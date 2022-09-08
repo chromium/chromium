@@ -38,8 +38,8 @@ const NSTimeInterval kContextMenuLongPressDuration = 1.0;
 const NSTimeInterval kWaitForVerificationTimeout = 8.0;
 
 // Generic verification injector. Injects one-time mousedown verification into
-// |web_state| that will set the boolean pointed to by |verified| to true when
-// |web_state|'s webview registers the mousedown event.
+// `web_state` that will set the boolean pointed to by `verified` to true when
+// `web_state`'s webview registers the mousedown event.
 base::CallbackListSubscription AddVerifierToElementWithPrefix(
     web::WebState* web_state,
     ElementSelector* selector,
@@ -159,8 +159,8 @@ id<GREYAction> WebViewVerifiedActionOnElement(WebState* state,
       base::StringPrintf("__web_test_%p_interaction", &selector);
 
   GREYPerformBlock verified_tap = ^BOOL(id element, __strong NSError** error) {
-    // A pointer to |verified| is passed into AddVerifierToElementWithPrefix()
-    // so the verifier can update its value, but |verified| also needs to be
+    // A pointer to `verified` is passed into AddVerifierToElementWithPrefix()
+    // so the verifier can update its value, but `verified` also needs to be
     // marked as __block so that waitUntilCondition(), below, can access it by
     // reference.
     __block bool verified = false;
@@ -200,7 +200,7 @@ id<GREYAction> WebViewVerifiedActionOnElement(WebState* state,
     }
     [[GREYUIThreadExecutor sharedInstance] drainUntilIdle];
 
-    // Wait for the verified to trigger and set |verified|.
+    // Wait for the verified to trigger and set `verified`.
     NSString* verification_timeout_message =
         [NSString stringWithFormat:@"The action (%@) on element %@ wasn't "
                                    @"verified before timing out.",

@@ -67,8 +67,8 @@ class ResponseProvider {
   static scoped_refptr<net::HttpResponseHeaders> GetResponseHeaders(
       const std::string& content_type,
       net::HttpStatusCode response_code);
-  // Gets configurable response based on |http_status| headers for redirecting
-  // to |destination|.
+  // Gets configurable response based on `http_status` headers for redirecting
+  // to `destination`.
   static scoped_refptr<net::HttpResponseHeaders> GetRedirectResponseHeaders(
       const std::string& destination,
       const net::HttpStatusCode& http_status);

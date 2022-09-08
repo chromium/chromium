@@ -239,9 +239,9 @@ CGRect GetBoundingRectOfElement(web::WebState* web_state,
   return elementFrame;
 }
 
-// Returns whether the Javascript action specified by |action| ran on the
-// element retrieved by the Javascript snippet |element_script| in the passed
-// |web_state|. |error| can be nil, and will return any error from executing
+// Returns whether the Javascript action specified by `action` ran on the
+// element retrieved by the Javascript snippet `element_script` in the passed
+// `web_state`. `error` can be nil, and will return any error from executing
 // JavaScript.
 bool RunActionOnWebViewElementWithScript(web::WebState* web_state,
                                          const std::string& element_script,
@@ -278,7 +278,7 @@ bool RunActionOnWebViewElementWithScript(web::WebState* web_state,
   __block bool element_found = false;
   __block NSError* block_error = nil;
 
-  // |executeUserJavaScript:completionHandler:| is no-op for app-specific URLs,
+  // `executeUserJavaScript:completionHandler:` is no-op for app-specific URLs,
   // so simulate a user gesture by calling TouchTracking method.
   [web_controller touched:YES];
   [web_controller executeJavaScript:script
@@ -299,8 +299,8 @@ bool RunActionOnWebViewElementWithScript(web::WebState* web_state,
   return js_finished && element_found;
 }
 
-// Returns whether the Javascript action specified by |action| ran on
-// |element_id| in the passed |web_state|. |error| can be nil, and will return
+// Returns whether the Javascript action specified by `action` ran on
+// `element_id` in the passed `web_state`. `error` can be nil, and will return
 // any error from executing JavaScript.
 bool RunActionOnWebViewElementWithId(web::WebState* web_state,
                                      const std::string& element_id,

@@ -40,7 +40,7 @@ class NavigationManager {
     // The URL to load. Must be set.
     GURL url;
 
-    // The URL to display in Omnibox. If empty, |url| will be displayed.
+    // The URL to display in Omnibox. If empty, `url` will be displayed.
     GURL virtual_url;
 
     // The referrer for the load. May be empty.
@@ -99,7 +99,7 @@ class NavigationManager {
   // Removes the pending NavigationItem.
   virtual void DiscardNonCommittedItems() = 0;
 
-  // Loads the URL with specified |params|.
+  // Loads the URL with specified `params`.
   virtual void LoadURLWithParams(
       const NavigationManager::WebLoadParams& params) = 0;
 
@@ -110,10 +110,10 @@ class NavigationManager {
   //  - Web usage was disabled and re-enabled.
   virtual void LoadIfNecessary() = 0;
 
-  // Adds |rewriter| to a transient list of URL rewriters.  Transient URL
+  // Adds `rewriter` to a transient list of URL rewriters.  Transient URL
   // rewriters will be executed before the rewriters already added to the
   // BrowserURLRewriter singleton, and the list will be cleared after the next
-  // attempted page load.  |rewriter| must not be null.
+  // attempted page load.  `rewriter` must not be null.
   virtual void AddTransientURLRewriter(
       BrowserURLRewriter::URLRewriter rewriter) = 0;
 
@@ -122,10 +122,10 @@ class NavigationManager {
   // TODO(crbug.com/533848): Update to return size_t.
   virtual int GetItemCount() const = 0;
 
-  // Returns the committed NavigationItem at |index|.
+  // Returns the committed NavigationItem at `index`.
   virtual NavigationItem* GetItemAtIndex(size_t index) const = 0;
 
-  // Returns the index of |item| in the committed session history.
+  // Returns the index of `item` in the committed session history.
   virtual int GetIndexOfItem(const NavigationItem* item) const = 0;
 
   // Returns the index of the last committed item or -1 if the last
@@ -151,10 +151,10 @@ class NavigationManager {
   virtual void GoToIndex(int index) = 0;
 
   // Reloads the visible item under the specified ReloadType. If
-  // |check_for_repost| is true and the current item has POST data the user is
+  // `check_for_repost` is true and the current item has POST data the user is
   // prompted to see if they really want to reload the page. Pass in true if the
   // reload is explicitly initiated by the user.
-  // TODO(crbug.com/700958): implement the logic for |check_for_repost|.
+  // TODO(crbug.com/700958): implement the logic for `check_for_repost`.
   virtual void Reload(ReloadType reload_type, bool check_for_repost) = 0;
 
   // Reloads the visible item under the specified UserAgentType.
@@ -167,9 +167,9 @@ class NavigationManager {
   virtual std::vector<NavigationItem*> GetForwardItems() const = 0;
 
   // Initializes this NavigationManager with the given saved navigations, using
-  // |last_committed_item_index| as the currently loaded item. Before this call
+  // `last_committed_item_index` as the currently loaded item. Before this call
   // the NavigationManager should be unused (there should be no current item).
-  // This takes ownership of |items| (must be moved).
+  // This takes ownership of `items` (must be moved).
   virtual void Restore(int last_committed_item_index,
                        std::vector<std::unique_ptr<NavigationItem>> items) = 0;
 

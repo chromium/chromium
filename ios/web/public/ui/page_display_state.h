@@ -24,7 +24,7 @@ class PageScrollState {
   bool IsValid() const;
 
   // Returns the content offset that produces an equivalent scroll offset when
-  // applied to a UIScrollView whose contentInset is |content_inset|.
+  // applied to a UIScrollView whose contentInset is `content_inset`.
   CGPoint GetEffectiveContentOffsetForContentInset(
       UIEdgeInsets content_inset) const;
 

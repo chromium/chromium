@@ -73,7 +73,7 @@ class HttpServer : public base::RefCountedThreadSafe<HttpServer> {
   HttpServer& operator=(const HttpServer&) = delete;
 
   // A convenience method for the longer form of
-  // |web::test::HttpServer::GetSharedInstance().MakeUrlForHttpServer|
+  // `web::test::HttpServer::GetSharedInstance().MakeUrlForHttpServer`
   static GURL MakeUrl(const std::string& url);
   // Starts the server on the default port 8080. CHECKs if the server can not be
   // started.
@@ -92,13 +92,13 @@ class HttpServer : public base::RefCountedThreadSafe<HttpServer> {
   NSUInteger GetPort() const;
 
   // Adds a ResponseProvider. Takes ownership of the ResponseProvider.
-  // Note for using URLs inside of the |response_provider|:
+  // Note for using URLs inside of the `response_provider`:
   // The HttpServer cannot run on default HTTP port 80, so URLs used in
   // ResponseProviders must be converted at runtime after the HttpServer's port
-  // is determined. Please use |MakeUrl| to handle converting URLs.
+  // is determined. Please use `MakeUrl` to handle converting URLs.
   // Must be called from the main thread.
   void AddResponseProvider(std::unique_ptr<ResponseProvider> response_provider);
-  // Removes the |response_provider|. Must be called from the main thread.
+  // Removes the `response_provider`. Must be called from the main thread.
   void RemoveResponseProvider(ResponseProvider* response_provider);
   // Removes all the response providers. Must be called from the main thread.
   void RemoveAllResponseProviders();
@@ -111,22 +111,22 @@ class HttpServer : public base::RefCountedThreadSafe<HttpServer> {
   // Sets the port that the server is running on. Thread Safe
   void SetPort(NSUInteger port);
 
-  // Creates a GURL that the server can service based on the |url|
+  // Creates a GURL that the server can service based on the `url`
   // passed in.
-  // It does not rewrite URLs if the |url| can already be serviced by the
+  // It does not rewrite URLs if the `url` can already be serviced by the
   // server.
-  // |url| must be a valid URL. Thread safe.
+  // `url` must be a valid URL. Thread safe.
   GURL MakeUrlForHttpServer(const std::string& url) const;
 
-  // Returns the response provider that can handle the |request|.
+  // Returns the response provider that can handle the `request`.
   // Note: No more than one response provider can handle the request.
   // Thread safe.
   scoped_refptr<RefCountedResponseProviderWrapper>
   GetResponseProviderForRequest(const web::ResponseProvider::Request& request);
 
-  // Lock for serializing access to |provider_|.
+  // Lock for serializing access to `provider_`.
   mutable base::Lock provider_list_lock_;
-  // Lock for serializing access to |port_|.
+  // Lock for serializing access to `port_`.
   mutable base::Lock port_lock_;
   // The port that the server is running on. 0 if the server is not running.
   NSUInteger port_;

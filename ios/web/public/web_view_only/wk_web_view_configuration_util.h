@@ -12,11 +12,11 @@ namespace web {
 
 class WebState;
 
-// Creates the web view of |web_state| with given |configuration|.
+// Creates the web view of `web_state` with given `configuration`.
 // Returns the created web view.
-// If |configuration| is nil, a new WKWebViewConfiguration object will be
+// If `configuration` is nil, a new WKWebViewConfiguration object will be
 // created and used to create the web view.
-// This must be called immediately after |web_state| is created
+// This must be called immediately after `web_state` is created
 // e.g., with web::WebState::Create().
 //
 // The goal of writing this function is to make it possible to construct

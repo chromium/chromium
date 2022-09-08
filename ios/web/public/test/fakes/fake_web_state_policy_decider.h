@@ -19,16 +19,16 @@ class FakeWebStatePolicyDecider : public WebStatePolicyDecider {
   explicit FakeWebStatePolicyDecider(WebState* web_state);
   ~FakeWebStatePolicyDecider() override = default;
 
-  // Sets the value returned from |ShouldAllowRequest|.
+  // Sets the value returned from `ShouldAllowRequest`.
   void SetShouldAllowRequest(
       WebStatePolicyDecider::PolicyDecision should_allow_request);
 
   // WebStatePolicyDecider overrides
-  // Always calls |callback| with PolicyDecision::Allow().
+  // Always calls `callback` with PolicyDecision::Allow().
   void ShouldAllowRequest(NSURLRequest* request,
                           RequestInfo request_info,
                           PolicyDecisionCallback callback) override;
-  // Always calls |callback| with PolicyDecision::Allow().
+  // Always calls `callback` with PolicyDecision::Allow().
   void ShouldAllowResponse(NSURLResponse* response,
                            ResponseInfo response_info,
                            PolicyDecisionCallback callback) override;

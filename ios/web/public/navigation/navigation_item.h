@@ -120,13 +120,13 @@ class NavigationItem : public base::SupportsUserData {
   virtual void SetUserAgentType(UserAgentType type) = 0;
   virtual UserAgentType GetUserAgentType() const = 0;
 
-  // |true| if this item is the result of a POST request with data.
+  // `true` if this item is the result of a POST request with data.
   virtual bool HasPostData() const = 0;
 
   // Returns the item's current http request headers.
   virtual NSDictionary* GetHttpRequestHeaders() const = 0;
 
-  // Adds headers from |additional_headers| to the item's http request headers.
+  // Adds headers from `additional_headers` to the item's http request headers.
   // Existing headers with the same key will be overridden.
   virtual void AddHttpRequestHeaders(NSDictionary* additional_headers) = 0;
 

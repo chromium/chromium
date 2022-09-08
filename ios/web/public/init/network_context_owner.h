@@ -31,7 +31,7 @@ namespace web {
 class NetworkContextOwner : public net::URLRequestContextGetterObserver {
  public:
   // This initiates creation of the NetworkContext object on I/O thread and
-  // connects the pipe in |network_context_client| to it.
+  // connects the pipe in `network_context_client` to it.
   NetworkContextOwner(
       net::URLRequestContextGetter* request_context,
       const std::vector<std::string>& cors_exempt_header_list,

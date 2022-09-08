@@ -14,7 +14,7 @@ namespace web {
 
 class WebState;
 
-// Matcher for WKWebView which belogs to the given |webState|.
+// Matcher for WKWebView which belogs to the given `webState`.
 id<GREYMatcher> WebViewInWebState(WebState* web_state);
 
 // Matcher for WKWebView's scroll view.

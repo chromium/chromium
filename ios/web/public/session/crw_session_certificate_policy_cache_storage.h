@@ -41,7 +41,7 @@ size_t GetCertPolicyBytesEncoded();
 
 // The certificate represented by this storage.
 @property(nonatomic, readonly) net::X509Certificate* certificate;
-// The hostname of the page that issued |certificate|.
+// The hostname of the page that issued `certificate`.
 @property(nonatomic, readonly) std::string& host;
 // The allowance chosen for the certificate.
 @property(nonatomic, readonly) net::CertStatus status;

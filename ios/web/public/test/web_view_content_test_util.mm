@@ -61,7 +61,7 @@ char kGetDocumentBodyJavaScript[] =
     "}"
     "allTextContent(document.body);";
 
-// Fetches the image from |image_url|.
+// Fetches the image from `image_url`.
 UIImage* LoadImage(const GURL& image_url) {
   __block UIImage* image;
   __block NSError* error;

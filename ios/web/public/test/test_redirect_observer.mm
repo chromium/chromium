@@ -33,7 +33,7 @@ GURL TestRedirectObserver::GetFinalUrlForUrl(const GURL& url) {
     if (redirect_chain.original_url == url)
       return redirect_chain.final_url;
   }
-  // If load for |url| did not occur after BeginObservingRedirectsForUrl() is
+  // If load for `url` did not occur after BeginObservingRedirectsForUrl() is
   // called, there will be no final redirected URL.
   return GURL();
 }

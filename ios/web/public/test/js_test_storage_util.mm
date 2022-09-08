@@ -62,9 +62,9 @@ bool ExecuteJavaScriptInFrame(WebFrame* web_frame,
                                   base::Seconds(kWaitForJSCompletionTimeout));
 }
 
-// Saves |key|, |value| to a Javascript storage type in |web_frame| using the
-// __gCrWeb function |name|. Places any error message from the JavaScript into
-// |error_message|.
+// Saves `key`, `value` to a Javascript storage type in `web_frame` using the
+// __gCrWeb function `name`. Places any error message from the JavaScript into
+// `error_message`.
 bool SetStorage(WebFrame* web_frame,
                 const std::string& set_function,
                 NSString* key,
@@ -94,9 +94,9 @@ bool SetStorage(WebFrame* web_frame,
   return success && set_success;
 }
 
-// Reads the value for the given |key| from storage on |web_frame| using
-// the __gCrWeb function |name|. The read value will be placed in |result| and
-// any JavaScript error will be placed in |error_message|.
+// Reads the value for the given `key` from storage on `web_frame` using
+// the __gCrWeb function `name`. The read value will be placed in `result` and
+// any JavaScript error will be placed in `error_message`.
 bool GetStorage(WebFrame* web_frame,
                 const std::string& get_function,
                 NSString* key,
@@ -132,10 +132,10 @@ bool GetStorage(WebFrame* web_frame,
   return success && lookup_success;
 }
 
-// Saves |key|, |value| to a Javascript storage type in |web_frame| and
-// |web_state| using the
-// __gCrWeb function |name|. The storage being used must be async. Places any
-// error message from the JavaScript into |error_message|.
+// Saves `key`, `value` to a Javascript storage type in `web_frame` and
+// `web_state` using the
+// __gCrWeb function `name`. The storage being used must be async. Places any
+// error message from the JavaScript into `error_message`.
 bool SetAsyncStorage(WebFrame* web_frame,
                      WebState* web_state,
                      const std::string& set_function,
@@ -187,10 +187,10 @@ bool SetAsyncStorage(WebFrame* web_frame,
   return success;
 }
 
-// Reads the value for the given |key| from storage on |web_frame| using
-// the __gCrWeb function |name|. The storage type must be async. The read value
-// will be placed in |result| and any JavaScript error will be placed in
-// |error_message|.
+// Reads the value for the given `key` from storage on `web_frame` using
+// the __gCrWeb function `name`. The storage type must be async. The read value
+// will be placed in `result` and any JavaScript error will be placed in
+// `error_message`.
 bool GetAsyncStorage(WebFrame* web_frame,
                      WebState* web_state,
                      const std::string& get_function,

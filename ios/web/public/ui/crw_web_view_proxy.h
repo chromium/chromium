@@ -51,7 +51,7 @@
 - (void)removeGestureRecognizer:(UIGestureRecognizer*)gestureRecognizer;
 
 // Whether or not the content view should use the content inset when setting
-// |contentInset|. Implementations may or may not respect the setting of this
+// `contentInset`. Implementations may or may not respect the setting of this
 // property.
 @property(nonatomic, assign) BOOL shouldUseViewContentInset;
 

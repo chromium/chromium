@@ -82,11 +82,11 @@ class BrowserState : public base::SupportsUserData {
   GetSharedURLLoaderFactory();
 
   // Safely cast a base::SupportsUserData to a BrowserState. Returns nullptr
-  // if |supports_user_data| is not a BrowserState.
+  // if `supports_user_data` is not a BrowserState.
   static BrowserState* FromSupportsUserData(
       base::SupportsUserData* supports_user_data);
 
-  // Updates |cors_exempt_header_list| field of the given |param| to register
+  // Updates `cors_exempt_header_list` field of the given `param` to register
   // headers that are used in content for special purpose and should not be
   // blocked by CORS checks.
   virtual void UpdateCorsExemptHeader(
@@ -115,7 +115,7 @@ class BrowserState : public base::SupportsUserData {
       shared_url_loader_factory_;
   mojo::Remote<network::mojom::NetworkContext> network_context_;
 
-  // Owns the network::NetworkContext that backs |url_loader_factory_|. Created
+  // Owns the network::NetworkContext that backs `url_loader_factory_`. Created
   // on the UI thread, destroyed on the IO thread.
   std::unique_ptr<NetworkContextOwner> network_context_owner_;
 

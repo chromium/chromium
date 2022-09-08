@@ -13,7 +13,7 @@ class WebState;
 
 namespace test {
 
-// Loads |url| in |web_state| with transition of type ui::PAGE_TRANSITION_TYPED.
+// Loads `url` in `web_state` with transition of type ui::PAGE_TRANSITION_TYPED.
 void LoadUrl(WebState* web_state, const GURL& url);
 
 // Returns true if the current page in the current WebState finishes loading

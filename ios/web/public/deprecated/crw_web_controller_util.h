@@ -16,8 +16,8 @@ class WebState;
 // slim navigation launching.
 namespace web_deprecated {
 
-// Sets side swipe recognizer for the |web_state|.
-// |web_state| can't be null.
+// Sets side swipe recognizer for the `web_state`.
+// `web_state` can't be null.
 void SetSwipeRecognizerProvider(web::WebState* web_state,
                                 id<CRWSwipeRecognizerProvider> delegate);
 

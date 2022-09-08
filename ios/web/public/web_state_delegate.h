@@ -27,11 +27,11 @@ class WebStateDelegate {
  public:
   WebStateDelegate();
 
-  // Called when |source| wants to open a new window. |url| is the URL of
-  // the new window; |opener_url| is the URL of the page which requested a
-  // window to be open; |initiated_by_user| is true if action was caused by the
-  // user. |source| will not open a window if this method returns nil. This
-  // method can not return |source|.
+  // Called when `source` wants to open a new window. `url` is the URL of
+  // the new window; `opener_url` is the URL of the page which requested a
+  // window to be open; `initiated_by_user` is true if action was caused by the
+  // user. `source` will not open a window if this method returns nil. This
+  // method can not return `source`.
   virtual WebState* CreateNewWebState(WebState* source,
                                       const GURL& url,
                                       const GURL& opener_url,
@@ -46,7 +46,7 @@ class WebStateDelegate {
   virtual WebState* OpenURLFromWebState(WebState* source,
                                         const WebState::OpenURLParams& params);
 
-  // Requests the repost form confirmation dialog. Clients must call |callback|
+  // Requests the repost form confirmation dialog. Clients must call `callback`
   // with true to allow repost and with false to cancel the repost. If this
   // method is not implemented then WebState will repost the form.
   virtual void ShowRepostFormWarningDialog(
@@ -60,9 +60,9 @@ class WebStateDelegate {
       WebState* source);
 
   // Called when a request receives an authentication challenge specified by
-  // |protection_space|, and is unable to respond using cached credentials.
-  // Clients must call |callback| even if they want to cancel authentication
-  // (in which case |username| or |password| should be nil).
+  // `protection_space`, and is unable to respond using cached credentials.
+  // Clients must call `callback` even if they want to cancel authentication
+  // (in which case `username` or `password` should be nil).
   typedef base::OnceCallback<void(NSString* username, NSString* password)>
       AuthCallback;
   virtual void OnAuthRequired(WebState* source,
@@ -75,7 +75,7 @@ class WebStateDelegate {
   virtual UIView* GetWebViewContainer(WebState* source);
 
   // Called when the context menu is triggered and now it is required to
-  // provide a UIContextMenuConfiguration to |completion_handler| to generate
+  // provide a UIContextMenuConfiguration to `completion_handler` to generate
   // the context menu.
   virtual void ContextMenuConfiguration(
       WebState* source,
@@ -96,13 +96,13 @@ class WebStateDelegate {
  private:
   friend class WebStateImpl;
 
-  // Called when |this| becomes the WebStateDelegate for |source|.
+  // Called when `this` becomes the WebStateDelegate for `source`.
   void Attach(WebState* source);
 
-  // Called when |this| is no longer the WebStateDelegate for |source|.
+  // Called when `this` is no longer the WebStateDelegate for `source`.
   void Detach(WebState* source);
 
-  // The WebStates for which |this| is currently a delegate.
+  // The WebStates for which `this` is currently a delegate.
   std::set<WebState*> attached_states_;
 };
 

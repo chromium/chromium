@@ -73,8 +73,8 @@ class NavigationContext {
   // redirect).
   //
   // Note: page and frame navigations can only be done using POST or GET
-  // methods Therefore API exposes only |bool IsPost()| as opposed to
-  // |const std::string& GetMethod()| method.
+  // methods Therefore API exposes only `bool IsPost()` as opposed to
+  // `const std::string& GetMethod()` method.
   virtual bool IsPost() const = 0;
 
   // Returns error if the navigation has failed.

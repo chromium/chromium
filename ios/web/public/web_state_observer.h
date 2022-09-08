@@ -38,10 +38,10 @@ class WebStateObserver : public base::CheckedObserver {
   virtual void WasHidden(WebState* web_state) {}
 
   // Called when a navigation started in the WebState for the main frame.
-  // |navigation_context| is unique to a specific navigation. The same
+  // `navigation_context` is unique to a specific navigation. The same
   // NavigationContext will be provided on subsequent call to
   // DidFinishNavigation() when related to this navigation. Observers should
-  // clear any references to |navigation_context| in DidFinishNavigation(), just
+  // clear any references to `navigation_context` in DidFinishNavigation(), just
   // before it is destroyed.
   //
   // This is also fired by same-document navigations, such as fragment
@@ -56,10 +56,10 @@ class WebStateObserver : public base::CheckedObserver {
   virtual void DidStartNavigation(WebState* web_state,
                                   NavigationContext* navigation_context) {}
 
-  // Called when an in-progress main-frame navigation in |web_state| receives
+  // Called when an in-progress main-frame navigation in `web_state` receives
   // a server redirect to a different URL. At the point where this is called,
-  // |navigation_context|'s URL has already been updated, so calling GetUrl()
-  // on |navigation_context| will return the redirect URL rather than the
+  // `navigation_context`'s URL has already been updated, so calling GetUrl()
+  // on `navigation_context` will return the redirect URL rather than the
   // original URL.
   virtual void DidRedirectNavigation(WebState* web_state,
                                      NavigationContext* navigation_context) {}
@@ -70,7 +70,7 @@ class WebStateObserver : public base::CheckedObserver {
   // NavigationContext::GetError().
   //
   // If this is called because the navigation committed, then the document load
-  // will still be ongoing in the WebState returned by |navigation_context|.
+  // will still be ongoing in the WebState returned by `navigation_context`.
   // Use the document loads events such as DidStopLoading
   // and related methods to listen for continued events from this
   // WebState.
@@ -79,7 +79,7 @@ class WebStateObserver : public base::CheckedObserver {
   // navigations or pushState/replaceState, which will not result in a document
   // change. To filter these out, use NavigationContext::IsSameDocument().
   //
-  // |navigation_context| will be destroyed at the end of this call, so do not
+  // `navigation_context` will be destroyed at the end of this call, so do not
   // keep a reference to it afterward.
   virtual void DidFinishNavigation(WebState* web_state,
                                    NavigationContext* navigation_context) {}
@@ -111,7 +111,7 @@ class WebStateObserver : public base::CheckedObserver {
                           PageLoadCompletionStatus load_completion_status) {}
 
   // Notifies the observer that the page has made some progress loading.
-  // |progress| is a value between 0.0 (nothing loaded) to 1.0 (page fully
+  // `progress` is a value between 0.0 (nothing loaded) to 1.0 (page fully
   // loaded).
   virtual void LoadProgressChanged(WebState* web_state, double progress) {}
 
@@ -134,16 +134,16 @@ class WebStateObserver : public base::CheckedObserver {
       API_AVAILABLE(ios(15.0)) {}
 
   // Called when a frame was created or navigated to a new document.
-  // Receivers can keep references to |web_frame| until
-  // |WebFrameWillBecomeUnavailable| is called but must not assume that the
-  // web Frame described by |web_frame| still exist.
+  // Receivers can keep references to `web_frame` until
+  // `WebFrameWillBecomeUnavailable` is called but must not assume that the
+  // web Frame described by `web_frame` still exist.
   virtual void WebFrameDidBecomeAvailable(WebState* web_state,
                                           WebFrame* web_frame) {}
 
   // Called when a frame was deleted or navigated away from the document and
   // will be removed from the WebFramesManager.
   // Receivers of this callback should clear all references to
-  // |web_frame|.
+  // `web_frame`.
   virtual void WebFrameWillBecomeUnavailable(WebState* web_state,
                                              WebFrame* web_frame) {}
 

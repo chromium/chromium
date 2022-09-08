@@ -17,7 +17,7 @@ namespace web {
 
 // An abstract ResponseProvider that returns a test_server::HttpResponse for a
 // request. This class encapsulates the logic to convert the response headers
-// and body received from |GetResponseHeadersAndBody| into a
+// and body received from `GetResponseHeadersAndBody` into a
 // net::test_server::HttpResponse.
 class DataResponseProvider : public ResponseProvider {
  public:

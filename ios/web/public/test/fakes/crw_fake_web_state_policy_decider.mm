@@ -31,10 +31,10 @@ FakeDecidePolicyForNavigationResponseInfo::
 }  // namespace web
 
 @implementation CRWFakeWebStatePolicyDecider {
-  // Arguments passed to |shouldAllowRequest:requestInfo:|.
+  // Arguments passed to `shouldAllowRequest:requestInfo:`.
   std::unique_ptr<web::FakeShouldAllowRequestInfo> _shouldAllowRequestInfo;
   // Arguments passed to
-  // |decidePolicyForNavigationResponse:responseInfo:completionHandler:|.
+  // `decidePolicyForNavigationResponse:responseInfo:completionHandler:`.
   std::unique_ptr<web::FakeDecidePolicyForNavigationResponseInfo>
       _decidePolicyForNavigationResponseInfo;
 }

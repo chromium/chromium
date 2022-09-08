@@ -51,7 +51,7 @@ void FakeWebFramesManager::RemoveWebFrame(const std::string& frame_id) {
   }
   // The web::WebFrame destructor can call some callbacks that will try to
   // access the frame via GetFrameWithId. This can lead to a reentrancy issue
-  // on |web_frames_|.
+  // on `web_frames_`.
   // To avoid this issue, keep the frame alive during the map operation and
   // destroy it after.
   auto keep_frame_alive = std::move(web_frames_[frame_id]);

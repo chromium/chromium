@@ -37,7 +37,7 @@
 + (ElementSelector*)selectorWithXPathQuery:(const std::string&)query;
 
 // Returns an ElementSelector to retrieve an element described by
-// |selectorDescription| using |selectorScript|.
+// `selectorDescription` using `selectorScript`.
 + (ElementSelector*)selectorWithScript:(NSString*)selectorScript
                    selectorDescription:(NSString*)selectorDescription;
 

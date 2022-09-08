@@ -61,8 +61,8 @@ class WebClient {
 
   // An embedder may support schemes that are otherwise unknown to lower-level
   // components. To control how /net/url and other components interpret urls of
-  // such schemes, the embedder overrides |AddAdditionalSchemes| and adds to the
-  // vectors inside the |Schemes| structure.
+  // such schemes, the embedder overrides `AddAdditionalSchemes` and adds to the
+  // vectors inside the `Schemes` structure.
   struct Schemes {
     Schemes();
     ~Schemes();
@@ -137,18 +137,18 @@ class WebClient {
       BrowserState* browser_state) const;
 
   // Allows the embedder to bind an interface request for a WebState-scoped
-  // interface that originated from the main frame of |web_state|. Called if
-  // |web_state| could not bind the receiver itself.
+  // interface that originated from the main frame of `web_state`. Called if
+  // `web_state` could not bind the receiver itself.
   virtual void BindInterfaceReceiverFromMainFrame(
       WebState* web_state,
       mojo::GenericPendingReceiver receiver) {}
 
-  // Calls the given |callback| with the contents of an error page to display
-  // when a navigation error occurs. |error| is always a valid pointer. The
-  // string passed to |callback| will be nil if no error page should be
+  // Calls the given `callback` with the contents of an error page to display
+  // when a navigation error occurs. `error` is always a valid pointer. The
+  // string passed to `callback` will be nil if no error page should be
   // displayed. Otherwise, this string will contain the details of the error
-  // and maybe links to more info. |info| will have a value for SSL cert errors
-  // and otherwise be nullopt. |navigation_id| is passed into this method so
+  // and maybe links to more info. `info` will have a value for SSL cert errors
+  // and otherwise be nullopt. `navigation_id` is passed into this method so
   // that in the case of an SSL cert error, the blocking page can be associated
   // with the tab.
   virtual void PrepareErrorPage(WebState* web_state,
@@ -167,7 +167,7 @@ class WebClient {
   virtual bool EnableLongPressUIContextMenu() const;
 
   // Returns the UserAgentType that should be used by default for the web
-  // content, based on the |web_state|.
+  // content, based on the `web_state`.
   virtual UserAgentType GetDefaultUserAgent(web::WebState* web_state,
                                             const GURL& url) const;
 
@@ -183,7 +183,7 @@ class WebClient {
   // restoration may not properly restore these items.
   virtual void CleanupNativeRestoreURLs(web::WebState* web_state) const;
 
-  // Notify the embedder that |web_state| will display a prompt for the user.
+  // Notify the embedder that `web_state` will display a prompt for the user.
   virtual void WillDisplayMediaCapturePermissionPrompt(
       web::WebState* web_state) const;
 

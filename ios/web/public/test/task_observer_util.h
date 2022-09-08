@@ -14,7 +14,7 @@ namespace test {
 // background tasks have completed
 void WaitForBackgroundTasks();
 
-// Blocks until |web_state| navigation and background tasks are
+// Blocks until `web_state` navigation and background tasks are
 // completed. Returns false when timed out.
 bool WaitUntilLoaded(WebState* web_state);
 

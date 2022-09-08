@@ -25,11 +25,11 @@ class TestRedirectObserver final
   TestRedirectObserver(const TestRedirectObserver&) = delete;
   TestRedirectObserver& operator=(const TestRedirectObserver&) = delete;
 
-  // Notifies the observer that |url| is about to be loaded by the associated
+  // Notifies the observer that `url` is about to be loaded by the associated
   // WebState, triggering the TestRedirectObserver to start observing redirects.
   void BeginObservingRedirectsForUrl(const GURL& url);
 
-  // Returns the final url in the redirect chain that began with |url|.
+  // Returns the final url in the redirect chain that began with `url`.
   GURL GetFinalUrlForUrl(const GURL& url);
 
  private:
@@ -52,10 +52,10 @@ class TestRedirectObserver final
 
   // Stores redirect chains with their corresponding NavigationItems.
   std::map<NavigationItem*, RedirectChain> redirect_chains_;
-  // Stores URLs passed into |BeginObservingRedirectsForUrl()|.  Once a
+  // Stores URLs passed into `BeginObservingRedirectsForUrl()`.  Once a
   // provisional load has begin for a URL contained in this set, the URL will
   // be removed and the redirect chain originating from that URL will be stored
-  // in |redirect_chains_|.
+  // in `redirect_chains_`.
   std::set<GURL> expected_urls_;
 
   WEB_STATE_USER_DATA_KEY_DECL();

@@ -57,7 +57,7 @@ class HttpServerTest : public web::WebIntTest {
 };
 
 // Tests that a web::test::HttpServer can be started and can send and receive
-// requests and response from |TestResponseProvider|.
+// requests and response from `TestResponseProvider`.
 TEST_F(HttpServerTest, StartAndInterfaceWithResponseProvider) {
   __block NSString* page_result;
   id completion_handler =

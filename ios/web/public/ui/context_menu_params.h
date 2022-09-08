@@ -44,7 +44,7 @@ struct ContextMenuParams {
   // The view in which to present the menu.
   UIView* view;
 
-  // The location in |view| to present the menu.
+  // The location in `view` to present the menu.
   CGPoint location;
 
   // The text associated with the link or text element. It is either nil or

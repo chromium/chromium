@@ -58,7 +58,7 @@ void WebTest::OverrideJavaScriptFeatures(
   WKWebViewConfiguration* configuration =
       configuration_provider.GetWebViewConfiguration();
   // User scripts must be removed because
-  // |JavaScriptFeatureManager::ConfigureFeatures| will remove script message
+  // `JavaScriptFeatureManager::ConfigureFeatures` will remove script message
   // handlers.
   [configuration.userContentController removeAllUserScripts];
 

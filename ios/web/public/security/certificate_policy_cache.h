@@ -29,12 +29,12 @@ class CertificatePolicyCache
 
   // Everything from here on can only be called from the IO thread.
 
-  // Records that |cert| is permitted to be used for |host| in the future.
+  // Records that `cert` is permitted to be used for `host` in the future.
   virtual void AllowCertForHost(net::X509Certificate* cert,
                                 const std::string& host,
                                 net::CertStatus error);
 
-  // Queries whether |cert| is allowed or denied for |host|.
+  // Queries whether `cert` is allowed or denied for `host`.
   virtual CertPolicy::Judgment QueryPolicy(net::X509Certificate* cert,
                                            const std::string& host,
                                            net::CertStatus error);

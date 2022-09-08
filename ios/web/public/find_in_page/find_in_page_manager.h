@@ -32,9 +32,9 @@ enum class FindInPageOptions {
 // Manager for searching text on a page. Supports searching within all iframes.
 class FindInPageManager : public web::WebStateUserData<FindInPageManager> {
  public:
-  // Searches for string |query|. Executes new search or traverses results based
-  // on |options|. |query| must not be null if |options| is |FindInPageSearch|.
-  // |query| is ignored if |options| is not |FindInPageSearch|. If new search is
+  // Searches for string `query`. Executes new search or traverses results based
+  // on `options`. `query` must not be null if `options` is `FindInPageSearch`.
+  // `query` is ignored if `options` is not `FindInPageSearch`. If new search is
   // started before previous search finishes, old request will be discarded.
   // Check CanSearchContent() before calling Find().
   //

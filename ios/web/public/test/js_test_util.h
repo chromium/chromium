@@ -17,18 +17,18 @@ namespace test {
 // NSArray (array), NSNull (null), NSDate (Date), nil (undefined or execution
 // exception).
 
-// Executes JavaScript on |web_view| and returns the result as an id.
-// |error| can be null and will be updated only if script execution fails.
+// Executes JavaScript on `web_view` and returns the result as an id.
+// `error` can be null and will be updated only if script execution fails.
 id ExecuteJavaScript(WKWebView* web_view,
                      NSString* script,
                      NSError* __autoreleasing* error);
 
-// Executes JavaScript on |web_view| and returns the result as an id.
+// Executes JavaScript on `web_view` and returns the result as an id.
 // Fails if there was an error during script execution.
 id ExecuteJavaScript(WKWebView* web_view, NSString* script);
 
-// Synchronously loads |html| into |web_view|. Returns true is successful or
-// false if the |web_view| never finishes loading.
+// Synchronously loads `html` into `web_view`. Returns true is successful or
+// false if the `web_view` never finishes loading.
 [[nodiscard]] bool LoadHtml(WKWebView* web_view,
                             NSString* html,
                             NSURL* base_url);

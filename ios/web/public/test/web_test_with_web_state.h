@@ -49,29 +49,29 @@ class WebTestWithWebState : public WebTest {
   // Loads the specified HTML content into the WebState, using test url name.
   // Equivalent to calling `LoadHtmlInWebState(html, web_state())`.
   [[nodiscard]] bool LoadHtml(const std::string& html);
-  // Loads the specified HTML content with URL into |web_state|.
+  // Loads the specified HTML content with URL into `web_state`.
   void LoadHtmlInWebState(NSString* html, const GURL& url, WebState* web_state);
-  // Loads the specified HTML content into |web_state|, using test url name.
+  // Loads the specified HTML content into `web_state`, using test url name.
   void LoadHtmlInWebState(NSString* html, WebState* web_state);
-  // Loads the specified HTML content into |web_state|, using test url name.
+  // Loads the specified HTML content into `web_state`, using test url name.
   [[nodiscard]] bool LoadHtmlInWebState(const std::string& html,
                                         WebState* web_state);
   // Loads the specified HTML content with URL into the WebState. None of the
   // subresources will be fetched.
   // This function is only supported on iOS11+. On iOS10, this function simply
-  // calls |LoadHtml|.
+  // calls `LoadHtml`.
   bool LoadHtmlWithoutSubresources(const std::string& html);
   // Blocks until both known NSRunLoop-based and known message-loop-based
   // background tasks have completed
   void WaitForBackgroundTasks();
   // Blocks until known NSRunLoop-based have completed, known message-loop-based
-  // background tasks have completed and |condition| evaluates to true.
+  // background tasks have completed and `condition` evaluates to true.
   void WaitForCondition(ConditionBlock condition);
   // Blocks until web_state() navigation and background tasks are
   // completed. Returns false when timed out.
   bool WaitUntilLoaded();
   // Synchronously returns the result of the executed JavaScript function by
-  // calling |function| with |parameters| in the main frame of |web_state()|.
+  // calling `function` with `parameters` in the main frame of `web_state()`.
   std::unique_ptr<base::Value> CallJavaScriptFunction(
       const std::string& function,
       const std::vector<base::Value>& parameters);
@@ -82,7 +82,7 @@ class WebTestWithWebState : public WebTest {
   // Synchronously executes JavaScript and returns result as id.
   id ExecuteJavaScript(NSString* script);
   // Synchronously executes JavaScript in the content world associated with
-  // |feature| and returns the result as id.
+  // `feature` and returns the result as id.
   id ExecuteJavaScriptForFeature(NSString* script, JavaScriptFeature* feature);
 
   // Returns the base URL of the loaded page.

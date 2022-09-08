@@ -16,7 +16,7 @@
 
 namespace web {
 
-// Arguments passed to |shouldAllowRequest:requestInfo:|.
+// Arguments passed to `shouldAllowRequest:requestInfo:`.
 struct FakeShouldAllowRequestInfo {
   FakeShouldAllowRequestInfo(NSURLRequest* request,
                              WebStatePolicyDecider::RequestInfo request_info);
@@ -26,7 +26,7 @@ struct FakeShouldAllowRequestInfo {
 };
 
 // Arguments passed to
-// |decidePolicyForNavigationResponse:forMainFrame:completionHandler:|.
+// `decidePolicyForNavigationResponse:forMainFrame:completionHandler:`.
 struct FakeDecidePolicyForNavigationResponseInfo {
   FakeDecidePolicyForNavigationResponseInfo(
       NSURLResponse* response,
@@ -40,11 +40,11 @@ struct FakeDecidePolicyForNavigationResponseInfo {
 
 // Test implementation of CRWWebStatePolicyDecider protocol.
 @interface CRWFakeWebStatePolicyDecider : NSObject<CRWWebStatePolicyDecider>
-// Arguments passed to |shouldAllowRequest:requestInfo:|.
+// Arguments passed to `shouldAllowRequest:requestInfo:`.
 @property(nonatomic, readonly)
     const web::FakeShouldAllowRequestInfo* shouldAllowRequestInfo;
 // Arguments passed to
-// |decidePolicyForNavigationResponse:responseInfo:completionHandler:|.
+// `decidePolicyForNavigationResponse:responseInfo:completionHandler:`.
 @property(nonatomic, readonly)
     const web::FakeDecidePolicyForNavigationResponseInfo*
         decidePolicyForNavigationResponseInfo;

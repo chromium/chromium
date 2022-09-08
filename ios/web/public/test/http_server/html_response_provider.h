@@ -24,15 +24,15 @@ class HtmlResponseProvider : public web::DataResponseProvider {
   // Constructs an HtmlResponseProvider that does not respond to any request.
   HtmlResponseProvider();
   // Constructs an HtmlResponseProvider that generates a simple string response
-  // to a URL based on the mapping present in |responses|.
+  // to a URL based on the mapping present in `responses`.
   explicit HtmlResponseProvider(const std::map<GURL, std::string>& responses);
   // Constructs an HtmlResponseProvider that generates a simple string response
   // to a URL with a Set-Cookie entry in the headers based on the mapping
-  // present in |responses|.
+  // present in `responses`.
   explicit HtmlResponseProvider(
       const std::map<GURL, std::pair<std::string, std::string>>& responses);
   // Constructs an HtmlResponseProvider that generates a response to a URL based
-  // on the mapping present in |responses|.
+  // on the mapping present in `responses`.
   explicit HtmlResponseProvider(
       const std::map<GURL, HtmlResponseProviderImpl::Response>& responses);
 

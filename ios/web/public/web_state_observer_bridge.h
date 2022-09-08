@@ -85,7 +85,7 @@ enum Permission : NSUInteger;
 // Invoked by WebStateObserverBridge::WebStateRealized.
 - (void)webStateRealized:(web::WebState*)webState;
 
-// Note: after |webStateDestroyed:| is invoked, the WebState being observed
+// Note: after `webStateDestroyed:` is invoked, the WebState being observed
 // is no longer valid.
 - (void)webStateDestroyed:(web::WebState*)webState;
 

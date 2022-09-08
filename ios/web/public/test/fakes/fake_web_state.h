@@ -149,15 +149,15 @@ class FakeWebState : public WebState {
   void SetCanTakeSnapshot(bool can_take_snapshot);
 
   // Getters for test data.
-  // Uses |policy_deciders| to determine whether the navigation corresponding to
-  // |request| should be allowed. Calls |callback| with the decision. Defaults
+  // Uses `policy_deciders` to determine whether the navigation corresponding to
+  // `request` should be allowed. Calls `callback` with the decision. Defaults
   // to PolicyDecision::Allow().
   void ShouldAllowRequest(
       NSURLRequest* request,
       WebStatePolicyDecider::RequestInfo request_info,
       WebStatePolicyDecider::PolicyDecisionCallback callback);
-  // Uses |policy_deciders| to determine whether the navigation corresponding to
-  // |response| should be allowed. Calls |callback| with the decision. Defaults
+  // Uses `policy_deciders` to determine whether the navigation corresponding to
+  // `response` should be allowed. Calls `callback` with the decision. Defaults
   // to PolicyDecision::Allow().
   void ShouldAllowResponse(
       NSURLResponse* response,

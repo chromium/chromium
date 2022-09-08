@@ -179,7 +179,7 @@ void FakeNavigationManager::AddRestoreCompletionCallback(
   NOTREACHED();
 }
 
-// Adds a new navigation item of |transition| type at the end of this
+// Adds a new navigation item of `transition` type at the end of this
 // navigation manager.
 void FakeNavigationManager::AddItem(const GURL& url,
                                     ui::PageTransition transition) {

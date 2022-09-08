@@ -17,7 +17,7 @@ class ResponseProvider;
 namespace test {
 
 // Sets up a web::test::HttpServer with a simple HtmlResponseProvider. The
-// HtmlResponseProvider will use the |responses| map to resolve URLs.
+// HtmlResponseProvider will use the `responses` map to resolve URLs.
 void SetUpSimpleHttpServer(const std::map<GURL, std::string>& responses);
 
 // Sets up a web::test::HttpServer with a single custom provider.

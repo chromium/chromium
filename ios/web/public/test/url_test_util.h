@@ -12,7 +12,7 @@ class GURL;
 
 namespace web {
 
-// Returns a formatted version of |url| that would be used as the fallback title
+// Returns a formatted version of `url` that would be used as the fallback title
 // for a page with that URL.
 std::u16string GetDisplayTitleForUrl(const GURL& url);
 

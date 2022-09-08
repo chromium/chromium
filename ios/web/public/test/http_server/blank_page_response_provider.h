@@ -16,7 +16,7 @@ class ResponseProvider;
 namespace test {
 
 // Creates a ResponseProvider that returns an empty HTML document for
-// |url|.
+// `url`.
 std::unique_ptr<ResponseProvider> CreateBlankPageResponseProvider(
     const GURL& url);
 

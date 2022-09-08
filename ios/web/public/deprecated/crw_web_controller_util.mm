@@ -15,7 +15,7 @@
 #endif
 
 namespace {
-// Gets the web controller from |web_state|.
+// Gets the web controller from `web_state`.
 CRWWebController* GetWebController(web::WebState* web_state) {
   return static_cast<web::WebStateImpl*>(web_state)->GetWebController();
 }

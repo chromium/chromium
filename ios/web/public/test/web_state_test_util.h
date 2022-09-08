@@ -16,7 +16,7 @@ namespace test {
 // Synchronously executes JavaScript and returns result as id.
 id ExecuteJavaScript(NSString* script, web::WebState* web_state);
 
-// Returns CRWWebController for the given |web_state|.
+// Returns CRWWebController for the given `web_state`.
 CRWWebController* GetWebController(web::WebState* web_state);
 
 // Loads the specified HTML content with URL into the WebState.

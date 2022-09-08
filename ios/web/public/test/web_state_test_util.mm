@@ -66,9 +66,9 @@ void LoadHtml(NSString* html, const GURL& url, web::WebState* web_state) {
 
   // If the underlying WKWebView is empty, first load a placeholder to create a
   // WKBackForwardListItem to store the NavigationItem associated with the
-  // |-loadHTML|.
-  // TODO(crbug.com/777884): consider changing |-loadHTML| to match WKWebView's
-  // |-loadHTMLString:baseURL| that doesn't create a navigation entry.
+  // `-loadHTML`.
+  // TODO(crbug.com/777884): consider changing `-loadHTML` to match WKWebView's
+  // `-loadHTMLString:baseURL` that doesn't create a navigation entry.
   if (!web_state->GetNavigationManager()->GetItemCount()) {
     GURL placeholder_url(url::kAboutBlankURL);
 

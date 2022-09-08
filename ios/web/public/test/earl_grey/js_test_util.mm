@@ -19,8 +19,8 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace web {
 
-// Executes |javascript| on the given |web_state|, and waits until execution is
-// completed. If |out_error| is not nil, it is set to the error resulting from
+// Executes `javascript` on the given `web_state`, and waits until execution is
+// completed. If `out_error` is not nil, it is set to the error resulting from
 // the execution, if one occurs. The return value is the result of the
 // JavaScript execution, or nil if script execution timed out.
 absl::optional<base::Value> ExecuteJavaScript(

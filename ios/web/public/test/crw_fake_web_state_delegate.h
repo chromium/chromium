@@ -10,25 +10,25 @@
 // Stub implementation for CRWWebStateDelegate protocol.
 @interface CRWFakeWebStateDelegate : NSObject <CRWWebStateDelegate>
 
-// web::WebState::OpenURLParams in |webState:openURLWithParams:| call.
+// web::WebState::OpenURLParams in `webState:openURLWithParams:` call.
 @property(nonatomic, readonly)
     const web::WebState::OpenURLParams* openURLParams;
 // web::WebState received in delegate method calls.
 @property(nonatomic, readonly) web::WebState* webState;
-// Whether |webState:createNewWebStateForURL:openerURL:initiatedByUser:| has
+// Whether `webState:createNewWebStateForURL:openerURL:initiatedByUser:` has
 // been called or not.
 @property(nonatomic, readonly) BOOL webStateCreationRequested;
-// Whether |closeWebState:| has been called or not.
+// Whether `closeWebState:` has been called or not.
 @property(nonatomic, readonly) BOOL webStateClosingRequested;
-// Whether |webState:runRepostFormDialogWithCompletionHandler:| has been called
+// Whether `webState:runRepostFormDialogWithCompletionHandler:` has been called
 // or not.
 @property(nonatomic, readonly) BOOL repostFormWarningRequested;
-// Whether |javaScriptDialogPresenterForWebState:| has been called or not.
+// Whether `javaScriptDialogPresenterForWebState:` has been called or not.
 @property(nonatomic, readonly) BOOL javaScriptDialogPresenterRequested;
-// Whether |webState:didRequestHTTPAuthForProtectionSpace:...| has been called
+// Whether `webState:didRequestHTTPAuthForProtectionSpace:...| has been called
 // or not.
 @property(nonatomic, readonly) BOOL authenticationRequested;
-// Specifies the return value of |isAppLaunchingAllowedForWebState:|.
+// Specifies the return value of `isAppLaunchingAllowedForWebState:`.
 @property(nonatomic) BOOL isAppLaunchingAllowedForWebStateReturnValue;
 
 @end

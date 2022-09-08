@@ -31,7 +31,7 @@ enum class HttpsUpgradeType {
   kOmnibox,
 };
 
-// Returns a string representation of |type|.
+// Returns a string representation of `type`.
 std::string GetHttpsUpgradeTypeDescription(HttpsUpgradeType type);
 
 }  // namespace web

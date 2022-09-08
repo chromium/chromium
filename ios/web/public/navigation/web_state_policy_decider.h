@@ -31,8 +31,8 @@ class WebStatePolicyDecider : public base::CheckedObserver {
     // A policy decision which cancels the navigation.
     static PolicyDecision Cancel();
 
-    // A policy decision which cancels the navigation and displays |error|.
-    // NOTE: The |error| will only be displayed if the associated navigation is
+    // A policy decision which cancels the navigation and displays `error`.
+    // NOTE: The `error` will only be displayed if the associated navigation is
     // being loaded in the main frame.
     static PolicyDecision CancelAndDisplayError(NSError* error);
 
@@ -43,13 +43,13 @@ class WebStatePolicyDecider : public base::CheckedObserver {
     bool ShouldCancelNavigation() const;
 
     // Whether or not an error should be displayed. Always returns false if
-    // |ShouldAllowNavigation| is true.
+    // `ShouldAllowNavigation` is true.
     // NOTE: Will return true when the receiver is created with
-    // |CancelAndDisplayError| even though an error will only end up being
+    // `CancelAndDisplayError` even though an error will only end up being
     // displayed if the associated navigation is occurring in the main frame.
     bool ShouldDisplayError() const;
 
-    // The error to display when |ShouldDisplayError| is true.
+    // The error to display when `ShouldDisplayError` is true.
     NSError* GetDisplayError() const;
 
    private:
@@ -72,7 +72,7 @@ class WebStatePolicyDecider : public base::CheckedObserver {
     Decision decision = Decision::kAllow;
 
     // An error associated with the navigation. This error will be displayed if
-    // |decision| is |kCancelAndDisplayError|.
+    // `decision` is `kCancelAndDisplayError`.
     NSError* error = nil;
   };
 
@@ -114,19 +114,19 @@ class WebStatePolicyDecider : public base::CheckedObserver {
   WebStatePolicyDecider(const WebStatePolicyDecider&) = delete;
   WebStatePolicyDecider& operator=(const WebStatePolicyDecider&) = delete;
 
-  // Removes self as a policy decider of |web_state_|.
+  // Removes self as a policy decider of `web_state_`.
   ~WebStatePolicyDecider() override;
 
-  // Asks the decider whether the navigation corresponding to |request| should
+  // Asks the decider whether the navigation corresponding to `request` should
   // be allowed to continue. Defaults to PolicyDecision::Allow() if not
   // overridden. Called before WebStateObserver::DidStartNavigation. Calls
-  // |callback| with the decision. Never called in the following cases:
+  // `callback` with the decision. Never called in the following cases:
   //  - same-document back-forward and state change navigations
   virtual void ShouldAllowRequest(NSURLRequest* request,
                                   RequestInfo request_info,
                                   PolicyDecisionCallback callback);
 
-  // Asks the decider whether the navigation corresponding to |response| should
+  // Asks the decider whether the navigation corresponding to `response` should
   // be allowed to display an error page if an error occurs. Defaults to
   // true if not overridden. This can be used to suppress error pages in certain
   // cases such as attempting to upgrade an omnibox navigation to HTTPS. In that
@@ -135,10 +135,10 @@ class WebStatePolicyDecider : public base::CheckedObserver {
   virtual bool ShouldAllowErrorPageToBeDisplayed(NSURLResponse* response,
                                                  bool for_main_frame);
 
-  // Asks the decider whether the navigation corresponding to |response| should
+  // Asks the decider whether the navigation corresponding to `response` should
   // be allowed to continue. Defaults to PolicyDecision::Allow() if not
   // overridden. Called before WebStateObserver::DidFinishNavigation. Calls
-  // |callback| with the decision.
+  // `callback` with the decision.
   // Never called in the following cases:
   //  - same-document navigations (unless initiated via LoadURLWithParams)
   //  - going back after form submission navigation
@@ -156,7 +156,7 @@ class WebStatePolicyDecider : public base::CheckedObserver {
   WebState* web_state() const { return web_state_; }
 
  protected:
-  // Designated constructor. Subscribes to |web_state|.
+  // Designated constructor. Subscribes to `web_state`.
   explicit WebStatePolicyDecider(WebState* web_state);
 
  private:
