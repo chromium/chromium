@@ -30,6 +30,8 @@ class SharedURLLoaderFactory;
 class PromoService : public KeyedService {
  public:
   enum class Status {
+    // Promo service initialized and no new response has been registered.
+    NOT_UPDATED,
     // Received a valid response and there is a promo running.
     OK_WITH_PROMO,
     // Received a valid response but there is no promo running.
@@ -99,7 +101,7 @@ class PromoService : public KeyedService {
   base::ObserverList<PromoServiceObserver, true>::Unchecked observers_;
 
   absl::optional<PromoData> promo_data_;
-  Status promo_status_;
+  Status promo_status_ = Status::NOT_UPDATED;
 
   raw_ptr<Profile> profile_;
 

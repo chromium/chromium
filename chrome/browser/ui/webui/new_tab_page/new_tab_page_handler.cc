@@ -784,6 +784,8 @@ void NewTabPageHandler::OnPromoDataUpdated() {
       UMA_HISTOGRAM_MEDIUM_TIMES(
           "NewTabPage.Promos.RequestLatency2.SuccessWithoutPromo", duration);
     } else {
+      DCHECK(promo_service_->promo_status() !=
+             PromoService::Status::NOT_UPDATED);
       UMA_HISTOGRAM_MEDIUM_TIMES("NewTabPage.Promos.RequestLatency2.Failure",
                                  duration);
     }

@@ -86,6 +86,7 @@ TEST_F(PromoServiceTest, PromoDataNetworkError) {
   SetUpResponseWithNetworkError(service()->GetLoadURLForTesting());
 
   ASSERT_EQ(service()->promo_data(), absl::nullopt);
+  EXPECT_EQ(service()->promo_status(), PromoService::Status::NOT_UPDATED);
 
   service()->Refresh();
   base::RunLoop().RunUntilIdle();
@@ -99,6 +100,7 @@ TEST_F(PromoServiceTest, BadPromoResponse) {
                         "{\"update\":{\"promotions\":{}}}");
 
   ASSERT_EQ(service()->promo_data(), absl::nullopt);
+  EXPECT_EQ(service()->promo_status(), PromoService::Status::NOT_UPDATED);
 
   service()->Refresh();
   base::RunLoop().RunUntilIdle();
@@ -112,6 +114,7 @@ TEST_F(PromoServiceTest, PromoResponseMissingData) {
                         "{\"update\":{\"promos\":{}}}");
 
   ASSERT_EQ(service()->promo_data(), absl::nullopt);
+  EXPECT_EQ(service()->promo_status(), PromoService::Status::NOT_UPDATED);
 
   service()->Refresh();
   base::RunLoop().RunUntilIdle();
@@ -128,6 +131,7 @@ TEST_F(PromoServiceTest, GoodPromoResponse) {
   SetUpResponseWithData(service()->GetLoadURLForTesting(), response_string);
 
   ASSERT_EQ(service()->promo_data(), absl::nullopt);
+  EXPECT_EQ(service()->promo_status(), PromoService::Status::NOT_UPDATED);
 
   service()->Refresh();
   base::RunLoop().RunUntilIdle();
@@ -152,6 +156,7 @@ TEST_F(PromoServiceTest, GoodPromoResponseCanDismiss) {
   SetUpResponseWithData(service()->GetLoadURLForTesting(), response_string);
 
   ASSERT_EQ(service()->promo_data(), absl::nullopt);
+  EXPECT_EQ(service()->promo_status(), PromoService::Status::NOT_UPDATED);
 
   service()->Refresh();
   base::RunLoop().RunUntilIdle();
@@ -176,6 +181,7 @@ TEST_F(PromoServiceTest, GoodPromoResponseNoIdField) {
   SetUpResponseWithData(service()->GetLoadURLForTesting(), response_string);
 
   ASSERT_EQ(service()->promo_data(), absl::nullopt);
+  EXPECT_EQ(service()->promo_status(), PromoService::Status::NOT_UPDATED);
 
   service()->Refresh();
   base::RunLoop().RunUntilIdle();
@@ -199,6 +205,7 @@ TEST_F(PromoServiceTest, GoodPromoResponseNoIdFieldNorLogUrl) {
   SetUpResponseWithData(service()->GetLoadURLForTesting(), response_string);
 
   ASSERT_EQ(service()->promo_data(), absl::nullopt);
+  EXPECT_EQ(service()->promo_status(), PromoService::Status::NOT_UPDATED);
 
   service()->Refresh();
   base::RunLoop().RunUntilIdle();
@@ -227,6 +234,7 @@ TEST_F(PromoServiceTest, GoodPromoWithBlockedID) {
   SetUpResponseWithData(service()->GetLoadURLForTesting(), response_string);
 
   ASSERT_EQ(service()->promo_data(), absl::nullopt);
+  EXPECT_EQ(service()->promo_status(), PromoService::Status::NOT_UPDATED);
 
   service()->Refresh();
   base::RunLoop().RunUntilIdle();
@@ -246,6 +254,7 @@ TEST_F(PromoServiceTest, BlocklistPromo) {
   SetUpResponseWithData(service()->GetLoadURLForTesting(), response_string);
 
   ASSERT_EQ(service()->promo_data(), absl::nullopt);
+  EXPECT_EQ(service()->promo_status(), PromoService::Status::NOT_UPDATED);
 
   service()->Refresh();
   base::RunLoop().RunUntilIdle();
@@ -342,6 +351,7 @@ TEST_F(PromoServiceTest, UndoBlocklistPromo) {
   SetUpResponseWithData(service()->GetLoadURLForTesting(), response_string);
 
   ASSERT_EQ(service()->promo_data(), absl::nullopt);
+  EXPECT_EQ(service()->promo_status(), PromoService::Status::NOT_UPDATED);
 
   service()->Refresh();
   base::RunLoop().RunUntilIdle();
