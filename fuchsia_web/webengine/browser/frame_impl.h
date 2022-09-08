@@ -332,6 +332,8 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
                                   const GURL& security_origin,
                                   blink::mojom::MediaStreamType type) override;
+  std::unique_ptr<content::AudioStreamBrokerFactory>
+  CreateAudioStreamBrokerFactory(content::WebContents* web_contents) override;
   bool CanOverscrollContent() override;
 
   // content::WebContentsObserver implementation.
@@ -363,6 +365,9 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
 
   // Parameters applied to popups created by content running in this Frame.
   const fuchsia::web::CreateFrameParams params_for_popups_;
+
+  base::RepeatingCallback<void(fuchsia::media::AudioRenderUsage output_usage)>
+      set_audio_output_usage_callback_;
 
   std::unique_ptr<FrameWindowTreeHost> window_tree_host_;
 

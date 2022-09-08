@@ -101,6 +101,13 @@ AudioParameters AudioManagerFuchsia::GetInputStreamParameters(
 AudioParameters AudioManagerFuchsia::GetPreferredOutputStreamParameters(
     const std::string& output_device_id,
     const AudioParameters& input_params) {
+  if (input_params.IsValid()) {
+    AudioParameters params = input_params;
+    params.set_frames_per_buffer(AudioTimestampHelper::TimeToFrames(
+        base::kAudioSchedulingPeriod, params.sample_rate()));
+    return params;
+  }
+
   // TODO(crbug.com/852834): Fuchsia currently doesn't provide an API to get
   // device configuration. Update this method when that functionality is
   // implemented.

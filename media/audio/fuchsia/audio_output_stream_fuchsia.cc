@@ -4,6 +4,7 @@
 
 #include "media/audio/fuchsia/audio_output_stream_fuchsia.h"
 
+#include <fuchsia/media/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 #include <zircon/syscalls.h>
 
@@ -22,13 +23,35 @@ namespace {
 
 const uint32_t kBufferId = 0;
 
-fuchsia::media::AudioRenderUsage GetStreamUsage(
+absl::optional<fuchsia::media::AudioRenderUsage> GetStreamUsage(
     const AudioParameters& parameters) {
-  // TODO(crbug.com/1253010) In WebEngine: use `audio_renderer_usage` from the
-  // `FrameMediaSettings` for the current web frame.
-  if (parameters.latency_tag() == AudioLatency::LATENCY_RTC)
-    return fuchsia::media::AudioRenderUsage::COMMUNICATION;
-  return fuchsia::media::AudioRenderUsage::MEDIA;
+  int usage_flags = parameters.effects() &
+                    (AudioParameters::FUCHSIA_RENDER_USAGE_BACKGROUND |
+                     AudioParameters::FUCHSIA_RENDER_USAGE_MEDIA |
+                     AudioParameters::FUCHSIA_RENDER_USAGE_INTERRUPTION |
+                     AudioParameters::FUCHSIA_RENDER_USAGE_SYSTEM_AGENT |
+                     AudioParameters::FUCHSIA_RENDER_USAGE_COMMUNICATION);
+  switch (usage_flags) {
+    case AudioParameters::FUCHSIA_RENDER_USAGE_BACKGROUND:
+      return fuchsia::media::AudioRenderUsage::BACKGROUND;
+    case AudioParameters::FUCHSIA_RENDER_USAGE_MEDIA:
+      return fuchsia::media::AudioRenderUsage::MEDIA;
+    case AudioParameters::FUCHSIA_RENDER_USAGE_INTERRUPTION:
+      return fuchsia::media::AudioRenderUsage::INTERRUPTION;
+    case AudioParameters::FUCHSIA_RENDER_USAGE_SYSTEM_AGENT:
+      return fuchsia::media::AudioRenderUsage::SYSTEM_AGENT;
+    case AudioParameters::FUCHSIA_RENDER_USAGE_COMMUNICATION:
+      return fuchsia::media::AudioRenderUsage::COMMUNICATION;
+    case 0:
+      // If the usage flags are not set then use COMMUNICATION for WebRTC and
+      // MEDIA for everything else.
+      if (parameters.latency_tag() == AudioLatency::LATENCY_RTC)
+        return fuchsia::media::AudioRenderUsage::COMMUNICATION;
+      return fuchsia::media::AudioRenderUsage::MEDIA;
+    default:
+      DLOG(FATAL) << "More than one FUCHSIA_RENDER_USAGE flag is set";
+      return absl::nullopt;
+  }
 }
 
 }  // namespace
@@ -57,7 +80,10 @@ bool AudioOutputStreamFuchsia::Open() {
   audio_renderer_.set_error_handler(
       fit::bind_member(this, &AudioOutputStreamFuchsia::OnRendererError));
 
-  audio_renderer_->SetUsage(GetStreamUsage(parameters_));
+  auto usage = GetStreamUsage(parameters_);
+  if (!usage)
+    return false;
+  audio_renderer_->SetUsage(usage.value());
 
   // Inform the |audio_renderer_| of the format required by the caller.
   fuchsia::media::AudioStreamType format;

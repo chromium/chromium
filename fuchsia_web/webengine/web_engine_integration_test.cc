@@ -344,6 +344,63 @@ TEST_F(WebEngineIntegrationTest, ContentDirectoryProvider) {
   navigation_listener()->RunUntilUrlAndTitleEquals(kUrl, kTitle);
 }
 
+class FakeAudioRenderer
+    : public fuchsia::media::testing::AudioRenderer_TestBase {
+ public:
+  FakeAudioRenderer() = default;
+  ~FakeAudioRenderer() override = default;
+
+  void set_on_set_usage_callback(base::OnceClosure on_set_usage_callback) {
+    on_set_usage_callback_ = std::move(on_set_usage_callback);
+  }
+
+  void Bind(fidl::InterfaceRequest<fuchsia::media::AudioRenderer> request) {
+    binding_.AddBinding(this, std::move(request));
+  }
+
+  const absl::optional<fuchsia::media::AudioRenderUsage>& usage() const {
+    return usage_;
+  }
+
+  // AudioRenderer_TestBase overrides.
+  void SetUsage(fuchsia::media::AudioRenderUsage usage) override {
+    usage_ = usage;
+    if (on_set_usage_callback_)
+      std::move(on_set_usage_callback_).Run();
+  }
+  void NotImplemented_(const std::string& name) override {}
+
+ private:
+  fidl::BindingSet<fuchsia::media::AudioRenderer> binding_;
+  base::OnceClosure on_set_usage_callback_;
+  absl::optional<fuchsia::media::AudioRenderUsage> usage_;
+};
+
+class FakeAudio : public fuchsia::media::testing::Audio_TestBase {
+ public:
+  FakeAudio() = default;
+  ~FakeAudio() override = default;
+
+  void Bind(fidl::InterfaceRequest<fuchsia::media::Audio> request) {
+    binding_.AddBinding(this, std::move(request));
+  }
+
+  FakeAudioRenderer& renderer() { return renderer_; }
+
+  // Audio_TestBase overrides.
+  void CreateAudioRenderer(
+      fidl::InterfaceRequest<fuchsia::media::AudioRenderer> request) override {
+    renderer_.Bind(std::move(request));
+  }
+  void NotImplemented_(const std::string& name) override {
+    FAIL() << "Not implemented: " << name;
+  }
+
+ private:
+  fidl::BindingSet<fuchsia::media::Audio> binding_;
+  FakeAudioRenderer renderer_;
+};
+
 // Configures the default filtered service directory with a fake AudioConsumer
 // service for testing.
 class WebEngineIntegrationMediaTest : public WebEngineIntegrationTest {
@@ -367,8 +424,12 @@ class WebEngineIntegrationMediaTest : public WebEngineIntegrationTest {
         fidl::InterfaceRequestHandler<fuchsia::media::Audio>(
             [this](auto request) {
               ++num_audio_connections_;
-              base::ComponentContextForProcess()->svc()->Connect(
-                  std::move(request));
+              if (fake_audio_) {
+                fake_audio_->Bind(std::move(request));
+              } else {
+                base::ComponentContextForProcess()->svc()->Connect(
+                    std::move(request));
+              }
             }));
     ZX_CHECK(status == ZX_OK, status) << "AddPublicService";
   }
@@ -386,6 +447,7 @@ class WebEngineIntegrationMediaTest : public WebEngineIntegrationTest {
   media::FakeAudioConsumerService fake_audio_consumer_service_;
   absl::optional<media::FakeAudioDeviceEnumerator>
       fake_audio_device_enumerator_;
+  absl::optional<FakeAudio> fake_audio_;
 
   size_t num_audio_connections_ = 0;
 };
@@ -402,6 +464,30 @@ TEST_F(WebEngineIntegrationMediaTest, PlayAudioToAudioRenderer) {
 
   EXPECT_EQ(num_audio_connections_, 1U);
   EXPECT_EQ(fake_audio_consumer_service_.num_instances(), 0U);
+}
+
+TEST_F(WebEngineIntegrationMediaTest, PlayAudioToAudioRendererWithUsage) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
+  CreateContextAndFrame(ContextParamsWithAudioAndTestData());
+
+  base::RunLoop run_loop;
+  fake_audio_.emplace();
+  fake_audio_->renderer().set_on_set_usage_callback(run_loop.QuitClosure());
+
+  static const fuchsia::media::AudioRenderUsage kTestRenderUsage =
+      fuchsia::media::AudioRenderUsage::SYSTEM_AGENT;
+  fuchsia::web::FrameMediaSettings media_settings;
+  media_settings.set_renderer_usage(kTestRenderUsage);
+  frame_->SetMediaSettings(std::move(media_settings));
+
+  ASSERT_NO_FATAL_FAILURE(
+      LoadUrlAndExpectResponse("fuchsia-dir://testdata/play_audio.html",
+                               CreateLoadUrlParamsWithUserActivation()));
+
+  run_loop.Run();
+
+  EXPECT_EQ(num_audio_connections_, 1U);
+  EXPECT_EQ(fake_audio_->renderer().usage(), kTestRenderUsage);
 }
 
 TEST_F(WebEngineIntegrationMediaTest, PlayAudioToAudioConsumer) {
