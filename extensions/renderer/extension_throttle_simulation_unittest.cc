@@ -12,6 +12,7 @@
 //    anti-DDoS throttling for various different actual downtimes is what
 //    we expect it to be.
 
+#include <stdarg.h>
 #include <stddef.h>
 
 #include <cmath>
