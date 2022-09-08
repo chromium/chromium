@@ -14,6 +14,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "remoting/base/constants.h"
 #include "remoting/protocol/frame_stats.h"
 #include "remoting/protocol/host_video_stats_dispatcher.h"
@@ -197,9 +198,15 @@ void WebrtcVideoStream::Core::CaptureNextFrame() {
 WebrtcVideoStream::WebrtcVideoStream(const std::string& stream_name,
                                      const SessionOptions& session_options)
     : stream_name_(stream_name), session_options_(session_options) {
+// TODO(joedow): Dig into the threading model on other platforms to see if they
+// can also be updated to run on a dedicated thread.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
   core_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
       {base::TaskPriority::HIGHEST},
       base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+#else
+  core_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+#endif
 }
 
 WebrtcVideoStream::~WebrtcVideoStream() {
