@@ -51,7 +51,7 @@ constexpr struct UserLogs {
   bool pattern = false;
 } kUserLogs[] = {
     {"chrome_user_log", "log/chrome"},
-    {"chrome_user_log.PREVIOUS", "log/chrome_??????-??????", true},
+    {"chrome_user_log.PREVIOUS", "log/chrome_????????-??????", true},
     {"libassistant_user_log", "google-assistant-library/log/libassistant.log"},
     {"login-times", "login-times"},
     {"logout-times", "logout-times"},
