@@ -312,9 +312,6 @@ class ExtensionAppsBase : public apps::PublisherBase,
   using EnableFlowPtr = std::unique_ptr<ExtensionAppsEnableFlow>;
   std::map<std::string, EnableFlowPtr> enable_flow_map_;
 
-  // app_service_ is owned by the object that owns this object.
-  raw_ptr<apps::mojom::AppService> app_service_;
-
   base::WeakPtrFactory<ExtensionAppsBase> weak_factory_{this};
 };
 

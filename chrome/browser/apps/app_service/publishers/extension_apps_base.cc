@@ -389,8 +389,6 @@ void ExtensionAppsBase::Initialize() {
   extensions::ExtensionSystem::Get(profile_)->ready().Post(
       FROM_HERE, base::BindOnce(&ExtensionAppsBase::OnExtensionsReady,
                                 weak_factory_.GetWeakPtr()));
-
-  app_service_ = proxy()->AppService().get();
 }
 
 void ExtensionAppsBase::OnExtensionsReady() {
