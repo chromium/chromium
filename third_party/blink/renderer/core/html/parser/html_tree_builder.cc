@@ -2519,6 +2519,15 @@ ReprocessBuffer:
     case kAfterBodyMode:
     case kAfterAfterBodyMode: {
       // FIXME: parse error
+      StringView leading_whitespace = buffer.TakeLeadingWhitespace();
+      if (!leading_whitespace.IsEmpty()) {
+        InsertionMode mode = GetInsertionMode();
+        SetInsertionMode(kInBodyMode);
+        tree_.InsertTextNode(leading_whitespace, kAllWhitespace);
+        SetInsertionMode(mode);
+      }
+      if (buffer.IsEmpty())
+        return;
       SetInsertionMode(kInBodyMode);
       goto ReprocessBuffer;
     }
