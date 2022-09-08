@@ -60,18 +60,20 @@ public class MessageAnimationCoordinator {
                         candidate.handler.getMessageIdentifier(), candidate.messageKey,
                         candidate.handler.shouldShow());
 
-                mAnimatorSet.cancel();
-                mAnimatorSet.removeAllListeners();
-
-                mAnimatorSet = new AnimatorSet();
-                mAnimatorSet.play(
-                        mCurrentDisplayedMessage.handler.show(Position.INVISIBLE, Position.FRONT));
+                final var animator =
+                        mCurrentDisplayedMessage.handler.show(Position.INVISIBLE, Position.FRONT);
 
                 // Wait until the message and the container are measured before showing the message.
                 // This is required in case the animation set-up requires the height of the
                 // container, e.g. showing messages without the top controls visible.
-                mContainer.runAfterInitialMessageLayout(
-                        () -> mAnimatorStartCallback.onResult(mAnimatorSet));
+                mContainer.runAfterInitialMessageLayout(() -> {
+                    mAnimatorSet.cancel();
+                    mAnimatorSet.removeAllListeners();
+
+                    mAnimatorSet = new AnimatorSet();
+                    mAnimatorSet.play(animator);
+                    mAnimatorStartCallback.onResult(mAnimatorSet);
+                });
                 mLastShownMessage = mCurrentDisplayedMessage;
                 onFinished.run();
             });
