@@ -4,7 +4,9 @@
 
 #include "chrome/updater/policy/service.h"
 
-#include <algorithm>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -12,6 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -31,10 +34,9 @@ namespace updater {
 PolicyService::PolicyService(PolicyManagerVector managers)
     : policy_managers_([](auto managers) {
         // Make sure managed policy managers are ahead of non-managed ones.
-        std::stable_sort(
-            managers.begin(), managers.end(),
-            [](const std::unique_ptr<PolicyManagerInterface>& lhs,
-               const std::unique_ptr<PolicyManagerInterface>& rhs) {
+        base::ranges::stable_sort(
+            managers, [](const std::unique_ptr<PolicyManagerInterface>& lhs,
+                         const std::unique_ptr<PolicyManagerInterface>& rhs) {
               return lhs->HasActiveDevicePolicies() &&
                      !rhs->HasActiveDevicePolicies();
             });

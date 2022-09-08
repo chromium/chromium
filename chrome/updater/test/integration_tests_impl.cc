@@ -4,10 +4,12 @@
 
 #include "chrome/updater/test/integration_tests_impl.h"
 
-#include <algorithm>
+#include <cstdint>
 #include <cstdlib>
 #include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"

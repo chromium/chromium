@@ -6,7 +6,6 @@
 
 #include <inttypes.h>
 
-#include <algorithm>
 #include <string>
 
 #include "base/check.h"

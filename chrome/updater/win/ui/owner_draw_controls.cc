@@ -4,8 +4,8 @@
 
 #include "chrome/updater/win/ui/owner_draw_controls.h"
 
-#include <stdint.h>
 #include <algorithm>
+#include <cstdint>
 #include <vector>
 
 #include "base/check.h"

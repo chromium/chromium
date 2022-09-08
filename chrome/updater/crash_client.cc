@@ -4,7 +4,6 @@
 
 #include "chrome/updater/crash_client.h"
 
-#include <algorithm>
 #include <vector>
 
 #include "base/check.h"

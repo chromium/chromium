@@ -4,11 +4,11 @@
 
 #include "chrome/updater/win/tag_extractor.h"
 
-#include <stddef.h>
-#include <stdint.h>
 #include <windows.h>
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <limits>
 #include <string>
 #include <vector>

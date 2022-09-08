@@ -5,6 +5,7 @@
 #include "chrome/updater/auto_run_on_os_upgrade_task.h"
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"

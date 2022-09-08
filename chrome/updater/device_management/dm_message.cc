@@ -9,6 +9,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/updater/device_management/dm_response_validator.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
@@ -176,10 +177,9 @@ std::string ParseDeviceRegistrationResponse(const std::string& response_data) {
 bool ShouldDeleteDmToken(const std::string& response_data) {
   enterprise_management::DeviceManagementResponse dm_response;
   return dm_response.ParseFromString(response_data) &&
-         std::find(dm_response.error_detail().begin(),
-                   dm_response.error_detail().end(),
-                   enterprise_management::
-                       CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN) !=
+         base::ranges::find(dm_response.error_detail(),
+                            enterprise_management::
+                                CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN) !=
              dm_response.error_detail().end();
 }
 

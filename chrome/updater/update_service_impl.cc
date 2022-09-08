@@ -4,7 +4,6 @@
 
 #include "chrome/updater/update_service_impl.h"
 
-#include <algorithm>
 #include <iterator>
 #include <map>
 #include <string>
@@ -21,6 +20,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"
@@ -674,10 +674,9 @@ void UpdateServiceImpl::OnShouldBlockUpdateForMeteredNetwork(
           [&app_install_data_index]() {
             std::vector<std::string> app_ids;
             app_ids.reserve(app_install_data_index.size());
-            std::transform(app_install_data_index.begin(),
-                           app_install_data_index.end(),
-                           std::back_inserter(app_ids),
-                           [](const auto& param) { return param.first; });
+            base::ranges::transform(
+                app_install_data_index, std::back_inserter(app_ids),
+                [](const auto& param) { return param.first; });
             return app_ids;
           }(),
           base::BindOnce(&GetComponents, config_, persisted_data_,

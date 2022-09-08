@@ -4,9 +4,9 @@
 
 #include "chrome/updater/external_constants_builder.h"
 
-#include <algorithm>
 #include <iterator>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/json/json_file_value_serializer.h"
@@ -31,8 +31,9 @@ std::vector<std::string> StringVectorFromGURLVector(
   std::vector<std::string> ret;
   ret.reserve(gurls.size());
 
-  std::transform(gurls.begin(), gurls.end(), std::back_inserter(ret),
-                 [](const GURL& gurl) { return gurl.possibly_invalid_spec(); });
+  base::ranges::transform(gurls, std::back_inserter(ret), [](const GURL& gurl) {
+    return gurl.possibly_invalid_spec();
+  });
 
   return ret;
 }

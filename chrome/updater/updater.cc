@@ -4,7 +4,6 @@
 
 #include "chrome/updater/updater.h"
 
-#include <algorithm>
 #include <iterator>
 
 #include "base/at_exit.h"
@@ -16,6 +15,7 @@
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/process/memory.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/platform_thread.h"
@@ -198,9 +198,9 @@ const char* GetUpdaterCommand(const base::CommandLine* command_line) {
       kHealthCheckSwitch,    kHandoffSwitch,
       kRuntimeSwitch,
   };
-  const char** it = std::find_if(
-      std::begin(commands), std::end(commands),
-      [command_line](auto cmd) { return command_line->HasSwitch(cmd); });
+  const char** it = base::ranges::find_if(commands, [command_line](auto cmd) {
+    return command_line->HasSwitch(cmd);
+  });
   // Return the command. As a workaround for recovery component invocations
   // that do not pass --recover, report the browser version switch as --recover.
   return it != std::end(commands)
