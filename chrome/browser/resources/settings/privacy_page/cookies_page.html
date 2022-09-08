@@ -111,9 +111,7 @@
             <template is="dom-if" if="[[enableFirstPartySetsUI_]]">
               <settings-toggle-button
                   id="firstPartySetsToggle"
-                  pref="{{
-                      prefs.privacy_sandbox.first_party_sets_data_access_allowed
-                      }}"
+                  pref="{{prefs.first_party_sets.enabled}}"
                   label="$i18n{cookiePageFpsLabel}"
                   sub-label="$i18n{cookiePageFpsSubLabel}"
                   disabled="[[firstPartySetsToggleDisabled_(

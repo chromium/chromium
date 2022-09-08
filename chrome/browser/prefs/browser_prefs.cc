@@ -767,6 +767,10 @@ const char kProfileAvatarTutorialShown[] =
 constexpr char kUsersLastInputMethod[] = "UsersLRUInputMethod";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 09/2022.
+const char kPrivacySandboxFirstPartySetsDataAccessAllowed[] =
+    "privacy_sandbox.first_party_sets_data_access_allowed";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1010,6 +1014,10 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 08/2022.
   registry->RegisterBooleanPref(prefs::kUsesSystemThemeDeprecated, false);
 #endif
+
+  // Deprecated 09/2022
+  registry->RegisterBooleanPref(kPrivacySandboxFirstPartySetsDataAccessAllowed,
+                                true);
 }
 
 }  // namespace
@@ -1979,6 +1987,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   }
   profile_prefs->ClearPref(prefs::kUsesSystemThemeDeprecated);
 #endif
+
+  // Added 09/2022.
+  profile_prefs->ClearPref(kPrivacySandboxFirstPartySetsDataAccessAllowed);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

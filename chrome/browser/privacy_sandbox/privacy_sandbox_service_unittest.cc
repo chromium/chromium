@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -661,8 +662,7 @@ void SetupDialogTestState(
 // returning them to their default value.
 void ClearFpsUserPrefs(
     sync_preferences::TestingPrefServiceSyncable* pref_service) {
-  pref_service->RemoveUserPref(
-      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed);
+  pref_service->RemoveUserPref(first_party_sets::kFirstPartySetsEnabled);
   pref_service->RemoveUserPref(
       prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized);
 }
@@ -1984,8 +1984,7 @@ TEST_F(PrivacySandboxServiceTest, SampleFpsData) {
       prefs::kCookieControlsMode,
       std::make_unique<base::Value>(static_cast<int>(
           content_settings::CookieControlsMode::kBlockThirdParty)));
-  prefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed,
-                      true);
+  prefs()->SetBoolean(first_party_sets::kFirstPartySetsEnabled, true);
 
   EXPECT_EQ(u"google.com",
             privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
@@ -2011,8 +2010,7 @@ TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {
       privacy_sandbox::kPrivacySandboxFirstPartySetsUI);
 
   CreateService();
-  EXPECT_TRUE(prefs()->GetBoolean(
-      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed));
+  EXPECT_TRUE(prefs()->GetBoolean(first_party_sets::kFirstPartySetsEnabled));
   EXPECT_FALSE(prefs()->GetBoolean(
       prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
 
@@ -2024,8 +2022,7 @@ TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {
       privacy_sandbox::kPrivacySandboxFirstPartySetsUI);
 
   CreateService();
-  EXPECT_FALSE(prefs()->GetBoolean(
-      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed));
+  EXPECT_FALSE(prefs()->GetBoolean(first_party_sets::kFirstPartySetsEnabled));
   EXPECT_TRUE(prefs()->GetBoolean(
       prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
 
@@ -2037,8 +2034,7 @@ TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {
                            content_settings::CookieControlsMode::kOff)));
 
   CreateService();
-  EXPECT_TRUE(prefs()->GetBoolean(
-      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed));
+  EXPECT_TRUE(prefs()->GetBoolean(first_party_sets::kFirstPartySetsEnabled));
   EXPECT_TRUE(prefs()->GetBoolean(
       prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
 
@@ -2047,8 +2043,7 @@ TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {
       std::make_unique<base::Value>(static_cast<int>(
           content_settings::CookieControlsMode::kBlockThirdParty)));
   CreateService();
-  EXPECT_TRUE(prefs()->GetBoolean(
-      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed));
+  EXPECT_TRUE(prefs()->GetBoolean(first_party_sets::kFirstPartySetsEnabled));
   EXPECT_TRUE(prefs()->GetBoolean(
       prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
 
@@ -2060,8 +2055,7 @@ TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {
 
   cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
   CreateService();
-  EXPECT_FALSE(prefs()->GetBoolean(
-      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed));
+  EXPECT_FALSE(prefs()->GetBoolean(first_party_sets::kFirstPartySetsEnabled));
   EXPECT_TRUE(prefs()->GetBoolean(
       prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
 }
@@ -2080,8 +2074,7 @@ TEST_F(PrivacySandboxServiceTest, NoFpsWhileNotAffected) {
       std::make_unique<base::Value>(static_cast<int>(
           content_settings::CookieControlsMode::kBlockThirdParty)));
   cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_ALLOW);
-  prefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed,
-                      true);
+  prefs()->SetBoolean(first_party_sets::kFirstPartySetsEnabled, true);
   EXPECT_GT(privacy_sandbox_service()->GetFirstPartySets().size(), 0u);
 
   // When 3PC are enabled, no sets should be returned.
@@ -2101,8 +2094,7 @@ TEST_F(PrivacySandboxServiceTest, NoFpsWhileNotAffected) {
 
   // When FPS is disabled, no sets should be returned.
   cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_ALLOW);
-  prefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed,
-                      false);
+  prefs()->SetBoolean(first_party_sets::kFirstPartySetsEnabled, false);
 
   EXPECT_EQ(0u, privacy_sandbox_service()->GetFirstPartySets().size());
 
@@ -2110,8 +2102,7 @@ TEST_F(PrivacySandboxServiceTest, NoFpsWhileNotAffected) {
   feature_list()->Reset();
   feature_list()->InitAndDisableFeature(
       privacy_sandbox::kPrivacySandboxFirstPartySetsUI);
-  prefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed,
-                      true);
+  prefs()->SetBoolean(first_party_sets::kFirstPartySetsEnabled, true);
 
   EXPECT_EQ(0u, privacy_sandbox_service()->GetFirstPartySets().size());
 }

@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -309,18 +310,16 @@ void PrivacySandboxService::OnPrivacySandboxV2PrefChanged() {
 }
 
 bool PrivacySandboxService::IsFirstPartySetsDataAccessEnabled() {
-  return pref_service_->GetBoolean(
-      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed);
+  return pref_service_->GetBoolean(first_party_sets::kFirstPartySetsEnabled);
 }
 
 bool PrivacySandboxService::IsFirstPartySetsDataAccessManaged() {
   return pref_service_->IsManagedPreference(
-      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed);
+      first_party_sets::kFirstPartySetsEnabled);
 }
 
 void PrivacySandboxService::SetFirstPartySetsDataAccessEnabled(bool enabled) {
-  pref_service_->SetBoolean(
-      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed, enabled);
+  pref_service_->SetBoolean(first_party_sets::kFirstPartySetsEnabled, enabled);
 }
 
 void PrivacySandboxService::GetFledgeJoiningEtldPlusOneForDisplay(
@@ -623,8 +622,7 @@ PrivacySandboxService::GetFirstPartySets() const {
   if (!(cookie_settings_->ShouldBlockThirdPartyCookies() &&
         cookie_settings_->GetDefaultCookieSetting(/*provider_id=*/nullptr) !=
             CONTENT_SETTING_BLOCK &&
-        pref_service_->GetBoolean(
-            prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed) &&
+        pref_service_->GetBoolean(first_party_sets::kFirstPartySetsEnabled) &&
         base::FeatureList::IsEnabled(
             privacy_sandbox::kPrivacySandboxFirstPartySetsUI))) {
     return {};
@@ -875,8 +873,7 @@ void PrivacySandboxService::MaybeInitializeFirstPartySetsPref() {
   // init has been run is not synced). If any of the user's devices local state
   // would disable the pref, it is disabled across all devices.
   if (AreThirdPartyCookiesBlocked(cookie_settings_)) {
-    pref_service_->SetBoolean(
-        prefs::kPrivacySandboxFirstPartySetsDataAccessAllowed, false);
+    pref_service_->SetBoolean(first_party_sets::kFirstPartySetsEnabled, false);
   }
 
   pref_service_->SetBoolean(

@@ -84,11 +84,10 @@ extern const char kPrivacySandboxNoConfirmationManuallyControlled[];
 // automatically because they do not have the correct level of confirmation.
 extern const char kPrivacySandboxDisabledInsufficientConfirmation[];
 
-// Synced boolean pref. Controls whether First Party Set enabled data access is
-// enabled, e.g. Storage Access API auto grants, or partitioning access by FPS.
-extern const char kPrivacySandboxFirstPartySetsDataAccessAllowed[];
-
-// Boolean that indicates the user's FPS data access preference has been init.
+// Boolean that indicates the user's FPS data access preference has been init,
+// so named because of the user intent it intends to represent. Currently there
+// is no distinction between FPS for data access, and FPS for other purposes, so
+// this init is applied to the first_party_sets.enabled pref.
 extern const char kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized[];
 
 }  // namespace prefs

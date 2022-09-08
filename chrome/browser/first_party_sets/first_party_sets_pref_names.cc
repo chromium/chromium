@@ -12,8 +12,8 @@ namespace first_party_sets {
 
 // *************** PROFILE PREFS ***************
 
-// A boolean pref indicating whether First-Party Sets is enabled by enterprise
-// policy.
+// A boolean pref indicating whether First-Party Sets is enabled. Exposed to the
+// user via Chrome UI, and to enterprise via policy.
 const char kFirstPartySetsEnabled[] = "first_party_sets.enabled";
 
 // A dictionary pref that can contain up to two lists of First-Party Sets that
