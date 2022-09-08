@@ -60,7 +60,11 @@ public class CrashKeys {
      * @see #flushToNative
      */
     public AtomicReferenceArray<String> getValues() {
-        assert !mFlushed;
+        // TODO(smaier) this was causing infinite uploads of assertions. This caught a legitimate
+        // bug (uploading with Java-only crash keys when native is ready), but we need a bit of time
+        // to fix this, so doing a temporary workaround. Uncomment this as soon as possible. See
+        // crbug.com/1360834 for more details.
+        // assert !mFlushed;
         return mValues;
     }
 
@@ -89,7 +93,11 @@ public class CrashKeys {
     public void flushToNative() {
         ThreadUtils.assertOnUiThread();
 
-        assert !mFlushed;
+        // TODO(smaier) this was causing infinite uploads of assertions. This caught a legitimate
+        // bug (uploading with Java-only crash keys when native is ready), but we need a bit of time
+        // to fix this, so doing a temporary workaround. Uncomment this as soon as possible. See
+        // crbug.com/1360834 for more details.
+        // assert !mFlushed;
         for (@CrashKeyIndex int i = 0; i < mValues.length(); i++) {
             CrashKeysJni.get().set(CrashKeys.this, i, mValues.getAndSet(i, null));
         }
