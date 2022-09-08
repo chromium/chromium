@@ -12,14 +12,12 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 class AudioMediaDataSource;
 
-class AudioStreamHandler
-    : public ash::assistant::mojom::AssistantAudioDecoderClient,
-      public assistant_client::AudioOutput::Delegate {
+class AudioStreamHandler : public assistant::mojom::AssistantAudioDecoderClient,
+                           public assistant_client::AudioOutput::Delegate {
  public:
   using InitCB =
       base::OnceCallback<void(const assistant_client::OutputStreamFormat&)>;
@@ -31,12 +29,12 @@ class AudioStreamHandler
 
   ~AudioStreamHandler() override;
 
-  void StartAudioDecoder(ash::assistant::mojom::AssistantAudioDecoderFactory*
-                             audio_decoder_factory,
-                         assistant_client::AudioOutput::Delegate* delegate,
-                         InitCB start_device_owner_on_main_thread);
+  void StartAudioDecoder(
+      assistant::mojom::AssistantAudioDecoderFactory* audio_decoder_factory,
+      assistant_client::AudioOutput::Delegate* delegate,
+      InitCB start_device_owner_on_main_thread);
 
-  // ash::assistant::mojom::AssistantAudioDecoderClient overrides:
+  // assistant::mojom::AssistantAudioDecoderClient overrides:
   void OnNewBuffers(const std::vector<std::vector<uint8_t>>& buffers) override;
 
   // assistant_client::AudioOutput::Delegate overrides:
@@ -72,7 +70,7 @@ class AudioStreamHandler
 
   mojo::Receiver<AssistantAudioDecoderClient> client_receiver_{this};
   std::unique_ptr<AudioMediaDataSource> media_data_source_;
-  mojo::Remote<ash::assistant::mojom::AssistantAudioDecoder> audio_decoder_;
+  mojo::Remote<assistant::mojom::AssistantAudioDecoder> audio_decoder_;
 
   // True when there is more decoded data.
   bool no_more_data_ = false;
@@ -101,7 +99,6 @@ class AudioStreamHandler
   base::WeakPtrFactory<AudioStreamHandler> weak_factory_;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_AUDIO_AUDIO_STREAM_HANDLER_H_

@@ -13,8 +13,7 @@
 #include "chromeos/ash/services/libassistant/audio/fake_input_device.h"
 #endif  // BUILDFLAG(ENABLE_FAKE_ASSISTANT_MICROPHONE)
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
@@ -24,6 +23,9 @@ audio::DeadStreamDetection ToDeadStreamDetection(bool detect_dead_stream) {
                             : audio::DeadStreamDetection::kDisabled;
 }
 #endif  // !BUILDFLAG(ENABLE_FAKE_ASSISTANT_MICROPHONE)
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::libassistant::mojom;
 
 }  // namespace
 
@@ -86,5 +88,4 @@ media::AudioParameters AudioInputStream::GetAudioParameters() const {
   return result;
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

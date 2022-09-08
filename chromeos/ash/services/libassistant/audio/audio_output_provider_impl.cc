@@ -17,10 +17,12 @@
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "media/audio/audio_device_description.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::libassistant::mojom;
 
 bool IsEncodedFormat(const assistant_client::OutputStreamFormat& format) {
   return format.encoding ==
@@ -176,7 +178,7 @@ class AudioDecoderFactoryManagerImpl
         audio_decoder_factory_.BindNewPipeAndPassReceiver());
   }
 
-  ash::assistant::mojom::AssistantAudioDecoderFactory* GetAudioDecoderFactory()
+  assistant::mojom::AssistantAudioDecoderFactory* GetAudioDecoderFactory()
       override {
     return audio_decoder_factory_.get();
   }
@@ -195,7 +197,7 @@ class AudioDecoderFactoryManagerImpl
   }
 
  private:
-  mojo::Remote<ash::assistant::mojom::AssistantAudioDecoderFactory>
+  mojo::Remote<assistant::mojom::AssistantAudioDecoderFactory>
       audio_decoder_factory_;
 
   SEQUENCE_CHECKER(main_sequence_checker_);
@@ -211,7 +213,7 @@ AudioOutputProviderImpl::AudioOutputProviderImpl(const std::string& device_id)
       main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       device_id_(device_id),
       start_audio_decoder_on_demand_(
-          ash::features::IsStartAssistantAudioDecoderOnDemandEnabled()) {}
+          features::IsStartAssistantAudioDecoderOnDemandEnabled()) {}
 
 void AudioOutputProviderImpl::Bind(
     mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate,
@@ -331,5 +333,4 @@ AudioOutputProviderImpl::CreateAudioOutputInternal(
                              device_id_);
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

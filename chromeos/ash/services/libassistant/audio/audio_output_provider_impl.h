@@ -25,9 +25,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
-
-namespace libassistant {
+namespace ash::libassistant {
 
 class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
  public:
@@ -43,7 +41,7 @@ class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
   class AudioDecoderFactoryManager
       : public base::RefCounted<AudioDecoderFactoryManager> {
    public:
-    virtual ash::assistant::mojom::AssistantAudioDecoderFactory*
+    virtual assistant::mojom::AssistantAudioDecoderFactory*
     GetAudioDecoderFactory() = 0;
 
     AudioDecoderFactoryManager() = default;
@@ -64,8 +62,9 @@ class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
   ~AudioOutputProviderImpl() override;
 
   void Bind(
-      mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate,
-      mojom::PlatformDelegate* platform_delegate);
+      mojo::PendingRemote<chromeos::libassistant::mojom::AudioOutputDelegate>
+          audio_output_delegate,
+      chromeos::libassistant::mojom::PlatformDelegate* platform_delegate);
 
   // assistant_client::AudioOutputProvider overrides:
   assistant_client::AudioOutput* CreateAudioOutput(
@@ -92,9 +91,10 @@ class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
       const assistant_client::OutputStreamFormat& stream_format);
 
   // Owned by |AssistantManagerServiceImpl|.
-  mojom::PlatformDelegate* platform_delegate_ = nullptr;
+  chromeos::libassistant::mojom::PlatformDelegate* platform_delegate_ = nullptr;
 
-  mojo::Remote<mojom::AudioOutputDelegate> audio_output_delegate_;
+  mojo::Remote<chromeos::libassistant::mojom::AudioOutputDelegate>
+      audio_output_delegate_;
 
   AudioInputImpl loop_back_input_;
   VolumeControlImpl volume_control_impl_;
@@ -120,7 +120,11 @@ class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
   base::WeakPtrFactory<AudioOutputProviderImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::libassistant {
+using ::ash::libassistant::AudioOutputProviderImpl;
+}
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_AUDIO_AUDIO_OUTPUT_PROVIDER_IMPL_H_

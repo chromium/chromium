@@ -22,14 +22,15 @@
 #include "media/base/bind_to_current_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 namespace {
-using ::ash::assistant::mojom::AssistantAudioDecoderFactory;
+using assistant::mojom::AssistantAudioDecoderFactory;
 using ::assistant_client::OutputStreamMetadata;
 using ::base::test::ScopedFeatureList;
 using ::base::test::SingleThreadTaskEnvironment;
 using ::chromeos::assistant::FakePlatformDelegate;
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::libassistant::mojom;
 
 constexpr char kFakeDeviceId[] = "device_id";
 }  // namespace
@@ -109,8 +110,8 @@ class FakeAudioOutputDelegateMojom
   ~FakeAudioOutputDelegateMojom() override = default;
 
   // libassistant::mojom::AudioOutputDelegate implementation:
-  void RequestAudioFocus(
-      libassistant::mojom::AudioOutputStreamType stream_type) override {}
+  void RequestAudioFocus(chromeos::libassistant::mojom::AudioOutputStreamType
+                             stream_type) override {}
   void AbandonAudioFocusIfNeeded() override {}
   void AddMediaSessionObserver(
       mojo::PendingRemote<::media_session::mojom::MediaSessionObserver>
@@ -148,7 +149,7 @@ class AssistantAudioDeviceOwnerTest : public testing::Test {
 };
 
 TEST(AudioOutputProviderImplTest, StartDecoderServiceWithBindCall) {
-  ASSERT_FALSE(ash::features::IsStartAssistantAudioDecoderOnDemandEnabled());
+  ASSERT_FALSE(features::IsStartAssistantAudioDecoderOnDemandEnabled());
   SingleThreadTaskEnvironment task_environment;
 
   auto provider = std::make_unique<AudioOutputProviderImpl>(kFakeDeviceId);
@@ -349,5 +350,4 @@ TEST_F(AssistantAudioDeviceOwnerTest, BufferFilling) {
   EXPECT_TRUE(audio_output_delegate.end_of_stream());
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

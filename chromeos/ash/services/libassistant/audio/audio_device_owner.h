@@ -22,8 +22,7 @@
 #include "services/audio/public/cpp/output_device.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 class AudioDeviceOwner : public media::AudioRendererSink::RenderCallback,
                          media_session::mojom::MediaSessionObserver {
@@ -73,7 +72,8 @@ class AudioDeviceOwner : public media::AudioRendererSink::RenderCallback,
  private:
   void StartDevice(
       mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
-      mojom::AudioOutputDelegate* audio_output_delegate);
+      chromeos::libassistant::mojom::AudioOutputDelegate*
+          audio_output_delegate);
 
   // Requests assistant to fill buffer with more data.
   void ScheduleFillLocked(const base::TimeTicks& time);
@@ -108,7 +108,6 @@ class AudioDeviceOwner : public media::AudioRendererSink::RenderCallback,
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_AUDIO_AUDIO_DEVICE_OWNER_H_

@@ -11,8 +11,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
@@ -75,5 +74,4 @@ void AudioMediaDataSource::OnFillBuffer(int bytes_filled) {
   std::move(read_callback_).Run(source_buffer_);
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

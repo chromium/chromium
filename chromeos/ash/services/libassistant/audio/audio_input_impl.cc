@@ -28,10 +28,12 @@
 #include "services/audio/public/cpp/device_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::libassistant::mojom;
 
 constexpr assistant_client::BufferFormat kFormatMono{
     16000 /* sample_rate */, assistant_client::INTERLEAVED_S16, 1 /* channels */
@@ -550,5 +552,4 @@ bool AudioInputImpl::HasOpenAudioStream() const {
   return open_audio_stream_ != nullptr;
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

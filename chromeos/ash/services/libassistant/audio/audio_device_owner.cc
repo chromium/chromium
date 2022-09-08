@@ -13,8 +13,10 @@
 #include "media/base/limits.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::libassistant::mojom;
 
 // A macro which ensures we are running on the background thread.
 #define ENSURE_BACKGROUND_THREAD(method, ...)                               \
@@ -247,5 +249,4 @@ void AudioDeviceOwner::BufferFillDone(int num_bytes) {
     ScheduleFillLocked(base::TimeTicks::Now());
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

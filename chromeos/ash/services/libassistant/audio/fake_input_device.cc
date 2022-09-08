@@ -20,8 +20,7 @@
 #include "media/base/audio_block_fifo.h"
 #include "media/base/audio_capturer_source.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
@@ -221,5 +220,4 @@ scoped_refptr<media::AudioCapturerSource> CreateFakeInputDevice() {
   return base::MakeRefCounted<FakeInputDeviceWrapper>();
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

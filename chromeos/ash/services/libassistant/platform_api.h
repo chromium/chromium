@@ -7,6 +7,8 @@
 
 #include <memory>
 
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/services/libassistant/audio/audio_output_provider_impl.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/ash/services/libassistant/network_provider_impl.h"
 #include "chromeos/ash/services/libassistant/public/mojom/audio_output_delegate.mojom.h"
@@ -17,7 +19,6 @@
 namespace chromeos {
 namespace libassistant {
 
-class AudioOutputProviderImpl;
 class FakeAuthProvider;
 class FileProviderImpl;
 class NetworkProviderImpl;

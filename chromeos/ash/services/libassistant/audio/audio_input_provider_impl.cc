@@ -7,8 +7,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 AudioInputProviderImpl::AudioInputProviderImpl()
     : audio_input_(/*device_id=*/absl::nullopt) {}
@@ -20,11 +19,10 @@ AudioInputImpl& AudioInputProviderImpl::GetAudioInput() {
 }
 
 int64_t AudioInputProviderImpl::GetCurrentAudioTime() {
-  if (chromeos::assistant::features::IsAudioEraserEnabled())
+  if (assistant::features::IsAudioEraserEnabled())
     return base::TimeTicks::Now().since_origin().InMicroseconds();
 
   return 0;
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

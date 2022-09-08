@@ -14,16 +14,14 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 // Class to provide media data source for audio stream decoder.
 // Internally it will read media data from |delegate_|.
-class AudioMediaDataSource
-    : public ash::assistant::mojom::AssistantMediaDataSource {
+class AudioMediaDataSource : public assistant::mojom::AssistantMediaDataSource {
  public:
   explicit AudioMediaDataSource(
-      mojo::PendingReceiver<ash::assistant::mojom::AssistantMediaDataSource>
+      mojo::PendingReceiver<assistant::mojom::AssistantMediaDataSource>
           receiver);
 
   AudioMediaDataSource(const AudioMediaDataSource&) = delete;
@@ -31,7 +29,7 @@ class AudioMediaDataSource
 
   ~AudioMediaDataSource() override;
 
-  // ash::assistant::mojom::MediaDataSource implementation.
+  // assistant::mojom::MediaDataSource implementation.
   // Must be called after |set_delegate()|.
   // The caller must wait for callback to finish before issuing the next read.
   void Read(uint32_t size, ReadCallback callback) override;
@@ -60,7 +58,6 @@ class AudioMediaDataSource
   base::WeakPtrFactory<AudioMediaDataSource> weak_factory_;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_AUDIO_AUDIO_MEDIA_DATA_SOURCE_H_

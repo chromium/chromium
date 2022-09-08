@@ -35,8 +35,10 @@ struct TypeConverter<AudioOutputStreamType,
 
 }  // namespace mojo
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::libassistant::mojom;
 
 VolumeControlImpl::VolumeControlImpl()
     : main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
@@ -118,5 +120,4 @@ void VolumeControlImpl::SetSystemMutedOnMainThread(bool muted) {
   volume_control_->SetMuted(muted);
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

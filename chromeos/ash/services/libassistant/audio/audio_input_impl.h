@@ -19,8 +19,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 class AudioInputStream;
 class AudioCapturer;
@@ -52,7 +51,8 @@ class AudioInputImpl : public assistant_client::AudioInput {
     AudioInputImpl* input_;
   };
 
-  void Initialize(mojom::PlatformDelegate* platform_delegate);
+  void Initialize(
+      chromeos::libassistant::mojom::PlatformDelegate* platform_delegate);
 
   // assistant_client::AudioInput overrides. These function are called by
   // assistant from assistant thread, for which we should not assume any
@@ -74,7 +74,7 @@ class AudioInputImpl : public assistant_client::AudioInput {
   void SetHotwordDeviceId(const absl::optional<std::string>& device_id);
 
   // Called when the user opens/closes the lid.
-  void OnLidStateChanged(mojom::LidState new_state);
+  void OnLidStateChanged(chromeos::libassistant::mojom::LidState new_state);
 
   void RecreateAudioInputStream(bool use_dsp);
 
@@ -124,7 +124,7 @@ class AudioInputImpl : public assistant_client::AudioInput {
   std::unique_ptr<AudioCapturer> audio_capturer_;
 
   // Owned by |LibassistantService|.
-  mojom::PlatformDelegate* platform_delegate_ = nullptr;
+  chromeos::libassistant::mojom::PlatformDelegate* platform_delegate_ = nullptr;
 
   // Preferred audio input device which will be used for capture.
   absl::optional<std::string> preferred_device_id_;
@@ -136,12 +136,17 @@ class AudioInputImpl : public assistant_client::AudioInput {
 
   // Start with lidstate |kClosed| so we do not open the microphone before we
   // know if the lid is open or closed.
-  mojom::LidState lid_state_ = mojom::LidState ::kClosed;
+  chromeos::libassistant::mojom::LidState lid_state_ =
+      chromeos::libassistant::mojom::LidState ::kClosed;
 
   base::WeakPtrFactory<AudioInputImpl> weak_factory_;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::libassistant {
+using ::ash::libassistant::AudioInputImpl;
+}
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_AUDIO_AUDIO_INPUT_IMPL_H_
