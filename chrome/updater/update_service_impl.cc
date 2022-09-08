@@ -391,13 +391,12 @@ void UpdateServiceImpl::ForceInstall(StateChangeCallback state_update,
   DCHECK(!force_install_apps.empty());
 
   std::vector<std::string> installed_app_ids = persisted_data_->GetAppIds();
-  std::sort(force_install_apps.begin(), force_install_apps.end());
-  std::sort(installed_app_ids.begin(), installed_app_ids.end());
+  base::ranges::sort(force_install_apps);
+  base::ranges::sort(installed_app_ids);
 
   std::vector<std::string> app_ids_to_install;
-  std::set_difference(force_install_apps.begin(), force_install_apps.end(),
-                      installed_app_ids.begin(), installed_app_ids.end(),
-                      std::back_inserter(app_ids_to_install));
+  base::ranges::set_difference(force_install_apps, installed_app_ids,
+                               std::back_inserter(app_ids_to_install));
   if (app_ids_to_install.empty()) {
     base::BindPostTask(main_task_runner_, std::move(callback))
         .Run(UpdateService::Result::kSuccess);
@@ -521,8 +520,8 @@ void UpdateServiceImpl::CancelInstalls(const std::string& app_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
   auto range = cancellation_callbacks_.equal_range(app_id);
-  std::for_each(range.first, range.second,
-                [](const auto& i) { i.second.Run(); });
+  base::ranges::for_each(range.first, range.second,
+                         [](const auto& i) { i.second.Run(); });
 }
 
 void UpdateServiceImpl::RunInstaller(const std::string& app_id,
