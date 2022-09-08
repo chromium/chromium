@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Handler;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
 import android.view.View;
@@ -63,6 +64,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     // The number of items past the last visible one we want to have loaded at any give point.
     static final int REMAINING_ITEM_BUFFER_SIZE = 25;
     static final int MIN_EXPANDED_CLUSTER_SIZE = 2;
+    static final long QUERY_DELAY_MS = 60;
 
     interface Clock {
         long currentTimeMillis();
@@ -107,6 +109,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     private final Map<ClusterVisit, VisitMetadata> mVisitMetadataMap = new HashMap<>();
     private final AccessibilityUtil mAccessibilityUtil;
     private final Callback<String> mAnnounceForAccessibilityCallback;
+    private final Handler mHandler;
     private final boolean mIsScrollToLoadDisabled;
 
     /**
@@ -127,6 +130,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
      * @param metricsLogger Object that records metrics about user interactions.
      * @param accessibilityUtil Utility object that tells us about the current accessibility state.
      * @param announceForAccessibilityCallback Callback that announces the given string for a11y.
+     * @param handler Handler object on which deferred tasks can be posted.
      */
     HistoryClustersMediator(@NonNull HistoryClustersBridge historyClustersBridge,
             LargeIconBridge largeIconBridge, @NonNull Context context, @NonNull Resources resources,
@@ -134,7 +138,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
             HistoryClustersDelegate historyClustersDelegate, Clock clock,
             TemplateUrlService templateUrlService, SelectionDelegate selectionDelegate,
             HistoryClustersMetricsLogger metricsLogger, AccessibilityUtil accessibilityUtil,
-            Callback<String> announceForAccessibilityCallback) {
+            Callback<String> announceForAccessibilityCallback, Handler handler) {
         mHistoryClustersBridge = historyClustersBridge;
         mLargeIconBridge = largeIconBridge;
         mModelList = modelList;
@@ -151,6 +155,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         mMetricsLogger = metricsLogger;
         mAccessibilityUtil = accessibilityUtil;
         mAnnounceForAccessibilityCallback = announceForAccessibilityCallback;
+        mHandler = handler;
 
         mSelectionDelegate.addObserver(
                 (selectedItems -> setSelectionActive(mSelectionDelegate.isSelectionEnabled())));
@@ -176,7 +181,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                 new PropertyModel.Builder(HistoryClustersItemProperties.ALL_KEYS)
                         .with(HistoryClustersItemProperties.PROGRESS_BUTTON_STATE, buttonState)
                         .with(HistoryClustersItemProperties.CLICK_HANDLER,
-                                (v) -> mPromise.then(this::continueQuery))
+                                (v) -> mPromise.then(this::continueQuery, this::onPromiseRejected))
                         .build();
         mMoreProgressItem = new ListItem(ItemType.MORE_PROGRESS, moreProgressModel);
         mEmptyTextListItem = new ListItem(ItemType.EMPTY_TEXT, new PropertyModel());
@@ -185,7 +190,11 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     // SearchDelegate implementation.
     @Override
     public void onSearchTextChanged(String query) {
-        setQueryState(QueryState.forQuery(query, mDelegate.getSearchEmptyString()));
+        mHandler.removeCallbacksAndMessages(null);
+        mHandler.postDelayed(()
+                                     -> setQueryState(QueryState.forQuery(
+                                             query, mDelegate.getSearchEmptyString())),
+                QUERY_DELAY_MS);
     }
 
     @Override
@@ -200,11 +209,12 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
         if (layoutManager.findLastVisibleItemPosition()
                 > (mModelList.size() - REMAINING_ITEM_BUFFER_SIZE)) {
-            mPromise.then(this::continueQuery);
+            mPromise.then(this::continueQuery, this::onPromiseRejected);
         }
     }
 
     void destroy() {
+        mHandler.removeCallbacksAndMessages(null);
         mLargeIconBridge.destroy();
         mCallbackController.destroy();
     }
@@ -226,15 +236,21 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
             mMetricsLogger.incrementQueryCount();
         }
 
+        if (mPromise != null && !mPromise.isFulfilled()) {
+            mPromise.reject();
+        }
+
         mPromise = mHistoryClustersBridge.queryClusters(query);
-        mPromise.then(mCallbackController.makeCancelable(this::queryComplete));
+        mPromise.then(
+                mCallbackController.makeCancelable(this::queryComplete), this::onPromiseRejected);
         ensureFooters(State.LOADING, true, null);
     }
 
     void continueQuery(HistoryClustersResult previousResult) {
         if (!previousResult.canLoadMore()) return;
         mPromise = mHistoryClustersBridge.loadMoreClusters(previousResult.getQuery());
-        mPromise.then(mCallbackController.makeCancelable(this::queryComplete));
+        mPromise.then(
+                mCallbackController.makeCancelable(this::queryComplete), this::onPromiseRejected);
         ensureFooters(State.LOADING, true, null);
     }
 
@@ -589,6 +605,9 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
             @State int buttonState, boolean canLoadMore, HistoryClustersResult result) {
         mMoreProgressItem.model.set(
                 HistoryClustersItemProperties.PROGRESS_BUTTON_STATE, buttonState);
+        boolean showVerticallyCentered = buttonState == State.LOADING && !mIsScrollToLoadDisabled;
+        mMoreProgressItem.model.set(
+                HistoryClustersItemProperties.SHOW_VERTICALLY_CENTERED, showVerticallyCentered);
         boolean shouldShowLoadIndicator =
                 (buttonState == State.BUTTON && canLoadMore && mIsScrollToLoadDisabled)
                 || buttonState == State.LOADING;
@@ -704,4 +723,6 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
 
         return spannableString;
     }
+
+    private void onPromiseRejected(Exception e) {}
 }

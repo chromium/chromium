@@ -5,10 +5,13 @@
 package org.chromium.chrome.browser.history_clusters;
 
 import android.app.Activity;
+import android.os.Handler;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout.LayoutParams;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -97,7 +100,7 @@ public class HistoryClustersCoordinator extends RecyclerView.OnScrollListener
                 mSelectionDelegate, mMetricsLogger, accessibilityUtil, (message) -> {
                     if (mRecyclerView == null) return;
                     mRecyclerView.announceForAccessibility(message);
-                });
+                }, new Handler());
     }
 
     /**
@@ -224,8 +227,13 @@ public class HistoryClustersCoordinator extends RecyclerView.OnScrollListener
     }
 
     private View buildMoreProgressView(ViewGroup parent) {
-        return LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.more_progress_button, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.more_progress_button, parent, false);
+        View progressSpinner = view.findViewById(R.id.progress_spinner);
+        if (progressSpinner != null) {
+            ((LayoutParams) progressSpinner.getLayoutParams()).gravity = Gravity.CENTER;
+        }
+        return view;
     }
 
     private View buildClusterView(ViewGroup parent) {

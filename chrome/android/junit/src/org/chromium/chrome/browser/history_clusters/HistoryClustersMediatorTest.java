@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -25,6 +26,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Handler;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
 import android.view.View;
@@ -171,6 +173,7 @@ public class HistoryClustersMediatorTest {
     private final ObservableSupplierImpl<Boolean> mShouldShowClearBrowsingDataSupplier =
             new ObservableSupplierImpl<>();
     private List<ClusterVisit> mVisitsForRemoval = new ArrayList<>();
+    private Handler mHandler;
 
     @Before
     public void setUp() {
@@ -182,6 +185,7 @@ public class HistoryClustersMediatorTest {
         doReturn(mConfiguration).when(mResources).getConfiguration();
         mModelList = new ModelList();
         mToolbarModel = new PropertyModel(HistoryClustersToolbarProperties.ALL_KEYS);
+        mHandler = new Handler();
 
         mHistoryClustersDelegate = new HistoryClustersDelegate() {
             @Override
@@ -264,7 +268,8 @@ public class HistoryClustersMediatorTest {
 
         mMediator = new HistoryClustersMediator(mBridge, mLargeIconBridge, mContext, mResources,
                 mModelList, mToolbarModel, mHistoryClustersDelegate, mClock, mTemplateUrlService,
-                mSelectionDelegate, mMetricsLogger, mAccessibilityUtil, mAnnounceCallback);
+                mSelectionDelegate, mMetricsLogger, mAccessibilityUtil, mAnnounceCallback,
+                mHandler);
         mVisit1 = new ClusterVisit(1.0F, mGurl1, "Title 1", "url1.com/", new ArrayList<>(),
                 new ArrayList<>(), mGurl1, 123L, new ArrayList<>());
         mVisit2 = new ClusterVisit(1.0F, mGurl2, "Title 2", "url2.com/", new ArrayList<>(),
@@ -352,7 +357,8 @@ public class HistoryClustersMediatorTest {
         mConfiguration.keyboard = Configuration.KEYBOARD_12KEY;
         mMediator = new HistoryClustersMediator(mBridge, mLargeIconBridge, mContext, mResources,
                 mModelList, mToolbarModel, mHistoryClustersDelegate, mClock, mTemplateUrlService,
-                mSelectionDelegate, mMetricsLogger, mAccessibilityUtil, mAnnounceCallback);
+                mSelectionDelegate, mMetricsLogger, mAccessibilityUtil, mAnnounceCallback,
+                mHandler);
 
         Promise<HistoryClustersResult> promise = new Promise<>();
         doReturn(promise).when(mBridge).queryClusters("query");
@@ -500,13 +506,18 @@ public class HistoryClustersMediatorTest {
         doReturn(new Promise<>()).when(mBridge).queryClusters("pan");
         // Add a dummy entry to mModelList so we can check it was cleared.
         mModelList.add(new ListItem(42, new PropertyModel()));
+        mMediator.onSearchTextChanged("p");
+        mMediator.onSearchTextChanged("pa");
         mMediator.onSearchTextChanged("pan");
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         assertEquals(mModelList.size(), 1);
         ListItem spinnerItem = mModelList.get(0);
         assertEquals(spinnerItem.type, ItemType.MORE_PROGRESS);
         assertEquals(spinnerItem.model.get(HistoryClustersItemProperties.PROGRESS_BUTTON_STATE),
                 State.LOADING);
+        verify(mBridge, never()).queryClusters("p");
+        verify(mBridge, never()).queryClusters("pa");
         verify(mBridge).queryClusters("pan");
 
         doReturn(new Promise<>()).when(mBridge).queryClusters("");
@@ -813,6 +824,7 @@ public class HistoryClustersMediatorTest {
         promise = new Promise<>();
         doReturn(promise).when(mBridge).queryClusters("query");
         mMediator.onSearchTextChanged("query");
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         fulfillPromise(promise, mHistoryClustersResultWithQuery);
 
         item = mModelList.get(0);
@@ -827,7 +839,6 @@ public class HistoryClustersMediatorTest {
         doReturn(promise).when(mBridge).queryClusters("");
 
         mMediator.setQueryState(QueryState.forQueryless());
-        mMediator.startQuery("");
         fulfillPromise(promise, mHistoryClustersResultEmptyQuery);
 
         assertEquals(ItemType.CLUSTER, mModelList.get(3).type);
@@ -839,7 +850,6 @@ public class HistoryClustersMediatorTest {
         doReturn(promise).when(mBridge).queryClusters("query");
 
         mMediator.setQueryState(QueryState.forQuery("query", ""));
-        mMediator.startQuery("query");
         fulfillPromise(promise, mHistoryClustersResultWithQuery);
 
         assertEquals(ItemType.CLUSTER, mModelList.get(0).type);
@@ -962,7 +972,6 @@ public class HistoryClustersMediatorTest {
         doReturn(promise).when(mBridge).queryClusters("query");
 
         mMediator.setQueryState(QueryState.forQuery("query", ""));
-        mMediator.startQuery("query");
         fulfillPromise(promise, singletonVisitResult);
         assertEquals(0, mModelList.size());
     }
