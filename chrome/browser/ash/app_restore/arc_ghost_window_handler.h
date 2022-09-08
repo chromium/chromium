@@ -24,8 +24,8 @@ class ArcGhostWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
   // Map from window_session_id to exo::ClientControlledShellSurface.
   using ShellSurfaceMap =
       std::map<int, std::unique_ptr<exo::ClientControlledShellSurface>>;
-  // Map from window_session_id to arc::mojom::WindowInfoPtr.
-  using WindowInfoMap = std::map<int, arc::mojom::WindowInfoPtr>;
+  // Map from window_session_id to ::arc::mojom::WindowInfoPtr.
+  using WindowInfoMap = std::map<int, ::arc::mojom::WindowInfoPtr>;
 
   // This class populates the exo::ShellSurfaceBase to PropertyHandler by
   // the corresponding window session id.
