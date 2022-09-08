@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/driver/data_type_encryption_handler.h"
 #include "components/sync/driver/data_type_manager_observer.h"
@@ -54,22 +55,33 @@ base::queue<ModelTypeSet> PrioritizeTypes(const ModelTypeSet& types) {
   // makes the behavior consistent also for various flows for restarting sync
   // such as migrating all data types or reconfiguring sync in ephemeral mode
   // when all local data is wiped.
-  ModelTypeSet control_types = ControlTypes();
-  control_types.RetainAll(types);
+  const ModelTypeSet control_types = Intersection(ControlTypes(), types);
 
-  ModelTypeSet priority_types = PriorityUserTypes();
-  priority_types.RetainAll(types);
+  // Priority types are particularly important and/or urgent, and should be
+  // downloaded and applied before regular types.
+  const ModelTypeSet high_priority_types =
+      Intersection(HighPriorityUserTypes(), types);
 
-  ModelTypeSet regular_types =
-      Difference(types, Union(control_types, priority_types));
+  // *Low*-priority types are less important, and/or typically contain more data
+  // than other data types, and so should be downloaded last so as not to slow
+  // down the initial sync for other types.
+  const ModelTypeSet low_priority_types =
+      Intersection(LowPriorityUserTypes(), types);
+
+  // Regular types are everything that's not control, priority, or low-priority.
+  const ModelTypeSet regular_types = Difference(
+      types,
+      Union(Union(control_types, high_priority_types), low_priority_types));
 
   base::queue<ModelTypeSet> result;
   if (!control_types.Empty())
     result.push(control_types);
-  if (!priority_types.Empty())
-    result.push(priority_types);
+  if (!high_priority_types.Empty())
+    result.push(high_priority_types);
   if (!regular_types.Empty())
     result.push(regular_types);
+  if (!low_priority_types.Empty())
+    result.push(low_priority_types);
 
   // Could be empty in case of purging for migration, sync nothing, etc.
   // Configure empty set to purge data from backend.

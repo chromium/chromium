@@ -292,7 +292,7 @@ constexpr ModelTypeSet AlwaysEncryptedUserTypes() {
 // This mostly matters during initial sync, since priority types can become
 // active before all the data for non-prio types has been downloaded (which may
 // be a lot of data).
-constexpr ModelTypeSet PriorityUserTypes() {
+constexpr ModelTypeSet HighPriorityUserTypes() {
   return ModelTypeSet(
       // The "Send to Your Devices" feature needs fast updating of the list of
       // your devices and also fast sending of the actual messages.
@@ -310,6 +310,17 @@ constexpr ModelTypeSet PriorityUserTypes() {
       // their sync data, the browser offers a theme customization bubble which
       // should appear soon after opening the browser.
       THEMES);
+}
+
+// This is the subset of UserTypes() that have a *lower* priority than other
+// types. These types are synced only after all other user types. This mostly
+// matters during initial sync, since priority and regular types can become
+// active before all the data for low-prio types has been downloaded (which may
+// be a lot of data).
+constexpr ModelTypeSet LowPriorityUserTypes() {
+  // Downloading History may take a while, but should not block the download of
+  // other data types.
+  return ModelTypeSet(HISTORY);
 }
 
 // Returns a list of all control types.

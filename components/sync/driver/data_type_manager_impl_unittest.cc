@@ -186,20 +186,6 @@ ModelTypeSet FakeDataTypeEncryptionHandler::GetEncryptedDataTypes() const {
   return encrypted_types_;
 }
 
-MATCHER_P(ConfigurationStatsForType, model_type, "") {
-  return arg.model_type == model_type;
-}
-
-MATCHER_P3(ConfigurationStatsForType,
-           model_type,
-           high_prio_types_before,
-           same_prio_types_before,
-           "") {
-  return arg.model_type == model_type &&
-         arg.high_priority_types_configured_before == high_prio_types_before &&
-         arg.same_priority_types_configured_before == same_prio_types_before;
-}
-
 }  // namespace
 
 class SyncDataTypeManagerImplTest : public testing::Test {
@@ -797,8 +783,14 @@ TEST_F(SyncDataTypeManagerImplTest, ConfigureDuringPurge) {
 }
 
 TEST_F(SyncDataTypeManagerImplTest, PrioritizedConfiguration) {
-  AddController(BOOKMARKS);
+  // The order of priorities is:
+  // 1. Control types, i.e. NIGORI - included implicitly.
+  // 2. Priority types.
   AddController(PRIORITY_PREFERENCES);
+  // 3. Regular types.
+  AddController(BOOKMARKS);
+  // 4. Low-priority types.
+  AddController(HISTORY);
 
   // Initial configure.
   SetConfigureStartExpectation();
@@ -806,7 +798,7 @@ TEST_F(SyncDataTypeManagerImplTest, PrioritizedConfiguration) {
 
   // Start the configuration.
   ASSERT_EQ(0, configurer_.configure_call_count());
-  Configure(ModelTypeSet(BOOKMARKS, PRIORITY_PREFERENCES));
+  Configure(ModelTypeSet(BOOKMARKS, HISTORY, PRIORITY_PREFERENCES));
   // This causes an immediate ConfigureDataTypes() call for control types, i.e.
   // Nigori. It's important that this does *not* ask for any types to be
   // downloaded, see crbug.com/1170318 and crbug.com/1187914.
@@ -824,7 +816,12 @@ TEST_F(SyncDataTypeManagerImplTest, PrioritizedConfiguration) {
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
   EXPECT_EQ(AddControlTypesTo(BOOKMARKS), last_configure_params().to_download);
 
+  // HISTORY is downloaded after BOOKMARKS finishes.
   FinishDownload(ModelTypeSet(BOOKMARKS), ModelTypeSet());
+  EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
+  EXPECT_EQ(AddControlTypesTo(HISTORY), last_configure_params().to_download);
+
+  FinishDownload(ModelTypeSet(HISTORY), ModelTypeSet());
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
 }
 

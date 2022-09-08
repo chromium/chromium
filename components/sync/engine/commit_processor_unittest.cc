@@ -72,9 +72,9 @@ class CommitProcessorTest : public testing::Test {
         processor_(/*commit_types=*/ModelTypeSet{NIGORI, SHARING_MESSAGE,
                                                  BOOKMARKS, PREFERENCES},
                    &contributor_map_) {
-    EXPECT_TRUE(PriorityUserTypes().Has(SHARING_MESSAGE));
-    EXPECT_FALSE(PriorityUserTypes().Has(BOOKMARKS));
-    EXPECT_FALSE(PriorityUserTypes().Has(PREFERENCES));
+    EXPECT_TRUE(HighPriorityUserTypes().Has(SHARING_MESSAGE));
+    EXPECT_FALSE(HighPriorityUserTypes().Has(BOOKMARKS));
+    EXPECT_FALSE(HighPriorityUserTypes().Has(PREFERENCES));
   }
 
   testing::NiceMock<MockCommitContributor> nigori_contributor_;
@@ -103,7 +103,7 @@ TEST_F(CommitProcessorTest, ShouldGatherNigoriOnlyContribution) {
               UnorderedElementsAre(Pair(NIGORI, HasNumEntries(1))));
 }
 
-TEST_F(CommitProcessorTest, ShouldGatherPriorityUserTypesOnlyContribution) {
+TEST_F(CommitProcessorTest, ShouldGatherHighPriorityUserTypesOnlyContribution) {
   const int kNumReturnedEntries = 3;
 
   EXPECT_CALL(sharing_message_contributor_, GetContribution(kMaxEntries))

@@ -88,12 +88,14 @@ CommitProcessor::GatheringPhase CommitProcessor::IncrementGatheringPhase(
 }
 
 ModelTypeSet CommitProcessor::GetUserTypesForCurrentCommitPhase() const {
+  // TODO(crbug.com/1350983): Introduce kLowPriority for LowPriorityUserTypes(),
+  // and rename kPriority to kHighPriority.
   switch (phase_) {
     case GatheringPhase::kPriority:
-      return Intersection(commit_types_, PriorityUserTypes());
+      return Intersection(commit_types_, HighPriorityUserTypes());
     case GatheringPhase::kRegular:
       return Difference(commit_types_,
-                        Union(PriorityUserTypes(), ModelTypeSet(NIGORI)));
+                        Union(HighPriorityUserTypes(), ModelTypeSet(NIGORI)));
     case GatheringPhase::kDone:
       NOTREACHED();
       return ModelTypeSet();
