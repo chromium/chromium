@@ -1,0 +1,35 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+source_set("cpp") {
+  sources = [
+    "cros_hotspot_config_observer.cc",
+    "cros_hotspot_config_observer.h",
+  ]
+
+  deps = [ "//chromeos/services/hotspot_config/public/mojom" ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "cros_hotspot_config_test_observer.cc",
+    "cros_hotspot_config_test_observer.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/services/hotspot_config/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  deps = [
+    "//chromeos/ash/components/network",
+    "//chromeos/services/hotspot_config",
+  ]
+}

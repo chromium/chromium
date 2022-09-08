@@ -89,3 +89,50 @@ enum HotspotControlResult {
   kNoUpstreamConnection,
   kUnknownFailure,
 };
+
+// Information about Hotspot feature including current state, active client
+// count, supported security modes and configuration.
+struct HotspotInfo {
+  // Current Hotspot state.
+  HotspotState state;
+  // Total number clients currently connected.
+  uint32 client_count;
+  // Indicates whether hotspot is allowed.
+  HotspotAllowStatus allow_status;
+  // Supported WiFi security modes for WiFi downstream.
+  array<WiFiSecurityMode> allowed_wifi_security_modes;
+  // Hotspot configuration properties.
+  HotspotConfig config;
+};
+
+// CrosHotspotConfig interface provides methods to get current hotspot status,
+// configure, enable or disable hotspot.
+interface CrosHotspotConfig {
+  // Adds an observer that can listen to hotspot related events.
+  AddObserver(pending_remote<CrosHotspotConfigObserver> observer);
+
+  // Returns HotspotInfo structure containing state, client count, capabilities,
+  // supported security modes and configuration properties of Hotspot.
+  GetHotspotInfo() => (HotspotInfo hotspot_info);
+
+  // Sets configuration properties for hotspot.
+  SetHotspotConfig(HotspotConfig config) => (SetHotspotConfigResult result);
+
+  // Attempts to enable hotspot.
+  EnableHotspot() => (HotspotControlResult result);
+
+  // Disables hotspot if already enabled. This is a no-op if hotspot is already
+  // disabled.
+  DisableHotspot() => (HotspotControlResult result);
+};
+
+// CrosHotspotConfigObserver is implemented by any module that needs to observe
+// changes to the hotspot status.
+interface CrosHotspotConfigObserver {
+  // Called when there is a state, client count, configuration or capability
+  // change within Hotspot.
+  OnHotspotInfoChanged();
+
+  // Called when hotspot state become failure with |error_code|.
+  OnHotspotStateFailed(string error_code);
+};
