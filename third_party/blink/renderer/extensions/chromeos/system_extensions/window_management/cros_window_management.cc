@@ -159,24 +159,23 @@ void CrosWindowManagement::DispatchAcceleratorEvent(
 }
 
 void CrosWindowManagement::DispatchWindowClosedEvent(
-    mojom::blink::CrosWindowInfoPtr window) {
-  WTF::String closed_window_id_string = WTF::String(window->id.ToString());
-  Member<CrosWindow>* window_ptr =
+    const base::UnguessableToken& window_id) {
+  WTF::String closed_window_id_string = WTF::String(window_id.ToString());
+  auto* info_ptr =
       std::find_if(windows_.begin(), windows_.end(),
-                   [&closed_window_id_string](Member<CrosWindow> cros_window) {
-                     return cros_window->id() == closed_window_id_string;
+                   [&closed_window_id_string](Member<CrosWindow> info) {
+                     return info.Get()->id() == closed_window_id_string;
                    });
 
   auto* event_init = CrosWindowEventInit::Create();
-  if (window_ptr == windows_.end()) {
+
+  // If we don't find the closed window by id (i.e. the cache is unpopulated),
+  // manually create the cros window.
+  if (info_ptr == windows_.end()) {
     event_init->setWindow(
-        MakeGarbageCollected<CrosWindow>(this, std::move(window)));
+        MakeGarbageCollected<CrosWindow>(this, std::move(window_id)));
   } else {
-    // Update cached CrosWindow member with CrosWindowInfoPtr with nulled
-    // attributes.
-    window_ptr->Get()->Update(std::move(window));
-    event_init->setWindow(window_ptr->Get());
-    windows_.erase(window_ptr);
+    event_init->setWindow(*info_ptr);
   }
 
   DispatchEvent(

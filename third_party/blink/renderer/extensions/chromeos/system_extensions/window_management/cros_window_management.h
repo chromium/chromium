@@ -61,7 +61,7 @@ class CrosWindowManagement : public EventTargetWithInlineData,
   void DispatchAcceleratorEvent(
       mojom::blink::AcceleratorEventPtr event) override;
   void DispatchWindowClosedEvent(
-      mojom::blink::CrosWindowInfoPtr window) override;
+      const base::UnguessableToken& window_id) override;
 
  private:
   HeapMojoRemote<mojom::blink::CrosWindowManagementFactory>
