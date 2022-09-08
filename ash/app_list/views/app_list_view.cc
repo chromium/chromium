@@ -707,9 +707,9 @@ void AppListView::InitChildWidget() {
   search_box_widget->SetFocusTraversableParent(
       GetWidget()->GetFocusTraversable());
 
-  // Directs A11y focus ring from AppListView's descendants (like
-  // ExpandArrowView) to search box view without focusing on the whole app list
-  // window when using search + arrow button.
+  // Directs A11y focus ring from AppListView's descendants to search box view
+  // without focusing on the whole app list window when using search + arrow
+  // button.
   GetViewAccessibility().OverrideNextFocus(search_box_widget);
   GetViewAccessibility().OverridePreviousFocus(search_box_widget);
 }

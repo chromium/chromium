@@ -1517,16 +1517,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Apps.AppListPageOpened" enum="AppListPage"
-    expires_after="2023-02-12">
-  <owner>tbarzic@chromium.org</owner>
-  <owner>src/ash/app_list/OWNERS</owner>
-  <summary>
-    The page that the app list goes to. This is gathered every time the user
-    initiates a transition to another page in the launcher.
-  </summary>
-</histogram>
-
 <histogram name="Apps.AppListPageSwitcherSource"
     enum="AppListPageSwitcherSource" expires_after="2023-01-22">
 <!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->

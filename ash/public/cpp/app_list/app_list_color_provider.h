@@ -24,8 +24,6 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
   static AppListColorProvider* Get();
 
   // |default_color| will be used when dark/light mode is disabled.
-  virtual SkColor GetExpandArrowIconBaseColor() const = 0;
-  virtual SkColor GetExpandArrowIconBackgroundColor() const = 0;
   virtual SkColor GetAppListBackgroundColor(bool is_tablet_mode,
                                             SkColor default_color) const = 0;
   virtual SkColor GetSearchBoxBackgroundColor() const = 0;

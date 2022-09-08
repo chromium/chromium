@@ -100,8 +100,6 @@ source_set("app_list") {
     "views/continue_task_container_view.h",
     "views/continue_task_view.cc",
     "views/continue_task_view.h",
-    "views/expand_arrow_view.cc",
-    "views/expand_arrow_view.h",
     "views/folder_background_view.cc",
     "views/folder_background_view.h",
     "views/folder_header_view.cc",

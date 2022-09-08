@@ -33,22 +33,6 @@ AppListColorProviderImpl::AppListColorProviderImpl()
 
 AppListColorProviderImpl::~AppListColorProviderImpl() = default;
 
-SkColor AppListColorProviderImpl::GetExpandArrowIconBaseColor() const {
-  if (ShouldUseDarkLightColors()) {
-    return ash_color_provider_->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kButtonIconColor);
-  }
-  return SK_ColorWHITE;  // default_color
-}
-
-SkColor AppListColorProviderImpl::GetExpandArrowIconBackgroundColor() const {
-  if (ShouldUseDarkLightColors()) {
-    return ash_color_provider_->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
-  }
-  return SkColorSetARGB(0xF, 0xFF, 0xFF, 0xFF);  // default_color
-}
-
 SkColor AppListColorProviderImpl::GetAppListBackgroundColor(
     bool is_tablet_mode,
     SkColor default_color) const {

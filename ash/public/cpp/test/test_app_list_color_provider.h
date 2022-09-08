@@ -16,8 +16,6 @@ class TestAppListColorProvider : public AppListColorProvider {
 
  public:
   // AppListColorProvider:
-  SkColor GetExpandArrowIconBaseColor() const override;
-  SkColor GetExpandArrowIconBackgroundColor() const override;
   SkColor GetAppListBackgroundColor(bool is_tablet_mode,
                                     SkColor default_color) const override;
   SkColor GetSearchBoxBackgroundColor() const override;

@@ -9,14 +9,6 @@
 
 namespace ash {
 
-SkColor TestAppListColorProvider::GetExpandArrowIconBaseColor() const {
-  return gfx::kGoogleGrey200;
-}
-
-SkColor TestAppListColorProvider::GetExpandArrowIconBackgroundColor() const {
-  return SkColorSetA(SK_ColorWHITE, 0x1A);
-}
-
 SkColor TestAppListColorProvider::GetAppListBackgroundColor(
     bool is_tablet_mode,
     SkColor default_color) const {
