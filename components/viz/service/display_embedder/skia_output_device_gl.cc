@@ -441,7 +441,8 @@ void SkiaOutputDeviceGL::ScheduleOverlays(
     params->clip_rect = dc_layer.clip_rect;
     params->protected_video_type = dc_layer.protected_video_type;
     params->hdr_metadata = dc_layer.hdr_metadata;
-    params->is_video_fullscreen_mode = dc_layer.is_video_fullscreen_mode;
+    params->is_video_fullscreen_letterboxing =
+        dc_layer.is_video_fullscreen_letterboxing;
 
     // Schedule DC layer overlay to be presented at next SwapBuffers().
     if (!gl_surface_->ScheduleDCLayer(std::move(params)))

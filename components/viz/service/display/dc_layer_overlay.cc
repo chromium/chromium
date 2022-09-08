@@ -1019,7 +1019,7 @@ void DCLayerOverlayProcessor::UpdateDCLayerOverlays(
   RecordDCLayerResult(DC_LAYER_SUCCESS, it);
 
   DCLayerOverlay dc_layer;
-  dc_layer.is_video_fullscreen_mode =
+  dc_layer.is_video_fullscreen_letterboxing =
       is_page_fullscreen_mode
           ? IsFullScreenLetterboxing(it, render_pass->quad_list.end(),
                                      display_rect)

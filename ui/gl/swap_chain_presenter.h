@@ -146,7 +146,16 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // If the swap chain size is very close to the screen size but not exactly the
   // same, the swap chain should be adjusted to fit the screen size in order to
   // get the fullscreen DWM optimizations.
-  void AdjustSwapChainToFullScreenSizeIfNeeded(
+  bool AdjustSwapChainToFullScreenSizeIfNeeded(
+      const gfx::Size& monitor_size,
+      const ui::DCRendererLayerParams& params,
+      const gfx::Rect& overlay_onscreen_rect,
+      gfx::Size* swap_chain_size,
+      gfx::Transform* transform,
+      gfx::Rect* clip_rect);
+
+  void AdjustSwapChainForFullScreenLetterboxing(
+      const gfx::Size& monitor_size,
       const ui::DCRendererLayerParams& params,
       const gfx::Rect& overlay_onscreen_rect,
       gfx::Size* swap_chain_size,
