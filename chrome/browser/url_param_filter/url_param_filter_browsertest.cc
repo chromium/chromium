@@ -191,6 +191,55 @@ IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
 }
 
 // Enable "Open Link in Incognito Window" URL parameter filtering, and ensure
+// that it does not filter nested URLs.
+IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
+                       OpenIncognitoUrlParamFilterNoNestedFiltering) {
+  base::HistogramTester histogram_tester;
+
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_root(embedded_test_server()->GetURL(
+      "/empty.html?plzblock=1&nochanges=2&plzblock1=2&url=https%3A%2F%2Ffoo."
+      "com%2F%3Fplzblock%3D1"));
+
+  // Go to a |page| with a link to a URL that has associated filtering rules.
+  GURL page("data:text/html,<a href='" + test_root.spec() + "'>link</a>");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
+
+  // Set up the source URL to an eTLD+1 that also has a filtering rule.
+  const GURL kSource("http://foo.com/test");
+
+  // Set up menu with link URL.
+  content::ContextMenuParams context_menu_params;
+  context_menu_params.page_url = kSource;
+  context_menu_params.link_url = test_root;
+
+  // Select "Open Link in Incognito Window" and wait for window to be added.
+  TestRenderViewContextMenu menu(*browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
+  menu.Init();
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
+
+  content::WebContents* tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(tab));
+
+  // Verify that it loaded the filtered URL.
+  GURL expected(embedded_test_server()->GetURL(
+      "/empty.html?nochanges=2&url=https%3A%2F%2Ffoo.com%2F%3Fplzblock%3D1"));
+  ASSERT_EQ(expected, tab->GetLastCommittedURL());
+
+  // The response was a 200 (params filtered => metrics collected), and the
+  // navigation went from normal --> OTR browsing.
+  histogram_tester.ExpectUniqueSample(
+      kCrossOtrResponseMetricName,
+      net::HttpUtil::MapStatusCodeForHistogram(200), 1);
+}
+
+// Enable "Open Link in Incognito Window" URL parameter filtering, and ensure
 // that it filters only main frame navigations.
 IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterEnabledBrowserTest,
                        OpenIncognitoUrlParamFilterSubresources) {

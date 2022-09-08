@@ -31,6 +31,8 @@ struct FilterResult {
   ClassificationExperimentStatus experimental_status;
 };
 
+enum NestedFilterOption { kFilterNested = 0, kNoFilterNested = 1 };
+
 // Filter the destination URL according to the parameter classifications for the
 // source and destination URLs. Used internally by the 2-arg overload, and
 // called directly from tests.
@@ -46,6 +48,15 @@ FilterResult FilterUrl(const GURL& source_url,
 // backward compatibility and will be removed.
 // Currently experimental; not intended for broad consumption.
 FilterResult FilterUrl(const GURL& source_url, const GURL& destination_url);
+
+// Filter the destination URL according to the default parameter classifications
+// for the source and destination URLs. Can be configured to not filter nested
+// URLs, making this the preferred option when redirects are protected (vs
+// filtering only the first hop). Currently experimental; not intended for broad
+// consumption.
+FilterResult FilterUrl(const GURL& source_url,
+                       const GURL& destination_url,
+                       NestedFilterOption filter_nested_urls);
 
 // Filter the destination URL according to the default parameter classifications
 // for the source and destination URLs, only if the classifications include the
