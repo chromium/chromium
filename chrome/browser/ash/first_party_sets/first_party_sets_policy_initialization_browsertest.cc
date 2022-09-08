@@ -172,10 +172,9 @@ IN_PROC_BROWSER_TEST_F(FirstPartySetsPolicyInitializationTest,
         EXPECT_EQ(profile->GetPrefs()->GetBoolean(
                       ::first_party_sets::kFirstPartySetsEnabled),
                   true);
-        EXPECT_TRUE(
-            profile->GetPrefs()
-                ->GetDictionary(::first_party_sets::kFirstPartySetsOverrides)
-                ->GetDict() == expected_overrides.GetDict());
+        EXPECT_TRUE(profile->GetPrefs()->GetValueDict(
+                        ::first_party_sets::kFirstPartySetsOverrides) ==
+                    expected_overrides.GetDict());
         loop.Quit();
         return base::WrapUnique<KeyedService>(
             new ::first_party_sets::FirstPartySetsPolicyService(
