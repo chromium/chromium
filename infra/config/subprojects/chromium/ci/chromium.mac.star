@@ -82,6 +82,9 @@ ci.builder(
     experiments = {
         "luci.buildbucket.omit_python2": 100,
     },
+    goma_backend = None,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
