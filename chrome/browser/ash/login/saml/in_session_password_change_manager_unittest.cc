@@ -243,7 +243,8 @@ TEST_F(InSessionPasswordChangeManagerTest, TimePasses_NoUserActionTaken) {
   EXPECT_EQ(utf16("Choose a new one now"), Notification()->message());
 }
 
-TEST_F(InSessionPasswordChangeManagerTest, TimePasses_NotificationDismissed) {
+TEST_F(InSessionPasswordChangeManagerTest,
+       DISABLED_TimePasses_NotificationDismissed) {
   SetExpirationTime(base::Time::Now() + kOneYear + kAdvanceWarningTime / 2);
   manager_->MaybeShowExpiryNotification();
 
