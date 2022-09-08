@@ -159,6 +159,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
   void RequestProperties(ManagedState::ManagedType type,
                          const std::string& path);
 
+  // Requests portal detection for |service_path|.
+  void RequestPortalDetection(const std::string& service_path);
+
   // Requests traffic counters for a Service denoted by |service_path|.
   // Traffic counters are returned via |callback|.
   void RequestTrafficCounters(

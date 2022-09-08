@@ -304,6 +304,20 @@ void ShillPropertyHandler::RequestProperties(ManagedState::ManagedType type,
   NOTREACHED();
 }
 
+void ShillPropertyHandler::RequestPortalDetection(
+    const std::string& service_path) {
+  ShillServiceClient::Get()->RequestPortalDetection(
+      dbus::ObjectPath(service_path),
+      base::BindOnce(
+          [](const std::string& service_path, bool success) {
+            if (!success) {
+              NET_LOG(ERROR) << "Shill RecheckPortal call failed for: "
+                             << NetworkPathId(service_path);
+            }
+          },
+          service_path));
+}
+
 void ShillPropertyHandler::RequestTrafficCounters(
     const std::string& service_path,
     chromeos::DBusMethodCallback<base::Value> callback) {

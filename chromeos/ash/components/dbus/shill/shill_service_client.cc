@@ -227,6 +227,15 @@ class ShillServiceClientImpl : public ShillServiceClient {
                                             std::move(error_callback));
   }
 
+  void RequestPortalDetection(
+      const dbus::ObjectPath& service_path,
+      chromeos::VoidDBusMethodCallback callback) override {
+    dbus::MethodCall method_call(shill::kFlimflamServiceInterface,
+                                 shill::kRequestPortalDetectionFunction);
+
+    GetHelper(service_path)->CallVoidMethod(&method_call, std::move(callback));
+  }
+
   void RequestTrafficCounters(
       const dbus::ObjectPath& service_path,
       chromeos::DBusMethodCallback<base::Value> callback) override {

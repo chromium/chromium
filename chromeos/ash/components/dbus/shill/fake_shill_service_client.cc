@@ -389,6 +389,17 @@ void FakeShillServiceClient::GetEapPassphrase(
   std::move(callback).Run(passphrase ? *passphrase : std::string());
 }
 
+void FakeShillServiceClient::RequestPortalDetection(
+    const dbus::ObjectPath& service_path,
+    chromeos::VoidDBusMethodCallback callback) {
+  if (request_portal_state_) {
+    SetServiceProperty(service_path.value(), shill::kStateProperty,
+                       base::Value(*request_portal_state_));
+    request_portal_state_ = absl::nullopt;
+  }
+  std::move(callback).Run(/*success=*/true);
+}
+
 void FakeShillServiceClient::RequestTrafficCounters(
     const dbus::ObjectPath& service_path,
     chromeos::DBusMethodCallback<base::Value> callback) {
@@ -700,6 +711,10 @@ void FakeShillServiceClient::SetConnectBehavior(
 void FakeShillServiceClient::SetErrorForNextConnectionAttempt(
     const std::string& error_name) {
   connect_error_name_ = error_name;
+}
+
+void FakeShillServiceClient::SetRequestPortalState(const std::string& state) {
+  request_portal_state_ = state;
 }
 
 void FakeShillServiceClient::SetHoldBackServicePropertyUpdates(bool hold_back) {

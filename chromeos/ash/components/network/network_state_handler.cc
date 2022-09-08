@@ -1210,6 +1210,15 @@ void NetworkStateHandler::SetFastTransitionStatus(bool enabled) {
   shill_property_handler_->SetFastTransitionStatus(enabled);
 }
 
+void NetworkStateHandler::RequestPortalDetection() {
+  if (default_network_path_.empty()) {
+    return;
+  }
+  NET_LOG(USER) << "RequestPortalDetection for "
+                << NetworkPathId(default_network_path_);
+  shill_property_handler_->RequestPortalDetection(default_network_path_);
+}
+
 const NetworkState* NetworkStateHandler::GetEAPForEthernet(
     const std::string& service_path,
     bool connected_only) {

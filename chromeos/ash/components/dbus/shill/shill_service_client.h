@@ -106,6 +106,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
     virtual void SetErrorForNextConnectionAttempt(
         const std::string& error_name) = 0;
 
+    // Sets a state property to set affer a call to RequestPortalDetection.
+    virtual void SetRequestPortalState(const std::string& state) = 0;
+
     // If |hold_back| is set to true, stops sending service property updates to
     // observers and records them instead. Then if this is called again with
     // |hold_back| == false, sends all recorded property updates.
@@ -228,6 +231,12 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
   virtual void GetEapPassphrase(const dbus::ObjectPath& service_path,
                                 StringCallback callback,
                                 ErrorCallback error_callback) = 0;
+
+  // Calls the RequestPortalDetection method.
+  // |callback| is called after the method call completes.
+  virtual void RequestPortalDetection(
+      const dbus::ObjectPath& service_path,
+      chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Calls the RequestTrafficCounters method.
   // |callback| is called after the method call succeeds.

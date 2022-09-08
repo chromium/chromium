@@ -374,6 +374,10 @@ class NetworkStateHandlerTest : public testing::Test {
   }
 
  protected:
+  NetworkState* GetModifiableNetworkState(const std::string& service_path) {
+    return network_state_handler_->GetModifiableNetworkState(service_path);
+  }
+
   void AddService(const std::string& service_path,
                   const std::string& guid,
                   const std::string& name,
@@ -2492,10 +2496,9 @@ TEST_F(NetworkStateHandlerTest, SyncStubCellularNetworks_SimInfoChange) {
 }
 
 TEST_F(NetworkStateHandlerTest, BlockedWifiByPolicyBlocked) {
-  NetworkState* wifi1 = network_state_handler_->GetModifiableNetworkState(
-      kShillManagerClientStubDefaultWifi);
-  NetworkState* wifi2 = network_state_handler_->GetModifiableNetworkState(
-      kShillManagerClientStubWifi2);
+  NetworkState* wifi1 =
+      GetModifiableNetworkState(kShillManagerClientStubDefaultWifi);
+  NetworkState* wifi2 = GetModifiableNetworkState(kShillManagerClientStubWifi2);
 
   EXPECT_FALSE(network_state_handler_->OnlyManagedWifiNetworksAllowed());
   EXPECT_FALSE(wifi1->IsManagedByPolicy());
@@ -2529,10 +2532,9 @@ TEST_F(NetworkStateHandlerTest, BlockedWifiByPolicyBlocked) {
 }
 
 TEST_F(NetworkStateHandlerTest, BlockedWifiByPolicyOnlyManaged) {
-  NetworkState* wifi1 = network_state_handler_->GetModifiableNetworkState(
-      kShillManagerClientStubDefaultWifi);
-  NetworkState* wifi2 = network_state_handler_->GetModifiableNetworkState(
-      kShillManagerClientStubWifi2);
+  NetworkState* wifi1 =
+      GetModifiableNetworkState(kShillManagerClientStubDefaultWifi);
+  NetworkState* wifi2 = GetModifiableNetworkState(kShillManagerClientStubWifi2);
 
   EXPECT_FALSE(network_state_handler_->OnlyManagedWifiNetworksAllowed());
   EXPECT_FALSE(wifi1->IsManagedByPolicy());
@@ -2571,10 +2573,10 @@ TEST_F(NetworkStateHandlerTest, BlockedCellularByPolicyOnlyManaged) {
              shill::kStateIdle);
   base::RunLoop().RunUntilIdle();
 
-  NetworkState* cellular1 = network_state_handler_->GetModifiableNetworkState(
-      kShillManagerClientStubCellular);
-  NetworkState* cellular2 = network_state_handler_->GetModifiableNetworkState(
-      kTestCellularServicePath2);
+  NetworkState* cellular1 =
+      GetModifiableNetworkState(kShillManagerClientStubCellular);
+  NetworkState* cellular2 =
+      GetModifiableNetworkState(kTestCellularServicePath2);
   EXPECT_FALSE(cellular1->IsManagedByPolicy());
   EXPECT_FALSE(cellular1->blocked_by_policy());
   EXPECT_FALSE(cellular2->IsManagedByPolicy());
@@ -2609,10 +2611,10 @@ TEST_F(NetworkStateHandlerTest,
              shill::kStateIdle);
   base::RunLoop().RunUntilIdle();
 
-  NetworkState* cellular1 = network_state_handler_->GetModifiableNetworkState(
-      kShillManagerClientStubCellular);
-  NetworkState* cellular2 = network_state_handler_->GetModifiableNetworkState(
-      kTestCellularServicePath2);
+  NetworkState* cellular1 =
+      GetModifiableNetworkState(kShillManagerClientStubCellular);
+  NetworkState* cellular2 =
+      GetModifiableNetworkState(kTestCellularServicePath2);
   EXPECT_FALSE(cellular1->IsManagedByPolicy());
   EXPECT_FALSE(cellular1->blocked_by_policy());
   EXPECT_FALSE(cellular2->IsManagedByPolicy());
@@ -2641,10 +2643,9 @@ TEST_F(NetworkStateHandlerTest,
 }
 
 TEST_F(NetworkStateHandlerTest, BlockedWifiByPolicyOnlyManagedIfAvailable) {
-  NetworkState* wifi1 = network_state_handler_->GetModifiableNetworkState(
-      kShillManagerClientStubDefaultWifi);
-  NetworkState* wifi2 = network_state_handler_->GetModifiableNetworkState(
-      kShillManagerClientStubWifi2);
+  NetworkState* wifi1 =
+      GetModifiableNetworkState(kShillManagerClientStubDefaultWifi);
+  NetworkState* wifi2 = GetModifiableNetworkState(kShillManagerClientStubWifi2);
 
   EXPECT_FALSE(wifi1->IsManagedByPolicy());
   EXPECT_FALSE(wifi2->IsManagedByPolicy());
@@ -2830,6 +2831,23 @@ TEST_F(NetworkStateHandlerTest, RequestTrafficCounters) {
                       },
                       &traffic_counters, run_loop.QuitClosure()));
   run_loop.Run();
+}
+
+TEST_F(NetworkStateHandlerTest, RequestPortalDetection) {
+  RemoveEthernet();
+  NetworkState* wifi1 =
+      GetModifiableNetworkState(kShillManagerClientStubDefaultWifi);
+  EXPECT_EQ(wifi1->connection_state(), shill::kStateOnline);
+
+  test_observer_->reset_change_counts();
+  service_test_->SetRequestPortalState(shill::kStateRedirectFound);
+  network_state_handler_->RequestPortalDetection();
+  base::RunLoop().RunUntilIdle();
+  wifi1 = GetModifiableNetworkState(kShillManagerClientStubDefaultWifi);
+  EXPECT_EQ(wifi1->connection_state(), shill::kStateRedirectFound);
+  EXPECT_EQ(test_observer_->default_network_portal_state(),
+            NetworkState::PortalState::kPortal);
+  EXPECT_EQ(test_observer_->portal_state_change_count(), 1u);
 }
 
 }  // namespace ash

@@ -408,6 +408,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // reassociation. This allows devices to roam much more quickly.
   void SetFastTransitionStatus(bool enabled);
 
+  // Requests a Shill portal check on the default network.
+  void RequestPortalDetection();
+
   const std::string& GetCheckPortalListForTest() const {
     return check_portal_list_;
   }
@@ -538,7 +541,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
  private:
   typedef std::map<std::string, std::string> SpecifierGuidMap;
   friend class NetworkStateHandlerTest;
-  FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest, NetworkStateHandlerStub);
   FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest, BlockedWifiByPolicyBlocked);
   FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest,
                            BlockedWifiByPolicyOnlyManaged);
