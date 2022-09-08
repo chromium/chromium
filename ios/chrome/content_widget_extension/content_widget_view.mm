@@ -51,7 +51,7 @@ const int kRows = 2;
 // Sets up the widget UI in compact mode.
 - (void)createUI;
 
-// Arranges |tiles| horizontally in a view and returns the view.
+// Arranges `tiles` horizontally in a view and returns the view.
 - (UIView*)createRowFromTiles:(NSArray<MostVisitedTileView*>*)tiles;
 
 // Returns the height to use for the first row, depending on the display mode.
@@ -61,7 +61,7 @@ const int kRows = 2;
 // be shown).
 - (CGFloat)secondRowHeight;
 
-// Opens the |mostVisitedTile|'s url, using the delegate.
+// Opens the `mostVisitedTile`'s url, using the delegate.
 - (void)openURLFromMostVisited:(MostVisitedTileView*)mostVisitedTile;
 
 @end

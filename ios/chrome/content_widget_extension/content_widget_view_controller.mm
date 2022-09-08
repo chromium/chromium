@@ -100,7 +100,7 @@ NSString* const kXCallbackURLHost = @"x-callback-url";
   [super viewWillAppear:animated];
   [self registerWidgetDisplay];
 
-  // |widgetActiveDisplayMode| does not contain a valid value in viewDidLoad. By
+  // `widgetActiveDisplayMode` does not contain a valid value in viewDidLoad. By
   // the time viewWillAppear is called, it is correct, so set the mode here.
   [self.widgetView showMode:self.isCompact];
 }
