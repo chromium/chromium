@@ -205,6 +205,7 @@ void PermissionChip::Collapse(bool allow_restart) {
     StartCollapseTimer();
   } else {
     chip_button_->AnimateCollapse();
+    chip_button_->SetTheme(OmniboxChipTheme::kLowVisibility);
     StartDismissTimer();
     ShowBlockedIcon();
   }

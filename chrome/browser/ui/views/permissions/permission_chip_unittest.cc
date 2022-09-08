@@ -173,8 +173,13 @@ TEST_F(PermissionChipUnitTest, DisplayChipNoAutoPopupTest) {
   ASSERT_TRUE(delegate.IsRequestInProgress());
 
   // The collapse timer is fired and the dismiss timer is started.
+  // Once collapsing, the chip should be displayed in low visibility style.
+
   EXPECT_FALSE(chip.is_collapse_timer_running_for_testing());
   EXPECT_TRUE(chip.is_dismiss_timer_running_for_testing());
+
+  EXPECT_EQ(chip.get_chip_button_for_testing()->get_theme_for_testing(),
+            OmniboxChipTheme::kLowVisibility);
 
   task_environment()->AdvanceClock(kNormalChipDismissDuration);
   base::RunLoop().RunUntilIdle();
