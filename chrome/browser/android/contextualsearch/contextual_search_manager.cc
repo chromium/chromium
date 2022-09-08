@@ -18,7 +18,7 @@
 #include "chrome/browser/android/contextualsearch/native_contextual_search_context.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "components/contextual_search/core/browser/contextual_search_delegate.h"
+#include "components/contextual_search/core/browser/contextual_search_delegate_impl.h"
 #include "components/contextual_search/core/browser/resolved_search_term.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "components/variations/variations_associated_data.h"
@@ -41,7 +41,7 @@ ContextualSearchManager::ContextualSearchManager(JNIEnv* env,
   Java_ContextualSearchManager_setNativeManager(
       env, obj, reinterpret_cast<intptr_t>(this));
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  delegate_ = std::make_unique<ContextualSearchDelegate>(
+  delegate_ = std::make_unique<ContextualSearchDelegateImpl>(
       profile->GetURLLoaderFactory(),
       TemplateURLServiceFactory::GetForProfile(profile));
 }

@@ -37,7 +37,10 @@ void ContextualSearchContext::PrepareToResolve(
     const std::string& related_searches_stamp) {
   is_exact_resolve_ = is_exact_resolve;
   related_searches_stamp_ = related_searches_stamp;
-  do_related_searches_ = !related_searches_stamp_.empty();
+  if (!related_searches_stamp_.empty()) {
+    // Only RELATED_SEARCHES queries pass a stamp.
+    request_type_ = RequestType::RELATED_SEARCHES;
+  }
 }
 
 std::string ContextualSearchContext::DetectLanguage() const {

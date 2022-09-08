@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/contextual_search/core/browser/contextual_search_delegate.h"
+#include "components/contextual_search/core/browser/contextual_search_delegate_impl.h"
 
 #include <stddef.h>
 
@@ -49,16 +49,17 @@ std::unique_ptr<ContextualSearchContext> MakeTestContext(
   return context;
 }
 
-// Unit tests for the native |ContextualSearchDelegate|.
-class ContextualSearchDelegateTest : public testing::Test {
+// Unit tests for the native |ContextualSearchDelegateImpl|.
+class ContextualSearchDelegateImplTest : public testing::Test {
  public:
-  ContextualSearchDelegateTest() {}
+  ContextualSearchDelegateImplTest() {}
 
-  ContextualSearchDelegateTest(const ContextualSearchDelegateTest&) = delete;
-  ContextualSearchDelegateTest& operator=(const ContextualSearchDelegateTest&) =
+  ContextualSearchDelegateImplTest(const ContextualSearchDelegateImplTest&) =
       delete;
+  ContextualSearchDelegateImplTest& operator=(
+      const ContextualSearchDelegateImplTest&) = delete;
 
-  ~ContextualSearchDelegateTest() override {}
+  ~ContextualSearchDelegateImplTest() override {}
 
  protected:
   void SetUp() override {
@@ -66,7 +67,7 @@ class ContextualSearchDelegateTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
     template_url_service_.reset(CreateTemplateURLService());
-    delegate_ = std::make_unique<ContextualSearchDelegate>(
+    delegate_ = std::make_unique<ContextualSearchDelegateImpl>(
         test_shared_url_loader_factory_, template_url_service_.get());
 
     received_search_term_resolution_response_ = false;
@@ -111,9 +112,9 @@ class ContextualSearchDelegateTest : public testing::Test {
                                             surrounding_text);
     delegate_->ResolveSearchTermFromContext(
         test_context_->AsWeakPtr(),
-        base::BindRepeating(
-            &ContextualSearchDelegateTest::recordSearchTermResolutionResponse,
-            base::Unretained(this)));
+        base::BindRepeating(&ContextualSearchDelegateImplTest::
+                                recordSearchTermResolutionResponse,
+                            base::Unretained(this)));
     ASSERT_TRUE(test_url_loader_factory_.GetPendingRequest(0));
   }
 
@@ -138,8 +139,8 @@ class ContextualSearchDelegateTest : public testing::Test {
   }
 
   //-------------------------------------------------------------------
-  // Helper methods that call private ContextualSearchDelegate methods.
-  // The ContextualSearchDelegate methods cannot be called directly
+  // Helper methods that call private ContextualSearchDelegateImpl methods.
+  // The ContextualSearchDelegateImpl methods cannot be called directly
   // from tests, but can be called here because this is a friend class.
   //-------------------------------------------------------------------
   void CreateTestContext() {
@@ -157,7 +158,7 @@ class ContextualSearchDelegateTest : public testing::Test {
     delegate_->OnTextSurroundingSelectionAvailable(
         context,
         base::BindRepeating(
-            &ContextualSearchDelegateTest::recordSampleSelectionAvailable,
+            &ContextualSearchDelegateImplTest::recordSampleSelectionAvailable,
             base::Unretained(this)),
         std::u16string(), 1, 2);
   }
@@ -165,15 +166,15 @@ class ContextualSearchDelegateTest : public testing::Test {
   void CallResolveSearchTermFromContext(
       base::WeakPtr<ContextualSearchContext> context) {
     delegate_->ResolveSearchTermFromContext(
-        context,
-        base::BindRepeating(
-            &ContextualSearchDelegateTest::recordSearchTermResolutionResponse,
-            base::Unretained(this)));
+        context, base::BindRepeating(&ContextualSearchDelegateImplTest::
+                                         recordSearchTermResolutionResponse,
+                                     base::Unretained(this)));
   }
 
   void SetResponseStringAndSimulateResponse(const std::string& selected_text,
                                             const std::string& mentions_start,
                                             const std::string& mentions_end) {
+    // clang-format off
     std::string response = std::string(
         ")]}'\n"
         "{\"mid\":\"/m/02mjmr\", \"search_term\":\"obama\","
@@ -182,6 +183,7 @@ class ContextualSearchDelegateTest : public testing::Test {
         "\"mentions\":[" + mentions_start + "," + mentions_end + "],"
         "\"selected_text\":\"" + selected_text + "\","
         "\"resolved_term\":\"barack obama\"}");
+    // clang-format on
     SimulateResponseReturned(response);
   }
 
@@ -263,7 +265,7 @@ class ContextualSearchDelegateTest : public testing::Test {
   }
 
   // The delegate under test.
-  std::unique_ptr<ContextualSearchDelegate> delegate_;
+  std::unique_ptr<ContextualSearchDelegateImpl> delegate_;
   std::unique_ptr<ContextualSearchContext> test_context_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -335,7 +337,7 @@ class ContextualSearchDelegateTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(ContextualSearchDelegateTest, NormalFetchWithXssiEscape) {
+TEST_F(ContextualSearchDelegateImplTest, NormalFetchWithXssiEscape) {
   CreateDefaultSearchContextAndRequestSearchTerm();
   std::string response(
       ")]}'\n"
@@ -353,7 +355,7 @@ TEST_F(ContextualSearchDelegateTest, NormalFetchWithXssiEscape) {
   EXPECT_FALSE(do_prevent_preload());
 }
 
-TEST_F(ContextualSearchDelegateTest, NormalFetchWithoutXssiEscape) {
+TEST_F(ContextualSearchDelegateImplTest, NormalFetchWithoutXssiEscape) {
   CreateDefaultSearchContextAndRequestSearchTerm();
   std::string response(
       "{\"mid\":\"/m/02mjmr\", \"search_term\":\"obama\","
@@ -370,7 +372,7 @@ TEST_F(ContextualSearchDelegateTest, NormalFetchWithoutXssiEscape) {
   EXPECT_FALSE(do_prevent_preload());
 }
 
-TEST_F(ContextualSearchDelegateTest, ResponseWithNoDisplayText) {
+TEST_F(ContextualSearchDelegateImplTest, ResponseWithNoDisplayText) {
   CreateDefaultSearchContextAndRequestSearchTerm();
   std::string response(
       "{\"mid\":\"/m/02mjmr\",\"search_term\":\"obama\","
@@ -385,7 +387,7 @@ TEST_F(ContextualSearchDelegateTest, ResponseWithNoDisplayText) {
   EXPECT_FALSE(do_prevent_preload());
 }
 
-TEST_F(ContextualSearchDelegateTest, ResponseWithPreventPreload) {
+TEST_F(ContextualSearchDelegateImplTest, ResponseWithPreventPreload) {
   CreateDefaultSearchContextAndRequestSearchTerm();
   std::string response(
       "{\"mid\":\"/m/02mjmr\",\"search_term\":\"obama\","
@@ -400,7 +402,7 @@ TEST_F(ContextualSearchDelegateTest, ResponseWithPreventPreload) {
   EXPECT_TRUE(do_prevent_preload());
 }
 
-TEST_F(ContextualSearchDelegateTest, NonJsonResponse) {
+TEST_F(ContextualSearchDelegateImplTest, NonJsonResponse) {
   CreateDefaultSearchContextAndRequestSearchTerm();
   std::string response("Non-JSON Response");
   SimulateResponseReturned(response);
@@ -413,7 +415,7 @@ TEST_F(ContextualSearchDelegateTest, NonJsonResponse) {
   EXPECT_FALSE(do_prevent_preload());
 }
 
-TEST_F(ContextualSearchDelegateTest, InvalidResponse) {
+TEST_F(ContextualSearchDelegateImplTest, InvalidResponse) {
   CreateDefaultSearchContextAndRequestSearchTerm();
   auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
   test_url_loader_factory_.SimulateResponseForPendingRequest(
@@ -425,7 +427,7 @@ TEST_F(ContextualSearchDelegateTest, InvalidResponse) {
   EXPECT_TRUE(is_invalid());
 }
 
-TEST_F(ContextualSearchDelegateTest, ExpandSelectionToEnd) {
+TEST_F(ContextualSearchDelegateImplTest, ExpandSelectionToEnd) {
   std::u16string surrounding = u"Barack Obama just spoke.";
   std::string selected_text = "Barack";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding, 0, 6);
@@ -435,7 +437,7 @@ TEST_F(ContextualSearchDelegateTest, ExpandSelectionToEnd) {
   EXPECT_EQ(6, end_adjust());
 }
 
-TEST_F(ContextualSearchDelegateTest, ExpandSelectionToStart) {
+TEST_F(ContextualSearchDelegateImplTest, ExpandSelectionToStart) {
   std::u16string surrounding = u"Barack Obama just spoke.";
   std::string selected_text = "Obama";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding, 7, 12);
@@ -445,7 +447,7 @@ TEST_F(ContextualSearchDelegateTest, ExpandSelectionToStart) {
   EXPECT_EQ(0, end_adjust());
 }
 
-TEST_F(ContextualSearchDelegateTest, ExpandSelectionBothDirections) {
+TEST_F(ContextualSearchDelegateImplTest, ExpandSelectionBothDirections) {
   std::u16string surrounding = u"Barack Obama just spoke.";
   std::string selected_text = "Ob";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding, 7, 9);
@@ -455,7 +457,7 @@ TEST_F(ContextualSearchDelegateTest, ExpandSelectionBothDirections) {
   EXPECT_EQ(3, end_adjust());
 }
 
-TEST_F(ContextualSearchDelegateTest, ExpandSelectionInvalidRange) {
+TEST_F(ContextualSearchDelegateImplTest, ExpandSelectionInvalidRange) {
   std::u16string surrounding = u"Barack Obama just spoke.";
   std::string selected_text = "Ob";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding, 7, 9);
@@ -465,7 +467,7 @@ TEST_F(ContextualSearchDelegateTest, ExpandSelectionInvalidRange) {
   EXPECT_EQ(0, end_adjust());
 }
 
-TEST_F(ContextualSearchDelegateTest, ExpandSelectionInvalidDistantStart) {
+TEST_F(ContextualSearchDelegateImplTest, ExpandSelectionInvalidDistantStart) {
   std::u16string surrounding = u"Barack Obama just spoke.";
   std::string selected_text = "Ob";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding,
@@ -476,7 +478,7 @@ TEST_F(ContextualSearchDelegateTest, ExpandSelectionInvalidDistantStart) {
   EXPECT_EQ(0, end_adjust());
 }
 
-TEST_F(ContextualSearchDelegateTest, ExpandSelectionInvalidNoOverlap) {
+TEST_F(ContextualSearchDelegateImplTest, ExpandSelectionInvalidNoOverlap) {
   std::u16string surrounding = u"Barack Obama just spoke.";
   std::string selected_text = "Ob";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding, 0, 12);
@@ -486,7 +488,8 @@ TEST_F(ContextualSearchDelegateTest, ExpandSelectionInvalidNoOverlap) {
   EXPECT_EQ(0, end_adjust());
 }
 
-TEST_F(ContextualSearchDelegateTest, ExpandSelectionInvalidDistantEndAndRange) {
+TEST_F(ContextualSearchDelegateImplTest,
+       ExpandSelectionInvalidDistantEndAndRange) {
   std::u16string surrounding = u"Barack Obama just spoke.";
   std::string selected_text = "Ob";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding,
@@ -497,7 +500,7 @@ TEST_F(ContextualSearchDelegateTest, ExpandSelectionInvalidDistantEndAndRange) {
   EXPECT_EQ(0, end_adjust());
 }
 
-TEST_F(ContextualSearchDelegateTest, ExpandSelectionLargeNumbers) {
+TEST_F(ContextualSearchDelegateImplTest, ExpandSelectionLargeNumbers) {
   std::u16string surrounding = u"Barack Obama just spoke.";
   std::string selected_text = "Ob";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding, 268435450,
@@ -508,7 +511,7 @@ TEST_F(ContextualSearchDelegateTest, ExpandSelectionLargeNumbers) {
   EXPECT_EQ(0, end_adjust());
 }
 
-TEST_F(ContextualSearchDelegateTest, ContractSelectionValid) {
+TEST_F(ContextualSearchDelegateImplTest, ContractSelectionValid) {
   std::u16string surrounding = u"Barack Obama just spoke.";
   std::string selected_text = "Barack Obama just";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding, 0, 17);
@@ -518,7 +521,7 @@ TEST_F(ContextualSearchDelegateTest, ContractSelectionValid) {
   EXPECT_EQ(-5, end_adjust());
 }
 
-TEST_F(ContextualSearchDelegateTest, ContractSelectionInvalid) {
+TEST_F(ContextualSearchDelegateImplTest, ContractSelectionInvalid) {
   std::u16string surrounding = u"Barack Obama just spoke.";
   std::string selected_text = "Barack Obama just";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding, 0, 17);
@@ -528,7 +531,7 @@ TEST_F(ContextualSearchDelegateTest, ContractSelectionInvalid) {
   EXPECT_EQ(0, end_adjust());
 }
 
-TEST_F(ContextualSearchDelegateTest, ExtractMentionsStartEnd) {
+TEST_F(ContextualSearchDelegateImplTest, ExtractMentionsStartEnd) {
   base::Value::List mentions_list;
   mentions_list.Append(1);
   mentions_list.Append(2);
@@ -539,7 +542,7 @@ TEST_F(ContextualSearchDelegateTest, ExtractMentionsStartEnd) {
   EXPECT_EQ(2, end);
 }
 
-TEST_F(ContextualSearchDelegateTest, SampleSurroundingText) {
+TEST_F(ContextualSearchDelegateImplTest, SampleSurroundingText) {
   std::u16string sample = u"this is Barack Obama in office.";
   int limit_each_side = 3;
   size_t start = 8;
@@ -551,7 +554,7 @@ TEST_F(ContextualSearchDelegateTest, SampleSurroundingText) {
   EXPECT_EQ(u"is Barack Obama in", result);
 }
 
-TEST_F(ContextualSearchDelegateTest, SampleSurroundingTextNegativeLimit) {
+TEST_F(ContextualSearchDelegateImplTest, SampleSurroundingTextNegativeLimit) {
   std::u16string sample = u"this is Barack Obama in office.";
   int limit_each_side = -2;
   size_t start = 8;
@@ -563,7 +566,7 @@ TEST_F(ContextualSearchDelegateTest, SampleSurroundingTextNegativeLimit) {
   EXPECT_EQ(u"Barack Obama", result);
 }
 
-TEST_F(ContextualSearchDelegateTest, SampleSurroundingTextSameStartEnd) {
+TEST_F(ContextualSearchDelegateImplTest, SampleSurroundingTextSameStartEnd) {
   std::u16string sample = u"this is Barack Obama in office.";
   int limit_each_side = 3;
   size_t start = 11;
@@ -578,7 +581,7 @@ TEST_F(ContextualSearchDelegateTest, SampleSurroundingTextSameStartEnd) {
   EXPECT_EQ(u"Barack", result);
 }
 
-TEST_F(ContextualSearchDelegateTest, DecodeSearchTermFromJsonResponse) {
+TEST_F(ContextualSearchDelegateImplTest, DecodeSearchTermFromJsonResponse) {
   std::string json_with_escape =
       ")]}'\n"
       "{\"mid\":\"/m/02mjmr\", \"search_term\":\"obama\","
@@ -637,7 +640,7 @@ TEST_F(ContextualSearchDelegateTest, DecodeSearchTermFromJsonResponse) {
   EXPECT_FALSE(related_searches_json.empty());
 }
 
-TEST_F(ContextualSearchDelegateTest, ResponseWithLanguage) {
+TEST_F(ContextualSearchDelegateImplTest, ResponseWithLanguage) {
   CreateDefaultSearchContextAndRequestSearchTerm();
   std::string response(
       "{\"mid\":\"/m/02mjmr\",\"search_term\":\"obama\","
@@ -654,27 +657,27 @@ TEST_F(ContextualSearchDelegateTest, ResponseWithLanguage) {
   EXPECT_EQ("de", context_language());
 }
 
-TEST_F(ContextualSearchDelegateTest, HeaderContainsBasePageUrl) {
+TEST_F(ContextualSearchDelegateImplTest, HeaderContainsBasePageUrl) {
   CreateDefaultSearchContextAndRequestSearchTerm();
   EXPECT_EQ(kSomeSpecificBasePage, getBasePageUrlFromRequest());
 }
 
 // Missing all Contextual Cards data.
-TEST_F(ContextualSearchDelegateTest, ContextualCardsResponseWithNoData) {
+TEST_F(ContextualSearchDelegateImplTest, ContextualCardsResponseWithNoData) {
   CreateDefaultSearchWithAdditionalJsonData("");
   EXPECT_EQ("", caption());
   EXPECT_EQ("", thumbnail_url());
 }
 
 // Test just the root level caption.
-TEST_F(ContextualSearchDelegateTest, ContextualCardsResponseWithCaption) {
+TEST_F(ContextualSearchDelegateImplTest, ContextualCardsResponseWithCaption) {
   CreateDefaultSearchWithAdditionalJsonData(", |caption|:|aCaption|");
   EXPECT_EQ("aCaption", caption());
   EXPECT_EQ("", thumbnail_url());
 }
 
 // Test just the root level thumbnail.
-TEST_F(ContextualSearchDelegateTest, ContextualCardsResponseWithThumbnail) {
+TEST_F(ContextualSearchDelegateImplTest, ContextualCardsResponseWithThumbnail) {
   CreateDefaultSearchWithAdditionalJsonData(
       ", |thumbnail|:|https://t0.gstatic.com/images?q=tbn:ANd9|");
   EXPECT_EQ("", caption());
@@ -682,7 +685,7 @@ TEST_F(ContextualSearchDelegateTest, ContextualCardsResponseWithThumbnail) {
 }
 
 // Test that we can destroy the context while resolving without a crash.
-TEST_F(ContextualSearchDelegateTest, DestroyContextDuringResolve) {
+TEST_F(ContextualSearchDelegateImplTest, DestroyContextDuringResolve) {
   CreateTestContext();
   CallResolveSearchTermFromContext(test_context_->AsWeakPtr());
   DestroyTestContext();
@@ -694,7 +697,8 @@ TEST_F(ContextualSearchDelegateTest, DestroyContextDuringResolve) {
 }
 
 // Test that we can destroy the context while gathering surrounding text.
-TEST_F(ContextualSearchDelegateTest, DestroyContextDuringGatherSurroundings) {
+TEST_F(ContextualSearchDelegateImplTest,
+       DestroyContextDuringGatherSurroundings) {
   CreateTestContext();
   base::WeakPtr<ContextualSearchContext> weak_context =
       test_context_->AsWeakPtr();
@@ -702,7 +706,7 @@ TEST_F(ContextualSearchDelegateTest, DestroyContextDuringGatherSurroundings) {
   CallOnTextSurroundingSelectionAvailable(weak_context);
 }
 
-TEST_F(ContextualSearchDelegateTest, ResponseWithCocaCardTag) {
+TEST_F(ContextualSearchDelegateImplTest, ResponseWithCocaCardTag) {
   CreateDefaultSearchContextAndRequestSearchTerm();
   std::string response(
       "{\"search_term\":\"obscure\","
@@ -712,7 +716,7 @@ TEST_F(ContextualSearchDelegateTest, ResponseWithCocaCardTag) {
   EXPECT_EQ(11, coca_card_tag());
 }
 
-TEST_F(ContextualSearchDelegateTest, ResponseWithoutCocaCardTag) {
+TEST_F(ContextualSearchDelegateImplTest, ResponseWithoutCocaCardTag) {
   CreateDefaultSearchContextAndRequestSearchTerm();
   std::string response("{\"search_term\":\"obscure\"}");
   SimulateResponseReturned(response);
@@ -720,7 +724,7 @@ TEST_F(ContextualSearchDelegateTest, ResponseWithoutCocaCardTag) {
   EXPECT_EQ(0, coca_card_tag());
 }
 
-TEST_F(ContextualSearchDelegateTest, ResponseWithStringCocaCardTag) {
+TEST_F(ContextualSearchDelegateImplTest, ResponseWithStringCocaCardTag) {
   CreateDefaultSearchContextAndRequestSearchTerm();
   std::string response(
       "{\"search_term\":\"obscure\","
@@ -730,7 +734,7 @@ TEST_F(ContextualSearchDelegateTest, ResponseWithStringCocaCardTag) {
   EXPECT_EQ(0, coca_card_tag());
 }
 
-TEST_F(ContextualSearchDelegateTest, ResponseWithRelatedSearches) {
+TEST_F(ContextualSearchDelegateImplTest, ResponseWithRelatedSearches) {
   CreateDefaultSearchContextAndRequestSearchTerm();
   // Although this JSON is a reasonable sample of expected content the nested
   // JSON for the suggestions is not parsed in native code.
@@ -745,7 +749,7 @@ TEST_F(ContextualSearchDelegateTest, ResponseWithRelatedSearches) {
               std::string::npos);
 }
 
-TEST_F(ContextualSearchDelegateTest, ResponseWithEmptyRelatedSearches) {
+TEST_F(ContextualSearchDelegateImplTest, ResponseWithEmptyRelatedSearches) {
   CreateDefaultSearchContextAndRequestSearchTerm();
   // A response without a related searches tag.
   std::string response("{\"no_suggestions_tag\":\"test\"}");

@@ -10,8 +10,9 @@ static_library("browser") {
   sources = [
     "contextual_search_context.cc",
     "contextual_search_context.h",
-    "contextual_search_delegate.cc",
     "contextual_search_delegate.h",
+    "contextual_search_delegate_impl.cc",
+    "contextual_search_delegate_impl.h",
     "contextual_search_field_trial.cc",
     "contextual_search_field_trial.h",
     "public.cc",
@@ -46,7 +47,7 @@ if (is_android) {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "contextual_search_delegate_unittest.cc",
+    "contextual_search_delegate_impl_unittest.cc",
     "contextual_search_field_trial_unittest.cc",
   ]
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/contextual_search/core/browser/contextual_search_delegate.h"
+#include "components/contextual_search/core/browser/contextual_search_delegate_impl.h"
 
 #include <algorithm>
 #include <memory>
@@ -23,6 +23,7 @@
 #include "components/variations/net/variations_http_headers.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -59,9 +60,9 @@ const char kActionCategoryPhone[] = "PHONE";
 const char kActionCategoryWebsite[] = "WEBSITE";
 
 const char kContextualSearchServerEndpoint[] = "_/contextualsearch?";
-const int kContextualSearchRequestVersion = 2;
-// Deprecated: kContextualSearchSingleRequest = 3;
-const int kRelatedSearchesVersion = 4;
+const int kContextualSearchRequestCtxsVersion = 2;
+const int kDesktopPartialTranslateCtxsVersion = 3;
+const int kRelatedSearchesCtxsVersion = 4;
 
 const int kContextualSearchMaxSelection = 1000;
 const char kXssiEscape[] = ")]}'\n";
@@ -101,23 +102,23 @@ const net::HttpRequestHeaders GetDiscourseContext(
 }  // namespace
 
 // Handles tasks for the ContextualSearchManager in a separable, testable way.
-ContextualSearchDelegate::ContextualSearchDelegate(
+ContextualSearchDelegateImpl::ContextualSearchDelegateImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     TemplateURLService* template_url_service)
     : url_loader_factory_(std::move(url_loader_factory)),
       template_url_service_(template_url_service),
       field_trial_(std::make_unique<ContextualSearchFieldTrial>()) {}
 
-ContextualSearchDelegate::~ContextualSearchDelegate() = default;
+ContextualSearchDelegateImpl::~ContextualSearchDelegateImpl() = default;
 
-void ContextualSearchDelegate::GatherAndSaveSurroundingText(
+void ContextualSearchDelegateImpl::GatherAndSaveSurroundingText(
     base::WeakPtr<ContextualSearchContext> context,
     content::WebContents* web_contents,
     SurroundingTextCallback callback) {
   DCHECK(web_contents);
   blink::mojom::LocalFrame::GetTextSurroundingSelectionCallback
       get_text_callback = base::BindOnce(
-          &ContextualSearchDelegate::OnTextSurroundingSelectionAvailable,
+          &ContextualSearchDelegateImpl::OnTextSurroundingSelectionAvailable,
           AsWeakPtr(), context, callback);
   if (!context)
     return;
@@ -135,7 +136,7 @@ void ContextualSearchDelegate::GatherAndSaveSurroundingText(
   }
 }
 
-void ContextualSearchDelegate::StartSearchTermResolutionRequest(
+void ContextualSearchDelegateImpl::StartSearchTermResolutionRequest(
     base::WeakPtr<ContextualSearchContext> context,
     content::WebContents* web_contents,
     SearchTermResolutionCallback callback) {
@@ -157,7 +158,7 @@ void ContextualSearchDelegate::StartSearchTermResolutionRequest(
   ResolveSearchTermFromContext(context, std::move(callback));
 }
 
-void ContextualSearchDelegate::ResolveSearchTermFromContext(
+void ContextualSearchDelegateImpl::ResolveSearchTermFromContext(
     base::WeakPtr<ContextualSearchContext> context,
     SearchTermResolutionCallback callback) {
   DCHECK(context);
@@ -216,11 +217,11 @@ void ContextualSearchDelegate::ResolveSearchTermFromContext(
 
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
-      base::BindOnce(&ContextualSearchDelegate::OnUrlLoadComplete,
+      base::BindOnce(&ContextualSearchDelegateImpl::OnUrlLoadComplete,
                      base::Unretained(this), context, std::move(callback)));
 }
 
-void ContextualSearchDelegate::OnUrlLoadComplete(
+void ContextualSearchDelegateImpl::OnUrlLoadComplete(
     base::WeakPtr<ContextualSearchContext> context,
     SearchTermResolutionCallback callback,
     std::unique_ptr<std::string> response_body) {
@@ -242,7 +243,7 @@ void ContextualSearchDelegate::OnUrlLoadComplete(
 }
 
 std::unique_ptr<ResolvedSearchTerm>
-ContextualSearchDelegate::GetResolvedSearchTermFromJson(
+ContextualSearchDelegateImpl::GetResolvedSearchTermFromJson(
     const ContextualSearchContext& context,
     int response_code,
     const std::string& json_string) {
@@ -297,7 +298,7 @@ ContextualSearchDelegate::GetResolvedSearchTermFromJson(
       related_searches_json);
 }
 
-std::string ContextualSearchDelegate::BuildRequestUrl(
+std::string ContextualSearchDelegateImpl::BuildRequestUrl(
     ContextualSearchContext* context) {
   if (!template_url_service_ ||
       !template_url_service_->GetDefaultSearchProvider()) {
@@ -324,9 +325,18 @@ std::string ContextualSearchDelegate::BuildRequestUrl(
     contextual_cards_version = field_trial_->GetContextualCardsVersion();
   }
 
-  int mainFunctionVersion = kContextualSearchRequestVersion;
-  if (context->GetRelatedSearches())
-    mainFunctionVersion = kRelatedSearchesVersion;
+  int mainFunctionVersion;
+  switch (context->GetRequestType()) {
+    case ContextualSearchContext::RequestType::CONTEXTUAL_SEARCH:
+      mainFunctionVersion = kContextualSearchRequestCtxsVersion;
+      break;
+    case ContextualSearchContext::RequestType::RELATED_SEARCHES:
+      mainFunctionVersion = kRelatedSearchesCtxsVersion;
+      break;
+    case ContextualSearchContext::RequestType::PARTIAL_TRANSLATE:
+      mainFunctionVersion = kDesktopPartialTranslateCtxsVersion;
+      break;
+  }
 
   TemplateURLRef::SearchTermsArgs::ContextualSearchParams params(
       mainFunctionVersion, contextual_cards_version, context->GetHomeCountry(),
@@ -357,7 +367,7 @@ std::string ContextualSearchDelegate::BuildRequestUrl(
   return request;
 }
 
-void ContextualSearchDelegate::OnTextSurroundingSelectionAvailable(
+void ContextualSearchDelegateImpl::OnTextSurroundingSelectionAvailable(
     base::WeakPtr<ContextualSearchContext> context,
     SurroundingTextCallback callback,
     const std::u16string& surrounding_text,
@@ -400,7 +410,7 @@ void ContextualSearchDelegate::OnTextSurroundingSelectionAvailable(
 
 // Decodes the given response from the search term resolution request and sets
 // the value of the given parameters.
-void ContextualSearchDelegate::DecodeSearchTermFromJsonResponse(
+void ContextualSearchDelegateImpl::DecodeSearchTermFromJsonResponse(
     const std::string& response,
     std::string* search_term,
     std::string* display_text,
@@ -528,7 +538,7 @@ void ContextualSearchDelegate::DecodeSearchTermFromJsonResponse(
 
 // Extract the Start/End of the mentions in the surrounding text
 // for selection-expansion.
-void ContextualSearchDelegate::ExtractMentionsStartEnd(
+void ContextualSearchDelegateImpl::ExtractMentionsStartEnd(
     const base::Value::List& mentions_list,
     int* start_result,
     int* end_result) const {
@@ -538,7 +548,7 @@ void ContextualSearchDelegate::ExtractMentionsStartEnd(
     *end_result = std::max(0, mentions_list[1].GetInt());
 }
 
-std::u16string ContextualSearchDelegate::SampleSurroundingText(
+std::u16string ContextualSearchDelegateImpl::SampleSurroundingText(
     const std::u16string& surrounding_text,
     int padding_each_side,
     size_t* start,

@@ -116,9 +116,24 @@ struct ContextualSearchContext
     return translation_languages_;
   }
 
-  // Returns whether this request should include Related Searches in the
-  // response.
-  bool GetRelatedSearches() const { return do_related_searches_; }
+  // Indicates the type of request that is being made to the Contextual Search
+  // service.
+  enum class RequestType {
+    // A base contextual search request.
+    CONTEXTUAL_SEARCH,
+    // A contextual search request that also includes information around related
+    // searches.
+    RELATED_SEARCHES,
+    // A request to translate a selection of text, used by the Partial Translate
+    // functionality on desktop.
+    PARTIAL_TRANSLATE,
+  };
+
+  // Gets the type of request that the context was collected for.
+  RequestType GetRequestType() const { return request_type_; }
+  void SetRequestType(RequestType request_type) {
+    request_type_ = request_type;
+  }
 
   // Get the logging information stamp for Related Searches requests or the
   // empty string if the feature is not enabled.
@@ -135,6 +150,7 @@ struct ContextualSearchContext
   std::u16string GetSelection() const;
 
   bool can_resolve_ = false;
+  RequestType request_type_ = RequestType::CONTEXTUAL_SEARCH;
   bool can_send_base_page_url_ = false;
   std::string home_country_;
   GURL base_page_url_;
@@ -146,7 +162,6 @@ struct ContextualSearchContext
   int previous_event_results_ = 0;
   bool is_exact_resolve_ = false;
   TranslationLanguages translation_languages_;
-  bool do_related_searches_ = false;
   std::string related_searches_stamp_;
 };
 
