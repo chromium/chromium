@@ -7,6 +7,7 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/updater/updater_branding.h"
@@ -45,7 +46,8 @@ TEST(UpdaterTest, UpdaterExitCode) {
   auto process = base::LaunchProcess(command_line, options);
   ASSERT_TRUE(process.IsValid());
   int exit_code = -1;
-  EXPECT_TRUE(process.WaitForExitWithTimeout(base::Seconds(60), &exit_code));
+  EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
+                                             &exit_code));
   EXPECT_EQ(0, exit_code);
 }
 

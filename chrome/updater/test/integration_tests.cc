@@ -454,8 +454,10 @@ TEST_F(IntegrationTest, ReportsActive) {
   // A longer than usual timeout is needed for this test because the macOS
   // UpdateServiceInternal server takes at least 10 seconds to shut down after
   // Install, and InstallApp cannot make progress until it shut downs and
-  // releases the global prefs lock. We give it at most 18 seconds to be safe.
-  base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(18));
+  // releases the global prefs lock.
+  EXPECT_GE(TestTimeouts::action_timeout(), base::Seconds(18));
+  base::test::ScopedRunLoopTimeout timeout(FROM_HERE,
+                                           TestTimeouts::action_timeout());
 
   ScopedServer test_server(test_commands_);
   Install();

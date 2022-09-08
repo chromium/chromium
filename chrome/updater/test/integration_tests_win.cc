@@ -1206,7 +1206,8 @@ int RunVPythonCommand(const base::CommandLine& command_line) {
   int exit_code = -1;
   base::Process process = base::LaunchProcess(python_command, {});
   EXPECT_TRUE(process.IsValid());
-  EXPECT_TRUE(process.WaitForExitWithTimeout(base::Seconds(60), &exit_code));
+  EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
+                                             &exit_code));
   return exit_code;
 }
 
@@ -1287,7 +1288,8 @@ void RunUninstallCmdLine(UpdaterScope scope) {
   EXPECT_TRUE(process.IsValid());
 
   int exit_code = 0;
-  EXPECT_TRUE(process.WaitForExitWithTimeout(base::Seconds(45), &exit_code));
+  EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
+                                             &exit_code));
   EXPECT_EQ(0, exit_code);
 }
 
