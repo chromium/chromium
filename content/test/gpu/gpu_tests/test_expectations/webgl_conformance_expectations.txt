@@ -593,6 +593,9 @@ crbug.com/1136231 [ mac nvidia-0xfe9 passthrough ] conformance/extensions/s3tc-a
 # Mac / Passthrough command decoder / OpenGL / NVIDIA
 crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/renderbuffers/framebuffer-object-attachment.html [ Failure ]
 crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/textures/misc/tex-input-validation.html [ Failure ]
+crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/textures/misc/texture-npot-video.html [ Slow ]
+crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/uniforms/uniform-samplers-test.html [ Slow ]
+crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ RetryOnFailure ]
 
 # Mac / Passthrough command decoder / Metal
 crbug.com/angleproject/4846 [ mac angle-metal passthrough ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ Failure ]
