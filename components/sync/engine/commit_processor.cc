@@ -22,7 +22,7 @@ CommitProcessor::CommitProcessor(ModelTypeSet commit_types,
                                  CommitContributorMap* commit_contributor_map)
     : commit_types_(commit_types),
       commit_contributor_map_(commit_contributor_map),
-      phase_(GatheringPhase::kPriority) {
+      phase_(GatheringPhase::kHighPriority) {
   // NIGORI contributions must be collected in every commit cycle.
   DCHECK(commit_types_.Has(NIGORI));
   DCHECK(commit_contributor_map);
@@ -41,7 +41,7 @@ Commit::ContributionMap CommitProcessor::GatherCommitContributions(
 
   // NIGORI contributions are always gathered to make sure that no encrypted
   // data gets committed before the corresponding NIGORI commit, which can
-  // otherwise leave to data loss if the commit fails partially.
+  // otherwise lead to data loss if the commit fails partially.
   size_t num_entries =
       GatherCommitContributionsForType(NIGORI, max_entries, &contributions);
   if (num_entries > 0) {
@@ -77,9 +77,11 @@ Commit::ContributionMap CommitProcessor::GatherCommitContributions(
 CommitProcessor::GatheringPhase CommitProcessor::IncrementGatheringPhase(
     GatheringPhase phase) {
   switch (phase) {
-    case GatheringPhase::kPriority:
+    case GatheringPhase::kHighPriority:
       return GatheringPhase::kRegular;
     case GatheringPhase::kRegular:
+      return GatheringPhase::kLowPriority;
+    case GatheringPhase::kLowPriority:
       return GatheringPhase::kDone;
     case GatheringPhase::kDone:
       NOTREACHED();
@@ -88,14 +90,15 @@ CommitProcessor::GatheringPhase CommitProcessor::IncrementGatheringPhase(
 }
 
 ModelTypeSet CommitProcessor::GetUserTypesForCurrentCommitPhase() const {
-  // TODO(crbug.com/1350983): Introduce kLowPriority for LowPriorityUserTypes(),
-  // and rename kPriority to kHighPriority.
   switch (phase_) {
-    case GatheringPhase::kPriority:
+    case GatheringPhase::kHighPriority:
       return Intersection(commit_types_, HighPriorityUserTypes());
     case GatheringPhase::kRegular:
-      return Difference(commit_types_,
-                        Union(HighPriorityUserTypes(), ModelTypeSet(NIGORI)));
+      return Difference(commit_types_, Union(Union(HighPriorityUserTypes(),
+                                                   LowPriorityUserTypes()),
+                                             ModelTypeSet(NIGORI)));
+    case GatheringPhase::kLowPriority:
+      return Intersection(commit_types_, LowPriorityUserTypes());
     case GatheringPhase::kDone:
       NOTREACHED();
       return ModelTypeSet();

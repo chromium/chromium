@@ -68,23 +68,29 @@ class CommitProcessorTest : public testing::Test {
       : contributor_map_{{NIGORI, &nigori_contributor_},
                          {SHARING_MESSAGE, &sharing_message_contributor_},
                          {BOOKMARKS, &bookmark_contributor_},
-                         {PREFERENCES, &preference_contributor_}},
-        processor_(/*commit_types=*/ModelTypeSet{NIGORI, SHARING_MESSAGE,
-                                                 BOOKMARKS, PREFERENCES},
-                   &contributor_map_) {
+                         {PREFERENCES, &preference_contributor_},
+                         {HISTORY, &history_contributor_}},
+        processor_(
+            /*commit_types=*/ModelTypeSet{NIGORI, SHARING_MESSAGE, BOOKMARKS,
+                                          PREFERENCES, HISTORY},
+            &contributor_map_) {
     EXPECT_TRUE(HighPriorityUserTypes().Has(SHARING_MESSAGE));
     EXPECT_FALSE(HighPriorityUserTypes().Has(BOOKMARKS));
     EXPECT_FALSE(HighPriorityUserTypes().Has(PREFERENCES));
+    EXPECT_TRUE(LowPriorityUserTypes().Has(HISTORY));
   }
 
   testing::NiceMock<MockCommitContributor> nigori_contributor_;
 
-  // A priority user type.
+  // A high-priority user type.
   testing::NiceMock<MockCommitContributor> sharing_message_contributor_;
 
   // Regular user types.
   testing::NiceMock<MockCommitContributor> bookmark_contributor_;
   testing::NiceMock<MockCommitContributor> preference_contributor_;
+
+  // A low-priority user type.
+  testing::NiceMock<MockCommitContributor> history_contributor_;
 
   CommitContributorMap contributor_map_;
   CommitProcessor processor_;
@@ -98,6 +104,7 @@ TEST_F(CommitProcessorTest, ShouldGatherNigoriOnlyContribution) {
   EXPECT_CALL(sharing_message_contributor_, GetContribution).Times(0);
   EXPECT_CALL(bookmark_contributor_, GetContribution).Times(0);
   EXPECT_CALL(preference_contributor_, GetContribution).Times(0);
+  EXPECT_CALL(history_contributor_, GetContribution).Times(0);
 
   EXPECT_THAT(processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
               UnorderedElementsAre(Pair(NIGORI, HasNumEntries(1))));
@@ -112,6 +119,7 @@ TEST_F(CommitProcessorTest, ShouldGatherHighPriorityUserTypesOnlyContribution) {
   // Non-priority user types shouldn't even be gathered.
   EXPECT_CALL(bookmark_contributor_, GetContribution).Times(0);
   EXPECT_CALL(preference_contributor_, GetContribution).Times(0);
+  EXPECT_CALL(history_contributor_, GetContribution).Times(0);
 
   EXPECT_THAT(processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
               UnorderedElementsAre(
@@ -135,9 +143,32 @@ TEST_F(CommitProcessorTest, ShouldGatherRegularUserTypes) {
   // verified in this test.
   EXPECT_CALL(preference_contributor_, GetContribution);
 
+  // Low-priority types should not be gathered.
+  EXPECT_CALL(history_contributor_, GetContribution).Times(0);
+
   EXPECT_THAT(processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
               UnorderedElementsAre(
                   Pair(BOOKMARKS, HasNumEntries(kNumReturnedBookmarks))));
+}
+
+TEST_F(CommitProcessorTest, ShouldGatherLowPriorityUserTypes) {
+  const int kNumReturnedHistory = 7;
+
+  // High-priority types and regular types should be gathered, but no entries
+  // are produced. Nigori is even gathered three times (once in each gathering
+  // phase).
+  EXPECT_CALL(nigori_contributor_, GetContribution(kMaxEntries)).Times(3);
+  EXPECT_CALL(sharing_message_contributor_, GetContribution(kMaxEntries));
+  EXPECT_CALL(bookmark_contributor_, GetContribution(kMaxEntries));
+  EXPECT_CALL(preference_contributor_, GetContribution(kMaxEntries));
+
+  // Return |kNumReturnedHistory| history entries.
+  EXPECT_CALL(history_contributor_, GetContribution(kMaxEntries))
+      .WillOnce(ReturnContributionWithEntries(kNumReturnedHistory));
+
+  EXPECT_THAT(
+      processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
+      UnorderedElementsAre(Pair(HISTORY, HasNumEntries(kNumReturnedHistory))));
 }
 
 TEST_F(CommitProcessorTest, ShouldGatherMultipleRegularUserTypes) {
@@ -151,13 +182,15 @@ TEST_F(CommitProcessorTest, ShouldGatherMultipleRegularUserTypes) {
   EXPECT_CALL(preference_contributor_, GetContribution)
       .WillOnce(ReturnContributionWithEntries(kNumReturnedPreferences));
 
+  EXPECT_CALL(history_contributor_, GetContribution).Times(0);
+
   EXPECT_THAT(processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
               UnorderedElementsAre(
                   Pair(BOOKMARKS, HasNumEntries(kNumReturnedBookmarks)),
                   Pair(PREFERENCES, HasNumEntries(kNumReturnedPreferences))));
 }
 
-TEST_F(CommitProcessorTest, ShouldContinueGatheringPriorityContributions) {
+TEST_F(CommitProcessorTest, ShouldContinueGatheringHighPriorityContributions) {
   const int kNumReturnedSharingMessages = 3;
 
   // First, return |kMaxEntries| sharing messages.
@@ -167,12 +200,14 @@ TEST_F(CommitProcessorTest, ShouldContinueGatheringPriorityContributions) {
   // Non-priority user types shouldn't even be gathered.
   EXPECT_CALL(bookmark_contributor_, GetContribution).Times(0);
   EXPECT_CALL(preference_contributor_, GetContribution).Times(0);
+  EXPECT_CALL(history_contributor_, GetContribution).Times(0);
 
   EXPECT_THAT(
       processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
       UnorderedElementsAre(Pair(SHARING_MESSAGE, HasNumEntries(kMaxEntries))));
 
-  // Now, return only |kNumReturnedSharingMessages| bookmarks (all that's left).
+  // Now, return only |kNumReturnedSharingMessages| sharing messages (all that's
+  // left).
   EXPECT_CALL(sharing_message_contributor_, GetContribution)
       .WillOnce(ReturnContributionWithEntries(kNumReturnedSharingMessages));
 
@@ -184,10 +219,13 @@ TEST_F(CommitProcessorTest, ShouldContinueGatheringPriorityContributions) {
   // There are no contributions left, do not return any further and do not even
   // call the contributor.
   EXPECT_CALL(sharing_message_contributor_, GetContribution).Times(0);
-  // At the same time, the other contributors should get called now (don't
+  // At the same time, the regular contributors should get called now (don't
   // return anything in this test).
   EXPECT_CALL(bookmark_contributor_, GetContribution).Times(1);
   EXPECT_CALL(preference_contributor_, GetContribution).Times(1);
+  // Since the regular contributors returned nothing, the low-priority
+  // contributors should also be called (but also don't return anything).
+  EXPECT_CALL(history_contributor_, GetContribution).Times(1);
 
   EXPECT_THAT(processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
               IsEmpty());
@@ -220,6 +258,32 @@ TEST_F(CommitProcessorTest, ShouldContinueGatheringRegularContributions) {
               IsEmpty());
 }
 
+TEST_F(CommitProcessorTest, ShouldContinueGatheringLowPriorityContributions) {
+  const int kNumReturnedHistory = 7;
+
+  // First, return |kMaxEntries| history entries.
+  EXPECT_CALL(history_contributor_, GetContribution(kMaxEntries))
+      .WillOnce(ReturnContributionWithEntries(kMaxEntries));
+
+  EXPECT_THAT(processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
+              UnorderedElementsAre(Pair(HISTORY, HasNumEntries(kMaxEntries))));
+
+  // Now, return only |kNumReturnedHistory| entries (all that's left).
+  EXPECT_CALL(history_contributor_, GetContribution)
+      .WillOnce(ReturnContributionWithEntries(kNumReturnedHistory));
+
+  EXPECT_THAT(
+      processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
+      UnorderedElementsAre(Pair(HISTORY, HasNumEntries(kNumReturnedHistory))));
+
+  // There are no contributions left, do not return any further and do not even
+  // call the contributor.
+  EXPECT_CALL(history_contributor_, GetContribution).Times(0);
+
+  EXPECT_THAT(processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
+              IsEmpty());
+}
+
 TEST_F(CommitProcessorTest,
        ShouldContinueGatheringRegularContributionsIfMatchingMaxEntries) {
   // Return |kMaxEntries| bookmarks.
@@ -239,12 +303,13 @@ TEST_F(CommitProcessorTest,
               IsEmpty());
 }
 
-TEST_F(CommitProcessorTest, ShouldGatherFirstPriorityThenOtherUserTypes) {
+TEST_F(CommitProcessorTest, ShouldGatherInPriorityOrder) {
   const int kNumReturnedSharingMessages = 3;
   const int kNumReturnedBookmarks = 7;
   const int kNumReturnedPreferences = 8;
+  const int kNumReturnedHistory = 9;
 
-  // All three types have non-zero contributions.
+  // All four types have non-zero contributions.
   EXPECT_CALL(sharing_message_contributor_, GetContribution(kMaxEntries))
       .WillOnce(ReturnContributionWithEntries(kNumReturnedSharingMessages))
       .RetiresOnSaturation();
@@ -252,6 +317,8 @@ TEST_F(CommitProcessorTest, ShouldGatherFirstPriorityThenOtherUserTypes) {
       .WillOnce(ReturnContributionWithEntries(kNumReturnedBookmarks));
   EXPECT_CALL(preference_contributor_, GetContribution)
       .WillOnce(ReturnContributionWithEntries(kNumReturnedPreferences));
+  EXPECT_CALL(history_contributor_, GetContribution)
+      .WillOnce(ReturnContributionWithEntries(kNumReturnedHistory));
 
   // The first call should return only the priority types.
   EXPECT_THAT(
@@ -264,11 +331,20 @@ TEST_F(CommitProcessorTest, ShouldGatherFirstPriorityThenOtherUserTypes) {
   EXPECT_CALL(sharing_message_contributor_, GetContribution(kMaxEntries))
       .Times(0);
 
-  // The second call should return all the other types.
+  // The second call should return all the regular types.
   EXPECT_THAT(processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
               UnorderedElementsAre(
                   Pair(BOOKMARKS, HasNumEntries(kNumReturnedBookmarks)),
                   Pair(PREFERENCES, HasNumEntries(kNumReturnedPreferences))));
+
+  // All regular contributions were gathered; no further calls should happen.
+  EXPECT_CALL(bookmark_contributor_, GetContribution(kMaxEntries)).Times(0);
+  EXPECT_CALL(preference_contributor_, GetContribution(kMaxEntries)).Times(0);
+
+  // The third call should return the low-priority types i.e. HISTORY.
+  EXPECT_THAT(
+      processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
+      UnorderedElementsAre(Pair(HISTORY, HasNumEntries(kNumReturnedHistory))));
 }
 
 }  // namespace
