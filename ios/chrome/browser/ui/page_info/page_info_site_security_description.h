@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_PAGE_INFO_PAGE_INFO_SITE_SECURITY_DESCRIPTION_H_
 #define IOS_CHROME_BROWSER_UI_PAGE_INFO_PAGE_INFO_SITE_SECURITY_DESCRIPTION_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 // Config for the information displayed by the page info Site Security section.
 @interface PageInfoSiteSecurityDescription : NSObject
@@ -13,7 +13,8 @@
 @property(nonatomic, copy) NSString* siteURL;
 @property(nonatomic, copy) NSString* status;
 @property(nonatomic, copy) NSString* message;
-@property(nonatomic, copy) NSString* iconImageName;
+@property(nonatomic, strong) UIImage* iconImage;
+@property(nonatomic, strong) UIColor* iconBackgroundColor;
 @property(nonatomic, assign) BOOL isEmpty;
 
 @end

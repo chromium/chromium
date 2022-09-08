@@ -79,6 +79,7 @@ NSString* const kPlusSymbol = @"plus";
 NSString* const kSearchSymbol = @"magnifyingglass";
 NSString* const kCheckmarkSymbol = @"checkmark";
 NSString* const kArrowDownCircleFillSymbol = @"arrow.down.circle.fill";
+NSString* const kSecureSymbol = @"lock";
 NSString* const kWarningSymbol = @"exclamationmark.triangle";
 NSString* const kWarningFillSymbol = @"exclamationmark.triangle.fill";
 NSString* const kHelpFillSymbol = @"questionmark.circle";
@@ -89,6 +90,8 @@ NSString* const kTrashSymbol = @"trash";
 NSString* const kInfoCircleSymbol = @"info.circle";
 NSString* const kClockArrowSymbol = @"clock.arrow.circlepath";
 NSString* const kWifiSymbol = @"wifi";
+
+const CGFloat kColorfulBackgroundSymbolCornerRadius = 7;
 
 UIImage* DefaultSymbolWithConfiguration(NSString* symbol_name,
                                         UIImageConfiguration* configuration) {

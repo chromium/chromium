@@ -778,7 +778,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     defaultBrowser.iconImage = DefaultSettingsRootSymbol(kDefaultBrowserSymbol);
     defaultBrowser.iconBackgroundColor = [UIColor colorNamed:kPurple500Color];
     defaultBrowser.iconTintColor = UIColor.whiteColor;
-    defaultBrowser.iconCornerRadius = kSettingsIconBackgroundCornerRadius;
+    defaultBrowser.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
   } else {
     defaultBrowser.iconImage =
         [UIImage imageNamed:kDefaultBrowserWorldImageName];
@@ -1148,7 +1148,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
           [UIColor colorNamed:kOrange500Color];
       _managedFeedSettingsItem.iconTintColor = UIColor.whiteColor;
       _managedFeedSettingsItem.iconCornerRadius =
-          kSettingsIconBackgroundCornerRadius;
+          kColorfulBackgroundSymbolCornerRadius;
     } else {
       _managedFeedSettingsItem.iconImage =
           [UIImage imageNamed:kSettingsArticleSuggestionsImageName];
@@ -1214,7 +1214,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   detailItem.iconImage = symbol;
   detailItem.iconBackgroundColor = backgroundColor;
   detailItem.iconTintColor = UIColor.whiteColor;
-  detailItem.iconCornerRadius = kSettingsIconBackgroundCornerRadius;
+  detailItem.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
   return detailItem;
 }
 
@@ -1748,7 +1748,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
         googleSyncItem.iconImage = DefaultSettingsRootSymbol(kSyncErrorSymbol);
         googleSyncItem.iconBackgroundColor = UIColor.redColor;
         googleSyncItem.iconTintColor = UIColor.whiteColor;
-        googleSyncItem.iconCornerRadius = kSettingsIconBackgroundCornerRadius;
+        googleSyncItem.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
 
       } else {
         googleSyncItem.iconImage = [UIImage imageNamed:kSyncOffImageName];
@@ -1764,7 +1764,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
             CustomSettingsRootSymbol(kSyncDisabledSymbol);
         googleSyncItem.iconBackgroundColor = [UIColor colorNamed:kGrey500Color];
         googleSyncItem.iconTintColor = UIColor.whiteColor;
-        googleSyncItem.iconCornerRadius = kSettingsIconBackgroundCornerRadius;
+        googleSyncItem.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
 
       } else {
         googleSyncItem.iconImage = [UIImage imageNamed:kSyncOffImageName];
@@ -1780,7 +1780,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
         googleSyncItem.iconImage = DefaultSettingsRootSymbol(kSyncErrorSymbol);
         googleSyncItem.iconBackgroundColor = [UIColor colorNamed:kRed500Color];
         googleSyncItem.iconTintColor = UIColor.whiteColor;
-        googleSyncItem.iconCornerRadius = kSettingsIconBackgroundCornerRadius;
+        googleSyncItem.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
 
       } else {
         googleSyncItem.iconImage = [UIImage imageNamed:kSyncErrorImageName];
@@ -1799,7 +1799,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
         googleSyncItem.iconBackgroundColor =
             [UIColor colorNamed:kGreen500Color];
         googleSyncItem.iconTintColor = UIColor.whiteColor;
-        googleSyncItem.iconCornerRadius = kSettingsIconBackgroundCornerRadius;
+        googleSyncItem.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
       } else {
         googleSyncItem.iconImage = [UIImage imageNamed:kSyncOnImageName];
       }

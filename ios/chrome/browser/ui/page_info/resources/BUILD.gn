@@ -44,14 +44,6 @@ imageset("security_icon_dangerous") {
   ]
 }
 
-imageset("security_icon_not_secure") {
-  sources = [
-    "security_icon_not_secure.imageset/Contents.json",
-    "security_icon_not_secure.imageset/security_icon_not_secure@2x.png",
-    "security_icon_not_secure.imageset/security_icon_not_secure@3x.png",
-  ]
-}
-
 imageset("security_icon_secure") {
   sources = [
     "security_icon_secure.imageset/Contents.json",

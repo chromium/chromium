@@ -10,6 +10,7 @@
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/commands/page_info_commands.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
 #import "ios/chrome/browser/ui/permissions/permission_info.h"
 #import "ios/chrome/browser/ui/permissions/permissions_constants.h"
@@ -125,8 +126,11 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
       [[TableViewDetailIconItem alloc] initWithType:ItemTypeSecurityHeader];
   securityHeader.text = l10n_util::GetNSString(IDS_IOS_PAGE_INFO_SITE_SECURITY);
   securityHeader.detailText = self.pageInfoSecurityDescription.status;
-  securityHeader.iconImage =
-      [UIImage imageNamed:self.pageInfoSecurityDescription.iconImageName];
+  securityHeader.iconImage = self.pageInfoSecurityDescription.iconImage;
+  securityHeader.iconTintColor = UIColor.whiteColor;
+  securityHeader.iconBackgroundColor =
+      self.pageInfoSecurityDescription.iconBackgroundColor;
+  securityHeader.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
   [self.tableViewModel addItem:securityHeader
        toSectionWithIdentifier:SectionIdentifierSecurityContent];
 
