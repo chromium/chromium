@@ -19,8 +19,12 @@ const char kChromeUITrustedAnnotatorUrl[] = "chrome://projector-annotator/";
 const char kChromeUIUntrustedAnnotatorUrl[] =
     "chrome-untrusted://projector-annotator/";
 
+// LINT.IfChange
 const char kChromeUITrustedProjectorSwaAppId[] =
     "nblbgfbmjfjaeonhjnbbkabkdploocij";
+// Also update the Projector app id in the file below.
+// LINT.ThenChange(
+// src/platform/tast-tests/src/chromiumos/tast/local/apps/apps.go)
 
 const base::FilePath::CharType kProjectorMetadataFileExtension[] =
     FILE_PATH_LITERAL(".projector");
