@@ -59,26 +59,6 @@ TEST_F(VariationsAssociatedDataTest, DisableImmediately) {
   }
 }
 
-// Test that successfully associating the FieldTrial with some ID, and then
-// disabling the FieldTrial actually makes GetGoogleVariationID correctly
-// return the empty ID.
-TEST_F(VariationsAssociatedDataTest, DisableAfterInitialization) {
-  const std::string default_name = "default";
-  const std::string non_default_name = "non_default";
-
-  scoped_refptr<base::FieldTrial> trial(
-      CreateFieldTrial("trial", 100, default_name));
-
-  trial->AppendGroup(non_default_name, 100);
-  AssociateGoogleVariationID(GOOGLE_APP, trial->trial_name(), default_name,
-                             TEST_VALUE_A);
-  AssociateGoogleVariationID(GOOGLE_APP, trial->trial_name(), non_default_name,
-                             TEST_VALUE_B);
-  trial->Disable();
-  ASSERT_EQ(default_name, trial->group_name());
-  ASSERT_EQ(TEST_VALUE_A, GetIDForTrial(GOOGLE_APP, trial.get()));
-}
-
 // Test various successful association cases.
 TEST_F(VariationsAssociatedDataTest, AssociateGoogleVariationID) {
   const std::string default_name1 = "default";

@@ -129,7 +129,7 @@ mojo::PendingRemote<mojom::Service> ServiceProcessLauncher::Start(
 
   // Use --force-field-trials to make the child process to create field trials.
   std::string field_trial_states;
-  base::FieldTrialList::AllStatesToString(&field_trial_states, false);
+  base::FieldTrialList::AllStatesToString(&field_trial_states);
   if (!field_trial_states.empty()) {
     DCHECK(!child_command_line->HasSwitch(::switches::kForceFieldTrials));
     child_command_line->AppendSwitchASCII(::switches::kForceFieldTrials,

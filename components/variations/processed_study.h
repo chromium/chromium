@@ -45,7 +45,7 @@ class COMPONENT_EXPORT(VARIATIONS) ProcessedStudy {
   ProcessedStudy(const ProcessedStudy& other);
   ~ProcessedStudy();
 
-  bool Init(const Study* study, bool is_expired);
+  bool Init(const Study* study);
 
   const Study* study() const { return study_; }
 
@@ -56,8 +56,6 @@ class COMPONENT_EXPORT(VARIATIONS) ProcessedStudy {
   bool all_assignments_to_one_group() const {
     return all_assignments_to_one_group_;
   }
-
-  bool is_expired() const { return is_expired_; }
 
   const std::vector<std::string>& associated_features() const {
     return associated_features_;
@@ -80,9 +78,6 @@ class COMPONENT_EXPORT(VARIATIONS) ProcessedStudy {
 
   // Whether all assignments are to a single group.
   bool all_assignments_to_one_group_ = false;
-
-  // Whether the study is expired.
-  bool is_expired_ = false;
 
   // A list of feature names associated with this study by default. Studies
   // might have groups that do not specify any feature associations – this is

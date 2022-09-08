@@ -38,7 +38,7 @@ TEST(ChildProcessFieldTrialSyncerTest, FieldTrialState) {
   trial1->Activate();
 
   std::string states_string;
-  base::FieldTrialList::AllStatesToString(&states_string, false);
+  base::FieldTrialList::AllStatesToString(&states_string);
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kForceFieldTrials, states_string);

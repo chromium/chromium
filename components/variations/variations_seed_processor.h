@@ -69,8 +69,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
   // (Otherwise, forcing_flag and variation_id are mutually exclusive.)
   bool AllowVariationIdWithForcingFlag(const Study& study);
 
-  // Creates and registers a field trial from the |processed_study| data.
-  // Disables the trial if |processed_study.is_expired| is true. Uses
+  // Creates and registers a field trial from the |processed_study| data. Uses
   // |low_entropy_provider| if ShouldStudyUseLowEntropy returns true for the
   // study.
   void CreateTrialFromStudy(

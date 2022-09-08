@@ -188,12 +188,6 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   FieldTrial(const FieldTrial&) = delete;
   FieldTrial& operator=(const FieldTrial&) = delete;
 
-  // Disables this trial, meaning the default group is always selected. May be
-  // called immediately after construction or at any time after initialization;
-  // however, it cannot be called after group(). Once disabled, there is no way
-  // to re-enable a trial.
-  void Disable();
-
   // Establishes the name and probability of the next group in this trial.
   // Sometimes, based on construction randomization, this call may cause the
   // provided group to be *THE* group selected for use in this instance.
@@ -324,13 +318,8 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   bool GetActiveGroup(ActiveGroup* active_group) const;
 
   // Returns the trial name and selected group name for this field trial via
-  // the output parameter |field_trial_state| for all the studies when
-  // |include_disabled| is true. In case when |include_disabled| is false, if
-  // the trial has not been disabled true is returned and |field_trial_state|
-  // is filled in; otherwise, the result is false and |field_trial_state| is
-  // left untouched.
-  bool GetStateWhileLocked(PickleState* field_trial_state,
-                           bool include_disabled);
+  // the output parameter |field_trial_state| for all the studies.
+  void GetStateWhileLocked(PickleState* field_trial_state);
 
   // Returns the group_name. A winner need not have been chosen.
   const std::string& group_name_internal() const { return group_name_; }
@@ -363,10 +352,6 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   // A textual name for the randomly selected group. Valid after |group()|
   // has been called.
   std::string group_name_;
-
-  // When enable_field_trial_ is false, field trial reverts to the 'default'
-  // group.
-  bool enable_field_trial_;
 
   // When forced_ is true, we return the chosen group from AppendGroup when
   // appropriate.
@@ -488,21 +473,20 @@ class BASE_EXPORT FieldTrialList {
   // resurrection in another process. This allows randomization to be done in
   // one process, and secondary processes can be synchronized on the result.
   // The resulting string contains the name and group name pairs of all
-  // registered FieldTrials including disabled based on |include_disabled|,
+  // registered FieldTrials,
   // with "/" used to separate all names and to terminate the string. All
   // activated trials have their name prefixed with "*". This string is parsed
   // by |CreateTrialsFromString()|.
-  static void AllStatesToString(std::string* output, bool include_disabled);
+  static void AllStatesToString(std::string* output);
 
   // Creates a persistent representation of all FieldTrial params for
   // resurrection in another process. The returned string contains the trial
-  // name and group name pairs of all registered FieldTrials including disabled
-  // based on |include_disabled| separated by '.'. The pair is followed by ':'
-  // separator and list of param name and values separated by '/'. It also takes
-  // |encode_data_func| function pointer for encodeing special charactors.
-  // This string is parsed by |AssociateParamsFromString()|.
-  static std::string AllParamsToString(bool include_disabled,
-                                       EscapeDataFunc encode_data_func);
+  // name and group name pairs of all registered FieldTrials. The pair is
+  // followed by ':' separator and list of param name and values separated by
+  // '/'. It also takes |encode_data_func| function pointer for encodeing
+  // special charactors. This string is parsed by
+  // |AssociateParamsFromString()|.
+  static std::string AllParamsToString(EscapeDataFunc encode_data_func);
 
   // Fills in the supplied vector |active_groups| (which must be empty when
   // called) with a snapshot of all registered FieldTrials for which the group
