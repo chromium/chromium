@@ -38,7 +38,8 @@ SharedImageRepresentation::~SharedImageRepresentation() {
   CHECK(!has_scoped_access_) << "Destroying a SharedImageRepresentation with "
                                 "outstanding Scoped*Access objects.";
   if (manager_ && backing_->is_ref_counted()) {
-    manager_->OnRepresentationDestroyed(backing_->mailbox(), this);
+    manager_->OnRepresentationDestroyed(backing_.ExtractAsDangling()->mailbox(),
+                                        this);
   }
 }
 
