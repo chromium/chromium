@@ -9,12 +9,14 @@ source_set("coordinator") {
     "lens_coordinator.mm",
   ]
   deps = [
+    ":lens_entrypoint",
     "//ios/chrome/browser/browser_state:browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/url_loading",
     "//ios/public/provider/chrome/browser/lens:lens_api",
+    "//ios/web/public/navigation",
   ]
 }
 

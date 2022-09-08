@@ -4,9 +4,11 @@
 
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
+#import "url/url_constants.h"
 
-#include "base/bind.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#import "base/bind.h"
+#import "base/notreached.h"
+#import "base/threading/sequenced_task_runner_handle.h"
 
 #import <UIKit/UIKit.h>
 
@@ -39,16 +41,13 @@ bool IsLensSupported() {
   return false;
 }
 
-void GenerateLensWebURLForImage(
+web::NavigationManager::WebLoadParams GenerateLensLoadParamsForImage(
     UIImage* image,
-    ios::provider::LensWebURLCompletion completion) {
-  NSError* error = [NSError errorWithDomain:kTestLensProviderErrorDomain
-                                       code:kTestLensProviderErrorNotImplemented
-                                   userInfo:nil];
-  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                   base::BindOnce(^() {
-                                                     completion(nil, error);
-                                                   }));
+    LensEntrypoint entry_point,
+    bool is_incognito) {
+  // Lens is not supported for tests.
+  NOTREACHED() << "Lens is not supported.";
+  return web::NavigationManager::WebLoadParams({});
 }
 
 }  // namespace provider

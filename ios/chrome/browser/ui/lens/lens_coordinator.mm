@@ -9,10 +9,12 @@
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/search_image_with_lens_command.h"
+#import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "net/base/mac/url_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -55,13 +57,10 @@
 #pragma mark - Commands
 
 - (void)searchImageWithLens:(SearchImageWithLensCommand*)command {
-  __weak LensCoordinator* weakSelf = self;
-  ios::provider::GenerateLensWebURLForImage(
-      command.image, ^(NSURL* url, NSError* error) {
-        if (url != nil) {
-          [weakSelf openWebURL:net::GURLWithNSURL(url)];
-        }
-      });
+  const bool isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
+  [self openWebLoadParams:ios::provider::GenerateLensLoadParamsForImage(
+                              command.image, LensEntrypoint::ContextMenu,
+                              isIncognito)];
 }
 
 #pragma mark - ChromeLensControllerDelegate
@@ -74,22 +73,17 @@
   self.viewController = nil;
 }
 
-- (void)lensControllerDidSelectURL:(NSURL*)URL {
-  // Dismiss the Lens view controller.
-  if (self.baseViewController.presentedViewController == self.viewController) {
-    [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
-  }
-
-  self.viewController = nil;
-  [self openWebURL:net::GURLWithNSURL(URL)];
+- (void)lensControllerDidGenerateLoadParams:
+    (const web::NavigationManager::WebLoadParams&)params {
+  [self openWebLoadParams:params];
 }
 
 #pragma mark - Private
 
-- (void)openWebURL:(const GURL&)url {
+- (void)openWebLoadParams:(const web::NavigationManager::WebLoadParams&)params {
   if (!self.browser)
     return;
-  UrlLoadParams loadParams = UrlLoadParams::InNewTab(url);
+  UrlLoadParams loadParams = UrlLoadParams::InNewTab(params);
   loadParams.SetInBackground(NO);
   loadParams.in_incognito = self.browser->GetBrowserState()->IsOffTheRecord();
   loadParams.append_to = kCurrentTab;

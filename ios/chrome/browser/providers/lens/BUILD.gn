@@ -8,5 +8,6 @@ source_set("chromium_lens") {
   deps = [
     "//base",
     "//ios/public/provider/chrome/browser/lens:lens_api",
+    "//ios/web/public/navigation",
   ]
 }

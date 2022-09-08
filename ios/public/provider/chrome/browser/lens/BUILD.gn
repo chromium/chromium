@@ -8,6 +8,11 @@ source_set("lens_api") {
     "lens_api.h",
     "lens_configuration.h",
     "lens_configuration.mm",
+    "lens_query.h",
+    "lens_query.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/web/public/navigation:navigation",
+  ]
 }

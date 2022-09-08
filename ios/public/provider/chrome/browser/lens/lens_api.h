@@ -7,8 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/web/public/navigation/navigation_manager.h"
+
 @class LensConfiguration;
 @class UIViewController;
+enum class LensEntrypoint;
 
 // A delegate that can receive Lens events forwarded by a ChromeLensController.
 @protocol ChromeLensControllerDelegate <NSObject>
@@ -16,8 +19,10 @@
 // Called when the Lens view controller's dimiss button has been tapped.
 - (void)lensControllerDidTapDismissButton;
 
-// Called when a URL in the Lens view controller has been selected.
-- (void)lensControllerDidSelectURL:(NSURL*)url;
+// Called when the user selects an image and the Lens controller has prepared
+// `params` for loading a Lens web page.
+- (void)lensControllerDidGenerateLoadParams:
+    (const web::NavigationManager::WebLoadParams&)params;
 
 @end
 
@@ -28,17 +33,15 @@
 // A delegate that can receive Lens events forwarded by the controller.
 @property(nonatomic, weak) id<ChromeLensControllerDelegate> delegate;
 
-// Returns a Lens post-capture view controller for the given query image.
-- (UIViewController*)postCaptureViewControllerForImage:(UIImage*)image;
+// Returns an input selection UIViewController with the provided
+// web content frame.
+- (UIViewController*)inputSelectionViewControllerWithWebContentFrame:
+    (CGRect)webContentFrame;
 
 @end
 
 namespace ios {
 namespace provider {
-
-// Block invoked when the URL for Lens has been generated. Either
-// `url` or `error` is guaranteed to be non-nil.
-using LensWebURLCompletion = void (^)(NSURL* url, NSError* error);
 
 // Returns a controller for the given configuration that can facilitate
 // communication with the downstream Lens controller.
@@ -47,11 +50,12 @@ id<ChromeLensController> NewChromeLensController(LensConfiguration* config);
 // Returns whether Lens is supported for the current build.
 bool IsLensSupported();
 
-// Generates an URL for a Lens image search. The `completion` will
-// be invoked asynchronously in the calling sequence when the url
-// has been generated.
-void GenerateLensWebURLForImage(UIImage* image,
-                                LensWebURLCompletion completion);
+// Generates web load params for a Lens image search for the given
+// 'image' and 'entry_point'.
+web::NavigationManager::WebLoadParams GenerateLensLoadParamsForImage(
+    UIImage* image,
+    LensEntrypoint entry_point,
+    bool is_incognito);
 
 }  // namespace provider
 }  // namespace ios
