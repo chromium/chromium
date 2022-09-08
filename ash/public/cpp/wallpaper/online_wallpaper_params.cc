@@ -8,21 +8,20 @@
 #include <string>
 
 #include "components/account_id/account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash {
 
 OnlineWallpaperParams::OnlineWallpaperParams(
     const AccountId& in_account_id,
-    const absl::optional<uint64_t>& in_asset_id,
+    uint64_t in_asset_id,
     const GURL& in_url,
     const std::string& in_collection_id,
     WallpaperLayout in_layout,
     bool in_preview_mode,
     bool in_from_user,
     bool in_daily_refresh_enabled,
-    const absl::optional<uint64_t>& in_unit_id,
+    uint64_t in_unit_id,
     const std::vector<OnlineWallpaperVariant>& in_variants)
     : account_id(in_account_id),
       asset_id(in_asset_id),
@@ -50,14 +49,14 @@ std::ostream& operator<<(std::ostream& os,
                          const OnlineWallpaperParams& params) {
   os << "OnlineWallpaperParams:" << std::endl
      << "  account_id: " << params.account_id << std::endl
-     << "  asset_id: " << params.asset_id.value_or(-1) << std::endl
+     << "  asset_id: " << params.asset_id << std::endl
      << "  url: " << params.url << std::endl
      << "  collection_id: " << params.collection_id << std::endl
      << "  layout: " << params.layout << std::endl
      << "  preview_mode: " << params.preview_mode << std::endl
      << "  from_user: " << params.from_user << std::endl
      << "  daily_refresh_enabled: " << params.daily_refresh_enabled << std::endl
-     << "  unit_id: " << params.unit_id.value_or(-1) << std::endl
+     << "  unit_id: " << params.unit_id << std::endl
      << "  variants_size: " << params.variants.size() << std::endl;
   return os;
 }

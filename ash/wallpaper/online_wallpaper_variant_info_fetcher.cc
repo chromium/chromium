@@ -180,7 +180,7 @@ void OnlineWallpaperVariantInfoFetcher::FetchOnlineWallpaper(
                                   GURL(variant->raw_url), info.collection_id,
                                   info.layout, /*preview_mode=*/false,
                                   /*from_user=*/false, IsDaily(info),
-                                  info.unit_id, info.variants}));
+                                  info.unit_id.value(), info.variants}));
     return;
   }
 

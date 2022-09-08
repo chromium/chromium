@@ -478,7 +478,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectWallpaper(
 
   client->SetOnlineWallpaper(
       ash::OnlineWallpaperParams(
-          GetAccountId(profile_), absl::make_optional(image_asset_id),
+          GetAccountId(profile_), image_asset_id,
           GURL(it->second.image_url.spec()), it->second.collection_id,
           ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED, preview_mode,
           /*from_user=*/true,
