@@ -3027,6 +3027,13 @@ static ui::AXMode ComputeAXModeFromAXContexts(Vector<AXContext*> ax_contexts) {
   ui::AXMode ax_mode = 0;
   for (AXContext* context : ax_contexts)
     ax_mode |= context->GetAXMode();
+
+  if (!ax_contexts.IsEmpty()) {
+    DCHECK(!ax_mode.is_mode_off())
+        << "The computed AX mode was empty but there were > 0 AXContext "
+           "objects. A caller should have called RemoveAXContext().";
+  }
+
   return ax_mode;
 }
 
@@ -3053,6 +3060,12 @@ void Document::AddAXContext(AXContext* context) {
     ax_object_cache_ =
         AXObjectCache::Create(*this, ComputeAXModeFromAXContexts(ax_contexts_));
   }
+}
+
+void Document::AXContextModeChanged() {
+  DCHECK_GT(ax_contexts_.size(), 0u);
+  DCHECK(ax_object_cache_);
+  ax_object_cache_->SetAXMode(ComputeAXModeFromAXContexts(ax_contexts_));
 }
 
 void Document::RemoveAXContext(AXContext* context) {

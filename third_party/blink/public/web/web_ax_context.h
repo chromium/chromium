@@ -30,6 +30,8 @@ class WebAXContext {
 
   BLINK_EXPORT const ui::AXMode& GetAXMode() const;
 
+  BLINK_EXPORT void SetAXMode(const ui::AXMode&);
+
  private:
   std::unique_ptr<AXContext> private_;
 };

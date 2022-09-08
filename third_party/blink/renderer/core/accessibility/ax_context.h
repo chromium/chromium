@@ -39,9 +39,11 @@ class CORE_EXPORT AXContext {
 
   const ui::AXMode& GetAXMode() { return ax_mode_; }
 
+  void SetAXMode(const ui::AXMode&);
+
  protected:
   WeakPersistent<Document> document_;
-  const ui::AXMode ax_mode_;
+  ui::AXMode ax_mode_;
 };
 
 }  // namespace blink

@@ -36,4 +36,8 @@ const ui::AXMode& WebAXContext::GetAXMode() const {
   return private_->GetAXMode();
 }
 
+void WebAXContext::SetAXMode(const ui::AXMode& mode) {
+  private_->SetAXMode(mode);
+}
+
 }  // namespace blink

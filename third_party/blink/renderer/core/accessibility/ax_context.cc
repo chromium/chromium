@@ -40,4 +40,15 @@ Document* AXContext::GetDocument() {
   return document_;
 }
 
+void AXContext::SetAXMode(const ui::AXMode& mode) {
+  DCHECK(!mode.is_mode_off()) << "When turning off accessibility, call "
+                                 "document_->RemoveAXContext() instead.";
+  ax_mode_ = mode;
+  document_->AXContextModeChanged();
+
+  DCHECK_EQ(
+      ax_mode_.mode(),
+      document_->ExistingAXObjectCache()->GetAXMode().mode() & ax_mode_.mode());
+}
+
 }  // namespace blink

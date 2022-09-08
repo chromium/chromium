@@ -210,7 +210,15 @@ void RenderAccessibilityImpl::AccessibilityModeChanged(const ui::AXMode& mode) {
   ui::AXMode old_mode = GetAccessibilityMode();
   if (old_mode == mode)
     return;
+
+  // TODO(chrishtr): this should really be the final accessibility mode on the
+  // document, taking into account all AXContexts registered on it.
   tree_source_->SetAccessibilityMode(mode);
+
+  if (mode.is_mode_off())
+    ax_context_ = nullptr;
+  else
+    ax_context_->SetAXMode(mode);
 
   SetAccessibilityCrashKey(mode);
 

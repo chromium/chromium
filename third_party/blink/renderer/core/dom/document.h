@@ -1971,6 +1971,8 @@ class CORE_EXPORT Document : public ContainerNode,
   friend class AXContext;
   void AddAXContext(AXContext*);
   void RemoveAXContext(AXContext*);
+  // Called when the AXMode of an existing AXContext changes.
+  void AXContextModeChanged();
 
   bool IsDocumentFragment() const =
       delete;  // This will catch anyone doing an unnecessary check.
