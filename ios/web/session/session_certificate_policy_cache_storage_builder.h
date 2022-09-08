@@ -17,11 +17,11 @@ class SessionCertificatePolicyCacheImpl;
 // Class that converts between model objects and their serializable versions.
 class SessionCertificatePolicyCacheStorageBuilder {
  public:
-  // Creates a CRWSessionCertificatePolicyCacheStorage from |cache|.
+  // Creates a CRWSessionCertificatePolicyCacheStorage from `cache`.
   static CRWSessionCertificatePolicyCacheStorage* BuildStorage(
       const SessionCertificatePolicyCacheImpl& cache);
 
-  // Creates a SessionCertificatePolicyCache from |cache_storage|.
+  // Creates a SessionCertificatePolicyCache from `cache_storage`.
   static std::unique_ptr<SessionCertificatePolicyCacheImpl>
   BuildSessionCertificatePolicyCache(
       CRWSessionCertificatePolicyCacheStorage* cache_storage,

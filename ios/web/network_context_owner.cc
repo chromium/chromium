@@ -26,7 +26,7 @@ NetworkContextOwner::NetworkContextOwner(
   web::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&NetworkContextOwner::InitializeOnIOThread,
-                     // This is safe, since |this| will be deleted on the IO
+                     // This is safe, since `this` will be deleted on the IO
                      // thread, which would have to happen afterwards.
                      base::Unretained(this), cors_exempt_header_list,
                      network_context_client->BindNewPipeAndPassReceiver()));

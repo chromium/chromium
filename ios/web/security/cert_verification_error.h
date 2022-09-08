@@ -12,8 +12,8 @@
 namespace web {
 
 // Represents cert verification error, which happened inside
-// |webView:didReceiveAuthenticationChallenge:completionHandler:| and should be
-// checked inside |webView:didFailProvisionalNavigation:withError:|.
+// `webView:didReceiveAuthenticationChallenge:completionHandler:` and should be
+// checked inside `webView:didFailProvisionalNavigation:withError:`.
 struct CertVerificationError {
   CertVerificationError(bool is_recoverable, net::CertStatus status)
       : is_recoverable(is_recoverable), status(status) {}

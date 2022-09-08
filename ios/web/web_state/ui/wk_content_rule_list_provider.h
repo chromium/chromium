@@ -28,7 +28,7 @@ class WKContentRuleListProvider {
 
   // Updates and re-installs the Content Blocker rules using any new state.
   // This may be asynchronous if a rule list hasn't been compiled yet, so
-  // |callback| will be called after the mode is set. It will be called with
+  // `callback` will be called after the mode is set. It will be called with
   // true if the update is successful and false otherwise (most likely because
   // rules were updated again before the first set of rules was fully
   // installed).

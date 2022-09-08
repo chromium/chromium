@@ -29,7 +29,7 @@ typedef NS_ENUM(NSInteger, DeprecatedSerializationIndices) {
   DeprecatedSerializationIndexCount,
 };
 
-// Converts |certificate| to NSData for serialization.
+// Converts `certificate` to NSData for serialization.
 NSData* CertificateToNSData(net::X509Certificate* certificate) {
   base::StringPiece cert_string =
       net::x509_util::CryptoBufferAsStringPiece(certificate->cert_buffer());

@@ -147,8 +147,8 @@ const char kNavigationItemSerializedRequestHeadersSizeHistogram[] =
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
-  // Desktop Chrome doesn't persist |url_| or |originalUrl_|, only
-  // |virtualUrl_|. Chrome on iOS is persisting |url_|.
+  // Desktop Chrome doesn't persist `url_` or `originalUrl_`, only
+  // `virtualUrl_`. Chrome on iOS is persisting `url_`.
   int serializedSizeInBytes = 0;
   int serializedVirtualURLSizeInBytes = 0;
   if (_virtualURL != _URL) {

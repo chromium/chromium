@@ -26,7 +26,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
 
 namespace {
-// Synchronously checks |cache| for the specified cert and returns the judgment.
+// Synchronously checks `cache` for the specified cert and returns the judgment.
 web::CertPolicy::Judgment GetJudgmenet(
     const scoped_refptr<web::CertificatePolicyCache>& cache,
     const scoped_refptr<net::X509Certificate>& cert,

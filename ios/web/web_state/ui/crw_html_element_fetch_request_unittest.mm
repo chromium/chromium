@@ -19,19 +19,19 @@ namespace web {
 
 using CRWHTMLElementFetchRequestTest = PlatformTest;
 
-// Tests that |creationTime| is set at CRWHTMLElementFetchRequest object
+// Tests that `creationTime` is set at CRWHTMLElementFetchRequest object
 // creation.
 TEST_F(CRWHTMLElementFetchRequestTest, CreationTime) {
   CRWHTMLElementFetchRequest* request =
       [[CRWHTMLElementFetchRequest alloc] initWithFoundElementHandler:nil];
   base::TimeDelta delta = base::TimeTicks::Now() - request.creationTime;
-  // Validate that |request.creationTime| is "now", but only use second
+  // Validate that `request.creationTime` is "now", but only use second
   // precision to avoid performance induced test flake.
   EXPECT_GT(1, delta.InSeconds());
 }
 
-// Tests that |runHandlerWithResponse:| runs the handler from the object's
-// initializer with the expected |response|.
+// Tests that `runHandlerWithResponse:` runs the handler from the object's
+// initializer with the expected `response`.
 TEST_F(CRWHTMLElementFetchRequestTest, RunHandler) {
   __block bool handler_called = false;
   __block web::ContextMenuParams received_params;
@@ -49,8 +49,8 @@ TEST_F(CRWHTMLElementFetchRequestTest, RunHandler) {
   EXPECT_NSEQ(params.text, received_params.text);
 }
 
-// Tests that |runHandlerWithResponse:| does not run the handler from the
-// object's initializer if |invalidate| has been called.
+// Tests that `runHandlerWithResponse:` does not run the handler from the
+// object's initializer if `invalidate` has been called.
 TEST_F(CRWHTMLElementFetchRequestTest, Invalidate) {
   __block bool handler_called = false;
   void (^handler)(const web::ContextMenuParams&) =

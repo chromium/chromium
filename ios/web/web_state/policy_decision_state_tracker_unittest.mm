@@ -132,7 +132,7 @@ TEST_F(PolicyDecisionStateTrackerTest, CancelSync) {
   EXPECT_TRUE(policy_decision_->ShouldCancelNavigation());
   EXPECT_FALSE(policy_decision_->ShouldDisplayError());
 
-  // Verify that additional calls into |policy_decision_state_tracker_| do not
+  // Verify that additional calls into `policy_decision_state_tracker_` do not
   // lead to additional calls to its callback, which would crash since the
   // callback is a OnceCallback.
   int num_decisions_requested = 4;

@@ -18,7 +18,7 @@ namespace web {
 // A WebSubThread is a physical thread backing a WebThread.
 class WebSubThread : public base::Thread {
  public:
-  // Constructs a WebSubThread for |identifier|.
+  // Constructs a WebSubThread for `identifier`.
   explicit WebSubThread(WebThread::ID identifier);
 
   WebSubThread(const WebSubThread&) = delete;
@@ -26,7 +26,7 @@ class WebSubThread : public base::Thread {
 
   ~WebSubThread() override;
 
-  // Registers this thread to represent |identifier_| in the web_thread.h
+  // Registers this thread to represent `identifier_` in the web_thread.h
   // API. This thread must already be running when this is called. This can only
   // be called once per WebSubThread instance.
   void RegisterAsWebThread();
@@ -46,7 +46,7 @@ class WebSubThread : public base::Thread {
 
  private:
   // Second Init() phase that must happen on this thread but can only happen
-  // after it's promoted to a WebThread in |RegisterAsWebThread()|.
+  // after it's promoted to a WebThread in `RegisterAsWebThread()`.
   void CompleteInitializationOnWebThread();
 
   // These methods merely forwards to Thread::Run() but are useful to identify
@@ -60,7 +60,7 @@ class WebSubThread : public base::Thread {
   // primitives except when explicitly allowed in tests.
   bool is_blocking_allowed_for_testing_ = false;
 
-  // The WebThread registration for this |identifier_|, initialized in
+  // The WebThread registration for this `identifier_`, initialized in
   // RegisterAsWebThread().
   std::unique_ptr<WebThreadImpl> web_thread_;
 

@@ -20,7 +20,7 @@ namespace web {
 ContextMenuParams ContextMenuParamsFromElementDictionary(base::Value* element) {
   ContextMenuParams params;
   if (!element || !element->is_dict()) {
-    // Invalid |element|.
+    // Invalid `element`.
     return params;
   }
 

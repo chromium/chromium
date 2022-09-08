@@ -12,7 +12,7 @@
 namespace web {
 
 // Converts WKSecurityOrigin to GURL origin.
-// Returns empty url if |origin| is nil.
+// Returns empty url if `origin` is nil.
 GURL GURLOriginWithWKSecurityOrigin(WKSecurityOrigin* origin);
 
 }  // namespace web

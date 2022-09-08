@@ -22,7 +22,7 @@ enum class CrFullscreenState {
 // to display content within a WebState.
 @protocol CRWScrollableContent <NSObject>
 
-// The scroll view used to display the content.  If |scrollView| is non-nil,
+// The scroll view used to display the content.  If `scrollView` is non-nil,
 // it will be used to back the CRWContentViewScrollViewProxy and is expected to
 // be a subview of the CRWContentView.
 @property(nonatomic, strong, readonly) UIScrollView* scrollView;
@@ -41,7 +41,7 @@ enum class CrFullscreenState {
 @optional
 
 // Whether or not the content view should use the content inset when setting
-// |contentInset|.
+// `contentInset`.
 @property(nonatomic, assign) BOOL shouldUseViewContentInset;
 
 @end

@@ -17,7 +17,7 @@
 #endif
 
 namespace {
-// Checks for equality between |cert_storage1| and |cert_storage2|.
+// Checks for equality between `cert_storage1` and `cert_storage2`.
 bool CertStoragesAreEqual(CRWSessionCertificateStorage* cert_storage1,
                           CRWSessionCertificateStorage* cert_storage2) {
   return net::x509_util::CryptoBufferEqual(
@@ -26,7 +26,7 @@ bool CertStoragesAreEqual(CRWSessionCertificateStorage* cert_storage1,
          cert_storage1.host == cert_storage2.host &&
          cert_storage1.status == cert_storage2.status;
 }
-// Checks for equality between |cache_storage1| and |cache_storage2|.
+// Checks for equality between `cache_storage1` and `cache_storage2`.
 bool CacheStoragesAreEqual(
     CRWSessionCertificatePolicyCacheStorage* cache_storage1,
     CRWSessionCertificatePolicyCacheStorage* cache_storage2) {
@@ -46,7 +46,7 @@ class CRWSessionCertificatePolicyCacheStorageTest : public PlatformTest {
  protected:
   CRWSessionCertificatePolicyCacheStorageTest()
       : cache_storage_([[CRWSessionCertificatePolicyCacheStorage alloc] init]) {
-    // Set up |cache_storage_|.
+    // Set up `cache_storage_`.
     scoped_refptr<net::X509Certificate> cert =
         net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
     NSMutableSet* certs = [[NSMutableSet alloc] init];

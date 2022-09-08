@@ -256,7 +256,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   // information for this WebStateImpl.
   std::unique_ptr<SessionCertificatePolicyCacheImpl> certificate_policy_cache_;
 
-  // |WebUIIOS| object for the current page if it is a WebUI page that
+  // `WebUIIOS` object for the current page if it is a WebUI page that
   // uses the web-based WebUI framework, or nullptr otherwise.
   std::unique_ptr<WebUIIOS> web_ui_;
 

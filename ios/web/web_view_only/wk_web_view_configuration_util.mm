@@ -27,7 +27,7 @@ WKWebView* EnsureWebViewCreatedWithConfiguration(
       WKWebViewConfigurationProvider::FromBrowserState(browser_state);
   provider.ResetWithWebViewConfiguration(configuration);
 
-  // |web_controller| will get the |configuration| from the |provider| to create
+  // `web_controller` will get the `configuration` from the `provider` to create
   // the webView to return.
   return [web_controller ensureWebViewCreated];
 }

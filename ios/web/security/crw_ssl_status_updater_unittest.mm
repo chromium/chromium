@@ -31,12 +31,12 @@
   StatusQueryHandler _verificationCompletionHandler;
 }
 
-// Yes if |SSLStatusUpdater:querySSLStatusForTrust:host:completionHandler| was
+// Yes if `SSLStatusUpdater:querySSLStatusForTrust:host:completionHandler` was
 // called.
 @property(nonatomic, readonly) BOOL certVerificationRequested;
 
 // Calls completion handler passed in
-// |SSLStatusUpdater:querySSLStatusForTrust:host:completionHandler|.
+// `SSLStatusUpdater:querySSLStatusForTrust:host:completionHandler`.
 - (void)finishVerificationWithCertStatus:(net::CertStatus)certStatus
                            securityStyle:(web::SecurityStyle)securityStyle;
 
@@ -117,7 +117,7 @@ class CRWSSLStatusUpdaterTest : public web::WebTest {
     web::WebTest::TearDown();
   }
 
-  // Adds a single committed entry to |nav_manager_|.
+  // Adds a single committed entry to `nav_manager_`.
   void AddNavigationItem(std::string item_url_spec) {
     [fake_wk_list_ setCurrentURL:base::SysUTF8ToNSString(item_url_spec)];
     nav_manager_.AddPendingItem(
@@ -186,7 +186,7 @@ TEST_F(CRWSSLStatusUpdaterTest, NoChangesToHttpItem) {
 TEST_F(CRWSSLStatusUpdaterTest, HttpsItemNoCert) {
   AddNavigationItem(kHttpsUrl);
   web::NavigationItem* item = nav_manager_.GetLastCommittedItem();
-  // Change default value to test that |item| is actually changed.
+  // Change default value to test that `item` is actually changed.
   item->GetSSL().security_style = SECURITY_STYLE_UNAUTHENTICATED;
 
   // Make sure that item change callback was called.

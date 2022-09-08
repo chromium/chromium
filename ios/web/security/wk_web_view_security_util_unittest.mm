@@ -32,7 +32,7 @@ const char kTestSubject[] = "self-signed";
 NSString* const kTestHost = @"www.example.com";
 
 // Returns an autoreleased certificate chain for testing. Chain will contain a
-// single self-signed cert with |subject| as a subject.
+// single self-signed cert with `subject` as a subject.
 NSArray* MakeTestCertChain(const std::string& subject) {
   std::unique_ptr<crypto::RSAPrivateKey> private_key;
   std::string der_cert;
@@ -99,7 +99,7 @@ TEST_F(WKWebViewSecurityUtilTest, MakingTrustValid) {
   EXPECT_TRUE(!trusted && error);
 
   // Make sure that trust becomes valid after
-  // |EnsureFutureTrustEvaluationSucceeds| call.
+  // `EnsureFutureTrustEvaluationSucceeds` call.
   EnsureFutureTrustEvaluationSucceeds(trust);
   trusted = SecTrustEvaluateWithError(trust, &error);
   EXPECT_TRUE(trusted && !error);

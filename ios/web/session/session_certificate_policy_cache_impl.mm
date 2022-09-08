@@ -77,9 +77,9 @@ void SessionCertificatePolicyCacheImpl::RegisterAllowedCertificate(
   DCHECK_CURRENTLY_ON(WebThread::UI);
   // Store user decisions with the leaf cert, ignoring any intermediates.
   // This is because WKWebView returns the verified certificate chain in
-  // |webView:didReceiveAuthenticationChallenge:completionHandler:|,
+  // `webView:didReceiveAuthenticationChallenge:completionHandler:`,
   // but the server-supplied chain in
-  // |webView:didFailProvisionalNavigation:withError:|.
+  // `webView:didFailProvisionalNavigation:withError:`.
   if (!certificate->intermediate_buffers().empty()) {
     certificate = net::X509Certificate::CreateFromBuffer(
         bssl::UpRef(certificate->cert_buffer()), {});

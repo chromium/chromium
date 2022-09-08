@@ -56,7 +56,7 @@ namespace {
                      /*cert_status=*/0));
 }
 
-// The error domain and code presented by |TestWebStatePolicyDecider| for
+// The error domain and code presented by `TestWebStatePolicyDecider` for
 // cancelled navigations.
 NSString* const kCancelledNavigationErrorDomain = @"Error domain";
 const int kCancelledNavigationErrorCode = 123;

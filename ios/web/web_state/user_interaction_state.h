@@ -18,33 +18,33 @@ class UserInteractionState {
   UserInteractionState();
   ~UserInteractionState();
 
-  // Returns |user_interaction_registered_since_page_loaded_|.
+  // Returns `user_interaction_registered_since_page_loaded_`.
   bool UserInteractionRegisteredSincePageLoaded() const;
-  // Sets |user_interaction_registered_since_page_loaded_|. If true, also sets
-  // |user_interaction_registered_since_last_url_change_| and
-  // |user_interaction_registered_since_web_view_created_| to true;
+  // Sets `user_interaction_registered_since_page_loaded_`. If true, also sets
+  // `user_interaction_registered_since_last_url_change_` and
+  // `user_interaction_registered_since_web_view_created_` to true;
   void SetUserInteractionRegisteredSincePageLoaded(
       bool user_interaction_registered_since_page_loaded);
 
-  // Returns |user_interaction_registered_since_last_url_change_|.
+  // Returns `user_interaction_registered_since_last_url_change_`.
   bool UserInteractionRegisteredSinceLastUrlChange() const;
-  // Sets |user_interaction_registered_since_last_url_change_|. If true, also
-  // sets |user_interaction_registered_since_web_view_created_| to true.
+  // Sets `user_interaction_registered_since_last_url_change_`. If true, also
+  // sets `user_interaction_registered_since_web_view_created_` to true.
   void SetUserInteractionRegisteredSinceLastUrlChange(
       bool interaction_registered_since_last_url_change);
 
-  // Returns |user_interaction_registered_since_web_view_created_|.
+  // Returns `user_interaction_registered_since_web_view_created_`.
   bool UserInteractionRegisteredSinceWebViewCreated() const;
 
-  // Sets |tap_in_progress_|.
+  // Sets `tap_in_progress_`.
   void SetTapInProgress(bool tap_in_progress);
 
-  // Resets |last_transfer_time_in_seconds_| to current time.
+  // Resets `last_transfer_time_in_seconds_` to current time.
   void ResetLastTransferTime();
 
-  // Returns the raw pointer managed by |last_user_interaction_|.
+  // Returns the raw pointer managed by `last_user_interaction_`.
   web::UserInteractionEvent* LastUserInteraction() const;
-  // Sets |last_user_interaction_|.
+  // Sets `last_user_interaction_`.
   void SetLastUserInteraction(
       std::unique_ptr<web::UserInteractionEvent> last_user_interaction);
 

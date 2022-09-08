@@ -136,7 +136,7 @@ class MockWebStatePolicyDecider : public WebStatePolicyDecider {
 };
 
 // Test callback for script commands.
-// Sets |is_called| to true if it is called, and checks that the parameters
+// Sets `is_called` to true if it is called, and checks that the parameters
 // match their expected values.
 void HandleScriptCommand(bool* is_called,
                          base::Value* expected_value,
@@ -183,10 +183,10 @@ class WebStateImplTest : public web::WebTest {
 TEST_F(WebStateImplTest, GetWeakPtr) {
   base::WeakPtr<WebState> weak_ptr = web_state_->GetWeakPtr();
 
-  // Verify that |weak_ptr| points to |web_state_|.
+  // Verify that `weak_ptr` points to `web_state_`.
   EXPECT_EQ(weak_ptr.get(), web_state_.get());
 
-  // Verify that |weak_ptr| is null after |web_state_| destruction.
+  // Verify that `weak_ptr` is null after `web_state_` destruction.
   web_state_.reset();
   EXPECT_EQ(weak_ptr.get(), nullptr);
 }
@@ -847,7 +847,7 @@ TEST_F(WebStateImplTest, ScriptCommand) {
   EXPECT_FALSE(is_called_2);
   EXPECT_FALSE(is_called_3);
   is_called_1 = false;
-  // Check that sending message from iframe sets |is_main_frame| to false.
+  // Check that sending message from iframe sets `is_main_frame` to false.
   web_state_->OnScriptCommandReceived(kCommand3, value_3, kUrl3,
                                       /*user_is_interacting*/ false,
 
@@ -881,7 +881,7 @@ TEST_F(WebStateImplTest, CreatedWithOpener) {
   // Verify that the HasOpener() returns false if not specified in the create
   // params.
   EXPECT_FALSE(web_state_->HasOpener());
-  // Set |created_with_opener| to true and verify that HasOpener() returns true.
+  // Set `created_with_opener` to true and verify that HasOpener() returns true.
   WebState::CreateParams params_with_opener =
       WebState::CreateParams(GetBrowserState());
   params_with_opener.created_with_opener = true;
@@ -960,7 +960,7 @@ TEST_F(WebStateImplTest, UncommittedRestoreSession) {
   web::WebState::CreateParams params(GetBrowserState());
   WebStateImpl web_state(params, session_storage);
 
-  // After restoring |web_state| change the uncommitted state's user data.
+  // After restoring `web_state` change the uncommitted state's user data.
   web::SerializableUserDataManager* user_data_manager =
       web::SerializableUserDataManager::FromWebState(&web_state);
   user_data_manager->AddSerializableData(@(1), @"user_data_key");

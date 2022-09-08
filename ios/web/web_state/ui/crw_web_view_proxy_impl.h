@@ -16,7 +16,7 @@
 @interface CRWWebViewProxyImpl : NSObject<CRWWebViewProxy>
 
 // Used by CRWWebController to set the content view being managed.
-// |contentView|'s scroll view property will be managed by the
+// `contentView`'s scroll view property will be managed by the
 // WebViewScrollViewProxy.
 @property(nonatomic, weak) CRWContentView* contentView;
 

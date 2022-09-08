@@ -101,7 +101,7 @@
   CRWHTMLElementFetchRequest* fetchRequest =
       _pendingElementFetchRequests[requestID];
   if (!fetchRequest) {
-    // Do not process the message if a fetch request with a matching |requestID|
+    // Do not process the message if a fetch request with a matching `requestID`
     // was not found. This ensures that the response matches a request made by
     // this instance.
     return;

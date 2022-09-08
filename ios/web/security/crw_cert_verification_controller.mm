@@ -34,14 +34,14 @@ using web::WebThread;
   scoped_refptr<web::CertificatePolicyCache> _certPolicyCache;
 }
 
-// Returns cert status for the given |trust|.
+// Returns cert status for the given `trust`.
 - (net::CertStatus)certStatusFromTrustResult:(SecTrustResultType)trustResult
                                   trustError:(base::ScopedCFTypeRef<CFErrorRef>)
                                                  trustError;
 
-// Decides the policy for the given |trust| which was rejected by iOS and the
-// given |host| and calls |handler| on completion. Must be called on UI thread.
-// |handler| can not be null and will be called on UI thread.
+// Decides the policy for the given `trust` which was rejected by iOS and the
+// given `host` and calls `handler` on completion. Must be called on UI thread.
+// `handler` can not be null and will be called on UI thread.
 - (void)
     decideLoadPolicyForRejectedTrustResult:(SecTrustResultType)trustResult
                                 trustError:(base::ScopedCFTypeRef<CFErrorRef>)
@@ -51,7 +51,7 @@ using web::WebThread;
                                       host:(NSString*)host
                          completionHandler:(web::PolicyDecisionHandler)handler;
 
-// Verifies the given |trust| using SecTrustRef API. |completionHandler| cannot
+// Verifies the given `trust` using SecTrustRef API. `completionHandler` cannot
 // be null and will be called on UI thread or never be called if the worker task
 // can't start or complete. Must be called on UI thread.
 - (void)verifyTrust:(base::ScopedCFTypeRef<SecTrustRef>)trust
@@ -59,7 +59,7 @@ using web::WebThread;
         (void (^)(SecTrustResultType,
                   base::ScopedCFTypeRef<CFErrorRef>))completionHandler;
 
-// Returns cert accept policy for the given SecTrust result. |trustResult| must
+// Returns cert accept policy for the given SecTrust result. `trustResult` must
 // not be for a valid cert. Must be called on IO thread.
 - (web::CertAcceptPolicy)
     loadPolicyForRejectedTrustResult:(SecTrustResultType)trustResult
@@ -131,9 +131,9 @@ using web::WebThread;
   DCHECK_CURRENTLY_ON(WebThread::UI);
   // Store user decisions with the leaf cert, ignoring any intermediates.
   // This is because WKWebView returns the verified certificate chain in
-  // |webView:didReceiveAuthenticationChallenge:completionHandler:|,
+  // `webView:didReceiveAuthenticationChallenge:completionHandler:`,
   // but the server-supplied chain in
-  // |webView:didFailProvisionalNavigation:withError:|.
+  // `webView:didFailProvisionalNavigation:withError:`.
   if (!cert->intermediate_buffers().empty()) {
     cert = net::X509Certificate::CreateFromBuffer(
         bssl::UpRef(cert->cert_buffer()), {});
@@ -182,8 +182,8 @@ using web::WebThread;
   DCHECK(handler);
   web::GetIOThreadTaskRunner({})
       ->PostTask(FROM_HERE, base::BindOnce(^{
-                   // |loadPolicyForRejectedTrustResult:certStatus:serverTrust
-                   // :host:| can only be called on IO thread.
+                   // `loadPolicyForRejectedTrustResult:certStatus:serverTrust
+                   // :host:` can only be called on IO thread.
                    net::CertStatus certStatus =
                        [self certStatusFromTrustResult:trustResult
                                             trustError:trustError];

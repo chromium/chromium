@@ -39,7 +39,7 @@ TEST_F(URLLoaderTest, Basic) {
   request->url = server_.GetURL("/echo");
   // Adds kCorsExemptHeaderName into the cors_exempt_headers, that use should be
   // allowed by FakeBrowserState. If BrowserState implementation does not
-  // permit to use this header in |cors_exempt_headers| explicitly, the request
+  // permit to use this header in `cors_exempt_headers` explicitly, the request
   // fails with net::ERR_INVALID_ARGUMENT.
   request->cors_exempt_headers.SetHeader(
       FakeBrowserState::kCorsExemptTestHeaderName, "Test");

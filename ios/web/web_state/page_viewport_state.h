@@ -28,7 +28,7 @@ class ViewportLength {
   // Whether the dimension is specified to use the device height/width.
   bool use_device_length_;
   // The hardcoded dimension value.  Will be NAN if unspecified or if
-  // |use_device_length_| is true.
+  // `use_device_length_` is true.
   double value_;
 };
 
@@ -45,7 +45,7 @@ class PageViewportState {
   explicit PageViewportState(NSString* viewport_content);
   ~PageViewportState();
 
-  // Parses |viewport_content| and updates properties accordingly.
+  // Parses `viewport_content` and updates properties accordingly.
   void UpdateWithViewportContent(NSString* const viewport_content);
 
   // Accessors.

@@ -39,7 +39,7 @@ extern const base::Feature kPreserveScrollViewProperties;
 // generate PDF when Page Snapshot is taken just to record PDF size.
 extern const base::Feature kRecordSnapshotSize;
 
-// When enabled, the |attribution| property of NSMutableURLRequests passed to
+// When enabled, the `attribution` property of NSMutableURLRequests passed to
 // WKWebView is set as NSURLRequestAttributionUser on iOS 15.
 extern const base::Feature kSetRequestAttribution;
 

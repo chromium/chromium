@@ -94,7 +94,7 @@ BrowserState::~BrowserState() {
 
   // Delete the URLDataManagerIOSBackend instance on the IO thread if it has
   // been created. Note that while this check can theoretically race with a
-  // call to |GetURLDataManagerIOSBackendOnIOThread()|, if any clients of this
+  // call to `GetURLDataManagerIOSBackendOnIOThread()`, if any clients of this
   // BrowserState are still accessing it on the IO thread at this point,
   // they're going to have a bad time anyway.
   if (url_data_manager_ios_backend_) {

@@ -32,7 +32,7 @@ extern const char kContextMenuElementSource[];
 extern const char kContextMenuElementTitle[];
 
 // Optional key. Represents referrer policy to use for navigations away from the
-// current page. Key is present if |kContextMenuElementError| is |NO_ERROR|.
+// current page. Key is present if `kContextMenuElementError` is `NO_ERROR`.
 extern const char kContextMenuElementReferrerPolicy[];
 
 // Optional key. Represents element's innerText attribute if present (<a>

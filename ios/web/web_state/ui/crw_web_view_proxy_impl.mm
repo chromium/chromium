@@ -15,7 +15,7 @@
 
 namespace {
 
-// Returns the first responder in the subviews of |view|, or nil if no view in
+// Returns the first responder in the subviews of `view`, or nil if no view in
 // the subtree is the first responder.
 UIView* GetFirstResponderSubview(UIView* view) {
   if ([view isFirstResponder])

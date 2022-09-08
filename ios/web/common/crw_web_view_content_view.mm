@@ -18,7 +18,7 @@
 namespace {
 
 // Background color RGB values for the content view which is displayed when the
-// |_webView| is offset from the screen due to user interaction. Displaying this
+// `_webView` is offset from the screen due to user interaction. Displaying this
 // background color is handled by UIWebView but not WKWebView, so it needs to be
 // set in CRWWebViewContentView to support both. The color value matches that
 // used by UIWebView.

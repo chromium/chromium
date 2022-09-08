@@ -37,16 +37,16 @@ struct WebThreadGlobals {
   WebThreadGlobals() {
   }
 
-  // This lock protects |threads| and |states|. Do not read or modify those
+  // This lock protects `threads` and `states`. Do not read or modify those
   // arrays without holding this lock. Do not block while holding this lock.
   base::Lock lock;
 
-  // This array is protected by |lock|. This array is filled as WebThreadImpls
+  // This array is protected by `lock`. This array is filled as WebThreadImpls
   // are constructed and depopulated when they are destructed.
   scoped_refptr<base::SingleThreadTaskRunner>
       task_runners[WebThread::ID_COUNT] GUARDED_BY(lock);
 
-  // This array is protected by |lock|. Holds the state of each WebThread::ID.
+  // This array is protected by `lock`. Holds the state of each WebThread::ID.
   WebThreadState states[WebThread::ID_COUNT] GUARDED_BY(lock) = {};
 };
 
@@ -164,7 +164,7 @@ class WebThreadTaskExecutor : public base::TaskExecutor {
       WebThread::ID identifier,
       const base::TaskTraits& traits) const {
     // //TODO(crbug.com/1304248): Unlike content, iOS never honored
-    // |traits.priority()|... but this is where it could.
+    // `traits.priority()`... but this is where it could.
     // Ref. content::BaseBrowserTaskExecutor::GetTaskRunner()
     switch (identifier) {
       case WebThread::UI:

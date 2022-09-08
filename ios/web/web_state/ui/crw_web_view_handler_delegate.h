@@ -26,7 +26,7 @@ class WebStateImpl;
 // The actual URL of the document object.
 - (const GURL&)documentURLForWebViewHandler:(CRWWebViewHandler*)handler;
 
-// Asks the delegate for the associated |UserInteractionState|.
+// Asks the delegate for the associated `UserInteractionState`.
 - (web::UserInteractionState*)userInteractionStateForWebViewHandler:
     (CRWWebViewHandler*)handler;
 

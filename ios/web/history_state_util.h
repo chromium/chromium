@@ -19,7 +19,7 @@ bool IsHistoryStateChangeValid(const GURL& currentUrl,
 
 // Generates the appropriate full URL for a history.pushState() or
 // history.replaceState() transition from currentURL to destination, resolved
-// against baseURL. |destination| may be a relative URL. Will return an invalid
+// against baseURL. `destination` may be a relative URL. Will return an invalid
 // URL if the resolved destination, or the transition, is not valid.
 GURL GetHistoryStateChangeUrl(const GURL& currentUrl,
                               const GURL& baseUrl,

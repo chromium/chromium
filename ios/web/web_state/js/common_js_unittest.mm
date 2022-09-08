@@ -132,7 +132,7 @@ TEST_F(CommonJsTest, Stringify) {
   for (size_t i = 0; i < std::size(test_data); i++) {
     TestScriptAndExpectedValue& data = test_data[i];
     // Load a sample HTML page. As a side-effect, loading HTML via
-    // |webController_| will also inject web_bundle.js.
+    // `webController_` will also inject web_bundle.js.
     LoadHtml(@"<p>");
     id result = ExecuteJavaScript(data.test_script);
     EXPECT_NSEQ(data.expected_value, result)

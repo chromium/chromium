@@ -66,7 +66,7 @@ class BrowserStateWebViewPartitionTest : public WebIntTest {
     ASSERT_TRUE(server_.Start());
   }
 
-  // Sets a persistent cookie with key, value on |web_view|.
+  // Sets a persistent cookie with key, value on `web_view`.
   void SetCookie(NSString* key, NSString* value, WKWebView* web_view) {
     NSString* set_cookie = [NSString
         stringWithFormat:@"document.cookie='%@=%@;"
@@ -75,13 +75,13 @@ class BrowserStateWebViewPartitionTest : public WebIntTest {
     web::test::ExecuteJavaScript(web_view, set_cookie);
   }
 
-  // Returns a csv list of all cookies from |web_view|.
+  // Returns a csv list of all cookies from `web_view`.
   NSString* GetCookies(WKWebView* web_view) {
     id result = web::test::ExecuteJavaScript(web_view, @"document.cookie");
     return base::mac::ObjCCastStrict<NSString>(result);
   }
 
-  // Sets a localstorage key, value pair on |web_view|.
+  // Sets a localstorage key, value pair on `web_view`.
   void SetLocalStorageItem(NSString* key,
                            NSString* value,
                            WKWebView* web_view) {
@@ -92,14 +92,14 @@ class BrowserStateWebViewPartitionTest : public WebIntTest {
                                  &unused_error);
   }
 
-  // Returns the localstorage value associated with |key| from |web_view|.
+  // Returns the localstorage value associated with `key` from `web_view`.
   id GetLocalStorageItem(NSString* key, WKWebView* web_view) {
     NSString* get_local_storage_value =
         [NSString stringWithFormat:@"localStorage.getItem('%@');", key];
     return web::test::ExecuteJavaScript(web_view, get_local_storage_value);
   }
 
-  // Loads a test web page (that contains a small string) in |web_view| and
+  // Loads a test web page (that contains a small string) in `web_view` and
   // waits until the web view has finished the navigation.
   [[nodiscard]] bool LoadTestWebPage(WKWebView* web_view) {
     FakeNavigationDelegate* navigation_delegate =
@@ -136,13 +136,13 @@ TEST_F(BrowserStateWebViewPartitionTest, Cookies) {
   WKWebView* web_view_2 = BuildWKWebView(CGRectZero, &otr_browser_state_);
   ASSERT_TRUE(LoadTestWebPage(web_view_2));
 
-  // Test that the cookie has not leaked over to |web_view_2|.
+  // Test that the cookie has not leaked over to `web_view_2`.
   ASSERT_NSEQ(@"", GetCookies(web_view_2));
 
   SetCookie(@"someCookieName2", @"someCookieValue2", web_view_2);
   EXPECT_NSEQ(@"someCookieName2=someCookieValue2", GetCookies(web_view_2));
 
-  // Test that the cookie has not leaked over to |web_view_1|.
+  // Test that the cookie has not leaked over to `web_view_1`.
   NSString* cookies = GetCookies(web_view_1);
   EXPECT_FALSE([cookies containsString:@"someCookieName2"]);
 }
@@ -158,7 +158,7 @@ TEST_F(BrowserStateWebViewPartitionTest, LocalStorage) {
   WKWebView* web_view_2 = BuildWKWebView(CGRectZero, &otr_browser_state_);
   ASSERT_TRUE(LoadTestWebPage(web_view_2));
 
-  // Test that LocalStorage has not leaked over to |web_view_2|.
+  // Test that LocalStorage has not leaked over to `web_view_2`.
   EXPECT_NSEQ([NSNull null], GetLocalStorageItem(@"someKey1", web_view_2));
 
   SetLocalStorageItem(@"someKey2", @"someValue2", web_view_2);
@@ -168,7 +168,7 @@ TEST_F(BrowserStateWebViewPartitionTest, LocalStorage) {
   // Look at
   // http://stackoverflow.com/questions/14555347/html5-localstorage-error-with-safari-quota-exceeded-err-dom-exception-22-an
   // for more details.
-  // Test that LocalStorage has not leaked over to |web_view_1|.
+  // Test that LocalStorage has not leaked over to `web_view_1`.
   EXPECT_NSEQ([NSNull null], GetLocalStorageItem(@"someKey2", web_view_1));
 }
 

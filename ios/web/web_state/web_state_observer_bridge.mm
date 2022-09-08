@@ -167,7 +167,7 @@ void WebStateObserverBridge::WebStateRealized(web::WebState* web_state) {
 void WebStateObserverBridge::WebStateDestroyed(web::WebState* web_state) {
   SEL selector = @selector(webStateDestroyed:);
   if ([observer_ respondsToSelector:selector]) {
-    // |webStateDestroyed:| may delete |this|, so don't expect |this| to be
+    // `webStateDestroyed:` may delete `this`, so don't expect `this` to be
     // valid afterwards.
     [observer_ webStateDestroyed:web_state];
   }

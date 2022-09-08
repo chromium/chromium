@@ -24,7 +24,7 @@
 
 namespace {
 
-// Returns the WKUserScript from |user_scripts| which contains |script_string|
+// Returns the WKUserScript from `user_scripts` which contains `script_string`
 // or null if no such script is found.
 WKUserScript* FindWKUserScriptContaining(NSArray<WKUserScript*>* user_scripts,
                                          NSString* script_string) {
@@ -47,11 +47,11 @@ class WKWebViewConfigurationProviderTest : public PlatformTest {
       : web_client_(std::make_unique<FakeWebClient>()) {}
 
  protected:
-  // Returns WKWebViewConfigurationProvider associated with |browser_state_|.
+  // Returns WKWebViewConfigurationProvider associated with `browser_state_`.
   WKWebViewConfigurationProvider& GetProvider() {
     return GetProvider(&browser_state_);
   }
-  // Returns WKWebViewConfigurationProvider for given |browser_state|.
+  // Returns WKWebViewConfigurationProvider for given `browser_state`.
   WKWebViewConfigurationProvider& GetProvider(
       BrowserState* browser_state) const {
     return WKWebViewConfigurationProvider::FromBrowserState(browser_state);
@@ -132,7 +132,7 @@ TEST_F(WKWebViewConfigurationProviderTest, ConfigurationProtection) {
             provider.GetWebViewConfiguration().userContentController);
 }
 
-// Tests that the configuration are deallocated after |Purge| call.
+// Tests that the configuration are deallocated after `Purge` call.
 TEST_F(WKWebViewConfigurationProviderTest, Purge) {
   __weak id config;
   @autoreleasepool {  // Make sure that resulting copy is deallocated.
@@ -141,7 +141,7 @@ TEST_F(WKWebViewConfigurationProviderTest, Purge) {
     ASSERT_TRUE(config);
   }
 
-  // No configuration after |Purge| call.
+  // No configuration after `Purge` call.
   GetProvider().Purge();
   EXPECT_FALSE(config);
 }
@@ -243,7 +243,7 @@ TEST_F(WKWebViewConfigurationProviderTest, Observers) {
 }
 
 // Tests that if -[ResetWithWebViewConfiguration:] copies and applies Chrome's
-// initialization logic to the |config| that passed into that method
+// initialization logic to the `config` that passed into that method
 TEST_F(WKWebViewConfigurationProviderTest, ResetConfiguration) {
   auto browser_state = std::make_unique<FakeBrowserState>();
   WKWebViewConfigurationProvider* provider = &GetProvider(browser_state.get());
@@ -260,13 +260,13 @@ TEST_F(WKWebViewConfigurationProviderTest, ResetConfiguration) {
   // To check the configuration inside is reset.
   EXPECT_EQ(config.preferences, actual.preferences);
 
-  // To check Chrome's initialization logic has been applied to |actual|,
-  // where the |actual.allowsInlineMediaPlayback| should be overwriten by YES.
+  // To check Chrome's initialization logic has been applied to `actual`,
+  // where the `actual.allowsInlineMediaPlayback` should be overwriten by YES.
   EXPECT_EQ(NO, config.allowsInlineMediaPlayback);
   EXPECT_EQ(YES, actual.allowsInlineMediaPlayback);
 
-  // Compares the POINTERS to make sure the |config| has been shallow cloned
-  // inside the |provider|.
+  // Compares the POINTERS to make sure the `config` has been shallow cloned
+  // inside the `provider`.
   EXPECT_NE(config, actual);
 }
 

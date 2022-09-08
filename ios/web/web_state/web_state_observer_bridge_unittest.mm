@@ -44,7 +44,7 @@ class WebStateObserverBridgeTest : public PlatformTest {
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
 };
 
-// Tests |webStateWasShown:| forwarding.
+// Tests `webStateWasShown:` forwarding.
 TEST_F(WebStateObserverBridgeTest, WasShown) {
   ASSERT_FALSE([observer_ wasShownInfo]);
 
@@ -53,7 +53,7 @@ TEST_F(WebStateObserverBridgeTest, WasShown) {
   EXPECT_EQ(&fake_web_state_, [observer_ wasShownInfo]->web_state);
 }
 
-// Tests |webStateWasHidden:| forwarding.
+// Tests `webStateWasHidden:` forwarding.
 TEST_F(WebStateObserverBridgeTest, WasHidden) {
   ASSERT_FALSE([observer_ wasHiddenInfo]);
 
@@ -62,7 +62,7 @@ TEST_F(WebStateObserverBridgeTest, WasHidden) {
   EXPECT_EQ(&fake_web_state_, [observer_ wasHiddenInfo]->web_state);
 }
 
-// Tests |webState:didStartNavigation:| forwarding.
+// Tests `webState:didStartNavigation:` forwarding.
 TEST_F(WebStateObserverBridgeTest, DidStartNavigation) {
   ASSERT_FALSE([observer_ didStartNavigationInfo]);
 
@@ -91,7 +91,7 @@ TEST_F(WebStateObserverBridgeTest, DidStartNavigation) {
             actual_context->GetResponseHeaders());
 }
 
-// Tests |webState:didRedirectNavigation:| forwarding.
+// Tests `webState:didRedirectNavigation:` forwarding.
 TEST_F(WebStateObserverBridgeTest, DidRedirectNavigation) {
   ASSERT_FALSE([observer_ didRedirectNavigationInfo]);
 
@@ -120,7 +120,7 @@ TEST_F(WebStateObserverBridgeTest, DidRedirectNavigation) {
             actual_context->GetResponseHeaders());
 }
 
-// Tests |webState:didFinishNavigation:| forwarding.
+// Tests `webState:didFinishNavigation:` forwarding.
 TEST_F(WebStateObserverBridgeTest, DidFinishNavigation) {
   ASSERT_FALSE([observer_ didFinishNavigationInfo]);
 
@@ -149,7 +149,7 @@ TEST_F(WebStateObserverBridgeTest, DidFinishNavigation) {
             actual_context->GetResponseHeaders());
 }
 
-// Tests |webState:webStateDidStartLoading:| forwarding.
+// Tests `webState:webStateDidStartLoading:` forwarding.
 TEST_F(WebStateObserverBridgeTest, DidStartLoading) {
   ASSERT_FALSE([observer_ startLoadingInfo]);
 
@@ -158,7 +158,7 @@ TEST_F(WebStateObserverBridgeTest, DidStartLoading) {
   EXPECT_EQ(&fake_web_state_, [observer_ startLoadingInfo]->web_state);
 }
 
-// Tests |webState:webStateDidStopLoading:| forwarding.
+// Tests `webState:webStateDidStopLoading:` forwarding.
 TEST_F(WebStateObserverBridgeTest, DidStopLoading) {
   ASSERT_FALSE([observer_ stopLoadingInfo]);
 
@@ -167,7 +167,7 @@ TEST_F(WebStateObserverBridgeTest, DidStopLoading) {
   EXPECT_EQ(&fake_web_state_, [observer_ stopLoadingInfo]->web_state);
 }
 
-// Tests |webState:didLoadPageWithSuccess:| forwarding.
+// Tests `webState:didLoadPageWithSuccess:` forwarding.
 TEST_F(WebStateObserverBridgeTest, PageLoaded) {
   ASSERT_FALSE([observer_ loadPageInfo]);
 
@@ -186,7 +186,7 @@ TEST_F(WebStateObserverBridgeTest, PageLoaded) {
   EXPECT_FALSE([observer_ loadPageInfo]->success);
 }
 
-// Tests |webState:didChangeLoadingProgress:| forwarding.
+// Tests `webState:didChangeLoadingProgress:` forwarding.
 TEST_F(WebStateObserverBridgeTest, LoadProgressChanged) {
   ASSERT_FALSE([observer_ changeLoadingProgressInfo]);
 
@@ -197,7 +197,7 @@ TEST_F(WebStateObserverBridgeTest, LoadProgressChanged) {
   EXPECT_EQ(kTestLoadProgress, [observer_ changeLoadingProgressInfo]->progress);
 }
 
-// Tests |webStateDidChangeBackForwardState:| forwarding.
+// Tests `webStateDidChangeBackForwardState:` forwarding.
 TEST_F(WebStateObserverBridgeTest, DidChangeBackForwardState) {
   ASSERT_FALSE([observer_ changeBackForwardStateInfo]);
 
@@ -207,7 +207,7 @@ TEST_F(WebStateObserverBridgeTest, DidChangeBackForwardState) {
             [observer_ changeBackForwardStateInfo]->web_state);
 }
 
-// Tests |webStateDidChangeTitle:| forwarding.
+// Tests `webStateDidChangeTitle:` forwarding.
 TEST_F(WebStateObserverBridgeTest, TitleWasSet) {
   ASSERT_FALSE([observer_ titleWasSetInfo]);
 
@@ -216,7 +216,7 @@ TEST_F(WebStateObserverBridgeTest, TitleWasSet) {
   EXPECT_EQ(&fake_web_state_, [observer_ titleWasSetInfo]->web_state);
 }
 
-// Tests |webStateDidChangeVisibleSecurityState:| forwarding.
+// Tests `webStateDidChangeVisibleSecurityState:` forwarding.
 TEST_F(WebStateObserverBridgeTest, DidChangeVisibleSecurityState) {
   ASSERT_FALSE([observer_ didChangeVisibleSecurityStateInfo]);
 
@@ -226,7 +226,7 @@ TEST_F(WebStateObserverBridgeTest, DidChangeVisibleSecurityState) {
             [observer_ didChangeVisibleSecurityStateInfo]->web_state);
 }
 
-// Tests |webState:didUpdateFaviconURLCandidates:| forwarding.
+// Tests `webState:didUpdateFaviconURLCandidates:` forwarding.
 TEST_F(WebStateObserverBridgeTest, FaviconUrlUpdated) {
   ASSERT_FALSE([observer_ updateFaviconUrlCandidatesInfo]);
 
@@ -247,7 +247,7 @@ TEST_F(WebStateObserverBridgeTest, FaviconUrlUpdated) {
   EXPECT_EQ(url.icon_sizes[0].height(), actual_url.icon_sizes[0].height());
 }
 
-// Tests |webState:didChangeStateForPermission:| forwarding.
+// Tests `webState:didChangeStateForPermission:` forwarding.
 TEST_F(WebStateObserverBridgeTest, PermissionStateChanged) {
   if (@available(iOS 15.0, *)) {
     ASSERT_FALSE([observer_ permissionStateChangedInfo]);
@@ -267,7 +267,7 @@ TEST_F(WebStateObserverBridgeTest, PermissionStateChanged) {
   }
 }
 
-// Tests |renderProcessGoneForWebState:| forwarding.
+// Tests `renderProcessGoneForWebState:` forwarding.
 TEST_F(WebStateObserverBridgeTest, RenderProcessGone) {
   ASSERT_FALSE([observer_ renderProcessGoneInfo]);
 
@@ -276,7 +276,7 @@ TEST_F(WebStateObserverBridgeTest, RenderProcessGone) {
   EXPECT_EQ(&fake_web_state_, [observer_ renderProcessGoneInfo]->web_state);
 }
 
-// Tests |webStateRealized:| forwarding.
+// Tests `webStateRealized:` forwarding.
 TEST_F(WebStateObserverBridgeTest, WebStateRealized) {
   ASSERT_FALSE([observer_ webStateRealizedInfo]);
 
@@ -285,7 +285,7 @@ TEST_F(WebStateObserverBridgeTest, WebStateRealized) {
   EXPECT_EQ(&fake_web_state_, [observer_ webStateRealizedInfo]->web_state);
 }
 
-// Tests |webStateDestroyed:| forwarding.
+// Tests `webStateDestroyed:` forwarding.
 TEST_F(WebStateObserverBridgeTest, WebStateDestroyed) {
   ASSERT_FALSE([observer_ webStateDestroyedInfo]);
 

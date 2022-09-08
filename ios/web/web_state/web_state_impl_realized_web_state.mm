@@ -823,7 +823,7 @@ bool WebStateImpl::RealizedWebState::SetSessionStateData(NSData* data) {
 
   // If this fails (e.g., see crbug.com/1019672 for a previous failure), this
   // may be a bug in WebKit session restoration, or a bug in generating the
-  // |cached_data_| blob.
+  // `cached_data_` blob.
   if (navigation_manager_->GetItemCount() == 0) {
     return false;
   }

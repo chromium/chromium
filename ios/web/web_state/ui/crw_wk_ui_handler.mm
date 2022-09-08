@@ -141,8 +141,8 @@ enum class PermissionRequest {
     return nil;
 
   // WKWebView requires WKUIDelegate to return a child view created with
-  // exactly the same |configuration| object (exception is raised if config is
-  // different). |configuration| param and config returned by
+  // exactly the same `configuration` object (exception is raised if config is
+  // different). `configuration` param and config returned by
   // WKWebViewConfigurationProvider are different objects because WKWebView
   // makes a shallow copy of the config inside init, so every WKWebView
   // owns a separate shallow copy of WKWebViewConfiguration.
@@ -152,8 +152,8 @@ enum class PermissionRequest {
 }
 
 - (void)webViewDidClose:(WKWebView*)webView {
-  // This is triggered by a JavaScript |close()| method call, only if the tab
-  // was opened using |window.open|. WebKit is checking that this is the case,
+  // This is triggered by a JavaScript `close()` method call, only if the tab
+  // was opened using `window.open`. WebKit is checking that this is the case,
   // so we can close the tab unconditionally here.
   if (self.webStateImpl) {
     __weak __typeof(self) weakSelf = self;
@@ -256,8 +256,8 @@ enum class PermissionRequest {
 
 #pragma mark - Helper
 
-// Helper to respond to |webView:runJavaScript...| delegate methods.
-// |completionHandler| must not be nil.
+// Helper to respond to `webView:runJavaScript...| delegate methods.
+// `completionHandler` must not be nil.
 - (void)runJavaScriptDialogOfType:(web::JavaScriptDialogType)type
                  initiatedByFrame:(WKFrameInfo*)frame
                           message:(NSString*)message

@@ -128,9 +128,9 @@ enum class BackForwardNavigationType {
       web::NavigationInitiationType::BROWSER_INITIATED);
 
   // The load data call will replace the current navigation and the webView URL
-  // of the navigation will be replaced by |URL|. Set the URL of the
+  // of the navigation will be replaced by `URL`. Set the URL of the
   // navigationItem to keep them synced.
-  // Note: it is possible that the URL in item already match |url|. But item can
+  // Note: it is possible that the URL in item already match `url`. But item can
   // also contain a placeholder URL intended to be replaced.
   item->SetURL(URL);
   navigationContext->SetMimeType(MIMEType);
@@ -169,7 +169,7 @@ enum class BackForwardNavigationType {
   const ui::PageTransition loadHTMLTransition =
       ui::PageTransition::PAGE_TRANSITION_TYPED;
   if (self.webState->HasWebUI()) {
-    // WebUI uses |loadHTML:forURL:| to feed the content to web view. This
+    // WebUI uses `loadHTML:forURL:` to feed the content to web view. This
     // should not be treated as a navigation, but WKNavigationDelegate callbacks
     // still expect a valid context.
     context = web::NavigationContextImpl::CreateNavigationContext(
@@ -359,10 +359,9 @@ enum class BackForwardNavigationType {
   DCHECK_EQ(web::WKNavigationState::FINISHED,
             self.navigationHandler.navigationState);
   // Placeholder and restore session URLs are implementation details so should
-  // not notify WebStateObservers. If |context| is nullptr, don't skip
+  // not notify WebStateObservers. If `context` is nullptr, don't skip
   // placeholder URLs because this may be the only opportunity to update
-  // |isLoading| for native view reload.
-
+  // `isLoading` for native view reload.
 
   if (context && IsRestoreSessionUrl(context->GetUrl()))
     return;
@@ -438,8 +437,8 @@ enum class BackForwardNavigationType {
 #pragma mark - WebUI
 
 - (void)createWebUIForURL:(const GURL&)URL {
-  // |CreateWebUI| will do nothing if |URL| is not a WebUI URL and then
-  // |HasWebUI| will return false.
+  // `CreateWebUI` will do nothing if `URL` is not a WebUI URL and then
+  // `HasWebUI` will return false.
   self.webState->CreateWebUI(URL);
 }
 
@@ -450,9 +449,9 @@ enum class BackForwardNavigationType {
 #pragma mark - Private methods
 
 // Checks if a load request of the current navigation item should proceed. If
-// this returns |YES|, caller should create a webView and call
-// |loadRequestForCurrentNavigationItem|. Otherwise this will set the request
-// state to finished and call |didFinishWithURL| with failure.
+// this returns `YES`, caller should create a webView and call
+// `loadRequestForCurrentNavigationItem`. Otherwise this will set the request
+// state to finished and call `didFinishWithURL` with failure.
 - (BOOL)maybeLoadRequestForCurrentNavigationItem {
   web::NavigationItem* item = self.currentNavItem;
   GURL targetURL = item ? item->GetVirtualURL() : GURL::EmptyGURL();
@@ -488,7 +487,7 @@ enum class BackForwardNavigationType {
     return;
   }
 
-  // Set |item| to nullptr here to avoid any use-after-free issues, as it can
+  // Set `item` to nullptr here to avoid any use-after-free issues, as it can
   // be cleared by the call to -registerLoadRequestForURL below.
   item = nullptr;
   std::unique_ptr<web::NavigationContextImpl> navigationContext =
@@ -552,9 +551,9 @@ enum class BackForwardNavigationType {
 - (void)webViewNavigationInternal:(web::WKBackForwardListItemHolder*)holder
            sameDocumentNavigation:(BOOL)sameDocumentNavigation {
   // If the current navigation URL is the same as the URL of the visible
-  // page, that means the user requested a reload. |goToBackForwardListItem|
+  // page, that means the user requested a reload. `goToBackForwardListItem`
   // will be a no-op when it is passed the current back forward list item,
-  // so |reload| must be explicitly called.
+  // so `reload` must be explicitly called.
   web::NavigationItem* item = self.currentNavItem;
   GURL navigationURL = item ? item->GetURL() : GURL::EmptyGURL();
   std::unique_ptr<web::NavigationContextImpl> navigationContext =
@@ -568,7 +567,7 @@ enum class BackForwardNavigationType {
   if (navigationURL == net::GURLWithNSURL(self.webView.URL)) {
     navigation = [self.webView reload];
   } else {
-    // |didCommitNavigation:| may not be called for fast navigation, so update
+    // `didCommitNavigation:` may not be called for fast navigation, so update
     // the navigation type now as it is already known.
     navigationContext->SetWKNavigationType(WKNavigationTypeBackForward);
     navigationContext->SetMimeType(holder->mime_type());
@@ -586,7 +585,7 @@ enum class BackForwardNavigationType {
 
 // Loads request for the URL of the current navigation item. Subclasses may
 // choose to build a new NSURLRequest and call
-// |loadRequestForCurrentNavigationItem| on the underlying web view, or use
+// `loadRequestForCurrentNavigationItem` on the underlying web view, or use
 // native web view navigation where possible (for example, going back and
 // forward through the history stack).
 - (void)loadRequestForCurrentNavigationItem {
@@ -652,8 +651,8 @@ enum class BackForwardNavigationType {
     }
   }
 
-  // If there are headers in the current session entry add them to |request|.
-  // Headers that would overwrite fields already present in |request| are
+  // If there are headers in the current session entry add them to `request`.
+  // Headers that would overwrite fields already present in `request` are
   // skipped.
   NSDictionary* headers = self.currentHTTPHeaders;
   for (NSString* headerName in headers) {

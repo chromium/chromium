@@ -40,7 +40,7 @@ class PluginPlaceholderTest : public WebTestWithWebState {
     web_client->SetPluginNotSupportedText(kPluginNotSupportedText16);
   }
 
-  // Sets up |server_| with |html| as response content.
+  // Sets up `server_` with `html` as response content.
   [[nodiscard]] bool SetUpServer(const std::string& html) {
     server_.RegisterDefaultHandler(
         base::BindRepeating(&testing::HandlePageWithHtml, html));

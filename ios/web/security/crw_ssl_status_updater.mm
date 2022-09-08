@@ -29,16 +29,16 @@ using web::SecurityStyle;
 // Unowned pointer to web::NavigationManager.
 @property(nonatomic, readonly) web::NavigationManagerImpl* navigationManager;
 
-// Updates |security_style| and |cert_status| for the NavigationItem with ID
-// |navigationItemID|, if URL and certificate chain still match |host| and
-// |certChain|.
+// Updates `security_style` and `cert_status` for the NavigationItem with ID
+// `navigationItemID`, if URL and certificate chain still match `host` and
+// `certChain`.
 - (void)updateSSLStatusForItemWithID:(int)navigationItemID
                                trust:(ScopedCFTypeRef<SecTrustRef>)trust
                                 host:(NSString*)host
                    withSecurityStyle:(SecurityStyle)style
                           certStatus:(CertStatus)certStatus;
 
-// Asynchronously obtains SSL status from given |secTrust| and |host| and
+// Asynchronously obtains SSL status from given `secTrust` and `host` and
 // updates current navigation item. Before scheduling update changes SSLStatus'
 // cert_status and security_style to default.
 - (void)scheduleSSLStatusUpdateUsingTrust:(ScopedCFTypeRef<SecTrustRef>)trust
@@ -74,7 +74,7 @@ using web::SecurityStyle;
   web::SSLStatus previousSSLStatus = item->GetSSL();
 
   // Starting from iOS9 WKWebView blocks active mixed content, so if
-  // |hasOnlySecureContent| returns NO it means passive content.
+  // `hasOnlySecureContent` returns NO it means passive content.
   item->GetSSL().content_status =
       hasOnlySecureContent ? web::SSLStatus::NORMAL_CONTENT
                            : web::SSLStatus::DISPLAYED_INSECURE_CONTENT;
@@ -94,7 +94,7 @@ using web::SecurityStyle;
           oldHost != item->GetSSL().cert_status_host) {
         // Real SSL status is unknown, reset cert status and security style.
         // They will be asynchronously updated in
-        // |scheduleSSLStatusUpdateUsingTrust:host:|.
+        // `scheduleSSLStatusUpdateUsingTrust:host:`.
         item->GetSSL().cert_status = CertStatus();
         item->GetSSL().security_style = web::SECURITY_STYLE_UNKNOWN;
 

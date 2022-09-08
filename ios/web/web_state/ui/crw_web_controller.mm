@@ -104,13 +104,13 @@ using web::wk_navigation_util::IsWKInternalUrl;
                                 CRWWKUIHandlerDelegate,
                                 UIDropInteractionDelegate,
                                 WKNavigationDelegate> {
-  // The view used to display content.  Must outlive |_webViewProxy|. The
+  // The view used to display content.  Must outlive `_webViewProxy`. The
   // container view should be accessed through this property rather than
-  // |self.view| from within this class, as |self.view| triggers creation while
-  // |self.containerView| will return nil if the view hasn't been instantiated.
+  // `self.view` from within this class, as `self.view` triggers creation while
+  // `self.containerView` will return nil if the view hasn't been instantiated.
   CRWWebControllerContainerView* _containerView;
   // YES if the current URL load was triggered in Web Controller. NO by default
-  // and after web usage was disabled. Used by |-loadCurrentURLIfNecessary| to
+  // and after web usage was disabled. Used by `-loadCurrentURLIfNecessary` to
   // prevent extra loads.
   BOOL _currentURLLoadWasTrigerred;
   BOOL _isBeingDestroyed;  // YES if in the process of closing.
@@ -155,10 +155,10 @@ using web::wk_navigation_util::IsWKInternalUrl;
 // YES if in the process of closing.
 @property(nonatomic, readwrite, assign) BOOL beingDestroyed;
 
-// If |contentView_| contains a web view, this is the web view it contains.
+// If `contentView_` contains a web view, this is the web view it contains.
 // If not, it's nil. When setting the property, it performs basic setup.
 @property(weak, nonatomic) WKWebView* webView;
-// The scroll view of |webView|.
+// The scroll view of `webView`.
 @property(weak, nonatomic, readonly) UIScrollView* webScrollView;
 // The current page state of the web view. Writing to this property
 // asynchronously applies the passed value to the current web view.
@@ -220,7 +220,7 @@ using web::wk_navigation_util::IsWKInternalUrl;
 
 @property(strong, nonatomic) CRWJSInjectionReceiver* jsInjectionReceiver;
 
-// Returns the current URL of the web view, and sets |trustLevel| accordingly
+// Returns the current URL of the web view, and sets `trustLevel` accordingly
 // based on the confidence in the verification.
 - (GURL)webURLWithTrustLevel:(web::URLVerificationTrustLevel*)trustLevel;
 
@@ -233,28 +233,28 @@ using web::wk_navigation_util::IsWKInternalUrl;
 // may be called multiple times and thus must be idempotent.
 - (void)loadCompleteWithSuccess:(BOOL)loadSuccess
                      forContext:(web::NavigationContextImpl*)context;
-// Extracts the current page's viewport tag information and calls |completion|.
+// Extracts the current page's viewport tag information and calls `completion`.
 // If the page has changed before the viewport tag is successfully extracted,
-// |completion| is called with nullptr.
+// `completion` is called with nullptr.
 typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 - (void)extractViewportTagWithCompletion:(ViewportStateCompletion)completion;
 // Queries the web view for the user-scalable meta tag and calls
-// |-applyPageDisplayState:userScalable:| with the result.
+// `-applyPageDisplayState:userScalable:` with the result.
 - (void)applyPageDisplayState:(const web::PageDisplayState&)displayState;
-// Restores state of the web view's scroll view from |scrollState|.
-// |isUserScalable| represents the value of user-scalable meta tag.
+// Restores state of the web view's scroll view from `scrollState`.
+// `isUserScalable` represents the value of user-scalable meta tag.
 - (void)applyPageDisplayState:(const web::PageDisplayState&)displayState
                  userScalable:(BOOL)isUserScalable;
 // Calls the zoom-preparation UIScrollViewDelegate callbacks on the web view.
-// This is called before |-applyWebViewScrollZoomScaleFromScrollState:|.
+// This is called before `-applyWebViewScrollZoomScaleFromScrollState:`.
 - (void)prepareToApplyWebViewScrollZoomScale;
 // Calls the zoom-completion UIScrollViewDelegate callbacks on the web view.
-// This is called after |-applyWebViewScrollZoomScaleFromScrollState:|.
+// This is called after `-applyWebViewScrollZoomScaleFromScrollState:`.
 - (void)finishApplyingWebViewScrollZoomScale;
-// Sets zoom scale value for webview scroll view from |zoomState|.
+// Sets zoom scale value for webview scroll view from `zoomState`.
 - (void)applyWebViewScrollZoomScaleFromZoomState:
     (const web::PageZoomState&)zoomState;
-// Sets scroll offset value for webview scroll view from |scrollState|.
+// Sets scroll offset value for webview scroll view from `scrollState`.
 - (void)applyWebViewScrollOffsetFromScrollState:
     (const web::PageScrollState&)scrollState;
 // Finds all the scrollviews in the view hierarchy and makes sure they do not
@@ -685,7 +685,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   } else if (!_currentURLLoadWasTrigerred) {
     [self ensureContainerViewCreated];
 
-    // TODO(crbug.com/796608): end the practice of calling |loadCurrentURL|
+    // TODO(crbug.com/796608): end the practice of calling `loadCurrentURL`
     // when it is possible there is no current URL. If the call performs
     // necessary initialization, break that out.
     [self loadCurrentURLWithRendererInitiatedNavigation:NO];
@@ -832,10 +832,10 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
                   completionHandler:^(UIImage* snapshot, NSError* error) {
                     // Pass nil to the completion block if there is an error
                     // or if the web view has been removed before the
-                    // snapshot is finished.  |snapshot| can sometimes be
+                    // snapshot is finished.  `snapshot` can sometimes be
                     // corrupt if it's sent due to the WKWebView's
                     // deallocation, so callbacks received after
-                    // |-removeWebView| are ignored to prevent crashing.
+                    // `-removeWebView` are ignored to prevent crashing.
                     if (error || !weakSelf.webView) {
                       if (error) {
                         DLOG(ERROR)
@@ -874,7 +874,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 }
 
 - (void)createFullPagePDFWithCompletion:(void (^)(NSData*))completionBlock {
-  // Invoke the |completionBlock| with nil rather than a blank PDF for certain
+  // Invoke the `completionBlock` with nil rather than a blank PDF for certain
   // URLs or if there is a javascript dialog running.
   const GURL& URL = self.webState->GetLastCommittedURL();
   if (![self contentIsHTML] || !URL.is_valid() ||
@@ -1100,7 +1100,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
 #pragma mark - JavaScript Helpers (Private)
 
-// Returns a new script which wraps |script| with windowID check so |script| is
+// Returns a new script which wraps `script` with windowID check so `script` is
 // not evaluated on windowID mismatch.
 - (NSString*)scriptByAddingWindowIDCheckForScript:(NSString*)script {
   NSString* kTemplate = @"if (__gCrWeb['windowId'] === '%@') { %@; }";
@@ -1205,7 +1205,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   return _userInteractionState.IsUserInteracting(self.webView);
 }
 
-// Adds a custom drop interaction to the same subview of |self.webScrollView|
+// Adds a custom drop interaction to the same subview of `self.webScrollView`
 // that already has a default drop interaction.
 - (void)addCustomURLDropInteractionIfNeeded {
   BOOL subviewWithDefaultInteractionFound = NO;
@@ -1449,9 +1449,9 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
 - (void)applyPageDisplayState:(const web::PageDisplayState&)displayState
                  userScalable:(BOOL)isUserScalable {
-  // Early return if |scrollState| doesn't match the current NavigationItem.
+  // Early return if `scrollState` doesn't match the current NavigationItem.
   // This can sometimes occur in tests, as navigation occurs programmatically
-  // and |-applyPageScrollState:| is asynchronous.
+  // and `-applyPageScrollState:` is asynchronous.
   web::NavigationItem* currentItem = self.currentNavItem;
   if (currentItem && currentItem->GetPageDisplayState() != displayState)
     return;
@@ -1499,9 +1499,9 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
 - (void)applyWebViewScrollZoomScaleFromZoomState:
     (const web::PageZoomState&)zoomState {
-  // After rendering a web page, WKWebView keeps the |minimumZoomScale| and
-  // |maximumZoomScale| properties of its scroll view constant while adjusting
-  // the |zoomScale| property accordingly.  The maximum-scale or minimum-scale
+  // After rendering a web page, WKWebView keeps the `minimumZoomScale` and
+  // `maximumZoomScale` properties of its scroll view constant while adjusting
+  // the `zoomScale` property accordingly.  The maximum-scale or minimum-scale
   // meta tags of a page may have changed since the state was recorded, so clamp
   // the zoom scale to the current range if necessary.
   DCHECK(zoomState.IsValid());
@@ -1634,7 +1634,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
   return [self ensureWebViewCreatedWithConfiguration:config];
 }
 
-// Creates a web view with given |config|. No-op if web view is already created.
+// Creates a web view with given `config`. No-op if web view is already created.
 - (WKWebView*)ensureWebViewCreatedWithConfiguration:
     (WKWebViewConfiguration*)config {
   if (!self.webView) {
@@ -1653,7 +1653,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
     [self.webView setAutoresizingMask:UIViewAutoresizingFlexibleWidth |
                                       UIViewAutoresizingFlexibleHeight];
 
-    // Create a dependency between the |webView| pan gesture and BVC side swipe
+    // Create a dependency between the `webView` pan gesture and BVC side swipe
     // gestures. Note: This needs to be added before the longPress recognizers
     // below, or the longPress appears to deadlock the remaining recognizers,
     // thereby breaking scroll.
@@ -1839,7 +1839,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
   if (self.navigationHandler.navigationState ==
       web::WKNavigationState::REQUESTED) {
     // Do not update SSL Status for pending load. It will be updated in
-    // |webView:didCommitNavigation:| callback.
+    // `webView:didCommitNavigation:` callback.
     return;
   }
   web::NavigationItem* item =
@@ -1961,7 +1961,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
   newContext->SetHasCommitted(!isSameDocumentNavigation);
   self.webStateImpl->OnNavigationFinished(newContext.get());
   // TODO(crbug.com/792515): It is OK, but very brittle, to call
-  // |didFinishNavigation:| here because the gating condition is mutually
+  // `didFinishNavigation:` here because the gating condition is mutually
   // exclusive with the condition below. Refactor this method after
   // deprecating self.navigationHandler.pendingNavigationInfo.
   if (newContext->GetWKNavigationType() == WKNavigationTypeBackForward) {
@@ -2011,7 +2011,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
   // URL, but also must come first since it uses state that is reset on URL
   // changes.
 
-  // |newNavigationContext| only exists if this method has to create a new
+  // `newNavigationContext` only exists if this method has to create a new
   // context object.
   std::unique_ptr<web::NavigationContextImpl> newNavigationContext;
   if (!self.jsNavigationHandler.changingHistoryState) {
@@ -2117,7 +2117,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 - (void)resumeDownloadWithData:(NSData*)data
              completionHandler:(void (^)(WKDownload*))completionHandler
     API_AVAILABLE(ios(15)) {
-  // Reports some failure to higher level code if |webView| doesn't exist
+  // Reports some failure to higher level code if `webView` doesn't exist
   if (!_webView) {
     completionHandler(nil);
     return;
@@ -2140,7 +2140,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 
 - (void)webRequestControllerDisableNavigationGesturesUntilFinishNavigation:
     (CRWWebRequestController*)requestController {
-  // Disable |allowsBackForwardNavigationGestures| during restore. Otherwise,
+  // Disable `allowsBackForwardNavigationGestures` during restore. Otherwise,
   // WebKit will trigger a snapshot for each (blank) page, and quickly
   // overload system memory.
   self.webView.allowsBackForwardNavigationGestures = NO;

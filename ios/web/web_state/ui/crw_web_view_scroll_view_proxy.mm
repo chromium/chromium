@@ -24,8 +24,8 @@ static int gAnyContext = 0;
 
 // A wrapper of a key-value observer. When an instance of
 // CRWKeyValueObserverForwarder receives a KVO callback, it forwards the
-// callback to |wrappedObserver|, but replacing the object parameter with the
-// |object| given in its initializer.
+// callback to `wrappedObserver`, but replacing the object parameter with the
+// `object` given in its initializer.
 //
 // This is useful when creating a proxy class of an object and forwarding KVO
 // against the proxy object to the underlying object, but making the KVO
@@ -124,7 +124,7 @@ static int gAnyContext = 0;
 // Returns the key paths that need to be observed for UIScrollView.
 + (NSArray*)scrollViewObserverKeyPaths;
 
-// Adds and removes key-value observers for |scrollView| needed by |proxy|.
+// Adds and removes key-value observers for `scrollView` needed by `proxy`.
 + (void)startObservingScrollView:(UIScrollView*)scrollView
                            proxy:(CRWWebViewScrollViewProxy*)proxy;
 + (void)stopObservingScrollView:(UIScrollView*)scrollView
@@ -228,7 +228,7 @@ static int gAnyContext = 0;
   if (_storedClipsToBounds) {
     scrollView.clipsToBounds = *_storedClipsToBounds;
   }
-  // Assigns |contentInsetAdjustmentBehavior| which was set before setting the
+  // Assigns `contentInsetAdjustmentBehavior` which was set before setting the
   // scroll view.
   if (_storedContentInsetAdjustmentBehavior) {
     self.underlyingScrollView.contentInsetAdjustmentBehavior =
@@ -239,7 +239,7 @@ static int gAnyContext = 0;
 }
 
 // Preserves properties of the underlying scroll view when it changes from
-// |oldScrollView| to |newScrollView|.
+// `oldScrollView` to `newScrollView`.
 //
 // This is necessary to avoid losing properties set against the proxy when the
 // underlying scroll view is reset.
@@ -250,8 +250,8 @@ static int gAnyContext = 0;
   // CRWWebViewScrollViewProxy) which:
   //   - is a readwrite property
   //   - AND is supposed to be modified directly, considering it's a scroll
-  //     view of a web view. e.g., |frame| and |subviews| do not meet this
-  //     condition because they are managed by the web view.  |backgroundColor|
+  //     view of a web view. e.g., `frame` and `subviews` do not meet this
+  //     condition because they are managed by the web view.  `backgroundColor`
   //     is also managed by WKWebView to match the page's background color, and
   //     should not be set directly (see crbug.com/1078790).
   //
@@ -324,7 +324,7 @@ static int gAnyContext = 0;
 
 + (void)startObservingScrollView:(UIScrollView*)scrollView
                            proxy:(CRWWebViewScrollViewProxy*)proxy {
-  // Add observations by |proxy|.
+  // Add observations by `proxy`.
   for (NSString* keyPath in [proxy.class scrollViewObserverKeyPaths]) {
     [scrollView addObserver:proxy forKeyPath:keyPath options:0 context:nil];
   }
@@ -348,7 +348,7 @@ static int gAnyContext = 0;
 
 + (void)stopObservingScrollView:(UIScrollView*)scrollView
                           proxy:(CRWWebViewScrollViewProxy*)proxy {
-  // Remove observations by |self|.
+  // Remove observations by `self`.
   for (NSString* keyPath in [proxy.class scrollViewObserverKeyPaths]) {
     [scrollView removeObserver:proxy forKeyPath:keyPath];
   }
@@ -424,7 +424,7 @@ static int gAnyContext = 0;
             options:(NSKeyValueObservingOptions)options
             context:(nullable void*)context {
   // KVO against CRWWebViewScrollViewProxy works as KVO against the underlying
-  // scroll view, except that |object| parameter of the notification points to
+  // scroll view, except that `object` parameter of the notification points to
   // CRWWebViewScrollViewProxy, not the undelying scroll view. This is achieved
   // by CRWKeyValueObserverForwarder.
   NSMutableDictionary<NSValue*, NSMutableArray<CRWKeyValueObserverForwarder*>*>*
@@ -474,7 +474,7 @@ static int gAnyContext = 0;
       map[observerValue];
 
   // It is technically allowed to call -addObserver:forKeypath:options:context:
-  // multiple times with the same |observer| and same |keyPath|. And
+  // multiple times with the same `observer` and same `keyPath`. And
   // -removeObserver:forKeyPath:context: (and -removeObserver:forKeyPath:)
   // removes the *last* observation matching the condition. This matches the
   // (undocumented) behavior of the built-in KVO.

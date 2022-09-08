@@ -12,8 +12,8 @@
 
 namespace web {
 
-// Generates a PDF of the entire content of a |web_view| and invokes the
-// |callback| with the NSData of the PDF.
+// Generates a PDF of the entire content of a `web_view` and invokes the
+// `callback` with the NSData of the PDF.
 void CreateFullPagePdf(WKWebView* web_view,
                        base::OnceCallback<void(NSData*)> callback);
 }  // namespace web

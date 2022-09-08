@@ -75,7 +75,7 @@ const char16_t kFailedTitle[] = u"failed_title";
 // Location of a test page.
 const char kTestPageURL[] = "/pony.html";
 
-// A text string from the test HTML page at |kTestPageURL|.
+// A text string from the test HTML page at `kTestPageURL`.
 const char kTestSessionStoragePageText[] = "pony";
 
 // Returns a session storage with a single committed entry of a test HTML page.
@@ -108,8 +108,8 @@ ACTION_P(VerifyTitle, expected_title) {
   EXPECT_EQ(expected_title, base::UTF16ToASCII(web_state->GetTitle()));
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for new page navigation
-// passed to |DidStartNavigation|. Stores |NavigationContext| in |context|
+// Verifies correctness of `NavigationContext` (`arg1`) for new page navigation
+// passed to `DidStartNavigation`. Stores `NavigationContext` in `context`
 // pointer.
 ACTION_P5(VerifyPageStartedContext,
           web_state,
@@ -141,8 +141,8 @@ ACTION_P5(VerifyPageStartedContext,
   EXPECT_EQ(url, item->GetURL());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for new page navigation
-// passed to |DidStartNavigation|. Stores |NavigationContext| in |context|
+// Verifies correctness of `NavigationContext` (`arg1`) for new page navigation
+// passed to `DidStartNavigation`. Stores `NavigationContext` in `context`
 // pointer. This action is used to verify one of multiple pending navigations.
 ACTION_P6(VerifyPageConcurrentlyStartedContext,
           web_state,
@@ -177,8 +177,8 @@ ACTION_P6(VerifyPageConcurrentlyStartedContext,
   EXPECT_EQ(item_url, item->GetURL());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for data navigation
-// passed to |DidStartNavigation|. Stores |NavigationContext| in |context|
+// Verifies correctness of `NavigationContext` (`arg1`) for data navigation
+// passed to `DidStartNavigation`. Stores `NavigationContext` in `context`
 // pointer.
 ACTION_P5(VerifyDataStartedContext,
           web_state,
@@ -210,8 +210,8 @@ ACTION_P5(VerifyDataStartedContext,
   EXPECT_EQ(url, item->GetURL());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for navigation for
-// stopped load. Stores |NavigationContext| in |context| pointer.
+// Verifies correctness of `NavigationContext` (`arg1`) for navigation for
+// stopped load. Stores `NavigationContext` in `context` pointer.
 ACTION_P5(VerifyAbortedNavigationStartedContext,
           web_state,
           url,
@@ -241,9 +241,9 @@ ACTION_P5(VerifyAbortedNavigationStartedContext,
   EXPECT_FALSE(web_state->GetNavigationManager()->GetPendingItem());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for new page navigation
-// passed to |DidFinishNavigation|. Asserts that |NavigationContext| the same as
-// |context|.
+// Verifies correctness of `NavigationContext` (`arg1`) for new page navigation
+// passed to `DidFinishNavigation`. Asserts that `NavigationContext` the same as
+// `context`.
 ACTION_P6(VerifyNewPageFinishedContext,
           web_state,
           url,
@@ -282,9 +282,9 @@ ACTION_P6(VerifyNewPageFinishedContext,
   EXPECT_EQ(url, item->GetURL());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for file:// URL
-// navigation passed to |DidFinishNavigation|. Asserts that |NavigationContext|
-// the same as |context|.
+// Verifies correctness of `NavigationContext` (`arg1`) for file:// URL
+// navigation passed to `DidFinishNavigation`. Asserts that `NavigationContext`
+// the same as `context`.
 ACTION_P4(VerifyPdfFileUrlFinishedContext, web_state, url, context, nav_id) {
   ASSERT_EQ(*context, arg1);
   EXPECT_EQ(web_state, arg0);
@@ -312,9 +312,9 @@ ACTION_P4(VerifyPdfFileUrlFinishedContext, web_state, url, context, nav_id) {
   EXPECT_EQ(url, item->GetURL());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for data navigation
-// passed to |DidFinishNavigation|. Asserts that |NavigationContext| the same as
-// |context|.
+// Verifies correctness of `NavigationContext` (`arg1`) for data navigation
+// passed to `DidFinishNavigation`. Asserts that `NavigationContext` the same as
+// `context`.
 ACTION_P5(VerifyDataFinishedContext,
           web_state,
           url,
@@ -347,9 +347,9 @@ ACTION_P5(VerifyDataFinishedContext,
   EXPECT_EQ(url, item->GetURL());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for failed navigation
-// passed to |DidFinishNavigation|. Asserts that |NavigationContext| the same as
-// |context|.
+// Verifies correctness of `NavigationContext` (`arg1`) for failed navigation
+// passed to `DidFinishNavigation`. Asserts that `NavigationContext` the same as
+// `context`.
 ACTION_P6(VerifyErrorFinishedContext,
           web_state,
           url,
@@ -390,9 +390,9 @@ ACTION_P6(VerifyErrorFinishedContext,
   }
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) passed to
-// |DidFinishNavigation| for navigation canceled due to a rejected response.
-// Asserts that |NavigationContext| the same as |context|.
+// Verifies correctness of `NavigationContext` (`arg1`) passed to
+// `DidFinishNavigation` for navigation canceled due to a rejected response.
+// Asserts that `NavigationContext` the same as `context`.
 ACTION_P4(VerifyResponseRejectedFinishedContext,
           web_state,
           url,
@@ -421,9 +421,9 @@ ACTION_P4(VerifyResponseRejectedFinishedContext,
   ASSERT_FALSE(web_state->ContentIsHTML());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for navigations via POST
-// HTTP methods passed to |DidStartNavigation|. Stores |NavigationContext| in
-// |context| pointer.
+// Verifies correctness of `NavigationContext` (`arg1`) for navigations via POST
+// HTTP methods passed to `DidStartNavigation`. Stores `NavigationContext` in
+// `context` pointer.
 ACTION_P6(VerifyPostStartedContext,
           web_state,
           url,
@@ -452,9 +452,9 @@ ACTION_P6(VerifyPostStartedContext,
   EXPECT_EQ(url, item->GetURL());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for navigations via POST
-// HTTP methods passed to |DidFinishNavigation|. Stores |NavigationContext| in
-// |context| pointer.
+// Verifies correctness of `NavigationContext` (`arg1`) for navigations via POST
+// HTTP methods passed to `DidFinishNavigation`. Stores `NavigationContext` in
+// `context` pointer.
 ACTION_P6(VerifyPostFinishedContext,
           web_state,
           url,
@@ -482,8 +482,8 @@ ACTION_P6(VerifyPostFinishedContext,
   EXPECT_EQ(url, item->GetURL());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for same page navigation
-// passed to |DidFinishNavigation|. Stores |NavigationContext| in |context|
+// Verifies correctness of `NavigationContext` (`arg1`) for same page navigation
+// passed to `DidFinishNavigation`. Stores `NavigationContext` in `context`
 // pointer.
 ACTION_P7(VerifySameDocumentStartedContext,
           web_state,
@@ -511,9 +511,9 @@ ACTION_P7(VerifySameDocumentStartedContext,
   EXPECT_FALSE((*context)->GetResponseHeaders());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for same page navigation
-// passed to |DidFinishNavigation|. Asserts that |NavigationContext| the same as
-// |context|.
+// Verifies correctness of `NavigationContext` (`arg1`) for same page navigation
+// passed to `DidFinishNavigation`. Asserts that `NavigationContext` the same as
+// `context`.
 ACTION_P7(VerifySameDocumentFinishedContext,
           web_state,
           url,
@@ -543,8 +543,8 @@ ACTION_P7(VerifySameDocumentFinishedContext,
   EXPECT_EQ(url, item->GetURL());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for reload navigation
-// passed to |DidStartNavigation|. Stores |NavigationContext| in |context|
+// Verifies correctness of `NavigationContext` (`arg1`) for reload navigation
+// passed to `DidStartNavigation`. Stores `NavigationContext` in `context`
 // pointer.
 ACTION_P4(VerifyReloadStartedContext, web_state, url, context, nav_id) {
   *context = arg1;
@@ -569,9 +569,9 @@ ACTION_P4(VerifyReloadStartedContext, web_state, url, context, nav_id) {
   EXPECT_EQ(url, item->GetURL());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for reload navigation
-// passed to |DidFinishNavigation|. Asserts that |NavigationContext| the same as
-// |context|.
+// Verifies correctness of `NavigationContext` (`arg1`) for reload navigation
+// passed to `DidFinishNavigation`. Asserts that `NavigationContext` the same as
+// `context`.
 ACTION_P5(VerifyReloadFinishedContext,
           web_state,
           url,
@@ -607,9 +607,9 @@ ACTION_P5(VerifyReloadFinishedContext,
   EXPECT_EQ(url, item->GetURL());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for download navigation
-// passed to |DidFinishNavigation|. Asserts that |NavigationContext| the same as
-// |context|.
+// Verifies correctness of `NavigationContext` (`arg1`) for download navigation
+// passed to `DidFinishNavigation`. Asserts that `NavigationContext` the same as
+// `context`.
 ACTION_P4(VerifyDownloadFinishedContext, web_state, url, context, nav_id) {
   ASSERT_EQ(*context, arg1);
   EXPECT_EQ(web_state, arg0);
@@ -629,9 +629,9 @@ ACTION_P4(VerifyDownloadFinishedContext, web_state, url, context, nav_id) {
   EXPECT_FALSE((*context)->IsRendererInitiated());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for restoration
-// navigation passed to |DidStartNavigation|. Stores |NavigationContext| in
-// |context| pointer.
+// Verifies correctness of `NavigationContext` (`arg1`) for restoration
+// navigation passed to `DidStartNavigation`. Stores `NavigationContext` in
+// `context` pointer.
 ACTION_P4(VerifyRestorationStartedContext, web_state, url, context, nav_id) {
   *context = arg1;
   ASSERT_TRUE(*context);
@@ -663,9 +663,9 @@ ACTION_P4(VerifyRestorationStartedContext, web_state, url, context, nav_id) {
   EXPECT_EQ(url, navigation_manager->GetPendingItem()->GetURL());
 }
 
-// Verifies correctness of |NavigationContext| (|arg1|) for restoration
-// navigation passed to |DidFinishNavigation|. Asserts that |NavigationContext|
-// the same as |context|.
+// Verifies correctness of `NavigationContext` (`arg1`) for restoration
+// navigation passed to `DidFinishNavigation`. Asserts that `NavigationContext`
+// the same as `context`.
 ACTION_P5(VerifyRestorationFinishedContext,
           web_state,
           url,
@@ -718,7 +718,7 @@ MATCHER_P(ResponseInfoMatch, expected_response_info, /*description=*/"") {
   return ::web::ResponseInfoMatch(expected_response_info, arg);
 }
 
-// A GMock matcher that matches |URL| member of |arg| with |expected_url|. |arg|
+// A GMock matcher that matches `URL` member of `arg` with `expected_url`. `arg`
 // is expected to be either an NSURLRequest or NSURLResponse.
 MATCHER_P(URLMatch, expected_url, /*description=*/"") {
   return expected_url == net::GURLWithNSURL(arg.URL);
@@ -956,14 +956,14 @@ TEST_F(WebStateObserverTest, AboutNewTabNavigation) {
   // Perform about://newtab navigation and immediately perform the second
   // navigation without waiting until the first navigation finishes.
 
-  // Load |first_url|.
+  // Load `first_url`.
   NavigationContext* context = nullptr;
   int32_t nav_id = 0;
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
 
-  // WKWebView.URL will change from |first_url| to |second_url|, then to nil
+  // WKWebView.URL will change from `first_url` to `second_url`, then to nil
   // while WKWebView.loading changing to false and back to true immediately,
-  // then to |first_url| again and the first navigation will finish.
+  // then to `first_url` again and the first navigation will finish.
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
 
@@ -994,7 +994,7 @@ TEST_F(WebStateObserverTest, AboutNewTabNavigation) {
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::SUCCESS));
 
-  // Load |second_url|.
+  // Load `second_url`.
   EXPECT_CALL(*decider_, MockShouldAllowRequest(
                              _, RequestInfoMatch(expected_request_info), _))
       .WillOnce(
@@ -1015,7 +1015,7 @@ TEST_F(WebStateObserverTest, AboutNewTabNavigation) {
           &context, &nav_id));
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
 
-  // Finish loading |second_url|.
+  // Finish loading `second_url`.
   __block bool page_loaded = false;
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::SUCCESS))
@@ -1862,10 +1862,10 @@ TEST_F(WebStateObserverTest, ReloadPostNavigation) {
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::SUCCESS));
-  // TODO(crbug.com/700958): ios/web ignores |check_for_repost| flag and current
+  // TODO(crbug.com/700958): ios/web ignores `check_for_repost` flag and current
   // delegate does not run callback for ShowRepostFormWarningDialog. Clearing
   // the delegate will allow form resubmission. Remove this workaround (clearing
-  // the delegate, once |check_for_repost| is supported).
+  // the delegate, once `check_for_repost` is supported).
   web_state()->SetDelegate(nullptr);
   ASSERT_TRUE(ExecuteBlockAndWaitForLoad(action, ^{
     navigation_manager()->Reload(ReloadType::NORMAL,
@@ -1981,10 +1981,10 @@ TEST_F(WebStateObserverTest, ForwardPostNavigation) {
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::SUCCESS));
-  // TODO(crbug.com/700958): ios/web ignores |check_for_repost| flag and current
+  // TODO(crbug.com/700958): ios/web ignores `check_for_repost` flag and current
   // delegate does not run callback for ShowRepostFormWarningDialog. Clearing
   // the delegate will allow form resubmission. Remove this workaround (clearing
-  // the delegate, once |check_for_repost| is supported).
+  // the delegate, once `check_for_repost` is supported).
   web_state()->SetDelegate(nullptr);
   ASSERT_TRUE(ExecuteBlockAndWaitForLoad(action, ^{
     navigation_manager()->GoForward();
@@ -2802,7 +2802,7 @@ TEST_F(WebStateObserverTest, RestoreSessionOnline) {
 
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
 
-  // Client-side redirect to |url1|.
+  // Client-side redirect to `url1`.
   EXPECT_CALL(*decider_, MockShouldAllowRequest(URLMatch(url1), _, _))
       .WillOnce(
           RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
@@ -2830,7 +2830,7 @@ TEST_F(WebStateObserverTest, RestoreSessionOnline) {
   ASSERT_TRUE(navigation_manager()->CanGoBack());
   ASSERT_TRUE(navigation_manager()->CanGoForward());
 
-  // Go back to |item0|.
+  // Go back to `item0`.
 
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   // Only CanGoBackward changes state on this navigation.
@@ -2849,7 +2849,7 @@ TEST_F(WebStateObserverTest, RestoreSessionOnline) {
 
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
 
-  // Client-side redirect to |url0|.
+  // Client-side redirect to `url0`.
   EXPECT_CALL(*decider_, MockShouldAllowRequest(URLMatch(url0), _, _))
       .WillOnce(
           RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));

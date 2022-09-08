@@ -25,10 +25,10 @@ enum class UserAgentType : short {
   DESKTOP
 };
 
-// Returns a string representation of |type|.
+// Returns a string representation of `type`.
 std::string GetUserAgentTypeDescription(UserAgentType type);
 
-// Returns a UserAgentType with the given description.  If |description| doesn't
+// Returns a UserAgentType with the given description.  If `description` doesn't
 // correspond with a UserAgentType, UserAgentType::NONE will be returned.
 UserAgentType GetUserAgentTypeWithDescription(const std::string& description);
 

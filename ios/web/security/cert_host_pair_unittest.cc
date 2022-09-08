@@ -20,7 +20,7 @@ const char kCertFileName2[] = "expired_cert.pem";
 const char kHostName1[] = "www.example.com";
 const char kHostName2[] = "www.chromium.test";
 
-// Loads cert with the given |file_name|.
+// Loads cert with the given `file_name`.
 scoped_refptr<net::X509Certificate> GetCert(const std::string& file_name) {
   return net::ImportCertFromFile(net::GetTestCertsDirectory(), file_name);
 }

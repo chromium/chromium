@@ -18,15 +18,15 @@
 @protocol CRWWebControllerContainerViewDelegate<NSObject>
 
 // Returns the proxy object that's backed by the CRWContentView displayed by
-// |containerView|.
+// `containerView`.
 - (CRWWebViewProxyImpl*)contentViewProxyForContainerView:
         (CRWWebControllerContainerView*)containerView;
 
-// Returns |YES| if the delegate wants to keep the render process alive.
+// Returns `YES` if the delegate wants to keep the render process alive.
 - (BOOL)shouldKeepRenderProcessAliveForContainerView:
     (CRWWebControllerContainerView*)containerView;
 
-// Instructs the delegate to add the |viewToStash| to the view hierarchy to
+// Instructs the delegate to add the `viewToStash` to the view hierarchy to
 // keep the render process alive.
 - (void)containerView:(CRWWebControllerContainerView*)containerView
     storeWebViewInWindow:(UIView*)viewToStash;
@@ -44,14 +44,14 @@
 @property(nonatomic, weak) id<CRWWebControllerContainerViewDelegate>
     delegate;  // weak
 
-// Designated initializer.  |proxy|'s content view will be updated as different
+// Designated initializer.  `proxy`'s content view will be updated as different
 // content is added to the container.
 - (instancetype)initWithDelegate:
         (id<CRWWebControllerContainerViewDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;
 
 // CRWWebControllerContainerView should be initialized via
-// |-initWithContentViewProxy:|.
+// `-initWithContentViewProxy:`.
 - (instancetype)initWithCoder:(NSCoder*)decoder NS_UNAVAILABLE;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 
@@ -61,16 +61,16 @@
 // Removes all subviews and resets state to default.
 - (void)resetContent;
 
-// Replaces the currently displayed content with |webViewContentView|.
+// Replaces the currently displayed content with `webViewContentView`.
 - (void)displayWebViewContentView:(CRWWebViewContentView*)webViewContentView;
 
-// Updates the |webViewContentView|'s view hierarchy status based on the the
+// Updates the `webViewContentView`'s view hierarchy status based on the the
 // container view window status. If the current webView is active but the window
 // is nil, store the webView in the view hierarchy keyWindow so WKWebView
 // doesn't suspend it's counterpart process.
 - (void)updateWebViewContentViewForContainerWindow:(UIWindow*)window;
 
-// Updates |webViewContentView| with the current fullscreen state
+// Updates `webViewContentView` with the current fullscreen state
 - (void)updateWebViewContentViewFullscreenState:
     (CrFullscreenState)fullscreenState;
 

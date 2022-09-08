@@ -49,10 +49,10 @@ using base::test::ios::kWaitForPageLoadTimeout;
 namespace web {
 namespace {
 
-// A text string that is included in |kTestPageHTML|.
+// A text string that is included in `kTestPageHTML`.
 const char kTextInTestPageHTML[] = "this_is_a_test_string";
 
-// A test page HTML containing |kTextInTestPageHTML|.
+// A test page HTML containing `kTextInTestPageHTML`.
 const char kTestPageHTML[] = "<html><body>this_is_a_test_string</body><html>";
 
 // Returns the NSURLErrorUnsupportedURL error expected for tests.
@@ -389,7 +389,7 @@ TEST_F(WebStateTest, CreateFullPagePdfWebStatePdfContent) {
 }
 
 // Tests that message sent from main frame triggers the ScriptCommandCallback
-// with |is_main_frame| = true.
+// with `is_main_frame` = true.
 TEST_F(WebStateTest, MessageFromMainFrame) {
   // Add a script command handler.
   __block bool message_received = false;
@@ -422,7 +422,7 @@ TEST_F(WebStateTest, MessageFromMainFrame) {
 }
 
 // Tests that message sent from main frame triggers the ScriptCommandCallback
-// with |is_main_frame| = false.
+// with `is_main_frame` = false.
 TEST_F(WebStateTest, MessageFromIFrame) {
   // Add a script command handler.
   __block bool message_received = false;
@@ -464,7 +464,7 @@ TEST_F(WebStateTest, SetHasOpener) {
 }
 
 // Verifies that large session can be restored with max session size limit
-// equals to |wk_navigation_util::kMaxSessionSize|.
+// equals to `wk_navigation_util::kMaxSessionSize`.
 TEST_F(WebStateTest, RestoreLargeSession) {
   // Create session storage with large number of items.
   const int kItemCount = 150;
@@ -690,7 +690,7 @@ TEST_F(WebStateTest, CallLoadURLWithParamsDuringSessionRestore) {
   // Now wait until the last committed item is fully loaded.
   // TODO(crbug.com/996544) On Xcode 11 beta 6 this became very slow.  This
   // appears to only affect simulator, and will hopefully be fixed in a future
-  // Xcode release.  Revert this to |kWaitForPageLoadTimeout| alone when fixed.
+  // Xcode release.  Revert this to `kWaitForPageLoadTimeout` alone when fixed.
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout * 7, ^{
     return web_state_ptr->GetLastCommittedURL() == url;
   }));

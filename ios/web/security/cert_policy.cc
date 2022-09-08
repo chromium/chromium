@@ -12,8 +12,8 @@ CertPolicy::CertPolicy() {}
 
 CertPolicy::~CertPolicy() {}
 
-// We consider a given |cert| to be a match to a saved allowed cert if the
-// |error| is an exact match to or subset of the errors in the saved CertStatus.
+// We consider a given `cert` to be a match to a saved allowed cert if the
+// `error` is an exact match to or subset of the errors in the saved CertStatus.
 CertPolicy::Judgment CertPolicy::Check(net::X509Certificate* cert,
                                        net::CertStatus error) const {
   auto allowed_iter = allowed_.find(cert->CalculateChainFingerprint256());

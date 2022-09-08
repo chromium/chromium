@@ -28,7 +28,7 @@ class WebStatePolicyDeciderBridgeTest : public PlatformTest {
   WebStatePolicyDeciderBridge decider_bridge_;
 };
 
-// Tests |shouldAllowRequest:requestInfo:| forwarding.
+// Tests `shouldAllowRequest:requestInfo:` forwarding.
 TEST_F(WebStatePolicyDeciderBridgeTest, ShouldAllowRequest) {
   ASSERT_FALSE([decider_ shouldAllowRequestInfo]);
   NSURL* url = [NSURL URLWithString:@"http://test.url"];
@@ -55,7 +55,7 @@ TEST_F(WebStatePolicyDeciderBridgeTest, ShouldAllowRequest) {
       should_allow_request_info->request_info.transition_type));
 }
 
-// Tests |decidePolicyForNavigationResponse:responseInfo:completionHandler:|
+// Tests `decidePolicyForNavigationResponse:responseInfo:completionHandler:`
 // forwarding.
 TEST_F(WebStatePolicyDeciderBridgeTest, DecidePolicyForNavigationResponse) {
   ASSERT_FALSE([decider_ decidePolicyForNavigationResponseInfo]);

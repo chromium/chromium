@@ -41,28 +41,28 @@ const char kRequestId[] = "UNIQUE_IDENTIFIER";
 const char kTestUrl[] = "https://chromium.test/";
 
 // A point in the web view's coordinate space on the link returned by
-// |GetHtmlForLink()|.
+// `GetHtmlForLink()`.
 const CGPoint kPointOnLink = {5.0, 2.0};
 
 // A point in the web view's coordinate space on the image returned by
-// |GetHtmlForImage()|.
+// `GetHtmlForImage()`.
 const CGPoint kPointOnImage = {50.0, 10.0};
 // A point in the web view's coordinate space within the document bounds but not
-// on the image returned by |GetHtmlForImage()|.
+// on the image returned by `GetHtmlForImage()`.
 const CGPoint kPointOutsideImage = {50.0, 100.0};
 
 // A point in the web view's coordinate space on the svg link returned by
-// |GetHtmlForSvgLink()| and |GetHtmlForSvgXlink()|.
+// `GetHtmlForSvgLink()` and `GetHtmlForSvgXlink()`.
 const CGPoint kPointOnSvgLink = {50.0, 75.0};
 // A point in the web view's coordinate space within the svg element but not
-// on the svg link returned by |GetHtmlForSvgLink()| and |GetHtmlForSvgXlink()|.
+// on the svg link returned by `GetHtmlForSvgLink()` and `GetHtmlForSvgXlink()`.
 const CGPoint kPointOutsideSvgLink = {50.0, 10.0};
 
 // A point in the web view's coordinate space on the shadow DOM link returned by
-// |GetHtmlForShadowDomLink()|.
+// `GetHtmlForShadowDomLink()`.
 const CGPoint kPointOnShadowDomLink = {5.0, 2.0};
 // A point in the web view's coordinate space within the shadow DOM returned by
-// |GetHtmlForShadowDomLink()| but not on the link.
+// `GetHtmlForShadowDomLink()` but not on the link.
 const CGPoint kPointOutsideShadowDomLink = {50.0, 75.0};
 
 // A point in the web view's coordinate space outside of the document bounds.
@@ -85,7 +85,7 @@ const char kImageSource[] =
 // Alt text on image element for accessibility.
 const char kImageAlt[] = "Some alt text for an image";
 
-// Style used to size the image returned by |GetHtmlForImage()|.
+// Style used to size the image returned by `GetHtmlForImage()`.
 const char kImageSizeStyle[] = "width:100%;height:25%;";
 
 // Style used to size a div with the background image set.
@@ -95,7 +95,7 @@ const char kBackgroundDivStyle[] = "width:100%;height:25px;";
 const char kOverlayDivStyle[] = "position:fixed;left:0;top:0;width:100%;height:"
                                 "100%;background-color:black;";
 
-// Returns HTML for a test webpage with the given |head| and |body|.
+// Returns HTML for a test webpage with the given `head` and `body`.
 NSString* GetHtmlForPage(NSString* head, NSString* body) {
   return [NSString
       stringWithFormat:
@@ -107,7 +107,7 @@ NSString* GetHtmlForPage(NSString* head, NSString* body) {
           head ? head : @"", body];
 }
 
-// Returns HTML for a link to |href|, display |text|, and inline |style|.
+// Returns HTML for a link to `href`, display `text`, and inline `style`.
 NSString* GetHtmlForLink(const char* href,
                          const char* text,
                          const char* style) {
@@ -117,7 +117,7 @@ NSString* GetHtmlForLink(const char* href,
                                     style_attribute.c_str(), href, text];
 }
 
-// Returns HTML for an SVG shape which links to |href|.
+// Returns HTML for an SVG shape which links to `href`.
 NSString* GetHtmlForSvgLink(const char* href) {
   NSString* svg_shape = @"<rect y=\"50\" width=\"100\" height=\"50\"/>";
   return [NSString
@@ -126,7 +126,7 @@ NSString* GetHtmlForSvgLink(const char* href) {
           href, svg_shape];
 }
 
-// Returns HTML for an SVG shape which links to |href| with an xlink:href.
+// Returns HTML for an SVG shape which links to `href` with an xlink:href.
 NSString* GetHtmlForSvgXlink(const char* href) {
   NSString* svg_shape = @"<rect y=\"50\" width=\"100\" height=\"50\"/>";
   return [NSString stringWithFormat:@"<svg width=\"100\" height=\"100\"><a "
@@ -134,13 +134,13 @@ NSString* GetHtmlForSvgXlink(const char* href) {
                                     href, svg_shape];
 }
 
-// Returns HTML for a link to |href| and display text |text|.
+// Returns HTML for a link to `href` and display text `text`.
 NSString* GetHtmlForLink(const char* href, NSString* text) {
   return GetHtmlForLink(href, base::SysNSStringToUTF8(text).c_str(),
                         /*style=*/nullptr);
 }
 
-// Returns HTML for a shadow DOM link to |href| and display text |text|.
+// Returns HTML for a shadow DOM link to `href` and display text `text`.
 NSString* GetHtmlForShadowDomLink(const char* href, NSString* text) {
   NSString* shadow_html = [NSString
       stringWithFormat:@"<div style=\"height:100px;font-size:20px\">%@</div>",
@@ -156,8 +156,8 @@ NSString* GetHtmlForShadowDomLink(const char* href, NSString* text) {
 }
 
 // Returns html for an image styled to fill the width and top 25% of its
-// container. |source| must be provided, but specifying an image |title| and
-// inline |style| are optional.
+// container. `source` must be provided, but specifying an image `title` and
+// inline `style` are optional.
 NSString* GetHtmlForImage(const char* source,
                           const char* alt_text,
                           const char* title,
@@ -224,7 +224,7 @@ class ContextMenuJsFindElementAtPointTest : public PlatformTest {
   }
 
  protected:
-  // Returns details of the DOM element at the given |point| in the web view
+  // Returns details of the DOM element at the given `point` in the web view
   // viewport's coordinate space.
   base::Value FindElementAtPoint(CGPoint point) {
     bool gCrWeb_injected = web::test::WaitForInjectedScripts(web_view_);
@@ -258,8 +258,8 @@ class ContextMenuJsFindElementAtPointTest : public PlatformTest {
         ->Clone();
   }
 
-  // Finds the element at the given |point| and compares it against
-  // |expected_result|. Retries if there is a mismatch.  Without
+  // Finds the element at the given `point` and compares it against
+  // `expected_result`. Retries if there is a mismatch.  Without
   // the retry logic, these tests fail flakily, possibly because they attempt to
   // find the element before the webview has completed layout and/or
   // rendering. This occurs on all iOS versions, but seems to be worse on iOS
@@ -296,7 +296,7 @@ class ContextMenuJsFindElementAtPointTest : public PlatformTest {
   // Returns the test page URL.
   NSURL* GetTestURL() { return net::NSURLWithGURL(GURL(kTestUrl)); }
 
-  // Executes __gCrWeb.findElementAtPoint script with the given |point| in the
+  // Executes __gCrWeb.findElementAtPoint script with the given `point` in the
   // web view viewport's coordinate space.
   id ExecuteFindElementFromPointJavaScript(CGPoint point) {
     CGSize size = GetWebViewContentSize();
@@ -306,7 +306,7 @@ class ContextMenuJsFindElementAtPointTest : public PlatformTest {
     return web::test::ExecuteJavaScript(web_view_, script);
   }
 
-  // Handles script message responses sent from |web_view_|.
+  // Handles script message responses sent from `web_view_`.
   CRWFakeScriptMessageHandler* script_message_handler_;
 
   // The web view used for testing.
@@ -775,7 +775,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextFromTallPage) {
   ASSERT_TRUE(web::test::LoadHtml(web_view_, GetHtmlForPage(/*head=*/nil, body),
                                   GetTestURL()));
 
-  // Force layout to ensure |content_height| below is correct.
+  // Force layout to ensure `content_height` below is correct.
   EXPECT_TRUE(web::test::WaitForInjectedScripts(web_view_));
   web::test::ExecuteJavaScript(web_view_,
                                @"document.getElementsByTagName('p')");

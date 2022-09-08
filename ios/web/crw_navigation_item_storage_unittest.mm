@@ -30,7 +30,7 @@ class CRWNavigationItemStorageTest : public PlatformTest {
  protected:
   CRWNavigationItemStorageTest()
       : item_storage_([[CRWNavigationItemStorage alloc] init]) {
-    // Set up |item_storage_|.
+    // Set up `item_storage_`.
     [item_storage_ setURL:GURL("http://url.test")];
     [item_storage_ setVirtualURL:GURL("http://virtual.test")];
     [item_storage_ setReferrer:web::Referrer(GURL("http://referrer.url"),

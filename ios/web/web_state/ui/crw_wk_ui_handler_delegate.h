@@ -17,7 +17,7 @@ class WebState;
 // Delegate for the CRWWKUIHandler.
 @protocol CRWWKUIHandlerDelegate <CRWWebViewHandlerDelegate>
 
-// Creates and returns a web view with given |config|, in the |webController|.
+// Creates and returns a web view with given `config`, in the `webController`.
 - (WKWebView*)UIHandler:(CRWWKUIHandler*)UIHandler
     createWebViewWithConfiguration:(WKWebViewConfiguration*)configuration
                        forWebState:(web::WebState*)webState;

@@ -561,8 +561,8 @@ TEST_F(CRWWebViewScrollViewProxyTest, AddKVObserver) {
           options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew
           context:&context];
 
-  // Setting |contentOffset| of the underlying scroll view should trigger a KVO
-  // notification. The |object| of the notification should be the
+  // Setting `contentOffset` of the underlying scroll view should trigger a KVO
+  // notification. The `object` of the notification should be the
   // CRWWebViewScrollViewProxy, not the underlying scroll view.
   CGPoint new_offset = CGPointMake(10, 20);
   NSDictionary<NSKeyValueChangeKey, id>* expected_change = @{
@@ -662,7 +662,7 @@ TEST_F(CRWWebViewScrollViewProxyTest, RemoveKVObserverRemovesLastObservation) {
   underlying_scroll_view.contentOffset = CGPointZero;
   [web_view_scroll_view_proxy_ setScrollView:underlying_scroll_view];
 
-  // Add an observer twice with |context1| and then with |context2|.
+  // Add an observer twice with `context1` and then with `context2`.
   NSObject* observer = OCMClassMock([NSObject class]);
   int context1 = 0;
   int context2 = 0;
@@ -678,12 +678,12 @@ TEST_F(CRWWebViewScrollViewProxyTest, RemoveKVObserverRemovesLastObservation) {
           context:&context2];
 
   // Remove an observer once. This should remove the observation with
-  // |context2|.
+  // `context2`.
   [web_view_scroll_view_proxy_ removeObserver:observer
                                    forKeyPath:@"contentOffset"];
 
-  // The observer should be notified of a change with |context1| but not with
-  // |context2|.
+  // The observer should be notified of a change with `context1` but not with
+  // `context2`.
   CGPoint new_offset = CGPointMake(10, 20);
   NSDictionary<NSKeyValueChangeKey, id>* expected_change = @{
     NSKeyValueChangeKindKey : @(NSKeyValueChangeSetting),
@@ -714,7 +714,7 @@ TEST_F(CRWWebViewScrollViewProxyTest, RemoveKVObserverWithContext) {
   underlying_scroll_view.contentOffset = CGPointZero;
   [web_view_scroll_view_proxy_ setScrollView:underlying_scroll_view];
 
-  // Add an observer twice with |context1| and then with |context2|.
+  // Add an observer twice with `context1` and then with `context2`.
   NSObject* observer = OCMClassMock([NSObject class]);
   int context1 = 0;
   int context2 = 0;
@@ -729,13 +729,13 @@ TEST_F(CRWWebViewScrollViewProxyTest, RemoveKVObserverWithContext) {
           options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew
           context:&context2];
 
-  // Remove the observation with |context1|.
+  // Remove the observation with `context1`.
   [web_view_scroll_view_proxy_ removeObserver:observer
                                    forKeyPath:@"contentOffset"
                                       context:&context1];
 
-  // The observer should be notified of a change with |context2| but not with
-  // |context1|.
+  // The observer should be notified of a change with `context2` but not with
+  // `context1`.
   CGPoint new_offset = CGPointMake(10, 20);
   NSDictionary<NSKeyValueChangeKey, id>* expected_change = @{
     NSKeyValueChangeKindKey : @(NSKeyValueChangeSetting),
@@ -770,7 +770,7 @@ TEST_F(CRWWebViewScrollViewProxyTest,
       [[CRWTestObserver alloc] initWithProxy:web_view_scroll_view_proxy_];
 }
 
-// Verifies that properties registered to |propertiesStore| are preserved if:
+// Verifies that properties registered to `propertiesStore` are preserved if:
 //   - the setter is called when the underlying scroll view is not set
 //   - the getter is called after the underlying scroll view is still not set
 TEST_F(CRWWebViewScrollViewProxyTest,
@@ -798,7 +798,7 @@ TEST_F(CRWWebViewScrollViewProxyTest,
             [web_view_scroll_view_proxy_ asUIScrollView].tintColor);
 }
 
-// Verifies that properties registered to |propertiesStore| are preserved if:
+// Verifies that properties registered to `propertiesStore` are preserved if:
 //   - the setter is called when the underlying scroll view is not set
 //   - the getter is called after the underlying scroll view is set
 TEST_F(CRWWebViewScrollViewProxyTest,
@@ -831,7 +831,7 @@ TEST_F(CRWWebViewScrollViewProxyTest,
   [web_view_scroll_view_proxy_ setScrollView:nil];
 }
 
-// Verifies that properties registered to |propertiesStore| are preserved if:
+// Verifies that properties registered to `propertiesStore` are preserved if:
 //   - the setter is called when the underlying scroll view is set
 //   - the getter is called after the underlying scroll view is reassigned
 TEST_F(CRWWebViewScrollViewProxyTest,

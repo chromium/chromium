@@ -19,7 +19,7 @@ WebThreadDelegate* g_io_thread_delegate = nullptr;
 
 // static
 void WebThread::SetIOThreadDelegate(WebThreadDelegate* delegate) {
-  // |delegate| can only be set/unset while WebThread::IO isn't up.
+  // `delegate` can only be set/unset while WebThread::IO isn't up.
   DCHECK(!WebThread::IsThreadInitialized(WebThread::IO));
   // and it cannot be set twice.
   DCHECK(!g_io_thread_delegate || !delegate);
@@ -44,7 +44,7 @@ void WebSubThread::RegisterAsWebThread() {
   DCHECK(!web_thread_);
   web_thread_.reset(new WebThreadImpl(identifier_, task_runner()));
 
-  // Unretained(this) is safe as |this| outlives its underlying thread.
+  // Unretained(this) is safe as `this` outlives its underlying thread.
   task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&WebSubThread::CompleteInitializationOnWebThread,

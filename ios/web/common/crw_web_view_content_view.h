@@ -13,13 +13,13 @@
 // Wraps a web vew in a CRWContentView.
 @interface CRWWebViewContentView : CRWContentView <CRWViewportAdjustment>
 
-// The webView passed to |-initWithWebView|.
+// The webView passed to `-initWithWebView`.
 @property(nonatomic, strong, readonly) UIView* webView;
 
 // The fullscreen state of this view
 @property(nonatomic, readonly) CrFullscreenState fullscreenState;
 
-// Initializes the CRWWebViewContentView to display |webView| and passes state
+// Initializes the CRWWebViewContentView to display `webView` and passes state
 // of fullscreen mode. This should pass in a default value of
 // CrFullscreenState (e.g., kNotInFullScreen).
 - (instancetype)initWithWebView:(UIView*)webView
@@ -30,8 +30,8 @@
 // Available only for testing.
 - (instancetype)initForTesting NS_DESIGNATED_INITIALIZER;
 
-// CRWWebViewContentViews should be initialized via |-initWithWebView:
-// scrollView:|.
+// CRWWebViewContentViews should be initialized via `-initWithWebView:
+// scrollView:`.
 - (instancetype)initWithCoder:(NSCoder*)decoder NS_UNAVAILABLE;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 

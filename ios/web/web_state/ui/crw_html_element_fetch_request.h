@@ -23,17 +23,17 @@ struct ContextMenuParams;
 
 - (instancetype)init NS_UNAVAILABLE;
 // Designated initializer to create a new object with the given completion
-// handler |foundElementHandler|.
+// handler `foundElementHandler`.
 - (instancetype)initWithFoundElementHandler:
     (void (^)(const web::ContextMenuParams&))foundElementHandler
     NS_DESIGNATED_INITIALIZER;
 
-// Calls the |foundElementHandler| from the receiver's initializer with
-// |response| as the parameter. This method has no effect if |invalidate| has
+// Calls the `foundElementHandler` from the receiver's initializer with
+// `response` as the parameter. This method has no effect if `invalidate` has
 // been called.
 - (void)runHandlerWithResponse:(const web::ContextMenuParams&)response;
-// Removes the stored |foundElementHandler| from the receiver's initializer.
-// |runHandlerWithResponse:| will have no effect if called after |invalidate|.
+// Removes the stored `foundElementHandler` from the receiver's initializer.
+// `runHandlerWithResponse:` will have no effect if called after `invalidate`.
 - (void)invalidate;
 
 @end

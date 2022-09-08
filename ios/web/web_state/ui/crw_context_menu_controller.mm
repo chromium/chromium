@@ -175,7 +175,7 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
                       animator:(id<UIContextMenuInteractionAnimating>)animator {
   __weak UIView* weakScreenshotView = self.screenshotView;
   [animator addCompletion:^{
-    // Check if |self.screenshotView| has already been replaced and removed.
+    // Check if `self.screenshotView` has already been replaced and removed.
     if (self.screenshotView && self.screenshotView == weakScreenshotView) {
       [self.screenshotView removeFromSuperview];
     }
@@ -198,7 +198,7 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
   }
 }
 
-// Fetches the context menu params for the element at |locationInWebView|. The
+// Fetches the context menu params for the element at `locationInWebView`. The
 // returned params can be empty.
 - (absl::optional<web::ContextMenuParams>)fetchContextMenuParamsAtLocation:
     (CGPoint)locationInWebView {

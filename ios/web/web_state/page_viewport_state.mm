@@ -10,11 +10,11 @@
 #endif
 
 namespace {
-// Parses a double from |viewport_content|.  |viewport_content| is expected to
+// Parses a double from `viewport_content`.  `viewport_content` is expected to
 // have no leading whitespace.
 double ParseDouble(NSString* viewport_content) {
   double value = [viewport_content doubleValue];
-  // |-doubleValue| returns zero when parsing a non-numerical string, so check
+  // `-doubleValue` returns zero when parsing a non-numerical string, so check
   // that the string actually contains zero to verify that the value was
   // represented in the string.
   if (!value && ![viewport_content hasPrefix:@"0"])

@@ -23,8 +23,8 @@ class ScrollHelperJavaScriptFeature : public JavaScriptFeature {
   ScrollHelperJavaScriptFeature& operator=(
       const ScrollHelperJavaScriptFeature&) = delete;
 
-  // Sets the scroll dragging state of the page to |dragging|. window.scrollTo
-  // is overridden to be suppressed as long as the |dragging| is true.
+  // Sets the scroll dragging state of the page to `dragging`. window.scrollTo
+  // is overridden to be suppressed as long as the `dragging` is true.
   void SetWebViewScrollViewIsDragging(WebState* web_state, bool dragging);
 };
 

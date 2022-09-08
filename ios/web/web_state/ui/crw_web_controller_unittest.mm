@@ -124,7 +124,7 @@ const char kTestAppSpecificURL[] = "testwebui://test/";
 
 const char kTestMimeType[] = "application/vnd.test";
 
-// Returns HTML for an optionally zoomable test page with |zoom_state|.
+// Returns HTML for an optionally zoomable test page with `zoom_state`.
 enum PageScalabilityType {
   PAGE_SCALABILITY_DISABLED = 0,
   PAGE_SCALABILITY_ENABLED,
@@ -164,7 +164,7 @@ class CRWWebControllerTest : public WebTestWithWebController {
         WebTestWithWebController::GetWebClient());
   }
 
-  // The value for web view OCMock objects to expect for |-setFrame:|.
+  // The value for web view OCMock objects to expect for `-setFrame:`.
   CGRect GetExpectedWebViewFrame() const {
     CGSize container_view_size = GetAnyKeyWindow().bounds.size;
 
@@ -182,8 +182,8 @@ class CRWWebControllerTest : public WebTestWithWebController {
     WKWebView* result = [OCMockObject mockForClass:[WKWebView class]];
 
     OCMStub([result backForwardList]).andReturn(wk_list);
-    // This uses |andDo| rather than |andReturn| since the URL it returns needs
-    // to change when |test_url_| changes.
+    // This uses `andDo` rather than `andReturn` since the URL it returns needs
+    // to change when `test_url_` changes.
     OCMStub([result URL]).andDo(^(NSInvocation* invocation) {
       [invocation setReturnValue:&test_url_];
     });
@@ -851,7 +851,7 @@ TEST_F(CRWWebControllerResponseTest, IFrameDownloadWithNSHTTPURLResponse) {
   EXPECT_EQ("", task->GetMimeType());
 }
 
-// Tests |currentURLWithTrustLevel:| method.
+// Tests `currentURLWithTrustLevel:` method.
 TEST_F(CRWWebControllerTest, CurrentUrlWithTrustLevel) {
   GURL url("http://chromium.test");
   AddPendingItem(url, ui::PAGE_TRANSITION_TYPED);
@@ -884,7 +884,7 @@ class CRWWebControllerPolicyDeciderTest : public CRWWebControllerTest {
   }
   // Calls webView:decidePolicyForNavigationAction:preferences:decisionHandler:
   // callback and waits for decision handler call. Returns false if decision
-  // handler policy parameter didn't match |expected_policy| or if the call
+  // handler policy parameter didn't match `expected_policy` or if the call
   // timed out.
   [[nodiscard]] bool VerifyDecidePolicyForNavigationAction(
       NSURLRequest* request,
@@ -942,7 +942,7 @@ TEST_F(CRWWebControllerPolicyDeciderTest,
 }
 
 // Tests that URL is allowed in OffTheRecord mode when the
-// |kBlockUniversalLinksInOffTheRecordMode| feature is disabled.
+// `kBlockUniversalLinksInOffTheRecordMode` feature is disabled.
 TEST_F(CRWWebControllerPolicyDeciderTest, AllowOffTheRecordNavigation) {
   GetFakeBrowserState()->SetOffTheRecord(true);
   base::test::ScopedFeatureList feature_list;
@@ -957,7 +957,7 @@ TEST_F(CRWWebControllerPolicyDeciderTest, AllowOffTheRecordNavigation) {
 }
 
 // Tests that URL is allowed in OffTheRecord mode and that universal links are
-// blocked when the |kBlockUniversalLinksInOffTheRecordMode| feature is enabled
+// blocked when the `kBlockUniversalLinksInOffTheRecordMode` feature is enabled
 // and the BLOCK_UNIVERSAL_LINKS_IN_OFF_THE_RECORD_MODE buildflag is set.
 TEST_F(CRWWebControllerPolicyDeciderTest,
        AllowOffTheRecordNavigationBlockUniversalLinks) {
@@ -1029,7 +1029,7 @@ TEST_F(CRWWebControllerPolicyDeciderTest, ClosedWebState) {
 }
 
 // Tests that navigations are cancelled if the web state is closed in
-// |ShouldAllowRequest|.
+// `ShouldAllowRequest`.
 TEST_F(CRWWebControllerPolicyDeciderTest, ClosedWebStateInShouldAllowRequest) {
   static CRWWebControllerPolicyDeciderTest* test_fixture = nullptr;
   test_fixture = this;
@@ -1062,8 +1062,8 @@ TEST_F(CRWWebControllerPolicyDeciderTest, ClosedWebStateInShouldAllowRequest) {
       url_request, WKNavigationActionPolicyCancel));
 }
 
-// Tests that navigations are allowed if |ShouldAllowRequest| returns a
-// PolicyDecision which returns true from |ShouldAllowNavigation()|.
+// Tests that navigations are allowed if `ShouldAllowRequest` returns a
+// PolicyDecision which returns true from `ShouldAllowNavigation()`.
 TEST_F(CRWWebControllerPolicyDeciderTest, AllowRequest) {
   FakeWebStatePolicyDecider policy_decider(web_state());
   policy_decider.SetShouldAllowRequest(
@@ -1075,8 +1075,8 @@ TEST_F(CRWWebControllerPolicyDeciderTest, AllowRequest) {
       url_request, WKNavigationActionPolicyAllow));
 }
 
-// Tests that navigations are cancelled if |ShouldAllowRequest| returns a
-// PolicyDecision which returns false from |ShouldAllowNavigation()|.
+// Tests that navigations are cancelled if `ShouldAllowRequest` returns a
+// PolicyDecision which returns false from `ShouldAllowNavigation()`.
 TEST_F(CRWWebControllerPolicyDeciderTest, CancelRequest) {
   FakeWebStatePolicyDecider policy_decider(web_state());
   policy_decider.SetShouldAllowRequest(
@@ -1088,8 +1088,8 @@ TEST_F(CRWWebControllerPolicyDeciderTest, CancelRequest) {
       url_request, WKNavigationActionPolicyCancel));
 }
 
-// Tests that navigations are cancelled if |ShouldAllowRequest| returns a
-// PolicyDecision which returns true from |ShouldBlockNavigation()|.
+// Tests that navigations are cancelled if `ShouldAllowRequest` returns a
+// PolicyDecision which returns true from `ShouldBlockNavigation()`.
 TEST_F(CRWWebControllerPolicyDeciderTest, CancelRequestAndDisplayError) {
   FakeWebStatePolicyDecider policy_decider(web_state());
   NSError* error = [NSError errorWithDomain:@"Error domain"
@@ -1203,7 +1203,7 @@ TEST_F(CRWWebControllerTitleTest, TitleChange) {
     TitleObserver(const TitleObserver&) = delete;
     TitleObserver& operator=(const TitleObserver&) = delete;
 
-    // Returns number of times |TitleWasSet| was called.
+    // Returns number of times `TitleWasSet` was called.
     int title_change_count() { return title_change_count_; }
     // WebStateObserver overrides:
     void TitleWasSet(WebState* web_state) override { title_change_count_++; }
@@ -1253,7 +1253,7 @@ TEST_F(CRWWebControllerTitleTest, FragmentChangeNavigationsUsePreviousTitle) {
 // Test fixture for JavaScript execution.
 class ScriptExecutionTest : public WebTestWithWebController {
  protected:
-  // Calls |executeUserJavaScript:completionHandler:|, waits for script
+  // Calls `executeUserJavaScript:completionHandler:`, waits for script
   // execution completion, and synchronously returns the result.
   id ExecuteUserJavaScript(NSString* java_script, NSError** error) {
     __block id script_result = nil;

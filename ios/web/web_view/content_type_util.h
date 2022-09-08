@@ -9,12 +9,12 @@
 
 namespace web {
 
-// Returns true if |mime_type| is one of:
+// Returns true if `mime_type` is one of:
 //   1. text/html;
 //   2. application/xhtml+xml;
 //   3. application/xml.
 bool IsContentTypeHtml(const std::string& mime_type);
-// Returns true if |mime_type| begins with "image".
+// Returns true if `mime_type` begins with "image".
 bool IsContentTypeImage(const std::string& mime_type);
 
 }  // namespace web

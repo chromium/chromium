@@ -28,7 +28,7 @@ const char kReferrerPolicy[] = "always";
 const char kLinkText[] = "link text";
 const char kAlt[] = "alt text";
 
-// Returns true if the |params| contain enough information to present a context
+// Returns true if the `params` contain enough information to present a context
 // menu. (A valid url for either link_url or src_url must exist in the params.)
 bool CanShowContextMenuForParams(const web::ContextMenuParams& params) {
   if (params.link_url.is_valid()) {
