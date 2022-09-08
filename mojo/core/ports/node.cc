@@ -1019,6 +1019,10 @@ int Node::OnUserMessageReadAck(std::unique_ptr<UserMessageReadAckEvent> event) {
 }
 
 int Node::AddPortWithName(const PortName& port_name, scoped_refptr<Port> port) {
+  // https://linear.app/replay/issue/RUN-549
+  recordreplay::Assert("Node::AddPortWithName %lu %lu %lu %lu",
+                       name_.v1, name_.v2, port_name.v1, port_name.v2);
+
   PortLocker::AssertNoPortsLockedOnCurrentThread();
   base::AutoLock lock(ports_lock_);
   if (port->peer_port_name != kInvalidPortName) {
@@ -1033,6 +1037,10 @@ int Node::AddPortWithName(const PortName& port_name, scoped_refptr<Port> port) {
 }
 
 void Node::ErasePort(const PortName& port_name) {
+  // https://linear.app/replay/issue/RUN-549
+  recordreplay::Assert("Node::ErasePort %lu %lu %lu %lu",
+                       name_.v1, name_.v2, port_name.v1, port_name.v2);
+
   PortLocker::AssertNoPortsLockedOnCurrentThread();
   scoped_refptr<Port> port;
   {
