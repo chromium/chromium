@@ -263,6 +263,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/sessions:restoration_agent",
     "//ios/chrome/browser/sessions:test_support",
+    "//ios/chrome/browser/signin:signin",
+    "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/sync:sync_error_browser_agent",
     "//ios/chrome/browser/tabs",

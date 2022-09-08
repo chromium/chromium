@@ -40,8 +40,6 @@
 #endif
 
 namespace {
-const char kPriceTrackingWithOptimizationGuideParam[] =
-    "price_tracking_with_optimization_guide";
 constexpr char kTypeURL[] =
     "type.googleapis.com/optimization_guide.proto.PriceTrackingData";
 constexpr char kPriceDropUrl[] = "https://merchant.com/has_price_drop.html";
@@ -84,7 +82,7 @@ void FillPriceTrackingProto(commerce::PriceTrackingData& price_tracking_data,
       ->set_amount_micros(old_price_micros);
 }
 
-}
+}  // namespace
 
 class ShoppingPersistedDataTabHelperTest : public PlatformTest {
  public:
@@ -131,9 +129,7 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{optimization_guide::features::kOptimizationHints, {}},
          {optimization_guide::features::kOptimizationGuideMetadataValidation,
-          {}},
-         {commerce::kCommercePriceTracking,
-          {{kPriceTrackingWithOptimizationGuideParam, "true"}}}},
+          {}}},
         {});
 
     web_state_.SetBrowserState(browser_state_.get());

@@ -200,6 +200,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/ntp",
+    "//ios/chrome/browser/signin:signin",
+    "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/web_state_list:test_support",

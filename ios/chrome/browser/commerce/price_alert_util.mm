@@ -18,12 +18,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-const char kPriceTrackingWithOptimizationGuideParam[] =
-    "price_tracking_with_optimization_guide";
-const char kPriceTrackingOptOutParam[] = "price_tracking_opt_out";
-}  // namespace
-
 bool IsPriceAlertsEligible(web::BrowserState* browser_state) {
   if (browser_state->IsOffTheRecord()) {
     return false;
@@ -50,18 +44,4 @@ bool IsPriceAlertsEligible(web::BrowserState* browser_state) {
     return false;
   }
   return true;
-}
-
-bool IsPriceAlertsEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      commerce::kCommercePriceTracking,
-      kPriceTrackingWithOptimizationGuideParam,
-      /** default_value */ false);
-}
-
-bool IsPriceAlertsWithOptOutEnabled() {
-  return IsPriceAlertsEnabled() &&
-         base::GetFieldTrialParamByFeatureAsBool(
-             commerce::kCommercePriceTracking, kPriceTrackingOptOutParam,
-             /** default_value */ false);
 }

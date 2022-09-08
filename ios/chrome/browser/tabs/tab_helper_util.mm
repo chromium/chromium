@@ -124,8 +124,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   LoadTimingTabHelper::CreateForWebState(web_state);
   OverscrollActionsTabHelper::CreateForWebState(web_state);
   IOSTaskTabHelper::CreateForWebState(web_state);
-  if (IsPriceAlertsEnabled() &&
-      IsPriceAlertsEligible(web_state->GetBrowserState()))
+  if (IsPriceAlertsEligible(web_state->GetBrowserState()))
     ShoppingPersistedDataTabHelper::CreateForWebState(web_state);
   commerce::CommerceTabHelper::CreateForWebState(
       web_state, is_off_the_record,

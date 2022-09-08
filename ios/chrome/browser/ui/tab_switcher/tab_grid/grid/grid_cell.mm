@@ -10,7 +10,6 @@
 #import "base/check.h"
 #import "base/feature_list.h"
 #import "base/notreached.h"
-#import "ios/chrome/browser/commerce/price_alert_util.h"
 #import "ios/chrome/browser/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
@@ -128,11 +127,8 @@ const base::Feature kPreviousTabViewWidthCrash{
         kGridCellCloseButtonIdentifier;
     [contentView addSubview:topBar];
     [contentView addSubview:snapshotView];
-    PriceCardView* priceCardView;
-    if (IsPriceAlertsEnabled()) {
-      priceCardView = [[PriceCardView alloc] init];
-      [snapshotView addSubview:priceCardView];
-    }
+    PriceCardView* priceCardView = [[PriceCardView alloc] init];
+    [snapshotView addSubview:priceCardView];
     [contentView addSubview:closeTapTargetButton];
     _topBar = topBar;
     _snapshotView = snapshotView;
@@ -152,8 +148,7 @@ const base::Feature kPreviousTabViewWidthCrash{
     self.layer.shadowRadius = 4.0f;
     self.layer.shadowOpacity = 0.5f;
     self.layer.masksToBounds = NO;
-    NSMutableArray* constraints = [[NSMutableArray alloc] init];
-    [constraints addObjectsFromArray:@[
+    NSArray* constraints = @[
       [topBar.topAnchor constraintEqualToAnchor:contentView.topAnchor],
       [topBar.leadingAnchor constraintEqualToAnchor:contentView.leadingAnchor],
       [topBar.trailingAnchor
@@ -173,21 +168,16 @@ const base::Feature kPreviousTabViewWidthCrash{
           constraintEqualToConstant:kGridCellCloseTapTargetWidthHeight],
       [closeTapTargetButton.heightAnchor
           constraintEqualToConstant:kGridCellCloseTapTargetWidthHeight],
-    ]];
-    if (IsPriceAlertsEnabled()) {
-      [constraints addObjectsFromArray:@[
-        [priceCardView.topAnchor
-            constraintEqualToAnchor:snapshotView.topAnchor
-                           constant:kGridCellPriceDropTopSpacing],
-        [priceCardView.leadingAnchor
-            constraintEqualToAnchor:snapshotView.leadingAnchor
-                           constant:kGridCellPriceDropLeadingSpacing],
-        [priceCardView.trailingAnchor
-            constraintLessThanOrEqualToAnchor:snapshotView.trailingAnchor
-                                     constant:-
-                                              kGridCellPriceDropTrailingSpacing]
-      ]];
-    }
+      [priceCardView.topAnchor
+          constraintEqualToAnchor:snapshotView.topAnchor
+                         constant:kGridCellPriceDropTopSpacing],
+      [priceCardView.leadingAnchor
+          constraintEqualToAnchor:snapshotView.leadingAnchor
+                         constant:kGridCellPriceDropLeadingSpacing],
+      [priceCardView.trailingAnchor
+          constraintLessThanOrEqualToAnchor:snapshotView.trailingAnchor
+                                   constant:-kGridCellPriceDropTrailingSpacing],
+    ];
     [NSLayoutConstraint activateConstraints:constraints];
   }
   return self;

@@ -25,7 +25,6 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/chrome_url_util.h"
-#import "ios/chrome/browser/commerce/price_alert_util.h"
 #import "ios/chrome/browser/commerce/shopping_persisted_data_tab_helper.h"
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
 #import "ios/chrome/browser/flags/system_flags.h"
@@ -420,8 +419,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
                          }];
   }
 
-  if (IsPriceAlertsEnabled())
-    LogPriceDropMetrics(itemWebStateList->GetWebStateAt(index));
+  LogPriceDropMetrics(itemWebStateList->GetWebStateAt(index));
 
   // Don't attempt a no-op activation. Normally this is not an issue, but it's
   // possible that this method (-selectItemWithID:) is being called as part of

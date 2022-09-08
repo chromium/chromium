@@ -98,8 +98,7 @@ void ShoppingPersistedDataTabHelper::CreateForWebState(
 
 const ShoppingPersistedDataTabHelper::PriceDrop*
 ShoppingPersistedDataTabHelper::GetPriceDrop() {
-  if (!IsPriceAlertsEligible(web_state_->GetBrowserState()) ||
-      !IsPriceAlertsEnabled())
+  if (!IsPriceAlertsEligible(web_state_->GetBrowserState()))
     return nullptr;
   const GURL& url = web_state_->GetLastCommittedURL().is_valid()
                         ? web_state_->GetLastCommittedURL()
@@ -180,8 +179,7 @@ std::u16string ShoppingPersistedDataTabHelper::FormatPrice(
 void ShoppingPersistedDataTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  if (!IsPriceAlertsEligible(web_state->GetBrowserState()) ||
-      !IsPriceAlertsEnabled())
+  if (!IsPriceAlertsEligible(web_state->GetBrowserState()))
     return;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

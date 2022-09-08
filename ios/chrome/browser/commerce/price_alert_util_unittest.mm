@@ -23,11 +23,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-const char kPriceTrackingWithOptimizationGuideParam[] =
-    "price_tracking_with_optimization_guide";
-}  // namespace
-
 class PriceAlertUtilTest : public PlatformTest {
  public:
   void SetUp() override {
@@ -60,16 +55,6 @@ class PriceAlertUtilTest : public PlatformTest {
                                            enabled);
   }
 
-  void SetFeatureFlag(bool enabled) {
-    if (enabled) {
-      scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          commerce::kCommercePriceTracking,
-          {{kPriceTrackingWithOptimizationGuideParam, "true"}});
-    } else {
-      scoped_feature_list_.InitWithFeatures({}, {});
-    }
-  }
-
   void SignIn() { auth_service_->SignIn(fake_identity_); }
 
   void SignOut() {
@@ -83,7 +68,6 @@ class PriceAlertUtilTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   AuthenticationServiceFake* auth_service_ = nullptr;
   FakeChromeIdentity* fake_identity_ = nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(PriceAlertUtilTest, TestMSBBOff) {
@@ -97,27 +81,14 @@ TEST_F(PriceAlertUtilTest, TestNotSignedIn) {
   EXPECT_FALSE(IsPriceAlertsEligible(browser_state_.get()));
 }
 
-TEST_F(PriceAlertUtilTest, TestFlagOff) {
-  SetFeatureFlag(false);
-  EXPECT_FALSE(IsPriceAlertsEnabled());
-}
-
-TEST_F(PriceAlertUtilTest, TestFlagOn) {
-  SetFeatureFlag(true);
-  EXPECT_TRUE(IsPriceAlertsEnabled());
-}
-
 TEST_F(PriceAlertUtilTest, TestPriceAlertsAllowed) {
   SignIn();
-  SetFeatureFlag(true);
   SetMSBB(true);
   EXPECT_TRUE(IsPriceAlertsEligible(browser_state_.get()));
-  EXPECT_TRUE(IsPriceAlertsEnabled());
 }
 
 TEST_F(PriceAlertUtilTest, TestPriceAlertsEligibleThenSignOut) {
   SignIn();
-  SetFeatureFlag(true);
   SetMSBB(true);
   EXPECT_TRUE(IsPriceAlertsEligible(browser_state_.get()));
   SignOut();
@@ -126,7 +97,6 @@ TEST_F(PriceAlertUtilTest, TestPriceAlertsEligibleThenSignOut) {
 
 TEST_F(PriceAlertUtilTest, TestIncognito) {
   SignIn();
-  SetFeatureFlag(true);
   SetMSBB(true);
   EXPECT_FALSE(IsPriceAlertsEligible(
       browser_state_->GetOffTheRecordChromeBrowserState()));
@@ -134,7 +104,6 @@ TEST_F(PriceAlertUtilTest, TestIncognito) {
 
 TEST_F(PriceAlertUtilTest, TestUserSettingOn) {
   SignIn();
-  SetFeatureFlag(true);
   SetMSBB(true);
   SetUserSetting(true);
   EXPECT_TRUE(IsPriceAlertsEligible(browser_state_.get()));
@@ -142,7 +111,6 @@ TEST_F(PriceAlertUtilTest, TestUserSettingOn) {
 
 TEST_F(PriceAlertUtilTest, TestUserSettingOff) {
   SignIn();
-  SetFeatureFlag(true);
   SetMSBB(true);
   SetUserSetting(false);
   EXPECT_FALSE(IsPriceAlertsEligible(browser_state_.get()));

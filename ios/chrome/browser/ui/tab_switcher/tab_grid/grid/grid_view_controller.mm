@@ -14,7 +14,6 @@
 #include "base/notreached.h"
 #import "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/commerce/price_alert_util.h"
 #include "ios/chrome/browser/procedural_block_types.h"
 #import "ios/chrome/browser/ui/commands/thumb_strip_commands.h"
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_data_source.h"
@@ -1410,15 +1409,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                                        }
                                      }
                                    }];
-  if (IsPriceAlertsEnabled()) {
-    [self.priceCardDataSource
-        priceCardForIdentifier:itemIdentifier
-                    completion:^(PriceCardItem* priceCardItem) {
-                      if (priceCardItem && [cell hasIdentifier:itemIdentifier])
-                        [cell setPriceDrop:priceCardItem.price
-                             previousPrice:priceCardItem.previousPrice];
-                    }];
-  }
+  [self.priceCardDataSource
+      priceCardForIdentifier:itemIdentifier
+                  completion:^(PriceCardItem* priceCardItem) {
+                    if (priceCardItem && [cell hasIdentifier:itemIdentifier])
+                      [cell setPriceDrop:priceCardItem.price
+                           previousPrice:priceCardItem.previousPrice];
+                  }];
   if (self.thumbStripEnabled &&
       ![itemIdentifier isEqualToString:self.selectedItemID]) {
     cell.opacity = self.notSelectedTabCellOpacity;
