@@ -36,7 +36,7 @@ const CGFloat kURLButtonMargin = 10;
 @property(nonatomic, strong) UIVisualEffectView* primaryEffectView;
 @property(nonatomic, strong) UIVisualEffectView* secondaryEffectView;
 
-// Updates the view to show the currently set |type|.
+// Updates the view to show the currently set `type`.
 - (void)updateUI;
 
 @end

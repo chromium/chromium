@@ -30,8 +30,8 @@ typedef NS_ENUM(NSInteger, CopiedContentType);
 // ways to launch the app. The second section displays the current copied URL.
 @interface SearchWidgetView : UIView
 
-// Designated initializer, creates the widget view with a |target| for user
-// actions. |compactHeight| indicates the size to use in compact display.
+// Designated initializer, creates the widget view with a `target` for user
+// actions. `compactHeight` indicates the size to use in compact display.
 - (instancetype)initWithActionTarget:(id<SearchWidgetViewActionTarget>)target
                        compactHeight:(CGFloat)compactHeight
     NS_DESIGNATED_INITIALIZER;

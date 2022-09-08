@@ -94,7 +94,7 @@
   [self registerWidgetDisplay];
   [self updateWidget];
 
-  // |widgetActiveDisplayMode| does not contain a valid value in viewDidLoad. By
+  // `widgetActiveDisplayMode` does not contain a valid value in viewDidLoad. By
   // the time viewWillAppear is called, it is correct, so set the mode here.
   BOOL initiallyCompact = [self.extensionContext widgetActiveDisplayMode] ==
                           NCWidgetDisplayModeCompact;
@@ -255,7 +255,7 @@
 
 #pragma mark - internal
 
-// Opens the main application with the given |command|.
+// Opens the main application with the given `command`.
 - (void)openAppWithCommand:(NSString*)command {
   [self.command prepareWithCommandID:command];
   [self.command executeInApp];
