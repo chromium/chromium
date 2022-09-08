@@ -7,7 +7,9 @@
 #import <Foundation/Foundation.h>
 #import <map>
 
+#import "base/check.h"
 #import "base/containers/small_map.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/promos_manager_commands.h"
@@ -75,11 +77,25 @@
 #pragma mark - PromosManagerCommands
 
 - (void)displayPromo:(promos_manager::Promo)promo {
-  // TODO(crbug.com/1358991):
-  // 1. Grab the proper view provider or display handler that's registered with
-  // the coordinator
-  // 2. Call the proper view provider or display handler.
-  // 3. Let the mediator know that `promo` was displayed.
+  auto handler_it = _displayHandlerPromos.find(promo);
+  auto provider_it = _viewProviderPromos.find(promo);
+
+  DCHECK(handler_it == _displayHandlerPromos.end() ||
+         provider_it == _viewProviderPromos.end());
+
+  if (handler_it != _displayHandlerPromos.end()) {
+    id<StandardPromoDisplayHandler> handler = handler_it->second;
+
+    [handler handleDisplay];
+  } else if (provider_it != _viewProviderPromos.end()) {
+    id<StandardPromoViewProvider> provider = provider_it->second;
+
+    [self.baseViewController presentViewController:provider.viewController
+                                          animated:YES
+                                        completion:nil];
+  } else {
+    NOTREACHED();
+  }
 }
 
 #pragma mark - Private
