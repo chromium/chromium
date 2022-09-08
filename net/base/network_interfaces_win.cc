@@ -152,11 +152,11 @@ bool GetNetworkListImpl(NetworkInterfaceList* networks,
       continue;
     }
 
-    auto* address = reinterpret_cast<const uint8_t*>(adapter->PhysicalAddress);
     absl::optional<Eui48MacAddress> mac_address;
     mac_address.emplace();
     if (adapter->PhysicalAddressLength == mac_address->size()) {
-      std::copy_n(address, mac_address->size(), mac_address->begin());
+      std::copy_n(reinterpret_cast<const uint8_t*>(adapter->PhysicalAddress),
+                  mac_address->size(), mac_address->begin());
     } else {
       mac_address.reset();
     }

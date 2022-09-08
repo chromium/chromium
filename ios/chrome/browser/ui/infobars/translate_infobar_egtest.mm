@@ -177,10 +177,10 @@ void TestResponseProvider::GetResponseHeadersAndBody(
     return;
   } else if (url.path() == kLinkPath) {
     // Link to a page with "Content Language" headers.
-    GURL url = web::test::HttpServer::MakeUrl(kSomeLanguageUrl);
+    GURL some_language_url = web::test::HttpServer::MakeUrl(kSomeLanguageUrl);
     *response_body = base::StringPrintf(
         "<html><body><a href='%s' id='click'>Click</a></body></html>",
-        url.spec().c_str());
+        some_language_url.spec().c_str());
     return;
   } else if (url.path() == kFrenchPagePath) {
     *response_body = GetFrenchPageHtml(kHtmlAttribute, "");
