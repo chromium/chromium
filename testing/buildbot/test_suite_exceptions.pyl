@@ -477,7 +477,17 @@
           'shards': 8,
         },
       },
+      'mac10.13-blink-rel': {
+        'swarming': {
+          'shards': 1,
+        },
+      },
       'mac10.13-blink-rel-dummy': {
+        'swarming': {
+          'shards': 1,
+        },
+      },
+      'mac10.14-blink-rel': {
         'swarming': {
           'shards': 1,
         },
@@ -485,6 +495,11 @@
       'mac10.14-blink-rel-dummy': {
         'swarming': {
           'shards': 1,
+        },
+      },
+      'mac10.15-blink-rel': {
+        'swarming': {
+          'shards': 8,
         },
       },
       'mac10.15-blink-rel-dummy': {
@@ -766,7 +781,17 @@
           'shards': 12,
         },
       },
+      'mac10.13-blink-rel': {
+        'swarming': {
+          'shards': 1,
+        },
+      },
       'mac10.13-blink-rel-dummy': {
+        'swarming': {
+          'shards': 1,
+        },
+      },
+      'mac10.14-blink-rel': {
         'swarming': {
           'shards': 1,
         },
@@ -774,6 +799,11 @@
       'mac10.14-blink-rel-dummy': {
         'swarming': {
           'shards': 1,
+        },
+      },
+      'mac10.15-blink-rel': {
+        'swarming': {
+          'shards': 12,
         },
       },
       'mac10.15-blink-rel-dummy': {
