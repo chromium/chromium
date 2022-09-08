@@ -2,6 +2,7 @@ include_rules = [
   "-content",
 
   "+services/cert_verifier/public/mojom",
+  "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+services/service_manager/public",
 
