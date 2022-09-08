@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -90,7 +89,6 @@ class WebAppNavigationBrowserTest : public InProcessBrowserTest {
   void TearDownInProcessBrowserTestFixture() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
-  void TearDownOnMainThread() override;
 
   Profile* profile();
 
@@ -125,7 +123,6 @@ class WebAppNavigationBrowserTest : public InProcessBrowserTest {
   // Similar to net::MockCertVerifier, but also updates the CertVerifier
   // used by the NetworkService.
   content::ContentMockCertVerifier cert_verifier_;
-  raw_ptr<Profile> profile_ = nullptr;
   AppId test_web_app_;
   base::HistogramTester histogram_tester_;
 };
