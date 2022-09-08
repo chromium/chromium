@@ -122,6 +122,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     // in landcape mode.
     private @Px int mNavbarHeight;
     private int mOrientation;
+
+    // Note: Do not use anywhere except in |onConfigurationChanged| as it might not be up-to-date.
     private boolean mIsInMultiWindowMode;
 
     private ImageView mSpinnerView;
@@ -514,7 +516,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     }
 
     private boolean isFullHeight() {
-        return mOrientation == Configuration.ORIENTATION_LANDSCAPE || mIsInMultiWindowMode;
+        return mOrientation == Configuration.ORIENTATION_LANDSCAPE
+                || MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
     }
 
     private boolean isFixedHeight() {
@@ -821,7 +824,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         }
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
-        if (mIsInMultiWindowMode) {
+        if (MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity)) {
             mActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         } else {
             mActivity.getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);

@@ -94,6 +94,7 @@ public class PartialCustomTabHeightStrategyTest {
     private static final int MAX_INIT_POS = DEVICE_HEIGHT / 2;
     private static final int INITIAL_HEIGHT = DEVICE_HEIGHT / 2 - NAVBAR_HEIGHT;
     private static final int FULL_HEIGHT = DEVICE_HEIGHT - NAVBAR_HEIGHT;
+    private static final int MULTIWINDOW_HEIGHT = FULL_HEIGHT / 2;
 
     @Parameters
     public static Collection<Object[]> data() {
@@ -156,6 +157,7 @@ public class PartialCustomTabHeightStrategyTest {
     private Context mContext;
     private List<WindowManager.LayoutParams> mAttributeResults;
     private DisplayMetrics mRealMetrics;
+    private DisplayMetrics mMetrics;
     private Callback<Integer> mBottomInsetCallback = inset -> {};
     private FrameLayout.LayoutParams mLayoutParams = new FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
@@ -781,6 +783,24 @@ public class PartialCustomTabHeightStrategyTest {
         // Drag to the initial height -> resized.
         assertTabIsAtInitialPos(dragTab(handleStrategy, 50, 650, 1300));
         verify(mOnResizedCallback).onResized(eq(INITIAL_HEIGHT));
+    }
+
+    @Test
+    public void verifyNavigationBarHeightInMultiWindowMode() {
+        mMetrics = new DisplayMetrics();
+        mMetrics.widthPixels = DEVICE_WIDTH;
+        mMetrics.heightPixels = MULTIWINDOW_HEIGHT;
+        doAnswer(invocation -> {
+            DisplayMetrics displayMetrics = invocation.getArgument(0);
+            displayMetrics.setTo(mMetrics);
+            return null;
+        })
+                .when(mDisplay)
+                .getMetrics(any(DisplayMetrics.class));
+        when(mContentFrame.getHeight()).thenReturn(MULTIWINDOW_HEIGHT);
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
+        assertEquals(0, strategy.getNavbarHeightForTesting());
     }
 
     private void verifyWindowFlagsSet() {
