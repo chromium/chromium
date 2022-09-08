@@ -106,9 +106,9 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin,
 
   bool IsTransformInvertible() const;
 
-  virtual TransformationMatrix GetTransform() const {
+  virtual AffineTransform GetTransform() const {
     // This will be the identity matrix
-    return TransformationMatrix();
+    return AffineTransform();
   }
 
   IdentifiableToken GetIdentifiableToken() const {

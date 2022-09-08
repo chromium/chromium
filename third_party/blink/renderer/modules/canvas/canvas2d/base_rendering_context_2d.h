@@ -513,7 +513,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   void SetTransform(const AffineTransform&);
 
-  TransformationMatrix GetTransform() const override;
+  AffineTransform GetTransform() const override;
 
   bool StateHasFilter();
 

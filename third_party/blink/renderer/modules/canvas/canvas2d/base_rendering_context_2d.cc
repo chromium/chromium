@@ -1004,8 +1004,8 @@ DOMMatrix* BaseRenderingContext2D::getTransform() {
   return m;
 }
 
-TransformationMatrix BaseRenderingContext2D::GetTransform() const {
-  return TransformationMatrix(GetState().GetTransform());
+AffineTransform BaseRenderingContext2D::GetTransform() const {
+  return GetState().GetTransform();
 }
 
 void BaseRenderingContext2D::beginPath() {
