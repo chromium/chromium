@@ -37,28 +37,6 @@ std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type) {
   }
 }
 
-std::string ConvertWebAppManagementToStringType(
-    const WebAppManagement::Type& source) {
-  switch (source) {
-    case WebAppManagement::Type::kSystem:
-      return "System";
-    case WebAppManagement::Type::kKiosk:
-      return "Kiosk";
-    case WebAppManagement::Type::kPolicy:
-      return "Policy";
-    case WebAppManagement::Type::kSubApp:
-      return "SubApp";
-    case WebAppManagement::Type::kWebAppStore:
-      return "WebAppStore";
-    case WebAppManagement::Type::kSync:
-      return "Sync";
-    case WebAppManagement::Type::kDefault:
-      return "Default";
-    case WebAppManagement::Type::kCommandLine:
-      return "CommandLine";
-  }
-}
-
 static_assert(OsHookType::kShortcuts == 0,
               "OsHookType enum should be zero based");
 

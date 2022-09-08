@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 
 #include <memory>
+#include <sstream>
 #include <utility>
 
 #include "base/bind.h"
@@ -47,6 +48,12 @@ bool CanUninstallAllManagementSources(
          uninstall_source == webapps::WebappUninstallSource::kSync ||
          uninstall_source == webapps::WebappUninstallSource::kStartupCleanup;
 }
+
+auto StreamableToString = [](const auto& value) {
+  std::stringstream ss;
+  ss << value;
+  return ss.str();
+};
 
 }  // namespace
 
@@ -195,9 +202,9 @@ void WebAppUninstallCommand::AppendUninstallInfoToDebugLog(
     const UninstallInfo& uninstall_info) {
   base::Value::Dict source_info;
   if (uninstall_info.management_type_or_all.has_value()) {
-    source_info.Set("management_type",
-                    ConvertWebAppManagementToStringType(
-                        uninstall_info.management_type_or_all.value()));
+    source_info.Set(
+        "management_type",
+        StreamableToString(uninstall_info.management_type_or_all.value()));
   }
   source_info.Set("uninstall_source", ConvertUninstallSourceToStringType(
                                           uninstall_info.uninstall_source));

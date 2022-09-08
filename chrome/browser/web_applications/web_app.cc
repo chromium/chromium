@@ -718,10 +718,9 @@ base::Value WebApp::AsDebugValue() const {
   }
 
   base::Value::Dict external_map;
-  for (auto it : management_to_external_config_map_) {
-    external_map.Set(ConvertWebAppManagementToStringType(it.first),
-                     it.second.AsDebugValue());
-  }
+  for (auto it : management_to_external_config_map_)
+    external_map.Set(ConvertToString(it.first), it.second.AsDebugValue());
+
   root.SetKey("management_type_to_external_configuration_map",
               base::Value(std::move(external_map)));
 

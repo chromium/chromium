@@ -56,8 +56,6 @@ enum Type {
 }  // namespace WebAppManagement
 
 std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type);
-std::string ConvertWebAppManagementToStringType(
-    const WebAppManagement::Type& type);
 
 // Type of OS hook.
 //
