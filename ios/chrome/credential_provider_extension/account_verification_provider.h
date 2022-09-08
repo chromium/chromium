@@ -12,12 +12,12 @@
 @protocol AccountVerificationProvider
 
 // Completes with a validationID (or nil) that can be used with
-// |validateValidationID:completionHandler:| at a later time.
+// `validateValidationID:completionHandler:` at a later time.
 - (void)validationIDForAccountID:(NSString*)accountID
                completionHandler:
                    (void (^)(NSString*, NSError*))completionHandler;
 
-// Checks if the given |validationID| is valid, in the sense of
+// Checks if the given `validationID` is valid, in the sense of
 // credential provider extension should provide or ignore/delete credentials
 // associated with this ID.  Completes with YES if account is valid or
 // NO with or without error if it is not.

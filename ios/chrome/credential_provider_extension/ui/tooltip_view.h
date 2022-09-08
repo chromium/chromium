@@ -21,12 +21,12 @@
 // Delegate for a tooltip view instance.
 @property(nonatomic, weak) id<TooltipViewDelegate> delegate;
 
-// Init with the target and |action| parameter-less selector.
+// Init with the target and `action` parameter-less selector.
 - (instancetype)initWithKeyWindow:(UIView*)keyWindow
                            target:(NSObject*)target
                            action:(SEL)action;
 
-// Shows the tooltip with given |message| below the |view|.
+// Shows the tooltip with given `message` below the `view`.
 - (void)showMessage:(NSString*)message atBottomOf:(UIView*)view;
 
 // Hides this tooltip.

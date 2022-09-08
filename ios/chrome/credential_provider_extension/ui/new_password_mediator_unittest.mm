@@ -26,9 +26,9 @@
 // methods were called
 @interface FakeNewPasswordUIHandler : NSObject <NewPasswordUIHandler>
 
-// Whether the |-alertUserCredentialExists| method was called.
+// Whether the `-alertUserCredentialExists` method was called.
 @property(nonatomic, assign) BOOL alertedCredentialExists;
-// Whether the |-alertSavePasswordFailed| method was called.
+// Whether the `-alertSavePasswordFailed` method was called.
 @property(nonatomic, assign) BOOL alertedSaveFailed;
 // Password passed to the consumer.
 @property(nonatomic, assign) NSString* password;
@@ -140,7 +140,7 @@ void NewPasswordMediatorTest::TearDown() {
   [TestUserDefaults() removeObjectForKey:key];
 }
 
-// Tests that |-saveNewCredential:completion:| adds a new credential to the
+// Tests that `-saveNewCredential:completion:` adds a new credential to the
 // store and that gets saved to disk.
 TEST_F(NewPasswordMediatorTest, SaveNewCredential) {
   // Manually store a credential.
@@ -191,7 +191,7 @@ TEST_F(NewPasswordMediatorTest, SaveNewCredential) {
   EXPECT_NSEQ(testUsername, freshCredentialStore.credentials[1].user);
 }
 
-// Tests that |-saveNewCredential:completion:| updates an existing credential
+// Tests that `-saveNewCredential:completion:` updates an existing credential
 // and that gets saved to disk.
 TEST_F(NewPasswordMediatorTest, SaveUpdateCredential) {
   // Create a credential that will be stored.

@@ -434,8 +434,8 @@ UIColor* BackgroundColor() {
   [self.delegate showDetailsForCredential:credential];
 }
 
-// Returns number of sections to display based on |suggestedPasswords| and
-// |allPasswords|. If no sections with data, returns 1 for the 'no data' banner.
+// Returns number of sections to display based on `suggestedPasswords` and
+// `allPasswords`. If no sections with data, returns 1 for the 'no data' banner.
 - (int)numberOfSections {
   if ([self numberOfRowsInSuggestedPasswordSection] == 0 ||
       [self.allPasswords count] == 0) {

@@ -30,7 +30,7 @@
 // The delegate for the actions in the consumer.
 @property(nonatomic, weak) id<CredentialDetailsConsumerDelegate> delegate;
 
-// Tells the consumer to show the |credential| details.
+// Tells the consumer to show the `credential` details.
 - (void)presentCredential:(id<Credential>)credential;
 
 @end

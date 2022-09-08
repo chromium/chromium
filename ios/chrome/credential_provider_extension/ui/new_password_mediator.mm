@@ -143,7 +143,7 @@ using base::SysUTF16ToNSString;
                                   validationIdentifier:validationIdentifier];
 }
 
-// Saves the given credential to disk and calls |completion| once the operation
+// Saves the given credential to disk and calls `completion` once the operation
 // is finished.
 - (void)saveNewCredential:(ArchivableCredential*)credential
                completion:(void (^)(NSError* error))completion {

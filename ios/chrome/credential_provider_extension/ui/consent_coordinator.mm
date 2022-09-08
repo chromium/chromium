@@ -20,7 +20,7 @@
 
 @interface ConsentCoordinator () <PromoStyleViewControllerDelegate>
 
-// Base view controller from where |viewController| is presented.
+// Base view controller from where `viewController` is presented.
 @property(nonatomic, weak) UIViewController* baseViewController;
 
 // The view controller of this coordinator.

@@ -15,7 +15,7 @@
 @interface NewPasswordCoordinator : NSObject
 
 // Default initializer. When the coordinator is started it will present on
-// |baseViewController|.
+// `baseViewController`.
 - (instancetype)
     initWithBaseViewController:(UIViewController*)baseViewController
                        context:(ASCredentialProviderExtensionContext*)context

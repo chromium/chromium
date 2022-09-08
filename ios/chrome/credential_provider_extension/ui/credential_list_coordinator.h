@@ -17,7 +17,7 @@
 @interface CredentialListCoordinator : NSObject
 
 // Default initializer. When the coordinator is started it will present on
-// |baseViewController|. |serviceIdentifiers| will be used to prioritize data,
+// `baseViewController`. `serviceIdentifiers` will be used to prioritize data,
 // can be nil.
 - (instancetype)
     initWithBaseViewController:(UIViewController*)baseViewController

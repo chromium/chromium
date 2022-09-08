@@ -18,8 +18,8 @@
 // consumer.
 @interface NewPasswordMediator : NSObject <NewCredentialHandler>
 
-// Initializes a new object, using |userDefaults| as the user defaults location
-// to store new credentials to and |serviceIdentifier| as the current service to
+// Initializes a new object, using `userDefaults` as the user defaults location
+// to store new credentials to and `serviceIdentifier` as the current service to
 // store new credentials for.
 - (instancetype)initWithUserDefaults:(NSUserDefaults*)userDefaults
                    serviceIdentifier:

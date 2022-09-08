@@ -13,10 +13,10 @@
 // Asks the presenter to display the empty credentials view.
 - (void)showEmptyCredentials;
 
-// Calls the presenter when user has selected given |credential|.
+// Calls the presenter when user has selected given `credential`.
 - (void)userSelectedCredential:(id<Credential>)credential;
 
-// Asks the presenter to display the details for given |credential|.
+// Asks the presenter to display the details for given `credential`.
 - (void)showDetailsForCredential:(id<Credential>)credential;
 
 // Called when user wants to create a new credential.

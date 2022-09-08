@@ -10,8 +10,8 @@
 // Queries Keychain Services for the passed identifier password.
 NSString* PasswordWithKeychainIdentifier(NSString* identifier);
 
-// Stores |password| in Keychain Services using |identifier| as its identifier
-// for later query. Returns |YES| if saving was successful and |NO| otherwise.
+// Stores `password` in Keychain Services using `identifier` as its identifier
+// for later query. Returns `YES` if saving was successful and `NO` otherwise.
 BOOL StorePasswordInKeychain(NSString* password, NSString* identifier);
 
 #endif  // IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_PASSWORD_UTIL_H_

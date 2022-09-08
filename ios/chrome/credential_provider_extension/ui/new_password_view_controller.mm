@@ -166,7 +166,7 @@ const CGFloat kTableViewTopSpace = 14;
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   // There is no need to check which cell has been selected because all the
-  // other cells are unselectable from |-tableView:willSelectRowAtIndexPath:|.
+  // other cells are unselectable from `-tableView:willSelectRowAtIndexPath:`.
   [self.credentialHandler userDidRequestGeneratedPassword];
   self.passwordCreationType = CPEPasswordCreated::kPasswordSuggested;
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -262,7 +262,7 @@ const CGFloat kTableViewTopSpace = 14;
   return passwordCell.textField.text;
 }
 
-// Saves the current data as a credential. If |shouldReplace| is YES, then the
+// Saves the current data as a credential. If `shouldReplace` is YES, then the
 // user has already said they are aware that they are replacing a previous
 // credential.
 - (void)saveCredential:(BOOL)shouldReplace {
