@@ -309,12 +309,6 @@ bool BrowserAccessibilityManager::CanFireEvents() const {
          !delegate_->AccessibilityRenderFrameHost()->IsInBackForwardCache();
 }
 
-BrowserAccessibility* BrowserAccessibilityManager::RetargetForEvents(
-    BrowserAccessibility* node,
-    RetargetEventType type) const {
-  return node;
-}
-
 void BrowserAccessibilityManager::FireFocusEvent(BrowserAccessibility* node) {
   if (g_focus_change_callback_for_testing.Get())
     g_focus_change_callback_for_testing.Get().Run();
@@ -393,8 +387,8 @@ void BrowserAccessibilityManager::ParentConnectionChanged(
   parent->OnDataChanged();
   parent->UpdatePlatformAttributes();
   BrowserAccessibilityManager* parent_manager = parent->manager();
-  parent = parent_manager->RetargetForEvents(
-      parent, RetargetEventType::RetargetEventTypeGenerated);
+  parent = parent_manager->GetFromAXNode(RetargetForEvents(
+      parent->node(), RetargetEventType::RetargetEventTypeGenerated));
   parent_manager->FireGeneratedEvent(
       ui::AXEventGenerator::Event::CHILDREN_CHANGED, parent);
 }
@@ -595,8 +589,8 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     BrowserAccessibility* event_target = GetFromID(targeted_event.node_id);
     DCHECK(event_target) << "No event target for " << targeted_event.node_id;
 
-    event_target = RetargetForEvents(
-        event_target, RetargetEventType::RetargetEventTypeGenerated);
+    event_target = GetFromAXNode(RetargetForEvents(
+        event_target->node(), RetargetEventType::RetargetEventTypeGenerated));
     if (!event_target)
       continue;  // Drop the event if RetargetForEvents() returns nullptr.
     if (!event_target->CanFireEvents())
@@ -626,8 +620,8 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     BrowserAccessibility* event_target = GetFromID(targeted_event.node_id);
     DCHECK(event_target) << "No event target for " << targeted_event.node_id;
 
-    event_target = RetargetForEvents(
-        event_target, RetargetEventType::RetargetEventTypeGenerated);
+    event_target = GetFromAXNode(RetargetForEvents(
+        event_target->node(), RetargetEventType::RetargetEventTypeGenerated));
     if (!event_target)
       continue;  // Drop the event if RetargetForEvents() returns nullptr.
     if (!event_target->CanFireEvents())
@@ -647,7 +641,8 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
         event.event_type == ax::mojom::Event::kHover
             ? RetargetEventType::RetargetEventTypeBlinkHover
             : RetargetEventType::RetargetEventTypeBlinkGeneral;
-    BrowserAccessibility* retargeted = RetargetForEvents(event_target, type);
+    BrowserAccessibility* retargeted =
+        GetFromAXNode(RetargetForEvents(event_target->node(), type));
     if (!retargeted)
       continue;  // Drop the event if RetargetForEvents() returns nullptr.
     if (!retargeted->CanFireEvents())
@@ -2018,7 +2013,8 @@ void BrowserAccessibilityManager::CollectChangedNodesAndParentsForAtomicUpdate(
 
 bool BrowserAccessibilityManager::ShouldFireEventForNode(
     BrowserAccessibility* node) const {
-  node = RetargetForEvents(node, RetargetEventType::RetargetEventTypeGenerated);
+  node = GetFromAXNode(RetargetForEvents(
+      node->node(), RetargetEventType::RetargetEventTypeGenerated));
   if (!node || !node->CanFireEvents())
     return false;
 

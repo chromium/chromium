@@ -19,6 +19,8 @@
 
 namespace content {
 
+using RetargetEventType = ui::AXTreeManager::RetargetEventType;
+
 class MockContentClient : public TestContentClient {
  public:
   std::u16string GetLocalizedString(int message_id) override {
@@ -113,9 +115,9 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetTextOnly) {
   BrowserAccessibility* text_obj = manager->GetFromID(111);
   EXPECT_TRUE(text_obj->IsLeaf());
   EXPECT_FALSE(text_obj->CanFireEvents());
-  BrowserAccessibility* updated = manager->RetargetForEvents(
-      text_obj, BrowserAccessibilityManager::RetargetEventType::
-                    RetargetEventTypeBlinkHover);
+  BrowserAccessibility* updated =
+      manager->GetFromAXNode(manager->RetargetForEvents(
+          text_obj->node(), RetargetEventType::RetargetEventTypeBlinkHover));
   // |updated| should be the paragraph.
   EXPECT_EQ(11, updated->GetId());
   EXPECT_TRUE(updated->CanFireEvents());
@@ -152,9 +154,9 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetHeading) {
   BrowserAccessibility* text_obj = manager->GetFromID(111);
   EXPECT_TRUE(text_obj->IsLeaf());
   EXPECT_FALSE(text_obj->CanFireEvents());
-  BrowserAccessibility* updated = manager->RetargetForEvents(
-      text_obj, BrowserAccessibilityManager::RetargetEventType::
-                    RetargetEventTypeBlinkHover);
+  BrowserAccessibility* updated =
+      manager->GetFromAXNode(manager->RetargetForEvents(
+          text_obj->node(), RetargetEventType::RetargetEventTypeBlinkHover));
   // |updated| should be the heading.
   EXPECT_EQ(11, updated->GetId());
   EXPECT_TRUE(updated->CanFireEvents());
@@ -192,9 +194,9 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetFocusable) {
   BrowserAccessibility* text_obj = manager->GetFromID(111);
   EXPECT_TRUE(text_obj->IsLeaf());
   EXPECT_FALSE(text_obj->CanFireEvents());
-  BrowserAccessibility* updated = manager->RetargetForEvents(
-      text_obj, BrowserAccessibilityManager::RetargetEventType::
-                    RetargetEventTypeBlinkHover);
+  BrowserAccessibility* updated =
+      manager->GetFromAXNode(manager->RetargetForEvents(
+          text_obj->node(), RetargetEventType::RetargetEventTypeBlinkHover));
   // |updated| should be the paragraph.
   EXPECT_EQ(11, updated->GetId());
   EXPECT_TRUE(updated->CanFireEvents());
@@ -281,9 +283,10 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetInputControl) {
   BrowserAccessibility* label_text_obj = manager->GetFromID(label_text.id);
   EXPECT_TRUE(label_text_obj->IsLeaf());
   EXPECT_FALSE(label_text_obj->CanFireEvents());
-  BrowserAccessibility* updated = manager->RetargetForEvents(
-      label_text_obj, BrowserAccessibilityManager::RetargetEventType::
-                          RetargetEventTypeBlinkHover);
+  BrowserAccessibility* updated =
+      manager->GetFromAXNode(manager->RetargetForEvents(
+          label_text_obj->node(),
+          RetargetEventType::RetargetEventTypeBlinkHover));
   EXPECT_EQ(label.id, updated->GetId());
   EXPECT_TRUE(updated->CanFireEvents());
 
@@ -294,17 +297,16 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetInputControl) {
       manager->GetFromID(input_container.id);
   EXPECT_TRUE(input_time_container_obj->IsLeaf());
   EXPECT_FALSE(input_time_container_obj->CanFireEvents());
-  updated = manager->RetargetForEvents(
-      input_time_container_obj, BrowserAccessibilityManager::RetargetEventType::
-                                    RetargetEventTypeBlinkHover);
+  updated = manager->GetFromAXNode(manager->RetargetForEvents(
+      input_time_container_obj->node(),
+      RetargetEventType::RetargetEventTypeBlinkHover));
   EXPECT_EQ(input_time.id, updated->GetId());
   EXPECT_TRUE(updated->CanFireEvents());
   BrowserAccessibility* input_text_obj = manager->GetFromID(input_text.id);
   EXPECT_TRUE(input_text_obj->IsLeaf());
   EXPECT_FALSE(input_text_obj->CanFireEvents());
-  updated = manager->RetargetForEvents(
-      input_text_obj, BrowserAccessibilityManager::RetargetEventType::
-                          RetargetEventTypeBlinkHover);
+  updated = manager->GetFromAXNode(manager->RetargetForEvents(
+      input_text_obj->node(), RetargetEventType::RetargetEventTypeBlinkHover));
   EXPECT_EQ(input_time.id, updated->GetId());
   EXPECT_TRUE(updated->CanFireEvents());
 
@@ -314,9 +316,8 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetInputControl) {
   BrowserAccessibility* button_text_obj = manager->GetFromID(button_text.id);
   EXPECT_TRUE(button_text_obj->IsLeaf());
   EXPECT_FALSE(button_text_obj->CanFireEvents());
-  updated = manager->RetargetForEvents(
-      button_text_obj, BrowserAccessibilityManager::RetargetEventType::
-                           RetargetEventTypeBlinkHover);
+  updated = manager->GetFromAXNode(manager->RetargetForEvents(
+      button_text_obj->node(), RetargetEventType::RetargetEventTypeBlinkHover));
   EXPECT_EQ(button.id, updated->GetId());
   EXPECT_TRUE(updated->CanFireEvents());
   manager.reset();

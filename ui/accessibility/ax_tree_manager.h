@@ -31,6 +31,16 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
 
   ~AXTreeManager() override;
 
+  enum RetargetEventType {
+    RetargetEventTypeGenerated = 0,
+    RetargetEventTypeBlinkGeneral,
+    RetargetEventTypeBlinkHover,
+  };
+
+  // Return |node| by default, but some platforms want to update the target node
+  // based on the event type.
+  virtual AXNode* RetargetForEvents(AXNode* node, RetargetEventType type) const;
+
   // Returns the AXNode with the given |node_id| from the tree that has the
   // given |tree_id|. This allows for callers to access nodes outside of their
   // own tree. Returns nullptr if |tree_id| or |node_id| is not found.
