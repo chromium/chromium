@@ -134,7 +134,7 @@ void SubscriptionsServerProxy::Create(
   auto* const fetcher_ptr = fetcher.get();
   fetcher_ptr->Fetch(base::BindOnce(
       &SubscriptionsServerProxy::HandleManageSubscriptionsResponses,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback), std::move(fetcher)));
 }
 
 void SubscriptionsServerProxy::Delete(
@@ -199,7 +199,7 @@ void SubscriptionsServerProxy::Delete(
   auto* const fetcher_ptr = fetcher.get();
   fetcher_ptr->Fetch(base::BindOnce(
       &SubscriptionsServerProxy::HandleManageSubscriptionsResponses,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback), std::move(fetcher)));
 }
 
 void SubscriptionsServerProxy::Get(SubscriptionType type,
@@ -251,9 +251,9 @@ void SubscriptionsServerProxy::Get(SubscriptionType type,
   auto fetcher = CreateEndpointFetcher(GURL(service_url), kGetHttpMethod,
                                        kEmptyPostData, traffic_annotation);
   auto* const fetcher_ptr = fetcher.get();
-  fetcher_ptr->Fetch(
-      base::BindOnce(&SubscriptionsServerProxy::HandleGetSubscriptionsResponses,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  fetcher_ptr->Fetch(base::BindOnce(
+      &SubscriptionsServerProxy::HandleGetSubscriptionsResponses,
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback), std::move(fetcher)));
 }
 
 std::unique_ptr<EndpointFetcher>
@@ -270,6 +270,7 @@ SubscriptionsServerProxy::CreateEndpointFetcher(
 
 void SubscriptionsServerProxy::HandleManageSubscriptionsResponses(
     ManageSubscriptionsFetcherCallback callback,
+    std::unique_ptr<EndpointFetcher> endpoint_fetcher,
     std::unique_ptr<EndpointResponse> responses) {
   data_decoder::DataDecoder::ParseJsonIsolated(
       responses->response,
@@ -296,6 +297,7 @@ void SubscriptionsServerProxy::OnManageSubscriptionsJsonParsed(
 
 void SubscriptionsServerProxy::HandleGetSubscriptionsResponses(
     GetSubscriptionsFetcherCallback callback,
+    std::unique_ptr<EndpointFetcher> endpoint_fetcher,
     std::unique_ptr<EndpointResponse> responses) {
   data_decoder::DataDecoder::ParseJsonIsolated(
       responses->response,

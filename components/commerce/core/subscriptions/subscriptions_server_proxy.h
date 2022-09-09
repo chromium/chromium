@@ -70,6 +70,11 @@ class SubscriptionsServerProxy {
   // Handle Create or Delete response.
   void HandleManageSubscriptionsResponses(
       ManageSubscriptionsFetcherCallback callback,
+      // Passing the endpoint_fetcher ensures the endpoint_fetcher's
+      // lifetime extends to the callback and is not destroyed
+      // prematurely (which would result in cancellation of the request).
+      // TODO(crbug.com/1362026): Avoid passing this fetcher.
+      std::unique_ptr<EndpointFetcher> endpoint_fetcher,
       std::unique_ptr<EndpointResponse> responses);
 
   // This is called when Create or Delete response is parsed.
@@ -80,6 +85,11 @@ class SubscriptionsServerProxy {
   // Handle Get response.
   void HandleGetSubscriptionsResponses(
       GetSubscriptionsFetcherCallback callback,
+      // Passing the endpoint_fetcher ensures the endpoint_fetcher's
+      // lifetime extends to the callback and is not destroyed
+      // prematurely (which would result in cancellation of the request).
+      // TODO(crbug.com/1362026): Avoid passing this fetcher.
+      std::unique_ptr<EndpointFetcher> endpoint_fetcher,
       std::unique_ptr<EndpointResponse> responses);
 
   // This is called when Get response is parsed.

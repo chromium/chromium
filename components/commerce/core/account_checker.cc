@@ -107,13 +107,14 @@ void AccountChecker::FetchWaaStatus() {
       url_loader_factory_, waa_oauth_name, GURL(waa_query_url), waa_get_method,
       waa_content_type, std::vector<std::string>{waa_oauth_scope},
       waa_timeout_ms, waa_post_data, traffic_annotation, identity_manager_);
-  endpoint_fetcher.get()->Fetch(
-      base::BindOnce(&AccountChecker::HandleFetchWaaResponse,
-                     weak_ptr_factory_.GetWeakPtr(), pref_service_));
+  endpoint_fetcher.get()->Fetch(base::BindOnce(
+      &AccountChecker::HandleFetchWaaResponse, weak_ptr_factory_.GetWeakPtr(),
+      pref_service_, std::move(endpoint_fetcher)));
 }
 
 void AccountChecker::HandleFetchWaaResponse(
     PrefService* pref_service,
+    std::unique_ptr<EndpointFetcher> endpoint_fetcher,
     std::unique_ptr<EndpointResponse> responses) {
   data_decoder::DataDecoder::ParseJsonIsolated(
       responses->response,
