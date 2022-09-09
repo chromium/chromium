@@ -931,6 +931,15 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   StyleImageCache style_image_cache_;
 };
 
+// Helper function for checking if we need to handle legacy fragmentation cases
+// for container queries.
+inline bool HasFullNGFragmentationSupport() {
+  return RuntimeEnabledFeatures::LayoutNGPrintingEnabled() &&
+         RuntimeEnabledFeatures::LayoutNGFlexFragmentationEnabled() &&
+         RuntimeEnabledFeatures::LayoutNGGridFragmentationEnabled() &&
+         RuntimeEnabledFeatures::LayoutNGTableFragmentationEnabled();
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_ENGINE_H_
