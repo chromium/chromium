@@ -109,18 +109,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.InspectModule.ConnectionError"
-    enum="BooleanConnectionError" expires_after="M81">
-  <owner>pmonette@chromium.org</owner>
-  <summary>
-    Whether connection error has happened for the UtilWin service. Every time a
-    connection is made to the service, a &quot;false&quot; value is reported to
-    provide a baseline. Every time a mojo connection error happens, a
-    &quot;true&quot; value is reported, which typically means the utility
-    process crashed.
-  </summary>
-</histogram>
-
 <histogram name="Windows.InstallerPinUnpinned" enum="IsPinnedToTaskbarResult"
     expires_after="2023-08-31">
   <owner>davidbienvenu@chromium.org</owner>
@@ -158,19 +146,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.IsPinnedToTaskbar2" enum="BooleanError"
-    expires_after="M87">
-  <owner>pmonette@chromium.org</owner>
-  <owner>chrdavis@microsoft.com</owner>
-  <summary>
-    Indicates whether Chrome is pinned to the Windows taskbar for the current
-    user. Recorded shortly after startup. This is different from
-    Windows.IsPinnedToTaskbar in that we do not check if the pin to taskbar verb
-    is available on the shortcut and only relies on the shortcut existing in the
-    User Pinned folder.
-  </summary>
-</histogram>
-
 <histogram name="Windows.Launch.TaskbarInstallerPinned" enum="Boolean"
     expires_after="2023-08-23">
   <owner>davidbienvenu@chromium.org</owner>
@@ -201,26 +176,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Indicates whether Windows 11 style menus are used. Recorded on menu
     configuration initialization.
-  </summary>
-</histogram>
-
-<histogram name="Windows.ModuleInspector.ReadCacheResult"
-    enum="InspectionResultsCacheReadResult" expires_after="M78">
-  <owner>chrisha@chromium.org</owner>
-  <owner>pmonette@chromium.org</owner>
-  <summary>
-    The result of reading the InspectionResultsCache from disk. The cache is
-    read once at startup when the ModuleInspector needs it.
-  </summary>
-</histogram>
-
-<histogram name="Windows.ModuleInspector.WriteCacheResult"
-    enum="BooleanSuccess" expires_after="M78">
-  <owner>chrisha@chromium.org</owner>
-  <owner>pmonette@chromium.org</owner>
-  <summary>
-    The result of writing the InspectionResultsCache to disk. This is done every
-    time the ModuleDatabase becomes idle.
   </summary>
 </histogram>
 
