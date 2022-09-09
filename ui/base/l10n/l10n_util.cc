@@ -41,6 +41,10 @@
 #include "ui/base/l10n/l10n_util_android.h"
 #endif
 
+#if BUILDFLAG(IS_IOS)
+#include "ui/base/l10n/l10n_util_ios.h"
+#endif
+
 #if defined(USE_GLIB)
 #include <glib.h>
 #endif

@@ -16,48 +16,10 @@ namespace {
 
 base::LazyInstance<std::string>::DestructorAtExit g_overridden_locale =
     LAZY_INSTANCE_INITIALIZER;
-base::LazyInstance<base::scoped_nsobject<NSLocale>>::DestructorAtExit
-    mac_locale = LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
 
 namespace l10n_util {
-
-std::u16string GetDisplayNameForLocale(const std::string& locale,
-                                       const std::string& display_locale) {
-  NSString* display = base::SysUTF8ToNSString(display_locale);
-
-  if (mac_locale.Get() == nil ||
-      ![[mac_locale.Get() localeIdentifier] isEqualToString:display]) {
-    mac_locale.Get().reset([[NSLocale alloc] initWithLocaleIdentifier:display]);
-  }
-
-  NSString* language = base::SysUTF8ToNSString(locale);
-  NSString* localized_language_name =
-      [mac_locale.Get() displayNameForKey:NSLocaleIdentifier value:language];
-  // Return localized language if system API provided it. Do not attempt to
-  // manually parse into error format if no |locale| was provided.
-  if (localized_language_name.length || !language.length) {
-    return base::SysNSStringToUTF16(localized_language_name);
-  }
-
-  NSRange script_seperator =
-      [language rangeOfString:@"-" options:NSBackwardsSearch];
-  if (!script_seperator.length) {
-    return base::SysNSStringToUTF16([language lowercaseString]);
-  }
-
-  NSString* language_component =
-      [language substringToIndex:script_seperator.location];
-  NSString* script_component = [language
-      substringFromIndex:script_seperator.location + script_seperator.length];
-  if (!script_component.length) {
-    return base::SysNSStringToUTF16([language_component lowercaseString]);
-  }
-  return base::SysNSStringToUTF16([NSString
-      stringWithFormat:@"%@ (%@)", [language_component lowercaseString],
-                       [script_component uppercaseString]]);
-}
 
 const std::string& GetLocaleOverride() {
   return g_overridden_locale.Get();
