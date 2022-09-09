@@ -116,12 +116,7 @@ void TCPClientSocketBrokered ::DidCompleteCreate(
   // browser process.
   std::unique_ptr<net::TCPSocket> tcp_socket = std::make_unique<net::TCPSocket>(
       std::move(socket_performance_watcher_), net_log_, source_);
-// TODO(https://crbug.com/1311014): call TCPSocketWin::AdoptUnconnectedSocket
-#if BUILDFLAG(IS_WIN)
-  tcp_socket->Open(addresses_.begin()->GetFamily());
-#else
   tcp_socket->AdoptUnconnectedSocket(socket.TakeSocket());
-#endif
 
   // TODO(liza): Pass through the NetworkHandle.
   brokered_socket_ = std::make_unique<net::TCPClientSocket>(

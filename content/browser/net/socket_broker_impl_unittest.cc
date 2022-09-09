@@ -6,6 +6,8 @@
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "content/public/browser/network_service_instance.h"
+#include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/address_family.h"
 #include "net/base/completion_once_callback.h"
@@ -20,21 +22,24 @@ namespace content {
 void DidCompleteCreateTest(base::RunLoop* run_loop,
                            network::TransferableSocket socket,
                            int rv) {
-// TODO(https://crbug.com/1311014): Remove ifdef and expect a result of net::OK
-// on Windows.
-#if BUILDFLAG(IS_WIN)
-  EXPECT_EQ(rv, net::ERR_FAILED);
-#else
   EXPECT_NE(socket.TakeSocket(), net::kInvalidSocket);
   EXPECT_EQ(rv, net::OK);
-#endif
 
   run_loop->Quit();
 }
 
 TEST(SocketBrokerImplTest, TestCanOpenSocket) {
+  content::BrowserTaskEnvironment task_environment;
+
+  // On Windows, calling the broker requires knowledge of the network service
+  // process in order to correctly duplicate the socket. Since there is no
+  // network service in unit_tests, there is no process to duplicate the handle
+  // to, so make it current process for testing.
+#if BUILDFLAG(IS_WIN)
+  content::SetNetworkServiceTrackerToCurrentProcessForTesting();
+#endif
+
   SocketBrokerImpl socket_broker_impl;
-  base::test::TaskEnvironment task_environment;
   base::RunLoop run_loop;
   mojo::Remote<network::mojom::SocketBroker> remote(
       socket_broker_impl.BindNewRemote());

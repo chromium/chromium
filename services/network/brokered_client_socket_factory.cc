@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "net/socket/datagram_client_socket.h"
 #include "net/socket/tcp_client_socket.h"
+#include "net/socket/udp_client_socket.h"
 #include "services/network/tcp_client_socket_brokered.h"
 
 namespace net {
@@ -34,8 +35,8 @@ BrokeredClientSocketFactory::CreateDatagramClientSocket(
     net::DatagramSocket::BindType bind_type,
     net::NetLog* net_log,
     const net::NetLogSource& source) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  // TODO(liza): Call into the broker rather than directly to net.
+  return std::make_unique<net::UDPClientSocket>(bind_type, net_log, source);
 }
 
 std::unique_ptr<net::TransportClientSocket>
@@ -56,8 +57,9 @@ BrokeredClientSocketFactory::CreateSSLClientSocket(
     std::unique_ptr<net::StreamSocket> stream_socket,
     const net::HostPortPair& host_and_port,
     const net::SSLConfig& ssl_config) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  // TODO(liza): Call into the broker rather than directly to net.
+  return context->CreateSSLClientSocket(std::move(stream_socket), host_and_port,
+                                        ssl_config);
 }
 
 void BrokeredClientSocketFactory::BrokerCreateTcpSocket(

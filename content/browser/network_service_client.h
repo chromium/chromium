@@ -82,7 +82,9 @@ class NetworkServiceClient
 
   // net::NetworkChangeNotifier::DNSObserver implementation:
   void OnDNSChanged() override;
+#endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(USE_SOCKET_BROKER)
   // Called when the network service sandbox is enabled.
   mojo::PendingRemote<network::mojom::SocketBroker> BindSocketBroker();
 #endif
