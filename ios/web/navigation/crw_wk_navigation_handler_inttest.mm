@@ -167,6 +167,30 @@ TEST_F(CRWKNavigationHandlerIntTest, ReloadWithDifferentUserAgent) {
       }));
 }
 
+// Tests that reloading a failed page that should not have a User Agent doesn't
+// trigger a DCHECK (preventing crbug.com/1360567).
+TEST_F(CRWKNavigationHandlerIntTest, ReloadNONEUserAgentErrorPage) {
+  FakeWebClient* web_client = GetWebClient();
+  web_client->SetDefaultUserAgent(UserAgentType::MOBILE);
+
+  GURL url("testwebui://extensions");
+  ASSERT_TRUE(LoadUrl(url));
+
+  NavigationItem* item = web_state()->GetNavigationManager()->GetVisibleItem();
+  EXPECT_EQ(UserAgentType::NONE, item->GetUserAgentType());
+
+  web_state()->GetNavigationManager()->Reload(ReloadType::NORMAL,
+                                              /* check_for_repost = */ true);
+
+  // Make sure the load has time to start.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(10));
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        return !web_state()->IsLoading();
+      }));
+}
+
 // Tests that an SSL or net error on a navigation that wasn't upgraded to HTTPS
 // doesn't set the IsFailedHTTPSUpgrade() bit on the navigation context.
 TEST_F(CRWKNavigationHandlerIntTest, FailedHTTPSUpgrade_NotUpgraded_SSLError) {

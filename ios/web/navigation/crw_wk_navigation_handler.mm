@@ -166,6 +166,8 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
                         preferences:(WKWebpagePreferences*)preferences
                     decisionHandler:(void (^)(WKNavigationActionPolicy,
                                               WKWebpagePreferences*))handler {
+  GURL requestURL = net::GURLWithNSURL(action.request.URL);
+
   const web::UserAgentType userAgentType =
       [self userAgentForNavigationAction:action webView:webView];
 
@@ -178,9 +180,14 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
       self.webStateImpl->SetUserAgent(userAgentType);
     }
 
+    GURL URLForUserAgent = requestURL;
+    if ([CRWErrorPageHelper isErrorPageFileURL:URLForUserAgent]) {
+      URLForUserAgent = [CRWErrorPageHelper
+          failedNavigationURLFromErrorPageFileURL:URLForUserAgent];
+    }
+
     if (action.navigationType == WKNavigationTypeReload &&
-        web::wk_navigation_util::URLNeedsUserAgentType(
-            net::GURLWithNSURL(action.request.URL))) {
+        web::wk_navigation_util::URLNeedsUserAgentType(URLForUserAgent)) {
       // When reloading the page, the UserAgent will be updated to the one for
       // the new page.
       web::NavigationItem* item = [[CRWNavigationItemHolder
@@ -219,8 +226,6 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
     decisionHandler(WKNavigationActionPolicyCancel);
     return;
   }
-
-  GURL requestURL = net::GURLWithNSURL(action.request.URL);
 
   // The page will not be changed until this navigation is committed, so the
   // retrieved state will be pending until `didCommitNavigation` callback.
