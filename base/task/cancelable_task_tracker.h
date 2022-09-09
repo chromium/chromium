@@ -157,7 +157,7 @@ class BASE_EXPORT CancelableTaskTracker {
       task_flags_;
 
   TaskId next_id_ = 1;
-  SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // TODO(https://crbug.com/1009795): Remove once crasher is resolved.
   base::WeakPtr<CancelableTaskTracker> weak_this_;
