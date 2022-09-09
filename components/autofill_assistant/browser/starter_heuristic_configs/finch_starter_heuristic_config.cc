@@ -13,6 +13,7 @@ FinchStarterHeuristicConfig::FinchStarterHeuristicConfig(
   InitFromTrialParams(trial_parameter);
 }
 
+FinchStarterHeuristicConfig::FinchStarterHeuristicConfig() = default;
 FinchStarterHeuristicConfig::~FinchStarterHeuristicConfig() = default;
 
 const std::string& FinchStarterHeuristicConfig::GetIntent() const {
@@ -94,6 +95,11 @@ void FinchStarterHeuristicConfig::InitFromTrialParams(
     VLOG(2) << "Field trial parameter not set";
     return;
   }
+  InitFromString(parameters);
+}
+
+void FinchStarterHeuristicConfig::InitFromString(
+    const std::string& parameters) {
   auto dict = base::JSONReader::ReadAndReturnValueWithError(parameters);
   if (!dict.has_value() || !dict->is_dict()) {
     VLOG(1) << "Failed to parse field trial params as JSON object: "

@@ -64,6 +64,11 @@ class FinchStarterHeuristicConfig : public StarterHeuristicConfig {
       content::BrowserContext* browser_context) const override;
   const base::flat_set<std::string>& GetDenylistedDomains() const override;
 
+ protected:
+  // Default constructor only accessible by subclasses.
+  FinchStarterHeuristicConfig();
+  void InitFromString(const std::string& parameters);
+
  private:
   void InitFromTrialParams(
       const base::FeatureParam<std::string>& trial_parameter);
