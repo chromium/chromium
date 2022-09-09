@@ -73289,6 +73289,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Virtual keyboard tray"/>
   <int value="4" label="IME tray"/>
   <int value="5" label="Enterprise enrollment button"/>
+  <int value="6" label="Use as personal device button"/>
+  <int value="7" label="OsInstall button"/>
+  <int value="8" label="Unexpected click"/>
 </enum>
 
 <enum name="OobeWebViewLoadResult">
