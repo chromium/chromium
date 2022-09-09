@@ -96,28 +96,35 @@ struct NGStitchedAnchorQuery : public GarbageCollected<NGStitchedAnchorQuery> {
     if (!anchor_query)
       return;
     for (const auto& it : *anchor_query) {
-      const PhysicalRect physical_rect_in_fragmentainer =
-          it.value->rect + offset_from_fragmentainer;
-      const LogicalRect rect_in_fragmentainer =
-          fragmentainer.converter.ToLogical(physical_rect_in_fragmentainer);
       DCHECK(it.value->fragment);
-      auto* new_value = MakeGarbageCollected<NGStitchedAnchorReference>(
-          *it.value->fragment, rect_in_fragmentainer, fragmentainer);
-      const auto result = references.insert(it.key, new_value);
-      if (result.is_new_entry)
-        continue;
-
-      // If this is the same anchor-name on a different box, ignore it. The
-      // first one in the pre-order wins.
-      NGStitchedAnchorReference* existing = result.stored_value->value;
-      if (existing->fragment->GetLayoutObject() !=
-          new_value->fragment->GetLayoutObject()) {
-        continue;
-      }
-
-      // If this is a fragment of the same box, unite it.
-      existing->Unite(rect_in_fragmentainer, fragmentainer.offset);
+      AddAnchorReference(it.key, *it.value->fragment,
+                         it.value->rect + offset_from_fragmentainer,
+                         fragmentainer);
     }
+  }
+
+  void AddAnchorReference(const AtomicString& anchor_name,
+                          const NGPhysicalFragment& fragment,
+                          const PhysicalRect& physical_rect_in_fragmentainer,
+                          const FragmentainerContext& fragmentainer) {
+    const LogicalRect rect_in_fragmentainer =
+        fragmentainer.converter.ToLogical(physical_rect_in_fragmentainer);
+    auto* new_value = MakeGarbageCollected<NGStitchedAnchorReference>(
+        fragment, rect_in_fragmentainer, fragmentainer);
+    const auto result = references.insert(anchor_name, new_value);
+    if (result.is_new_entry)
+      return;
+
+    // If this is the same anchor-name on a different box, ignore it. The
+    // first one in the pre-order wins.
+    NGStitchedAnchorReference* existing = result.stored_value->value;
+    if (existing->fragment->GetLayoutObject() !=
+        new_value->fragment->GetLayoutObject()) {
+      return;
+    }
+
+    // If this is a fragment of the same box, unite it.
+    existing->Unite(rect_in_fragmentainer, fragmentainer.offset);
   }
 
   void Trace(Visitor* visitor) const { visitor->Trace(references); }
