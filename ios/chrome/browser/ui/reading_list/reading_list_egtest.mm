@@ -642,10 +642,9 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   // Tap the Omnibox' Info Bubble to open the Page Info.
   OpenPageSecurityInfoBubble();
   // Verify that the Page Info is about offline pages.
-  id<GREYMatcher> pageInfoTitleMatcher =
-      chrome_test_util::StaticTextWithAccessibilityLabelId(
-          IDS_IOS_PAGE_INFO_OFFLINE_PAGE_LABEL);
-  [[EarlGrey selectElementWithMatcher:pageInfoTitleMatcher]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::HeaderWithAccessibilityLabelId(
+                                   IDS_IOS_PAGE_INFO_OFFLINE_PAGE_LABEL)]
       assertWithMatcher:grey_notNil()];
 
   // Verify that the webState's title is correct.
