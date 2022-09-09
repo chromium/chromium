@@ -24,3 +24,7 @@
 
 # TODO(crbug/1349958)
 -org.chromium.chrome.browser.autofill_assistant.AutofillAssistantOverlayIntegrationTest.testShowCastOnIFrameElementInScrollIFrame
+
+# TODO(crbug/1361660)
+-org.chromium.chrome.browser.sync.SyncErrorCardPreferenceTest.testSyncErrorCardForTrustedVaultRecoverabilityDegradedForEverythingWithTitleFeatureDisabled__NightModeEnabled
+-org.chromium.chrome.browser.sync.SyncErrorCardPreferenceTest.testSyncErrorCardForTrustedVaultRecoverabilityDegradedForPasswordsWithTitleFeatureDisabled__NightModeDisabled

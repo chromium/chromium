@@ -15,3 +15,9 @@
 
 # TODO(crbug.com/1349978)
 -PrefetchBrowserTest/PrefetchBrowserTest.CrossOriginWithPreloadHasNoSameSiteCookies/7
+
+# TODO(crbug.com/1116774)
+-All/SitePerProcessBrowserTest.PageScaleFactorPropagatesToOOPIFs/1
+
+# TODO(crbug.com/1344391)
+-All/SitePerProcessBrowserTest.KeyboardScrollBubblingFromOOPIF/1
