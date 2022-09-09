@@ -211,6 +211,7 @@ class AuthenticationService : public KeyedService,
   void OnAccessTokenRefreshFailed(ChromeIdentity* identity,
                                   NSDictionary* user_info) override;
   void OnIdentityListChanged(bool need_user_approval) override;
+  void OnServiceSupportedChanged() override;
 
   // Fires `OnPrimaryAccountRestricted` on all observers.
   void FirePrimaryAccountRestricted();

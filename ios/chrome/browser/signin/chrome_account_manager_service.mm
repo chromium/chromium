@@ -312,6 +312,8 @@ void ChromeAccountManagerService::OnChromeIdentityServiceDidChange(
   small_size_avatar_cache_ = nil;
   default_large_avatar_cache_ = nil;
   OnIdentityListChanged(false);
+  for (auto& observer : observer_list_)
+    observer.OnServiceSupportedChanged();
 }
 
 void ChromeAccountManagerService::OnChromeBrowserProviderWillBeDestroyed() {

@@ -529,6 +529,10 @@ void AuthenticationService::OnIdentityListChanged(bool need_user_approval) {
                      GetWeakPtr(), need_user_approval));
 }
 
+void AuthenticationService::OnServiceSupportedChanged() {
+  FireServiceStatusNotification();
+}
+
 bool AuthenticationService::HandleMDMNotification(ChromeIdentity* identity,
                                                   NSDictionary* user_info) {
   ios::ChromeIdentityService* identity_service =

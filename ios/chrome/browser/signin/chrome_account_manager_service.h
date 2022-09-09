@@ -51,6 +51,11 @@ class ChromeAccountManagerService : public KeyedService,
 
     // Called when the identity is updated.
     virtual void OnIdentityChanged(ChromeIdentity* identity) {}
+
+    // Called when ChromeIdentityService is replaced. The value of
+    // `IsServiceSupported()` might have been updated.
+    // This can only happen for EGTests.
+    virtual void OnServiceSupportedChanged() {}
   };
 
   // Initializes the service.
