@@ -7,31 +7,16 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/test/test_timeouts.h"
-#include "base/version.h"
 #include "build/build_config.h"
-#include "chrome/updater/win/test/test_executables.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/updater/win/test/test_executables.h"
+#endif
+
 namespace updater::test {
-namespace {
-
-// Returns the name of the unit test program, which is this program.
-base::FilePath::StringType GetUnitTestExecutableName() {
-  base::FilePath unit_test_executable;
-  base::PathService::Get(base::FILE_EXE, &unit_test_executable);
-  return unit_test_executable.BaseName().value();
-}
-
-}  // namespace
 
 TEST(UnitTestUtil, Processes) {
-  // Test the state of the process for the unit test process itself.
-  base::FilePath::StringType unit_test = GetUnitTestExecutableName();
-  // TODO(crbug.com/1352190) - remove process name insertion after the flakiness
-  // of the test is resolved.
-  EXPECT_TRUE(IsProcessRunning(unit_test)) << unit_test;
-  EXPECT_FALSE(WaitForProcessesToExit(unit_test, base::Milliseconds(1)));
-
 #if BUILDFLAG(IS_WIN)
   EXPECT_FALSE(IsProcessRunning(kTestProcessExecutableName));
 
@@ -57,6 +42,15 @@ TEST(UnitTestUtil, Processes) {
         p.WaitForExitWithTimeout(TestTimeouts::tiny_timeout(), &exit_code));
     EXPECT_EQ(exit_code, kExitCode);
   }
+#else
+  // Test the state of the process for the unit test process itself.
+  base::FilePath::StringType unit_test = []() {
+    base::FilePath unit_test_executable;
+    base::PathService::Get(base::FILE_EXE, &unit_test_executable);
+    return unit_test_executable.BaseName().value();
+  }();
+  EXPECT_TRUE(IsProcessRunning(unit_test));
+  EXPECT_FALSE(WaitForProcessesToExit(unit_test, base::Milliseconds(1)));
 #endif  // IS_WIN
 }
 
