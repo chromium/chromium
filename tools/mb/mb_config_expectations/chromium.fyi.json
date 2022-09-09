@@ -1037,7 +1037,7 @@
       "target_cpu": "arm64",
       "target_environment": "device",
       "target_os": "ios",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "ios15-sdk-simulator": {
