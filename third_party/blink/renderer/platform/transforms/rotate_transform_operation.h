@@ -71,7 +71,10 @@ class PLATFORM_EXPORT RotateTransformOperation : public TransformOperation {
 
   void Apply(TransformationMatrix& transform,
              const gfx::SizeF& /*borderBoxSize*/) const override {
-    transform.Rotate3d(rotation_);
+    if (type_ == kRotate)
+      transform.Rotate(Angle());
+    else
+      transform.Rotate3d(rotation_);
   }
 
   static bool IsMatchingOperationType(OperationType type) {

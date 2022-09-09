@@ -474,6 +474,22 @@ TransformationMatrix& TransformationMatrix::Scale3d(double sx,
   return *this;
 }
 
+TransformationMatrix& TransformationMatrix::Rotate(double angle) {
+  angle = Deg2rad(angle);
+
+  TransformationMatrix rotation_matrix;
+  double sin_theta = std::sin(angle);
+  double cos_theta = std::cos(angle);
+
+  rotation_matrix.matrix_[0][0] = cos_theta;
+  rotation_matrix.matrix_[0][1] = sin_theta;
+  rotation_matrix.matrix_[1][0] = -sin_theta;
+  rotation_matrix.matrix_[1][1] = cos_theta;
+
+  Multiply(rotation_matrix);
+  return *this;
+}
+
 TransformationMatrix& TransformationMatrix::Rotate3d(const Rotation& rotation) {
   return Rotate3d(rotation.axis.x(), rotation.axis.y(), rotation.axis.z(),
                   rotation.angle);

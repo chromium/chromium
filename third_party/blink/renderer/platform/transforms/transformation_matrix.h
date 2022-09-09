@@ -299,8 +299,8 @@ class PLATFORM_EXPORT TransformationMatrix {
   TransformationMatrix& ScaleNonUniform(double sx, double sy);
   TransformationMatrix& Scale3d(double sx, double sy, double sz);
 
-  TransformationMatrix& Rotate(double d) { return Rotate3d(0, 0, d); }
   // Angles are in degrees.
+  TransformationMatrix& Rotate(double d);
   TransformationMatrix& Rotate3d(double rx, double ry, double rz);
   TransformationMatrix& Rotate3d(const Rotation&);
 
