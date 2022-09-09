@@ -13,7 +13,10 @@
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task_impl.h"
+#include "chrome/browser/ash/file_manager/copy_or_move_io_task_scanning_impl.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
+#include "chrome/browser/enterprise/connectors/analysis/file_transfer_analysis_delegate.h"
+#include "chrome/common/chrome_features.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -66,12 +69,28 @@ CopyOrMoveIOTask::~CopyOrMoveIOTask() = default;
 
 void CopyOrMoveIOTask::Execute(IOTask::ProgressCallback progress_callback,
                                IOTask::CompleteCallback complete_callback) {
-  // TODO (crbug.com/1339818): check whether scanning is needed and create
-  // appropriate impl_.
-  impl_ = std::make_unique<CopyOrMoveIOTaskImpl>(
-      progress_.type, progress_, std::move(destination_file_names_),
-      progress_.destination_folder, profile_, file_system_context_,
-      progress_.show_notification);
+  // Check if scanning is enabled.
+  bool scanning_feature_enabled =
+      base::FeatureList::IsEnabled(features::kFileTransferEnterpriseConnector);
+  std::vector<absl::optional<enterprise_connectors::AnalysisSettings>>
+      scanning_settings;
+  if (scanning_feature_enabled) {
+    scanning_settings =
+        enterprise_connectors::FileTransferAnalysisDelegate::IsEnabledVec(
+            profile_, source_urls_, progress_.destination_folder);
+  }
+
+  if (scanning_feature_enabled && !scanning_settings.empty()) {
+    impl_ = std::make_unique<CopyOrMoveIOTaskScanningImpl>(
+        progress_.type, progress_, std::move(destination_file_names_),
+        std::move(scanning_settings), progress_.destination_folder, profile_,
+        file_system_context_, progress_.show_notification);
+  } else {
+    impl_ = std::make_unique<CopyOrMoveIOTaskImpl>(
+        progress_.type, progress_, std::move(destination_file_names_),
+        progress_.destination_folder, profile_, file_system_context_,
+        progress_.show_notification);
+  }
 
   impl_->Execute(std::move(progress_callback), std::move(complete_callback));
 }

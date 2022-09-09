@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -17,11 +19,18 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task_impl.h"
+#include "chrome/browser/ash/file_manager/copy_or_move_io_task_scanning_impl.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
+#include "chrome/browser/enterprise/connectors/analysis/mock_file_transfer_analysis_delegate.h"
+#include "chrome/browser/enterprise/connectors/analysis/source_destination_test_util.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -38,6 +47,7 @@ using ::testing::AllOf;
 using ::testing::AnyNumber;
 using ::testing::AtLeast;
 using ::testing::ElementsAre;
+using ::testing::ElementsAreArray;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Return;
@@ -422,6 +432,718 @@ INSTANTIATE_TEST_SUITE_P(CopyOrMove,
                          CopyOrMoveIOTaskTest,
                          testing::Values(OperationType::kCopy,
                                          OperationType::kMove));
+
+constexpr char kBlockingScansForDlpAndMalware[] = R"(
+{
+  "service_provider": "google",
+  "enable": [
+    {
+      "source_destination_list": [
+        {
+          "sources": [{
+            "file_system_type": "PROVIDED"
+          }],
+          "destinations": [{
+            "file_system_type": "*"
+          }]
+        }
+      ],
+      "tags": ["dlp", "malware"]
+    }
+  ],
+  "block_until_verdict": 1
+})";
+
+constexpr std::initializer_list<
+    enterprise_connectors::SourceDestinationTestingHelper::VolumeInfo>
+    kVolumeInfos{
+        {file_manager::VOLUME_TYPE_PROVIDED, absl::nullopt, "PROVIDED"},
+        {file_manager::VOLUME_TYPE_GOOGLE_DRIVE, absl::nullopt, "GOOGLE_DRIVE"},
+        {file_manager::VOLUME_TYPE_DOWNLOADS_DIRECTORY, absl::nullopt,
+         "MY_FILES"},
+    };
+
+enum class BlockState { kAll, kSome, kNone };
+
+struct FileInfo {
+  std::string file_contents;
+  storage::FileSystemURL source_url;
+  storage::FileSystemURL expected_output_url;
+};
+
+class CopyOrMoveIOTaskWithScansTest
+    : public testing::TestWithParam<OperationType> {
+ public:
+  static std::string ParamToString(
+      const ::testing::TestParamInfo<ParamType>& info) {
+    OperationType operation_type = info.param;
+    std::string name;
+    name += operation_type == OperationType::kCopy ? "Copy" : "Move";
+    return name;
+  }
+
+ protected:
+  OperationType GetOperationType() { return GetParam(); }
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {enterprise_connectors::kEnterpriseConnectorsEnabled,
+         features::kFileTransferEnterpriseConnector},
+        {});
+
+    // Set a device management token. It is required to enable scanning.
+    // Without it, FileTransferAnalysisDelegate::IsEnabled() always
+    // returns absl::nullopt.
+    SetDMTokenForTesting(
+        policy::DMToken::CreateValidTokenForTesting("dm_token"));
+
+    // Set the analysis connector (enterprise_connectors) for FILE_TRANSFER.
+    // It is also required for FileTransferAnalysisDelegate::IsEnabled() to
+    // return a meaningful result.
+    safe_browsing::SetAnalysisConnector(profile_.GetPrefs(),
+                                        enterprise_connectors::FILE_TRANSFER,
+                                        kBlockingScansForDlpAndMalware);
+
+    source_destination_testing_helper_ =
+        std::make_unique<enterprise_connectors::SourceDestinationTestingHelper>(
+            &profile_, kVolumeInfos);
+
+    file_system_context_ = storage::CreateFileSystemContextForTesting(
+        nullptr, source_destination_testing_helper_->GetTempDirPath());
+
+    CopyOrMoveIOTaskScanningImpl::
+        SetFileTransferAnalysisDelegateFactoryForTesting(base::BindRepeating(
+            [](base::RepeatingCallback<void(
+                   enterprise_connectors::MockFileTransferAnalysisDelegate*,
+                   const storage::FileSystemURL& source_url)>
+                   mock_setup_callback,
+               safe_browsing::DeepScanAccessPoint access_point,
+               storage::FileSystemURL source_url,
+               storage::FileSystemURL destination_url, Profile* profile,
+               storage::FileSystemContext* file_system_context,
+               enterprise_connectors::AnalysisSettings settings,
+               base::OnceClosure result_callback)
+                -> std::unique_ptr<
+                    enterprise_connectors::FileTransferAnalysisDelegate> {
+              auto delegate = std::make_unique<::testing::StrictMock<
+                  enterprise_connectors::MockFileTransferAnalysisDelegate>>(
+                  access_point, source_url, destination_url, profile,
+                  file_system_context, std::move(settings),
+                  std::move(result_callback));
+
+              mock_setup_callback.Run(delegate.get(), source_url);
+
+              return delegate;
+            },
+            base::BindRepeating(&CopyOrMoveIOTaskWithScansTest::SetupMock,
+                                base::Unretained(this))));
+  }
+
+  // Setup the expectations of the mock.
+  // This function uses the stored expectations from the
+  // `scanning_expectations_` map.
+  void SetupMock(
+      enterprise_connectors::MockFileTransferAnalysisDelegate* delegate,
+      const storage::FileSystemURL& source_url) {
+    if (auto iter = scanning_expectations_.find(source_url);
+        iter != scanning_expectations_.end()) {
+      EXPECT_CALL(*delegate, UploadData()).WillOnce([delegate]() {
+        delegate->RunCallback();
+      });
+
+      EXPECT_CALL(*delegate, GetAnalysisResultAfterScan(source_url))
+          .WillOnce(Return(iter->second));
+    } else if (auto iter = directory_scanning_expectations_.find(source_url);
+               iter != directory_scanning_expectations_.end()) {
+      // Scan for directory detected.
+      EXPECT_CALL(*delegate, UploadData()).WillOnce([delegate]() {
+        delegate->RunCallback();
+      });
+
+      for (auto&& scanning_expectation : scanning_expectations_) {
+        // Note: We're using IsParent here, so this doesn't support recursive
+        // scanning!
+        // If the current directory is a parent of the expectation, set an
+        // expectation.
+        if (iter->IsParent(scanning_expectation.first)) {
+          EXPECT_CALL(*delegate,
+                      GetAnalysisResultAfterScan(scanning_expectation.first))
+              .WillOnce(Return(scanning_expectation.second));
+        }
+      }
+    } else {
+      // Expect no scans if we set no expectation.
+      EXPECT_CALL(*delegate, UploadData()).Times(0);
+      EXPECT_CALL(*delegate, GetAnalysisResultAfterScan(source_url)).Times(0);
+    }
+  }
+
+  // Expect a scan for the file specified using `file_info`.
+  // The scan will return the specified `result'.
+  void ExpectScan(FileInfo file_info,
+                  enterprise_connectors::FileTransferAnalysisDelegate::
+                      FileTransferAnalysisResult result) {
+    ASSERT_EQ(scanning_expectations_.count(file_info.source_url), 0);
+    scanning_expectations_[file_info.source_url] = result;
+  }
+
+  // Expect a scan for the directory specified using `file_info`.
+  void ExpectDirectoryScan(FileInfo file_info) {
+    ASSERT_EQ(directory_scanning_expectations_.count(file_info.source_url), 0);
+    directory_scanning_expectations_.insert(file_info.source_url);
+  }
+
+  storage::FileSystemURL GetSourceFileSystemURLForEnabledVolume(
+      const std::string& component) {
+    return source_destination_testing_helper_->GetTestFileSystemURLForVolume(
+        std::data(kVolumeInfos)[0], component);
+  }
+
+  storage::FileSystemURL GetSourceFileSystemURLForDisabledVolume(
+      const std::string& component) {
+    return source_destination_testing_helper_->GetTestFileSystemURLForVolume(
+        std::data(kVolumeInfos)[1], component);
+  }
+
+  storage::FileSystemURL GetDestinationFileSystemURL(
+      const std::string& component) {
+    return source_destination_testing_helper_->GetTestFileSystemURLForVolume(
+        std::data(kVolumeInfos)[2], component);
+  }
+
+  // Creates one file.
+  // If `on_enabled_fs` is true, the created file lies on a file system, for
+  // which scanning is enabled.
+  // If `on_enabled_fs` is false, the created file lies on a file system, for
+  // which scanning is disabled.
+  FileInfo SetupFile(bool on_enabled_fs, std::string file_name) {
+    auto file_contents = base::RandBytesAsString(kTestFileSize);
+    storage::FileSystemURL url =
+        on_enabled_fs ? GetSourceFileSystemURLForEnabledVolume(file_name)
+                      : GetSourceFileSystemURLForDisabledVolume(file_name);
+    EXPECT_TRUE(base::WriteFile(url.path(), file_contents));
+
+    return {file_contents, url, GetDestinationFileSystemURL(file_name)};
+  }
+
+  std::vector<storage::FileSystemURL> GetExpectedOutputUrlsFromFileInfos(
+      const std::vector<FileInfo>& file_infos) {
+    std::vector<storage::FileSystemURL> expected_output_urls;
+    for (auto&& file : file_infos) {
+      expected_output_urls.push_back(file.expected_output_url);
+    }
+    return expected_output_urls;
+  }
+
+  std::vector<storage::FileSystemURL> GetSourceUrlsFromFileInfos(
+      const std::vector<FileInfo>& file_infos) {
+    std::vector<storage::FileSystemURL> source_urls;
+    for (auto&& file : file_infos) {
+      source_urls.push_back(file.source_url);
+    }
+    return source_urls;
+  }
+
+  auto GetBaseMatcher(const std::vector<FileInfo>& file_infos,
+                      storage::FileSystemURL dest,
+                      size_t total_num_files) {
+    std::vector<storage::FileSystemURL> source_urls;
+    for (auto&& file : file_infos) {
+      source_urls.push_back(file.source_url);
+    }
+    return AllOf(
+        Field(&ProgressStatus::type, GetOperationType()),
+        Field(&ProgressStatus::sources,
+              EntryStatusUrls(GetSourceUrlsFromFileInfos(file_infos))),
+        Field(&ProgressStatus::destination_folder, dest),
+        Field(&ProgressStatus::total_bytes, total_num_files * kTestFileSize));
+  }
+
+  // The progress callback may be called any number of times, this expectation
+  // catches extra calls.
+  void ExpectExtraProgressCallbackCalls(
+      base::MockRepeatingCallback<void(const ProgressStatus&)>&
+          progress_callback,
+      const std::vector<FileInfo>& file_infos,
+      const storage::FileSystemURL& dest,
+      size_t total_num_files = -1) {
+    if (total_num_files == -1) {
+      total_num_files = file_infos.size();
+    }
+    EXPECT_CALL(progress_callback,
+                Run(AllOf(Field(&ProgressStatus::state, State::kInProgress),
+                          GetBaseMatcher(file_infos, dest, total_num_files))))
+        .Times(AnyNumber());
+  }
+
+  // Expect a progress callback call for the specified files.
+  // `file_infos` should include all files for which the transfer was initiated.
+  // `expected_output_errors` should hold the errors of the files that should
+  // have been progressed when the call is expected.
+  void ExpectProgressCallbackCall(
+      base::MockRepeatingCallback<void(const ProgressStatus&)>&
+          progress_callback,
+      const std::vector<FileInfo>& file_infos,
+      const storage::FileSystemURL& dest,
+      const std::vector<absl::optional<base::File::Error>>&
+          expected_output_errors) {
+    // Progress callback may be called any number of times. This expectation
+    // catches extra calls.
+
+    size_t processed_num_files = expected_output_errors.size();
+    size_t total_num_files = file_infos.size();
+
+    // ExpectProgressCallbackCall should not be called for the last file.
+    ASSERT_LT(processed_num_files, total_num_files);
+
+    // Expected source errors should contain nullopt entries for every entry,
+    // even not yet processed ones.
+    auto expected_source_errors = expected_output_errors;
+    expected_source_errors.resize(file_infos.size(), absl::nullopt);
+
+    // The expected output urls should only be populated for already processed
+    // files, so we shrink them here to the appropriate size.
+    std::vector<storage::FileSystemURL> partial_expected_output_urls =
+        GetExpectedOutputUrlsFromFileInfos(file_infos);
+    partial_expected_output_urls.resize(processed_num_files);
+
+    EXPECT_CALL(
+        progress_callback,
+        Run(AllOf(
+            Field(&ProgressStatus::state, State::kInProgress),
+            Field(&ProgressStatus::bytes_transferred,
+                  processed_num_files * kTestFileSize),
+            Field(&ProgressStatus::sources,
+                  EntryStatusErrors(ElementsAreArray(expected_source_errors))),
+            Field(&ProgressStatus::outputs,
+                  EntryStatusUrls(partial_expected_output_urls)),
+            Field(&ProgressStatus::outputs,
+                  EntryStatusErrors(ElementsAreArray(expected_output_errors))),
+            GetBaseMatcher(file_infos, dest, total_num_files))))
+        .Times(AtLeast(1));
+  }
+
+  // Expect a completion callback call for the specified files.
+  // `file_infos` should include all transferred files.
+  // `expected_errors` should hold the errors of all files.
+  void ExpectCompletionCallbackCall(
+      base::MockOnceCallback<void(ProgressStatus)>& complete_callback,
+      const std::vector<FileInfo>& file_infos,
+      const storage::FileSystemURL& dest,
+      const std::vector<absl::optional<base::File::Error>>& expected_errors,
+      base::RepeatingClosure quit_closure,
+      size_t total_num_files = -1) {
+    if (total_num_files == -1) {
+      total_num_files = file_infos.size();
+    }
+    ASSERT_EQ(expected_errors.size(), file_infos.size());
+    // We should get one complete callback when the copy/move finishes.
+    bool has_error = std::any_of(
+        expected_errors.begin(), expected_errors.end(),
+        [](const auto& element) {
+          return element.has_value() && element.value() != base::File::FILE_OK;
+        });
+    EXPECT_CALL(
+        complete_callback,
+        Run(AllOf(Field(&ProgressStatus::state,
+                        has_error ? State::kError : State::kSuccess),
+                  Field(&ProgressStatus::bytes_transferred,
+                        total_num_files * kTestFileSize),
+                  Field(&ProgressStatus::sources,
+                        EntryStatusErrors(ElementsAreArray(expected_errors))),
+                  Field(&ProgressStatus::outputs,
+                        EntryStatusUrls(
+                            GetExpectedOutputUrlsFromFileInfos(file_infos))),
+                  Field(&ProgressStatus::outputs,
+                        EntryStatusErrors(ElementsAreArray(expected_errors))),
+                  GetBaseMatcher(file_infos, dest, total_num_files))))
+        .WillOnce(RunClosure(quit_closure));
+  }
+
+  void VerifyFileWasNotTransferred(FileInfo file_info) {
+    // If there was an error, the file wasn't copied or moved.
+    // The source should still exist.
+    ExpectFileContents(file_info.source_url.path(), file_info.file_contents);
+    // The destination should not exist.
+    EXPECT_FALSE(base::PathExists(file_info.expected_output_url.path()));
+  }
+
+  void VerifyFileWasTransferred(FileInfo file_info) {
+    if (GetOperationType() == OperationType::kCopy) {
+      // For a copy, the source should still be valid.
+      ExpectFileContents(file_info.source_url.path(), file_info.file_contents);
+    } else {
+      // For a move operation, the source should be deleted.
+      EXPECT_FALSE(base::PathExists(file_info.source_url.path()));
+    }
+    // If there's no error, the destination should always exist.
+    ExpectFileContents(file_info.expected_output_url.path(),
+                       file_info.file_contents);
+  }
+
+  void VerifyDirectoryWasTransferred(FileInfo file_info) {
+    if (GetOperationType() == OperationType::kCopy) {
+      // For a copy, the source should still be valid.
+      EXPECT_TRUE(base::PathExists(file_info.source_url.path()));
+    } else {
+      // For a move operation, the source should be deleted.
+      EXPECT_FALSE(base::PathExists(file_info.source_url.path()));
+    }
+    // If there's no error, the destination should always exist.
+    EXPECT_TRUE(base::PathExists(file_info.expected_output_url.path()));
+  }
+
+  // The directory should exist at source and destination if there was an
+  // error when transferring contained files.
+  void VerifyDirectoryExistsAtSourceAndDestination(FileInfo file_info) {
+    EXPECT_TRUE(base::PathExists(file_info.source_url.path()));
+    EXPECT_TRUE(base::PathExists(file_info.expected_output_url.path()));
+  }
+
+  std::unique_ptr<enterprise_connectors::SourceDestinationTestingHelper>
+      source_destination_testing_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
+  scoped_refptr<storage::FileSystemContext> file_system_context_;
+  std::map<storage::FileSystemURL,
+           enterprise_connectors::FileTransferAnalysisDelegate::
+               FileTransferAnalysisResult,
+           storage::FileSystemURL::Comparator>
+      scanning_expectations_;
+  storage::FileSystemURLSet directory_scanning_expectations_;
+};
+
+TEST_P(CopyOrMoveIOTaskWithScansTest, BlockSingleFileUsingResultBlocked) {
+  // Create file.
+  auto file = SetupFile(/*on_enabled_fs=*/true, "file.txt");
+  auto dest = GetDestinationFileSystemURL("");
+
+  // Block the file using RESULT_BLOCK.
+  ExpectScan(
+      file,
+      enterprise_connectors::FileTransferAnalysisDelegate::RESULT_BLOCKED);
+
+  base::RunLoop run_loop;
+
+  // Setup the expected callbacks.
+  base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
+  base::MockOnceCallback<void(ProgressStatus)> complete_callback;
+
+  ExpectExtraProgressCallbackCalls(progress_callback, {file}, dest);
+
+  ExpectCompletionCallbackCall(complete_callback, {file}, dest,
+                               {base::File::FILE_ERROR_SECURITY},
+                               run_loop.QuitClosure());
+
+  // Start the copy/move.
+  CopyOrMoveIOTask task(GetOperationType(), GetSourceUrlsFromFileInfos({file}),
+                        dest, &profile_, file_system_context_);
+  task.Execute(progress_callback.Get(), complete_callback.Get());
+  // Wait for the copy/move to be completed.
+  run_loop.Run();
+
+  VerifyFileWasNotTransferred(file);
+}
+
+TEST_P(CopyOrMoveIOTaskWithScansTest, BlockSingleFileUsingResultUnknown) {
+  // Create the file.
+  auto file = SetupFile(/*on_enabled_fs=*/true, "file.txt");
+  auto dest = GetDestinationFileSystemURL("");
+
+  // Block the file using RESULT_UNKNOWN.
+  ExpectScan(
+      file,
+      enterprise_connectors::FileTransferAnalysisDelegate::RESULT_UNKNOWN);
+
+  base::RunLoop run_loop;
+
+  // Setup the expected callbacks.
+  base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
+  base::MockOnceCallback<void(ProgressStatus)> complete_callback;
+
+  ExpectExtraProgressCallbackCalls(progress_callback, {file}, dest);
+
+  ExpectCompletionCallbackCall(complete_callback, {file}, dest,
+                               {base::File::FILE_ERROR_SECURITY},
+                               run_loop.QuitClosure());
+
+  // Start the copy/move.
+  CopyOrMoveIOTask task(GetOperationType(), GetSourceUrlsFromFileInfos({file}),
+                        dest, &profile_, file_system_context_);
+  task.Execute(progress_callback.Get(), complete_callback.Get());
+  // Wait for the copy/move to be completed.
+  run_loop.Run();
+
+  VerifyFileWasNotTransferred(file);
+}
+
+TEST_P(CopyOrMoveIOTaskWithScansTest, AllowSingleFileUsingResultAllowed) {
+  // Create the file.
+  auto file = SetupFile(/*on_enabled_fs=*/true, "file.txt");
+  auto dest = GetDestinationFileSystemURL("");
+
+  // Allow the file using RESULT_ALLOWED.
+  ExpectScan(
+      file,
+      enterprise_connectors::FileTransferAnalysisDelegate::RESULT_ALLOWED);
+
+  base::RunLoop run_loop;
+
+  // Setup the expected callbacks.
+  base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
+  base::MockOnceCallback<void(ProgressStatus)> complete_callback;
+
+  ExpectExtraProgressCallbackCalls(progress_callback, {file}, dest);
+
+  ExpectCompletionCallbackCall(complete_callback, {file}, dest,
+                               {base::File::FILE_OK}, run_loop.QuitClosure());
+
+  // Start the copy/move.
+  CopyOrMoveIOTask task(GetOperationType(), GetSourceUrlsFromFileInfos({file}),
+                        dest, &profile_, file_system_context_);
+  task.Execute(progress_callback.Get(), complete_callback.Get());
+  // Wait for the copy/move to be completed.
+  run_loop.Run();
+
+  VerifyFileWasTransferred(file);
+}
+
+TEST_P(CopyOrMoveIOTaskWithScansTest, SingleFileOnDisabledFileSystem) {
+  // Create the file.
+  auto file = SetupFile(/*on_enabled_fs=*/false, "file.txt");
+  auto dest = GetDestinationFileSystemURL("");
+
+  // We don't expect any scan to happen, so we don't set any expectation.
+
+  base::RunLoop run_loop;
+
+  // Setup the expected callbacks.
+  base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
+  base::MockOnceCallback<void(ProgressStatus)> complete_callback;
+
+  ExpectExtraProgressCallbackCalls(progress_callback, {file}, dest);
+
+  ExpectCompletionCallbackCall(complete_callback, {file}, dest,
+                               {base::File::FILE_OK}, run_loop.QuitClosure());
+
+  // Start the copy/move.
+  CopyOrMoveIOTask task(GetOperationType(), GetSourceUrlsFromFileInfos({file}),
+                        dest, &profile_, file_system_context_);
+  task.Execute(progress_callback.Get(), complete_callback.Get());
+  // Wait for the copy/move to be completed.
+  run_loop.Run();
+
+  VerifyFileWasTransferred(file);
+}
+
+TEST_P(CopyOrMoveIOTaskWithScansTest, FilesOnDisabledAndEnabledFileSystems) {
+  // Create the files.
+  auto enabled_file = SetupFile(/*on_enabled_fs=*/true, "file1.txt");
+  auto disabled_file = SetupFile(/*on_enabled_fs=*/false, "file2.txt");
+
+  // Expect a scan for the enabled file and block it.
+  ExpectScan(
+      enabled_file,
+      enterprise_connectors::FileTransferAnalysisDelegate::RESULT_BLOCKED);
+  // Don't expect any scan for the file on the disabled file system.
+
+  auto dest = GetDestinationFileSystemURL("");
+
+  base::RunLoop run_loop;
+
+  // Setup the expected callbacks.
+  base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
+  base::MockOnceCallback<void(ProgressStatus)> complete_callback;
+
+  ExpectExtraProgressCallbackCalls(progress_callback,
+                                   {enabled_file, disabled_file}, dest);
+
+  ExpectProgressCallbackCall(progress_callback, {enabled_file, disabled_file},
+                             dest, {base::File::FILE_ERROR_SECURITY});
+
+  ExpectCompletionCallbackCall(
+      complete_callback, {enabled_file, disabled_file}, dest,
+      {base::File::FILE_ERROR_SECURITY, base::File::FILE_OK},
+      run_loop.QuitClosure());
+
+  // Start the copy/move.
+  CopyOrMoveIOTask task(
+      GetOperationType(),
+      GetSourceUrlsFromFileInfos({enabled_file, disabled_file}), dest,
+      &profile_, file_system_context_);
+  task.Execute(progress_callback.Get(), complete_callback.Get());
+  // Wait for the copy/move to be completed.
+  run_loop.Run();
+
+  // Verify the files after the copy/move.
+  VerifyFileWasNotTransferred(enabled_file);
+  VerifyFileWasTransferred(disabled_file);
+}
+
+TEST_P(CopyOrMoveIOTaskWithScansTest, DirectoryTransferBlockAll) {
+  // Create directory.
+  FileInfo directory{"", GetSourceFileSystemURLForEnabledVolume("folder"),
+                     GetDestinationFileSystemURL("folder")};
+  ASSERT_TRUE(base::CreateDirectory(directory.source_url.path()));
+
+  // Create the files.
+  auto file0 = SetupFile(/*on_enabled_fs=*/true, "folder/file0.txt");
+  auto file1 = SetupFile(/*on_enabled_fs=*/true, "folder/file1.txt");
+
+  // Expect a scan for both files and block the transfer.
+  ExpectDirectoryScan(directory);
+  ExpectScan(
+      file0,
+      enterprise_connectors::FileTransferAnalysisDelegate::RESULT_BLOCKED);
+  ExpectScan(
+      file1,
+      enterprise_connectors::FileTransferAnalysisDelegate::RESULT_BLOCKED);
+
+  auto dest = GetDestinationFileSystemURL("");
+
+  base::RunLoop run_loop;
+
+  // Setup the expected callbacks.
+  base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
+  base::MockOnceCallback<void(ProgressStatus)> complete_callback;
+
+  ExpectExtraProgressCallbackCalls(progress_callback, {directory}, dest,
+                                   /*total_num_files=*/2);
+
+  // For moves, only the last error is reported. The last step the operation
+  // performs is to try to remove the parent directory. This fails with
+  // FILE_ERROR_NOT_EMPTY, as there are files that weren't moved.
+  auto expected_error = GetOperationType() == OperationType::kCopy
+                            ? base::File::FILE_ERROR_SECURITY
+                            : base::File::FILE_ERROR_NOT_EMPTY;
+
+  ExpectCompletionCallbackCall(complete_callback, {directory}, dest,
+                               {expected_error}, run_loop.QuitClosure(),
+                               /*total_num_files=*/2);
+
+  // Start the copy/move.
+  CopyOrMoveIOTask task(GetOperationType(),
+                        GetSourceUrlsFromFileInfos({directory}), dest,
+                        &profile_, file_system_context_);
+  task.Execute(progress_callback.Get(), complete_callback.Get());
+  // Wait for the copy/move to be completed.
+  run_loop.Run();
+
+  // Verify the directory and the files after the copy/move.
+  VerifyDirectoryExistsAtSourceAndDestination(directory);
+  VerifyFileWasNotTransferred(file0);
+  VerifyFileWasNotTransferred(file1);
+}
+
+TEST_P(CopyOrMoveIOTaskWithScansTest, DirectoryTransferBlockOne) {
+  // Create directory.
+  FileInfo directory{"", GetSourceFileSystemURLForEnabledVolume("folder"),
+                     GetDestinationFileSystemURL("folder")};
+  ASSERT_TRUE(base::CreateDirectory(directory.source_url.path()));
+
+  // Create the files.
+  auto file0 = SetupFile(/*on_enabled_fs=*/true, "folder/file0.txt");
+  auto file1 = SetupFile(/*on_enabled_fs=*/true, "folder/file1.txt");
+
+  // Expect a scan for both files and block the transfer.
+  ExpectDirectoryScan(directory);
+  ExpectScan(
+      file0,
+      enterprise_connectors::FileTransferAnalysisDelegate::RESULT_BLOCKED);
+  ExpectScan(
+      file1,
+      enterprise_connectors::FileTransferAnalysisDelegate::RESULT_ALLOWED);
+
+  auto dest = GetDestinationFileSystemURL("");
+
+  base::RunLoop run_loop;
+
+  // Setup the expected callbacks.
+  base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
+  base::MockOnceCallback<void(ProgressStatus)> complete_callback;
+
+  ExpectExtraProgressCallbackCalls(progress_callback, {directory}, dest,
+                                   /*total_num_files=*/2);
+
+  // For moves, only the last error is reported. The last step the operation
+  // performs is to try to remove the parent directory. This fails with
+  // FILE_ERROR_NOT_EMPTY, as there are files that weren't moved.
+  auto expected_error = GetOperationType() == OperationType::kCopy
+                            ? base::File::FILE_ERROR_SECURITY
+                            : base::File::FILE_ERROR_NOT_EMPTY;
+
+  ExpectCompletionCallbackCall(complete_callback, {directory}, dest,
+                               {expected_error}, run_loop.QuitClosure(),
+                               /*total_num_files=*/2);
+
+  // Start the copy/move.
+  CopyOrMoveIOTask task(GetOperationType(),
+                        GetSourceUrlsFromFileInfos({directory}), dest,
+                        &profile_, file_system_context_);
+  task.Execute(progress_callback.Get(), complete_callback.Get());
+  // Wait for the copy/move to be completed.
+  run_loop.Run();
+
+  // Verify the directory and the files after the copy/move.
+  VerifyDirectoryExistsAtSourceAndDestination(directory);
+  VerifyFileWasNotTransferred(file0);
+  VerifyFileWasTransferred(file1);
+}
+
+TEST_P(CopyOrMoveIOTaskWithScansTest, DirectoryTransferAllowAll) {
+  // Create directory.
+  FileInfo directory{"", GetSourceFileSystemURLForEnabledVolume("folder"),
+                     GetDestinationFileSystemURL("folder")};
+  ASSERT_TRUE(base::CreateDirectory(directory.source_url.path()));
+
+  // Create the files.
+  auto file0 = SetupFile(/*on_enabled_fs=*/true, "folder/file0.txt");
+  auto file1 = SetupFile(/*on_enabled_fs=*/true, "folder/file1.txt");
+
+  // Expect a scan for both files and block the transfer.
+  ExpectDirectoryScan(directory);
+  ExpectScan(
+      file0,
+      enterprise_connectors::FileTransferAnalysisDelegate::RESULT_ALLOWED);
+  ExpectScan(
+      file1,
+      enterprise_connectors::FileTransferAnalysisDelegate::RESULT_ALLOWED);
+
+  auto dest = GetDestinationFileSystemURL("");
+
+  base::RunLoop run_loop;
+
+  // Setup the expected callbacks.
+  base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
+  base::MockOnceCallback<void(ProgressStatus)> complete_callback;
+
+  ExpectExtraProgressCallbackCalls(progress_callback, {directory}, dest,
+                                   /*total_num_files=*/2);
+
+  ExpectCompletionCallbackCall(complete_callback, {directory}, dest,
+                               {base::File::FILE_OK}, run_loop.QuitClosure(),
+                               /*total_num_files=*/2);
+
+  // Start the copy/move.
+  CopyOrMoveIOTask task(GetOperationType(),
+                        GetSourceUrlsFromFileInfos({directory}), dest,
+                        &profile_, file_system_context_);
+  task.Execute(progress_callback.Get(), complete_callback.Get());
+  // Wait for the copy/move to be completed.
+  run_loop.Run();
+
+  // Verify the directory and the files after the copy/move.
+  VerifyDirectoryWasTransferred(directory);
+  VerifyFileWasTransferred(file0);
+  VerifyFileWasTransferred(file1);
+}
+
+INSTANTIATE_TEST_SUITE_P(CopyOrMove,
+                         CopyOrMoveIOTaskWithScansTest,
+                         testing::Values(OperationType::kCopy,
+                                         OperationType::kMove),
+                         &CopyOrMoveIOTaskWithScansTest::ParamToString);
 
 }  // namespace
 

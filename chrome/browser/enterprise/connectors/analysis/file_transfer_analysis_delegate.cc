@@ -140,9 +140,11 @@ bool IsInSameFileSystem(Profile* profile,
 
 namespace enterprise_connectors {
 
-absl::optional<AnalysisSettings> FileTransferAnalysisDelegate::IsEnabled(
+// static
+std::vector<absl::optional<AnalysisSettings>>
+FileTransferAnalysisDelegate::IsEnabledVec(
     Profile* profile,
-    storage::FileSystemURL source_url,
+    const std::vector<storage::FileSystemURL>& source_urls,
     storage::FileSystemURL destination_url) {
   DCHECK(profile);
   auto* service =
@@ -151,16 +153,29 @@ absl::optional<AnalysisSettings> FileTransferAnalysisDelegate::IsEnabled(
   // If the corresponding Connector policy isn't set, don't perform scans.
   if (!service ||
       !service->IsConnectorEnabled(enterprise_connectors::FILE_TRANSFER)) {
-    return absl::nullopt;
+    // Return an empty vector.
+    return {};
   }
 
-  if (IsInSameFileSystem(profile, source_url, destination_url)) {
-    // Scanning is disabled for transfers on the same file system.
-    return absl::nullopt;
+  std::vector<absl::optional<AnalysisSettings>> settings(source_urls.size());
+
+  bool at_least_one_enabled = false;
+  for (size_t i = 0; i < source_urls.size(); ++i) {
+    if (IsInSameFileSystem(profile, source_urls[i], destination_url)) {
+      // Scanning is disabled for transfers on the same file system.
+      continue;
+    }
+
+    settings[i] = service->GetAnalysisSettings(
+        source_urls[i], destination_url, enterprise_connectors::FILE_TRANSFER);
+    at_least_one_enabled |= settings[i].has_value();
+  }
+  if (!at_least_one_enabled) {
+    // Return an empty vector.
+    return {};
   }
 
-  return service->GetAnalysisSettings(source_url, destination_url,
-                                      enterprise_connectors::FILE_TRANSFER);
+  return settings;
 }
 
 FileTransferAnalysisDelegate::FileTransferAnalysisResult

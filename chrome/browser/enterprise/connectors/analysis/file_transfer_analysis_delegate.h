@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -29,7 +28,11 @@ class FilesRequestHandler;
 // `FileTransferAnalysisDelegate` handles scanning and reporting of ChromeOS
 // file system transfers.
 // A user of `FileTransferAnalysisDelegate` should first check whether scanning
-// is enabled for a pair of filesystem urls using `IsEnabled()`.
+// is enabled for a pair of filesystem urls using `IsEnabledVec()`.
+// Note: `IsEnabledVec()` allows checking for multiple source urls at once. In
+// this case, a user has to create a FileTransferAnalysisDelegate for each
+// source url.
+//
 // If scanning is enabled, a user proceeds with the creation of the class and
 // then calls `UploadData()` to start the scan. Once the scans are complete,
 // `callback_` is run.
@@ -50,9 +53,15 @@ class FileTransferAnalysisDelegate : public ContentAnalysisDelegateBase {
 
   ~FileTransferAnalysisDelegate() override;
 
-  static absl::optional<AnalysisSettings> IsEnabled(
+  // Returns a vector with the AnalysisSettings for file transfers from the
+  // respective source url to the destination_url.
+  // If the transfer is not enabled for any of the transfers an empty vector is
+  // returned.
+  // Each entry in the returned vector corresponds to the entry in the
+  // `source_urls` vector with the same index.
+  static std::vector<absl::optional<AnalysisSettings>> IsEnabledVec(
       Profile* profile,
-      storage::FileSystemURL source_url,
+      const std::vector<storage::FileSystemURL>& source_urls,
       storage::FileSystemURL destination_url);
 
   FileTransferAnalysisDelegate(safe_browsing::DeepScanAccessPoint access_point,
@@ -65,10 +74,10 @@ class FileTransferAnalysisDelegate : public ContentAnalysisDelegateBase {
 
   // Main entrypoint to start the file uploads.
   // Once scanning is complete `callback_` will be called.
-  void UploadData();
+  virtual void UploadData();
 
   // Calling this function is only allowed after the scan is complete!
-  FileTransferAnalysisResult GetAnalysisResultAfterScan(
+  virtual FileTransferAnalysisResult GetAnalysisResultAfterScan(
       storage::FileSystemURL url);
 
   // ContentAnalysisDelegateBase:

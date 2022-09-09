@@ -239,12 +239,14 @@ class BaseTest : public testing::Test {
                          const storage::FileSystemURL& dest_url,
                          bool expect_dlp,
                          bool expect_malware) {
-    auto settings =
-        FileTransferAnalysisDelegate::IsEnabled(profile(), src_url, dest_url);
-    ASSERT_EQ(expect_dlp || expect_malware, settings.has_value());
-    if (settings.has_value()) {
-      EXPECT_EQ(expect_dlp, settings.value().tags.count("dlp"));
-      EXPECT_EQ(expect_malware, settings.value().tags.count("malware"));
+    auto settings = FileTransferAnalysisDelegate::IsEnabledVec(
+        profile(), {src_url}, dest_url);
+    ASSERT_EQ(expect_dlp || expect_malware, !settings.empty());
+    if (expect_dlp || expect_malware) {
+      ASSERT_EQ(settings.size(), 1);
+      ASSERT_TRUE(settings[0].has_value());
+      EXPECT_EQ(expect_dlp, settings[0].value().tags.count("dlp"));
+      EXPECT_EQ(expect_malware, settings[0].value().tags.count("malware"));
     }
   }
 
@@ -376,19 +378,20 @@ TEST_P(FileTransferAnalysisDelegateIsEnabledTest, Enabled) {
                                         kBlockingScansForDlpAndMalware);
   }
 
-  auto settings = FileTransferAnalysisDelegate::IsEnabled(
-      profile(), GetEmptyTestSrcUrl(), GetEmptyTestDestUrl());
+  auto settings = FileTransferAnalysisDelegate::IsEnabledVec(
+      profile(), {GetEmptyTestSrcUrl()}, GetEmptyTestDestUrl());
 
   if (!GetFeatureEnabled() || !GetTokenValid() || GetPrefState() == NO_PREF ||
       GetPrefState() == NOTHING_ENABLED_PREF) {
-    EXPECT_FALSE(settings.has_value());
+    EXPECT_TRUE(settings.empty());
   } else {
-    ASSERT_TRUE(settings.has_value());
+    ASSERT_EQ(settings.size(), 1);
+    ASSERT_TRUE(settings[0].has_value());
     if (GetPrefState() == DLP_PREF || GetPrefState() == DLP_MALWARE_PREF) {
-      EXPECT_TRUE(settings.value().tags.count("dlp"));
+      EXPECT_TRUE(settings[0].value().tags.count("dlp"));
     }
     if (GetPrefState() == MALWARE_PREF || GetPrefState() == DLP_MALWARE_PREF) {
-      EXPECT_TRUE(settings.value().tags.count("malware"));
+      EXPECT_TRUE(settings[0].value().tags.count("malware"));
     }
   }
 }
@@ -404,13 +407,72 @@ TEST_F(FileTransferAnalysisDelegateIsEnabledTestSameFileSystem,
   safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_TRANSFER,
                                       kBlockingScansForDlpAndMalware);
 
-  auto settings = FileTransferAnalysisDelegate::IsEnabled(
+  auto settings = FileTransferAnalysisDelegate::IsEnabledVec(
       profile(),
-      PathToFileSystemURL(source_destination_testing_helper_->GetTempDirPath()),
+      {PathToFileSystemURL(
+          source_destination_testing_helper_->GetTempDirPath())},
       PathToFileSystemURL(
           source_destination_testing_helper_->GetTempDirPath()));
 
-  EXPECT_FALSE(settings.has_value());
+  EXPECT_TRUE(settings.empty());
+}
+
+using FileTransferAnalysisDelegateIsEnabledTestMultiple = BaseTest;
+
+// Test using multiple source urls.
+TEST_F(FileTransferAnalysisDelegateIsEnabledTestMultiple, Test) {
+  EnableFeatures();
+  ScopedSetDMToken scoped_dm_token(
+      policy::DMToken::CreateValidTokenForTesting(kDmToken));
+
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_TRANSFER,
+                                      R"({
+          "service_provider": "google",
+          "enable": [
+            {
+              "source_destination_list": [
+                {
+                  "sources": [{
+                    "file_system_type": "REMOVABLE"
+                  },
+                  {
+                    "file_system_type": "CROSTINI"
+                  }
+                  ],
+                  "destinations": [{
+                    "file_system_type": "ANY"
+                  }]
+                }
+              ],
+              "tags": ["malware"]
+            }
+          ],
+          "block_until_verdict": 1
+        })");
+
+  std::vector<VolumeInfo> volume_infos{kVolumeInfos};
+
+  std::vector<storage::FileSystemURL> source_urls;
+  for (auto&& volume_info : volume_infos) {
+    source_urls.push_back(GetTestFileSystemURLForVolume(volume_info));
+  }
+
+  storage::FileSystemURL dest_url =
+      GetTestFileSystemURLForVolume(*kVolumeInfos.begin());
+
+  auto settings = FileTransferAnalysisDelegate::IsEnabledVec(
+      profile(), source_urls, dest_url);
+  ASSERT_EQ(settings.size(), source_urls.size());
+  for (size_t i = 0; i < volume_infos.size(); ++i) {
+    std::string source_string = volume_infos[i].fs_config_string;
+    bool should_be_enabled =
+        source_string == "REMOVABLE" || source_string == "CROSTINI";
+    EXPECT_EQ(should_be_enabled, settings[i].has_value());
+    if (settings[i].has_value()) {
+      EXPECT_FALSE(settings[i].value().tags.count("dlp"));
+      EXPECT_TRUE(settings[i].value().tags.count("malware"));
+    }
+  }
 }
 
 class FileTransferAnalysisDelegateIsEnabledParamTest

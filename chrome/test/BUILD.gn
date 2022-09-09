@@ -7174,6 +7174,8 @@ test("unit_tests") {
       "../browser/component_updater/metadata_table_chromeos_unittest.cc",
       "../browser/device_identity/chromeos/device_oauth2_token_store_chromeos_unittest.cc",
       "../browser/enterprise/connectors/analysis/file_transfer_analysis_delegate_unittest.cc",
+      "../browser/enterprise/connectors/analysis/mock_file_transfer_analysis_delegate.cc",
+      "../browser/enterprise/connectors/analysis/mock_file_transfer_analysis_delegate.h",
       "../browser/enterprise/connectors/analysis/source_destination_matcher_ash_unittest.cc",
       "../browser/enterprise/connectors/analysis/source_destination_test_util.cc",
       "../browser/enterprise/connectors/analysis/source_destination_test_util.h",

@@ -56,11 +56,11 @@ SourceDestinationTestingHelper::~SourceDestinationTestingHelper() {
 
 storage::FileSystemURL
 SourceDestinationTestingHelper::GetTestFileSystemURLForVolume(
-    VolumeInfo volume_info) {
+    VolumeInfo volume_info,
+    const std::string& component) {
   return storage::FileSystemURL::CreateForTest(
       kTestStorageKey, storage::kFileSystemTypeLocal,
-      GetBasePathForVolume(temp_dir_.GetPath(), volume_info)
-          .Append("test.txt"));
+      GetBasePathForVolume(temp_dir_.GetPath(), volume_info).Append(component));
 }
 
 base::FilePath SourceDestinationTestingHelper::GetTempDirPath() {

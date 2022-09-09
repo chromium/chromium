@@ -20,6 +20,17 @@ class BrowserContext;
 
 namespace enterprise_connectors {
 
+// A helper class for tests using an analysis connector that supports filtering
+// based on volumes using `SourceDestinationMatcherAsh`.
+// The constructor will create one directory for each `VolumeInfo` in `volumes`
+// and register each directory with the `VolumeManager` associated to `profile`.
+// FileSystemURLs on these volumes can be retrieved using
+// `GetTestFileSystemURLForVolume()`.
+// Use `GetTempDirPath()` to get the parent directory for all volumes.
+// `GetTempDirPath()` should also be used to register a `FileSystemContext`.
+//
+// Registering volumes is necessary for SourceDestinationMatcherAsh to match the
+// correct volumes.
 class SourceDestinationTestingHelper {
  public:
   struct VolumeInfo {
@@ -36,7 +47,12 @@ class SourceDestinationTestingHelper {
   // DiskMountManager is shutdown.
   ~SourceDestinationTestingHelper();
 
-  storage::FileSystemURL GetTestFileSystemURLForVolume(VolumeInfo volume_info);
+  // Get a FileSystemURL on a volume matching `volume_info`.
+  // The path `component` is appended to the base directory of the volume.
+  // `component` must be a relative path
+  storage::FileSystemURL GetTestFileSystemURLForVolume(
+      VolumeInfo volume_info,
+      const std::string& component = "test.txt");
 
   base::FilePath GetTempDirPath();
 
