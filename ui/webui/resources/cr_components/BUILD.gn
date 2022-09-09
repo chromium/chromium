@@ -121,7 +121,7 @@ preprocess_if_expr("preprocess_src") {
 
 if (is_chromeos_ash) {
   preprocess_if_expr("preprocess_generated") {
-    deps = [ "chromeos:polymer3_elements" ]
+    deps = [ "chromeos:web_components" ]
     in_folder = target_gen_dir
     out_folder = preprocess_folder
     out_manifest = "$target_gen_dir/$preprocess_gen_manifest"

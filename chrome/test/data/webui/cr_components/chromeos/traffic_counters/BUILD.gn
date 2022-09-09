@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//ui/webui/resources/cr_components/chromeos/os_cr_components.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
