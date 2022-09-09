@@ -4,7 +4,7 @@
 
 // Frontend for chrome://reset-password/ WebUI page.
 
-import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 

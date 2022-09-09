@@ -6,7 +6,7 @@
  * @fileoverview This element contains a set of SVGs that together acts as an
  * animated and responsive background for any page that contains it.
  */
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './navi_colors.css.js';
 
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';

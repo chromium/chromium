@@ -7,7 +7,7 @@
  * cards etc.) to be shown in the settings page.
  */
 
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../settings_shared.css.js';
 import './credit_card_list_entry.js';
 import './passwords_shared.css.js';

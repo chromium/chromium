@@ -6,7 +6,7 @@
  * @fileoverview
  * `settings-toggle-button` is a toggle that controls a supplied preference.
  */
-import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '//resources/cr_elements/policy/cr_policy_pref_indicator.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';

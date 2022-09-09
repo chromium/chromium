@@ -6,7 +6,7 @@
  * #type=style
  * #import=chrome://resources/cr_elements/cr_hidden_style.css.js
  * #import=chrome://resources/cr_elements/cr_shared_style.css.js
- * #import=chrome://resources/cr_elements/shared_vars_css.m.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #import=./throbber.css.js
  * #include=print-preview-shared cr-hidden-style throbber
  * #css_wrapper_metadata_end */

@@ -8,7 +8,7 @@
  * fledge interest in the privacy sandbox.
  */
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../settings.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';

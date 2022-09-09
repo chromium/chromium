@@ -8,7 +8,7 @@
  * passwords, payment methods and addresses.
  */
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 // <if expr="is_chromeos">
 import '../controls/password_prompt_dialog.js';
 // </if>

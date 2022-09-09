@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/mwb_shared_icons.html.js';
 import 'chrome://resources/cr_elements/mwb_shared_vars.css.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {CrSearchFieldMixin} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field_mixin.js';
