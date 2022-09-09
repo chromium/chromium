@@ -149,6 +149,7 @@ void InitTracingPostThreadPoolStartAndFeatureList(bool enable_consumer) {
 
   PerfettoTracedProcess::Get()->OnThreadPoolAvailable(enable_consumer);
 
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   if (ShouldSetupSystemTracing()) {
     // Ensure that data sources are created and registered.
     TraceEventAgent::GetInstance();
@@ -166,6 +167,7 @@ void InitTracingPostThreadPoolStartAndFeatureList(bool enable_consumer) {
                          ->ConnectToSystemService();
                    }));
   }
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
 void PropagateTracingFlagsToChildProcessCmdLine(base::CommandLine* cmd_line) {

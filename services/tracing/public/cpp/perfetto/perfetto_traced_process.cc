@@ -404,12 +404,17 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
 // TODO(eseckler): Not yet supported on Android to avoid binary size regression
 // of the consumer IPC messages. We'll need a way to exclude them.
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
-  // We currently only use the client library system backend for the consumer
-  // side, which is only allowed in the browser process. Furthermore, on
-  // non-Android platforms, sandboxed processes need to delegate the socket
-  // connections to the browser, but this delegation hasn't been hooked up in
-  // the client library yet.
+  // In non-SDK build we only use the client library system backend for the
+  // consumer side, which is only allowed in the browser process.
+  // In SDK build we use system backend for producers too, but note that
+  // currently the connection to the service fails from sandboxed processes.
+  // TODO(khokhlov): Delegate socket connections from sandboxed processes
+  // to the browser.
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  if (ShouldSetupSystemTracing()) {
+#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   if (ShouldSetupSystemTracing() && enable_consumer) {
+#endif  // @BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     init_args.backends |= perfetto::kSystemBackend;
     init_args.tracing_policy = this;
   }
