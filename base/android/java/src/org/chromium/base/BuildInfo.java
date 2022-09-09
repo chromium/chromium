@@ -17,6 +17,7 @@ import android.os.Build;
 import android.text.TextUtils;
 
 import androidx.annotation.OptIn;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.os.BuildCompat;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -62,12 +63,19 @@ public class BuildInfo {
     public final String resourcesVersion;
     /** Whether we're running on Android TV or not */
     public final boolean isTV;
+    /** Whether we're running on an Android Automotive OS device or not. */
+    public final boolean isAutomotive;
 
     private static class Holder { private static BuildInfo sInstance = new BuildInfo(); }
 
     @CalledByNative
     private static String[] getAll() {
-        BuildInfo buildInfo = getInstance();
+        return BuildInfo.getInstance().getAllProperties();
+    }
+
+    /** Returns a serialized string array of all properties of this class. */
+    @VisibleForTesting
+    String[] getAllProperties() {
         String hostPackageName = ContextUtils.getApplicationContext().getPackageName();
         return new String[] {
                 Build.BRAND,
@@ -79,25 +87,26 @@ public class BuildInfo {
                 Build.TYPE,
                 Build.BOARD,
                 hostPackageName,
-                String.valueOf(buildInfo.hostVersionCode),
-                buildInfo.hostPackageLabel,
-                buildInfo.packageName,
-                String.valueOf(buildInfo.versionCode),
-                buildInfo.versionName,
-                buildInfo.androidBuildFingerprint,
-                buildInfo.gmsVersionCode,
-                buildInfo.installerPackageName,
-                buildInfo.abiString,
+                String.valueOf(hostVersionCode),
+                hostPackageLabel,
+                packageName,
+                String.valueOf(versionCode),
+                versionName,
+                androidBuildFingerprint,
+                gmsVersionCode,
+                installerPackageName,
+                abiString,
                 sFirebaseAppId,
-                buildInfo.customThemes,
-                buildInfo.resourcesVersion,
+                customThemes,
+                resourcesVersion,
                 String.valueOf(
                         ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion),
                 isDebugAndroid() ? "1" : "0",
-                buildInfo.isTV ? "1" : "0",
+                isTV ? "1" : "0",
                 Build.VERSION.INCREMENTAL,
                 Build.HARDWARE,
                 isAtLeastT() ? "1" : "0",
+                isAutomotive ? "1" : "0",
         };
     }
 
@@ -136,7 +145,8 @@ public class BuildInfo {
         return Holder.sInstance;
     }
 
-    private BuildInfo() {
+    @VisibleForTesting
+    BuildInfo() {
         sInitialized = true;
         try {
             Context appContext = ContextUtils.getApplicationContext();
@@ -215,6 +225,18 @@ public class BuildInfo {
             isTV = uiModeManager != null
                     && uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
 
+            boolean isAutomotive;
+            try {
+                isAutomotive = pm.hasSystemFeature(PackageManager.FEATURE_AUTOMOTIVE);
+            } catch (SecurityException e) {
+                Log.e(TAG, "Unable to query for Automotive system feature", e);
+
+                // `hasSystemFeature` can possibly throw an exception on modified instances of
+                // Android. In this case, assume the device is not a car since automotive vehicles
+                // should not have such a modification.
+                isAutomotive = false;
+            }
+            this.isAutomotive = isAutomotive;
         } catch (NameNotFoundException e) {
             throw new RuntimeException(e);
         }

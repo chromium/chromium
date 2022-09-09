@@ -81,7 +81,8 @@ BuildInfo::BuildInfo(const std::vector<std::string>& params)
       is_tv_(GetIntParam(params, 23)),
       version_incremental_(StrDupParam(params, 24)),
       hardware_(StrDupParam(params, 25)),
-      is_at_least_t_(GetIntParam(params, 26)) {}
+      is_at_least_t_(GetIntParam(params, 26)),
+      is_automotive_(GetIntParam(params, 27)) {}
 
 // static
 BuildInfo* BuildInfo::GetInstance() {
