@@ -231,21 +231,12 @@ EmeConfig::Rule GetRobustnessConfigRule(
 // Therefore, SetMediaClient() must be called before this function to make sure
 // MediaClient in effect when constructing KeySystems.
 void AddContainerAndCodecMasksForTest() {
-  // Since KeySystems is a singleton. Make sure we only add test container and
-  // codec masks once per process.
-  static bool is_test_masks_added = false;
-
-  if (is_test_masks_added)
-    return;
-
   AddCodecMaskForTesting(EmeMediaType::AUDIO, "fooaudio", TEST_CODEC_FOO_AUDIO);
   AddCodecMaskForTesting(EmeMediaType::VIDEO, "foovideo", TEST_CODEC_FOO_VIDEO);
   AddCodecMaskForTesting(EmeMediaType::VIDEO, "securefoovideo",
                          TEST_CODEC_FOO_SECURE_VIDEO);
   AddMimeTypeCodecMaskForTesting("audio/foo", TEST_CODEC_FOO_AUDIO_ALL);
   AddMimeTypeCodecMaskForTesting("video/foo", TEST_CODEC_FOO_VIDEO_ALL);
-
-  is_test_masks_added = true;
 }
 
 class TestMediaClient : public MediaClient {
@@ -278,7 +269,6 @@ TestMediaClient::~TestMediaClient() = default;
 
 void TestMediaClient::GetSupportedKeySystems(GetSupportedKeySystemsCB cb) {
   // Save the callback for future updates.
-  DCHECK(!get_supported_key_systems_cb_);
   get_supported_key_systems_cb_ = cb;
 
   get_supported_key_systems_cb_.Run(GetSupportedKeySystemsInternal());
@@ -360,6 +350,9 @@ class KeySystemsTest : public testing::Test {
     mixed_codecs_.push_back("foovideo");
 
     SetMediaClient(&test_media_client_);
+
+    // Reset KeySystems since it's a singleton.
+    ResetKeySystemsForTesting();
   }
 
   void SetUp() override {

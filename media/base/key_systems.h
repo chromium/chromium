@@ -127,6 +127,8 @@ MEDIA_EXPORT void AddCodecMaskForTesting(EmeMediaType media_type,
                                          uint32_t mask);
 MEDIA_EXPORT void AddMimeTypeCodecMaskForTesting(const std::string& mime_type,
                                                  uint32_t mask);
+// Resets and reinitializes the KeySystems for testing.
+MEDIA_EXPORT void ResetKeySystemsForTesting();
 #endif  // defined(UNIT_TEST)
 
 }  // namespace media

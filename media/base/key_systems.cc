@@ -31,6 +31,8 @@
 
 namespace media {
 
+namespace {
+
 const char kClearKeyKeySystem[] = "org.w3.clearkey";
 
 // These names are used by UMA. Do not change them!
@@ -310,12 +312,13 @@ class KeySystemsImpl : public KeySystems {
   EmeFeatureSupport GetDistinctiveIdentifierSupport(
       const std::string& key_system) const override;
 
-  // These two functions are for testing purpose only.
+  // These functions are for testing purpose only.
   void AddCodecMaskForTesting(EmeMediaType media_type,
                               const std::string& codec,
                               uint32_t mask);
   void AddMimeTypeCodecMaskForTesting(const std::string& mime_type,
                                       uint32_t mask);
+  void ResetForTesting();
 
  private:
   friend class base::NoDestructor<KeySystemsImpl>;
@@ -326,6 +329,8 @@ class KeySystemsImpl : public KeySystems {
 
   KeySystemsImpl();
   ~KeySystemsImpl() override;
+
+  void Initialize();
 
   void UpdateSupportedKeySystems();
   void OnSupportedKeySystemsUpdated(KeySystemInfoVector key_systems);
@@ -378,15 +383,19 @@ KeySystemsImpl* KeySystemsImpl::GetInstance() {
 }
 
 KeySystemsImpl::KeySystemsImpl() {
-  for (const auto& [mime_type, codecs] : kMimeTypeToCodecsMap)
-    RegisterMimeType(mime_type, codecs);
-
-  UpdateSupportedKeySystems();
+  Initialize();
 }
 
 KeySystemsImpl::~KeySystemsImpl() {
   if (!update_callbacks_.empty())
     update_callbacks_.Notify();
+}
+
+void KeySystemsImpl::Initialize() {
+  for (const auto& [mime_type, codecs] : kMimeTypeToCodecsMap)
+    RegisterMimeType(mime_type, codecs);
+
+  UpdateSupportedKeySystems();
 }
 
 void KeySystemsImpl::UpdateSupportedKeySystems() {
@@ -614,6 +623,20 @@ void KeySystemsImpl::AddMimeTypeCodecMaskForTesting(
   RegisterMimeType(mime_type, static_cast<EmeCodec>(codecs_mask));
 }
 
+void KeySystemsImpl::ResetForTesting() {
+  weak_factory_.InvalidateWeakPtrs();
+  is_updating_ = false;
+  DCHECK(update_callbacks_.empty())
+      << "Should have no update callbacks for a clean test.";
+  key_system_properties_vector_.clear();
+  mime_type_to_codecs_map_.clear();
+  codec_map_for_testing_.clear();
+  audio_codec_mask_ = EME_CODEC_AUDIO_ALL;
+  video_codec_mask_ = EME_CODEC_VIDEO_ALL;
+
+  Initialize();
+}
+
 std::string KeySystemsImpl::GetBaseKeySystemName(
     const std::string& key_system) const {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -811,11 +834,11 @@ EmeFeatureSupport KeySystemsImpl::GetDistinctiveIdentifierSupport(
   return properties->GetDistinctiveIdentifierSupport();
 }
 
+}  // namespace
+
 KeySystems* KeySystems::GetInstance() {
   return KeySystemsImpl::GetInstance();
 }
-
-//------------------------------------------------------------------------------
 
 bool IsSupportedKeySystemWithInitDataType(const std::string& key_system,
                                           EmeInitDataType init_data_type) {
@@ -862,7 +885,7 @@ bool CanUseAesDecryptor(const std::string& key_system) {
   return KeySystemsImpl::GetInstance()->CanUseAesDecryptor(key_system);
 }
 
-// These two functions are for testing purpose only. The declaration in the
+// These three functions are for testing purpose only. The declaration in the
 // header file is guarded by "#if defined(UNIT_TEST)" so that they can be used
 // by tests but not non-test code. However, this .cc file is compiled as part of
 // "media" where "UNIT_TEST" is not defined. So we need to specify
@@ -879,6 +902,10 @@ MEDIA_EXPORT void AddMimeTypeCodecMaskForTesting(const std::string& mime_type,
                                                  uint32_t mask) {
   KeySystemsImpl::GetInstance()->AddMimeTypeCodecMaskForTesting(mime_type,
                                                                 mask);
+}
+
+MEDIA_EXPORT void ResetKeySystemsForTesting() {
+  KeySystemsImpl::GetInstance()->ResetForTesting();
 }
 
 }  // namespace media
