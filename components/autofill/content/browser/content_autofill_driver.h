@@ -184,12 +184,6 @@ class ContentAutofillDriver : public AutofillDriver,
       const FormFieldData& raw_field,
       const autofill_assistant::AutofillAssistantIntent intent);
 
-  // Transform bounding box coordinates to real viewport coordinates. In the
-  // case of a page spanning multiple renderer processes, subframe renderers
-  // cannot do this transformation themselves.
-  [[nodiscard]] gfx::RectF TransformBoundingBoxToViewportCoordinates(
-      const gfx::RectF& bounding_box) const;
-
   // Triggers a reparse of the new forms in the AutofillAgent. This is necessary
   // when a form is seen in a child frame and it is not known which form is its
   // parent.
@@ -330,6 +324,12 @@ class ContentAutofillDriver : public AutofillDriver,
   void SetFrameAndFormMetaData(FormData& form,
                                FormFieldData* optional_field) const;
   [[nodiscard]] FormData GetFormWithFrameAndFormMetaData(FormData form) const;
+
+  // Transform bounding box coordinates to real viewport coordinates. In the
+  // case of a page spanning multiple renderer processes, subframe renderers
+  // cannot do this transformation themselves.
+  [[nodiscard]] gfx::RectF TransformBoundingBoxToViewportCoordinates(
+      const gfx::RectF& bounding_box) const;
 
   // Returns the AutofillRouter and confirms that it may be accessed (we should
   // not be using the router if we're prerendering).

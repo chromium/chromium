@@ -152,12 +152,7 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
   if (obj.is_null())
     return;
 
-  form_ = std::make_unique<FormDataAndroid>(
-      form,
-      base::BindRepeating(
-          &ContentAutofillDriver::TransformBoundingBoxToViewportCoordinates,
-          base::Unretained(
-              static_cast<ContentAutofillDriver*>(manager->driver()))));
+  form_ = std::make_unique<FormDataAndroid>(form);
   field_id_ = field.global_id();
 
   size_t index;
