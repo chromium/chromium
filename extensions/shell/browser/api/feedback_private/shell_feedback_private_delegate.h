@@ -23,9 +23,8 @@ class ShellFeedbackPrivateDelegate : public FeedbackPrivateDelegate {
   ~ShellFeedbackPrivateDelegate() override;
 
   // FeedbackPrivateDelegate:
-  std::unique_ptr<base::DictionaryValue> GetStrings(
-      content::BrowserContext* browser_context,
-      bool from_crash) const override;
+  base::Value::Dict GetStrings(content::BrowserContext* browser_context,
+                               bool from_crash) const override;
   void FetchSystemInformation(
       content::BrowserContext* context,
       system_logs::SysLogsFetcherCallback callback) const override;

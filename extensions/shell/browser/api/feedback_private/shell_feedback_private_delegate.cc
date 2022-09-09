@@ -21,11 +21,11 @@ namespace extensions {
 ShellFeedbackPrivateDelegate::ShellFeedbackPrivateDelegate() = default;
 ShellFeedbackPrivateDelegate::~ShellFeedbackPrivateDelegate() = default;
 
-std::unique_ptr<base::DictionaryValue> ShellFeedbackPrivateDelegate::GetStrings(
+base::Value::Dict ShellFeedbackPrivateDelegate::GetStrings(
     content::BrowserContext* browser_context,
     bool from_crash) const {
   NOTIMPLEMENTED();
-  return nullptr;
+  return {};
 }
 
 void ShellFeedbackPrivateDelegate::FetchSystemInformation(

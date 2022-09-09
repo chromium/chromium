@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_API_FEEDBACK_PRIVATE_FEEDBACK_PRIVATE_DELEGATE_H_
 
 #include "base/callback.h"
+#include "base/values.h"
 #include "components/feedback/feedback_data.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 #include "extensions/common/api/feedback_private.h"
@@ -14,10 +15,6 @@
 #include <string>
 
 #include "build/chromeos_buildflags.h"
-
-namespace base {
-class DictionaryValue;
-}  // namespace base
 
 namespace content {
 class BrowserContext;
@@ -45,9 +42,8 @@ class FeedbackPrivateDelegate {
   // extension.
   // Set |from_crash| to customize strings when the feedback UI was initiated
   // from a "sad tab" crash.
-  virtual std::unique_ptr<base::DictionaryValue> GetStrings(
-      content::BrowserContext* browser_context,
-      bool from_crash) const = 0;
+  virtual base::Value::Dict GetStrings(content::BrowserContext* browser_context,
+                                       bool from_crash) const = 0;
 
   virtual void FetchSystemInformation(
       content::BrowserContext* context,

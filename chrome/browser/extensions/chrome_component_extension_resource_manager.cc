@@ -146,14 +146,13 @@ ChromeComponentExtensionResourceManager::Data::Data() {
 
   // ResourceBundle is not always initialized in unit tests.
   if (ui::ResourceBundle::HasSharedInstance()) {
-    base::Value dict(base::Value::Type::DICTIONARY);
+    base::Value::Dict dict;
     pdf_extension_util::AddStrings(
         pdf_extension_util::PdfViewerContext::kPdfViewer, &dict);
     pdf_extension_util::AddAdditionalData(/*enable_annotations=*/true, &dict);
 
     ui::TemplateReplacements pdf_viewer_replacements;
-    ui::TemplateReplacementsFromDictionaryValue(dict.GetDict(),
-                                                &pdf_viewer_replacements);
+    ui::TemplateReplacementsFromDictionaryValue(dict, &pdf_viewer_replacements);
     template_replacements_[extension_misc::kPdfExtensionId] =
         std::move(pdf_viewer_replacements);
   }

@@ -180,11 +180,6 @@ void ParsePathAndScale(const GURL& url,
 }
 
 void SetLoadTimeDataDefaults(const std::string& app_locale,
-                             base::Value* localized_strings) {
-  SetLoadTimeDataDefaults(app_locale, localized_strings->GetIfDict());
-}
-
-void SetLoadTimeDataDefaults(const std::string& app_locale,
                              base::Value::Dict* localized_strings) {
   localized_strings->Set("fontfamily", GetFontFamily());
   localized_strings->Set("fontsize", GetFontSize());
