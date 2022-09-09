@@ -1622,8 +1622,9 @@ void VolumeManager::OnFuseboxAttachStorageMTP(const std::string& subdir,
   // Register the fusebox MTP storage device with chrome::storage.
   auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
   bool result = mount_points->RegisterFileSystem(
-      /*prefixed*/ util::kFuseBox + fsid, storage::kFileSystemTypeFuseBox,
-      storage::FileSystemMountOption(), volume->mount_path());
+      base::StrCat({util::kFuseBoxMountNamePrefix, subdir}),
+      storage::kFileSystemTypeFuseBox, storage::FileSystemMountOption(),
+      volume->mount_path());
   DCHECK(result);
 
   // Mount the fusebox MTP storage device in files app.
@@ -1670,11 +1671,12 @@ void VolumeManager::OnRemovableStorageDetached(
     DoUnmountEvent(*volume);
 
   // Remove the fusebox MTP storage device from chrome::storage.
-  mount_points->RevokeFileSystem(util::kFuseBox + fsid);
+  std::string subdir = FuseBoxSubdirMTP(info.device_id());
+  mount_points->RevokeFileSystem(
+      base::StrCat({util::kFuseBoxMountNamePrefix, subdir}));
 
   // Detach the fusebox MTP storage device from the fusebox daemon.
-  fusebox_mounter_->DetachStorage(FuseBoxSubdirMTP(info.device_id()),
-                                  base::DoNothing());
+  fusebox_mounter_->DetachStorage(subdir, base::DoNothing());
 }
 
 void VolumeManager::OnDocumentsProviderRootAdded(
