@@ -93,13 +93,13 @@ class PlaylistTestBuilder {
     auto playlist = std::move(result).value();
 
     // Ensure that playlist has expected version
-    EXPECT_EQ(playlist.GetVersion(), version_) << from.ToString();
+    EXPECT_EQ(playlist->GetVersion(), version_) << from.ToString();
 
     for (const auto& expectation : playlist_expectations_) {
-      expectation.Run(playlist);
+      expectation.Run(*playlist);
     }
 
-    this->VerifyExpectations(playlist, from);
+    this->VerifyExpectations(*playlist, from);
   }
 
  private:

@@ -25,11 +25,6 @@
 
 namespace media::hls {
 
-MultivariantPlaylist::MultivariantPlaylist(MultivariantPlaylist&&) = default;
-
-MultivariantPlaylist& MultivariantPlaylist::operator=(MultivariantPlaylist&&) =
-    default;
-
 MultivariantPlaylist::~MultivariantPlaylist() = default;
 
 Playlist::Kind MultivariantPlaylist::GetKind() const {
@@ -37,10 +32,10 @@ Playlist::Kind MultivariantPlaylist::GetKind() const {
 }
 
 // static
-ParseStatus::Or<MultivariantPlaylist> MultivariantPlaylist::Parse(
-    base::StringPiece source,
-    GURL uri,
-    types::DecimalInteger version) {
+ParseStatus::Or<scoped_refptr<MultivariantPlaylist>>
+MultivariantPlaylist::Parse(base::StringPiece source,
+                            GURL uri,
+                            types::DecimalInteger version) {
   DCHECK(version != 0);
   if (version < Playlist::kMinSupportedVersion ||
       version > Playlist::kMaxSupportedVersion) {
@@ -179,13 +174,14 @@ ParseStatus::Or<MultivariantPlaylist> MultivariantPlaylist::Parse(
     return ParseStatusCode::kPlaylistHasVersionMismatch;
   }
 
-  return MultivariantPlaylist(std::move(uri), version,
-                              common_state.independent_segments_tag.has_value(),
-                              std::move(variants),
-                              std::move(common_state.variable_dict));
+  return base::MakeRefCounted<MultivariantPlaylist>(
+      base::PassKey<MultivariantPlaylist>(), std::move(uri), version,
+      common_state.independent_segments_tag.has_value(), std::move(variants),
+      std::move(common_state.variable_dict));
 }
 
 MultivariantPlaylist::MultivariantPlaylist(
+    base::PassKey<MultivariantPlaylist>,
     GURL uri,
     types::DecimalInteger version,
     bool independent_segments,

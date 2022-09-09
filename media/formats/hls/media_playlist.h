@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/playlist.h"
@@ -38,11 +39,12 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
     base::TimeDelta target_duration;
   };
 
+  struct CtorArgs;
+  explicit MediaPlaylist(base::PassKey<MediaPlaylist>, CtorArgs);
   MediaPlaylist(const MediaPlaylist&) = delete;
-  MediaPlaylist(MediaPlaylist&&);
+  MediaPlaylist(MediaPlaylist&&) = delete;
   MediaPlaylist& operator=(const MediaPlaylist&) = delete;
-  MediaPlaylist& operator=(MediaPlaylist&&);
-  ~MediaPlaylist() override;
+  MediaPlaylist& operator=(MediaPlaylist&&) = delete;
 
   // `Playlist` implementation
   Kind GetKind() const override;
@@ -139,15 +141,14 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
   // order to support persistent properties and imported variables. Otherwise,
   // it should be `nullptr`. If `source` is invalid, this returns an error.
   // Otherwise, the parsed playlist is returned.
-  static ParseStatus::Or<MediaPlaylist> Parse(
+  static ParseStatus::Or<scoped_refptr<MediaPlaylist>> Parse(
       base::StringPiece source,
       GURL uri,
       types::DecimalInteger version,
       const MultivariantPlaylist* parent_playlist);
 
  private:
-  struct CtorArgs;
-  explicit MediaPlaylist(CtorArgs);
+  ~MediaPlaylist() override;
 
   base::TimeDelta target_duration_;
   absl::optional<PartialSegmentInfo> partial_segment_info_;

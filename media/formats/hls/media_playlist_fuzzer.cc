@@ -9,6 +9,7 @@
 #include "base/at_exit.h"
 #include "base/check.h"
 #include "base/i18n/icu_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_piece_forward.h"
 #include "media/formats/hls/media_playlist.h"
@@ -42,7 +43,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Decide whether to create a multivariant playlist + media playlist or just a
   // media playlist
-  std::unique_ptr<media::hls::MultivariantPlaylist> multivariant_playlist;
+  scoped_refptr<media::hls::MultivariantPlaylist> multivariant_playlist;
   if (data_provider.ConsumeBool()) {
     auto multivariant_playlist_source =
         data_provider.ConsumeRandomLengthString();
@@ -56,8 +57,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       return 0;
     }
 
-    multivariant_playlist = std::make_unique<media::hls::MultivariantPlaylist>(
-        std::move(multivariant_playlist_result).value());
+    multivariant_playlist = std::move(multivariant_playlist_result).value();
   }
 
   auto media_playlist_source = data_provider.ConsumeRemainingBytesAsString();

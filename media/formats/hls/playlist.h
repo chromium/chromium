@@ -5,13 +5,14 @@
 #ifndef MEDIA_FORMATS_HLS_PLAYLIST_H_
 #define MEDIA_FORMATS_HLS_PLAYLIST_H_
 
+#include "base/memory/ref_counted.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/types.h"
 #include "url/gurl.h"
 
 namespace media::hls {
 
-class MEDIA_EXPORT Playlist {
+class MEDIA_EXPORT Playlist : public base::RefCounted<Playlist> {
  public:
   // Unless explicitly specified via the `EXT-X-VERSION` tag, the default
   // playlist version is `1`.
@@ -42,7 +43,9 @@ class MEDIA_EXPORT Playlist {
       base::StringPiece src);
 
   Playlist(const Playlist&) = delete;
+  Playlist(Playlist&&) = delete;
   Playlist& operator=(const Playlist&) = delete;
+  Playlist& operator=(Playlist&&) = delete;
 
   // Returns the resolved URI of this playlist.
   const GURL& Uri() const { return uri_; }
@@ -61,8 +64,8 @@ class MEDIA_EXPORT Playlist {
 
  protected:
   Playlist(GURL uri, types::DecimalInteger version, bool independent_segments);
-  Playlist(Playlist&&);
-  Playlist& operator=(Playlist&&);
+
+  friend base::RefCounted<Playlist>;
   virtual ~Playlist();
 
  private:

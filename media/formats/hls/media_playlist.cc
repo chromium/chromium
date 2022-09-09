@@ -46,10 +46,6 @@ struct MediaPlaylist::CtorArgs {
   absl::optional<base::TimeDelta> part_hold_back_distance;
 };
 
-MediaPlaylist::MediaPlaylist(MediaPlaylist&&) = default;
-
-MediaPlaylist& MediaPlaylist::operator=(MediaPlaylist&&) = default;
-
 MediaPlaylist::~MediaPlaylist() = default;
 
 Playlist::Kind MediaPlaylist::GetKind() const {
@@ -57,7 +53,7 @@ Playlist::Kind MediaPlaylist::GetKind() const {
 }
 
 // static
-ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
+ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
     base::StringPiece source,
     GURL uri,
     types::DecimalInteger version,
@@ -518,7 +514,8 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
     playlist_type = playlist_type_tag->type;
   }
 
-  return MediaPlaylist(
+  return base::MakeRefCounted<MediaPlaylist>(
+      base::PassKey<MediaPlaylist>(),
       CtorArgs{.uri = std::move(uri),
                .version = version,
                .independent_segments = independent_segments,
@@ -537,7 +534,7 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
                .part_hold_back_distance = part_hold_back_distance});
 }
 
-MediaPlaylist::MediaPlaylist(CtorArgs args)
+MediaPlaylist::MediaPlaylist(base::PassKey<MediaPlaylist>, CtorArgs args)
     : Playlist(std::move(args.uri), args.version, args.independent_segments),
       target_duration_(args.target_duration),
       partial_segment_info_(std::move(args.partial_segment_info)),

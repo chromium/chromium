@@ -19,8 +19,6 @@ Playlist::Playlist(GURL uri,
       version_(version),
       independent_segments_(independent_segments) {}
 
-Playlist::Playlist(Playlist&&) = default;
-Playlist& Playlist::operator=(Playlist&&) = default;
 Playlist::~Playlist() = default;
 
 // static

@@ -7,7 +7,9 @@
 
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
+#include "base/types/pass_key.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/playlist.h"
@@ -21,11 +23,16 @@ class VariantStream;
 
 class MEDIA_EXPORT MultivariantPlaylist final : public Playlist {
  public:
+  MultivariantPlaylist(base::PassKey<MultivariantPlaylist>,
+                       GURL uri,
+                       types::DecimalInteger version,
+                       bool independent_segments,
+                       std::vector<VariantStream> variants,
+                       VariableDictionary variable_dictionary);
   MultivariantPlaylist(const MultivariantPlaylist&) = delete;
-  MultivariantPlaylist(MultivariantPlaylist&&);
+  MultivariantPlaylist(MultivariantPlaylist&&) = delete;
   MultivariantPlaylist& operator=(const MultivariantPlaylist&) = delete;
-  MultivariantPlaylist& operator=(MultivariantPlaylist&&);
-  ~MultivariantPlaylist() override;
+  MultivariantPlaylist& operator=(MultivariantPlaylist&&) = delete;
 
   // Returns all variants described by this playlist.
   const std::vector<VariantStream>& GetVariants() const { return variants_; }
@@ -44,15 +51,11 @@ class MEDIA_EXPORT MultivariantPlaylist final : public Playlist {
   // in this playlist (or `Playlist::kDefaultVersion` if none), which may be
   // determined via `Playlist::IdentifyPlaylist`. If the playlist source is
   // invalid, returns an error.
-  static ParseStatus::Or<MultivariantPlaylist>
+  static ParseStatus::Or<scoped_refptr<MultivariantPlaylist>>
   Parse(base::StringPiece source, GURL uri, types::DecimalInteger version);
 
  private:
-  MultivariantPlaylist(GURL uri,
-                       types::DecimalInteger version,
-                       bool independent_segments,
-                       std::vector<VariantStream> variants,
-                       VariableDictionary variable_dictionary);
+  ~MultivariantPlaylist() override;
 
   std::vector<VariantStream> variants_;
   VariableDictionary variable_dictionary_;
