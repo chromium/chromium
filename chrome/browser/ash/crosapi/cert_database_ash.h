@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/components/certificate_provider/certificate_info.h"
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -45,6 +46,10 @@ class CertDatabaseAsh : public mojom::CertDatabase,
   void OnCertsChangedInLacros() override;
   void AddAshCertDatabaseObserver(
       mojo::PendingRemote<mojom::AshCertDatabaseObserver> observer) override;
+  void SetCertsProvidedByExtension(
+      const std::string& extension_id,
+      const chromeos::certificate_provider::CertificateInfoList&
+          certificate_infos) override;
 
   // Notifies observers that were added with `AddAshCertDatabaseObserver` about
   // cert changes in Ash.

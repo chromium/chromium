@@ -4,6 +4,8 @@
 
 module crosapi.mojom;
 
+import "services/network/public/mojom/network_param.mojom";
+
 [Stable]
 struct GetCertDatabaseInfoResult {
   // Deprecated on 10/2021. Use `user_nss_database` from
@@ -20,6 +22,20 @@ struct GetCertDatabaseInfoResult {
   bool enable_system_slot@3;
   [MinVersion=1]
   uint32 system_slot_id@4;
+};
+
+[Stable]
+struct CertInfo {
+  // Certificates are very complex, and different versions of Ash and Lacros
+  // may catch different invalid inputs. Because of that, we send DER-enconded
+  // certificates to make it explicit that a well-behaved sender may send an
+  // arbitrary byte string that doesn't necessarily parse with
+  // net::X509Certificate.
+  // Details: https://crrev.com/c/3827793/comments/45af4f77_d034b465.
+  array<uint8> cert@0;
+  // Supported algorithm numbers come from TLS. They are stable and are stored
+  // there as 16-bit integer.
+  array<uint16> supported_algorithms@1;
 };
 
 // This interface is implemented by Lacros-Chrome.
@@ -47,4 +63,12 @@ interface CertDatabase {
   [MinVersion=2]
   AddAshCertDatabaseObserver@2(
     pending_remote<AshCertDatabaseObserver> observer);
+
+  // Lacros calls this to notify Ash about new changes to certificates
+  // provided by extension.
+  [MinVersion=3]
+  SetCertsProvidedByExtension@3(
+    string extension_id,
+    array<CertInfo> cert_infos
+  );
 };

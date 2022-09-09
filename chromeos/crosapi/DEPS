@@ -6,6 +6,7 @@ include_rules = [
   "+components/webapps/browser",
   "+components/digital_goods/mojom",
   "+components/policy/core/common",
+  "+third_party/boringssl/src/include/openssl",
 ]
 
 specific_include_rules = {

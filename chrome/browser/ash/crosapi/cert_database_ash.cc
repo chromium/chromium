@@ -4,10 +4,15 @@
 
 #include "chrome/browser/ash/crosapi/cert_database_ash.h"
 
+#include <algorithm>
+
 #include "ash/components/tpm/tpm_token_info_getter.h"
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -180,6 +185,27 @@ void CertDatabaseAsh::AddAshCertDatabaseObserver(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   observers_.Add(
       mojo::Remote<mojom::AshCertDatabaseObserver>(std::move(observer)));
+}
+
+void CertDatabaseAsh::SetCertsProvidedByExtension(
+    const std::string& extension_id,
+    const chromeos::certificate_provider::CertificateInfoList&
+        certificate_infos) {
+  // Some certificates could've failed to parse, which is represented by
+  // nullptr. We ignore such certificates to avoid closing the mojo pipe.
+  chromeos::certificate_provider::CertificateInfoList
+      filtered_certificate_infos;
+  base::ranges::copy_if(certificate_infos,
+                        std::back_inserter(filtered_certificate_infos),
+                        [&](const auto& certificate_info) {
+                          return certificate_info.certificate != nullptr;
+                        });
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  chromeos::CertificateProviderService* certificate_provider_service =
+      chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
+          profile);
+  certificate_provider_service->SetCertificatesProvidedByExtension(
+      extension_id, filtered_certificate_infos);
 }
 
 void CertDatabaseAsh::NotifyCertsChangedInAsh() {
