@@ -11,6 +11,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -1024,7 +1025,11 @@ void SkiaRenderer::SwapBuffersComplete(gfx::GpuFenceHandle release_fence) {
 }
 
 void SkiaRenderer::BuffersPresented() {
-  DCHECK(!read_lock_release_fence_overlay_locks_.empty());
+  if (read_lock_release_fence_overlay_locks_.empty()) {
+    // Debug crbug.com/1357789.
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
   read_lock_release_fence_overlay_locks_.pop_front();
 }
 
