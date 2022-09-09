@@ -931,7 +931,7 @@ class OmniboxPedalCreateGoogleCalendarEvent : public OmniboxPedalAuthRequired {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return kGoogleCalendarIcon;
+    return vector_icons::kGoogleCalendarIcon;
   }
 #endif
 
@@ -990,7 +990,7 @@ class OmniboxPedalCreateGoogleSite : public OmniboxPedalAuthRequired {
                 IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_SITE)) {}
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return kGoogleSitesIcon;
+    return vector_icons::kGoogleSitesIcon;
   }
 #endif
 
@@ -1050,7 +1050,7 @@ class OmniboxPedalCreateGoogleKeepNote : public OmniboxPedalAuthRequired {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return kGoogleKeepNoteIcon;
+    return vector_icons::kGoogleKeepNoteIcon;
   }
 #endif
 
@@ -1222,7 +1222,7 @@ class OmniboxPedalManageGoogleAccount : public OmniboxPedalAuthRequired {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return kGoogleSuperGIcon;
+    return vector_icons::kGoogleSuperGIcon;
   }
 #endif
 
@@ -1282,7 +1282,7 @@ class OmniboxPedalChangeGooglePassword : public OmniboxPedalAuthRequired {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return kGoogleSuperGIcon;
+    return vector_icons::kGoogleSuperGIcon;
   }
 #endif
 
@@ -1484,7 +1484,7 @@ class OmniboxPedalFindMyPhone : public OmniboxPedalAuthRequired {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return kGoogleSuperGIcon;
+    return vector_icons::kGoogleSuperGIcon;
   }
 #endif
 
@@ -1534,7 +1534,7 @@ class OmniboxPedalManageGooglePrivacy : public OmniboxPedalAuthRequired {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return kGoogleSuperGIcon;
+    return vector_icons::kGoogleSuperGIcon;
   }
 #endif
 
