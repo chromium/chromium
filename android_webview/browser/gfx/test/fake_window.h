@@ -88,10 +88,10 @@ class FakeWindow {
   // UI thread members.
   gfx::Rect location_;
   bool on_draw_hardware_pending_;
-  base::SequenceChecker ui_checker_;
+  SEQUENCE_CHECKER(ui_checker_);
 
   // Render thread members.
-  base::SequenceChecker rt_checker_;
+  SEQUENCE_CHECKER(rt_checker_);
   scoped_refptr<base::SingleThreadTaskRunner> render_thread_loop_;
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;

@@ -167,7 +167,7 @@ void FakeWindow::DrawFunctorOnRT(FakeFunctor* functor,
 }
 
 void FakeWindow::CheckCurrentlyOnUIThread() {
-  DCHECK(ui_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(ui_checker_);
 }
 
 void FakeWindow::CreateRenderThreadIfNeeded() {
@@ -183,7 +183,7 @@ void FakeWindow::CreateRenderThreadIfNeeded() {
   }
 
   render_thread_loop_ = g_render_thread->task_runner();
-  rt_checker_.DetachFromSequence();
+  DETACH_FROM_SEQUENCE(rt_checker_);
 
   base::WaitableEvent completion(
       base::WaitableEvent::ResetPolicy::MANUAL,
@@ -217,7 +217,7 @@ void FakeWindow::DestroyOnRT(base::WaitableEvent* sync) {
 }
 
 void FakeWindow::CheckCurrentlyOnRT() {
-  DCHECK(rt_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(rt_checker_);
 }
 
 FakeFunctor::FakeFunctor() : window_(nullptr) {}
