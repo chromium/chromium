@@ -21,7 +21,6 @@
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
-#include "ash/capture_mode/capture_mode_camera_preview_view.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
@@ -48,15 +47,12 @@
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/root_window_controller.h"
-#include "ash/rotator/window_rotation.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf.h"
-#include "ash/shelf/shelf_focus_cycler.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/accessibility/floating_accessibility_controller.h"
 #include "ash/system/brightness_control_delegate.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
@@ -97,21 +93,15 @@
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/ui/base/display_util.h"
-#include "chromeos/ui/wm/desks/chromeos_desks_histogram_enums.h"
 #include "chromeos/ui/wm/features.h"
 #include "components/user_manager/user_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/accelerator_manager.h"
-#include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/chromeos/events/keyboard_layout_util.h"
-#include "ui/compositor/layer.h"
-#include "ui/compositor/layer_animation_sequence.h"
-#include "ui/compositor/layer_animator.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
@@ -143,8 +133,6 @@ using input_method::InputMethodManager;
 
 // Toast id and duration for Assistant shortcuts.
 constexpr char kAssistantErrorToastId[] = "assistant_error";
-
-constexpr char kVirtualDesksToastId[] = "virtual_desks_toast";
 
 // Path of the json file that contains side volume button location info.
 constexpr char kSideVolumeButtonLocationFilePath[] =
@@ -293,47 +281,6 @@ void HandleMoveActiveItem(const ui::Accelerator& accelerator, bool going_left) {
   }
 }
 
-void HandleNewDesk() {
-  auto* desks_controller = DesksController::Get();
-  if (!desks_controller->CanCreateDesks()) {
-    ShowToast(kVirtualDesksToastId, ToastCatalogName::kVirtualDesksLimitMax,
-              l10n_util::GetStringUTF16(IDS_ASH_DESKS_MAX_NUM_REACHED));
-    return;
-  }
-
-  if (desks_controller->AreDesksBeingModified())
-    return;
-
-  // Add a new desk and switch to it.
-  const size_t new_desk_index = desks_controller->desks().size();
-  desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
-  const Desk* desk = desks_controller->desks()[new_desk_index].get();
-  desks_controller->ActivateDesk(desk, DesksSwitchSource::kNewDeskShortcut);
-  base::RecordAction(base::UserMetricsAction("Accel_Desks_NewDesk"));
-}
-
-void HandleRemoveCurrentDesk() {
-  if (window_util::IsAnyWindowDragged())
-    return;
-
-  auto* desks_controller = DesksController::Get();
-  if (!desks_controller->CanRemoveDesks()) {
-    ShowToast(kVirtualDesksToastId, ToastCatalogName::kVirtualDesksLimitMin,
-              l10n_util::GetStringUTF16(IDS_ASH_DESKS_MIN_NUM_REACHED));
-    return;
-  }
-
-  if (desks_controller->AreDesksBeingModified())
-    return;
-
-  // TODO(afakhry): Finalize the desk removal animation outside of overview with
-  // UX. https://crbug.com/977434.
-  desks_controller->RemoveDesk(desks_controller->active_desk(),
-                               DesksCreationRemovalSource::kKeyboard,
-                               DeskCloseType::kCombineDesks);
-  base::RecordAction(base::UserMetricsAction("Accel_Desks_RemoveDesk"));
-}
-
 void HandleActivateDeskAtIndex(AcceleratorAction action) {
   DCHECK_LE(action, DESKS_ACTIVATE_7);
   const size_t target_index = action - DESKS_ACTIVATE_0;
@@ -354,31 +301,6 @@ void HandleActivateDeskAtIndex(AcceleratorAction action) {
   }
 }
 
-void HandleToggleAssignToAllDesks() {
-  auto* active_window = window_util::GetActiveWindow();
-  if (!active_window)
-    return;
-
-  // Only children of the desk container should have their assigned to all
-  // desks state toggled to avoid interfering with special windows like
-  // always-on-top windows, floated windows, etc.
-  if (desks_util::IsActiveDeskContainer(active_window->parent())) {
-    const bool is_already_visible_on_all_desks =
-        desks_util::IsWindowVisibleOnAllWorkspaces(active_window);
-    if (!is_already_visible_on_all_desks) {
-      UMA_HISTOGRAM_ENUMERATION(
-          chromeos::kDesksAssignToAllDesksSourceHistogramName,
-          chromeos::DesksAssignToAllDesksSource::kKeyboardShortcut);
-    }
-
-    active_window->SetProperty(
-        aura::client::kWindowWorkspaceKey,
-        is_already_visible_on_all_desks
-            ? aura::client::kWindowWorkspaceUnassignedWorkspace
-            : aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
-  }
-}
-
 void HandleRotatePaneFocus(FocusCycler::Direction direction) {
   switch (direction) {
     // TODO(stevet): Not sure if this is the same as IDC_FOCUS_NEXT_PANE.
@@ -392,26 +314,6 @@ void HandleRotatePaneFocus(FocusCycler::Direction direction) {
     }
   }
   Shell::Get()->focus_cycler()->RotateFocus(direction);
-}
-
-void HandleFocusShelf() {
-  base::RecordAction(UserMetricsAction("Accel_Focus_Shelf"));
-
-  if (Shell::Get()->session_controller()->IsRunningInAppMode()) {
-    // If floating accessibility menu is shown, focus on it instead of the
-    // shelf.
-    FloatingAccessibilityController* floating_menu =
-        Shell::Get()->accessibility_controller()->GetFloatingMenuController();
-    if (floating_menu) {
-      floating_menu->FocusOnMenu();
-    }
-    return;
-  }
-
-  // TODO(jamescook): Should this be GetRootWindowForNewWindows()?
-  // Focus the home button.
-  Shelf* shelf = Shelf::ForWindow(Shell::GetPrimaryRootWindow());
-  shelf->shelf_focus_cycler()->FocusNavigation(false /* lastElement */);
 }
 
 // TODO(zentaro): This is duplicated in accelerator_commands.cc. Remove
@@ -435,12 +337,6 @@ bool CanHandleFocusCameraPreview() {
   DCHECK(camera_controller);
   auto* preview_widget = camera_controller->camera_preview_widget();
   return preview_widget && preview_widget->IsVisible();
-}
-
-void HandleFocusCameraPreview() {
-  auto* camera_controller = CaptureModeController::Get()->camera_controller();
-  DCHECK(camera_controller);
-  camera_controller->PseudoFocusCameraPreview();
 }
 
 void HandleToggleMirrorMode() {
@@ -639,23 +535,6 @@ void HandleRotateScreen() {
   }
 }
 
-// Rotate the active window.
-void HandleRotateActiveWindow() {
-  base::RecordAction(UserMetricsAction("Accel_Rotate_Active_Window"));
-  aura::Window* active_window = window_util::GetActiveWindow();
-  if (!active_window)
-    return;
-  // The rotation animation bases its target transform on the current
-  // rotation and position. Since there could be an animation in progress
-  // right now, queue this animation so when it starts it picks up a neutral
-  // rotation and position. Use replace so we only enqueue one at a time.
-  active_window->layer()->GetAnimator()->set_preemption_strategy(
-      ui::LayerAnimator::REPLACE_QUEUED_ANIMATIONS);
-  active_window->layer()->GetAnimator()->StartAnimation(
-      new ui::LayerAnimationSequence(
-          std::make_unique<WindowRotation>(360, active_window->layer())));
-}
-
 void HandleShowKeyboardShortcutViewer() {
   NewWindowDelegate::GetInstance()->ShowKeyboardShortcutViewer();
 }
@@ -850,11 +729,6 @@ void HandleToggleOverview() {
     overview_controller->StartOverview(OverviewStartAction::kAccelerator);
 }
 
-void HandleToggleUnifiedDesktop() {
-  Shell::Get()->display_manager()->SetUnifiedDesktopEnabled(
-      !Shell::Get()->display_manager()->unified_desktop_enabled());
-}
-
 bool CanHandleWindowSnap() {
   aura::Window* active_window = window_util::GetActiveWindow();
   if (!active_window)
@@ -914,11 +788,6 @@ void HandleTopWindowMinimizeOnBack() {
   base::RecordAction(
       base::UserMetricsAction("Accel_Minimize_Top_Window_On_Back"));
   WindowState::Get(window_util::GetTopWindow())->Minimize();
-}
-
-void HandleShowEmojiPicker() {
-  base::RecordAction(UserMetricsAction("Accel_Show_Emoji_Picker"));
-  ui::ShowEmojiPanel();
 }
 
 void HandleToggleImeMenuBubble() {
@@ -1372,16 +1241,6 @@ void HandleToggleSpokenFeedback() {
 
 bool CanHandleTogglePrivacyScreen() {
   return Shell::Get()->privacy_screen_controller()->IsSupported();
-}
-
-void HandleTogglePrivacyScreen() {
-  base::RecordAction(UserMetricsAction("Accel_Toggle_Privacy_Screen"));
-
-  PrivacyScreenController* controller =
-      Shell::Get()->privacy_screen_controller();
-  controller->SetEnabled(
-      !controller->GetEnabled(),
-      PrivacyScreenController::kToggleUISurfaceKeyboardShortcut);
 }
 
 bool CanHandleActiveMagnifierZoom() {
@@ -2025,10 +1884,12 @@ void AcceleratorControllerImpl::PerformAction(
       HandleMoveActiveItem(accelerator, /*going_left=*/false);
       break;
     case DESKS_NEW_DESK:
-      HandleNewDesk();
+      // UMA metrics are recorded in the function.
+      accelerators::NewDesk();
       break;
     case DESKS_REMOVE_CURRENT_DESK:
-      HandleRemoveCurrentDesk();
+      // UMA metrics are recorded in the function.
+      accelerators::RemoveCurrentDesk();
       break;
     case DESKS_ACTIVATE_0:
     case DESKS_ACTIVATE_1:
@@ -2041,7 +1902,7 @@ void AcceleratorControllerImpl::PerformAction(
       HandleActivateDeskAtIndex(action);
       break;
     case DESKS_TOGGLE_ASSIGN_TO_ALL_DESKS:
-      HandleToggleAssignToAllDesks();
+      accelerators::ToggleAssignToAllDesk();
       break;
     case DEBUG_DUMP_CALENDAR_MODEL:
     case DEBUG_KEYBOARD_BACKLIGHT_TOGGLE:
@@ -2078,7 +1939,7 @@ void AcceleratorControllerImpl::PerformAction(
       HandleToggleAppList(accelerator, kSearchKey);
       break;
     case DEV_TOGGLE_UNIFIED_DESKTOP:
-      HandleToggleUnifiedDesktop();
+      accelerators::ToggleUnifiedDesktop();
       break;
     case DISABLE_CAPS_LOCK:
       base::RecordAction(base::UserMetricsAction("Accel_Disable_Caps_Lock"));
@@ -2095,10 +1956,11 @@ void AcceleratorControllerImpl::PerformAction(
       HandleRotatePaneFocus(FocusCycler::BACKWARD);
       break;
     case FOCUS_SHELF:
-      HandleFocusShelf();
+      base::RecordAction(UserMetricsAction("Accel_Focus_Shelf"));
+      accelerators::FocusShelf();
       break;
     case FOCUS_CAMERA_PREVIEW:
-      HandleFocusCameraPreview();
+      accelerators::FocusCameraPreview();
       break;
     case FOCUS_PIP:
       base::RecordAction(base::UserMetricsAction("Accel_Focus_Pip"));
@@ -2265,7 +2127,8 @@ void AcceleratorControllerImpl::PerformAction(
       debug::PrintUIHierarchies();
       break;
     case PRIVACY_SCREEN_TOGGLE:
-      HandleTogglePrivacyScreen();
+      base::RecordAction(UserMetricsAction("Accel_Toggle_Privacy_Screen"));
+      accelerators::TogglePrivacyScreen();
       break;
     case ROTATE_SCREEN:
       HandleRotateScreen();
@@ -2275,7 +2138,8 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::RestoreTab();
       break;
     case ROTATE_WINDOW:
-      HandleRotateActiveWindow();
+      base::RecordAction(UserMetricsAction("Accel_Rotate_Active_Window"));
+      accelerators::RotateActiveWindow();
       break;
     case SCALE_UI_DOWN:
       accelerators::ZoomDisplay(false /* down */);
@@ -2287,7 +2151,8 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::ZoomDisplay(true /* up */);
       break;
     case SHOW_EMOJI_PICKER:
-      HandleShowEmojiPicker();
+      base::RecordAction(UserMetricsAction("Accel_Show_Emoji_Picker"));
+      accelerators::ShowEmojiPicker();
       break;
     case TOGGLE_IME_MENU_BUBBLE:
       HandleToggleImeMenuBubble();

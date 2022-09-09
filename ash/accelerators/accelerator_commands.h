@@ -26,8 +26,14 @@ ASH_EXPORT void CycleForwardMru();
 // Disable caps-lock.
 ASH_EXPORT void DisableCapsLock();
 
+// Focus the camera preview if it is present.
+ASH_EXPORT void FocusCameraPreview();
+
 // Focus the PiP window if it is present.
 ASH_EXPORT void FocusPip();
+
+// Focus the shelf.
+ASH_EXPORT void FocusShelf();
 
 // Launch the nth(0-7) app on the shelf.
 ASH_EXPORT void LaunchAppN(int n);
@@ -65,6 +71,9 @@ ASH_EXPORT void MediaStop();
 // Toggle microphone mute.
 ASH_EXPORT void MicrophoneMuteToggle();
 
+// Create a new desk.
+ASH_EXPORT void NewDesk();
+
 // Open a new incognito browser window.
 ASH_EXPORT void NewIncognitoWindow();
 
@@ -89,15 +98,27 @@ ASH_EXPORT void OpenFileManager();
 // Open the help/explore app.
 ASH_EXPORT void OpenHelp();
 
+// Remove the current desk.
+ASH_EXPORT void RemoveCurrentDesk();
+
 // Reset the display zooming to the default state.
 ASH_EXPORT void ResetDisplayZoom();
 
 // Restore the last closed tab in the browser.
 ASH_EXPORT void RestoreTab();
 
+// Rotate the active window 90 degrees.
+ASH_EXPORT void RotateActiveWindow();
+
 // Change primary display to the secondary display next to current primary
 // display
 ASH_EXPORT void ShiftPrimaryDisplay();
+
+// Open Emoji Picker.
+ASH_EXPORT void ShowEmojiPicker();
+
+// Assign active window to all desks.
+ASH_EXPORT void ToggleAssignToAllDesk();
 
 // Toogles to show and hide the calendar widget.
 ASH_EXPORT void ToggleCalendar();
@@ -118,9 +139,16 @@ ASH_EXPORT void ToggleMaximized();
 // restored.
 ASH_EXPORT bool ToggleMinimized();
 
+// Toggles on/off the electronic privacy screen.
+ASH_EXPORT void TogglePrivacyScreen();
+
 // Toggles the resize lock mode menu for a focused ARC++ resize-locked app if
 // present.
 ASH_EXPORT void ToggleResizeLockMenu();
+
+// Toggles the unified desktop mode which allows a window to span multiple
+// displays.
+ASH_EXPORT void ToggleUnifiedDesktop();
 
 // If a window is pinned (aka forced fullscreen), exit from pinned mode.
 ASH_EXPORT void UnpinWindow();

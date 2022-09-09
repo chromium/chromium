@@ -4,25 +4,36 @@
 
 #include "ash/accelerators/accelerator_commands.h"
 
+#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/capture_mode/capture_mode_camera_controller.h"
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/display_configuration_controller.h"
+#include "ash/display/privacy_screen_controller.h"
 #include "ash/focus_cycler.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/media/media_controller_impl.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/public/cpp/system/toast_data.h"
 #include "ash/root_window_controller.h"
+#include "ash/rotator/window_rotation.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_focus_cycler.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/system/accessibility/floating_accessibility_controller.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_model.h"
+#include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/screen_pinning_controller.h"
@@ -30,11 +41,19 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/wm/desks/chromeos_desks_histogram_enums.h"
+#include "ui/aura/client/aura_constants.h"
+#include "ui/base/emoji/emoji_panel_helper.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animation_sequence.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/display/display.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager.h"
@@ -51,13 +70,22 @@ namespace accelerators {
 namespace {
 
 // Percent by which the volume should be changed when a volume key is pressed.
-const double kStepPercentage = 4.0;
+constexpr double kStepPercentage = 4.0;
+constexpr char kVirtualDesksToastId[] = "virtual_desks_toast";
 
 views::Widget* FindPipWidget() {
   return Shell::Get()->focus_cycler()->FindWidget(
       base::BindRepeating([](views::Widget* widget) {
         return WindowState::Get(widget->GetNativeWindow())->IsPip();
       }));
+}
+
+void ShowToast(const std::string& id,
+               ToastCatalogName catalog_name,
+               const std::u16string& text) {
+  ToastData toast(id, catalog_name, text, ToastData::kDefaultToastDuration,
+                  /*visible_on_lock_screen=*/true);
+  Shell::Get()->toast_manager()->Show(toast);
 }
 
 }  // namespace
@@ -84,6 +112,30 @@ void CycleForwardMru() {
 
 void DisableCapsLock() {
   Shell::Get()->ime_controller()->SetCapsLockEnabled(false);
+}
+
+void FocusShelf() {
+  if (Shell::Get()->session_controller()->IsRunningInAppMode()) {
+    // If floating accessibility menu is shown, focus on it instead of the
+    // shelf.
+    FloatingAccessibilityController* floating_menu =
+        Shell::Get()->accessibility_controller()->GetFloatingMenuController();
+    if (floating_menu) {
+      floating_menu->FocusOnMenu();
+    }
+    return;
+  }
+
+  // TODO(jamescook): Should this be GetRootWindowForNewWindows()?
+  // Focus the home button.
+  Shelf* shelf = Shelf::ForWindow(Shell::GetPrimaryRootWindow());
+  shelf->shelf_focus_cycler()->FocusNavigation(false /* lastElement */);
+}
+
+void FocusCameraPreview() {
+  auto* camera_controller = CaptureModeController::Get()->camera_controller();
+  DCHECK(camera_controller);
+  camera_controller->PseudoFocusCameraPreview();
 }
 
 void LaunchAppN(int n) {
@@ -141,6 +193,25 @@ void MicrophoneMuteToggle() {
   audio_handler->SetInputMute(mute);
 }
 
+void NewDesk() {
+  auto* desks_controller = DesksController::Get();
+  if (!desks_controller->CanCreateDesks()) {
+    ShowToast(kVirtualDesksToastId, ToastCatalogName::kVirtualDesksLimitMax,
+              l10n_util::GetStringUTF16(IDS_ASH_DESKS_MAX_NUM_REACHED));
+    return;
+  }
+
+  if (desks_controller->AreDesksBeingModified())
+    return;
+
+  // Add a new desk and switch to it.
+  const size_t new_desk_index = desks_controller->desks().size();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
+  const Desk* desk = desks_controller->desks()[new_desk_index].get();
+  desks_controller->ActivateDesk(desk, DesksSwitchSource::kNewDeskShortcut);
+  base::RecordAction(base::UserMetricsAction("Accel_Desks_NewDesk"));
+}
+
 void NewIncognitoWindow() {
   NewWindowDelegate::GetPrimary()->NewWindow(
       /*is_incognito=*/true,
@@ -177,6 +248,28 @@ void OpenHelp() {
   NewWindowDelegate::GetInstance()->OpenGetHelp();
 }
 
+void RemoveCurrentDesk() {
+  if (window_util::IsAnyWindowDragged())
+    return;
+
+  auto* desks_controller = DesksController::Get();
+  if (!desks_controller->CanRemoveDesks()) {
+    ShowToast(kVirtualDesksToastId, ToastCatalogName::kVirtualDesksLimitMin,
+              l10n_util::GetStringUTF16(IDS_ASH_DESKS_MIN_NUM_REACHED));
+    return;
+  }
+
+  if (desks_controller->AreDesksBeingModified())
+    return;
+
+  // TODO(afakhry): Finalize the desk removal animation outside of overview with
+  // UX. https://crbug.com/977434.
+  desks_controller->RemoveDesk(desks_controller->active_desk(),
+                               DesksCreationRemovalSource::kKeyboard,
+                               DeskCloseType::kCombineDesks);
+  base::RecordAction(base::UserMetricsAction("Accel_Desks_RemoveDesk"));
+}
+
 void ResetDisplayZoom() {
   base::RecordAction(base::UserMetricsAction("Accel_Scale_Ui_Reset"));
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
@@ -188,6 +281,21 @@ void ResetDisplayZoom() {
 
 void RestoreTab() {
   NewWindowDelegate::GetPrimary()->RestoreTab();
+}
+
+void RotateActiveWindow() {
+  aura::Window* active_window = window_util::GetActiveWindow();
+  if (!active_window)
+    return;
+  // The rotation animation bases its target transform on the current
+  // rotation and position. Since there could be an animation in progress
+  // right now, queue this animation so when it starts it picks up a neutral
+  // rotation and position. Use replace so we only enqueue one at a time.
+  active_window->layer()->GetAnimator()->set_preemption_strategy(
+      ui::LayerAnimator::REPLACE_QUEUED_ANIMATIONS);
+  active_window->layer()->GetAnimator()->StartAnimation(
+      new ui::LayerAnimationSequence(
+          std::make_unique<WindowRotation>(360, active_window->layer())));
 }
 
 void ShiftPrimaryDisplay() {
@@ -215,6 +323,35 @@ void ShiftPrimaryDisplay() {
 
   Shell::Get()->display_configuration_controller()->SetPrimaryDisplayId(
       primary_display_iter->id(), true /* throttle */);
+}
+
+void ShowEmojiPicker() {
+  ui::ShowEmojiPanel();
+}
+
+void ToggleAssignToAllDesk() {
+  auto* active_window = window_util::GetActiveWindow();
+  if (!active_window)
+    return;
+
+  // Only children of the desk container should have their assigned to all
+  // desks state toggled to avoid interfering with special windows like
+  // always-on-top windows, floated windows, etc.
+  if (desks_util::IsActiveDeskContainer(active_window->parent())) {
+    const bool is_already_visible_on_all_desks =
+        desks_util::IsWindowVisibleOnAllWorkspaces(active_window);
+    if (!is_already_visible_on_all_desks) {
+      UMA_HISTOGRAM_ENUMERATION(
+          chromeos::kDesksAssignToAllDesksSourceHistogramName,
+          chromeos::DesksAssignToAllDesksSource::kKeyboardShortcut);
+    }
+
+    active_window->SetProperty(
+        aura::client::kWindowWorkspaceKey,
+        is_already_visible_on_all_desks
+            ? aura::client::kWindowWorkspaceUnassignedWorkspace
+            : aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
+  }
 }
 
 void ToggleCalendar() {
@@ -290,6 +427,19 @@ void ToggleResizeLockMenu() {
   aura::Window* active_window = window_util::GetActiveWindow();
   auto* frame_view = ash::NonClientFrameViewAsh::Get(active_window);
   frame_view->GetToggleResizeLockMenuCallback().Run();
+}
+
+void TogglePrivacyScreen() {
+  PrivacyScreenController* controller =
+      Shell::Get()->privacy_screen_controller();
+  controller->SetEnabled(
+      !controller->GetEnabled(),
+      PrivacyScreenController::kToggleUISurfaceKeyboardShortcut);
+}
+
+void ToggleUnifiedDesktop() {
+  Shell::Get()->display_manager()->SetUnifiedDesktopEnabled(
+      !Shell::Get()->display_manager()->unified_desktop_enabled());
 }
 
 void UnpinWindow() {
