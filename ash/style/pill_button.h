@@ -174,10 +174,12 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   ~PillButton() override;
 
   // views::LabelButton:
+  void AddedToWidget() override;
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
   void OnThemeChanged() override;
   gfx::Insets GetInsets() const override;
+  void UpdateBackgroundColor() override;
 
   // Sets the button's background color, text's color or icon's color. Note, do
   // this only when the button wants to have different colors from the default
@@ -192,9 +194,12 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   void SetUseDefaultLabelFont();
 
  private:
-  // Initialize the button focus ring and background according to the button
-  // type.
-  void InitFocusRingAndBackground();
+  // Initializes the button layout, focus ring and background according to the
+  // button type.
+  void Init();
+
+  void UpdateTextColor();
+  void UpdateIconColor();
 
   // Returns the spacing on the side where the icon locates. The value is set
   // smaller to make the spacing on two sides visually look the same.

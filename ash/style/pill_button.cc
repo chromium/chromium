@@ -167,11 +167,6 @@ PillButton::PillButton(PressedCallback callback,
       rounded_highlight_path_(rounded_highlight_path) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  if (type_ & kIconFollowing)
-    SetHorizontalAlignment(gfx::ALIGN_RIGHT);
-  else
-    SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  InitFocusRingAndBackground();
   label()->SetSubpixelRenderingEnabled(false);
   // TODO: Unify the font size, weight under ash/style as well.
   label()->SetFontList(views::Label::GetDefaultFontList().Derive(
@@ -190,6 +185,11 @@ PillButton::PillButton(PressedCallback callback,
 }
 
 PillButton::~PillButton() = default;
+
+void PillButton::AddedToWidget() {
+  // Only initialize the button after the button is added to a widget.
+  Init();
+}
 
 gfx::Size PillButton::CalculatePreferredSize() const {
   int button_width = label()->GetPreferredSize().width();
@@ -221,46 +221,16 @@ void PillButton::OnThemeChanged() {
 
   views::LabelButton::OnThemeChanged();
 
-  const ui::ColorProvider* color_provider = GetColorProvider();
-  auto default_text_icon_color_id = GetDefaultButtonTextIconColorId(type_);
-
-  DCHECK(default_text_icon_color_id);
-
-  SkColor enabled_icon_color = icon_color_.value_or(
-      color_provider->GetColor(*default_text_icon_color_id));
-  SkColor enabled_text_color = text_color_.value_or(
-      color_provider->GetColor(*default_text_icon_color_id));
-  if (background() && background_color_)
-    background()->SetNativeControlColor(background_color_.value());
-
-  // Override the colors to light mode if `use_light_colors_` is true when D/L
-  // is not enabled.
   if (use_light_colors_ && !features::IsDarkLightModeEnabled()) {
     ScopedLightModeAsDefault scoped_light_mode_as_default;
-    auto light_text_icon_color_id = GetDefaultButtonTextIconColorId(type_);
-    DCHECK(light_text_icon_color_id);
-    enabled_icon_color = icon_color_.value_or(
-        color_provider->GetColor(*light_text_icon_color_id));
-    enabled_text_color = text_color_.value_or(
-        color_provider->GetColor(*light_text_icon_color_id));
-    if (background() && background_color_)
-      background()->SetNativeControlColor(background_color_.value());
+    UpdateBackgroundColor();
+    UpdateTextColor();
+    UpdateIconColor();
+  } else {
+    UpdateBackgroundColor();
+    UpdateTextColor();
+    UpdateIconColor();
   }
-
-  if (IsIconPillButton(type_)) {
-    DCHECK(icon_);
-    SetImage(views::Button::STATE_NORMAL,
-             gfx::CreateVectorIcon(*icon_, kIconSize, enabled_icon_color));
-    SetImage(views::Button::STATE_DISABLED,
-             gfx::CreateVectorIcon(
-                 *icon_, kIconSize,
-                 AshColorProvider::GetDisabledColor(enabled_icon_color)));
-    SetImageLabelSpacing(kIconPillButtonImageLabelSpacingDp);
-  }
-
-  SetEnabledTextColors(enabled_text_color);
-  SetTextColor(views::Button::STATE_DISABLED,
-               AshColorProvider::GetDisabledColor(enabled_text_color));
 }
 
 gfx::Insets PillButton::GetInsets() const {
@@ -278,13 +248,31 @@ gfx::Insets PillButton::GetInsets() const {
                            horizontal_spacing_);
 }
 
+void PillButton::UpdateBackgroundColor() {
+  if (!background())
+    return;
+
+  SkColor background_color;
+  if (background_color_) {
+    background_color = background_color_.value();
+  } else {
+    DCHECK(GetWidget());
+
+    auto default_background_color_id = GetDefaultBackgroundColorId(type_);
+    DCHECK(default_background_color_id);
+    background_color =
+        GetColorProvider()->GetColor(default_background_color_id.value());
+  }
+
+  background()->SetNativeControlColor(background_color);
+}
+
 void PillButton::SetBackgroundColor(const SkColor background_color) {
   if (background_color_ == background_color)
     return;
 
   background_color_ = background_color;
-  DCHECK(background());
-  background()->SetNativeControlColor(background_color_.value());
+  UpdateBackgroundColor();
 }
 
 void PillButton::SetButtonTextColor(const SkColor text_color) {
@@ -292,7 +280,7 @@ void PillButton::SetButtonTextColor(const SkColor text_color) {
     return;
 
   text_color_ = text_color;
-  OnThemeChanged();
+  UpdateTextColor();
 }
 
 void PillButton::SetIconColor(const SkColor icon_color) {
@@ -300,7 +288,7 @@ void PillButton::SetIconColor(const SkColor icon_color) {
     return;
 
   icon_color_ = icon_color;
-  OnThemeChanged();
+  UpdateIconColor();
 }
 
 void PillButton::SetPillButtonType(Type type) {
@@ -308,6 +296,10 @@ void PillButton::SetPillButtonType(Type type) {
     return;
 
   type_ = type;
+
+  if (GetWidget())
+    Init();
+
   OnThemeChanged();
 }
 
@@ -315,7 +307,14 @@ void PillButton::SetUseDefaultLabelFont() {
   label()->SetFontList(views::Label::GetDefaultFontList());
 }
 
-void PillButton::InitFocusRingAndBackground() {
+void PillButton::Init() {
+  DCHECK(GetWidget());
+
+  if (type_ & kIconFollowing)
+    SetHorizontalAlignment(gfx::ALIGN_RIGHT);
+  else
+    SetHorizontalAlignment(gfx::ALIGN_CENTER);
+
   const int height = GetButtonHeight(type_);
 
   if (rounded_highlight_path_) {
@@ -332,10 +331,60 @@ void PillButton::InitFocusRingAndBackground() {
   if (!IsFloatingPillButton(type_)) {
     auto color_id = GetDefaultBackgroundColorId(type_);
     DCHECK(color_id);
-    SetBackground(views::CreateThemedRoundedRectBackground(color_id.value(),
-                                                           height / 2.f));
+    SkColor background_color = background_color_.value_or(
+        GetColorProvider()->GetColor(color_id.value()));
+    SetBackground(
+        views::CreateRoundedRectBackground(background_color, height / 2.f));
+  } else {
+    SetBackground(nullptr);
   }
   PreferredSizeChanged();
+}
+
+void PillButton::UpdateTextColor() {
+  SkColor text_color;
+  if (text_color_) {
+    text_color = text_color_.value();
+  } else {
+    DCHECK(GetWidget());
+
+    auto default_text_icon_color_id = GetDefaultButtonTextIconColorId(type_);
+    DCHECK(default_text_icon_color_id);
+
+    text_color =
+        GetColorProvider()->GetColor(default_text_icon_color_id.value());
+  }
+
+  SetEnabledTextColors(text_color);
+  SetTextColor(views::Button::STATE_DISABLED,
+               AshColorProvider::GetDisabledColor(text_color));
+}
+
+void PillButton::UpdateIconColor() {
+  if (!IsIconPillButton(type_))
+    return;
+
+  SkColor icon_color;
+  if (icon_color_) {
+    icon_color = icon_color_.value();
+  } else {
+    DCHECK(GetWidget());
+
+    auto default_text_icon_color_id = GetDefaultButtonTextIconColorId(type_);
+    DCHECK(default_text_icon_color_id);
+
+    icon_color =
+        GetColorProvider()->GetColor(default_text_icon_color_id.value());
+  }
+
+  DCHECK(icon_);
+  SetImage(views::Button::STATE_NORMAL,
+           gfx::CreateVectorIcon(*icon_, kIconSize, icon_color));
+  SetImage(
+      views::Button::STATE_DISABLED,
+      gfx::CreateVectorIcon(*icon_, kIconSize,
+                            AshColorProvider::GetDisabledColor(icon_color)));
+  SetImageLabelSpacing(kIconPillButtonImageLabelSpacingDp);
 }
 
 int PillButton::GetHorizontalSpacingWithIcon() const {
