@@ -337,8 +337,15 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
 };
 
 // Test that the intent picker bubble will pop out for ARC apps.
+//
+// TODO(https://crbug.com/1361934): Fix timeouts under MSAN.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_BubblePopOut DISABLED_BubblePopOut
+#else
+#define MAYBE_BubblePopOut BubblePopOut
+#endif
 IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
-                       BubblePopOut) {
+                       MAYBE_BubblePopOut) {
   GURL test_url(InScopeAppUrl());
   std::string app_name = "test_name";
   auto app_id = AddArcAppWithIntentFilter(app_name, test_url);
@@ -1068,8 +1075,15 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
 }
 
 // Test that remember by choice checkbox works for open ARC app option.
+//
+// TODO(https://crbug.com/1361934): Fix timeouts under MSAN.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_RememberOpenARCApp DISABLED_RememberOpenARCApp
+#else
+#define MAYBE_RememberOpenARCApp RememberOpenARCApp
+#endif
 IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
-                       RememberOpenARCApp) {
+                       MAYBE_RememberOpenARCApp) {
   GURL test_url(InScopeAppUrl());
   std::string app_name = "test_name";
   auto app_id = AddArcAppWithIntentFilter(app_name, test_url);
@@ -1153,8 +1167,15 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
 }
 
 // Test that remember by choice checkbox works for open PWA option.
+//
+// TODO(https://crbug.com/1361934): Fix timeouts under MSAN.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_RememberOpenPWA DISABLED_RememberOpenPWA
+#else
+#define MAYBE_RememberOpenPWA RememberOpenPWA
+#endif
 IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
-                       RememberOpenPWA) {
+                       MAYBE_RememberOpenPWA) {
   base::HistogramTester histogram_tester;
 
   GURL test_url(InScopeAppUrl());
@@ -1234,8 +1255,16 @@ class IntentPickerBubbleViewPrerenderingBrowserTestChromeOS
 // Simulates prerendering an app URL that the user has opted into always
 // launching an app window for. In this case, the prerender should be canceled
 // and the app shouldn't be opened.
+//
+// TODO(https://crbug.com/1361934): Fix timeouts under MSAN.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_AppLaunchURLCancelsPrerendering \
+  DISABLED_AppLaunchURLCancelsPrerendering
+#else
+#define MAYBE_AppLaunchURLCancelsPrerendering AppLaunchURLCancelsPrerendering
+#endif
 IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewPrerenderingBrowserTestChromeOS,
-                       AppLaunchURLCancelsPrerendering) {
+                       MAYBE_AppLaunchURLCancelsPrerendering) {
   // Prerendering is currently limited to same-origin pages so we need to start
   // it from an arbitrary page on the same origin, rather than about:blank.
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
