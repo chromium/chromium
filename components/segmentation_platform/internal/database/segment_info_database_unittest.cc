@@ -39,14 +39,17 @@ proto::SegmentInfo CreateSegment(SegmentId segment_id,
 
 }  // namespace
 
-class SegmentInfoDatabaseTest : public testing::Test {
+class SegmentInfoDatabaseTest : public testing::Test,
+                                public ::testing::WithParamInterface<bool> {
  public:
   SegmentInfoDatabaseTest() = default;
   ~SegmentInfoDatabaseTest() override = default;
 
   void OnGetAllSegments(
+      base::RepeatingClosure closure,
       std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> entries) {
     get_all_segment_result_.swap(entries);
+    std::move(closure).Run();
   }
 
   void OnGetSegment(absl::optional<proto::SegmentInfo> result) {
@@ -54,14 +57,17 @@ class SegmentInfoDatabaseTest : public testing::Test {
   }
 
  protected:
-  void SetUpDB() {
+  void SetUpDB(bool cache_enabled) {
     DCHECK(!db_);
     DCHECK(!segment_db_);
 
     auto db = std::make_unique<leveldb_proto::test::FakeDB<proto::SegmentInfo>>(
         &db_entries_);
     db_ = db.get();
-    segment_db_ = std::make_unique<SegmentInfoDatabase>(std::move(db));
+    auto segment_info_cache = std::make_unique<SegmentInfoCache>(cache_enabled);
+    segment_info_cache_ = segment_info_cache.get();
+    segment_db_ = std::make_unique<SegmentInfoDatabase>(
+        std::move(db), std::move(segment_info_cache));
   }
 
   void TearDown() override {
@@ -86,7 +92,9 @@ class SegmentInfoDatabaseTest : public testing::Test {
                                        ? absl::make_optional(prediction_result)
                                        : absl::nullopt,
                                    base::DoNothing());
-    db_->GetCallback(true);
+    if (segment_info_cache_->GetSegmentInfo(segment_id) == absl::nullopt) {
+      db_->GetCallback(true);
+    }
     db_->UpdateCallback(true);
   }
 
@@ -94,7 +102,9 @@ class SegmentInfoDatabaseTest : public testing::Test {
     segment_db_->GetSegmentInfo(
         segment_id, base::BindOnce(&SegmentInfoDatabaseTest::OnGetSegment,
                                    base::Unretained(this)));
-    db_->GetCallback(true);
+    if (segment_info_cache_->GetSegmentInfo(segment_id) == absl::nullopt) {
+      db_->GetCallback(true);
+    }
 
     EXPECT_EQ(segment_id, get_segment_result_->segment_id());
     EXPECT_EQ(result.has_value(), get_segment_result_->has_prediction_result());
@@ -104,6 +114,27 @@ class SegmentInfoDatabaseTest : public testing::Test {
     }
   }
 
+  void ExecuteAndVerifyGetSegmentInfoForSegments(
+      const base::flat_set<SegmentId>& segment_ids) {
+    base::RunLoop loop;
+    segment_db_->GetSegmentInfoForSegments(
+        segment_ids,
+        base::BindOnce(&SegmentInfoDatabaseTest::OnGetAllSegments,
+                       base::Unretained(this), loop.QuitClosure()));
+
+    for (SegmentId segment_id : segment_ids) {
+      if (segment_info_cache_->GetSegmentInfo(segment_id) == absl::nullopt) {
+        db_->LoadCallback(true);
+        break;
+      }
+    }
+    loop.Run();
+    EXPECT_EQ(segment_ids.size(), get_all_segment_result().size());
+    int index = 0;
+    for (SegmentId segment_id : segment_ids) {
+      EXPECT_EQ(segment_id, get_all_segment_result()[index++].first);
+    }
+  }
   const SegmentInfoDatabase::SegmentInfoList& get_all_segment_result() const {
     return *get_all_segment_result_;
   }
@@ -114,38 +145,42 @@ class SegmentInfoDatabaseTest : public testing::Test {
   std::map<std::string, proto::SegmentInfo> db_entries_;
   raw_ptr<leveldb_proto::test::FakeDB<proto::SegmentInfo>> db_{nullptr};
   std::unique_ptr<SegmentInfoDatabase> segment_db_;
+  raw_ptr<SegmentInfoCache> segment_info_cache_;
 };
 
-TEST_F(SegmentInfoDatabaseTest, Get) {
+INSTANTIATE_TEST_SUITE_P(IsCacheEnabled,
+                         SegmentInfoDatabaseTest,
+                         ::testing::Bool());
+
+TEST_P(SegmentInfoDatabaseTest, Get) {
   // Initialize DB with one entry.
   db_entries_.insert(
       std::make_pair(ToString(kSegmentId), CreateSegment(kSegmentId)));
-  SetUpDB();
+  SetUpDB(GetParam());
 
   segment_db_->Initialize(base::DoNothing());
   db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   VerifyDb({kSegmentId});
 
   // Get all segments.
-  segment_db_->GetAllSegmentInfo(base::BindOnce(
-      &SegmentInfoDatabaseTest::OnGetAllSegments, base::Unretained(this)));
-  db_->LoadCallback(true);
-  EXPECT_EQ(1u, get_all_segment_result().size());
+  ExecuteAndVerifyGetSegmentInfoForSegments({kSegmentId});
 
   // Get a single segment.
   segment_db_->GetSegmentInfo(
       kSegmentId, base::BindOnce(&SegmentInfoDatabaseTest::OnGetSegment,
                                  base::Unretained(this)));
-  db_->GetCallback(true);
+  if (segment_info_cache_->GetSegmentInfo(kSegmentId) == absl::nullopt) {
+    db_->GetCallback(true);
+  }
   EXPECT_TRUE(get_segment_result_.has_value());
   EXPECT_EQ(kSegmentId, get_segment_result_->segment_id());
 }
 
-TEST_F(SegmentInfoDatabaseTest, Update) {
+TEST_P(SegmentInfoDatabaseTest, Update) {
   // Initialize DB with one entry.
   db_entries_.insert(
       std::make_pair(ToString(kSegmentId), CreateSegment(kSegmentId)));
-  SetUpDB();
+  SetUpDB(GetParam());
 
   segment_db_->Initialize(base::DoNothing());
   db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
@@ -168,35 +203,18 @@ TEST_F(SegmentInfoDatabaseTest, Update) {
   VerifyDb({kSegmentId, kSegmentId2});
 
   // Verify GetSegmentInfoForSegments.
-  segment_db_->GetSegmentInfoForSegments(
-      {kSegmentId2}, base::BindOnce(&SegmentInfoDatabaseTest::OnGetAllSegments,
-                                    base::Unretained(this)));
-  db_->LoadCallback(true);
-  EXPECT_EQ(1u, get_all_segment_result().size());
-  EXPECT_EQ(kSegmentId2, get_all_segment_result()[0].first);
+  ExecuteAndVerifyGetSegmentInfoForSegments({kSegmentId2});
 
-  segment_db_->GetSegmentInfoForSegments(
-      {kSegmentId}, base::BindOnce(&SegmentInfoDatabaseTest::OnGetAllSegments,
-                                   base::Unretained(this)));
-  db_->LoadCallback(true);
-  EXPECT_EQ(1u, get_all_segment_result().size());
-  EXPECT_EQ(kSegmentId, get_all_segment_result()[0].first);
+  ExecuteAndVerifyGetSegmentInfoForSegments({kSegmentId});
 
-  segment_db_->GetSegmentInfoForSegments(
-      {kSegmentId, kSegmentId2},
-      base::BindOnce(&SegmentInfoDatabaseTest::OnGetAllSegments,
-                     base::Unretained(this)));
-  db_->LoadCallback(true);
-  EXPECT_EQ(2u, get_all_segment_result().size());
-  EXPECT_EQ(kSegmentId, get_all_segment_result()[0].first);
-  EXPECT_EQ(kSegmentId2, get_all_segment_result()[1].first);
+  ExecuteAndVerifyGetSegmentInfoForSegments({kSegmentId, kSegmentId2});
 }
 
-TEST_F(SegmentInfoDatabaseTest, WriteResult) {
+TEST_P(SegmentInfoDatabaseTest, WriteResult) {
   // Initialize DB with one entry.
   db_entries_.insert(
       std::make_pair(ToString(kSegmentId), CreateSegment(kSegmentId)));
-  SetUpDB();
+  SetUpDB(GetParam());
 
   segment_db_->Initialize(base::DoNothing());
   db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
@@ -214,13 +232,13 @@ TEST_F(SegmentInfoDatabaseTest, WriteResult) {
   VerifyResult(kSegmentId, absl::nullopt);
 }
 
-TEST_F(SegmentInfoDatabaseTest, WriteResultForTwoSegments) {
+TEST_P(SegmentInfoDatabaseTest, WriteResultForTwoSegments) {
   // Initialize DB with two entries.
   db_entries_.insert(
       std::make_pair(ToString(kSegmentId), CreateSegment(kSegmentId)));
   db_entries_.insert(
       std::make_pair(ToString(kSegmentId2), CreateSegment(kSegmentId2)));
-  SetUpDB();
+  SetUpDB(GetParam());
 
   segment_db_->Initialize(base::DoNothing());
   db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);

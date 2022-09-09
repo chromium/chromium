@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "components/leveldb_proto/public/proto_database.h"
+#include "components/segmentation_platform/internal/database/segment_info_cache.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -37,7 +38,8 @@ class SegmentInfoDatabase {
       base::OnceCallback<void(absl::optional<proto::SegmentInfo>)>;
   using SegmentInfoProtoDb = leveldb_proto::ProtoDatabase<proto::SegmentInfo>;
 
-  explicit SegmentInfoDatabase(std::unique_ptr<SegmentInfoProtoDb> database);
+  explicit SegmentInfoDatabase(std::unique_ptr<SegmentInfoProtoDb> database,
+                               std::unique_ptr<SegmentInfoCache> cache);
   virtual ~SegmentInfoDatabase();
 
   // Disallow copy/assign.
@@ -45,10 +47,6 @@ class SegmentInfoDatabase {
   SegmentInfoDatabase& operator=(const SegmentInfoDatabase&) = delete;
 
   virtual void Initialize(SuccessCallback callback);
-
-  // Convenient method to return combined info for all the segments in the
-  // database.
-  virtual void GetAllSegmentInfo(MultipleSegmentInfoCallback callback);
 
   // Called to get metadata for a given list of segments.
   virtual void GetSegmentInfoForSegments(
@@ -77,10 +75,12 @@ class SegmentInfoDatabase {
   void OnDatabaseInitialized(SuccessCallback callback,
                              leveldb_proto::Enums::InitStatus status);
   void OnMultipleSegmentInfoLoaded(
+      std::unique_ptr<SegmentInfoList> all_segments_in_cache,
       MultipleSegmentInfoCallback callback,
       bool success,
       std::unique_ptr<std::vector<proto::SegmentInfo>> all_infos);
-  void OnGetSegmentInfo(SegmentInfoCallback callback,
+  void OnGetSegmentInfo(SegmentId segment_id,
+                        SegmentInfoCallback callback,
                         bool success,
                         std::unique_ptr<proto::SegmentInfo> info);
   void OnGetSegmentInfoForUpdatingResults(
@@ -89,6 +89,8 @@ class SegmentInfoDatabase {
       absl::optional<proto::SegmentInfo> segment_info);
 
   std::unique_ptr<SegmentInfoProtoDb> database_;
+
+  std::unique_ptr<SegmentInfoCache> cache_;
 
   base::WeakPtrFactory<SegmentInfoDatabase> weak_ptr_factory_{this};
 };

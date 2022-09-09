@@ -18,6 +18,9 @@ class SegmentInfo;
 
 namespace {
 
+const SegmentId kSegmentId =
+    SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+
 class SegmentScoreProviderTest : public testing::Test {
  public:
   SegmentScoreProviderTest() = default;
@@ -26,7 +29,7 @@ class SegmentScoreProviderTest : public testing::Test {
   void SetUp() override {
     segment_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
     single_segment_manager_ =
-        SegmentScoreProvider::Create(segment_database_.get());
+        SegmentScoreProvider::Create(segment_database_.get(), {kSegmentId});
   }
 
   void InitializeMetadataForSegment(SegmentId segment_id,
@@ -65,10 +68,9 @@ class SegmentScoreProviderTest : public testing::Test {
 };
 
 TEST_F(SegmentScoreProviderTest, GetSegmentScore) {
-  SegmentId segment_id1 = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
   float mapping1[][2] = {{0.2, 1}, {0.5, 3}, {0.7, 4}};
-  InitializeMetadataForSegment(segment_id1, mapping1, 3);
-  segment_database_->AddPredictionResult(segment_id1, 0.6, base::Time::Now());
+  InitializeMetadataForSegment(kSegmentId, mapping1, 3);
+  segment_database_->AddPredictionResult(kSegmentId, 0.6, base::Time::Now());
 
   base::RunLoop loop;
   single_segment_manager_->Initialize(loop.QuitClosure());
@@ -77,11 +79,11 @@ TEST_F(SegmentScoreProviderTest, GetSegmentScore) {
   // Returns results from last session.
   SegmentScore expected;
   expected.score = 0.6;
-  GetSegmentScore(segment_id1, expected);
+  GetSegmentScore(kSegmentId, expected);
 
   // Updating the scores in the current session doesn't affect the get call.
-  segment_database_->AddPredictionResult(segment_id1, 0.8, base::Time::Now());
-  GetSegmentScore(segment_id1, expected);
+  segment_database_->AddPredictionResult(kSegmentId, 0.8, base::Time::Now());
+  GetSegmentScore(kSegmentId, expected);
 
   // Returns empty results when called on a segment with no scores.
   GetSegmentScore(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE,

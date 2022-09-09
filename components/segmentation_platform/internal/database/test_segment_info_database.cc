@@ -17,18 +17,12 @@
 namespace segmentation_platform::test {
 
 TestSegmentInfoDatabase::TestSegmentInfoDatabase()
-    : SegmentInfoDatabase(nullptr) {}
+    : SegmentInfoDatabase(nullptr, nullptr) {}
 
 TestSegmentInfoDatabase::~TestSegmentInfoDatabase() = default;
 
 void TestSegmentInfoDatabase::Initialize(SuccessCallback callback) {
   std::move(callback).Run(true);
-}
-
-void TestSegmentInfoDatabase::GetAllSegmentInfo(
-    MultipleSegmentInfoCallback callback) {
-  std::move(callback).Run(
-      std::make_unique<SegmentInfoDatabase::SegmentInfoList>(segment_infos_));
 }
 
 void TestSegmentInfoDatabase::GetSegmentInfoForSegments(

@@ -18,14 +18,16 @@ namespace {
 
 class SegmentScoreProviderImpl : public SegmentScoreProvider {
  public:
-  explicit SegmentScoreProviderImpl(SegmentInfoDatabase* segment_database)
-      : segment_database_(segment_database) {}
+  SegmentScoreProviderImpl(SegmentInfoDatabase* segment_database,
+                           const base::flat_set<proto::SegmentId> segment_ids)
+      : segment_database_(segment_database), segment_ids_(segment_ids) {}
 
   ~SegmentScoreProviderImpl() override = default;
 
   void Initialize(base::OnceClosure callback) override {
     // Read model results from DB.
-    segment_database_->GetAllSegmentInfo(
+    segment_database_->GetSegmentInfoForSegments(
+        segment_ids_,
         base::BindOnce(&SegmentScoreProviderImpl::ReadScoresFromLastSession,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
@@ -65,6 +67,9 @@ class SegmentScoreProviderImpl : public SegmentScoreProvider {
   // The database retrieving results.
   raw_ptr<SegmentInfoDatabase> segment_database_;
 
+  // List of all segment_ids to be fetched
+  const base::flat_set<proto::SegmentId> segment_ids_;
+
   // Model scores that are read from db on startup and used for serving the
   // clients in the current session.
   std::map<SegmentId, float> scores_last_session_;
@@ -84,8 +89,10 @@ SegmentScore::SegmentScore(const SegmentScore& other) = default;
 SegmentScore::~SegmentScore() = default;
 
 std::unique_ptr<SegmentScoreProvider> SegmentScoreProvider::Create(
-    SegmentInfoDatabase* segment_database) {
-  return std::make_unique<SegmentScoreProviderImpl>(segment_database);
+    SegmentInfoDatabase* segment_database,
+    base::flat_set<proto::SegmentId> segment_ids) {
+  return std::make_unique<SegmentScoreProviderImpl>(segment_database,
+                                                    segment_ids);
 }
 
 }  // namespace segmentation_platform

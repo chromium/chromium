@@ -94,11 +94,15 @@ void TrainingDataCollectorImpl::OnModelMetadataUpdated() {
 }
 
 void TrainingDataCollectorImpl::OnServiceInitialized() {
-  if (!SegmentationUkmHelper::GetInstance()->allowed_segment_ids().empty()) {
-    segment_info_database_->GetAllSegmentInfo(
-        base::BindOnce(&TrainingDataCollectorImpl::OnGetSegmentsInfoList,
-                       weak_ptr_factory_.GetWeakPtr()));
+  base::flat_set<SegmentId> segment_ids =
+      SegmentationUkmHelper::GetInstance()->allowed_segment_ids();
+  if (segment_ids.empty()) {
+    return;
   }
+  segment_info_database_->GetSegmentInfoForSegments(
+      segment_ids,
+      base::BindOnce(&TrainingDataCollectorImpl::OnGetSegmentsInfoList,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TrainingDataCollectorImpl::OnGetSegmentsInfoList(

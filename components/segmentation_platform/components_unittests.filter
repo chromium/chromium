@@ -29,6 +29,7 @@ SegmentationPlatformServiceImplMultiClientTest.*
 SegmentationPlatformServiceImplTest.*
 SegmentationResultPrefsTest.*
 SegmentationUkmHelperTest.*
+SegmentInfoCacheTest.*
 SegmentInfoDatabaseTest.*
 SegmentResultProviderTest.*
 SegmentScoreProviderTest.*

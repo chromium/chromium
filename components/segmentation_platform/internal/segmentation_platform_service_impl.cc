@@ -108,8 +108,8 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
       storage_service_->default_model_manager(),
       storage_service_->signal_storage_config(), &configs_, platform_options_,
       &segment_selectors_);
-  segment_score_provider_ =
-      SegmentScoreProvider::Create(storage_service_->segment_info_database());
+  segment_score_provider_ = SegmentScoreProvider::Create(
+      storage_service_->segment_info_database(), all_segment_ids_);
 
   // Kick off initialization of all databases. Internal operations will be
   // delayed until they are all complete.

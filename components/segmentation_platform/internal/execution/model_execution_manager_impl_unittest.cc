@@ -52,10 +52,6 @@ class MockSegmentInfoDatabase : public test::TestSegmentInfoDatabase {
  public:
   MOCK_METHOD(void, Initialize, (SuccessCallback callback), (override));
   MOCK_METHOD(void,
-              GetAllSegmentInfo,
-              (MultipleSegmentInfoCallback callback),
-              (override));
-  MOCK_METHOD(void,
               GetSegmentInfoForSegments,
               (const base::flat_set<SegmentId>& segment_ids,
                MultipleSegmentInfoCallback callback),

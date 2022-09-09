@@ -26,7 +26,6 @@ class TestSegmentInfoDatabase : public SegmentInfoDatabase {
 
   // SegmentInfoDatabase overrides.
   void Initialize(SuccessCallback callback) override;
-  void GetAllSegmentInfo(MultipleSegmentInfoCallback callback) override;
   void GetSegmentInfoForSegments(const base::flat_set<SegmentId>& segment_ids,
                                  MultipleSegmentInfoCallback callback) override;
   void GetSegmentInfo(SegmentId segment_id,

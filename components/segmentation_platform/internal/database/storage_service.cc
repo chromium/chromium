@@ -64,8 +64,9 @@ StorageService::StorageService(
     : default_model_manager_(
           std::make_unique<DefaultModelManager>(model_provider_factory,
                                                 all_segment_ids)),
-      segment_info_database_(
-          std::make_unique<SegmentInfoDatabase>(std::move(segment_db))),
+      segment_info_database_(std::make_unique<SegmentInfoDatabase>(
+          std::move(segment_db),
+          std::make_unique<SegmentInfoCache>(false /*cache_enabled*/))),
       signal_database_(
           std::make_unique<SignalDatabaseImpl>(std::move(signal_db), clock)),
       signal_storage_config_(std::make_unique<SignalStorageConfig>(
