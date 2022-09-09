@@ -47,6 +47,9 @@ try_.builder(
 try_.builder(
     name = "fuchsia-arm64-cast-receiver-rel",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    # TODO(crbug.com/1294938): Determine whether this should this have a
+    # swarming bot `builder` defined and thus have the following line:
+    # builderless = not settings.is_main,
     main_list_view = "try",
     # TODO(crbug.com/1294938): Uncomment the following when removing the
     # `tryjob` attribute from fuchsia-arm64-cast.
@@ -65,7 +68,9 @@ try_.builder(
     # TODO(crbug.com/1294938): Make this FUCHSIA_LTS_MILESTONE once the mirrored
     # bot is moved to infra/config/subprojects/chromium/ci/chromium.fuchsia.star.
     branch_selector = branches.MAIN,
-    builderless = not settings.is_main,
+    # TODO(crbug.com/1294938): Uncomment this when a swarming bot `builder` with
+    # this name is defined:
+    # builderless = not settings.is_main,
     main_list_view = "try",
     # TODO(crbug.com/1294938): Uncomment the following when removing the
     # `tryjob` attribute from fuchsia_arm64.
@@ -151,7 +156,9 @@ try_.builder(
 try_.builder(
     name = "fuchsia-x64-cast-receiver-rel",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    builderless = not settings.is_main,
+    # TODO(crbug.com/1294938): Uncomment this when a swarming bot `builder` with
+    # this name is defined:
+    # builderless = not settings.is_main,
     main_list_view = "try",
     # TODO(crbug.com/1294938): Uncomment the following when removing the
     # `tryjob` attribute from fuchsia-x64-cast.
@@ -170,7 +177,9 @@ try_.builder(
     # TODO(crbug.com/1294938): Make this FUCHSIA_LTS_MILESTONE once the mirrored
     # bot is moved to infra/config/subprojects/chromium/ci/chromium.fuchsia.star.
     branch_selector = branches.MAIN,
-    builderless = not settings.is_main,
+    # TODO(crbug.com/1294938): Uncomment this when a swarming bot `builder` with
+    # this name is defined:
+    # builderless = not settings.is_main,
     main_list_view = "try",
     # TODO(crbug.com/1294938): Uncomment the following when removing the
     # `tryjob` attribute from fuchsia_x64.
