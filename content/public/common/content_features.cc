@@ -910,8 +910,16 @@ const base::Feature kSignedHTTPExchangePingValidity{
 // Delays RenderProcessHost shutdown by a few seconds to allow the subframe's
 // process to be potentially reused. This aims to reduce process churn in
 // navigations where the source and destination share subframes.
-const base::Feature kSubframeShutdownDelay{"SubframeShutdownDelay",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+// This is enabled only on platforms where the behavior leads to performance
+// gains, i.e., those where process startup is expensive.
+const base::Feature kSubframeShutdownDelay {
+  "SubframeShutdownDelay",
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+};
 const base::FeatureParam<SubframeShutdownDelayType>::Option delay_types[] = {
     {SubframeShutdownDelayType::kConstant, "constant"},
     {SubframeShutdownDelayType::kConstantLong, "constant-long"},

@@ -9453,27 +9453,6 @@
             ]
         }
     ],
-    "SubframeShutdownDelay": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledConstant",
-                    "params": {
-                        "type": "constant"
-                    },
-                    "enable_features": [
-                        "SubframeShutdownDelay"
-                    ]
-                }
-            ]
-        }
-    ],
     "SubstringSetTreeForAttributeBuckets": [
         {
             "platforms": [
