@@ -77,17 +77,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.FileDeleteRetryCount" units="attempts"
-    expires_after="2023-02-19">
-  <owner>grt@chromium.org</owner>
-  <owner>davidbienvenu@chromium.org</owner>
-  <summary>
-    The number of retries needed to successfully delete a file from
-    GetDeleteFileCallback. 0 means it succeeded the first time, 9 means it never
-    succeeded.
-  </summary>
-</histogram>
-
 <histogram name="Windows.HasHighResolutionTimeTicks" enum="Boolean"
     expires_after="2023-12-19">
   <owner>brucedawson@chromium.org</owner>
@@ -314,18 +303,6 @@ chromium-metrics-reviews@google.com.
     minor or patch level exceeds the value that can fit in a 16-bit unsigned
     integer, then this histogram will report 0. Reported once, shortly after
     browser startup.
-  </summary>
-</histogram>
-
-<histogram name="Windows.PathRecursivelyDeleteRetryCount" units="attempts"
-    expires_after="2022-10-16">
-  <owner>grt@chromium.org</owner>
-  <owner>davidbienvenu@chromium.org</owner>
-  <summary>
-    The number of retries needed to fully delete a path recursively from
-    GetDeletePathRecursivelyCallback. 0 means it succeeded the first time, 9
-    means it never succeeded to fully delete the path and all of its contents
-    (if the path named a directory).
   </summary>
 </histogram>
 

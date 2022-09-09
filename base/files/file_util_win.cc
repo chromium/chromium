@@ -29,7 +29,6 @@
 #include "base/guid.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
@@ -313,12 +312,6 @@ bool DeleteFileOrSetLastError(const FilePath& path, bool recursive) {
 
 constexpr int kMaxDeleteAttempts = 9;
 
-void LogFileDeleteRetryCount(bool recursive, int attempt) {
-  UmaHistogramExactLinear(recursive ? "Windows.PathRecursivelyDeleteRetryCount"
-                                    : "Windows.FileDeleteRetryCount",
-                          attempt, kMaxDeleteAttempts);
-}
-
 void DeleteFileWithRetry(const FilePath& path,
                          bool recursive,
                          int attempt,
@@ -328,9 +321,6 @@ void DeleteFileWithRetry(const FilePath& path,
   static constexpr TimeDelta kDeleteFileRetryDelay = Milliseconds(250);
 
   if (DeleteFileOrSetLastError(path, recursive)) {
-    // Log how many times we had to retry the RetryDeleteFile operation before
-    // it succeeded. This will be from 0 to kMaxDeleteAttempts - 1.
-    LogFileDeleteRetryCount(recursive, attempt);
     // Consider introducing further retries until the item has been removed from
     // the filesystem and its name is ready for reuse; see the comments in
     // chrome/installer/mini_installer/delete_with_retry.cc for details.
@@ -342,8 +332,6 @@ void DeleteFileWithRetry(const FilePath& path,
   ++attempt;
   DCHECK_LE(attempt, kMaxDeleteAttempts);
   if (attempt == kMaxDeleteAttempts) {
-    // Log kMaxDeleteAttempts to indicate failure after exhausting all attempts.
-    LogFileDeleteRetryCount(recursive, attempt);
     if (!reply_callback.is_null())
       std::move(reply_callback).Run(false);
     return;
