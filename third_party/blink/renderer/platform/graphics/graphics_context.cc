@@ -97,7 +97,8 @@ Color DarkModeColor(GraphicsContext& context,
     // TODO(https://crbug.com/1351544): DarkModeFilter should operate on
     // SkColor4f, not SkColor.
     return Color::FromSkColor(context.GetDarkModeFilter()->InvertColorIfNeeded(
-        color.ToSkColorDeprecated(), auto_dark_mode.role));
+        color.ToSkColorDeprecated(), auto_dark_mode.role,
+        auto_dark_mode.contrast_color));
   }
   return color;
 }
@@ -118,7 +119,7 @@ class GraphicsContext::DarkModeFlags final {
                 const cc::PaintFlags& flags) {
     if (auto_dark_mode.enabled) {
       dark_mode_flags_ = context->GetDarkModeFilter()->ApplyToFlagsIfNeeded(
-          flags, auto_dark_mode.role);
+          flags, auto_dark_mode.role, auto_dark_mode.contrast_color);
       if (dark_mode_flags_) {
         flags_ = &dark_mode_flags_.value();
         return;

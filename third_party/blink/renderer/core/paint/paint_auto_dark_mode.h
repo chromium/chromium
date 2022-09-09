@@ -15,7 +15,9 @@ class LocalFrame;
 
 inline AutoDarkMode PaintAutoDarkMode(const ComputedStyle& style,
                                       DarkModeFilter::ElementRole role) {
-  return AutoDarkMode(role, style.ForceDark());
+  return AutoDarkMode(
+      role, style.ForceDark(),
+      style.VisitedDependentColor(GetCSSPropertyBackgroundColor()).Rgb());
 }
 
 inline AutoDarkMode PaintAutoDarkMode(DarkModeFilter::ElementRole role,

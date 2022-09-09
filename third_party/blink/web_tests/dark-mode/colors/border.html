@@ -1,0 +1,45 @@
+<!doctype html>
+<!-- crbug.com/1263545: light contrast input border should still be visible -->
+<div style="width: 150px; background: #fff; border: 1px solid #dfe1e5;">light contrast border</div>
+<br>
+
+<!-- crbug.com/1263545: buttons with a visible border should still have a visible border -->
+<div style="width: 150px; background: #f8f9fa; border: 1px solid #dadce0;">light contrast border 2</div>
+<br>
+
+<!-- crbug.com/1263545: buttons with no contrast border should still have no visible border -->
+<!-- TODO(penglin) -->
+<div style="width: 150px; background: #f8f9fa; border: 1px solid #f8f9fa;">no contrast border</div>
+<br>
+
+<!-- crbug.com/1057723: tables with contrasting borders should still have contrasting borders -->
+<table>
+    <tr>
+        <td style="border: 1px solid black; background: white;">a</td>
+        <td style="border: 1px solid black; background: white;">b</td>
+    </tr>
+</table>
+<br>
+<table style="border-collapse: collapse;">
+    <tr>
+        <td style="border: 1px solid black; background: white;">c</td>
+        <td style="border: 1px solid black; background: white;">d</td>
+    </tr>
+</table>
+<br>
+
+<!-- crbug.com/1271977: svg with contrasting strokes should still have contrasting strokes -->
+<!-- TODO(penglin) -->
+<svg width="50" height="50">
+    <rect x="5" y="5" width="40" height="40" fill="white" stroke="black" stroke-width="1"></rect>
+</svg>
+<br>
+
+<!-- crbug.com/992137: heavy contrast input border should still be visible -->
+<div style="width: 150px; background: #fff; border: 1px solid black;">heavy contrast border</div>
+<br>
+
+<!-- crbug.com/992137: borders with transparent backgrounds and contrasting borders should still have contrasting borders -->
+<div style="background: white;">
+    <div style="width: 150px; background: transparent; border: 1px solid black;">border</div>
+</div>

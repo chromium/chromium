@@ -115,6 +115,11 @@ struct AutoDarkMode {
   AutoDarkMode(DarkModeFilter::ElementRole role, bool enabled)
       : role(role), enabled(enabled) {}
 
+  AutoDarkMode(DarkModeFilter::ElementRole role,
+               bool enabled,
+               SkColor contrast_color)
+      : role(role), enabled(enabled), contrast_color(contrast_color) {}
+
   explicit AutoDarkMode(const ImageDrawOptions& draw_options)
       : role(DarkModeFilter::ElementRole::kBackground),
         enabled(draw_options.apply_dark_mode) {}
@@ -126,6 +131,7 @@ struct AutoDarkMode {
 
   DarkModeFilter::ElementRole role;
   bool enabled;
+  SkColor contrast_color = 0;
 };
 
 struct ImageAutoDarkMode : AutoDarkMode {

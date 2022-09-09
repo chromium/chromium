@@ -188,9 +188,9 @@ void ImagePainter::PaintReplaced(const PaintInfo& paint_info,
     context.SetStrokeStyle(kSolidStroke);
     context.SetStrokeColor(Color::kLightGray);
     context.SetFillColor(Color::kTransparent);
-    context.DrawRect(paint_rect, PaintAutoDarkMode(
-                                     layout_image_.StyleRef(),
-                                     DarkModeFilter::ElementRole::kBackground));
+    context.DrawRect(paint_rect,
+                     PaintAutoDarkMode(layout_image_.StyleRef(),
+                                       DarkModeFilter::ElementRole::kBorder));
     return;
   }
 

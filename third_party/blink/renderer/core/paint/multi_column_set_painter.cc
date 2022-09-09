@@ -68,8 +68,7 @@ void MultiColumnSetPainter::PaintColumnRules(
     BoxBorderPainter::DrawBoxSide(
         paint_info.context, pixel_snapped_rule_rect, box_side, rule_color,
         rule_style,
-        PaintAutoDarkMode(block_style,
-                          DarkModeFilter::ElementRole::kBackground));
+        PaintAutoDarkMode(block_style, DarkModeFilter::ElementRole::kBorder));
   }
 }
 

@@ -35,7 +35,7 @@ TEST(DarkModeFilterTest, ApplyDarkModeToColorsAndFlags) {
   cc::PaintFlags flags;
   flags.setColor(SK_ColorWHITE);
   auto flags_or_nullopt = filter.ApplyToFlagsIfNeeded(
-      flags, DarkModeFilter::ElementRole::kBackground);
+      flags, DarkModeFilter::ElementRole::kBackground, 0);
   ASSERT_NE(flags_or_nullopt, absl::nullopt);
   EXPECT_EQ(SK_ColorBLACK, flags_or_nullopt.value().getColor());
 }
@@ -76,9 +76,35 @@ TEST(DarkModeFilterTest, ApplyDarkModeToColorsAndFlagsWithInvertLightnessLAB) {
   cc::PaintFlags flags;
   flags.setColor(SK_ColorBLACK);
   auto flags_or_nullopt = filter.ApplyToFlagsIfNeeded(
-      flags, DarkModeFilter::ElementRole::kBackground);
+      flags, DarkModeFilter::ElementRole::kBackground, 0);
   ASSERT_NE(flags_or_nullopt, absl::nullopt);
   EXPECT_EQ(SK_ColorWHITE, flags_or_nullopt.value().getColor());
+}
+
+TEST(DarkModeFilterTest, ApplyDarkModeToColorsAndFlagsWithContrast) {
+  DarkModeSettings settings;
+  settings.mode = DarkModeInversionAlgorithm::kInvertLightnessLAB;
+  settings.background_brightness_threshold = 205;
+  DarkModeFilter filter(settings);
+
+  constexpr SkColor SK_Target_For_White = SkColorSetRGB(0x12, 0x12, 0x12);
+  constexpr SkColor SK_Target_For_Black = SkColorSetRGB(0x57, 0x57, 0x57);
+
+  EXPECT_EQ(
+      SK_Target_For_White,
+      filter.InvertColorIfNeeded(
+          SK_ColorWHITE, DarkModeFilter::ElementRole::kBorder, SK_ColorBLACK));
+  EXPECT_EQ(
+      SK_Target_For_Black,
+      filter.InvertColorIfNeeded(
+          SK_ColorBLACK, DarkModeFilter::ElementRole::kBorder, SK_ColorBLACK));
+
+  cc::PaintFlags flags;
+  flags.setColor(SK_ColorWHITE);
+  auto flags_or_nullopt = filter.ApplyToFlagsIfNeeded(
+      flags, DarkModeFilter::ElementRole::kBorder, SK_ColorBLACK);
+  ASSERT_NE(flags_or_nullopt, absl::nullopt);
+  EXPECT_EQ(SK_Target_For_White, flags_or_nullopt.value().getColor());
 }
 
 TEST(DarkModeFilterTest, InvertedColorCacheSize) {

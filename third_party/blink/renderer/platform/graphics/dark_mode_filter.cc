@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_color_classifier.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_color_filter.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_image_cache.h"
@@ -20,12 +21,14 @@
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
+#include "ui/gfx/color_utils.h"
 
 namespace blink {
 
 namespace {
 
 const size_t kMaxCacheSize = 1024u;
+constexpr SkColor SK_ColorDark = SkColorSetARGB(0xFF, 0x12, 0x12, 0x12);
 
 bool IsRasterSideDarkModeForImagesEnabled() {
   static bool enabled = base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -134,6 +137,32 @@ DarkModeImagePolicy DarkModeFilter::GetDarkModeImagePolicy() const {
   return immutable_.settings.image_policy;
 }
 
+// Heuristic to maintain contrast for borders (see: crbug.com/1263545)
+SkColor DarkModeFilter::AdjustDarkenColor(SkColor color,
+                                          DarkModeFilter::ElementRole role,
+                                          SkColor contrast_background) {
+  if (role != DarkModeFilter::ElementRole::kBorder)
+    return color;
+
+  if (contrast_background == 0)
+    contrast_background = SK_ColorDark;
+
+  if (color_utils::GetContrastRatio(color, contrast_background) <
+      color_utils::kMinimumReadableContrastRatio)
+    return color;
+
+  return AdjustDarkenColor(Color::FromSkColor(color).Dark().Rgb(), role,
+                           contrast_background);
+}
+
+SkColor DarkModeFilter::InvertColorIfNeeded(SkColor color,
+                                            ElementRole role,
+                                            SkColor contrast_background) {
+  return AdjustDarkenColor(
+      InvertColorIfNeeded(color, role), role,
+      InvertColorIfNeeded(contrast_background, ElementRole::kBackground));
+}
+
 SkColor DarkModeFilter::InvertColorIfNeeded(SkColor color, ElementRole role) {
   if (!immutable_.color_filter)
     return color;
@@ -210,20 +239,27 @@ sk_sp<SkColorFilter> DarkModeFilter::GetImageFilter() const {
 
 absl::optional<cc::PaintFlags> DarkModeFilter::ApplyToFlagsIfNeeded(
     const cc::PaintFlags& flags,
-    ElementRole role) {
-  if (!immutable_.color_filter || flags.HasShader() ||
-      !ShouldApplyToColor(flags.getColor(), role))
+    ElementRole role,
+    SkColor contrast_background) {
+  if (!immutable_.color_filter || flags.HasShader())
     return absl::nullopt;
 
   cc::PaintFlags dark_mode_flags = flags;
-  dark_mode_flags.setColor(inverted_color_cache_->GetInvertedColor(
-      immutable_.color_filter.get(), flags.getColor()));
+  SkColor flags_color = flags.getColor();
+  if (ShouldApplyToColor(flags_color, role)) {
+    flags_color = inverted_color_cache_->GetInvertedColor(
+        immutable_.color_filter.get(), flags_color);
+  }
+  dark_mode_flags.setColor(AdjustDarkenColor(
+      flags_color, role,
+      InvertColorIfNeeded(contrast_background, ElementRole::kBackground)));
 
   return absl::make_optional<cc::PaintFlags>(std::move(dark_mode_flags));
 }
 
 bool DarkModeFilter::ShouldApplyToColor(SkColor color, ElementRole role) {
   switch (role) {
+    case ElementRole::kBorder:
     case ElementRole::kSVG:
     case ElementRole::kForeground:
     case ElementRole::kListSymbol:
