@@ -38,15 +38,13 @@ export async function testKeepLatest(done: () => void) {
   // concurrency model `keepLatest`.
   const first = action('first-action');
 
-  // Starts consuming the generated actions, but without await, so we can start
-  // another one in parallel.
+  // Starts consuming the generated actions and can start another one in
+  // parallel.
   const {value} = await first.next();
   assertEquals(value!.type, 'step#0');
   assertEquals(value!.payload, 'first-action');
 
-  // A new action will cause the previous `first` to be cancelled, however since
-  // `first` is async, we won't see the exception here, it's just an uncaught
-  // promise error.
+  // A new call to the `action` will cause the previous `first` to be cancelled.
   const second = action('second-action');
   const secondValue = await second.next();
   assertEquals(secondValue.value!.type, 'step#0');
@@ -54,6 +52,8 @@ export async function testKeepLatest(done: () => void) {
   results.push(secondValue.value!);
 
   // At this point `first` should be cancelled by the keepLatest().
+  // However, the exception doesn't show up here, because the exception is in
+  // the actionsProducerSuccess() and isn't surfaced by the keepLast().
   const result = await first.next();
   assertEquals(result.value, undefined);
   assertEquals(result.done, true);
