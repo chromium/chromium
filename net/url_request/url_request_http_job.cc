@@ -40,6 +40,7 @@
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_delegate.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/privacy_mode.h"
@@ -258,6 +259,8 @@ void URLRequestHttpJob::Start() {
 
   request_info_.network_isolation_key =
       request_->isolation_info().network_isolation_key();
+  request_info_.network_anonymization_key =
+      request_->isolation_info().network_anonymization_key();
   request_info_.possibly_top_frame_origin =
       request_->isolation_info().top_frame_origin();
   request_info_.is_subframe_document_resource =
