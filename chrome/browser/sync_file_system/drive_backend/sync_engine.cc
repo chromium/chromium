@@ -112,14 +112,14 @@ class SyncEngine::WorkerObserver : public SyncWorkerInterface::Observer {
                  base::WeakPtr<SyncEngine> sync_engine)
       : ui_task_runner_(ui_task_runner),
         sync_engine_(sync_engine) {
-    sequence_checker_.DetachFromSequence();
+    DETACH_FROM_SEQUENCE(sequence_checker_);
   }
 
   WorkerObserver(const WorkerObserver&) = delete;
   WorkerObserver& operator=(const WorkerObserver&) = delete;
 
   ~WorkerObserver() override {
-    DCHECK(sequence_checker_.CalledOnValidSequence());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
 
   void OnPendingFileListUpdated(int item_count) override {
@@ -129,7 +129,7 @@ class SyncEngine::WorkerObserver : public SyncWorkerInterface::Observer {
       return;
     }
 
-    DCHECK(sequence_checker_.CalledOnValidSequence());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     ui_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&SyncEngine::OnPendingFileListUpdated,
                                   sync_engine_, item_count));
@@ -147,7 +147,7 @@ class SyncEngine::WorkerObserver : public SyncWorkerInterface::Observer {
       return;
     }
 
-    DCHECK(sequence_checker_.CalledOnValidSequence());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     ui_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&SyncEngine::OnFileStatusChanged, sync_engine_, url,
@@ -162,21 +162,19 @@ class SyncEngine::WorkerObserver : public SyncWorkerInterface::Observer {
       return;
     }
 
-    DCHECK(sequence_checker_.CalledOnValidSequence());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     ui_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&SyncEngine::UpdateServiceState, sync_engine_,
                                   state, description));
   }
 
-  void DetachFromSequence() {
-    sequence_checker_.DetachFromSequence();
-  }
+  void DetachFromSequence() { DETACH_FROM_SEQUENCE(sequence_checker_); }
 
  private:
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
   base::WeakPtr<SyncEngine> sync_engine_;
 
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 std::unique_ptr<SyncEngine> SyncEngine::CreateForBrowserContext(

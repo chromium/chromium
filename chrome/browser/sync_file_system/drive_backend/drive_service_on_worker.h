@@ -203,7 +203,7 @@ class DriveServiceOnWorker : public drive::DriveServiceInterface {
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> worker_task_runner_;
 
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace drive_backend

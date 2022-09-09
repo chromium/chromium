@@ -70,7 +70,7 @@ class DriveUploaderOnWorker : public drive::DriveUploaderInterface {
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> worker_task_runner_;
 
-  base::SequenceChecker sequece_checker_;
+  SEQUENCE_CHECKER(sequece_checker_);
 };
 
 }  // namespace drive_backend

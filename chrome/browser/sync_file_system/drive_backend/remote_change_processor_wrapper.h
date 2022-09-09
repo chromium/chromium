@@ -46,7 +46,7 @@ class RemoteChangeProcessorWrapper
 
  private:
   raw_ptr<RemoteChangeProcessor> remote_change_processor_;
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace drive_backend

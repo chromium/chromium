@@ -40,7 +40,7 @@ class DriveUploaderWrapper
 
  private:
   raw_ptr<drive::DriveUploaderInterface> drive_uploader_;
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace drive_backend

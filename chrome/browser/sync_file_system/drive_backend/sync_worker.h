@@ -182,7 +182,7 @@ class SyncWorker : public SyncWorkerInterface,
   std::unique_ptr<SyncEngineContext> context_;
   base::ObserverList<Observer>::Unchecked observers_;
 
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SyncWorker> weak_ptr_factory_{this};
 };
