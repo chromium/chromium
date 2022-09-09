@@ -18,8 +18,10 @@
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 #include "device/bluetooth/bluetooth_socket_thread.h"
+#include "device/bluetooth/floss/bluetooth_low_energy_scan_session_floss.h"
 #include "device/bluetooth/floss/floss_adapter_client.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
+#include "device/bluetooth/floss/floss_lescan_client.h"
 #include "device/bluetooth/floss/floss_manager_client.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -40,7 +42,8 @@ class BluetoothDeviceFloss;
 class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
     : public device::BluetoothAdapter,
       public floss::FlossManagerClient::Observer,
-      public floss::FlossAdapterClient::Observer {
+      public floss::FlossAdapterClient::Observer,
+      public ScannerClientObserver {
  public:
   static scoped_refptr<BluetoothAdapterFloss> CreateAdapter();
 
@@ -128,6 +131,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   void SetStandardChromeOSAdapterName() override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  // ScannerClientObserver overrides
+  void ScannerRegistered(device::BluetoothUUID uuid,
+                         uint8_t scanner_id,
+                         uint8_t status) override;
+  void ScanResultReceived(ScanResult scan_result) override;
+
  protected:
   // BluetoothAdapter:
   void RemovePairingDelegateInternal(
@@ -210,6 +219,17 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
       std::unique_ptr<device::BluetoothDiscoveryFilter> discovery_filter,
       DiscoverySessionResultCallback callback) override;
   void StopScan(DiscoverySessionResultCallback callback) override;
+
+  void OnRegisterScanner(
+      base::WeakPtr<BluetoothLowEnergyScanSessionFloss> scan_session,
+      DBusResult<device::BluetoothUUID> ret);
+  void OnStartScan(DBusResult<Void> ret);
+  void OnLowEnergyScanSessionDestroyed(const std::string& uuid_str);
+  void OnUnregisterScanner(uint8_t scanner_id, DBusResult<bool> ret);
+
+  std::map<device::BluetoothUUID,
+           base::WeakPtr<BluetoothLowEnergyScanSessionFloss>>
+      scanners_;
 
   base::OnceClosure init_callback_;
 

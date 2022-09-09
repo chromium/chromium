@@ -18,8 +18,10 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_socket_thread.h"
 #include "device/bluetooth/floss/bluetooth_device_floss.h"
+#include "device/bluetooth/floss/bluetooth_low_energy_scan_session_floss.h"
 #include "device/bluetooth/floss/bluetooth_socket_floss.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
+#include "device/bluetooth/floss/floss_lescan_client.h"
 #include "device/bluetooth/floss/floss_socket_manager.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 
@@ -119,6 +121,11 @@ void BluetoothAdapterFloss::Shutdown() {
 
   FlossDBusManager::Get()->GetManagerClient()->RemoveObserver(this);
   dbus_is_shutdown_ = true;
+
+  for (const auto& [key, scanner] : scanners_) {
+    scanner->OnRelease();
+  }
+  scanners_.clear();
 }
 
 void BluetoothAdapterFloss::AddAdapterObservers() {
@@ -128,6 +135,7 @@ void BluetoothAdapterFloss::AddAdapterObservers() {
   // FlossDBusManager::SwitchAdapter will control what the active adapter is
   // that we are controlling.
   FlossDBusManager::Get()->GetAdapterClient()->AddObserver(this);
+  FlossDBusManager::Get()->GetLEScanClient()->AddObserver(this);
 }
 
 void BluetoothAdapterFloss::RemoveAdapter() {
@@ -135,6 +143,10 @@ void BluetoothAdapterFloss::RemoveAdapter() {
     return;
 
   ClearAllDevices();
+
+  // Clean up observers
+  FlossDBusManager::Get()->GetAdapterClient()->RemoveObserver(this);
+  FlossDBusManager::Get()->GetLEScanClient()->RemoveObserver(this);
 
   // Remove adapter by switching to an invalid adapter (cleans up DBus clients)
   // and then emitting |AdapterPresentChanged| to observers.
@@ -848,8 +860,14 @@ std::unique_ptr<device::BluetoothLowEnergyScanSession>
 BluetoothAdapterFloss::StartLowEnergyScanSession(
     std::unique_ptr<device::BluetoothLowEnergyScanFilter> filter,
     base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  auto scan_session = std::make_unique<BluetoothLowEnergyScanSessionFloss>(
+      delegate,
+      base::BindOnce(&BluetoothAdapterFloss::OnLowEnergyScanSessionDestroyed,
+                     weak_ptr_factory_.GetWeakPtr()));
+  FlossDBusManager::Get()->GetLEScanClient()->RegisterScanner(base::BindOnce(
+      &BluetoothAdapterFloss::OnRegisterScanner, weak_ptr_factory_.GetWeakPtr(),
+      scan_session->GetWeakPtr()));
+  return scan_session;
 }
 
 device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
@@ -864,6 +882,39 @@ void BluetoothAdapterFloss::SetStandardChromeOSAdapterName() {
   NOTIMPLEMENTED();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+void BluetoothAdapterFloss::ScannerRegistered(device::BluetoothUUID uuid,
+                                              uint8_t scanner_id,
+                                              uint8_t status) {
+  BLUETOOTH_LOG(EVENT) << "Scanner registered with UUID = " << uuid
+                       << ", scanner id = " << static_cast<int>(scanner_id)
+                       << ", status = " << static_cast<int>(status);
+
+  if (!base::Contains(scanners_, uuid)) {
+    VLOG(1) << "ScannerRegistered but no longer exists " << uuid;
+    return;
+  }
+
+  scanners_[uuid]->OnActivate(scanner_id);
+
+  FlossDBusManager::Get()->GetLEScanClient()->StartScan(
+      base::BindOnce(&BluetoothAdapterFloss::OnStartScan,
+                     weak_ptr_factory_.GetWeakPtr()),
+      scanner_id, ScanSettings{}, std::vector<ScanFilter>());
+
+  return;
+}
+
+void BluetoothAdapterFloss::ScanResultReceived(ScanResult scan_result) {
+  device::BluetoothDevice* device = new BluetoothDeviceFloss(
+      this, FlossDeviceId({.address = scan_result.address, .name = ""}),
+      ui_task_runner_, socket_thread_);
+
+  // All scanners share scan results
+  for (const auto& [key, scanner] : scanners_) {
+    scanner->OnDeviceFound(device);
+  }
+}
 
 void BluetoothAdapterFloss::RemovePairingDelegateInternal(
     device::BluetoothDevice::PairingDelegate* pairing_delegate) {
@@ -932,6 +983,52 @@ void BluetoothAdapterFloss::StopScan(DiscoverySessionResultCallback callback) {
   FlossDBusManager::Get()->GetAdapterClient()->CancelDiscovery(
       base::BindOnce(&BluetoothAdapterFloss::OnStopDiscovery,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void BluetoothAdapterFloss::OnRegisterScanner(
+    base::WeakPtr<BluetoothLowEnergyScanSessionFloss> scan_session,
+    DBusResult<device::BluetoothUUID> ret) {
+  if (!ret.has_value()) {
+    BLUETOOTH_LOG(ERROR) << "Failed RegisterScanner: " << ret.error();
+    return;
+  }
+  scan_session->OnRegistered(ret.value());
+  scanners_[ret.value()] = scan_session;
+  BLUETOOTH_LOG(EVENT) << "Registering scanner " << ret.value();
+}
+
+void BluetoothAdapterFloss::OnStartScan(DBusResult<Void> ret) {
+  BLUETOOTH_LOG(EVENT) << "OnStartScan success = " << ret.has_value();
+  if (!ret.has_value()) {
+    BLUETOOTH_LOG(ERROR) << "Failed StartScan: " << ret.error();
+  }
+}
+
+void BluetoothAdapterFloss::OnLowEnergyScanSessionDestroyed(
+    const std::string& uuid_str) {
+  BLUETOOTH_LOG(EVENT) << __func__ << ": UUID = " << uuid_str;
+
+  device::BluetoothUUID uuid = device::BluetoothUUID(uuid_str);
+  if (!base::Contains(scanners_, uuid)) {
+    return;
+  }
+
+  uint8_t scanner_id = scanners_[uuid]->GetScannerId();
+  scanners_.erase(uuid);
+
+  FlossDBusManager::Get()->GetLEScanClient()->UnregisterScanner(
+      base::BindOnce(&BluetoothAdapterFloss::OnUnregisterScanner,
+                     weak_ptr_factory_.GetWeakPtr(), scanner_id),
+      scanner_id);
+}
+
+void BluetoothAdapterFloss::OnUnregisterScanner(uint8_t scanner_id,
+                                                DBusResult<bool> ret) {
+  BLUETOOTH_LOG(EVENT) << __func__ << ": scanner_id = " << scanner_id;
+
+  if (!ret.has_value()) {
+    BLUETOOTH_LOG(ERROR) << "Failed UnregisterScanner: " << ret.error();
+  }
 }
 
 }  // namespace floss

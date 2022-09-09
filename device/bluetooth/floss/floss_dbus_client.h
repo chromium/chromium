@@ -28,6 +28,7 @@ extern DEVICE_BLUETOOTH_EXPORT int kDBusTimeoutMs;
 extern DEVICE_BLUETOOTH_EXPORT const char kAdapterService[];
 extern DEVICE_BLUETOOTH_EXPORT const char kManagerService[];
 extern DEVICE_BLUETOOTH_EXPORT const char kAdapterInterface[];
+extern DEVICE_BLUETOOTH_EXPORT const char kGattInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kManagerInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kManagerObject[];
 extern DEVICE_BLUETOOTH_EXPORT const char kAdapterObjectFormat[];
@@ -57,6 +58,12 @@ extern DEVICE_BLUETOOTH_EXPORT const char kConnectAllEnabledProfiles[];
 extern DEVICE_BLUETOOTH_EXPORT const char kDisconnectAllEnabledProfiles[];
 extern DEVICE_BLUETOOTH_EXPORT const char kRegisterCallback[];
 extern DEVICE_BLUETOOTH_EXPORT const char kRegisterConnectionCallback[];
+extern DEVICE_BLUETOOTH_EXPORT const char kRegisterScanner[];
+extern DEVICE_BLUETOOTH_EXPORT const char kUnregisterScanner[];
+extern DEVICE_BLUETOOTH_EXPORT const char kRegisterScannerCallback[];
+extern DEVICE_BLUETOOTH_EXPORT const char kUnregisterScannerCallback[];
+extern DEVICE_BLUETOOTH_EXPORT const char kStartScan[];
+extern DEVICE_BLUETOOTH_EXPORT const char kStopScan[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCallbackInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kConnectionCallbackInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kSetPairingConfirmation[];
@@ -77,6 +84,9 @@ extern DEVICE_BLUETOOTH_EXPORT const char kOnSspRequest[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnBondStateChanged[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnDeviceConnected[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnDeviceDisconnected[];
+
+extern DEVICE_BLUETOOTH_EXPORT const char kOnScannerRegistered[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnScanResult[];
 }  // namespace adapter
 
 namespace manager {
@@ -312,6 +322,11 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
     WriteDBusParam(&variant, data);
     writer->CloseContainer(&variant);
   }
+
+  // Generalized write for std::vector.
+  template <typename T>
+  static void WriteDBusParam(dbus::MessageWriter* writer,
+                             const std::vector<T>& value);
 
   // Optional container type needs to be explicitly listed here.
   template <typename T>

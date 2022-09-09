@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "dbus/message.h"
 #include "device/bluetooth/floss/floss_adapter_client.h"
+#include "device/bluetooth/floss/floss_lescan_client.h"
 
 namespace floss {
 
@@ -19,6 +20,7 @@ int kDBusTimeoutMs = 2000;
 const char kAdapterService[] = "org.chromium.bluetooth";
 const char kManagerService[] = "org.chromium.bluetooth.Manager";
 const char kAdapterInterface[] = "org.chromium.bluetooth.Bluetooth";
+const char kGattInterface[] = "org.chromium.bluetooth.BluetoothGatt";
 const char kManagerInterface[] = "org.chromium.bluetooth.Manager";
 const char kManagerObject[] = "/org/chromium/bluetooth/Manager";
 const char kAdapterObjectFormat[] = "/org/chromium/bluetooth/hci%d/adapter";
@@ -46,6 +48,12 @@ const char kConnectAllEnabledProfiles[] = "ConnectAllEnabledProfiles";
 const char kDisconnectAllEnabledProfiles[] = "DisconnectAllEnabledProfiles";
 const char kRegisterCallback[] = "RegisterCallback";
 const char kRegisterConnectionCallback[] = "RegisterConnectionCallback";
+const char kRegisterScanner[] = "RegisterScanner";
+const char kUnregisterScanner[] = "UnregisterScanner";
+const char kRegisterScannerCallback[] = "RegisterScannerCallback";
+const char kUnregisterScannerCallback[] = "UnregisterScannerCallback";
+const char kStartScan[] = "StartScan";
+const char kStopScan[] = "StopScan";
 const char kSetPairingConfirmation[] = "SetPairingConfirmation";
 const char kSetPin[] = "SetPin";
 const char kSetPasskey[] = "SetPasskey";
@@ -69,6 +77,9 @@ const char kOnSspRequest[] = "OnSspRequest";
 const char kOnBondStateChanged[] = "OnBondStateChanged";
 const char kOnDeviceConnected[] = "OnDeviceConnected";
 const char kOnDeviceDisconnected[] = "OnDeviceDisconnected";
+
+const char kOnScannerRegistered[] = "OnScannerRegistered";
+const char kOnScanResult[] = "OnScanResult";
 }  // namespace adapter
 
 namespace manager {
@@ -492,6 +503,12 @@ template <>
 void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
                                      const uint32_t& data) {
   writer->AppendUint32(data);
+}
+
+template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const uint8_t& data) {
+  writer->AppendByte(data);
 }
 
 template void FlossDBusClient::WriteDBusParam<uint32_t>(
