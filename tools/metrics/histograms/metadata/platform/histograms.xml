@@ -651,6 +651,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Hibernate.LoginToResumeReady" units="ms"
+    expires_after="2023-09-10">
+  <owner>asavery@chromium.org</owner>
+  <owner>evgreen@chromium.org</owner>
+  <summary>
+    The time between when hiberman receives the request to resume, and when
+    resume is ready to launch. This represents an approximation of how long the
+    user had to wait for a hibernate resume to occur. Recorded when resume is
+    ready, and reported when hiberman flushes metrics at the completion of
+    resume.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Hibernate.MemoryAndSwapAvailable" units="MiB"
     expires_after="2023-08-04">
   <owner>asavery@chromium.org</owner>
