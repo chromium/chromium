@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <limits>
 
+#include <string.h>
 #include <unistd.h>
 
 #include "base/debug/buffered_dwarf_reader.h"
