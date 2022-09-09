@@ -59,7 +59,7 @@ class CRWWKHTTPCookieStoreTest : public PlatformTest {
     return data_store;
   }
 
-  // Adds |cookie| to the CRWWKHTTPCookieStore.
+  // Adds `cookie` to the CRWWKHTTPCookieStore.
   [[nodiscard]] bool SetCookie(NSHTTPCookie* cookie) {
     __block bool cookie_set = false;
     [crw_cookie_store_ setCookie:cookie
@@ -71,7 +71,7 @@ class CRWWKHTTPCookieStoreTest : public PlatformTest {
     });
   }
 
-  // Deletes |cookie| from the CRWWKHTTPCookieStore.
+  // Deletes `cookie` from the CRWWKHTTPCookieStore.
   [[nodiscard]] bool DeleteCookie(NSHTTPCookie* cookie) {
     __block bool cookie_deleted = false;
     [crw_cookie_store_ deleteCookie:cookie
@@ -126,7 +126,7 @@ TEST_F(CRWWKHTTPCookieStoreTest, GetCookiesCachedCorrectly) {
   EXPECT_OCMOCK_VERIFY(mock_http_cookie_store_);
 }
 
-// Tests that |setCookie:| works correctly and invalidates the cache.
+// Tests that `setCookie:` works correctly and invalidates the cache.
 TEST_F(CRWWKHTTPCookieStoreTest, SetCookie) {
   // Verify that internal cookie store setCookie method was called.
   OCMExpect([mock_http_cookie_store_ setCookie:test_cookie_1_
@@ -158,7 +158,7 @@ TEST_F(CRWWKHTTPCookieStoreTest, SetCookie) {
   EXPECT_OCMOCK_VERIFY(mock_http_cookie_store_);
 }
 
-// Tests that |deleteCookie:| works correctly and invalidates the cache.
+// Tests that `deleteCookie:` works correctly and invalidates the cache.
 TEST_F(CRWWKHTTPCookieStoreTest, DeleteCookie) {
   EXPECT_TRUE(SetCookie(test_cookie_1_));
   EXPECT_TRUE(SetCookie(test_cookie_2_));

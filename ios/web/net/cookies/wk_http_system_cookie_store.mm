@@ -23,7 +23,7 @@
 namespace web {
 namespace {
 
-// Posts a task to run |block| on IO Thread. This is needed because
+// Posts a task to run `block` on IO Thread. This is needed because
 // WKHTTPCookieStore executes callbacks on the main thread, while
 // SystemCookieStore should operate on IO thread.
 void RunBlockOnIOThread(ProceduralBlock block) {
@@ -31,11 +31,11 @@ void RunBlockOnIOThread(ProceduralBlock block) {
   web::GetIOThreadTaskRunner({})->PostTask(FROM_HERE, base::BindOnce(block));
 }
 
-// Returns wether |cookie| should be included for queries about |url|.
-// To include |cookie| for |url|, all these conditions need to be met:
+// Returns wether `cookie` should be included for queries about `url`.
+// To include `cookie` for `url`, all these conditions need to be met:
 //   1- If the cookie is secure the URL needs to be secure.
-//   2- |url| domain need to match the cookie domain.
-//   3- |cookie| url path need to be on the path of the given |url|.
+//   2- `url` domain need to match the cookie domain.
+//   3- `cookie` url path need to be on the path of the given `url`.
 bool ShouldIncludeForRequestUrl(NSHTTPCookie* cookie, const GURL& url) {
   // CanonicalCookies already implements cookie selection for URLs, so instead
   // of rewriting the checks here, the function converts the NSHTTPCookie to
@@ -51,7 +51,7 @@ bool ShouldIncludeForRequestUrl(NSHTTPCookie* cookie, const GURL& url) {
   net::CookieAccessSemantics cookie_access_semantics =
       net::CookieAccessSemantics::LEGACY;
 
-  // Using |UNKNOWN| semantics to allow the experiment to switch between non
+  // Using `UNKNOWN` semantics to allow the experiment to switch between non
   // legacy (where cookies that don't have a specific same-site access policy
   // and not secure will not be included), and legacy mode.
   cookie_access_semantics = net::CookieAccessSemantics::UNKNOWN;
