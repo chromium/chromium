@@ -73,6 +73,8 @@ void ExpectInitialSearchResults(FindTextTestClient& client, int count) {
 
   EXPECT_CALL(client,
               NotifyNumberOfFindResultsChanged(1, /*final_result=*/false));
+  EXPECT_CALL(client,
+              NotifySelectedFindResultChanged(0, /*final_result=*/false));
   for (int i = 2; i < count + 1; ++i) {
     EXPECT_CALL(client,
                 NotifyNumberOfFindResultsChanged(i, /*final_result=*/false));
@@ -182,7 +184,6 @@ TEST_F(FindTextTest, SelectFindResult) {
 
   ExpectInitialSearchResults(client, 4);
   engine->StartFind("world", /*case_sensitive=*/true);
-  ASSERT_TRUE(engine->SelectFindResult(/*forward=*/true));
 
   EXPECT_CALL(client, NotifyNumberOfFindResultsChanged(_, _)).Times(0);
   EXPECT_CALL(client,
@@ -212,9 +213,9 @@ TEST_F(FindTextTest, SelectFindResultAndSwitchToTwoUpView) {
     InSequence sequence;
 
     EXPECT_CALL(client,
-                NotifySelectedFindResultChanged(0, /*final_result=*/true));
-    EXPECT_CALL(client,
                 NotifySelectedFindResultChanged(1, /*final_result=*/true));
+    EXPECT_CALL(client,
+                NotifySelectedFindResultChanged(2, /*final_result=*/true));
   }
   ASSERT_TRUE(engine->SelectFindResult(/*forward=*/true));
   ASSERT_TRUE(engine->SelectFindResult(/*forward=*/true));
@@ -235,7 +236,7 @@ TEST_F(FindTextTest, SelectFindResultAndSwitchToTwoUpView) {
     InSequence sequence;
 
     EXPECT_CALL(client,
-                NotifySelectedFindResultChanged(1, /*final_result=*/true));
+                NotifySelectedFindResultChanged(2, /*final_result=*/true));
   }
   ASSERT_TRUE(engine->SelectFindResult(/*forward=*/true));
 }
