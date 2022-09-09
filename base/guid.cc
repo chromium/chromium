@@ -12,6 +12,7 @@
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/pass_key.h"
 
 namespace base {
 
@@ -84,10 +85,31 @@ std::string RandomDataToGUIDString(const uint64_t bytes[2]) {
 
 // static
 GUID GUID::GenerateRandomV4() {
-  uint64_t sixteen_bytes[2];
+  uint8_t sixteen_bytes[kGuidV4InputLength];
   // Use base::RandBytes instead of crypto::RandBytes, because crypto calls the
   // base version directly, and to prevent the dependency from base/ to crypto/.
   RandBytes(&sixteen_bytes, sizeof(sixteen_bytes));
+  return FormatRandomDataAsV4Impl(sixteen_bytes);
+}
+
+// static
+GUID GUID::FormatRandomDataAsV4(
+    base::span<const uint8_t, 16> input,
+    base::PassKey<content::FileSystemAccessManagerImpl> /*pass_key*/) {
+  return FormatRandomDataAsV4Impl(input);
+}
+
+// static
+GUID GUID::FormatRandomDataAsV4ForTesting(base::span<const uint8_t, 16> input) {
+  return FormatRandomDataAsV4Impl(input);
+}
+
+// static
+GUID GUID::FormatRandomDataAsV4Impl(base::span<const uint8_t, 16> input) {
+  DCHECK_EQ(input.size_bytes(), kGuidV4InputLength);
+
+  uint64_t sixteen_bytes[2];
+  memcpy(&sixteen_bytes, input.data(), sizeof(sixteen_bytes));
 
   // Set the GUID to version 4 as described in RFC 4122, section 4.4.
   // The format of GUID version 4 must be xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx,
