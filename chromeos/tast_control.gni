@@ -174,9 +174,6 @@ tast_disabled_tests_from_chrome_all = [
   # b/235279574
   "wmp.DragAndDropWindow",
 
-  # http://b/238600197
-  "crostini.FilesAppWatch.buster_stable",
-
   # http://crbug.com/1335213
   "arc.WindowState.clamshell",
 
@@ -219,12 +216,6 @@ tast_disabled_tests_from_chrome_all = [
 
   # https://crbug.com/1352475
   "a11y.LiveCaption",
-
-  # https://crbug.com/1359911
-  "crostini.AppEmacs.clamshell_stable",
-  "crostini.AppGeditFilesharing.clamshell_stable",
-  "crostini.AppGeditUnshareFolder.clamshell_stable",
-  "crostini.ResizeInstallation.stable",
 
   # https://crbug.com/1352525
   "apps.ContentPreview",
