@@ -6,7 +6,6 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
-#include "base/atomic_ref_count.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
@@ -244,6 +243,8 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
   ash::smb_client::SmbFsShare* smb_share = nullptr;
   base::FilePath smbfs_mount_point_path;
   base::FilePath smbfs_mount_name;
+  auto* vmgr = file_manager::VolumeManager::Get(profile_);
+  base::WeakPtr<file_manager::Volume> volume;
 
   // Allow MyFiles directory and subdirs.
   bool allowed_path = false;
@@ -353,6 +354,17 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
     allowed_path = true;
     request.set_storage_location(vm_tools::seneschal::SharePathRequest::SMBFS);
     request.set_smbfs_mount_name(smbfs_mount_name.value());
+  } else if (vmgr && (volume = vmgr->FindVolumeFromPath(path)) &&
+             volume->type() == file_manager::VOLUME_TYPE_GUEST_OS &&
+             AppendRelativePath(volume->mount_path(), path, &relative_path)) {
+    allowed_path = true;
+    // Allow GuestOs files and subdirs.
+    base::FilePath mount_name;
+    fuse_fs_root_path.AppendRelativePath(volume->mount_path(), &mount_name);
+    request.set_storage_location(
+        vm_tools::seneschal::SharePathRequest::GUEST_OS_FILES);
+    request.set_owner_id(crostini::CryptohomeIdForProfile(profile_));
+    request.set_guest_os_mount_name(mount_name.value());
   }
 
   if (!allowed_path) {

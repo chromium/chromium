@@ -272,6 +272,7 @@ CrostiniImpl.VALID_ROOT_TYPES_FOR_SHARE = new Map([
   [VolumeManagerCommon.RootType.SHARED_DRIVE, 'TeamDrive'],
   [VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME, 'SharedWithMe'],
   [VolumeManagerCommon.RootType.CROSTINI, 'Crostini'],
+  [VolumeManagerCommon.RootType.GUEST_OS, 'GuestOs'],
   [VolumeManagerCommon.RootType.ARCHIVE, 'Archive'],
   [VolumeManagerCommon.RootType.SMB, 'SMB'],
 ]);

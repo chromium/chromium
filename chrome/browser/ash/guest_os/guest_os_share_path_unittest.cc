@@ -15,13 +15,11 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
-#include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
-#include "chrome/browser/ash/file_system_provider/service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
@@ -49,7 +47,6 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
-#include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -616,6 +613,21 @@ TEST_F(GuestOsSharePathTest, SuccessSystemFonts) {
           &GuestOsSharePathTest::SharePathCallback, base::Unretained(this),
           "vm-running", Persist::NO, SeneschalClientCalled::YES,
           &vm_tools::seneschal::SharePathRequest::FONTS, "", Success::YES, ""));
+  run_loop()->Run();
+}
+
+TEST_F(GuestOsSharePathTest, SuccessGuestOs) {
+  SetUpVolume();
+  file_manager::VolumeManager::Get(profile())->AddSftpGuestOsVolume(
+      "name", base::FilePath("/media/fuse/whatever"), base::FilePath("/meh"),
+      guest_os::VmType::UNKNOWN);
+  guest_os_share_path_->SharePath(
+      "vm-running", base::FilePath("/media/fuse/whatever"), PERSIST_NO,
+      base::BindOnce(&GuestOsSharePathTest::SharePathCallback,
+                     base::Unretained(this), "vm-running", Persist::NO,
+                     SeneschalClientCalled::YES,
+                     &vm_tools::seneschal::SharePathRequest::GUEST_OS_FILES, "",
+                     Success::YES, ""));
   run_loop()->Run();
 }
 
