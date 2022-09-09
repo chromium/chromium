@@ -197,7 +197,6 @@
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
-#include "chrome/browser/plugins/plugin_finder.h"
 #include "content/public/browser/plugin_service.h"
 #endif
 
@@ -1172,11 +1171,8 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-  auto* plugin_service = content::PluginService::GetInstance();
-  plugin_service->SetFilter(ChromePluginServiceFilter::GetInstance());
-
-  // Triggers initialization of the singleton instance on UI thread.
-  PluginFinder::GetInstance();
+  content::PluginService::GetInstance()->SetFilter(
+      ChromePluginServiceFilter::GetInstance());
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 #if !BUILDFLAG(IS_ANDROID)

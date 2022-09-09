@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest, GetPluginInfoForNaCl) {
   EXPECT_EQ(PluginStatus::kPlayImportantContent, plugin_info->status);
   EXPECT_EQ(nacl::kNaClPluginMimeType, plugin_info->actual_mime_type);
 
-  // Group ID and name synthesized by `PluginFinder::GetPluginMetadata()`.
+  // Group ID and name synthesized by `PluginInfoHostImpl`.
   EXPECT_EQ(kPluginPath.BaseName().AsUTF8Unsafe(),
             plugin_info->group_identifier);
   EXPECT_EQ(kPluginName, plugin_info->group_name);
@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest, GetPluginInfoForPnacl) {
   EXPECT_EQ(PluginStatus::kPlayImportantContent, plugin_info->status);
   EXPECT_EQ(nacl::kPnaclPluginMimeType, plugin_info->actual_mime_type);
 
-  // Group ID and name synthesized by `PluginFinder::GetPluginMetadata()`.
+  // Group ID and name synthesized by `PluginInfoHostImpl`.
   EXPECT_EQ(kPluginPath.BaseName().AsUTF8Unsafe(),
             plugin_info->group_identifier);
   EXPECT_EQ(kPluginName, plugin_info->group_name);
@@ -276,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest,
   EXPECT_EQ(PluginStatus::kAllowed, plugin_info->status);
   EXPECT_EQ(kPDFMimeType, plugin_info->actual_mime_type);
 
-  // Group ID and name defined by `IDR_PLUGIN_DB_JSON`.
+  // Group ID and name defined by `PluginInfoHostImpl`.
   EXPECT_EQ(kGroupId, plugin_info->group_identifier);
   EXPECT_EQ(kPluginName, plugin_info->group_name);
 
@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest,
   EXPECT_EQ(PluginStatus::kAllowed, plugin_info->status);
   EXPECT_EQ(pdf::kInternalPluginMimeType, plugin_info->actual_mime_type);
 
-  // Group ID and name defined by `IDR_PLUGIN_DB_JSON`.
+  // Group ID and name defined by `PluginInfoHostImpl`.
   EXPECT_EQ(kGroupId, plugin_info->group_identifier);
   EXPECT_EQ(kPluginName, plugin_info->group_name);
 

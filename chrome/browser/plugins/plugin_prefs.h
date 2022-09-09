@@ -29,12 +29,6 @@ struct WebPluginInfo;
 // Except where otherwise noted, it can be used on every thread.
 class PluginPrefs : public RefcountedKeyedService {
  public:
-  enum PolicyStatus {
-    NO_POLICY = 0,  // Neither enabled or disabled by policy.
-    POLICY_ENABLED,
-    POLICY_DISABLED,
-  };
-
   // Returns the instance associated with |profile|, creating it if necessary.
   static scoped_refptr<PluginPrefs> GetForProfile(Profile* profile);
 
@@ -53,10 +47,6 @@ class PluginPrefs : public RefcountedKeyedService {
   // plugin groups as defined by the user's preferences.
   // This method should only be called on the UI thread.
   void SetPrefs(PrefService* prefs);
-
-  // Returns whether there is a policy enabling or disabling plugins of the
-  // given name.
-  PolicyStatus PolicyStatusForPlugin(const std::u16string& name) const;
 
   // Returns whether the plugin is enabled or not.
   bool IsPluginEnabled(const content::WebPluginInfo& plugin) const;

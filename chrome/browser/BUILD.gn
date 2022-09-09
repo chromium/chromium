@@ -7408,16 +7408,8 @@ static_library("browser") {
       "plugins/chrome_plugin_service_filter.h",
       "plugins/hung_plugin_infobar_delegate.cc",
       "plugins/hung_plugin_infobar_delegate.h",
-      "plugins/plugin_finder.cc",
-      "plugins/plugin_finder.h",
       "plugins/plugin_info_host_impl.cc",
       "plugins/plugin_info_host_impl.h",
-      "plugins/plugin_infobar_delegates.cc",
-      "plugins/plugin_infobar_delegates.h",
-      "plugins/plugin_installer.cc",
-      "plugins/plugin_installer.h",
-      "plugins/plugin_installer_observer.cc",
-      "plugins/plugin_installer_observer.h",
       "plugins/plugin_metadata.cc",
       "plugins/plugin_metadata.h",
       "plugins/plugin_observer.cc",
@@ -7940,11 +7932,6 @@ grit("resources") {
     "//url/mojom:url_mojom_gurl_js",
     "//url/mojom:url_mojom_origin_js",
   ]
-
-  # TODO(crbug.com/1064647): Remove PluginFinder completely.
-  if (enable_plugins) {
-    inputs = [ "resources/plugin_metadata.json" ]
-  }
 
   if (enable_webui_certificate_viewer) {
     deps += [ "//chrome/browser/resources/certificate_viewer:build_ts" ]

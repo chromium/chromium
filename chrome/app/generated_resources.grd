@@ -6032,9 +6032,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_PLUGIN_HIDE" desc="The tooltip for hiding a blocked plugin, displayed in the click to play UI.">
         Hide this plugin
       </message>
-      <message name="IDS_PLUGIN_UPDATE" desc="The link for updating an outdated plugin.">
-        Update plugin
-      </message>
       <if expr="is_macosx">
         <message name="IDS_PLUGIN_BLOCKED" desc="The placeholder text for a blocked plugin.">
           Control-click to run <ph name="PLUGIN_NAME">$1<ex>Flash</ex></ph>
@@ -6055,9 +6052,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </if>
       <message name="IDS_PLUGIN_NOT_AUTHORIZED" desc="The placeholder text for a plugin that requires user permission to run.">
         <ph name="PLUGIN_NAME">$1<ex>Java</ex></ph> needs your permission to run
-      </message>
-      <message name="IDS_PLUGIN_UPDATING" desc="The placeholder text when updating an out-of-date plugin.">
-        When <ph name="PLUGIN_NAME">$1<ex>Realplayer</ex></ph> finishes updating, reload the page to activate it
       </message>
       <message name="IDS_PLUGIN_DISABLED" desc="The placeholder text for a disabled plugin.">
         <ph name="PLUGIN_NAME">$1<ex>Flash</ex></ph> disabled.
@@ -9988,12 +9982,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         No, this device only
       </message>
 
-      <message name="IDS_PLUGIN_OUTDATED_PROMPT" desc="Infobar message when an outdated plugin was disabled">
-        <ph name="PLUGIN_NAME">$1<ex>Flash</ex></ph> was blocked because it is out of date
-      </message>
-      <message name="IDS_PLUGIN_ENABLE_TEMPORARILY" desc="Infobar button to run a blocked outdated plugin">
-        Run this time
-      </message>
       <message name="IDS_PLUGIN_CRASHED_PROMPT" desc="Infobar message to notify about a crashed plugin">
        <ph name="PLUGIN_NAME">$1<ex>Flash</ex></ph> has crashed
       </message>

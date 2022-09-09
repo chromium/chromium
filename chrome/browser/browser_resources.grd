@@ -112,9 +112,6 @@
       <if expr="enable_pdf">
         <include name="IDR_PDF_MANIFEST" file="resources\pdf\manifest.json" type="BINDATA" />
       </if>
-      <if expr="enable_plugins">
-        <include name="IDR_PLUGIN_DB_JSON" file="resources\plugin_metadata.json" type="BINDATA" />
-      </if>
       <if expr="chromeos_ash">
         <include name="IDR_URL_MOJOM_LITE_JS" file="${root_gen_dir}\url\mojom\url.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       </if>

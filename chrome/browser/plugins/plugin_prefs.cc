@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
@@ -17,8 +17,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/plugins/plugin_finder.h"
-#include "chrome/browser/plugins/plugin_metadata.h"
 #include "chrome/browser/plugins/plugin_prefs_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
@@ -61,32 +59,8 @@ scoped_refptr<PluginPrefs> PluginPrefs::GetForTestingProfile(
           .get());
 }
 
-PluginPrefs::PolicyStatus PluginPrefs::PolicyStatusForPlugin(
-    const std::u16string& name) const {
-  // Special handling for PDF based on its specific policy.
-  if (IsPDFViewerPlugin(name) && always_open_pdf_externally_)
-    return POLICY_DISABLED;
-
-  return NO_POLICY;
-}
-
 bool PluginPrefs::IsPluginEnabled(const content::WebPluginInfo& plugin) const {
-  std::unique_ptr<PluginMetadata> plugin_metadata(
-      PluginFinder::GetInstance()->GetPluginMetadata(plugin));
-  std::u16string group_name = plugin_metadata->name();
-
-  // Check if the plugin or its group is enabled by policy.
-  PolicyStatus plugin_status = PolicyStatusForPlugin(plugin.name);
-  PolicyStatus group_status = PolicyStatusForPlugin(group_name);
-  if (plugin_status == POLICY_ENABLED || group_status == POLICY_ENABLED)
-    return true;
-
-  // Check if the plugin or its group is disabled by policy.
-  if (plugin_status == POLICY_DISABLED || group_status == POLICY_DISABLED)
-    return false;
-
-  // Default to enabled.
-  return true;
+  return !IsPDFViewerPlugin(plugin.name) || !always_open_pdf_externally_;
 }
 
 void PluginPrefs::UpdatePdfPolicy(const std::string& pref_name) {

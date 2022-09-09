@@ -37,12 +37,6 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/error_utils.h"
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "chrome/browser/plugins/plugin_finder.h"
-#include "chrome/browser/plugins/plugin_installer.h"
-#include "content/public/browser/plugin_service.h"
-#endif
-
 using content::BrowserThread;
 
 namespace Clear = extensions::api::content_settings::ContentSetting::Clear;
