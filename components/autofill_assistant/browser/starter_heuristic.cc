@@ -32,7 +32,7 @@ StarterHeuristic::StarterHeuristic() = default;
 StarterHeuristic::~StarterHeuristic() = default;
 
 void StarterHeuristic::InitFromHeuristicConfigs(
-    const std::vector<std::unique_ptr<StarterHeuristicConfig>>& configs,
+    const std::vector<const StarterHeuristicConfig*>& configs,
     StarterPlatformDelegate* platform_delegate,
     content::BrowserContext* browser_context) {
   url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
@@ -41,7 +41,7 @@ void StarterHeuristic::InitFromHeuristicConfigs(
   url_matcher::URLMatcherConditionSet::Vector condition_sets;
   base::flat_map<base::MatcherStringPattern::ID, HeuristicConfigEntry> mapping;
   base::MatcherStringPattern::ID next_condition_set_id = 0;
-  for (const auto& config : configs) {
+  for (const StarterHeuristicConfig* config : configs) {
     for (const auto& condition_set : config->GetConditionSetsForClientState(
              platform_delegate, browser_context)) {
       if (!condition_set.is_dict()) {

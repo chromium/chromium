@@ -27,6 +27,7 @@
 #include "components/autofill_assistant/browser/service/service_request_sender_impl.h"
 #include "components/autofill_assistant/browser/service/service_request_sender_local_impl.h"
 #include "components/autofill_assistant/browser/service/simple_url_loader_factory.h"
+#include "components/autofill_assistant/browser/starter_heuristic_configs/finch_configs.h"
 #include "components/autofill_assistant/browser/starter_heuristic_configs/finch_starter_heuristic_config.h"
 #include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/browser/trigger_scripts/dynamic_trigger_conditions.h"
@@ -58,20 +59,6 @@ constexpr size_t kMaxUserDenylistedCacheSize = 100;
 constexpr base::TimeDelta kMaxFailedTriggerScriptsCacheDuration =
     base::Hours(1);
 constexpr base::TimeDelta kMaxUserDenylistedCacheDuration = base::Hours(1);
-
-// String parameter containing the JSON-encoded parameter dictionary.
-const char kUrlHeuristicParametersKey[] = "json_parameters";
-// The 5 URL heuristics features that are defined for future use cases.
-constexpr base::FeatureParam<std::string> kUrlHeuristicParams1{
-    &features::kAutofillAssistantUrlHeuristic1, kUrlHeuristicParametersKey, ""};
-constexpr base::FeatureParam<std::string> kUrlHeuristicParams2{
-    &features::kAutofillAssistantUrlHeuristic2, kUrlHeuristicParametersKey, ""};
-constexpr base::FeatureParam<std::string> kUrlHeuristicParams3{
-    &features::kAutofillAssistantUrlHeuristic3, kUrlHeuristicParametersKey, ""};
-constexpr base::FeatureParam<std::string> kUrlHeuristicParams4{
-    &features::kAutofillAssistantUrlHeuristic4, kUrlHeuristicParametersKey, ""};
-constexpr base::FeatureParam<std::string> kUrlHeuristicParams5{
-    &features::kAutofillAssistantUrlHeuristic5, kUrlHeuristicParametersKey, ""};
 
 // Creates a service request sender that communicates with a remote endpoint.
 std::unique_ptr<ServiceRequestSender> CreateRpcTriggerScriptRequestSender(
@@ -173,18 +160,12 @@ Starter::Starter(content::WebContents* web_contents,
       runtime_manager_(runtime_manager),
       starter_heuristic_(base::MakeRefCounted<StarterHeuristic>()),
       tick_clock_(tick_clock) {
-  heuristic_configs_.emplace_back(
-      std::make_unique<LegacyStarterHeuristicConfig>());
-  heuristic_configs_.emplace_back(
-      std::make_unique<FinchStarterHeuristicConfig>(kUrlHeuristicParams1));
-  heuristic_configs_.emplace_back(
-      std::make_unique<FinchStarterHeuristicConfig>(kUrlHeuristicParams2));
-  heuristic_configs_.emplace_back(
-      std::make_unique<FinchStarterHeuristicConfig>(kUrlHeuristicParams3));
-  heuristic_configs_.emplace_back(
-      std::make_unique<FinchStarterHeuristicConfig>(kUrlHeuristicParams4));
-  heuristic_configs_.emplace_back(
-      std::make_unique<FinchStarterHeuristicConfig>(kUrlHeuristicParams5));
+  heuristic_configs_.emplace_back(finch_configs::GetOrCreateLegacyConfig());
+  heuristic_configs_.emplace_back(finch_configs::GetOrCreateUrlHeuristic1());
+  heuristic_configs_.emplace_back(finch_configs::GetOrCreateUrlHeuristic2());
+  heuristic_configs_.emplace_back(finch_configs::GetOrCreateUrlHeuristic3());
+  heuristic_configs_.emplace_back(finch_configs::GetOrCreateUrlHeuristic4());
+  heuristic_configs_.emplace_back(finch_configs::GetOrCreateUrlHeuristic5());
 }
 
 Starter::~Starter() = default;

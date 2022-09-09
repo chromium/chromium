@@ -200,7 +200,7 @@ class Starter : public content::WebContentsObserver,
   // from the command line and intended only for debugging and testing.
   ImplicitTriggeringDebugParametersProto implicit_triggering_debug_parameters_;
 
-  std::vector<std::unique_ptr<StarterHeuristicConfig>> heuristic_configs_;
+  std::vector<const StarterHeuristicConfig*> heuristic_configs_;
   bool waiting_for_onboarding_ = false;
   bool waiting_for_deeplink_navigation_ = false;
   bool is_custom_tab_ = false;

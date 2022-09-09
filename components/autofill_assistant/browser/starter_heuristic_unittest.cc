@@ -50,8 +50,8 @@ class StarterHeuristicTest : public testing::Test {
          {features::kAutofillAssistantInCCTTriggering, {}}},
         /* disabled_features = */ {});
 
-    std::vector<std::unique_ptr<StarterHeuristicConfig>> configs;
-    configs.emplace_back(std::make_unique<LegacyStarterHeuristicConfig>());
+    LegacyStarterHeuristicConfig legacy_config;
+    std::vector<const StarterHeuristicConfig*> configs{&legacy_config};
     starter_heuristic.InitFromHeuristicConfigs(
         configs, &fake_platform_delegate_, &context_);
   }
@@ -295,14 +295,13 @@ TEST_F(StarterHeuristicTest, MultipleUrlHeuristicTrials) {
        {features::kAutofillAssistantInCCTTriggering, {}}},
       /* disabled_features = */ {});
 
-  std::vector<std::unique_ptr<StarterHeuristicConfig>> configs;
-  configs.emplace_back(std::make_unique<LegacyStarterHeuristicConfig>());
-  configs.emplace_back(std::make_unique<FinchStarterHeuristicConfig>(
-      base::FeatureParam<std::string>{
-          &features::kAutofillAssistantUrlHeuristic1, "json_parameters", ""}));
-  configs.emplace_back(std::make_unique<FinchStarterHeuristicConfig>(
-      base::FeatureParam<std::string>{
-          &features::kAutofillAssistantUrlHeuristic2, "json_parameters", ""}));
+  LegacyStarterHeuristicConfig legacy_config;
+  FinchStarterHeuristicConfig finch_config_1{base::FeatureParam<std::string>{
+      &features::kAutofillAssistantUrlHeuristic1, "json_parameters", ""}};
+  FinchStarterHeuristicConfig finch_config_2{base::FeatureParam<std::string>{
+      &features::kAutofillAssistantUrlHeuristic2, "json_parameters", ""}};
+  std::vector<const StarterHeuristicConfig*> configs{
+      &legacy_config, &finch_config_1, &finch_config_2};
   auto starter_heuristic = base::MakeRefCounted<StarterHeuristic>();
   fake_platform_delegate_.is_custom_tab_ = true;
   fake_platform_delegate_.is_web_layer_ = false;

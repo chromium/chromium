@@ -36,7 +36,7 @@ class StarterHeuristic : public base::RefCountedThreadSafe<StarterHeuristic> {
   // (Re-)initializes this starter heuristic from the given set of configs and
   // the current client state.
   void InitFromHeuristicConfigs(
-      const std::vector<std::unique_ptr<StarterHeuristicConfig>>& configs,
+      const std::vector<const StarterHeuristicConfig*>& configs,
       StarterPlatformDelegate* platform_delegate,
       content::BrowserContext* browser_context);
 
