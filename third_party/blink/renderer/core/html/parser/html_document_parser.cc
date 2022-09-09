@@ -84,6 +84,7 @@ namespace blink {
 // the final page. This is the default value to use, if no Finch-provided
 // value exists.
 constexpr int kDefaultMaxTokenizationBudget = 250;
+constexpr int kInfiniteTokenizationBudget = 1e7;
 constexpr int kNumYieldsWithDefaultBudget = 2;
 
 class EndIfDelayedForbiddenScope;
@@ -245,11 +246,12 @@ class HTMLDocumentParserState
     kUnenforceable = 3,
   };
 
-  explicit HTMLDocumentParserState(ParserSynchronizationPolicy mode)
+  explicit HTMLDocumentParserState(ParserSynchronizationPolicy mode, int budget)
       : state_(DeferredParserState::kNotScheduled),
         meta_csp_state_(MetaCSPTokenState::kNotSeen),
         mode_(mode),
-        preload_processing_mode_(GetPreloadProcessingMode()) {}
+        preload_processing_mode_(GetPreloadProcessingMode()),
+        budget_(budget) {}
 
   void Trace(Visitor* v) const {}
 
@@ -258,6 +260,8 @@ class HTMLDocumentParserState
     state_ = state;
   }
   DeferredParserState GetState() const { return state_; }
+
+  int GetDefaultBudget() const { return budget_; }
 
   bool IsScheduled() const { return state_ >= DeferredParserState::kScheduled; }
   const char* GetStateAsString() const {
@@ -373,6 +377,7 @@ class HTMLDocumentParserState
   unsigned should_complete_ = 0;
   unsigned times_yielded_ = 0;
   unsigned pump_session_nesting_level_ = 0;
+  int budget_;
 
   // Set to non-zero if Document::Finish has been called and we're operating
   // asynchronously.
@@ -535,8 +540,15 @@ HTMLDocumentParser::HTMLDocumentParser(Document& document,
       loading_task_runner_(sync_policy == kForceSynchronousParsing
                                ? nullptr
                                : document.GetTaskRunner(TaskType::kNetworking)),
-      task_runner_state_(
-          MakeGarbageCollected<HTMLDocumentParserState>(sync_policy)),
+      task_runner_state_(MakeGarbageCollected<HTMLDocumentParserState>(
+          sync_policy,
+          // Parser yields in chrome-extension:// or file:// documents can
+          // cause UI flickering. To mitigate, use_infinite_budget will
+          // parse all the way up to the mojo limit.
+          (document.Url().ProtocolIs("chrome-extension") ||
+           document.Url().IsLocalFile())
+              ? kInfiniteTokenizationBudget
+              : kDefaultMaxTokenizationBudget)),
       scheduler_(sync_policy == kAllowDeferredParsing
                      ? Thread::Current()->Scheduler()
                      : nullptr) {
@@ -818,8 +830,8 @@ bool HTMLDocumentParser::PumpTokenizer() {
   // a larger rendering lifecycle that processes the remainder of the page.
   int budget =
       (task_runner_state_->TimesYielded() <= kNumYieldsWithDefaultBudget)
-          ? kDefaultMaxTokenizationBudget
-          : 1e7;
+          ? task_runner_state_->GetDefaultBudget()
+          : kInfiniteTokenizationBudget;
 
   base::TimeDelta timed_budget;
   if (TimedParserBudgetEnabled())
@@ -842,7 +854,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
       // Just executed a parser-blocking script in the body. We'd probably like
       // to yield at some point soon, especially if we're in "extended budget"
       // mode. So reduce the budget back to at most the default.
-      budget = std::min(budget, kDefaultMaxTokenizationBudget);
+      budget = std::min(budget, task_runner_state_->GetDefaultBudget());
       if (TimedParserBudgetEnabled()) {
         timed_budget = std::min(timed_budget, chunk_parsing_timer.Elapsed() +
                                                   GetDefaultTimedBudget());
