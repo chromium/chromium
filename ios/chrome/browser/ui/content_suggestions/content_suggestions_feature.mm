@@ -21,6 +21,11 @@ const base::Feature kSingleNtp{"SingleNTP", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kContentSuggestionsUIModuleRefresh{
     "ContentSuggestionsUIModuleRefresh", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const char kContentSuggestionsUIModuleRefreshMinimizeSpacingParam[] =
+    "minimize_spacing";
+const char kContentSuggestionsUIModuleRefreshRemoveHeadersParam[] =
+    "remove_headers";
+
 // Feature disabled by default.
 const base::Feature kTrendingQueriesModule{"TrendingQueriesModule",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
@@ -46,6 +51,18 @@ bool IsTrendingQueriesModuleEnabled() {
   return base::FeatureList::IsEnabled(kContentSuggestionsUIModuleRefresh) &&
          base::FeatureList::IsEnabled(kTrendingQueriesModule) &&
          !ShouldNeverShowTrendingQueriesModule();
+}
+
+bool ShouldMinimizeSpacingForModuleRefresh() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kContentSuggestionsUIModuleRefresh,
+      kContentSuggestionsUIModuleRefreshMinimizeSpacingParam, false);
+}
+
+bool ShouldRemoveHeadersForModuleRefresh() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kContentSuggestionsUIModuleRefresh,
+      kContentSuggestionsUIModuleRefreshRemoveHeadersParam, false);
 }
 
 bool ShouldHideShortcutsForTrendingQueries() {

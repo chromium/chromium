@@ -18,7 +18,7 @@
 @implementation ContentSuggestionsReturnToRecentTabItem
 
 - (CGFloat)cellHeightForWidth:(CGFloat)width {
-  return kReturnToRecentTabSize.height;
+  return ReturnToRecentTabHeight();
 }
 
 @end
