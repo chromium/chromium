@@ -68,6 +68,10 @@ TEST(ZlibTest, InflateCover) {
   cover_fast();
 }
 
+TEST(ZlibTest, InflateCVE) {
+  cover_CVE_2022_37434();
+}
+
 TEST(ZlibTest, DeflateStored) {
   const int no_compression = 0;
   const zlib_internal::WrapperType type = zlib_internal::WrapperType::GZIP;
