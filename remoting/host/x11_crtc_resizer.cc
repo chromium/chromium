@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,9 @@ X11CrtcResizer::CrtcInfo::CrtcInfo(
     x11::RandR::Rotation rotation,
     const std::vector<x11::RandR::Output>& outputs)
     : crtc(crtc),
+      old_x(x),
       x(x),
+      old_y(y),
       y(y),
       width(width),
       height(height),
@@ -44,6 +46,10 @@ X11CrtcResizer::CrtcInfo& X11CrtcResizer::CrtcInfo::operator=(
 X11CrtcResizer::CrtcInfo& X11CrtcResizer::CrtcInfo::operator=(
     X11CrtcResizer::CrtcInfo&&) = default;
 X11CrtcResizer::CrtcInfo::~CrtcInfo() = default;
+
+bool X11CrtcResizer::CrtcInfo::OffsetsChanged() const {
+  return old_x != x || old_y != y;
+}
 
 X11CrtcResizer::X11CrtcResizer(
     x11::RandR::GetScreenResourcesCurrentReply* resources,
@@ -98,6 +104,8 @@ void X11CrtcResizer::DisableCrtc(x11::RandR::Crtc crtc) {
 void X11CrtcResizer::UpdateActiveCrtcs(x11::RandR::Crtc crtc,
                                        x11::RandR::Mode mode,
                                        const webrtc::DesktopSize& new_size) {
+  resized_crtc_ = crtc;
+
   // Find |crtc| in |active_crtcs_| and adjust its mode and size.
   auto iter = base::ranges::find(active_crtcs_, crtc, &CrtcInfo::crtc);
 
@@ -106,15 +114,20 @@ void X11CrtcResizer::UpdateActiveCrtcs(x11::RandR::Crtc crtc,
   DCHECK(iter != active_crtcs_.end());
 
   iter->mode = mode;
+  RelayoutCrtcs(*iter, new_size);
+  NormalizeCrtcs();
+}
 
-  if (new_size.width() > iter->width) {
+void X11CrtcResizer::RelayoutCrtcs(CrtcInfo& crtc_to_resize,
+                                   const webrtc::DesktopSize& new_size) {
+  if (new_size.width() > crtc_to_resize.width) {
     // CRTCs beyond the old right edge may need to be pushed out of the way.
     // Loop over these CRTCs and find the amount of adjustment needed for each
     // CRTC. The final adjustment will be the max of these, and the same amount
     // will be applied to every CRTC (beyond the old right edge), to avoid
     // introducing any new overlaps.
-    int16_t old_right_edge = iter->x + iter->width;
-    int16_t new_right_edge = iter->x + new_size.width();
+    int16_t old_right_edge = crtc_to_resize.x + crtc_to_resize.width;
+    int16_t new_right_edge = crtc_to_resize.x + new_size.width();
     int16_t x_adjustment = 0;
     for (auto& active_crtc : active_crtcs_) {
       // Only consider CRTCs whose left edges lie between these values.
@@ -127,17 +140,15 @@ void X11CrtcResizer::UpdateActiveCrtcs(x11::RandR::Crtc crtc,
       for (auto& active_crtc : active_crtcs_) {
         if (active_crtc.x >= old_right_edge) {
           active_crtc.x += x_adjustment;
-          active_crtc.changed = true;
         }
       }
     }
   }
-  iter->width = new_size.width();
 
-  if (new_size.height() > iter->height) {
+  if (new_size.height() > crtc_to_resize.height) {
     // Apply the same algorithm as above, but using heights and y-offsets.
-    int16_t old_bottom_edge = iter->y + iter->height;
-    int16_t new_bottom_edge = iter->y + new_size.height();
+    int16_t old_bottom_edge = crtc_to_resize.y + crtc_to_resize.height;
+    int16_t new_bottom_edge = crtc_to_resize.y + new_size.height();
     int16_t y_adjustment = 0;
     for (auto& active_crtc : active_crtcs_) {
       if (active_crtc.y >= old_bottom_edge && active_crtc.y < new_bottom_edge) {
@@ -149,54 +160,44 @@ void X11CrtcResizer::UpdateActiveCrtcs(x11::RandR::Crtc crtc,
       for (auto& active_crtc : active_crtcs_) {
         if (active_crtc.y >= old_bottom_edge) {
           active_crtc.y += y_adjustment;
-          active_crtc.changed = true;
         }
       }
     }
   }
-  iter->height = new_size.height();
 
-  // Mark it as changed so that ApplyActiveCrtcs() will apply the new |mode|.
-  // The |width| and |height| are only used for computing the bounding-box,
-  // they are not used by ApplyActiveCrtcs().
-  iter->changed = true;
+  crtc_to_resize.width = new_size.width();
+  crtc_to_resize.height = new_size.height();
 }
 
 void X11CrtcResizer::DisableChangedCrtcs() {
   for (const auto& crtc_info : active_crtcs_) {
-    if (crtc_info.changed) {
+    // |resized_crtc_| is expected to be disabled by the caller.
+    if (crtc_info.OffsetsChanged() && crtc_info.crtc != resized_crtc_) {
       DisableCrtc(crtc_info.crtc);
     }
   }
 }
 
 webrtc::DesktopSize X11CrtcResizer::GetBoundingBox() const {
-  webrtc::DesktopSize result;
-  for (const auto& crtc_info : active_crtcs_) {
-    int32_t width = crtc_info.x + crtc_info.width;
-    int32_t height = crtc_info.y + crtc_info.height;
-    result.set(std::max(result.width(), width),
-               std::max(result.height(), height));
-  }
-  return result;
+  DCHECK(!bounding_box_size_.is_empty());
+  return bounding_box_size_;
 }
 
 void X11CrtcResizer::ApplyActiveCrtcs() {
   for (const auto& crtc_info : active_crtcs_) {
-    if (!crtc_info.changed)
-      continue;
-
-    x11::Time config_timestamp = resources_->config_timestamp;
-    randr_->SetCrtcConfig({
-        .crtc = crtc_info.crtc,
-        .timestamp = x11::Time::CurrentTime,
-        .config_timestamp = config_timestamp,
-        .x = crtc_info.x,
-        .y = crtc_info.y,
-        .mode = crtc_info.mode,
-        .rotation = crtc_info.rotation,
-        .outputs = crtc_info.outputs,
-    });
+    if (crtc_info.OffsetsChanged() || crtc_info.crtc == resized_crtc_) {
+      x11::Time config_timestamp = resources_->config_timestamp;
+      randr_->SetCrtcConfig({
+          .crtc = crtc_info.crtc,
+          .timestamp = x11::Time::CurrentTime,
+          .config_timestamp = config_timestamp,
+          .x = crtc_info.x,
+          .y = crtc_info.y,
+          .mode = crtc_info.mode,
+          .rotation = crtc_info.rotation,
+          .outputs = crtc_info.outputs,
+      });
+    }
   }
 }
 
@@ -223,6 +224,23 @@ void X11CrtcResizer::AddCrtcFromReply(
     const x11::RandR::GetCrtcInfoReply& reply) {
   active_crtcs_.emplace_back(crtc, reply.x, reply.y, reply.width, reply.height,
                              reply.mode, reply.rotation, reply.outputs);
+}
+
+void X11CrtcResizer::NormalizeCrtcs() {
+  webrtc::DesktopRect bounding_box;
+  for (const auto& crtc : active_crtcs_) {
+    bounding_box.UnionWith(
+        webrtc::DesktopRect::MakeXYWH(crtc.x, crtc.y, crtc.width, crtc.height));
+  }
+  bounding_box_size_ = bounding_box.size();
+  webrtc::DesktopVector adjustment = -bounding_box.top_left();
+  if (adjustment.is_zero()) {
+    return;
+  }
+  for (auto& crtc : active_crtcs_) {
+    crtc.x += adjustment.x();
+    crtc.y += adjustment.y();
+  }
 }
 
 }  // namespace remoting

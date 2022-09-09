@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,13 +42,14 @@ class X11CrtcResizer {
 
   // This operates only on |active_crtcs_| without making any X server calls.
   // It sets the new mode and width/height for the given CRTC. And it changes
-  // any xy-offsets as needed, to avoid overlaps between CRTCs. Every modified
-  // CRTC is marked by setting its |changed| flag.
+  // any xy-offsets as needed, to avoid overlaps between CRTCs.
   void UpdateActiveCrtcs(x11::RandR::Crtc crtc,
                          x11::RandR::Mode mode,
                          const webrtc::DesktopSize& new_size);
 
-  // Disables any CRTCs whose |changed| flag is true.
+  // Disables any CRTCs whose offsets are being changed. The caller is
+  // responsible for disabling the CRTC being resized, so there is no need to
+  // do it here.
   void DisableChangedCrtcs();
 
   // Returns the bounding box of |active_crtcs_| from their current xy-offsets
@@ -87,22 +88,46 @@ class X11CrtcResizer {
     CrtcInfo& operator=(CrtcInfo&&);
     ~CrtcInfo();
 
+    // Returns whether {x, y} are different from the original values.
+    bool OffsetsChanged() const;
+
     x11::RandR::Crtc crtc;
+    int16_t old_x;
     int16_t x;
+    int16_t old_y;
     int16_t y;
     uint16_t width;
     uint16_t height;
     x11::RandR::Mode mode;
     x11::RandR::Rotation rotation;
     std::vector<x11::RandR::Output> outputs;
-
-    // True if any values are different from the response from RRGetCrtcInfo.
-    bool changed = false;
   };
 
   // Adds a new active CRTC from a reply to RRGetCrtcInfo.
   void AddCrtcFromReply(x11::RandR::Crtc crtc,
                         const x11::RandR::GetCrtcInfoReply& reply);
+
+  // Adjusts CRTC offsets to accommodate the new size of the CRTC. This should
+  // position the CRTCs such that they do not overlap after the CRTC is given
+  // its new size. The implementation may set negative xy-coordinates, or it
+  // may leave a gap between all CRTCs and the top (or left) desktop edge.
+  // NormalizeCrtcs() will be called afterwards to fix both these issues.
+  // The implementation may also re-order |active_crtcs_|, for example, a
+  // stacking-algorithm may want to sort the list first.
+  // |crtc_to_resize| points to the CRTC being resized, and its width and height
+  // have the old values. Note that any re-ordering of the list may invalidate
+  // this reference. This is a convenience to avoid searching the list again -
+  // |resized_crtc_| will also hold the same CRTC's ID.
+  // |new_size| is the new size of |crtc_to_resize|. This method is responsible
+  // for setting the new width/height values of the CRTC.
+  void RelayoutCrtcs(CrtcInfo& crtc_to_resize,
+                     const webrtc::DesktopSize& new_size);
+
+  // Computes the bounding-box of the CRTCs after adjustments have been
+  // proposed by the layout algorithm. If the bounding-box is not aligned at
+  // the origin, all the CRTC offsets are shifted the same amount so that the
+  // new bounding-box's top-left corner is at (0, 0).
+  void NormalizeCrtcs();
 
   raw_ptr<x11::RandR::GetScreenResourcesCurrentReply> resources_;
   raw_ptr<x11::RandR> randr_;
@@ -115,6 +140,14 @@ class X11CrtcResizer {
   // preserved so that the CRTC can be re-enabled with the original and new
   // properties.
   std::list<CrtcInfo> active_crtcs_;
+
+  // Stores the CRTC being resized. This is needed so that ApplyActiveCrtcs()
+  // will set this CRTC's new size in the X server, even if its xy-offsets are
+  // unchanged.
+  x11::RandR::Crtc resized_crtc_{0};
+
+  // Bounding-box size computed by NormalizeCrtcs().
+  webrtc::DesktopSize bounding_box_size_{};
 };
 
 }  // namespace remoting
