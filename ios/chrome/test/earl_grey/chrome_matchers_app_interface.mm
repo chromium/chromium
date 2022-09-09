@@ -239,7 +239,8 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)headerWithAccessibilityLabel:(NSString*)label {
   return grey_allOf(grey_accessibilityLabel(label),
-                    grey_accessibilityTrait(UIAccessibilityTraitHeader), nil);
+                    grey_accessibilityTrait(UIAccessibilityTraitHeader),
+                    grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)navigationBarTitleWithAccessibilityLabelID:(int)labelID {
