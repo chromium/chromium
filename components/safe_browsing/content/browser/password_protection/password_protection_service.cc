@@ -30,6 +30,12 @@ using password_manager::metrics_util::PasswordType;
 
 namespace safe_browsing {
 
+PasswordReuseInfo::PasswordReuseInfo() = default;
+
+PasswordReuseInfo::PasswordReuseInfo(const PasswordReuseInfo& other) = default;
+
+PasswordReuseInfo::~PasswordReuseInfo() = default;
+
 #if defined(ON_FOCUS_PING_ENABLED)
 void PasswordProtectionService::MaybeStartPasswordFieldOnFocusRequest(
     WebContents* web_contents,
@@ -100,6 +106,22 @@ void PasswordProtectionService::MaybeStartProtectedPasswordEntryRequest(
         reused_password_account_type;
     ShowInterstitial(web_contents, reused_password_account_type);
   }
+}
+
+PasswordReuseInfo PasswordProtectionService::ConstructPasswordReuseInfo(
+    uint64_t reused_password_hash,
+    const std::string& username,
+    PasswordType password_type,
+    std::vector<std::string> matching_domains) {
+  PasswordReuseInfo pw_reuse_info;
+  pw_reuse_info.matches_signin_password =
+      password_type == PasswordType::PRIMARY_ACCOUNT_PASSWORD;
+  pw_reuse_info.matching_domains = matching_domains;
+  pw_reuse_info.reused_password_account_type =
+      GetPasswordProtectionReusedPasswordAccountType(password_type, username);
+  pw_reuse_info.count = 1;
+  pw_reuse_info.reused_password_hash = reused_password_hash;
+  return pw_reuse_info;
 }
 
 void PasswordProtectionService::StartRequest(

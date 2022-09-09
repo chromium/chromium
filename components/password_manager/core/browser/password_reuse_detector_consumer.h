@@ -32,13 +32,17 @@ class PasswordReuseDetectorConsumer
   // not null) on and the username, |saved_passwords| is the total number of
   // passwords (with unique domains) stored in Password Manager. When no reuse
   // is found, |password_length| is 0, |reused_protected_password_hash| is
-  // nullopt, and |matching_reused_credentials| is empty.
+  // nullopt, and |matching_reused_credentials| is empty. |domain| is the origin
+  // of the webpage where password reuse happens. |reused_password_hash| is the
+  // hash of the reused password.
   virtual void OnReuseCheckDone(
       bool is_reuse_found,
       size_t password_length,
       absl::optional<PasswordHashData> reused_protected_password_hash,
       const std::vector<MatchingReusedCredential>& matching_reused_credentials,
-      int saved_passwords) = 0;
+      int saved_passwords,
+      const std::string& domain,
+      uint64_t reused_password_hash) = 0;
 };
 
 }  // namespace password_manager

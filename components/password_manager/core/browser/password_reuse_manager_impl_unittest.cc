@@ -145,9 +145,9 @@ TEST_F(PasswordReuseManagerImplTest, CheckPasswordReuse) {
       EXPECT_CALL(mock_consumer,
                   OnReuseCheckDone(true, test_data.reused_password_len,
                                    Matches(absl::nullopt),
-                                   ElementsAreArray(credentials), 2));
+                                   ElementsAreArray(credentials), 2, _, _));
     } else {
-      EXPECT_CALL(mock_consumer, OnReuseCheckDone(false, _, _, _, _));
+      EXPECT_CALL(mock_consumer, OnReuseCheckDone(false, _, _, _, _, _, _));
     }
 
     reuse_manager()->CheckReuse(test_data.input, test_data.domain,
@@ -175,9 +175,9 @@ TEST_F(PasswordReuseManagerImplTest, BasicSynced) {
 
   // Check that sync password reuse is found.
   MockPasswordReuseDetectorConsumer mock_consumer;
-  EXPECT_CALL(mock_consumer,
-              OnReuseCheckDone(true, sync_password.size(),
-                               Matches(sync_password_hash), IsEmpty(), 0));
+  EXPECT_CALL(mock_consumer, OnReuseCheckDone(true, sync_password.size(),
+                                              Matches(sync_password_hash),
+                                              IsEmpty(), 0, _, _));
   reuse_manager()->CheckReuse(input, "https://facebook.com", &mock_consumer);
   RunUntilIdle();
 }
@@ -198,9 +198,9 @@ TEST_F(PasswordReuseManagerImplTest, BasicUnsynced) {
 
   // Check that Gaia password reuse is found.
   MockPasswordReuseDetectorConsumer mock_consumer;
-  EXPECT_CALL(mock_consumer,
-              OnReuseCheckDone(true, gaia_password.size(),
-                               Matches(gaia_password_hash), IsEmpty(), 0));
+  EXPECT_CALL(mock_consumer, OnReuseCheckDone(true, gaia_password.size(),
+                                              Matches(gaia_password_hash),
+                                              IsEmpty(), 0, _, _));
   reuse_manager()->CheckReuse(input, "https://example.com", &mock_consumer);
   RunUntilIdle();
 }
@@ -224,7 +224,7 @@ TEST_F(PasswordReuseManagerImplTest, ClearGaiaPasswordHash) {
   reuse_manager()->ClearGaiaPasswordHash("sync_username");
   EXPECT_EQ(0u, prefs().GetValueList(prefs::kPasswordHashDataList).size());
   MockPasswordReuseDetectorConsumer mock_consumer;
-  EXPECT_CALL(mock_consumer, OnReuseCheckDone(false, _, _, _, _));
+  EXPECT_CALL(mock_consumer, OnReuseCheckDone(false, _, _, _, _, _, _));
   reuse_manager()->CheckReuse(input, "https://facebook.com", &mock_consumer);
   RunUntilIdle();
 }
@@ -249,7 +249,7 @@ TEST_F(PasswordReuseManagerImplTest, ClearAllGaiaPasswordHash) {
   // password hash.
   MockPasswordReuseDetectorConsumer mock_consumer;
   EXPECT_EQ(0u, prefs().GetValueList(prefs::kPasswordHashDataList).size());
-  EXPECT_CALL(mock_consumer, OnReuseCheckDone(false, _, _, _, _));
+  EXPECT_CALL(mock_consumer, OnReuseCheckDone(false, _, _, _, _, _, _));
   reuse_manager()->CheckReuse(input, "https://example.com", &mock_consumer);
   RunUntilIdle();
 }
@@ -270,7 +270,7 @@ TEST_F(PasswordReuseManagerImplTest, SaveEnterprisePasswordHash) {
   MockPasswordReuseDetectorConsumer mock_consumer;
   EXPECT_CALL(mock_consumer, OnReuseCheckDone(true, enterprise_password.size(),
                                               Matches(enterprise_password_hash),
-                                              IsEmpty(), 0));
+                                              IsEmpty(), 0, _, _));
   reuse_manager()->CheckReuse(input, "https://example.com", &mock_consumer);
   RunUntilIdle();
 }
@@ -292,7 +292,7 @@ TEST_F(PasswordReuseManagerImplTest, ClearAllEnterprisePasswordHash) {
   reuse_manager()->ClearAllEnterprisePasswordHash();
   EXPECT_EQ(0u, prefs().GetValueList(prefs::kPasswordHashDataList).size());
   MockPasswordReuseDetectorConsumer mock_consumer;
-  EXPECT_CALL(mock_consumer, OnReuseCheckDone(false, _, _, _, _));
+  EXPECT_CALL(mock_consumer, OnReuseCheckDone(false, _, _, _, _, _, _));
   reuse_manager()->CheckReuse(input, "https://example.com", &mock_consumer);
   RunUntilIdle();
 }
@@ -329,14 +329,14 @@ TEST_F(PasswordReuseManagerImplTest, ClearAllNonGmailPasswordHash) {
   reuse_manager()->ClearAllNonGmailPasswordHash();
   MockPasswordReuseDetectorConsumer mock_consumer;
   EXPECT_EQ(1u, prefs().GetValueList(prefs::kPasswordHashDataList).size());
-  EXPECT_CALL(mock_consumer, OnReuseCheckDone(false, _, _, _, _));
+  EXPECT_CALL(mock_consumer, OnReuseCheckDone(false, _, _, _, _, _, _));
   reuse_manager()->CheckReuse(non_sync_gaia_password, "https://example.com",
                               &mock_consumer);
   RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(&mock_consumer);
-  EXPECT_CALL(mock_consumer,
-              OnReuseCheckDone(true, gmail_password.size(),
-                               Matches(gmail_password_hash), IsEmpty(), 0));
+  EXPECT_CALL(mock_consumer, OnReuseCheckDone(true, gmail_password.size(),
+                                              Matches(gmail_password_hash),
+                                              IsEmpty(), 0, _, _));
   reuse_manager()->CheckReuse(gmail_password, "https://example.com",
                               &mock_consumer);
   RunUntilIdle();
@@ -412,7 +412,7 @@ TEST_F(PasswordReuseManagerImplTest,
                PasswordForm::Store::kProfileStore},
               {"https://www.facebook.com", u"username3",
                PasswordForm::Store::kAccountStore}}),
-          /*saved_passwords=*/3));
+          /*saved_passwords=*/3, _, _));
   reuse_manager()->CheckReuse(u"12345password", "https://evil.com",
                               &mock_consumer);
   RunUntilIdle();
@@ -435,7 +435,7 @@ TEST_F(PasswordReuseManagerImplTest, NoReuseFoundAfterClearingAccountStorage) {
   MockPasswordReuseDetectorConsumer mock_consumer;
   EXPECT_CALL(mock_consumer,
               OnReuseCheckDone(/* is_reuse_found=*/false, _, _, IsEmpty(),
-                               /*saved_passwords=*/0));
+                               /*saved_passwords=*/0, _, _));
   reuse_manager()->CheckReuse(u"password", "https://evil.com", &mock_consumer);
   RunUntilIdle();
 }

@@ -400,12 +400,16 @@ class PasswordManagerClient {
   // warning dialog if it looks like the page is phishy.
   // The |username| is the user name of the reused password. The user name
   // can be an email or a username for a non-GAIA or saved-password reuse. No
-  // validation has been done on it.
+  // validation has been done on it. The |domain| is the origin of the webpage
+  // where password reuse happens. The |reused_password_hash| is the hash of the
+  // reused password.
   virtual void CheckProtectedPasswordEntry(
       metrics_util::PasswordType reused_password_type,
       const std::string& username,
       const std::vector<MatchingReusedCredential>& matching_reused_credentials,
-      bool password_field_exists) = 0;
+      bool password_field_exists,
+      uint64_t reused_password_hash,
+      const std::string& domain) = 0;
 
   // Records a Chrome Sync event that GAIA password reuse was detected.
   virtual void LogPasswordReuseDetectedEvent() = 0;

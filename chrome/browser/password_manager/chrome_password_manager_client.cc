@@ -925,7 +925,9 @@ void ChromePasswordManagerClient::CheckProtectedPasswordEntry(
     const std::string& username,
     const std::vector<password_manager::MatchingReusedCredential>&
         matching_reused_credentials,
-    bool password_field_exists) {
+    bool password_field_exists,
+    uint64_t reused_password_hash,
+    const std::string& domain) {
   safe_browsing::PasswordProtectionService* pps =
       GetPasswordProtectionService();
   if (!pps)
@@ -934,6 +936,10 @@ void ChromePasswordManagerClient::CheckProtectedPasswordEntry(
   pps->MaybeStartProtectedPasswordEntryRequest(
       web_contents(), web_contents()->GetLastCommittedURL(), username,
       password_type, matching_reused_credentials, password_field_exists);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/1351484): Hook this to the extension service in the next CL.
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ChromePasswordManagerClient::LogPasswordReuseDetectedEvent() {

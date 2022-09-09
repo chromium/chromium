@@ -45,7 +45,9 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (metrics_util::PasswordType,
                const std::string&,
                const std::vector<MatchingReusedCredential>&,
-               bool),
+               bool,
+               uint64_t,
+               const std::string&),
               (override));
 };
 
@@ -144,7 +146,7 @@ TEST_F(PasswordReuseDetectionManagerTest, NoReuseCheckingAfterReuseFound) {
 
   // Simulate that reuse found.
   manager.OnReuseCheckDone(true, 0ul, absl::nullopt, {{"https://example.com"}},
-                           0);
+                           0, std::string(), 0);
 
   // Expect no checking of reuse.
   EXPECT_CALL(reuse_manager_, CheckReuse(_, _, _)).Times(0);
@@ -231,10 +233,12 @@ TEST_F(PasswordReuseDetectionManagerTest,
   // CheckProtectedPasswordEntry should get called once, and the reused
   // credentials get used reported once in this call.
   EXPECT_CALL(client_,
-              CheckProtectedPasswordEntry(_, _, reused_credentials, _));
+              CheckProtectedPasswordEntry(_, _, reused_credentials, _, _, _));
   manager.OnReuseCheckDone(/*is_reuse_found=*/true, /*password_length=*/10,
                            /*reused_protected_password_hash=*/absl::nullopt,
-                           reused_credentials, /*saved_passwords=*/1);
+                           reused_credentials, /*saved_passwords=*/1,
+                           /*domain=*/std::string(),
+                           /*reused_password_hash=*/0);
 }
 
 #if BUILDFLAG(IS_ANDROID)

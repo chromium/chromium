@@ -49,7 +49,9 @@ class PasswordReuseDetectionManager : public PasswordReuseDetectorConsumer {
       size_t password_length,
       absl::optional<PasswordHashData> reused_protected_password_hash,
       const std::vector<MatchingReusedCredential>& matching_reused_credentials,
-      int saved_passwords) override;
+      int saved_passwords,
+      const std::string& domain,
+      uint64_t reused_password_hash) override;
 
   void SetClockForTesting(base::Clock* clock);
 

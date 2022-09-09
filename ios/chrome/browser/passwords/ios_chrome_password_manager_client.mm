@@ -352,7 +352,9 @@ void IOSChromePasswordManagerClient::CheckProtectedPasswordEntry(
     const std::string& username,
     const std::vector<password_manager::MatchingReusedCredential>&
         matching_reused_credentials,
-    bool password_field_exists) {
+    bool password_field_exists,
+    uint64_t reused_password_hash,
+    const std::string& domain) {
   safe_browsing::PasswordProtectionService* service =
       GetPasswordProtectionService();
   if (service) {

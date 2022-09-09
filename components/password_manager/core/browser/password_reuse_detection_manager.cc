@@ -102,7 +102,9 @@ void PasswordReuseDetectionManager::OnReuseCheckDone(
     size_t password_length,
     absl::optional<PasswordHashData> reused_protected_password_hash,
     const std::vector<MatchingReusedCredential>& matching_reused_credentials,
-    int saved_passwords) {
+    int saved_passwords,
+    const std::string& domain,
+    uint64_t reused_password_hash) {
   reuse_on_this_page_was_found_ |= is_reuse_found;
 
   // If no reuse was found, we're done.
@@ -138,9 +140,9 @@ void PasswordReuseDetectionManager::OnReuseCheckDone(
         break;
     }
 
-    for (const auto& domain : domains_to_log) {
+    for (const auto& domain_to_log : domains_to_log) {
       logger.LogString(BrowserSavePasswordProgressLogger::STRING_REUSE_FOUND,
-                       domain);
+                       domain_to_log);
     }
   }
 
@@ -161,9 +163,9 @@ void PasswordReuseDetectionManager::OnReuseCheckDone(
                              ? reused_protected_password_hash->username
                              : "";
 
-  client_->CheckProtectedPasswordEntry(reused_password_type, username,
-                                       matching_reused_credentials,
-                                       password_field_detected);
+  client_->CheckProtectedPasswordEntry(
+      reused_password_type, username, matching_reused_credentials,
+      password_field_detected, reused_password_hash, domain);
 }
 
 void PasswordReuseDetectionManager::SetClockForTesting(base::Clock* clock) {

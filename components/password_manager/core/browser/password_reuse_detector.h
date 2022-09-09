@@ -122,9 +122,9 @@ class PasswordReuseDetector {
       const std::string& domain);
 
   // If saved-password reuse is found, fill in the MatchingReusedCredentials
-  // that match any reused password, and return the length of the
-  // longest password matched.  If no reuse is found, return 0.
-  size_t CheckSavedPasswordReuse(
+  // that match any reused password, and return the longest password matched. If
+  // no reuse is found, return an empty string.
+  std::u16string CheckSavedPasswordReuse(
       const std::u16string& input,
       const std::string& domain,
       std::vector<MatchingReusedCredential>* matching_reused_credentials_out);

@@ -37,7 +37,9 @@ class CheckReuseRequest : public PasswordReuseDetectorConsumer {
       size_t password_length,
       absl::optional<PasswordHashData> reused_protected_password_hash,
       const std::vector<MatchingReusedCredential>& matching_reused_credentials,
-      int saved_passwords) override;
+      int saved_passwords,
+      const std::string& domain,
+      uint64_t reused_password_hash) override;
 
  private:
   const scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
@@ -55,13 +57,16 @@ void CheckReuseRequest::OnReuseCheckDone(
     size_t password_length,
     absl::optional<PasswordHashData> reused_protected_password_hash,
     const std::vector<MatchingReusedCredential>& matching_reused_credentials,
-    int saved_passwords) {
+    int saved_passwords,
+    const std::string& domain,
+    uint64_t reused_password_hash) {
   origin_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&PasswordReuseDetectorConsumer::OnReuseCheckDone,
                      consumer_weak_, is_reuse_found, password_length,
                      reused_protected_password_hash,
-                     matching_reused_credentials, saved_passwords));
+                     matching_reused_credentials, saved_passwords, domain,
+                     reused_password_hash));
 }
 
 void CheckReuseHelper(std::unique_ptr<CheckReuseRequest> request,
@@ -155,7 +160,8 @@ void PasswordReuseManagerImpl::CheckReuse(
     PasswordReuseDetectorConsumer* consumer) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   if (!reuse_detector_) {
-    consumer->OnReuseCheckDone(false, 0, absl::nullopt, {}, 0);
+    consumer->OnReuseCheckDone(false, 0, absl::nullopt, {}, 0, std::string(),
+                               0);
     return;
   }
   ScheduleTask(base::BindOnce(

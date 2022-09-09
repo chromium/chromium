@@ -156,7 +156,9 @@ class MockPasswordReuseDetectorConsumer : public PasswordReuseDetectorConsumer {
                size_t,
                absl::optional<PasswordHashData>,
                const std::vector<MatchingReusedCredential>&,
-               int),
+               int,
+               const std::string&,
+               uint64_t),
               (override));
 };
 
