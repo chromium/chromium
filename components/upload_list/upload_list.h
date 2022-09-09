@@ -122,7 +122,7 @@ class UploadList : public base::RefCountedThreadSafe<UploadList> {
 
   // Ensures that this class' thread unsafe state is only accessed from the
   // sequence that owns this UploadList.
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::OnceClosure load_callback_;
   base::OnceClosure clear_callback_;
