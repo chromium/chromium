@@ -188,10 +188,6 @@ class ASH_EXPORT ProjectorControllerImpl
   // restriction check is not completed.
   void MaybeWrapUpRecording();
 
-  // Get the screencast file path without file extension. This will be used
-  // to construct media and metadata file path.
-  base::FilePath GetScreencastFilePathNoExtension() const;
-
   ProjectorClient* client_ = nullptr;
   std::unique_ptr<ProjectorSessionImpl> projector_session_;
   std::unique_ptr<ProjectorUiController> ui_controller_;

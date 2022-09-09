@@ -285,6 +285,9 @@ TEST_F(ProjectorControllerTest, RecordingEnded) {
   base::RunLoop runLoop;
   controller_->CreateScreencastContainerFolder(base::BindLambdaForTesting(
       [&](const base::FilePath& screencast_file_path_no_extension) {
+        // Expects screencast files name equals to it's parent folder name:
+        EXPECT_EQ(screencast_file_path_no_extension.BaseName(),
+                  screencast_file_path_no_extension.DirName().BaseName());
         EXPECT_CALL(
             mock_client_,
             OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
@@ -373,7 +376,9 @@ TEST_P(ProjectorOnDlpRestrictionCheckedAtVideoEndTest, WrapUpRecordingOnce) {
                   // Screencast file name without extension.
                   .Append(expected_screencast_name);
           EXPECT_EQ(screencast_file_path_no_extension, expected_path);
-          // Verify that save metadata only triggered once.
+          // Verify that save metadata only triggered once. The path will not
+          // change as the clock advances.
+          task_environment()->AdvanceClock(base::Minutes(1));
           EXPECT_CALL(*mock_metadata_controller_, SaveMetadata(expected_path))
               .Times(1);
           // Verify that thumbnail file is saved.

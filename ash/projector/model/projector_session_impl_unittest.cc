@@ -9,6 +9,7 @@
 #include "ash/public/cpp/projector/projector_session.h"
 #include "ash/test/ash_test_base.h"
 #include "base/dcheck_is_on.h"
+#include "base/files/file_path.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 
@@ -23,8 +24,8 @@ constexpr char kProjectorCreationFlowHistogramName[] =
 
 class ProjectorSessionImplTest : public AshTestBase {
  public:
-  ProjectorSessionImplTest() = default;
-
+  ProjectorSessionImplTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ProjectorSessionImplTest(const ProjectorSessionImplTest&) = delete;
   ProjectorSessionImplTest& operator=(const ProjectorSessionImplTest&) = delete;
 
@@ -45,13 +46,17 @@ class ProjectorSessionImplTest : public AshTestBase {
 
 TEST_F(ProjectorSessionImplTest, Start) {
   base::HistogramTester histogram_tester;
-
+  base::Time start_time;
+  EXPECT_TRUE(base::Time::FromString("2 Jan 2021 20:02:10", &start_time));
+  base::TimeDelta forward_by = start_time - base::Time::Now();
+  task_environment()->AdvanceClock(forward_by);
   session_->Start("projector_data");
   histogram_tester.ExpectUniqueSample(kProjectorCreationFlowHistogramName,
                                       ProjectorCreationFlow::kSessionStarted,
                                       /*count=*/1);
   EXPECT_TRUE(session_->is_active());
   EXPECT_EQ("projector_data", session_->storage_dir());
+  EXPECT_EQ("Screencast 2021-01-02 20.02.10", session_->screencast_name());
 
   session_->Stop();
   EXPECT_FALSE(session_->is_active());

@@ -34,10 +34,6 @@ namespace ash {
 
 namespace {
 
-// String format of the screencast name.
-constexpr char kScreencastPathFmtStr[] =
-    "Screencast %d-%02d-%02d %02d.%02d.%02d";
-
 constexpr char kScreencastDefaultThumbnailFileName[] = "thumbnail.png";
 
 // Create directory. Returns true if saving succeeded, or false otherwise.
@@ -83,15 +79,6 @@ bool SaveFile(scoped_refptr<base::RefCountedMemory> data,
 scoped_refptr<base::RefCountedMemory> EncodeImage(
     const gfx::ImageSkia& image_skia) {
   return gfx::Image(image_skia).As1xPNGBytes();
-}
-
-std::string GetScreencastName() {
-  base::Time::Exploded exploded_time;
-  base::Time::Now().LocalExplode(&exploded_time);
-  return base::StringPrintf(kScreencastPathFmtStr, exploded_time.year,
-                            exploded_time.month, exploded_time.day_of_month,
-                            exploded_time.hour, exploded_time.minute,
-                            exploded_time.second);
 }
 
 }  // namespace
@@ -157,8 +144,7 @@ void ProjectorControllerImpl::CreateScreencastContainerFolder(
 
   auto path = mounted_path.Append("root")
                   .Append(projector_session_->storage_dir())
-                  .Append(GetScreencastName());
-
+                  .Append(projector_session_->screencast_name());
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()}, base::BindOnce(&CreateDirectory, path),
       base::BindOnce(&ProjectorControllerImpl::OnContainerFolderCreated,
@@ -493,11 +479,13 @@ void ProjectorControllerImpl::OnContainerFolderCreated(
   }
 
   projector_session_->set_screencast_container_path(path);
-  std::move(callback).Run(GetScreencastFilePathNoExtension());
+  std::move(callback).Run(
+      projector_session_->GetScreencastFilePathNoExtension());
 }
 
 void ProjectorControllerImpl::SaveScreencast() {
-  metadata_controller_->SaveMetadata(GetScreencastFilePathNoExtension());
+  metadata_controller_->SaveMetadata(
+      projector_session_->GetScreencastFilePathNoExtension());
 }
 
 void ProjectorControllerImpl::MaybeWrapUpRecording() {
@@ -558,15 +546,6 @@ void ProjectorControllerImpl::CleanupContainerFolder() {
                     LOG(ERROR) << "Failed to delete the folder: " << path;
                 },
                 *screencast_container_path));
-}
-
-base::FilePath ProjectorControllerImpl::GetScreencastFilePathNoExtension()
-    const {
-  auto screencast_container_path =
-      projector_session_->screencast_container_path();
-
-  DCHECK(screencast_container_path.has_value());
-  return screencast_container_path->Append(GetScreencastName());
 }
 
 }  // namespace ash
