@@ -324,12 +324,6 @@ bool PrefService::IsUserModifiablePreference(
   return pref && pref->IsUserModifiable();
 }
 
-const base::Value* PrefService::GetDictionary(const std::string& path) const {
-  const base::Value& value = GetValue(path);
-  DCHECK(value.is_dict());
-  return &value;
-}
-
 const base::Value& PrefService::GetValue(const std::string& path) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return *GetPreferenceValueChecked(path);
