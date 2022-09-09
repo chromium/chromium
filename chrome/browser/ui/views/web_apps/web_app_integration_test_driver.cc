@@ -1645,7 +1645,8 @@ void WebAppIntegrationTestDriver::UninstallFromAppSettings(Site site) {
   uninstall_observer.BeginListening({app_id});
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  if (web_contents->GetURL() != GURL("chrome://app-settings/" + app_id)) {
+  if (web_contents->GetURL() !=
+      GURL(chrome::kChromeUIWebAppSettingsURL + app_id)) {
     OpenAppSettingsFromChromeApps(site);
     CheckBrowserNavigationIsAppSettings(site);
   }
@@ -1884,7 +1885,7 @@ void WebAppIntegrationTestDriver::CheckBrowserNavigationIsAppSettings(
 
   ASSERT_TRUE(browser());
   GURL url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
-  EXPECT_EQ(url, GURL("chrome://app-settings/" + app_id));
+  EXPECT_EQ(url, GURL(chrome::kChromeUIWebAppSettingsURL + app_id));
   AfterStateCheckAction();
 #else
   NOTREACHED() << "Not implemented on Chrome OS.";
@@ -2904,8 +2905,10 @@ bool WebAppIntegrationTestDriver::IsFileHandledBySite(
     if (std::find(supported_file_extensions.begin(),
                   supported_file_extensions.end(),
                   extension) != supported_file_extensions.end()) {
-      const std::wstring reg_key =
-          L"Software\\Classes\\" + extension + L"\\OpenWithProgids";
+      const std::wstring reg_key = std::wstring(ShellUtil::kRegClasses) +
+                                   base::FilePath::kSeparators[0] + extension +
+                                   base::FilePath::kSeparators[0] +
+                                   ShellUtil::kRegOpenWithProgids;
       EXPECT_EQ(ERROR_SUCCESS,
                 key.Open(HKEY_CURRENT_USER, reg_key.data(), KEY_READ));
       return key.HasValue(file_handler_prog_id.data());
