@@ -23863,61 +23863,73 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="OutdatedPluginInfobar.AllowThisTime">
+  <obsolete>Removed in M107</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="OutdatedPluginInfobar.Closed">
+  <obsolete>Removed in M107</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="OutdatedPluginInfobar.Dismissed">
+  <obsolete>Removed in M107</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="OutdatedPluginInfobar.LearnMore">
+  <obsolete>Removed in M107</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="OutdatedPluginInfobar.Shown">
+  <obsolete>Removed in M107</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="OutdatedPluginInfobar.Shown.Java">
+  <obsolete>Removed in M107</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="OutdatedPluginInfobar.Shown.QuickTime">
+  <obsolete>Removed in M107</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="OutdatedPluginInfobar.Shown.Reader">
+  <obsolete>Removed in M107</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="OutdatedPluginInfobar.Shown.RealPlayer">
+  <obsolete>Removed in M107</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="OutdatedPluginInfobar.Shown.Shockwave">
+  <obsolete>Removed in M107</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="OutdatedPluginInfobar.Shown.Silverlight">
+  <obsolete>Removed in M107</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="OutdatedPluginInfobar.Update">
+  <obsolete>Removed in M107</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>

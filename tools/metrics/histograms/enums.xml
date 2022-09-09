@@ -50734,7 +50734,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="29"
       label="DURABLE_STORAGE_PERMISSION_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
   <int value="30" label="NPAPI_REMOVAL_INFOBAR_DELEGATE (Obsolete)"/>
-  <int value="31" label="OUTDATED_PLUGIN_INFOBAR_DELEGATE"/>
+  <int value="31" label="OUTDATED_PLUGIN_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="32" label="PLUGIN_METRO_MODE_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="33" label="RELOAD_PLUGIN_INFOBAR_DELEGATE"/>
   <int value="34" label="PLUGIN_OBSERVER_INFOBAR_DELEGATE"/>
