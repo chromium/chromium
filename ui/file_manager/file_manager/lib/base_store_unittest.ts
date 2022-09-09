@@ -4,23 +4,25 @@
 
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
-import {BaseAction, BaseStore} from './base_store.js';
+import {waitUntil} from '../common/js/test_error_reporting.js';
 
-/** Store state used across all unittests in this file. */
-interface TestState {
-  // Just an incremental counter.
-  numVisitors?: number;
+import {ActionsProducerGen} from './actions_producer.js';
+import {BaseStore} from './base_store.js';
+import {actionsProducerSuccess, TestAction, TestState, TestStore} from './for_tests.js';
 
-  // The latest string sent in the Action.
-  latestPayload?: string;
+/** ActionsProducer that yields an empty/undefined action. */
+async function* producesEmpty(payload: string): ActionsProducerGen<TestAction> {
+  yield {type: 'step#0', payload};
+
+  yield;
+
+  yield {type: 'final-step', payload};
 }
 
-/** Test action used across all unittests in this file. */
-interface TestAction extends BaseAction {
-  payload?: string;
+/** ActionsProducer that raises an error */
+async function* producesError(): ActionsProducerGen<TestAction> {
+  throw new Error('This error is intentional for tests');
 }
-
-type TestStore = BaseStore<TestState, any>;
 
 /** Returns the current numVisitors from the Store. */
 function getNumVisitors(store: TestStore): number|undefined {
@@ -37,7 +39,7 @@ class TestSubscriber {
 }
 
 /**
- * Creates new Storee, subscriber and dispatchedActions.
+ * Creates new Store, subscriber and dispatchedActions.
  * These can be called multiple times for each test, which create new
  * independent instances of those.
  */
@@ -222,4 +224,57 @@ export function testObserverException() {
       1, successSubscriber.calledCounter,
       'successSubscriber called by dispatch()');
   assertEquals(1, errorCounter, 'errorSubscriber called by dispatch()');
+}
+
+/**
+ * Tests that dispatching an action that is an Actions Producer results in all
+ * produced actions being dispatched.
+ */
+export async function testStoreActionsProducer(done: () => void) {
+  const {store, subscriber, dispatchedActions} = setupStore();
+  store.init({numVisitors: 2});
+  store.subscribe(subscriber);
+
+  store.dispatch(actionsProducerSuccess('attempt 1'));
+
+  await waitUntil(() => dispatchedActions.length == 4);
+
+  done();
+}
+
+/**
+ * Tests that Actions Producers can generate an empty action `undefined` which
+ * is ignored.
+ */
+export async function testStoreActionsProducerEmpty(done: () => void) {
+  const {store, subscriber, dispatchedActions} = setupStore();
+  store.init({numVisitors: 2});
+  store.subscribe(subscriber);
+
+  store.dispatch(producesEmpty('trying empty #1'));
+
+  // The AP issues 2 non-empty actions and 1 empty between those.
+  await waitUntil(() => dispatchedActions.length == 2);
+
+  done();
+}
+
+/**
+ * Tests that an error during the Actions Producer doesn't stop other
+ * actions.
+ */
+export async function testStoreActionsProducerError(done: () => void) {
+  const {store, subscriber, dispatchedActions} = setupStore();
+  store.init({numVisitors: 2});
+  store.subscribe(subscriber);
+
+  store.dispatch(producesError());
+  store.dispatch(actionsProducerSuccess('attempt 1'));
+  store.dispatch(producesError());
+  store.dispatch(actionsProducerSuccess('attempt 2'));
+
+  // 4 actions from each Success producer.
+  await waitUntil(() => dispatchedActions.length == 8);
+
+  done();
 }

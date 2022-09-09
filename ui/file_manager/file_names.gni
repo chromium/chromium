@@ -248,7 +248,10 @@ static_js_files = [
 # END: static_js_files.
 
 ts_files = [
+  "file_manager/lib/actions_producer.ts",
   "file_manager/lib/base_store.ts",
+  "file_manager/lib/concurrency_models.ts",
+
   "file_manager/state/store.ts",
   "file_manager/state/reducers/root.ts",
   "file_manager/state/reducers/all_entries.ts",
@@ -266,6 +269,8 @@ ts_templates = [ "file_manager/widgets/xf_breadcrumb.html" ]
 ts_test_files = [
   # Lib:
   "file_manager/lib/base_store_unittest.ts",
+  "file_manager/lib/actions_producer_unittest.ts",
+  "file_manager/lib/for_tests.ts",
 
   # Reducers:
   "file_manager/state/reducers/all_entries_unittest.ts",

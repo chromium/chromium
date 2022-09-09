@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ActionsProducerGen, ConcurrentActionInvalidatedError, isActionsProducer} from './actions_producer.js';
+
 /**
  * The base interface for actions.
  * The application should extend this to enforce its own Actions.
@@ -91,7 +93,7 @@ export class BaseStore<StateType, ActionType extends BaseAction> {
   /**
    * Subscribe to Store changes/updates.
    * @param observer Callback called whenever the Store is updated.
-   * @returns callback to unsusbscribe the observer.
+   * @returns callback to unsubscribe the observer.
    */
   subscribe(observer: StoreObserver<StateType>): () => void {
     this.observers_.push(observer);
@@ -138,7 +140,11 @@ export class BaseStore<StateType, ActionType extends BaseAction> {
    * If the Store isn't initialized, the action is queued and dispatched to
    * reducers during the initialization.
    */
-  dispatch(action: ActionType) {
+  dispatch(action: ActionType|ActionsProducerGen<ActionType>) {
+    if (isActionsProducer(action)) {
+      this.consumeProducedActions_(action);
+      return;
+    }
     if (!this.initialized_) {
       this.queuedActions_.push(action);
       return;
@@ -149,6 +155,36 @@ export class BaseStore<StateType, ActionType extends BaseAction> {
   /** Synchronously call apply the `action` by calling the reducer.  */
   private dispatchInternal_(action: ActionType) {
     this.reduce(action);
+  }
+
+  /**
+   * Consumes the produced actions from the actions producer.
+   * It dispatches each generated action.
+   */
+  private async consumeProducedActions_(actionsProducer:
+                                            ActionsProducerGen<ActionType>) {
+    while (true) {
+      try {
+        const {done, value} = await actionsProducer.next();
+
+        // Accept undefined to accept empty `yield;` or `return;`.
+        // The empty `yield` is useful to allow the generator to be stopped at
+        // any arbitrary point.
+        if (value !== undefined) {
+          this.dispatch(value);
+        }
+        if (done) {
+          return;
+        }
+      } catch (error) {
+        if (error instanceof ConcurrentActionInvalidatedError) {
+          // This error is expected when the actionsProducer has been
+          // invalidated.
+          return;
+        }
+        console.warn('Failure executing actions producer', error);
+      }
+    }
   }
 
   /** Apply the `action` to the Store by calling the reducer.  */
