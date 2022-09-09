@@ -23,7 +23,6 @@ public class WebAuthnBrowserBridge {
      * available as options for autofill UI on sign-in input fields. The callback is invoked when
      * a user selects one of the credentials from the list.
      *
-     * @param frameHost The RenderFrameHost for the frame that generated the request.
      * @param credentialList The list of credentials that can be used as autofill suggestions.
      * @param callback The callback to be invoked with the credential ID of a selected credential.
      */
@@ -43,20 +42,6 @@ public class WebAuthnBrowserBridge {
         WebAuthnBrowserBridgeJni.get().onCredentialsDetailsListReceived(
                 mNativeWebAuthnBrowserBridge, WebAuthnBrowserBridge.this, credentialArray,
                 frameHost, callback);
-    }
-
-    /**
-     * Cancels an outstanding Conditional UI request that was initiated through
-     * onCredentialsDetailsListReceived. This causes the callback to be invoked with an
-     * empty credential.
-     *
-     * @param frameHost The RenderFrameHost for the frame that generated the cancellation.
-     */
-    public void cancelRequest(RenderFrameHost frameHost) {
-        // This should never be called without a bridge already having been created.
-        assert mNativeWebAuthnBrowserBridge != 0;
-
-        WebAuthnBrowserBridgeJni.get().cancelRequest(mNativeWebAuthnBrowserBridge, frameHost);
     }
 
     @CalledByNative
@@ -87,6 +72,5 @@ public class WebAuthnBrowserBridge {
         void onCredentialsDetailsListReceived(long nativeWebAuthnBrowserBridge,
                 WebAuthnBrowserBridge caller, WebAuthnCredentialDetails[] credentialList,
                 RenderFrameHost frameHost, Callback<byte[]> callback);
-        void cancelRequest(long nativeWebAuthnBrowserBridge, RenderFrameHost frameHost);
     }
 }

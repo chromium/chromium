@@ -24,10 +24,6 @@ class WebAuthnBrowserBridge {
       const base::android::JavaParamRef<jobject>& jframe_host,
       const base::android::JavaParamRef<jobject>& jcallback) const;
 
-  void CancelRequest(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jframe_host) const;
-
  private:
   // Java object that owns this WebAuthnBrowserBridge.
   base::android::ScopedJavaGlobalRef<jobject> owner_;

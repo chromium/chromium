@@ -47,18 +47,6 @@ void ConditionalUiDelegateAndroid::OnWebAuthnRequestPending(
       ->OnCredentialsReceived(credentials);
 }
 
-void ConditionalUiDelegateAndroid::CancelWebAuthnRequest(
-    content::RenderFrameHost* frame_host) {
-  // Calling OnCredentialsReceived() with an empty list will prevent autofill
-  // from offering WebAuthn credentials in the popup.
-  ChromeWebAuthnCredentialsDelegateFactory::GetFactory(
-      content::WebContents::FromRenderFrameHost(frame_host))
-      ->GetDelegateForFrame(frame_host)
-      ->OnCredentialsReceived(
-          std::vector<device::DiscoverableCredentialMetadata>());
-  std::move(webauthn_account_selection_callback_).Run(std::vector<uint8_t>());
-}
-
 void ConditionalUiDelegateAndroid::OnWebAuthnAccountSelected(
     const std::vector<uint8_t>& user_id) {
   std::move(webauthn_account_selection_callback_).Run(user_id);

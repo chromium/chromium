@@ -66,7 +66,6 @@ public final class AuthenticatorImpl implements Authenticator {
     // situation does not matter because all pending requests will return the same value.
     private Queue<org.chromium.mojo.bindings.Callbacks.Callback1<Boolean>>
             mIsUserVerifyingPlatformAuthenticatorAvailableCallbackQueue = new LinkedList<>();
-    private Fido2CredentialRequest mPendingFido2CredentialRequest;
 
     private static Fido2CredentialRequest sFido2CredentialRequestOverrideForTesting;
 
@@ -142,9 +141,7 @@ public final class AuthenticatorImpl implements Authenticator {
             return;
         }
 
-        mPendingFido2CredentialRequest = getFido2CredentialRequest();
-        mPendingFido2CredentialRequest.handleMakeCredentialRequest(options, mRenderFrameHost,
-                mOrigin,
+        getFido2CredentialRequest().handleMakeCredentialRequest(options, mRenderFrameHost, mOrigin,
                 (status, response)
                         -> onRegisterResponse(status, response),
                 status -> onError(status));
@@ -166,8 +163,7 @@ public final class AuthenticatorImpl implements Authenticator {
             return;
         }
 
-        mPendingFido2CredentialRequest = getFido2CredentialRequest();
-        mPendingFido2CredentialRequest.handleGetAssertionRequest(options, mRenderFrameHost, mOrigin,
+        getFido2CredentialRequest().handleGetAssertionRequest(options, mRenderFrameHost, mOrigin,
                 mPayment,
                 (status, response) -> onSignResponse(status, response), status -> onError(status));
     }
@@ -214,13 +210,8 @@ public final class AuthenticatorImpl implements Authenticator {
 
     @Override
     public void cancel() {
-        // This is not implemented for anything other than Conditional UI getAssertion requests,
-        // since there is no way to cancel a request that has already triggered gmscore UI.
-        if (!mIsOperationPending || mGetAssertionCallback == null) {
-            return;
-        }
-
-        mPendingFido2CredentialRequest.cancelConditionalGetAssertion(mRenderFrameHost);
+        // Not implemented, ignored because request sent to gmscore fido cannot be cancelled.
+        return;
     }
 
     /**
@@ -270,7 +261,6 @@ public final class AuthenticatorImpl implements Authenticator {
         mIsOperationPending = false;
         mMakeCredentialCallback = null;
         mGetAssertionCallback = null;
-        mPendingFido2CredentialRequest = null;
     }
 
     @Override

@@ -70,15 +70,6 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     private long mStartTimeMs;
     private WebAuthnBrowserBridge mBrowserBridge;
 
-    private enum ConditionalUiState {
-        NONE,
-        WAITING_FOR_CREDENTIAL_LIST,
-        WAITING_FOR_SELECTION,
-        CANCEL_PENDING
-    }
-
-    private ConditionalUiState mConditionalUiState = ConditionalUiState.NONE;
-
     // Not null when the GMSCore-created ClientDataJson needs to be overridden.
     @Nullable
     private String mClientDataJson;
@@ -224,7 +215,6 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         if (options.isConditional) {
             // For use in the lambda expression.
             final byte[] finalClientDataHash = clientDataHash;
-            mConditionalUiState = ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST;
             Fido2ApiCallHelper.getInstance().invokeFido2GetCredentials(options.relyingPartyId,
                     mSupportLevel,
                     (credentials)
@@ -234,19 +224,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             return;
         }
 
-        maybeDispatchGetAssertionRequest(options, callerOriginString, clientDataHash, null);
-    }
-
-    public void cancelConditionalGetAssertion(RenderFrameHost frameHost) {
-        if (mConditionalUiState == ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST) {
-            mConditionalUiState = ConditionalUiState.CANCEL_PENDING;
-            return;
-        }
-
-        if (mConditionalUiState == ConditionalUiState.WAITING_FOR_SELECTION) {
-            mConditionalUiState = ConditionalUiState.CANCEL_PENDING;
-            mBrowserBridge.cancelRequest(frameHost);
-        }
+        dispatchGetAssertionRequest(options, callerOriginString, clientDataHash, null);
     }
 
     public void handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(
@@ -289,14 +267,6 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     private void onWebAuthnCredentialDetailsListReceived(RenderFrameHost frameHost,
             PublicKeyCredentialRequestOptions options, String callerOriginString,
             byte[] clientDataHash, List<WebAuthnCredentialDetails> credentials) {
-        assert mConditionalUiState == ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST
-                || mConditionalUiState == ConditionalUiState.CANCEL_PENDING;
-
-        if (mConditionalUiState == ConditionalUiState.CANCEL_PENDING) {
-            returnErrorAndResetCallback(AuthenticatorStatus.ABORT_ERROR);
-            return;
-        }
-
         if (mBrowserBridge == null) {
             mBrowserBridge = new WebAuthnBrowserBridge();
         }
@@ -306,24 +276,14 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 discoverableCredentials.add(credential);
             }
         }
-
-        mConditionalUiState = ConditionalUiState.WAITING_FOR_SELECTION;
         mBrowserBridge.onCredentialsDetailsListReceived(frameHost, discoverableCredentials,
                 (selectedCredentialId)
-                        -> maybeDispatchGetAssertionRequest(
+                        -> dispatchGetAssertionRequest(
                                 options, callerOriginString, clientDataHash, selectedCredentialId));
     }
 
-    private void maybeDispatchGetAssertionRequest(PublicKeyCredentialRequestOptions options,
+    private void dispatchGetAssertionRequest(PublicKeyCredentialRequestOptions options,
             String callerOriginString, byte[] clientDataHash, byte[] credentialId) {
-        // For Conditional UI requests, this is invoked by a callback, and might have been
-        // cancelled before a credential was selected.
-        if (mConditionalUiState == ConditionalUiState.CANCEL_PENDING) {
-            returnErrorAndResetCallback(AuthenticatorStatus.ABORT_ERROR);
-            return;
-        }
-
-        mConditionalUiState = ConditionalUiState.NONE;
         if (credentialId != null) {
             if (credentialId.length == 0) {
                 // An empty credential ID means an error from native code, which can happen if the

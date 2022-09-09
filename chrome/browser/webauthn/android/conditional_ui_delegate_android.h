@@ -41,10 +41,6 @@ class ConditionalUiDelegateAndroid : public base::SupportsUserData::Data {
       const std::vector<device::DiscoverableCredentialMetadata>& credentials,
       base::OnceCallback<void(const std::vector<uint8_t>& id)> callback);
 
-  // Called when an outstanding request is aborted. This triggers the cached
-  // callback with an empty credential.
-  void CancelWebAuthnRequest(content::RenderFrameHost* frame_host);
-
   // Tells the driver that the user has selected a Web Authentication
   // credential from a dialog, and provides the credential ID for the selected
   // credential.

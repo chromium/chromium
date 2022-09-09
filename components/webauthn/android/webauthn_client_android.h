@@ -36,10 +36,6 @@ class WebAuthnClientAndroid {
       content::RenderFrameHost* frame_host,
       const std::vector<device::DiscoverableCredentialMetadata>& credentials,
       base::OnceCallback<void(const std::vector<uint8_t>& id)> callback) = 0;
-
-  // Cancels a request if one is outstanding. Revokes the credential list and
-  // causes the callback to be called with an empty credential.
-  virtual void CancelWebAuthnRequest(content::RenderFrameHost* frame_host) = 0;
 };
 
 }  // namespace components
