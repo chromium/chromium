@@ -28,7 +28,6 @@ class Profile;
 
 namespace {
 class CrashesDOMHandler;
-class FlashDOMHandler;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -121,7 +120,6 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
  private:
   friend class autofill_assistant::AssistantFieldTrialUtilChrome;
   friend class ::CrashesDOMHandler;
-  friend class ::FlashDOMHandler;
   friend class ChromeBrowserFieldTrials;
   // For ClangPGO.
   friend class ChromeBrowserMainExtraPartsMetrics;
