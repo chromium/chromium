@@ -28,6 +28,7 @@ class AudioManagerPowerUser;
 
 namespace media {
 
+class AecdumpRecordingManager;
 class AudioDebugRecordingManager;
 class AudioInputStream;
 class AudioManager;
@@ -169,6 +170,11 @@ class MEDIA_EXPORT AudioManager {
   // Get debug recording manager. This can only be called on AudioManager's
   // thread (GetTaskRunner()).
   virtual AudioDebugRecordingManager* GetAudioDebugRecordingManager() = 0;
+
+  // Set aecdump recording manager. This can only be called on AudioManager's
+  // thread (GetTaskRunner()).
+  virtual void SetAecDumpRecordingManager(
+      base::WeakPtr<AecdumpRecordingManager> aecdump_recording_manager) = 0;
 
   // Gets the name of the audio manager (e.g., Windows, Mac, PulseAudio).
   virtual const char* GetName() = 0;

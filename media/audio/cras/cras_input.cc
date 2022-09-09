@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -74,6 +75,9 @@ CrasInputStream::CrasInputStream(const AudioParameters& params,
       mute_system_audio_(device_id ==
                          AudioDeviceDescription::kLoopbackWithMuteDeviceId),
       mute_done_(false),
+#if DCHECK_IS_ON()
+      recording_enabled_(false),
+#endif
       input_volume_(1.0f) {
   DCHECK(audio_manager_);
   audio_bus_ = AudioBus::Create(params_);
@@ -336,6 +340,8 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
 
   started_ = true;
 
+  audio_manager_->RegisterSystemAecDumpSource(this);
+
   ReportStreamStartResult(StreamStartResult::kCallbackStartSuccess);
 }
 
@@ -345,6 +351,8 @@ void CrasInputStream::Stop() {
 
   if (!callback_ || !started_)
     return;
+
+  audio_manager_->DeregisterSystemAecDumpSource(this);
 
   if (mute_system_audio_ && mute_done_) {
     libcras_client_set_system_mute(client_, 0);
@@ -462,6 +470,28 @@ void CrasInputStream::SetOutputDeviceForAec(
     echo_ref_id = dev_index_of(cras_node_id);
   }
   libcras_client_set_aec_ref(client_, stream_id_, echo_ref_id);
+}
+
+void CrasInputStream::StartAecdump(base::File file) {
+  FILE* stream = base::FileToFILE(std::move(file), "w");
+  if (!client_)
+    return;
+#if DCHECK_IS_ON()
+  DCHECK(!recording_enabled_);
+  recording_enabled_ = true;
+#endif
+
+  libcras_client_set_aec_dump(client_, stream_id_, /*start=*/1, fileno(stream));
+}
+
+void CrasInputStream::StopAecdump() {
+  if (!client_)
+    return;
+#if DCHECK_IS_ON()
+  DCHECK(recording_enabled_);
+  recording_enabled_ = false;
+#endif
+  libcras_client_set_aec_dump(client_, stream_id_, /*start=*/0, /*fd=*/-1);
 }
 
 }  // namespace media

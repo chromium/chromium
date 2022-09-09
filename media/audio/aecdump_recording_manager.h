@@ -35,7 +35,8 @@ class AecdumpRecordingSource {
 // register/deregister with the AecdumpRecordingManager.
 // All operations, including creation and destruction, must happen on the same
 // thread as the |task_runner| provided in the constructor.
-class MEDIA_EXPORT AecdumpRecordingManager {
+class MEDIA_EXPORT AecdumpRecordingManager
+    : public base::SupportsWeakPtr<AecdumpRecordingManager> {
  public:
   using CreateFileCallback = base::RepeatingCallback<
       void(uint32_t id, base::OnceCallback<void(base::File)> reply_callback)>;
@@ -52,11 +53,12 @@ class MEDIA_EXPORT AecdumpRecordingManager {
   virtual void EnableDebugRecording(CreateFileCallback create_file_callback);
   virtual void DisableDebugRecording();
 
-  // Registers an aecdump recording source.
-  void RegisterAecdumpSource(AecdumpRecordingSource* source);
+  // Registers an aecdump recording source. Overridden by tests.
+  virtual void RegisterAecdumpSource(AecdumpRecordingSource* source);
   // Registers an aecdump recording source. If aecdump recording is currently
-  // enabled, then StopAecdump will be called on the source.
-  void DeregisterAecdumpSource(AecdumpRecordingSource* source);
+  // enabled, then StopAecdump will be called on the source. Overridden by
+  // tests.
+  virtual void DeregisterAecdumpSource(AecdumpRecordingSource* source);
 
  private:
   // Forwards to StartRecording() if |manager| is valid, otherwise closes |file|
@@ -85,6 +87,7 @@ class MEDIA_EXPORT AecdumpRecordingManager {
   // recording is enabled.
   CreateFileCallback create_file_callback_;
 
+  // For managing debug recording cycles.
   base::WeakPtrFactory<AecdumpRecordingManager> weak_factory_{this};
 };
 

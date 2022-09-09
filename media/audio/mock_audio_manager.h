@@ -65,6 +65,9 @@ class MockAudioManager : public AudioManager {
   void InitializeDebugRecording() override;
   AudioDebugRecordingManager* GetAudioDebugRecordingManager() override;
 
+  void SetAecDumpRecordingManager(base::WeakPtr<AecdumpRecordingManager>
+                                      aecdump_recording_manager) override;
+
   const char* GetName() override;
 
   // Setters to emulate desired in-test behavior.

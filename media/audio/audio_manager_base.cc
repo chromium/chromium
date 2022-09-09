@@ -634,4 +634,9 @@ AudioDebugRecordingManager* AudioManagerBase::GetAudioDebugRecordingManager() {
   return debug_recording_manager_.get();
 }
 
+void AudioManagerBase::SetAecDumpRecordingManager(
+    base::WeakPtr<AecdumpRecordingManager>) {
+  // This is no-op by default.
+}
+
 }  // namespace media

@@ -360,6 +360,8 @@ static_library("test_support") {
     "audio_system_test_util.h",
     "audio_unittest_util.cc",
     "audio_unittest_util.h",
+    "mock_aecdump_recording_manager.cc",
+    "mock_aecdump_recording_manager.h",
     "mock_audio_debug_recording_manager.cc",
     "mock_audio_debug_recording_manager.h",
     "mock_audio_manager.cc",
@@ -458,16 +460,20 @@ source_set("unit_tests") {
     ]
 
     if (use_cras) {
-      sources += [
-        "cras/audio_manager_chromeos_unittest.cc",
-        "cras/cras_input_unittest.cc",
-        "cras/cras_unified_unittest.cc",
-      ]
+      sources += [ "cras/audio_manager_chromeos_unittest.cc" ]
     }
   }
 
   if (is_chromeos_lacros && use_cras) {
     sources += [ "cras/audio_manager_cras_unittest.cc" ]
+  }
+
+  if (use_cras) {
+    sources += [
+      "cras/audio_manager_cras_base_unittest.cc",
+      "cras/cras_input_unittest.cc",
+      "cras/cras_unified_unittest.cc",
+    ]
   }
 
   if (is_win) {

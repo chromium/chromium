@@ -16,7 +16,7 @@
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "media/audio/audio_device_description.h"
-#include "media/audio/cras/audio_manager_chromeos.h"
+#include "media/audio/cras/audio_manager_cras.h"
 #include "media/audio/fake_audio_log_factory.h"
 #include "media/audio/test_audio_thread.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -42,11 +42,28 @@ class MockAudioInputCallback : public AudioInputStream::AudioInputCallback {
   MOCK_METHOD0(OnError, void());
 };
 
-class MockAudioManagerCrasInput : public AudioManagerChromeOS {
+class MockAudioManagerCrasInput : public AudioManagerCrasBase {
  public:
   MockAudioManagerCrasInput()
-      : AudioManagerChromeOS(std::make_unique<TestAudioThread>(),
+      : AudioManagerCrasBase(std::make_unique<TestAudioThread>(),
                              &fake_audio_log_factory_) {}
+
+  MOCK_METHOD1(RegisterSystemAecDumpSource, void(AecdumpRecordingSource*));
+
+  MOCK_METHOD1(DeregisterSystemAecDumpSource, void(AecdumpRecordingSource*));
+
+  bool HasAudioOutputDevices() { return true; }
+  bool HasAudioInputDevices() { return true; }
+  AudioParameters GetPreferredOutputStreamParameters(
+      const std::string& output_device_id,
+      const AudioParameters& input_params) {
+    return AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
+                           CHANNEL_LAYOUT_STEREO, 44100, 1000);
+  }
+  bool IsDefault(const std::string& device_id, bool is_input) override {
+    return true;
+  }
+  enum CRAS_CLIENT_TYPE GetClientType() { return CRAS_CLIENT_TYPE_LACROS; }
 
   // We need to override this function in order to skip checking the number
   // of active output streams. It is because the number of active streams
@@ -103,6 +120,9 @@ class CrasInputStreamTest : public testing::Test {
                          unsigned int duration_ms) {
     CrasInputStream* test_stream = new CrasInputStream(
         params, mock_manager_.get(), AudioDeviceDescription::kDefaultDeviceId);
+
+    EXPECT_CALL(*mock_manager_.get(), RegisterSystemAecDumpSource(_));
+    EXPECT_CALL(*mock_manager_.get(), DeregisterSystemAecDumpSource(_));
 
     EXPECT_EQ(test_stream->Open(), AudioInputStream::OpenOutcome::kSuccess);
 

@@ -141,6 +141,12 @@ AudioDebugRecordingManager* MockAudioManager::GetAudioDebugRecordingManager() {
   return debug_recording_manager_.get();
 }
 
+void MockAudioManager::SetAecDumpRecordingManager(
+    base::WeakPtr<AecdumpRecordingManager>) {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  // This is no-op by default.
+}
+
 const char* MockAudioManager::GetName() {
   return nullptr;
 }

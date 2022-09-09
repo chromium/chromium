@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "media/audio/audio_manager.h"
 
 namespace media {
 namespace {

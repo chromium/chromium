@@ -13,7 +13,9 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "media/audio/aecdump_recording_manager.h"
 #include "media/audio/agc_audio_stream.h"
+#include "media/audio/audio_debug_recording_helper.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
@@ -25,7 +27,8 @@ class AudioManagerCrasBase;
 // Provides an input stream for audio capture based on CRAS, the ChromeOS Audio
 // Server.  This object is not thread safe and all methods should be invoked in
 // the thread that created the object.
-class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream> {
+class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream>,
+                                     public AecdumpRecordingSource {
  public:
   // The ctor takes all the usual parameters, plus |manager| which is the
   // audio manager who is creating this object.
@@ -50,6 +53,10 @@ class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream> {
   double GetVolume() override;
   bool IsMuted() override;
   void SetOutputDeviceForAec(const std::string& output_device_id) override;
+
+  // Implementation of AecdumpRecordingSource
+  void StartAecdump(base::File aecdump_file) override;
+  void StopAecdump() override;
 
  private:
   // Handles requests to get samples from the provided buffer.  This will be
@@ -128,10 +135,17 @@ class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream> {
   bool mute_system_audio_;
   bool mute_done_;
 
+#if DCHECK_IS_ON()
+  // Flag to indicate if recording has been enabled or not.
+  bool recording_enabled_;
+#endif
+
   // Value of input stream volume, between 0.0 - 1.0.
   double input_volume_;
 
   std::unique_ptr<AudioBus> audio_bus_;
+
+  base::WeakPtrFactory<CrasInputStream> weak_factory_{this};
 };
 
 }  // namespace media
