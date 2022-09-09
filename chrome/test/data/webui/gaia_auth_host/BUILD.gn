@@ -15,7 +15,10 @@ generate_grd("build_grdp") {
 
   # Add local test files.
   input_files_base_dir = rebase_path(".", "//")
-  input_files = [ "password_change_authenticator_test.js" ]
+  input_files = [
+    "password_change_authenticator_test.js",
+    "saml_username_autofill_test.js",
+  ]
 
   # Add the core files from c/b/r/gaia_auth_host as well.
   deps = [ "//chrome/browser/resources/gaia_auth_host:preprocess_gen_js_files" ]
