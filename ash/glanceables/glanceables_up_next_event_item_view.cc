@@ -26,18 +26,14 @@ namespace {
 
 using ::google_apis::calendar::CalendarEvent;
 
-std::u16string GetFormattedEventTimeInterval(const CalendarEvent& event) {
+std::u16string GetEventTimeLabelText(const CalendarEvent& event) {
   const base::Time& event_start_time = event.start_time().date_time();
-  const base::Time& event_end_time = event.end_time().date_time();
   bool use_12_hour_clock =
       Shell::Get()->system_tray_model()->clock()->hour_clock_type() ==
       base::k12HourClock;
-  if (use_12_hour_clock) {
-    return calendar_utils::FormatTwelveHourClockTimeInterval(event_start_time,
-                                                             event_end_time);
-  }
-  return calendar_utils::FormatTwentyFourHourClockTimeInterval(event_start_time,
-                                                               event_end_time);
+  if (use_12_hour_clock)
+    return calendar_utils::GetTwelveHourClockTime(event_start_time);
+  return calendar_utils::GetTwentyFourHourClockTime(event_start_time);
 }
 
 }  // namespace
@@ -59,7 +55,7 @@ GlanceablesUpNextEventItemView::GlanceablesUpNextEventItemView(
       gfx::HorizontalAlignment::ALIGN_LEFT);
 
   event_time_label_ = AddChildView(
-      std::make_unique<views::Label>(GetFormattedEventTimeInterval(event_)));
+      std::make_unique<views::Label>(GetEventTimeLabelText(event_)));
   event_time_label_->SetAutoColorReadabilityEnabled(false);
   event_time_label_->SetEnabledColor(SK_ColorWHITE);
 

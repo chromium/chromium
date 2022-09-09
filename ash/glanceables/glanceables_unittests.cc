@@ -264,10 +264,10 @@ TEST_F(GlanceablesTest, UpNextViewRendersCorrectly) {
 
   EXPECT_EQ(GetEventTitleLabelAt(0)->GetText(),
             u"Ongoing event, started in the past");
-  EXPECT_EQ(GetEventTimeLabelAt(0)->GetText(), u"10:00 AM – 2:00 PM");
+  EXPECT_EQ(GetEventTimeLabelAt(0)->GetText(), u"10:00 AM");
 
   EXPECT_EQ(GetEventTitleLabelAt(1)->GetText(), u"Future event, later today");
-  EXPECT_EQ(GetEventTimeLabelAt(1)->GetText(), u"9:30 – 10:30 PM");
+  EXPECT_EQ(GetEventTimeLabelAt(1)->GetText(), u"9:30 PM");
 }
 
 TEST_F(GlanceablesTest, UpNextViewRendersCorrectlyIn24HrClockFormat) {
@@ -290,10 +290,10 @@ TEST_F(GlanceablesTest, UpNextViewRendersCorrectlyIn24HrClockFormat) {
 
   EXPECT_EQ(GetEventTitleLabelAt(0)->GetText(),
             u"Ongoing event, started in the past");
-  EXPECT_EQ(GetEventTimeLabelAt(0)->GetText(), u"10:00 – 14:00");
+  EXPECT_EQ(GetEventTimeLabelAt(0)->GetText(), u"10:00");
 
   EXPECT_EQ(GetEventTitleLabelAt(1)->GetText(), u"Future event, later today");
-  EXPECT_EQ(GetEventTimeLabelAt(1)->GetText(), u"21:30 – 22:30");
+  EXPECT_EQ(GetEventTimeLabelAt(1)->GetText(), u"21:30");
 }
 
 TEST_F(GlanceablesTest, UpNextViewShowsNoEventsLabel) {
