@@ -11,6 +11,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/message_center/unified_message_center_view.h"
 #include "ash/system/status_area_widget.h"
@@ -29,6 +30,7 @@
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
@@ -133,6 +135,16 @@ class UnifiedSystemTrayTest : public AshTestBase,
 INSTANTIATE_TEST_SUITE_P(All,
                          UnifiedSystemTrayTest,
                          testing::Bool() /* IsQsRevampEnabled() */);
+
+// Regression test for crbug/1360579
+TEST_P(UnifiedSystemTrayTest, GetAccessibleNameForQuickSettingsBubble) {
+  auto* tray = GetPrimaryUnifiedSystemTray();
+  tray->ShowBubble();
+
+  EXPECT_EQ(tray->GetAccessibleNameForQuickSettingsBubble(),
+            l10n_util::GetStringUTF16(
+                IDS_ASH_QUICK_SETTINGS_BUBBLE_ACCESSIBLE_DESCRIPTION));
+}
 
 TEST_P(UnifiedSystemTrayTest, ShowVolumeSliderBubble) {
   // The volume popup is not visible initially.

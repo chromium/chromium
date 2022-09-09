@@ -597,9 +597,12 @@ std::u16string UnifiedSystemTray::GetAccessibleNameForBubble() {
 }
 
 std::u16string UnifiedSystemTray::GetAccessibleNameForQuickSettingsBubble() {
-  if (features::IsQsRevampEnabled() &&
-      bubble_->quick_settings_view()->IsDetailedViewShown()) {
-    return bubble_->quick_settings_view()->GetDetailedViewAccessibleName();
+  if (features::IsQsRevampEnabled()) {
+    if (bubble_->quick_settings_view()->IsDetailedViewShown())
+      return bubble_->quick_settings_view()->GetDetailedViewAccessibleName();
+
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_QUICK_SETTINGS_BUBBLE_ACCESSIBLE_DESCRIPTION);
   }
 
   if (bubble_->unified_view()->IsDetailedViewShown())
