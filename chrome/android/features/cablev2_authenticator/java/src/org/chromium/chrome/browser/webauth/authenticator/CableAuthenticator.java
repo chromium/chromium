@@ -145,7 +145,7 @@ class CableAuthenticator {
             Fido2Api.appendBrowserMakeCredentialOptionsToParcel(
                     params, Uri.parse("https://" + params.relyingParty.id), params.challenge, args);
         } catch (NoSuchAlgorithmException e) {
-            onAuthenticatorAttestationResponse(CTAP2_ERR_UNSUPPORTED_ALGORITHM, null);
+            onAuthenticatorAttestationResponse(CTAP2_ERR_UNSUPPORTED_ALGORITHM, null, null);
             return;
         }
 
@@ -283,8 +283,16 @@ class CableAuthenticator {
             }
         } else if (isMakeCredential) {
             if (response instanceof MakeCredentialAuthenticatorResponse) {
-                onAuthenticatorAttestationResponse(CTAP2_OK,
-                        ((MakeCredentialAuthenticatorResponse) response).attestationObject);
+                MakeCredentialAuthenticatorResponse r =
+                        (MakeCredentialAuthenticatorResponse) response;
+
+                byte[] devicePublicKeySignature = null;
+                if (r.devicePublicKey != null) {
+                    devicePublicKeySignature = r.devicePublicKey.signature;
+                }
+
+                onAuthenticatorAttestationResponse(
+                        CTAP2_OK, r.attestationObject, devicePublicKeySignature);
                 result = Result.REGISTER_OK;
             }
         } else {
@@ -301,7 +309,7 @@ class CableAuthenticator {
 
         if (result != Result.REGISTER_OK && result != Result.SIGN_OK) {
             if (isMakeCredential) {
-                onAuthenticatorAttestationResponse(ctapStatus, null);
+                onAuthenticatorAttestationResponse(ctapStatus, null, null);
             } else {
                 onAuthenticatorAssertionResponse(ctapStatus, null);
             }
@@ -310,11 +318,12 @@ class CableAuthenticator {
         mUi.onAuthenticatorResult(result);
     }
 
-    private void onAuthenticatorAttestationResponse(int ctapStatus, byte[] attestationObject) {
+    private void onAuthenticatorAttestationResponse(
+            int ctapStatus, byte[] attestationObject, byte[] devicePublicKeySignature) {
         mTaskRunner.postTask(
                 ()
                         -> CableAuthenticatorJni.get().onAuthenticatorAttestationResponse(
-                                ctapStatus, attestationObject));
+                                ctapStatus, attestationObject, devicePublicKeySignature));
     }
 
     private void onAuthenticatorAssertionResponse(int ctapStatus, byte[] responseBytes) {
@@ -455,7 +464,8 @@ class CableAuthenticator {
         /**
          * Called to alert native code of a response to a makeCredential request.
          */
-        void onAuthenticatorAttestationResponse(int ctapStatus, byte[] attestationObject);
+        void onAuthenticatorAttestationResponse(
+                int ctapStatus, byte[] attestationObject, byte[] devicePublicKeySignature);
 
         /**
          * Called to alert native code of a response to a getAssertion request.

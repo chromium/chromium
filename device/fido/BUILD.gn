@@ -10,6 +10,8 @@ component("fido") {
   sources = [
     "attested_credential_data.cc",
     "attested_credential_data.h",
+    "authenticator_data.cc",
+    "authenticator_data.h",
     "authenticator_selection_criteria.cc",
     "authenticator_selection_criteria.h",
     "cable/cable_discovery_data.cc",
@@ -89,8 +91,6 @@ component("fido") {
       "attestation_statement_formats.h",
       "auth_token_requester.cc",
       "auth_token_requester.h",
-      "authenticator_data.cc",
-      "authenticator_data.h",
       "authenticator_get_assertion_response.cc",
       "authenticator_get_assertion_response.h",
       "authenticator_get_info_response.cc",

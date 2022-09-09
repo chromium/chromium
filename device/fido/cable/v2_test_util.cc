@@ -383,6 +383,9 @@ class TestPlatform : public authenticator::Platform {
             ? false
             : params->authenticator_selection->resident_key ==
                   ResidentKeyRequirement::kRequired;
+    if (params->device_public_key) {
+      request.device_public_key.emplace();
+    }
 
     std::pair<device::CtapRequestCommand, absl::optional<cbor::Value>>
         request_cbor = AsCTAPRequestValuePair(request);
@@ -402,6 +405,9 @@ class TestPlatform : public authenticator::Platform {
     CHECK_EQ(request.client_data_hash.size(), params->challenge.size());
     memcpy(request.client_data_hash.data(), params->challenge.data(),
            params->challenge.size());
+    if (params->device_public_key) {
+      request.device_public_key.emplace();
+    }
 
     std::pair<device::CtapRequestCommand, absl::optional<cbor::Value>>
         request_cbor = AsCTAPRequestValuePair(request);
@@ -459,7 +465,7 @@ class TestPlatform : public authenticator::Platform {
     if (!result || result->empty()) {
       std::move(callback).Run(
           static_cast<uint32_t>(device::CtapDeviceResponseCode::kCtap2ErrOther),
-          base::span<const uint8_t>());
+          base::span<const uint8_t>(), absl::nullopt);
       return;
     }
     const base::span<const uint8_t> payload = *result;
@@ -467,7 +473,8 @@ class TestPlatform : public authenticator::Platform {
     if (payload.size() == 1 ||
         payload[0] !=
             static_cast<uint8_t>(device::CtapDeviceResponseCode::kSuccess)) {
-      std::move(callback).Run(payload[0], base::span<const uint8_t>());
+      std::move(callback).Run(payload[0], base::span<const uint8_t>(),
+                              absl::nullopt);
       return;
     }
 
@@ -480,12 +487,21 @@ class TestPlatform : public authenticator::Platform {
                     in_map.find(cbor::Value(2))->second.GetBytestring());
     out_map.emplace("attStmt", in_map.find(cbor::Value(3))->second.GetMap());
 
+    absl::optional<base::span<const uint8_t>> device_public_key_signature;
+    const auto& unsigned_extension_outputs_it = in_map.find(cbor::Value(6));
+    if (unsigned_extension_outputs_it != in_map.end()) {
+      device_public_key_signature =
+          unsigned_extension_outputs_it->second.GetMap()
+              .find(cbor::Value(kExtensionDevicePublicKey))
+              ->second.GetBytestring();
+    }
+
     absl::optional<std::vector<uint8_t>> attestation_obj =
         cbor::Writer::Write(cbor::Value(std::move(out_map)));
 
     std::move(callback).Run(
         static_cast<uint32_t>(device::CtapDeviceResponseCode::kSuccess),
-        *attestation_obj);
+        *attestation_obj, device_public_key_signature);
   }
 
   void OnGetAssertionResult(GetAssertionCallback callback,
@@ -524,6 +540,16 @@ class TestPlatform : public authenticator::Platform {
       response->user_handle = user_it->second.GetMap()
                                   .find(cbor::Value("id"))
                                   ->second.GetBytestring();
+    }
+
+    auto unsigned_extension_outputs_it = in_map.find(cbor::Value(8));
+    if (unsigned_extension_outputs_it != in_map.end()) {
+      response->device_public_key =
+          blink::mojom::DevicePublicKeyResponse::New();
+      response->device_public_key->signature =
+          unsigned_extension_outputs_it->second.GetMap()
+              .find(cbor::Value(kExtensionDevicePublicKey))
+              ->second.GetBytestring();
     }
 
     std::move(callback).Run(

@@ -69,9 +69,10 @@ class Platform {
     DISCOVERABLE_CREDENTIALS_REQUEST = 115,
   };
 
-  using MakeCredentialCallback =
-      base::OnceCallback<void(uint32_t status,
-                              base::span<const uint8_t> attestation_obj)>;
+  using MakeCredentialCallback = base::OnceCallback<void(
+      uint32_t status,
+      base::span<const uint8_t> attestation_obj,
+      absl::optional<base::span<const uint8_t>> device_public_key_signature)>;
 
   virtual void MakeCredential(
       blink::mojom::PublicKeyCredentialCreationOptionsPtr params,

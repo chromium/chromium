@@ -83,6 +83,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     // as a fixed size area for the large blob.
     size_t available_large_blob_storage = 1024;
     bool cred_blob_support = false;
+    // none_attestation causes a "none" attestation statement to be returned
+    // from makeCredential calls.
+    bool none_attestation = false;
     // include_transports_in_attestation_certificate controls whether a
     // transports extension will be included in the attestation certificate
     // returned from a makeCredential operation.

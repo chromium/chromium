@@ -725,6 +725,23 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
     return AuthenticatorMakeCredential(std::move(options)).status;
   }
 
+  // HasDevicePublicKeyExtensionInAuthenticatorData returns true if `response`
+  // contains a DPK extension in the authenticator data of the response.
+  bool HasDevicePublicKeyExtensionInAuthenticatorData(
+      const MakeCredentialAuthenticatorResponsePtr& response) {
+    device::AuthenticatorData parsed_auth_data =
+        AuthDataFromMakeCredentialResponse(response);
+
+    const auto& extensions = parsed_auth_data.extensions();
+    if (!extensions) {
+      return false;
+    }
+
+    const cbor::Value::MapValue& extensions_map = extensions->GetMap();
+    return extensions_map.find(cbor::Value(
+               device::kExtensionDevicePublicKey)) != extensions_map.end();
+  }
+
   scoped_refptr<::testing::NiceMock<device::MockBluetoothAdapter>>
       mock_adapter_ = base::MakeRefCounted<
           ::testing::NiceMock<device::MockBluetoothAdapter>>();
@@ -4953,23 +4970,6 @@ class AuthenticatorDevicePublicKeyTest : public AuthenticatorImplTest {
   }
 
  protected:
-  // HasDevicePublicKeyExtensionInAuthenticatorData returns true if `response`
-  // contains a DPK extension in the authenticator data of the response.
-  bool HasDevicePublicKeyExtensionInAuthenticatorData(
-      const MakeCredentialAuthenticatorResponsePtr& response) {
-    device::AuthenticatorData parsed_auth_data =
-        AuthDataFromMakeCredentialResponse(response);
-
-    const auto& extensions = parsed_auth_data.extensions();
-    if (!extensions) {
-      return false;
-    }
-
-    const cbor::Value::MapValue& extensions_map = extensions->GetMap();
-    return extensions_map.find(cbor::Value(
-               device::kExtensionDevicePublicKey)) != extensions_map.end();
-  }
-
   TestAuthenticatorContentBrowserClient test_client_;
   raw_ptr<ContentBrowserClient> old_client_ = nullptr;
 };
@@ -4980,11 +4980,10 @@ TEST_F(AuthenticatorDevicePublicKeyTest, DevicePublicKeyMakeCredential) {
   for (const bool dpk_support : {false, true}) {
     device::VirtualCtap2Device::Config config;
     config.device_public_key_support = dpk_support;
-    virtual_device_factory_->SetCtap2Config(config);
-
-    // self-attestation is needed because, otherwise, zeroing the AAGUID
+    // None attestation is needed because, otherwise, zeroing the AAGUID
     // invalidates the DPK signature.
-    virtual_device_factory_->mutable_state()->self_attestation = true;
+    config.none_attestation = true;
+    virtual_device_factory_->SetCtap2Config(config);
 
     PublicKeyCredentialCreationOptionsPtr options =
         GetTestPublicKeyCredentialCreationOptions();
@@ -5065,6 +5064,10 @@ TEST_F(AuthenticatorDevicePublicKeyTest, DevicePublicKeyBadResponse) {
 
     device::VirtualCtap2Device::Config config;
     config.device_public_key_support = true;
+    // None attestation is needed because, otherwise, zeroing the AAGUID
+    // invalidates the DPK signature.
+    config.none_attestation = true;
+
     switch (breakage) {
       case 0:
         break;
@@ -5081,10 +5084,6 @@ TEST_F(AuthenticatorDevicePublicKeyTest, DevicePublicKeyBadResponse) {
         CHECK(false);
     }
     virtual_device_factory_->SetCtap2Config(config);
-
-    // self-attestation is needed because, otherwise, zeroing the AAGUID
-    // invalidates the DPK signature.
-    virtual_device_factory_->mutable_state()->self_attestation = true;
 
     AuthenticatorStatus status;
     for (const bool is_make_credential : {false, true}) {
@@ -5227,11 +5226,10 @@ TEST_F(AuthenticatorDevicePublicKeyTest,
     config.device_public_key_always_return_attestation = test.has_attestation;
     config.device_public_key_always_return_enterprise_attestation =
         test.enterprise_attestation_returned;
-    virtual_device_factory_->SetCtap2Config(config);
-
-    // self-attestation is needed because, otherwise, zeroing the AAGUID
+    // None attestation is needed because, otherwise, zeroing the AAGUID
     // invalidates the DPK signature.
-    virtual_device_factory_->mutable_state()->self_attestation = true;
+    config.none_attestation = true;
+    virtual_device_factory_->SetCtap2Config(config);
 
     test_client_.GetTestWebAuthenticationDelegate()
         ->permit_individual_attestation = test.is_permitted_by_policy;
@@ -9038,6 +9036,10 @@ class AuthenticatorCableV2Test
     VirtualCtap2Device::Config ret;
     ret.include_credential_in_assertion_response =
         VirtualCtap2Device::Config::IncludeCredential::ALWAYS;
+    ret.device_public_key_support = true;
+    // None attestation is needed because, otherwise, zeroing the AAGUID
+    // invalidates the DPK signature.
+    ret.none_attestation = true;
     return ret;
   }
 };
@@ -9444,6 +9446,31 @@ TEST_F(AuthenticatorCableV2AuthenticatorTest, EmptyAllowList) {
   ASSERT_TRUE(error_.has_value());
   EXPECT_EQ(*error_, device::cablev2::authenticator::Platform::Error::
                          DISCOVERABLE_CREDENTIALS_REQUEST);
+}
+
+TEST_F(AuthenticatorCableV2AuthenticatorTest, DevicePublicKeyMakeCredential) {
+  auto options = GetTestPublicKeyCredentialCreationOptions();
+  options->device_public_key = blink::mojom::DevicePublicKeyRequest::New();
+
+  const auto result = AuthenticatorMakeCredential(std::move(options));
+
+  ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+  EXPECT_TRUE(result.response->device_public_key);
+  EXPECT_TRUE(HasDevicePublicKeyExtensionInAuthenticatorData(result.response));
+}
+
+TEST_F(AuthenticatorCableV2AuthenticatorTest, DevicePublicKeyGetAssertion) {
+  auto options = GetTestPublicKeyCredentialRequestOptions();
+  options->device_public_key = blink::mojom::DevicePublicKeyRequest::New();
+  options->allow_credentials[0].transports.insert(
+      device::FidoTransportProtocol::kHybrid);
+  ASSERT_TRUE(virtual_device_.mutable_state()->InjectRegistration(
+      options->allow_credentials[0].id, options->relying_party_id));
+
+  const auto result = AuthenticatorGetAssertion(std::move(options));
+
+  ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+  EXPECT_TRUE(result.response->device_public_key);
 }
 
 // AuthenticatorImplWithRequestProxyTest tests behavior with an installed

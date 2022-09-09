@@ -96,6 +96,7 @@ struct MakeCredRequest {
   RAW_PTR_EXCLUSION const cbor::Value::ArrayValue* cred_params;
   RAW_PTR_EXCLUSION const cbor::Value::ArrayValue* excluded_credentials;
   RAW_PTR_EXCLUSION const bool* resident_key;
+  RAW_PTR_EXCLUSION const std::string* device_public_key_attestation;
 };
 
 static constexpr StepOrByte<MakeCredRequest> kMakeCredParseSteps[] = {
@@ -129,6 +130,19 @@ static constexpr StepOrByte<MakeCredRequest> kMakeCredParseSteps[] = {
     IntKey<MakeCredRequest>(4),
     ELEMENT(Is::kOptional, MakeCredRequest, excluded_credentials),
     IntKey<MakeCredRequest>(5),
+
+    Map<MakeCredRequest>(Is::kOptional),
+    IntKey<MakeCredRequest>(6),
+      Map<MakeCredRequest>(Is::kOptional),
+      StringKey<MakeCredRequest>(), 'd', 'e', 'v', 'i', 'c', 'e',
+                                    'P', 'u', 'b', 'K', 'e', 'y', '\0',
+        // The presence of the attestation type is used to detect when DPK is
+        // requested.
+        ELEMENT(Is::kRequired, MakeCredRequest, device_public_key_attestation),
+        StringKey<MakeCredRequest>(), 'a', 't', 't', 'e', 's', 't', 'a', 't',
+                                      'i', 'o', 'n', '\0',
+      Stop<MakeCredRequest>(),
+    Stop<MakeCredRequest>(),
 
     Map<MakeCredRequest>(Is::kOptional),
     IntKey<MakeCredRequest>(7),
@@ -171,6 +185,7 @@ struct GetAssertionRequest {
   RAW_PTR_EXCLUSION const std::string* rp_id;
   RAW_PTR_EXCLUSION const std::vector<uint8_t>* client_data_hash;
   RAW_PTR_EXCLUSION const cbor::Value::ArrayValue* allowed_credentials;
+  RAW_PTR_EXCLUSION const std::string* device_public_key_attestation;
 };
 
 static constexpr StepOrByte<GetAssertionRequest> kGetAssertionParseSteps[] = {
@@ -183,6 +198,19 @@ static constexpr StepOrByte<GetAssertionRequest> kGetAssertionParseSteps[] = {
 
     ELEMENT(Is::kOptional, GetAssertionRequest, allowed_credentials),
     IntKey<GetAssertionRequest>(3),
+
+    Map<GetAssertionRequest>(Is::kOptional),
+    IntKey<GetAssertionRequest>(4),
+      Map<GetAssertionRequest>(Is::kOptional),
+      StringKey<GetAssertionRequest>(), 'd', 'e', 'v', 'i', 'c', 'e',
+                                        'P', 'u', 'b', 'K', 'e', 'y', '\0',
+        // The presence of the attestation type is used to detect when DPK is
+        // requested.
+        ELEMENT(Is::kRequired, GetAssertionRequest, device_public_key_attestation),
+        StringKey<GetAssertionRequest>(), 'a', 't', 't', 'e', 's', 't', 'a', 't',
+                                          'i', 'o', 'n', '\0',
+      Stop<GetAssertionRequest>(),
+    Stop<GetAssertionRequest>(),
 
     Stop<GetAssertionRequest>(),
     // clang-format on
@@ -207,8 +235,12 @@ std::vector<uint8_t> BuildGetInfoResponse() {
   transports.emplace_back("hybrid");
   transports.emplace_back("internal");
 
+  cbor::Value::ArrayValue extensions;
+  extensions.emplace_back("devicePubKey");
+
   cbor::Value::MapValue response_map;
   response_map.emplace(1, std::move(versions));
+  response_map.emplace(2, std::move(extensions));
   response_map.emplace(3, aaguid);
   response_map.emplace(4, std::move(options));
   response_map.emplace(9, std::move(transports));
@@ -754,6 +786,13 @@ class CTAP2Processor : public Transaction {
                : device::ResidentKeyRequirement::kDiscouraged,
             device::UserVerificationRequirement::kRequired);
 
+        if (make_cred_request.device_public_key_attestation) {
+          // Play Services doesn't support any of the devicePubKey parameters so
+          // this code doesn't bother parsing them nor passing them on.
+          params->device_public_key =
+              blink::mojom::DevicePublicKeyRequest::New();
+        }
+
         if (!CopyCredIds(make_cred_request.excluded_credentials,
                          &params->exclude_credentials)) {
           return Platform::Error::INTERNAL_ERROR;
@@ -821,6 +860,13 @@ class CTAP2Processor : public Transaction {
           return Platform::Error::INTERNAL_ERROR;
         }
 
+        if (get_assertion_request.device_public_key_attestation) {
+          // Play Services doesn't support any of the devicePubKey parameters so
+          // this code doesn't bother parsing them nor passing them on.
+          params->device_public_key =
+              blink::mojom::DevicePublicKeyRequest::New();
+        }
+
         transaction_received_ = true;
         const bool empty_allowlist = params->allow_credentials.empty();
         platform_->GetAssertion(
@@ -849,7 +895,8 @@ class CTAP2Processor : public Transaction {
   void OnMakeCredentialResponse(
       bool was_discoverable_credential_request,
       uint32_t ctap_status,
-      base::span<const uint8_t> attestation_object_bytes) {
+      base::span<const uint8_t> attestation_object_bytes,
+      absl::optional<base::span<const uint8_t>> device_public_key_signature) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK_LE(ctap_status, 0xFFu);
 
@@ -876,6 +923,13 @@ class CTAP2Processor : public Transaction {
       response_map.emplace(
           2, base::span<const uint8_t>(*attestation_object.auth_data));
       response_map.emplace(3, attestation_object.statement->Clone());
+
+      if (device_public_key_signature) {
+        cbor::Value::MapValue unsigned_extension_outputs;
+        unsigned_extension_outputs.emplace(kExtensionDevicePublicKey,
+                                           *device_public_key_signature);
+        response_map.emplace(6, std::move(unsigned_extension_outputs));
+      }
 
       absl::optional<std::vector<uint8_t>> response_payload =
           cbor::Writer::Write(cbor::Value(std::move(response_map)));
@@ -950,6 +1004,14 @@ class CTAP2Processor : public Transaction {
         // This is the `userSelected` field, which indicates that additional
         // confirmation of the account selection isn't needed.
         response_map.emplace(6, true);
+      }
+
+      if (auth_response->device_public_key) {
+        cbor::Value::MapValue unsigned_extension_outputs;
+        unsigned_extension_outputs.emplace(
+            kExtensionDevicePublicKey,
+            auth_response->device_public_key->signature);
+        response_map.emplace(8, std::move(unsigned_extension_outputs));
       }
 
       absl::optional<std::vector<uint8_t>> response_payload =

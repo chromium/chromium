@@ -163,22 +163,29 @@ std::vector<uint8_t> ConstructMakeCredentialResponse(
     bool enterprise_attestation_requested,
     absl::optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key,
     const absl::optional<std::vector<uint8_t>>& dpk_signature) {
-  cbor::Value::MapValue attestation_map;
-  attestation_map.emplace("alg", -7);
-  attestation_map.emplace("sig", fido_parsing_utils::Materialize(signature));
+  std::unique_ptr<OpaqueAttestationStatement> attestation_statement;
+  if (!signature.empty()) {
+    cbor::Value::MapValue attestation_map;
+    attestation_map.emplace("alg", -7);
+    attestation_map.emplace("sig", fido_parsing_utils::Materialize(signature));
 
-  if (attestation_certificate) {
-    cbor::Value::ArrayValue certificate_chain;
-    certificate_chain.emplace_back(std::move(*attestation_certificate));
-    attestation_map.emplace("x5c", std::move(certificate_chain));
+    if (attestation_certificate) {
+      cbor::Value::ArrayValue certificate_chain;
+      certificate_chain.emplace_back(std::move(*attestation_certificate));
+      attestation_map.emplace("x5c", std::move(certificate_chain));
+    }
+
+    attestation_statement = std::make_unique<OpaqueAttestationStatement>(
+        "packed", cbor::Value(std::move(attestation_map)));
+  } else {
+    attestation_statement = std::make_unique<OpaqueAttestationStatement>(
+        "none", cbor::Value(cbor::Value::MapValue()));
   }
 
   AuthenticatorMakeCredentialResponse make_credential_response(
       FidoTransportProtocol::kUsbHumanInterfaceDevice,
-      AttestationObject(
-          std::move(authenticator_data),
-          std::make_unique<OpaqueAttestationStatement>(
-              "packed", cbor::Value(std::move(attestation_map)))));
+      AttestationObject(std::move(authenticator_data),
+                        std::move(attestation_statement)));
   make_credential_response.enterprise_attestation_returned =
       enterprise_attestation_requested;
   if (large_blob_key) {
@@ -1313,15 +1320,17 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
   // Note: Non-deterministic, you need to mock this out if you rely on
   // deterministic behavior.
   std::vector<uint8_t> sig;
-  std::unique_ptr<crypto::ECPrivateKey> attestation_private_key =
-      crypto::ECPrivateKey::CreateFromPrivateKeyInfo(GetAttestationKey());
-  bool status =
-      Sign(attestation_private_key.get(), std::move(sign_buffer), &sig);
-  DCHECK(status);
+  if (!config_.none_attestation) {
+    std::unique_ptr<crypto::ECPrivateKey> attestation_private_key =
+        crypto::ECPrivateKey::CreateFromPrivateKeyInfo(GetAttestationKey());
+    bool status =
+        Sign(attestation_private_key.get(), std::move(sign_buffer), &sig);
+    DCHECK(status);
+  }
 
   absl::optional<std::vector<uint8_t>> attestation_cert;
   bool enterprise_attestation_requested = false;
-  if (!mutable_state()->self_attestation) {
+  if (!config_.none_attestation && !mutable_state()->self_attestation) {
     if (config_.support_enterprise_attestation) {
       switch (request.attestation_preference) {
         case AttestationConveyancePreference::
@@ -2810,8 +2819,9 @@ AttestedCredentialData VirtualCtap2Device::ConstructAttestedCredentialData(
   constexpr std::array<uint8_t, 16> kZeroAaguid = {0, 0, 0, 0, 0, 0, 0, 0,
                                                    0, 0, 0, 0, 0, 0, 0, 0};
   base::span<const uint8_t, 16> aaguid(kDeviceAaguid);
-  if (mutable_state()->self_attestation &&
-      !mutable_state()->non_zero_aaguid_with_self_attestation) {
+  if (config_.none_attestation ||
+      (mutable_state()->self_attestation &&
+       !mutable_state()->non_zero_aaguid_with_self_attestation)) {
     aaguid = kZeroAaguid;
   }
   return AttestedCredentialData(aaguid, sha256_length,
