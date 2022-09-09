@@ -3,14 +3,12 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/util/branding.gni")
 import("//components/vector_icons/vector_icons.gni")
 
 aggregate_vector_icons("components_vector_icons") {
   icon_directory = "."
 
   sources = [
-    "${branding_path_component}/product.icon",
     "account_circle.icon",
     "ads.icon",
     "ads_click.icon",
@@ -132,23 +130,6 @@ aggregate_vector_icons("components_vector_icons") {
 
   if (is_chromeos_ash) {
     sources += [ "videogame_asset_outline.icon" ]
-  }
-
-  if (is_chrome_branded) {
-    sources += [
-      "google_chrome/assistant.icon",
-      "google_chrome/google_calendar.icon",
-      "google_chrome/google_g_logo.icon",
-      "google_chrome/google_g_logo_monochrome.icon",
-      "google_chrome/google_keep_note.icon",
-      "google_chrome/google_lens_full_logo.icon",
-      "google_chrome/google_lens_full_logo_dark.icon",
-      "google_chrome/google_lens_logo.icon",
-      "google_chrome/google_password_manager.icon",
-      "google_chrome/google_pay_logo.icon",
-      "google_chrome/google_sites.icon",
-      "google_chrome/google_super_g.icon",
-    ]
   }
 }
 

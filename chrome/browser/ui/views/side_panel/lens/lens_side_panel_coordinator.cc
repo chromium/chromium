@@ -9,6 +9,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/scoped_observation.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/lens/lens_unified_side_panel_view.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/vector_icons.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/vector_icons.h"
 
@@ -86,8 +86,7 @@ void LensSidePanelCoordinator::RegisterEntryAndShow(
     auto entry = std::make_unique<SidePanelEntry>(
         SidePanelEntry::Id::kLens,
         l10n_util::GetStringUTF16(IDS_SIDE_PANEL_COMBO_BOX_GOOGLE_LENS_LABEL),
-        ui::ImageModel::FromVectorIcon(vector_icons::kGoogleLensLogoIcon,
-                                       ui::kColorIcon),
+        ui::ImageModel::FromVectorIcon(kGoogleLensLogoIcon, ui::kColorIcon),
         base::BindRepeating(&LensSidePanelCoordinator::CreateLensWebView,
                             base::Unretained(this), params));
     entry->AddObserver(this);

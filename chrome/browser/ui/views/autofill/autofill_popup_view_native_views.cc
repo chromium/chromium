@@ -220,7 +220,7 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
   if (icon_str == "google") {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     return ImageViewFromImageSkia(gfx::CreateVectorIcon(
-        vector_icons::kGoogleGLogoIcon, kIconSize, gfx::kPlaceholderColor));
+        kGoogleGLogoIcon, kIconSize, gfx::kPlaceholderColor));
 #else
     return nullptr;
 #endif

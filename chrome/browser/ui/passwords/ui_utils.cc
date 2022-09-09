@@ -34,7 +34,6 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/url_formatter/elide_url.h"
-#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
@@ -261,7 +260,7 @@ mojo::Remote<network::mojom::URLLoaderFactory> GetURLLoaderForMainFrame(
 
 const gfx::VectorIcon& GooglePasswordManagerVectorIcon() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return vector_icons::kGooglePasswordManagerIcon;
+  return kGooglePasswordManagerIcon;
 #else
   return kKeyIcon;
 #endif

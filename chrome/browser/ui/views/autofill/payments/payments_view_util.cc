@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -72,13 +71,13 @@ class IconView : public views::ImageView {
         // keep the bottom empty portion.
         image = gfx::ImageSkiaOperations::CreateTiledImage(
             gfx::CreateVectorIcon(
-                vector_icons::kGooglePayLogoIcon,
+                kGooglePayLogoIcon,
                 GetColorProvider()->GetColor(kColorPaymentsGooglePayLogo)),
             /*x=*/0, /*y=*/0, kGooglePayLogoWidth, kIconHeight);
         break;
       case TitleWithIconAndSeparatorView::Icon::GOOGLE_G:
         image =
-            gfx::CreateVectorIcon(vector_icons::kGoogleGLogoIcon, kIconHeight,
+            gfx::CreateVectorIcon(kGoogleGLogoIcon, kIconHeight,
                                   GetColorProvider()->GetColor(ui::kColorIcon));
         break;
     }
