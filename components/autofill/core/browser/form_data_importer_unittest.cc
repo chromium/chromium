@@ -4289,10 +4289,6 @@ TEST_P(FormDataImporterTest, UnusableIncompleteProfile) {
 // Note that this function doesn't test the removal functionality itself. This
 // is done in the AutofillProfile unit tests.
 TEST_P(FormDataImporterTest, RemoveInaccessibleProfileValuesMetrics) {
-  base::test::ScopedFeatureList remove_inaccessible_values_feature;
-  remove_inaccessible_values_feature.InitAndEnableFeature(
-      features::kAutofillRemoveInaccessibleProfileValues);
-
   // Minimal importable profile, but with a state, which is setting-inaccessible
   // for Germany.
   TypeValuePairs type_value_pairs = {{ADDRESS_HOME_COUNTRY, "DE"},

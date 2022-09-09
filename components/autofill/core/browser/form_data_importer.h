@@ -262,8 +262,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
                       PhoneNumber::PhoneCombineHelper& combined_phone,
                       const std::string& predicted_country_code);
 
-  // Clears all setting-inaccessible values from `profile` if
-  // `kAutofillRemoveInaccessibleProfileValues` is enabled.
+  // Clears all setting-inaccessible values from `profile`.
   // TODO(crbug.com/1297032): Remove `predicted_country_code` when launched.
   void RemoveInaccessibleProfileValues(
       AutofillProfile& profile,

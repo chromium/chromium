@@ -332,16 +332,13 @@ bool FormDataImporter::SetPhoneNumber(
 void FormDataImporter::RemoveInaccessibleProfileValues(
     AutofillProfile& profile,
     const std::string& predicted_country_code) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillRemoveInaccessibleProfileValues)) {
-    const ServerFieldTypeSet inaccessible_fields =
-        profile.FindInaccessibleProfileValues(predicted_country_code);
-    profile.ClearFields(inaccessible_fields);
-    AutofillMetrics::LogRemovedSettingInaccessibleFields(
-        !inaccessible_fields.empty());
-    for (const ServerFieldType inaccessible_field : inaccessible_fields) {
-      AutofillMetrics::LogRemovedSettingInaccessibleField(inaccessible_field);
-    }
+  const ServerFieldTypeSet inaccessible_fields =
+      profile.FindInaccessibleProfileValues(predicted_country_code);
+  profile.ClearFields(inaccessible_fields);
+  AutofillMetrics::LogRemovedSettingInaccessibleFields(
+      !inaccessible_fields.empty());
+  for (const ServerFieldType inaccessible_field : inaccessible_fields) {
+    AutofillMetrics::LogRemovedSettingInaccessibleField(inaccessible_field);
   }
 }
 

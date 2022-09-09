@@ -974,10 +974,8 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_OncePerVersion) {
 TEST_F(PersonalDataManagerCleanerTest,
        RemoveInaccessibleProfileValuesOnStartup) {
   base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeatureWithParameters(
-      features::kAutofillRemoveInaccessibleProfileValues,
-      {{features::kAutofillRemoveInaccessibleProfileValuesOnStartup.name,
-        "true"}});
+  feature.InitAndEnableFeature(
+      features::kAutofillRemoveInaccessibleProfileValuesOnStartup);
 
   // Add a German and a US profile.
   AutofillProfile profile0(base::GenerateGUID(), test::kEmptyOrigin);
