@@ -315,6 +315,7 @@ CONTENT_EXPORT extern const base::Feature kWebXr;
 CONTENT_EXPORT extern const base::Feature kWebXrArModule;
 
 #if BUILDFLAG(IS_ANDROID)
+CONTENT_EXPORT extern const base::Feature kAccessibilityAsyncTreeConstruction;
 CONTENT_EXPORT extern const base::Feature kAccessibilityPageZoom;
 CONTENT_EXPORT extern const base::Feature
     kBackgroundMediaRendererHasModerateBinding;

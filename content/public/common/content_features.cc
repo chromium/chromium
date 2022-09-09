@@ -1214,6 +1214,11 @@ const base::Feature kWebXrArModule{"WebXRARModule",
                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
 #if BUILDFLAG(IS_ANDROID)
+// Allows the experimental approach of proactively generating an accessibility
+// tree asynchronously off the main thread, before the framework requests it.
+const base::Feature kAccessibilityAsyncTreeConstruction{
+    "AccessibilityAsyncTreeConstruction", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Allows the use of page zoom in place of accessibility text autosizing, and
 // updated UI to replace existing Chrome Accessibility Settings.
 const base::Feature kAccessibilityPageZoom{"AccessibilityPageZoom",
