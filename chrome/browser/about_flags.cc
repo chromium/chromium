@@ -7805,7 +7805,7 @@ const FeatureEntry kFeatureEntries[] = {
                                  "AllowURNsInIframes,BrowsingTopics,"
                                  "ConversionMeasurement,FencedFrames,"
                                  "OverridePrivacySandboxSettingsLocalTesting,"
-                                 "SharedStorageAPI")},
+                                 "SharedStorageAPI,PrivateAggregationApi")},
 
 #if BUILDFLAG(IS_ANDROID)
     {"site-data-improvements", flag_descriptions::kSiteDataImprovementsName,
