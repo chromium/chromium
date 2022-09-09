@@ -88,6 +88,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
@@ -3765,7 +3766,13 @@ TEST_P(AppListPresenterNonBubbleTest, SearchBoxDeactivatedOnModelChange) {
 
 // Tests that search UI gets closed if search model gets changed.
 // TODO(crbug.com/1273162): Fix for ProductivityLauncher enabled.
-TEST_F(AppListPresenterNonBubbleTest, SearchClearedOnModelChange) {
+// TODO(crbug.com/1361916): Re-enable flaky test
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SearchClearedOnModelChange DISABLED_SearchClearedOnModelChange
+#else
+#define MAYBE_SearchClearedOnModelChange SearchClearedOnModelChange
+#endif
+TEST_F(AppListPresenterNonBubbleTest, MAYBE_SearchClearedOnModelChange) {
   EnableTabletMode(true);
 
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
