@@ -66,7 +66,8 @@ ChromeDevToolsSession::ChromeDevToolsSession(
   }
   if (IsDomainAvailableToUntrustedClient<TargetHandler>() ||
       channel->GetClient()->IsTrusted()) {
-    target_handler_ = std::make_unique<TargetHandler>(&dispatcher_);
+    target_handler_ = std::make_unique<TargetHandler>(
+        &dispatcher_, channel->GetClient()->IsTrusted());
   }
   if (IsDomainAvailableToUntrustedClient<BrowserHandler>() ||
       channel->GetClient()->IsTrusted()) {
