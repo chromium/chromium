@@ -344,7 +344,7 @@ class AudioSinkAudioTrackImpl {
                                         .build());
         if (isValidSessionId(sessionId)) builder.setSessionId(sessionId);
         mAudioTrack = builder.build();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && isValidSessionId(sessionId)) {
             // The playback will not be started until Android AudioTrack has more data than
             // the start threshold. Reduce the start threshold to 50ms in order to start
             // playback as soon as possible after starting or resuming. Sometimes other
