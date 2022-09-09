@@ -200,6 +200,11 @@ vars = {
   # qemu on linux-arm64 machines.
   'checkout_fuchsia_for_arm64_host': False,
 
+  # Whether to checkout test related data. For compile only builder, we should
+  # consider using this flag to save some resources.
+  # This is introduced because of crbug.com/1358788.
+  'checkout_testdata': True,
+
   # Revision of Crubit (trunk on 2022-08-26).  This should typically be the
   # same as the revision specified in CRUBIT_REVISION in
   # tools/rust/update_rust.py.  More details and roll instructions can be
@@ -4103,6 +4108,7 @@ hooks = [
  {
     'name': 'test_fonts',
     'pattern': '.',
+    'condition': 'checkout_testdata',
     'action': [ 'python3',
                 'src/third_party/depot_tools/download_from_google_storage.py',
                 '--no_resume',
@@ -4116,6 +4122,7 @@ hooks = [
   {
     'name': 'opus_test_files',
     'pattern': '.',
+    'condition': 'checkout_testdata',
     'action': ['python3',
                'src/third_party/depot_tools/download_from_google_storage.py',
                '--no_auth',
@@ -4165,6 +4172,7 @@ hooks = [
   {
     'name': 'wasm_fuzzer',
     'pattern': '.',
+    'condition': 'checkout_testdata',
     'action': [ 'python3',
                 'src/third_party/depot_tools/download_from_google_storage.py',
                 '--no_resume',
@@ -4321,6 +4329,7 @@ hooks = [
   {
     'name': 'maps_perf_test_load_dataset',
     'pattern': '\\.sha1',
+    'condition': 'checkout_testdata',
     'action': [ 'python3',
                 'src/third_party/depot_tools/download_from_google_storage.py',
                 '--no_resume',
@@ -4366,6 +4375,7 @@ hooks = [
   {
     'name': 'zucchini_testdata',
     'pattern': '.',
+    'condition': 'checkout_testdata',
     'action': [ 'python3',
                 'src/third_party/depot_tools/download_from_google_storage.py',
                 '--no_resume',
