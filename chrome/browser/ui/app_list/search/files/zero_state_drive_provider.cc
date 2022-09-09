@@ -9,19 +9,14 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/bind.h"
 #include "base/files/file.h"
-#include "base/files/file_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
-#include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -51,11 +46,6 @@ constexpr char kSchema[] = "zero_state_drive://";
 // ItemSuggestCache.
 constexpr base::TimeDelta kFirstUpdateDelay = base::Seconds(10);
 
-// The minimum number of results required to keep using the short delay. This
-// means that results are refreshed more often if there are enough high-quality
-// results returned.
-constexpr size_t kShortDelayQuota = 3u;
-
 void LogLatency(base::TimeDelta latency) {
   base::UmaHistogramTimes("Apps.AppList.DriveZeroStateProvider.Latency",
                           latency);
@@ -73,30 +63,6 @@ bool IsDriveDisabled(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(drive::prefs::kDisableDrive);
 }
 
-// Filters out the files that exceed the max last modified time.
-SuggestResults FilterSuggestDataArrayByTime(
-    SuggestResults suggest_results,
-    const base::TimeDelta& max_last_modified_time) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  SuggestResults filtered_results;
-  const base::Time now = base::Time::Now();
-  for (const auto& suggest_result : suggest_results) {
-    base::File::Info info;
-    const auto& path = suggest_result.file_path;
-    if (!base::PathExists(path) || !base::GetFileInfo(path, &info) ||
-        now - info.last_modified > max_last_modified_time) {
-      // Filter out this suggestion data.
-      continue;
-    }
-
-    filtered_results.push_back(suggest_result);
-  }
-
-  return filtered_results;
-}
-
 }  // namespace
 
 ZeroStateDriveProvider::ZeroStateDriveProvider(
@@ -109,11 +75,7 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
       session_manager_(session_manager),
       file_suggest_service_(
           FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile)),
-      construction_time_(base::Time::Now()),
-      max_last_modified_time_(base::Days(base::GetFieldTrialParamByFeatureAsInt(
-          ash::features::kProductivityLauncher,
-          "max_last_modified_time",
-          8))) {
+      construction_time_(base::Time::Now()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(profile_);
 
@@ -122,10 +84,6 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
   // `ZeroStateDriveProvider` is built only when the app list syncable service
   // exists. Therefore, `file_suggest_service_` should always be true.
   DCHECK(file_suggest_service_);
-
-  task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::TaskPriority::USER_BLOCKING, base::MayBlock(),
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
   // It's safe to use Unretained(this) by contract of the
   // CallbackListSubscription.
@@ -239,36 +197,25 @@ void ZeroStateDriveProvider::OnSuggestFileDataFetched(
   if (!suggest_results)
     return;
 
-  task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&FilterSuggestDataArrayByTime, *suggest_results,
-                     max_last_modified_time_),
-      base::BindOnce(&ZeroStateDriveProvider::SetSearchResults,
-                     weak_factory_.GetWeakPtr()));
+  SetSearchResults(*suggest_results);
 }
 
-void ZeroStateDriveProvider::SetSearchResults(SuggestResults filtered_results) {
+void ZeroStateDriveProvider::SetSearchResults(SuggestResults suggest_results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Assign scores to results by simply using their position in the results
   // list. The order of results from the ItemSuggest API is significant:
   // the first is better than the second, etc. Resulting scores are in [0, 1].
-  const double total_items = static_cast<double>(filtered_results.size());
+  const double total_items = static_cast<double>(suggest_results.size());
   int item_index = 0;
   SearchProvider::Results provider_results;
-  for (const auto& filtered_data : filtered_results) {
+  for (const auto& result : suggest_results) {
     const double score = 1.0 - (item_index / total_items);
     ++item_index;
 
-    provider_results.emplace_back(MakeListResult(
-        filtered_data.file_path, filtered_data.prediction_reason, score));
+    provider_results.emplace_back(
+        MakeListResult(result.file_path, result.prediction_reason, score));
   }
-
-  // If there aren't enough results, use a long delay and vice versa. Note that
-  // the delay is only updated if cache results are non-null, indicating that
-  // the cache has been updated.
-  SetUseLongDelayInDriveSuggestQuery(
-      profile_, provider_results.size() < kShortDelayQuota);
 
   SwapResults(&provider_results);
   LogLatency(base::TimeTicks::Now() - query_start_time_);

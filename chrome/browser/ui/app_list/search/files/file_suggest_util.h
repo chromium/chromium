@@ -8,8 +8,6 @@
 #include "base/files/file_path.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-class Profile;
-
 namespace app_list {
 
 // Outcome of a call to `FileSuggestKeyedService::GetSuggestFileData()`. These
@@ -41,10 +39,6 @@ struct FileSuggestData {
   // The reason why the file is suggested.
   absl::optional<std::string> prediction_reason;
 };
-
-// Sets on the specified profile whether to use a long delay duration in the
-// query for drive file suggest data.
-void SetUseLongDelayInDriveSuggestQuery(Profile* profile, bool use_long_delay);
 
 }  // namespace app_list
 

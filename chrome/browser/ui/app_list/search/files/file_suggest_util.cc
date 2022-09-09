@@ -4,10 +4,6 @@
 
 #include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
 
-#include "ash/constants/ash_pref_names.h"
-#include "chrome/browser/profiles/profile.h"
-#include "components/prefs/pref_service.h"
-
 namespace app_list {
 
 // FileSuggestData -------------------------------------------------------
@@ -26,12 +22,5 @@ FileSuggestData::FileSuggestData(const FileSuggestData&) = default;
 FileSuggestData& FileSuggestData::operator=(const FileSuggestData&) = default;
 
 FileSuggestData::~FileSuggestData() = default;
-
-// Helper functions ------------------------------------------------------------
-
-void SetUseLongDelayInDriveSuggestQuery(Profile* profile, bool use_long_delay) {
-  profile->GetPrefs()->SetBoolean(
-      chromeos::prefs::kLauncherUseLongContinueDelay, use_long_delay);
-}
 
 }  // namespace app_list

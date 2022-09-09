@@ -44,7 +44,9 @@ class FileSuggestKeyedService : public KeyedService {
 
   // Queries for the suggested files of the specified type and returns the
   // suggested file data, including file paths and suggestion reasons, through
-  // the callback.
+  // the callback. The returned suggestions have been filtered by the file
+  // last modification time. Only the files that have been modified more
+  // recently than a threshold are returned.
   void GetSuggestFileData(SuggestDataType type,
                           GetSuggestDataCallback callback);
 
@@ -64,6 +66,9 @@ class FileSuggestKeyedService : public KeyedService {
       ItemSuggestCache::OnResultsCallback callback);
 
  private:
+  // Drive file related member functions ---------------------------------------
+  // TODO(https://crbug.com/1360992): move these members to a separate class.
+
   // Handles `GetSuggestFileData()` for drive files.
   void GetDriveSuggestFileData(GetSuggestDataCallback callback);
 
@@ -77,10 +82,14 @@ class FileSuggestKeyedService : public KeyedService {
   // Ends the validation on drive suggestion file paths and publishes the
   // result.
   void EndDriveFilePathValidation(
-      const absl::optional<std::vector<FileSuggestData>>& suggest_results,
-      DriveSuggestValidationStatus validation_status);
+      DriveSuggestValidationStatus validation_status,
+      const absl::optional<std::vector<FileSuggestData>>& suggest_results);
 
   const base::raw_ptr<Profile> profile_;
+
+  // Drive file related data members -------------------------------------------
+  // TODO(https://crbug.com/1360992): move these members to a separate class.
+
   const base::raw_ptr<drive::DriveIntegrationService> drive_service_;
 
   // The drive client from which the raw suggest data (i.e. the data before
@@ -93,7 +102,18 @@ class FileSuggestKeyedService : public KeyedService {
   base::OnceCallbackList<GetSuggestDataCallback::RunType>
       on_drive_results_ready_callback_list_;
 
-  base::WeakPtrFactory<FileSuggestKeyedService> weak_factory_{this};
+  // A drive file needs to have been modified more recently than this to be
+  // considered valid.
+  const base::TimeDelta drive_file_max_last_modified_time_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // Used to post the task to filter drive suggestion results.
+  scoped_refptr<base::SequencedTaskRunner> drive_result_filter_task_runner_;
+
+  // Used to guard the calling to get drive suggestion results.
+  base::WeakPtrFactory<FileSuggestKeyedService> drive_result_weak_factory_{
+      this};
 };
 
 }  // namespace app_list

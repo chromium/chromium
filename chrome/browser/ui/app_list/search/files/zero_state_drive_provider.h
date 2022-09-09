@@ -66,9 +66,8 @@ class ZeroStateDriveProvider : public SearchProvider,
   void OnSuggestFileDataFetched(
       absl::optional<std::vector<FileSuggestData>> suggest_results);
 
-  // Builds the search results from the filtered file suggestion data and
-  // publishes the results.
-  void SetSearchResults(std::vector<FileSuggestData> filtered_results);
+  // Builds the search results from file suggestions then publishes the results.
+  void SetSearchResults(std::vector<FileSuggestData> suggest_results);
 
   std::unique_ptr<FileResult> MakeListResult(
       const base::FilePath& filepath,
@@ -98,10 +97,6 @@ class ZeroStateDriveProvider : public SearchProvider,
   // Whether or not the screen is off due to idling.
   bool screen_off_ = true;
 
-  // A file needs to have been modified more recently than this to be considered
-  // valid.
-  const base::TimeDelta max_last_modified_time_;
-
   base::ScopedObservation<drive::DriveIntegrationService,
                           drive::DriveIntegrationServiceObserver>
       drive_observation_{this};
@@ -114,7 +109,6 @@ class ZeroStateDriveProvider : public SearchProvider,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<ZeroStateDriveProvider> weak_factory_{this};
 };
 
