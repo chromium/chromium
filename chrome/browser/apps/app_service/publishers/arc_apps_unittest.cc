@@ -180,8 +180,6 @@ class ArcAppsPublisherTest : public testing::Test {
     }
   }
 
-  void FlushMojoCalls() { app_service_test_.FlushMojoCalls(); }
-
   void SetUpFileSystemInstance() {
     auto* arc_bridge_service =
         arc_test()->arc_service_manager()->arc_bridge_service();
@@ -254,8 +252,6 @@ TEST_F(ArcAppsPublisherTest, SetSupportedLinksFromArc) {
       CreateSupportedLinks(package_name), {},
       arc::mojom::SupportedLinkChangeSource::kArcSystem);
 
-  FlushMojoCalls();
-
   ASSERT_EQ(app_id, preferred_apps().FindPreferredAppForUrl(
                         GURL("https://www.example.com/foo")));
 }
@@ -272,11 +268,9 @@ TEST_F(ArcAppsPublisherTest, SetSupportedLinksFromAppService) {
   intent_helper()->OnIntentFiltersUpdatedForPackage(
       package_name, CreateFilterList(package_name, {kTestAuthority}));
   VerifyIntentFilters(app_id, {kTestAuthority});
-  FlushMojoCalls();
 
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->SetSupportedLinksPreference(app_id);
-  FlushMojoCalls();
 
   ASSERT_TRUE(
       intent_helper_instance()->verified_links().find(package_name)->second);
@@ -304,8 +298,6 @@ TEST_F(ArcAppsPublisherTest, SetSupportedLinksDefaultBrowserBehavior) {
       CreateSupportedLinks(package_name), {},
       arc::mojom::SupportedLinkChangeSource::kArcSystem);
 
-  FlushMojoCalls();
-
   ASSERT_EQ(absl::nullopt, preferred_apps().FindPreferredAppForUrl(
                                GURL("https://www.example.com/foo")));
 }
@@ -330,7 +322,6 @@ TEST_F(ArcAppsPublisherTest,
   intent_helper()->OnSupportedLinksChanged(
       CreateSupportedLinks(package_name), {},
       arc::mojom::SupportedLinkChangeSource::kArcSystem);
-  FlushMojoCalls();
 
   base::test::ScopedFeatureList scoped_features(
       features::kDefaultLinkCapturingInBrowser);
@@ -343,7 +334,6 @@ TEST_F(ArcAppsPublisherTest,
   intent_helper()->OnSupportedLinksChanged(
       CreateSupportedLinks(package_name), {},
       arc::mojom::SupportedLinkChangeSource::kArcSystem);
-  FlushMojoCalls();
 
   ASSERT_EQ(app_id, preferred_apps().FindPreferredAppForUrl(
                         GURL("https://www.newexample.com/foo")));
@@ -370,8 +360,6 @@ TEST_F(ArcAppsPublisherTest,
   intent_helper()->OnSupportedLinksChanged(
       CreateSupportedLinks(package_name), {},
       arc::mojom::SupportedLinkChangeSource::kUserPreference);
-
-  FlushMojoCalls();
 
   ASSERT_EQ(app_id, preferred_apps().FindPreferredAppForUrl(
                         GURL("https://www.example.com/foo")));
@@ -400,8 +388,6 @@ TEST_F(ArcAppsPublisherTest,
       CreateSupportedLinks(arc::kPlayStorePackage), {},
       arc::mojom::SupportedLinkChangeSource::kArcSystem);
 
-  FlushMojoCalls();
-
   ASSERT_EQ(arc::kPlayStoreAppId, preferred_apps().FindPreferredAppForUrl(
                                       GURL("https://play.google.com/foo")));
 }
@@ -409,7 +395,7 @@ TEST_F(ArcAppsPublisherTest,
 TEST_F(ArcAppsPublisherTest,
        LaunchAppWithIntent_EditIntent_SendsOpenUrlRequest) {
   SetUpFileSystemInstance();
-  auto intent = apps_util::CreateEditIntentFromFile(
+  auto intent = apps_util::MakeEditIntent(
       FileInDownloads(profile(), base::FilePath("test.txt")), "text/plain");
 
   const auto& fake_apps = arc_test()->fake_apps();
@@ -420,12 +406,10 @@ TEST_F(ArcAppsPublisherTest,
 
   absl::optional<bool> result;
   app_service_proxy()->LaunchAppWithIntent(
-      app_id, 0, std::move(intent), apps::mojom::LaunchSource::kFromFileManager,
+      app_id, 0, std::move(intent), apps::LaunchSource::kFromFileManager,
       /*window_info=*/nullptr,
       base::BindLambdaForTesting(
           [&result](bool callback_result) { result = callback_result; }));
-
-  FlushMojoCalls();
 
   ASSERT_TRUE(result.has_value() && result.value());
 
@@ -442,7 +426,7 @@ TEST_F(ArcAppsPublisherTest,
        LaunchAppWithIntent_EditIntent_NoArcFileSystem_ReturnsFalse) {
   // Do not start up ArcFileSystem, to simulate the intent being sent before ARC
   // starts.
-  auto intent = apps_util::CreateEditIntentFromFile(
+  auto intent = apps_util::MakeEditIntent(
       FileInDownloads(profile(), base::FilePath("test.txt")), "text/plain");
 
   const auto& fake_apps = arc_test()->fake_apps();
@@ -453,12 +437,10 @@ TEST_F(ArcAppsPublisherTest,
 
   absl::optional<bool> result;
   app_service_proxy()->LaunchAppWithIntent(
-      app_id, 0, std::move(intent), apps::mojom::LaunchSource::kFromFileManager,
+      app_id, 0, std::move(intent), apps::LaunchSource::kFromFileManager,
       /*window_info=*/nullptr,
       base::BindLambdaForTesting(
           [&result](bool callback_result) { result = callback_result; }));
-
-  FlushMojoCalls();
 
   ASSERT_TRUE(result.has_value());
   ASSERT_FALSE(result.value());
@@ -469,19 +451,20 @@ TEST_F(
     LaunchAppWithIntent_ViewFileIntent_SendsOpenUrlRequestWithIndividualFileMimeTypes) {
   SetUpFileSystemInstance();
 
-  auto file1 = apps::mojom::IntentFile::New();
-  file1->url = FileInDownloads(profile(), base::FilePath("test1.png"));
+  auto file1 = std::make_unique<apps::IntentFile>(
+      FileInDownloads(profile(), base::FilePath("test1.png")));
   file1->mime_type = "image/png";
 
-  auto file2 = apps::mojom::IntentFile::New();
-  file2->url = FileInDownloads(profile(), base::FilePath("test2.jpeg"));
+  auto file2 = std::make_unique<apps::IntentFile>(
+      FileInDownloads(profile(), base::FilePath("test2.jpeg")));
   file2->mime_type = "image/jpeg";
 
-  std::vector<apps::mojom::IntentFilePtr> files;
+  std::vector<apps::IntentFilePtr> files;
   files.push_back(std::move(file1));
   files.push_back(std::move(file2));
 
-  auto intent = apps_util::CreateViewIntentFromFiles(std::move(files));
+  auto intent = std::make_unique<apps::Intent>(apps_util::kIntentActionView,
+                                               std::move(files));
 
   const auto& fake_apps = arc_test()->fake_apps();
   std::string package_name = fake_apps[0]->package_name;
@@ -491,12 +474,10 @@ TEST_F(
 
   absl::optional<bool> result;
   app_service_proxy()->LaunchAppWithIntent(
-      app_id, 0, std::move(intent), apps::mojom::LaunchSource::kFromFileManager,
+      app_id, 0, std::move(intent), apps::LaunchSource::kFromFileManager,
       /*window_info=*/nullptr,
       base::BindLambdaForTesting(
           [&result](bool callback_result) { result = callback_result; }));
-
-  FlushMojoCalls();
 
   ASSERT_TRUE(result.has_value() && result.value());
 
@@ -520,7 +501,7 @@ TEST_F(ArcAppsPublisherTest,
   std::string file_name = "test.jpeg";
 
   GURL url = FileInDownloads(profile(), base::FilePath(file_name));
-  auto intent = apps_util::CreateShareIntentFromFiles({url}, {mime_type});
+  auto intent = apps_util::MakeShareIntent({url}, {mime_type});
 
   const auto& fake_apps = arc_test()->fake_apps();
   std::string package_name = fake_apps[0]->package_name;
@@ -530,12 +511,10 @@ TEST_F(ArcAppsPublisherTest,
 
   absl::optional<bool> result;
   app_service_proxy()->LaunchAppWithIntent(
-      app_id, 0, std::move(intent), apps::mojom::LaunchSource::kFromFileManager,
+      app_id, 0, std::move(intent), apps::LaunchSource::kFromFileManager,
       /*window_info=*/nullptr,
       base::BindLambdaForTesting(
           [&result](bool callback_result) { result = callback_result; }));
-
-  FlushMojoCalls();
 
   ASSERT_TRUE(result.has_value() && result.value());
 
@@ -557,8 +536,8 @@ TEST_F(ArcAppsPublisherTest, LaunchAppWithIntent_ShareFilesIntent_SendsExtras) {
   constexpr char kTestExtraValue[] = "extra_value";
 
   GURL url = FileInDownloads(profile(), base::FilePath("test.jpeg"));
-  auto intent = apps_util::CreateShareIntentFromFiles(
-      {url}, {"image/jpeg"}, kTestIntentText, kTestIntentTitle);
+  auto intent = apps_util::MakeShareIntent({url}, {"image/jpeg"},
+                                           kTestIntentText, kTestIntentTitle);
   intent->extras = {std::make_pair(kTestExtraKey, kTestExtraValue)};
 
   const auto& fake_apps = arc_test()->fake_apps();
@@ -568,9 +547,8 @@ TEST_F(ArcAppsPublisherTest, LaunchAppWithIntent_ShareFilesIntent_SendsExtras) {
   arc_test()->app_instance()->SendRefreshAppList(fake_apps);
 
   app_service_proxy()->LaunchAppWithIntent(
-      app_id, 0, std::move(intent), apps::mojom::LaunchSource::kFromFileManager,
+      app_id, 0, std::move(intent), apps::LaunchSource::kFromFileManager,
       /*window_info=*/nullptr, base::DoNothing());
-  FlushMojoCalls();
 
   ASSERT_EQ(file_system_instance()->handledUrlRequests().size(), 1);
   auto& url_request = file_system_instance()->handledUrlRequests()[0];
