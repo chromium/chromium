@@ -6,11 +6,13 @@
 
 #include <memory>
 
+#import "base/test/metrics/histogram_tester.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #include "ios/chrome/browser/ntp_snippets/ios_chrome_content_suggestions_service_factory.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -21,6 +23,7 @@
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_consumer.h"
+#import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/ntp/logo_vendor.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
 #import "ios/chrome/browser/url_loading/fake_url_loading_browser_agent.h"
@@ -59,6 +62,7 @@ class NTPHomeMediatorTest : public PlatformTest {
         std::make_unique<ToolbarTestNavigationManager>();
     navigation_manager_ = navigation_manager.get();
     fake_web_state_ = std::make_unique<web::FakeWebState>();
+    NewTabPageTabHelper::CreateForWebState(fake_web_state_.get());
     logo_vendor_ = OCMProtocolMock(@protocol(LogoVendor));
     voice_availability_.SetVoiceProviderEnabled(true);
 
@@ -88,6 +92,7 @@ class NTPHomeMediatorTest : public PlatformTest {
         voiceSearchAvailability:&voice_availability_];
     consumer_ = OCMProtocolMock(@protocol(NTPHomeConsumer));
     mediator_.consumer = consumer_;
+    histogram_tester_.reset(new base::HistogramTester());
   }
 
   // Explicitly disconnect the mediator.
@@ -98,6 +103,7 @@ class NTPHomeMediatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
+  std::unique_ptr<web::FakeWebState> fake_web_state_;
   id consumer_;
   id logo_vendor_;
   FakeVoiceSearchAvailability voice_availability_;
@@ -106,9 +112,7 @@ class NTPHomeMediatorTest : public PlatformTest {
   FakeUrlLoadingBrowserAgent* url_loader_;
   AuthenticationServiceFake* auth_service_;
   signin::IdentityManager* identity_manager_;
-
- private:
-  std::unique_ptr<web::FakeWebState> fake_web_state_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 // Tests that the consumer has the right value set up.
@@ -166,4 +170,26 @@ TEST_F(NTPHomeMediatorTest, DisableVoiceSearch) {
   voice_availability_.SetVoiceOverEnabled(false);
 
   EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+TEST_F(NTPHomeMediatorTest, TestFakeboxTapped) {
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.ContentSuggestions.ActionOnStartSurface",
+      IOSContentSuggestionsActionType::kFakebox, 0);
+  NewTabPageTabHelper::FromWebState(fake_web_state_.get())
+      ->SetShowStartSurface(true);
+  [mediator_ fakeboxTapped];
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.ContentSuggestions.ActionOnStartSurface",
+      IOSContentSuggestionsActionType::kFakebox, 1);
+
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.ContentSuggestions.ActionOnNTP",
+      IOSContentSuggestionsActionType::kFakebox, 0);
+  NewTabPageTabHelper::FromWebState(fake_web_state_.get())
+      ->SetShowStartSurface(false);
+  [mediator_ fakeboxTapped];
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.ContentSuggestions.ActionOnNTP",
+      IOSContentSuggestionsActionType::kFakebox, 1);
 }

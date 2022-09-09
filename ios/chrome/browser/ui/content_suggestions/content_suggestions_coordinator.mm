@@ -215,6 +215,10 @@
 }
 
 - (void)viewDidDisappear {
+  if (IsStartSurfaceSplashStartupEnabled()) {
+    NewTabPageTabHelper::FromWebState(self.webState)
+        ->SetShowStartSurface(false);
+  }
   // Start no longer showing
   self.contentSuggestionsMediator.showingStartSurface = NO;
   DiscoverFeedServiceFactory::GetForBrowserState(
@@ -397,10 +401,7 @@
     base::RecordAction(
         base::UserMetricsAction("IOS.StartSurface.HideShortcuts"));
   }
-  if (IsStartSurfaceSplashStartupEnabled()) {
-    NewTabPageTabHelper::FromWebState(self.webState)
-        ->SetShowStartSurface(false);
-  } else {
+  if (!IsStartSurfaceSplashStartupEnabled()) {
     scene.modifytVisibleNTPForStartSurface = NO;
   }
 }

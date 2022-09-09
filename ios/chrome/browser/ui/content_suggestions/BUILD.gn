@@ -295,6 +295,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/ntp_snippets",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/search_engines",
