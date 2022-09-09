@@ -101,11 +101,8 @@
   #important {
     --foo: bar;
   }
-  @container style(--foo: bar) {
-    #important-child { color: green; }
-  }
   @container style(--foo: bar !important) {
-    #important-child { color: red; }
+    #important-child { color: green; }
   }
 </style>
 <div id="important">
