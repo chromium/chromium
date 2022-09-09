@@ -1759,6 +1759,41 @@ void ReadableStream::LockAndDisturb(ScriptState* script_state) {
   is_disturbed_ = true;
 }
 
+void ReadableStream::CloseStream(ScriptState* script_state,
+                                 ExceptionState& exception_state) {
+  // https://streams.spec.whatwg.org/#readablestream-close
+  // 1. If stream.[[controller]] implements ReadableByteStreamController,
+  if (auto* readable_byte_stream_controller =
+          DynamicTo<ReadableByteStreamController>(
+              readable_stream_controller_.Get())) {
+    // 1. Perform ! ReadableByteStreamControllerClose(stream.[[controller]]).
+    readable_byte_stream_controller->Close(
+        script_state, readable_byte_stream_controller, exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+
+    // 2. If stream.[[controller]].[[pendingPullIntos]] is not empty, perform !
+    // ReadableByteStreamControllerRespond(stream.[[controller]], 0).
+    if (readable_byte_stream_controller->pending_pull_intos_.size() > 0) {
+      readable_byte_stream_controller->Respond(
+          script_state, readable_byte_stream_controller, 0, exception_state);
+    }
+    if (exception_state.HadException()) {
+      return;
+    }
+  }
+
+  // 2. Otherwise, perform !
+  // ReadableStreamDefaultControllerClose(stream.[[controller]]).
+  else {
+    auto* readable_stream_default_controller =
+        To<ReadableStreamDefaultController>(readable_stream_controller_.Get());
+    ReadableStreamDefaultController::Close(script_state,
+                                           readable_stream_default_controller);
+  }
+}
+
 void ReadableStream::Serialize(ScriptState* script_state,
                                MessagePort* port,
                                ExceptionState& exception_state) {

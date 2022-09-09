@@ -403,6 +403,28 @@ TEST_F(ReadableStreamTest, Close) {
   EXPECT_FALSE(stream->IsErrored());
 }
 
+TEST_F(ReadableStreamTest, CloseStream) {
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+
+  auto* underlying_source =
+      MakeGarbageCollected<TestUnderlyingSource>(script_state);
+  auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
+      script_state, underlying_source, 0);
+
+  ASSERT_TRUE(stream);
+
+  EXPECT_TRUE(stream->IsReadable());
+  EXPECT_FALSE(stream->IsClosed());
+  EXPECT_FALSE(stream->IsErrored());
+
+  stream->CloseStream(script_state, ASSERT_NO_EXCEPTION);
+
+  EXPECT_FALSE(stream->IsReadable());
+  EXPECT_TRUE(stream->IsClosed());
+  EXPECT_FALSE(stream->IsErrored());
+}
+
 TEST_F(ReadableStreamTest, Error) {
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
@@ -807,6 +829,30 @@ TEST_F(ReadableByteStreamTest, ThrowFromCancel) {
   read_tester.WaitUntilSettled();
   EXPECT_TRUE(read_tester.IsRejected());
   EXPECT_TRUE(IsTypeError(script_state, read_tester.Value(), kMessage));
+}
+
+TEST_F(ReadableByteStreamTest, CloseStream) {
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+  Init(script_state,
+       MakeGarbageCollected<TestUnderlyingByteSource>(script_state));
+  EXPECT_TRUE(Stream());
+
+  auto* reader =
+      Stream()->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  ScriptPromiseTester read_tester(
+      script_state, reader->read(script_state, view, ASSERT_NO_EXCEPTION));
+  // Close a byte stream with pending pull intos should fulfill read requests
+  // with bytes filled is 0 and done is true.
+  Stream()->CloseStream(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
+  read_tester.WaitUntilSettled();
+  EXPECT_TRUE(read_tester.IsFulfilled());
+
+  EXPECT_FALSE(Stream()->IsReadable());
+  EXPECT_TRUE(Stream()->IsClosed());
+  EXPECT_FALSE(Stream()->IsErrored());
 }
 
 }  // namespace

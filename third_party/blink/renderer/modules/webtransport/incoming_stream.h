@@ -24,7 +24,7 @@ namespace blink {
 
 class ScriptState;
 class ReadableStream;
-class ReadableStreamDefaultControllerWithScriptScope;
+class ReadableByteStreamController;
 
 // Implementation of the IncomingStream mixin from the standard:
 // https://wicg.github.io/web-transport/#incoming-stream. ReceiveStream and
@@ -77,7 +77,7 @@ class MODULES_EXPORT IncomingStream final
   void Trace(Visitor*) const;
 
  private:
-  class UnderlyingSource;
+  class UnderlyingByteSource;
 
   // Called when |data_pipe_| becomes readable, closed or errored.
   void OnHandleReady(MojoResult, const mojo::HandleSignalsState&);
@@ -91,13 +91,13 @@ class MODULES_EXPORT IncomingStream final
   // Reads all the data currently in the pipe and enqueues it. If no data is
   // currently available, triggers the |read_watcher_| and enqueues when data
   // becomes available.
-  void ReadFromPipeAndEnqueue();
+  void ReadFromPipeAndEnqueue(ExceptionState&);
 
   // Copies a sequence of bytes into an ArrayBuffer and enqueues it.
-  void EnqueueBytes(const void* source, uint32_t byte_length);
+  void EnqueueBytes(const void* source, uint32_t byte_length, ExceptionState&);
 
   // Closes |readable_|, and resets |data_pipe_|.
-  void CloseAbortAndReset();
+  void CloseAbortAndReset(ExceptionState&);
 
   // Errors |readable_|, and resets |data_pipe_|.
   // |exception| will be set as the error on |readable_|.
@@ -123,7 +123,7 @@ class MODULES_EXPORT IncomingStream final
   mojo::SimpleWatcher read_watcher_;
 
   Member<ReadableStream> readable_;
-  Member<ReadableStreamDefaultControllerWithScriptScope> controller_;
+  Member<ReadableByteStreamController> controller_;
 
   State state_ = State::kOpen;
 

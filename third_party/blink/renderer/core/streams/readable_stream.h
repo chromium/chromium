@@ -210,6 +210,9 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
 
   void LockAndDisturb(ScriptState*);
 
+  // https://streams.spec.whatwg.org/#readablestream-close
+  void CloseStream(ScriptState*, ExceptionState&);
+
   void Serialize(ScriptState*, MessagePort* port, ExceptionState&);
 
   static ReadableStream* Deserialize(
