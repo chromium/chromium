@@ -1351,6 +1351,10 @@ const base::Feature kProjectorBleedingEdgeExperience(
     "ProjectorBleedingEdgeExperience",
     base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether to enable crash report from the Projector web component.
+const base::Feature kProjectorWebReportCrash("ProjectorWebReportCrash",
+                                             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enable or disable quick settings revamped view.
 const base::Feature kQsRevamp{"QsRevamp", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -2437,6 +2441,10 @@ bool IsProjectorUseOAuthForGetVideoInfoEnabled() {
 bool IsProjectorLocalPlaybackEnabled() {
   return base::FeatureList::IsEnabled(kProjectorLocalPlayback) ||
          base::FeatureList::IsEnabled(kProjectorBleedingEdgeExperience);
+}
+
+bool IsProjectorWebReportCrashEnabled() {
+  return base::FeatureList::IsEnabled(kProjectorWebReportCrash);
 }
 
 bool IsQsRevampEnabled() {

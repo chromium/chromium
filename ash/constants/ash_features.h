@@ -550,6 +550,8 @@ extern const base::Feature kProjectorLocalPlayback;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kProjectorBleedingEdgeExperience;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kProjectorWebReportCrash;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQsRevamp;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQuickDim;
@@ -882,6 +884,7 @@ bool IsProjectorShowShortPseudoTranscript();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorUpdateIndexableTextEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsProjectorUseOAuthForGetVideoInfoEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorWebReportCrashEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQsRevampEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickDimEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
