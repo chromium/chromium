@@ -202,9 +202,14 @@ const float kTrendingQueriesContentHeight = 103;
   switch (self.type) {
     case ContentSuggestionsModuleTypeShortcuts:
     case ContentSuggestionsModuleTypeMostVisited:
+      // Add 3px of addition spacing so that a 2-line caption has some bottom
+      // spacing.
+      // TODO(crbug.com/1361569): Only add spacing if at least one tile is
+      // multi-line.
       contentHeight +=
           MostVisitedCellSize(self.traitCollection.preferredContentSizeCategory)
-              .height;
+              .height +
+          3;
       break;
     case ContentSuggestionsModuleTypeReturnToRecentTab:
       return ReturnToRecentTabHeight();
@@ -222,11 +227,12 @@ const float kTrendingQueriesContentHeight = 103;
 // ShouldRemoveHeadersForModuleRefresh() is YES where there are no headers for
 // modules.
 - (CGFloat)titleTopInset {
+  if (self.type == ContentSuggestionsModuleTypeReturnToRecentTab) {
+    return 0;
+  }
   if (ShouldRemoveHeadersForModuleRefresh() ||
       ShouldMinimizeSpacingForModuleRefresh()) {
-    return self.type == ContentSuggestionsModuleTypeReturnToRecentTab
-               ? 0
-               : kTitleShortenedTopInset;
+    return kTitleShortenedTopInset;
   }
   return kTitleTopInset;
 }
