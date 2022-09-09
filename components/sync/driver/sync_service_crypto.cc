@@ -18,6 +18,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/engine/sync_string_conversions.h"
 
@@ -835,10 +836,12 @@ void SyncServiceCrypto::GetIsRecoverabilityDegradedCompleted(
   }
 
   if (!initial_trusted_vault_recoverability_logged_to_uma_) {
+    DCHECK(state_.engine);
+
     initial_trusted_vault_recoverability_logged_to_uma_ = true;
-    base::UmaHistogramBoolean(
+    RecordTrustedVaultHistogramBooleanWithMigrationSuffix(
         "Sync.TrustedVaultRecoverabilityDegradedOnStartup",
-        is_recoverability_degraded);
+        is_recoverability_degraded, state_.engine->GetDetailedStatus());
   }
 }
 

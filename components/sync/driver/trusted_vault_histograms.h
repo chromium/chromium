@@ -5,7 +5,11 @@
 #ifndef COMPONENTS_SYNC_DRIVER_TRUSTED_VAULT_HISTOGRAMS_H_
 #define COMPONENTS_SYNC_DRIVER_TRUSTED_VAULT_HISTOGRAMS_H_
 
+#include <string>
+
 namespace syncer {
+
+struct SyncStatus;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -65,6 +69,11 @@ void RecordTrustedVaultURLFetchResponse(
 
 void RecordTrustedVaultDownloadKeysStatus(
     TrustedVaultDownloadKeysStatusForUMA status);
+
+void RecordTrustedVaultHistogramBooleanWithMigrationSuffix(
+    const std::string& histogram_name,
+    bool sample,
+    const SyncStatus& sync_status);
 
 }  // namespace syncer
 

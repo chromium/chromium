@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -69,8 +70,12 @@ sync_pb::NigoriSpecifics BuildKeystoreNigoriSpecifics(
 // encrypted with key derived from last of them.
 // 2. passphrase_type is TRUSTED_VAULT_PASSPHRASE.
 // 3. keybag_is_frozen set to true.
+//
+// |migration_time| allows the caller to specify a trusted vault migration time
+// as represented in |TrustedVaultDebugInfo|.
 sync_pb::NigoriSpecifics BuildTrustedVaultNigoriSpecifics(
-    const std::vector<std::vector<uint8_t>>& trusted_vault_keys);
+    const std::vector<std::vector<uint8_t>>& trusted_vault_keys,
+    base::Time migration_time = base::Time::UnixEpoch());
 
 // Creates a NigoriSpecifics that describes encryption using a custom
 // passphrase with the given |passphrase_key_params|. If |old_key_params| is

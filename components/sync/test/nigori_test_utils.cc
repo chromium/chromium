@@ -77,7 +77,8 @@ sync_pb::NigoriSpecifics BuildKeystoreNigoriSpecifics(
 }
 
 sync_pb::NigoriSpecifics BuildTrustedVaultNigoriSpecifics(
-    const std::vector<std::vector<uint8_t>>& trusted_vault_keys) {
+    const std::vector<std::vector<uint8_t>>& trusted_vault_keys,
+    base::Time migration_time) {
   sync_pb::NigoriSpecifics specifics;
   specifics.set_passphrase_type(
       sync_pb::NigoriSpecifics::TRUSTED_VAULT_PASSPHRASE);
@@ -92,7 +93,8 @@ sync_pb::NigoriSpecifics BuildTrustedVaultNigoriSpecifics(
     cryptographer->SelectDefaultEncryptionKey(key_name);
   }
 
-  specifics.mutable_trusted_vault_debug_info()->set_migration_time(1U);
+  specifics.mutable_trusted_vault_debug_info()->set_migration_time(
+      TimeToProtoTime(migration_time));
   specifics.mutable_trusted_vault_debug_info()->set_key_version(2);
 
   EXPECT_TRUE(cryptographer->Encrypt(cryptographer->ToProto().key_bag(),
