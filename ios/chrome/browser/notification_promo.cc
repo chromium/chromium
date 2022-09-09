@@ -155,11 +155,11 @@ void NotificationPromo::WritePrefs(int promo_id,
   ntp_promo.SetIntKey(kPrefPromoViews, views);
   ntp_promo.SetBoolKey(kPrefPromoClosed, closed);
 
-  base::Value promo_dict{base::Value::Type::DICTIONARY};
-  promo_dict.MergeDictionary(local_state_->GetDictionary(kPrefPromoObject));
-  promo_dict.SetKey(base::NumberToString(promo_id), std::move(ntp_promo));
-  local_state_->Set(kPrefPromoObject, promo_dict);
+  base::Value::Dict promo_dict =
+      local_state_->GetValueDict(kPrefPromoObject).Clone();
+  promo_dict.Set(base::NumberToString(promo_id), std::move(ntp_promo));
   DVLOG(1) << "WritePrefs " << promo_dict;
+  local_state_->SetDict(kPrefPromoObject, std::move(promo_dict));
 }
 
 void NotificationPromo::InitFromPrefs() {
@@ -167,21 +167,20 @@ void NotificationPromo::InitFromPrefs() {
   if (promo_id_ == -1)
     return;
 
-  const base::Value* promo_dict = local_state_->GetDictionary(kPrefPromoObject);
-  if (!promo_dict)
-    return;
+  const base::Value::Dict& promo_dict =
+      local_state_->GetValueDict(kPrefPromoObject);
 
-  const base::Value* ntp_promo =
-      promo_dict->FindDictKey(base::NumberToString(promo_id_));
+  const base::Value::Dict* ntp_promo =
+      promo_dict.FindDict(base::NumberToString(promo_id_));
   if (!ntp_promo)
     return;
 
-  first_view_time_ = ntp_promo->FindDoubleKey(kPrefPromoFirstViewTime)
-                         .value_or(first_view_time_);
-  absl::optional<int> maybe_views = ntp_promo->FindIntKey(kPrefPromoViews);
+  first_view_time_ =
+      ntp_promo->FindDouble(kPrefPromoFirstViewTime).value_or(first_view_time_);
+  absl::optional<int> maybe_views = ntp_promo->FindInt(kPrefPromoViews);
   if (maybe_views.has_value())
     views_ = maybe_views.value();
-  closed_ = ntp_promo->FindBoolPath(kPrefPromoClosed).value_or(closed_);
+  closed_ = ntp_promo->FindBool(kPrefPromoClosed).value_or(closed_);
 }
 
 bool NotificationPromo::CanShow() const {
