@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_handler.h"
 
 #include "base/task/thread_pool.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
@@ -18,6 +19,11 @@ namespace {
 
 // The default folder where the file should be uploaded.
 const char kDestinationFolder[] = "from Chromebook";
+
+// The maximum amount of time allowed, in seconds, between the syncing
+// completion of a file and the update of its metadata with the expected (Google
+// editor) alternate URL.
+const int kAlternateUrlTimeout = 15;
 
 storage::FileSystemURL FilePathToFileSystemURL(
     Profile* profile,
@@ -84,7 +90,6 @@ CloudUploadHandler::CloudUploadHandler(Profile* profile,
           base::MakeRefCounted<CloudUploadNotificationManager>(profile)),
       source_url_(source_url) {
   observed_task_id_ = -1;
-  upload_done_ = false;
 }
 
 CloudUploadHandler::~CloudUploadHandler() {
@@ -313,6 +318,12 @@ void CloudUploadHandler::OnSyncingStatusUpdate(
       case drivefs::mojom::ItemEvent::State::kCompleted:
         sync_progress_ = 100;
         UpdateProgressNotification();
+        // The file has fully synced. Start the timer for the maximum amount of
+        // time we allow before the file's alternate URL is available.
+        alternate_url_timer_.Start(
+            FROM_HERE, base::Seconds(kAlternateUrlTimeout),
+            base::BindOnce(&CloudUploadHandler::OnAlternateUrlTimeout,
+                           weak_ptr_factory_.GetWeakPtr()));
         return;
       case drivefs::mojom::ItemEvent::State::kFailed:
         OnEndUpload(GURL(), "Drive sync error: kFailed");
@@ -326,18 +337,13 @@ void CloudUploadHandler::OnSyncingStatusUpdate(
 
 // If a `kModify` event has been dispatched for the uploaded file, check the
 // file's metadata to see if its alternate URL is available, in which case the
-// upload is complete. TODO (b/243638305) Add a timeout for how long we want to
-// wait for the alternate URL.
+// upload is complete.
 void CloudUploadHandler::OnFilesChanged(
     const std::vector<drivefs::mojom::FileChange>& changes) {
   for (const auto& change : changes) {
     if (base::FilePath(change.path) != observed_relative_drive_path_ ||
         change.type != drivefs::mojom::FileChange::Type::kModify) {
       continue;
-    }
-
-    if (upload_done_) {
-      return;
     }
 
     if (!drive_integration_service_) {
@@ -347,7 +353,7 @@ void CloudUploadHandler::OnFilesChanged(
     drive_integration_service_->GetDriveFsInterface()->GetMetadata(
         observed_relative_drive_path_,
         base::BindOnce(&CloudUploadHandler::OnGetDriveMetadata,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(), /*timed_out=*/false));
   }
 }
 
@@ -368,6 +374,7 @@ void CloudUploadHandler::OnError(const drivefs::mojom::DriveError& error) {
 }
 
 void CloudUploadHandler::OnGetDriveMetadata(
+    bool timed_out,
     drive::FileError error,
     drivefs::mojom::FileMetadataPtr metadata) {
   if (error != drive::FILE_ERROR_OK) {
@@ -375,10 +382,37 @@ void CloudUploadHandler::OnGetDriveMetadata(
   }
   GURL hosted_url(metadata->alternate_url);
   if (!hosted_url.is_valid()) {
+    if (timed_out) {
+      OnEndUpload(GURL(), "Invalid alternate URL - Drive editing unavailable");
+    }
     return;
   }
-  upload_done_ = true;
+
+  // URLs for editing Office files in Web Drive all have a "docs.google.com"
+  // host.
+  if (hosted_url.host() != "docs.google.com") {
+    if (timed_out) {
+      OnEndUpload(GURL(),
+                  "Unexpected alternate URL - Drive editing unavailable");
+    }
+    return;
+  }
+
+  // Success.
+  alternate_url_timer_.Stop();
   OnEndUpload(hosted_url);
+}
+
+void CloudUploadHandler::OnAlternateUrlTimeout() {
+  if (!drive_integration_service_) {
+    OnEndUpload(GURL(), "No drive integration service");
+    return;
+  }
+
+  drive_integration_service_->GetDriveFsInterface()->GetMetadata(
+      observed_relative_drive_path_,
+      base::BindOnce(&CloudUploadHandler::OnGetDriveMetadata,
+                     weak_ptr_factory_.GetWeakPtr(), /*timed_out=*/true));
 }
 
 }  // namespace chromeos::cloud_upload

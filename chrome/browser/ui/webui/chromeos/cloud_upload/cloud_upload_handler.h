@@ -83,8 +83,13 @@ class CloudUploadHandler
   void OnError(const drivefs::mojom::DriveError& error) override;
 
   // Checks the alternate URL from the request file's metadata.
-  void OnGetDriveMetadata(drive::FileError error,
+  void OnGetDriveMetadata(bool timed_out,
+                          drive::FileError error,
                           drivefs::mojom::FileMetadataPtr metadata);
+
+  // Run when the maximum amount of time allowed to get the synced file's
+  // alternate URL has elapsed.
+  void OnAlternateUrlTimeout();
 
   Profile* const profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
@@ -94,9 +99,9 @@ class CloudUploadHandler
   const storage::FileSystemURL source_url_;
   file_manager::io_task::IOTaskId observed_task_id_;
   base::FilePath observed_relative_drive_path_;
-  bool upload_done_;
   int move_progress_ = 0;
   int sync_progress_ = 0;
+  base::OneShotTimer alternate_url_timer_;
   UploadCallback callback_;
   std::unique_ptr<file_manager::ScopedSuppressDriveNotificationsForPath>
       scoped_suppress_drive_notifications_for_path_ = nullptr;
