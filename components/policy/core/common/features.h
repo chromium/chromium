@@ -35,9 +35,6 @@ POLICY_EXPORT extern const base::Feature
 POLICY_EXPORT extern const base::Feature
     kActivateMetricsReportingEnabledPolicyAndroid;
 
-// Enable caching the value of the ManagementStatus.
-POLICY_EXPORT extern const base::Feature kEnableCachedManagementStatus;
-
 // Causes the DMToken to be deleted (rather than invalidated) when a browser is
 // deleted from CBCM.
 POLICY_EXPORT extern const base::Feature kDmTokenDeletion;

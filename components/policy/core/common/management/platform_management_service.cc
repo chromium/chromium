@@ -4,7 +4,6 @@
 
 #include "components/policy/core/common/management/platform_management_service.h"
 
-#include "base/feature_list.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -13,7 +12,6 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "components/policy/core/common/features.h"
 #if BUILDFLAG(IS_MAC)
 #include "components/policy/core/common/management/platform_management_status_provider_mac.h"
 #elif BUILDFLAG(IS_WIN)
@@ -60,9 +58,6 @@ void PlatformManagementService::AddChromeOsStatusProvider(
 #endif
 
 void PlatformManagementService::RefreshCache(CacheRefreshCallback callback) {
-  if (!base::FeatureList::IsEnabled(features::kEnableCachedManagementStatus))
-    return;
-
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       // Unretained here since this class should never be destroyed.

@@ -27,9 +27,6 @@ const base::Feature kActivateMetricsReportingEnabledPolicyAndroid{
     "ActivateMetricsReportingEnabledPolicyAndroid",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kEnableCachedManagementStatus{
-    "EnableCachedManagementStatus", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kDmTokenDeletion{"DmTokenDeletion",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 

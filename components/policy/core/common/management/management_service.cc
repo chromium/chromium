@@ -7,12 +7,10 @@
 #include <tuple>
 
 #include "base/barrier_closure.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -29,8 +27,6 @@ ManagementStatusProvider::~ManagementStatusProvider() = default;
 EnterpriseManagementAuthority ManagementStatusProvider::GetAuthority() {
   if (!RequiresCache())
     return FetchAuthority();
-  if (!base::FeatureList::IsEnabled(features::kEnableCachedManagementStatus))
-    return EnterpriseManagementAuthority::NONE;
 
   if (absl::holds_alternative<PrefService*>(cache_) &&
       absl::get<PrefService*>(cache_) &&
@@ -101,9 +97,6 @@ void ManagementService::UsePrefStoreAsCache(
 
 void ManagementService::RefreshCache(CacheRefreshCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::FeatureList::IsEnabled(features::kEnableCachedManagementStatus))
-    return;
-
   ManagementAuthorityTrustworthiness previous =
       GetManagementAuthorityTrustworthiness();
   for (const auto& provider : management_status_providers_) {

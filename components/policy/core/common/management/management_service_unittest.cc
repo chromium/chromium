@@ -6,9 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -52,8 +50,6 @@ class ManagementServiceTests : public testing::Test {
   ManagementServiceTests& operator=(const ManagementServiceTests&) = delete;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kEnableCachedManagementStatus);
     prefs_.registry()->RegisterIntegerPref(kPrefName, 0);
   }
 
@@ -68,7 +64,6 @@ class ManagementServiceTests : public testing::Test {
 
  private:
   TestingPrefServiceSimple prefs_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ManagementServiceTests, ScopedManagementServiceOverrideForTesting) {
