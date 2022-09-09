@@ -46,9 +46,6 @@ NSString* const kPromoViewImageName = @"ntp_feed_signin_promo_icon";
 
 @implementation FeedTopSectionViewController
 
-// FeedTopSectionConsumer
-@synthesize shouldShowSigninPromo = _shouldShowSigninPromo;
-
 - (instancetype)init {
   self = [super init];
   if (self) {
@@ -179,7 +176,9 @@ NSString* const kPromoViewImageName = @"ntp_feed_signin_promo_icon";
   promoView.titleLabel.text =
       l10n_util::GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_TITLE);
   promoView.textLabel.text =
-      l10n_util::GetNSString(IDS_IOS_NTP_FEED_SIGNIN_COMPACT_PROMO_BODY);
+      IsDiscoverFeedTopSyncPromoCompact()
+          ? l10n_util::GetNSString(IDS_IOS_NTP_FEED_SIGNIN_COMPACT_PROMO_BODY)
+          : l10n_util::GetNSString(IDS_IOS_NTP_FEED_SIGNIN_FULL_PROMO_BODY);
   // TODO(crbug.com/1331010): Update the Promo icon.
   [promoView setNonProfileImage:[UIImage imageNamed:kPromoViewImageName]];
   return promoView;

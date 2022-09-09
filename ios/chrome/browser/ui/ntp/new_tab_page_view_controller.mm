@@ -194,6 +194,8 @@
     self.shouldScrollIntoFeed = NO;
   }
 
+  [self updateFeedTopSectionIsVisible];
+
   self.viewDidAppear = YES;
 }
 
@@ -433,12 +435,7 @@
 }
 
 - (CGFloat)heightAboveFeed {
-  CGFloat height = [self adjustedContentSuggestionsHeight] +
-                   [self feedHeaderHeight] + [self feedTopSectionHeight];
-  // Add the header height since it is no longer a part of the Content
-  // Suggestions.
-  height += [self.headerController headerHeight];
-  return height;
+  return [self heightAboveFeedTopSection] + [self feedTopSectionHeight];
 }
 
 - (void)resetViewHierarchy {
@@ -501,6 +498,10 @@
 
   CGFloat scrollPosition = scrollView.contentOffset.y;
   [self handleStickyElementsForScrollPosition:scrollPosition force:NO];
+
+  if (self.viewDidAppear) {
+    [self updateFeedTopSectionIsVisible];
+  }
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
@@ -792,6 +793,21 @@
   self.headerSynchronizer.additionalOffset = [self heightAboveFeed];
 }
 
+// Checks whether the feed top section is visible and updates the
+// `ntpContentDelegate`.
+- (void)updateFeedTopSectionIsVisible {
+  if (!self.feedTopSectionViewController) {
+    return;
+  }
+  BOOL isFeedTopSectionVisible =
+      ([self scrollPosition] + self.view.frame.size.height -
+           self.view.safeAreaInsets.top >
+       -[self feedTopSectionHeight]) &&
+      ([self scrollPosition] < -[self stickyContentHeight]);
+  [self.ntpContentDelegate
+      feedTopSectionHasChangedVisibility:isFeedTopSectionVisible];
+}
+
 // TODO(crbug.com/1170995): Remove once the Feed header properly supports
 // ContentSuggestions.
 - (void)handleSingleTapInView:(UITapGestureRecognizer*)recognizer {
@@ -937,6 +953,21 @@
 // Sets the content offset to the top of the feed.
 - (void)scrollIntoFeed {
   [self setContentOffset:[self offsetWhenScrolledIntoFeed]];
+}
+
+// The height of the content above the feed top section.
+- (CGFloat)heightAboveFeedTopSection {
+  return [self.headerController headerHeight] +
+         [self adjustedContentSuggestionsHeight] + [self feedHeaderHeight];
+}
+
+// The total height of all sticky content.
+- (CGFloat)stickyContentHeight {
+  CGFloat stickyContentHeight = [self stickyOmniboxHeight];
+  if ([self.ntpContentDelegate isContentHeaderSticky]) {
+    stickyContentHeight += [self feedHeaderHeight];
+  }
+  return stickyContentHeight;
 }
 
 #pragma mark - Helpers

@@ -19,6 +19,9 @@
 // Delegate for NTP related actions.
 @property(nonatomic, weak) id<NewTabPageDelegate> ntpDelegate;
 
+// Handles the feed top section changing visibility in the NTP.
+- (void)feedTopSectionHasChangedVisibility:(BOOL)visible;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_FEED_TOP_SECTION_FEED_TOP_SECTION_COORDINATOR_H_

@@ -74,19 +74,8 @@
     return;
   }
   _shouldShowSigninPromo = shouldShowSigninPromo;
-  if (shouldShowSigninPromo) {
-    [self.signinPromoMediator signinPromoViewIsVisible];
-  } else {
-    // When the sign-in view is closed, the promo state changes, but
-    // -[SigninPromoViewMediator signinPromoViewIsHidden] should not be
-    // called because it's already hidden.
-    if (!self.signinPromoMediator.invalidClosedOrNeverVisible) {
-      [self.signinPromoMediator signinPromoViewIsHidden];
-    }
-  }
-  // TODO(crbug.com/1331010): Update pref if needed.
 
-  // Update the view.
+  // Update the consumer.
   self.consumer.shouldShowSigninPromo = _shouldShowSigninPromo;
 }
 
@@ -136,7 +125,6 @@
 - (void)signinPromoViewMediatorCloseButtonWasTapped:
     (SigninPromoViewMediator*)mediator {
   self.shouldShowSigninPromo = NO;
-  // TODO(crbug.com/1331010): Update local prefs if needed.
 }
 
 #pragma mark - Private

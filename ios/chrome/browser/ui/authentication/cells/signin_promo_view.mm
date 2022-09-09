@@ -487,8 +487,9 @@ constexpr CGFloat kNonProfileImageHeightWidth = 56.0;
       self.secondaryButton.hidden = YES;
 
       // Configures fonts for titled layout.
-      self.titleLabel.font =
-          [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
+      // TODO(crbug.com/1331010): Make this font size dynamic.
+      self.titleLabel.font = [[UIFont
+          preferredFontForTextStyle:UIFontTextStyleHeadline] fontWithSize:20];
       self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
       self.textLabel.font =
           [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
