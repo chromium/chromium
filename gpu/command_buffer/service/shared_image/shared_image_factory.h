@@ -189,12 +189,16 @@ class GPU_GLES2_EXPORT SharedImageFactory {
 
 class GPU_GLES2_EXPORT SharedImageRepresentationFactory {
  public:
+  // All arguments must outlive this object.
   SharedImageRepresentationFactory(SharedImageManager* manager,
                                    MemoryTracker* tracker);
   ~SharedImageRepresentationFactory();
 
   // Helpers which call similar classes on SharedImageManager, providing a
   // MemoryTypeTracker.
+  // NOTE: This object *must* outlive all objects created via the below methods,
+  // as the |tracker_| instance variable that it supplies to them is used in
+  // their destruction process.
   std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       const Mailbox& mailbox);
   std::unique_ptr<GLTextureImageRepresentation> ProduceRGBEmulationGLTexture(
