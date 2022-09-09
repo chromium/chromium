@@ -62,8 +62,6 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/app_service/public/mojom/types.mojom-shared.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/disable_reason.h"
@@ -149,7 +147,6 @@ void RemoveApps(apps::AppType app_type,
                 FakeAppListModelUpdater* model_updater) {
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
-  proxy->FlushMojoCallsForTesting();
   proxy->AppRegistryCache().ForEachApp(
       [&model_updater, &app_type](const apps::AppUpdate& update) {
         if (update.AppType() != app_type) {
@@ -458,7 +455,6 @@ TEST_F(ExtensionAppTest, HideWebStore) {
 
   // Activate the HideWebStoreIcon policy.
   profile_->GetPrefs()->SetBoolean(prefs::kHideWebStoreIcon, true);
-  app_service_test_.FlushMojoCalls();
   // Now the web store should not be present anymore.
   EXPECT_FALSE(model_updater1.FindItem(store->id()));
 
@@ -470,12 +466,10 @@ TEST_F(ExtensionAppTest, HideWebStore) {
       AppServiceAppModelBuilder::ScopedAppPositionInitCallbackForTest>(
       &builder2, base::BindRepeating(&InitAppPosition));
   builder2.Initialize(nullptr, profile_.get(), &model_updater2);
-  app_service_test_.FlushMojoCalls();
   EXPECT_FALSE(model_updater2.FindItem(store->id()));
 
   // Deactivate the HideWebStoreIcon policy again.
   profile_->GetPrefs()->SetBoolean(prefs::kHideWebStoreIcon, false);
-  app_service_test_.FlushMojoCalls();
   // Now the web store should have appeared.
   EXPECT_TRUE(model_updater2.FindItem(store->id()));
 
@@ -487,18 +481,15 @@ TEST_F(ExtensionAppTest, HideWebStore) {
 TEST_F(ExtensionAppTest, DisableAndEnable) {
   service_->DisableExtension(kHostedAppId,
                              extensions::disable_reason::DISABLE_USER_ACTION);
-  app_service_test_.FlushMojoCalls();
   EXPECT_EQ(preinstalled_apps_, GetModelContent(model_updater_.get()));
 
   service_->EnableExtension(kHostedAppId);
-  app_service_test_.FlushMojoCalls();
   EXPECT_EQ(preinstalled_apps_, GetModelContent(model_updater_.get()));
 }
 
 TEST_F(ExtensionAppTest, Uninstall) {
   service_->UninstallExtension(
       kPackagedApp2Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
-  app_service_test_.FlushMojoCalls();
   EXPECT_EQ((std::vector<std::string>{"Hosted App", "Packaged App 1"}),
             GetModelContent(model_updater_.get()));
 
@@ -513,7 +504,6 @@ TEST_F(ExtensionAppTest, UninstallTerminatedApp) {
 
   service_->UninstallExtension(
       kPackagedApp2Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
-  app_service_test_.FlushMojoCalls();
   EXPECT_EQ((std::vector<std::string>{"Hosted App", "Packaged App 1"}),
             GetModelContent(model_updater_.get()));
 
@@ -529,7 +519,6 @@ TEST_F(ExtensionAppTest, Reinstall) {
   extensions::InstallObserver::ExtensionInstallParams params(
       kPackagedApp1Id, "", gfx::ImageSkia(), true, true);
   tracker->OnBeginExtensionInstall(params);
-  app_service_test_.FlushMojoCalls();
 
   EXPECT_EQ(preinstalled_apps_, GetModelContent(model_updater_.get()));
 }
@@ -540,7 +529,6 @@ TEST_F(ExtensionAppTest, OrdinalPrefsChange) {
   syncer::StringOrdinal package_app_page =
       sorting->GetPageOrdinal(kPackagedApp1Id);
   sorting->SetPageOrdinal(kHostedAppId, package_app_page.CreateBefore());
-  app_service_test_.FlushMojoCalls();
   // Old behavior: This would be "Hosted App,Packaged App 1,Packaged App 2"
   // New behavior: Sorting order doesn't change.
   EXPECT_EQ(preinstalled_apps_, GetModelContent(model_updater_.get()));
@@ -552,7 +540,6 @@ TEST_F(ExtensionAppTest, OrdinalPrefsChange) {
   sorting->SetPageOrdinal(kHostedAppId, package_app_page);
   sorting->SetAppLaunchOrdinal(kHostedAppId,
                                app1_ordinal.CreateBetween(app2_ordinal));
-  app_service_test_.FlushMojoCalls();
   // Old behavior: This would be "Packaged App 1,Hosted App,Packaged App 2"
   // New behavior: Sorting order doesn't change.
   EXPECT_EQ(preinstalled_apps_, GetModelContent(model_updater_.get()));
@@ -564,19 +551,16 @@ TEST_F(ExtensionAppTest, OnExtensionMoved) {
                           sorting->GetPageOrdinal(kPackagedApp1Id));
 
   sorting->OnExtensionMoved(kHostedAppId, kPackagedApp1Id, kPackagedApp2Id);
-  app_service_test_.FlushMojoCalls();
   // Old behavior: This would be "Packaged App 1,Hosted App,Packaged App 2"
   // New behavior: Sorting order doesn't change.
   EXPECT_EQ(preinstalled_apps_, GetModelContent(model_updater_.get()));
 
   sorting->OnExtensionMoved(kHostedAppId, kPackagedApp2Id, std::string());
-  app_service_test_.FlushMojoCalls();
   // Old behavior: This would be restored to the default order.
   // New behavior: Sorting order still doesn't change.
   EXPECT_EQ(preinstalled_apps_, GetModelContent(model_updater_.get()));
 
   sorting->OnExtensionMoved(kHostedAppId, std::string(), kPackagedApp1Id);
-  app_service_test_.FlushMojoCalls();
   // Old behavior: This would be "Hosted App,Packaged App 1,Packaged App 2"
   // New behavior: Sorting order doesn't change.
   EXPECT_EQ(preinstalled_apps_, GetModelContent(model_updater_.get()));
@@ -652,8 +636,6 @@ TEST_F(WebAppBuilderTest, WebAppList) {
 TEST_F(WebAppBuilderTest, LoadGeneratedIcon) {
   const std::string kAppName = "Web App";
   const std::string app_id = CreateWebApp(kAppName);
-
-  app_service_test_.FlushMojoCalls();
 
   // Generate the source icon for comparing.
   gfx::ImageSkia src_image_skia;
@@ -1025,12 +1007,10 @@ TEST_F(PluginVmAppTest, PluginVmDisabled) {
 }
 
 TEST_F(PluginVmAppTest, EnableAndDisablePluginVm) {
-  app_service_test_.FlushMojoCalls();
   EXPECT_THAT(GetModelContent(model_updater_.get()), testing::IsEmpty());
 
   AllowPluginVm();
 
-  app_service_test_.FlushMojoCalls();
   EXPECT_EQ(std::vector<std::string>{l10n_util::GetStringUTF8(
                 IDS_PLUGIN_VM_APP_NAME)},
             GetModelContent(model_updater_.get()));
@@ -1038,7 +1018,6 @@ TEST_F(PluginVmAppTest, EnableAndDisablePluginVm) {
   testing_profile_->ScopedCrosSettingsTestHelper()->SetBoolean(
       ash::kPluginVmAllowed, false);
 
-  app_service_test_.FlushMojoCalls();
   EXPECT_THAT(GetModelContent(model_updater_.get()), testing::IsEmpty());
 }
 
