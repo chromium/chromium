@@ -8,6 +8,7 @@
 #include "components/autofill_assistant/browser/fake_starter_platform_delegate.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/starter_heuristic_configs/launched_starter_heuristic_config.h"
+#include "components/autofill_assistant/browser/starter_heuristic_configs/starter_heuristic_configs_test_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,6 +22,7 @@ using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
+using ::testing::ValuesIn;
 
 class LaunchedConfigsTest : public testing::Test {
  public:
@@ -96,6 +98,87 @@ TEST_F(LaunchedConfigsTest, ShoppingAndCouponsCanBeDisabledWithFeature) {
                   &fake_platform_delegate_, &context_),
               IsEmpty());
 }
+
+class LaunchedConfigsParametrizedTest
+    : public LaunchedConfigsTest,
+      public testing::WithParamInterface<
+          starter_heuristic_configs_test_util::ClientState> {
+ public:
+  void SetUp() override {
+    LaunchedConfigsTest::SetUp();
+    starter_heuristic_configs_test_util::ApplyClientState(
+        &fake_platform_delegate_, GetParam());
+  }
+};
+
+TEST_P(LaunchedConfigsParametrizedTest,
+       ShoppingAndCouponsSupportedClientStatesUnitedStates) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillAssistantInCCTTriggering);
+
+  fake_platform_delegate_.fake_common_dependencies_->country_code_ = "us";
+
+  // - Must not be a supervised user
+  // - Proactive help must be turned on
+  // - Must be a CCT created by GSA
+  // - MSBB must be enabled
+  bool expected_result =
+      !GetParam().is_supervised_user && GetParam().proactive_help_enabled &&
+      GetParam().is_custom_tab && GetParam().is_tab_created_by_gsa &&
+      GetParam().msbb_enabled;
+  EXPECT_THAT(GetOrCreateShoppingConfig()->GetConditionSetsForClientState(
+                  &fake_platform_delegate_, &context_),
+              SizeIs(expected_result ? 2 : 0));
+  EXPECT_THAT(GetOrCreateCouponsConfig()->GetConditionSetsForClientState(
+                  &fake_platform_delegate_, &context_),
+              SizeIs(expected_result ? 2 : 0));
+}
+
+TEST_P(LaunchedConfigsParametrizedTest,
+       ShoppingAndCouponsSupportedClientStatesGreatBritain) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillAssistantInCCTTriggering);
+
+  fake_platform_delegate_.fake_common_dependencies_->country_code_ = "gb";
+
+  // - Must not be a supervised user
+  // - Proactive help must be turned on
+  // - Must be a CCT created by GSA
+  // - MSBB must be enabled
+  bool expected_result =
+      !GetParam().is_supervised_user && GetParam().proactive_help_enabled &&
+      GetParam().is_custom_tab && GetParam().is_tab_created_by_gsa &&
+      GetParam().msbb_enabled;
+  EXPECT_THAT(GetOrCreateShoppingConfig()->GetConditionSetsForClientState(
+                  &fake_platform_delegate_, &context_),
+              SizeIs(expected_result ? 2 : 0));
+  // Coupons are not enabled in gb yet.
+  EXPECT_THAT(GetOrCreateCouponsConfig()->GetConditionSetsForClientState(
+                  &fake_platform_delegate_, &context_),
+              IsEmpty());
+}
+
+TEST_P(LaunchedConfigsParametrizedTest,
+       ShoppingAndCouponsNotSupportedInOtherCountries) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillAssistantInCCTTriggering);
+
+  fake_platform_delegate_.fake_common_dependencies_->country_code_ = "ch";
+  EXPECT_THAT(GetOrCreateShoppingConfig()->GetConditionSetsForClientState(
+                  &fake_platform_delegate_, &context_),
+              IsEmpty());
+  EXPECT_THAT(GetOrCreateCouponsConfig()->GetConditionSetsForClientState(
+                  &fake_platform_delegate_, &context_),
+              IsEmpty());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    LaunchedConfigsTestSuite,
+    LaunchedConfigsParametrizedTest,
+    ValuesIn(starter_heuristic_configs_test_util::kRelevantClientStates));
 
 }  // namespace
 }  // namespace launched_configs

@@ -588,6 +588,7 @@ source_set("unit_tests") {
     "starter_heuristic_configs/launched_configs_unittest.cc",
     "starter_heuristic_configs/launched_starter_heuristic_config_unittest.cc",
     "starter_heuristic_configs/legacy_starter_heuristic_config_unittest.cc",
+    "starter_heuristic_configs/starter_heuristic_configs_test_util.h",
     "starter_heuristic_unittest.cc",
     "starter_unittest.cc",
     "startup_util_unittest.cc",
