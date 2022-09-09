@@ -21,7 +21,7 @@ const char kEventListenersScriptName[] = "find_in_page_event_listeners";
 const double kFindInPageFindTimeout = 100.0;
 
 // The timeout for JavaScript function calls in milliseconds. Important that
-// this is longer than |kFindInPageFindTimeout| to allow for incomplete find to
+// this is longer than `kFindInPageFindTimeout` to allow for incomplete find to
 // restart again. If this timeout hits, then something went wrong with the find
 // and find in page should not continue.
 const double kJavaScriptFunctionCallTimeout = 200.0;

@@ -52,13 +52,13 @@ class FindInPageManagerTest : public WebTestWithWebState {
     GetFindInPageManager()->SetDelegate(&delegate_);
   }
 
-  // Returns the FindInPageManager associated with |web_state()|.
+  // Returns the FindInPageManager associated with `web_state()`.
   FindInPageManager* GetFindInPageManager() {
     return web::FindInPageManager::FromWebState(web_state());
   }
 
-  // Waits until the delegate receives |index| from
-  // DidSelectMatch(). Returns False if delegate never receives |index| within
+  // Waits until the delegate receives `index` from
+  // DidSelectMatch(). Returns False if delegate never receives `index` within
   // time.
   [[nodiscard]] bool WaitForSelectedMatchAtIndex(int index) {
     return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {

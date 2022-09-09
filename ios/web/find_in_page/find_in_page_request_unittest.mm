@@ -49,7 +49,7 @@ TEST_F(FindInPageRequestTest, Reset) {
   EXPECT_EQ(-1, request_.GetMatchCountForSelectedFrame());
 }
 
-// Tests that FindinPageRequest properly decrements |pending_frame_call_count_|
+// Tests that FindinPageRequest properly decrements `pending_frame_call_count_`
 // properly.
 TEST_F(FindInPageRequestTest, AllFindResponsesReturned) {
   request_.DidReceiveFindResponseFromOneFrame();

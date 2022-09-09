@@ -152,7 +152,7 @@ int FindInPageRequest::GetCurrentSelectedMatchPageIndex() {
     return -1;
   }
   // Count all matches in frames that come before frame with id
-  // |selected_frame_id|.
+  // `selected_frame_id`.
   int total_match_index = selected_match_index_in_selected_frame_;
   for (auto it = frame_order_.begin(); it != selected_frame_id_; ++it) {
     total_match_index += frame_match_count_[*it];

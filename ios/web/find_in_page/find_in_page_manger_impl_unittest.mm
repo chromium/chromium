@@ -50,13 +50,13 @@ class FindInPageManagerImplTest : public WebTest {
     GetFindInPageManager()->SetDelegate(&fake_delegate_);
   }
 
-  // Returns the FindInPageManager associated with |fake_web_state_|.
+  // Returns the FindInPageManager associated with `fake_web_state_`.
   FindInPageManager* GetFindInPageManager() {
     return FindInPageManager::FromWebState(fake_web_state_.get());
   }
 
   // Returns a fake WebFrame that represents the main frame which will return
-  // |js_result| for the JavaScript function call "findInString.findString".
+  // `js_result` for the JavaScript function call "findInString.findString".
   std::unique_ptr<FakeWebFrame> CreateMainWebFrameWithJsResultForFind(
       base::Value* js_result) {
     auto frame = FakeWebFrame::CreateMainWebFrame(GURL());
@@ -66,7 +66,7 @@ class FindInPageManagerImplTest : public WebTest {
   }
 
   // Returns a fake WebFrame that represents a child frame which will return
-  // |js_result| for the JavaScript function call "findInString.findString".
+  // `js_result` for the JavaScript function call "findInString.findString".
   std::unique_ptr<FakeWebFrame> CreateChildWebFrameWithJsResultForFind(
       base::Value* js_result) {
     auto frame = FakeWebFrame::CreateChildWebFrame(GURL());

@@ -68,7 +68,7 @@ class FindInPageJsTest : public WebTestWithWebState {
     });
   }
 
-  // Returns all web frames for |web_state()|.
+  // Returns all web frames for `web_state()`.
   std::set<WebFrameImpl*> all_web_frames() {
     std::set<WebFrameImpl*> frames;
     for (WebFrame* frame :
@@ -77,7 +77,7 @@ class FindInPageJsTest : public WebTestWithWebState {
     }
     return frames;
   }
-  // Returns main frame for |web_state_|.
+  // Returns main frame for `web_state_`.
   WebFrameInternal* main_web_frame() {
     WebFrame* main_frame =
         web_state()->GetWebFramesManager()->GetMainWebFrame();

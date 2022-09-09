@@ -45,11 +45,11 @@ class FindInPageManagerImpl : public FindInPageManager,
  private:
   friend class web::WebStateUserData<FindInPageManagerImpl>;
 
-  // Executes find logic for |FindInPageSearch| option.
+  // Executes find logic for `FindInPageSearch` option.
   void StartSearch(NSString* query);
-  // Executes find logic for |FindInPageNext| option.
+  // Executes find logic for `FindInPageNext` option.
   void SelectNextMatch();
-  // Executes find logic for |FindInPagePrevious| option.
+  // Executes find logic for `FindInPagePrevious` option.
   void SelectPreviousMatch();
   // Determines whether find is finished. If not, calls pumpSearch to
   // continue. If it is, calls UpdateFrameMatchesCount(). If find returned
@@ -57,12 +57,12 @@ class FindInPageManagerImpl : public FindInPageManager,
   void ProcessFindInPageResult(const std::string& frame_id,
                                const int request_id,
                                absl::optional<int> result);
-  // Calls delegate DidHighlightMatches() method if |delegate_| is set and
+  // Calls delegate DidHighlightMatches() method if `delegate_` is set and
   // starts a FindInPageNext find. Called when the last frame returns results
   // from a Find request.
   void LastFindRequestCompleted();
   // Calls delegate DidSelectMatch() method to pass back index selected if
-  // |delegate_| is set. |result| is a byproduct of using base::BindOnce() to
+  // `delegate_` is set. `result` is a byproduct of using base::BindOnce() to
   // call this method after making a web_frame->CallJavaScriptFunction() call.
   void SelectDidFinish(const base::Value* result);
   // Executes highlightResult() JavaScript function in frame which contains the
