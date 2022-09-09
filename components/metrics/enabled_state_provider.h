@@ -18,6 +18,10 @@ class EnabledStateProvider {
   // Should collection and reporting be enabled. This should depend on consent
   // being given.
   virtual bool IsReportingEnabled() const;
+
+  // Enable or disable checking whether field trials are forced or not at
+  // EnabledStateProvider::IsReportingEnabled().
+  static void SetIgnoreForceFieldTrialsForTesting(bool ignore_trials);
 };
 
 }  // namespace metrics

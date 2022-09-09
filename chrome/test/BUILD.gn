@@ -1342,6 +1342,7 @@ if (!is_android) {
       "//components/memory_pressure",
       "//components/memory_pressure:test_support",
       "//components/metrics:content",
+      "//components/metrics:metrics",
       "//components/metrics/demographics",
       "//components/metrics/demographics:test_support",
       "//components/metrics_services_manager",
