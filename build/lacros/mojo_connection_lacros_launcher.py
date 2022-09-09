@@ -92,14 +92,8 @@ def _ReceiveFDs(sock):
           'CMSG_LEN is unexpected: %d' % (len(cmsg_data), ))
       fds.frombytes(cmsg_data[:])
 
-  if version == b'\x00':
-    assert len(fds) in (1, 2, 3), 'Expecting exactly 1, 2, or 3 FDs'
-    legacy_mojo_fd = os.fdopen(fds[0])
-    startup_fd = None if len(fds) < 2 else os.fdopen(fds[1])
-    mojo_fd = None if len(fds) < 3 else os.fdopen(fds[2])
-  elif version == b'\x01':
+  if version == b'\x01':
     assert len(fds) == 2, 'Expecting exactly 2 FDs'
-    legacy_mojo_fd = None
     startup_fd = os.fdopen(fds[0])
     mojo_fd = os.fdopen(fds[1])
   elif version:
@@ -107,7 +101,7 @@ def _ReceiveFDs(sock):
   else:
     raise AssertionError('Failed to receive startup message from ash-chrome. '
                          'Make sure you\'re logged in to Chrome OS.')
-  return legacy_mojo_fd, startup_fd, mojo_fd
+  return startup_fd, mojo_fd
 
 
 def _MaybeClosing(fileobj):
@@ -176,22 +170,11 @@ def Main():
 
   with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
     sock.connect(flags.socket_path.as_posix())
-    legacy_mojo_connection, startup_connection, mojo_connection = (
-        _ReceiveFDs(sock))
+    startup_connection, mojo_connection = (_ReceiveFDs(sock))
 
-  with _MaybeClosing(legacy_mojo_connection), \
-          _MaybeClosing(startup_connection), \
-          _MaybeClosing(mojo_connection):
+  with _MaybeClosing(startup_connection), _MaybeClosing(mojo_connection):
     cmd = args[:]
     pass_fds = []
-    if legacy_mojo_connection:
-      cmd.append('--mojo-platform-channel-handle=%d' %
-                 legacy_mojo_connection.fileno())
-      pass_fds.append(legacy_mojo_connection.fileno())
-    else:
-      # TODO(crbug.com/1188020): This is for backward compatibility.
-      # We should remove this after M93 lacros is spread enough.
-      cmd.append('--mojo-platform-channel-handle=-1')
     if startup_connection:
       cmd.append('--cros-startup-data-fd=%d' % startup_connection.fileno())
       pass_fds.append(startup_connection.fileno())

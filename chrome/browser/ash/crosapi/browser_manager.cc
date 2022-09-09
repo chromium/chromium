@@ -909,10 +909,6 @@ void BrowserManager::StartWithLogFile(LaunchParamsFromBackground params) {
       base::BindOnce(&BrowserManager::OnMojoDisconnected,
                      weak_factory_.GetWeakPtr()));
 
-  // Append a fake switch for backward compatibility.
-  // TODO(crbug.com/1188020): Remove this after M93 Lacros is spread enough.
-  command_line.AppendSwitchASCII(mojo::PlatformChannel::kHandleSwitch, "-1");
-
   if (crash_reporter::IsCrashpadEnabled()) {
     command_line.AppendSwitch(switches::kEnableCrashpad);
   }
