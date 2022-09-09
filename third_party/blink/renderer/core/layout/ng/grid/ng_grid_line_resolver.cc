@@ -25,22 +25,6 @@ static inline String ImplicitNamedGridLineForSide(const String& line_name,
                           : "-end");
 }
 
-NGGridLineResolver::NGGridLineResolver(const ComputedStyle& grid_style)
-    : column_implicit_grid_line_names_(
-          grid_style.ImplicitNamedGridColumnLines()),
-      row_implicit_grid_line_names_(grid_style.ImplicitNamedGridRowLines()),
-      column_computed_grid_track_list_(grid_style.GridTemplateColumns()),
-      row_computed_grid_track_list_(grid_style.GridTemplateRows()),
-      column_track_count_without_auto_repeat_(
-          grid_style.GridTemplateColumns()
-              .track_sizes.NGTrackList()
-              .TrackCountWithoutAutoRepeat()),
-      row_track_count_without_auto_repeat_(grid_style.GridTemplateRows()
-                                               .track_sizes.NGTrackList()
-                                               .TrackCountWithoutAutoRepeat()),
-      named_area_column_count_(grid_style.NamedGridAreaColumnCount()),
-      named_area_row_count_(grid_style.NamedGridAreaRowCount()) {}
-
 void NGGridLineResolver::InitialAndFinalPositionsFromStyle(
     const ComputedStyle& grid_item_style,
     GridTrackSizingDirection track_direction,
@@ -146,9 +130,11 @@ wtf_size_t NGGridLineResolver::ExplicitGridColumnCount(
   if (subgrid_span_size != kNotFound)
     return subgrid_span_size;
 
-  return std::min<wtf_size_t>(std::max(column_track_count_without_auto_repeat_ +
+  return std::min<wtf_size_t>(std::max(style_->GridTemplateColumns()
+                                               .track_sizes.NGTrackList()
+                                               .TrackCountWithoutAutoRepeat() +
                                            auto_repeat_tracks_count,
-                                       named_area_column_count_),
+                                       style_->NamedGridAreaColumnCount()),
                               kGridMaxTracks);
 }
 
@@ -158,10 +144,12 @@ wtf_size_t NGGridLineResolver::ExplicitGridRowCount(
   if (subgrid_span_size != kNotFound)
     return subgrid_span_size;
 
-  return std::min<wtf_size_t>(
-      std::max(row_track_count_without_auto_repeat_ + auto_repeat_rows_count,
-               named_area_row_count_),
-      kGridMaxTracks);
+  return std::min<wtf_size_t>(std::max(style_->GridTemplateRows()
+                                               .track_sizes.NGTrackList()
+                                               .TrackCountWithoutAutoRepeat() +
+                                           auto_repeat_rows_count,
+                                       style_->NamedGridAreaRowCount()),
+                              kGridMaxTracks);
 }
 
 wtf_size_t NGGridLineResolver::ExplicitGridSizeForSide(
@@ -215,6 +203,20 @@ static GridSpan DefiniteGridSpanWithSpanAgainstOpposite(
 
   return GridSpan::UntranslatedDefiniteGridSpan(
       opposite_line, opposite_line + position_offset);
+}
+
+const NamedGridLinesMap& NGGridLineResolver::NamedLinesMapForDirection(
+    GridTrackSizingDirection track_direction) const {
+  return (track_direction == kForColumns)
+             ? style_->ImplicitNamedGridColumnLines()
+             : style_->ImplicitNamedGridRowLines();
+}
+
+const ComputedGridTrackList&
+NGGridLineResolver::ComputedGridTrackListForDirection(
+    GridTrackSizingDirection track_direction) const {
+  return (track_direction == kForColumns) ? style_->GridTemplateColumns()
+                                          : style_->GridTemplateRows();
 }
 
 GridSpan NGGridLineResolver::ResolveGridPositionAgainstOppositePosition(

@@ -24,7 +24,8 @@ class NGGridLineResolver {
   DISALLOW_NEW();
 
  public:
-  explicit NGGridLineResolver(const ComputedStyle& grid_style);
+  explicit NGGridLineResolver(const ComputedStyle& grid_style)
+      : style_(&grid_style) {}
 
   wtf_size_t ExplicitGridColumnCount(
       wtf_size_t auto_repeat_columns_count,
@@ -46,16 +47,10 @@ class NGGridLineResolver {
 
  private:
   const NamedGridLinesMap& NamedLinesMapForDirection(
-      GridTrackSizingDirection track_direction) const {
-    return (track_direction == kForColumns) ? column_implicit_grid_line_names_
-                                            : row_implicit_grid_line_names_;
-  }
+      GridTrackSizingDirection track_direction) const;
 
   const ComputedGridTrackList& ComputedGridTrackListForDirection(
-      GridTrackSizingDirection track_direction) const {
-    return (track_direction == kForColumns) ? column_computed_grid_track_list_
-                                            : row_computed_grid_track_list_;
-  }
+      GridTrackSizingDirection track_direction) const;
 
   GridSpan ResolveGridPositionAgainstOppositePosition(
       int opposite_line,
@@ -114,17 +109,7 @@ class NGGridLineResolver {
       int last_line,
       NGGridNamedLineCollection& lines_collection) const;
 
-  NamedGridLinesMap column_implicit_grid_line_names_;
-  NamedGridLinesMap row_implicit_grid_line_names_;
-
-  ComputedGridTrackList column_computed_grid_track_list_;
-  ComputedGridTrackList row_computed_grid_track_list_;
-
-  wtf_size_t column_track_count_without_auto_repeat_;
-  wtf_size_t row_track_count_without_auto_repeat_;
-
-  wtf_size_t named_area_column_count_;
-  wtf_size_t named_area_row_count_;
+  scoped_refptr<const ComputedStyle> style_;
 };
 
 }  // namespace blink

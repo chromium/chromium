@@ -47,7 +47,7 @@ GridItems NGGridNode::ConstructGridItems(
     auto* grid_item = MakeGarbageCollected<GridItemData>(To<NGBlockNode>(child),
                                                          container_style);
 
-    // Order all of our in-flow children by their order property.
+    // Order all of our in-flow children by their `order` property.
     if (!grid_item->IsOutOfFlow()) {
       should_sort_grid_items_by_order_property |=
           child.Style().Order() != initial_order;
