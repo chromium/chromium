@@ -579,7 +579,7 @@ class TouchBarNotificationBridge : public CommandObserver,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (isGoogle) {
     image = NSImageFromImageSkiaWithColorSpace(
-        gfx::CreateVectorIcon(kGoogleGLogoIcon, kTouchBarIconSize,
+        gfx::CreateVectorIcon(vector_icons::kGoogleGLogoIcon, kTouchBarIconSize,
                               gfx::kPlaceholderColor),
         base::mac::GetSRGBColorSpace());
   } else {

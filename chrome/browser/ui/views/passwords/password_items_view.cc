@@ -211,7 +211,7 @@ void PasswordItemsView::PasswordRow::AddPasswordRow(
           parent_->AddChildView(std::make_unique<views::ImageView>());
       image_view->SetImage(gfx::CreateVectorIcon(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-          kGoogleGLogoIcon,
+          vector_icons::kGoogleGLogoIcon,
 #else
           vector_icons::kSyncIcon,
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)

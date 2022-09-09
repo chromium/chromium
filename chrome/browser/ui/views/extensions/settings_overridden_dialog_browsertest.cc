@@ -8,7 +8,6 @@
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -25,6 +24,7 @@
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/views/test/widget_test.h"
@@ -111,7 +111,7 @@ class SettingsOverriddenDialogViewBrowserTest : public DialogBrowserTest {
         u"Settings overriden dialog body, which is quite a bit "
         u"longer than the title alone"};
     if (show_icon)
-      params.icon = &kProductIcon;
+      params.icon = &vector_icons::kProductIcon;
 
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          kExtensionSettingsOverridenDialogName);

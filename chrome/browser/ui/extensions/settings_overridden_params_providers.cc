@@ -6,7 +6,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
 #include "chrome/browser/extensions/settings_api_bubble_delegate.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
@@ -21,6 +20,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/url_formatter.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_url_handler.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
@@ -192,7 +192,7 @@ GetNtpOverriddenParams(Profile* profile) {
         IDS_EXTENSION_NTP_OVERRIDDEN_DIALOG_TITLE_BACK_TO_GOOGLE);
     histogram_name = kBackToGoogleDialogHistogramName;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    icon = &kGoogleGLogoIcon;
+    icon = &vector_icons::kGoogleGLogoIcon;
 #endif
   } else {
     dialog_title = l10n_util::GetStringUTF16(
@@ -279,7 +279,7 @@ GetSearchOverriddenParams(Profile* profile) {
       dialog_title = l10n_util::GetStringUTF16(
           IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_TITLE_BACK_TO_GOOGLE);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      icon = &kGoogleGLogoIcon;
+      icon = &vector_icons::kGoogleGLogoIcon;
 #endif
       break;
     case SecondarySearchInfo::Type::kNonGoogleInDefaultList:

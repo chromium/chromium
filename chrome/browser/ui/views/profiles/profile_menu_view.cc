@@ -595,7 +595,7 @@ void ProfileMenuView::BuildFeatureButtons() {
         base::BindRepeating(
             &ProfileMenuView::OnManageGoogleAccountButtonClicked,
             base::Unretained(this)),
-        kGoogleGLogoIcon,
+        vector_icons::kGoogleGLogoIcon,
         /*icon_to_image_ratio=*/0.75f);
 #else
     AddFeatureButton(
