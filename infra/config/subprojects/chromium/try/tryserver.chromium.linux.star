@@ -312,16 +312,6 @@ try_.builder(
     },
 )
 
-# b/236069482: Experimental builder to test reclient migration
-try_.builder(
-    name = "linux-wayland-rel-reclient",
-    mirrors = builder_config.copy_from("linux-wayland-rel"),
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    tryjob = try_.job(
-        experiment_percentage = 5,
-    ),
-)
-
 try_.builder(
     name = "linux-viz-rel",
 )
