@@ -257,7 +257,7 @@ blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
           ? absl::make_optional(ConvertToBlink(in->critical_ch.value()))
           : absl::nullopt,
       in->xfo, ConvertToBlink(in->link_headers),
-      ConvertToBlink(in->timing_allow_origin), in->bfcache_opt_in_unload,
+      ConvertToBlink(in->timing_allow_origin),
       in->reporting_endpoints.has_value()
           ? absl::make_optional(ConvertToBlink(in->reporting_endpoints.value()))
           : absl::nullopt,

@@ -8,7 +8,6 @@
 #include "net/base/features.h"
 #include "net/http/http_response_headers.h"
 #include "net/reporting/reporting_header_parser.h"
-#include "services/network/public/cpp/bfcache_opt_in_parser.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/content_language_parser.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
@@ -62,12 +61,6 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
                                    &timing_allow_origin_value)) {
     parsed_headers->timing_allow_origin =
         ParseTimingAllowOrigin(timing_allow_origin_value);
-  }
-
-  std::string bfcache_opt_in;
-  if (headers->GetNormalizedHeader("BFCache-Opt-In", &bfcache_opt_in)) {
-    parsed_headers->bfcache_opt_in_unload =
-        ParseBFCacheOptInUnload(bfcache_opt_in);
   }
 
 #if BUILDFLAG(ENABLE_REPORTING)
