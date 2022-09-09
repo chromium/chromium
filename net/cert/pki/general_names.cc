@@ -8,7 +8,6 @@
 #include "base/strings/string_util.h"
 #include "net/cert/pki/cert_error_params.h"
 #include "net/cert/pki/cert_errors.h"
-#include "net/cert/pki/string_util.h"
 #include "net/der/input.h"
 #include "net/der/parser.h"
 #include "net/der/tag.h"
@@ -131,8 +130,8 @@ std::unique_ptr<GeneralNames> GeneralNames::CreateFromValue(
   } else if (tag == der::ContextSpecificPrimitive(1)) {
     // rfc822Name                      [1]     IA5String,
     name_type = GENERAL_NAME_RFC822_NAME;
-    const std::string_view s = value.AsStringView();
-    if (!net::string_util::IsAscii(s)) {
+    const base::StringPiece s = value.AsStringPiece();
+    if (!base::IsStringASCII(s)) {
       errors->AddError(kRFC822NameNotAscii);
       return false;
     }
@@ -140,8 +139,8 @@ std::unique_ptr<GeneralNames> GeneralNames::CreateFromValue(
   } else if (tag == der::ContextSpecificPrimitive(2)) {
     // dNSName                         [2]     IA5String,
     name_type = GENERAL_NAME_DNS_NAME;
-    const std::string_view s = value.AsStringView();
-    if (!net::string_util::IsAscii(s)) {
+    const base::StringPiece s = value.AsStringPiece();
+    if (!base::IsStringASCII(s)) {
       errors->AddError(kDnsNameNotAscii);
       return false;
     }
@@ -168,8 +167,8 @@ std::unique_ptr<GeneralNames> GeneralNames::CreateFromValue(
   } else if (tag == der::ContextSpecificPrimitive(6)) {
     // uniformResourceIdentifier       [6]     IA5String,
     name_type = GENERAL_NAME_UNIFORM_RESOURCE_IDENTIFIER;
-    const std::string_view s = value.AsStringView();
-    if (!net::string_util::IsAscii(s)) {
+    const base::StringPiece s = value.AsStringPiece();
+    if (!base::IsStringASCII(s)) {
       errors->AddError(kURINotAscii);
       return false;
     }

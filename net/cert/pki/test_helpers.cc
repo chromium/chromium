@@ -13,7 +13,6 @@
 #include "net/cert/pem.h"
 #include "net/cert/pki/cert_error_params.h"
 #include "net/cert/pki/cert_errors.h"
-#include "net/cert/pki/string_util.h"
 #include "net/der/parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
@@ -24,11 +23,11 @@ namespace net {
 
 namespace {
 
-bool GetValue(std::string_view prefix,
-              std::string_view line,
+bool GetValue(base::StringPiece prefix,
+              base::StringPiece line,
               std::string* value,
               bool* has_value) {
-  if (!net::string_util::StartsWith(line, prefix))
+  if (!base::StartsWith(line, prefix))
     return false;
 
   if (*has_value) {
@@ -46,19 +45,13 @@ bool GetValue(std::string_view prefix,
 namespace der {
 
 void PrintTo(const Input& data, ::std::ostream* os) {
-  size_t len;
-  if (!EVP_EncodedLength(&len, data.Length())) {
-    *os << "[]";
-    return;
-  }
-  std::vector<uint8_t> encoded(len);
-  if (encoded.empty() ||
-      !EVP_EncodeBlock(&encoded[0], data.UnsafeData(), data.Length())) {
-    *os << "[]";
-    return;
-  }
-  std::string b64_encoded(encoded.begin(), encoded.end());
-  *os << "[" << b64_encoded << "]";
+  std::string b64;
+  base::Base64Encode(
+      base::StringPiece(reinterpret_cast<const char*>(data.UnsafeData()),
+                        data.Length()),
+      &b64);
+
+  *os << "[" << b64 << "]";
 }
 
 }  // namespace der
@@ -209,7 +202,7 @@ bool ReadVerifyCertChainTestFromFile(const std::string& file_path_ascii,
   bool has_errors = false;
   bool has_key_purpose = false;
 
-  std::string kExpectedErrors = "expected_errors:";
+  base::StringPiece kExpectedErrors = "expected_errors:";
 
   std::istringstream stream(file_data);
   for (std::string line; std::getline(stream, line, '\n');) {
@@ -225,7 +218,7 @@ bool ReadVerifyCertChainTestFromFile(const std::string& file_path_ascii,
     if (line.empty()) {
       continue;
     }
-    std::string_view line_piece(line);
+    base::StringPiece line_piece(line);
 
     std::string value;
 
@@ -278,7 +271,7 @@ bool ReadVerifyCertChainTestFromFile(const std::string& file_path_ascii,
         ADD_FAILURE() << "Unrecognized last_cert_trust: " << value;
         return false;
       }
-    } else if (net::string_util::StartsWith(line_piece, "#")) {
+    } else if (base::StartsWith(line_piece, "#")) {
       // Skip comments.
       continue;
     } else if (line_piece == kExpectedErrors) {
@@ -286,7 +279,7 @@ bool ReadVerifyCertChainTestFromFile(const std::string& file_path_ascii,
       // The errors start on the next line, and extend until the end of the
       // file.
       std::string prefix =
-          std::string("\n") + kExpectedErrors + std::string("\n");
+          std::string("\n") + std::string(kExpectedErrors) + std::string("\n");
       size_t errors_start = file_data.find(prefix);
       if (errors_start == std::string::npos) {
         ADD_FAILURE() << "expected_errors not found";

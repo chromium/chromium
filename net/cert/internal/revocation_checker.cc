@@ -51,10 +51,9 @@ bool CheckCertRevocation(const ParsedCertificateList& certs,
   // Check using stapled OCSP, if available.
   if (!stapled_ocsp_response.empty() && issuer_cert) {
     OCSPVerifyResult::ResponseStatus response_details;
-    OCSPRevocationStatus ocsp_status = CheckOCSP(
-        std::string_view(stapled_ocsp_response.data(),
-                         stapled_ocsp_response.size()),
-        cert, issuer_cert, base::Time::Now(), max_age, &response_details);
+    OCSPRevocationStatus ocsp_status =
+        CheckOCSP(stapled_ocsp_response, cert, issuer_cert, base::Time::Now(),
+                  max_age, &response_details);
     if (stapled_ocsp_verify_result) {
       stapled_ocsp_verify_result->response_status = response_details;
       stapled_ocsp_verify_result->revocation_status = ocsp_status;
@@ -87,7 +86,7 @@ bool CheckCertRevocation(const ParsedCertificateList& certs,
     for (const auto& ocsp_uri : cert->ocsp_uris()) {
       // Only consider http:// URLs (https:// could create a circular
       // dependency).
-      GURL parsed_ocsp_url(base::StringPiece(ocsp_uri.data(), ocsp_uri.size()));
+      GURL parsed_ocsp_url(ocsp_uri);
       if (!parsed_ocsp_url.is_valid() ||
           !parsed_ocsp_url.SchemeIs(url::kHttpScheme)) {
         continue;
@@ -136,7 +135,7 @@ bool CheckCertRevocation(const ParsedCertificateList& certs,
       OCSPVerifyResult::ResponseStatus response_details;
 
       OCSPRevocationStatus ocsp_status = CheckOCSP(
-          std::string_view(
+          base::StringPiece(
               reinterpret_cast<const char*>(ocsp_response_bytes.data()),
               ocsp_response_bytes.size()),
           cert, issuer_cert, base::Time::Now(), max_age, &response_details);
@@ -187,8 +186,7 @@ bool CheckCertRevocation(const ParsedCertificateList& certs,
                  ->uniform_resource_identifiers) {
           // Only consider http:// URLs (https:// could create a circular
           // dependency).
-          GURL parsed_crl_url(
-              base::StringPiece(crl_uri.data(), crl_uri.size()));
+          GURL parsed_crl_url(crl_uri);
           if (!parsed_crl_url.is_valid() ||
               !parsed_crl_url.SchemeIs(url::kHttpScheme)) {
             continue;
@@ -226,7 +224,7 @@ bool CheckCertRevocation(const ParsedCertificateList& certs,
             continue;
 
           CRLRevocationStatus crl_status = CheckCRL(
-              std::string_view(
+              base::StringPiece(
                   reinterpret_cast<const char*>(crl_response_bytes.data()),
                   crl_response_bytes.size()),
               certs, target_cert_index, distribution_point, base::Time::Now(),

@@ -97,7 +97,7 @@ class PkitsTest : public ::testing::Test {
       crl_ders.push_back(net::ReadTestFileToString(
           "net/third_party/nist-pkits/crls/" + s + ".crl"));
 
-    std::string_view test_number = info.test_number;
+    base::StringPiece test_number = info.test_number;
 
     // Some of the PKITS tests are intentionally given different expectations
     // from PKITS.pdf.

@@ -39,7 +39,9 @@ class NET_EXPORT CertIssuerSourceStatic : public CertIssuerSource {
  private:
   // The certificates that the CertIssuerSourceStatic can return, keyed on the
   // normalized subject value.
-  std::unordered_multimap<std::string_view, scoped_refptr<ParsedCertificate>>
+  std::unordered_multimap<base::StringPiece,
+                          scoped_refptr<ParsedCertificate>,
+                          base::StringPieceHash>
       intermediates_;
 };
 
