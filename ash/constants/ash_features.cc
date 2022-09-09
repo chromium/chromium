@@ -1071,6 +1071,10 @@ const base::Feature kLockScreenHideSensitiveNotificationsSupport{
 const base::Feature kLockScreenInlineReply{"LockScreenInlineReply",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables new flow for Education license packaged devices.
+const base::Feature kEducationEnrollmentOobeFlow{
+    "EducationEnrollmentOobeFlow", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables notifications on the lock screen.
 const base::Feature kLockScreenNotifications{"LockScreenNotifications",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
@@ -2205,6 +2209,10 @@ bool IsLockScreenHideSensitiveNotificationsSupported() {
 
 bool IsLogControllerForDiagnosticsAppEnabled() {
   return base::FeatureList::IsEnabled(kEnableLogControllerForDiagnosticsApp);
+}
+
+bool IsEducationEnrollmentOobeFlowEnabled() {
+  return base::FeatureList::IsEnabled(kEducationEnrollmentOobeFlow);
 }
 
 bool IsLockScreenInlineReplyEnabled() {

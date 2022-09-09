@@ -460,6 +460,8 @@ extern const base::FeatureParam<int> kMemoryPressureMetricsDetailLogPeriod;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kManagedTermsOfService;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kEducationEnrollmentOobeFlow;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kMicMuteNotifications;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kDisableMessagesCrossDeviceIntegration;
@@ -827,6 +829,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsMicMuteNotificationsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsMinimumChromeVersionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNearbyKeepAliveFixEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNetworkingInDiagnosticsAppEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEducationEnrollmentOobeFlowEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNewLockScreenReauthLayoutEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationExpansionAnimationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
