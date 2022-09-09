@@ -145,6 +145,11 @@ void ScriptRunner::RemoveDelayReason(DelayReason delay_reason) {
 
 void ScriptRunner::RemoveDelayReasonFromScript(PendingScript* pending_script,
                                                DelayReason delay_reason) {
+  // |pending_script| can be null when |RemoveDelayReasonFromScript()| is called
+  // via |PostDelayedTask()| below.
+  if (!pending_script)
+    return;
+
   auto it = pending_async_scripts_.find(pending_script);
 
   if (it == pending_async_scripts_.end())
