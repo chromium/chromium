@@ -319,7 +319,8 @@ TEST_F(AggregationServiceImplTest, AssembleReport_Succeed) {
                         /*key_id=*/"key_1",
                         /*debug_cleartext_payload=*/absl::nullopt);
 
-  AggregatableReport report(std::move(payloads), "example_shared_info");
+  AggregatableReport report(std::move(payloads), "example_shared_info",
+                            /*debug_key=*/absl::nullopt);
   assembler()->TriggerResponse(
       /*report_id=*/0, std::move(report),
       AggregatableReportAssembler::AssemblyStatus::kOk);
@@ -352,7 +353,8 @@ TEST_F(AggregationServiceImplTest, SendReport) {
                         /*key_id=*/"key_1",
                         /*debug_cleartext_payload=*/absl::nullopt);
 
-  AggregatableReport report(std::move(payloads), "example_shared_info");
+  AggregatableReport report(std::move(payloads), "example_shared_info",
+                            /*debug_key=*/absl::nullopt);
 
   SendReport(GURL("https://example.com/reports"), report);
 
@@ -377,7 +379,8 @@ TEST_F(AggregationServiceImplTest, ScheduleReport_Success) {
   payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
                         /*key_id=*/"key_1",
                         /*debug_cleartext_payload=*/absl::nullopt);
-  AggregatableReport report(std::move(payloads), "example_shared_info");
+  AggregatableReport report(std::move(payloads), "example_shared_info",
+                            /*debug_key=*/absl::nullopt);
 
   assembler()->TriggerResponse(
       /*report_id=*/0, std::move(report),
@@ -422,7 +425,8 @@ TEST_F(AggregationServiceImplTest, ScheduleReport_FailedAssembly) {
   payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
                         /*key_id=*/"key_1",
                         /*debug_cleartext_payload=*/absl::nullopt);
-  AggregatableReport report(std::move(payloads), "example_shared_info");
+  AggregatableReport report(std::move(payloads), "example_shared_info",
+                            /*debug_key=*/absl::nullopt);
 
   assembler()->TriggerResponse(
       /*report_id=*/0, absl::nullopt,
@@ -458,7 +462,8 @@ TEST_F(AggregationServiceImplTest, ScheduleReport_FailedSending) {
   payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
                         /*key_id=*/"key_1",
                         /*debug_cleartext_payload=*/absl::nullopt);
-  AggregatableReport report(std::move(payloads), "example_shared_info");
+  AggregatableReport report(std::move(payloads), "example_shared_info",
+                            /*debug_key=*/absl::nullopt);
 
   assembler()->TriggerResponse(
       /*report_id=*/0, std::move(report),
@@ -490,8 +495,10 @@ TEST_F(AggregationServiceImplTest,
   payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
                         /*key_id=*/"key_1",
                         /*debug_cleartext_payload=*/absl::nullopt);
-  AggregatableReport report_1(payloads, "example_shared_info");
-  AggregatableReport report_2(payloads, "example_shared_info");
+  AggregatableReport report_1(payloads, "example_shared_info",
+                              /*debug_key=*/absl::nullopt);
+  AggregatableReport report_2(payloads, "example_shared_info",
+                              /*debug_key=*/absl::nullopt);
 
   assembler()->TriggerResponse(
       /*report_id=*/0, std::move(report_1),
@@ -565,7 +572,8 @@ TEST_F(AggregationServiceImplTest, SendReportsForWebUI) {
   payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
                         /*key_id=*/"key_1",
                         /*debug_cleartext_payload=*/absl::nullopt);
-  AggregatableReport report(std::move(payloads), "example_shared_info");
+  AggregatableReport report(std::move(payloads), "example_shared_info",
+                            /*debug_key=*/absl::nullopt);
 
   assembler()->TriggerResponse(
       /*report_id=*/0, std::move(report),

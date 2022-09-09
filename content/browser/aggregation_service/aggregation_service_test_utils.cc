@@ -255,7 +255,8 @@ AggregatableReport CloneAggregatableReport(const AggregatableReport& report) {
                           payload.debug_cleartext_payload);
   }
 
-  return AggregatableReport(std::move(payloads), report.shared_info());
+  return AggregatableReport(std::move(payloads), report.shared_info(),
+                            report.debug_key());
 }
 
 TestHpkeKey GenerateKey(std::string key_id) {

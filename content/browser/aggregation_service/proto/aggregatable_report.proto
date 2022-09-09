@@ -57,4 +57,5 @@ message AggregatableReportRequest {
   AggregationServicePayloadContents payload_contents = 1;
   AggregatableReportSharedInfo shared_info = 2;
   string reporting_path = 3;
+  optional int64 debug_key = 4;
 }

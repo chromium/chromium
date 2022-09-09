@@ -1014,6 +1014,36 @@ TEST_F(AggregationServiceStorageSqlTest, StoreRequest_LimitIsScopedCorrectly) {
       false, 2);
 }
 
+TEST_F(AggregationServiceStorageSqlTest,
+       StoreRequestWithDebugKey_DeserializedWithDebugKey) {
+  OpenDatabase();
+
+  EXPECT_FALSE(storage_->NextReportTimeAfter(base::Time::Min()).has_value());
+  EXPECT_TRUE(
+      storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).empty());
+
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+  AggregatableReportSharedInfo shared_info =
+      example_request.shared_info().Clone();
+  shared_info.debug_mode = AggregatableReportSharedInfo::DebugMode::kEnabled;
+
+  AggregatableReportRequest request =
+      AggregatableReportRequest::Create(
+          example_request.payload_contents(), std::move(shared_info),
+          /*reporting_path=*/std::string(), /*debug_key=*/1234)
+          .value();
+
+  storage_->StoreRequest(aggregation_service::CloneReportRequest(request));
+
+  std::vector<AggregationServiceStorage::RequestAndId> stored_requests_and_ids =
+      storage_->GetRequestsReportingOnOrBefore(base::Time::Max());
+
+  ASSERT_EQ(stored_requests_and_ids.size(), 1u);
+  EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
+      stored_requests_and_ids[0].request, request));
+}
+
 TEST_F(AggregationServiceStorageSqlInMemoryTest,
        DatabaseInMemoryReopened_RequestsNotPersisted) {
   OpenDatabase();
