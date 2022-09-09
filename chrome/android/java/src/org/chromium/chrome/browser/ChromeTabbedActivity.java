@@ -2341,22 +2341,20 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private void initializeBackPressHandlers() {
         if (mReturnToChromeBackPressHandler == null) {
-            mReturnToChromeBackPressHandler =
-                    new ReturnToChromeBackPressHandler(mLayoutStateProviderSupplier,
-                            getTabModelSelectorSupplier(), this::returnToOverviewModeOnBackPressed);
+            mReturnToChromeBackPressHandler = new ReturnToChromeBackPressHandler(
+                    getActivityTabProvider(), this::returnToOverviewModeOnBackPressed);
             mBackPressManager.addHandler(mReturnToChromeBackPressHandler,
                     BackPressHandler.Type.TAB_RETURN_TO_CHROME_START_SURFACE);
         }
         if (mReadingListBackPressHandler == null && !isTablet()) {
             mReadingListBackPressHandler =
-                    new ReadingListBackPressHandler(getTabModelSelectorSupplier());
+                    new ReadingListBackPressHandler(getActivityTabProvider());
             mBackPressManager.addHandler(
                     mReadingListBackPressHandler, BackPressHandler.Type.SHOW_READING_LIST);
         }
         if (mMinimizeAppAndCloseTabBackPressHandler == null) {
-            mMinimizeAppAndCloseTabBackPressHandler =
-                    new MinimizeAppAndCloseTabBackPressHandler(getTabModelSelectorSupplier(),
-                            this::backShouldCloseTab, this::sendToBackground);
+            mMinimizeAppAndCloseTabBackPressHandler = new MinimizeAppAndCloseTabBackPressHandler(
+                    getActivityTabProvider(), this::backShouldCloseTab, this::sendToBackground);
             mBackPressManager.addHandler(mMinimizeAppAndCloseTabBackPressHandler,
                     BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
         }

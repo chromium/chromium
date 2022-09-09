@@ -18,8 +18,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.WebContents;
@@ -34,11 +32,10 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
     // An always-enabled supplier since this handler is the final step of back press handling.
     private final ObservableSupplierImpl<Boolean> mBackPressSupplier =
             new ObservableSupplierImpl<>();
-    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    private final Callback<TabModelSelector> mOnTabModelSelectorAvailableCallback;
     private final Predicate<Tab> mBackShouldCloseTab;
     private final Callback<Tab> mSendToBackground;
-    private TabModelSelectorTabModelObserver mTabModelObserver;
+    private final Callback<Tab> mOnTabChanged = this::onTabChanged;
+    private final ObservableSupplier<Tab> mActivityTabSupplier;
     private static Integer sVersionForTesting;
 
     @IntDef({MinimizeAppAndCloseTabType.MINIMIZE_APP, MinimizeAppAndCloseTabType.CLOSE_TAB,
@@ -60,16 +57,14 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
                 HISTOGRAM, type, MinimizeAppAndCloseTabType.NUM_TYPES);
     }
 
-    public MinimizeAppAndCloseTabBackPressHandler(
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+    public MinimizeAppAndCloseTabBackPressHandler(ObservableSupplier<Tab> activityTabSupplier,
             Predicate<Tab> backShouldCloseTab, Callback<Tab> sendToBackground) {
         mBackShouldCloseTab = backShouldCloseTab;
         mSendToBackground = sendToBackground;
-        mTabModelSelectorSupplier = tabModelSelectorSupplier;
-        mOnTabModelSelectorAvailableCallback = this::onTabModelSelectorAvailable;
-        tabModelSelectorSupplier.addObserver(mOnTabModelSelectorAvailableCallback);
-        if (!shouldUseSystemBack()) {
-            mBackPressSupplier.set(true);
+        mActivityTabSupplier = activityTabSupplier;
+        mBackPressSupplier.set(!shouldUseSystemBack());
+        if (shouldUseSystemBack()) {
+            mActivityTabSupplier.addObserver(mOnTabChanged);
         }
     }
 
@@ -77,16 +72,14 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
     public void handleBackPress() {
         boolean minimizeApp;
         boolean shouldCloseTab;
-        Tab currentTab = null;
+        Tab currentTab = mActivityTabSupplier.get();
 
-        if (mTabModelSelectorSupplier.get() == null
-                || mTabModelSelectorSupplier.get().getCurrentTab() == null) {
+        if (currentTab == null) {
             assert !shouldUseSystemBack()
                 : "Should be disabled when there is no valid tab and back press will be consumed.";
             minimizeApp = true;
             shouldCloseTab = false;
         } else {
-            currentTab = mTabModelSelectorSupplier.get().getCurrentTab();
             // At this point we know either the tab will close or the app will minimize.
             NativePage nativePage = currentTab.getNativePage();
             if (nativePage != null) {
@@ -123,21 +116,12 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
 
     @Override
     public void destroy() {
-        if (mTabModelObserver != null) mTabModelObserver.destroy();
+        mActivityTabSupplier.removeObserver(mOnTabChanged);
     }
 
-    private void onTabModelSelectorAvailable(TabModelSelector tabModelSelector) {
-        mTabModelSelectorSupplier.removeObserver(mOnTabModelSelectorAvailableCallback);
-        if (shouldUseSystemBack()) {
-            Tab tab = tabModelSelector.getCurrentTab();
-            mBackPressSupplier.set(tab != null && mBackShouldCloseTab.test(tab));
-            mTabModelObserver = new TabModelSelectorTabModelObserver(tabModelSelector) {
-                @Override
-                public void didSelectTab(Tab tab, int type, int lastId) {
-                    mBackPressSupplier.set(mBackShouldCloseTab.test(tab));
-                }
-            };
-        }
+    private void onTabChanged(Tab tab) {
+        assert shouldUseSystemBack() : "Should not observe changes when system back is disabled";
+        mBackPressSupplier.set(tab != null && mBackShouldCloseTab.test(tab));
     }
 
     private static boolean shouldUseSystemBack() {

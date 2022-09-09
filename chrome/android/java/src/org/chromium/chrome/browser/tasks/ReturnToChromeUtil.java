@@ -23,8 +23,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -32,9 +31,6 @@ import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.homepage.HomepageManager;
-import org.chromium.chrome.browser.layouts.LayoutStateProvider;
-import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -45,7 +41,6 @@ import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformSer
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -109,56 +104,33 @@ public final class ReturnToChromeUtil {
     public static class ReturnToChromeBackPressHandler implements BackPressHandler {
         private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
                 new ObservableSupplierImpl<>();
-        private final Supplier<LayoutStateProvider> mLayoutStateProvider;
-        private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
         private final Runnable mOnBackPressedCallback;
+        private final ActivityTabProvider.ActivityTabTabObserver mActivityTabObserver;
+        private final ActivityTabProvider mActivityTabProvider;
 
         public ReturnToChromeBackPressHandler(
-                OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
-                ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-                Runnable onBackPressedCallback) {
-            mLayoutStateProvider = layoutStateProviderOneshotSupplier;
-            mTabModelSelectorSupplier = tabModelSelectorSupplier;
-            mOnBackPressedCallback = onBackPressedCallback;
-            onBackPressStateChanged();
-            tabModelSelectorSupplier.addObserver(this::onTabModelSelectorAvailable);
-            layoutStateProviderOneshotSupplier.onAvailable(this::onLayoutManagerAvailable);
-        }
-
-        private void onTabModelSelectorAvailable(TabModelSelector tabModelSelector) {
-            onBackPressStateChanged();
-            tabModelSelector.getTabModelFilterProvider().addTabModelFilterObserver(
-                    new TabModelObserver() {
+                ActivityTabProvider activityTabProvider, Runnable onBackPressedCallback) {
+            mActivityTabProvider = activityTabProvider;
+            mActivityTabObserver =
+                    new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider, true) {
                         @Override
-                        public void didSelectTab(Tab tab, int type, int lastId) {
+                        protected void onObservingDifferentTab(Tab tab, boolean hint) {
                             onBackPressStateChanged();
                         }
-                    });
-        }
-
-        private void onLayoutManagerAvailable(LayoutStateProvider layoutStateProvider) {
+                    };
+            mOnBackPressedCallback = onBackPressedCallback;
             onBackPressStateChanged();
-            layoutStateProvider.addObserver(new LayoutStateObserver() {
-                @Override
-                public void onStartedShowing(int layoutType, boolean showToolbar) {
-                    onBackPressStateChanged();
-                }
-            });
         }
 
         private void onBackPressStateChanged() {
-            if (mTabModelSelectorSupplier.get() == null || mLayoutStateProvider.get() == null
-                    || mTabModelSelectorSupplier.get().getCurrentTab() == null) {
-                mBackPressChangedSupplier.set(false);
-                return;
-            }
-            mBackPressChangedSupplier.set(
-                    isTabFromStartSurface(mTabModelSelectorSupplier.get().getCurrentTab())
-                    && !mLayoutStateProvider.get().isLayoutVisible(LayoutType.TAB_SWITCHER));
+            Tab tab = mActivityTabProvider.get();
+            mBackPressChangedSupplier.set(tab != null && isTabFromStartSurface(tab));
         }
 
         @Override
         public void handleBackPress() {
+            Tab tab = mActivityTabProvider.get();
+            assert tab != null && !tab.canGoBack();
             mOnBackPressedCallback.run();
         }
 

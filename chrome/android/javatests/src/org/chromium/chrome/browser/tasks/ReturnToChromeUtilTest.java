@@ -255,10 +255,7 @@ public class ReturnToChromeUtilTest {
         mBackPressHandler = TestThreadUtils.runOnUiThreadBlockingNoException(
                 ()
                         -> new ReturnToChromeBackPressHandler(
-                                mActivityTestRule.getActivity()
-                                        .getRootUiCoordinatorForTesting()
-                                        .getLayoutStateProviderForTesting(),
-                                mActivityTestRule.getActivity().getTabModelSelectorSupplier(),
+                                mActivityTestRule.getActivity().getActivityTabProvider(),
                                 () -> {}));
     }
 

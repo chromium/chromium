@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -53,16 +52,13 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
     public ExpectedException thrown = ExpectedException.none();
 
     @Mock
-    private TabModelSelector mTabModelSelector;
-
-    @Mock
     private Callback<Tab> mSendToBackground;
 
     @Mock
     private Predicate<Tab> mShouldCloseTab;
 
     private MinimizeAppAndCloseTabBackPressHandler mHandler;
-    private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorObservableSupplier;
+    private ObservableSupplierImpl<Tab> mActivityTabSupplier;
 
     @BeforeClass
     public static void setUpClass() {
@@ -90,14 +86,13 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
         HistogramDelta d1 = new HistogramDelta(MinimizeAppAndCloseTabBackPressHandler.HISTOGRAM,
                 MinimizeAppAndCloseTabType.MINIMIZE_APP_AND_CLOSE_TAB);
         Tab tab = Mockito.mock(Tab.class);
-        Mockito.when(mTabModelSelector.getCurrentTab()).thenReturn(tab);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mTabModelSelectorObservableSupplier.set(mTabModelSelector); });
         Mockito.when(mShouldCloseTab.test(tab)).thenReturn(true);
         UserDataHost userDataHost = new UserDataHost();
         Mockito.when(tab.getUserDataHost()).thenReturn(userDataHost);
         TabAssociatedApp.from(tab);
         Mockito.when(tab.getLaunchType()).thenReturn(TabLaunchType.FROM_EXTERNAL_APP);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mActivityTabSupplier.set(tab); });
+        Assert.assertTrue(mHandler.getHandleBackPressChangedSupplier().get());
         mHandler.handleBackPress();
 
         Mockito.verify(mSendToBackground,
@@ -120,14 +115,13 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
         HistogramDelta d1 = new HistogramDelta(MinimizeAppAndCloseTabBackPressHandler.HISTOGRAM,
                 MinimizeAppAndCloseTabType.CLOSE_TAB);
         Tab tab = Mockito.mock(Tab.class);
-        Mockito.when(mTabModelSelector.getCurrentTab()).thenReturn(tab);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mTabModelSelectorObservableSupplier.set(mTabModelSelector); });
         Mockito.when(mShouldCloseTab.test(tab)).thenReturn(true);
         UserDataHost userDataHost = new UserDataHost();
         Mockito.when(tab.getUserDataHost()).thenReturn(userDataHost);
         TabAssociatedApp.from(tab);
         Mockito.when(tab.getLaunchType()).thenReturn(TabLaunchType.FROM_LONGPRESS_FOREGROUND);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mActivityTabSupplier.set(tab); });
+        Assert.assertTrue(mHandler.getHandleBackPressChangedSupplier().get());
         mHandler.handleBackPress();
 
         Mockito.verify(mSendToBackground,
@@ -151,10 +145,9 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
         HistogramDelta d1 = new HistogramDelta(MinimizeAppAndCloseTabBackPressHandler.HISTOGRAM,
                 MinimizeAppAndCloseTabType.MINIMIZE_APP);
         Tab tab = Mockito.mock(Tab.class);
-        Mockito.when(mTabModelSelector.getCurrentTab()).thenReturn(tab);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mTabModelSelectorObservableSupplier.set(mTabModelSelector); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mActivityTabSupplier.set(tab); });
         Mockito.when(mShouldCloseTab.test(tab)).thenReturn(false);
+        Assert.assertTrue(mHandler.getHandleBackPressChangedSupplier().get());
         mHandler.handleBackPress();
 
         Mockito.verify(mSendToBackground,
@@ -171,9 +164,7 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
         HistogramDelta d1 = new HistogramDelta(MinimizeAppAndCloseTabBackPressHandler.HISTOGRAM,
                 MinimizeAppAndCloseTabType.MINIMIZE_APP);
         Tab tab = Mockito.mock(Tab.class);
-        Mockito.when(mTabModelSelector.getCurrentTab()).thenReturn(tab);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mTabModelSelectorObservableSupplier.set(mTabModelSelector); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mActivityTabSupplier.set(tab); });
         Mockito.when(mShouldCloseTab.test(tab)).thenReturn(false);
 
         Assert.assertFalse("Back press should be handled by OS.",
@@ -186,9 +177,8 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
     public void testMinimizeApp_NoValidTab() {
         HistogramDelta d1 = new HistogramDelta(MinimizeAppAndCloseTabBackPressHandler.HISTOGRAM,
                 MinimizeAppAndCloseTabType.MINIMIZE_APP);
-        Mockito.when(mTabModelSelector.getCurrentTab()).thenReturn(null);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mTabModelSelectorObservableSupplier.set(mTabModelSelector); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mActivityTabSupplier.set(null); });
+        Assert.assertTrue(mHandler.getHandleBackPressChangedSupplier().get());
         mHandler.handleBackPress();
 
         Mockito.verify(mSendToBackground).onResult(null);
@@ -205,9 +195,7 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
 
         HistogramDelta d1 = new HistogramDelta(MinimizeAppAndCloseTabBackPressHandler.HISTOGRAM,
                 MinimizeAppAndCloseTabType.MINIMIZE_APP);
-        Mockito.when(mTabModelSelector.getCurrentTab()).thenReturn(null);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mTabModelSelectorObservableSupplier.set(mTabModelSelector); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mActivityTabSupplier.set(null); });
 
         Assert.assertFalse("Back press should be handled by OS.",
                 mHandler.getHandleBackPressChangedSupplier().get());
@@ -237,11 +225,10 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
             MinimizeAppAndCloseTabBackPressHandler.setVersionForTesting(VERSION_CODES.S);
         }
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mTabModelSelectorObservableSupplier = new ObservableSupplierImpl<>(); });
+                () -> { mActivityTabSupplier = new ObservableSupplierImpl<>(); });
         mHandler = TestThreadUtils.runOnUiThreadBlockingNoException(
                 ()
                         -> new MinimizeAppAndCloseTabBackPressHandler(
-                                mTabModelSelectorObservableSupplier, mShouldCloseTab,
-                                mSendToBackground));
+                                mActivityTabSupplier, mShouldCloseTab, mSendToBackground));
     }
 }
