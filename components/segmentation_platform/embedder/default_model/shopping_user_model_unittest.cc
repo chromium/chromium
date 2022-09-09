@@ -20,12 +20,7 @@ class ShoppingUserModelTest : public testing::Test {
     shopping_user_model_ = std::make_unique<ShoppingUserModel>();
   }
 
-  void TearDown() override {
-    shopping_user_model_.reset();
-    RunUntilIdle();
-  }
-
-  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+  void TearDown() override { shopping_user_model_.reset(); }
 
   void ExpectInitAndFetchModel() {
     base::RunLoop loop;

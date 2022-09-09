@@ -20,12 +20,7 @@ class ResumeHeavyUserModelTest : public testing::Test {
     resume_heavy_user_model_ = std::make_unique<ResumeHeavyUserModel>();
   }
 
-  void TearDown() override {
-    resume_heavy_user_model_.reset();
-    RunUntilIdle();
-  }
-
-  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+  void TearDown() override { resume_heavy_user_model_.reset(); }
 
   void ExpectInitAndFetchModel() {
     base::RunLoop loop;

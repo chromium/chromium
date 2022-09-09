@@ -20,12 +20,7 @@ class FeedUserModelTest : public testing::Test {
     feed_user_model_ = std::make_unique<FeedUserSegment>();
   }
 
-  void TearDown() override {
-    feed_user_model_.reset();
-    RunUntilIdle();
-  }
-
-  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+  void TearDown() override { feed_user_model_.reset(); }
 
   void ExpectInitAndFetchModel() {
     base::RunLoop loop;

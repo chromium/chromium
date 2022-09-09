@@ -20,12 +20,7 @@ class QueryTilesModelTest : public testing::Test {
     query_tile_model_ = std::make_unique<QueryTilesModel>();
   }
 
-  void TearDown() override {
-    query_tile_model_.reset();
-    RunUntilIdle();
-  }
-
-  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+  void TearDown() override { query_tile_model_.reset(); }
 
   void ExpectInitAndFetchModel() {
     base::RunLoop loop;

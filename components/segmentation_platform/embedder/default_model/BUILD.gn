@@ -4,6 +4,8 @@
 
 static_library("default_model") {
   sources = [
+    "cross_device_user_segment.cc",
+    "cross_device_user_segment.h",
     "feed_user_segment.cc",
     "feed_user_segment.h",
     "intentional_user_model.cc",
@@ -24,6 +26,7 @@ static_library("default_model") {
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
+    "//ui/base",
   ]
 }
 
@@ -33,6 +36,7 @@ source_set("unit_tests") {
   # IMPORTANT NOTE: When adding new tests, also remember to update the list of
   # tests in //components/segmentation_platform/components_unittests.filter
   sources = [
+    "cross_device_user_segment_unittest.cc",
     "feed_user_segment_unittest.cc",
     "intentional_user_model_unittest.cc",
     "low_user_engagement_model_unittest.cc",
