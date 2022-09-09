@@ -75,7 +75,7 @@ class UdevWatcher {
   raw_ptr<Observer> observer_;
   const std::vector<Filter> udev_filters_;
   std::unique_ptr<base::FileDescriptorWatcher::Controller> file_watcher_;
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace device

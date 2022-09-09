@@ -75,11 +75,11 @@ std::unique_ptr<UdevWatcher> UdevWatcher::StartWatching(
 }
 
 UdevWatcher::~UdevWatcher() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void UdevWatcher::EnumerateExistingDevices() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   ScopedUdevEnumeratePtr enumerate(udev_enumerate_new(udev_.get()));
