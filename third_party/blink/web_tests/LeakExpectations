@@ -61,6 +61,8 @@ crbug.com/1350279 [ Linux ] external/wpt/accessibility/crashtests/svg-mouse-list
 
 # Sheriff 2022-09-09
 crbug.com/1361848 [ Linux ] http/tests/media/autoplay/document-user-activation-navigation-keypress.html [ Failure Pass ]
+crbug.com/1361848 [ Linux ] http/tests/media/autoplay/document-user-activation-navigation-click.html [ Failure Pass ]
+crbug.com/1361848 [ Linux ] http/tests/media/autoplay/document-user-activation-navigation-tap.html [ Failure Pass ]
 
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
