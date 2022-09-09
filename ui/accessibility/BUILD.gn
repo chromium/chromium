@@ -79,7 +79,7 @@ component("ax_base") {
     "ax_tree_update_forward.h",
   ]
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     sources += [
       "ax_enum_localization_util.cc",
       "ax_enum_localization_util.h",
@@ -94,7 +94,7 @@ component("ax_base") {
     "//ui/gfx/geometry",
   ]
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     public_deps += [
       "//base:i18n",
       "//ui/base",
