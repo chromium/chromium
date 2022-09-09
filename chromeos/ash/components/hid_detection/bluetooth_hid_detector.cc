@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/hid_detection/bluetooth_hid_detector.h"
+
 #include "ash/constants/ash_features.h"
 
 namespace ash::hid_detection {

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/login/session/session_termination_manager.h"
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/login_types.h"
 #include "base/bind.h"
@@ -40,6 +39,7 @@
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/system/fake_statistics_provider.h"

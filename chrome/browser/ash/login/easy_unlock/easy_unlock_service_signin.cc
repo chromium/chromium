@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "ash/components/login/auth/public/user_context.h"
 #include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/multidevice/remote_device.h"
 #include "ash/components/multidevice/remote_device_cache.h"
@@ -37,6 +36,7 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/login/login_state/login_state.h"
 
 namespace ash {

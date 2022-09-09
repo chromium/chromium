@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/login/session/session_termination_manager.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_types.h"
@@ -41,6 +40,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"

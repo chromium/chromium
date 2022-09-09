@@ -6,10 +6,10 @@
 
 #include <memory>
 
-#include "ash/components/login/auth/public/user_context.h"
 #include "base/callback.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_mode.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/login/base_screen_handler_utils.h"
 

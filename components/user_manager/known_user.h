@@ -187,7 +187,7 @@ class USER_MANAGER_EXPORT KnownUser final {
   // Setter and getter for the information about challenge-response keys that
   // can be used by this user to authenticate. The getter returns a null value
   // when the property isn't present. For the format of the value, refer to
-  // ash/components/login/auth/challenge_response/known_user_pref_utils.h.
+  // chromeos/ash/components/login/auth/challenge_response/known_user_pref_utils.h.
   void SetChallengeResponseKeys(const AccountId& account_id, base::Value value);
 
   base::Value GetChallengeResponseKeys(const AccountId& account_id);

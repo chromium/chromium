@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/components/login/auth/public/user_context.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/files/file_util.h"
@@ -25,6 +24,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"

@@ -107,7 +107,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/arc_util.h"
-#include "ash/components/login/auth/password_visibility_utils.h"
 #include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
@@ -128,6 +127,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/browser_resources.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "chromeos/ash/components/login/auth/password_visibility_utils.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/user_manager/user.h"

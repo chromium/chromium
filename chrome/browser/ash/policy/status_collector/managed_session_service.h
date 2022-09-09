@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_STATUS_COLLECTOR_MANAGED_SESSION_SERVICE_H_
 #define CHROME_BROWSER_ASH_POLICY_STATUS_COLLECTOR_MANAGED_SESSION_SERVICE_H_
 
-#include "ash/components/login/auth/auth_status_consumer.h"
-#include "ash/components/login/session/session_termination_manager.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_multi_source_observation.h"
@@ -18,6 +16,8 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "chromeos/ash/components/login/auth/auth_status_consumer.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"

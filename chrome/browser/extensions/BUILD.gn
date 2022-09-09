@@ -1142,7 +1142,6 @@ static_library("extensions") {
     deps += [
       "//ash",
       "//ash/components/arc",
-      "//ash/components/login/auth",
       "//ash/components/proximity_auth",
       "//ash/components/settings",
       "//ash/components/tpm",
@@ -1173,6 +1172,7 @@ static_library("extensions") {
       "//chromeos/ash/components/enhanced_network_tts/mojom",
       "//chromeos/ash/components/language/language_packs",
       "//chromeos/ash/components/language/public/mojom",
+      "//chromeos/ash/components/login/auth",
       "//chromeos/ash/components/network",
       "//chromeos/ash/services/assistant/public/cpp",
       "//chromeos/ash/services/chromebox_for_meetings/public/cpp",

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/saml_confirm_password_screen.h"
-#include "ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/values.h"
@@ -11,6 +10,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ui/webui/chromeos/login/check_passwords_against_cryptohome_helper.h"
 #include "chrome/browser/ui/webui/chromeos/login/saml_confirm_password_handler.h"
+#include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 
 namespace ash {
 

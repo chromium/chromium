@@ -4,8 +4,6 @@
 
 #include <string>
 
-#include "ash/components/login/auth/public/user_context.h"
-#include "ash/components/login/auth/stub_authenticator_builder.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/command_line.h"
@@ -28,6 +26,8 @@
 #include "chromeos/ash/components/dbus/cryptohome/account_identifier_operators.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/login/auth/stub_authenticator_builder.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
@@ -36,6 +36,7 @@
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 
 namespace ash {
+
 namespace {
 
 constexpr char kEncryptionMigrationId[] = "encryption-migration";

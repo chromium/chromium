@@ -7,8 +7,6 @@
 #include <memory>
 #include <tuple>
 
-#include "ash/components/login/auth/public/auth_failure.h"
-#include "ash/components/login/auth/public/user_context.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -26,6 +24,8 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/public/auth_failure.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/browser_thread.h"

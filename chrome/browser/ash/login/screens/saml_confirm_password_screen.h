@@ -8,10 +8,10 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/login/auth/public/user_context.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/check_passwords_against_cryptohome_helper.h"
 #include "chrome/browser/ui/webui/chromeos/login/saml_confirm_password_handler.h"

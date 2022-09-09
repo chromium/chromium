@@ -9,10 +9,6 @@
 #include <vector>
 
 #include "apps/test/app_window_waiter.h"
-#include "ash/components/login/auth/public/auth_failure.h"
-#include "ash/components/login/auth/public/key.h"
-#include "ash/components/login/auth/public/user_context.h"
-#include "ash/components/login/auth/stub_authenticator_builder.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/session/session_controller_impl.h"
@@ -42,6 +38,10 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/public/auth_failure.h"
+#include "chromeos/ash/components/login/auth/public/key.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/login/auth/stub_authenticator_builder.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
 #include "components/account_id/account_id.h"

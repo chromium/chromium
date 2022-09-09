@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/login/session/session_termination_manager.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
@@ -27,6 +26,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"

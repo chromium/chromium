@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/login/reporting/login_logout_reporter_test_delegate.h"
 
-#include "ash/components/login/auth/public/auth_failure.h"
-#include "ash/components/login/session/session_termination_manager.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
@@ -14,6 +12,8 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/login/auth/public/auth_failure.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/user_manager/scoped_user_manager.h"

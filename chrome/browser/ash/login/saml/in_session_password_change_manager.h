@@ -8,12 +8,12 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/login/auth/auth_status_consumer.h"
 #include "ash/public/cpp/session/session_activation_observer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
+#include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 
 class Profile;
 

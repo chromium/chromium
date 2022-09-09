@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 
-#include "ash/components/login/auth/public/auth_failure.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
@@ -13,6 +12,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"

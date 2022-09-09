@@ -5104,7 +5104,6 @@ static_library("browser") {
       "//ash/components/arc/enterprise",
       "//ash/components/arc/mojom",
       "//ash/components/arc/mojom",
-      "//ash/components/login/session",
       "//ash/components/settings",
       "//ash/components/timezone",
       "//ash/components/tpm",
@@ -5233,6 +5232,7 @@ static_library("browser") {
       "//chromeos/ash/components/local_search_service",
       "//chromeos/ash/components/local_search_service/public/cpp",
       "//chromeos/ash/components/local_search_service/public/mojom",
+      "//chromeos/ash/components/login/session",
       "//chromeos/ash/components/memory",
       "//chromeos/ash/components/network",
       "//chromeos/ash/components/sync_wifi",
@@ -8311,7 +8311,6 @@ static_library("test_support") {
     ]
     configs += [ "//build/config/linux/dbus" ]
     deps += [
-      "//ash/components/login/auth",
       "//ash/public/cpp",
       "//chrome/browser/ash",
       "//chrome/browser/ash/login/oobe_quick_start",
@@ -8321,6 +8320,7 @@ static_library("test_support") {
       "//chromeos/ash/components/dbus",
       "//chromeos/ash/components/dbus/cros_disks",
       "//chromeos/ash/components/disks",
+      "//chromeos/ash/components/login/auth",
       "//components/login",
       "//components/session_manager/core",
       "//components/soda",

@@ -5,8 +5,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/components/login/auth/public/key.h"
-#include "ash/components/login/auth/public/user_context.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/cast_config_controller.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -36,6 +34,8 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/media_router/access_code_cast/access_code_cast_integration_browsertest.h"
+#include "chromeos/ash/components/login/auth/public/key.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/access_code_cast/common/access_code_cast_metrics.h"
 #include "components/account_id/account_id.h"
 #include "components/media_router/browser/media_routes_observer.h"

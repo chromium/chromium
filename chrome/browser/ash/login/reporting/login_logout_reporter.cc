@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/login/reporting/login_logout_reporter.h"
 
-#include "ash/components/login/auth/public/auth_failure.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
@@ -12,6 +11,7 @@
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"

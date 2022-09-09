@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/login/auth/public/user_context.h"
 #include "base/command_line.h"
 #include "base/test/bind.h"
 #include "chrome/browser/about_flags.h"
@@ -15,6 +14,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/flags_ui/feature_entry_macros.h"
 #include "components/flags_ui/flags_state.h"
 #include "components/flags_ui/pref_service_flags_storage.h"

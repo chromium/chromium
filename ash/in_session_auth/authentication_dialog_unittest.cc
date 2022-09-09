@@ -6,11 +6,6 @@
 
 #include <cctype>
 
-#include "ash/components/login/auth/auth_performer.h"
-#include "ash/components/login/auth/mock_auth_performer.h"
-#include "ash/components/login/auth/public/auth_factors_data.h"
-#include "ash/components/login/auth/public/authentication_error.h"
-#include "ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "ash/public/cpp/test/mock_in_session_auth_token_provider.h"
 #include "ash/test/ash_test_base.h"
@@ -20,6 +15,11 @@
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/auth_performer.h"
+#include "chromeos/ash/components/login/auth/mock_auth_performer.h"
+#include "chromeos/ash/components/login/auth/public/auth_factors_data.h"
+#include "chromeos/ash/components/login/auth/public/authentication_error.h"
+#include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"

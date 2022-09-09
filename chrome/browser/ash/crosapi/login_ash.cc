@@ -4,9 +4,6 @@
 
 #include "chrome/browser/ash/crosapi/login_ash.h"
 
-#include "ash/components/login/auth/public/cryptohome_key_constants.h"
-#include "ash/components/login/auth/public/key.h"
-#include "ash/components/login/auth/public/user_context.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -17,6 +14,9 @@
 #include "chrome/browser/chromeos/extensions/login_screen/login/shared_session_handler.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "chromeos/ash/components/login/auth/public/key.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"

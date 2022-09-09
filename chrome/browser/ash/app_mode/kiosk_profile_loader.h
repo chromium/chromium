@@ -8,11 +8,11 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/login/auth/login_performer.h"
 #include "base/callback.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
+#include "chromeos/ash/components/login/auth/login_performer.h"
 #include "components/account_id/account_id.h"
 
 class Profile;

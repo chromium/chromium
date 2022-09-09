@@ -7,12 +7,12 @@
 
 #include <memory>
 
-#include "ash/components/login/auth/login_performer.h"
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
+#include "chromeos/ash/components/login/auth/login_performer.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/ui/captive_portal_window_proxy.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"

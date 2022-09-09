@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 
-#include "ash/components/login/auth/stub_authenticator_builder.h"
+#include "chromeos/ash/components/login/auth/stub_authenticator_builder.h"
 
 namespace ash {
 namespace test {

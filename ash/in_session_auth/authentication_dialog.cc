@@ -6,11 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/login/auth/auth_performer.h"
-#include "ash/components/login/auth/public/auth_session_intent.h"
-#include "ash/components/login/auth/public/authentication_error.h"
-#include "ash/components/login/auth/public/cryptohome_key_constants.h"
-#include "ash/components/login/auth/public/user_context.h"
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -19,6 +14,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "chromeos/ash/components/login/auth/auth_performer.h"
+#include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
+#include "chromeos/ash/components/login/auth/public/authentication_error.h"
+#include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"

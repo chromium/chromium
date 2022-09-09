@@ -11,10 +11,10 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/login/auth/public/challenge_response_key.h"
 #include "base/component_export.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
 
 class AccountId;
 

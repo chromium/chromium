@@ -1,0 +1,158 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
+
+component("auth") {
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_IMPL" ]
+  public_deps = [
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//chromeos/ash/components/login/auth/public:challenge_response_key",
+  ]
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//base:i18n",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus/authpolicy",
+    "//chromeos/ash/components/dbus/authpolicy:authpolicy_proto",
+    "//chromeos/ash/components/dbus/cryptohome",
+    "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    "//chromeos/ash/components/login/hibernate:hibernate_manager",
+    "//chromeos/dbus/constants",
+    "//chromeos/login/login_state",
+    "//chromeos/metrics",
+    "//components/account_id",
+    "//components/device_event_log",
+    "//components/metrics",
+    "//components/password_manager/core/browser:password_hash_data",
+    "//components/prefs",
+    "//components/user_manager",
+    "//crypto",
+    "//google_apis",
+    "//net",
+    "//skia",
+    "//third_party/protobuf:protobuf_lite",
+    "//url",
+  ]
+  sources = [
+    "auth_attempt_state.cc",
+    "auth_attempt_state.h",
+    "auth_factor_editor.cc",
+    "auth_factor_editor.h",
+    "auth_performer.cc",
+    "auth_performer.h",
+    "auth_session_authenticator.cc",
+    "auth_session_authenticator.h",
+    "auth_status_consumer.cc",
+    "auth_status_consumer.h",
+    "authenticator.cc",
+    "authenticator.h",
+    "challenge_response/cert_utils.cc",
+    "challenge_response/cert_utils.h",
+    "challenge_response/key_label_utils.cc",
+    "challenge_response/key_label_utils.h",
+    "challenge_response/known_user_pref_utils.cc",
+    "challenge_response/known_user_pref_utils.h",
+    "cryptohome_authenticator.cc",
+    "cryptohome_authenticator.h",
+    "cryptohome_parameter_utils.cc",
+    "cryptohome_parameter_utils.h",
+    "extended_authenticator.cc",
+    "extended_authenticator.h",
+    "extended_authenticator_impl.cc",
+    "extended_authenticator_impl.h",
+    "login_performer.cc",
+    "login_performer.h",
+    "metrics_recorder.cc",
+    "metrics_recorder.h",
+    "mount_performer.cc",
+    "mount_performer.h",
+    "password_visibility_utils.cc",
+    "password_visibility_utils.h",
+    "recovery/service_constants.cc",
+    "recovery/service_constants.h",
+    "safe_mode_delegate.h",
+    "stub_authenticator.cc",
+    "stub_authenticator.h",
+    "stub_authenticator_builder.cc",
+    "stub_authenticator_builder.h",
+    "test_attempt_state.cc",
+    "test_attempt_state.h",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  deps = [
+    ":auth",
+    "//base",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/login/login_state",
+    "//components/account_id",
+    "//google_apis",
+    "//net",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  sources = [
+    "fake_extended_authenticator.cc",
+    "fake_extended_authenticator.h",
+    "mock_auth_performer.cc",
+    "mock_auth_performer.h",
+    "mock_auth_status_consumer.cc",
+    "mock_auth_status_consumer.h",
+    "mock_safe_mode_delegate.cc",
+    "mock_safe_mode_delegate.h",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/linux/dbus" ]
+  testonly = true
+  deps = [
+    ":auth",
+    ":test_support",
+    "//base",
+    "//base:i18n",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus/authpolicy",
+    "//chromeos/ash/components/dbus/authpolicy:authpolicy_proto",
+    "//chromeos/ash/components/dbus/cryptohome",
+    "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth:test_support",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    "//chromeos/ash/components/login/auth",
+    "//components/account_id",
+    "//components/password_manager/core/browser:password_hash_data",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/user_manager",
+    "//net",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/icu",
+  ]
+  sources = [
+    "auth_performer_unittest.cc",
+    "auth_session_authenticator_unittest.cc",
+    "challenge_response/cert_utils_unittest.cc",
+    "public/auth_factors_data_unittest.cc",
+    "public/key_unittest.cc",
+    "public/operation_chain_runner_unittest.cc",
+    "public/saml_password_attributes_unittest.cc",
+    "public/sync_trusted_vault_keys_unittest.cc",
+  ]
+}

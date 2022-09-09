@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 
-#include "ash/components/login/auth/public/key.h"
-#include "ash/components/login/auth/public/user_context.h"
 #include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -17,6 +15,8 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/login/auth/public/key.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager.h"

@@ -6,11 +6,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/login/auth/public/cryptohome_key_constants.h"
-#include "ash/components/login/auth/public/key.h"
-#include "ash/components/login/auth/public/user_context.h"
-#include "ash/components/login/auth/stub_authenticator.h"
-#include "ash/components/login/auth/stub_authenticator_builder.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/auto_reset.h"
@@ -54,6 +49,11 @@
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "chromeos/ash/components/login/auth/public/key.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/login/auth/stub_authenticator.h"
+#include "chromeos/ash/components/login/auth/stub_authenticator_builder.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"

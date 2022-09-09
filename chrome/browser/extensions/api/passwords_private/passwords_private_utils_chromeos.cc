@@ -7,13 +7,13 @@
 #include "components/password_manager/core/browser/password_access_authenticator.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/login/auth/password_visibility_utils.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/login/auth/password_visibility_utils.h"
 #include "components/user_manager/user.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

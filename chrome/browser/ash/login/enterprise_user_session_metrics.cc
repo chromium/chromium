@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "ash/components/login/auth/public/user_context.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 

@@ -9,8 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/login/auth/auth_status_consumer.h"
-#include "ash/components/login/auth/public/challenge_response_key.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -22,6 +20,8 @@
 #include "chrome/browser/ash/login/ui/oobe_ui_dialog_delegate.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
+#include "chromeos/ash/components/login/auth/auth_status_consumer.h"
+#include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"

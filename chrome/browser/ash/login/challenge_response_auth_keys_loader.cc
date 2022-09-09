@@ -9,8 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/login/auth/challenge_response/cert_utils.h"
-#include "ash/components/login/auth/challenge_response/known_user_pref_utils.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
@@ -25,6 +23,8 @@
 #include "chrome/browser/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/login/auth/challenge_response/cert_utils.h"
+#include "chromeos/ash/components/login/auth/challenge_response/known_user_pref_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"

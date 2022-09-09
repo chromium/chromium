@@ -13,8 +13,6 @@
 #include <vector>
 
 #include "ash/components/arc/net/always_on_vpn_manager.h"
-#include "ash/components/login/auth/authenticator.h"
-#include "ash/components/login/auth/public/user_context.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -26,6 +24,8 @@
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/child_accounts/child_policy_observer.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
+#include "chromeos/ash/components/login/auth/authenticator.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"

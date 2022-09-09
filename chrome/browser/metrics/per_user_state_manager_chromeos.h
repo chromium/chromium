@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "ash/components/login/session/session_termination_manager.h"
 #include "base/callback_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -17,6 +16,7 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/profile_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/metrics/metrics_log_store.h"
 #include "components/metrics/metrics_provider.h"

@@ -23,13 +23,13 @@ source_set("in_session_auth") {
   ]
 
   deps = [
-    "//ash/components/login/auth",
     "//ash/login/resources",
     "//ash/public/cpp",
     "//ash/resources/vector_icons",
     "//ash/strings",
     "//base",
     "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/login/auth",
     "//chromeos/components/webauthn",
     "//ui/views",
   ]

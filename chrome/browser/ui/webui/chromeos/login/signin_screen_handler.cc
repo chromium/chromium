@@ -11,8 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/login/auth/public/key.h"
-#include "ash/components/login/auth/public/user_context.h"
 #include "ash/components/proximity_auth/screenlock_bridge.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/mojom/tray_action.mojom.h"
@@ -67,6 +65,8 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/login/auth/public/key.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/strings/grit/chromeos_strings.h"

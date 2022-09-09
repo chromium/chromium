@@ -7,13 +7,13 @@
 
 #include <memory>
 
-#include "ash/components/login/auth/auth_performer.h"
-#include "ash/components/login/auth/public/user_context.h"
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "chromeos/ash/components/login/auth/auth_performer.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"

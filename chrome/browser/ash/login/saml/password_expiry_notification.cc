@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/login/auth/public/saml_password_attributes.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/session/session_activation_observer.h"
@@ -27,6 +26,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/password_change_ui.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/login/auth/public/saml_password_attributes.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"

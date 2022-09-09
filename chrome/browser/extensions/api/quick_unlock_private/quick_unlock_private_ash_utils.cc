@@ -6,8 +6,6 @@
 
 #include <utility>
 
-#include "ash/components/login/auth/extended_authenticator.h"
-#include "ash/components/login/auth/public/user_context.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/fingerprint_storage.h"
@@ -17,6 +15,8 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/quick_unlock_private.h"
+#include "chromeos/ash/components/login/auth/extended_authenticator.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 

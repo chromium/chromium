@@ -10,9 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/login/auth/login_performer.h"
-#include "ash/components/login/auth/public/auth_failure.h"
-#include "ash/components/login/auth/public/user_context.h"
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
@@ -25,6 +22,9 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chromeos/ash/components/login/auth/login_performer.h"
+#include "chromeos/ash/components/login/auth/public/auth_failure.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"

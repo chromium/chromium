@@ -8,9 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/login/auth/auth_status_consumer.h"
-#include "ash/components/login/auth/challenge_response/known_user_pref_utils.h"
-#include "ash/components/login/auth/public/auth_failure.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
@@ -49,6 +46,9 @@
 #include "chromeos/ash/components/dbus/cryptohome/key.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/auth_status_consumer.h"
+#include "chromeos/ash/components/login/auth/challenge_response/known_user_pref_utils.h"
+#include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/browser/browser_policy_connector.h"

@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/login_logout_event.pb.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 
 class PrefRegistrySimple;
 

@@ -8,10 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/login/auth/auth_status_consumer.h"
-#include "ash/components/login/auth/public/key.h"
-#include "ash/components/login/auth/public/user_context.h"
-#include "ash/components/login/auth/stub_authenticator_builder.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_util.h"
@@ -29,6 +25,10 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
+#include "chromeos/ash/components/login/auth/auth_status_consumer.h"
+#include "chromeos/ash/components/login/auth/public/key.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/login/auth/stub_authenticator_builder.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/known_user.h"

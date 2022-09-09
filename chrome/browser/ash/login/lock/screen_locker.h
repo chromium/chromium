@@ -10,9 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/login/auth/auth_status_consumer.h"
-#include "ash/components/login/auth/public/challenge_response_key.h"
-#include "ash/components/login/auth/public/user_context.h"
 #include "ash/public/cpp/login_types.h"
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
@@ -24,6 +21,9 @@
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/security_token_pin_dialog_host_login_impl.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
+#include "chromeos/ash/components/login/auth/auth_status_consumer.h"
+#include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"

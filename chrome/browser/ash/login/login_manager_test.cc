@@ -6,8 +6,6 @@
 
 #include <string>
 
-#include "ash/components/login/auth/public/key.h"
-#include "ash/components/login/auth/public/user_context.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/shell.h"
@@ -22,6 +20,8 @@
 #include "chrome/browser/ash/login/test/profile_prepared_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/browser_process.h"
+#include "chromeos/ash/components/login/auth/public/key.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/known_user.h"
