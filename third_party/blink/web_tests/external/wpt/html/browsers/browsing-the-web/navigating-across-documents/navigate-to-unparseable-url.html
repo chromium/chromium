@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>location.href unparseable URL throws a DOM exception</title>
+<title>location.href unparseable URL throws a SyntaxError DOMException</title>
 <link rel="help" href="https://html.spec.whatwg.org/#the-location-interface:dom-location-href-2">
 <link rel="help" href="https://html.spec.whatwg.org/#following-hyperlinks-2">
 <script src="/resources/testharness.js"></script>
@@ -20,10 +20,11 @@ promise_test(async t => {
     win.onload = resolve;
   });
 
-  assert_throws_js(win.TypeError, () => {
+  assert_throws_dom("SyntaxError", win.DOMException, () => {
     win.location.href = kUnparseableURL;
-  }, "location.href setter throws a TypeError");
-}, "location.href setter throws a TypeError for unparseable URLs");
+  }, "location.href setter throws a SyntaxError DOMException");
+}, "location.href setter throws a SyntaxError DOMException for unparseable " +
+   "URLs");
 
 promise_test(async t => {
   const win = window.open("/common/blank.html");
