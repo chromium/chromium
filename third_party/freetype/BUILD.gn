@@ -59,7 +59,6 @@ config("freetype-warnings") {
       # https://savannah.nongnu.org/bugs/index.php?54852
       "-Wno-deprecated-declarations",
 
-      "-Wno-shadow",
       "-Wno-unused-function",
     ]
   }
