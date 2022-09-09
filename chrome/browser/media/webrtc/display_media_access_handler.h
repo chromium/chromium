@@ -92,8 +92,9 @@ class DisplayMediaAccessHandler : public CaptureAccessHandlerBase,
   // Called back after the user chooses one of the possible desktop media
   // sources for the request that's currently being processed. If no |media_id|
   // is given, the request was rejected, either by the browser or by the user.
-  void OnDisplaySurfaceSelected(content::WebContents* web_contents,
-                                content::DesktopMediaID media_id);
+  void OnDisplaySurfaceSelected(
+      base::WeakPtr<content::WebContents> web_contents,
+      content::DesktopMediaID media_id);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Called back after checking Data Leak Prevention (DLP) restrictions.

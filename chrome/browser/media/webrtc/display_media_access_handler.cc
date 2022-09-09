@@ -106,6 +106,7 @@ void DisplayMediaAccessHandler::HandleRequest(
     content::MediaResponseCallback callback,
     const extensions::Extension* extension) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(web_contents);
 
   if (capture_policy::GetAllowedCaptureLevel(request.security_origin,
                                              web_contents) ==
@@ -251,6 +252,7 @@ void DisplayMediaAccessHandler::ProcessChangeSourceRequest(
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(web_contents);
 
   // Ensure we are observing the deletion of |web_contents|.
   web_contents_collection_.StartObserving(web_contents);
@@ -270,6 +272,7 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
     const RequestsQueue& queue,
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(web_contents);
 
   const PendingAccessRequest& pending_request = *queue.front();
   UpdateTrusted(pending_request.request, false /* is_trusted */);
@@ -298,6 +301,9 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
     content::WebContents* web_contents,
     AllowedScreenCaptureLevel capture_level,
     const GURL& request_origin) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(web_contents);
+
   std::vector<DesktopMediaList::Type> media_types;
   if (pending_request.request.video_type ==
       blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
@@ -343,7 +349,7 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
   // destroyed when the browser process terminates.
   DesktopMediaPicker::DoneCallback done_callback =
       base::BindOnce(&DisplayMediaAccessHandler::OnDisplaySurfaceSelected,
-                     base::Unretained(this), web_contents);
+                     base::Unretained(this), web_contents->GetWeakPtr());
   DesktopMediaPicker::Params picker_params;
   picker_params.web_contents = web_contents;
   gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
@@ -367,7 +373,9 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
 void DisplayMediaAccessHandler::ProcessQueuedChangeSourceRequest(
     const content::MediaStreamRequest& request,
     content::WebContents* web_contents) {
+  DCHECK(web_contents);
   DCHECK(!request.requested_video_device_id.empty());
+
   content::WebContentsMediaCaptureId web_contents_id;
   if (!content::WebContentsMediaCaptureId::Parse(
           request.requested_video_device_id, &web_contents_id)) {
@@ -380,7 +388,7 @@ void DisplayMediaAccessHandler::ProcessQueuedChangeSourceRequest(
                                    web_contents_id);
   media_id.audio_share =
       request.audio_type != blink::mojom::MediaStreamType::NO_SERVICE;
-  OnDisplaySurfaceSelected(web_contents, media_id);
+  OnDisplaySurfaceSelected(web_contents->GetWeakPtr(), media_id);
 }
 
 void DisplayMediaAccessHandler::RejectRequest(
@@ -445,13 +453,18 @@ void DisplayMediaAccessHandler::AcceptRequest(
 }
 
 void DisplayMediaAccessHandler::OnDisplaySurfaceSelected(
-    content::WebContents* web_contents,
+    base::WeakPtr<content::WebContents> web_contents,
     content::DesktopMediaID media_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(web_contents);
+
+  if (!web_contents) {
+    // WebContentsDestroyed() will evict the entry from `pending_requests_`,
+    // which was associated with `web_contents` before it got null-out.
+    return;
+  }
 
   if (media_id.is_null()) {
-    RejectRequest(web_contents,
+    RejectRequest(web_contents.get(),
                   blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED);
     return;
   }
@@ -462,7 +475,7 @@ void DisplayMediaAccessHandler::OnDisplaySurfaceSelected(
           content::RenderFrameHost::FromID(
               media_id.web_contents_id.render_process_id,
               media_id.web_contents_id.main_render_frame_id))) {
-    RejectRequest(web_contents,
+    RejectRequest(web_contents.get(),
                   blink::mojom::MediaStreamRequestResult::TAB_CAPTURE_FAILURE);
     return;
   }
@@ -474,7 +487,7 @@ void DisplayMediaAccessHandler::OnDisplaySurfaceSelected(
       system_media_permissions::CheckSystemScreenCapturePermission() !=
           system_media_permissions::SystemPermission::kAllowed) {
     RejectRequest(
-        web_contents,
+        web_contents.get(),
         blink::mojom::MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED);
     return;
   }
@@ -486,12 +499,11 @@ void DisplayMediaAccessHandler::OnDisplaySurfaceSelected(
   // by MediaCaptureDevicesDispatcher, which is a lazy singleton which is
   // destroyed when the browser process terminates.
   policy::DlpContentManager::Get()->CheckScreenShareRestriction(
-      media_id, GetApplicationTitle(web_contents),
+      media_id, GetApplicationTitle(web_contents.get()),
       base::BindOnce(&DisplayMediaAccessHandler::OnDlpRestrictionChecked,
-                     base::Unretained(this), web_contents->GetWeakPtr(),
-                     media_id));
+                     base::Unretained(this), web_contents, media_id));
 #else   // BUILDFLAG(IS_CHROMEOS)
-  AcceptRequest(web_contents, media_id);
+  AcceptRequest(web_contents.get(), media_id);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
