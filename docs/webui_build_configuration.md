@@ -471,6 +471,8 @@ extra_grdp_deps: List of external generate_grd() targets that generate .grdp
                  resources.grd file. Optional parameter.
 extra_grdp_files: Output .grdp files of external generate_grd() targets. Must be
                   defined if |extra_grdp_deps| is defined.
+grit_output_dir: See |output_dir| in grit(). Optional parameter, defaults to
+                 "$root_gen_dir/chrome"
 ```
 
 #### **Example**

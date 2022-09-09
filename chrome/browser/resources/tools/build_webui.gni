@@ -293,6 +293,12 @@ template("build_webui") {
       "grit/${grd_prefix}_resources_map.h",
       "${grd_prefix}_resources.pak",
     ]
-    output_dir = "$root_gen_dir/chrome"
+
+    grit_output_dir = "$root_gen_dir/chrome"
+    if (defined(invoker.grit_output_dir)) {
+      grit_output_dir = invoker.grit_output_dir
+    }
+
+    output_dir = grit_output_dir
   }
 }

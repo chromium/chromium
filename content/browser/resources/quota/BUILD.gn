@@ -2,72 +2,28 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/common/features.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
 
-copy("copy_ts") {
-  sources = [
-    "quota_internals.ts",
-    "quota_internals_browser_proxy.ts",
-  ]
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
-
-copy("copy_mojo") {
-  deps = [ "//storage/browser/quota:mojo_bindings_webui_js" ]
-  mojom_folder = "$root_gen_dir/mojom-webui/storage/browser/quota/"
-  sources = [ "$mojom_folder/quota_internals.mojom-webui.js" ]
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
-
-grit("resources") {
-  defines = chrome_grit_defines
-
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/quota_internals_resources.h",
-    "grit/quota_internals_resources_map.cc",
-    "grit/quota_internals_resources_map.h",
-    "quota_internals_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/content"
-}
-
-ts_library("build_ts") {
-  root_dir = target_gen_dir
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
-  in_files = [
-    "quota_internals.ts",
-    "quota_internals_browser_proxy.ts",
-    "quota_internals.mojom-webui.js",
-  ]
-  deps = [
-    "//ui/webui/resources:library",
-    "//ui/webui/resources/mojo:library",
-  ]
-  extra_deps = [
-    ":copy_mojo",
-    ":copy_ts",
-  ]
-}
-
-generate_grd("build_grd") {
+build_webui("build") {
   grd_prefix = "quota_internals"
-  out_grd = "$target_gen_dir/resources.grd"
-  input_files = [
+
+  static_files = [
     "quota_internals.html",
     "quota_internals.css",
   ]
-  input_files_base_dir = rebase_path(".", "//")
 
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  non_web_component_files = [
+    "quota_internals.ts",
+    "quota_internals_browser_proxy.ts",
+  ]
+
+  mojo_files_deps = [ "//storage/browser/quota:mojo_bindings_webui_js" ]
+  mojo_files = [ "$root_gen_dir/mojom-webui/storage/browser/quota/quota_internals.mojom-webui.js" ]
+
+  ts_deps = [
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
+  ]
+
+  grit_output_dir = "$root_gen_dir/content"
 }
