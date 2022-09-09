@@ -19,6 +19,7 @@ build_webui("build") {
     "prefs/pref_toggle_button.ts",
   ]
   non_web_component_files = [
+    "password_manager_proxy.ts",
     "password_manager.ts",
     "router.ts",
   ]
@@ -32,6 +33,11 @@ build_webui("build") {
   icons_html_files = [ "icons.html" ]
 
   ts_composite = true
+
+  ts_definitions = [
+    "//tools/typescript/definitions/passwords_private.d.ts",
+    "//tools/typescript/definitions/runtime.d.ts",
+  ]
 
   ts_deps = [
     "//third_party/polymer/v3_0:library",

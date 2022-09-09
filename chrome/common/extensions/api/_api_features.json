@@ -666,7 +666,8 @@
     "channel": "stable",
     "contexts": ["webui"],
     "matches": [
-      "chrome://settings/*"
+      "chrome://settings/*",
+      "chrome://password-manager/*"
     ]
   }],
   "permissions": {
