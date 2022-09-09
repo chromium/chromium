@@ -537,8 +537,8 @@ crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/ogles/GL
 crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/more/glsl/uniformOutOfBounds.html [ RetryOnFailure ]
 crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/more/glsl/arrayOutOfBounds.html [ RetryOnFailure ]
 crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/uniforms/* [ RetryOnFailure ]
-crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/webgl_canvas/tex-2d-rgb-rgb-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/webgl_canvas/tex-2d-rgba-rgba-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/webgl_canvas/tex-2d-rgb-rgb-unsigned_byte.html [ Skip ]
+crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/webgl_canvas/tex-2d-rgba-rgba-unsigned_byte.html [ Skip ]
 
 # Vulkan / Win (32-bit) / Passthrough command decoder
 crbug.com/1216686 [ win angle-vulkan passthrough ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Failure ]
