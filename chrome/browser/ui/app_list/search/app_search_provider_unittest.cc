@@ -748,62 +748,6 @@ class AppSearchProviderWithExtensionInstallType
   ~AppSearchProviderWithExtensionInstallType() override = default;
 };
 
-TEST_P(AppSearchProviderWithExtensionInstallType, InstallInternallyRanking) {
-  extensions::ExtensionPrefs* const prefs =
-      extensions::ExtensionPrefs::Get(profile());
-  ASSERT_TRUE(prefs);
-
-  // Install normal app.
-  const std::string normal_app_id =
-      crx_file::id_util::GenerateId(kRankingNormalAppName);
-  AddExtension(normal_app_id, kRankingNormalAppName,
-               ManifestLocation::kExternalPrefDownload,
-               extensions::Extension::NO_FLAGS);
-
-  // Wait a bit to make sure time is updated.
-  WaitTimeUpdated();
-
-  // Install app internally.
-  const std::string internal_app_id =
-      crx_file::id_util::GenerateId(kRankingInternalAppName);
-  switch (GetParam()) {
-    case TestExtensionInstallType::CONTROLLED_BY_POLICY:
-      AddExtension(internal_app_id, kRankingInternalAppName,
-                   ManifestLocation::kExternalPolicyDownload,
-                   extensions::Extension::NO_FLAGS);
-      break;
-    case TestExtensionInstallType::CHROME_COMPONENT:
-      AddExtension(internal_app_id, kRankingInternalAppName,
-                   ManifestLocation::kComponent,
-                   extensions::Extension::NO_FLAGS);
-      break;
-    case TestExtensionInstallType::INSTALLED_BY_DEFAULT:
-      AddExtension(internal_app_id, kRankingInternalAppName,
-                   ManifestLocation::kExternalPrefDownload,
-                   extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
-      break;
-    case TestExtensionInstallType::INSTALLED_BY_OEM:
-      AddExtension(internal_app_id, kRankingInternalAppName,
-                   ManifestLocation::kExternalPrefDownload,
-                   extensions::Extension::WAS_INSTALLED_BY_OEM);
-      break;
-  }
-
-  // Allow async callbacks to run.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_LT(prefs->GetInstallTime(normal_app_id),
-            prefs->GetInstallTime(internal_app_id));
-
-  // Installed internally app has runking below other apps, even if it's install
-  // time is later.
-  CreateSearch();
-  // Allow async callbacks to run.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(std::string(kRankingNormalAppName) + "," +
-                std::string(kRankingInternalAppName),
-            RunQuery(kRankingAppQuery));
-}
-
 TEST_P(AppSearchProviderWithExtensionInstallType, OemResultsOnFirstBoot) {
   // Disable the pre-installed high-priority extensions. This test simulates
   // a brand new profile being added to a device, and should not include these.
