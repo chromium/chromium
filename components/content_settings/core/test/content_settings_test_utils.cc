@@ -6,6 +6,7 @@
 
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 
@@ -16,21 +17,23 @@ base::Value TestUtils::GetContentSettingValue(const ProviderInterface* provider,
                                               const GURL& primary_url,
                                               const GURL& secondary_url,
                                               ContentSettingsType content_type,
-                                              bool include_incognito) {
+                                              bool include_incognito,
+                                              RuleMetaData* metadata) {
   return HostContentSettingsMap::GetContentSettingValueAndPatterns(
       provider, primary_url, secondary_url, content_type, include_incognito,
-      nullptr, nullptr, nullptr);
+      nullptr, nullptr, metadata);
 }
 
 // static
-ContentSetting TestUtils::GetContentSetting(
-    const ProviderInterface* provider,
-    const GURL& primary_url,
-    const GURL& secondary_url,
-    ContentSettingsType content_type,
-    bool include_incognito) {
-  return ValueToContentSetting(GetContentSettingValue(
-      provider, primary_url, secondary_url, content_type, include_incognito));
+ContentSetting TestUtils::GetContentSetting(const ProviderInterface* provider,
+                                            const GURL& primary_url,
+                                            const GURL& secondary_url,
+                                            ContentSettingsType content_type,
+                                            bool include_incognito,
+                                            RuleMetaData* metadata) {
+  return ValueToContentSetting(
+      GetContentSettingValue(provider, primary_url, secondary_url, content_type,
+                             include_incognito, metadata));
 }
 
 // static
@@ -39,10 +42,11 @@ base::Value TestUtils::GetContentSettingValueAndPatterns(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsPattern* primary_pattern,
-    ContentSettingsPattern* secondary_pattern) {
+    ContentSettingsPattern* secondary_pattern,
+    RuleMetaData* metadata) {
   return HostContentSettingsMap::GetContentSettingValueAndPatterns(
       rule_iterator, primary_url, secondary_url, primary_pattern,
-      secondary_pattern, nullptr);
+      secondary_pattern, metadata);
 }
 
 // static

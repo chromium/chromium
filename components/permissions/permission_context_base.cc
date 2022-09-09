@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
@@ -28,6 +29,7 @@
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/unused_site_permissions_service.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/disallow_activation_reason.h"
@@ -544,18 +546,13 @@ void PermissionContextBase::UpdateContentSetting(const GURL& requesting_origin,
     // 1. Are ALLOWed.
     // 2. Fall back to ASK.
     // 3. Are not already a one-time grant.
-    if (content_setting == CONTENT_SETTING_ALLOW && !is_one_time) {
+    if (content_setting == CONTENT_SETTING_ALLOW && !is_one_time &&
+        content_settings::CanTrackLastVisit(content_settings_type_)) {
       // For #2, by definition, that should be all of them. If that changes in
       // the future, consider whether revocation for such permission makes
       // sense, and/or change this to an early return so that we don't
       // unnecessarily record timestamps where we don't need them.
-      DCHECK(content_settings::ContentSettingsRegistry::GetInstance()
-                 ->Get(content_settings_type_)
-                 ->GetInitialDefaultSetting() == CONTENT_SETTING_ASK);
-
-      // To avoid inadvertently recording a history entry that a permission was
-      // granted at a certain exact time, the timer is fuzzed.
-      constraints.expiration = base::Time::Now() + base::Days(60 + rand() % 7);
+      constraints.track_last_visit_for_autoexpiration = true;
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

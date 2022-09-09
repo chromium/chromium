@@ -74,6 +74,11 @@ const char kObsoleteInstalledWebAppMetadataExceptionsPref[] =
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
 
+// Get a timestamp with week-precision.
+base::Time GetCoarseTime(base::Time time) {
+  return base::Time::FromDeltaSinceWindowsEpoch(
+      base::Days(time.ToDeltaSinceWindowsEpoch().InDaysFloored() / 7) * 7);
+}
 }  // namespace
 
 // ////////////////////////////////////////////////////////////////////////////
@@ -221,6 +226,18 @@ bool PrefProvider::SetWebsiteSetting(
   base::Time modified_time =
       store_last_modified_ ? clock_->Now() : base::Time();
 
+  // Last visit timestamps should only be tracked for ContentSettings that are
+  // "ASK" by default.
+  DCHECK(!constraints.track_last_visit_for_autoexpiration ||
+         content_settings::CanTrackLastVisit(content_type));
+  // Last visit timestamps can only be tracked for host-specific pattern.
+  DCHECK(!constraints.track_last_visit_for_autoexpiration ||
+         !primary_pattern.GetHost().empty());
+
+  base::Time last_visited = constraints.track_last_visit_for_autoexpiration
+                                ? GetCoarseTime(clock_->Now())
+                                : base::Time();
+
   // If SessionModel is OneTime, we know for sure that a one time permission
   // has been set by the One Time Provider, therefore we reset a potentially
   // existing Allow Always setting.
@@ -233,6 +250,7 @@ bool PrefProvider::SetWebsiteSetting(
       ->SetWebsiteSetting(primary_pattern, secondary_pattern,
                           std::move(in_value),
                           {.last_modified = modified_time,
+                           .last_visited = last_visited,
                            .expiration = constraints.expiration,
                            .session_model = constraints.session_model});
   return true;

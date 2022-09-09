@@ -38,6 +38,7 @@
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -688,26 +689,6 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
   }
 }
 
-base::Time HostContentSettingsMap::GetExpirationForTesting(
-    GURL& primary_url,
-    GURL& secondary_url,
-    ContentSettingsType content_type) {
-  content_settings::PatternPair patterns = GetPatternsForContentSettingsType(
-      primary_url, secondary_url, content_type);
-
-  std::unique_ptr<content_settings::RuleIterator> iterator =
-      pref_provider_->GetRuleIterator(content_type, /* off_the_record */ false);
-  while (iterator->HasNext()) {
-    content_settings::Rule rule = iterator->Next();
-    if (rule.primary_pattern == patterns.first &&
-        rule.secondary_pattern == patterns.second) {
-      return rule.metadata.expiration;
-    }
-  }
-
-  return base::Time();
-}
-
 void HostContentSettingsMap::AddObserver(content_settings::Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -916,11 +897,11 @@ base::Value HostContentSettingsMap::GetWebsiteSettingInternal(
   UsedContentSettingsProviders();
   ContentSettingsPattern* primary_pattern = nullptr;
   ContentSettingsPattern* secondary_pattern = nullptr;
-  content_settings::SessionModel* session_model = nullptr;
+  content_settings::RuleMetaData* metadata = nullptr;
   if (info) {
     primary_pattern = &info->primary_pattern;
     secondary_pattern = &info->secondary_pattern;
-    session_model = &info->metadata.session_model;
+    metadata = &info->metadata;
   }
 
   // The list of |content_settings_providers_| is ordered according to their
@@ -929,7 +910,7 @@ base::Value HostContentSettingsMap::GetWebsiteSettingInternal(
   for (; it != content_settings_providers_.end(); ++it) {
     base::Value value = GetContentSettingValueAndPatterns(
         it->second.get(), primary_url, secondary_url, content_type,
-        is_off_the_record_, primary_pattern, secondary_pattern, session_model);
+        is_off_the_record_, primary_pattern, secondary_pattern, metadata);
     if (!value.is_none()) {
       if (info)
         info->source = kProviderNamesSourceMap[it->first].provider_source;
@@ -954,7 +935,7 @@ base::Value HostContentSettingsMap::GetContentSettingValueAndPatterns(
     bool include_incognito,
     ContentSettingsPattern* primary_pattern,
     ContentSettingsPattern* secondary_pattern,
-    content_settings::SessionModel* session_model) {
+    content_settings::RuleMetaData* metadata) {
   // TODO(crbug.com/1336617): Remove this check once we figure out what is
   // wrong.
   CHECK(provider);
@@ -967,7 +948,7 @@ base::Value HostContentSettingsMap::GetContentSettingValueAndPatterns(
         provider->GetRuleIterator(content_type, true /* incognito */));
     base::Value value = GetContentSettingValueAndPatterns(
         incognito_rule_iterator.get(), primary_url, secondary_url,
-        primary_pattern, secondary_pattern, session_model);
+        primary_pattern, secondary_pattern, metadata);
     if (!value.is_none())
       return value;
   }
@@ -976,7 +957,7 @@ base::Value HostContentSettingsMap::GetContentSettingValueAndPatterns(
       provider->GetRuleIterator(content_type, false /* incognito */));
   base::Value value = GetContentSettingValueAndPatterns(
       rule_iterator.get(), primary_url, secondary_url, primary_pattern,
-      secondary_pattern, session_model);
+      secondary_pattern, metadata);
   if (!value.is_none() && include_incognito) {
     value = ProcessIncognitoInheritanceBehavior(content_type, std::move(value));
   }
@@ -990,7 +971,7 @@ base::Value HostContentSettingsMap::GetContentSettingValueAndPatterns(
     const GURL& secondary_url,
     ContentSettingsPattern* primary_pattern,
     ContentSettingsPattern* secondary_pattern,
-    content_settings::SessionModel* session_model) {
+    content_settings::RuleMetaData* metadata) {
   if (rule_iterator) {
     while (rule_iterator->HasNext()) {
       const content_settings::Rule& rule = rule_iterator->Next();
@@ -1002,8 +983,8 @@ base::Value HostContentSettingsMap::GetContentSettingValueAndPatterns(
           *primary_pattern = rule.primary_pattern;
         if (secondary_pattern)
           *secondary_pattern = rule.secondary_pattern;
-        if (session_model)
-          *session_model = rule.metadata.session_model;
+        if (metadata)
+          *metadata = rule.metadata;
         return rule.value.Clone();
       }
     }

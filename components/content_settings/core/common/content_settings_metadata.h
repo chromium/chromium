@@ -13,6 +13,7 @@ namespace content_settings {
 // Holds metadata for a ContentSetting rule.
 struct RuleMetaData {
   base::Time last_modified;
+  base::Time last_visited;
   base::Time expiration;
   SessionModel session_model = SessionModel::Durable;
 };

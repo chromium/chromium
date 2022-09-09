@@ -33,6 +33,9 @@ struct ContentSettingConstraints {
   base::Time expiration;
   // Used to specify the lifetime model that should be used.
   SessionModel session_model = SessionModel::Durable;
+  // Set to true to keep track of the last visit to the origin of this
+  // permission.
+  bool track_last_visit_for_autoexpiration = false;
 };
 
 }  // namespace content_settings

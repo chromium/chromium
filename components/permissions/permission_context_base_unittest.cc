@@ -918,13 +918,13 @@ TEST_F(PermissionContextBaseTests, ExpirationAllow) {
   GURL primary_url("https://www.google.com");
   GURL secondary_url;
   auto* hcsm = PermissionsClient::Get()->GetSettingsMap(browser_context());
-  base::Time expiration = hcsm->GetExpirationForTesting(
-      primary_url, secondary_url, ContentSettingsType::NOTIFICATIONS);
+  content_settings::SettingInfo info;
+  hcsm->GetWebsiteSetting(primary_url, secondary_url,
+                          ContentSettingsType::NOTIFICATIONS, &info);
 
-  // The expiration date should lie between two months and up to one more week.
-  int delta_days = (expiration - now).InDays();
-  EXPECT_GE(delta_days, 60);
-  EXPECT_LE(delta_days, 67);
+  // The last_visited should lie between today and a week ago.
+  EXPECT_GE(info.metadata.last_visited, now - base::Days(7));
+  EXPECT_LE(info.metadata.last_visited, now);
 }
 
 TEST_F(PermissionContextBaseTests, ExpirationBlock) {
@@ -938,11 +938,12 @@ TEST_F(PermissionContextBaseTests, ExpirationBlock) {
   GURL primary_url("https://www.google.com");
   GURL secondary_url;
   auto* hcsm = PermissionsClient::Get()->GetSettingsMap(browser_context());
-  base::Time expiration = hcsm->GetExpirationForTesting(
-      primary_url, secondary_url, ContentSettingsType::NOTIFICATIONS);
+  content_settings::SettingInfo info;
+  hcsm->GetWebsiteSetting(primary_url, secondary_url,
+                          ContentSettingsType::NOTIFICATIONS, &info);
 
-  // Expiration is not set for BLOCKed permissions.
-  EXPECT_EQ(base::Time(), expiration);
+  // last_visited is not set for BLOCKed permissions.
+  EXPECT_EQ(base::Time(), info.metadata.last_visited);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

@@ -73,6 +73,9 @@ bool IsConstraintPersistent(const ContentSettingConstraints& constraints);
 // Returns the expiration time for a supplied |duration|.
 base::Time GetConstraintExpiration(const base::TimeDelta duration);
 
+// Returns whether the given type supports tracking last_visit timestamps.
+bool CanTrackLastVisit(ContentSettingsType type);
+
 }  // namespace content_settings
 
 #endif  // COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_CONTENT_SETTINGS_UTILS_H_

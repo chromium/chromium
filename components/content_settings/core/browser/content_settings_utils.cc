@@ -12,6 +12,7 @@
 #include "base/strings/string_split.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 
@@ -177,6 +178,17 @@ bool IsConstraintPersistent(const ContentSettingConstraints& constraints) {
 base::Time GetConstraintExpiration(const base::TimeDelta duration) {
   DCHECK(!duration.is_zero());
   return base::Time::Now() + duration;
+}
+
+bool CanTrackLastVisit(ContentSettingsType type) {
+#if BUILDFLAG(IS_ANDROID)
+  // The notification provider on Android does not support last visit tracking.
+  if (type == ContentSettingsType::NOTIFICATIONS)
+    return false;
+#endif
+  auto* info =
+      content_settings::ContentSettingsRegistry::GetInstance()->Get(type);
+  return info && info->GetInitialDefaultSetting() == CONTENT_SETTING_ASK;
 }
 
 }  // namespace content_settings

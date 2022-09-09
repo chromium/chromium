@@ -24,6 +24,7 @@
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -314,6 +315,7 @@ bool NotificationChannelsProviderAndroid::SetWebsiteSetting(
   // These constraints are not supported for notifications on Android.
   DCHECK_EQ(constraints.expiration, base::Time());
   DCHECK_EQ(constraints.session_model, content_settings::SessionModel::Durable);
+  DCHECK_EQ(constraints.track_last_visit_for_autoexpiration, false);
 
   InitCachedChannels();
 
