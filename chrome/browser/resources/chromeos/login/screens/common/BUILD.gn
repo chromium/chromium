@@ -17,7 +17,6 @@ group("polymer3_elements") {
     ":assistant_optin_module",
     ":consolidated_consent_module",
     ":device_disabled_module",
-    ":enable_kiosk_module",
     ":error_message_module",
     ":family_link_notice_module",
     ":gaia_signin_module",
@@ -56,7 +55,7 @@ js_type_check("closure_compile_local") {
     ":autolaunch",
     ":consolidated_consent.m",
     ":device_disabled.m",
-    ":enable_kiosk.m",
+    ":enable_kiosk",
     ":error_message.m",
     ":family_link_notice.m",
     ":fingerprint_setup",
@@ -211,8 +210,8 @@ js_library("device_disabled.m") {
   extra_deps = [ ":device_disabled_module" ]
 }
 
-js_library("enable_kiosk.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/enable_kiosk.m.js" ]
+js_library("enable_kiosk") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/enable_kiosk.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
@@ -220,7 +219,7 @@ js_library("enable_kiosk.m") {
     "../../components/buttons:oobe_text_button.m",
     "../../components/dialogs:oobe_adaptive_dialog.m",
   ]
-  extra_deps = [ ":enable_kiosk_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("family_link_notice.m") {
@@ -688,14 +687,6 @@ polymer_modulizer("device_disabled") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("enable_kiosk") {
-  js_file = "enable_kiosk.js"
-  html_file = "enable_kiosk.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("family_link_notice") {
   js_file = "family_link_notice.js"
   html_file = "family_link_notice.html"
@@ -830,6 +821,7 @@ html_to_js("web_components") {
     "app_downloading.js",
     "arc_terms_of_service.js",
     "autolaunch.js",
+    "enable_kiosk.js",
     "fingerprint_setup.js",
     "gesture_navigation.js",
     "managed_terms_of_service.js",

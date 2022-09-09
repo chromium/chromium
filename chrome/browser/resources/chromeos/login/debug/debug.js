@@ -1477,6 +1477,10 @@ cr.define('cr.ui.login.debug', function() {
       kind: ScreenKind.NORMAL,
     },
     {
+      id: 'kiosk-enable',
+      kind: ScreenKind.NORMAL,
+    },
+    {
       id: 'marketing-opt-in',
       kind: ScreenKind.NORMAL,
       handledSteps: 'overview',
