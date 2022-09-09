@@ -18,6 +18,7 @@
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/writable_shared_memory_region.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -745,14 +746,14 @@ MojoResult MojoCreateSharedBufferIpcz(
     uint64_t num_bytes,
     const MojoCreateSharedBufferOptions* options,
     MojoHandle* shared_buffer_handle) {
-  auto region =
-      base::subtle::PlatformSharedMemoryRegion::CreateWritable(num_bytes);
+  auto region = base::WritableSharedMemoryRegion::Create(num_bytes);
   if (!region.IsValid()) {
     return MOJO_RESULT_RESOURCE_EXHAUSTED;
   }
 
-  *shared_buffer_handle =
-      ipcz_driver::SharedBuffer::MakeBoxed(std::move(region));
+  *shared_buffer_handle = ipcz_driver::SharedBuffer::MakeBoxed(
+      base::WritableSharedMemoryRegion::TakeHandleForSerialization(
+          std::move(region)));
   return MOJO_RESULT_OK;
 }
 

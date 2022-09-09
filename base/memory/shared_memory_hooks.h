@@ -11,6 +11,9 @@
 
 namespace mojo {
 class SharedMemoryUtils;
+namespace core::ipcz_driver {
+class BaseSharedMemoryService;
+}
 }  // namespace mojo
 
 namespace base {
@@ -22,6 +25,7 @@ class SharedMemoryHooks {
  private:
   friend class SharedMemoryHooksTest;
   friend mojo::SharedMemoryUtils;
+  friend class mojo::core::ipcz_driver::BaseSharedMemoryService;
 
   // Allows shared memory region creation to be hooked. Useful for sandboxed
   // processes that are restricted from invoking the platform APIs directly.

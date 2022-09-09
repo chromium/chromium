@@ -9,6 +9,7 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
+#include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
@@ -50,6 +51,11 @@ base::UnsafeSharedMemoryRegion CreateUnsafeSharedMemoryRegion(size_t size) {
 }  // namespace
 
 void SharedMemoryUtils::InstallBaseHooks() {
+  if (mojo::core::IsMojoIpczEnabled()) {
+    mojo::core::InstallMojoIpczBaseSharedMemoryHooks();
+    return;
+  }
+
   base::SharedMemoryHooks::SetCreateHooks(&CreateReadOnlySharedMemoryRegion,
                                           &CreateUnsafeSharedMemoryRegion,
                                           &CreateWritableSharedMemoryRegion);

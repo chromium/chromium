@@ -20,6 +20,7 @@
 #include "mojo/core/embedder/features.h"
 #include "mojo/core/entrypoints.h"
 #include "mojo/core/ipcz_api.h"
+#include "mojo/core/ipcz_driver/base_shared_memory_service.h"
 #include "mojo/core/ipcz_driver/transport.h"
 #include "mojo/core/node_controller.h"
 #include "mojo/public/c/system/thunks.h"
@@ -136,6 +137,11 @@ bool IsMojoIpczEnabled() {
   static bool enabled = g_mojo_ipcz_enabled.load(std::memory_order_acquire);
   DCHECK_EQ(enabled, g_mojo_ipcz_enabled.load(std::memory_order_acquire));
   return enabled;
+}
+
+void InstallMojoIpczBaseSharedMemoryHooks() {
+  DCHECK(IsMojoIpczEnabled());
+  mojo::core::ipcz_driver::BaseSharedMemoryService::InstallHooks();
 }
 
 }  // namespace core

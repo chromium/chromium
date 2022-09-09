@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/containers/stack_container.h"
 #include "mojo/core/ipcz_driver/object.h"
+#include "mojo/core/scoped_ipcz_handle.h"
 #include "mojo/public/c/system/invitation.h"
 #include "mojo/public/c/system/types.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
@@ -25,9 +26,10 @@ class Invitation : public Object<Invitation> {
   // This limit translates to the maximum number of initial portals Mojo will
   // request on any ConnectNode() call issued by this invitation. The limit is
   // not strictly specified by ipcz, but it does guarantee that ConnectNode()
-  // must support at least 8 initial portals, so we cap our limit there. In
-  // practice no known Mojo consumer today uses more than 4.
-  static constexpr size_t kMaxAttachments = 8;
+  // must support at least 8 initial portals, so we cap our limit there, minus
+  // one reserved initial portal for internal driver use. In practice no known
+  // Mojo consumer today uses more than 4 attachments.
+  static constexpr size_t kMaxAttachments = 7;
 
   explicit Invitation();
 
@@ -67,7 +69,7 @@ class Invitation : public Object<Invitation> {
   // An array of pipe attachments. An invitation to be sent must have exactly
   // `num_attachments_` contiguous attachments starting from the first element
   // of this array, but attachments may be added out-of-order up to that point.
-  std::array<IpczHandle, kMaxAttachments> attachments_ = {};
+  std::array<ScopedIpczHandle, kMaxAttachments> attachments_ = {};
 
   // The total number of pipes attached so far.
   size_t num_attachments_ = 0;

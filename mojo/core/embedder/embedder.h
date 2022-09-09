@@ -52,6 +52,13 @@ COMPONENT_EXPORT(MOJO_CORE_EMBEDDER) void InitFeatures();
 // done by enabling the MojoIpcz feature.
 COMPONENT_EXPORT(MOJO_CORE_EMBEDDER) bool IsMojoIpczEnabled();
 
+// Installs base shared shared memory allocation hooks appropriate for use in
+// a sandboxed environment when MojoIpcz is enabled on platforms where such
+// processes cannot allocate shared memory directly through the OS. Must be
+// called before any shared memory allocation is attempted in the process.
+COMPONENT_EXPORT(MOJO_CORE_EMBEDDER)
+void InstallMojoIpczBaseSharedMemoryHooks();
+
 }  // namespace core
 }  // namespace mojo
 

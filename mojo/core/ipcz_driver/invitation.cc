@@ -8,8 +8,10 @@
 #include <cstdint>
 
 #include "mojo/core/ipcz_api.h"
+#include "mojo/core/ipcz_driver/base_shared_memory_service.h"
 #include "mojo/core/ipcz_driver/transport.h"
 #include "mojo/core/platform_handle_utils.h"
+#include "mojo/core/scoped_ipcz_handle.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
@@ -36,7 +38,7 @@ MojoDefaultProcessErrorHandler g_default_process_error_handler = nullptr;
 //
 // We take the first 4 bytes of any name and interpret it as an index into an
 // array of initial portals. If the index is above a reasonably small upper
-// bound (8) then it's treated as zero.
+// bound (7) then it's treated as zero.
 size_t GetAttachmentIndex(base::span<const uint8_t> name) {
   if (name.size() != sizeof(uint32_t) && name.size() != sizeof(uint64_t)) {
     // Use index 0 if the invitation name does not match a simple integer size.
@@ -118,16 +120,18 @@ void Invitation::InvokeDefaultProcessErrorHandler(const std::string& error) {
 MojoResult Invitation::Attach(base::span<const uint8_t> name,
                               MojoHandle* handle) {
   const size_t index = GetAttachmentIndex(name);
-  if (attachments_[index] != IPCZ_INVALID_HANDLE) {
+  if (attachments_[index].is_valid()) {
     return MOJO_RESULT_ALREADY_EXISTS;
   }
 
   // One portal is returned for immediate use; the other is retained so that we
   // can merge it with a portal returned by ConnectNode() in Send() below.
-  IpczResult result = GetIpczAPI().OpenPortals(
-      GetIpczNode(), IPCZ_NO_FLAGS, nullptr, &attachments_[index], handle);
+  IpczHandle attachment;
+  IpczResult result = GetIpczAPI().OpenPortals(GetIpczNode(), IPCZ_NO_FLAGS,
+                                               nullptr, &attachment, handle);
   CHECK_EQ(result, IPCZ_RESULT_OK);
 
+  attachments_[index] = ScopedIpczHandle(attachment);
   max_attachment_index_ = std::max(max_attachment_index_, index);
   ++num_attachments_;
   return MOJO_RESULT_OK;
@@ -137,12 +141,11 @@ MojoResult Invitation::Extract(base::span<const uint8_t> name,
                                MojoHandle* handle) {
   // We expect attachments to have been populated by Accept() already.
   const size_t index = GetAttachmentIndex(name);
-  if (attachments_[index] == IPCZ_INVALID_HANDLE) {
+  if (!attachments_[index].is_valid()) {
     return MOJO_RESULT_NOT_FOUND;
   }
 
-  *handle = attachments_[index];
-  attachments_[index] = IPCZ_INVALID_HANDLE;
+  *handle = attachments_[index].release();
   return MOJO_RESULT_OK;
 }
 
@@ -200,19 +203,23 @@ MojoResult Invitation::Send(
     return MOJO_RESULT_FAILED_PRECONDITION;
   }
 
-  IpczHandle portals[kMaxAttachments];
+  // Note that we reserve the first initial portal for internal use, hence the
+  // additional (kMaxAttachments + 1) portal here. Portals corresponding to
+  // application-provided attachments begin at index 1.
+  IpczHandle portals[kMaxAttachments + 1];
   IpczResult result = GetIpczAPI().ConnectNode(
-      GetIpczNode(), transport, num_attachments_, flags, nullptr, portals);
+      GetIpczNode(), transport, num_attachments_ + 1, flags, nullptr, portals);
   if (result != IPCZ_RESULT_OK) {
     return result;
   }
 
+  BaseSharedMemoryService::CreateService(ScopedIpczHandle(portals[0]));
   for (size_t i = 0; i < num_attachments_; ++i) {
-    result = GetIpczAPI().MergePortals(attachments_[i], portals[i],
-                                       IPCZ_NO_FLAGS, nullptr);
+    result = GetIpczAPI().MergePortals(attachments_[i].release(),
+                                       portals[i + 1], IPCZ_NO_FLAGS, nullptr);
     CHECK_EQ(result, IPCZ_RESULT_OK);
-    attachments_[i] = IPCZ_INVALID_HANDLE;
   }
+
   return MOJO_RESULT_OK;
 }
 
@@ -260,7 +267,11 @@ MojoHandle Invitation::Accept(
   // will be extracted from this set. Any unclaimed initial portals (which will
   // not have a peer on the sending node anyway) will be cleaned up when the
   // Invitation itself is destroyed.
-  IpczHandle portals[kMaxAttachments];
+  //
+  // Note that we reserve the first portal slot for internal use, hence an
+  // the additional (kMaxAttachments + 1) portal here. Portals corresponding to
+  // application-provided attachments begin at index 1.
+  IpczHandle portals[kMaxAttachments + 1];
   IpczDriverHandle transport = CreateTransportForMojoEndpoint(
       Transport::kToBroker, *transport_endpoint, leak_transport);
   if (transport == IPCZ_INVALID_DRIVER_HANDLE) {
@@ -268,30 +279,24 @@ MojoHandle Invitation::Accept(
   }
 
   IpczResult result = GetIpczAPI().ConnectNode(
-      GetIpczNode(), transport, kMaxAttachments, flags, nullptr, portals);
+      GetIpczNode(), transport, kMaxAttachments + 1, flags, nullptr, portals);
   CHECK_EQ(result, IPCZ_RESULT_OK);
 
+  BaseSharedMemoryService::CreateClient(ScopedIpczHandle(portals[0]));
   for (size_t i = 0; i < kMaxAttachments; ++i) {
+    IpczHandle attachment;
     IpczHandle bridge;
-    GetIpczAPI().OpenPortals(GetIpczNode(), IPCZ_NO_FLAGS, nullptr,
-                             &invitation->attachments_[i], &bridge);
-    result =
-        GetIpczAPI().MergePortals(portals[i], bridge, IPCZ_NO_FLAGS, nullptr);
+    GetIpczAPI().OpenPortals(GetIpczNode(), IPCZ_NO_FLAGS, nullptr, &attachment,
+                             &bridge);
+    result = GetIpczAPI().MergePortals(portals[i + 1], bridge, IPCZ_NO_FLAGS,
+                                       nullptr);
+    invitation->attachments_[i] = ScopedIpczHandle(attachment);
   }
   invitation->num_attachments_ = kMaxAttachments;
   invitation->max_attachment_index_ = kMaxAttachments - 1;
   return Box(std::move(invitation));
 }
 
-void Invitation::Close() {
-  // Particularly on accepted invitations, some attachments were created
-  // speculatively. If they weren't extracted by the application, close them.
-  for (IpczHandle& handle : attachments_) {
-    if (handle != IPCZ_INVALID_HANDLE) {
-      GetIpczAPI().Close(std::exchange(handle, IPCZ_INVALID_HANDLE),
-                         IPCZ_NO_FLAGS, nullptr);
-    }
-  }
-}
+void Invitation::Close() {}
 
 }  // namespace mojo::core::ipcz_driver
