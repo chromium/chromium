@@ -204,6 +204,30 @@ TEST_P(SublevelManagerTest, GrandChildren) {
       grand_children[1][0].get(), grand_children[0][1].get()));
 }
 
+// The sublevel manager should be able to handle the Widget re-parenting.
+TEST_P(SublevelManagerTest, WidgetReparent) {
+  std::unique_ptr<Widget> root1 = CreateTestWidget();
+  std::unique_ptr<Widget> root2 = CreateTestWidget();
+  std::unique_ptr<Widget> child;
+
+  child =
+      CreateChildWidget(root1.get(), ui::ZOrderLevel::kNormal, 1,
+                        std::get<Widget::InitParams::Activatable>(GetParam()));
+
+  root1->Show();
+  child->Show();
+
+  root2->Show();
+  Widget::ReparentNativeView(child->GetNativeView(), root2->GetNativeView());
+  child->Show();
+
+#if !BUILDFLAG(IS_MAC)
+  // Mac does not allow re-parenting child widgets to nullptr.
+  Widget::ReparentNativeView(child->GetNativeView(), nullptr);
+  child->Show();
+#endif
+}
+
 // TODO(crbug.com/1333445): We should also test NativeWidgetType::kDesktop,
 // but currently IsWindowStackedAbove() does not work for desktop widgets.
 INSTANTIATE_TEST_SUITE_P(

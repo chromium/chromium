@@ -1930,6 +1930,7 @@ void Widget::SetParent(Widget* parent) {
   if (parent == parent_)
     return;
 
+  Widget* old_parent = parent_;
   parent_ = parent;
 
   // Release the paint-as-active lock on the old parent.
@@ -1945,6 +1946,13 @@ void Widget::SetParent(Widget* parent) {
         parent->RegisterPaintAsActiveChangedCallback(
             base::BindRepeating(&Widget::OnParentShouldPaintAsActiveChanged,
                                 base::Unretained(this)));
+  }
+
+  if (base::FeatureList::IsEnabled(features::kWidgetLayering)) {
+    if (old_parent)
+      old_parent->GetSublevelManager()->UntrackChildWidget(this);
+    if (parent)
+      parent->GetSublevelManager()->TrackChildWidget(this);
   }
 }
 

@@ -26,7 +26,8 @@ void SublevelManager::TrackChildWidget(Widget* child) {
 }
 
 void SublevelManager::UntrackChildWidget(Widget* child) {
-  DCHECK_EQ(1, base::ranges::count(children_, child));
+  // During shutdown a child might get untracked more than once by the same
+  // parent. We don't want to DCHECK on that.
   children_.erase(base::ranges::remove(children_, child), std::end(children_));
 }
 
