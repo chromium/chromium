@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "module": "ESNext",
-    "target": "ES2021",
+    "target": "ESNext",
+    "useDefineForClassFields": false,
 
     "noEmitOnError": true,
     "pretty": true,
