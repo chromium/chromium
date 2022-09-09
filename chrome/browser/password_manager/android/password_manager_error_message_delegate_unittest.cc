@@ -5,11 +5,14 @@
 #include "chrome/browser/password_manager/android/password_manager_error_message_delegate.h"
 
 #include "base/android/jni_android.h"
+#include "chrome/browser/password_manager/android/mock_password_manager_sign_in_helper_bridge.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+
+using testing::_;
 
 class PasswordManagerErrorMessageDelegateTest
     : public ChromeRenderViewHostTestHarness {
@@ -20,24 +23,30 @@ class PasswordManagerErrorMessageDelegateTest
   void SetUp() override;
   void TearDown() override;
 
-  void DisplayMessageAndExpecteEnqueued(bool save_password);
+  void DisplayMessageAndExpectEnqueued(bool save_password);
 
   void DismissMessageAndExpectDismissed(messages::DismissReason dismiss_reason);
 
-  messages::MessageWrapper* GetMessageWrapper();
-
-  messages::MockMessageDispatcherBridge* message_dispatcher_bridge() {
-    return &message_dispatcher_bridge_;
+  raw_ptr<MockPasswordManagerSignInHelperBridge> signin_helper_bridge() {
+    return sign_in_helper_bridge_;
   }
+  messages::MessageWrapper* GetMessageWrapper();
 
  private:
   std::unique_ptr<PasswordManagerErrorMessageDelegate> delegate_;
+  // The `sign_in_helper_bridge_` is owned by the `delegate_`.
+  raw_ptr<MockPasswordManagerSignInHelperBridge> sign_in_helper_bridge_;
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
 };
 
 PasswordManagerErrorMessageDelegateTest::
-    PasswordManagerErrorMessageDelegateTest()
-    : delegate_(std::make_unique<PasswordManagerErrorMessageDelegate>()) {}
+    PasswordManagerErrorMessageDelegateTest() {
+  auto mock_sign_in_bridge =
+      std::make_unique<MockPasswordManagerSignInHelperBridge>();
+  sign_in_helper_bridge_ = mock_sign_in_bridge.get();
+  delegate_ = std::make_unique<PasswordManagerErrorMessageDelegate>(
+      std::move(mock_sign_in_bridge));
+}
 
 void PasswordManagerErrorMessageDelegateTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
@@ -50,7 +59,7 @@ void PasswordManagerErrorMessageDelegateTest::TearDown() {
   ChromeRenderViewHostTestHarness::TearDown();
 }
 
-void PasswordManagerErrorMessageDelegateTest::DisplayMessageAndExpecteEnqueued(
+void PasswordManagerErrorMessageDelegateTest::DisplayMessageAndExpectEnqueued(
     bool save_password) {
   EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
   delegate_->DisplayPasswordManagerErrorMessage(web_contents(), save_password);
@@ -77,7 +86,7 @@ PasswordManagerErrorMessageDelegateTest::GetMessageWrapper() {
 // set correctly for "sign in to save password" message.
 TEST_F(PasswordManagerErrorMessageDelegateTest,
        MessagePropertyValuesSignInToSavePassword) {
-  DisplayMessageAndExpecteEnqueued(/*save_password=*/true);
+  DisplayMessageAndExpectEnqueued(/*save_password=*/true);
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SIGN_IN_TO_SAVE_PASSWORDS),
             GetMessageWrapper()->GetTitle());
@@ -93,7 +102,7 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
 // set correctly for "sign in to use password" message.
 TEST_F(PasswordManagerErrorMessageDelegateTest,
        MessagePropertyValuesSignInToUsePassword) {
-  DisplayMessageAndExpecteEnqueued(/*save_password=*/false);
+  DisplayMessageAndExpectEnqueued(/*save_password=*/false);
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SIGN_IN_TO_USE_PASSWORDS),
             GetMessageWrapper()->GetTitle());
@@ -102,5 +111,17 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_ERROR_SIGN_IN_BUTTON_TITLE),
             GetMessageWrapper()->GetPrimaryButtonText());
 
+  DismissMessageAndExpectDismissed(messages::DismissReason::UNKNOWN);
+}
+
+// Tests that the sign in flow starts when the user clicks the "Sign in" button.
+TEST_F(PasswordManagerErrorMessageDelegateTest, SignInOnActionClick) {
+  DisplayMessageAndExpectEnqueued(/*save_password=*/true);
+  EXPECT_NE(nullptr, GetMessageWrapper());
+
+  EXPECT_CALL(*signin_helper_bridge(),
+              startUpdateAccountCredentialsFlow(_, web_contents()));
+  // Trigger the click action on the "Sign in" button and dismiss the message.
+  GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
   DismissMessageAndExpectDismissed(messages::DismissReason::UNKNOWN);
 }

@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_ERROR_MESSAGE_DELEGATE_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_ERROR_MESSAGE_DELEGATE_H_
 
+#include <memory>
+
+#include "chrome/browser/password_manager/android/password_manager_sign_in_helper_bridge.h"
 #include "components/messages/android/message_wrapper.h"
 
 namespace content {
@@ -13,7 +16,8 @@ class WebContents;
 
 class PasswordManagerErrorMessageDelegate {
  public:
-  PasswordManagerErrorMessageDelegate();
+  explicit PasswordManagerErrorMessageDelegate(
+      std::unique_ptr<PasswordManagerSignInHelperBridge> bridge_);
   ~PasswordManagerErrorMessageDelegate();
 
   // Displays a password error message for current `web_contents`.
@@ -24,13 +28,16 @@ class PasswordManagerErrorMessageDelegate {
   void DismissPasswordManagerErrorMessage(
       messages::DismissReason dismiss_reason);
 
-  std::unique_ptr<messages::MessageWrapper> message_;
-
  private:
-  void CreateMessage(bool save_password);
+  friend class PasswordManagerErrorMessageDelegateTest;
+
+  std::unique_ptr<messages::MessageWrapper> message_;
+  std::unique_ptr<PasswordManagerSignInHelperBridge> sign_in_bridge_;
+
+  void CreateMessage(content::WebContents* web_contents, bool save_password);
 
   // Following methods handle events associated with user interaction with UI.
-  void HandleSignInButtonClicked();
+  void HandleSignInButtonClicked(content::WebContents* web_contents);
   void HandleMessageDismissed(messages::DismissReason dismiss_reason);
 };
 

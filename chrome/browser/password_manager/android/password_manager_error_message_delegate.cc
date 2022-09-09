@@ -7,12 +7,18 @@
 #include "base/android/jni_android.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
+#include "chrome/browser/android/signin/signin_bridge.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/android/window_android.h"
+#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 
-PasswordManagerErrorMessageDelegate::PasswordManagerErrorMessageDelegate() =
-    default;
+PasswordManagerErrorMessageDelegate::PasswordManagerErrorMessageDelegate(
+    std::unique_ptr<PasswordManagerSignInHelperBridge> bridge_)
+    : sign_in_bridge_(std::move(bridge_)) {}
 
 PasswordManagerErrorMessageDelegate::~PasswordManagerErrorMessageDelegate() =
     default;
@@ -25,7 +31,7 @@ void PasswordManagerErrorMessageDelegate::DisplayPasswordManagerErrorMessage(
   // Dismiss previous message if it is displayed.
   DismissPasswordManagerErrorMessage(messages::DismissReason::UNKNOWN);
 
-  CreateMessage(save_password);
+  CreateMessage(web_contents, save_password);
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
       message_.get(), web_contents, messages::MessageScopeType::WEB_CONTENTS,
       messages::MessagePriority::kUrgent);
@@ -39,15 +45,20 @@ void PasswordManagerErrorMessageDelegate::DismissPasswordManagerErrorMessage(
   }
 }
 
-void PasswordManagerErrorMessageDelegate::CreateMessage(bool save_password) {
+void PasswordManagerErrorMessageDelegate::CreateMessage(
+    content::WebContents* web_contents,
+    bool save_password) {
   messages::MessageIdentifier message_id =
       messages::MessageIdentifier::PASSWORD_MANAGER_ERROR;
   // Binding with base::Unretained(this) is safe here because
   // PasswordManagerErrorMessageDelegate owns `message_`. Callbacks won't be
   // called after the current object is destroyed.
+  // It's safe to give a raw pointer to WebContents to the `callback` because
+  // WebContents transitively owns the MessageWrapper so the `message_` can't
+  // outlive `web_contents`.
   base::OnceClosure callback = base::BindOnce(
       &PasswordManagerErrorMessageDelegate::HandleSignInButtonClicked,
-      base::Unretained(this));
+      base::Unretained(this), web_contents);
 
   message_ = std::make_unique<messages::MessageWrapper>(
       message_id, std::move(callback),
@@ -76,7 +87,9 @@ void PasswordManagerErrorMessageDelegate::HandleMessageDismissed(
   message_.reset();
 }
 
-void PasswordManagerErrorMessageDelegate::HandleSignInButtonClicked() {
-  // TODO (crbug/1352415): Implement opening the signin flow.
+void PasswordManagerErrorMessageDelegate::HandleSignInButtonClicked(
+    content::WebContents* web_contents) {
+  sign_in_bridge_->startUpdateAccountCredentialsFlow(
+      base::android::AttachCurrentThread(), web_contents);
   DismissPasswordManagerErrorMessage(messages::DismissReason::PRIMARY_ACTION);
 }
