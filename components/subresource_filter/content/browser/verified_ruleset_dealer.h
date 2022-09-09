@@ -118,7 +118,7 @@ class VerifiedRulesetDealer::Handle {
   // Note: Raw pointer, |dealer_| already holds a reference to |task_runner_|.
   raw_ptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<VerifiedRulesetDealer, base::OnTaskRunnerDeleter> dealer_;
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 // Holds a strong reference to MemoryMappedRuleset, and provides acceess to it.
@@ -141,7 +141,7 @@ class VerifiedRuleset {
   // Can return nullptr even after initialization in case no ruleset is
   // available, or if the ruleset is corrupted.
   const MemoryMappedRuleset* Get() const {
-    DCHECK(sequence_checker_.CalledOnValidSequence());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return ruleset_.get();
   }
 
@@ -150,7 +150,7 @@ class VerifiedRuleset {
   void Initialize(VerifiedRulesetDealer* dealer);
 
   scoped_refptr<const MemoryMappedRuleset> ruleset_;
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 // The UI-thread handle that owns a VerifiedRuleset living on a dedicated
@@ -184,7 +184,7 @@ class VerifiedRuleset::Handle {
   // Note: Raw pointer, |ruleset_| already holds a reference to |task_runner_|.
   raw_ptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<VerifiedRuleset, base::OnTaskRunnerDeleter> ruleset_;
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace subresource_filter
