@@ -30,7 +30,7 @@ WebRuntimeApplication::WebRuntimeApplication(
                              web_service,
                              std::move(task_runner),
                              std::move(runtime_application_factory)),
-      app_url_(GetAppConfig().cast_web_app_config().url()) {}
+      app_url_(RuntimeApplicationBase::config().cast_web_app_config().url()) {}
 
 WebRuntimeApplication::~WebRuntimeApplication() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -76,7 +76,7 @@ void WebRuntimeApplication::InnerWebContentsCreated(
 
   CastWebContents* inner_cast_contents =
       CastWebContents::FromWebContents(inner_web_contents);
-  CastWebContents* outer_cast_contents = GetCastWebContents();
+  CastWebContents* outer_cast_contents = cast_web_contents();
   DCHECK(inner_cast_contents);
   DCHECK(outer_cast_contents);
 
@@ -93,7 +93,7 @@ void WebRuntimeApplication::InnerWebContentsCreated(
   // Bind inner CastWebContents with the same session id and app id as the
   // root CastWebContents so that the same url rewrites are applied.
   inner_cast_contents->SetAppProperties(
-      GetAppConfig().app_id(), GetCastSessionId(), GetIsAudioOnly(), app_url_,
+      config().app_id(), GetCastSessionId(), GetIsAudioOnly(), app_url_,
       GetEnforceFeaturePermissions(), GetFeaturePermissions(),
       GetAdditionalFeaturePermissionOrigins());
   content::WebContentsObserver::Observe(inner_web_contents);
@@ -127,15 +127,15 @@ void WebRuntimeApplication::OnAllBindingsReceived(
     return;
   }
 
-  content::WebContentsObserver::Observe(GetCastWebContents()->web_contents());
+  content::WebContentsObserver::Observe(cast_web_contents()->web_contents());
   cast_receiver::PageStateObserver::Observe(
-      GetCastWebContents()->web_contents());
+      cast_web_contents()->web_contents());
   bindings_manager_ = std::make_unique<BindingsManagerWebRuntime>(
       application_platform().CreateMessagePortService());
   for (int i = 0; i < response->bindings_size(); ++i) {
     bindings_manager_->AddBinding(response->bindings(i).before_load_script());
   }
-  GetCastWebContents()->ConnectToBindingsService(
+  cast_web_contents()->ConnectToBindingsService(
       bindings_manager_->CreateRemote());
 
   // Application is initialized now - we can load the URL.

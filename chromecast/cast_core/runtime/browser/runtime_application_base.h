@@ -21,6 +21,7 @@
 
 namespace chromecast {
 
+class CastWebContents;
 class CastWebService;
 
 // This class is for sharing code between Web and streaming RuntimeApplication
@@ -54,19 +55,27 @@ class RuntimeApplicationBase : public RuntimeApplication,
     return task_runner_;
   }
 
-  // RuntimeApplication implementation:
-  CastWebContents* GetCastWebContents() override;
-  const cast::common::ApplicationConfig& GetAppConfig() const override;
-  const std::string& GetCastSessionId() const override;
-  void Load(cast::runtime::LoadApplicationRequest request,
-            StatusCallback callback) final;
-  void Launch(cast::runtime::LaunchApplicationRequest request,
-              StatusCallback callback) final;
+  CastWebContents* cast_web_contents() {
+    DCHECK(cast_web_view_);
+    return cast_web_view_->cast_web_contents();
+  }
 
   RuntimeApplicationPlatform& application_platform() {
     DCHECK(platform_);
     return *platform_;
   }
+
+  // NOTE: This field is empty until after Load() is called.
+  const cast::common::ApplicationConfig& config() const { return app_config_; }
+
+  // RuntimeApplication implementation:
+  const std::string& GetDisplayName() const override;
+  const std::string& GetAppId() const override;
+  const std::string& GetCastSessionId() const override;
+  void Load(cast::runtime::LoadApplicationRequest request,
+            StatusCallback callback) final;
+  void Launch(cast::runtime::LaunchApplicationRequest request,
+              StatusCallback callback) final;
 
   // Returns renderer features.
   base::Value GetRendererFeatures() const;

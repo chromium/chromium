@@ -100,6 +100,7 @@ void RuntimeApplicationDispatcher::LaunchApplication(
 std::unique_ptr<RuntimeApplication>
 RuntimeApplicationDispatcher::StopApplication(std::string session_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   auto iter = loaded_apps_.find(session_id);
   if (iter == loaded_apps_.end()) {
     return nullptr;

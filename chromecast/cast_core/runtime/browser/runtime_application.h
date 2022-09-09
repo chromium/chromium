@@ -15,8 +15,6 @@
 
 namespace chromecast {
 
-class CastWebContents;
-
 // This represents an application that can be hosted by RuntimeService.  Its
 // lifecycle is very simple: Load() -> Launch() -> Destruction.  Implementations
 // of this interface will additionally communicate over various gRPC interfaces.
@@ -28,14 +26,10 @@ class RuntimeApplication {
   RuntimeApplication() = default;
   virtual ~RuntimeApplication() = 0;
 
-  // NOTE: These fields are the empty string until after Load().
-  virtual const cast::common::ApplicationConfig& GetAppConfig() const = 0;
-
-  // NOTE: These fields are the empty string until after Load().
+  // NOTE: These fields are the empty string until after Load() is called.
+  virtual const std::string& GetDisplayName() const = 0;
+  virtual const std::string& GetAppId() const = 0;
   virtual const std::string& GetCastSessionId() const = 0;
-
-  // Returns the root instance of CastWebContents.
-  virtual CastWebContents* GetCastWebContents() = 0;
 
   // Called before Launch() to perform any pre-launch loading that is
   // necessary. The |callback| will be called indicating if the operation

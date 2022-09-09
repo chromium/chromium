@@ -201,7 +201,7 @@ void RuntimeApplicationDispatcherPlatformGrpc::HandleStopApplication(
 
   // Reset the app only after the response is constructed.
   cast::runtime::StopApplicationResponse response;
-  response.set_app_id(app->GetAppConfig().app_id());
+  response.set_app_id(app->GetAppId());
   response.set_cast_session_id(app->GetCastSessionId());
   reactor->Write(std::move(response));
 }

@@ -57,14 +57,12 @@ RuntimeApplicationBase::~RuntimeApplicationBase() {
   CHECK(!is_application_running_);
 }
 
-CastWebContents* RuntimeApplicationBase::GetCastWebContents() {
-  DCHECK(cast_web_view_);
-  return cast_web_view_->cast_web_contents();
+const std::string& RuntimeApplicationBase::GetDisplayName() const {
+  return config().display_name();
 }
 
-const cast::common::ApplicationConfig& RuntimeApplicationBase::GetAppConfig()
-    const {
-  return app_config_;
+const std::string& RuntimeApplicationBase::GetAppId() const {
+  return config().app_id();
 }
 
 const std::string& RuntimeApplicationBase::GetCastSessionId() const {
@@ -109,7 +107,7 @@ void RuntimeApplicationBase::OnApplicationLaunching(
 
 void RuntimeApplicationBase::OnUrlRewriteRulesSet(
     url_rewrite::mojom::UrlRequestRewriteRulesPtr mojom_rules) {
-  GetCastWebContents()->SetUrlRewriteRules(std::move(mojom_rules));
+  cast_web_contents()->SetUrlRewriteRules(std::move(mojom_rules));
 }
 
 void RuntimeApplicationBase::Launch(
@@ -124,8 +122,8 @@ void RuntimeApplicationBase::Launch(
 
 base::Value RuntimeApplicationBase::GetRendererFeatures() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto* entry = FindEntry(feature::kCastCoreRendererFeatures,
-                                GetAppConfig().extra_features());
+  const auto* entry =
+      FindEntry(feature::kCastCoreRendererFeatures, config().extra_features());
   if (!entry) {
     return base::Value();
   }
@@ -161,7 +159,7 @@ base::Value RuntimeApplicationBase::GetRendererFeatures() const {
 bool RuntimeApplicationBase::GetIsAudioOnly() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto* entry =
-      FindEntry(feature::kCastCoreIsAudioOnly, GetAppConfig().extra_features());
+      FindEntry(feature::kCastCoreIsAudioOnly, config().extra_features());
   if (!entry) {
     return false;
   }
@@ -173,7 +171,7 @@ bool RuntimeApplicationBase::GetIsAudioOnly() const {
 bool RuntimeApplicationBase::GetIsRemoteControlMode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto* entry = FindEntry(feature::kCastCoreIsRemoteControlMode,
-                                GetAppConfig().extra_features());
+                                config().extra_features());
   if (!entry) {
     return false;
   }
@@ -185,7 +183,7 @@ bool RuntimeApplicationBase::GetIsRemoteControlMode() const {
 bool RuntimeApplicationBase::GetEnforceFeaturePermissions() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto* entry = FindEntry(feature::kCastCoreEnforceFeaturePermissions,
-                                GetAppConfig().extra_features());
+                                config().extra_features());
   if (!entry) {
     return false;
   }
@@ -198,7 +196,7 @@ std::vector<int> RuntimeApplicationBase::GetFeaturePermissions() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<int> feature_permissions;
   const auto* entry = FindEntry(feature::kCastCoreFeaturePermissions,
-                                GetAppConfig().extra_features());
+                                config().extra_features());
   if (!entry) {
     return feature_permissions;
   }
@@ -218,7 +216,7 @@ RuntimeApplicationBase::GetAdditionalFeaturePermissionOrigins() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<std::string> feature_permission_origins;
   const auto* entry = FindEntry(feature::kCastCoreFeaturePermissionOrigins,
-                                GetAppConfig().extra_features());
+                                config().extra_features());
   if (!entry) {
     return feature_permission_origins;
   }
@@ -235,8 +233,8 @@ RuntimeApplicationBase::GetAdditionalFeaturePermissionOrigins() const {
 
 bool RuntimeApplicationBase::GetEnabledForDev() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto* entry = FindEntry(feature::kCastCoreRendererFeatures,
-                                GetAppConfig().extra_features());
+  const auto* entry =
+      FindEntry(feature::kCastCoreRendererFeatures, config().extra_features());
   if (!entry) {
     return false;
   }
@@ -249,9 +247,9 @@ bool RuntimeApplicationBase::GetEnabledForDev() const {
 void RuntimeApplicationBase::LoadPage(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  GetCastWebContents()->AddRendererFeatures(GetRendererFeatures());
-  GetCastWebContents()->SetAppProperties(
-      GetAppConfig().app_id(), GetCastSessionId(), GetIsAudioOnly(), url,
+  cast_web_contents()->AddRendererFeatures(GetRendererFeatures());
+  cast_web_contents()->SetAppProperties(
+      config().app_id(), GetCastSessionId(), GetIsAudioOnly(), url,
       GetEnforceFeaturePermissions(), GetFeaturePermissions(),
       GetAdditionalFeaturePermissionOrigins());
 
@@ -259,11 +257,11 @@ void RuntimeApplicationBase::LoadPage(const GURL& url) {
   // created. This way users won't see the progressive UI updates as the page is
   // formed and styles are applied. The actual window will be created in
   // OnApplicationStarted when application is fully launched.
-  GetCastWebContents()->LoadUrl(url);
+  cast_web_contents()->LoadUrl(url);
 
   // This needs to be called to get the PageState::LOADED event as it's fully
   // loaded.
-  GetCastWebContents()->SetWebVisibilityAndPaint(false);
+  cast_web_contents()->SetWebVisibilityAndPaint(false);
 }
 
 void RuntimeApplicationBase::OnPageLoaded() {
@@ -296,9 +294,8 @@ CastWebView::Scoped RuntimeApplicationBase::CreateCastWebView() {
   params->handle_inner_contents = true;
   params->session_id = GetCastSessionId();
   params->is_remote_control_mode = GetIsRemoteControlMode();
-  params->activity_id = params->is_remote_control_mode
-                            ? params->session_id
-                            : GetAppConfig().app_id();
+  params->activity_id =
+      params->is_remote_control_mode ? params->session_id : config().app_id();
   params->enabled_for_dev = GetEnabledForDev();
   return web_service_->CreateWebViewInternal(std::move(params));
 }
@@ -410,7 +407,7 @@ void RuntimeApplicationBase::StopApplication(
   is_application_running_ = false;
 
   if (cast_web_view_) {
-    GetCastWebContents()->ClosePage();
+    cast_web_contents()->ClosePage();
     // Check if window is still available as page might have been closed before.
     if (cast_web_view_->window()) {
       cast_web_view_->window()->RemoveObserver(this);
@@ -431,12 +428,12 @@ void RuntimeApplicationBase::OnVisibilityChange(
     case VisibilityType::PARTIAL_OUT:
     case VisibilityType::TRANSIENTLY_HIDDEN:
       LOG(INFO) << "Application is visible now: " << *this;
-      GetCastWebContents()->SetWebVisibilityAndPaint(true);
+      cast_web_contents()->SetWebVisibilityAndPaint(true);
       break;
 
     default:
       LOG(INFO) << "Application is hidden now: " << *this;
-      GetCastWebContents()->SetWebVisibilityAndPaint(false);
+      cast_web_contents()->SetWebVisibilityAndPaint(false);
       break;
   }
 }
