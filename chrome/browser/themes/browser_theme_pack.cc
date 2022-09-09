@@ -1277,12 +1277,11 @@ void BrowserThemePack::SetTintsFromJSON(
 
   // Parse the incoming data from |tints_value| into an intermediary structure.
   std::map<int, color_utils::HSL> temp_tints;
-  for (base::DictionaryValue::Iterator iter(*tints_value); !iter.IsAtEnd();
-       iter.Advance()) {
-    if (!iter.value().is_list())
+  for (const auto item : tints_value->GetDict()) {
+    if (!item.second.is_list())
       continue;
 
-    base::Value::ConstListView tint_list = iter.value().GetListDeprecated();
+    base::Value::ConstListView tint_list = item.second.GetListDeprecated();
     if (tint_list.size() != 3)
       continue;
 
@@ -1295,7 +1294,7 @@ void BrowserThemePack::SetTintsFromJSON(
     color_utils::HSL hsl = {*h, *s, *l};
     MakeHSLShiftValid(&hsl);
 
-    int id = GetIntForString(iter.key(), kTintTable, kTintTableLength);
+    int id = GetIntForString(item.first, kTintTable, kTintTableLength);
     if (id != -1)
       temp_tints[id] = hsl;
   }
@@ -1398,28 +1397,27 @@ void BrowserThemePack::SetDisplayPropertiesFromJSON(
     return;
 
   std::map<int, int> temp_properties;
-  for (base::DictionaryValue::Iterator iter(*display_properties_value);
-       !iter.IsAtEnd(); iter.Advance()) {
-    int property_id = GetIntForString(iter.key(), kDisplayProperties,
-                                      kDisplayPropertiesSize);
+  for (const auto item : display_properties_value->GetDict()) {
+    int property_id =
+        GetIntForString(item.first, kDisplayProperties, kDisplayPropertiesSize);
     switch (property_id) {
       case TP::NTP_BACKGROUND_ALIGNMENT: {
-        if (iter.value().is_string()) {
+        if (item.second.is_string()) {
           temp_properties[TP::NTP_BACKGROUND_ALIGNMENT] =
-              TP::StringToAlignment(iter.value().GetString());
+              TP::StringToAlignment(item.second.GetString());
         }
         break;
       }
       case TP::NTP_BACKGROUND_TILING: {
-        if (iter.value().is_string()) {
+        if (item.second.is_string()) {
           temp_properties[TP::NTP_BACKGROUND_TILING] =
-              TP::StringToTiling(iter.value().GetString());
+              TP::StringToTiling(item.second.GetString());
         }
         break;
       }
       case TP::NTP_LOGO_ALTERNATE: {
-        if (iter.value().is_int())
-          temp_properties[TP::NTP_LOGO_ALTERNATE] = iter.value().GetInt();
+        if (item.second.is_int())
+          temp_properties[TP::NTP_LOGO_ALTERNATE] = item.second.GetInt();
         break;
       }
     }
@@ -1442,27 +1440,21 @@ void BrowserThemePack::ParseImageNamesFromJSON(
   if (!images_value)
     return;
 
-  for (base::DictionaryValue::Iterator iter(*images_value); !iter.IsAtEnd();
-       iter.Advance()) {
-    if (iter.value().is_dict()) {
-      const base::DictionaryValue* inner_value = nullptr;
-      if (iter.value().GetAsDictionary(&inner_value)) {
-        for (base::DictionaryValue::Iterator inner_iter(*inner_value);
-             !inner_iter.IsAtEnd();
-             inner_iter.Advance()) {
-          ui::ResourceScaleFactor scale_factor = ui::kScaleFactorNone;
-          if (GetScaleFactorFromManifestKey(inner_iter.key(), &scale_factor) &&
-              inner_iter.value().is_string()) {
-            AddFileAtScaleToMap(
-                iter.key(), scale_factor,
-                images_path.AppendASCII(inner_iter.value().GetString()),
-                file_paths);
-          }
+  for (const auto item : images_value->GetDict()) {
+    if (item.second.is_dict()) {
+      for (const auto inner_item : item.second.GetDict()) {
+        ui::ResourceScaleFactor scale_factor = ui::kScaleFactorNone;
+        if (GetScaleFactorFromManifestKey(inner_item.first, &scale_factor) &&
+            inner_item.second.is_string()) {
+          AddFileAtScaleToMap(
+              item.first, scale_factor,
+              images_path.AppendASCII(inner_item.second.GetString()),
+              file_paths);
         }
       }
-    } else if (iter.value().is_string()) {
-      AddFileAtScaleToMap(iter.key(), ui::k100Percent,
-                          images_path.AppendASCII(iter.value().GetString()),
+    } else if (item.second.is_string()) {
+      AddFileAtScaleToMap(item.first, ui::k100Percent,
+                          images_path.AppendASCII(item.second.GetString()),
                           file_paths);
     }
   }

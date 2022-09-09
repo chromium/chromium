@@ -784,17 +784,16 @@ ExtensionFunction::ResponseAction TerminalPrivateSetPrefsFunction::Run() {
       kAllowList{{{guest_os::prefs::kGuestOsTerminalSettings,
                    base::Value::Type::DICTIONARY}}};
 
-  for (base::DictionaryValue::Iterator it(params->prefs.additional_properties);
-       !it.IsAtEnd(); it.Advance()) {
+  for (const auto item : params->prefs.additional_properties.GetDict()) {
     // Write prefs if they are allowed, and match expected type, else ignore.
-    auto allow_it = kAllowList->find(it.key());
+    auto allow_it = kAllowList->find(item.first);
     if (allow_it == kAllowList->end() ||
-        allow_it->second != it.value().type()) {
-      LOG(WARNING) << "Ignoring non-allowed SetPrefs path=" << it.key()
-                   << ", type=" << it.value().type();
+        allow_it->second != item.second.type()) {
+      LOG(WARNING) << "Ignoring non-allowed SetPrefs path=" << item.first
+                   << ", type=" << item.second.type();
       continue;
     }
-    service->Set(it.key(), it.value());
+    service->Set(item.first, item.second);
   }
   return RespondNow(NoArguments());
 }

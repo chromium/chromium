@@ -207,17 +207,16 @@ void AppWindowGeometryCache::LoadGeometryFromStorage(
   if (!stored_windows)
     return;
 
-  for (base::DictionaryValue::Iterator it(*stored_windows); !it.IsAtEnd();
-       it.Advance()) {
+  for (const auto item : stored_windows->GetDict()) {
     // If the cache already contains geometry for this window, don't
     // overwrite that information since it is probably the result of an
     // application starting up very quickly.
-    const std::string& window_id = it.key();
+    const std::string& window_id = item.first;
     auto cached_window = extension_data.find(window_id);
     if (cached_window == extension_data.end()) {
       const base::DictionaryValue* stored_window;
-      if (it.value().GetAsDictionary(&stored_window)) {
-        WindowData& window_data = extension_data[it.key()];
+      if (item.second.GetAsDictionary(&stored_window)) {
+        WindowData& window_data = extension_data[window_id];
 
         if (absl::optional<int> i = stored_window->FindIntKey("x"))
           window_data.bounds.set_x(*i);

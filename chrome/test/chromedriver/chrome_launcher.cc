@@ -1099,9 +1099,8 @@ Status WritePrefsFile(
     return Status(kUnknownError, "malformed prefs dictionary");
 
   if (custom_prefs) {
-    for (base::DictionaryValue::Iterator it(*custom_prefs); !it.IsAtEnd();
-         it.Advance()) {
-      prefs->Set(it.key(), std::make_unique<base::Value>(it.value().Clone()));
+    for (const auto item : custom_prefs->GetDict()) {
+      prefs->GetDict().SetByDottedPath(item.first, item.second.Clone());
     }
   }
 

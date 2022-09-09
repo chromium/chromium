@@ -437,13 +437,12 @@ bool Command::Parse(const base::DictionaryValue* command,
   // First try to parse the |suggested_key| as a dictionary.
   const base::DictionaryValue* suggested_key_dict;
   if (command->GetDictionary(keys::kSuggestedKey, &suggested_key_dict)) {
-    for (base::DictionaryValue::Iterator iter(*suggested_key_dict);
-         !iter.IsAtEnd(); iter.Advance()) {
+    for (const auto item : suggested_key_dict->GetDict()) {
       // For each item in the dictionary, extract the platforms specified.
-      const std::string* suggested_key_string = iter.value().GetIfString();
+      const std::string* suggested_key_string = item.second.GetIfString();
       if (suggested_key_string && !suggested_key_string->empty()) {
         // Found a platform, add it to the suggestions list.
-        suggestions[iter.key()] = *suggested_key_string;
+        suggestions[item.first] = *suggested_key_string;
       } else {
         *error = ErrorUtils::FormatErrorMessageUTF16(
             errors::kInvalidKeyBinding, base::NumberToString(index),

@@ -1002,11 +1002,9 @@ bool ExtensionWebRequestEventRouter::RequestFilter::InitFromValue(
   if (!value.FindKey("urls"))
     return false;
 
-  for (base::DictionaryValue::Iterator it(value); !it.IsAtEnd(); it.Advance()) {
-    if (it.key() == "urls") {
-      if (!it.value().is_list())
-        return false;
-      for (const auto& item : it.value().GetList()) {
+  for (const auto dict_item : value.GetDict()) {
+    if (dict_item.first == "urls" && dict_item.second.is_list()) {
+      for (const auto& item : dict_item.second.GetList()) {
         std::string url;
         URLPattern pattern(URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS |
                            URLPattern::SCHEME_FTP | URLPattern::SCHEME_FILE |
@@ -1025,10 +1023,8 @@ bool ExtensionWebRequestEventRouter::RequestFilter::InitFromValue(
         }
         urls.AddPattern(pattern);
       }
-    } else if (it.key() == "types") {
-      if (!it.value().is_list())
-        return false;
-      for (const auto& type : it.value().GetList()) {
+    } else if (dict_item.first == "types" && dict_item.second.is_list()) {
+      for (const auto& type : dict_item.second.GetList()) {
         std::string type_str;
         if (type.is_string())
           type_str = type.GetString();
@@ -1038,14 +1034,10 @@ bool ExtensionWebRequestEventRouter::RequestFilter::InitFromValue(
           return false;
         }
       }
-    } else if (it.key() == "tabId") {
-      if (!it.value().is_int())
-        return false;
-      tab_id = it.value().GetInt();
-    } else if (it.key() == "windowId") {
-      if (!it.value().is_int())
-        return false;
-      window_id = it.value().GetInt();
+    } else if (dict_item.first == "tabId" && dict_item.second.is_int()) {
+      tab_id = dict_item.second.GetInt();
+    } else if (dict_item.first == "windowId" && dict_item.second.is_int()) {
+      window_id = dict_item.second.GetInt();
     } else {
       return false;
     }

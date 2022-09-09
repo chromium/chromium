@@ -1782,13 +1782,6 @@ void DictionaryValue::Swap(DictionaryValue* other) {
   dict().swap(other->dict());
 }
 
-DictionaryValue::Iterator::Iterator(const DictionaryValue& target)
-    : target_(target), it_(target.DictItems().begin()) {}
-
-DictionaryValue::Iterator::Iterator(const Iterator& other) = default;
-
-DictionaryValue::Iterator::~Iterator() = default;
-
 std::unique_ptr<DictionaryValue> DictionaryValue::CreateDeepCopy() const {
   return std::make_unique<DictionaryValue>(dict());
 }

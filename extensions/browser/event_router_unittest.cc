@@ -239,7 +239,7 @@ class EventRouterFilterTest : public ExtensionsTest,
       return false;
     }
 
-    for (const base::Value& filter : filter_list->GetListDeprecated()) {
+    for (const base::Value& filter : filter_list->GetList()) {
       if (!filter.is_dict()) {
         ADD_FAILURE();
         return false;
@@ -257,11 +257,11 @@ class EventRouterFilterTest : public ExtensionsTest,
                              const std::string& event_name) {
     const base::DictionaryValue* filtered_events =
         GetFilteredEvents(extension_id);
-    DictionaryValue::Iterator iter(*filtered_events);
-    if (iter.key() != event_name)
+    const auto iter = filtered_events->GetDict().begin();
+    if (iter->first != event_name)
       return nullptr;
 
-    return iter.value().is_list() ? &iter.value() : nullptr;
+    return iter->second.is_list() ? &iter->second : nullptr;
   }
 
   std::unique_ptr<content::RenderProcessHost> render_process_host_;
@@ -461,10 +461,10 @@ TEST_P(EventRouterFilterTest, Basic) {
   ASSERT_TRUE(filtered_events);
   ASSERT_EQ(1u, filtered_events->DictSize());
 
-  DictionaryValue::Iterator iter(*filtered_events);
-  ASSERT_EQ(kEventName, iter.key());
-  ASSERT_TRUE(iter.value().is_list());
-  ASSERT_EQ(3u, iter.value().GetListDeprecated().size());
+  const auto iter = filtered_events->GetDict().begin();
+  ASSERT_EQ(kEventName, iter->first);
+  ASSERT_TRUE(iter->second.is_list());
+  ASSERT_EQ(3u, iter->second.GetList().size());
 
   ASSERT_TRUE(ContainsFilter(kExtensionId, kEventName, *filters[0]));
   ASSERT_TRUE(ContainsFilter(kExtensionId, kEventName, *filters[1]));

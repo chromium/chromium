@@ -28,27 +28,21 @@ void JSONFeatureProviderSource::LoadJSON(int resource_id) {
   DCHECK(result.has_value())
       << "Could not load features: " << name_ << " " << result.error().message;
 
-  std::unique_ptr<base::DictionaryValue> value_as_dict;
-  if (result.has_value()) {
-    CHECK(result->is_dict()) << name_;
-    value_as_dict = base::DictionaryValue::From(
-        base::Value::ToUniquePtrValue(std::move(*result)));
-  } else {
-    // There was some error loading the features file.
-    // http://crbug.com/176381
-    value_as_dict = std::make_unique<base::DictionaryValue>();
+  if (!result.has_value()) {
+    return;
   }
 
+  auto* value_as_dict = result->GetIfDict();
+  CHECK(value_as_dict) << name_;
   // Ensure there are no key collisions.
-  for (base::DictionaryValue::Iterator iter(*value_as_dict); !iter.IsAtEnd();
-       iter.Advance()) {
-    if (dictionary_.FindKey(iter.key()))
-      LOG(FATAL) << "Key " << iter.key() << " is defined in " << name_
+  for (const auto item : *value_as_dict) {
+    if (dictionary_.Find(item.first))
+      LOG(FATAL) << "Key " << item.first << " is defined in " << name_
                  << " JSON feature files more than once.";
   }
 
   // Merge.
-  dictionary_.MergeDictionary(value_as_dict.get());
+  dictionary_.Merge(std::move(*value_as_dict));
 }
 
 }  // namespace extensions

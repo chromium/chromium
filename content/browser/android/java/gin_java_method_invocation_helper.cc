@@ -70,15 +70,13 @@ void GinJavaMethodInvocationHelper::BuildObjectRefsFromDictionaryValue(
   DCHECK(dict_value.is_dict());
   const base::DictionaryValue* dict;
   dict_value.GetAsDictionary(&dict);
-  for (base::DictionaryValue::Iterator iter(*dict);
-       !iter.IsAtEnd();
-       iter.Advance()) {
-    if (AppendObjectRef(dispatcher, iter.value()))
+  for (const auto item : dict->GetDict()) {
+    if (AppendObjectRef(dispatcher, item.second))
       continue;
-    if (iter.value().is_list()) {
-      BuildObjectRefsFromListValue(dispatcher, iter.value());
-    } else if (iter.value().is_dict()) {
-      BuildObjectRefsFromDictionaryValue(dispatcher, iter.value());
+    if (item.second.is_list()) {
+      BuildObjectRefsFromListValue(dispatcher, item.second);
+    } else if (item.second.is_dict()) {
+      BuildObjectRefsFromDictionaryValue(dispatcher, item.second);
     }
   }
 }

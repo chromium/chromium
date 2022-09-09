@@ -277,15 +277,14 @@ class _Generator(object):
           c.Append('out->additional_properties.MergeDictionary(dict);')
         else:
           cpp_type = self._type_helper.GetCppType(type_.additional_properties)
-          (c.Append('for (base::DictionaryValue::Iterator it(*dict);')
-            .Sblock('     !it.IsAtEnd(); it.Advance()) {')
+          (c.Sblock('for (const auto item : dict->GetDict()) {')
               .Append('%s tmp;' % cpp_type)
               .Concat(self._GeneratePopulateVariableFromValue(
                   type_.additional_properties,
-                  'it.value()',
+                  'item.second',
                   'tmp',
                   'false'))
-              .Append('out->additional_properties[it.key()] = tmp;')
+              .Append('out->additional_properties[item.first] = tmp;')
             .Eblock('}')
           )
       c.Append('return true;')

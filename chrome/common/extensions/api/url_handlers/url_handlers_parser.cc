@@ -164,16 +164,15 @@ bool UrlHandlersParser::Parse(Extension* extension, std::u16string* error) {
 
   DCHECK(extension->is_platform_app());
 
-  for (base::DictionaryValue::Iterator iter(*all_handlers); !iter.IsAtEnd();
-       iter.Advance()) {
+  for (const auto item : all_handlers->GetDict()) {
     // A URL handler entry is a title and a list of URL patterns to handle.
     const base::DictionaryValue* handler = nullptr;
-    if (!iter.value().GetAsDictionary(&handler)) {
+    if (!item.second.GetAsDictionary(&handler)) {
       *error = merrors::kInvalidURLHandlerPatternElement16;
       return false;
     }
 
-    if (!ParseUrlHandler(iter.key(), *handler, &info->handlers, error,
+    if (!ParseUrlHandler(item.first, *handler, &info->handlers, error,
                          extension)) {
       // Text in |error| is set by ParseUrlHandler.
       return false;

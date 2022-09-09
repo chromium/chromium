@@ -288,18 +288,18 @@ void EventListenerMap::LoadFilteredLazyListeners(
     const std::string& extension_id,
     bool is_for_service_worker,
     const DictionaryValue& filtered) {
-  for (DictionaryValue::Iterator it(filtered); !it.IsAtEnd(); it.Advance()) {
+  for (const auto item : filtered.GetDict()) {
     // We skip entries if they are malformed.
-    if (!it.value().is_list())
+    if (!item.second.is_list())
       continue;
-    for (const base::Value& filter_value : it.value().GetListDeprecated()) {
+    for (const base::Value& filter_value : item.second.GetList()) {
       if (!filter_value.is_dict())
         continue;
       const base::DictionaryValue* filter =
           static_cast<const base::DictionaryValue*>(&filter_value);
       if (is_for_service_worker) {
         AddListener(EventListener::ForExtensionServiceWorker(
-            it.key(), extension_id, nullptr,
+            item.first, extension_id, nullptr,
             // TODO(lazyboy): We need to store correct scopes of each worker
             // into ExtensionPrefs for events. This currently assumes all
             // workers are registered in the '/' scope.
@@ -310,7 +310,7 @@ void EventListenerMap::LoadFilteredLazyListeners(
                 base::Value::ToUniquePtrValue(filter->Clone()))));
       } else {
         AddListener(EventListener::ForExtension(
-            it.key(), extension_id, nullptr,
+            item.first, extension_id, nullptr,
             base::DictionaryValue::From(
                 base::Value::ToUniquePtrValue(filter->Clone()))));
       }

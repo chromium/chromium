@@ -22,17 +22,14 @@ static bool Contains(const remoting::ChromotingEvent& actual,
   auto actual_dict = actual.CopyDictionaryValue();
   auto expected_dict = expected.CopyDictionaryValue();
 
-  base::DictionaryValue::Iterator expected_it(*expected_dict);
-
-  while (!expected_it.IsAtEnd()) {
-    const std::string& key = expected_it.key();
+  for (const auto expected_item : expected_dict->GetDict()) {
+    const std::string& key = expected_item.first;
     const base::Value* out_value = nullptr;
 
     if (!actual_dict->Get(key, &out_value) ||
-        expected_it.value() != *out_value) {
+        expected_item.second != *out_value) {
       return false;
     }
-    expected_it.Advance();
   }
   return true;
 }

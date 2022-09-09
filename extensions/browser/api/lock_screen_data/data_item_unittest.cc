@@ -270,10 +270,9 @@ class DataItemTest : public testing::Test {
       return result;
 
     items->clear();
-    for (base::DictionaryValue::Iterator iter(*items_value); !iter.IsAtEnd();
-         iter.Advance()) {
-      EXPECT_EQ(0u, items->count(iter.key()));
-      items->insert(iter.key());
+    for (const auto item : items_value->GetDict()) {
+      EXPECT_EQ(0u, items->count(item.first));
+      items->insert(item.first);
     }
     return OperationResult::kSuccess;
   }

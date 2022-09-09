@@ -863,10 +863,8 @@ void TaskManagerTableModel::StoreColumnsSettings() {
   DictionaryPrefUpdate dict_update(local_state,
                                    prefs::kTaskManagerColumnVisibility);
 
-  base::DictionaryValue::Iterator it(*columns_settings_);
-  while (!it.IsAtEnd()) {
-    dict_update->SetPath(it.key(), it.value().Clone());
-    it.Advance();
+  for (const auto item : columns_settings_->GetDict()) {
+    dict_update->SetPath(item.first, item.second.Clone());
   }
 
   // Store the current sort status to be restored again at startup.

@@ -255,10 +255,9 @@ std::unique_ptr<base::DictionaryValue> MockPrefHashStore::ComputeSplitMacs(
   std::unique_ptr<base::DictionaryValue> macs_dict(new base::DictionaryValue);
   if (!split_values)
     return macs_dict;
-  for (base::DictionaryValue::Iterator it(*split_values); !it.IsAtEnd();
-       it.Advance()) {
-    macs_dict->SetKey(it.key(),
-                      base::Value("split mac for: " + path + "/" + it.key()));
+  for (const auto item : split_values->GetDict()) {
+    macs_dict->SetKey(item.first,
+                      base::Value("split mac for: " + path + "/" + item.first));
   }
   return macs_dict;
 }

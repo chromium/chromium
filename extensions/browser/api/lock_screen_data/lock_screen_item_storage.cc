@@ -547,12 +547,11 @@ void LockScreenItemStorage::OnGotExtensionItems(
   }
 
   if (result == OperationResult::kSuccess) {
-    for (base::DictionaryValue::Iterator item_iter(*items);
-         !item_iter.IsAtEnd(); item_iter.Advance()) {
-      std::unique_ptr<DataItem> item = CreateDataItem(
-          item_iter.key(), extension_id, context_, value_store_cache_.get(),
+    for (const auto item : items->GetDict()) {
+      std::unique_ptr<DataItem> data_item = CreateDataItem(
+          item.first, extension_id, context_, value_store_cache_.get(),
           task_runner_.get(), crypto_key_);
-      data->second.data_items.emplace(item_iter.key(), std::move(item));
+      data->second.data_items.emplace(item.first, std::move(data_item));
     }
 
     // Record number of registered items.

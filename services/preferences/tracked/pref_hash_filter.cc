@@ -273,9 +273,8 @@ void PrefHashFilter::ClearFromExternalStore(
     const base::DictionaryValue* changed_paths_and_macs) {
   DCHECK(!changed_paths_and_macs->DictEmpty());
 
-  for (base::DictionaryValue::Iterator it(*changed_paths_and_macs);
-       !it.IsAtEnd(); it.Advance()) {
-    external_validation_hash_store_contents->RemoveEntry(it.key());
+  for (const auto item : changed_paths_and_macs->GetDict()) {
+    external_validation_hash_store_contents->RemoveEntry(item.first);
   }
 }
 
@@ -289,25 +288,23 @@ void PrefHashFilter::FlushToExternalStore(
   if (!write_success)
     return;
 
-  for (base::DictionaryValue::Iterator it(*changed_paths_and_macs);
-       !it.IsAtEnd(); it.Advance()) {
-    const std::string& changed_path = it.key();
+  for (const auto item : changed_paths_and_macs->GetDict()) {
+    const std::string& changed_path = item.first;
 
     const base::DictionaryValue* split_values = nullptr;
-    if (it.value().GetAsDictionary(&split_values)) {
-      for (base::DictionaryValue::Iterator inner_it(*split_values);
-           !inner_it.IsAtEnd(); inner_it.Advance()) {
-        const std::string* mac = inner_it.value().GetIfString();
+    if (item.second.GetAsDictionary(&split_values)) {
+      for (const auto inner_item : split_values->GetDict()) {
+        const std::string* mac = inner_item.second.GetIfString();
         bool is_string = !!mac;
         DCHECK(is_string);
 
         external_validation_hash_store_contents->SetSplitMac(
-            changed_path, inner_it.key(), *mac);
+            changed_path, inner_item.first, *mac);
       }
     } else {
-      DCHECK(it.value().is_string());
+      DCHECK(item.second.is_string());
       external_validation_hash_store_contents->SetMac(changed_path,
-                                                      it.value().GetString());
+                                                      item.second.GetString());
     }
   }
 }

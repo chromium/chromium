@@ -71,19 +71,19 @@ bool GetOpenWithLinksFromDictionaryValue(
   DCHECK(value);
   DCHECK(result);
 
-  const base::DictionaryValue* dictionary_value;
-  if (!value->GetAsDictionary(&dictionary_value))
+  const auto* dict = value->GetIfDict();
+  if (!dict) {
     return false;
+  }
 
-  result->reserve(dictionary_value->DictSize());
-  for (base::DictionaryValue::Iterator iter(*dictionary_value); !iter.IsAtEnd();
-       iter.Advance()) {
-    const std::string* string_value = iter.value().GetIfString();
+  result->reserve(dict->size());
+  for (const auto item : *dict) {
+    const std::string* string_value = item.second.GetIfString();
     if (!string_value)
       return false;
 
     FileResource::OpenWithLink open_with_link;
-    open_with_link.app_id = iter.key();
+    open_with_link.app_id = item.first;
     open_with_link.open_url = GURL(*string_value);
     result->push_back(open_with_link);
   }

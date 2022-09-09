@@ -462,11 +462,10 @@ Status ParseLoggingPrefs(const base::Value& option,
   if (!option.GetAsDictionary(&logging_prefs))
     return Status(kInvalidArgument, "must be a dictionary");
 
-  for (base::DictionaryValue::Iterator pref(*logging_prefs);
-       !pref.IsAtEnd(); pref.Advance()) {
-    std::string type = pref.key();
+  for (const auto pref : logging_prefs->GetDict()) {
+    const std::string& type = pref.first;
     Log::Level level;
-    const std::string* level_name = pref.value().GetIfString();
+    const std::string* level_name = pref.second.GetIfString();
     if (!level_name || !WebDriverLog::NameToLevel(*level_name, &level)) {
       return Status(kInvalidArgument,
                     "invalid log level for '" + type + "' log");
@@ -506,14 +505,13 @@ Status ParsePerfLoggingPrefs(const base::Value& option,
   parser_map["traceCategories"] = base::BindRepeating(
       &ParseString, &capabilities->perf_logging_prefs.trace_categories);
 
-  for (base::DictionaryValue::Iterator it(*perf_logging_prefs); !it.IsAtEnd();
-       it.Advance()) {
-     if (parser_map.find(it.key()) == parser_map.end())
-       return Status(kInvalidArgument,
-                     "unrecognized performance logging option: " + it.key());
-     Status status = parser_map[it.key()].Run(it.value(), capabilities);
-     if (status.IsError())
-       return Status(kInvalidArgument, "cannot parse " + it.key(), status);
+  for (const auto item : perf_logging_prefs->GetDict()) {
+    if (parser_map.find(item.first) == parser_map.end())
+      return Status(kInvalidArgument,
+                    "unrecognized performance logging option: " + item.first);
+    Status status = parser_map[item.first].Run(item.second, capabilities);
+    if (status.IsError())
+      return Status(kInvalidArgument, "cannot parse " + item.first, status);
   }
   return Status(kOk);
 }
@@ -620,18 +618,17 @@ Status ParseChromeOptions(
         base::BindRepeating(&IgnoreDeprecatedOption, "useAutomationExtension");
   }
 
-  for (base::DictionaryValue::Iterator it(*chrome_options); !it.IsAtEnd();
-       it.Advance()) {
-    if (parser_map.find(it.key()) == parser_map.end()) {
+  for (const auto item : chrome_options->GetDict()) {
+    if (parser_map.find(item.first) == parser_map.end()) {
       return Status(
           kInvalidArgument,
           base::StringPrintf("unrecognized %s option: %s",
                              base::ToLowerASCII(kBrowserShortName).c_str(),
-                             it.key().c_str()));
+                             item.first.c_str()));
     }
-    Status status = parser_map[it.key()].Run(it.value(), capabilities);
+    Status status = parser_map[item.first].Run(item.second, capabilities);
     if (status.IsError())
-      return Status(kInvalidArgument, "cannot parse " + it.key(), status);
+      return Status(kInvalidArgument, "cannot parse " + item.first, status);
   }
   return Status(kOk);
 }
@@ -645,13 +642,12 @@ Status ParseSeleniumOptions(
   std::map<std::string, Parser> parser_map;
   parser_map["loggingPrefs"] = base::BindRepeating(&ParseLoggingPrefs);
 
-  for (base::DictionaryValue::Iterator it(*selenium_options); !it.IsAtEnd();
-       it.Advance()) {
-    if (parser_map.find(it.key()) == parser_map.end())
+  for (const auto item : selenium_options->GetDict()) {
+    if (parser_map.find(item.first) == parser_map.end())
       continue;
-    Status status = parser_map[it.key()].Run(it.value(), capabilities);
+    Status status = parser_map[item.first].Run(item.second, capabilities);
     if (status.IsError())
-      return Status(kInvalidArgument, "cannot parse " + it.key(), status);
+      return Status(kInvalidArgument, "cannot parse " + item.first, status);
   }
   return Status(kOk);
 }
@@ -885,23 +881,23 @@ Status Capabilities::Parse(const base::DictionaryValue& desired_caps,
         base::BindRepeating(&ParseBoolean, &network_emulation_enabled);
   }
 
-  for (base::DictionaryValue::Iterator it(desired_caps); !it.IsAtEnd();
-       it.Advance()) {
-    if (it.value().is_none())
+  for (const auto item : desired_caps.GetDict()) {
+    if (item.second.is_none())
       continue;
-    if (parser_map.find(it.key()) == parser_map.end()) {
+    if (parser_map.find(item.first) == parser_map.end()) {
       // The specified capability is unrecognized. W3C spec requires us to
       // return an error if capability does not contain ":".
       // In legacy mode, for backward compatibility reasons,
       // we ignore unrecognized capabilities.
-      if (w3c_compliant && it.key().find(':') == std::string::npos)
-        return Status(kInvalidArgument, "unrecognized capability: " + it.key());
-      else
-        continue;
+      if (w3c_compliant && item.first.find(':') == std::string::npos) {
+        return Status(kInvalidArgument,
+                      "unrecognized capability: " + item.first);
+      }
+      continue;
     }
-    Status status = parser_map[it.key()].Run(it.value(), this);
+    Status status = parser_map[item.first].Run(item.second, this);
     if (status.IsError()) {
-      return Status(kInvalidArgument, "cannot parse capability: " + it.key(),
+      return Status(kInvalidArgument, "cannot parse capability: " + item.first,
                     status);
     }
   }

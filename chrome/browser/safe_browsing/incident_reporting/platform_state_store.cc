@@ -44,17 +44,16 @@ void KeysAndDigestsToProtobuf(
     const base::DictionaryValue& keys_and_digests,
     RepeatedPtrField<StateStoreData::Incidents::KeyDigestMapFieldEntry>*
         key_digest_pairs) {
-  for (base::DictionaryValue::Iterator iter(keys_and_digests); !iter.IsAtEnd();
-       iter.Advance()) {
+  for (const auto item : keys_and_digests.GetDict()) {
     uint32_t digest = 0;
-    if (!iter.value().is_string() ||
-        !base::StringToUint(iter.value().GetString(), &digest)) {
+    if (!item.second.is_string() ||
+        !base::StringToUint(item.second.GetString(), &digest)) {
       NOTREACHED();
       continue;
     }
     StateStoreData::Incidents::KeyDigestMapFieldEntry* key_digest =
         key_digest_pairs->Add();
-    key_digest->set_key(iter.key());
+    key_digest->set_key(item.first);
     key_digest->set_digest(digest);
   }
 }
@@ -65,17 +64,16 @@ void IncidentsSentToProtobuf(
     const base::DictionaryValue& incidents_sent,
     RepeatedPtrField<StateStoreData::TypeIncidentsMapFieldEntry>*
         type_incidents_pairs) {
-  for (base::DictionaryValue::Iterator iter(incidents_sent); !iter.IsAtEnd();
-       iter.Advance()) {
+  for (const auto item : incidents_sent.GetDict()) {
     const base::DictionaryValue* keys_and_digests = nullptr;
-    if (!iter.value().GetAsDictionary(&keys_and_digests)) {
+    if (!item.second.GetAsDictionary(&keys_and_digests)) {
       NOTREACHED();
       continue;
     }
     if (keys_and_digests->DictEmpty())
       continue;
     int incident_type = 0;
-    if (!base::StringToInt(iter.key(), &incident_type)) {
+    if (!base::StringToInt(item.first, &incident_type)) {
       NOTREACHED();
       continue;
     }

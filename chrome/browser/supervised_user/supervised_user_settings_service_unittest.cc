@@ -225,12 +225,12 @@ TEST_F(SupervisedUserSettingsServiceTest, ProcessSplitSetting) {
 
   settings_.reset();
   syncer::SyncChangeList change_list;
-  for (base::DictionaryValue::Iterator it(dict); !it.IsAtEnd(); it.Advance()) {
+  for (const auto item : dict.GetDict()) {
     syncer::SyncData data =
         SupervisedUserSettingsService::CreateSyncDataForSetting(
             SupervisedUserSettingsService::MakeSplitSettingKey(kSettingsName,
-                                                               it.key()),
-            it.value());
+                                                               item.first),
+            item.second);
     change_list.push_back(
         syncer::SyncChange(FROM_HERE, syncer::SyncChange::ACTION_ADD, data));
   }
@@ -309,13 +309,12 @@ TEST_F(SupervisedUserSettingsServiceTest, Merge) {
     base::DictionaryValue dict;
     dict.SetStringKey("foo", "bar");
     dict.SetIntKey("eaudecologne", 4711);
-    for (base::DictionaryValue::Iterator it(dict); !it.IsAtEnd();
-         it.Advance()) {
+    for (const auto item : dict.GetDict()) {
       sync_data.push_back(
           SupervisedUserSettingsService::CreateSyncDataForSetting(
               SupervisedUserSettingsService::MakeSplitSettingKey(kSplitItemName,
-                                                                 it.key()),
-              it.value()));
+                                                                 item.first),
+              item.second));
     }
     StartSyncing(sync_data);
     EXPECT_EQ(3u,
@@ -338,13 +337,12 @@ TEST_F(SupervisedUserSettingsServiceTest, Merge) {
     dict.SetStringKey("foo", "burp");
     dict.SetStringKey("item", "first");
     // Adding 2 SplitSettings from dictionary.
-    for (base::DictionaryValue::Iterator it(dict); !it.IsAtEnd();
-         it.Advance()) {
+    for (const auto item : dict.GetDict()) {
       sync_data.push_back(
           SupervisedUserSettingsService::CreateSyncDataForSetting(
               SupervisedUserSettingsService::MakeSplitSettingKey(kSplitItemName,
-                                                                 it.key()),
-              it.value()));
+                                                                 item.first),
+              item.second));
     }
     StartSyncing(sync_data);
     EXPECT_EQ(4u,

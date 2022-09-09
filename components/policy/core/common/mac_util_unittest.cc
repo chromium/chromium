@@ -40,8 +40,8 @@ TEST(PolicyMacUtilTest, PropertyToValue) {
   // base::Value::Type::LIST
   root.Set("emptyl", std::make_unique<base::Value>(base::Value::Type::LIST));
   base::ListValue list;
-  for (base::DictionaryValue::Iterator it(root); !it.IsAtEnd(); it.Advance())
-    list.GetList().Append(it.value().Clone());
+  for (const auto item : root.GetDict())
+    list.GetList().Append(item.second.Clone());
   EXPECT_EQ(root.DictSize(), list.GetList().size());
   list.GetList().Append(root.Clone());
   root.SetKey("list", list.Clone());

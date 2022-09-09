@@ -71,8 +71,8 @@ void DeviceLocalAccountExtensionTracker::UpdateFromStore() {
     return;
   }
 
-  for (base::DictionaryValue::Iterator it(*dict); !it.IsAtEnd(); it.Advance()) {
-    PolicyNamespace ns(POLICY_DOMAIN_EXTENSIONS, it.key());
+  for (const auto item : dict->GetDict()) {
+    PolicyNamespace ns(POLICY_DOMAIN_EXTENSIONS, item.first);
     if (schema_registry_->schema_map()->GetSchema(ns)) {
       // Important detail: Don't register the component again if it already
       // has a schema! If the session already started for this public session

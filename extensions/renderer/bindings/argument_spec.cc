@@ -153,9 +153,8 @@ void ArgumentSpec::InitializeType(const base::DictionaryValue* dict) {
   if (type_ == ArgumentType::OBJECT) {
     const base::DictionaryValue* properties_value = nullptr;
     if (dict->GetDictionary("properties", &properties_value)) {
-      for (base::DictionaryValue::Iterator iter(*properties_value);
-           !iter.IsAtEnd(); iter.Advance()) {
-        properties_[iter.key()] = std::make_unique<ArgumentSpec>(iter.value());
+      for (const auto item : properties_value->GetDict()) {
+        properties_[item.first] = std::make_unique<ArgumentSpec>(item.second);
       }
     }
     const base::DictionaryValue* additional_properties_value = nullptr;

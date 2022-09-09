@@ -1399,28 +1399,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   // Swaps contents with the `other` dictionary.
   void Swap(DictionaryValue* other);
 
-  // This class provides an iterator over both keys and values in the
-  // dictionary.  It can't be used to modify the dictionary.
-  //
-  // DEPRECATED: Use a range-based for loop over `base::Value::Dict` directly
-  // instead.
-  class BASE_EXPORT Iterator {
-   public:
-    explicit Iterator(const DictionaryValue& target);
-    Iterator(const Iterator& other);
-    ~Iterator();
-
-    bool IsAtEnd() const { return it_ == target_.DictItems().end(); }
-    void Advance() { ++it_; }
-
-    const std::string& key() const { return it_->first; }
-    const Value& value() const { return it_->second; }
-
-   private:
-    const DictionaryValue& target_;
-    detail::const_dict_iterator it_;
-  };
-
   // DEPRECATED, use `Value::Dict::Clone()` instead.
   // TODO(crbug.com/646113): Delete this and migrate callsites.
   std::unique_ptr<DictionaryValue> CreateDeepCopy() const;

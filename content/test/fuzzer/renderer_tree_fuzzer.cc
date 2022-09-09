@@ -259,10 +259,9 @@ class Element : public Node {
 
     const base::DictionaryValue* attrsDict;
     if (dict.GetDictionary("a", &attrsDict)) {
-      for (base::DictionaryValue::Iterator it(*attrsDict); !it.IsAtEnd();
-           it.Advance()) {
-        if (it.value().is_string())
-          attrs_[it.key()] = it.value().GetString();
+      for (const auto item : attrsDict->GetDict()) {
+        if (item.second.is_string())
+          attrs_[item.first] = item.second.GetString();
       }
     }
   }

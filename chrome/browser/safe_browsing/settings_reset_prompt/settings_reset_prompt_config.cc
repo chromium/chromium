@@ -208,9 +208,8 @@ SettingsResetPromptConfig::ParseDomainHashes(
   // Each key in the hash should be a 64-byte long string and each
   // integer ID should fit in an int.
   domain_hashes_.clear();
-  for (base::DictionaryValue::Iterator iter(*domains_dict); !iter.IsAtEnd();
-       iter.Advance()) {
-    const std::string& hash_string = iter.key();
+  for (const auto item : domains_dict->GetDict()) {
+    const std::string& hash_string = item.first;
     if (hash_string.size() != crypto::kSHA256Length * 2)
       return CONFIG_ERROR_BAD_DOMAIN_HASH;
 
@@ -221,7 +220,7 @@ SettingsResetPromptConfig::ParseDomainHashes(
       return CONFIG_ERROR_BAD_DOMAIN_HASH;
 
     // Convert the ID string to an integer.
-    const std::string* domain_id_string = iter.value().GetIfString();
+    const std::string* domain_id_string = item.second.GetIfString();
     int domain_id = -1;
     if (!domain_id_string ||
         !base::StringToInt(*domain_id_string, &domain_id) || domain_id < 0) {
