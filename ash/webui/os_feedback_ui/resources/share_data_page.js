@@ -130,6 +130,7 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
   /** @protected */
   handleScreenshotClick_() {
     this.$.screenshotDialog.showModal();
+    this.$.closeDialogButton.focus();
     this.feedbackServiceProvider_.recordPreSubmitAction(
         FeedbackAppPreSubmitAction.kViewedScreenshot);
   }
