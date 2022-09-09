@@ -365,37 +365,6 @@ class FormStructure {
     return password_length_vote_;
   }
 
-#if defined(UNIT_TEST)
-  mojom::SubmissionIndicatorEvent get_submission_event_for_testing() const {
-    return submission_event_;
-  }
-
-  // Identify sections for the |fields_| for testing purposes.
-  void identify_sections_for_testing() {
-    IdentifySections(/*ignore_autocomplete=*/false);
-  }
-
-  // Set the Overall field type for |fields_[field_index]| to |type| for testing
-  // purposes.
-  void set_overall_field_type_for_testing(size_t field_index,
-                                          ServerFieldType type) {
-    if (field_index < fields_.size() && type > 0 && type < MAX_VALID_FIELD_TYPE)
-      fields_[field_index]->set_heuristic_type(GetActivePatternSource(), type);
-  }
-  // Set the server field type for |fields_[field_index]| to |type| for testing
-  // purposes.
-  void set_server_field_type_for_testing(size_t field_index,
-                                         ServerFieldType type) {
-    if (field_index < fields_.size() && type > 0 &&
-        type < MAX_VALID_FIELD_TYPE) {
-      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
-          prediction;
-      prediction.set_type(type);
-      fields_[field_index]->set_server_predictions({prediction});
-    }
-  }
-#endif
-
   void set_password_symbol_vote(int noisified_symbol) {
     DCHECK(password_attributes_vote_.has_value())
         << "password_symbol_vote_| doesn't make sense if "

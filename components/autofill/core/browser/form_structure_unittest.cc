@@ -7780,17 +7780,14 @@ TEST_F(FormStructureTestImpl, NoAutocompleteSectionNames) {
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
-  form_structure.set_overall_field_type_for_testing(0, NAME_FULL);
-  form_structure.set_overall_field_type_for_testing(1, ADDRESS_HOME_COUNTRY);
-  form_structure.set_overall_field_type_for_testing(2, PHONE_HOME_NUMBER);
-  form_structure.set_overall_field_type_for_testing(3, NAME_FULL);
-  form_structure.set_overall_field_type_for_testing(4, ADDRESS_HOME_COUNTRY);
-  form_structure.set_overall_field_type_for_testing(5, PHONE_HOME_NUMBER);
+  test_api(&form_structure)
+      .SetFieldTypes({NAME_FULL, ADDRESS_HOME_COUNTRY, PHONE_HOME_NUMBER,
+                      NAME_FULL, ADDRESS_HOME_COUNTRY, PHONE_HOME_NUMBER});
 
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
-  form_structure.identify_sections_for_testing();
+  test_api(&form_structure).IdentifySections(/*ignore_autocomplete=*/false);
 
   // Assert the correct number of fields.
   ASSERT_EQ(6U, form_structure.field_count());
@@ -7840,18 +7837,15 @@ TEST_F(FormStructureTestImpl, NoSplitByRecurringPhoneFieldType) {
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
-  form_structure.set_overall_field_type_for_testing(0, NAME_FULL);
-  form_structure.set_overall_field_type_for_testing(1, PHONE_HOME_NUMBER);
-  form_structure.set_overall_field_type_for_testing(2, PHONE_HOME_NUMBER);
-  form_structure.set_overall_field_type_for_testing(3, NAME_FULL);
-  form_structure.set_overall_field_type_for_testing(4, PHONE_HOME_NUMBER);
-  form_structure.set_overall_field_type_for_testing(5, PHONE_HOME_NUMBER);
-  form_structure.set_overall_field_type_for_testing(6, ADDRESS_HOME_COUNTRY);
+  test_api(&form_structure)
+      .SetFieldTypes({NAME_FULL, PHONE_HOME_NUMBER, PHONE_HOME_NUMBER,
+                      NAME_FULL, PHONE_HOME_NUMBER, PHONE_HOME_NUMBER,
+                      ADDRESS_HOME_COUNTRY});
 
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
-  form_structure.identify_sections_for_testing();
+  test_api(&form_structure).IdentifySections(/*ignore_autocomplete=*/false);
 
   // Assert the correct number of fields.
   ASSERT_EQ(7U, form_structure.field_count());
@@ -7896,15 +7890,14 @@ TEST_F(FormStructureTestImpl, SplitByRecurringFieldType) {
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
-  form_structure.set_overall_field_type_for_testing(0, NAME_FULL);
-  form_structure.set_overall_field_type_for_testing(1, ADDRESS_HOME_COUNTRY);
-  form_structure.set_overall_field_type_for_testing(2, NAME_FULL);
-  form_structure.set_overall_field_type_for_testing(3, ADDRESS_HOME_COUNTRY);
+  test_api(&form_structure)
+      .SetFieldTypes(
+          {NAME_FULL, ADDRESS_HOME_COUNTRY, NAME_FULL, ADDRESS_HOME_COUNTRY});
 
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
-  form_structure.identify_sections_for_testing();
+  test_api(&form_structure).IdentifySections(/*ignore_autocomplete=*/false);
 
   // Assert the correct number of fields.
   ASSERT_EQ(4U, form_structure.field_count());
@@ -7948,15 +7941,14 @@ TEST_F(FormStructureTestImpl,
 
   FormStructure form_structure(form);
 
-  form_structure.set_overall_field_type_for_testing(0, NAME_FULL);
-  form_structure.set_overall_field_type_for_testing(1, ADDRESS_HOME_COUNTRY);
-  form_structure.set_overall_field_type_for_testing(2, NAME_FULL);
-  form_structure.set_overall_field_type_for_testing(3, ADDRESS_HOME_COUNTRY);
+  test_api(&form_structure)
+      .SetFieldTypes(
+          {NAME_FULL, ADDRESS_HOME_COUNTRY, NAME_FULL, ADDRESS_HOME_COUNTRY});
 
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
-  form_structure.identify_sections_for_testing();
+  test_api(&form_structure).IdentifySections(/*ignore_autocomplete=*/false);
 
   // Assert the correct number of fields.
   ASSERT_EQ(4U, form_structure.field_count());
@@ -7998,15 +7990,14 @@ TEST_F(FormStructureTestImpl, SplitByNewAutocompleteSectionName) {
 
   FormStructure form_structure(form);
 
-  form_structure.set_overall_field_type_for_testing(0, NAME_FULL);
-  form_structure.set_overall_field_type_for_testing(1, ADDRESS_HOME_CITY);
-  form_structure.set_overall_field_type_for_testing(2, NAME_FULL);
-  form_structure.set_overall_field_type_for_testing(3, ADDRESS_HOME_CITY);
+  test_api(&form_structure)
+      .SetFieldTypes(
+          {NAME_FULL, ADDRESS_HOME_CITY, NAME_FULL, ADDRESS_HOME_CITY});
 
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
-  form_structure.identify_sections_for_testing();
+  test_api(&form_structure).IdentifySections(/*ignore_autocomplete=*/false);
 
   // Assert the correct number of fields.
   ASSERT_EQ(4U, form_structure.field_count());
@@ -8047,15 +8038,14 @@ TEST_F(
 
   FormStructure form_structure(form);
 
-  form_structure.set_overall_field_type_for_testing(0, NAME_FULL);
-  form_structure.set_overall_field_type_for_testing(1, ADDRESS_HOME_COUNTRY);
-  form_structure.set_overall_field_type_for_testing(2, NAME_FULL);
-  form_structure.set_overall_field_type_for_testing(3, ADDRESS_HOME_CITY);
+  test_api(&form_structure)
+      .SetFieldTypes(
+          {NAME_FULL, ADDRESS_HOME_COUNTRY, NAME_FULL, ADDRESS_HOME_CITY});
 
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
-  form_structure.identify_sections_for_testing();
+  test_api(&form_structure).IdentifySections(/*ignore_autocomplete=*/false);
 
   // Assert the correct number of fields.
   ASSERT_EQ(4U, form_structure.field_count());
@@ -8087,13 +8077,12 @@ TEST_F(FormStructureTestImpl, FromEmptyAutocompleteSectionToDefinedOne) {
 
   FormStructure form_structure(form);
 
-  form_structure.set_overall_field_type_for_testing(0, NAME_FULL);
-  form_structure.set_overall_field_type_for_testing(1, ADDRESS_HOME_COUNTRY);
+  test_api(&form_structure).SetFieldTypes({NAME_FULL, ADDRESS_HOME_COUNTRY});
 
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
-  form_structure.identify_sections_for_testing();
+  test_api(&form_structure).IdentifySections(/*ignore_autocomplete=*/false);
 
   // Assert the correct number of fields.
   ASSERT_EQ(2U, form_structure.field_count());
@@ -8129,14 +8118,13 @@ TEST_F(FormStructureTestImpl,
 
   FormStructure form_structure(form);
 
-  form_structure.set_overall_field_type_for_testing(0, NAME_FULL);
-  form_structure.set_overall_field_type_for_testing(1, PHONE_HOME_NUMBER);
-  form_structure.set_overall_field_type_for_testing(2, NAME_FULL);
+  test_api(&form_structure)
+      .SetFieldTypes({NAME_FULL, PHONE_HOME_NUMBER, NAME_FULL});
 
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
-  form_structure.identify_sections_for_testing();
+  test_api(&form_structure).IdentifySections(/*ignore_autocomplete=*/false);
 
   // Assert the correct number of fields.
   ASSERT_EQ(3U, form_structure.field_count());
@@ -8172,14 +8160,14 @@ TEST_F(FormStructureTestImpl, FindFieldsEligibleForManualFilling) {
 
   FormStructure form_structure(form);
 
-  form_structure.set_server_field_type_for_testing(0, CREDIT_CARD_NAME_FULL);
-  form_structure.set_server_field_type_for_testing(1, ADDRESS_HOME_COUNTRY);
-  form_structure.set_server_field_type_for_testing(2, UNKNOWN_TYPE);
+  test_api(&form_structure)
+      .SetFieldTypes(
+          {CREDIT_CARD_NAME_FULL, ADDRESS_HOME_COUNTRY, UNKNOWN_TYPE});
 
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
-  form_structure.identify_sections_for_testing();
+  test_api(&form_structure).IdentifySections(/*ignore_autocomplete=*/false);
   std::vector<FieldGlobalId> expected_result;
   // Only credit card related and unknown fields are elible for manual filling.
   expected_result.push_back(full_name_id);

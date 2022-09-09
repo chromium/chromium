@@ -16,6 +16,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/version_info/version_info.h"
+#include "form_structure_test_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,6 +27,7 @@ using testing::SaveArg;
 namespace autofill {
 
 namespace {
+
 class MockSuggestionsHandler
     : public SingleFieldFormFiller::SuggestionsHandler {
  public:
@@ -48,6 +50,11 @@ class MockSuggestionsHandler
  private:
   base::WeakPtrFactory<MockSuggestionsHandler> weak_ptr_factory_{this};
 };
+
+FormStructureTestApi test_api(FormStructure* form_structure) {
+  return FormStructureTestApi(form_structure);
+}
+
 }  // namespace
 
 class SingleFieldFormFillRouterTest : public testing::Test {
@@ -126,18 +133,10 @@ TEST_F(SingleFieldFormFillRouterTest,
   form_data.fields = fields;
   FormStructure form_structure{form_data};
 
-  // Set the first |number_of_fields_for_testing| fields to be autocomplete
-  // fields.
-  for (size_t i = 0; i < number_of_fields_for_testing; i++) {
-    form_structure.set_server_field_type_for_testing(i, UNKNOWN_TYPE);
-  }
-
-  // Set the next |number_of_fields_for_testing| fields to be merchant promo
-  // code fields.
-  for (size_t i = number_of_fields_for_testing;
-       i < number_of_fields_for_testing * 2; i++) {
-    form_structure.set_server_field_type_for_testing(i, MERCHANT_PROMO_CODE);
-  }
+  test_api(&form_structure)
+      .SetFieldTypes({UNKNOWN_TYPE, UNKNOWN_TYPE, UNKNOWN_TYPE,
+                      MERCHANT_PROMO_CODE, MERCHANT_PROMO_CODE,
+                      MERCHANT_PROMO_CODE});
 
   std::vector<FormFieldData> submitted_autocomplete_fields;
   bool autocomplete_fields_is_autocomplete_enabled = false;

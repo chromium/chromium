@@ -22,6 +22,14 @@
 
 namespace autofill {
 
+namespace {
+
+FormStructureTestApi test_api(FormStructure* form_structure) {
+  return FormStructureTestApi(form_structure);
+}
+
+}  // namespace
+
 TestBrowserAutofillManager::TestBrowserAutofillManager(
     TestAutofillDriver* driver,
     TestAutofillClient* client)
@@ -223,9 +231,8 @@ void TestBrowserAutofillManager::SetSeenFormPredictions(
     const std::vector<ServerFieldType>& server_types) {
   FormStructure* form_structure = FindCachedFormByRendererId(form_id);
   ASSERT_TRUE(form_structure);
-  FormStructureTestApi(form_structure)
-      .SetFieldTypes(heuristic_types, server_types);
-  form_structure->identify_sections_for_testing();
+  test_api(form_structure).SetFieldTypes(heuristic_types, server_types);
+  test_api(form_structure).IdentifySections(/*ignore_autocomplete=*/false);
 }
 
 void TestBrowserAutofillManager::AddSeenFormStructure(

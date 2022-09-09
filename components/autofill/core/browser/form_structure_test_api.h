@@ -59,8 +59,17 @@ class FormStructureTestApi {
   void SetFieldTypes(const std::vector<ServerFieldType>& heuristic_types,
                      const std::vector<ServerFieldType>& server_types);
 
+  void SetFieldTypes(const std::vector<ServerFieldType>& overall_types) {
+    SetFieldTypes(/*heuristic_types=*/overall_types,
+                  /*server_types=*/overall_types);
+  }
+
   const std::vector<std::unique_ptr<AutofillField>>& fields() {
     return form_structure_->fields_;
+  }
+
+  mojom::SubmissionIndicatorEvent get_submission_event() const {
+    return form_structure_->submission_event_;
   }
 
   void IdentifySections(bool ignore_autocomplete) {
