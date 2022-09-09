@@ -184,7 +184,9 @@ void GameModeController::WindowTracker::OnPostWindowStateTypeChange(
   UpdateGameModeStatus(window_state);
 }
 
-GameMode GameModeController::GameModeEnabler::mode() const { return mode_; }
+GameMode GameModeController::GameModeEnabler::mode() const {
+  return mode_;
+}
 
 void GameModeController::WindowTracker::UpdateGameModeStatus(
     ash::WindowState* window_state) {

@@ -98,7 +98,7 @@ TEST_F(GameModeControllerForArcTest, SwitchToNonGameArcAppTurnsOffGameMode) {
       ash::ResourcedClient::GameMode::ARC);
 
   arc_app_test_.app_instance()->set_app_category_of_pkg(
-        "net.recipes.search", arc::mojom::AppCategory::kProductivity);
+      "net.recipes.search", arc::mojom::AppCategory::kProductivity);
   arc_app_test_.app_instance()->SetTaskInfo(9999, "net.recipes.search",
                                             "activity");
 
@@ -141,9 +141,8 @@ TEST_F(GameModeControllerForArcTest, SwitchToBorealisWindowAndBack) {
   arc_app_test_.app_instance()->SetTaskInfo(14, "jp.foo.game", "activity");
   game_mode::AddArcPkgNameForTesting("jp.foo.game");
 
-  auto non_game_widget = ash::TestWidgetBuilder()
-      .SetShow(true)
-      .BuildOwnsNativeWidget();
+  auto non_game_widget =
+      ash::TestWidgetBuilder().SetShow(true).BuildOwnsNativeWidget();
 
   auto game_widget = CreateArcTaskWidget(14);
 
@@ -175,8 +174,8 @@ TEST_F(GameModeControllerForArcTest, SwitchToBorealisWindowAndBack) {
 TEST_F(GameModeControllerForArcTest, IdentifyGameWithGetAppCategory) {
   arc_app_test_.app_instance()->set_app_category_of_pkg(
       "org.an_awesome.game", arc::mojom::AppCategory::kGame);
-  arc_app_test_.app_instance()->SetTaskInfo(
-      9882, "org.an_awesome.game", "activity");
+  arc_app_test_.app_instance()->SetTaskInfo(9882, "org.an_awesome.game",
+                                            "activity");
 
   auto game_widget = CreateArcTaskWidget(9882);
   game_widget->Show();

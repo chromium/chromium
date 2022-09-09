@@ -62,8 +62,7 @@ class GameModeController : public aura::client::FocusChangeObserver {
  public:
   GameModeController();
   GameModeController(const GameModeController&) = delete;
-  GameModeController& operator=(const GameModeController&) =
-      delete;
+  GameModeController& operator=(const GameModeController&) = delete;
   ~GameModeController() override;
 
   // Overridden from FocusChangeObserver
@@ -89,8 +88,8 @@ class GameModeController : public aura::client::FocusChangeObserver {
     GameMode mode() const override;
 
    private:
-    static void OnSetGameMode(
-        absl::optional<GameMode> refresh_of, absl::optional<GameMode> previous);
+    static void OnSetGameMode(absl::optional<GameMode> refresh_of,
+                              absl::optional<GameMode> previous);
     void RefreshGameMode();
 
     // Used to determine if it's the first instance of game mode failing.
