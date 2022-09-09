@@ -2972,7 +2972,7 @@ bool DeviceStatusCollector::IsReportingHardwareData() const {
          report_audio_status_ || report_board_status_ || report_memory_info_ ||
          report_cpu_info_ || report_backlight_info_ || report_bluetooth_info_ ||
          report_fan_info_ || report_vpd_info_ || report_system_info_ ||
-         report_boot_mode_ || report_version_info_;
+         report_boot_mode_ || report_version_info_ || report_graphics_status_;
 }
 bool DeviceStatusCollector::IsReportingUsers() const {
   // For more details, see comment in
