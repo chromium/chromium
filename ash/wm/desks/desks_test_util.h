@@ -93,6 +93,14 @@ const CloseButton* GetCloseDeskButtonForMiniView(const DeskMiniView* mini_view);
 // `close_desk_button` otherwise).
 bool GetDeskActionVisibilityForMiniView(const DeskMiniView* mini_view);
 
+// Wait for `milliseconds` to be finished.
+void WaitForMilliseconds(int milliseconds);
+
+// Long press at `screen_location` through a touch pressed event.
+void LongGestureTap(const gfx::Point& screen_location,
+                    ui::test::EventGenerator* event_generator,
+                    bool release_touch = true);
+
 }  // namespace ash
 
 #endif  // ASH_WM_DESKS_DESKS_TEST_UTIL_H_

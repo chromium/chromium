@@ -3578,6 +3578,66 @@ TEST_F(SavedDeskTest, ClickOrTapToExitGridView) {
   }
 }
 
+// Tests that long pressing on the library view to commit name changes.
+TEST_F(SavedDeskTest, LongPressToCommitNameChanges) {
+  AddEntry(base::GUID::GenerateRandomV4(), "template1", base::Time::Now(),
+           DeskTemplateType::kTemplate);
+  AddEntry(base::GUID::GenerateRandomV4(), "template2", base::Time::Now(),
+           DeskTemplateType::kTemplate);
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
+  SavedDeskLibraryView* library_view = overview_grid->GetSavedDeskLibraryView();
+  SavedDeskItemView* template1 = GetItemViewFromTemplatesGrid(0);
+  SavedDeskItemView* template2 = GetItemViewFromTemplatesGrid(1);
+  SavedDeskNameView* name_view1 = template1->name_view();
+  SavedDeskNameView* name_view2 = template2->name_view();
+  auto* hover_container_view1 =
+      SavedDeskItemViewTestApi(template1).hover_container();
+  auto* hover_container_view2 =
+      SavedDeskItemViewTestApi(template2).hover_container();
+  EXPECT_FALSE(hover_container_view1->GetVisible());
+  EXPECT_FALSE(hover_container_view2->GetVisible());
+
+  // Tests that long pressing on template1 which is in edit mode should commit
+  // changes and bring up the hover button.
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(name_view1);
+  EXPECT_TRUE(overview_grid->IsTemplateNameBeingModified());
+  EXPECT_TRUE(name_view1->HasFocus());
+  EXPECT_TRUE(name_view1->HasSelection());
+  LongGestureTap(template1->GetBoundsInScreen().CenterPoint(), event_generator);
+  EXPECT_FALSE(name_view1->HasFocus());
+  EXPECT_TRUE(hover_container_view1->GetVisible());
+  EXPECT_FALSE(hover_container_view2->GetVisible());
+
+  // Test that long pressing the library view outside of template2 which is in
+  // edit mode should commit changes.
+  ClickOnView(name_view2);
+  EXPECT_FALSE(hover_container_view1->GetVisible());
+  EXPECT_TRUE(overview_grid->IsTemplateNameBeingModified());
+  EXPECT_TRUE(name_view2->HasFocus());
+  EXPECT_TRUE(name_view2->HasSelection());
+  gfx::Point p = library_view->GetBoundsInScreen().bottom_center();
+  p.Offset(0, -50);
+  LongGestureTap(p, event_generator);
+  EXPECT_FALSE(name_view2->HasFocus());
+  EXPECT_FALSE(hover_container_view1->GetVisible());
+  EXPECT_FALSE(hover_container_view2->GetVisible());
+
+  // Tests that long pressing on template2 when template1 in edit mode should
+  // commit changes for template1 and bring up the hover button for template2.
+  ClickOnView(name_view1);
+  EXPECT_TRUE(overview_grid->IsTemplateNameBeingModified());
+  EXPECT_TRUE(name_view1->HasFocus());
+  EXPECT_TRUE(name_view1->HasSelection());
+  LongGestureTap(template2->GetBoundsInScreen().CenterPoint(), event_generator);
+  EXPECT_FALSE(name_view1->HasFocus());
+  EXPECT_FALSE(hover_container_view1->GetVisible());
+  EXPECT_TRUE(hover_container_view2->GetVisible());
+}
+
 // Tests that right clicking on the wallpaper while showing the saved desks grid
 // does not exit overview.
 TEST_F(SavedDeskTest, RightClickOnWallpaperStaysInOverview) {

@@ -523,8 +523,17 @@ void SavedDeskLibraryView::OnLocatedEvent(ui::LocatedEvent* event,
     case ui::ET_MOUSE_ENTERED:
     case ui::ET_MOUSE_RELEASED:
     case ui::ET_MOUSE_EXITED:
+    case ui::ET_GESTURE_SCROLL_BEGIN:
     case ui::ET_GESTURE_LONG_PRESS:
     case ui::ET_GESTURE_LONG_TAP: {
+      if (event->IsGestureEvent())
+        SavedDeskNameView::CommitChanges(GetWidget());
+
+      // For gesture scroll, we don't update hover button visibility but commit
+      // name changes for grid items.
+      if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN)
+        break;
+
       for (auto* grid_view : grid_views()) {
         for (SavedDeskItemView* grid_item : grid_view->grid_items())
           grid_item->UpdateHoverButtonsVisibility(screen_location, is_touch);

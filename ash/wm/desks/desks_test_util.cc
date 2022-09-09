@@ -20,6 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
 
 namespace ash {
@@ -191,6 +192,41 @@ bool GetDeskActionVisibilityForMiniView(const DeskMiniView* mini_view) {
     return mini_view->desk_action_view()->GetVisible();
 
   return mini_view->close_desk_button()->GetVisible();
+}
+
+void WaitForMilliseconds(int milliseconds) {
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(milliseconds));
+  run_loop.Run();
+}
+
+void LongGestureTap(const gfx::Point& screen_location,
+                    ui::test::EventGenerator* event_generator,
+                    bool release_touch) {
+  // Temporarily reconfigure gestures so that the long tap takes 2
+  // milliseconds.
+  ui::GestureConfiguration* gesture_config =
+      ui::GestureConfiguration::GetInstance();
+  const int old_long_press_time_in_ms = gesture_config->long_press_time_in_ms();
+  const base::TimeDelta old_short_press_time =
+      gesture_config->short_press_time();
+  const int old_show_press_delay_in_ms =
+      gesture_config->show_press_delay_in_ms();
+  gesture_config->set_long_press_time_in_ms(1);
+  gesture_config->set_short_press_time(base::Milliseconds(1));
+  gesture_config->set_show_press_delay_in_ms(1);
+
+  event_generator->set_current_screen_location(screen_location);
+  event_generator->PressTouch();
+  WaitForMilliseconds(2);
+
+  gesture_config->set_long_press_time_in_ms(old_long_press_time_in_ms);
+  gesture_config->set_short_press_time(old_short_press_time);
+  gesture_config->set_show_press_delay_in_ms(old_show_press_delay_in_ms);
+
+  if (release_touch)
+    event_generator->ReleaseTouch();
 }
 
 }  // namespace ash

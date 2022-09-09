@@ -112,7 +112,6 @@
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event_constants.h"
-#include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -212,40 +211,6 @@ void SendAccessibleActionToView(views::View* view, ax::mojom::Action action) {
   ui::AXActionData action_data;
   action_data.action = action;
   view->HandleAccessibleAction(action_data);
-}
-
-void WaitForMilliseconds(int milliseconds) {
-  base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(milliseconds));
-  run_loop.Run();
-}
-
-void LongGestureTap(const gfx::Point& screen_location,
-                    ui::test::EventGenerator* event_generator,
-                    bool release_touch = true) {
-  // Temporarily reconfigure gestures so that the long tap takes 2 milliseconds.
-  ui::GestureConfiguration* gesture_config =
-      ui::GestureConfiguration::GetInstance();
-  const int old_long_press_time_in_ms = gesture_config->long_press_time_in_ms();
-  const base::TimeDelta old_short_press_time =
-      gesture_config->short_press_time();
-  const int old_show_press_delay_in_ms =
-      gesture_config->show_press_delay_in_ms();
-  gesture_config->set_long_press_time_in_ms(1);
-  gesture_config->set_short_press_time(base::Milliseconds(1));
-  gesture_config->set_show_press_delay_in_ms(1);
-
-  event_generator->set_current_screen_location(screen_location);
-  event_generator->PressTouch();
-  WaitForMilliseconds(2);
-
-  gesture_config->set_long_press_time_in_ms(old_long_press_time_in_ms);
-  gesture_config->set_short_press_time(old_short_press_time);
-  gesture_config->set_show_press_delay_in_ms(old_show_press_delay_in_ms);
-
-  if (release_touch)
-    event_generator->ReleaseTouch();
 }
 
 void GestureTapOnView(const views::View* view,
