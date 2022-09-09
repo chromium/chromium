@@ -38,8 +38,8 @@ class MainThreadPerfTest : public testing::Test {
             base::MessagePump::Create(base::MessagePumpType::DEFAULT),
             base::sequence_manager::SequenceManager::Settings::Builder()
                 .Build()));
-    scheduler_overrider_ =
-        std::make_unique<ScopedSchedulerOverrider>(scheduler_.get());
+    scheduler_overrider_ = std::make_unique<ScopedSchedulerOverrider>(
+        scheduler_.get(), scheduler_->DefaultTaskRunner());
   }
 
   void TearDown() override { scheduler_->Shutdown(); }

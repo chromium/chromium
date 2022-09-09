@@ -198,11 +198,6 @@ class SimpleThread : public MainThread {
   SimpleThread(const SimpleThread&) = delete;
   SimpleThread& operator=(const SimpleThread&) = delete;
 
-  scoped_refptr<base::SingleThreadTaskRunner> GetDeprecatedTaskRunner()
-      const override {
-    return base::ThreadTaskRunnerHandle::Get();
-  }
-
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
       MainThreadTaskRunnerRestricted) const override {
     return base::ThreadTaskRunnerHandle::Get();

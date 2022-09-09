@@ -21,7 +21,9 @@ class ScopedSchedulerOverrider final {
 
  public:
   // |scheduler| must be owned by the caller.
-  explicit ScopedSchedulerOverrider(ThreadScheduler* scheduler);
+  explicit ScopedSchedulerOverrider(
+      ThreadScheduler* scheduler,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~ScopedSchedulerOverrider();
 
  private:

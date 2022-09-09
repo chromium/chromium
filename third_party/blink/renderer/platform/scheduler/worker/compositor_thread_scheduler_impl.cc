@@ -144,11 +144,5 @@ void CompositorThreadSchedulerImpl::SetV8Isolate(v8::Isolate* isolate) {
   NonMainThreadSchedulerBase::SetV8Isolate(isolate);
 }
 
-scoped_refptr<base::SingleThreadTaskRunner>
-CompositorThreadSchedulerImpl::DeprecatedDefaultTaskRunner() {
-  NOTREACHED();
-  return nullptr;
-}
-
 }  // namespace scheduler
 }  // namespace blink

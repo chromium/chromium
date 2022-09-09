@@ -35,10 +35,6 @@ class MockIdleDeadlineScheduler final : public ThreadScheduler {
                            Thread::IdleTask) override {}
   void PostNonNestableIdleTask(const base::Location&,
                                Thread::IdleTask) override {}
-  scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()
-      override {
-    return nullptr;
-  }
 
   base::TimeTicks MonotonicallyIncreasingVirtualTime() override {
     return base::TimeTicks();
@@ -86,7 +82,7 @@ TEST_F(IdleDeadlineTest, DeadlineInPast) {
 
 TEST_F(IdleDeadlineTest, YieldForHighPriorityWork) {
   MockIdleDeadlineScheduler scheduler;
-  ScopedSchedulerOverrider scheduler_overrider(&scheduler);
+  ScopedSchedulerOverrider scheduler_overrider(&scheduler, test_task_runner_);
 
   auto* deadline = MakeGarbageCollected<IdleDeadline>(
       base::TimeTicks() + base::Seconds(1.25),
