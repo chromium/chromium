@@ -64,7 +64,7 @@ class ChromeAppListItemTest : public InProcessBrowserTest {
   void ShowLauncherAppsGrid() {
     EXPECT_FALSE(client_->GetAppListWindow());
     ash::AcceleratorController::Get()->PerformActionIfEnabled(
-        ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+        ash::TOGGLE_APP_LIST, {});
     if (ash::features::IsProductivityLauncherEnabled()) {
       ash::AppListTestApi().WaitForBubbleWindow(
           /*wait_for_opening_animation=*/false);

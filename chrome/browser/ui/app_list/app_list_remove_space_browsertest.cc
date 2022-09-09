@@ -49,7 +49,7 @@ class AppListRemoveSpaceSyncCompatibilityTest
 
     // Create the app list view by triggering the accelerator to show it.
     ash::AcceleratorController::Get()->PerformActionIfEnabled(
-        ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+        ash::TOGGLE_APP_LIST, {});
   }
 
   ash::AppListTestApi app_list_test_api_;

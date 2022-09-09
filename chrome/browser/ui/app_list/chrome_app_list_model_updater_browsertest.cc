@@ -126,7 +126,7 @@ class ChromeAppListModelUpdaterTestBase
 
   void ShowAppList() {
     ash::AcceleratorController::Get()->PerformActionIfEnabled(
-        ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+        ash::TOGGLE_APP_LIST, {});
     if (ash::features::IsProductivityLauncherEnabled()) {
       app_list_test_api_.WaitForBubbleWindow(
           /*wait_for_opening_animation=*/false);
@@ -770,7 +770,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterLegacyLauncherTest,
 
   // Create the app list view and show the apps grid.
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
-      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+      ash::TOGGLE_APP_LIST, {});
   ASSERT_EQ(1, app_list_test_api_.GetPaginationModel()->total_pages());
 
   app_list_test_api_.GetLastItemInAppsGridView()->RequestFocus();
@@ -792,6 +792,6 @@ IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterLegacyLauncherTest,
 
   // Verify that the app list still has 2 pages after session restart.
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
-      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+      ash::TOGGLE_APP_LIST, {});
   EXPECT_EQ(2, app_list_test_api_.GetPaginationModel()->total_pages());
 }

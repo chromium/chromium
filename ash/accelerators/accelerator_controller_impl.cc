@@ -1719,7 +1719,6 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case SWITCH_TO_NEXT_USER:
       return CanHandleCycleUser();
     case TOGGLE_APP_LIST:
-    case TOGGLE_APP_LIST_FULLSCREEN:
       return CanHandleToggleAppList(
           accelerator, previous_accelerator,
           accelerator_history_->currently_pressed_keys());
@@ -2207,12 +2206,14 @@ void AcceleratorControllerImpl::PerformAction(
     case TAKE_WINDOW_SCREENSHOT:
       MaybeHandleTakeWindowScreenshot();
       break;
-    case TOGGLE_APP_LIST:
-      HandleToggleAppList(accelerator, kSearchKey);
+    case TOGGLE_APP_LIST: {
+      // TODO(crbug.com/1361531): Unify the two show source states.
+      AppListShowSource source = features::IsProductivityLauncherEnabled()
+                                     ? kSearchKey
+                                     : kSearchKeyFullscreen;
+      HandleToggleAppList(accelerator, source);
       break;
-    case TOGGLE_APP_LIST_FULLSCREEN:
-      HandleToggleAppList(accelerator, kSearchKeyFullscreen);
-      break;
+    }
     case TOGGLE_CALENDAR:
       accelerators::ToggleCalendar();
       break;

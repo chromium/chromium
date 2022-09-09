@@ -27,10 +27,13 @@ const AcceleratorData kAcceleratorData[] = {
     {true, ui::VKEY_TAB, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
      CYCLE_BACKWARD_MRU},
     {true, ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_NONE, TOGGLE_OVERVIEW},
+    // Historically, the browser search key with and without the shift key can
+    // toggle the app list into different open states. Now the two combinations
+    // are used to toggle the app list in the same way to keep the behavior
+    // consistent.
     {true, ui::VKEY_BROWSER_SEARCH, ui::EF_NONE, TOGGLE_APP_LIST},
+    {true, ui::VKEY_BROWSER_SEARCH, ui::EF_SHIFT_DOWN, TOGGLE_APP_LIST},
     {true, ui::VKEY_ALL_APPLICATIONS, ui::EF_NONE, TOGGLE_APP_LIST},
-    {true, ui::VKEY_BROWSER_SEARCH, ui::EF_SHIFT_DOWN,
-     TOGGLE_APP_LIST_FULLSCREEN},
     {true, ui::VKEY_WLAN, ui::EF_NONE, TOGGLE_WIFI},
     {true, ui::VKEY_PRIVACY_SCREEN_TOGGLE, ui::EF_NONE, PRIVACY_SCREEN_TOGGLE},
     {true, ui::VKEY_MICROPHONE_MUTE_TOGGLE, ui::EF_NONE,
@@ -134,7 +137,7 @@ const AcceleratorData kAcceleratorData[] = {
     // act on release instead of press when using Search as a modifier key for
     // extended keyboard shortcuts.
     {false, ui::VKEY_LWIN, ui::EF_NONE, TOGGLE_APP_LIST},
-    {false, ui::VKEY_LWIN, ui::EF_SHIFT_DOWN, TOGGLE_APP_LIST_FULLSCREEN},
+    {false, ui::VKEY_LWIN, ui::EF_SHIFT_DOWN, TOGGLE_APP_LIST},
     {true, ui::VKEY_ZOOM, ui::EF_NONE, TOGGLE_FULLSCREEN},
     {true, ui::VKEY_ZOOM, ui::EF_SHIFT_DOWN, TOGGLE_FULLSCREEN},
     {true, ui::VKEY_ESCAPE, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN, UNPIN},

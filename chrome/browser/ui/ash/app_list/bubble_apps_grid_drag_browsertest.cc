@@ -38,7 +38,7 @@ class BubbleAppsGridDragBrowserTest : public InProcessBrowserTest {
 
     // Show the bubble launcher.
     ash::AcceleratorController::Get()->PerformActionIfEnabled(
-        ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+        ash::TOGGLE_APP_LIST, {});
 
     app_list_test_api()->WaitForBubbleWindow(
         /*wait_for_opening_animation=*/true);

@@ -410,9 +410,9 @@ TEST_F(AppListMetricsPeekingLauncherTest, ClosedLaunchFromShelf) {
       AppListLaunchedFrom::kLaunchedFromShelf,
       1 /* Number of times launched from shelf */);
 
-  // Open the launcher to peeking.
+  // Open the launcher to fullscreen.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_BROWSER_SEARCH);
-  GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
+  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
 
   // Close launcher back to closed.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_BROWSER_SEARCH);

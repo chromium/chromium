@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppItemBrowserTest, UpdateAppNameInLauncher) {
   ASSERT_TRUE(extension_app);
 
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
-      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+      ash::TOGGLE_APP_LIST, {});
   ash::AppListTestApi app_list_test_api;
   if (ash::features::IsProductivityLauncherEnabled())
     app_list_test_api.WaitForBubbleWindow(/*wait_for_opening_animation=*/false);
