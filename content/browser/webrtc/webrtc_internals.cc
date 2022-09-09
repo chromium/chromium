@@ -423,7 +423,11 @@ void WebRTCInternals::RemoveObserver(WebRTCInternalsUIObserver* observer) {
   // Disables event log and audio debug recordings if enabled and the last
   // webrtc-internals page is going away.
   DisableAudioDebugRecordings();
-  DisableLocalEventLogRecordings();
+  if (CanToggleEventLogRecordings()) {
+    // Do not disable event log recording when the browser was started
+    // with the flag to enable the recordings on the command line.
+    DisableLocalEventLogRecordings();
+  }
 
   // TODO(tommi): Consider removing all the peer_connection_data().
   for (auto& dictionary : peer_connection_data())
