@@ -17,7 +17,6 @@
 #include "content/common/content_export.h"
 #include "content/public/common/page_type.h"
 #include "content/public/common/referrer.h"
-#include "services/network/public/cpp/resource_request_body.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 
@@ -25,6 +24,10 @@ class GURL;
 
 namespace blink {
 class PageState;
+}
+
+namespace network {
+class ResourceRequestBody;
 }
 
 namespace content {

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "services/network/public/cpp/resource_request_body.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_share_target {

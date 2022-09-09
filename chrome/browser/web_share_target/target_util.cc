@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/mime_util.h"
+#include "services/network/public/cpp/resource_request_body.h"
 
 namespace {
 

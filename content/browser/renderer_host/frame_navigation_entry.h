@@ -12,17 +12,20 @@
 #include "content/browser/site_instance_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/common/referrer.h"
-#include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace network {
+class ResourceRequestBody;
+}
+
 namespace content {
 
-class WebBundleNavigationInfo;
 class SubresourceWebBundleNavigationInfo;
+class WebBundleNavigationInfo;
 
 // Represents a session history item for a particular frame.  It is matched with
 // corresponding FrameTreeNodes using unique name (or by the root position).
