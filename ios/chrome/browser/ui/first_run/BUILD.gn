@@ -71,6 +71,7 @@ source_set("first_run") {
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/geolocation",
     "//ios/chrome/browser/main",
+    "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui:feature_flags",
@@ -201,7 +202,6 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "first_run_util_unittest.mm",
     "fre_field_trial_unittest.mm",
     "trending_queries_field_trial_unittest.mm",
     "welcome_to_chrome_view_controller_unittest.mm",

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/policy/policy_util.h"
 
+#import "components/policy/core/common/policy_loader_ios_constants.h"
 #include "components/prefs/pref_service.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 
@@ -27,4 +28,9 @@ bool IsIncognitoModeForced(PrefService* pref_service) {
   return IsIncognitoPolicyApplied(pref_service) &&
          pref_service->GetInteger(prefs::kIncognitoModeAvailability) ==
              static_cast<int>(IncognitoModePrefs::kForced);
+}
+
+bool IsApplicationManagedByPlatform() {
+  return [[[NSUserDefaults standardUserDefaults]
+             dictionaryForKey:kPolicyLoaderIOSConfigurationKey] count] > 0;
 }

@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/first_run/first_run_util.h"
+#import "ios/chrome/browser/policy/policy_util.h"
+
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "testing/platform_test.h"
 
@@ -10,31 +11,31 @@
 #error "This file requires ARC support."
 #endif
 
-using FirstRunUtilTest = PlatformTest;
+using PolicyUtilTest = PlatformTest;
 
-// Tests IsApplicationManaged() when the kPolicyLoaderIOSConfigurationKey value
-// doesn't exist.
-TEST_F(FirstRunUtilTest, TestBrowserManagedNotExist) {
+// Tests that IsApplicationManagedByPlatform() returns false when the
+// kPolicyLoaderIOSConfigurationKey value doesn't exist.
+TEST_F(PolicyUtilTest, ReturnsFalseWhenNoApplicationConfigFromPlatform) {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
-  EXPECT_FALSE(IsApplicationManaged());
+  EXPECT_FALSE(IsApplicationManagedByPlatform());
 }
 
-// Tests IsApplicationManaged() when the kPolicyLoaderIOSConfigurationKey value
-// is empty.
-TEST_F(FirstRunUtilTest, TestBrowserManagedEmpty) {
+// Tests that IsApplicationManagedByPlatform() returns false when the
+// kPolicyLoaderIOSConfigurationKey value is empty.
+TEST_F(PolicyUtilTest, ReturnsFalseWhenEmptyApplicationConfigFromPlatform) {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:@{} forKey:kPolicyLoaderIOSConfigurationKey];
-  EXPECT_FALSE(IsApplicationManaged());
+  EXPECT_FALSE(IsApplicationManagedByPlatform());
   [userDefaults removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
 }
 
-// Tests IsApplicationManaged() when the kPolicyLoaderIOSConfigurationKey value
-// is not empty.
-TEST_F(FirstRunUtilTest, TestBrowserManagedWithValue) {
+// Tests that IsApplicationManagedByPlatform() returns true when the
+// kPolicyLoaderIOSConfigurationKey value is not empty.
+TEST_F(PolicyUtilTest, ReturnsTrueWhenApplicationConfigFromPlatform) {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSDictionary* dict = @{@"key" : @"value"};
   [userDefaults setObject:dict forKey:kPolicyLoaderIOSConfigurationKey];
-  EXPECT_TRUE(IsApplicationManaged());
+  EXPECT_TRUE(IsApplicationManagedByPlatform());
   [userDefaults removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
 }

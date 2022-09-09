@@ -12,6 +12,7 @@
 #import "components/web_resource/web_resource_pref_names.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/first_run/first_run_metrics.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
@@ -251,7 +252,7 @@
       _consumer.signinStatus = SigninScreenConsumerSigninStatusDisabled;
       break;
   }
-  self.consumer.isManaged = IsApplicationManaged();
+  self.consumer.isManaged = IsApplicationManagedByPlatform();
   if (!self.showFREConsent) {
     self.consumer.screenIntent = SigninScreenConsumerScreenIntentSigninOnly;
   } else {

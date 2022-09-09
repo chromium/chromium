@@ -230,8 +230,3 @@ void RecordMetricsReportingDefaultState() {
             : metrics::EnableMetricsDefault::OPT_IN);
   });
 }
-
-bool IsApplicationManaged() {
-  return [[[NSUserDefaults standardUserDefaults]
-             dictionaryForKey:kPolicyLoaderIOSConfigurationKey] count] > 0;
-}

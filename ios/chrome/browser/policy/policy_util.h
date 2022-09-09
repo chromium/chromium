@@ -38,4 +38,8 @@ bool IsIncognitoModeDisabled(PrefService* pref_service);
 // Returns true if incognito mode is forced by enterprise policy.
 bool IsIncognitoModeForced(PrefService* pref_service);
 
+// Returns whether the browser is managed based on the presence of policy data
+// in the App Configuration from the platform.
+bool IsApplicationManagedByPlatform();
+
 #endif  // IOS_CHROME_BROWSER_POLICY_POLICY_UTIL_H_

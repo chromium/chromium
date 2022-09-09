@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/ui/elements/text_view_selection_disabled.h"
 #include "ios/chrome/browser/ui/fancy_ui/primary_action_button.h"
 #include "ios/chrome/browser/ui/first_run/first_run_util.h"
@@ -348,11 +349,6 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
   return _OKButton;
 }
 
-- (BOOL)isBrowserManaged {
-  return [[[NSUserDefaults standardUserDefaults]
-             dictionaryForKey:kPolicyLoaderIOSConfigurationKey] count] > 0;
-}
-
 #pragma mark - Layout
 
 - (void)willMoveToSuperview:(nullable UIView*)newSuperview {
@@ -370,7 +366,7 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
   [self.containerView addSubview:self.TOSTextView];
   [self.containerView addSubview:self.optInLabel];
   [self.containerView addSubview:self.checkBoxButton];
-  if ([self isBrowserManaged]) {
+  if (IsApplicationManagedByPlatform()) {
     [self.containerView addSubview:self.managedLabel];
     [self.containerView addSubview:self.enterpriseIcon];
   }
@@ -394,7 +390,7 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
   [self layoutTOSTextView];
   [self layoutOptInLabel];
   [self layoutCheckBoxButton];
-  if ([self isBrowserManaged]) {
+  if (IsApplicationManagedByPlatform()) {
     [self layoutManagedLabel];
     [self layoutEnterpriseIcon];
   }
@@ -540,11 +536,11 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
   // `kmanagedLabelPadding` or `kOptInLabelPadding` (depending if the browser is
   // managed) between `optInLabel` and `OKButton`.
   CGSize containerViewSize = self.containerView.bounds.size;
-  containerViewSize.height = [self isBrowserManaged]
+  containerViewSize.height = IsApplicationManagedByPlatform()
                                  ? CGRectGetMaxY(self.managedLabel.frame)
                                  : CGRectGetMaxY(self.checkBoxButton.frame);
 
-  CGFloat padding = [self isBrowserManaged]
+  CGFloat padding = IsApplicationManagedByPlatform()
                         ? kManagedLabelPadding[[self heightSizeClassIdiom]]
                         : kOptInLabelPadding[[self heightSizeClassIdiom]];
 
@@ -583,7 +579,7 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
   [self configureImageView];
   [self configureTOSTextView];
   [self configureOptInLabel];
-  if ([self isBrowserManaged]) {
+  if (IsApplicationManagedByPlatform()) {
     [self configureManagedLabel];
   }
   [self configureOKButton];

@@ -54,6 +54,7 @@ source_set("welcome_ui") {
     "//components/web_resource",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/first_run:constants",
     "//ios/chrome/browser/ui/first_run:field_trial",
