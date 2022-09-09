@@ -11837,7 +11837,7 @@
             {
               "cipd_package": "chromium/testing/weblayer-x86",
               "location": "weblayer_instrumentation_test_M105",
-              "revision": "version:105.0.5195.118"
+              "revision": "version:105.0.5195.119"
             }
           ],
           "dimension_sets": [
@@ -12237,7 +12237,7 @@
             {
               "cipd_package": "chromium/testing/weblayer-x86",
               "location": "weblayer_instrumentation_test_M105",
-              "revision": "version:105.0.5195.118"
+              "revision": "version:105.0.5195.119"
             }
           ],
           "dimension_sets": [
