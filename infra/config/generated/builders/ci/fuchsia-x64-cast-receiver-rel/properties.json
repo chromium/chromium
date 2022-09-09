@@ -42,6 +42,12 @@
           "builder": "fuchsia-x64-cast-receiver-rel",
           "project": "chromium"
         }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "fuchsia-x64-cast-receiver-rel",
+          "group": "tryserver.chromium.fuchsia"
+        }
       ]
     }
   },

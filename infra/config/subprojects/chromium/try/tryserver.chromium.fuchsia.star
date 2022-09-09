@@ -46,20 +46,24 @@ try_.builder(
 
 try_.builder(
     name = "fuchsia-arm64-cast-receiver-rel",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    # TODO(crbug.com/1294938): Make this FUCHSIA_LTS_MILESTONE once the mirrored
+    # bot is moved to infra/config/subprojects/chromium/ci/chromium.fuchsia.star.
+    branch_selector = branches.MAIN,
     # TODO(crbug.com/1294938): Determine whether this should this have a
     # swarming bot `builder` defined and thus have the following line:
     # builderless = not settings.is_main,
     main_list_view = "try",
     # TODO(crbug.com/1294938): Uncomment the following when removing the
     # `tryjob` attribute from fuchsia-arm64-cast.
+    # # This is the only bot that builds //chromecast code for Fuchsia on ARM64
+    # # so trigger it when changes are made.
     # tryjob = try_.job(
     #     location_regexp = [
     #         ".+/[+]/chromecast/.+",
     #     ],
     # ),
     mirrors = [
-        "ci/fuchsia-arm64-cast",
+        "ci/fuchsia-arm64-cast-receiver-rel",
     ],
 )
 
@@ -155,7 +159,9 @@ try_.builder(
 
 try_.builder(
     name = "fuchsia-x64-cast-receiver-rel",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    # TODO(crbug.com/1294938): Make this FUCHSIA_LTS_MILESTONE once the mirrored
+    # bot is moved to infra/config/subprojects/chromium/ci/chromium.fuchsia.star.
+    branch_selector = branches.MAIN,
     # TODO(crbug.com/1294938): Uncomment this when a swarming bot `builder` with
     # this name is defined:
     # builderless = not settings.is_main,
@@ -164,7 +170,7 @@ try_.builder(
     # `tryjob` attribute from fuchsia-x64-cast.
     # tryjob = try_.job(),
     mirrors = [
-        "ci/fuchsia-x64-cast",
+        "ci/fuchsia-x64-cast-receiver-rel",
     ],
     experiments = {
         "enable_weetbix_queries": 100,

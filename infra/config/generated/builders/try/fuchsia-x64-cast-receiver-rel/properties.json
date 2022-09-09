@@ -6,12 +6,12 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "fuchsia-x64-cast",
+              "builder": "fuchsia-x64-cast-receiver-rel",
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-linux-archive",
-              "builder_group": "chromium.fuchsia",
+              "build_gs_bucket": "chromium-fyi-archive",
+              "builder_group": "chromium.fuchsia.fyi",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -27,7 +27,11 @@
                   "fuchsia_x64"
                 ],
                 "config": "chromium"
-              }
+              },
+              "legacy_test_results_config": {
+                "config": "staging_server"
+              },
+              "run_tests_serially": true
             }
           }
         ]
@@ -35,7 +39,7 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "fuchsia-x64-cast",
+          "builder": "fuchsia-x64-cast-receiver-rel",
           "project": "chromium"
         }
       ]
