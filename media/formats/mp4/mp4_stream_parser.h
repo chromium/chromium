@@ -24,8 +24,7 @@
 #include "media/formats/mp4/aac.h"
 #endif
 
-namespace media {
-namespace mp4 {
+namespace media::mp4 {
 
 struct Movie;
 struct MovieHeader;
@@ -44,12 +43,12 @@ class MEDIA_EXPORT MP4StreamParser : public StreamParser {
   ~MP4StreamParser() override;
 
   void Init(InitCB init_cb,
-            const NewConfigCB& config_cb,
-            const NewBuffersCB& new_buffers_cb,
+            NewConfigCB config_cb,
+            NewBuffersCB new_buffers_cb,
             bool ignore_text_tracks,
-            const EncryptedMediaInitDataCB& encrypted_media_init_data_cb,
-            const NewMediaSegmentCB& new_segment_cb,
-            const EndMediaSegmentCB& end_of_segment_cb,
+            EncryptedMediaInitDataCB encrypted_media_init_data_cb,
+            NewMediaSegmentCB new_segment_cb,
+            EndMediaSegmentCB end_of_segment_cb,
             MediaLog* media_log) override;
   void Flush() override;
   bool GetGenerateTimestampsFlag() const override;
@@ -156,7 +155,6 @@ class MEDIA_EXPORT MP4StreamParser : public StreamParser {
   int num_video_keyframe_mismatches_;
 };
 
-}  // namespace mp4
-}  // namespace media
+}  // namespace media::mp4
 
 #endif  // MEDIA_FORMATS_MP4_MP4_STREAM_PARSER_H_

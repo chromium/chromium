@@ -835,16 +835,15 @@ class MockStreamParser : public StreamParser {
   ~MockStreamParser() override;
 
   // StreamParser interface
-  MOCK_METHOD8(
-      Init,
-      void(InitCB init_cb,
-           const NewConfigCB& config_cb,
-           const NewBuffersCB& new_buffers_cb,
-           bool ignore_text_track,
-           const EncryptedMediaInitDataCB& encrypted_media_init_data_cb,
-           const NewMediaSegmentCB& new_segment_cb,
-           const EndMediaSegmentCB& end_of_segment_cb,
-           MediaLog* media_log));
+  MOCK_METHOD8(Init,
+               void(InitCB init_cb,
+                    NewConfigCB config_cb,
+                    NewBuffersCB new_buffers_cb,
+                    bool ignore_text_track,
+                    EncryptedMediaInitDataCB encrypted_media_init_data_cb,
+                    NewMediaSegmentCB new_segment_cb,
+                    EndMediaSegmentCB end_of_segment_cb,
+                    MediaLog* media_log));
   MOCK_METHOD0(Flush, void());
   MOCK_CONST_METHOD0(GetGenerateTimestampsFlag, bool());
   MOCK_METHOD2(Parse, bool(const uint8_t*, int));

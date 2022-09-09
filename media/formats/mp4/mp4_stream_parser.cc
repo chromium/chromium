@@ -33,8 +33,7 @@
 #include "media/formats/mp4/rcheck.h"
 #include "media/formats/mpeg/adts_constants.h"
 
-namespace media {
-namespace mp4 {
+namespace media::mp4 {
 
 namespace {
 
@@ -101,12 +100,12 @@ MP4StreamParser::~MP4StreamParser() = default;
 
 void MP4StreamParser::Init(
     InitCB init_cb,
-    const NewConfigCB& config_cb,
-    const NewBuffersCB& new_buffers_cb,
+    NewConfigCB config_cb,
+    NewBuffersCB new_buffers_cb,
     bool /* ignore_text_tracks */,
-    const EncryptedMediaInitDataCB& encrypted_media_init_data_cb,
-    const NewMediaSegmentCB& new_segment_cb,
-    const EndMediaSegmentCB& end_of_segment_cb,
+    EncryptedMediaInitDataCB encrypted_media_init_data_cb,
+    NewMediaSegmentCB new_segment_cb,
+    EndMediaSegmentCB end_of_segment_cb,
     MediaLog* media_log) {
   DCHECK_EQ(state_, kWaitingForInit);
   DCHECK(!init_cb_);
@@ -119,11 +118,11 @@ void MP4StreamParser::Init(
 
   ChangeState(kParsingBoxes);
   init_cb_ = std::move(init_cb);
-  config_cb_ = config_cb;
-  new_buffers_cb_ = new_buffers_cb;
-  encrypted_media_init_data_cb_ = encrypted_media_init_data_cb;
-  new_segment_cb_ = new_segment_cb;
-  end_of_segment_cb_ = end_of_segment_cb;
+  config_cb_ = std::move(config_cb);
+  new_buffers_cb_ = std::move(new_buffers_cb);
+  encrypted_media_init_data_cb_ = std::move(encrypted_media_init_data_cb);
+  new_segment_cb_ = std::move(new_segment_cb);
+  end_of_segment_cb_ = std::move(end_of_segment_cb);
   media_log_ = media_log;
 }
 
@@ -304,8 +303,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
     // send a codec reconfiguration for fragments using a sample description
     // index different from the previous one. See https://crbug.com/748250.
     size_t desc_idx = 0;
-    for (size_t t = 0; t < moov_->extends.tracks.size(); t++) {
-      const TrackExtends& trex = moov_->extends.tracks[t];
+    for (const auto& trex : moov_->extends.tracks) {
       if (trex.track_id == track->header.track_id) {
         desc_idx = trex.default_sample_description_index;
         break;
@@ -709,15 +707,15 @@ void MP4StreamParser::OnEncryptedMediaInitData(
   // concatenated in arbitrary order) matches the EME spec.
   // See https://www.w3.org/Bugs/Public/show_bug.cgi?id=17673.
   size_t total_size = 0;
-  for (size_t i = 0; i < headers.size(); i++)
-    total_size += headers[i].raw_box.size();
+  for (const auto& header : headers) {
+    total_size += header.raw_box.size();
+  }
 
   std::vector<uint8_t> init_data(total_size);
   size_t pos = 0;
-  for (size_t i = 0; i < headers.size(); i++) {
-    memcpy(&init_data[pos], &headers[i].raw_box[0],
-           headers[i].raw_box.size());
-    pos += headers[i].raw_box.size();
+  for (const auto& header : headers) {
+    memcpy(&init_data[pos], &header.raw_box[0], header.raw_box.size());
+    pos += header.raw_box.size();
   }
   encrypted_media_init_data_cb_.Run(EmeInitDataType::CENC, init_data);
 }
@@ -976,7 +974,7 @@ bool MP4StreamParser::ReadAndDiscardMDATsUntil(int64_t max_clear_offset) {
   ParseResult result = ParseResult::kOk;
   int64_t upper_bound = std::min(max_clear_offset, queue_.tail());
   while (mdat_tail_ < upper_bound) {
-    const uint8_t* buf = NULL;
+    const uint8_t* buf = nullptr;
     int size = 0;
     queue_.PeekAt(mdat_tail_, &buf, &size);
 
@@ -1043,5 +1041,4 @@ bool MP4StreamParser::ComputeHighestEndOffset(const MovieFragment& moof) {
   return true;
 }
 
-}  // namespace mp4
-}  // namespace media
+}  // namespace media::mp4
