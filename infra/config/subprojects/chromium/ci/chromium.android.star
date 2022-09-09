@@ -704,10 +704,9 @@ ci.builder(
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
-            config = "main_builder_mb",
+            config = "x64_builder_mb",
         ),
         build_gs_bucket = "chromium-android-archive",
-        run_tests_serially = True,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "tester|tablet",
