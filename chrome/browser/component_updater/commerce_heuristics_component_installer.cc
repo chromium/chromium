@@ -22,6 +22,7 @@
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "components/search/ntp_features.h"
 #else
+#include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #endif
 
@@ -190,7 +191,8 @@ void RegisterCommerceHeuristicsComponent(
 #if !BUILDFLAG(IS_ANDROID)
   if (IsCartModuleEnabled()) {
 #else
-  if (base::FeatureList::IsEnabled(commerce::kCommerceHintAndroid)) {
+  if (base::FeatureList::IsEnabled(commerce::kCommerceHintAndroid) ||
+      base::FeatureList::IsEnabled(features::kFastCheckout)) {
 #endif
     VLOG(1) << "Registering Commerce Heuristics component.";
     auto installer = base::MakeRefCounted<ComponentInstaller>(
