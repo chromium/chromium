@@ -35,8 +35,8 @@ class WebState;
 // behaviour between the different concrete sub-classes.
 class DownloadTaskImpl : public DownloadTask {
  public:
-  // Constructs a new DownloadTaskImpl objects. |web_state|, |identifier| and
-  // |delegate| must be valid.
+  // Constructs a new DownloadTaskImpl objects. `web_state` and `identifier`
+  // must be valid.
   DownloadTaskImpl(WebState* web_state,
                    const GURL& original_url,
                    NSString* http_method,

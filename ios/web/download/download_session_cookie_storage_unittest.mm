@@ -74,7 +74,7 @@ TEST_F(DownloadSessionCookieStorageTest, CookiesForURL) {
   EXPECT_TRUE([cookies containsObject:test_cookie_2]);
 }
 
-// Tests that |getCookiesForTask| uses the correct URL to get cookies, and also
+// Tests that `getCookiesForTask` uses the correct URL to get cookies, and also
 // invokes the completion handler successfully on the result.
 TEST_F(DownloadSessionCookieStorageTest, GetCookiesForTask) {
   ASSERT_FALSE(cookie_store_.cookies.count);
@@ -102,8 +102,8 @@ TEST_F(DownloadSessionCookieStorageTest, GetCookiesForTask) {
   EXPECT_TRUE(callback_called);
 }
 
-// Tests that |storeCookies:forTask:| works correctly and respects the
-// |cookieAcceptPolicy|.
+// Tests that `storeCookies:forTask:` works correctly and respects the
+// `cookieAcceptPolicy`.
 TEST_F(DownloadSessionCookieStorageTest, StoreCookiesForTask) {
   ASSERT_FALSE(cookie_store_.cookies.count);
 
@@ -150,7 +150,7 @@ TEST_F(DownloadSessionCookieStorageTest, StoreCookiesForTask) {
   EXPECT_TRUE([result containsObject:test_cookie_1]);
 }
 
-// Tests that setCookiesForURL: respects the |cookieAcceptPolicy| settings.
+// Tests that setCookiesForURL: respects the `cookieAcceptPolicy` settings.
 TEST_F(DownloadSessionCookieStorageTest, SetCookiesForURL) {
   ASSERT_FALSE(cookie_store_.cookies.count);
 
@@ -193,8 +193,8 @@ TEST_F(DownloadSessionCookieStorageTest, SetCookiesForURL) {
   EXPECT_TRUE([result containsObject:test_cookie_1]);
 }
 
-// Tests that when |cookieAcceptPolicy| is set to
-// |NSHTTPCookieAcceptPolicyNever|, no cookies will be saved.
+// Tests that when `cookieAcceptPolicy` is set to
+// `NSHTTPCookieAcceptPolicyNever`, no cookies will be saved.
 TEST_F(DownloadSessionCookieStorageTest, NeverAcceptCookies) {
   ASSERT_FALSE(cookie_store_.cookies.count);
   // By default Cookies accept policy is NSHTTPCookieAcceptPolicyAlways.

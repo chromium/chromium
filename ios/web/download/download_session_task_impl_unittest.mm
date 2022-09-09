@@ -97,7 +97,7 @@ class DownloadSessionTaskImplTest : public PlatformTest {
   }
 
   // Updates NSURLSessionTask.countOfBytesReceived and calls
-  // URLSession:dataTask:didReceiveData: callback. |data_str| is null terminated
+  // URLSession:dataTask:didReceiveData: callback. `data_str` is null terminated
   // C-string that represents the downloaded data.
   void SimulateDataDownload(CRWFakeNSURLSessionTask* session_task,
                             const char data_str[]) {

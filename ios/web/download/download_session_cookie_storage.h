@@ -13,7 +13,7 @@
 // calls and setting cookies accept policy calls. Other methods of the class are
 // no op.
 // This Cookie store is solely used by the download session, which will only
-// retrieve cookies using |cookiesForURL:| when creating the retrieve request.
+// retrieve cookies using `cookiesForURL:` when creating the retrieve request.
 // After that these cookies are not useful, and it'll be safe to discard them
 // and only have the version kept by the WebSiteDataStore internal cookie store.
 // The reason why an instance of NSHTTPCookieStorage class (shared or newly

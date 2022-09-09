@@ -109,7 +109,7 @@ TEST_F(DownloadNativeTaskImplTest, CancelledDownload) {
     return;
 
   if (@available(iOS 15, *)) {
-    // Simulates download cancel and checks that |_startDownloadBlock| is called
+    // Simulates download cancel and checks that `_startDownloadBlock` is called
     EXPECT_TRUE(fake_task_bridge_.calledStartDownloadBlock == NO);
     {
       web::test::WaitDownloadTaskDone observer(task_.get());

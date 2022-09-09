@@ -54,14 +54,14 @@
   NSMutableArray<NSHTTPCookie*>* result = [NSMutableArray array];
   GURL gURL = net::GURLWithNSURL(URL);
   // TODO(crbug.com/1018272): Compute the cookie access semantic, and update
-  // |options| with it.
+  // `options` with it.
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
   net::CookieAccessSemantics cookieAccessSemantics =
       net::CookieAccessSemantics::LEGACY;
   // No extra trustworthy URLs.
   bool delegate_treats_url_as_trustworthy = false;
 
-  // Using |UNKNOWN| semantics to allow the experiment to switch between non
+  // Using `UNKNOWN` semantics to allow the experiment to switch between non
   // legacy (where cookies that don't have a specific same-site access policy
   // and not secure will not be included), and legacy mode.
   cookieAccessSemantics = net::CookieAccessSemantics::UNKNOWN;

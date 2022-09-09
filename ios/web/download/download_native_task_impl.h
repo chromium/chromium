@@ -17,8 +17,8 @@ namespace web {
 // NativeTaskBridge) to perform the download
 class DownloadNativeTaskImpl final : public DownloadTaskImpl {
  public:
-  // Constructs a new DownloadSessionTaskImpl objects. |web_state|, |identifier|
-  // and |download| must be valid.
+  // Constructs a new DownloadSessionTaskImpl objects. `web_state`, `identifier`
+  // and `download` must be valid.
   DownloadNativeTaskImpl(
       WebState* web_state,
       const GURL& original_url,

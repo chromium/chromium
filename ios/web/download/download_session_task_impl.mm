@@ -160,7 +160,7 @@ using TaskFinishedHandler =
                                   NSURLCredential*))handler {
   @synchronized(self) {
     // TODO(crbug.com/780911): use CRWCertVerificationController to get
-    // CertAcceptPolicy for this |challenge|.
+    // CertAcceptPolicy for this `challenge`.
     handler(NSURLSessionAuthChallengeRejectProtectionSpace, nil);
   }
 }
@@ -179,7 +179,7 @@ namespace download {
 namespace internal {
 namespace {
 
-// Asynchronously returns cookies for |context_getter|. Must be called on IO
+// Asynchronously returns cookies for `context_getter`. Must be called on IO
 // thread (due to URLRequestContextGetter thread-affinity). The callback will
 // be called on the IO thread too.
 void GetCookiesFromContextGetter(
