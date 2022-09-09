@@ -1013,15 +1013,26 @@ void ChromePasswordProtectionService::OpenChangePasswordUrl(
       ReusedPasswordAccountType::NON_GAIA_ENTERPRISE) {
     // Directly open enterprise change password page for enterprise password
     // reuses.
+    RecordAction(UserMetricsAction(
+        "PasswordProtection.NonGaiaEnterprise.ChangePasswordButtonClicked"));
     OpenUrl(web_contents, GetEnterpriseChangePasswordURL(), content::Referrer(),
             /*in_new_tab=*/true);
     web_contents_with_unhandled_enterprise_reuses_.erase(web_contents);
   } else if (password_type.account_type() !=
              ReusedPasswordAccountType::SAVED_PASSWORD) {
     // Opens accounts.google.com in a new tab.
+    if (password_type.account_type() == ReusedPasswordAccountType::GMAIL) {
+      RecordAction(UserMetricsAction(
+          "PasswordProtection.Gmail.ChangePasswordButtonClicked"));
+    } else {
+      RecordAction(UserMetricsAction(
+          "PasswordProtection.GSuite.ChangePasswordButtonClicked"));
+    }
     OpenUrl(web_contents, GetDefaultChangePasswordURL(), content::Referrer(),
             /*in_new_tab=*/true);
   } else {
+    RecordAction(UserMetricsAction(
+        "PasswordProtection.SavedPassword.ChangePasswordButtonClicked"));
 #if BUILDFLAG(IS_ANDROID)
     JNIEnv* env = base::android::AttachCurrentThread();
     PasswordCheckupLauncherHelper::LaunchLocalCheckup(

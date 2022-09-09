@@ -24513,6 +24513,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="PasswordProtection.Gmail.ChangePasswordButtonClicked">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <description>
+    Reported when a user clicks on the change password button for a Gmail
+    account.
+  </description>
+</action>
+
+<action name="PasswordProtection.GSuite.ChangePasswordButtonClicked">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <description>
+    Reported when a user clicks on the change password button for a Gsuite
+    account.
+  </description>
+</action>
+
 <action name="PasswordProtection.Interstitial.ResetPassword">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -24548,6 +24566,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="PasswordProtection.NonGaiaEnterprise.ChangePasswordButtonClicked">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <description>
+    Reported when a user clicks on the change password button for a
+    Non-Gaia-Enterprise account.
+  </description>
+</action>
+
 <action name="PasswordProtection.PageInfo.ChangePasswordButtonClicked">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -24563,6 +24590,15 @@ should be able to be added at any place in this file.
   <description>
     Reported when the user clicks on the mark site as legitimate button on the
     page info bubble.
+  </description>
+</action>
+
+<action name="PasswordProtection.SavedPassword.ChangePasswordButtonClicked">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <description>
+    Reported when a user clicks on the change password button for a saved
+    password.
   </description>
 </action>
 
