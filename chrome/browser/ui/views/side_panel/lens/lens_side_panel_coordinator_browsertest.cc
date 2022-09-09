@@ -50,7 +50,7 @@ namespace {
 
 constexpr char kCloseAction[] = "LensUnifiedSidePanel.HideSidePanel";
 constexpr char kExpectedSidePanelContentUrlRegex[] =
-    ".*ep=ccm&re=dcsp&s=csp&st=\\d+&p=somepayload";
+    ".*ep=ccm&re=dcsp&s=csp&st=\\d+&p=somepayload&sideimagesearch=1";
 
 // Maintains image search test state. In particular, note that |menu_observer_|
 // must live until the right-click completes asynchronously.
@@ -68,17 +68,17 @@ class SearchImageWithUnifiedSidePanel : public InProcessBrowserTest {
   }
 
   void SetupUnifiedSidePanel() {
-    // ensures that the lens side panel coordinator is open and is valid when
-    // running the search
-    lens::CreateLensUnifiedSidePanelEntryForTesting(browser());
     SetupAndLoadValidImagePage();
+    // Ensures that the lens side panel coordinator is open and is valid when
+    // running the search.
+    lens::CreateLensUnifiedSidePanelEntryForTesting(browser());
     // The browser should open a side panel with the image.
     AttemptLensImageSearch();
 
-    // We need to verify the contents before opening the side panel
+    // We need to verify the contents before opening the side panel.
     content::WebContents* contents =
         lens::GetLensUnifiedSidePanelWebContentsForTesting(browser());
-    // // Wait for the side panel to open and finish loading web contents.
+    // Wait for the side panel to open and finish loading web contents.
     content::TestNavigationObserver nav_observer(contents);
     nav_observer.Wait();
   }
@@ -144,6 +144,7 @@ class SearchImageWithUnifiedSidePanel : public InProcessBrowserTest {
     data.SetURL(embedded_test_server()->GetURL(kSearchURL).spec());
     data.image_url = GetImageSearchURL().spec();
     data.image_url_post_params = kImageSearchPostParams;
+    data.side_image_search_param = "sideimagesearch";
 
     TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
     ASSERT_TRUE(template_url);

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/side_panel/lens/lens_unified_side_panel_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
+#include "components/search_engines/template_url_service_observer.h"
 
 class Browser;
 
@@ -21,7 +22,8 @@ class Browser;
 class LensSidePanelCoordinator
     : public BrowserUserData<LensSidePanelCoordinator>,
       public SidePanelViewStateObserver,
-      public SidePanelEntryObserver {
+      public SidePanelEntryObserver,
+      public TemplateURLServiceObserver {
  public:
   explicit LensSidePanelCoordinator(Browser* browser);
   LensSidePanelCoordinator(const LensSidePanelCoordinator&) = delete;
@@ -45,7 +47,21 @@ class LensSidePanelCoordinator
   void OnEntryShown(SidePanelEntry* entry) override;
   void OnEntryHidden(SidePanelEntry* entry) override;
 
+  bool IsDefaultSearchProviderGoogle();
+
+  TemplateURLService* GetTemplateURLService();
+
+  std::u16string GetComboboxLabel();
+
+  const gfx::VectorIcon& GetComboboxIcon();
+
   BrowserView* GetBrowserView();
+
+  // Removes the lens entry from the side panel.
+  void DeregisterLensFromSidePanel();
+
+  // TemplateURLServiceObserver
+  void OnTemplateURLServiceChanged() override;
 
   // SidePanelViewStateObserver
   void OnSidePanelDidClose() override;

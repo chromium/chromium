@@ -63,6 +63,7 @@ aggregate_vector_icons("components_vector_icons") {
     "history.icon",
     "https_valid.icon",
     "https_valid_arrow.icon",
+    "image_search.icon",
     "info_outline.icon",
     "insert_drive_file_outline.icon",
     "keyboard.icon",

@@ -196,23 +196,13 @@ void LensRegionSearchController::OnCaptureCompleted(
         lens::features::IsLensFullscreenSearchEnabled()
             ? lens::EntryPoint::CHROME_FULLSCREEN_SEARCH_MENU_ITEM
             : lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM;
-    lens::RenderingEnvironment rendering_environment =
-        lens::features::IsLensFullscreenSearchEnabled()
-            ? lens::RenderingEnvironment::
-                  ONELENS_AMBIENT_VISUAL_SEARCH_WEB_FULLSCREEN
-            : (lens::features::IsLensSidePanelEnabled()
-                   ? lens::RenderingEnvironment::
-                         ONELENS_DESKTOP_WEB_CHROME_SIDE_PANEL
-                   : lens::RenderingEnvironment::
-                         ONELENS_DESKTOP_WEB_FULLSCREEN);
-
-    bool use_side_panel = lens::features::IsLensSidePanelEnabled() &&
-                          !lens::features::IsLensFullscreenSearchEnabled();
-    core_tab_helper->SearchWithLensInNewTab(image, captured_image.Size(),
-                                            entry_point, rendering_environment,
-                                            use_side_panel);
+    core_tab_helper->SearchWithLens(
+        image, captured_image.Size(), entry_point,
+        /* is_region_search_request= */ true,
+        /* is_side_panel_enabled_for_feature= */
+        lens::features::IsLensSidePanelEnabledForRegionSearch());
   } else {
-    core_tab_helper->SearchByImageInNewTab(image, captured_image.Size());
+    core_tab_helper->SearchByImage(image, captured_image.Size());
   }
 
   RecordCaptureResult(lens::LensRegionSearchCaptureResult::SUCCESS);

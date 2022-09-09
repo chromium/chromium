@@ -124,7 +124,7 @@ void ContextMenuNativeDelegateImpl::SearchForImage(
     return;
 
   CoreTabHelper::FromWebContents(web_contents_)
-      ->SearchByImageInNewTab(render_frame_host, context_menu_params_->src_url);
+      ->SearchByImage(render_frame_host, context_menu_params_->src_url);
 }
 
 void ContextMenuNativeDelegateImpl::RetrieveImageForShare(

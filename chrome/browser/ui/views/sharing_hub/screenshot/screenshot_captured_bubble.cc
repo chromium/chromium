@@ -337,13 +337,11 @@ void ScreenshotCapturedBubble::SearchImageButtonPressed() {
   set_close_on_deactivate(!lens::features::EnablePersistentBubble());
 
   CoreTabHelper::FromWebContents(web_contents_.get())
-      ->SearchWithLensInNewTab(
-          image_, GetImageSize(), lens::EntryPoint::CHROME_SCREENSHOT_SEARCH,
-          lens::features::UseSidePanelForScreenshotSharing()
-              ? lens::RenderingEnvironment::
-                    ONELENS_DESKTOP_WEB_CHROME_SIDE_PANEL
-              : lens::RenderingEnvironment::ONELENS_DESKTOP_WEB_FULLSCREEN,
-          lens::features::UseSidePanelForScreenshotSharing());
+      ->SearchWithLens(image_, GetImageSize(),
+                       lens::EntryPoint::CHROME_SCREENSHOT_SEARCH,
+                       /* is_region_search_request= */ false,
+                       /* is_side_panel_enabled_for_feature= */
+                       lens::features::UseSidePanelForScreenshotSharing());
 
   // Need to manually close the screenshot bubble if side panel is enabled
   if (lens::features::UseSidePanelForScreenshotSharing() &&

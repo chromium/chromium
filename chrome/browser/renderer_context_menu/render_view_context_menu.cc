@@ -3578,13 +3578,10 @@ void RenderViewContextMenu::ExecSearchLensForImage() {
   RenderFrameHost* render_frame_host = GetRenderFrameHost();
   if (!render_frame_host)
     return;
-
-  core_tab_helper->SearchWithLensInNewTab(
+  core_tab_helper->SearchWithLens(
       render_frame_host, params().src_url,
       lens::EntryPoint::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM,
-      lens::features::IsLensSidePanelEnabled()
-          ? lens::RenderingEnvironment::ONELENS_DESKTOP_WEB_CHROME_SIDE_PANEL
-          : lens::RenderingEnvironment::ONELENS_DESKTOP_WEB_FULLSCREEN,
+      /* is_side_panel_enabled_for_feature= */
       lens::features::IsLensSidePanelEnabled());
 }
 
@@ -3650,7 +3647,7 @@ void RenderViewContextMenu::ExecSearchWebForImage() {
   RenderFrameHost* render_frame_host = GetRenderFrameHost();
   if (!render_frame_host)
     return;
-  core_tab_helper->SearchByImageInNewTab(render_frame_host, params().src_url);
+  core_tab_helper->SearchByImage(render_frame_host, params().src_url);
 }
 
 void RenderViewContextMenu::ExecLoadImage() {
