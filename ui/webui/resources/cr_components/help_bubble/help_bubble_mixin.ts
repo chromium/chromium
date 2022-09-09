@@ -169,9 +169,11 @@ export const HelpBubbleMixin = dedupingMixin(
               this.onHelpBubbleTimedOut_.bind(this));
 
           bubble.anchorId = anchorId;
-          bubble.closeText = params.closeButtonAltText;
+          bubble.closeButtonAltText = params.closeButtonAltText;
           bubble.position = params.position;
           bubble.bodyText = params.bodyText;
+          bubble.bodyIconName = params.bodyIconName || null;
+          bubble.bodyIconAltText = params.bodyIconAltText;
           bubble.forceCloseButton = params.forceCloseButton;
           bubble.titleText = params.titleText || '';
           bubble.progress = params.progress || null;

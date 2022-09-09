@@ -6,6 +6,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 
 import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
+import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {HELP_BUBBLE_DISMISSED_EVENT, HELP_BUBBLE_TIMED_OUT_EVENT, HelpBubbleDismissedEvent, HelpBubbleElement, HelpBubbleTimedOutEvent} from 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 import {HelpBubbleArrowPosition, HelpBubbleButtonParams} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -136,6 +137,40 @@ suite('CrComponentsHelpBubbleTest', () => {
     assertTrue(titleElement.hidden, 'title element should be hidden');
   });
 
+  test('help bubble body icon shows when set', () => {
+    helpBubble.anchorId = 'p1';
+    helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
+    helpBubble.bodyText = HELP_BUBBLE_BODY;
+    helpBubble.bodyIconName = 'icon_name';
+    helpBubble.bodyIconAltText = '';
+    helpBubble.show();
+
+    assertTrue(isVisible(helpBubble), 'help bubble should be visible');
+    const bodyIcon = helpBubble.$.bodyIcon;
+    assertTrue(!!bodyIcon, 'body icon element should exist');
+    assertFalse(bodyIcon.hidden, 'body icon element should not be hidden');
+    assertTrue(isVisible(bodyIcon), 'body icon element should be visible');
+    assertEquals(
+        bodyIcon.querySelector<IronIconElement>('iron-icon')!.icon,
+        'iph:icon_name',
+        'bodyIcon passes icon name to iron-icon with iph namespace');
+  });
+
+  test('help bubble body icon is hidden when null', () => {
+    helpBubble.anchorId = 'p1';
+    helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
+    helpBubble.bodyText = HELP_BUBBLE_BODY;
+    helpBubble.bodyIconName = null;
+    helpBubble.bodyIconAltText = '';
+    helpBubble.show();
+
+    assertTrue(isVisible(helpBubble), 'help bubble should be visible');
+    const bodyIcon = helpBubble.$.bodyIcon;
+    assertTrue(!!bodyIcon, 'body icon element should exist');
+    assertTrue(bodyIcon.hidden, 'body icon element should be hidden');
+    assertFalse(isVisible(bodyIcon), 'body icon element should not be visible');
+  });
+
   test('help bubble closes', () => {
     helpBubble.anchorId = 'title';
     helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
@@ -175,10 +210,15 @@ suite('CrComponentsHelpBubbleTest', () => {
 
   test('help bubble close button has correct alt text', () => {
     const CLOSE_TEXT: string = 'Close button text.';
-    helpBubble.closeText = CLOSE_TEXT;
+    const ICON_TEXT: string = 'Body icon text.';
+    helpBubble.closeButtonAltText = CLOSE_TEXT;
+    helpBubble.bodyIconAltText = ICON_TEXT;
     assertEquals(
         CLOSE_TEXT, helpBubble.$.close.getAttribute('aria-label'),
         'close button should have aria-label content');
+    assertEquals(
+        ICON_TEXT, helpBubble.$.bodyIcon.getAttribute('aria-label'),
+        'body icon should have aria-label content');
   });
 
   test('help bubble click close button generates event', async () => {

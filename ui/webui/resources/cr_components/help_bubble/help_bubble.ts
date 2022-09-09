@@ -12,6 +12,9 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
+import '../../cr_elements/shared_vars_css.m.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './help_bubble_icons.html.js';
 
 import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -44,6 +47,7 @@ export interface HelpBubbleElement {
     arrow: HTMLElement,
     buttons: HTMLElement,
     close: CrIconButtonElement,
+    bodyIcon: HTMLElement,
     main: HTMLElement,
     progress: HTMLElement,
     topContainer: HTMLElement,
@@ -80,11 +84,12 @@ export class HelpBubbleElement extends PolymerElement {
   anchorId: string;
   bodyText: string;
   titleText: string;
-  closeText: string;
+  closeButtonAltText: string;
   position: HelpBubbleArrowPosition;
   buttons: HelpBubbleButtonParams[] = [];
   progress: Progress|null = null;
-  infoIcon: string|null = null;
+  bodyIconName: string|null;
+  bodyIconAltText: string;
   forceCloseButton: boolean;
   timeoutMs: number|null = null;
   timeoutTimerId: number|null = null;
@@ -215,10 +220,8 @@ export class HelpBubbleElement extends PolymerElement {
     return buttons.length === 0 || forceCloseButton;
   }
 
-  private shouldShowInfoIcon_(progress: Progress|null, infoIcon: string):
-      boolean {
-    // TODO(mickeyburks): Info icon needs to be added to HelpBubbleParams
-    return !progress && infoIcon !== null && infoIcon !== '';
+  private shouldShowBodyIcon_(bodyIconName: string): boolean {
+    return bodyIconName !== null && bodyIconName !== '';
   }
 
   private onButtonClick_(e: DomRepeatEvent<HelpBubbleButtonParams>) {

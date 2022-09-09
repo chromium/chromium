@@ -66,6 +66,32 @@ help_bubble::mojom::HelpBubbleArrowPosition HelpBubbleArrowToPosition(
   return help_bubble::mojom::HelpBubbleArrowPosition::TOP_CENTER;
 }
 
+std::string SnakeCaseFromCamelCase(std::string input) {
+  std::string output;
+  output.reserve(input.size());
+  for (const char c : input) {
+    if (std::isupper(c) && !output.empty())
+      output.push_back('_');
+    output.push_back(std::tolower(c));
+  }
+  return output;
+}
+
+// Retrieve the file name from the generated gfx::VectorIcon name
+// - Remove the 'k' prefix and 'Icon' suffix from gfx::VectorIcon.name
+// - The remaining portion of the name is converted from CamelCase to
+//      snake_case to yield the original file name
+std::string GetFileNameFromIcon(raw_ptr<const gfx::VectorIcon> icon) {
+  std::string icon_name = icon->name;
+  constexpr char kPrefix[] = "k";
+  constexpr char kSuffix[] = "Icon";
+  DCHECK(base::StartsWith(icon_name, kPrefix));
+  DCHECK(base::EndsWith(icon_name, kSuffix));
+  icon_name.erase(0, strlen(kPrefix));
+  icon_name.erase(icon_name.length() - strlen(kSuffix));
+  return SnakeCaseFromCamelCase(icon_name);
+}
+
 }  // namespace
 
 struct HelpBubbleHandlerBase::ElementData {
@@ -148,15 +174,18 @@ std::unique_ptr<HelpBubbleWebUI> HelpBubbleHandlerBase::CreateHelpBubble(
                                    : kDefaultTimeoutWithButtons);
   if (!timeout.is_zero())
     mojom_params->timeout = timeout;
+  if (data.params->body_icon)
+    mojom_params->body_icon_name = GetFileNameFromIcon(data.params->body_icon);
+  mojom_params->body_icon_alt_text =
+      base::UTF16ToUTF8(data.params->body_icon_alt_text);
   mojom_params->position = HelpBubbleArrowToPosition(data.params->arrow);
   if (data.params->progress) {
     mojom_params->progress = help_bubble::mojom::Progress::New();
     mojom_params->progress->current = data.params->progress->first;
     mojom_params->progress->total = data.params->progress->second;
   }
-  if (!data.params->title_text.empty()) {
+  if (!data.params->title_text.empty())
     mojom_params->title_text = base::UTF16ToUTF8(data.params->title_text);
-  }
   for (auto& button : data.params->buttons) {
     auto mojom_button = help_bubble::mojom::HelpBubbleButtonParams::New();
     mojom_button->text = base::UTF16ToUTF8(button.text);

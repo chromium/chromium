@@ -5,6 +5,7 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 
+import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {HelpBubbleElement} from 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 import {HelpBubbleArrowPosition, HelpBubbleClientCallbackRouter, HelpBubbleClientRemote, HelpBubbleClosedReason, HelpBubbleHandlerInterface, HelpBubbleParams} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
@@ -18,6 +19,7 @@ const TITLE_NATIVE_ID: string = 'kHelpBubbleMixinTestTitleElementId';
 const PARAGRAPH_NATIVE_ID: string = 'kHelpBubbleMixinTestParagraphElementId';
 const LIST_NATIVE_ID: string = 'kHelpBubbleMixinTestListElementId';
 const CLOSE_BUTTON_ALT_TEXT: string = 'Close help bubble.';
+const BODY_ICON_ALT_TEXT: string = 'Icon help bubble.';
 
 const HelpBubbleMixinTestElementBase = HelpBubbleMixin(PolymerElement) as {
   new (): PolymerElement & HelpBubbleMixinInterface,
@@ -169,6 +171,8 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
   defaultParams.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
   defaultParams.position = HelpBubbleArrowPosition.BOTTOM_CENTER;
   defaultParams.bodyText = 'This is a help bubble.';
+  defaultParams.bodyIconName = 'lightbulb_outline';
+  defaultParams.bodyIconAltText = BODY_ICON_ALT_TEXT;
   defaultParams.buttons = [];
 
   test('help bubble mixin shows bubble when called directly', () => {
@@ -241,6 +245,33 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     assertEquals(CLOSE_BUTTON_ALT_TEXT, closeButton.getAttribute('aria-label'));
   });
 
+  test('help bubble mixin uses body icon', async () => {
+    testProxy.getCallbackRouterRemote().showHelpBubble(defaultParams);
+    await waitAfterNextRender(container);
+    assertTrue(container.isHelpBubbleShowing());
+    const bubble = container.getHelpBubbleFor('p1')!;
+    assertEquals(bubble.bodyIconName, defaultParams.bodyIconName);
+    const bodyIcon = bubble.shadowRoot!.querySelector<HTMLElement>('#bodyIcon');
+    assertTrue(!!bodyIcon);
+    const ironIcon = bodyIcon!.querySelector<IronIconElement>('iron-icon');
+    assertTrue(!!ironIcon);
+    assertEquals(`iph:${defaultParams.bodyIconName}`, ironIcon.icon);
+  });
+
+  test(
+      'help bubble mixin does not use body icon when not defined', async () => {
+        const noIconParams = {...defaultParams, bodyIconName: undefined};
+        testProxy.getCallbackRouterRemote().showHelpBubble(noIconParams);
+        await waitAfterNextRender(container);
+        assertTrue(container.isHelpBubbleShowing());
+        const bubble = container.getHelpBubbleFor('p1')!;
+        assertEquals(bubble.bodyIconName, null);
+        const bodyIcon =
+            bubble.shadowRoot!.querySelector<HTMLElement>('#bodyIcon');
+        assertTrue(!!bodyIcon);
+        assertTrue(bodyIcon.hidden);
+      });
+
   test(
       'help bubble mixin hides help bubble when called via proxy', async () => {
         testProxy.getCallbackRouterRemote().showHelpBubble(defaultParams);
@@ -267,6 +298,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
         const params: HelpBubbleParams = new HelpBubbleParams();
         params.nativeIdentifier = 'This is an unregistered identifier';
         params.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
+        params.bodyIconAltText = BODY_ICON_ALT_TEXT;
         params.position = HelpBubbleArrowPosition.BOTTOM_CENTER;
         params.bodyText = 'This is a help bubble.';
         params.buttons = [];
@@ -394,6 +426,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
   const paramsWithTitle: HelpBubbleParams = new HelpBubbleParams();
   paramsWithTitle.nativeIdentifier = TITLE_NATIVE_ID;
   paramsWithTitle.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
+  paramsWithTitle.bodyIconAltText = BODY_ICON_ALT_TEXT;
   paramsWithTitle.position = HelpBubbleArrowPosition.TOP_CENTER;
   paramsWithTitle.bodyText = 'This is another help bubble.';
   paramsWithTitle.titleText = 'This is a title';
@@ -433,6 +466,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
   const paramsWithProgress: HelpBubbleParams = new HelpBubbleParams();
   paramsWithProgress.nativeIdentifier = LIST_NATIVE_ID;
   paramsWithProgress.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
+  paramsWithProgress.bodyIconAltText = BODY_ICON_ALT_TEXT;
   paramsWithProgress.position = HelpBubbleArrowPosition.TOP_CENTER;
   paramsWithProgress.bodyText = 'This is another help bubble.';
   paramsWithProgress.progress = {current: 1, total: 3};
@@ -493,6 +527,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
   const buttonParams: HelpBubbleParams = new HelpBubbleParams();
   buttonParams.nativeIdentifier = PARAGRAPH_NATIVE_ID;
   buttonParams.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
+  buttonParams.bodyIconAltText = BODY_ICON_ALT_TEXT;
   buttonParams.position = HelpBubbleArrowPosition.TOP_CENTER;
   buttonParams.bodyText = 'This is another help bubble.';
   buttonParams.titleText = 'This is a title';
@@ -529,6 +564,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
   const timeoutParams: HelpBubbleParams = new HelpBubbleParams();
   timeoutParams.nativeIdentifier = PARAGRAPH_NATIVE_ID;
   timeoutParams.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
+  timeoutParams.bodyIconAltText = BODY_ICON_ALT_TEXT;
   timeoutParams.position = HelpBubbleArrowPosition.TOP_CENTER;
   timeoutParams.bodyText = 'This is another help bubble.';
   timeoutParams.titleText = 'This is a title';

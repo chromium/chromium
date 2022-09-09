@@ -183,11 +183,19 @@
     border: 2px solid var(--help-bubble-text-color);
   }
 
-  #infoIcon {
-    --info-icon-button-size: 24px;
-    height: var(--info-icon-button-size);
+  #bodyIcon {
+    --body-icon-button-size: 24px;
+    --iron-icon-height: 18px;
+    --iron-icon-width: 18px;
+    background-color: var(--help-bubble-text-color);
+    border-radius: 50%;
+    box-sizing: border-box;
+    color: var(--help-bubble-background);
+    height: var(--body-icon-button-size);
     margin-inline-end: var(--help-bubble-element-spacing);
-    width: var(--info-icon-button-size);
+    padding: 3px;
+    text-align: center;
+    width: var(--body-icon-button-size);
   }
 
   #buttons {
@@ -224,12 +232,15 @@
 
 <div class="help-bubble">
   <div id="topContainer">
+    <div id="bodyIcon" hidden$="[[!shouldShowBodyIcon_(bodyIconName)]]"
+      aria-label$="[[bodyIconAltText]]">
+      <iron-icon icon="iph:[[bodyIconName]]"></iron-icon>
+    </div>
     <div id="progress" hidden$="[[!progress]]">
       <template is="dom-repeat" items="[[progressData_]]">
         <div class$="[[getProgressClass_(index)]]"></div>
       </template>
     </div>
-    <div id="infoIcon" hidden$="[[!shouldShowInfoIcon_(progress, infoIcon)]]"></div>
     <div class="title" hidden$="[[!shouldShowTitleInTopContainer_(progress, titleText)]]">
       [[titleText]]
     </div>
@@ -238,11 +249,11 @@
     </div>
     <cr-icon-button id="close" iron-icon="cr:close"
       hidden$="[[!shouldShowCloseButton_(buttons, forceCloseButton)]]"
-      aria-label$="[[closeText]]" on-click="dismiss_">
+      aria-label$="[[closeButtonAltText]]" on-click="dismiss_">
     </cr-icon-button>
   </div>
   <div id="main" hidden$="[[!shouldShowBodyInMain_(progress, titleText)]]">
-    <div id="middleRowSpacer" hidden$="[[!shouldShowInfoIcon_(progress, infoIcon)]]"></div>
+    <div id="middleRowSpacer" hidden$="[[!shouldShowBodyIcon_(bodyIconName)]]"></div>
     <div class="body">[[bodyText]]</div>
   </div>
   <div id="buttons" hidden$="[[!buttons.length]]">

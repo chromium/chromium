@@ -38,6 +38,7 @@ source_set("unit_tests") {
     "//components/user_education/common",
     "//components/user_education/test",
     "//components/variations",
+    "//components/vector_icons",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",

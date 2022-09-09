@@ -5,9 +5,11 @@
 # Files holding a Polymer element definition AND have an equivalent .html file.
 _web_component_files = [ "help_bubble.ts" ]
 
+_icon_files = [ "help_bubble_icons.ts" ]
+
 # Files that are passed as input to html_to_wrapper().
 html_files = []
-foreach(f, _web_component_files) {
+foreach(f, _web_component_files + _icon_files) {
   html_files += [ string_replace(f, ".ts", ".html") ]
 }
 
