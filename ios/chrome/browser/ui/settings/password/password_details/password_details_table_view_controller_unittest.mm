@@ -4,16 +4,17 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/ios/ios_util.h"
-#include "base/mac/foundation_util.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
+#import "base/ios/ios_util.h"
+#import "base/mac/foundation_util.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#include "components/password_manager/core/common/password_manager_features.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "components/password_manager/core/common/password_manager_features.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
@@ -24,13 +25,13 @@
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
-#include "ios/chrome/grit/ios_chromium_strings.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ios/chrome/test/app/password_test_util.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/app/password_test_util.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -543,6 +544,7 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestBlockedOrigin) {
 
 // Tests copy website works as intended.
 TEST_F(PasswordDetailsTableViewControllerTest, CopySite) {
+  base::HistogramTester histogram_tester;
   SetPassword();
 
   PasswordDetailsTableViewController* passwordDetails =
@@ -559,10 +561,14 @@ TEST_F(PasswordDetailsTableViewControllerTest, CopySite) {
   EXPECT_NSEQ(@"http://www.example.com/", generalPasteboard.string);
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SETTINGS_SITE_WAS_COPIED_MESSAGE),
               snack_bar().snackbarMessage);
+  // Verify that the error histogram was emitted to the success bucket.
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.iOS.PasswordDetails.CopyDetailsFailed", false, 1);
 }
 
 // Tests copy username works as intended.
 TEST_F(PasswordDetailsTableViewControllerTest, CopyUsername) {
+  base::HistogramTester histogram_tester;
   SetPassword();
   PasswordDetailsTableViewController* passwordDetails =
       base::mac::ObjCCastStrict<PasswordDetailsTableViewController>(
@@ -580,10 +586,15 @@ TEST_F(PasswordDetailsTableViewControllerTest, CopyUsername) {
   EXPECT_NSEQ(
       l10n_util::GetNSString(IDS_IOS_SETTINGS_USERNAME_WAS_COPIED_MESSAGE),
       snack_bar().snackbarMessage);
+
+  // Verify that the error histogram was emitted to the success bucket.
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.iOS.PasswordDetails.CopyDetailsFailed", false, 1);
 }
 
 // Tests copy password works as intended when reauth was successful.
 TEST_F(PasswordDetailsTableViewControllerTest, CopyPasswordSuccess) {
+  base::HistogramTester histogram_tester;
   SetPassword();
 
   PasswordDetailsTableViewController* passwordDetails =
@@ -605,10 +616,14 @@ TEST_F(PasswordDetailsTableViewControllerTest, CopyPasswordSuccess) {
   EXPECT_NSEQ(
       l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_WAS_COPIED_MESSAGE),
       snack_bar().snackbarMessage);
+  // Verify that the error histogram was emitted to the success bucket.
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.iOS.PasswordDetails.CopyDetailsFailed", false, 1);
 }
 
 // Tests copy password works as intended.
 TEST_F(PasswordDetailsTableViewControllerTest, CopyPasswordFail) {
+  base::HistogramTester histogram_tester;
   SetPassword();
 
   PasswordDetailsTableViewController* passwordDetails =
@@ -626,6 +641,27 @@ TEST_F(PasswordDetailsTableViewControllerTest, CopyPasswordFail) {
   EXPECT_NSEQ(
       l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_WAS_NOT_COPIED_MESSAGE),
       snack_bar().snackbarMessage);
+
+  // Verify that the error histogram was emitted to the success bucket.
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.iOS.PasswordDetails.CopyDetailsFailed", false, 1);
+}
+
+// Tests error histogram is emitted when we fail copying a field.
+TEST_F(PasswordDetailsTableViewControllerTest, CopyDetailsFailedEmitted) {
+  base::HistogramTester histogram_tester;
+
+  PasswordDetailsTableViewController* passwordDetails =
+      base::mac::ObjCCastStrict<PasswordDetailsTableViewController>(
+          controller());
+
+  // When no menu controller is passed, there's no way of knowing which field
+  // should be copied to the pasteboard and thus copying should fail.
+  [passwordDetails copyPasswordDetails:nil];
+
+  // Verify that the error histogram was emitted to the failure bucket.
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.iOS.PasswordDetails.CopyDetailsFailed", true, 1);
 }
 
 // Tests that there are multiple sections in the edit view.

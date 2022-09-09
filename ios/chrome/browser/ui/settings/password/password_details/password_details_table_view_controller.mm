@@ -1252,9 +1252,11 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
       break;
     case ItemTypeFederation:
       generalPasteboard.string = self.password.federation;
+      [self logCopyPasswordDetailsFailure:NO];
       return;
     case ItemTypePassword:
       [self attemptToShowPasswordFor:ReauthenticationReasonCopy];
+      [self logCopyPasswordDetailsFailure:NO];
       return;
     case ItemTypeDuplicateCredentialMessage:
     case ItemTypeDuplicateCredentialButton:
@@ -1262,7 +1264,18 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
       NOTREACHED();
       return;
   }
-  [self showToast:message forSuccess:YES];
+
+  if (message.length) {
+    [self logCopyPasswordDetailsFailure:NO];
+    [self showToast:message forSuccess:YES];
+  } else {
+    // TODO(crbug.com/1359331): There's a bug that is caused by `menu` being
+    // nil, which leads to a nil message and a crash. Avoiding the crash and
+    // logging for monitoring the issue. Since `menu` is an instance of
+    // `UIMenuController` which is deprecated on iOS 16, this crash should go
+    // away once we switch to `UIEditMenuInteraction`.
+    [self logCopyPasswordDetailsFailure:YES];
+  }
 }
 
 #pragma mark - UIResponder
@@ -1317,6 +1330,11 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
           password_manager::metrics_util::ACCESS_PASSWORD_COUNT);
       break;
   }
+}
+
+- (void)logCopyPasswordDetailsFailure:(BOOL)failure {
+  base::UmaHistogramBoolean(
+      "PasswordManager.iOS.PasswordDetails.CopyDetailsFailed", failure);
 }
 
 #pragma mark - Public
