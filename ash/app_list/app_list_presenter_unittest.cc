@@ -88,7 +88,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
@@ -3766,13 +3765,7 @@ TEST_P(AppListPresenterNonBubbleTest, SearchBoxDeactivatedOnModelChange) {
 
 // Tests that search UI gets closed if search model gets changed.
 // TODO(crbug.com/1273162): Fix for ProductivityLauncher enabled.
-// TODO(crbug.com/1361916): Re-enable flaky test
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_SearchClearedOnModelChange DISABLED_SearchClearedOnModelChange
-#else
-#define MAYBE_SearchClearedOnModelChange SearchClearedOnModelChange
-#endif
-TEST_F(AppListPresenterNonBubbleTest, MAYBE_SearchClearedOnModelChange) {
+TEST_F(AppListPresenterNonBubbleTest, SearchClearedOnModelChange) {
   EnableTabletMode(true);
 
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
@@ -3831,11 +3824,17 @@ TEST_F(AppListPresenterNonBubbleTest, MAYBE_SearchClearedOnModelChange) {
 
   auto test_result_override = std::make_unique<TestSearchResult>();
   test_result_override->set_result_id("test_override");
+  // Give this item a name so that the accessibility paint checks pass.
+  // (Focusable items should have accessible names.)
+  test_result_override->SetAccessibleName(u"test_override");
   test_result_override->set_display_type(SearchResultDisplayType::kList);
   search_model_override->results()->Add(std::move(test_result_override));
 
   auto test_tile_result_override = std::make_unique<TestSearchResult>();
   test_tile_result_override->set_result_id("test_tile_override");
+  // Give this item a name so that the accessibility paint checks pass.
+  // (Focusable items should have accessible names.)
+  test_tile_result_override->SetAccessibleName(u"test_tile_override");
   test_tile_result_override->set_display_type(SearchResultDisplayType::kTile);
   search_model_override->results()->Add(std::move(test_tile_result_override));
 
