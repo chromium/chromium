@@ -503,7 +503,12 @@ void SystemTrayClientImpl::ShowAccessibilityHelp() {
 
 void SystemTrayClientImpl::ShowAccessibilitySettings() {
   base::RecordAction(base::UserMetricsAction("ShowAccessibilitySettings"));
-  if (::features::IsAccessibilityOSSettingsVisibilityEnabled()) {
+  // TODO(crbug.com/1358729): We show the old Manage Accessibility page in kiosk
+  // mode, so users can't get to other OS Settings (such as Wi-Fi, Date / Time).
+  // We plan to remove this after we add a standalone OS Accessibility page for
+  // kiosk mode, which blocks access to other OS settings.
+  bool is_kiosk = user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp();
+  if (!is_kiosk && ::features::IsAccessibilityOSSettingsVisibilityEnabled()) {
     ShowSettingsSubPageForActiveUser(
         chromeos::settings::mojom::kAccessibilitySectionPath);
   } else {
