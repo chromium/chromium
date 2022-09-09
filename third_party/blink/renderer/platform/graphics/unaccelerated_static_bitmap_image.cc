@@ -23,6 +23,8 @@ namespace blink {
 scoped_refptr<UnacceleratedStaticBitmapImage>
 UnacceleratedStaticBitmapImage::Create(sk_sp<SkImage> image,
                                        ImageOrientation orientation) {
+  if (!image)
+    return nullptr;
   DCHECK(!image->isTextureBacked());
   return base::AdoptRef(
       new UnacceleratedStaticBitmapImage(std::move(image), orientation));
