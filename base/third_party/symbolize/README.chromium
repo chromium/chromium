@@ -26,4 +26,6 @@ Local modifications:
 - 004-add-missing-symbolize-header.patch: add an include for symbolize.h to
   symbolize.cc. This patch should be upstreamed.
 - 005-expose-file-helpers.patch: expose helpers for working with symbol files.
-- 006-clang-format.patch: clang-format all source files.
+- 006-use-sandbox-hook-for-open-object-file.patch: use the sandbox hook for
+  the exposed helper for opening object files. This patch should be upstreamed.
+- 007-clang-format.patch: apply clang-format to make PRESUBMIT.py happy.

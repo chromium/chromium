@@ -120,7 +120,7 @@ index 46869226024da..b935e3ec9cded 100644
 -#endif // GLOG_LOGGING_H
 +#endif  // GLOG_LOGGING_H
 diff --git a/base/third_party/symbolize/symbolize.cc b/base/third_party/symbolize/symbolize.cc
-index 3c72fd1183f48..fbf8e49771d0d 100644
+index 20d4d4106d65b..5287e5bb11007 100644
 --- a/base/third_party/symbolize/symbolize.cc
 +++ b/base/third_party/symbolize/symbolize.cc
 @@ -96,7 +96,7 @@ void InstallSymbolizeOpenObjectFileCallback(
@@ -256,7 +256,25 @@ index 3c72fd1183f48..fbf8e49771d0d 100644
      } else {  // Encountered the first non-hex character.
        break;
      }
-@@ -652,7 +662,11 @@ int OpenObjectFileContainingPcAndGetStartAddress(uint64_t pc,
+@@ -646,12 +656,11 @@ static int OpenObjectFileContainingPcAndGetStartAddressNoHook(
+   }
+ }
+ 
+-int OpenObjectFileContainingPcAndGetStartAddress(
+-    uint64_t pc,
+-    uint64_t& start_address,
+-    uint64_t& base_address,
+-    char* out_file_name,
+-    size_t out_file_name_size) {
++int OpenObjectFileContainingPcAndGetStartAddress(uint64_t pc,
++                                                 uint64_t& start_address,
++                                                 uint64_t& base_address,
++                                                 char* out_file_name,
++                                                 size_t out_file_name_size) {
+   if (g_symbolize_open_object_file_callback) {
+     return g_symbolize_open_object_file_callback(
+         pc, start_address, base_address, out_file_name, out_file_name_size);
+@@ -667,7 +676,11 @@ int OpenObjectFileContainingPcAndGetStartAddress(
  // bytes. Output will be truncated as needed, and a NUL character is always
  // appended.
  // NOTE: code from sandbox/linux/seccomp-bpf/demo.cc.
@@ -269,7 +287,7 @@ index 3c72fd1183f48..fbf8e49771d0d 100644
    // Make sure we can write at least one NUL byte.
    size_t n = 1;
    if (n > sz) {
-@@ -729,7 +743,8 @@ static void SafeAppendHexNumber(uint64_t value, char* dest, size_t dest_size) {
+@@ -744,7 +757,8 @@ static void SafeAppendHexNumber(uint64_t value, char* dest, size_t dest_size) {
  // and "out" is used as its output.
  // To keep stack consumption low, we would like this function to not
  // get inlined.
@@ -279,20 +297,7 @@ index 3c72fd1183f48..fbf8e49771d0d 100644
                                                      size_t out_size) {
    uint64_t pc0 = reinterpret_cast<uintptr_t>(pc);
    uint64_t start_address = 0;
-@@ -747,10 +762,8 @@ static ATTRIBUTE_NOINLINE bool SymbolizeAndDemangle(void *pc, char *out,
-                                                       base_address, out + 1,
-                                                       out_size - 1);
-   } else {
--    object_fd = OpenObjectFileContainingPcAndGetStartAddress(pc0, start_address,
--                                                             base_address,
--                                                             out + 1,
--                                                             out_size - 1);
-+    object_fd = OpenObjectFileContainingPcAndGetStartAddress(
-+        pc0, start_address, base_address, out + 1, out_size - 1);
-   }
- 
-   FileDescriptor wrapped_object_fd(object_fd);
-@@ -815,14 +828,16 @@ static ATTRIBUTE_NOINLINE bool SymbolizeAndDemangle(void *pc, char *out,
+@@ -821,14 +835,16 @@ static ATTRIBUTE_NOINLINE bool SymbolizeAndDemangle(void *pc, char *out,
  
  _END_GOOGLE_NAMESPACE_
  
@@ -311,7 +316,7 @@ index 3c72fd1183f48..fbf8e49771d0d 100644
                                                      size_t out_size) {
    Dl_info info;
    if (dladdr(pc, &info)) {
-@@ -876,7 +891,8 @@ private:
+@@ -882,7 +898,8 @@ private:
    SymInitializer& operator=(const SymInitializer&);
  };
  
@@ -321,7 +326,7 @@ index 3c72fd1183f48..fbf8e49771d0d 100644
                                                      size_t out_size) {
    const static SymInitializer symInitializer;
    if (!symInitializer.ready) {
-@@ -911,7 +927,7 @@ _END_GOOGLE_NAMESPACE_
+@@ -917,7 +934,7 @@ _END_GOOGLE_NAMESPACE_
  
  _START_GOOGLE_NAMESPACE_
  
