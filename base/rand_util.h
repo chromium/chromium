@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 
@@ -20,6 +21,20 @@ class RandomGenerator;
 }  // namespace partition_alloc
 
 namespace base {
+
+namespace internal {
+
+#if BUILDFLAG(IS_ANDROID)
+// Sets the implementation of RandBytes according to the corresponding
+// base::Feature. Thread safe: allows to switch while RandBytes() is in use.
+void ConfigureRandBytesFieldTrial();
+#endif
+
+#if !BUILDFLAG(IS_NACL)
+void ConfigureBoringSSLBackedRandBytesFieldTrial();
+#endif
+
+}  // namespace internal
 
 // Returns a random number in range [0, UINT64_MAX]. Thread-safe.
 BASE_EXPORT uint64_t RandUint64();
@@ -36,12 +51,6 @@ BASE_EXPORT double RandDouble();
 // Given input |bits|, convert with maximum precision to a double in
 // the range [0, 1). Thread-safe.
 BASE_EXPORT double BitsToOpenEndedUnitInterval(uint64_t bits);
-
-#if BUILDFLAG(IS_ANDROID)
-// Sets the implementation of RandBytes according to the corresponding
-// base::Feature. Thread safe: allows to switch while RandBytes() is in use.
-BASE_EXPORT void ConfigureRandBytesFieldTrial();
-#endif
 
 // Fills |output_length| bytes of |output| with random data. Thread-safe.
 //

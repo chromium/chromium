@@ -30,6 +30,13 @@
 #include <sys/random.h>
 #endif
 
+#if !BUILDFLAG(IS_NACL)
+#include "third_party/boringssl/src/include/openssl/crypto.h"
+#include "third_party/boringssl/src/include/openssl/rand.h"
+#endif
+
+namespace base {
+
 namespace {
 
 #if BUILDFLAG(IS_AIX)
@@ -115,8 +122,10 @@ bool GetRandomSyscall(void* output, size_t output_length) {
 #if BUILDFLAG(IS_ANDROID)
 std::atomic<bool> g_use_getrandom;
 
-const base::Feature kUseGetrandomForRandBytes{
-    "UseGetrandomForRandBytes", base::FEATURE_DISABLED_BY_DEFAULT};
+// Note: the BoringSSL feature takes precedence over the getrandom() trial if
+// both are enabled.
+const Feature kUseGetrandomForRandBytes{"UseGetrandomForRandBytes",
+                                        FEATURE_DISABLED_BY_DEFAULT};
 
 bool UseGetrandom() {
   return g_use_getrandom.load(std::memory_order_relaxed);
@@ -129,7 +138,7 @@ bool UseGetrandom() {
 
 }  // namespace
 
-namespace base {
+namespace internal {
 
 #if BUILDFLAG(IS_ANDROID)
 void ConfigureRandBytesFieldTrial() {
@@ -138,12 +147,41 @@ void ConfigureRandBytesFieldTrial() {
 }
 #endif
 
-// NOTE: In an ideal future, all implementations of this function will just
-// wrap BoringSSL's `RAND_bytes`. TODO(crbug.com/995996): Figure out the
-// build/test/performance issues with dcheng's CL
-// (https://chromium-review.googlesource.com/c/chromium/src/+/1545096) and land
-// it or some form of it.
+namespace {
+
+#if !BUILDFLAG(IS_NACL)
+// The BoringSSl helpers are duplicated in rand_util_fuchsia.cc and
+// rand_util_win.cc.
+std::atomic<bool> g_use_boringssl;
+
+const Feature kUseBoringSSLForRandBytes{"UseBoringSSLForRandBytes",
+                                        FEATURE_DISABLED_BY_DEFAULT};
+
+}  // namespace
+
+void ConfigureBoringSSLBackedRandBytesFieldTrial() {
+  g_use_boringssl.store(FeatureList::IsEnabled(kUseBoringSSLForRandBytes),
+                        std::memory_order_relaxed);
+}
+
+bool UseBoringSSLForRandBytes() {
+  return g_use_boringssl.load(std::memory_order_relaxed);
+}
+#endif
+
+}  // namespace internal
+
 void RandBytes(void* output, size_t output_length) {
+#if !BUILDFLAG(IS_NACL)
+  // The BoringSSL experiment takes priority over everything else.
+  if (internal::UseBoringSSLForRandBytes()) {
+    // Ensure BoringSSL is initialized so it can use things like RDRAND.
+    CRYPTO_library_init();
+    // BoringSSL's RAND_bytes always returns 1. Any error aborts the program.
+    (void)RAND_bytes(static_cast<uint8_t*>(output), output_length);
+    return;
+  }
+#endif
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
      BUILDFLAG(IS_ANDROID)) &&                        \
     !BUILDFLAG(IS_NACL)

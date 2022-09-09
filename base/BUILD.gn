@@ -1953,9 +1953,9 @@ mixed_component("base") {
     public_configs = [ ":fuchsia_sync_lib" ]
   }
 
-  # Use the base implementation of hash functions when building for
-  # NaCl. Otherwise, use boringssl. Building boringssl for NaCl opens
-  # a can of worms surrounding the nacl_io library.
+  # Several helpers in //base are backed by BoringSSL; however, NaCl builds
+  # cannot easily depend on BoringSSL due to the nacl_io library, so NaCl builds
+  # still retain a dedicated local implementation of the functionality.
   #
   # TODO(crbug.com/702997) Use only boringssl when NaCl is removed.
   sources += [
