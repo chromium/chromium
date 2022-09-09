@@ -12,6 +12,7 @@
 #include "base/mac/scoped_nsobject.h"
 
 @interface NSAccessibilityRemoteUIElement : NSObject
++ (void)setRemoteUIApp:(BOOL)flag;
 + (void)registerRemoteUIProcessIdentifier:(int)pid;
 + (NSData*)remoteTokenForLocalUIElement:(id)element;
 - (id)initWithRemoteToken:(NSData*)token;
