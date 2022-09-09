@@ -23,24 +23,22 @@ class ProxyNonThreadSafeThreadTraits {
    public:
     RefCount() : ref_(0) {}
 
-    ~RefCount() {
-      DCHECK(sequence_checker_.CalledOnValidSequence());
-    }
+    ~RefCount() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
 
     int32_t AddRef() {
-      DCHECK(sequence_checker_.CalledOnValidSequence());
+      DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       return ++ref_;
     }
 
     int32_t Release() {
-      DCHECK(sequence_checker_.CalledOnValidSequence());
+      DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       DCHECK(ref_ > 0);
       return --ref_;
     }
 
    private:
     int32_t ref_;
-    base::SequenceChecker sequence_checker_;
+    SEQUENCE_CHECKER(sequence_checker_);
   };
 
   // No-op lock class.
