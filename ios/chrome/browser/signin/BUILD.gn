@@ -148,6 +148,12 @@ source_set("signin_util_internal") {
   ]
 }
 
+source_set("system_identity") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "system_identity.h" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
 source_set("trusted_vault") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [

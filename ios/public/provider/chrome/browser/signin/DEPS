@@ -2,6 +2,7 @@ include_rules = [
   "+components/signin/internal/identity_manager/account_capabilities_constants.h",
   "+components/signin/public/base/signin_metrics.h",
   "+components/sync/driver/trusted_vault_client.h",
+  "+ios/chrome/browser/signin/system_identity.h",
   "+ios/chrome/browser/signin/trusted_vault_client_backend.h",
   "+ios/chrome/browser/signin/trusted_vault_configuration.h",
 ]

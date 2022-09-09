@@ -17,6 +17,7 @@ source_set("signin") {
     "//components/signin/internal/identity_manager",
     "//components/sync/driver",
     "//google_apis",
+    "//ios/chrome/browser/signin:system_identity",
   ]
 }
 
