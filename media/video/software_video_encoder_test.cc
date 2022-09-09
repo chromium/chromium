@@ -917,6 +917,10 @@ INSTANTIATE_TEST_SUITE_P(VpxTemporalSvc,
 #endif  // ENABLE_LIBVPX
 
 #if BUILDFLAG(ENABLE_LIBAOM)
+#if !BUILDFLAG(ENABLE_AV1_DECODER)
+#error PrepareDecoder() requires an AV1 decoder.
+#endif
+
 SwVideoTestParams kAv1Params[] = {
     {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_I420},
     {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_NV12},
