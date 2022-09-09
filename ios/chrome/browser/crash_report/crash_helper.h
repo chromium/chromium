@@ -5,9 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_CRASH_REPORT_CRASH_HELPER_H_
 #define IOS_CHROME_BROWSER_CRASH_REPORT_CRASH_HELPER_H_
 
+#include "base/feature_list.h"
 #include "base/time/time.h"
 
 namespace crash_helper {
+
+// Kill switch guarding a workaround for too many calls to SetUploadConsent
+// see crbug.com/1361334 for details.
+extern const base::Feature kLimitSetUploadConsentCalls;
 
 // Sync the kCrashpadIOS feature to kCrashpadStartOnNextRun NSUserDefault.
 void SyncCrashpadEnabledOnNextRun();

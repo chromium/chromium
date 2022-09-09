@@ -45,6 +45,11 @@
 
 namespace crash_helper {
 
+// Kill switch guarding a workaround for too many calls to SetUploadConsent
+// see crbug.com/1361334 for details.
+const base::Feature kLimitSetUploadConsentCalls{
+    "LimitSetUploadConsentCalls", base::FEATURE_ENABLED_BY_DEFAULT};
+
 namespace {
 
 const char kUptimeAtRestoreInMs[] = "uptime_at_restore_in_ms";
@@ -166,13 +171,24 @@ void SetEnabled(bool enabled) {
   // here, because if Crashpad fails to init, do not unintentionally enable
   // breakpad.
   if (common::CanUseCrashpad()) {
-    // Posts SetUploadConsent on blocking pool thread because it needs access to
-    // IO and cannot work from UI thread.
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(^{
-          crash_reporter::SetUploadConsent(enabled);
-        }));
+    // Don't sync upload consent when the app is backgrounded. Crashpad
+    // flocks the settings file, and because Chrome puts this in a shared
+    // container, slow reads and writes can lead to watchdog kills.
+    static bool limit_set_upload_consent_calls =
+        base::FeatureList::IsEnabled(kLimitSetUploadConsentCalls);
+    // TODO(crbug.com/1361334): Safety for cherry-pick. Remove feature check
+    // and keep active check after speculative fix is confirmed to be safe.
+    if (!limit_set_upload_consent_calls ||
+        UIApplication.sharedApplication.applicationState ==
+            UIApplicationStateActive) {
+      // Posts SetUploadConsent on blocking pool thread because it needs access
+      // to IO and cannot work from UI thread.
+      base::ThreadPool::PostTask(
+          FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+          base::BindOnce(^{
+            crash_reporter::SetUploadConsent(enabled);
+          }));
+    }
     return;
   }
 
