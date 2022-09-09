@@ -48,6 +48,21 @@ class MockAutofillClient : public TestAutofillClient {
               (override));
   MOCK_METHOD(void, HideTouchToFillCreditCard, (), (override));
   MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason reason), (override));
+
+  void ExpectDelegateWeakPtrFromShowInvalidatedOnHide() {
+    EXPECT_CALL(*this, ShowTouchToFillCreditCard)
+        .WillOnce(
+            [this](base::WeakPtr<autofill::TouchToFillDelegate> delegate) {
+              captured_delegate_ = delegate;
+              return true;
+            });
+    EXPECT_CALL(*this, HideTouchToFillCreditCard).WillOnce([this]() {
+      EXPECT_FALSE(captured_delegate_);
+    });
+  }
+
+ private:
+  base::WeakPtr<autofill::TouchToFillDelegate> captured_delegate_;
 };
 
 class MockBrowserAutofillManager : public TestBrowserAutofillManager {
@@ -78,8 +93,12 @@ class TouchToFillDelegateImplUnitTest : public testing::Test {
     browser_autofill_manager_ =
         std::make_unique<NiceMock<MockBrowserAutofillManager>>(
             autofill_driver_.get(), &autofill_client_);
-    touch_to_fill_delegate_ = std::make_unique<TouchToFillDelegateImpl>(
+
+    auto touch_to_fill_delegate = std::make_unique<TouchToFillDelegateImpl>(
         browser_autofill_manager_.get());
+    touch_to_fill_delegate_ = touch_to_fill_delegate.get();
+    browser_autofill_manager_->SetTouchToFillDelegateImplForTest(
+        std::move(touch_to_fill_delegate));
 
     // Default setup for successful |TryToShowTouchToFill|.
     field_.is_focusable = true;
@@ -92,12 +111,6 @@ class TouchToFillDelegateImplUnitTest : public testing::Test {
     ON_CALL(*autofill_driver_, CanShowAutofillUi).WillByDefault(Return(true));
     ON_CALL(autofill_client_, ShowTouchToFillCreditCard)
         .WillByDefault(Return(true));
-  }
-
-  void TearDown() override {
-    browser_autofill_manager_.reset();
-    touch_to_fill_delegate_.reset();
-    autofill_driver_.reset();
   }
 
   void TryToShowTouchToFill(bool expected_success) {
@@ -117,8 +130,8 @@ class TouchToFillDelegateImplUnitTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   NiceMock<MockAutofillClient> autofill_client_;
   std::unique_ptr<NiceMock<MockAutofillDriver>> autofill_driver_;
-  std::unique_ptr<TouchToFillDelegateImpl> touch_to_fill_delegate_;
   std::unique_ptr<MockBrowserAutofillManager> browser_autofill_manager_;
+  raw_ptr<TouchToFillDelegateImpl> touch_to_fill_delegate_;
 };
 
 TEST_F(TouchToFillDelegateImplUnitTest, TryToShowTouchToFillSucceeds) {
@@ -292,6 +305,13 @@ TEST_F(TouchToFillDelegateImplUnitTest, ResetAllowsShowingTouchToFillAgain) {
 
   touch_to_fill_delegate_->Reset();
   TryToShowTouchToFill(/*expected_success=*/true);
+}
+
+TEST_F(TouchToFillDelegateImplUnitTest, SafelyHideTouchToFillInDtor) {
+  autofill_client_.ExpectDelegateWeakPtrFromShowInvalidatedOnHide();
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  browser_autofill_manager_.reset();
 }
 
 }  // namespace autofill

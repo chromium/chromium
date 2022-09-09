@@ -16,7 +16,11 @@ TouchToFillDelegateImpl::TouchToFillDelegateImpl(
   DCHECK(manager);
 }
 
-TouchToFillDelegateImpl::~TouchToFillDelegateImpl() = default;
+TouchToFillDelegateImpl::~TouchToFillDelegateImpl() {
+  // Invalidate pointers to avoid post hide callbacks.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  HideTouchToFill();
+}
 
 bool TouchToFillDelegateImpl::TryToShowTouchToFill(int query_id,
                                                    const FormData& form,
