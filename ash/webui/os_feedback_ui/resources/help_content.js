@@ -8,9 +8,9 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '//resources/cr_elements/cr_icons.css.js';
 import '//resources/cr_elements/cr_hidden_style.css.js';
-import '//resources/cr_elements/icons.m.js';
+import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/policy/cr_tooltip_icon.js';
-import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/cr_elements/cr_shared_vars.css.js';
 
 import {mojoString16ToString} from '//resources/ash/common/mojo_utils.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';

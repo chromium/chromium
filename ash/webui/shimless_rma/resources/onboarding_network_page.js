@@ -10,7 +10,7 @@ import 'chrome://resources/cr_components/chromeos/network/network_config.js';
 import 'chrome://resources/cr_components/chromeos/network/network_list.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {HTMLEscape} from '//resources/js/util.m.js';
