@@ -6,3 +6,9 @@ include_rules = [
   "+third_party/blink/public/mojom/annotation",
   "+ui/gfx/geometry",
 ]
+
+specific_include_rules = {
+  "user_note_service_unittest.cc": [
+    "+components/shared_highlighting/core/common/shared_highlighting_metrics.h"
+  ]
+}

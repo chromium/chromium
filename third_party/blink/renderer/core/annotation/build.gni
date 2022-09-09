@@ -5,6 +5,8 @@
 blink_core_sources_annotation = [
   "annotation_agent_container_impl.cc",
   "annotation_agent_container_impl.h",
+  "annotation_agent_generator.h",
+  "annotation_agent_generator.cc",
   "annotation_agent_impl.cc",
   "annotation_agent_impl.h",
   "annotation_selector.cc",

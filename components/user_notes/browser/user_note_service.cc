@@ -136,39 +136,53 @@ void UserNoteService::OnAddNoteRequested(content::RenderFrameHost* frame,
 
   // TODO(crbug.com/1313967): `has_selected_text` is used to determine whether
   // or not to create a page-level note. This will need to be reassessed when
-  // page-level UX is finalized.
+  // page-level UX is finalized. In addition, record/use
+  // LinkGenerationReadyStatus.
   if (has_selected_text) {
     auto create_agent_callback = base::BindOnce(
         [](base::SafeRef<UserNoteService> service,
            content::WeakDocumentPtr document,
-           mojo::PendingReceiver<blink::mojom::AnnotationAgentHost>
-               host_receiver,
-           mojo::PendingRemote<blink::mojom::AnnotationAgent> agent_remote,
-           const std::string& serialized_selector,
-           const std::u16string& selected_text) {
-          if (agent_remote.is_valid() != host_receiver.is_valid()) {
-            mojo::ReportBadMessage(
-                "User note creation received only one invalid remote/receiver");
+           blink::mojom::SelectorCreationResultPtr selector_creation_result,
+           shared_highlighting::LinkGenerationError error,
+           shared_highlighting::LinkGenerationReadyStatus) {
+          if ((error != shared_highlighting::LinkGenerationError::kNone) !=
+              (!selector_creation_result)) {
+            mojo::ReportBadMessage("User note creation was invalid");
             return;
           }
 
-          if (agent_remote.is_valid() == serialized_selector.empty()) {
+          if (!selector_creation_result->host_receiver.is_valid()) {
             mojo::ReportBadMessage(
-                "User note creation received unexpected selector for mojo "
+                "User note creation received an invalid receiver");
+            return;
+          }
+
+          if (!selector_creation_result->agent_remote.is_valid()) {
+            mojo::ReportBadMessage(
+                "User note creation received an invalid remote");
+            return;
+          }
+
+          if (selector_creation_result->serialized_selector.empty()) {
+            mojo::ReportBadMessage(
+                "User note creation received an empty selector for mojo "
                 "binding result");
             return;
           }
 
-          if (agent_remote.is_valid() == selected_text.empty()) {
+          if (selector_creation_result->selected_text.empty()) {
             mojo::ReportBadMessage(
-                "User note creation received unexpected text for mojo binding "
+                "User note creation received an empty text for mojo binding "
                 "result");
             return;
           }
 
           service->InitializeNewNoteForCreation(
-              document, /*is_page_level=*/false, std::move(host_receiver),
-              std::move(agent_remote), serialized_selector, selected_text);
+              document, /*is_page_level=*/false,
+              std::move(selector_creation_result->host_receiver),
+              std::move(selector_creation_result->agent_remote),
+              selector_creation_result->serialized_selector,
+              selector_creation_result->selected_text);
         },
         // SafeRef is safe since the service owns the UserNoteManager which
         // owns the mojo binding so if we receive this callback both manager

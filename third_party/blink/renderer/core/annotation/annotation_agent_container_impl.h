@@ -10,6 +10,7 @@
 #include "third_party/blink/public/mojom/annotation/annotation.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/fragment_directive/text_fragment_selector_generator.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -22,7 +23,7 @@ class AnnotationAgentContainerImplTest;
 class AnnotationAgentImpl;
 class AnnotationSelector;
 class LocalFrame;
-class TextFragmentSelector;
+class AnnotationAgentGenerator;
 class TextFragmentSelectorGenerator;
 
 // This class provides a per-Document container for AnnotationAgents. It is
@@ -92,15 +93,22 @@ class CORE_EXPORT AnnotationAgentContainerImpl final
       mojom::blink::AnnotationType type,
       CreateAgentFromSelectionCallback callback) override;
 
+  void OpenedContextMenuOverSelection();
+
  private:
   friend AnnotationAgentContainerImplTest;
 
+  bool ShouldPreemptivelyGenerate();
+
   void DidFinishSelectorGeneration(
-      TextFragmentSelectorGenerator* generator,
-      mojom::blink::AnnotationType type,
       CreateAgentFromSelectionCallback callback,
+      mojom::blink::AnnotationType type,
+      shared_highlighting::LinkGenerationReadyStatus ready_status,
+      const String& selected_text,
       const TextFragmentSelector& selector,
       shared_highlighting::LinkGenerationError error);
+
+  Member<AnnotationAgentGenerator> annotation_agent_generator_;
 
   HeapMojoReceiverSet<mojom::blink::AnnotationAgentContainer,
                       AnnotationAgentContainerImpl>

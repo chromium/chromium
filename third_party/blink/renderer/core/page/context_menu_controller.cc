@@ -43,6 +43,7 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_text_check_client.h"
+#include "third_party/blink/renderer/core/annotation/annotation_agent_container_impl.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -662,6 +663,9 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
                .ComputeVisibleSelectionInDOMTreeDeprecated();
     if (!result.IsContentEditable()) {
       TextFragmentHandler::OpenedContextMenuOverSelection(selected_frame);
+      AnnotationAgentContainerImpl* annotation_container =
+          AnnotationAgentContainerImpl::From(*selected_frame->GetDocument());
+      annotation_container->OpenedContextMenuOverSelection();
     }
   }
 

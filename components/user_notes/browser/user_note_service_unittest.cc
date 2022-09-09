@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/unguessable_token.h"
+#include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "components/user_notes/browser/frame_user_note_changes.h"
 #include "components/user_notes/browser/user_note_base_test.h"
 #include "components/user_notes/browser/user_note_manager.h"
@@ -1205,6 +1206,14 @@ TEST_F(UserNoteServiceTest, OnAddNoteRequestedWithSelection) {
 
   mojo::Remote<blink::mojom::AnnotationAgentHost> host;
   MockAnnotationAgent agent;
+
+  blink::mojom::SelectorCreationResultPtr selector_creation_result =
+      blink::mojom::SelectorCreationResult::New();
+  selector_creation_result->host_receiver = host.BindNewPipeAndPassReceiver();
+  selector_creation_result->agent_remote = agent.BindNewPipeAndPassRemote();
+  selector_creation_result->serialized_selector = "FOO";
+  selector_creation_result->selected_text = std::u16string(u"FOO");
+
   EXPECT_CALL(container,
               CreateAgentFromSelection(blink::mojom::AnnotationType::kUserNote,
                                        testing::_))
@@ -1212,10 +1221,12 @@ TEST_F(UserNoteServiceTest, OnAddNoteRequestedWithSelection) {
           [&](blink::mojom::AnnotationType type,
               MockAnnotationAgentContainer::CreateAgentFromSelectionCallback
                   cb) {
-            std::move(cb).Run(host.BindNewPipeAndPassReceiver(),
-                              agent.BindNewPipeAndPassRemote(),
-                              /*serialized_selector=*/"FOO",
-                              /*selected_text=*/std::u16string(u"FOO"));
+            std::move(cb).Run(
+                std::move(selector_creation_result),
+                /*error=*/shared_highlighting::LinkGenerationError::kNone,
+                /*ready_status=*/
+                shared_highlighting::LinkGenerationReadyStatus::
+                    kRequestedAfterReady);
           });
   manager->note_agent_container().FlushForTesting();
   testing::Mock::VerifyAndClearExpectations(&container);

@@ -5,6 +5,9 @@
 #include "third_party/blink/renderer/core/annotation/annotation_agent_container_impl.h"
 
 #include "base/callback.h"
+#include "components/shared_highlighting/core/common/disabled_sites.h"
+#include "components/shared_highlighting/core/common/shared_highlighting_features.h"
+#include "third_party/blink/renderer/core/annotation/annotation_agent_generator.h"
 #include "third_party/blink/renderer/core/annotation/annotation_agent_impl.h"
 #include "third_party/blink/renderer/core/annotation/annotation_selector.h"
 #include "third_party/blink/renderer/core/annotation/text_annotation_selector.h"
@@ -56,7 +59,13 @@ void AnnotationAgentContainerImpl::BindReceiver(
 AnnotationAgentContainerImpl::AnnotationAgentContainerImpl(Document& document,
                                                            PassKey)
     : Supplement<Document>(document),
-      receivers_(this, document.GetExecutionContext()) {}
+      receivers_(this, document.GetExecutionContext()) {
+  LocalFrame* frame = document.GetFrame();
+  DCHECK(frame);
+
+  annotation_agent_generator_ =
+      MakeGarbageCollected<AnnotationAgentGenerator>(frame);
+}
 
 void AnnotationAgentContainerImpl::Bind(
     mojo::PendingReceiver<mojom::blink::AnnotationAgentContainer> receiver) {
@@ -67,6 +76,7 @@ void AnnotationAgentContainerImpl::Bind(
 void AnnotationAgentContainerImpl::Trace(Visitor* visitor) const {
   visitor->Trace(receivers_);
   visitor->Trace(agents_);
+  visitor->Trace(annotation_agent_generator_);
   Supplement<Document>::Trace(visitor);
 }
 
@@ -137,59 +147,25 @@ void AnnotationAgentContainerImpl::CreateAgent(
 void AnnotationAgentContainerImpl::CreateAgentFromSelection(
     mojom::blink::AnnotationType type,
     CreateAgentFromSelectionCallback callback) {
-  // Both Document and LocalFrame must be non-null since the mojo connections
-  // are closed when the Document shuts down its execution context.
-  Document* document = GetSupplementable();
-  DCHECK(document);
-
-  LocalFrame* frame = document->GetFrame();
-  DCHECK(frame);
-
-  VisibleSelectionInFlatTree selection =
-      frame->Selection().ComputeVisibleSelectionInFlatTree();
-  if (selection.IsNone() || !selection.IsRange()) {
-    std::move(callback).Run(mojo::NullReceiver(), mojo::NullRemote(),
-                            /*serialized_selector=*/"", /*selected_text=*/"");
-    return;
-  }
-
-  EphemeralRangeInFlatTree selection_range(selection.Start(), selection.End());
-
-  if (selection_range.IsNull() || selection_range.IsCollapsed()) {
-    std::move(callback).Run(mojo::NullReceiver(), mojo::NullRemote(),
-                            /*serialized_selector=*/"", /*selected_text=*/"");
-    return;
-  }
-
-  RangeInFlatTree* current_selection_range =
-      MakeGarbageCollected<RangeInFlatTree>(selection_range.StartPosition(),
-                                            selection_range.EndPosition());
-
-  // TODO(crbug.com/1313967): We may be able to reduce the latency of adding a
-  // new note by starting the generator when the context menu is opened so that
-  // by the time the user selects "add a note" the selector is already
-  // generated. We already do this for shared-highlighting so we could just
-  // generalize that code, see
-  // TextFragmentHandler::OpenedContextMenuOverSelection.
-  auto* generator = MakeGarbageCollected<TextFragmentSelectorGenerator>(frame);
-
-  // The generator is kept alive by the callback.
-  generator->Generate(
-      *current_selection_range,
+  DCHECK(annotation_agent_generator_);
+  annotation_agent_generator_->GetForCurrentSelection(
+      type,
       WTF::Bind(&AnnotationAgentContainerImpl::DidFinishSelectorGeneration,
-                WrapWeakPersistent(this), WrapPersistent(generator), type,
-                std::move(callback)));
+                WrapWeakPersistent(this), std::move(callback)));
 }
 
+// TODO(cheickcisse@): Move shared highlighting enums, also used in user note to
+// annotation.mojom.
 void AnnotationAgentContainerImpl::DidFinishSelectorGeneration(
-    TextFragmentSelectorGenerator* generator,
-    mojom::blink::AnnotationType type,
     CreateAgentFromSelectionCallback callback,
+    mojom::blink::AnnotationType type,
+    shared_highlighting::LinkGenerationReadyStatus ready_status,
+    const String& selected_text,
     const TextFragmentSelector& selector,
     shared_highlighting::LinkGenerationError error) {
   if (error != shared_highlighting::LinkGenerationError::kNone) {
-    std::move(callback).Run(mojo::NullReceiver(), mojo::NullRemote(),
-                            /*serialized_selector=*/"", /*selected_text=*/"");
+    std::move(callback).Run(/*SelectorCreationResult=*/nullptr, error,
+                            ready_status);
     return;
   }
 
@@ -214,10 +190,24 @@ void AnnotationAgentContainerImpl::DidFinishSelectorGeneration(
   // highlight is showing before the creation flow begins we can swap these.
   auto* annotation_selector =
       MakeGarbageCollected<TextAnnotationSelector>(selector);
-  std::move(callback).Run(pending_host_remote.InitWithNewPipeAndPassReceiver(),
-                          pending_agent_receiver.InitWithNewPipeAndPassRemote(),
-                          annotation_selector->Serialize(),
-                          generator->GetSelectorTargetText());
+
+  mojom::blink::SelectorCreationResultPtr selector_creation_result =
+      mojom::blink::SelectorCreationResult::New();
+  selector_creation_result->host_receiver =
+      pending_host_remote.InitWithNewPipeAndPassReceiver();
+  selector_creation_result->agent_remote =
+      pending_agent_receiver.InitWithNewPipeAndPassRemote();
+  selector_creation_result->serialized_selector =
+      annotation_selector->Serialize();
+  DCHECK(!selector_creation_result->serialized_selector.IsEmpty())
+      << "User note creation received an empty selector for mojo binding "
+         "result";
+  selector_creation_result->selected_text = selected_text;
+  DCHECK(!selector_creation_result->selected_text.IsEmpty())
+      << "User note creation received an empty text for mojo binding result";
+
+  std::move(callback).Run(std::move(selector_creation_result), error,
+                          ready_status);
 
   AnnotationAgentImpl* agent_impl =
       CreateUnboundAgent(type, *annotation_selector);
@@ -225,6 +215,39 @@ void AnnotationAgentContainerImpl::DidFinishSelectorGeneration(
                    std::move(pending_agent_receiver));
 
   agent_impl->Attach();
+}
+
+void AnnotationAgentContainerImpl::OpenedContextMenuOverSelection() {
+  DCHECK(annotation_agent_generator_);
+  if (!ShouldPreemptivelyGenerate())
+    return;
+
+  annotation_agent_generator_->PreemptivelyGenerateForCurrentSelection();
+}
+
+bool AnnotationAgentContainerImpl::ShouldPreemptivelyGenerate() {
+  Document* document = GetSupplementable();
+  DCHECK(document);
+
+  LocalFrame* frame = document->GetFrame();
+  DCHECK(frame);
+
+  if (!shared_highlighting::ShouldOfferLinkToText(
+          GURL(frame->GetDocument()->Url()))) {
+    return false;
+  }
+
+  if (frame->Selection().SelectedText().IsEmpty())
+    return false;
+
+  if (frame->IsOutermostMainFrame())
+    return true;
+
+  // Only generate for iframe urls if they are supported
+  return base::FeatureList::IsEnabled(
+             shared_highlighting::kSharedHighlightingAmp) &&
+         shared_highlighting::SupportsLinkGenerationInIframe(
+             GURL(frame->GetDocument()->Url()));
 }
 
 }  // namespace blink

@@ -8,6 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom-blink.h"
@@ -38,6 +39,15 @@ class AnnotationAgentContainerImplTest : public SimTest {
 
   size_t GetAgentCount(AnnotationAgentContainerImpl& container) {
     return container.agents_.size();
+  }
+
+  void SendRightClick(const gfx::Point& click_point) {
+    auto event = frame_test_helpers::CreateMouseEvent(
+        WebMouseEvent::Type::kMouseDown, WebMouseEvent::Button::kRight,
+        click_point, /*modifiers=*/0);
+    event.click_count = 1;
+    WebView().MainFrameViewWidget()->HandleInputEvent(
+        WebCoalescedInputEvent(event, ui::LatencyInfo()));
   }
 
   ScopedUseMockAnnotationSelector use_mock_annotation_selector_;
@@ -327,16 +337,20 @@ TEST_F(AnnotationAgentContainerImplTest,
       mojom::blink::AnnotationType::kUserNote,
       base::BindLambdaForTesting(
           [&did_reply](
-              mojo::PendingReceiver<mojom::blink::AnnotationAgentHost>
-                  host_receiver,
-              mojo::PendingRemote<mojom::blink::AnnotationAgent> agent_remote,
-              const String& serialized_selector, const String& selected_text) {
+              mojom::blink::SelectorCreationResultPtr selector_creation_result,
+              shared_highlighting::LinkGenerationError error,
+              shared_highlighting::LinkGenerationReadyStatus ready_status) {
             did_reply = true;
 
-            EXPECT_EQ(selected_text, "");
-            EXPECT_EQ(serialized_selector, "");
-            EXPECT_FALSE(host_receiver.is_valid());
-            EXPECT_FALSE(agent_remote.is_valid());
+            EXPECT_FALSE(selector_creation_result);
+            EXPECT_EQ(
+                error,
+                shared_highlighting::LinkGenerationError::kEmptySelection);
+            // Test that the generation was not preemptive, the result was not
+            // ready by the time we called CreateAgentFromSelection.
+            EXPECT_EQ(ready_status,
+                      shared_highlighting::LinkGenerationReadyStatus::
+                          kRequestedBeforeReady);
           }));
 
   EXPECT_TRUE(did_reply);
@@ -370,20 +384,94 @@ TEST_F(AnnotationAgentContainerImplTest,
       mojom::blink::AnnotationType::kUserNote,
       base::BindLambdaForTesting(
           [&did_reply](
-              mojo::PendingReceiver<mojom::blink::AnnotationAgentHost>
-                  host_receiver,
-              mojo::PendingRemote<mojom::blink::AnnotationAgent> agent_remote,
-              const String& serialized_selector, const String& selected_text) {
+              mojom::blink::SelectorCreationResultPtr selector_creation_result,
+              shared_highlighting::LinkGenerationError error,
+              shared_highlighting::LinkGenerationReadyStatus ready_status) {
             did_reply = true;
 
-            EXPECT_EQ(selected_text, "");
-            EXPECT_EQ(serialized_selector, "");
-            EXPECT_FALSE(host_receiver.is_valid());
-            EXPECT_FALSE(agent_remote.is_valid());
+            EXPECT_FALSE(selector_creation_result);
+            EXPECT_EQ(
+                error,
+                shared_highlighting::LinkGenerationError::kEmptySelection);
+            EXPECT_EQ(ready_status,
+                      shared_highlighting::LinkGenerationReadyStatus::
+                          kRequestedBeforeReady);
           }));
 
   EXPECT_TRUE(did_reply);
   EXPECT_EQ(GetAgentCount(*container), 0ul);
+}
+
+// CreateAgentFromSelection should synchronously return a preemptively generated
+// result if one is available.
+TEST_F(AnnotationAgentContainerImplTest,
+       CreateAgentFromSelectionWithPreemptiveGeneration) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <body>TEST PAGE</body>
+  )HTML");
+
+  auto* container = AnnotationAgentContainerImpl::From(GetDocument());
+
+  FrameSelection& frame_selection = GetDocument().GetFrame()->Selection();
+
+  Element* body = GetDocument().body();
+  EphemeralRange range = EphemeralRange(Position(body->firstChild(), 0),
+                                        Position(body->firstChild(), 5));
+  ASSERT_EQ("TEST ", PlainText(range));
+
+  frame_selection.SetSelection(
+      SelectionInDOMTree::Builder().SetBaseAndExtent(range).Build(),
+      SetSelectionOptions());
+
+  // Right click on the selected text
+  const auto& selection_rect = CreateRange(range)->BoundingBox();
+  SendRightClick(selection_rect.origin());
+
+  MockAnnotationAgentHost host;
+
+  base::RunLoop run_loop;
+
+  run_loop.RunUntilIdle();
+
+  bool did_reply = false;
+  container->CreateAgentFromSelection(
+      mojom::blink::AnnotationType::kUserNote,
+      base::BindLambdaForTesting(
+          [&did_reply, &host](
+              mojom::blink::SelectorCreationResultPtr selector_creation_result,
+              shared_highlighting::LinkGenerationError error,
+              shared_highlighting::LinkGenerationReadyStatus ready_status) {
+            did_reply = true;
+
+            EXPECT_EQ(selector_creation_result->selected_text, "TEST");
+            EXPECT_EQ(selector_creation_result->serialized_selector,
+                      "TEST,-PAGE");
+            EXPECT_TRUE(selector_creation_result->host_receiver.is_valid());
+            EXPECT_TRUE(selector_creation_result->agent_remote.is_valid());
+            EXPECT_EQ(error, shared_highlighting::LinkGenerationError::kNone);
+            // Test that the generation was preemptive, the result was ready by
+            // the time we called CreateAgentFromSelection.
+            EXPECT_EQ(ready_status,
+                      shared_highlighting::LinkGenerationReadyStatus::
+                          kRequestedAfterReady);
+
+            host.Bind(std::move(selector_creation_result->host_receiver),
+                      std::move(selector_creation_result->agent_remote));
+          }));
+
+  // Test that the callback from CreateAgentFromSelection invoked synchronously.
+  EXPECT_TRUE(did_reply);
+
+  EXPECT_TRUE(host.agent_.is_connected());
+  host.FlushForTesting();
+
+  // Creating an agent from selection should automatically start attachment.
+  EXPECT_TRUE(host.did_finish_attachment_rect_);
+
+  EXPECT_EQ(GetAgentCount(*container), 1ul);
 }
 
 // When the document has a collapsed selection, calling
@@ -410,6 +498,9 @@ TEST_F(AnnotationAgentContainerImplTest, CreateAgentFromSelection) {
       SelectionInDOMTree::Builder().SetBaseAndExtent(range).Build(),
       SetSelectionOptions());
 
+  const auto& selection_rect = CreateRange(range)->BoundingBox();
+  SendRightClick(selection_rect.origin());
+
   MockAnnotationAgentHost host;
 
   base::RunLoop run_loop;
@@ -417,18 +508,25 @@ TEST_F(AnnotationAgentContainerImplTest, CreateAgentFromSelection) {
       mojom::blink::AnnotationType::kUserNote,
       base::BindLambdaForTesting(
           [&run_loop, &host](
-              mojo::PendingReceiver<mojom::blink::AnnotationAgentHost>
-                  host_receiver,
-              mojo::PendingRemote<mojom::blink::AnnotationAgent> agent_remote,
-              const String& serialized_selector, const String& selected_text) {
+              mojom::blink::SelectorCreationResultPtr selector_creation_result,
+              shared_highlighting::LinkGenerationError error,
+              shared_highlighting::LinkGenerationReadyStatus ready_status) {
             run_loop.Quit();
 
-            EXPECT_EQ(selected_text, "TEST");
-            EXPECT_EQ(serialized_selector, "TEST,-PAGE");
-            EXPECT_TRUE(host_receiver.is_valid());
-            EXPECT_TRUE(agent_remote.is_valid());
+            EXPECT_EQ(selector_creation_result->selected_text, "TEST");
+            EXPECT_EQ(selector_creation_result->serialized_selector,
+                      "TEST,-PAGE");
+            EXPECT_TRUE(selector_creation_result->host_receiver.is_valid());
+            EXPECT_TRUE(selector_creation_result->agent_remote.is_valid());
+            EXPECT_EQ(error, shared_highlighting::LinkGenerationError::kNone);
+            // Test that the generation was preemptive, the result was ready by
+            // the time we called CreateAgentFromSelection.
+            EXPECT_EQ(ready_status,
+                      shared_highlighting::LinkGenerationReadyStatus::
+                          kRequestedAfterReady);
 
-            host.Bind(std::move(host_receiver), std::move(agent_remote));
+            host.Bind(std::move(selector_creation_result->host_receiver),
+                      std::move(selector_creation_result->agent_remote));
           }));
   run_loop.Run();
 
@@ -478,6 +576,10 @@ TEST_F(AnnotationAgentContainerImplTest, ShutdownDocumentWhileGenerating) {
       SelectionInDOMTree::Builder().SetBaseAndExtent(range).Build(),
       SetSelectionOptions());
 
+  // Right click on the selected text
+  const auto& selection_rect = CreateRange(range)->BoundingBox();
+  SendRightClick(selection_rect.origin());
+
   base::RunLoop run_loop;
   bool did_finish = false;
 
@@ -485,15 +587,19 @@ TEST_F(AnnotationAgentContainerImplTest, ShutdownDocumentWhileGenerating) {
       mojom::blink::AnnotationType::kUserNote,
       base::BindLambdaForTesting(
           [&did_finish](
-              mojo::PendingReceiver<mojom::blink::AnnotationAgentHost>
-                  host_receiver,
-              mojo::PendingRemote<mojom::blink::AnnotationAgent> agent_remote,
-              const String& serialized_selector, const String& selected_text) {
+              mojom::blink::SelectorCreationResultPtr selector_creation_result,
+              shared_highlighting::LinkGenerationError error,
+              shared_highlighting::LinkGenerationReadyStatus ready_status) {
             did_finish = true;
-            EXPECT_EQ(selected_text, "");
-            EXPECT_EQ(serialized_selector, "");
-            EXPECT_FALSE(host_receiver.is_valid());
-            EXPECT_FALSE(agent_remote.is_valid());
+            EXPECT_FALSE(selector_creation_result);
+            EXPECT_EQ(
+                error,
+                shared_highlighting::LinkGenerationError::kIncorrectSelector);
+            // Test that the generation was preemptive, the result was ready by
+            // the time we called CreateAgentFromSelection.
+            EXPECT_EQ(ready_status,
+                      shared_highlighting::LinkGenerationReadyStatus::
+                          kRequestedAfterReady);
           }));
 
   // The above will have posted the first generator task to
