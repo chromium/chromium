@@ -67,8 +67,9 @@ if (include_polymer) {
   }
 
   icons_html_files = [
-    "mwb_shared_icons.html",
     "cr_fingerprint/cr_fingerprint_icons.html",
+    "icons.html",
+    "mwb_shared_icons.html",
   ]
 
   # Polymer HTML files that are passed as input to html_to_wrapper().
@@ -115,6 +116,7 @@ if (include_polymer) {
     "cr_page_host_style.css",
     "cr_radio_button/cr_radio_button_style.css",
     "cr_shared_style.css",
+    "cr_shared_vars.css",
     "md_select.css",
     "mwb_element_shared_style.css",
     "mwb_shared_style.css",

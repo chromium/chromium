@@ -53,19 +53,17 @@ generate_grd("build_grd") {
       "cr_components/customize_themes:build_grdp",
       "cr_components/help_bubble:build_grdp",
       "cr_components/most_visited:build_grdp",
-      "cr_elements:build_grdp",
       "js/browser_command:build_grdp",
       "//third_party/polymer/v3_0:build_grdp",
     ]
     grdp_files += [
       "$root_gen_dir/third_party/polymer/v3_0/polymer_3_0_resources.grdp",
-      "$root_gen_dir/ui/webui/resources/cr_components/app_management/resources.grdp",
-      "$root_gen_dir/ui/webui/resources/cr_components/cr_components_resources.grdp",
-      "$root_gen_dir/ui/webui/resources/cr_components/customize_themes/resources.grdp",
-      "$root_gen_dir/ui/webui/resources/cr_components/help_bubble/resources.grdp",
-      "$root_gen_dir/ui/webui/resources/cr_components/most_visited/resources.grdp",
-      "$root_gen_dir/ui/webui/resources/cr_elements/cr_elements_resources.grdp",
-      "$root_gen_dir/ui/webui/resources/js/browser_command/resources.grdp",
+      "$target_gen_dir/cr_components/app_management/resources.grdp",
+      "$target_gen_dir/cr_components/cr_components_resources.grdp",
+      "$target_gen_dir/cr_components/customize_themes/resources.grdp",
+      "$target_gen_dir/cr_components/help_bubble/resources.grdp",
+      "$target_gen_dir/cr_components/most_visited/resources.grdp",
+      "$target_gen_dir/js/browser_command/resources.grdp",
     ]
 
     if (use_nss_certs) {
@@ -83,6 +81,7 @@ generate_grd("build_grd") {
   if (is_chromeos_ash) {
     public_deps += [
       ":build_cros_styles_grdp",
+      "cr_elements:build_grdp",
       "js/cr/ui:build_grdp",
       "//ash/webui/common/resources:build_grdp",
       "//ash/webui/common/resources:build_html_css_wrapper_files_grdp",
@@ -96,6 +95,7 @@ generate_grd("build_grd") {
       "$root_gen_dir/chromeos/ash/components/cros_elements/cros_elements_resources.grdp",
       "$root_gen_dir/third_party/material_web_components/material_web_components_resources.grdp",
       "$root_gen_dir/third_party/web-animations-js/web_animations_resources.grdp",
+      "$root_gen_dir/ui/webui/resources/cr_elements/cr_elements_resources.grdp",
       "$root_gen_dir/ui/webui/resources/cros_styles_resources.grdp",
       "$root_gen_dir/ui/webui/resources/js/cr/ui/resources.grdp",
     ]
@@ -220,6 +220,7 @@ if (is_chromeos_ash) {
     "cr_components/chromeos/traffic_counters/traffic_counters.d.ts",
     "cr_components/chromeos/traffic_counters/traffic_counters_adapter.d.ts",
     "cr_components/chromeos/quick_unlock/pin_keyboard.d.ts",
+    "cr_components/chromeos/quick_unlock/setup_pin_keyboard.d.ts",
     "cr_elements/cr_container_shadow_behavior.d.ts",
     "js/list_property_update_behavior.d.ts",
     "js/cr/ui/focus_row_behavior.d.ts",
@@ -258,25 +259,17 @@ if (is_chromeos_ash) {
   ]
 }
 
-if (include_polymer) {
+if (include_polymer && is_chromeos_ash) {
   generate_definitions_js_files += [
-    "cr_elements/icons.m.js",
-    "cr_elements/shared_vars_css.m.js",
+    "cr_components/chromeos/bluetooth/bluetooth_icons.js",
+    "cr_components/chromeos/bluetooth/bluetooth_metrics_utils.js",
+    "cr_components/chromeos/bluetooth/bluetooth_types.js",
+    "cr_components/chromeos/bluetooth/bluetooth_utils.js",
+    "cr_components/chromeos/bluetooth/cros_bluetooth_config.js",
+    "cr_components/chromeos/quick_unlock/lock_screen_constants.js",
+    "cr_components/chromeos/quick_unlock/pin_keyboard_icon.js",
+    "cr_elements/chromeos/cros_color_overrides.m.js",
   ]
-
-  if (is_chromeos_ash) {
-    generate_definitions_js_files += [
-      "cr_components/chromeos/bluetooth/bluetooth_icons.js",
-      "cr_components/chromeos/bluetooth/bluetooth_metrics_utils.js",
-      "cr_components/chromeos/bluetooth/bluetooth_types.js",
-      "cr_components/chromeos/bluetooth/bluetooth_utils.js",
-      "cr_components/chromeos/bluetooth/cros_bluetooth_config.js",
-      "cr_components/chromeos/quick_unlock/lock_screen_constants.js",
-      "cr_components/chromeos/quick_unlock/pin_keyboard_icon.js",
-      "cr_components/chromeos/quick_unlock/setup_pin_keyboard.js",
-      "cr_elements/chromeos/cros_color_overrides.m.js",
-    ]
-  }
 }
 
 if (is_ios) {
@@ -288,6 +281,7 @@ ts_library("library") {
   out_dir = preprocessed_folder
   composite = true
   tsconfig_base = "tsconfig_base.json"
+  extra_deps = []
 
   in_files = cr_elements_files + [
                "js/assert_ts.ts",
@@ -315,6 +309,19 @@ ts_library("library") {
       "js/search_highlight_utils.ts",
       "js/web_ui_listener_mixin.ts",
     ]
+
+    # Adding a few aliases to make it easier to check-in the Polymer3 version of
+    # the code.
+    # TODO(crbug.com/1184053): Remove aliases when all references to the old
+    # names have been updated.
+    in_files += [
+      "cr_elements/icons.m.ts",
+      "cr_elements/shared_vars_css.m.ts",
+    ]
+    extra_deps += [
+      "cr_elements:copy_cr_shared_vars_alias",
+      "cr_elements:copy_icons_alias",
+    ]
   }
 
   definitions = [
@@ -336,7 +343,7 @@ ts_library("library") {
   }
 
   deps = [ "//third_party/polymer/v3_0:library" ]
-  extra_deps = [
+  extra_deps += [
     ":copy_checked_in_dts_files",
     ":generate_definitions",
     ":preprocess",

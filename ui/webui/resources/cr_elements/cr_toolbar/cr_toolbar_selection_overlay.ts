@@ -15,8 +15,8 @@
 
 import '../cr_button/cr_button.js';
 import '../cr_icon_button/cr_icon_button.js';
-import '../icons.m.js';
-import '../shared_vars_css.m.js';
+import '../cr_shared_vars.css.js';
+import '../icons.html.js';
 
 import {IronA11yAnnouncer} from '//resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {Debouncer, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

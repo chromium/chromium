@@ -8,7 +8,7 @@
  */
 
 import '../cr_button/cr_button.js';
-import '../shared_vars_css.m.js';
+import '../cr_shared_vars.css.js';
 import '../cr_shared_style.css.js';
 import '//resources/polymer/v3_0/paper-styles/color.js';
 import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';

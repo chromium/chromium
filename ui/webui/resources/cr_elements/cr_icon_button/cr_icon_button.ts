@@ -41,7 +41,7 @@
  * the |ironIcon| property to a comma-delimited list of keys.
  */
 
-import '../shared_vars_css.m.js';
+import '../cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
