@@ -58,6 +58,7 @@ ci.builder(
             config = "chromium",
             apply_configs = [
                 "fuchsia_arm64",
+                "fuchsia_arm64_host",
             ],
         ),
         chromium_config = builder_config.chromium_config(

@@ -25,7 +25,8 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "fuchsia_arm64"
+                  "fuchsia_arm64",
+                  "fuchsia_arm64_host"
                 ],
                 "config": "chromium"
               },
