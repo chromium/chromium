@@ -67,7 +67,7 @@ ServiceVideoCaptureDeviceLauncher::ServiceVideoCaptureDeviceLauncher(
       callbacks_(nullptr) {}
 
 ServiceVideoCaptureDeviceLauncher::~ServiceVideoCaptureDeviceLauncher() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_ == State::READY_TO_LAUNCH);
 }
 
@@ -79,7 +79,7 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     base::OnceClosure connection_lost_cb,
     Callbacks* callbacks,
     base::OnceClosure done_cb) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_ == State::READY_TO_LAUNCH);
 
   auto scoped_trace = ScopedCaptureTrace::CreateIfEnabled(
@@ -184,7 +184,7 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
 }
 
 void ServiceVideoCaptureDeviceLauncher::AbortLaunch() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ == State::DEVICE_START_IN_PROGRESS)
     state_ = State::DEVICE_START_ABORTING;
 }
@@ -197,7 +197,7 @@ void ServiceVideoCaptureDeviceLauncher::OnCreatePushSubscriptionCallback(
     std::unique_ptr<ScopedCaptureTrace> scoped_trace,
     video_capture::mojom::CreatePushSubscriptionResultCodePtr result_code,
     const media::VideoCaptureParams& params) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callbacks_);
   DCHECK(done_cb_);
   subscription.set_disconnect_handler(base::DoNothing());
@@ -233,7 +233,7 @@ void ServiceVideoCaptureDeviceLauncher::OnCreatePushSubscriptionCallback(
 
 void ServiceVideoCaptureDeviceLauncher::
     OnConnectionLostWhileWaitingForCallback() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callbacks_);
   const bool abort_requested = (state_ == State::DEVICE_START_ABORTING);
   state_ = State::READY_TO_LAUNCH;

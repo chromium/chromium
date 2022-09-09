@@ -63,7 +63,7 @@ class CONTENT_EXPORT ServiceVideoCaptureDeviceLauncher
   ConnectToDeviceFactoryCB connect_to_source_provider_cb_;
   scoped_refptr<RefCountedVideoSourceProvider> service_connection_;
   State state_;
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
   base::OnceClosure done_cb_;
   raw_ptr<Callbacks> callbacks_;
 };
