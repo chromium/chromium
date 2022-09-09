@@ -449,7 +449,7 @@
             ],
             "experiments": [
                 {
-                    "name": "RationaleShownAtFirstRequest_20220406",
+                    "name": "RationaleShownAtFirstRequest_20220909",
                     "params": {
                         "always_show_rationale_before_requesting_permission": "true",
                         "notification_permission_dialog_text_variant_2": "false",
@@ -460,7 +460,7 @@
                     ]
                 },
                 {
-                    "name": "TextVariant2_20220406",
+                    "name": "TextVariant2_20220909",
                     "params": {
                         "always_show_rationale_before_requesting_permission": "true",
                         "notification_permission_dialog_text_variant_2": "true",
