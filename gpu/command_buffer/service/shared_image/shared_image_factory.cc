@@ -475,17 +475,6 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                                            SkAlphaType alpha_type,
                                            uint32_t usage,
                                            base::span<const uint8_t> data) {
-  // For now, restrict this to SHARED_IMAGE_USAGE_DISPLAY with optional
-  // SHARED_IMAGE_USAGE_SCANOUT.
-  // TODO(ericrk): SCANOUT support for Vulkan by ensuring all interop factories
-  // support this, and allowing them to be chosen here.
-  constexpr uint32_t allowed_usage =
-      SHARED_IMAGE_USAGE_DISPLAY | SHARED_IMAGE_USAGE_SCANOUT;
-  if (usage & ~allowed_usage) {
-    LOG(ERROR) << "Unsupported usage for SharedImage with initial data upload.";
-    return false;
-  }
-
   SharedImageBackingFactory* factory = nullptr;
   if (backing_factory_for_testing_) {
     factory = backing_factory_for_testing_;
