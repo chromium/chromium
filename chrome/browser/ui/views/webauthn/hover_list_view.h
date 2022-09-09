@@ -9,16 +9,12 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webauthn/hover_list_model.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
-
-namespace gfx {
-struct VectorIcon;
-}  // namespace gfx
 
 namespace views {
 class Separator;
@@ -54,7 +50,7 @@ class HoverListView : public views::View {
     views::Separator* separator_view;
   };
 
-  void AppendListItemView(const gfx::VectorIcon* icon,
+  void AppendListItemView(const ui::ImageModel& icon,
                           std::u16string item_text,
                           std::u16string item_description,
                           int item_tag);

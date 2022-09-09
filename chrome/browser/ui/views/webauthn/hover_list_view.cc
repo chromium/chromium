@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/webauthn/webauthn_hover_button.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
@@ -31,45 +32,20 @@
 
 namespace {
 
-class ListItemVectorIconView : public views::ImageView {
- public:
-  METADATA_HEADER(ListItemVectorIconView);
-  ListItemVectorIconView(const gfx::VectorIcon* vector_icon, int icon_size)
-      : vector_icon_(vector_icon), icon_size_(icon_size) {}
-  ~ListItemVectorIconView() override = default;
-
-  // views::ImageView:
-  void OnThemeChanged() override {
-    ImageView::OnThemeChanged();
-    const SkColor icon_color =
-        color_utils::DeriveDefaultIconColor(views::style::GetColor(
-            *this, views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY));
-    SetImage(gfx::CreateVectorIcon(*vector_icon_, icon_size_, icon_color));
-  }
-
- private:
-  raw_ptr<const gfx::VectorIcon> vector_icon_;
-  int icon_size_;
-};
-
-BEGIN_METADATA(ListItemVectorIconView, views::ImageView)
-END_METADATA
-
 std::unique_ptr<WebAuthnHoverButton> CreateHoverButtonForListItem(
-    const gfx::VectorIcon* vector_icon,
+    const ui::ImageModel& icon,
     std::u16string item_title,
     std::u16string item_description,
     views::Button::PressedCallback callback,
     bool is_two_line_item) {
   constexpr int kChevronSize = 8;
-  auto secondary_view = std::make_unique<ListItemVectorIconView>(
-      &vector_icons::kSubmenuArrowIcon, kChevronSize);
+  auto secondary_view =
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          vector_icons::kSubmenuArrowIcon, ui::kColorIcon, kChevronSize));
 
   constexpr int kIconSize = 20;
-  std::unique_ptr<views::ImageView> item_image =
-      vector_icon
-          ? std::make_unique<ListItemVectorIconView>(vector_icon, kIconSize)
-          : std::make_unique<views::ImageView>();
+  auto item_image = std::make_unique<views::ImageView>(icon);
+  item_image->SetImageSize(gfx::Size(kIconSize, kIconSize));
 
   return std::make_unique<WebAuthnHoverButton>(
       std::move(callback), std::move(item_image), item_title, item_description,
@@ -108,7 +84,7 @@ HoverListView::HoverListView(std::unique_ptr<HoverListModel> model)
 
 HoverListView::~HoverListView() = default;
 
-void HoverListView::AppendListItemView(const gfx::VectorIcon* icon,
+void HoverListView::AppendListItemView(const ui::ImageModel& icon,
                                        std::u16string item_text,
                                        std::u16string description_text,
                                        int item_tag) {
@@ -153,7 +129,7 @@ int HoverListView::GetPreferredViewHeight() const {
       model_->GetPreferredItemCount() - tags_to_list_item_views_.size();
   if (reserved_items > 0) {
     auto dummy_hover_button = CreateHoverButtonForListItem(
-        &gfx::kNoneIcon, std::u16string(), std::u16string(),
+        ui::ImageModel(), std::u16string(), std::u16string(),
         views::Button::PressedCallback(), is_two_line_list_);
     const auto list_item_height =
         separator_height + dummy_hover_button->GetPreferredSize().height();

@@ -486,17 +486,32 @@ class AuthenticatorSelectAccountSheetModel
   // gathering user verification and generating an assertion signature.
   // `kPreUserVerification` is only possible with platform authenticators
   // for which we can silently enumerate credentials.
-  enum Mode {
-    kPostUserVerification,
+  enum UserVerificationMode {
     kPreUserVerification,
+    kPostUserVerification,
+  };
+
+  // Whether the user needs to select an account from a list of many or they
+  // merely need to confirm a single possible choice.
+  enum SelectionType {
+    kSingleAccount,
+    kMultipleAccounts,
   };
 
   AuthenticatorSelectAccountSheetModel(
       AuthenticatorRequestDialogModel* dialog_model,
-      Mode mode);
+      UserVerificationMode mode,
+      SelectionType type);
   ~AuthenticatorSelectAccountSheetModel() override;
 
-  // Set the index of the currently selected row.
+  SelectionType selection_type() const;
+
+  // Returns the single available credential if `type()` is
+  // `kSingleAccount` and must not be called otherwise.
+  const device::DiscoverableCredentialMetadata& SingleCredential() const;
+
+  // Set the index of the currently selected row. Only valid to call for
+  // `kMultipleAccount`.
   void SetCurrentSelection(int selected);
 
   // AuthenticatorSheetModelBase:
@@ -512,7 +527,8 @@ class AuthenticatorSelectAccountSheetModel
   bool IsAcceptButtonEnabled() const override;
   std::u16string GetAcceptButtonLabel() const override;
 
-  const Mode mode_;
+  const UserVerificationMode user_verification_mode_;
+  const SelectionType selection_type_;
   size_t selected_ = 0;
 };
 
@@ -573,8 +589,6 @@ class AuthenticatorCreatePasskeySheetModel
   explicit AuthenticatorCreatePasskeySheetModel(
       AuthenticatorRequestDialogModel* dialog_model);
   ~AuthenticatorCreatePasskeySheetModel() override;
-
-  std::u16string GetUserNameForDisplay() const;
 
  private:
   // AuthenticatorSheetModelBase:

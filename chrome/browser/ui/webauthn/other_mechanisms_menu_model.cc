@@ -24,8 +24,8 @@ OtherMechanismsMenuModel::OtherMechanismsMenuModel(
 
     const auto& m = mechanisms[i];
     AddItemWithIcon(static_cast<int>(i), m.short_name,
-                    ui::ImageModel::FromVectorIcon(
-                        *m.icon, ui::kColorMenuIcon, kTransportIconSize));
+                    ui::ImageModel::FromVectorIcon(m.icon, ui::kColorMenuIcon,
+                                                   kTransportIconSize));
   }
 }
 

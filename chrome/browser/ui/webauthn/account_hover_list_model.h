@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webauthn/hover_list_model.h"
+#include "ui/base/models/image_model.h"
 
 namespace device {
 class DiscoverableCredentialMetadata;
@@ -37,7 +38,7 @@ class AccountHoverListModel : public HoverListModel {
   std::vector<int> GetButtonTags() const override;
   std::u16string GetItemText(int item_tag) const override;
   std::u16string GetDescriptionText(int item_tag) const override;
-  const gfx::VectorIcon* GetItemIcon(int item_tag) const override;
+  ui::ImageModel GetItemIcon(int item_tag) const override;
   void OnListItemSelected(int item_tag) override;
   size_t GetPreferredItemCount() const override;
   bool StyleForTwoLines() const override;

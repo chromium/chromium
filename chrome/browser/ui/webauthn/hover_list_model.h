@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/vector_icon_types.h"
 
 // List model that controls which item is added to WebAuthN UI views.
@@ -29,7 +30,7 @@ class HoverListModel {
   // GetItemIcon may return nullptr to indicate that no icon should be added.
   // This is distinct from using an empty icon as the latter will still take up
   // as much space as any other icon.
-  virtual const gfx::VectorIcon* GetItemIcon(int item_tag) const = 0;
+  virtual ui::ImageModel GetItemIcon(int item_tag) const = 0;
   virtual void OnListItemSelected(int item_tag) = 0;
   virtual size_t GetPreferredItemCount() const = 0;
   // StyleForTwoLines returns true if the items in the list should lay out

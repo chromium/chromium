@@ -124,9 +124,14 @@ class AuthenticatorRequestDialogModel {
     // notice about resident credentials.
     kResidentCredentialConfirmation,
 
-    // Account selection,
+    // Account selection. This occurs prior to performing user verification for
+    // platform authenticators ("pre-select"), or afterwards for USB security
+    // keys. In each mode, there are different sheets for confirming a single
+    // available credential and choosing one from a list of multiple options.
     kSelectAccount,
+    kSelectSingleAccount,
     kPreSelectAccount,
+    kPreSelectSingleAccount,
 
     // Attestation permission requests.
     kAttestationPermissionRequest,
@@ -182,7 +187,7 @@ class AuthenticatorRequestDialogModel {
     Mechanism(Type type,
               std::u16string name,
               std::u16string short_name,
-              const gfx::VectorIcon* icon,
+              const gfx::VectorIcon& icon,
               base::RepeatingClosure callback,
               bool is_priority);
     ~Mechanism();
@@ -193,7 +198,7 @@ class AuthenticatorRequestDialogModel {
     const Type type;
     const std::u16string name;
     const std::u16string short_name;
-    const raw_ptr<const gfx::VectorIcon> icon;
+    const gfx::VectorIcon& icon;
     const base::RepeatingClosure callback;
     // priority is true if this mechanism should be activated immediately.
     // Only a single Mechanism in a list should have priority.

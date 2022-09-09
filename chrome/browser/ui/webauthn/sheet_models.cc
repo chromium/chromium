@@ -1177,25 +1177,42 @@ void AuthenticatorResidentCredentialConfirmationSheetView::OnAccept() {
 
 AuthenticatorSelectAccountSheetModel::AuthenticatorSelectAccountSheetModel(
     AuthenticatorRequestDialogModel* dialog_model,
-    Mode mode)
-    : AuthenticatorSheetModelBase(dialog_model), mode_(mode) {}
+    UserVerificationMode mode,
+    SelectionType type)
+    : AuthenticatorSheetModelBase(dialog_model),
+      user_verification_mode_(mode),
+      selection_type_(type) {}
 
 AuthenticatorSelectAccountSheetModel::~AuthenticatorSelectAccountSheetModel() =
     default;
 
+AuthenticatorSelectAccountSheetModel::SelectionType
+AuthenticatorSelectAccountSheetModel::selection_type() const {
+  return selection_type_;
+}
+
+const device::DiscoverableCredentialMetadata&
+AuthenticatorSelectAccountSheetModel::SingleCredential() const {
+  DCHECK_EQ(selection_type_, kSingleAccount);
+  DCHECK_EQ(dialog_model()->creds().size(), 1u);
+  return dialog_model()->creds().at(0);
+}
+
 void AuthenticatorSelectAccountSheetModel::SetCurrentSelection(int selected) {
+  DCHECK_EQ(selection_type_, kMultipleAccounts);
   DCHECK_LE(0, selected);
   DCHECK_LT(static_cast<size_t>(selected), dialog_model()->creds().size());
   selected_ = selected;
 }
 
 void AuthenticatorSelectAccountSheetModel::OnAccept() {
-  switch (mode_) {
+  const size_t index = selection_type_ == kMultipleAccounts ? selected_ : 0;
+  switch (user_verification_mode_) {
     case kPreUserVerification:
-      dialog_model()->OnAccountPreselectedIndex(selected_);
+      dialog_model()->OnAccountPreselectedIndex(index);
       break;
     case kPostUserVerification:
-      dialog_model()->OnAccountSelected(selected_);
+      dialog_model()->OnAccountSelected(index);
       break;
   }
 }
@@ -1208,19 +1225,51 @@ AuthenticatorSelectAccountSheetModel::GetStepIllustration(
 }
 
 std::u16string AuthenticatorSelectAccountSheetModel::GetStepTitle() const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    switch (selection_type_) {
+      case kSingleAccount:
+        // TODO(1358719): i18n
+        return u"Use this passkey?";
+      case kMultipleAccounts:
+        // TODO(1358719): i18n
+        return u"Choose a passkey";
+    }
+  }
   return l10n_util::GetStringUTF16(IDS_WEBAUTHN_SELECT_ACCOUNT);
 }
 
 std::u16string AuthenticatorSelectAccountSheetModel::GetStepDescription()
     const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    switch (selection_type_) {
+      case kSingleAccount:
+        // TODO(1358719): i18n
+        return u"This passkey will be used for " +
+               GetRelyingPartyIdString(dialog_model());
+      case kMultipleAccounts:
+        // TODO(1358719): i18n
+        return u"Which passkey would you like to use for " +
+               GetRelyingPartyIdString(dialog_model()) + u"?";
+    }
+  }
   return std::u16string();
 }
 
 bool AuthenticatorSelectAccountSheetModel::IsAcceptButtonVisible() const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return selection_type_ == kSingleAccount;
+  }
   return false;
 }
 
 bool AuthenticatorSelectAccountSheetModel::IsAcceptButtonEnabled() const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return selection_type_ == kSingleAccount;
+  }
   return false;
 }
 
@@ -1344,15 +1393,6 @@ AuthenticatorCreatePasskeySheetModel::AuthenticatorCreatePasskeySheetModel(
 
 AuthenticatorCreatePasskeySheetModel::~AuthenticatorCreatePasskeySheetModel() =
     default;
-
-std::u16string AuthenticatorCreatePasskeySheetModel::GetUserNameForDisplay()
-    const {
-  if (!dialog_model()->user_entity().name) {
-    // TODO(1358719): i18n
-    return u"Unknown user";
-  }
-  return base::UTF8ToUTF16(*dialog_model()->user_entity().name);
-}
 
 const gfx::VectorIcon&
 AuthenticatorCreatePasskeySheetModel::GetStepIllustration(

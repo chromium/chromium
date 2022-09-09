@@ -17,20 +17,12 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_select_account_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/hover_list_view.h"
+#include "chrome/browser/ui/views/webauthn/passkey_pill_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "chrome/browser/ui/webauthn/transport_hover_list_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
-#include "components/vector_icons/vector_icons.h"
 #include "device/fido/features.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/text_constants.h"
-#include "ui/views/border.h"
-#include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
-#include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/layout_types.h"
-#include "ui/views/style/typography.h"
 
 namespace {
 
@@ -79,49 +71,6 @@ class AuthenticatorMechanismSelectorSheetView
   }
 };
 
-// A rounded rectangle visualizing user information for a passkey.
-class PasskeyPillView : public views::View {
-  METADATA_HEADER(PasskeyPillView);
-
- public:
-  explicit PasskeyPillView(const std::u16string& username) {
-    constexpr size_t kVerticalMargin = 14, kHorizontalMargin = 24,
-                     kPillHeight = 63;
-
-    auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
-    layout->SetOrientation(views::LayoutOrientation::kHorizontal);
-    layout->SetMainAxisAlignment(views::LayoutAlignment::kStart);
-    layout->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-    layout->SetMinimumCrossAxisSize(kPillHeight);
-
-    // Force 16px margin between icon and label.
-    layout->SetDefault(views::kMarginsKey, gfx::Insets::VH(0, 16));
-    layout->SetInteriorMargin(
-        gfx::Insets::VH(kVerticalMargin, kHorizontalMargin));
-    layout->SetCollapseMargins(true);
-
-    AddChildView(
-        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            vector_icons::kPasskeyIcon, ui::kColorAccent,
-            /*icon_size=*/24)));
-
-    auto* label = AddChildView(std::make_unique<views::Label>(
-        username, views::style::CONTEXT_DIALOG_BODY_TEXT));
-
-    // Make the username label elide with appropriate behavior.
-    label->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero));
-    label->SetElideBehavior(gfx::ELIDE_EMAIL);
-
-    SetBorder(views::CreateThemedRoundedRectBorder(
-        /*thickness=*/1, /*corner_radius=*/16, ui::kColorSeparator));
-  }
-};
-
-BEGIN_METADATA(PasskeyPillView, views::View)
-END_METADATA
-
 class AuthenticatorCreatePasskeySheetView
     : public AuthenticatorRequestSheetView {
  public:
@@ -142,7 +91,8 @@ class AuthenticatorCreatePasskeySheetView
     return std::make_pair(
         std::make_unique<PasskeyPillView>(
             static_cast<AuthenticatorCreatePasskeySheetModel*>(model())
-                ->GetUserNameForDisplay()),
+                ->dialog_model()
+                ->user_entity()),
         AutoFocus::kNo);
   }
 };
@@ -291,7 +241,17 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
       sheet_view = std::make_unique<AuthenticatorSelectAccountSheetView>(
           std::make_unique<AuthenticatorSelectAccountSheetModel>(
               dialog_model,
-              AuthenticatorSelectAccountSheetModel::kPostUserVerification));
+              AuthenticatorSelectAccountSheetModel::kPostUserVerification,
+              AuthenticatorSelectAccountSheetModel::kMultipleAccounts));
+      break;
+    case Step::kSelectSingleAccount:
+      DCHECK(base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi));
+      sheet_view = std::make_unique<AuthenticatorSelectAccountSheetView>(
+          std::make_unique<AuthenticatorSelectAccountSheetModel>(
+              dialog_model,
+              AuthenticatorSelectAccountSheetModel::kPostUserVerification,
+              AuthenticatorSelectAccountSheetModel::kSingleAccount));
       break;
     case Step::kPreSelectAccount:
       DCHECK(base::FeatureList::IsEnabled(
@@ -299,7 +259,17 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
       sheet_view = std::make_unique<AuthenticatorSelectAccountSheetView>(
           std::make_unique<AuthenticatorSelectAccountSheetModel>(
               dialog_model,
-              AuthenticatorSelectAccountSheetModel::kPreUserVerification));
+              AuthenticatorSelectAccountSheetModel::kPreUserVerification,
+              AuthenticatorSelectAccountSheetModel::kMultipleAccounts));
+      break;
+    case Step::kPreSelectSingleAccount:
+      DCHECK(base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi));
+      sheet_view = std::make_unique<AuthenticatorSelectAccountSheetView>(
+          std::make_unique<AuthenticatorSelectAccountSheetModel>(
+              dialog_model,
+              AuthenticatorSelectAccountSheetModel::kPreUserVerification,
+              AuthenticatorSelectAccountSheetModel::kSingleAccount));
       break;
     case Step::kAttestationPermissionRequest:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(

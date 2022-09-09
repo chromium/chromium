@@ -34,6 +34,7 @@
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_elider.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -105,21 +106,21 @@ std::u16string GetTransportShortDescription(AuthenticatorTransport transport) {
   return l10n_util::GetStringUTF16(msg_id);
 }
 
-constexpr const gfx::VectorIcon* GetTransportIcon(
+constexpr const gfx::VectorIcon& GetTransportIcon(
     AuthenticatorTransport transport) {
   switch (transport) {
     case AuthenticatorTransport::kUsbHumanInterfaceDevice:
-      return &vector_icons::kUsbIcon;
+      return vector_icons::kUsbIcon;
     case AuthenticatorTransport::kInternal:
-      return &kLaptopIcon;
+      return kLaptopIcon;
     case AuthenticatorTransport::kHybrid:
-      return &kSmartphoneIcon;
+      return kSmartphoneIcon;
     case AuthenticatorTransport::kAndroidAccessory:
-      return &kUsbCableIcon;
+      return kUsbCableIcon;
     case AuthenticatorTransport::kBluetoothLowEnergy:
     case AuthenticatorTransport::kNearFieldCommunication:
       NOTREACHED();
-      return nullptr;
+      return gfx::kNoneIcon;
   }
 }
 
@@ -138,7 +139,7 @@ AuthenticatorRequestDialogModel::Mechanism::Mechanism(
     AuthenticatorRequestDialogModel::Mechanism::Type in_type,
     std::u16string in_name,
     std::u16string in_short_name,
-    const gfx::VectorIcon* in_icon,
+    const gfx::VectorIcon& in_icon,
     base::RepeatingClosure in_callback,
     bool is_priority)
     : type(std::move(in_type)),
@@ -394,7 +395,9 @@ void AuthenticatorRequestDialogModel::StartPlatformAuthenticatorFlow() {
              .empty()) {
       ephemeral_state_.creds_ =
           transport_availability_.recognized_platform_authenticator_credentials;
-      SetCurrentStep(Step::kPreSelectAccount);
+      SetCurrentStep(ephemeral_state_.creds_.size() == 1
+                         ? Step::kPreSelectSingleAccount
+                         : Step::kPreSelectAccount);
       return;
     }
   }
@@ -674,6 +677,13 @@ void AuthenticatorRequestDialogModel::SelectAccount(
         relying_party_id_, response.credential->id, *response.user_entity);
   }
   selection_callback_ = std::move(callback);
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    SetCurrentStep(ephemeral_state_.creds_.size() == 1
+                       ? Step::kSelectSingleAccount
+                       : Step::kSelectAccount);
+    return;
+  }
   SetCurrentStep(Step::kSelectAccount);
 }
 
@@ -1159,7 +1169,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
     const std::u16string label =
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_ADD_PHONE);
     mechanisms_.emplace_back(
-        Mechanism::AddPhone(), label, label, &kQrcodeGeneratorIcon,
+        Mechanism::AddPhone(), label, label, kQrcodeGeneratorIcon,
         base::BindRepeating(
             &AuthenticatorRequestDialogModel::StartGuidedFlowForAddPhone,
             base::Unretained(this), mechanisms_.size()),
@@ -1192,7 +1202,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
 
       mechanisms_.emplace_back(
           Mechanism::Phone(phone_name), std::move(long_name),
-          std::move(short_name), &kSmartphoneIcon,
+          std::move(short_name), kSmartphoneIcon,
           base::BindRepeating(&AuthenticatorRequestDialogModel::ContactPhone,
                               base::Unretained(this), phone_name,
                               mechanisms_.size()),
