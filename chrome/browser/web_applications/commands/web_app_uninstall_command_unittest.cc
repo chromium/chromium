@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/mock_file_utils_wrapper.h"
@@ -60,6 +61,7 @@ class WebAppUninstallCommandTest : public WebAppTest {
 
   testing::StrictMock<MockOsIntegrationManager> os_integration_manager_;
   scoped_refptr<testing::StrictMock<MockFileUtilsWrapper>> file_utils_wrapper_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(WebAppUninstallCommandTest, SimpleUninstallInternal) {
@@ -306,6 +308,45 @@ TEST_F(WebAppUninstallCommandTest, UserUninstalledPrefsFilled) {
   EXPECT_EQ(provider()->registrar().GetAppById(app_id), nullptr);
   EXPECT_TRUE(UserUninstalledPreinstalledWebAppPrefs(profile()->GetPrefs())
                   .DoesAppIdExist(app_id));
+}
+
+TEST_F(WebAppUninstallCommandTest, ExternalConfigMapMissing) {
+  auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
+                                    WebAppManagement::kDefault);
+  AppId app_id = web_app->app_id();
+  {
+    ScopedRegistryUpdate update(&provider()->sync_bridge());
+    update->CreateApp(std::move(web_app));
+  }
+  EXPECT_TRUE(provider()->registrar().IsLocallyInstalled(app_id));
+  OsHooksErrors result;
+  EXPECT_CALL(os_integration_manager_, UninstallAllOsHooks(app_id, testing::_))
+      .WillOnce(base::test::RunOnceCallback<1>(result));
+
+  base::FilePath deletion_path = GetManifestResourcesDirectoryForApp(
+      GetWebAppsRootDirectory(profile()), app_id);
+
+  EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively(deletion_path))
+      .WillOnce(testing::Return(true));
+
+  base::RunLoop loop;
+  provider()->command_manager().ScheduleCommand(
+      std::make_unique<WebAppUninstallCommand>(
+          app_id, absl::nullopt, webapps::WebappUninstallSource::kAppMenu,
+          base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+            EXPECT_EQ(webapps::UninstallResultCode::kSuccess, code);
+            loop.Quit();
+          }),
+          profile(), &os_integration_manager_, &provider()->sync_bridge(),
+          &provider()->icon_manager(), &provider()->registrar(),
+          &provider()->install_manager(), &provider()->translation_manager()));
+
+  loop.Run();
+  EXPECT_EQ(provider()->registrar().GetAppById(app_id), nullptr);
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "WebApp.Preinstalled.ExternalConfigMapAbsentDuringUninstall"),
+              BucketsAre(base::Bucket(true, 1)));
 }
 
 TEST_F(WebAppUninstallCommandTest, RemoveSourceAndTriggerOSUninstallation) {

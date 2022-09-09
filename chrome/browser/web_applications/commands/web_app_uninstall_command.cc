@@ -144,9 +144,14 @@ void WebAppUninstallCommand::Start() {
         const WebApp::ExternalConfigMap& config_map =
             app->management_to_external_config_map();
         auto it = config_map.find(WebAppManagement::kDefault);
-        DCHECK(it != config_map.end());
-        UserUninstalledPreinstalledWebAppPrefs(profile_prefs_)
-            .Add(app_id, it->second.install_urls);
+        if (it != config_map.end()) {
+          UserUninstalledPreinstalledWebAppPrefs(profile_prefs_)
+              .Add(app_id, it->second.install_urls);
+        } else {
+          base::UmaHistogramBoolean(
+              "WebApp.Preinstalled.ExternalConfigMapAbsentDuringUninstall",
+              true);
+        }
       }
       Uninstall(app_id, current_uninstall.uninstall_source);
     }
