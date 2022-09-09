@@ -5394,8 +5394,11 @@ crbug.com/1173956 http/tests/xsl/xslt-transform-with-javascript-disabled.html [ 
 # No support for key combinations like Alt + c in testdriver.Actions for content_shell
 crbug.com/893480 external/wpt/uievents/interface/keyboard-accesskey-click-event.html [ Timeout ]
 
-
 # No support for Drag-and-Drop handlers being called.
+crbug.com/1353435 external/wpt/html/editing/dnd/images/001.html [ Timeout ]
+crbug.com/1353435 external/wpt/html/editing/dnd/images/002.html [ Timeout ]
+crbug.com/1353435 external/wpt/html/editing/dnd/images/004.html [ Timeout ]
+crbug.com/1353435 external/wpt/html/editing/dnd/images/005.html [ Timeout ]
 crbug.com/1353435 external/wpt/html/editing/dnd/images/006.html [ Timeout ]
 crbug.com/1353435 external/wpt/html/editing/dnd/images/007.html [ Timeout ]
 crbug.com/1353435 external/wpt/html/editing/dnd/images/008.html [ Timeout ]

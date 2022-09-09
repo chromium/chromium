@@ -1,4 +1,10 @@
 <!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="../resources/test-helper.js"></script>
 <head>
 <title>dataURL image drag and drop</title>
 <style type="text/css">
@@ -25,7 +31,21 @@ function addImage(event)
 <div
   ondragenter="event.preventDefault()"
   ondragover="return false"
-  ondrop="addImage(event)"
 />
+<script>
+async function test(){
+  await new Promise(loaded => window.addEventListener("load", loaded));
+  const img = document.querySelector('img');
+  const div = document.querySelector('div');
+  function onDropCallBack(event) {
+    addImage(event);
+    assert_equals(img.src, event.dataTransfer.getData('text/uri-list').replace(/\r\n$/,''));
+    return true;
+  }
+
+  dragDropTest(img, div, onDropCallBack, 'Dragging the dataURL PNG image to the bottom div should copy the image there');
+}
+test();
+</script>
 </body>
 </html>
