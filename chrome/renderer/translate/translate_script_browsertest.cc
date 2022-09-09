@@ -8,6 +8,7 @@
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "components/grit/components_resources.h"
 #include "components/translate/core/common/translate_errors.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -112,7 +113,8 @@ class TranslateScriptBrowserTest : public ChromeRenderViewTest {
   double ExecuteScriptAndGetNumberResult(const std::string& script) {
     WebScriptSource source =
         WebScriptSource(blink::WebString::FromASCII(script));
-    v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+    v8::HandleScope handle_scope(
+        GetMainFrame()->GetAgentGroupScheduler()->Isolate());
     v8::Local<v8::Value> result =
         GetMainFrame()->ExecuteScriptAndReturnValue(source);
     if (result.IsEmpty() || !result->IsNumber()) {
@@ -127,7 +129,8 @@ class TranslateScriptBrowserTest : public ChromeRenderViewTest {
   bool ExecuteScriptAndGetBoolResult(const std::string& script) {
     WebScriptSource source =
         WebScriptSource(blink::WebString::FromASCII(script));
-    v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+    v8::HandleScope handle_scope(
+        GetMainFrame()->GetAgentGroupScheduler()->Isolate());
     v8::Local<v8::Value> result =
         GetMainFrame()->ExecuteScriptAndReturnValue(source);
     if (result.IsEmpty() || !result->IsBoolean()) {
