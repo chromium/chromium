@@ -64,7 +64,8 @@ bool RarReader::ExtractNextEntry() {
 #endif
       current_entry_.is_directory = archive_->FileHead.Dir;
       current_entry_.is_encrypted = archive_->FileHead.Encrypted;
-      current_entry_.file_size = extractor_->GetCurrentFileSize();
+      current_entry_.file_size =
+          current_entry_.is_directory ? 0 : extractor_->GetCurrentFileSize();
 
       if (success) {
         return true;

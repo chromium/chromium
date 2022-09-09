@@ -1017,4 +1017,31 @@ TEST_F(FileAnalyzerTest, EncryptedEntriesDoNotHaveHashOrLength) {
   EXPECT_FALSE(result_.archived_binaries.Get(0).has_length());
 }
 
+TEST_F(FileAnalyzerTest, RarDirectoriesHaveZeroLength) {
+  scoped_refptr<MockBinaryFeatureExtractor> extractor =
+      new testing::StrictMock<MockBinaryFeatureExtractor>();
+  FileAnalyzer analyzer(extractor);
+  base::RunLoop run_loop;
+
+  base::FilePath target_path(FILE_PATH_LITERAL("file_and_folder.rar"));
+  base::FilePath rar_path;
+  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &rar_path));
+  rar_path = rar_path.AppendASCII("safe_browsing")
+                 .AppendASCII("rar")
+                 .AppendASCII("file_and_folder.rar");
+
+  analyzer.Start(
+      target_path, rar_path,
+      base::BindOnce(&FileAnalyzerTest::DoneCallback, base::Unretained(this),
+                     run_loop.QuitClosure()));
+  run_loop.Run();
+
+  ASSERT_TRUE(has_result_);
+  ASSERT_EQ(result_.archived_binaries.size(), 2);
+  EXPECT_EQ(result_.archived_binaries[0].file_basename(), "file.exe");
+  EXPECT_EQ(result_.archived_binaries[0].length(), 24);
+  EXPECT_EQ(result_.archived_binaries[1].file_basename(), "folder");
+  EXPECT_EQ(result_.archived_binaries[1].length(), 0);
+}
+
 }  // namespace safe_browsing
