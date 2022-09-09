@@ -70,6 +70,9 @@ public class ClipboardImpl
     // This mime type annotates that clipboard contains a text.
     private static final String TEXT_MIME_TYPE = "text/*";
 
+    // This mime type annotates that clipboard contains a plain text.
+    private static final String PLAIN_TEXT_MIME_TYPE = "text/plain";
+
     // This mime type annotates that clipboard contains a PNG image.
     private static final String PNG_MIME_TYPE = "image/png";
 
@@ -515,8 +518,8 @@ public class ClipboardImpl
 
     @Override
     public void copyUrlToClipboard(GURL url) {
-        ClipData clip =
-                new ClipData("url", new String[] {URL_MIME_TYPE}, new ClipData.Item(url.getSpec()));
+        ClipData clip = new ClipData("url", new String[] {URL_MIME_TYPE, PLAIN_TEXT_MIME_TYPE},
+                new ClipData.Item(url.getSpec()));
         if (setPrimaryClipNoException(clip) && Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
             // According to
             // https://developer.android.com/about/versions/13/features/copy-paste?hl=en#duplicate-notifications,
