@@ -128,6 +128,12 @@ void TabInteractionRecorderAndroid::DidFinishNavigation(
 
 void TabInteractionRecorderAndroid::DidGetUserInteraction(
     const blink::WebInputEvent& event) {
+  // We already reported the interaction for this Tab and the lifetime of
+  // this object is the same as the CCT, so we will only report once.
+  if (did_get_user_interaction_)
+    return;
+
+  did_get_user_interaction_ = true;
   chrome::android::CustomTabSessionStateTracker::GetInstance()
       .OnUserInteraction();
 }
@@ -159,6 +165,11 @@ void TabInteractionRecorderAndroid::StartObservingFrame(
 WEB_CONTENTS_USER_DATA_KEY_IMPL(TabInteractionRecorderAndroid);
 
 // JNI methods
+jboolean TabInteractionRecorderAndroid::DidGetUserInteraction(
+    JNIEnv* env) const {
+  return did_get_user_interaction_;
+}
+
 jboolean TabInteractionRecorderAndroid::HadInteraction(JNIEnv* env) const {
   bool has_interaction = has_form_interactions() || HasNavigatedFromFirstPage();
   return static_cast<jboolean>(has_interaction);
