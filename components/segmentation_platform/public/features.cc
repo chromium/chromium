@@ -24,6 +24,9 @@ const base::Feature kSegmentationPlatformLowEngagementFeature{
     "SegmentationPlatformLowEngagementFeature",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kShoppingUserSegmentFeature{
+    "ShoppingUserSegmentFeature", base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::Feature kSegmentationPlatformFeedSegmentFeature{
   "SegmentationPlatformFeedSegmentFeature",
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

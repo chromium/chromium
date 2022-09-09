@@ -14,6 +14,7 @@
 #include "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/intentional_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/low_user_engagement_model.h"
+#include "components/segmentation_platform/embedder/default_model/shopping_user_model.h"
 #include "components/segmentation_platform/internal/config_parser.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/constants.h"
@@ -54,6 +55,14 @@ constexpr int kChromeLowUserEngagementSelectionTTLDays = 7;
 constexpr int kFeedUserSegmentSelectionTTLDays = 14;
 constexpr int kFeedUserSegmentUnknownSelectionTTLDays = 14;
 
+constexpr int kShoppingUserDefaultSelectionTTLDays = 7;
+constexpr int kShoppingUserDefaultUnknownSelectionTTLDays = 7;
+
+constexpr char kVariationsParamNameSegmentSelectionTTLDays[] =
+    "segment_selection_ttl_days";
+constexpr char kVariationsParamNameUnknownSelectionTTLDays[] =
+    "unknown_selection_ttl_days";
+
 #if BUILDFLAG(IS_ANDROID)
 
 constexpr int kAdaptiveToolbarDefaultSelectionTTLDays = 56;
@@ -81,7 +90,8 @@ std::unique_ptr<Config> GetConfigForAdaptiveToolbar() {
 
   int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
       chrome::android::kAdaptiveButtonInTopToolbarCustomizationV2,
-      "segment_selection_ttl_days", kAdaptiveToolbarDefaultSelectionTTLDays);
+      kVariationsParamNameSegmentSelectionTTLDays,
+      kAdaptiveToolbarDefaultSelectionTTLDays);
   config->segment_selection_ttl = base::Days(segment_selection_ttl_days);
   // Do not set unknown TTL so that the platform ignores unknown results.
 
@@ -123,7 +133,8 @@ std::unique_ptr<Config> GetConfigForChromeStartAndroid() {
       GetChromeStartAndroidModel());
 
   int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
-      chrome::android::kStartSurfaceAndroid, "segment_selection_ttl_days",
+      chrome::android::kStartSurfaceAndroid,
+      kVariationsParamNameSegmentSelectionTTLDays,
       kChromeStartDefaultSelectionTTLDays);
   int unknown_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
       chrome::android::kStartSurfaceAndroid,
@@ -243,11 +254,13 @@ std::unique_ptr<Config> GetConfigForChromeLowUserEngagement() {
 #if BUILDFLAG(IS_ANDROID)
   int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
       feature_guide::features::kSegmentationModelLowEngagedUsers,
-      "segment_selection_ttl_days", kChromeLowUserEngagementSelectionTTLDays);
+      kVariationsParamNameSegmentSelectionTTLDays,
+      kChromeLowUserEngagementSelectionTTLDays);
 #else
   int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
       features::kSegmentationPlatformLowEngagementFeature,
-      "segment_selection_ttl_days", kChromeLowUserEngagementSelectionTTLDays);
+      kVariationsParamNameSegmentSelectionTTLDays,
+      kChromeLowUserEngagementSelectionTTLDays);
 #endif
 
   config->segment_selection_ttl = base::Days(segment_selection_ttl_days);
@@ -273,12 +286,42 @@ std::unique_ptr<Config> GetConfigForFeedSegments() {
   config->segment_selection_ttl =
       base::Days(base::GetFieldTrialParamByFeatureAsInt(
           features::kSegmentationPlatformFeedSegmentFeature,
-          "segment_selection_ttl_days", kFeedUserSegmentSelectionTTLDays));
+          kVariationsParamNameSegmentSelectionTTLDays,
+          kFeedUserSegmentSelectionTTLDays));
   config->unknown_selection_ttl =
       base::Days(base::GetFieldTrialParamByFeatureAsInt(
           features::kSegmentationPlatformFeedSegmentFeature,
-          "unknown_selection_ttl_days",
+          kVariationsParamNameUnknownSelectionTTLDays,
           kFeedUserSegmentUnknownSelectionTTLDays));
+  return config;
+}
+
+std::unique_ptr<ModelProvider> GetShoppingUserDefaultModel() {
+  if (!base::GetFieldTrialParamByFeatureAsBool(
+          features::kShoppingUserSegmentFeature, kDefaultModelEnabledParam,
+          true)) {
+    return nullptr;
+  }
+  return std::make_unique<ShoppingUserModel>();
+}
+
+std::unique_ptr<Config> GetConfigForShoppingUser() {
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kShoppingUserSegmentationKey;
+  config->segmentation_uma_name = kShoppingUserUmaName;
+  config->AddSegmentId(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER,
+      GetShoppingUserDefaultModel());
+  config->segment_selection_ttl =
+      base::Days(base::GetFieldTrialParamByFeatureAsInt(
+          features::kShoppingUserSegmentFeature,
+          kVariationsParamNameSegmentSelectionTTLDays,
+          kShoppingUserDefaultSelectionTTLDays));
+  config->unknown_selection_ttl =
+      base::Days(base::GetFieldTrialParamByFeatureAsInt(
+          features::kShoppingUserSegmentFeature,
+          kVariationsParamNameUnknownSelectionTTLDays,
+          kShoppingUserDefaultUnknownSelectionTTLDays));
   return config;
 }
 
@@ -329,6 +372,10 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   if (base::FeatureList::IsEnabled(
           features::kSegmentationPlatformFeedSegmentFeature)) {
     configs.emplace_back(GetConfigForFeedSegments());
+  }
+
+  if (base::FeatureList::IsEnabled(features::kShoppingUserSegmentFeature)) {
+    configs.emplace_back(GetConfigForShoppingUser());
   }
 
   AppendConfigsFromExperiments(configs);
