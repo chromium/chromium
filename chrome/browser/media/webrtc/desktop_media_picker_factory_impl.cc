@@ -124,7 +124,7 @@ DesktopMediaPickerFactoryImpl::CreateMediaList(
         break;
       }
       case DesktopMediaList::Type::kCurrentTab: {
-        if (have_current_tab)
+        if (have_current_tab || !web_contents)
           continue;
         have_current_tab = true;
         source_lists.push_back(

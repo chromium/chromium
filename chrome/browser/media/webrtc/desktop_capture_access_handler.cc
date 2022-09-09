@@ -90,6 +90,9 @@ std::u16string GetApplicationTitle(content::WebContents* web_contents,
   if (extension)
     return base::UTF8ToUTF16(extension->name());
 
+  if (!web_contents)
+    return std::u16string();
+
   return url_formatter::FormatOriginForSecurityDisplay(
       web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
       url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
@@ -342,14 +345,16 @@ void DesktopCaptureAccessHandler::HandleRequest(
   const bool should_display_notification =
       display_notification_ && ShouldDisplayNotification(extension) &&
       !HasNotificationExemption(request.security_origin);
+
   std::unique_ptr<PendingAccessRequest> pending_request =
       std::make_unique<PendingAccessRequest>(
           /*picker=*/nullptr, request, std::move(callback),
           GetApplicationTitle(web_contents, extension),
           should_display_notification, is_allowlisted_extension);
 
-  if (request.video_type !=
-      blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE) {
+  if (!web_contents ||
+      request.video_type !=
+          blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE) {
     std::move(pending_request->callback)
         .Run(blink::mojom::StreamDevicesSet(),
              blink::mojom::MediaStreamRequestResult::INVALID_STATE,
@@ -482,6 +487,7 @@ void DesktopCaptureAccessHandler::ProcessChangeSourceRequest(
     content::WebContents* web_contents,
     std::unique_ptr<PendingAccessRequest> pending_request) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(web_contents);
   DCHECK_EQ(pending_request->request.video_type,
             blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE);
 
@@ -535,6 +541,7 @@ void DesktopCaptureAccessHandler::ProcessQueuedAccessRequest(
     const RequestsQueue& queue,
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(web_contents);
 
   const PendingAccessRequest& pending_request = *queue.front();
 
@@ -574,7 +581,7 @@ void DesktopCaptureAccessHandler::ProcessQueuedAccessRequest(
                      base::Unretained(this), web_contents->GetWeakPtr(),
                      pending_request.application_title);
   DesktopMediaPicker::Params picker_params;
-  picker_params.web_contents = web_contents;
+  picker_params.web_contents = web_contents->GetWeakPtr();
   gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
   picker_params.context = parent_window;
   picker_params.parent = parent_window;

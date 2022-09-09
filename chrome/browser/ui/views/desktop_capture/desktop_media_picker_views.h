@@ -100,8 +100,8 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
   DesktopMediaList::Type GetSelectedSourceListType() const;
 
-  const raw_ptr<content::WebContents> web_contents_;
   const bool audio_requested_;
+  const content::GlobalRenderFrameHostId capturer_global_id_;
 
   raw_ptr<DesktopMediaPickerViews> parent_;
 

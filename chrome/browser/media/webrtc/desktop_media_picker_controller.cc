@@ -52,11 +52,18 @@ void DesktopMediaPickerController::Show(
   done_callback_ = std::move(done_callback);
   params_ = params;
 
-  Observe(params.web_contents);
+  if (!params.web_contents) {
+    OnPickerDialogResults(
+        "The WebContents associated with the picker is already destroyed.", {});
+    return;
+  }
+
+  Observe(params.web_contents.get());
 
   // Keep same order as the input |sources| and avoid duplicates.
   source_lists_ = picker_factory_->CreateMediaList(
-      sources, params.web_contents, std::move(includable_web_contents_filter));
+      sources, params.web_contents.get(),
+      std::move(includable_web_contents_filter));
   if (source_lists_.empty()) {
     OnPickerDialogResults("At least one source type must be specified.", {});
     return;
