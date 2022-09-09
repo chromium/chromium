@@ -74,6 +74,17 @@ SidePanelEntry::Key SidePanelComboboxModel::GetKeyAt(int index) const {
   return entries_[index].key;
 }
 
+void SidePanelComboboxModel::UpdateIconForEntry(SidePanelEntry* entry) {
+  for (auto& item : entries_) {
+    if (item.key == entry->key()) {
+      item.icon = entry->icon();
+      for (auto& observer : observers()) {
+        observer.OnComboboxModelChanged(this);
+      }
+    }
+  }
+}
+
 int SidePanelComboboxModel::GetIndexForKey(const SidePanelEntry::Key& key) {
   for (size_t index = 0; index < entries_.size(); index++) {
     if (entries_[index].key == key)

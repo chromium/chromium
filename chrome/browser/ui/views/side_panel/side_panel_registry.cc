@@ -88,6 +88,11 @@ void SidePanelRegistry::OnEntryShown(SidePanelEntry* entry) {
   active_entry_ = entry;
 }
 
+void SidePanelRegistry::OnEntryIconUpdated(SidePanelEntry* entry) {
+  for (SidePanelRegistryObserver& observer : observers_)
+    observer.OnEntryIconUpdated(entry);
+}
+
 void SidePanelRegistry::RemoveEntry(SidePanelEntry* entry) {
   base::EraseIf(entries_, base::MatchesUniquePtr(entry));
 }

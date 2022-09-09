@@ -84,6 +84,12 @@ void SidePanelEntry::ClearCachedView() {
   content_view_.reset(nullptr);
 }
 
+void SidePanelEntry::ResetIcon(ui::ImageModel icon) {
+  icon_ = std::move(icon);
+  for (SidePanelEntryObserver& observer : observers_)
+    observer.OnEntryIconUpdated(this);
+}
+
 void SidePanelEntry::OnEntryShown() {
   entry_shown_timestamp_ = base::TimeTicks::Now();
   SidePanelUtil::RecordEntryShownMetrics(key_.id());

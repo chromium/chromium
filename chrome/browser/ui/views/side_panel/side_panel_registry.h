@@ -55,6 +55,7 @@ class SidePanelRegistry final : public base::SupportsUserData::Data,
 
   // SidePanelEntryObserver:
   void OnEntryShown(SidePanelEntry* id) override;
+  void OnEntryIconUpdated(SidePanelEntry* entry) override;
 
  private:
   void RemoveEntry(SidePanelEntry* entry);

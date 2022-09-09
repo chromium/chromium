@@ -43,6 +43,9 @@ class SidePanelComboboxModel : public ui::ComboboxModel {
   void RemoveItems(const std::vector<std::unique_ptr<SidePanelEntry>>& entries);
   SidePanelEntry::Key GetKeyAt(int index) const;
 
+  // If the entry is in |entries_|, update the icon.
+  void UpdateIconForEntry(SidePanelEntry* entry);
+
   // Returns the index for the given side panel entry id, if the id doesn't
   // exist in entries_ then default to 0.
   int GetIndexForKey(const SidePanelEntry::Key& key);

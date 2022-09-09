@@ -583,6 +583,10 @@ void SidePanelCoordinator::OnEntryWillDeregister(SidePanelEntry* entry) {
   }
 }
 
+void SidePanelCoordinator::OnEntryIconUpdated(SidePanelEntry* entry) {
+  combobox_model_->UpdateIconForEntry(entry);
+}
+
 void SidePanelCoordinator::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
