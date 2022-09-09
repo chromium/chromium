@@ -75,7 +75,7 @@ media::AudioParameters AudioInputStream::GetAudioParameters() const {
   // AUDIO_PCM_LINEAR and AUDIO_PCM_LOW_LATENCY are the same on CRAS.
   auto result = media::AudioParameters(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::GuessChannelLayout(buffer_format_.num_channels),
+      media::ChannelLayoutConfig::Guess(buffer_format_.num_channels),
       buffer_format_.sample_rate,
       buffer_format_.sample_rate / 10 /* buffer size for 100 ms */);
 

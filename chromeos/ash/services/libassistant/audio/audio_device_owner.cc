@@ -10,6 +10,7 @@
 #include "base/sequence_checker.h"
 #include "chromeos/ash/services/libassistant/public/mojom/audio_output_delegate.mojom.h"
 #include "media/audio/audio_device_description.h"
+#include "media/base/audio_parameters.h"
 #include "media/base/limits.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 
@@ -77,7 +78,7 @@ media::AudioParameters GetAudioParametersFromBufferFormat(
 
   return media::AudioParameters(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::GuessChannelLayout(output_format.pcm_num_channels),
+      media::ChannelLayoutConfig::Guess(output_format.pcm_num_channels),
       output_format.pcm_sample_rate,
       output_format.pcm_sample_rate / kNumberOfBuffersPerSec);
 }
