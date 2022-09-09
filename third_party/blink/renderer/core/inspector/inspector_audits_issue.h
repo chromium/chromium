@@ -105,6 +105,7 @@ enum class RendererCorsIssueCode {
 
 enum class AttributionReportingIssueType {
   kPermissionPolicyDisabled,
+  kPermissionPolicyNotDelegated,
   kUntrustworthyReportingOrigin,
   kInsecureContext,
   kInvalidRegisterSourceHeader,

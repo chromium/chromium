@@ -1,0 +1,11 @@
+Test that an iframe without the attribution-reporting permission gets a devtools warning
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            violatingNodeId : <number>
+            violationType : PermissionPolicyNotDelegated
+        }
+    }
+}
+
