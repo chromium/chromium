@@ -310,6 +310,10 @@ def main(args):
                       default='',
                       action='store',
                       help='version of swiftc compiler')
+  parser.add_argument('-xcode-version',
+                      default='',
+                      action='store',
+                      help='version of xcode')
 
   parsed, extras = parser.parse_known_args(args)
   with tempfile.TemporaryDirectory() as tmpdir:

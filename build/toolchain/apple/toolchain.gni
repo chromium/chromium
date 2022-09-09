@@ -633,6 +633,19 @@ template("apple_toolchain") {
           _extra_flags += " -swiftc-version $swiftc_version"
         }
 
+        # Include the version of Xcode on the command-line (if specified via
+        # toolchain_args). This causes `ninja` to consider all the compilation
+        # outputs to be dirty when the version change.
+        #
+        # This is required because sometimes module dependency changes between
+        # different version of Xcode (e.g. when moving from Xcode 14 beta 6 to
+        # Xcode 14 RC). If the swiftmodule are not rebuilt when the version
+        # changes, they may encode dependency on now non-existing frameworks
+        # causing linker failures ultimately.
+        if (defined(toolchain_args.xcode_build)) {
+          _extra_flags += " -xcode-version ${toolchain_args.xcode_build}"
+        }
+
         if (swift_toolchain_path != "") {
           _extra_flags += " -swift-toolchain-path $swift_toolchain_path"
         }
