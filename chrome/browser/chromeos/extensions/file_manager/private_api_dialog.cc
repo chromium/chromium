@@ -10,8 +10,11 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "base/bind.h"
+#include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/arc/fileapi/arc_select_files_util.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/file_tasks_notifier.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -79,6 +82,16 @@ ExtensionFunction::ResponseAction FileManagerPrivateSelectFileFunction::Run() {
         file_manager::file_tasks::kUseOutsideDriveMetricName,
         file_manager::file_tasks::OfficeFilesUseOutsideDriveHook::
             FILE_PICKER_SELECTION);
+    auto* drive_service = drive::util::GetIntegrationServiceByProfile(profile);
+    drive_service->ForceReSyncFile(
+        file_system_url.path(),
+        base::BindOnce(
+            &file_manager::util::GetSelectedFileInfo, render_frame_host(),
+            profile, file_paths, option,
+            base::BindOnce(&FileManagerPrivateSelectFileFunction::
+                               GetSelectedFileInfoResponse,
+                           this, params->for_opening, params->index)));
+    return RespondLater();
   }
 
   file_manager::util::GetSelectedFileInfo(
@@ -108,21 +121,28 @@ void FileManagerPrivateSelectFileFunction::GetSelectedFileInfoResponse(
   Respond(NoArguments());
 }
 
+FileManagerPrivateSelectFilesFunction::FileManagerPrivateSelectFilesFunction() =
+    default;
+FileManagerPrivateSelectFilesFunction::
+    ~FileManagerPrivateSelectFilesFunction() = default;
+
 ExtensionFunction::ResponseAction FileManagerPrivateSelectFilesFunction::Run() {
   using extensions::api::file_manager_private::SelectFiles::Params;
   const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
+
+  should_return_local_path_ = params->should_return_local_path;
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
   scoped_refptr<storage::FileSystemContext> file_system_context =
       file_manager::util::GetFileSystemContextForRenderFrameHost(
           profile, render_frame_host());
 
-  std::vector<GURL> file_urls;
+  std::vector<base::FilePath> resync_paths;
   for (const auto& selected_path : params->selected_paths) {
-    file_urls.emplace_back(selected_path);
+    file_urls_.emplace_back(selected_path);
     const storage::FileSystemURL file_system_url =
-        file_system_context->CrackURLInFirstPartyContext(file_urls.back());
+        file_system_context->CrackURLInFirstPartyContext(file_urls_.back());
 
     if (file_manager::util::IsDriveLocalPath(profile, file_system_url.path()) &&
         file_manager::file_tasks::IsOfficeFile(file_system_url.path())) {
@@ -130,12 +150,26 @@ ExtensionFunction::ResponseAction FileManagerPrivateSelectFilesFunction::Run() {
           file_manager::file_tasks::kUseOutsideDriveMetricName,
           file_manager::file_tasks::OfficeFilesUseOutsideDriveHook::
               FILE_PICKER_SELECTION);
+      resync_paths.push_back(file_system_url.path());
+    }
+  }
+  resync_files_remaining_ = resync_paths.size();
+  if (!resync_paths.empty()) {
+    auto* drive_service = drive::util::GetIntegrationServiceByProfile(profile);
+    if (drive_service) {
+      for (const auto& path : resync_paths) {
+        drive_service->ForceReSyncFile(
+            path,
+            base::BindOnce(&FileManagerPrivateSelectFilesFunction::OnReSyncFile,
+                           this));
+      }
+      return RespondLater();
     }
   }
 
   file_manager::util::GetSelectedFileInfo(
       render_frame_host(), Profile::FromBrowserContext(browser_context()),
-      file_urls,
+      file_urls_,
       params->should_return_local_path
           ? file_manager::util::NEED_LOCAL_PATH_FOR_OPENING
           : file_manager::util::NO_LOCAL_PATH_RESOLUTION,
@@ -143,6 +177,22 @@ ExtensionFunction::ResponseAction FileManagerPrivateSelectFilesFunction::Run() {
           &FileManagerPrivateSelectFilesFunction::GetSelectedFileInfoResponse,
           this, true));
   return RespondLater();
+}
+
+void FileManagerPrivateSelectFilesFunction::OnReSyncFile() {
+  DCHECK(resync_files_remaining_ > 0);
+  if (--resync_files_remaining_ > 0) {
+    return;
+  }
+  file_manager::util::GetSelectedFileInfo(
+      render_frame_host(), Profile::FromBrowserContext(browser_context()),
+      file_urls_,
+      should_return_local_path_
+          ? file_manager::util::NEED_LOCAL_PATH_FOR_OPENING
+          : file_manager::util::NO_LOCAL_PATH_RESOLUTION,
+      base::BindOnce(
+          &FileManagerPrivateSelectFilesFunction::GetSelectedFileInfoResponse,
+          this, true));
 }
 
 void FileManagerPrivateSelectFilesFunction::GetSelectedFileInfoResponse(

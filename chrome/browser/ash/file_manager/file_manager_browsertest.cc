@@ -991,6 +991,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         // TestCase("openFileDialogDriveHostedDoc").WithBrowser(),
         TestCase("openFileDialogDriveHostedNeedsFile").WithBrowser(),
         TestCase("saveFileDialogDriveHostedNeedsFile").WithBrowser(),
+        TestCase("openFileDialogDriveOfficeFile").WithBrowser(),
+        TestCase("openMultiFileDialogDriveOfficeFile").WithBrowser(),
         TestCase("openFileDialogCancelDrive").WithBrowser(),
         TestCase("openFileDialogEscapeDrive").WithBrowser(),
         TestCase("openFileDialogDriveOffline").WithBrowser().Offline(),

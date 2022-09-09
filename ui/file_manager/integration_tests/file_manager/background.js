@@ -143,8 +143,8 @@ export async function openEntryChoosingWindow(params) {
 /**
  * Companion function to openEntryChoosingWindow function. This function waits
  * until entry selected in a dialog shown by chooseEntry() is set.
- * @return {!Promise<?Entry>} the entry set by the dialog shown via
- *     chooseEntry().
+ * @return {!Promise<?(Entry|Array<Entry>)>} the entry set by the dialog shown
+ *     via chooseEntry().
  */
 export async function pollForChosenEntry(caller) {
   await repeatUntil(() => {
@@ -152,7 +152,8 @@ export async function pollForChosenEntry(caller) {
       return pending(caller, 'Waiting for chooseEntry() result');
     }
   });
-  return /** @type{FileEntry} */ (window[CHOOSE_ENTRY_PROPERTY]);
+  return /** @type{FileEntry|Array<FileEntry>} */ (
+      window[CHOOSE_ENTRY_PROPERTY]);
 }
 
 /**

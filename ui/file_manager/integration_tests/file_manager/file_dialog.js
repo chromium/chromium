@@ -65,12 +65,14 @@ async function unloadOpenFileDialog(
  */
 async function setUpFileEntrySet(volume) {
   const localEntryPromise = addEntries(['local'], BASIC_LOCAL_ENTRY_SET);
-  const driveEntryPromise = addEntries(
-      ['drive'], [ENTRIES.hello, ENTRIES.pinned, ENTRIES.testDocument]);
+
+  const driveEntries =
+      [ENTRIES.hello, ENTRIES.pinned, ENTRIES.testDocument, ENTRIES.docxFile];
+  const driveEntryPromise = addEntries(['drive'], driveEntries);
 
   await Promise.all([localEntryPromise, driveEntryPromise]);
   if (volume == 'drive') {
-    return [ENTRIES.hello, ENTRIES.pinned, ENTRIES.testDocument];
+    return driveEntries;
   }
   return BASIC_LOCAL_ENTRY_SET;
 }
@@ -472,6 +474,49 @@ testcase.openFileDialogDriveHostedNeedsFile = () => {
 testcase.saveFileDialogDriveHostedNeedsFile = () => {
   return openFileDialogExpectOkButtonDisabled(
       'drive', ENTRIES.testDocument.nameText, TEST_DRIVE_FILE, 'saveFile');
+};
+
+/**
+ * Tests opening file dialog on Drive and selecting an office file.
+ */
+testcase.openFileDialogDriveOfficeFile = () => {
+  return openFileDialogClickOkButton('drive', ENTRIES.docxFile.nameText);
+};
+
+/**
+ * Tests opening file dialog on Drive and selecting multiple files including an
+ * office file.
+ */
+testcase.openMultiFileDialogDriveOfficeFile = async () => {
+  await setUpFileEntrySet('drive');
+  await openEntryChoosingWindow({type: 'openFile', acceptsMultiple: true});
+  const appId = await waitForDialog();
+
+  // Wait for initial load to finish.
+  await remoteCall.waitFor('isFileManagerLoaded', appId, true);
+
+  await navigateWithDirectoryTree(appId, '/My Drive');
+
+  // Sort the file names so we can compare the array directly with the entries
+  // returned from pollForChosenEntry() without worrying about order.
+  const selectFileNames = [
+    ENTRIES.hello.nameText,
+    ENTRIES.docxFile.nameText,
+  ].sort();
+
+  // Select both files with the dialog.
+  await remoteCall.waitAndClickElement(
+      appId, `#file-list [file-name="${selectFileNames[0]}"]`);
+  await remoteCall.waitAndClickElement(
+      appId, `#file-list [file-name="${selectFileNames[1]}"]`, {ctrl: true});
+  await sendTestMessage(
+      {name: 'expectFileTask', fileNames: selectFileNames, openType: 'open'});
+  const okButton = '.button-panel button.ok:enabled';
+  await remoteCall.waitAndClickElement(appId, okButton);
+
+  const chosenEntries =
+      (await pollForChosenEntry(getCaller())).map(entry => entry.name).sort();
+  chrome.test.assertEq(selectFileNames, chosenEntries);
 };
 
 /**
