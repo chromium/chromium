@@ -8,10 +8,8 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -84,7 +82,7 @@ ContentToVisibleTimeReporter::TabWasShown(
                                    gfx::PresentationFeedback::Failure());
   }
   DCHECK(!tab_switch_start_state_);
-  ResetTabSwitchStartState(std::move(start_state), has_saved_frames);
+  OverwriteTabSwitchStartState(std::move(start_state), has_saved_frames);
 
   // |tab_switch_start_state_| is only reset by RecordHistogramsAndTraceEvents
   // once the metrics have been emitted.
@@ -143,6 +141,12 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
   // The kPresentationFailure result should only be used if `feedback` has a
   // failure.
   DCHECK_NE(tab_switch_result, TabSwitchResult::kPresentationFailure);
+
+  // Reset tab switch information on exit. Unretained is safe because the
+  // closure is invoked synchronously.
+  base::ScopedClosureRunner reset_state(
+      base::BindOnce(&ContentToVisibleTimeReporter::ResetTabSwitchStartState,
+                     base::Unretained(this)));
 
   if (show_reason_bfcache_restore) {
     RecordBackForwardCacheRestoreMetric(
@@ -236,12 +240,9 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
     case TabSwitchResult::kPresentationFailure:
       break;
   }
-
-  // Reset tab switch information.
-  ResetTabSwitchStartState();
 }
 
-void ContentToVisibleTimeReporter::ResetTabSwitchStartState(
+void ContentToVisibleTimeReporter::OverwriteTabSwitchStartState(
     mojom::RecordContentToVisibleTimeRequestPtr state,
     bool has_saved_frames) {
   if (tab_switch_start_state_) {

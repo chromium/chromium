@@ -585,17 +585,8 @@ class SideSearchAutoTriggeringBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-#if BUILDFLAG(IS_MAC)
-// Test is flaky on Mac.
-#define MAYBE_SidePanelAutoTriggersAfterReturningToAPreviousSRP \
-  DISABLED_SidePanelAutoTriggersAfterReturningToAPreviousSRP
-#else
-#define MAYBE_SidePanelAutoTriggersAfterReturningToAPreviousSRP \
-  SidePanelAutoTriggersAfterReturningToAPreviousSRP
-#endif
-IN_PROC_BROWSER_TEST_F(
-    SideSearchAutoTriggeringBrowserTest,
-    MAYBE_SidePanelAutoTriggersAfterReturningToAPreviousSRP) {
+IN_PROC_BROWSER_TEST_F(SideSearchAutoTriggeringBrowserTest,
+                       SidePanelAutoTriggersAfterReturningToAPreviousSRP) {
   const auto srp_url = GetMatchingSearchUrl();
   const auto non_srp_url_1 = GetNonMatchingUrl();
   const auto non_srp_url_2 = GetNonMatchingUrl();
@@ -684,17 +675,8 @@ class SideSearchPageActionLabelTriggerBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-#if BUILDFLAG(IS_MAC)
-// Test is flaky on Mac.
-#define MAYBE_SideSearchPageActionLabelAnimationTriggersCorrectly \
-  DISABLED_SideSearchPageActionLabelAnimationTriggersCorrectly
-#else
-#define MAYBE_SideSearchPageActionLabelAnimationTriggersCorrectly \
-  SideSearchPageActionLabelAnimationTriggersCorrectly
-#endif
-IN_PROC_BROWSER_TEST_F(
-    SideSearchPageActionLabelTriggerBrowserTest,
-    MAYBE_SideSearchPageActionLabelAnimationTriggersCorrectly) {
+IN_PROC_BROWSER_TEST_F(SideSearchPageActionLabelTriggerBrowserTest,
+                       SideSearchPageActionLabelAnimationTriggersCorrectly) {
   auto* button_view = GetSidePanelButtonFor(browser());
   ASSERT_NE(nullptr, button_view);
   auto* icon_view = views::AsViewClass<SideSearchIconView>(button_view);
