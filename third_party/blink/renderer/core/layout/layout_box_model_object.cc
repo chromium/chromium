@@ -202,6 +202,14 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
     Parent()->SetNeedsLayout(layout_invalidation_reason::kChildChanged,
                              kMarkContainerChain);
 
+  if (Layer() && old_style->HasStickyConstrainedPosition() &&
+      !StyleRef().HasStickyConstrainedPosition()) {
+    if (const auto* scroll_container =
+            Layer()->ContainingScrollContainerLayer()) {
+      scroll_container->GetScrollableArea()->RemoveStickyLayer(Layer());
+    }
+  }
+
   PaintLayerType type = LayerTypeRequired();
   if (type != kNoPaintLayer) {
     if (!Layer()) {
