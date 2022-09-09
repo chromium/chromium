@@ -9,6 +9,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
+#include "extensions/browser/extension_registry_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -20,9 +23,15 @@ namespace extensions {
 class Extension;
 }  // namespace extensions
 
+namespace web_app {
+class WebAppProvider;
+}  // namespace web_app
+
 namespace webapps {
 
-class AppHomePageHandler : public app_home::mojom::PageHandler {
+class AppHomePageHandler : public app_home::mojom::PageHandler,
+                           public web_app::WebAppInstallManagerObserver,
+                           public extensions::ExtensionRegistryObserver {
  public:
   AppHomePageHandler(
       content::WebUI*,
@@ -34,6 +43,14 @@ class AppHomePageHandler : public app_home::mojom::PageHandler {
   AppHomePageHandler& operator=(const AppHomePageHandler&) = delete;
 
   ~AppHomePageHandler() override;
+
+  // web_app::WebAppInstallManagerObserver:
+  void OnWebAppInstalled(const web_app::AppId& app_id) override;
+  void OnWebAppInstallManagerDestroyed() override;
+
+  // extensions::ExtensionRegistryObserver:
+  void OnExtensionLoaded(content::BrowserContext* browser_context,
+                         const extensions::Extension* extension) override;
 
   // app_home::mojom::PageHandler:
   void GetApps(GetAppsCallback callback) override;
@@ -53,6 +70,14 @@ class AppHomePageHandler : public app_home::mojom::PageHandler {
   mojo::Receiver<app_home::mojom::PageHandler> receiver_;
 
   mojo::Remote<app_home::mojom::Page> page_;
+
+  // The apps are represented in the web apps model, which outlives us since
+  // it's owned by our containing profile.
+  const raw_ptr<web_app::WebAppProvider> web_app_provider_;
+
+  base::ScopedObservation<web_app::WebAppInstallManager,
+                          web_app::WebAppInstallManagerObserver>
+      install_manager_observation_{this};
 
   // Used for passing callbacks.
   base::WeakPtrFactory<AppHomePageHandler> weak_ptr_factory_{this};

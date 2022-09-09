@@ -34,8 +34,6 @@ bool IsYoutubeExtension(const std::string& extension_id) {
 }
 }  // namespace
 
-AppHomePageHandler::~AppHomePageHandler() = default;
-
 AppHomePageHandler::AppHomePageHandler(
     content::WebUI* web_ui,
     Profile* profile,
@@ -44,12 +42,19 @@ AppHomePageHandler::AppHomePageHandler(
     : web_ui_(web_ui),
       profile_(profile),
       receiver_(this, std::move(receiver)),
-      page_(std::move(page)) {}
+      page_(std::move(page)),
+      web_app_provider_(web_app::WebAppProvider::GetForWebApps(profile)) {
+  install_manager_observation_.Observe(&web_app_provider_->install_manager());
+  ExtensionRegistry::Get(profile)->AddObserver(this);
+}
+
+AppHomePageHandler::~AppHomePageHandler() {
+  ExtensionRegistry::Get(profile_)->RemoveObserver(this);
+}
 
 app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromWebApp(
     const web_app::AppId& app_id) {
-  auto& registrar =
-      web_app::WebAppProvider::GetForWebApps(profile_)->registrar();
+  auto& registrar = web_app_provider_->registrar();
 
   auto app_info = app_home::mojom::AppInfo::New();
 
@@ -87,8 +92,7 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromExtension(
 
 void AppHomePageHandler::FillWebAppInfoList(
     std::vector<app_home::mojom::AppInfoPtr>* result) {
-  web_app::WebAppRegistrar& registrar =
-      web_app::WebAppProvider::GetForWebApps(profile_)->registrar();
+  web_app::WebAppRegistrar& registrar = web_app_provider_->registrar();
 
   for (const web_app::AppId& web_app_id : registrar.GetAppIds()) {
     if (IsYoutubeExtension(web_app_id))
@@ -116,6 +120,20 @@ void AppHomePageHandler::GetApps(GetAppsCallback callback) {
   FillWebAppInfoList(&result);
   FillExtensionInfoList(&result);
   std::move(callback).Run(std::move(result));
+}
+
+void AppHomePageHandler::OnWebAppInstalled(const web_app::AppId& app_id) {
+  page_->AddApp(CreateAppInfoPtrFromWebApp(app_id));
+}
+
+void AppHomePageHandler::OnWebAppInstallManagerDestroyed() {
+  install_manager_observation_.Reset();
+}
+
+void AppHomePageHandler::OnExtensionLoaded(
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension) {
+  page_->AddApp(CreateAppInfoPtrFromExtension(extension));
 }
 
 }  // namespace webapps

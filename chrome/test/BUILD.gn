@@ -8427,7 +8427,7 @@ test("unit_tests") {
       "../browser/enterprise/remote_commands/rotate_attestation_credential_job_unittest.cc",
       "../browser/enterprise/signals/user_delegate_impl_unittest.cc",
       "../browser/net/disk_cache_dir_policy_handler_unittest.cc",
-      "../browser/ui/webui/app_home/app_home_page_handler_test.cc",
+      "../browser/ui/webui/app_home/app_home_page_handler_unittest.cc",
       "../browser/ui/webui/app_home/mock_app_home_page.cc",
       "../browser/ui/webui/app_home/mock_app_home_page.h",
       "../browser/ui/webui/ntp/app_launcher_handler_unittest.cc",

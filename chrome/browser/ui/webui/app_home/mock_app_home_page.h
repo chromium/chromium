@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace webapps {
 
@@ -18,6 +19,7 @@ class MockAppHomePage : public app_home::mojom::Page {
 
   mojo::PendingRemote<app_home::mojom::Page> BindAndGetRemote();
 
+  MOCK_METHOD1(AddApp, void(app_home::mojom::AppInfoPtr));
   mojo::Receiver<app_home::mojom::Page> receiver_{this};
 };
 

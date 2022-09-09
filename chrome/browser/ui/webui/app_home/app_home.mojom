@@ -29,7 +29,8 @@ interface PageHandler {
 
 // The `Page` interface is used for sending mojom action messsage
 // from backend to frontend.
-// TODO(crbug.com/1350406): Currently there's no place needs to
-// send message to frontend page, so we just left an empty interface class
-// here now, but in the feature, we will add needed APIs here.
-interface Page {};
+interface Page {
+  // Inform frontend that an app is successfully installed
+  // and instruct frontend to update data.
+  AddApp(AppInfo app_info);
+};
