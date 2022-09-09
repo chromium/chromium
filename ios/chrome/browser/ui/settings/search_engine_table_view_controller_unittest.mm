@@ -465,12 +465,11 @@ TEST_F(SearchEngineTableViewControllerTest, TestChangeProvider) {
   histogram_tester_.ExpectTotalCount(kUmaSelectDefaultSearchEngine, 3);
 
   // Check that the selection was written back to the prefs.
-  const base::Value* searchProviderDict =
-      chrome_browser_state_->GetTestingPrefService()->GetDictionary(
+  const base::Value::Dict& searchProviderDict =
+      chrome_browser_state_->GetTestingPrefService()->GetValueDict(
           DefaultSearchManager::kDefaultSearchProviderDataPrefName);
-  ASSERT_TRUE(searchProviderDict);
   const std::string* short_name =
-      searchProviderDict->FindStringKey(DefaultSearchManager::kShortName);
+      searchProviderDict.FindString(DefaultSearchManager::kShortName);
   ASSERT_TRUE(short_name);
   EXPECT_EQ(url_c1->short_name(), base::ASCIIToUTF16(*short_name));
 }

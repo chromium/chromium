@@ -1816,29 +1816,27 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
 // Check if the default search engine is managed by policy.
 - (BOOL)isDefaultSearchEngineManagedByPolicy {
-  const base::Value* dict = _browserState->GetPrefs()->GetDictionary(
+  const base::Value::Dict& dict = _browserState->GetPrefs()->GetValueDict(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
 
-  if (dict) {
-    if (dict->FindBoolPath(DefaultSearchManager::kDisabledByPolicy) ||
-        dict->FindBoolPath(prefs::kDefaultSearchProviderEnabled))
-      return YES;
-  }
+  if (dict.FindBoolByDottedPath(DefaultSearchManager::kDisabledByPolicy) ||
+      dict.FindBoolByDottedPath(prefs::kDefaultSearchProviderEnabled))
+    return YES;
   return NO;
 }
 
 // Returns the text to be displayed by the managed Search Engine item.
 - (NSString*)managedSearchEngineDetailText {
-  const base::Value* dict = _browserState->GetPrefs()->GetDictionary(
+  const base::Value::Dict& dict = _browserState->GetPrefs()->GetValueDict(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
-  if (dict->FindBoolPath(DefaultSearchManager::kDisabledByPolicy)) {
+  if (dict.FindBoolByDottedPath(DefaultSearchManager::kDisabledByPolicy)) {
     // Default search engine is disabled by policy.
     return l10n_util::GetNSString(
         IDS_IOS_SEARCH_ENGINE_SETTING_DISABLED_STATUS);
   }
   // Default search engine is enabled and set by policy.
   const std::string* status =
-      dict->FindStringPath(DefaultSearchManager::kShortName);
+      dict.FindStringByDottedPath(DefaultSearchManager::kShortName);
   return base::SysUTF8ToNSString(*status);
 }
 
