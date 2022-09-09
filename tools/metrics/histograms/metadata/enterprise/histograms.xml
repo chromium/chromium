@@ -938,6 +938,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.Dlp.FileActionBlocked"
+    enum="EnterpriseDlpPolicyFileAction" expires_after="2023-03-01">
+  <owner>accorsi@google.com</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Records which file action is blocked because of Data Leak Prevention policy
+    restrictions.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.FileActionWarned"
+    enum="EnterpriseDlpPolicyFileAction" expires_after="2023-03-01">
+  <owner>accorsi@google.com</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Records which file action is warned because of Data Leak Prevention policy
+    restrictions.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.FileActionWarnProceeded"
+    enum="EnterpriseDlpPolicyFileAction" expires_after="2023-03-01">
+  <owner>accorsi@google.com</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Records which file action was warned because of Data Leak Prevention policy
+    restrictions and proceeded by the user.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.Dlp.FilesDaemonStarted" enum="Boolean"
     expires_after="2022-12-01">
   <owner>poromov@chromium.org</owner>

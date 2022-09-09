@@ -88,6 +88,9 @@ const std::u16string GetDialogButtonOkLabelForFiles(
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_CONTINUE_BUTTON);
     case DlpFilesController::FileAction::kTransfer:
+    case DlpFilesController::FileAction::kUnknown:  // TODO(crbug.com/1361900)
+                                                    // Set proper text when file
+                                                    // action is unknown
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_FILES_TRANSFER_WARN_CONTINUE_BUTTON);
   }
@@ -103,6 +106,9 @@ const std::u16string GetTitleForFiles(
           // Download action is only allowed for one file.
           IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_TITLE, 1);
     case DlpFilesController::FileAction::kTransfer:
+    case DlpFilesController::FileAction::kUnknown:  // TODO(crbug.com/1361900)
+                                                    // Set proper text when file
+                                                    // action is unknown
       return l10n_util::GetPluralStringFUTF16(
           IDS_POLICY_DLP_FILES_TRANSFER_WARN_TITLE, files_number);
   }
@@ -122,6 +128,9 @@ const std::u16string GetMessageForFiles(
           u"External storage",
           /*offset=*/nullptr);
     case DlpFilesController::FileAction::kTransfer:
+    case DlpFilesController::FileAction::kUnknown:  // TODO(crbug.com/1361900)
+                                                    // Set proper text when file
+                                                    // action is unknown
       return base::ReplaceStringPlaceholders(
           l10n_util::GetPluralStringFUTF16(
               IDS_POLICY_DLP_FILES_TRANSFER_WARN_MESSAGE, files_number),

@@ -17,6 +17,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.h"
@@ -194,21 +196,21 @@ class DlpFilesControllerTest : public testing::Test {
 
     const base::FilePath file1 = path.AppendASCII(kFilePath1);
     ASSERT_TRUE(CreateDummyFile(file1));
-    dlp::AddFileRequest add_file_req1;
+    ::dlp::AddFileRequest add_file_req1;
     add_file_req1.set_file_path(file1.value());
     add_file_req1.set_source_url(kExampleUrl1);
     chromeos::DlpClient::Get()->AddFile(add_file_req1, add_file_cb.Get());
 
     const base::FilePath file2 = path.AppendASCII(kFilePath2);
     ASSERT_TRUE(CreateDummyFile(file2));
-    dlp::AddFileRequest add_file_req2;
+    ::dlp::AddFileRequest add_file_req2;
     add_file_req2.set_file_path(file2.value());
     add_file_req2.set_source_url(kExampleUrl2);
     chromeos::DlpClient::Get()->AddFile(add_file_req2, add_file_cb.Get());
 
     const base::FilePath file3 = path.AppendASCII(kFilePath3);
     ASSERT_TRUE(CreateDummyFile(file3));
-    dlp::AddFileRequest add_file_req3;
+    ::dlp::AddFileRequest add_file_req3;
     add_file_req3.set_file_path(file3.value());
     add_file_req3.set_source_url(kExampleUrl3);
     chromeos::DlpClient::Get()->AddFile(add_file_req3, add_file_cb.Get());
@@ -252,7 +254,7 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_DiffFileSystem) {
   std::vector<storage::FileSystemURL> disallowed_files(
       {file_url1_, file_url3_});
 
-  dlp::CheckFilesTransferResponse check_files_transfer_response;
+  ::dlp::CheckFilesTransferResponse check_files_transfer_response;
   for (const auto& file : disallowed_files) {
     check_files_transfer_response.add_files_paths(file.path().value());
   }
@@ -329,7 +331,7 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_EmptyList) {
 
   std::vector<FileChooserFileInfoPtr> uploaded_files;
 
-  dlp::CheckFilesTransferResponse check_files_transfer_response;
+  ::dlp::CheckFilesTransferResponse check_files_transfer_response;
 
   base::test::TestFuture<std::vector<FileChooserFileInfoPtr>> future;
 
@@ -388,7 +390,7 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_MixedFiles) {
   uploaded_files.push_back(
       FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
 
-  dlp::CheckFilesTransferResponse check_files_transfer_response;
+  ::dlp::CheckFilesTransferResponse check_files_transfer_response;
   check_files_transfer_response.add_files_paths(file_url1_.path().value());
   check_files_transfer_response.add_files_paths(file_url3_.path().value());
   ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
@@ -522,6 +524,8 @@ TEST_F(DlpFilesControllerTest, GetDlpRestrictionDetails_Components) {
 TEST_F(DlpFilesControllerTest, CheckReportingOnIsDlpPolicyMatched) {
   AddFilesToDlpClient();
 
+  const auto histogram_tester = base::HistogramTester();
+
   EXPECT_CALL(*rules_manager_, IsRestrictedByAnyRule)
       .WillOnce(testing::Return(DlpRulesManager::Level::kBlock))
       .WillOnce(testing::Return(DlpRulesManager::Level::kReport))
@@ -553,6 +557,22 @@ TEST_F(DlpFilesControllerTest, CheckReportingOnIsDlpPolicyMatched) {
   EXPECT_THAT(events[2], IsDlpPolicyEvent(CreateDlpPolicyEvent(
                              kExampleUrl3, DlpRulesManager::Restriction::kFiles,
                              DlpRulesManager::Level::kWarn)));
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(GetDlpHistogramPrefix() +
+                                     std::string(dlp::kFileActionBlockedUMA)),
+      base::BucketsAre(
+          base::Bucket(DlpFilesController::FileAction::kUnknown, 1),
+          base::Bucket(DlpFilesController::FileAction::kDownload, 0),
+          base::Bucket(DlpFilesController::FileAction::kTransfer, 0)));
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(GetDlpHistogramPrefix() +
+                                     std::string(dlp::kFileActionWarnedUMA)),
+      base::BucketsAre(
+          base::Bucket(DlpFilesController::FileAction::kUnknown, 1),
+          base::Bucket(DlpFilesController::FileAction::kDownload, 0),
+          base::Bucket(DlpFilesController::FileAction::kTransfer, 0)));
 }
 
 TEST_F(DlpFilesControllerTest, DownloadToLocalAllowed) {
@@ -670,6 +690,8 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(DlpFilesExternalDestinationTest, IsFilesTransferRestricted_Component) {
   auto [mount_name, path, expected_component] = GetParam();
 
+  const auto histogram_tester = base::HistogramTester();
+
   std::vector<DlpFilesController::FileDaemonInfo> transferred_files(
       {DlpFilesController::FileDaemonInfo(kInode1, base::FilePath(),
                                           kExampleUrl1),
@@ -713,6 +735,14 @@ TEST_P(DlpFilesExternalDestinationTest, IsFilesTransferRestricted_Component) {
                              kExampleUrl3, expected_component,
                              DlpRulesManager::Restriction::kFiles,
                              DlpRulesManager::Level::kBlock)));
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(GetDlpHistogramPrefix() +
+                                     std::string(dlp::kFileActionBlockedUMA)),
+      base::BucketsAre(
+          base::Bucket(DlpFilesController::FileAction::kUnknown, 0),
+          base::Bucket(DlpFilesController::FileAction::kDownload, 0),
+          base::Bucket(DlpFilesController::FileAction::kTransfer, 2)));
 }
 
 TEST_P(DlpFilesExternalDestinationTest, FileDownloadBlocked) {
@@ -774,6 +804,8 @@ TEST_P(DlpFilesUrlDestinationTest, IsFilesTransferRestricted_Url) {
   auto [transferred_data, dst, confidential_files_restriction_level,
         disallowed_data] = GetParam();
 
+  const auto histogram_tester = base::HistogramTester();
+
   std::vector<DlpFilesController::FileDaemonInfo> transferred_files;
   std::vector<DlpFilesController::FileDaemonInfo> disallowed_files;
   for (const auto& [inode, src] : transferred_data)
@@ -803,6 +835,19 @@ TEST_P(DlpFilesUrlDestinationTest, IsFilesTransferRestricted_Url) {
                                DlpRulesManager::Restriction::kFiles,
                                confidential_files_restriction_level)));
   }
+
+  int blocked_downloads =
+      confidential_files_restriction_level == DlpRulesManager::Level::kBlock
+          ? disallowed_files.size()
+          : 0;
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(GetDlpHistogramPrefix() +
+                                     std::string(dlp::kFileActionBlockedUMA)),
+      base::BucketsAre(
+          base::Bucket(DlpFilesController::FileAction::kDownload,
+                       blocked_downloads),
+          base::Bucket(DlpFilesController::FileAction::kTransfer, 0)));
 }
 
 class DlpFilesWarningDialogChoiceTest

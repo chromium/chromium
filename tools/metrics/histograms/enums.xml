@@ -31051,6 +31051,15 @@ Called by update_document_policy_enum.py.-->
   <int value="902" label="SERVICE_POLICY_NOT_FOUND"/>
 </enum>
 
+<enum name="EnterpriseDlpPolicyFileAction">
+  <summary>
+    Types of restricted file actions checked by Data Leak Prevention policy.
+  </summary>
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kDownload"/>
+  <int value="2" label="kTransfer"/>
+</enum>
+
 <enum name="EnterpriseDlpPolicyRestriction">
   <summary>
     Type of restriction enforced by Data Leak Prevention policy.

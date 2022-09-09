@@ -31,8 +31,14 @@ class DlpWarnNotifier;
 class DlpFilesController {
  public:
   // Types of file actions. These actions are used when warning dialogs are
-  // shown because of files restrictions.
-  enum class FileAction { kDownload = 1, kTransfer = 2, kMaxValue = kTransfer };
+  // shown because of files restrictions. This is used in UMA histograms, should
+  // not change order.
+  enum class FileAction {
+    kUnknown = 0,
+    kDownload = 1,
+    kTransfer = 2,
+    kMaxValue = kTransfer
+  };
 
   // DlpFileMetadata keeps metadata about a file, such as whether it's managed
   // or not and the source URL, if it exists.
@@ -183,6 +189,7 @@ class DlpFilesController {
   void OnDlpWarnDialogReply(
       std::vector<FileDaemonInfo> restricted_files_sources,
       std::vector<FileDaemonInfo> warned_files_sources,
+      FileAction files_action,
       IsFilesTransferRestrictedCallback callback,
       bool should_proceed);
 
