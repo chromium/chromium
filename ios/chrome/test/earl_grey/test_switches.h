@@ -8,6 +8,8 @@
 namespace test_switches {
 
 // Switch used to record an identity at startup to avoid automatic sign out.
+// Only uses the identities from the `ios::kAddFakeIdentitiesArg` switch if the
+// switch is set, otherwise fakeIdentity1 is used by default.
 extern const char kSignInAtStartup[];
 
 }  // namespace test_switches

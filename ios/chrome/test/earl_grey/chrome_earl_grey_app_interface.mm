@@ -1168,6 +1168,16 @@ NSString* SerializedValue(const base::Value* value) {
       base::SysNSStringToUTF8(prefName).c_str(), value);
 }
 
++ (void)clearUserPrefWithName:(NSString*)prefName {
+  PrefService* prefs = chrome_test_util::GetOriginalBrowserState()->GetPrefs();
+  prefs->ClearPref(base::SysNSStringToUTF8(prefName));
+}
+
++ (void)commitPendingUserPrefsWrite {
+  PrefService* prefs = chrome_test_util::GetOriginalBrowserState()->GetPrefs();
+  prefs->CommitPendingWrite();
+}
+
 + (void)resetBrowsingDataPrefs {
   PrefService* prefs = chrome_test_util::GetOriginalBrowserState()->GetPrefs();
   prefs->ClearPref(browsing_data::prefs::kDeleteBrowsingHistory);

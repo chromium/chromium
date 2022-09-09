@@ -583,6 +583,13 @@
 // Sets the value of a integer user pref in the original browser state.
 + (void)setIntegerValue:(int)value forUserPref:(NSString*)prefName;
 
+// Clears the user pref of |prefName|.
++ (void)clearUserPrefWithName:(NSString*)prefName;
+
+// Commit synchronously the pending user prefs write. Waits until the disk write
+// operation is done.
++ (void)commitPendingUserPrefsWrite;
+
 // Resets the BrowsingDataPrefs, which defines if its selected or not when
 // clearing Browsing data.
 + (void)resetBrowsingDataPrefs;

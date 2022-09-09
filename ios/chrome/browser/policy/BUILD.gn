@@ -253,6 +253,7 @@ source_set("eg2_tests") {
     "//components/safe_browsing/core/common",
     "//components/strings",
     "//google_apis",
+    "//ios/chrome/app/strings",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser:chrome_url_constants",
     "//ios/chrome/browser:utils",

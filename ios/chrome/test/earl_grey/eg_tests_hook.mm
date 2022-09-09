@@ -15,6 +15,7 @@
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -79,9 +80,14 @@ void SetUpTestsIfPresent() {
         new ios::FakeChromeIdentityService());
     ios::GetChromeBrowserProvider().SetChromeIdentityServiceForTesting(
         std::move(service));
-    ios::FakeChromeIdentityService* identity_service =
-        ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
-    identity_service->AddIdentity([FakeChromeIdentity fakeIdentity1]);
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+            ios::kAddFakeIdentitiesArg)) {
+      // Add a fake identity by default if no identities were provided from the
+      // commandline switch.
+      ios::FakeChromeIdentityService* identity_service =
+          ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
+      identity_service->AddIdentity([FakeChromeIdentity fakeIdentity1]);
+    }
   }
 }
 

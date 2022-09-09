@@ -10,7 +10,11 @@
 #import "base/strings/strcat.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "components/policy/core/common/cloud/cloud_policy_constants.h"
+#import "components/policy/core/common/policy_pref_names.h"
 #import "components/policy/core/common/policy_switches.h"
 #import "components/policy/proto/cloud_policy.pb.h"
 #import "components/policy/test_support/embedded_policy_test_server.h"
@@ -20,12 +24,16 @@
 #import "google_apis/gaia/gaia_switches.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service_constants.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
@@ -38,6 +46,8 @@
 #endif
 
 namespace {
+
+constexpr int kWaitOnScheduledUserPolicyFetchInterval = 10;
 
 std::string GetTestEmail() {
   return base::StrCat({"enterprise@", policy::SignatureProvider::kTestDomain1});
@@ -102,6 +112,42 @@ void VerifyThatPoliciesAreNotSet() {
                   @"There should not be user policy data in the store");
 }
 
+void ClearUserPolicyPrefs() {
+  // Clears the user policy notification pref.
+  [ChromeEarlGreyAppInterface
+      clearUserPrefWithName:
+          base::SysUTF8ToNSString(
+              policy::policy_prefs::kUserPolicyNotificationWasShown)];
+  // Clears the pref used used to determine the fetch interval.
+  [ChromeEarlGreyAppInterface
+      clearUserPrefWithName:base::SysUTF8ToNSString(
+                                policy::policy_prefs::kLastPolicyCheckTime)];
+  [ChromeEarlGreyAppInterface commitPendingUserPrefsWrite];
+}
+
+void WaitOnUserPolicy(NSTimeInterval timeout) {
+  // Wait for user policy fetch.
+  ConditionBlock condition = ^{
+    return [PolicyAppInterface hasUserPolicyDataInCurrentBrowserState];
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(timeout, condition),
+             @"Didn't fetch user policies");
+}
+
+void VerifyTheNotificationUI() {
+  NSString* title =
+      l10n_util::GetNSString(IDS_IOS_USER_POLICY_NOTIFICATION_TITLE);
+  NSString* subtitle = l10n_util::GetNSStringF(
+      IDS_IOS_USER_POLICY_NOTIFICATION_SUBTITLE,
+      base::UTF8ToUTF16(std::string(policy::SignatureProvider::kTestDomain1)));
+
+  // Verify the notification UI.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(title)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(subtitle)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 }  // namespace
 
 // Test suite for User Policy.
@@ -136,6 +182,11 @@ void VerifyThatPoliciesAreNotSet() {
   }
 
   [super setUp];
+}
+
+- (void)tearDown {
+  ClearUserPolicyPrefs();
+  [super tearDown];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -178,6 +229,153 @@ void VerifyThatPoliciesAreNotSet() {
 
   // Verify that the policies are cleared on sign out.
   [ChromeEarlGreyAppInterface signOutAndClearIdentities];
+  VerifyThatPoliciesAreNotSet();
+}
+
+// Tests that the user policies are loaded from the store when Sync is still ON
+// at startup when the user policies were fetched in the previous session.
+// TODO(crbug.com/1362122): Re-enable this test once we figure out the problem
+// with flakes.
+- (void)DISABLED_testThatPoliciesAreLoadedFromStoreAtStartupIfSyncOn {
+  // Turn on Sync for managed account to fetch user policies.
+  FakeChromeIdentity* fakeManagedIdentity = [FakeChromeIdentity
+      identityWithEmail:base::SysUTF8ToNSString(GetTestEmail().c_str())
+                 gaiaID:@"exampleManagedID"
+                   name:@"Fake Managed"];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
+
+  VerifyThatPoliciesAreSet();
+
+  // Commit pending user prefs write to make sure that all Sync prefs are
+  // written before shutting down the browser. This is to make sure that Sync
+  // can be turned on when the browser is restarted.
+  [ChromeEarlGreyAppInterface commitPendingUserPrefsWrite];
+
+  // Restart the browser while keeping Sync ON by preserving the identity of the
+  // managed account.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.additional_args.push_back(
+      base::StrCat({"--", test_switches::kSignInAtStartup}));
+  config.additional_args.push_back(
+      std::string("-") + ios::kAddFakeIdentitiesArg + "=" +
+      [FakeChromeIdentity encodeIdentitiesToBase64:@[ fakeManagedIdentity ]]);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:5.0];
+
+  // Wait until the user policies are loaded from disk.
+  WaitOnUserPolicy(NSTimeInterval(kWaitOnScheduledUserPolicyFetchInterval));
+
+  // Verifiy that the policies that were fetched in the previous session are
+  // loaded from the cache at startup.
+  VerifyThatPoliciesAreSet();
+}
+
+// Tests that the user policies are fetched when the user decides to "Continue"
+// in the notification dialog.
+- (void)testUserPolicyNotificationWithAcceptChoice {
+  // Clear the prefs related to user policy to make sure that the notification
+  // isn't skipped and that the fetch is started within the minimal schedule
+  // interval.
+  ClearUserPolicyPrefs();
+
+  // Restart the app to disable user policy and allow turning on Sync for the
+  // managed account.
+  AppLaunchConfiguration config;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Turn on Sync for managed account. This won't trigger the user policy fetch.
+  FakeChromeIdentity* fakeManagedIdentity = [FakeChromeIdentity
+      identityWithEmail:base::SysUTF8ToNSString(GetTestEmail().c_str())
+                 gaiaID:@"exampleManagedID"
+                   name:@"Fake Managed"];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
+
+  // Restart the browser while keeping Sync ON by preserving the identity of the
+  // managed account.
+  config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.additional_args.push_back(
+      base::StrCat({"--", test_switches::kSignInAtStartup}));
+  config.additional_args.push_back(
+      std::string("-") + ios::kAddFakeIdentitiesArg + "=" +
+      [FakeChromeIdentity encodeIdentitiesToBase64:@[ fakeManagedIdentity ]]);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Verify that the notification dialog is there.
+  VerifyTheNotificationUI();
+
+  // Tap on the "Continue" button to dismiss the alert dialog and start the user
+  // policy fetch.
+  NSString* continueLabel =
+      l10n_util::GetNSString(IDS_IOS_USER_POLICY_CONTINUE);
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityLabel(continueLabel),
+                                   grey_accessibilityTrait(
+                                       UIAccessibilityTraitButton),
+                                   nil)] performAction:grey_tap()];
+
+  // Wait for user policy fetch. This will take at least 5 seconds which
+  // corresponds to the minimal user policy fetch delay when triggering the
+  // fetch at startup.
+  WaitOnUserPolicy(NSTimeInterval(kWaitOnScheduledUserPolicyFetchInterval));
+
+  // Verifiy that the policies were fetched and loaded.
+  VerifyThatPoliciesAreSet();
+}
+
+// Tests that the user policies aren't fetched when the user decides to sign out
+// in the notification dialog.
+- (void)testUserPolicyNotificationWithSignoutChoice {
+  // Clear the prefs related to user policy to make sure that the notification
+  // isn't skipped and that the fetch is started within the minimal schedule
+  // interval.
+  ClearUserPolicyPrefs();
+
+  // Restart the app to disable user policy and allow turning on Sync for the
+  // managed account.
+  AppLaunchConfiguration config;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Turn on Sync for managed account. This won't trigger the user policy fetch.
+  FakeChromeIdentity* fakeManagedIdentity = [FakeChromeIdentity
+      identityWithEmail:base::SysUTF8ToNSString(GetTestEmail().c_str())
+                 gaiaID:@"exampleManagedID"
+                   name:@"Fake Managed"];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
+
+  // Restart the browser while keeping Sync ON by preserving the identity of the
+  // managed account.
+  config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.additional_args.push_back(
+      base::StrCat({"--", test_switches::kSignInAtStartup}));
+  config.additional_args.push_back(
+      std::string("-") + ios::kAddFakeIdentitiesArg + "=" +
+      [FakeChromeIdentity encodeIdentitiesToBase64:@[ fakeManagedIdentity ]]);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Verify that the notification dialog is there.
+  VerifyTheNotificationUI();
+
+  // Tap on the "Sign Out and Clear Data" button to dismiss the alert dialog
+  // without triggering the user policy fetch.
+  NSString* signoutLabel =
+      l10n_util::GetNSString(IDS_IOS_USER_POLICY_SIGNOUT_AND_CLEAR_DATA);
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(signoutLabel),
+                                          grey_accessibilityTrait(
+                                              UIAccessibilityTraitButton),
+                                          nil)] performAction:grey_tap()];
+
+  // Wait enough time to verifiy that the fetch wasn't unexpectedly triggered
+  // after dismissing the notification.
+  base::test::ios::SpinRunLoopWithMinDelay(
+      base::Seconds(kWaitOnScheduledUserPolicyFetchInterval));
+
+  // Verify that the fetch wasn't done.
   VerifyThatPoliciesAreNotSet();
 }
 
