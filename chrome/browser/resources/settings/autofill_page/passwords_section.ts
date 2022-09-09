@@ -96,7 +96,7 @@ export interface PasswordsSectionElement {
     exportImportMenu: CrActionMenuElement,
     manageLink: HTMLElement,
     menuEditPassword: HTMLElement,
-    menuExportPassword: HTMLElement,
+    menuExportPassword: HTMLButtonElement,
     noExceptionsLabel: HTMLElement,
     noPasswordsLabel: HTMLElement,
     optInToAccountStorageButton: HTMLElement,

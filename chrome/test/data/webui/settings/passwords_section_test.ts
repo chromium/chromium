@@ -984,7 +984,7 @@ suite('PasswordsSection', function() {
         passwordManager, passwordList, []);
 
     validatePasswordList(passwordsSection, passwordList);
-    assertTrue(passwordsSection.$.menuExportPassword.hidden);
+    assertTrue(passwordsSection.$.menuExportPassword.disabled);
   });
 
   test(
