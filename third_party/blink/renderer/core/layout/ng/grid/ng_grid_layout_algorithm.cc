@@ -672,40 +672,16 @@ void NGGridLayoutAlgorithm::ComputeGridGeometry(
                                &grid_properties);
   CacheGridTrackSpanProperties(*layout_data->Rows(), grid_items,
                                &grid_properties);
+  InitializeTrackSizes(grid_properties, layout_data->Columns());
+  InitializeTrackSizes(grid_properties, layout_data->Rows());
 
-  auto ComputeGrid = [&]() {
-    // We perform the track sizing algorithm using two methods. First
-    // |InitializeTrackSizes|, which we need to get an initial column and row
-    // set geometry. Then |ComputeUsedTrackSizes|, to finalize the sizing
-    // algorithm for both dimensions.
-    InitializeTrackSizes(grid_properties, layout_data->Columns());
-    InitializeTrackSizes(grid_properties, layout_data->Rows());
-
-    bool needs_additional_pass = false;
-    ComputeUsedTrackSizes(*layout_data, grid_properties,
-                          SizingConstraint::kLayout, grid_items,
-                          layout_data->Columns(), &needs_additional_pass);
-
-    ComputeUsedTrackSizes(*layout_data, grid_properties,
-                          SizingConstraint::kLayout, grid_items,
-                          layout_data->Rows(), &needs_additional_pass);
-
-    // If we had an orthogonal item which may have depended on the resolved row
-    // tracks, re-run the track sizing algorithm for both dimensions.
-    if (needs_additional_pass) {
-      InitializeTrackSizes(grid_properties, layout_data->Columns());
-      ComputeUsedTrackSizes(*layout_data, grid_properties,
-                            SizingConstraint::kLayout, grid_items,
-                            layout_data->Columns());
-
-      InitializeTrackSizes(grid_properties, layout_data->Rows());
-      ComputeUsedTrackSizes(*layout_data, grid_properties,
-                            SizingConstraint::kLayout, grid_items,
-                            layout_data->Rows());
-    }
-  };
-
-  ComputeGrid();
+  bool needs_additional_pass = false;
+  ComputeUsedTrackSizes(*layout_data, grid_properties,
+                        SizingConstraint::kLayout, grid_items,
+                        layout_data->Columns(), &needs_additional_pass);
+  ComputeUsedTrackSizes(*layout_data, grid_properties,
+                        SizingConstraint::kLayout, grid_items,
+                        layout_data->Rows(), &needs_additional_pass);
 
   if (contain_intrinsic_block_size_) {
     *intrinsic_block_size = *contain_intrinsic_block_size_;
@@ -742,7 +718,7 @@ void NGGridLayoutAlgorithm::ComputeGridGeometry(
     // If we have any rows, gaps which will resolve differently if we have a
     // definite |grid_available_size_| re-compute the grid using the
     // |block_size| calculated above.
-    bool should_recompute_grid =
+    needs_additional_pass |=
         (container_style.RowGap() &&
          container_style.RowGap()->IsPercentOrCalc()) ||
         grid_properties.IsDependentOnAvailableSize(kForRows);
@@ -756,24 +732,18 @@ void NGGridLayoutAlgorithm::ComputeGridGeometry(
     // TODO(layout-dev): A small optimization here would be to do this only if
     // we have 'auto' tracks which fill the remaining available space.
     if (constraint_space.IsInitialBlockSizeIndefinite()) {
-      should_recompute_grid |=
+      needs_additional_pass |=
           ComputeBlockSizeForFragment(
               constraint_space, container_style, BorderPadding(),
               /* intrinsic_block_size */ kIndefiniteSize,
               container_builder_.InlineSize()) != kIndefiniteSize;
     }
 
-    if (should_recompute_grid) {
-      DCHECK(row_builder_collection);
-
-      layout_data->rows = std::make_unique<NGGridSizingTrackCollection>(
-          *row_builder_collection, /* is_available_size_indefinite */ false);
-
-      CacheGridTrackSpanProperties(*layout_data->Rows(), grid_items,
-                                   &grid_properties);
-      ComputeGrid();
-    } else if (container_style.AlignContent() !=
-               ComputedStyleInitialValues::InitialAlignContent()) {
+    // After resolving the block-size, if we don't need to rerun the track
+    // sizing algorithm, simply apply any content alignment to its rows.
+    if (!needs_additional_pass &&
+        container_style.AlignContent() !=
+            ComputedStyleInitialValues::InitialAlignContent()) {
       auto& sizing_collection =
           To<NGGridSizingTrackCollection>(*layout_data->Rows());
 
@@ -786,6 +756,25 @@ void NGGridLayoutAlgorithm::ComputeGridGeometry(
       sizing_collection.CacheSetsGeometry(first_set_geometry.start_offset,
                                           first_set_geometry.gutter_size);
     }
+  }
+
+  if (needs_additional_pass) {
+    DCHECK(row_builder_collection);
+
+    InitializeTrackSizes(grid_properties, layout_data->Columns());
+    ComputeUsedTrackSizes(*layout_data, grid_properties,
+                          SizingConstraint::kLayout, grid_items,
+                          layout_data->Columns());
+
+    layout_data->rows = std::make_unique<NGGridSizingTrackCollection>(
+        *row_builder_collection, /* is_available_size_indefinite */ false);
+    CacheGridTrackSpanProperties(*layout_data->Rows(), grid_items,
+                                 &grid_properties);
+
+    InitializeTrackSizes(grid_properties, layout_data->Rows());
+    ComputeUsedTrackSizes(*layout_data, grid_properties,
+                          SizingConstraint::kLayout, grid_items,
+                          layout_data->Rows());
   }
 
   // Calculate final alignment baselines for grid item layout.
