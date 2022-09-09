@@ -77,7 +77,8 @@ void UpdateBackdropController(aura::Window* desk_container) {
 bool IsOverviewUiWindow(aura::Window* window) {
   return window->GetId() == kShellWindowId_DesksBarWindow ||
          window->GetId() == kShellWindowId_SaveDeskButtonContainer ||
-         window->GetId() == kShellWindowId_OverviewNoWindowsLabelWindow;
+         window->GetId() == kShellWindowId_OverviewNoWindowsLabelWindow ||
+         window->GetId() == kShellWindowId_SavedDeskLibraryWindow;
 }
 
 // Returns true if |window| can be managed by the desk, and therefore can be

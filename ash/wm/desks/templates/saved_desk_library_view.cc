@@ -10,6 +10,7 @@
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -40,6 +41,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/core/window_animations.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -243,10 +245,12 @@ SavedDeskLibraryView::CreateSavedDeskLibraryWidget(aura::Window* root) {
   // The parent should be a container that covers all the windows but is below
   // some other system UI features such as system tray and capture mode and also
   // below the system modal dialogs.
-  // TODO(sammiequon): Investigate if there is a more suitable container for
-  // this widget.
-  params.parent = root->GetChildById(kShellWindowId_ShelfBubbleContainer);
+  DesksController* desks_controller = DesksController::Get();
+  params.parent = desks_controller->GetDeskContainer(
+      root, desks_controller->GetDeskIndex(desks_controller->active_desk()));
   params.name = "SavedDeskLibraryWidget";
+  params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
+  params.init_properties_container.SetProperty(kExcludeInMruKey, true);
 
   auto widget = std::make_unique<views::Widget>(std::move(params));
   widget->SetContentsView(std::make_unique<SavedDeskLibraryView>());
@@ -256,6 +260,8 @@ SavedDeskLibraryView::CreateSavedDeskLibraryWidget(aura::Window* root) {
 
   widget->GetNativeWindow()->SetId(kShellWindowId_SavedDeskLibraryWindow);
 
+  ::wm::SetWindowVisibilityAnimationTransition(widget->GetNativeWindow(),
+                                               ::wm::ANIMATE_NONE);
   return widget;
 }
 

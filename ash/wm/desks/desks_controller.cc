@@ -1098,7 +1098,8 @@ const Desk* DesksController::CreateNewDeskForTemplate(
     auto active_desk_windows = active_desk_->windows();
     for (aura::Window* window : active_desk_windows) {
       if (window->GetId() == kShellWindowId_DesksBarWindow ||
-          window->GetId() == kShellWindowId_SaveDeskButtonContainer) {
+          window->GetId() == kShellWindowId_SaveDeskButtonContainer ||
+          window->GetId() == kShellWindowId_SavedDeskLibraryWindow) {
         aura::Window* destination_container =
             desk->GetDeskContainerForRoot(window->GetRootWindow());
         destination_container->AddChild(window);
