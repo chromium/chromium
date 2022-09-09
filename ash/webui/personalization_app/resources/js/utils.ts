@@ -8,6 +8,7 @@
 
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 export type PersonalizationAppSelectionEvent =
     MouseEvent&{type: 'click'}|KeyboardEvent&{key: 'Enter'};
@@ -71,4 +72,17 @@ export function inBetween(
 /** Converts a String16 to a JavaScript String. */
 export function decodeString16(str: String16|null): string {
   return str ? str.data.map(ch => String.fromCodePoint(ch)).join('') : '';
+}
+
+
+/**
+ * Append chrome://image/? scheme prefix to sanitize the given Url if the cloud
+ * migration is enabled.
+ */
+export function getSanitizedDefaultImageUrl(url: Url): Url {
+  if (!loadTimeData.getBoolean('isAvatarsCloudMigrationEnabled')) {
+    return url;
+  }
+
+  return {url: 'chrome://image/?' + url.url};
 }

@@ -1779,6 +1779,10 @@ bool IsAutocompleteExtendedSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(kAutocompleteExtendedSuggestions);
 }
 
+bool IsAvatarsCloudMigrationEnabled() {
+  return base::FeatureList::IsEnabled(kAvatarsCloudMigration);
+}
+
 bool DoWindowsFollowCursor() {
   return base::FeatureList::IsEnabled(kWindowsFollowCursor);
 }

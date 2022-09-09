@@ -345,6 +345,9 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
       "isRgbKeyboardSupported",
       features::IsRgbKeyboardEnabled() &&
           Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported());
+
+  source->AddBoolean("isAvatarsCloudMigrationEnabled",
+                     features::IsAvatarsCloudMigrationEnabled());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(PersonalizationAppUI)

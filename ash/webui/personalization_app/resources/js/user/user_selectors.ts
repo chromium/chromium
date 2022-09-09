@@ -8,6 +8,7 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {UserImage} from '../personalization_app.mojom-webui.js';
 import {PersonalizationState} from '../personalization_state.js';
+import {getSanitizedDefaultImageUrl} from '../utils.js';
 
 /**
  * @fileoverview Utility functions to derive a user image URL to display from
@@ -80,7 +81,7 @@ export function selectUserImageUrl(state: PersonalizationState): Url|null {
     case 'invalidImage':
       return placeHolderUrl;
     case 'defaultImage':
-      return userImage.defaultImage!.url;
+      return getSanitizedDefaultImageUrl(userImage.defaultImage!.url);
     case 'profileImage':
       return state.user.profileImage;
     case 'externalImage':
