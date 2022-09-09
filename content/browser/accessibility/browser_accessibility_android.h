@@ -14,6 +14,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/common/content_export.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 
@@ -22,6 +23,7 @@ namespace content {
 class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
  public:
   static BrowserAccessibilityAndroid* GetFromUniqueId(int32_t unique_id);
+  static void ResetLeafCache();
 
   BrowserAccessibilityAndroid(const BrowserAccessibilityAndroid&) = delete;
   BrowserAccessibilityAndroid& operator=(const BrowserAccessibilityAndroid&) =
@@ -112,6 +114,13 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   // ...-android-external.txt files. On other platforms this may be ::GetName().
   std::u16string GetTextContentUTF16() const override;
   std::u16string GetValueForControl() const override;
+
+  typedef base::RepeatingCallback<bool(const std::u16string& partial)>
+      EarlyExitPredicate;
+  std::u16string GetSubstringTextContentUTF16(
+      absl::optional<EarlyExitPredicate>) const;
+  static EarlyExitPredicate NonEmptyPredicate();
+  static EarlyExitPredicate LengthAtLeast(size_t length);
 
   // This method maps to the Android API's "hint" attribute. For nodes that have
   // chosen to expose their value in the name ("text") attribute, the hint must
