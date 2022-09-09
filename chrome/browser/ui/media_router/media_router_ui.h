@@ -5,17 +5,14 @@
 #ifndef CHROME_BROWSER_UI_MEDIA_ROUTER_MEDIA_ROUTER_UI_H_
 #define CHROME_BROWSER_UI_MEDIA_ROUTER_MEDIA_ROUTER_UI_H_
 
-#include <memory>
 #include <set>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "build/build_config.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/media_router/cast_dialog_model.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
@@ -29,10 +26,6 @@
 #include "components/media_router/browser/media_router_dialog_controller.h"
 #include "components/media_router/common/issue.h"
 #include "components/media_router/common/media_source.h"
-#include "url/origin.h"
-
-class Browser;
-class GURL;
 
 namespace content {
 struct PresentationRequest;
@@ -101,7 +94,6 @@ class MediaRouterUI : public CastDialogController,
                     MediaCastMode cast_mode) override;
   void StopCasting(const std::string& route_id) override;
   void ClearIssue(const Issue::Id& issue_id) override;
-  content::WebContents* GetInitiator() override;
   // Note that |MediaRouterUI| should not be used after |TakeMediaRouteStarter|
   // is called.
   std::unique_ptr<MediaRouteStarter> TakeMediaRouteStarter() override;
@@ -135,8 +127,6 @@ class MediaRouterUI : public CastDialogController,
   content::WebContents* initiator() const {
     return media_route_starter()->GetWebContents();
   }
-
-  void SimulateDocumentAvailableForTest();
 
  private:
   friend class MediaRouterViewsUITest;
@@ -270,14 +260,8 @@ class MediaRouterUI : public CastDialogController,
                               const MediaRoute* route,
                               const absl::optional<Issue>& issue);
 
-  // Opens the URL in a tab, returns the tab it was opened in.
-  content::WebContents* OpenTabWithUrl(const GURL& url);
-
   // Returns the MediaRouter for this instance's BrowserContext.
   virtual MediaRouter* GetMediaRouter() const;
-
-  // Retrieves the browser associated with this UI.
-  Browser* GetBrowser();
 
   const absl::optional<RouteRequest> current_route_request() const {
     return current_route_request_;

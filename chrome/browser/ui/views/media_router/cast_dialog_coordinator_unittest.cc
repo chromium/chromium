@@ -39,7 +39,6 @@ class MockCastDialogController : public CastDialogController {
               (const std::string& sink_id, MediaCastMode cast_mode));
   MOCK_METHOD(void, StopCasting, (const std::string& route_id));
   MOCK_METHOD(void, ClearIssue, (const Issue::Id& issue_id));
-  MOCK_METHOD(content::WebContents*, GetInitiator, ());
   MOCK_METHOD(std::unique_ptr<MediaRouteStarter>, TakeMediaRouteStarter, ());
 };
 

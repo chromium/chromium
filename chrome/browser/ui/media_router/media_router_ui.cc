@@ -4,23 +4,17 @@
 
 #include "chrome/browser/ui/media_router/media_router_ui.h"
 
-#include <string>
-#include <unordered_map>
 #include <utility>
-#include <vector>
 
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
-#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_media_route_provider.h"
@@ -45,17 +39,9 @@
 #include "components/media_router/common/route_request_result.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/url_formatter/elide_url.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/navigation_handle.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/common/constants.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/mojom/media/fullscreen_video_element.mojom.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
-#include "url/origin.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -189,10 +175,6 @@ void MediaRouterUI::StopCasting(const std::string& route_id) {
 
 void MediaRouterUI::ClearIssue(const Issue::Id& issue_id) {
   RemoveIssue(issue_id);
-}
-
-content::WebContents* MediaRouterUI::GetInitiator() {
-  return initiator();
 }
 
 std::unique_ptr<MediaRouteStarter> MediaRouterUI::TakeMediaRouteStarter() {
@@ -597,15 +579,6 @@ UIMediaSink MediaRouterUI::ConvertToUISink(const MediaSinkWithCastModes& sink,
 
 MediaRouter* MediaRouterUI::GetMediaRouter() const {
   return router_;
-}
-
-Browser* MediaRouterUI::GetBrowser() {
-  return chrome::FindBrowserWithWebContents(initiator());
-}
-
-void MediaRouterUI::SimulateDocumentAvailableForTest() {
-  DCHECK(web_contents_observer_for_test_);
-  web_contents_observer_for_test_->DidFinishNavigation(nullptr);
 }
 
 }  // namespace media_router
