@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/form_interactions_counter.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
+#include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/language_code.h"
@@ -165,7 +166,9 @@ class FormStructure {
   void UpdateAutofillCount();
 
   // Returns true if this form matches the structural requirements for Autofill.
-  bool ShouldBeParsed(LogManager* log_manager = nullptr) const;
+  [[nodiscard]] bool ShouldBeParsed(LogManager* log_manager = nullptr) const {
+    return ShouldBeParsed({}, log_manager);
+  }
 
   // Returns true if heuristic autofill type detection should be attempted for
   // this form.
@@ -436,6 +439,16 @@ class FormStructure {
  private:
   friend class FormStructureTestApi;
 
+  // Production code only uses the default parameters.
+  // Unit tests also test other parameters.
+  struct ShouldBeParsedParams {
+    size_t min_required_fields =
+        std::min({kMinRequiredFieldsForHeuristics, kMinRequiredFieldsForQuery,
+                  kMinRequiredFieldsForUpload});
+    size_t required_fields_for_forms_with_only_password_fields =
+        kRequiredFieldsForFormsWithOnlyPasswordFields;
+  };
+
   // Parses the field types from the server query response. |forms| must be the
   // same as the one passed to EncodeQueryRequest when constructing the query.
   // |form_interactions_ukm_logger| is used to provide logs to UKM and can be
@@ -449,6 +462,9 @@ class FormStructure {
 
   FormStructure(FormSignature form_signature,
                 const std::vector<FieldSignature>& field_signatures);
+
+  [[nodiscard]] bool ShouldBeParsed(ShouldBeParsedParams params,
+                                    LogManager* log_manager = nullptr) const;
 
   void EncodeFormForQuery(AutofillPageQueryRequest* query,
                           std::vector<FormSignature>* queried_form_signatures,

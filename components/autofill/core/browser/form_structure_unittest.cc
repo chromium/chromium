@@ -140,10 +140,6 @@ class FormStructureTestImpl : public test::FormStructureTest {
   }
 
  protected:
-  bool FormShouldBeParsed(const FormData form) {
-    return FormStructure(form).ShouldBeParsed();
-  }
-
   bool FormIsAutofillable(const FormData& form) {
     FormStructure form_structure(form);
     form_structure.DetermineHeuristicTypes(nullptr, nullptr);
@@ -356,111 +352,219 @@ TEST_F(FormStructureTestImpl, IsAutofillable) {
   EXPECT_TRUE(FormIsAutofillable(form));
 }
 
-TEST_F(FormStructureTestImpl, ShouldBeParsed) {
-  FormData form;
-  form.url = GURL("http://www.foo.com/");
+class FormStructureTestImpl_ShouldBeParsed_Test : public FormStructureTestImpl {
+ public:
+  FormStructureTestImpl_ShouldBeParsed_Test() {
+    form_.url = GURL("http://www.foo.com/");
+    form_structure_ = std::make_unique<FormStructure>(form_);
+  }
 
+  ~FormStructureTestImpl_ShouldBeParsed_Test() override = default;
+
+  void SetAction(GURL action) {
+    form_.action = action;
+    form_structure_ = nullptr;
+  }
+
+  void AddField(FormFieldData field) {
+    field.unique_renderer_id = test::MakeFieldRendererId();
+    form_.fields.push_back(std::move(field));
+    form_structure_ = nullptr;
+  }
+
+  FormStructure* form_structure() {
+    if (!form_structure_)
+      form_structure_ = std::make_unique<FormStructure>(form_);
+    return form_structure_.get();
+  }
+
+ private:
+  FormData form_;
+  std::unique_ptr<FormStructure> form_structure_;
+};
+
+// Empty forms should not be parsed.
+TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, FalseIfNoFields) {
+  EXPECT_FALSE(test_api(form_structure()).ShouldBeParsed());
+  EXPECT_FALSE(
+      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
+}
+
+// Forms with only checkable fields should not be parsed.
+TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, IgnoresCheckableFields) {
   // Start with a single checkable field.
-  FormFieldData checkable_field;
-  checkable_field.check_status =
-      FormFieldData::CheckStatus::kCheckableButUnchecked;
-  checkable_field.name = u"radiobtn";
-  checkable_field.form_control_type = "radio";
-  checkable_field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(checkable_field);
-
-  // A form with a single checkable field isn't interesting.
-  EXPECT_FALSE(FormShouldBeParsed(form)) << "one checkable";
+  {
+    FormFieldData field;
+    field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
+    field.form_control_type = "radio";
+    AddField(field);
+  }
+  EXPECT_FALSE(test_api(form_structure()).ShouldBeParsed());
+  EXPECT_FALSE(
+      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
 
   // Add a second checkable field.
-  checkable_field.name = u"checkbox";
-  checkable_field.form_control_type = "checkbox";
-  checkable_field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(checkable_field);
+  {
+    FormFieldData field;
+    field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
+    field.form_control_type = "checkbox";
+    AddField(field);
+  }
+  EXPECT_FALSE(test_api(form_structure()).ShouldBeParsed());
+  EXPECT_FALSE(
+      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
 
-  // A form with a only checkable fields isn't interesting.
-  EXPECT_FALSE(FormShouldBeParsed(form)) << "two checkable";
+  // Add one text field.
+  {
+    FormFieldData field;
+    field.form_control_type = "text";
+    AddField(field);
+  }
+  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
+  EXPECT_TRUE(
+      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
+}
 
-  // Add a text field.
-  FormFieldData field;
-  field.label = u"username";
-  field.name = u"username";
-  field.form_control_type = "text";
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
+// Forms with at least one text field should be parsed.
+TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, TrueIfOneTextField) {
+  {
+    FormFieldData field;
+    field.form_control_type = "text";
+    AddField(field);
+  }
+  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
+  EXPECT_TRUE(
+      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
+  EXPECT_FALSE(
+      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
 
-  // Single text field forms shouldn't be parsed if all of the minimums are
-  // enforced but should be parsed if ANY of the minimums is not enforced.
-  EXPECT_TRUE(FormShouldBeParsed(form)) << "username";
+  {
+    FormFieldData field;
+    field.form_control_type = "text";
+    AddField(field);
+  }
+  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
+  EXPECT_TRUE(
+      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
+  EXPECT_TRUE(
+      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
+}
 
-  // We now have three text fields, though only two are auto-fillable.
-  field.label = u"First Name";
-  field.name = u"firstname";
-  field.form_control_type = "text";
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
+// Forms that have only select fields should not be parsed.
+TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, FalseIfOnlySelectField) {
+  {
+    FormFieldData field;
+    field.form_control_type = "select-one";
+    AddField(field);
+  }
+  EXPECT_FALSE(test_api(form_structure()).ShouldBeParsed());
+  EXPECT_FALSE(
+      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
+  EXPECT_FALSE(
+      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
 
-  field.label = u"Last Name";
-  field.name = u"lastname";
-  field.form_control_type = "text";
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
+  {
+    FormFieldData field;
+    field.form_control_type = "text";
+    AddField(field);
+  }
+  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
+  EXPECT_TRUE(
+      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
+  EXPECT_TRUE(
+      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
+}
 
-  // Three text field forms should always be parsed.
-  EXPECT_TRUE(FormShouldBeParsed(form)) << "three field";
+// Form whose action is a search URL should not be parsed.
+TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, FalseIfSearchURL) {
+  {
+    FormFieldData field;
+    field.form_control_type = "text";
+    AddField(field);
+  }
+  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
+  EXPECT_TRUE(
+      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
+  EXPECT_FALSE(
+      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
 
   // The target cannot include http(s)://*/search...
-  form.action = GURL("http://google.com/search?q=hello");
-  EXPECT_FALSE(FormShouldBeParsed(form)) << "search path";
+  SetAction(GURL("http://google.com/search?q=hello"));
+  EXPECT_FALSE(test_api(form_structure()).ShouldBeParsed());
+  EXPECT_FALSE(
+      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
 
   // But search can be in the URL.
-  form.action = GURL("http://search.com/?q=hello");
-  EXPECT_TRUE(FormShouldBeParsed(form)) << "search domain";
+  SetAction(GURL("http://search.com/?q=hello"));
+  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
+  EXPECT_TRUE(
+      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
+}
 
-  // The form need only have three fields, but at least one must be a text
-  // field.
-  form.fields.clear();
+// Forms with two password fields and no other fields should be parsed.
+TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, TrueIfOnlyPasswordFields) {
+  {
+    FormFieldData field;
+    field.form_control_type = "password";
+    AddField(field);
+  }
+  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
+  EXPECT_TRUE(
+      test_api(form_structure())
+          .ShouldBeParsed(
+              {.min_required_fields = 2,
+               .required_fields_for_forms_with_only_password_fields = 1}));
+  EXPECT_FALSE(
+      test_api(form_structure())
+          .ShouldBeParsed(
+              {.min_required_fields = 2,
+               .required_fields_for_forms_with_only_password_fields = 2}));
 
-  field.label = u"Email";
-  field.name = u"email";
-  field.form_control_type = "email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
+  {
+    FormFieldData field;
+    field.form_control_type = "password";
+    AddField(field);
+  }
+  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
+  EXPECT_TRUE(
+      test_api(form_structure())
+          .ShouldBeParsed(
+              {.min_required_fields = 2,
+               .required_fields_for_forms_with_only_password_fields = 1}));
+  EXPECT_TRUE(
+      test_api(form_structure())
+          .ShouldBeParsed(
+              {.min_required_fields = 2,
+               .required_fields_for_forms_with_only_password_fields = 2}));
+}
 
-  field.label = u"State";
-  field.name = u"state";
-  field.form_control_type = "select-one";
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
+// Forms with at least one field with an autocomplete attribute should be
+// parsed.
+TEST_F(FormStructureTestImpl_ShouldBeParsed_Test,
+       TrueIfOneFieldHasAutocomplete) {
+  {
+    FormFieldData field;
+    field.form_control_type = "text";
+    AddField(field);
+  }
+  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
+  EXPECT_FALSE(
+      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
+  EXPECT_FALSE(
+      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
 
-  field.label = u"Country";
-  field.name = u"country";
-  field.form_control_type = "select-one";
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  EXPECT_TRUE(FormShouldBeParsed(form)) << "text + selects";
-
-  // Now, no text fields.
-  form.fields[0].form_control_type = "select-one";
-  EXPECT_FALSE(FormShouldBeParsed(form)) << "only selects";
-
-  // We have only one field, which is password.
-  form.fields.clear();
-  field.label = u"Password";
-  field.name = u"pw";
-  field.form_control_type = "password";
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-  EXPECT_TRUE(FormShouldBeParsed(form)) << "password";
-
-  // We have two fields, which are passwords, should be parsed.
-  field.label = u"New password";
-  field.name = u"new_pw";
-  field.form_control_type = "password";
-  field.unique_renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-  EXPECT_TRUE(FormShouldBeParsed(form)) << "new password";
+  {
+    FormFieldData field;
+    field.parsed_autocomplete = AutocompleteParsingResult{
+        .section = "my-billing-section", .field_type = HtmlFieldType::kName};
+    field.form_control_type = "text";
+    AddField(field);
+  }
+  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
+  EXPECT_TRUE(
+      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
+  EXPECT_TRUE(
+      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
 }
 
 TEST_F(FormStructureTestImpl, ShouldBeParsed_BadScheme) {

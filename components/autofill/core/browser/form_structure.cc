@@ -742,7 +742,8 @@ void FormStructure::UpdateAutofillCount() {
   }
 }
 
-bool FormStructure::ShouldBeParsed(LogManager* log_manager) const {
+bool FormStructure::ShouldBeParsed(ShouldBeParsedParams params,
+                                   LogManager* log_manager) const {
   // Exclude URLs not on the web via HTTP(S).
   if (!HasAllowedScheme(source_url_)) {
     LOG_AF(log_manager) << LoggingScope::kAbortParsing
@@ -750,12 +751,10 @@ bool FormStructure::ShouldBeParsed(LogManager* log_manager) const {
     return false;
   }
 
-  size_t min_required_fields =
-      std::min({kMinRequiredFieldsForHeuristics, kMinRequiredFieldsForQuery,
-                kMinRequiredFieldsForUpload});
-  if (active_field_count() < min_required_fields &&
+  if (active_field_count() < params.min_required_fields &&
       (!all_fields_are_passwords() ||
-       active_field_count() < kRequiredFieldsForFormsWithOnlyPasswordFields) &&
+       active_field_count() <
+           params.required_fields_for_forms_with_only_password_fields) &&
       !has_author_specified_types_) {
     LOG_AF(log_manager) << LoggingScope::kAbortParsing
                         << LogMessage::kAbortParsingNotEnoughFields

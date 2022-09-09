@@ -17,6 +17,8 @@ namespace autofill {
 // Exposes some testing operations for FormStructure.
 class FormStructureTestApi {
  public:
+  using ShouldBeParsedParams = FormStructure::ShouldBeParsedParams;
+
   static void ParseApiQueryResponse(
       base::StringPiece payload,
       const std::vector<FormStructure*>& forms,
@@ -41,6 +43,11 @@ class FormStructureTestApi {
   explicit FormStructureTestApi(FormStructure* form_structure)
       : form_structure_(form_structure) {
     DCHECK(form_structure_);
+  }
+
+  [[nodiscard]] bool ShouldBeParsed(ShouldBeParsedParams params = {},
+                                    LogManager* log_manager = nullptr) {
+    return form_structure_->ShouldBeParsed(params, log_manager);
   }
 
   // Set the heuristic and server types for each field. The `heuristic_types`
