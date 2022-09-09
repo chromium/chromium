@@ -35,14 +35,14 @@ class HistoryClustersRelatedSearchesChipLayout extends FrameLayout {
     public void onFinishInflate() {
         super.onFinishInflate();
 
-        mDividerView = new DividerView(getContext(), null, 0, R.style.HorizontalDivider);
-        mDividerView.addToParent(this, generateDefaultLayoutParams());
         mChipsCoordinator = new ChipsCoordinator(getContext(), mChipList);
         mChipsCoordinator.setSpaceItemDecoration(
                 getResources().getDimensionPixelSize(R.dimen.related_search_chip_list_chip_spacing),
                 getResources().getDimensionPixelSize(
                         R.dimen.related_search_chip_list_side_padding));
         addView(mChipsCoordinator.getView());
+        mDividerView = new DividerView(getContext(), null, 0, R.style.HorizontalDivider);
+        mDividerView.addToParent(this, generateDefaultLayoutParams());
     }
 
     void setOnChipClickHandler(Callback<String> onClickHandler) {
@@ -65,5 +65,14 @@ class HistoryClustersRelatedSearchesChipLayout extends FrameLayout {
 
     void setHasThickDivider(boolean hasThickDivider) {
         mDividerView.setIsThickDivider(hasThickDivider);
+        LayoutParams layoutParams = (LayoutParams) mChipsCoordinator.getView().getLayoutParams();
+        if (hasThickDivider) {
+            layoutParams.bottomMargin =
+                    getResources().getDimensionPixelSize(R.dimen.divider_margin);
+        } else {
+            layoutParams.bottomMargin = 0;
+        }
+
+        requestLayout();
     }
 }

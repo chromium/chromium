@@ -38,10 +38,8 @@ class DividerView extends View {
         if (isThick) {
             layoutParams.height =
                     getResources().getDimensionPixelSize(R.dimen.thick_divider_height);
-            layoutParams.topMargin = getResources().getDimensionPixelSize(R.dimen.divider_margin);
         } else {
             layoutParams.height = getResources().getDimensionPixelSize(R.dimen.divider_height);
-            layoutParams.topMargin = 0;
         }
         requestLayout();
     }

@@ -72,6 +72,15 @@ class HistoryClustersItemView extends SelectableItemView<ClusterVisit> {
 
     void setHasThickDivider(boolean hasThickDivider) {
         mDividerView.setIsThickDivider(hasThickDivider);
+        LayoutParams layoutParams = (LayoutParams) mContentView.getLayoutParams();
+        if (hasThickDivider) {
+            layoutParams.bottomMargin =
+                    getResources().getDimensionPixelSize(R.dimen.divider_margin);
+        } else {
+            layoutParams.bottomMargin = 0;
+        }
+
+        requestLayout();
     }
 
     void setEndButtonVisibility(boolean visible) {
