@@ -76,7 +76,7 @@ class SettingsSavedDevicesListElement extends
     this.browserProxy_.deleteFastPairSavedDevice(event.detail.key);
     for (let i = 0; i < this.devices.length; i++) {
       if (this.devices[i].accountKey === event.detail.key) {
-        this.devices.splice(i, 1);
+        this.splice('devices', i, 1);
         break;
       }
     }

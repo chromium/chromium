@@ -6,13 +6,14 @@ import 'chrome://os-settings/chromeos/os_settings.js';
 import 'chrome://os-settings/strings.m.js';
 
 import {FastPairSavedDevicesOptInStatus, OsBluetoothDevicesSubpageBrowserProxyImpl, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {DeviceConnectionState} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {createDefaultBluetoothDevice} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 import {eventToPromise, isVisible, waitAfterNextRender} from 'chrome://test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 
-import {assertEquals, assertTrue} from '../../../chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertTrue} from '../../../chai_assert.js';
 
 import {TestOsBluetoothDevicesSubpageBrowserProxy} from './test_os_bluetooth_subpage_browser_proxy.js';
 
@@ -45,6 +46,14 @@ suite('OsSavedDevicesSubpageTest', function() {
     flush();
   }
 
+  function getLabel() {
+    const label = savedDevicesSubpage.shadowRoot.querySelector('#label');
+    if (!label) {
+      return '';
+    }
+    return label.innerText;
+  }
+
   test('Base Test', function() {
     init();
     Router.getInstance().navigateTo(routes.BLUETOOTH_SAVED_DEVICES);
@@ -58,12 +67,7 @@ suite('OsSavedDevicesSubpageTest', function() {
     Router.getInstance().navigateTo(routes.BLUETOOTH_SAVED_DEVICES);
     flushTasks();
 
-    assertFalse(
-        isVisible(savedDevicesSubpage.shadowRoot.querySelector('#noDevices')));
-    assertFalse(isVisible(
-        savedDevicesSubpage.shadowRoot.querySelector('#devicesError')));
-    assertTrue(isVisible(
-        savedDevicesSubpage.shadowRoot.querySelector('#savedDevicesList')));
+    assertEquals(getLabel(), loadTimeData.getString('sublabelWithEmail'));
   });
 
   test('Show label with no saved devices', async function() {
@@ -72,28 +76,44 @@ suite('OsSavedDevicesSubpageTest', function() {
     Router.getInstance().navigateTo(routes.BLUETOOTH_SAVED_DEVICES);
     flushTasks();
 
-    assertTrue(
-        isVisible(savedDevicesSubpage.shadowRoot.querySelector('#noDevices')));
-    assertFalse(isVisible(
-        savedDevicesSubpage.shadowRoot.querySelector('#devicesError')));
-    assertFalse(isVisible(
-        savedDevicesSubpage.shadowRoot.querySelector('#savedDevicesList')));
+    assertEquals(getLabel(), loadTimeData.getString('noDevicesWithEmail'));
   });
 
   test('Show error label', async function() {
     browserProxy.optInStatus =
         FastPairSavedDevicesOptInStatus
             .STATUS_ERROR_RETRIEVING_FROM_FOOTPRINTS_SERVER;
+  });
+
+  test('Dynamic dialog change upon last device removal', async function() {
+    browserProxy.savedDevices = [{name: 'dev1', imageUrl: '', accountKey: '0'}];
     init();
 
     Router.getInstance().navigateTo(routes.BLUETOOTH_SAVED_DEVICES);
     flushTasks();
 
-    assertTrue(isVisible(
-        savedDevicesSubpage.shadowRoot.querySelector('#devicesError')));
-    assertFalse(isVisible(
-        savedDevicesSubpage.shadowRoot.querySelector('#savedDevicesList')));
-    assertFalse(
-        isVisible(savedDevicesSubpage.shadowRoot.querySelector('#noDevices')));
+    assertEquals(getLabel(), loadTimeData.getString('sublabelWithEmail'));
+
+    const list =
+        savedDevicesSubpage.shadowRoot.querySelector('#savedDevicesList');
+    const listItems =
+        list.shadowRoot.querySelectorAll('os-settings-saved-devices-list-item');
+
+    assertGT(listItems.length, 0);
+
+    const listItem = listItems[0];
+
+    const ironResizePromise = eventToPromise('iron-resize', list);
+
+    listItem.$$('#dotsMenu').click();
+    await flushTasks();
+    listItem.$$('#removeButton').click();
+    await flushTasks();
+    listItem.$$('#removeDeviceDialog').$$('#remove').click();
+
+    await ironResizePromise;
+    await flushTasks();
+
+    assertEquals(getLabel(), loadTimeData.getString('noDevicesWithEmail'));
   });
 });

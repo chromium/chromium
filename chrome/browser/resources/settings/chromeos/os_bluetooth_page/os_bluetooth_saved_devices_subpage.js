@@ -11,6 +11,7 @@ import '../../settings_shared.css.js';
 import './os_saved_devices_list.js';
 
 import {FastPairSavedDevicesUiEvent, recordSavedDevicesUiEventMetrics} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_metrics_utils.js';
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
@@ -52,45 +53,11 @@ class SettingsBluetoothSavedDevicesSubpageElement extends
   static get properties() {
     return {
       /**
-       * @protected
-       */
-      savedDevicesSublabel_: {
-        type: String,
-        value() {
-          return loadTimeData.getString('sublabelWithEmail');
-        },
-      },
-
-      /**
        * @protected {!Array<!FastPairSavedDevice>}
        */
       savedDevices_: {
         type: Array,
         value: [],
-      },
-
-      /** @protected */
-      noSavedDeviceslabel_: {
-        type: String,
-        value() {
-          return loadTimeData.getString('noDevicesWithEmail');
-        },
-      },
-
-      /** @protected */
-      savedDevicesErrorLabel_: {
-        type: String,
-        value() {
-          return loadTimeData.getString('savedDevicesErrorWithEmail');
-        },
-      },
-
-      /** @protected */
-      loadingSavedDevicesLabel_: {
-        type: String,
-        value() {
-          return loadTimeData.getString('loadingDevicesWithEmail');
-        },
       },
 
       /** @protected */
@@ -100,12 +67,30 @@ class SettingsBluetoothSavedDevicesSubpageElement extends
       },
 
       /** @protected */
-      showSavedDevicesLoadingLabel: {
+      showSavedDevicesLoadingLabel_: {
         type: Boolean,
         notify: true,
         value: true,
       },
+
+      /** @protected */
+      shouldShowDeviceList_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @protected */
+      shouldShowNoDevicesLabel_: {
+        type: Boolean,
+        value: false,
+      },
     };
+  }
+
+  static get observers() {
+    return [
+      'evaluateLabels_(showSavedDevicesLoadingLabel_, showSavedDevicesErrorLabel_, savedDevices_.*)',
+    ];
   }
 
   constructor() {
@@ -149,7 +134,7 @@ class SettingsBluetoothSavedDevicesSubpageElement extends
             .STATUS_ERROR_RETRIEVING_FROM_FOOTPRINTS_SERVER) {
       this.showSavedDevicesErrorLabel_ = true;
     }
-    this.showSavedDevicesLoadingLabel = false;
+    this.showSavedDevicesLoadingLabel_ = false;
   }
 
   /**
@@ -161,30 +146,38 @@ class SettingsBluetoothSavedDevicesSubpageElement extends
     // If we're navigating to the Saved Devices page, fetch the devices.
     if (route === routes.BLUETOOTH_SAVED_DEVICES) {
       this.showSavedDevicesErrorLabel_ = false;
-      this.showSavedDevicesLoadingLabel = true;
+      this.showSavedDevicesLoadingLabel_ = true;
       this.parentNode.pageTitle =
           loadTimeData.getString('savedDevicesPageName');
       this.browserProxy_.requestFastPairSavedDevices();
       return;
     }
   }
-  /**
-   * @param {!Array<!FastPairSavedDevice>} devices
-   * @return boolean
-   * @private
-   */
-  shouldShowDeviceList_(devices, showLoadingLabel) {
-    return !showLoadingLabel && devices.length > 0;
+
+  /** @private */
+  evaluateLabels_() {
+    this.shouldShowDeviceList_ =
+        !this.showSavedDevicesLoadingLabel_ && this.savedDevices_.length > 0;
+    this.shouldShowNoDevicesLabel_ = !this.showSavedDevicesLoadingLabel_ &&
+        !this.showSavedDevicesErrorLabel_ && this.savedDevices_.length === 0;
   }
 
-  /**
-   * @param {!Array<!FastPairSavedDevice>} devices
-   * @param {boolean} showErrorLabel
-   * @return boolean
-   * @private
-   */
-  shouldShowNoDevicesLabel_(devices, showLoadingLabel, showErrorLabel) {
-    return !showLoadingLabel && !showErrorLabel && devices.length === 0;
+  /** @private */
+  computeSavedDevicesSublabel_() {
+    this.evaluateLabels_();
+    if (this.shouldShowDeviceList_) {
+      return loadTimeData.getString('sublabelWithEmail');
+    }
+    if (this.shouldShowNoDevicesLabel_) {
+      return loadTimeData.getString('noDevicesWithEmail');
+    }
+    if (this.showSavedDevicesLoadingLabel_) {
+      return loadTimeData.getString('loadingDevicesWithEmail');
+    }
+    if (this.showSavedDevicesErrorLabel_) {
+      return loadTimeData.getString('savedDevicesErrorWithEmail');
+    }
+    assertNotReached();
   }
 }
 
