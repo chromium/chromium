@@ -166,4 +166,9 @@ auto BindToCurrentSequenceRepeating(Functor&& functor, Args&&... args) {
 }  // namespace libassistant
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::libassistant {
+using ::chromeos::libassistant::ToStdFunction;
+}
+
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_CALLBACK_UTILS_H_

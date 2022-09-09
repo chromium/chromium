@@ -13,25 +13,24 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
-class AssistantManagerMock : public assistant::FakeAssistantManager {
+class AssistantManagerMock : public chromeos::assistant::FakeAssistantManager {
  public:
   AssistantManagerMock() = default;
   AssistantManagerMock(const AssistantManagerMock&) = delete;
   AssistantManagerMock& operator=(const AssistantManagerMock&) = delete;
   ~AssistantManagerMock() override = default;
 
-  // assistant::FakeAssistantManager implementation:
+  // chromeos::assistant::FakeAssistantManager implementation:
   MOCK_METHOD(void, EnableListening, (bool value));
   MOCK_METHOD(void, SetAuthTokens, (const AssistantClient::AuthTokens&));
 };
 
 class AssistantManagerInternalMock
-    : public assistant::FakeAssistantManagerInternal {
+    : public chromeos::assistant::FakeAssistantManagerInternal {
  public:
   AssistantManagerInternalMock() = default;
   AssistantManagerInternalMock(const AssistantManagerInternalMock&) = delete;
@@ -39,7 +38,7 @@ class AssistantManagerInternalMock
       delete;
   ~AssistantManagerInternalMock() override = default;
 
-  // assistant::FakeAssistantManagerInternal implementation:
+  // chromeos::assistant::FakeAssistantManagerInternal implementation:
   MOCK_METHOD(void, SetLocaleOverride, (const std::string& locale));
   MOCK_METHOD(void,
               SetOptions,
@@ -146,5 +145,4 @@ TEST_F(AssistantClientV1Test, ShouldSetAuthenticationTokens) {
   v1_client().SetAuthenticationInfo(expected);
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

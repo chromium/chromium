@@ -14,8 +14,7 @@
 #include "third_party/grpc/src/include/grpcpp/completion_queue.h"
 #include "third_party/grpc/src/include/grpcpp/server_builder.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 // Initializes all services exposed by libassistant.
 class ServicesInitializerBase {
@@ -59,7 +58,6 @@ class ServicesInitializerBase {
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_SERVICES_INITIALIZER_BASE_H_

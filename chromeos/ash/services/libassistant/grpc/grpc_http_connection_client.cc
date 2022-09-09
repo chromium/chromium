@@ -19,13 +19,15 @@
 #include "third_party/grpc/src/include/grpcpp/security/server_credentials.h"
 #include "third_party/grpc/src/include/grpcpp/support/channel_arguments.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 using ::assistant::api::StreamHttpConnectionRequest;
 using ::assistant::api::StreamHttpConnectionResponse;
 using assistant_client::HttpConnection;
+using ::chromeos::libassistant::BidiStreamingRpcCall;
+using ::chromeos::libassistant::StreamingWriteQueue;
+using ::chromeos::libassistant::StreamingWriter;
 
 HttpConnection::Method ConvertToHttpConnectionMethod(
     StreamHttpConnectionResponse::Method method) {
@@ -295,5 +297,4 @@ void GrpcHttpConnectionClient::OnRpcExited(grpc::ClientContext* context,
   CleanUp();
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

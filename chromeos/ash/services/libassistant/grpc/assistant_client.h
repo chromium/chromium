@@ -52,8 +52,7 @@ class ChromeOSApiDelegate;
 class HttpConnectionFactory;
 }  // namespace assistant_client
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 // The Libassistant customer class which establishes a gRPC connection to
 // Libassistant and provides an interface for interacting with gRPC Libassistant
@@ -238,7 +237,11 @@ class AssistantClient {
       nullptr;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::libassistant {
+using ::ash::libassistant::AssistantClient;
+}
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_ASSISTANT_CLIENT_H_

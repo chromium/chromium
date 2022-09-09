@@ -27,8 +27,7 @@ class MessageLite;
 }  // namespace protobuf
 }  // namespace google
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 // Configs which dictate options for an RPCState instance.
 struct StateConfig {
@@ -54,7 +53,7 @@ struct StateConfig {
 // is greater than 0, the request will be retried for any transient failures
 // as long as the overall deadline has not elapsed.
 template <class Response>
-class RPCState : public GrpcClientCQTag {
+class RPCState : public chromeos::libassistant::GrpcClientCQTag {
  public:
   // Async RPCState constructor.
   // Default behavior is to set wait_for_ready = true and handle timeouts
@@ -215,7 +214,6 @@ class RPCState : public GrpcClientCQTag {
   size_t num_retries_ = 0;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_GRPC_STATE_H_

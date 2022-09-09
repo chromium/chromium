@@ -11,8 +11,7 @@ namespace assistant_client {
 struct VoicelessResponse;
 }  // namespace assistant_client
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 // Populates a |GetAssistantSettingsResponse| proto with corresponding fields
 // from a |VoicelessResponse| struct.
@@ -36,7 +35,11 @@ std::string UnwrapGetAssistantSettingsResponse(
 std::string UnwrapUpdateAssistantSettingsResponse(
     const ::assistant::api::UpdateAssistantSettingsResponse& response);
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::libassistant {
+using ::ash::libassistant::UnwrapGetAssistantSettingsResponse;
+using ::ash::libassistant::UnwrapUpdateAssistantSettingsResponse;
+}  // namespace chromeos::libassistant
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_UTILS_SETTINGS_UTILS_H_

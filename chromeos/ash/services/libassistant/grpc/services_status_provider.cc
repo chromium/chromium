@@ -7,8 +7,7 @@
 #include "base/logging.h"
 #include "chromeos/ash/services/libassistant/grpc/services_status_observer.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
@@ -75,5 +74,4 @@ void ServicesStatusProvider::RemoveObserver(ServicesStatusObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

@@ -13,8 +13,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/assistant/internal/grpc_transport/grpc_client_cq_tag.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
+
+using ::chromeos::libassistant::GrpcClientCQTag;
 
 GrpcClientThread::GrpcClientThread(const std::string& thread_name,
                                    base::ThreadType thread_type)
@@ -80,5 +81,4 @@ void GrpcClientThread::ScanCQInternal() {
   }
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

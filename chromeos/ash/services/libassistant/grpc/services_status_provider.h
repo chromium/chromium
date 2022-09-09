@@ -11,8 +11,7 @@
 #include "chromeos/ash/services/libassistant/grpc/services_status_observer.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 // Component monitoring Libassistant gRPC services status, exposing method to
 // get current services status and notify observers on status change.
@@ -37,7 +36,6 @@ class ServicesStatusProvider
   base::ObserverList<ServicesStatusObserver> observers_;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_SERVICES_STATUS_PROVIDER_H_

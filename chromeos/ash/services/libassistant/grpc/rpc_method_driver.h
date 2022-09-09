@@ -16,8 +16,7 @@
 #include "third_party/grpc/src/include/grpcpp/grpcpp.h"
 #include "third_party/grpc/src/include/grpcpp/server_context.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 // Implements async RPC driver for an RPC method.
 // Request and Response are the RPC method's request and response protos.
@@ -180,7 +179,6 @@ class RpcMethodDriver {
   base::WeakPtrFactory<RpcMethodDriver> weak_factory_{this};
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_RPC_METHOD_DRIVER_H_

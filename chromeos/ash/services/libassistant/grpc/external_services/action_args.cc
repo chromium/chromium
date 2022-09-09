@@ -6,8 +6,7 @@
 
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/action_interface.pb.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
@@ -77,5 +76,4 @@ assistant_client::ActionModule::Args* ActionArgs::Clone() const {
                         client_op_args_);
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

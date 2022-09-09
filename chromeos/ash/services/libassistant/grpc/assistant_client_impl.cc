@@ -35,8 +35,7 @@
 #include "chromeos/assistant/internal/proto/shared/proto/v2/query_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/speaker_id_enrollment_interface.pb.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
@@ -52,12 +51,11 @@ constexpr int kDefaultTimeoutMs = 5000;
 // Interaction related calls has longer timeout.
 constexpr int kAssistantInteractionDefaultTimeoutMs = 20000;
 
-const chromeos::libassistant::StateConfig kDefaultStateConfig =
-    chromeos::libassistant::StateConfig{kMaxRpcRetries, kDefaultTimeoutMs};
+const StateConfig kDefaultStateConfig =
+    StateConfig{kMaxRpcRetries, kDefaultTimeoutMs};
 
-const chromeos::libassistant::StateConfig kInteractionDefaultStateConfig =
-    chromeos::libassistant::StateConfig{kMaxRpcRetries,
-                                        kAssistantInteractionDefaultTimeoutMs};
+const StateConfig kInteractionDefaultStateConfig =
+    StateConfig{kMaxRpcRetries, kAssistantInteractionDefaultTimeoutMs};
 
 #define LOG_GRPC_STATUS(level, status, func_name)                \
   if (status.ok()) {                                             \
@@ -220,7 +218,8 @@ void AssistantClientImpl::SendVoicelessInteraction(
     const ::assistant::api::VoicelessOptions& options,
     base::OnceCallback<void(bool)> on_done) {
   ::assistant::api::SendQueryRequest request;
-  PopulateSendQueryRequest(interaction, description, options, &request);
+  chromeos::libassistant::PopulateSendQueryRequest(interaction, description,
+                                                   options, &request);
 
   libassistant_client_.CallServiceMethod(
       request,
@@ -449,20 +448,19 @@ void AssistantClientImpl::AddAlarmTimerEventObserver(
 std::unique_ptr<AssistantClient> AssistantClient::Create(
     std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
     assistant_client::AssistantManagerInternal* assistant_manager_internal) {
-  if (chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+  if (assistant::features::IsLibAssistantV2Enabled()) {
     const bool is_chromeos_device = base::SysInfo::IsRunningOnChromeOS();
     // Note that we should *not* depend on |assistant_manager_internal| for V2,
     // so |assistant_manager_internal| will be nullptr after the migration has
     // done.
     return std::make_unique<AssistantClientImpl>(
         std::move(assistant_manager), assistant_manager_internal,
-        assistant::GetLibassistantServiceAddress(is_chromeos_device),
-        assistant::GetAssistantServiceAddress(is_chromeos_device));
+        chromeos::assistant::GetLibassistantServiceAddress(is_chromeos_device),
+        chromeos::assistant::GetAssistantServiceAddress(is_chromeos_device));
   }
 
   return std::make_unique<AssistantClientV1>(std::move(assistant_manager),
                                              assistant_manager_internal);
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

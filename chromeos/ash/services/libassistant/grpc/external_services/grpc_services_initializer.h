@@ -33,8 +33,7 @@ namespace assistant_client {
 class HttpConnectionFactory;
 }  // namespace assistant_client
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 class ActionService;
 class GrpcHttpConnectionClient;
@@ -121,7 +120,7 @@ class GrpcServicesInitializer : public ServicesInitializerBase {
   std::unique_ptr<grpc::Server> assistant_grpc_server_;
 
   // The entrypoint through which we can query Libassistant V2 APIs.
-  std::unique_ptr<chromeos::libassistant::GrpcLibassistantClient>
+  std::unique_ptr<ash::libassistant::GrpcLibassistantClient>
       libassistant_client_;
 
   ServicesStatusProvider services_status_provider_;
@@ -130,8 +129,7 @@ class GrpcServicesInitializer : public ServicesInitializerBase {
       GrpcServicesObserver<::assistant::api::OnHeartbeatEventRequest>>
       heartbeat_event_observation_{&services_status_provider_};
 
-  std::unique_ptr<chromeos::libassistant::CustomerRegistrationClient>
-      customer_registration_client_;
+  std::unique_ptr<CustomerRegistrationClient> customer_registration_client_;
 
   std::unique_ptr<HeartbeatEventHandlerDriver> heartbeat_driver_;
 
@@ -161,11 +159,9 @@ class GrpcServicesInitializer : public ServicesInitializerBase {
       ::assistant::api::SpeakerIdEnrollmentEventHandlerInterface>>
       speaker_id_enrollment_event_handler_driver_;
 
-  std::unique_ptr<chromeos::libassistant::GrpcHttpConnectionClient>
-      http_connection_client_;
+  std::unique_ptr<GrpcHttpConnectionClient> http_connection_client_;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_EXTERNAL_SERVICES_GRPC_SERVICES_INITIALIZER_H_

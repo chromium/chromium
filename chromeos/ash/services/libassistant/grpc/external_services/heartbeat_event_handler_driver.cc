@@ -11,8 +11,7 @@
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/libas_server_status.pb.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
@@ -73,5 +72,4 @@ void HeartbeatEventHandlerDriver::HandleEvent(
     observer.OnGrpcMessage(*request);
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

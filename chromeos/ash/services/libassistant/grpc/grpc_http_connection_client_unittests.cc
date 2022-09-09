@@ -13,8 +13,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
@@ -110,8 +109,8 @@ class TestHttpConnectionFactory
   std::unique_ptr<MockHttpConnection> http_connection_;
 };
 
-class MockStreamingWriter
-    : public StreamingWriter<StreamHttpConnectionRequest> {
+class MockStreamingWriter : public chromeos::libassistant::StreamingWriter<
+                                StreamHttpConnectionRequest> {
  public:
   MockStreamingWriter() = default;
   ~MockStreamingWriter() override = default;
@@ -418,5 +417,4 @@ TEST_F(GrpcHttpConnectionClientTest, ReceiveOnNetworkError) {
   base::RunLoop().RunUntilIdle();
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

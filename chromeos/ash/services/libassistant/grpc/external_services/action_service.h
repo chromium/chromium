@@ -25,8 +25,7 @@ class HandleActionResponse;
 }  // namespace api
 }  // namespace assistant
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 class GrpcLibassistantClient;
 
@@ -126,7 +125,6 @@ class ActionService : public AsyncServiceDriver {
   base::WeakPtrFactory<ActionService> weak_factory_{this};
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_EXTERNAL_SERVICES_ACTION_SERVICE_H_

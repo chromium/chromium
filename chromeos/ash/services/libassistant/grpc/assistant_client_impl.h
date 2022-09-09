@@ -14,8 +14,7 @@
 #include "chromeos/ash/services/libassistant/grpc/external_services/grpc_services_initializer.h"
 #include "chromeos/ash/services/libassistant/grpc/services_status_provider.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 class GrpcLibassistantClient;
 
@@ -31,7 +30,7 @@ class AssistantClientImpl : public AssistantClientV1 {
 
   ~AssistantClientImpl() override;
 
-  // chromeos::libassistant::AssistantClientV1 overrides:
+  // AssistantClientV1 overrides:
   void StartServices(ServicesStatusObserver* services_status_observer) override;
   bool StartGrpcServices() override;
   void StartGrpcHttpConnectionClient(
@@ -108,17 +107,16 @@ class AssistantClientImpl : public AssistantClientV1 {
           observer) override;
 
  private:
-  chromeos::libassistant::GrpcServicesInitializer grpc_services_;
+  GrpcServicesInitializer grpc_services_;
 
   // Entry point for Libassistant V2 APIs, through which V2 methods can be
   // invoked. Created and owned by |GrpcServicesInitializer|.
-  chromeos::libassistant::GrpcLibassistantClient& libassistant_client_;
+  GrpcLibassistantClient& libassistant_client_;
 
   // Invoked when all LibAssistant services are ready to query.
   base::OnceClosure services_ready_callback_;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_ASSISTANT_CLIENT_IMPL_H_

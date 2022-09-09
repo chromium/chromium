@@ -9,8 +9,7 @@
 #include "chromeos/assistant/internal/proto/shared/proto/timer_params.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
@@ -138,5 +137,4 @@ std::vector<AssistantTimer> GetAllCurrentTimersFromEvents(
   return result;
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

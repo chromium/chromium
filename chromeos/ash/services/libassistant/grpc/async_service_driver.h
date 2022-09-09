@@ -9,8 +9,7 @@
 #include "base/logging.h"
 #include "third_party/grpc/src/include/grpcpp/server_builder.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 // Base class for asynchronous RPC drivers. Implementations of async drivers
 // for gRPC services exposed by libassistant should derive from this class.
@@ -31,7 +30,6 @@ class AsyncServiceDriver {
   grpc::ServerBuilder* server_builder_;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_ASYNC_SERVICE_DRIVER_H_

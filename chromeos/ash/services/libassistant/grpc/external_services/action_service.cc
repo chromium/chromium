@@ -12,8 +12,7 @@
 #include "chromeos/assistant/internal/grpc_transport/request_utils.h"
 #include "chromeos/assistant/internal/internal_constants.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
@@ -51,18 +50,21 @@ void ActionService::RegisterActionModule(
 void ActionService::StartRegistration() {
   ::assistant::api::RegisterActionModuleRequest request;
   for (const auto& action : action_module_->GetSupportedActions()) {
-    PopulateRegisterActionModuleRequest(action, &request);
+    chromeos::libassistant::PopulateRegisterActionModuleRequest(action,
+                                                                &request);
   }
 
   auto* action_handler = request.mutable_action_handler();
   action_handler->set_server_address(assistant_service_address_);
-  action_handler->set_service_name(assistant::kActionServiceName);
-  action_handler->set_handler_method(assistant::kHandleActionMethodName);
+  action_handler->set_service_name(chromeos::assistant::kActionServiceName);
+  action_handler->set_handler_method(
+      chromeos::assistant::kHandleActionMethodName);
 
   auto* context_provider = request.mutable_context_provider();
   context_provider->set_server_address(assistant_service_address_);
-  context_provider->set_service_name(assistant::kActionServiceName);
-  context_provider->set_handler_method(assistant::kGetContextMethodName);
+  context_provider->set_service_name(chromeos::assistant::kActionServiceName);
+  context_provider->set_handler_method(
+      chromeos::assistant::kGetContextMethodName);
 
   constexpr int kMaxRegisterRetry = 3;
   constexpr int kRegisterTimeoutInMs = 2000;
@@ -220,7 +222,7 @@ void ActionService::OnActionDone(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ::assistant::api::HandleActionResponse response;
-  PopulateHandleActionResponse(result, &response);
+  chromeos::libassistant::PopulateHandleActionResponse(result, &response);
 
   const auto action_iter = alive_actions_.find(action_id);
   if (action_iter != alive_actions_.end()) {
@@ -253,7 +255,8 @@ void ActionService::OnGetActionServiceContextRequest(
 
   DVLOG(3) << "Getting service context.";
   ::assistant::api::GetActionServiceContextResponse response;
-  PopulateGetActionServiceContextResponse(*action_module_, &response);
+  chromeos::libassistant::PopulateGetActionServiceContextResponse(
+      *action_module_, &response);
   std::move(done).Run(grpc::Status::OK, response);
 }
 
@@ -281,5 +284,4 @@ void ActionService::StartCQ(::grpc::ServerCompletionQueue* cq) {
                           weak_factory_.GetWeakPtr()));
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

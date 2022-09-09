@@ -8,8 +8,7 @@
 
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 AssistantClient::AssistantClient(
     std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
@@ -23,5 +22,4 @@ void AssistantClient::ResetAssistantManager() {
   assistant_manager_ = nullptr;
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

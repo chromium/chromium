@@ -26,8 +26,7 @@
 #include "third_party/grpc/src/include/grpcpp/security/server_credentials.h"
 #include "third_party/grpc/src/include/grpcpp/support/channel_arguments.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
@@ -194,14 +193,15 @@ void GrpcServicesInitializer::InitLibassistGrpcClient() {
       ::grpc::experimental::LocalCredentials(connect_type), channel_args);
 
   libassistant_client_ =
-      std::make_unique<chromeos::libassistant::GrpcLibassistantClient>(channel);
+      std::make_unique<ash::libassistant::GrpcLibassistantClient>(channel);
 }
 
 void GrpcServicesInitializer::StartGrpcHttpConnectionClient(
     assistant_client::HttpConnectionFactory* factory) {
   const bool is_chromeos_device = base::SysInfo::IsRunningOnChromeOS();
   http_connection_client_ = std::make_unique<GrpcHttpConnectionClient>(
-      factory, assistant::GetHttpConnectionServiceAddress(is_chromeos_device));
+      factory,
+      chromeos::assistant::GetHttpConnectionServiceAddress(is_chromeos_device));
   http_connection_client_->Start();
 }
 
@@ -223,5 +223,4 @@ void GrpcServicesInitializer::RegisterEventHandlers() {
   speaker_id_enrollment_event_handler_driver_->StartRegistration();
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

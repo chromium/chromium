@@ -9,8 +9,7 @@
 #include "third_party/grpc/src/include/grpcpp/support/proto_buffer_reader.h"
 #include "third_party/grpc/src/include/grpcpp/support/proto_buffer_writer.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 grpc_local_connect_type GetGrpcLocalConnectType(
     const std::string& server_address) {
@@ -32,5 +31,4 @@ bool GrpcParseProto(grpc::ByteBuffer* src, google::protobuf::MessageLite* dst) {
   return dst->ParseFromZeroCopyStream(&reader);
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

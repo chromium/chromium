@@ -20,8 +20,7 @@
 #include "chromeos/assistant/internal/proto/shared/proto/v2/experiment_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/speaker_id_enrollment_interface.pb.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 template <>
 std::string
@@ -209,5 +208,4 @@ GrpcLibassistantClient::GrpcLibassistantClient(
 
 GrpcLibassistantClient::~GrpcLibassistantClient() = default;
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

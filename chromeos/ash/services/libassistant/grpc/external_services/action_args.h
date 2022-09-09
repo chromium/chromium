@@ -14,8 +14,7 @@ class HandleActionRequest;
 }  // namespace api
 }  // namespace assistant
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 class ActionArgs : public assistant_client::ActionModule::Args {
  public:
@@ -45,7 +44,6 @@ class ActionArgs : public assistant_client::ActionModule::Args {
   ::assistant::api::ClientOp::Args client_op_args_;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_EXTERNAL_SERVICES_ACTION_ARGS_H_

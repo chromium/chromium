@@ -9,8 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 ServicesInitializerBase::ServicesInitializerBase(
     const std::string& cq_thread_name,
@@ -85,5 +84,4 @@ void ServicesInitializerBase::ScanCQInternal() {
   }
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

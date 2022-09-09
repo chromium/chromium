@@ -16,8 +16,7 @@
 #include "chromeos/assistant/internal/proto/shared/proto/v2/customer_registration_interface.pb.h"
 #include "third_party/grpc/src/include/grpcpp/grpcpp.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 class GrpcLibassistantClient;
 
@@ -40,10 +39,9 @@ class CustomerRegistrationClient {
   // heartbeats from libassistant.
   // |libassistant_client|: The gRPC client to invoke Libassistant service
   // methods.
-  CustomerRegistrationClient(
-      const std::string& customer_server_address,
-      base::TimeDelta heartbeat_period,
-      chromeos::libassistant::GrpcLibassistantClient* libassistant_client);
+  CustomerRegistrationClient(const std::string& customer_server_address,
+                             base::TimeDelta heartbeat_period,
+                             GrpcLibassistantClient* libassistant_client);
   ~CustomerRegistrationClient();
 
   // Adds a gRPC service that the customer supports (one that may be called by
@@ -84,8 +82,7 @@ class CustomerRegistrationClient {
       const ::assistant::api::ServiceRegistrationResponse& response);
 
   const std::string customer_server_address_;
-  chromeos::libassistant::GrpcLibassistantClient* const libassistant_client_ =
-      nullptr;
+  GrpcLibassistantClient* const libassistant_client_ = nullptr;
 
   ::assistant::api::RegisterCustomerRequest customer_registration_request_;
   bool is_started_ = false;
@@ -96,7 +93,6 @@ class CustomerRegistrationClient {
   base::WeakPtrFactory<CustomerRegistrationClient> weak_factory_{this};
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_EXTERNAL_SERVICES_CUSTOMER_REGISTRATION_CLIENT_H_

@@ -14,8 +14,7 @@
 #include "chromeos/ash/services/libassistant/grpc/grpc_util.h"
 #include "third_party/grpc/src/include/grpcpp/channel.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 // Return gRPC method names.
 template <typename Request>
@@ -35,11 +34,10 @@ class GrpcLibassistantClient {
   // caller's sequence. The raw pointer will be handled by |RPCState| internally
   // and gets deleted upon completion of the RPC call.
   template <typename Request, typename Response>
-  void CallServiceMethod(
-      const Request& request,
-      chromeos::libassistant::ResponseCallback<grpc::Status, Response> done,
-      chromeos::libassistant::StateConfig state_config) {
-    new chromeos::libassistant::RPCState<Response>(
+  void CallServiceMethod(const Request& request,
+                         ResponseCallback<grpc::Status, Response> done,
+                         StateConfig state_config) {
+    new RPCState<Response>(
         channel_, client_thread_.completion_queue(),
         GetLibassistGrpcMethodName<Request>(), request, std::move(done),
         /*callback_task_runner=*/base::SequencedTaskRunnerHandle::Get(),
@@ -53,10 +51,9 @@ class GrpcLibassistantClient {
   std::shared_ptr<grpc::Channel> channel_;
 
   // Thread running the completion queue.
-  chromeos::libassistant::GrpcClientThread client_thread_;
+  GrpcClientThread client_thread_;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_GRPC_LIBASSISTANT_CLIENT_H_

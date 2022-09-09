@@ -17,8 +17,7 @@ namespace assistant_client {
 class AlarmTimerManager;
 }  // namespace assistant_client
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 class ServicesStatusObserver;
 
@@ -29,7 +28,7 @@ class AssistantClientV1 : public AssistantClient {
       assistant_client::AssistantManagerInternal* assistant_manager_internal);
   ~AssistantClientV1() override;
 
-  // chromeos::libassistant::AssistantClient:
+  // AssistantClient:
   void StartServices(ServicesStatusObserver* services_status_observer) override;
   void SetChromeOSApiDelegate(
       assistant_client::ChromeOSApiDelegate* delegate) override;
@@ -160,7 +159,6 @@ class AssistantClientV1 : public AssistantClient {
   base::WeakPtrFactory<AssistantClientV1> weak_factory_{this};
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_ASSISTANT_CLIENT_V1_H_

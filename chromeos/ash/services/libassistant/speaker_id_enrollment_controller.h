@@ -6,6 +6,8 @@
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_SPEAKER_ID_ENROLLMENT_CONTROLLER_H_
 
 #include "chromeos/ash/services/libassistant/abortable_task_list.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/ash/services/libassistant/public/mojom/audio_input_controller.mojom-forward.h"
 #include "chromeos/ash/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom.h"
@@ -13,8 +15,6 @@
 
 namespace chromeos {
 namespace libassistant {
-
-class AssistantClient;
 
 class SpeakerIdEnrollmentController
     : public mojom::SpeakerIdEnrollmentController,

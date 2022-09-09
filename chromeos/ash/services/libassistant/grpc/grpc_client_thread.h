@@ -13,8 +13,7 @@
 #include "base/threading/thread.h"
 #include "third_party/grpc/src/include/grpcpp/completion_queue.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 // This thread could be shared by multiple grpc clients. It needs to be
 // destroyed after the clients.
@@ -49,7 +48,6 @@ class GrpcClientThread {
   bool is_cq_shutdown_ = false;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_GRPC_CLIENT_THREAD_H_

@@ -7,8 +7,7 @@
 
 #include "base/observer_list_types.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 // Enums representing states of Libassistant services in the order of the
 // bootup progession. States are monotonic and cannot get reverted back to
@@ -30,7 +29,12 @@ class ServicesStatusObserver : public base::CheckedObserver {
   virtual void OnServicesStatusChanged(ServicesStatus status) = 0;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::libassistant {
+using ::ash::libassistant::ServicesStatus;
+using ::ash::libassistant::ServicesStatusObserver;
+}  // namespace chromeos::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_SERVICES_STATUS_OBSERVER_H_

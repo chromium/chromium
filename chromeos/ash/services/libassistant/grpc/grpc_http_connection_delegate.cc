@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/libassistant/grpc/grpc_http_connection_delegate.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 using ::assistant::api::StreamHttpConnectionRequest;
 
@@ -67,5 +66,4 @@ void GrpcHttpConnectionDelegate::OnConnectionDestroyed() {
   task_runner_->DeleteSoon(FROM_HERE, this);
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

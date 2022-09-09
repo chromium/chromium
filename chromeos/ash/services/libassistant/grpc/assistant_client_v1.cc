@@ -33,8 +33,7 @@
 #include "chromeos/assistant/internal/proto/shared/proto/v2/speaker_id_enrollment_event.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/speaker_id_enrollment_interface.pb.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
@@ -46,6 +45,13 @@ using ::assistant::api::UpdateAssistantSettingsResponse;
 using ::assistant::api::events::SpeakerIdEnrollmentEvent;
 using ::assistant::ui::SettingsUiUpdate;
 using assistant_client::SpeakerIdEnrollmentUpdate;
+using ::chromeos::libassistant::AdaptCallback;
+using ::chromeos::libassistant::BindToCurrentSequence;
+using ::chromeos::libassistant::BindToCurrentSequenceRepeating;
+using ::chromeos::libassistant::PopulateInternalOptionsFromProto;
+using ::chromeos::libassistant::PopulateVoicelessOptionsFromProto;
+using ::chromeos::libassistant::ToStdFunction;
+using ::chromeos::libassistant::ToStdFunctionRepeating;
 
 // A macro which ensures we are running on the calling sequence.
 #define ENSURE_CALLING_SEQUENCE(method, ...)                                \
@@ -103,12 +109,12 @@ OnSpeakerIdEnrollmentEventRequest ConvertToGrpcEventRequest(
     bool spoken_feedback_enabled,
     bool dark_mode_enabled) {
   auto* options = assistant_manager_internal->CreateDefaultInternalOptions();
-  auto proto =
-      assistant::CreateInternalOptionsProto(locale, spoken_feedback_enabled);
+  auto proto = chromeos::assistant::CreateInternalOptionsProto(
+      locale, spoken_feedback_enabled);
   PopulateInternalOptionsFromProto(proto, options);
 
-  assistant::SetDarkModeEnabledForV1(options, dark_mode_enabled);
-  assistant::SetTimezoneOverrideForV1(options);
+  chromeos::assistant::SetDarkModeEnabledForV1(options, dark_mode_enabled);
+  chromeos::assistant::SetTimezoneOverrideForV1(options);
 
   return options;
 }
@@ -139,7 +145,7 @@ class AssistantClientV1::DeviceStateListener
 
     // We will be checking the heartbeat signal sent back for Libassistant for
     // v2.
-    if (!chromeos::assistant::features::IsLibAssistantV2Enabled())
+    if (!assistant::features::IsLibAssistantV2Enabled())
       assistant_client_->NotifyAllServicesReady();
   }
 
@@ -291,7 +297,7 @@ class AssistantClientV1::AssistantManagerDelegateImpl
     ENSURE_CALLING_SEQUENCE(&AssistantManagerDelegateImpl::OnCommunicationError,
                             error_code);
 
-    if (assistant::IsAuthError(error_code)) {
+    if (chromeos::assistant::IsAuthError(error_code)) {
       OnDeviceStateEventRequest request;
       auto* communication_error =
           request.mutable_event()->mutable_on_communication_error();
@@ -338,7 +344,7 @@ void AssistantClientV1::StartServices(
 
   // Instead we will be checking the heartbeat signal sent back from Libassisant
   // in v2.
-  if (!chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+  if (!assistant::features::IsLibAssistantV2Enabled()) {
     services_status_observer_->OnServicesStatusChanged(
         ServicesStatus::ONLINE_BOOTING_UP);
   }
@@ -517,7 +523,8 @@ void AssistantClientV1::UpdateAssistantSettings(
     const std::string& user_id,
     base::OnceCallback<void(const UpdateAssistantSettingsResponse&)> on_done) {
   std::string update_settings_ui_request =
-      assistant::SerializeUpdateSettingsUiRequest(settings.SerializeAsString());
+      chromeos::assistant::SerializeUpdateSettingsUiRequest(
+          settings.SerializeAsString());
 
   auto callback = AdaptCallback<const assistant_client::VoicelessResponse&>(
       /*once_callback=*/std::move(on_done),
@@ -533,7 +540,8 @@ void AssistantClientV1::GetAssistantSettings(
     const std::string& user_id,
     base::OnceCallback<void(const GetAssistantSettingsResponse&)> on_done) {
   std::string get_settins_ui_request =
-      assistant::SerializeGetSettingsUiRequest(selector.SerializeAsString());
+      chromeos::assistant::SerializeGetSettingsUiRequest(
+          selector.SerializeAsString());
 
   auto callback = AdaptCallback<const assistant_client::VoicelessResponse&>(
       /*once_callback=*/std::move(on_done),
@@ -691,5 +699,4 @@ void AssistantClientV1::GetAndNotifyTimerStatus() {
       weak_factory_.GetWeakPtr()));
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

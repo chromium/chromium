@@ -11,6 +11,8 @@
 #include "base/component_export.h"
 #include "base/sequence_checker.h"
 #include "chromeos/ash/services/assistant/public/cpp/conversation_observer.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/ash/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/ash/services/libassistant/public/mojom/authentication_state_observer.mojom.h"
@@ -29,8 +31,6 @@ class CrosActionModule;
 }  // namespace assistant
 
 namespace libassistant {
-
-class AssistantClient;
 
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
     : public mojom::ConversationController,

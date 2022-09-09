@@ -7,8 +7,7 @@
 #include "chromeos/assistant/internal/libassistant_util.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/event_notification_interface.pb.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
@@ -99,5 +98,4 @@ template <>
   return request;
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

@@ -16,8 +16,7 @@
 #include "chromeos/assistant/internal/proto/shared/proto/v2/customer_registration_service.grpc.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_service.grpc.pb.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
@@ -30,7 +29,7 @@ using ::assistant::api::ServiceRegistrationResponse;
 // customer registration service until it receives the first heartbeat.
 constexpr base::TimeDelta kRegistrationPollingPeriod = base::Seconds(3);
 
-chromeos::libassistant::StateConfig BuildCustomerRegistrationStateConfig() {
+StateConfig BuildCustomerRegistrationStateConfig() {
   StateConfig state_config;
   state_config.max_retries = 20;
   state_config.timeout_in_ms = kRegistrationPollingPeriod.InMilliseconds();
@@ -43,7 +42,7 @@ chromeos::libassistant::StateConfig BuildCustomerRegistrationStateConfig() {
 CustomerRegistrationClient::CustomerRegistrationClient(
     const std::string& customer_server_address,
     base::TimeDelta heartbeat_period,
-    chromeos::libassistant::GrpcLibassistantClient* libassistant_client)
+    GrpcLibassistantClient* libassistant_client)
     : customer_server_address_(customer_server_address),
       libassistant_client_(libassistant_client) {
   DCHECK(!customer_server_address_.empty());
@@ -148,5 +147,4 @@ void CustomerRegistrationClient::OnHeartbeatServiceRegistrationResponse(
   }
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

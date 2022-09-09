@@ -7,11 +7,10 @@
 
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 
-namespace chromeos {
-namespace libassistant {
-
-class AssistantClient;
+namespace ash::libassistant {
 
 // Observer informed when the |AssistantClient| is created or destroyed.
 // This is used internally in our mojom service implementation, to allow our
@@ -48,7 +47,11 @@ class AssistantClientObserver : public base::CheckedObserver {
   ~AssistantClientObserver() override = default;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::libassistant {
+using ash::libassistant::AssistantClientObserver;
+}
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_ASSISTANT_CLIENT_OBSERVER_H_

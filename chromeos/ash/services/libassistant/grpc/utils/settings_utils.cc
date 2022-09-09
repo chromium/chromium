@@ -9,14 +9,13 @@
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/proto/shared/proto/settings_ui.pb.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 namespace {
 
-using assistant::api::GetAssistantSettingsResponse;
-using assistant::api::ResponseDetails;
-using assistant::api::UpdateAssistantSettingsResponse;
+using ::assistant::api::GetAssistantSettingsResponse;
+using ::assistant::api::ResponseDetails;
+using ::assistant::api::UpdateAssistantSettingsResponse;
 using assistant_client::VoicelessResponse;
 
 }  // namespace
@@ -134,5 +133,4 @@ std::string UnwrapUpdateAssistantSettingsResponse(
   }
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

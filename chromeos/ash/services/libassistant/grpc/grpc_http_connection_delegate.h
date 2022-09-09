@@ -10,8 +10,7 @@
 #include "chromeos/ash/services/libassistant/grpc/grpc_http_connection_client.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 // An interface invoked by GrpcHttpConnectionDelegate to relay the HTTP
 // responses to gRPC HttpConnectionService.
@@ -39,7 +38,6 @@ class GrpcHttpConnectionDelegate
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_GRPC_HTTP_CONNECTION_DELEGATE_H_

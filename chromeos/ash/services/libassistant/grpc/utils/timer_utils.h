@@ -21,19 +21,20 @@ class TimerParams;
 }  // namespace api
 }  // namespace assistant
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 ::assistant::api::OnAlarmTimerEventRequest
 CreateOnAlarmTimerEventRequestProtoForV1(
     const std::vector<chromeos::assistant::AssistantTimer>& all_curr_timers);
 
 // `timer_params` contains the information of all the current timers.
-std::vector<assistant::AssistantTimer> ConstructAssistantTimersFromProto(
+std::vector<chromeos::assistant::AssistantTimer>
+ConstructAssistantTimersFromProto(
     const ::assistant::api::params::TimerParams& timer_params);
 
-void ConvertAssistantTimerToProtoTimer(const assistant::AssistantTimer& input,
-                                       ::assistant::api::params::Timer* output);
+void ConvertAssistantTimerToProtoTimer(
+    const chromeos::assistant::AssistantTimer& input,
+    ::assistant::api::params::Timer* output);
 
 void ConvertProtoTimerToAssistantTimer(
     const ::assistant::api::params::Timer& input,
@@ -43,7 +44,13 @@ void ConvertProtoTimerToAssistantTimer(
 std::vector<chromeos::assistant::AssistantTimer> GetAllCurrentTimersFromEvents(
     const std::vector<assistant_client::AlarmTimerManager::Event>& events);
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::libassistant {
+using ::ash::libassistant::ConstructAssistantTimersFromProto;
+using ::ash::libassistant::CreateOnAlarmTimerEventRequestProtoForV1;
+using ::ash::libassistant::GetAllCurrentTimersFromEvents;
+}  // namespace chromeos::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_UTILS_TIMER_UTILS_H_

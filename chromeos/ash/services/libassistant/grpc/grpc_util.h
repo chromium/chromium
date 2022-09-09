@@ -13,8 +13,7 @@
 #include "third_party/grpc/src/include/grpcpp/support/status.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 template <class Status, class Response>
 using ResponseCallback =
@@ -31,7 +30,6 @@ grpc::Status GrpcSerializeProto(const google::protobuf::MessageLite& src,
 // Parse contents of src and initialize *dst with them.
 bool GrpcParseProto(grpc::ByteBuffer* src, google::protobuf::MessageLite* dst);
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_GRPC_UTIL_H_

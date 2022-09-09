@@ -21,8 +21,7 @@
 #include "chromeos/assistant/internal/proto/shared/proto/v2/http_connection_service.grpc.pb.h"
 #include "third_party/grpc/src/include/grpcpp/channel.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 class GrpcHttpConnectionClient {
  public:
@@ -51,7 +50,8 @@ class GrpcHttpConnectionClient {
 
   void OnRpcWriteAvailable(
       grpc::ClientContext* context,
-      StreamingWriter<::assistant::api::StreamHttpConnectionRequest>* writer);
+      chromeos::libassistant::StreamingWriter<
+          ::assistant::api::StreamHttpConnectionRequest>* writer);
   void OnRpcReadAvailable(
       grpc::ClientContext* context,
       const ::assistant::api::StreamHttpConnectionResponse& request);
@@ -73,9 +73,9 @@ class GrpcHttpConnectionClient {
   // freed automatically.
   std::shared_ptr<grpc::Channel> channel_;
   std::unique_ptr<::assistant::api::HttpConnectionService::Stub> stub_;
-  std::unique_ptr<
-      BidiStreamingRpcCall<::assistant::api::StreamHttpConnectionRequest,
-                           ::assistant::api::StreamHttpConnectionResponse>>
+  std::unique_ptr<chromeos::libassistant::BidiStreamingRpcCall<
+      ::assistant::api::StreamHttpConnectionRequest,
+      ::assistant::api::StreamHttpConnectionResponse>>
       call_;
 
   // The following section is only accessed by the CQ thread.
@@ -85,8 +85,8 @@ class GrpcHttpConnectionClient {
   bool init_request_sent_ = false;
 
   // |write_queue_| methods are thread safe.
-  std::unique_ptr<
-      StreamingWriteQueue<::assistant::api::StreamHttpConnectionRequest>>
+  std::unique_ptr<chromeos::libassistant::StreamingWriteQueue<
+      ::assistant::api::StreamHttpConnectionRequest>>
       write_queue_;
 
   // `http_connection` owns itself and will be deleted when `Close()` is called.
@@ -99,7 +99,6 @@ class GrpcHttpConnectionClient {
   base::WeakPtrFactory<GrpcHttpConnectionClient> weak_factory_{this};
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_GRPC_HTTP_CONNECTION_CLIENT_H_

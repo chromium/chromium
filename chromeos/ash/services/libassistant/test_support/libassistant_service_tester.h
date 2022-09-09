@@ -6,6 +6,8 @@
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_TEST_SUPPORT_LIBASSISTANT_SERVICE_TESTER_H_
 
 #include "base/test/scoped_path_override.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/ash/services/libassistant/libassistant_service.h"
 #include "chromeos/ash/services/libassistant/public/mojom/audio_input_controller.mojom.h"
 #include "chromeos/ash/services/libassistant/public/mojom/audio_output_delegate.mojom-forward.h"
@@ -24,7 +26,6 @@
 namespace chromeos {
 namespace libassistant {
 
-class AssistantClient;
 class FakeLibassistantFactory;
 
 // Helper class that makes it easier to test |LibassistantService|.

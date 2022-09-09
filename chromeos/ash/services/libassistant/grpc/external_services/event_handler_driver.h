@@ -19,8 +19,7 @@
 #include "chromeos/assistant/internal/proto/shared/proto/v2/event_notification_interface.pb.h"
 #include "third_party/grpc/src/include/grpcpp/grpcpp.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 // Create request to register event handler, setting fields accordingly. It
 // cannot be a virtual method because it will be used in constructor. Derived
@@ -151,7 +150,6 @@ class EventHandlerDriver : public AsyncServiceDriver {
       this};
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_EXTERNAL_SERVICES_EVENT_HANDLER_DRIVER_H_i

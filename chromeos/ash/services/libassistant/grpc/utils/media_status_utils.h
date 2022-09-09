@@ -12,8 +12,7 @@ namespace assistant_client {
 struct MediaStatus;
 }  // namespace assistant_client
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 using MediaStatus = ::assistant::api::events::DeviceState::MediaStatus;
 
@@ -24,13 +23,20 @@ void ConvertMediaStatusToV2FromV1(
     const assistant_client::MediaStatus& media_status,
     MediaStatus* media_status_proto);
 
-mojom::MediaStatePtr ConvertMediaStatusToMojomFromV2(
+chromeos::libassistant::mojom::MediaStatePtr ConvertMediaStatusToMojomFromV2(
     const MediaStatus& media_status_proto);
 
-void ConvertMediaStatusToV2FromMojom(const mojom::MediaState& state,
-                                     MediaStatus* media_status_proto);
+void ConvertMediaStatusToV2FromMojom(
+    const chromeos::libassistant::mojom::MediaState& state,
+    MediaStatus* media_status_proto);
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::libassistant {
+using ::ash::libassistant::ConvertMediaStatusToMojomFromV2;
+using ::ash::libassistant::ConvertMediaStatusToV2FromMojom;
+using ::ash::libassistant::MediaStatus;
+}  // namespace chromeos::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_UTILS_MEDIA_STATUS_UTILS_H_

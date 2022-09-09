@@ -7,8 +7,7 @@
 
 #include "base/observer_list_types.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 // Observer class registered to event handler drivers.
 template <class TRequest>
@@ -21,7 +20,11 @@ class GrpcServicesObserver : public base::CheckedObserver {
   ~GrpcServicesObserver() override = default;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::libassistant {
+using ::ash::libassistant::GrpcServicesObserver;
+}
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_GRPC_EXTERNAL_SERVICES_GRPC_SERVICES_OBSERVER_H_
