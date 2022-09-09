@@ -27,6 +27,7 @@ component("constants") {
     "devicetype.h",
     "notifier_catalogs.h",
     "personalization_entry_point.h",
+    "quick_settings_catalogs.h",
     "url_constants.cc",
     "url_constants.h",
   ]

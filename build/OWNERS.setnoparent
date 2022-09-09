@@ -74,6 +74,7 @@ file://infra/config/groups/sheriff-rotations/CHROMIUM_OWNERS
 # completed manually.
 file://third_party/blink/common/origin_trials/OT_OWNERS
 
-# New notifiers added to //ash/constants/notifier_catalogs.h should be reviewed
+# New notifiers added to //ash/constants/notifier_catalogs.h and 
+# //ash/constants/quick_settings_catalogs.h should be reviewed
 # by //ash/system owners to ensure that the correct notifier is being used.
 file://ash/system/OWNERS

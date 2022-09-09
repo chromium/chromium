@@ -3572,6 +3572,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.QuickSettings.{QsChildView}.Activated"
+    enum="QsButtonCatalogName" expires_after="2023-09-08">
+  <owner>jiamingc@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded when any {QsChildView} in the quick settings view is activated. For
+    example, this view can be a button (such as lock button), or a pod view
+    (such as the network pod).
+  </summary>
+  <token key="QsChildView">
+    <variant name="Button" summary="Buttons"/>
+    <variant name="FeaturePod" summary="Feature pods"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.Rotation.AnimationSmoothness" units="%"
     expires_after="2023-06-01">
   <owner>oshima@chromium.org</owner>
@@ -4461,6 +4476,21 @@ chromium-metrics-reviews@google.com.
   <summary>
     The total time that TouchView is not active during a session.
   </summary>
+</histogram>
+
+<histogram name="Ash.UnifiedSystemView.{OldQsChildView}.Activated"
+    enum="QsButtonCatalogName" expires_after="2023-09-08">
+  <owner>jiamingc@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded when any {OldQsChildView} in the old quick settings view is
+    activated. For example, this view can be a button (such as lock button), or
+    a pod view (such as the network pod).
+  </summary>
+  <token key="OldQsChildView">
+    <variant name="Button" summary="Buttons"/>
+    <variant name="FeaturePod" summary="Feature pods"/>
+  </token>
 </histogram>
 
 <histogram base="true" name="Ash.UnlockAnimation.Duration" units="ms"

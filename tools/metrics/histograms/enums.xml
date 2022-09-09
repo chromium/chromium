@@ -82254,6 +82254,19 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="12" label="IPH shown, then install via BottomSheet (API)"/>
 </enum>
 
+<enum name="QsButtonCatalogName">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="SignOutButton"/>
+  <int value="2" label="LockButton"/>
+  <int value="3" label="PowerButton"/>
+  <int value="4" label="SettingsButton"/>
+  <int value="5" label="DateViewButton"/>
+  <int value="6" label="BatteryButton"/>
+  <int value="7" label="ManageButton"/>
+  <int value="8" label="AvatarButton"/>
+  <int value="9" label="CollapseButton"/>
+</enum>
+
 <enum name="QueryTilesGroupPruneReason">
   <int value="0" label="Expired"/>
   <int value="1" label="InvalidLocale"/>
