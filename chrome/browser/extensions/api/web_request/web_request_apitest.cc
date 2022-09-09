@@ -5284,8 +5284,14 @@ IN_PROC_BROWSER_TEST_P(WebRequestPersistentListenersTest,
   EXPECT_EQ(1, request_count.GetInt());
 }
 
+// TODO(https://crbug.com/1361941): Fix flakes under ASAN/LSAN.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_TestListenersArePersistent DISABLED_TestListenersArePersistent
+#else
+#define MAYBE_TestListenersArePersistent TestListenersArePersistent
+#endif
 IN_PROC_BROWSER_TEST_P(WebRequestPersistentListenersTest,
-                       TestListenersArePersistent) {
+                       MAYBE_TestListenersArePersistent) {
   // Find the installed extension and wait for it to fully load.
   ASSERT_TRUE(StartEmbeddedTestServer());
   const Extension* extension = nullptr;
