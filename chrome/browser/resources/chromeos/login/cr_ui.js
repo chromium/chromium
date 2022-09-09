@@ -14,7 +14,6 @@
 
 // #import {DisplayManager} from './display_manager.m.js';
 // #import {DISPLAY_TYPE} from './components/display_manager_types.m.js';
-// #import {DemoModeTestHelper} from './demo_mode_test_helper.m.js';
 // #import {loadTimeData} from './i18n_setup.js';
 // #import {OobeTypes} from './components/oobe_types.m.js';
 
@@ -202,13 +201,6 @@ cr.define('cr.ui', function() {
       }
 
       return step === OobeTypes.EnrollmentStep.SUCCESS;
-    }
-
-    /**
-     * Starts online demo mode setup for telemetry. Is used in autotests.
-     */
-    static setUpOnlineDemoModeForTesting() {
-      DemoModeTestHelper.setUp('online');
     }
 
     /**

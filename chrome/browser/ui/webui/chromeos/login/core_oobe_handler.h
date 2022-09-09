@@ -111,7 +111,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
   void HandleLaunchHelpApp(int help_topic_id);
   // Handles demo mode setup for tests. Accepts 'online' and 'offline' as
   // `demo_config`.
-  void HandleStartDemoModeSetupForTesting(const std::string& demo_config);
   void HandleUpdateOobeUIState(int state);
 
   // When keyboard_utils.js arrow key down event is reached, raise it

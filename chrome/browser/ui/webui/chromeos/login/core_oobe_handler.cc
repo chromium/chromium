@@ -137,8 +137,6 @@ void CoreOobeHandler::RegisterMessages() {
               &CoreOobeHandler::HandleUpdateCurrentScreen);
   AddCallback("launchHelpApp", &CoreOobeHandler::HandleLaunchHelpApp);
   AddCallback("raiseTabKeyEvent", &CoreOobeHandler::HandleRaiseTabKeyEvent);
-  AddCallback("startDemoModeSetupForTesting",
-              &CoreOobeHandler::HandleStartDemoModeSetupForTesting);
 
   AddCallback("updateOobeUIState", &CoreOobeHandler::HandleUpdateOobeUIState);
   AddCallback("enableShelfButtons", &CoreOobeHandler::HandleEnableShelfButtons);
@@ -261,25 +259,6 @@ void CoreOobeHandler::HandleRaiseTabKeyEvent(bool reverse) {
   if (reverse)
     event.set_flags(ui::EF_SHIFT_DOWN);
   SendEventToSink(&event);
-}
-
-void CoreOobeHandler::HandleStartDemoModeSetupForTesting(
-    const std::string& demo_config) {
-  CHECK(base::FeatureList::IsEnabled(features::kOobeStartDemoModeForTesting))
-      << "If you see this crash please report in https://crbug.com/1100910. To "
-         "disable the crash run chrome with "
-         "--enable-features=OobeStartDemoModeForTesting";
-  DemoSession::DemoModeConfig config;
-  if (demo_config == "online") {
-    config = DemoSession::DemoModeConfig::kOnline;
-  } else {
-    NOTREACHED() << "Unknown demo config passed for tests";
-  }
-
-  WizardController* wizard_controller = WizardController::default_controller();
-  DCHECK(wizard_controller);
-  wizard_controller->SimulateDemoModeSetupForTesting(config);  // IN-TEST
-  wizard_controller->AdvanceToScreen(DemoSetupScreenView::kScreenId);
 }
 
 void CoreOobeHandler::HandleUpdateOobeUIState(int state) {
