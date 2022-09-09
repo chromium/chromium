@@ -72,11 +72,18 @@ void ScheduleLoadForRestoredTabs(
     content::PermissionController* permission_controller =
         content->GetBrowserContext()->GetPermissionController();
 
+    // Cannot use GetPermissionStatusForCurrentDocument() because the navigation
+    // hasn't been committed in the RenderFrameHost yet, as evidenced by the
+    // DCHECK below.
+    DCHECK_EQ(content->GetPrimaryMainFrame()->GetLastCommittedURL(), GURL());
+    DCHECK_NE(content->GetLastCommittedURL(), GURL());
+
     bool has_notifications_permission =
-        permission_controller->GetPermissionStatusForCurrentDocument(
-            blink::PermissionType::NOTIFICATIONS,
-            content->GetPrimaryMainFrame()) ==
-        blink::mojom::PermissionStatus::GRANTED;
+        permission_controller
+            ->GetPermissionResultForOriginWithoutContext(
+                blink::PermissionType::NOTIFICATIONS,
+                url::Origin::Create(content->GetLastCommittedURL()))
+            .status == blink::mojom::PermissionStatus::GRANTED;
 
     BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission
         page_node_and_notification_permission(
@@ -199,18 +206,27 @@ void BackgroundTabLoadingPolicy::ScheduleLoadForRestoredTabs(
     std::vector<BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission>
         page_node_and_permission_vector) {
   for (auto page_node_and_permission : page_node_and_permission_vector) {
-    // Put the |page_node| in the queue for loading.
     PageNode* page_node = page_node_and_permission.page_node.get();
-    if (page_node) {
-      DCHECK(!FindPageNodeToLoadData(page_node));
-      DCHECK_EQ(page_node->GetType(), PageType::kTab);
+    if (!page_node)
+      continue;
 
-      page_nodes_to_load_.push_back(
-          std::make_unique<PageNodeToLoadData>(page_node));
+    DCHECK_EQ(page_node->GetType(), PageType::kTab);
+    DCHECK(!FindPageNodeToLoadData(page_node));
+    DCHECK(!base::Contains(page_nodes_load_initiated_, page_node));
 
-      if (page_node_and_permission.has_notification_permission)
-        page_nodes_to_load_.back()->used_in_bg = true;
-    }
+    // A visible page starts loading as soon as its created. It shouldn't be
+    // added to the list of pages to load.
+    DCHECK_EQ(base::Contains(page_nodes_loading_, page_node),
+              page_node->IsVisible());
+    if (base::Contains(page_nodes_loading_, page_node))
+      continue;
+
+    // Put the page in the queue for loading.
+    page_nodes_to_load_.push_back(
+        std::make_unique<PageNodeToLoadData>(page_node));
+
+    if (page_node_and_permission.has_notification_permission)
+      page_nodes_to_load_.back()->used_in_bg = true;
   }
 
   for (auto& page_node_to_load_data : page_nodes_to_load_) {
@@ -420,6 +436,10 @@ void BackgroundTabLoadingPolicy::NotifyAllTabsScored() {
 }
 
 void BackgroundTabLoadingPolicy::InitiateLoad(const PageNode* page_node) {
+  // The page shouldn't already be loading.
+  DCHECK(!base::Contains(page_nodes_load_initiated_, page_node));
+  DCHECK(!base::Contains(page_nodes_loading_, page_node));
+
   // Mark |page_node| as load initiated. Ensure that InitiateLoad is only called
   // for a PageNode that is tracked by the policy.
   ErasePageNodeToLoadData(page_node);
