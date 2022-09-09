@@ -975,8 +975,8 @@ chromium-metrics-reviews@google.com.
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     The amount of disk storage that the Missive daemon has been using for
-    storing encrypted records. This is reported once every 10 minutes and only
-    if the Missive daemon is running.
+    storing encrypted records. This is reported once every hour and only if the
+    Missive daemon is running.
   </summary>
 </histogram>
 
