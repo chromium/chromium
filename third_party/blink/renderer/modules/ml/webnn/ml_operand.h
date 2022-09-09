@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -17,7 +18,7 @@ namespace blink {
 class MLGraphBuilder;
 class MLOperator;
 
-class MLOperand final : public ScriptWrappable {
+class MODULES_EXPORT MLOperand final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

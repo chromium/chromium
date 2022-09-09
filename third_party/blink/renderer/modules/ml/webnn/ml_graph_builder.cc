@@ -193,6 +193,46 @@ MLOperand* BuildElementWiseBinary(MLGraphBuilder* builder,
   return output;
 }
 
+bool CalculatePaddingForAutoPad(V8MLAutoPad::Enum autoPad,
+                                const uint32_t input_size,
+                                const uint32_t filter_size,
+                                const int32_t stride,
+                                const int32_t dilation,
+                                uint32_t& padding_begin,
+                                uint32_t& padding_end) {
+  base::CheckedNumeric<uint32_t> checked_input_size(input_size);
+  auto checked_output_size = (checked_input_size + stride - 1) / stride;
+  base::CheckedNumeric<uint32_t> checked_filter_size(filter_size);
+  auto checked_dilated_filter_size = (checked_filter_size - 1) * dilation + 1;
+  auto checked_needed_input_size =
+      (checked_output_size - 1) * stride + checked_dilated_filter_size;
+  if (!checked_needed_input_size.IsValid() || !checked_input_size.IsValid()) {
+    return false;
+  }
+  auto checked_total_padding =
+      checked_needed_input_size.ValueOrDie() > checked_input_size.ValueOrDie()
+          ? checked_needed_input_size - checked_input_size
+          : base::MakeCheckedNum<uint32_t>(0);
+  base::CheckedNumeric<uint32_t> checked_padding_begin, checked_padding_end;
+  switch (autoPad) {
+    case V8MLAutoPad::Enum::kSameUpper:
+      checked_padding_begin = checked_total_padding / 2;
+      checked_padding_end = (checked_total_padding + 1) / 2;
+      break;
+    case V8MLAutoPad::Enum::kSameLower:
+      checked_padding_begin = (checked_total_padding + 1) / 2;
+      checked_padding_end = checked_total_padding / 2;
+      break;
+    default:
+      NOTREACHED();
+  }
+  if (!checked_padding_begin.AssignIfValid(&padding_begin) ||
+      !checked_padding_end.AssignIfValid(&padding_end)) {
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 // static
@@ -296,11 +336,271 @@ MLOperand* MLGraphBuilder::conv2d(const MLOperand* input,
                                   const MLOperand* filter,
                                   const MLConv2dOptions* options,
                                   ExceptionState& exception_state) {
-  // TODO(crbug.com/1273291): Implement this on operating systems to access
-  // hardware acceleration.
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Not implemented");
-  return nullptr;
+  // Validate input operand and set its sizes.
+  const auto input_shape = input->Dimensions();
+  if (input_shape.size() != 4) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The input should be a 4-D tensor.");
+    return nullptr;
+  }
+  // The input layout specifies the input layout format as follows:
+  // "nchw": [batches, input_channels, height, width]
+  // "nhwc": [batches, height, width, input_channels]
+  bool nchw = options->inputLayout() == V8MLInputOperandLayout::Enum::kNchw;
+  const uint32_t input_batches = input_shape[0];
+  const uint32_t input_channels = nchw ? input_shape[1] : input_shape[3];
+  const uint32_t input_height = nchw ? input_shape[2] : input_shape[1];
+  const uint32_t input_width = nchw ? input_shape[3] : input_shape[2];
+  // Validate filter operand and set its sizes.
+  if (filter->Type() != input->Type()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The filter type doesn't match the input type.");
+    return nullptr;
+  }
+  const auto filter_shape = filter->Dimensions();
+  if (filter_shape.size() != 4) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The filter should be a 4-D tensor.");
+    return nullptr;
+  }
+  // The filter layout specifies the filter layout format.
+  uint32_t filter_height, filter_width, output_channels, filter_input_channels;
+  switch (options->filterLayout().AsEnum()) {
+    case V8MLConv2dFilterOperandLayout::Enum::kHwio:
+      // "hwio": [height, width, input_channels/groups, output_channels]
+      filter_height = filter_shape[0];
+      filter_width = filter_shape[1];
+      filter_input_channels = filter_shape[2];
+      output_channels = filter_shape[3];
+      break;
+    case V8MLConv2dFilterOperandLayout::Enum::kOhwi:
+      // "ohwi": [output_channels, height, width, input_channels/groups]
+      output_channels = filter_shape[0];
+      filter_height = filter_shape[1];
+      filter_width = filter_shape[2];
+      filter_input_channels = filter_shape[3];
+      break;
+    case V8MLConv2dFilterOperandLayout::Enum::kIhwo:
+      // "ihwo": [input_channels/groups, height, width, output_channels]
+      filter_input_channels = filter_shape[0];
+      filter_height = filter_shape[1];
+      filter_width = filter_shape[2];
+      output_channels = filter_shape[3];
+      break;
+    case V8MLConv2dFilterOperandLayout::Enum::kOihw:
+      // "oihw": [output_channels, input_channels/groups, height, width]
+      output_channels = filter_shape[0];
+      filter_input_channels = filter_shape[1];
+      filter_height = filter_shape[2];
+      filter_width = filter_shape[3];
+      break;
+  }
+  // Validate bias operand if it is present.
+  if (options->hasBias()) {
+    const auto bias_shape = options->bias()->Dimensions();
+    if (bias_shape.size() != 1) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                        "The bias should be a 1-D tensor.");
+      return nullptr;
+    }
+    if (bias_shape[0] != output_channels) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          String::Format("The bias shape should be [%u].", output_channels));
+      return nullptr;
+    }
+    if (options->bias()->Type() != input->Type()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "The bias type doesn't match input type.");
+      return nullptr;
+    }
+  }
+  // Validate groups.
+  if (options->groups() < 1) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The groups should be greater than or equal to 1.");
+    return nullptr;
+  }
+  if (input_channels % options->groups() != 0 ||
+      filter_input_channels != input_channels / options->groups()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The groups must evenly divide the input "
+                                      "channels to filter input channels.");
+    return nullptr;
+  }
+  // Validate options.padding. If not present, the values are assumed to be
+  // [0,0,0,0].
+  // The current WebNN spec defines the paddings as signed integer:
+  // https://www.w3.org/TR/webnn/#dom-mlconv2doptions-padding
+  // However, there is a proposal of using unsigned integer:
+  // https://github.com/webmachinelearning/webnn/pull/294.
+  // Before the change merged, the signed integers are checked_cast to
+  // unsigned integers for output shape calculation.
+  uint32_t padding_beginning_height = 0, padding_ending_height = 0,
+           padding_beginning_width = 0, padding_ending_width = 0;
+  if (options->hasPadding()) {
+    if (options->padding().size() != 4) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                        "The length of padding should be 4.");
+      return nullptr;
+    }
+    if (std::any_of(options->padding().begin(), options->padding().end(),
+                    [](int32_t x) { return x < 0; })) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "All paddings should be greater than or equal to 0.");
+      return nullptr;
+    }
+    padding_beginning_height =
+        base::checked_cast<uint32_t>(options->padding()[0]);
+    padding_ending_height = base::checked_cast<uint32_t>(options->padding()[1]);
+    padding_beginning_width =
+        base::checked_cast<uint32_t>(options->padding()[2]);
+    padding_ending_width = base::checked_cast<uint32_t>(options->padding()[3]);
+  }
+  // Validate options.strides. If not present, the values are assumed to be
+  // [1,1].
+  // The current WebNN spec defines the strides as signed integer:
+  // https://www.w3.org/TR/webnn/#dom-mlconv2doptions-strides
+  // However, there is a proposal of using unsigned integer:
+  // https://github.com/webmachinelearning/webnn/pull/294
+  // Before the change merged, the signed integers are checked_cast to
+  // unsigned integers for output shape calculation.
+  uint32_t stride_height = 1, stride_width = 1;
+  if (options->hasStrides()) {
+    if (options->strides().size() != 2) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                        "The length of strides should be 2.");
+      return nullptr;
+    }
+    if (std::any_of(options->strides().begin(), options->strides().end(),
+                    [](int32_t x) { return x < 1; })) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "All strides should be greater than or equal to 1.");
+      return nullptr;
+    }
+    stride_height = base::checked_cast<uint32_t>(options->strides()[0]);
+    stride_width = base::checked_cast<uint32_t>(options->strides()[1]);
+  }
+  // Validate options.dilations. If not present, the values are assumed to be
+  // [1,1].
+  // The current WebNN spec defines the dilations as signed integer:
+  // https://www.w3.org/TR/webnn/#dom-mlconv2doptions-dilations
+  // However, there is a proposal of using unsigned integer:
+  // https://github.com/webmachinelearning/webnn/pull/294
+  // Before the change merged, the signed integers are checked_cast to
+  // unsigned integers for output shape calculation.
+  uint32_t dilation_height = 1, dilation_width = 1;
+  if (options->hasDilations()) {
+    if (options->dilations().size() != 2) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                        "The length of dilations should be 2.");
+      return nullptr;
+    }
+    if (std::any_of(options->dilations().begin(), options->dilations().end(),
+                    [](int32_t x) { return x < 1; })) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "All dilations should be greater than or equal to 1.");
+      return nullptr;
+    }
+    dilation_height = base::checked_cast<uint32_t>(options->dilations()[0]);
+    dilation_width = base::checked_cast<uint32_t>(options->dilations()[1]);
+  }
+  // When the options.autoPad is other than "explicit", the values in the
+  // options.padding array are ignored and the explicit padding values need to
+  // be calculated.
+  if (options->autoPad().AsEnum() != V8MLAutoPad::Enum::kExplicit) {
+    if (!CalculatePaddingForAutoPad(options->autoPad().AsEnum(), input_height,
+                                    filter_height, stride_height,
+                                    dilation_height, padding_beginning_height,
+                                    padding_ending_height)) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "Overflow occurred when calculating "
+          "the padding along the height dimension.");
+      return nullptr;
+    }
+    if (!CalculatePaddingForAutoPad(options->autoPad().AsEnum(), input_width,
+                                    filter_width, stride_width, dilation_width,
+                                    padding_beginning_width,
+                                    padding_ending_width)) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "Overflow occurred when calculating "
+          "the padding along the width dimension.");
+      return nullptr;
+    }
+  }
+  // Calculate the output shape.
+  base::CheckedNumeric<uint32_t> checked_filter_height(filter_height),
+      checked_filter_width(filter_width);
+  auto dilated_filter_height =
+      (checked_filter_height - 1) * dilation_height + 1;
+  auto dilated_filter_width = (checked_filter_width - 1) * dilation_width + 1;
+  if (!dilated_filter_height.IsValid()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "Overflow occurred when calculating the dilated filter height.");
+    return nullptr;
+  }
+  if (!dilated_filter_width.IsValid()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "Overflow occurred when calculating the dilated filter width.");
+    return nullptr;
+  }
+  base::CheckedNumeric<uint32_t> checked_input_height(input_height),
+      checked_input_width(input_width);
+  auto checked_output_height =
+      (checked_input_height - dilated_filter_height + padding_beginning_height +
+       padding_ending_height) /
+          stride_height +
+      1;
+  auto checked_output_width = (checked_input_width - dilated_filter_width +
+                               padding_beginning_width + padding_ending_width) /
+                                  stride_width +
+                              1;
+  uint32_t output_height, output_width;
+  if (!checked_output_height.AssignIfValid(&output_height)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "Overflow occurred when calculating the output height.");
+    return nullptr;
+  }
+  if (!checked_output_width.AssignIfValid(&output_width)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "Overflow occurred when calculating the output width.");
+    return nullptr;
+  }
+  // The input layout specifies the output layout format as follows:
+  // "nchw": [batches, output_channels, height, width]
+  // "nhwc": [batches, height, width, output_channels]
+  Vector<uint32_t> output_shape;
+  if (nchw) {
+    output_shape = {input_batches, output_channels, output_height,
+                    output_width};
+  } else {
+    output_shape = {input_batches, output_height, output_width,
+                    output_channels};
+  }
+  // Create conv2d operator and its output operand. Connect the conv2d operator
+  // to its input and output operands.
+  auto* conv2d = MakeGarbageCollected<MLOperator>(
+      this, MLOperator::OperatorKind::kConv2d, options);
+  HeapVector<Member<const MLOperand>> inputs = {input, filter};
+  if (options->hasBias()) {
+    inputs.push_back(options->bias());
+  }
+  auto* output = MLOperand::CreateOutput(this, input->Type(),
+                                         std::move(output_shape), conv2d);
+  conv2d->Connect(std::move(inputs), {output});
+  return output;
 }
 
 #define BUILD_ELEMENTWISE_BINARY_OP(op, op_kind)                              \

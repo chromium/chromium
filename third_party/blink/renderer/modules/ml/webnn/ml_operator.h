@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_OPERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_OPERATOR_H_
 
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/dictionary_base.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -16,13 +17,14 @@ namespace blink {
 class MLGraphBuilder;
 class MLOperand;
 
-class MLOperator final : public ScriptWrappable {
+class MODULES_EXPORT MLOperator final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   enum class OperatorKind {
     // Keep the order as the same as build methods of MLGraphBuilder.
     kClamp,
+    kConv2d,
     kAdd,
     kSub,
     kMul,
@@ -33,6 +35,19 @@ class MLOperator final : public ScriptWrappable {
     kReshape,
     kSoftmax
   };
+
+  // It is safe for a caller, usually a MLGraphBuidler operation build method,
+  // that passes the reference of the options dictionary argument received from
+  // Blink to MLOperator constructor and stores it in this object. This is
+  // because that WebIDL spec (https://webidl.spec.whatwg.org/#idl-dictionaries)
+  // mentiones that "an operation that accepts a dictionary as an argument will
+  // perform a one-time conversion from the given ECMAScript value into the
+  // dictionary, based on the current properties of the ECMAScript object.
+  // Modifications to the dictionary will not be reflected in the corresponding
+  // ECMAScript object, and vice-versa". Blink code generator follows the spec
+  // and does a deep-copy of the members of an options dictionary, e.g.,
+  // MLConv2dOptions::FillMembersFromV8Object, before passing it to a
+  // MLGraphBuilder operation build method.
   MLOperator(MLGraphBuilder* builder,
              OperatorKind kind,
              const bindings::DictionaryBase* options = nullptr);
