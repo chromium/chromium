@@ -138,7 +138,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.DesktopScreenshot.Action"
-    enum="SharingDesktopScreenshotAction" expires_after="2022-10-04">
+    enum="SharingDesktopScreenshotAction" expires_after="2023-02-26">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -622,7 +622,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubDesktop.TimeToShow" units="ms"
-    expires_after="2022-10-08">
+    expires_after="2023-02-26">
   <owner>ellyjones@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
