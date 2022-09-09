@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_BROKERED_CLIENT_SOCKET_FACTORY_H_
 
 #include "base/component_export.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/datagram_socket.h"
@@ -13,6 +14,10 @@
 #include "net/socket/transport_client_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/socket_broker.mojom.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "services/network/broker_helper_win.h"
+#endif
 
 namespace net {
 
@@ -65,7 +70,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) BrokeredClientSocketFactory
       mojom::SocketBroker::CreateTcpSocketCallback callback);
 
  private:
+  // Whether or not a socket for `addresses` should be brokered or not.
+  bool ShouldBroker(const net::AddressList& addresses) const;
+
   mojo::Remote<mojom::SocketBroker> socket_broker_;
+#if BUILDFLAG(IS_WIN)
+  BrokerHelperWin broker_helper_;
+#endif
 };
 
 }  // namespace network

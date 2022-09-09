@@ -229,6 +229,8 @@ component("network_service") {
 
   if (is_win) {
     sources += [
+      "broker_helper_win.cc",
+      "broker_helper_win.h",
       "windows_system_proxy_resolver_mojo.cc",
       "windows_system_proxy_resolver_mojo.h",
     ]
@@ -430,7 +432,10 @@ source_set("tests") {
   }
 
   if (is_win) {
-    sources += [ "windows_system_proxy_resolver_mojo_unittest.cc" ]
+    sources += [
+      "broker_helper_win_unittest.cc",
+      "windows_system_proxy_resolver_mojo_unittest.cc",
+    ]
   }
 
   deps = [
