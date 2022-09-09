@@ -15,6 +15,7 @@
 #include "ui/compositor/property_change_reason.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/controls/button/menu_button.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -174,7 +175,7 @@ TEST_F(CameraRollViewTest, ViewLayout) {
   // Test the layout size and positions of the items. If the layout is being
   // intentionally changed this test will need to be updated.
   fake_camera_roll_manager()->SetCurrentItems(CreateFakeItems(4));
-  GetItemsView()->Layout();
+  views::test::RunScheduledLayout(GetItemsView());
   EXPECT_EQ(GetItemsView()->CalculatePreferredSize(), gfx::Size(328, 82));
   EXPECT_EQ(GetThumbnailView(0)->bounds(), gfx::Rect(4, 4, 74, 74));
   EXPECT_EQ(GetThumbnailView(1)->bounds(), gfx::Rect(86, 4, 74, 74));

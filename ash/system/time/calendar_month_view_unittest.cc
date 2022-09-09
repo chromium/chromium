@@ -16,6 +16,7 @@
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/test/views_test_utils.h"
 
 namespace ash {
 
@@ -76,7 +77,7 @@ class CalendarMonthViewTest : public AshTestBase {
     controller_->UpdateMonth(date);
     calendar_month_view_ = std::make_unique<CalendarMonthView>(
         controller_->GetOnScreenMonthFirstDayUTC(), controller_.get());
-    calendar_month_view_->Layout();
+    views::test::RunScheduledLayout(calendar_month_view_.get());
   }
 
   void MockFetchEvents(base::Time start_of_month) {

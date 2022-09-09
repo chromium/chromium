@@ -53,8 +53,6 @@ class PageIndicatorViewTest : public NoSessionAshTestBase {
     return page_indicator_view()->IsPageSelectedForTesting(index);
   }
 
-  void Layout() { unified_view_->Layout(); }
-
   PaginationModel* pagination_model() { return model_->pagination_model(); }
   PageIndicatorView* page_indicator_view() {
     return unified_view_->page_indicator_view_for_test();

@@ -18,6 +18,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -38,7 +39,7 @@ class BluetoothDisabledDetailedViewTest : public AshTestBase {
         std::make_unique<BluetoothDisabledDetailedView>());
     static_cast<views::BoxLayout*>(container_->GetLayoutManager())
         ->SetFlexForView(bluetooth_disabled_detailed_view_, 1);
-    container_->Layout();
+    views::test::RunScheduledLayout(container_);
   }
 
   void TearDown() override {

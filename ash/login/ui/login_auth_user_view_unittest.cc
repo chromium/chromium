@@ -35,6 +35,7 @@
 #include "ui/views/controls/textfield/textfield_test_api.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 
 using testing::_;
@@ -201,7 +202,7 @@ TEST_P(LoginAuthUserViewUnittest, ShowingPinExpandsView) {
   gfx::Size start_size = view_->size();
   SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD |
                  LoginAuthUserView::AUTH_PIN);
-  container_->Layout();
+  views::test::RunScheduledLayout(container_);
   gfx::Size expanded_size = view_->size();
   EXPECT_GT(expanded_size.height(), start_size.height());
 }
@@ -683,7 +684,7 @@ TEST_F(LoginAuthUserViewAuthFactorsUnittest,
 
   SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD |
                  LoginAuthUserView::AUTH_AUTH_FACTOR_IS_HIDING_PASSWORD);
-  container_->Layout();
+  views::test::RunScheduledLayout(container_);
 
   int auth_factors_y_offset_1 =
       auth_factors_view
@@ -692,7 +693,7 @@ TEST_F(LoginAuthUserViewAuthFactorsUnittest,
 
   SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD |
                  LoginAuthUserView::AUTH_AUTH_FACTOR_IS_HIDING_PASSWORD);
-  container_->Layout();
+  views::test::RunScheduledLayout(container_);
 
   int auth_factors_y_offset_2 =
       auth_factors_view

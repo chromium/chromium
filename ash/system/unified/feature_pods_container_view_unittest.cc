@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_observer.h"
 
 namespace ash {
@@ -71,7 +72,7 @@ class FeaturePodsContainerViewTest : public NoSessionAshTestBase,
     for (int i = 0; i < count; ++i)
       AddButton(new FeaturePodButton(this));
     container()->SetBoundsRect(gfx::Rect(container_->GetPreferredSize()));
-    container()->Layout();
+    views::test::RunScheduledLayout(container());
   }
 
   FeaturePodsContainerView* container() { return container_.get(); }
@@ -241,7 +242,7 @@ TEST_F(FeaturePodsContainerViewTest, PaginationTransition) {
       gfx::Rect(initial_bounds.x() - page_offset, initial_bounds.y(),
                 initial_bounds.width(), initial_bounds.height());
   pagination_model()->SelectPage(1, false);
-  container()->Layout();
+  views::test::RunScheduledLayout(container());
   EXPECT_EQ(final_bounds, buttons_[0]->bounds());
 }
 

@@ -11,6 +11,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -50,7 +51,8 @@ class LoginUserViewUnittest : public LoginTestBase {
         public_account ? CreatePublicAccountUser(email) : CreateUser(email);
     view->UpdateForUser(user, false /*animate*/);
     container_->AddChildView(view);
-    widget()->GetContentsView()->Layout();
+    container_->InvalidateLayout();
+    views::test::RunScheduledLayout(widget());
     return view;
   }
 
@@ -107,7 +109,8 @@ TEST_F(LoginUserViewUnittest, DifferentUsernamesHaveSameWidth) {
     large->UpdateForUser(user, false /*animate*/);
     small->UpdateForUser(user, false /*animate*/);
     extra_small->UpdateForUser(user, false /*animate*/);
-    container_->Layout();
+    container_->InvalidateLayout();
+    views::test::RunScheduledLayout(container_);
 
     EXPECT_EQ(large_width, large->size().width());
     EXPECT_EQ(small_width, small->size().width());
@@ -314,7 +317,7 @@ TEST_F(LoginUserViewUnittest, ElideUserLabel) {
 
   LoginUserInfo user = CreateUser("verylongusernamethatfillsthebox@domain.com");
   view->UpdateForUser(user, false /*animate*/);
-  container_->Layout();
+  views::test::RunScheduledLayout(container_);
 
   EXPECT_TRUE(view->GetVisibleBounds().Contains(
       view_test.user_label()->GetVisibleBounds()));

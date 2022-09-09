@@ -23,6 +23,7 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/message_center/views/notification_view.h"
+#include "ui/views/test/views_test_utils.h"
 
 using message_center::MessageCenter;
 using message_center::MessageView;
@@ -150,7 +151,7 @@ class UnifiedMessageListViewTest : public AshTestBase,
   // views::ViewObserver:
   void OnViewPreferredSizeChanged(views::View* view) override {
     view->SetBoundsRect(gfx::Rect(view->GetPreferredSize()));
-    view->Layout();
+    views::test::RunScheduledLayout(view);
     ++size_changed_count_;
   }
 

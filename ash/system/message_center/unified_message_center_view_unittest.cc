@@ -29,6 +29,7 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 
 using message_center::MessageCenter;
@@ -103,7 +104,7 @@ class UnifiedMessageCenterViewTest : public AshTestBase,
       return;
     view->SetBoundsRect(view->GetVisible() ? gfx::Rect(view->GetPreferredSize())
                                            : gfx::Rect());
-    view->Layout();
+    views::test::RunScheduledLayout(view);
     ++size_changed_count_;
   }
 
@@ -258,9 +259,9 @@ class UnifiedMessageCenterViewTest : public AshTestBase,
     // Outside of tests, any changes to bubble's size as well as scrolling
     // through notification list will trigger TrayBubbleView's BoxLayout to
     // relayout, and then this view will relayout. In test, we don't have
-    // TrayBubbleView as the parent, so we need to explicitly call Layout()
+    // TrayBubbleView as the parent, so we need to ensure Layout() is executed
     // in some circumstances.
-    message_center_view_->Layout();
+    views::test::RunScheduledLayout(message_center_view_.get());
   }
 
   void UpdateNotificationBarForTest() {

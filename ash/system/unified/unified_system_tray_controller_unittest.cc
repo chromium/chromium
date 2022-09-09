@@ -20,6 +20,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_observer.h"
 
 namespace ash {
@@ -73,7 +74,7 @@ class UnifiedSystemTrayControllerTest : public AshTestBase,
   // views::ViewObserver:
   void OnViewPreferredSizeChanged(views::View* observed_view) override {
     view_->SetBoundsRect(gfx::Rect(view_->GetPreferredSize()));
-    view_->Layout();
+    views::test::RunScheduledLayout(view_.get());
     ++preferred_size_changed_count_;
   }
 

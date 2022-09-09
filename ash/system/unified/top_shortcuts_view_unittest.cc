@@ -13,6 +13,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "ui/views/test/views_test_utils.h"
 
 namespace ash {
 
@@ -65,7 +66,9 @@ class TopShortcutsViewTest : public NoSessionAshTestBase {
     return top_shortcuts_view_->collapse_button_;
   }
 
-  void Layout() { top_shortcuts_view_->Layout(); }
+  void LayoutShortcuts() {
+    views::test::RunScheduledLayout(top_shortcuts_view_.get());
+  }
 
  private:
   scoped_refptr<UnifiedSystemTrayModel> model_;
@@ -125,21 +128,21 @@ TEST_F(TopShortcutsViewTest, ButtonStatesAddingUser) {
 // Try to layout buttons before login.
 TEST_F(TopShortcutsViewTest, ButtonLayoutNotLoggedIn) {
   SetUpView();
-  Layout();
+  LayoutShortcuts();
 }
 
 // Try to layout buttons after login.
 TEST_F(TopShortcutsViewTest, ButtonLayoutLoggedIn) {
   CreateUserSessions(1);
   SetUpView();
-  Layout();
+  LayoutShortcuts();
 }
 
 // Try to layout buttons at the lock screen.
 TEST_F(TopShortcutsViewTest, ButtonLayoutLockScreen) {
   BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
   SetUpView();
-  Layout();
+  LayoutShortcuts();
 }
 
 // Try to layout buttons when adding a second multiprofile user.
@@ -147,7 +150,7 @@ TEST_F(TopShortcutsViewTest, ButtonLayoutAddingUser) {
   CreateUserSessions(1);
   SetUserAddingScreenRunning(true);
   SetUpView();
-  Layout();
+  LayoutShortcuts();
 }
 
 // Settings button is disabled when kSettingsIconDisabled is set.
