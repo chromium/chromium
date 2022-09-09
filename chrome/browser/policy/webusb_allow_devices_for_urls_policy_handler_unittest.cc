@@ -307,6 +307,40 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
 }
 
 TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
+       CheckPolicySettingsWithIntegerUrls) {
+  static constexpr char kInvalidPolicy[] = R"(
+      [
+        {
+          "devices": [
+            {
+              "vendor_id": 1234,
+              "product_id": 5678
+            }
+          ],
+          "urls": [
+            "https://www.youtube.com",
+            42
+          ]
+        }
+      ])";
+  PolicyMap policy;
+  policy.Set(
+      key::kWebUsbAllowDevicesForUrls, PolicyLevel::POLICY_LEVEL_MANDATORY,
+      PolicyScope::POLICY_SCOPE_MACHINE, PolicySource::POLICY_SOURCE_CLOUD,
+      ParseJson(kInvalidPolicy), nullptr);
+
+  PolicyErrorMap errors;
+  EXPECT_FALSE(handler()->CheckPolicySettings(policy, &errors));
+  EXPECT_EQ(1ul, errors.size());
+
+  static constexpr char16_t kExpected[] =
+      u"Error at WebUsbAllowDevicesForUrls[0].urls[1]: Schema validation "
+      u"error: Policy type mismatch: expected: \"string\", actual: "
+      u"\"integer\".";
+  EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
+}
+
+TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
        CheckPolicySettingsUnknownProperty) {
   PolicyMap policy;
   PolicyErrorMap errors;
