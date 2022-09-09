@@ -78,7 +78,7 @@ static void SetHostPatterns(
     const SocketsManifestPermission* permission,
     content::SocketPermissionRequest::OperationType operation_type) {
   host_patterns = std::make_unique<SocketHostPatterns>();
-  host_patterns->as_strings = std::make_unique<std::vector<std::string>>();
+  host_patterns->as_strings.emplace();
   for (auto it = permission->entries().cbegin();
        it != permission->entries().cend(); ++it) {
     if (it->pattern().type == operation_type) {

@@ -258,7 +258,7 @@ bool EventsEventRemoveRulesFunction::CreateParams() {
 ExtensionFunction::ResponseValue
 EventsEventRemoveRulesFunction::RunAsyncOnCorrectThread() {
   std::string error;
-  if (params_->rule_identifiers.get()) {
+  if (params_->rule_identifiers) {
     error = rules_registry_->RemoveRules(extension_id(),
                                          *params_->rule_identifiers);
   } else {
@@ -300,7 +300,7 @@ bool EventsEventGetRulesFunction::CreateParams() {
 ExtensionFunction::ResponseValue
 EventsEventGetRulesFunction::RunAsyncOnCorrectThread() {
   std::vector<const Rule*> rules;
-  if (params_->rule_identifiers.get()) {
+  if (params_->rule_identifiers) {
     rules_registry_->GetRules(extension_id(), *params_->rule_identifiers,
                               &rules);
   } else {

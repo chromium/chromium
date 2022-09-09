@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
+#include "base/stl_util.h"
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "extensions/browser/api/audio/audio_device_id_calculator.h"
@@ -145,7 +146,8 @@ ExtensionFunction::ResponseAction AudioSetActiveDevicesFunction::Run() {
   DCHECK(service);
 
   service->SetActiveDeviceLists(
-      params->ids.input.get(), params->ids.output.get(),
+      base::OptionalToPtr(params->ids.input),
+      base::OptionalToPtr(params->ids.output),
       base::BindOnce(&AudioSetActiveDevicesFunction::OnResponse, this));
   return RespondLater();
 }

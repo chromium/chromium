@@ -137,9 +137,8 @@ class FakeBluetoothAdvertisement : public device::BluetoothAdvertisement {
 };
 
 // Creates a UUIDList with one element of value |id|.
-std::unique_ptr<device::BluetoothAdvertisement::UUIDList> CreateUUIDList(
-    const std::string& id) {
-  return std::make_unique<device::BluetoothAdvertisement::UUIDList>(1u, id);
+device::BluetoothAdvertisement::UUIDList CreateUUIDList(const std::string& id) {
+  return device::BluetoothAdvertisement::UUIDList(1u, id);
 }
 
 // Creates advertisement data with a UUID list with one element of value |id|.
@@ -245,7 +244,7 @@ class SecureChannelBleSynchronizerTest : public testing::Test {
                               size_t reg_arg_index,
                               size_t expected_registration_result_count) {
     EXPECT_TRUE(register_args_list_.size() >= reg_arg_index);
-    EXPECT_EQ(*CreateUUIDList(expected_id),
+    EXPECT_EQ(CreateUUIDList(expected_id),
               register_args_list_[reg_arg_index]->service_uuids);
 
     BleSynchronizer::BluetoothAdvertisementResult expected_result;

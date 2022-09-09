@@ -145,27 +145,22 @@ void DoWorkCallback(base::OnceCallback<T()> callback) {
   std::move(callback).Run();
 }
 
-std::unique_ptr<device::BluetoothAdvertisement::ManufacturerData>
-CreateManufacturerData(
-    std::vector<apibtle::ManufacturerData>* manufacturer_data) {
-  std::unique_ptr<device::BluetoothAdvertisement::ManufacturerData>
-      created_data(new device::BluetoothAdvertisement::ManufacturerData());
-  for (const auto& it : *manufacturer_data) {
-    std::vector<uint8_t> data(it.data.size());
-    std::copy(it.data.begin(), it.data.end(), data.begin());
-    (*created_data)[it.id] = data;
+device::BluetoothAdvertisement::ManufacturerData CreateManufacturerData(
+    const std::vector<apibtle::ManufacturerData>& manufacturer_data) {
+  device::BluetoothAdvertisement::ManufacturerData created_data;
+  for (const auto& it : manufacturer_data) {
+    std::vector<uint8_t> data(it.data.begin(), it.data.end());
+    created_data[it.id] = std::move(data);
   }
   return created_data;
 }
 
-std::unique_ptr<device::BluetoothAdvertisement::ServiceData> CreateServiceData(
-    std::vector<apibtle::ServiceData>* service_data) {
-  std::unique_ptr<device::BluetoothAdvertisement::ServiceData> created_data(
-      new device::BluetoothAdvertisement::ServiceData());
-  for (const auto& it : *service_data) {
-    std::vector<uint8_t> data(it.data.size());
-    std::copy(it.data.begin(), it.data.end(), data.begin());
-    (*created_data)[it.uuid] = data;
+device::BluetoothAdvertisement::ServiceData CreateServiceData(
+    const std::vector<apibtle::ServiceData>& service_data) {
+  device::BluetoothAdvertisement::ServiceData created_data;
+  for (const auto& it : service_data) {
+    std::vector<uint8_t> data(it.data.begin(), it.data.end());
+    created_data[it.uuid] = std::move(data);
   }
   return created_data;
 }
@@ -1098,11 +1093,11 @@ void BluetoothLowEnergyRegisterAdvertisementFunction::DoWork() {
       std::move(params_->advertisement.solicit_uuids));
   if (params_->advertisement.manufacturer_data) {
     advertisement_data->set_manufacturer_data(
-        CreateManufacturerData(params_->advertisement.manufacturer_data.get()));
+        CreateManufacturerData(*params_->advertisement.manufacturer_data));
   }
   if (params_->advertisement.service_data) {
     advertisement_data->set_service_data(
-        CreateServiceData(params_->advertisement.service_data.get()));
+        CreateServiceData(*params_->advertisement.service_data));
   }
 
   event_router->adapter()->RegisterAdvertisement(

@@ -324,8 +324,7 @@ void OmniboxSendSuggestionsFunction::OnParsedDescriptionsAndStyles(
     params_->suggest_results[i].description =
         base::UTF16ToUTF8(result.descriptions_and_styles[i].description);
     params_->suggest_results[i].description_styles =
-        std::make_unique<std::vector<api::omnibox::MatchClassification>>(
-            std::move(result.descriptions_and_styles[i].styles));
+        std::move(result.descriptions_and_styles[i].styles);
   }
 
   NotifySuggestionsReady();
@@ -369,8 +368,7 @@ void OmniboxSetDefaultSuggestionFunction::OnParsedDescriptionAndStyles(
 
   omnibox::DefaultSuggestResult default_suggestion;
   default_suggestion.description = base::UTF16ToUTF8(single_result.description);
-  default_suggestion.description_styles =
-      std::make_unique<std::vector<api::omnibox::MatchClassification>>();
+  default_suggestion.description_styles.emplace();
   default_suggestion.description_styles->swap(single_result.styles);
   SetDefaultSuggestion(default_suggestion);
   Respond(NoArguments());

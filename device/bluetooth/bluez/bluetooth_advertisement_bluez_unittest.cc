@@ -73,16 +73,11 @@ class BluetoothAdvertisementBlueZTest : public testing::Test {
     std::unique_ptr<BluetoothAdvertisement::Data> data =
         std::make_unique<BluetoothAdvertisement::Data>(
             BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
-    data->set_service_uuids(
-        std::make_unique<BluetoothAdvertisement::UUIDList>());
-    data->set_manufacturer_data(
-        std::make_unique<BluetoothAdvertisement::ManufacturerData>());
-    data->set_solicit_uuids(
-        std::make_unique<BluetoothAdvertisement::UUIDList>());
-    data->set_service_data(
-        std::make_unique<BluetoothAdvertisement::ServiceData>());
-    data->set_scan_response_data(
-        std::make_unique<BluetoothAdvertisement::ScanResponseData>());
+    data->set_service_uuids(BluetoothAdvertisement::UUIDList());
+    data->set_manufacturer_data(BluetoothAdvertisement::ManufacturerData());
+    data->set_solicit_uuids(BluetoothAdvertisement::UUIDList());
+    data->set_service_data(BluetoothAdvertisement::ServiceData());
+    data->set_scan_response_data(BluetoothAdvertisement::ScanResponseData());
     return data;
   }
 

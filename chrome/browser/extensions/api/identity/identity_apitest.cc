@@ -997,7 +997,7 @@ class GetAuthTokenFunctionTest
 
     EXPECT_TRUE(result->token);
     *access_token = *result->token;
-    EXPECT_NE(nullptr, result->granted_scopes);
+    EXPECT_TRUE(result->granted_scopes);
     std::set<std::string> granted_scopes_map(result->granted_scopes->begin(),
                                              result->granted_scopes->end());
     *granted_scopes = std::move(granted_scopes_map);
@@ -1020,7 +1020,7 @@ class GetAuthTokenFunctionTest
 
     ASSERT_TRUE(result->token);
     *access_token = *result->token;
-    ASSERT_NE(nullptr, result->granted_scopes);
+    ASSERT_TRUE(result->granted_scopes);
     std::set<std::string> granted_scopes_map(result->granted_scopes->begin(),
                                              result->granted_scopes->end());
     *granted_scopes = std::move(granted_scopes_map);

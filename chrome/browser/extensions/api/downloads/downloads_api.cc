@@ -614,7 +614,7 @@ void RunDownloadQuery(const downloads::DownloadQuery& query_in,
     }
     query_out.AddFilter(danger_type);
   }
-  if (query_in.order_by.get()) {
+  if (query_in.order_by) {
     CompileDownloadQueryOrderBy(*query_in.order_by, error, &query_out);
     if (!error->empty())
       return;
@@ -1058,7 +1058,7 @@ ExtensionFunction::ResponseAction DownloadsDownloadFunction::Run() {
   if (options.save_as)
     download_params->set_prompt(*options.save_as);
 
-  if (options.headers.get()) {
+  if (options.headers) {
     for (const downloads::HeaderNameValuePair& name_value : *options.headers) {
       if (!net::HttpUtil::IsValidHeaderName(name_value.name)) {
         return RespondNow(Error(download_extension_errors::kInvalidHeaderName));

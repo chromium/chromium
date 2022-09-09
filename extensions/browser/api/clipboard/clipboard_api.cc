@@ -57,7 +57,7 @@ ExtensionFunction::ResponseAction ClipboardSetImageDataFunction::Run() {
 
   // Fill in the omitted additional data items with empty data.
   if (!params->additional_items)
-    params->additional_items = std::make_unique<AdditionalDataItemList>();
+    params->additional_items.emplace();
 
   if (!IsAdditionalItemsParamValid(*params->additional_items)) {
     return RespondNow(Error("Unsupported additionalItems parameter data."));

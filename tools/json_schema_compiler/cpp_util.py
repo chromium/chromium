@@ -111,6 +111,7 @@ def ShouldUseAbslOptional(type_):
   """
 
   if type_.property_type in (PropertyType.ANY,
+                             PropertyType.ARRAY,
                              PropertyType.BOOLEAN,
                              PropertyType.DOUBLE,
                              PropertyType.INTEGER,

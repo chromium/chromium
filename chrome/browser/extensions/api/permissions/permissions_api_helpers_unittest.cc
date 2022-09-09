@@ -239,11 +239,10 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_HostSeparation) {
       std::move(optional_explicit_hosts), URLPatternSet());
 
   Permissions permissions_object;
-  permissions_object.origins =
-      std::make_unique<std::vector<std::string>>(std::vector<std::string>(
-          {kRequiredExplicit1, kOptionalExplicit1, kRequiredScriptable1,
-           kRequiredExplicitAndScriptable1,
-           kOptionalExplicitAndRequiredScriptable1, kUnlisted1}));
+  permissions_object.origins = std::vector<std::string>(
+      {kRequiredExplicit1, kOptionalExplicit1, kRequiredScriptable1,
+       kRequiredExplicitAndScriptable1, kOptionalExplicitAndRequiredScriptable1,
+       kUnlisted1});
 
   std::string error;
   std::unique_ptr<UnpackPermissionSetResult> unpack_result =
@@ -291,8 +290,8 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_APISeparation) {
                                      URLPatternSet());
 
   Permissions permissions_object;
-  permissions_object.permissions = std::make_unique<std::vector<std::string>>(
-      std::vector<std::string>({"tabs", "cookies", "idle"}));
+  permissions_object.permissions =
+      std::vector<std::string>({"tabs", "cookies", "idle"});
 
   std::string error;
   std::unique_ptr<UnpackPermissionSetResult> unpack_result =
@@ -321,8 +320,8 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_WildcardSchemes) {
       URLPatternSet());
 
   Permissions permissions_object;
-  permissions_object.origins = std::make_unique<std::vector<std::string>>(
-      std::vector<std::string>({kWildcardSchemePattern}));
+  permissions_object.origins =
+      std::vector<std::string>({kWildcardSchemePattern});
 
   std::string error;
   std::unique_ptr<UnpackPermissionSetResult> unpack_result =
@@ -346,8 +345,8 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_FileSchemes_AllUrls) {
         URLPatternSet());
 
     Permissions permissions_object;
-    permissions_object.origins = std::make_unique<std::vector<std::string>>(
-        std::vector<std::string>({URLPattern::kAllUrlsPattern}));
+    permissions_object.origins =
+        std::vector<std::string>({URLPattern::kAllUrlsPattern});
 
     constexpr bool kHasFileAccess = false;
     std::string error;
@@ -376,8 +375,8 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_FileSchemes_AllUrls) {
         URLPatternSet());
 
     Permissions permissions_object;
-    permissions_object.origins = std::make_unique<std::vector<std::string>>(
-        std::vector<std::string>({URLPattern::kAllUrlsPattern}));
+    permissions_object.origins =
+        std::vector<std::string>({URLPattern::kAllUrlsPattern});
 
     std::string error;
     constexpr bool kHasFileAccess = true;
@@ -412,8 +411,7 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_FileSchemes_Specific) {
         URLPatternSet({file_pattern}), URLPatternSet());
 
     Permissions permissions_object;
-    permissions_object.origins = std::make_unique<std::vector<std::string>>(
-        std::vector<std::string>({kFilePattern}));
+    permissions_object.origins = std::vector<std::string>({kFilePattern});
 
     std::string error;
     constexpr bool kHasFileAccess = false;
@@ -442,8 +440,7 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_FileSchemes_Specific) {
         URLPatternSet({file_pattern}), URLPatternSet());
 
     Permissions permissions_object;
-    permissions_object.origins = std::make_unique<std::vector<std::string>>(
-        std::vector<std::string>({kFilePattern}));
+    permissions_object.origins = std::vector<std::string>({kFilePattern});
 
     std::string error;
     constexpr bool kHasFileAccess = true;
@@ -490,8 +487,8 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_UsbDevicePermission) {
                                      URLPatternSet());
 
   Permissions permissions_object;
-  permissions_object.permissions = std::make_unique<std::vector<std::string>>(
-      std::vector<std::string>({kUsbDevicesPermissionJson}));
+  permissions_object.permissions =
+      std::vector<std::string>({kUsbDevicesPermissionJson});
   constexpr bool kHasFileAccess = false;
   std::unique_ptr<UnpackPermissionSetResult> unpack_result =
       UnpackPermissionSet(permissions_object, PermissionSet(),

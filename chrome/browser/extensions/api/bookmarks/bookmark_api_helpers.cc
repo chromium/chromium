@@ -98,8 +98,7 @@ void PopulateBookmarkTreeNode(
             GetBookmarkTreeNode(managed, child.get(), true, only_folders));
       }
     }
-    out_bookmark_tree_node->children =
-        std::make_unique<std::vector<BookmarkTreeNode>>(std::move(children));
+    out_bookmark_tree_node->children = std::move(children);
   }
 }
 

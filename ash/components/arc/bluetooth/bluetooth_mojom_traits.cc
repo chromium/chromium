@@ -33,8 +33,8 @@ struct ServiceUUID16Entry : public AdvertisementEntry {
 
   void AddTo(device::BluetoothAdvertisement::Data* data) override {
     auto string_uuids = data->service_uuids();
-    if (string_uuids == nullptr)
-      string_uuids = std::make_unique<std::vector<std::string>>();
+    if (!string_uuids)
+      string_uuids.emplace();
     for (const auto& uuid : service_uuids_16) {
       string_uuids->emplace_back(base::StringPrintf("%04x", uuid));
     }
@@ -49,8 +49,8 @@ struct ServiceUUIDEntry : public AdvertisementEntry {
 
   void AddTo(device::BluetoothAdvertisement::Data* data) override {
     auto string_uuids = data->service_uuids();
-    if (string_uuids == nullptr)
-      string_uuids = std::make_unique<std::vector<std::string>>();
+    if (!string_uuids)
+      string_uuids.emplace();
     for (const auto& uuid : service_uuids) {
       string_uuids->emplace_back(uuid.value());
     }
@@ -66,10 +66,7 @@ struct ServiceDataEntry : public AdvertisementEntry {
 
   void AddTo(device::BluetoothAdvertisement::Data* data) override {
     std::string string_uuid = base::StringPrintf("%04x", service_uuid);
-    using MapType = std::map<std::string, std::vector<uint8_t>>;
-    data->set_service_data(
-        std::make_unique<MapType, std::initializer_list<MapType::value_type>>(
-            {{string_uuid, service_data}}));
+    data->set_service_data({{std::make_pair(string_uuid, service_data)}});
   }
 };
 
@@ -80,10 +77,7 @@ struct ManufacturerDataEntry : public AdvertisementEntry {
   ~ManufacturerDataEntry() override {}
 
   void AddTo(device::BluetoothAdvertisement::Data* data) override {
-    using MapType = std::map<uint16_t, std::vector<uint8_t>>;
-    data->set_manufacturer_data(
-        std::make_unique<MapType, std::initializer_list<MapType::value_type>>(
-            {{company_id_code, blob}}));
+    data->set_manufacturer_data({{std::make_pair(company_id_code, blob)}});
   }
 };
 

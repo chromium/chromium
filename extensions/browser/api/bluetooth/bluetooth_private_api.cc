@@ -525,7 +525,7 @@ void BluetoothPrivateSetDiscoveryFilterFunction::DoWork(
         device_filter.uuids.insert(
             device::BluetoothUUID(*df_param.uuids->as_string));
         discovery_filter->AddDeviceFilter(std::move(device_filter));
-      } else if (df_param.uuids->as_strings.get()) {
+      } else if (df_param.uuids->as_strings) {
         for (const auto& iter : *df_param.uuids->as_strings) {
           device::BluetoothDiscoveryFilter::DeviceInfoFilter device_filter;
           device_filter.uuids.insert(device::BluetoothUUID(iter));

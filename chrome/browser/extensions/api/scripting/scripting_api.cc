@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/json/json_writer.h"
+#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -474,17 +475,19 @@ std::unique_ptr<UserScript> ParseUserScript(
 
   DCHECK(content_script.matches);
   if (!script_parsing::ParseMatchPatterns(
-          *content_script.matches, content_script.exclude_matches.get(),
-          definition_index, extension.creation_flags(),
-          scripting::kScriptsCanExecuteEverywhere, valid_schemes,
-          scripting::kAllUrlsIncludesChromeUrls, result.get(), error,
+          *content_script.matches,
+          base::OptionalToPtr(content_script.exclude_matches), definition_index,
+          extension.creation_flags(), scripting::kScriptsCanExecuteEverywhere,
+          valid_schemes, scripting::kAllUrlsIncludesChromeUrls, result.get(),
+          error,
           /*wants_file_access=*/nullptr)) {
     return nullptr;
   }
 
   if (!script_parsing::ParseFileSources(
-          &extension, content_script.js.get(), content_script.css.get(),
-          definition_index, result.get(), error)) {
+          &extension, base::OptionalToPtr(content_script.js),
+          base::OptionalToPtr(content_script.css), definition_index,
+          result.get(), error)) {
     return nullptr;
   }
 
@@ -517,13 +520,13 @@ api::scripting::RegisteredContentScript CreateRegisteredContentScriptInfo(
   api::scripting::RegisteredContentScript script_info;
   script_info.id = script.id();
 
-  script_info.matches = std::make_unique<std::vector<std::string>>();
+  script_info.matches.emplace();
   script_info.matches->reserve(script.url_patterns().size());
   for (const URLPattern& pattern : script.url_patterns())
     script_info.matches->push_back(pattern.GetAsString());
 
   if (!script.exclude_url_patterns().is_empty()) {
-    script_info.exclude_matches = std::make_unique<std::vector<std::string>>();
+    script_info.exclude_matches.emplace();
     script_info.exclude_matches->reserve(script.exclude_url_patterns().size());
     for (const URLPattern& pattern : script.exclude_url_patterns())
       script_info.exclude_matches->push_back(pattern.GetAsString());
@@ -532,14 +535,14 @@ api::scripting::RegisteredContentScript CreateRegisteredContentScriptInfo(
   // File paths may be normalized in the returned object and can differ slightly
   // compared to what was originally passed into registerContentScripts.
   if (!script.js_scripts().empty()) {
-    script_info.js = std::make_unique<std::vector<std::string>>();
+    script_info.js.emplace();
     script_info.js->reserve(script.js_scripts().size());
     for (const auto& js_script : script.js_scripts())
       script_info.js->push_back(js_script->relative_path().AsUTF8Unsafe());
   }
 
   if (!script.css_scripts().empty()) {
-    script_info.css = std::make_unique<std::vector<std::string>>();
+    script_info.css.emplace();
     script_info.css->reserve(script.css_scripts().size());
     for (const auto& css_script : script.css_scripts())
       script_info.css->push_back(css_script->relative_path().AsUTF8Unsafe());

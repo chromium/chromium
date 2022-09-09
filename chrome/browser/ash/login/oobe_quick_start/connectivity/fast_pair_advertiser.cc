@@ -137,24 +137,21 @@ void FastPairAdvertiser::RegisterAdvertisement(
       std::make_unique<device::BluetoothAdvertisement::Data>(
           device::BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
 
-  auto list = std::make_unique<device::BluetoothAdvertisement::UUIDList>();
-  list->push_back(kFastPairServiceUuid);
+  device::BluetoothAdvertisement::UUIDList list;
+  list.push_back(kFastPairServiceUuid);
   advertisement_data->set_service_uuids(std::move(list));
 
-  auto service_data =
-      std::make_unique<device::BluetoothAdvertisement::ServiceData>();
+  device::BluetoothAdvertisement::ServiceData service_data;
   auto payload = std::vector<uint8_t>(std::begin(kFastPairModelId),
                                       std::end(kFastPairModelId));
-  service_data->insert(std::pair<std::string, std::vector<uint8_t>>(
-      kFastPairServiceUuid, payload));
+  service_data.insert(std::make_pair(kFastPairServiceUuid, std::move(payload)));
   advertisement_data->set_service_data(std::move(service_data));
 
-  auto manufacturer_data =
-      std::make_unique<device::BluetoothAdvertisement::ManufacturerData>();
+  device::BluetoothAdvertisement::ManufacturerData manufacturer_data;
   std::vector<uint8_t> manufacturer_metadata =
       GenerateManufacturerMetadata(random_session_id);
-  manufacturer_data->insert(std::pair<uint16_t, std::vector<uint8_t>>(
-      kCompanyId, manufacturer_metadata));
+  manufacturer_data.insert(
+      std::make_pair(kCompanyId, std::move(manufacturer_metadata)));
   advertisement_data->set_manufacturer_data(std::move(manufacturer_data));
 
   adapter_->RegisterAdvertisement(

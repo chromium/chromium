@@ -153,10 +153,9 @@ void HistoryEventRouter::OnURLsDeleted(
   OnVisitRemoved::Removed removed;
   removed.all_history = deletion_info.IsAllHistory();
 
-  std::vector<std::string>* urls = new std::vector<std::string>();
+  removed.urls.emplace();
   for (const auto& row : deletion_info.deleted_rows())
-    urls->push_back(row.url().spec());
-  removed.urls.reset(urls);
+    removed.urls->push_back(row.url().spec());
 
   auto args = OnVisitRemoved::Create(removed);
   DispatchEvent(profile_, events::HISTORY_ON_VISIT_REMOVED,

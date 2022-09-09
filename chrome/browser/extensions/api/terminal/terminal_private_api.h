@@ -62,7 +62,7 @@ class TerminalPrivateOpenTerminalProcessFunction : public ExtensionFunction {
   // Open the specified |process_name| with supplied |args|.
   ExtensionFunction::ResponseAction OpenProcess(
       const std::string& process_name,
-      std::unique_ptr<std::vector<std::string>> args);
+      absl::optional<std::vector<std::string>> args);
 
  private:
   void OnGuestRunning(const std::string& user_id_hash,

@@ -10,6 +10,7 @@
 
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
+#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -107,10 +108,10 @@ std::unique_ptr<UserScript> CreateUserScript(
 
   bool wants_file_access = false;
   if (!script_parsing::ParseMatchPatterns(
-          content_script.matches, content_script.exclude_matches.get(),
-          definition_index, extension->creation_flags(),
-          can_execute_script_everywhere, valid_schemes,
-          all_urls_includes_chrome_urls, result.get(), error,
+          content_script.matches,
+          base::OptionalToPtr(content_script.exclude_matches), definition_index,
+          extension->creation_flags(), can_execute_script_everywhere,
+          valid_schemes, all_urls_includes_chrome_urls, result.get(), error,
           &wants_file_access)) {
     return nullptr;
   }
@@ -138,12 +139,13 @@ std::unique_ptr<UserScript> CreateUserScript(
   if (wants_file_access)
     extension->set_wants_file_access(true);
 
-  ParseGlobs(content_script.include_globs.get(),
-             content_script.exclude_globs.get(), result.get());
+  ParseGlobs(base::OptionalToPtr(content_script.include_globs),
+             base::OptionalToPtr(content_script.exclude_globs), result.get());
 
   if (!script_parsing::ParseFileSources(
-          extension, content_script.js.get(), content_script.css.get(),
-          definition_index, result.get(), error)) {
+          extension, base::OptionalToPtr(content_script.js),
+          base::OptionalToPtr(content_script.css), definition_index,
+          result.get(), error)) {
     return nullptr;
   }
 

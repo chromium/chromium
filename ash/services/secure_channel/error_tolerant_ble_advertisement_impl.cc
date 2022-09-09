@@ -148,15 +148,14 @@ void ErrorTolerantBleAdvertisementImpl::AttemptUnregistration() {
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-std::unique_ptr<device::BluetoothAdvertisement::UUIDList>
+device::BluetoothAdvertisement::UUIDList
 ErrorTolerantBleAdvertisementImpl::CreateServiceUuids() const {
-  std::unique_ptr<device::BluetoothAdvertisement::UUIDList> list =
-      std::make_unique<device::BluetoothAdvertisement::UUIDList>();
-  list->push_back(kAdvertisingServiceUuid);
+  device::BluetoothAdvertisement::UUIDList list;
+  list.push_back(kAdvertisingServiceUuid);
   return list;
 }
 
-std::unique_ptr<device::BluetoothAdvertisement::ServiceData>
+device::BluetoothAdvertisement::ServiceData
 ErrorTolerantBleAdvertisementImpl::CreateServiceData() const {
   DCHECK(!advertisement_data_->data.empty());
 
@@ -168,11 +167,9 @@ ErrorTolerantBleAdvertisementImpl::CreateServiceData() const {
   // connection flow should be used.
   data_as_vector.push_back(kInvertedConnectionFlag);
 
-  std::unique_ptr<device::BluetoothAdvertisement::ServiceData> service_data =
-      std::make_unique<device::BluetoothAdvertisement::ServiceData>();
-  service_data->insert(std::pair<std::string, std::vector<uint8_t>>(
-      kAdvertisingServiceUuid, data_as_vector));
-  return service_data;
+  return device::BluetoothAdvertisement::ServiceData(
+      {{kAdvertisingServiceUuid, data_as_vector}});
+  ;
 }
 
 void ErrorTolerantBleAdvertisementImpl::OnAdvertisementRegistered(

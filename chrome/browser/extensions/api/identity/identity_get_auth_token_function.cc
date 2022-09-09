@@ -128,7 +128,7 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
     if (params->details->account.get())
       gaia_id = params->details->account->id;
 
-    if (params->details->scopes.get()) {
+    if (params->details->scopes) {
       scopes = std::set<std::string>(params->details->scopes->begin(),
                                      params->details->scopes->end());
     }
@@ -303,8 +303,7 @@ void IdentityGetAuthTokenFunction::CompleteFunctionWithResult(
 
   api::identity::GetAuthTokenResult result;
   result.token = access_token;
-  result.granted_scopes = std::make_unique<std::vector<std::string>>(
-      granted_scopes.begin(), granted_scopes.end());
+  result.granted_scopes.emplace(granted_scopes.begin(), granted_scopes.end());
 
   CompleteAsyncRun(
       WithArguments(base::Value::FromUniquePtrValue(result.ToValue())));

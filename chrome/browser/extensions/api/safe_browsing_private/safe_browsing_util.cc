@@ -52,7 +52,7 @@ safe_browsing_private::ReferrerChainEntry ReferrerToReferrerChainEntry(
       NOTREACHED();
   }
   if (referrer.ip_addresses_size() > 0) {
-    entry.ip_addresses = std::make_unique<std::vector<std::string>>();
+    entry.ip_addresses.emplace();
     entry.ip_addresses->reserve(referrer.ip_addresses_size());
     for (const std::string& ip_address : referrer.ip_addresses())
       entry.ip_addresses->emplace_back(ip_address);
@@ -69,8 +69,7 @@ safe_browsing_private::ReferrerChainEntry ReferrerToReferrerChainEntry(
     entry.navigation_time_ms = referrer.navigation_time_msec();
   }
   if (referrer.server_redirect_chain_size() > 0) {
-    entry.server_redirect_chain =
-        std::make_unique<std::vector<safe_browsing_private::ServerRedirect>>();
+    entry.server_redirect_chain.emplace();
     entry.server_redirect_chain->reserve(referrer.server_redirect_chain_size());
     for (const auto& server_redirect : referrer.server_redirect_chain()) {
       safe_browsing_private::ServerRedirect result;

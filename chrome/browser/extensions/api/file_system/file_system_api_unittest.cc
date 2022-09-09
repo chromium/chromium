@@ -45,15 +45,13 @@ AcceptOption BuildAcceptOption(const std::string& description,
     option.description = description;
 
   if (!mime_types.empty()) {
-    option.mime_types =
-        std::make_unique<std::vector<std::string>>(base::SplitString(
-            mime_types, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL));
+    option.mime_types = base::SplitString(
+        mime_types, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   }
 
   if (!extensions.empty()) {
-    option.extensions =
-        std::make_unique<std::vector<std::string>>(base::SplitString(
-            extensions, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL));
+    option.extensions = base::SplitString(
+        extensions, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   }
 
   return option;
@@ -71,7 +69,7 @@ TEST(FileSystemApiUnitTest, FileSystemChooseEntryFunctionFileTypeInfoTest) {
   // AcceptsAllTypes is ignored when no other extensions are available.
   ui::SelectFileDialog::FileTypeInfo file_type_info;
   FileSystemChooseEntryFunction::BuildFileTypeInfo(
-      &file_type_info, base::FilePath::StringType(), nullptr,
+      &file_type_info, base::FilePath::StringType(), absl::nullopt,
       /*acceptsAllTypes=*/false);
   EXPECT_TRUE(file_type_info.include_all_files);
   EXPECT_TRUE(file_type_info.extensions.empty());
@@ -82,7 +80,7 @@ TEST(FileSystemApiUnitTest, FileSystemChooseEntryFunctionFileTypeInfoTest) {
   options.push_back(BuildAcceptOption(std::string(),
                                       "application/x-chrome-extension", "jso"));
   FileSystemChooseEntryFunction::BuildFileTypeInfo(
-      &file_type_info, base::FilePath::StringType(), &options,
+      &file_type_info, base::FilePath::StringType(), std::move(options),
       /*acceptsAllTypes=*/false);
   EXPECT_FALSE(file_type_info.include_all_files);
   ASSERT_EQ(file_type_info.extensions.size(), (size_t) 1);
@@ -101,7 +99,7 @@ TEST(FileSystemApiUnitTest, FileSystemChooseEntryFunctionFileTypeInfoTest) {
   options.push_back(
       BuildAcceptOption(std::string(), std::string(), "unrelated"));
   FileSystemChooseEntryFunction::BuildFileTypeInfo(
-      &file_type_info, ToStringType(".jso"), &options,
+      &file_type_info, ToStringType(".jso"), std::move(options),
       /*acceptsAllTypes=*/false);
   EXPECT_TRUE(file_type_info.include_all_files);
 
@@ -110,10 +108,11 @@ TEST(FileSystemApiUnitTest, FileSystemChooseEntryFunctionFileTypeInfoTest) {
   options.clear();
   options.push_back(BuildAcceptOption(std::string(), std::string(), "jso,js"));
   options.push_back(BuildAcceptOption(std::string(), std::string(), "cpp,cc"));
+  size_t num_options = options.size();
   FileSystemChooseEntryFunction::BuildFileTypeInfo(
-      &file_type_info, base::FilePath::StringType(), &options,
+      &file_type_info, base::FilePath::StringType(), std::move(options),
       /*acceptsAllTypes=*/false);
-  ASSERT_EQ(file_type_info.extensions.size(), options.size());
+  ASSERT_EQ(file_type_info.extensions.size(), num_options);
 
   expectedTypes.clear();
   expectedTypes.push_back(ToStringType("js"));
@@ -130,7 +129,7 @@ TEST(FileSystemApiUnitTest, FileSystemChooseEntryFunctionFileTypeInfoTest) {
   options.clear();
   options.push_back(BuildAcceptOption(std::string(), "image/*", "html"));
   FileSystemChooseEntryFunction::BuildFileTypeInfo(
-      &file_type_info, base::FilePath::StringType(), &options,
+      &file_type_info, base::FilePath::StringType(), std::move(options),
       /*acceptsAllTypes=*/false);
   ASSERT_EQ(file_type_info.extension_description_overrides.size(), (size_t) 1);
   EXPECT_FALSE(file_type_info.extension_description_overrides[0].empty()) <<
@@ -143,7 +142,7 @@ TEST(FileSystemApiUnitTest, FileSystemChooseEntryFunctionFileTypeInfoTest) {
   options.push_back(BuildAcceptOption(std::string(), "image/*,audio/*,video/*",
                                       std::string()));
   FileSystemChooseEntryFunction::BuildFileTypeInfo(
-      &file_type_info, base::FilePath::StringType(), &options,
+      &file_type_info, base::FilePath::StringType(), std::move(options),
       /*acceptsAllTypes=*/false);
   ASSERT_EQ(file_type_info.extension_description_overrides.size(), (size_t) 1);
   EXPECT_TRUE(file_type_info.extension_description_overrides[0].empty());
@@ -154,7 +153,7 @@ TEST(FileSystemApiUnitTest, FileSystemChooseEntryFunctionFileTypeInfoTest) {
   options.push_back(
       BuildAcceptOption("File Types 101", "image/jpeg", std::string()));
   FileSystemChooseEntryFunction::BuildFileTypeInfo(
-      &file_type_info, base::FilePath::StringType(), &options,
+      &file_type_info, base::FilePath::StringType(), std::move(options),
       /*acceptsAllTypes=*/false);
   EXPECT_EQ(file_type_info.extension_description_overrides[0],
             u"File Types 101");

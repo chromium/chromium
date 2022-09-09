@@ -1500,7 +1500,7 @@ TEST_P(BluetoothTestWinrtOnly, RegisterAdvertisement) {
   auto advertisement_data = std::make_unique<BluetoothAdvertisement::Data>(
       BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
   advertisement_data->set_manufacturer_data(
-      std::make_unique<BluetoothAdvertisement::ManufacturerData>());
+      BluetoothAdvertisement::ManufacturerData());
 
   InitWithFakeAdapter();
   adapter_->RegisterAdvertisement(
@@ -1523,7 +1523,7 @@ TEST_P(BluetoothTestWinrtOnly, FailRegisterAdvertisement) {
   auto advertisement_data = std::make_unique<BluetoothAdvertisement::Data>(
       BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
   advertisement_data->set_manufacturer_data(
-      std::make_unique<BluetoothAdvertisement::ManufacturerData>());
+      BluetoothAdvertisement::ManufacturerData());
 
   InitWithFakeAdapter();
   adapter_->RegisterAdvertisement(
@@ -1549,7 +1549,7 @@ TEST_P(BluetoothTestWinrtOnly, RegisterAndUnregisterAdvertisement) {
   auto advertisement_data = std::make_unique<BluetoothAdvertisement::Data>(
       BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
   advertisement_data->set_manufacturer_data(
-      std::make_unique<BluetoothAdvertisement::ManufacturerData>());
+      BluetoothAdvertisement::ManufacturerData());
 
   InitWithFakeAdapter();
   adapter_->RegisterAdvertisement(
@@ -1581,7 +1581,7 @@ TEST_P(BluetoothTestWinrtOnly, FailUnregisterAdvertisement) {
   auto advertisement_data = std::make_unique<BluetoothAdvertisement::Data>(
       BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
   advertisement_data->set_manufacturer_data(
-      std::make_unique<BluetoothAdvertisement::ManufacturerData>());
+      BluetoothAdvertisement::ManufacturerData());
 
   InitWithFakeAdapter();
   adapter_->RegisterAdvertisement(
@@ -1619,8 +1619,7 @@ TEST_P(BluetoothTestWinrtOnly, RegisterAdvertisementWithInvalidData) {
   // rejected.
   auto advertisement_data = std::make_unique<BluetoothAdvertisement::Data>(
       BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
-  advertisement_data->set_service_data(
-      std::make_unique<BluetoothAdvertisement::ServiceData>());
+  advertisement_data->set_service_data(BluetoothAdvertisement::ServiceData());
 
   InitWithFakeAdapter();
   adapter_->RegisterAdvertisement(
@@ -1647,7 +1646,7 @@ TEST_P(BluetoothTestWinrtOnly, RegisterMultipleAdvertisements) {
     auto advertisement_data = std::make_unique<BluetoothAdvertisement::Data>(
         BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
     advertisement_data->set_manufacturer_data(
-        std::make_unique<BluetoothAdvertisement::ManufacturerData>());
+        BluetoothAdvertisement::ManufacturerData());
 
     adapter_->RegisterAdvertisement(
         std::move(advertisement_data),
@@ -1675,7 +1674,7 @@ TEST_P(BluetoothTestWinrtOnly, UnregisterAdvertisementWhilePendingUnregister) {
   auto advertisement_data = std::make_unique<BluetoothAdvertisement::Data>(
       BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
   advertisement_data->set_manufacturer_data(
-      std::make_unique<BluetoothAdvertisement::ManufacturerData>());
+      BluetoothAdvertisement::ManufacturerData());
 
   adapter_->RegisterAdvertisement(
       std::move(advertisement_data),
@@ -1722,7 +1721,7 @@ TEST_P(BluetoothTestWinrtOnly, DoubleUnregisterAdvertisement) {
   auto advertisement_data = std::make_unique<BluetoothAdvertisement::Data>(
       BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
   advertisement_data->set_manufacturer_data(
-      std::make_unique<BluetoothAdvertisement::ManufacturerData>());
+      BluetoothAdvertisement::ManufacturerData());
 
   adapter_->RegisterAdvertisement(
       std::move(advertisement_data),
@@ -1766,7 +1765,7 @@ TEST_P(BluetoothTestWinrtOnly, SimulateAdvertisementStoppedByOS) {
   auto advertisement_data = std::make_unique<BluetoothAdvertisement::Data>(
       BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
   advertisement_data->set_manufacturer_data(
-      std::make_unique<BluetoothAdvertisement::ManufacturerData>());
+      BluetoothAdvertisement::ManufacturerData());
 
   adapter_->RegisterAdvertisement(
       std::move(advertisement_data),

@@ -225,9 +225,10 @@ class MenuItem {
                                             std::string* error);
 
   // Sets any document and target URL patterns from |properties|.
-  bool PopulateURLPatterns(std::vector<std::string>* document_url_patterns,
-                           std::vector<std::string>* target_url_patterns,
-                           std::string* error);
+  bool PopulateURLPatterns(
+      const std::vector<std::string>* document_url_patterns,
+      const std::vector<std::string>* target_url_patterns,
+      std::string* error);
 
  protected:
   friend class MenuManager;

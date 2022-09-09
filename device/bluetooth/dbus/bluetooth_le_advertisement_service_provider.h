@@ -16,6 +16,7 @@
 #include "dbus/bus.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace bluez {
 
@@ -65,11 +66,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLEAdvertisementServiceProvider {
       const dbus::ObjectPath& object_path,
       Delegate* delegate,
       AdvertisementType type,
-      std::unique_ptr<UUIDList> service_uuids,
-      std::unique_ptr<ManufacturerData> manufacturer_data,
-      std::unique_ptr<UUIDList> solicit_uuids,
-      std::unique_ptr<ServiceData> service_data,
-      std::unique_ptr<ScanResponseData> scan_response_data);
+      absl::optional<UUIDList> service_uuids,
+      absl::optional<ManufacturerData> manufacturer_data,
+      absl::optional<UUIDList> solicit_uuids,
+      absl::optional<ServiceData> service_data,
+      absl::optional<ScanResponseData> scan_response_data);
 
  protected:
   BluetoothLEAdvertisementServiceProvider();

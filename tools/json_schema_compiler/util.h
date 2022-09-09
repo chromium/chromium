@@ -70,6 +70,7 @@ bool PopulateItem(const base::Value& from, T* out, std::u16string* error) {
 template <class T>
 bool PopulateArrayFromList(const base::Value::List& list, std::vector<T>* out) {
   out->clear();
+  out->reserve(list.size());
   T item;
   for (const auto& value : list) {
     if (!PopulateItem(value, &item))
@@ -89,6 +90,7 @@ bool PopulateArrayFromList(const base::Value::List& list,
                            std::vector<T>* out,
                            std::u16string* error) {
   out->clear();
+  out->reserve(list.size());
   T item;
   std::u16string item_error;
   for (size_t i = 0; i < list.size(); ++i) {
@@ -110,24 +112,22 @@ bool PopulateArrayFromList(const base::Value::List& list,
 // if anything other than a list of |T| is at the specified key.
 template <class T>
 bool PopulateOptionalArrayFromList(const base::Value::List& list,
-                                   std::unique_ptr<std::vector<T>>* out) {
-  out->reset(new std::vector<T>());
-  if (!PopulateArrayFromList(list, out->get())) {
-    out->reset();
+                                   absl::optional<std::vector<T>>* out) {
+  std::vector<T> populated;
+  if (!PopulateArrayFromList(list, &populated))
     return false;
-  }
+  *out = std::move(populated);
   return true;
 }
 
 template <class T>
 bool PopulateOptionalArrayFromList(const base::Value::List& list,
-                                   std::unique_ptr<std::vector<T>>* out,
+                                   absl::optional<std::vector<T>>* out,
                                    std::u16string* error) {
-  out->reset(new std::vector<T>());
-  if (!PopulateArrayFromList(list, out->get(), error)) {
-    out->reset();
+  std::vector<T> populated;
+  if (!PopulateArrayFromList(list, &populated, error))
     return false;
-  }
+  *out = std::move(populated);
   return true;
 }
 

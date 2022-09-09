@@ -716,8 +716,7 @@ TEST_F(DriveFsEventRouterTest, OnFilesChanged_Basic) {
   event.entry.additional_properties.SetStringKey("fileSystemName", "drivefs");
   event.entry.additional_properties.SetStringKey("fileFullPath", "/root");
   event.entry.additional_properties.SetBoolKey("fileIsDirectory", true);
-  event.changed_files =
-      std::make_unique<std::vector<file_manager_private::FileChange>>();
+  event.changed_files.emplace();
   event.changed_files->emplace_back();
   {
     auto& changed_file = event.changed_files->back();
@@ -766,8 +765,7 @@ TEST_F(DriveFsEventRouterTest, OnFilesChanged_MultipleDirectories) {
   event.entry.additional_properties.SetStringKey("fileSystemName", "drivefs");
   event.entry.additional_properties.SetStringKey("fileFullPath", "/root/a");
   event.entry.additional_properties.SetBoolKey("fileIsDirectory", true);
-  event.changed_files =
-      std::make_unique<std::vector<file_manager_private::FileChange>>();
+  event.changed_files.emplace();
   event.changed_files->emplace_back();
   {
     auto& changed_file = event.changed_files->back();
@@ -783,8 +781,7 @@ TEST_F(DriveFsEventRouterTest, OnFilesChanged_MultipleDirectories) {
   event.entry.additional_properties.SetStringKey("fileSystemName", "drivefs");
   event.entry.additional_properties.SetStringKey("fileFullPath", "/root/b");
   event.entry.additional_properties.SetBoolKey("fileIsDirectory", true);
-  event.changed_files =
-      std::make_unique<std::vector<file_manager_private::FileChange>>();
+  event.changed_files.emplace();
   event.changed_files->emplace_back();
   {
     auto& changed_file = event.changed_files->back();

@@ -157,7 +157,7 @@ management::ExtensionInfo CreateExtensionInfo(
   const ExtensionIconSet::IconMap& icons =
       IconsInfo::GetIcons(&extension).map();
   if (!icons.empty()) {
-    info.icons = std::make_unique<IconInfoList>();
+    info.icons.emplace();
     ExtensionIconSet::IconMap::const_iterator icon_iter;
     for (icon_iter = icons.begin(); icon_iter != icons.end(); ++icon_iter) {
       management::IconInfo icon_info;
@@ -240,9 +240,7 @@ management::ExtensionInfo CreateExtensionInfo(
         NOTREACHED();
     }
 
-    info.available_launch_types =
-        std::make_unique<std::vector<management::LaunchType>>(
-            GetAvailableLaunchTypes(extension, delegate));
+    info.available_launch_types = GetAvailableLaunchTypes(extension, delegate);
   }
 
   return info;

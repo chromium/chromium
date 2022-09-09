@@ -1647,8 +1647,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetMIXEDMode) {
     api::system_display::MirrorModeInfo info;
     info.mode = api::system_display::MIRROR_MODE_MIXED;
     info.mirroring_source_id = "bad_format_id";
-    info.mirroring_destination_ids =
-        std::make_unique<std::vector<std::string>>();
+    info.mirroring_destination_ids.emplace();
     EXPECT_FALSE(SetMirrorMode(info));
   }
 
@@ -1657,8 +1656,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetMIXEDMode) {
     api::system_display::MirrorModeInfo info;
     info.mode = api::system_display::MIRROR_MODE_MIXED;
     info.mirroring_source_id = "1000000";
-    info.mirroring_destination_ids =
-        std::make_unique<std::vector<std::string>>();
+    info.mirroring_destination_ids.emplace();
     info.mirroring_destination_ids->emplace_back("bad_format_id");
     EXPECT_FALSE(SetMirrorMode(info));
   }
@@ -1669,8 +1667,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetMIXEDMode) {
     api::system_display::MirrorModeInfo info;
     info.mode = api::system_display::MIRROR_MODE_MIXED;
     info.mirroring_source_id = "1000000";
-    info.mirroring_destination_ids =
-        std::make_unique<std::vector<std::string>>();
+    info.mirroring_destination_ids.emplace();
     EXPECT_FALSE(SetMirrorMode(info));
   }
 
@@ -1685,8 +1682,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetMIXEDMode) {
     api::system_display::MirrorModeInfo info;
     info.mode = api::system_display::MIRROR_MODE_MIXED;
     info.mirroring_source_id = "1000000";
-    info.mirroring_destination_ids =
-        std::make_unique<std::vector<std::string>>();
+    info.mirroring_destination_ids.emplace();
     EXPECT_FALSE(SetMirrorMode(info));
   }
 
@@ -1695,8 +1691,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetMIXEDMode) {
     api::system_display::MirrorModeInfo info;
     info.mode = api::system_display::MIRROR_MODE_MIXED;
     info.mirroring_source_id = base::NumberToString(id_list[0]);
-    info.mirroring_destination_ids =
-        std::make_unique<std::vector<std::string>>();
+    info.mirroring_destination_ids.emplace();
     EXPECT_FALSE(SetMirrorMode(info));
   }
 
@@ -1705,8 +1700,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetMIXEDMode) {
     api::system_display::MirrorModeInfo info;
     info.mode = api::system_display::MIRROR_MODE_MIXED;
     info.mirroring_source_id = base::NumberToString(id_list[0]);
-    info.mirroring_destination_ids =
-        std::make_unique<std::vector<std::string>>();
+    info.mirroring_destination_ids.emplace();
     info.mirroring_destination_ids->emplace_back(
         base::NumberToString(display::kInvalidDisplayId));
     EXPECT_FALSE(SetMirrorMode(info));
@@ -1717,8 +1711,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetMIXEDMode) {
     api::system_display::MirrorModeInfo info;
     info.mode = api::system_display::MIRROR_MODE_MIXED;
     info.mirroring_source_id = base::NumberToString(id_list[0]);
-    info.mirroring_destination_ids =
-        std::make_unique<std::vector<std::string>>();
+    info.mirroring_destination_ids.emplace();
     info.mirroring_destination_ids->emplace_back(
         base::NumberToString(id_list[0]));
     EXPECT_FALSE(SetMirrorMode(info));
@@ -1730,8 +1723,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetMIXEDMode) {
     api::system_display::MirrorModeInfo info;
     info.mode = api::system_display::MIRROR_MODE_MIXED;
     info.mirroring_source_id = base::NumberToString(id_list[0]);
-    info.mirroring_destination_ids =
-        std::make_unique<std::vector<std::string>>();
+    info.mirroring_destination_ids.emplace();
     info.mirroring_destination_ids->emplace_back(
         base::NumberToString(id_list[1]));
     EXPECT_TRUE(SetMirrorMode(info));

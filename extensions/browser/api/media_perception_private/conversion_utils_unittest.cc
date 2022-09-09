@@ -569,17 +569,16 @@ TEST(MediaPerceptionConversionUtilsTest, StateProtoToIdl) {
   EXPECT_EQ(*state_result.whiteboard->aspect_ratio, kWhiteboardAspectRatio);
 
   ASSERT_TRUE(state_result.features);
-  ASSERT_TRUE(state_result.features.get());
-  ASSERT_EQ(state_result.features.get()->size(), 5u);
-  EXPECT_EQ(state_result.features.get()->at(0),
-            media_perception::FEATURE_AUTOZOOM);
-  EXPECT_EQ(state_result.features.get()->at(1),
+  ASSERT_TRUE(state_result.features);
+  ASSERT_EQ(state_result.features->size(), 5u);
+  EXPECT_EQ(state_result.features->at(0), media_perception::FEATURE_AUTOZOOM);
+  EXPECT_EQ(state_result.features->at(1),
             media_perception::FEATURE_HOTWORD_DETECTION);
-  EXPECT_EQ(state_result.features.get()->at(2),
+  EXPECT_EQ(state_result.features->at(2),
             media_perception::FEATURE_OCCUPANCY_DETECTION);
-  EXPECT_EQ(state_result.features.get()->at(3),
+  EXPECT_EQ(state_result.features->at(3),
             media_perception::FEATURE_EDGE_EMBEDDINGS);
-  EXPECT_EQ(state_result.features.get()->at(4),
+  EXPECT_EQ(state_result.features->at(4),
             media_perception::FEATURE_SOFTWARE_CROPPING);
 
   ASSERT_EQ(state_result.named_template_arguments->size(),
@@ -643,8 +642,7 @@ TEST(MediaPerceptionConversionUtilsTest, StateIdlToProto) {
       MakePointIdl(kWhiteboardBottomRightX, kWhiteboardBottomRightY);
   state.whiteboard->aspect_ratio = kWhiteboardAspectRatio;
 
-  state.features =
-      std::make_unique<std::vector<media_perception::Feature>>();
+  state.features.emplace();
   state.features->emplace_back(media_perception::FEATURE_AUTOZOOM);
   state.features->emplace_back(media_perception::FEATURE_HOTWORD_DETECTION);
   state.features->emplace_back(media_perception::FEATURE_OCCUPANCY_DETECTION);
@@ -654,7 +652,7 @@ TEST(MediaPerceptionConversionUtilsTest, StateIdlToProto) {
 
   // {Number, Empty, String} test cases.
   state.named_template_arguments =
-      std::make_unique<std::vector<media_perception::NamedTemplateArgument>>(
+      std::vector<media_perception::NamedTemplateArgument>(
           kNamedTemplateArgumentsSize);
 
   state.named_template_arguments->at(0).name = kNumericalTemplateArgumentName;
@@ -735,15 +733,14 @@ TEST(MediaPerceptionConversionUtilsTest, StateIdlToProto) {
 TEST(MediaPerceptionConversionUtilsTest, StateIdlToProtoWithVideoStreamParam) {
   media_perception::State state;
   state.status = media_perception::STATUS_RUNNING;
-  state.video_stream_param =
-      std::make_unique<std::vector<media_perception::VideoStreamParam>>(2);
+  state.video_stream_param = std::vector<media_perception::VideoStreamParam>(2);
   InitializeVideoStreamParam(
-      state.video_stream_param.get()->at(0), kVideoStreamIdForFaceDetection,
+      state.video_stream_param->at(0), kVideoStreamIdForFaceDetection,
       kVideoStreamWidthForFaceDetection, kVideoStreamHeightForFaceDetection,
       kVideoStreamFrameRateForFaceDetection);
 
   InitializeVideoStreamParam(
-      state.video_stream_param.get()->at(1), kVideoStreamIdForVideoCapture,
+      state.video_stream_param->at(1), kVideoStreamIdForVideoCapture,
       kVideoStreamWidthForVideoCapture, kVideoStreamHeightForVideoCapture,
       kVideoStreamFrameRateForVideoCapture);
 

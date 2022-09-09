@@ -34,10 +34,9 @@ namespace {
 // Get the multi-valued element for |type| and return it as a |vector|.
 // TODO(khorimoto): remove this function since multi-valued types are
 // deprecated.
-std::unique_ptr<std::vector<std::string>> GetValueList(
-    const autofill::AutofillProfile& profile,
-    autofill::ServerFieldType type) {
-  std::unique_ptr<std::vector<std::string>> list(new std::vector<std::string>);
+std::vector<std::string> GetValueList(const autofill::AutofillProfile& profile,
+                                      autofill::ServerFieldType type) {
+  std::vector<std::string> list;
 
   std::vector<std::u16string> values;
   if (autofill::AutofillType(type).group() == autofill::FieldTypeGroup::kName) {
@@ -54,7 +53,7 @@ std::unique_ptr<std::vector<std::string>> GetValueList(
     return list;
 
   for (const std::u16string& value16 : values)
-    list->push_back(base::UTF16ToUTF8(value16));
+    list.push_back(base::UTF16ToUTF8(value16));
 
   return list;
 }

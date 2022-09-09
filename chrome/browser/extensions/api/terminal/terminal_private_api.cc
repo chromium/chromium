@@ -283,7 +283,7 @@ TerminalPrivateOpenTerminalProcessFunction::Run() {
 ExtensionFunction::ResponseAction
 TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
     const std::string& process_name,
-    std::unique_ptr<std::vector<std::string>> args) {
+    absl::optional<std::vector<std::string>> args) {
   const std::string& user_id_hash =
       extensions::ExtensionsBrowserClient::Get()->GetUserIdHashFromContext(
           browser_context());
@@ -323,7 +323,7 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
     // are set, and the specified vm/container is running.
     base::CommandLine cmdline((base::FilePath(kVmShellCommand)));
     if (!args)
-      args = std::make_unique<std::vector<std::string>>();
+      args.emplace();
     args->insert(args->begin(), kVmShellCommand);
     base::CommandLine params_args(*args);
     VLOG(1) << "Original cmdline= " << params_args.GetCommandLineString();

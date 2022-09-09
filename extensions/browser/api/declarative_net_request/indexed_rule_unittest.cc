@@ -163,31 +163,28 @@ TEST_F(IndexedRuleTest, ResourceTypesParsing) {
   using ResourceTypeVec = std::vector<dnr_api::ResourceType>;
 
   struct {
-    std::unique_ptr<ResourceTypeVec> resource_types;
-    std::unique_ptr<ResourceTypeVec> excluded_resource_types;
+    absl::optional<ResourceTypeVec> resource_types;
+    absl::optional<ResourceTypeVec> excluded_resource_types;
     const ParseResult expected_result;
     // Only valid if |expected_result| is SUCCESS.
     const uint16_t expected_element_types;
   } cases[] = {
-      {nullptr, nullptr, ParseResult::SUCCESS,
+      {absl::nullopt, absl::nullopt, ParseResult::SUCCESS,
        flat_rule::ElementType_ANY & ~flat_rule::ElementType_MAIN_FRAME},
-      {nullptr,
-       std::make_unique<ResourceTypeVec>(
-           ResourceTypeVec({dnr_api::RESOURCE_TYPE_SCRIPT})),
+      {absl::nullopt, ResourceTypeVec({dnr_api::RESOURCE_TYPE_SCRIPT}),
        ParseResult::SUCCESS,
        flat_rule::ElementType_ANY & ~flat_rule::ElementType_SCRIPT},
-      {std::make_unique<ResourceTypeVec>(ResourceTypeVec(
-           {dnr_api::RESOURCE_TYPE_SCRIPT, dnr_api::RESOURCE_TYPE_IMAGE})),
-       nullptr, ParseResult::SUCCESS,
+      {ResourceTypeVec(
+           {dnr_api::RESOURCE_TYPE_SCRIPT, dnr_api::RESOURCE_TYPE_IMAGE}),
+       absl::nullopt, ParseResult::SUCCESS,
        flat_rule::ElementType_SCRIPT | flat_rule::ElementType_IMAGE},
-      {std::make_unique<ResourceTypeVec>(ResourceTypeVec(
-           {dnr_api::RESOURCE_TYPE_SCRIPT, dnr_api::RESOURCE_TYPE_IMAGE})),
-       std::make_unique<ResourceTypeVec>(
-           ResourceTypeVec({dnr_api::RESOURCE_TYPE_SCRIPT})),
+      {ResourceTypeVec(
+           {dnr_api::RESOURCE_TYPE_SCRIPT, dnr_api::RESOURCE_TYPE_IMAGE}),
+       ResourceTypeVec({dnr_api::RESOURCE_TYPE_SCRIPT}),
        ParseResult::ERROR_RESOURCE_TYPE_DUPLICATED,
        flat_rule::ElementType_NONE},
-      {nullptr,
-       std::make_unique<ResourceTypeVec>(ResourceTypeVec(
+      {absl::nullopt,
+       ResourceTypeVec(
            {dnr_api::RESOURCE_TYPE_MAIN_FRAME, dnr_api::RESOURCE_TYPE_SUB_FRAME,
             dnr_api::RESOURCE_TYPE_STYLESHEET, dnr_api::RESOURCE_TYPE_SCRIPT,
             dnr_api::RESOURCE_TYPE_IMAGE, dnr_api::RESOURCE_TYPE_FONT,
@@ -196,15 +193,14 @@ TEST_F(IndexedRuleTest, ResourceTypesParsing) {
             dnr_api::RESOURCE_TYPE_CSP_REPORT, dnr_api::RESOURCE_TYPE_MEDIA,
             dnr_api::RESOURCE_TYPE_WEBSOCKET,
             dnr_api::RESOURCE_TYPE_WEBTRANSPORT,
-            dnr_api::RESOURCE_TYPE_WEBBUNDLE, dnr_api::RESOURCE_TYPE_OTHER})),
+            dnr_api::RESOURCE_TYPE_WEBBUNDLE, dnr_api::RESOURCE_TYPE_OTHER}),
        ParseResult::ERROR_NO_APPLICABLE_RESOURCE_TYPES,
        flat_rule::ElementType_NONE},
-      {std::make_unique<ResourceTypeVec>(), std::make_unique<ResourceTypeVec>(),
+      {{{}},
+       {{}},
        ParseResult::ERROR_EMPTY_RESOURCE_TYPES_LIST,
        flat_rule::ElementType_NONE},
-      {std::make_unique<ResourceTypeVec>(
-           ResourceTypeVec({dnr_api::RESOURCE_TYPE_SCRIPT})),
-       std::make_unique<ResourceTypeVec>(ResourceTypeVec()),
+      {ResourceTypeVec({dnr_api::RESOURCE_TYPE_SCRIPT}), ResourceTypeVec(),
        ParseResult::SUCCESS, flat_rule::ElementType_SCRIPT},
   };
 
@@ -338,12 +334,8 @@ TEST_F(IndexedRuleTest, DomainsParsing) {
     const DomainVec expected_excluded_domains;
   } cases[] = {
       {absl::nullopt, absl::nullopt, ParseResult::SUCCESS, {}, {}},
-      {DomainVec({}),
-       absl::nullopt,
-       ParseResult::ERROR_EMPTY_DOMAINS_LIST,
-       {},
-       {}},
-      {absl::nullopt, DomainVec({}), ParseResult::SUCCESS, {}, {}},
+      {{{}}, absl::nullopt, ParseResult::ERROR_EMPTY_DOMAINS_LIST, {}, {}},
+      {absl::nullopt, {{}}, ParseResult::SUCCESS, {}, {}},
       {DomainVec({"a.com", "b.com", "a.com"}),
        DomainVec({"g.com", "XY.COM", "zzz.com", "a.com", "google.com"}),
        ParseResult::SUCCESS,
@@ -376,28 +368,17 @@ TEST_F(IndexedRuleTest, DomainsParsing) {
     dnr_api::Rule request_domains_rule = CreateGenericParsedRule();
 
     if (cases[i].domains) {
-      auto domains = std::make_unique<DomainVec>(*cases[i].domains);
-      auto initiator_domains = std::make_unique<DomainVec>(*cases[i].domains);
-      auto request_domains = std::make_unique<DomainVec>(*cases[i].domains);
-      domains_rule.condition.domains = std::move(domains);
-      initiator_domains_rule.condition.initiator_domains =
-          std::move(initiator_domains);
-      request_domains_rule.condition.request_domains =
-          std::move(request_domains);
+      domains_rule.condition.domains = *cases[i].domains;
+      initiator_domains_rule.condition.initiator_domains = *cases[i].domains;
+      request_domains_rule.condition.request_domains = *cases[i].domains;
     }
 
     if (cases[i].excluded_domains) {
-      auto excluded_domains =
-          std::make_unique<DomainVec>(*cases[i].excluded_domains);
-      auto excluded_initiator_domains =
-          std::make_unique<DomainVec>(*cases[i].excluded_domains);
-      auto excluded_request_domains =
-          std::make_unique<DomainVec>(*cases[i].excluded_domains);
-      domains_rule.condition.excluded_domains = std::move(excluded_domains);
+      domains_rule.condition.excluded_domains = *cases[i].excluded_domains;
       initiator_domains_rule.condition.excluded_initiator_domains =
-          std::move(excluded_initiator_domains);
+          *cases[i].excluded_domains;
       request_domains_rule.condition.excluded_request_domains =
-          std::move(excluded_request_domains);
+          *cases[i].excluded_domains;
     }
 
     IndexedRule indexed_domains_rule;
@@ -465,14 +446,11 @@ TEST_F(IndexedRuleTest, DomainsParsing) {
   // excludedDomains + excludedInitiatorDomains results in an parsing error.
   dnr_api::Rule both_domains_rule = CreateGenericParsedRule();
   dnr_api::Rule both_excluded_domains_rule = CreateGenericParsedRule();
-  both_domains_rule.condition.domains =
-      std::make_unique<DomainVec>(DomainVec({"foo"}));
-  both_domains_rule.condition.initiator_domains =
-      std::make_unique<DomainVec>(DomainVec({"bar"}));
-  both_excluded_domains_rule.condition.excluded_domains =
-      std::make_unique<DomainVec>(DomainVec({"flib"}));
+  both_domains_rule.condition.domains = DomainVec({"foo"});
+  both_domains_rule.condition.initiator_domains = DomainVec({"bar"});
+  both_excluded_domains_rule.condition.excluded_domains = DomainVec({"flib"});
   both_excluded_domains_rule.condition.excluded_initiator_domains =
-      std::make_unique<DomainVec>(DomainVec({"flob"}));
+      DomainVec({"flob"});
 
   IndexedRule indexed_both_domains_rule;
   IndexedRule indexed_both_excluded_domains_rule;
@@ -825,14 +803,13 @@ TEST_F(IndexedRuleTest, InvalidAllowAllRequestsResourceType) {
     SCOPED_TRACE(base::StringPrintf("Testing case[%" PRIuS "]", i));
     dnr_api::Rule rule = CreateGenericParsedRule();
 
-    if (cases[i].resource_types.empty())
-      rule.condition.resource_types = nullptr;
-    else
-      rule.condition.resource_types =
-          std::make_unique<ResourceTypeVec>(cases[i].resource_types);
+    if (cases[i].resource_types.empty()) {
+      rule.condition.resource_types = absl::nullopt;
+    } else {
+      rule.condition.resource_types = cases[i].resource_types;
+    }
 
-    rule.condition.excluded_resource_types =
-        std::make_unique<ResourceTypeVec>(cases[i].excluded_resource_types);
+    rule.condition.excluded_resource_types = cases[i].excluded_resource_types;
     rule.action.type = dnr_api::RULE_ACTION_TYPE_ALLOWALLREQUESTS;
 
     IndexedRule indexed_rule;
@@ -934,7 +911,7 @@ TEST_F(IndexedRuleTest, ModifyHeadersParsing) {
 
     ModifyHeaderInfoList expected_request_headers;
     if (cases[i].request_headers) {
-      rule.action.request_headers = std::make_unique<ModifyHeaderInfoList>();
+      rule.action.request_headers.emplace();
       for (auto header : *cases[i].request_headers) {
         rule.action.request_headers->push_back(CreateModifyHeaderInfo(
             header.operation, header.header, header.value));
@@ -946,7 +923,7 @@ TEST_F(IndexedRuleTest, ModifyHeadersParsing) {
 
     ModifyHeaderInfoList expected_response_headers;
     if (cases[i].response_headers) {
-      rule.action.response_headers = std::make_unique<ModifyHeaderInfoList>();
+      rule.action.response_headers.emplace();
       for (auto header : *cases[i].response_headers) {
         rule.action.response_headers->push_back(CreateModifyHeaderInfo(
             header.operation, header.header, header.value));
@@ -979,35 +956,33 @@ TEST_F(IndexedRuleTest, RequestMethodsParsing) {
   using RequestMethodVec = std::vector<dnr_api::RequestMethod>;
 
   struct {
-    std::unique_ptr<RequestMethodVec> request_methods;
-    std::unique_ptr<RequestMethodVec> excluded_request_methods;
+    absl::optional<RequestMethodVec> request_methods;
+    absl::optional<RequestMethodVec> excluded_request_methods;
     const ParseResult expected_result;
     // Only valid if `expected_result` is SUCCESS.
     const uint16_t expected_request_methods_mask;
   } cases[] = {
-      {nullptr, nullptr, ParseResult::SUCCESS, flat_rule::RequestMethod_ANY},
-      {nullptr,
-       std::make_unique<RequestMethodVec>(
-           RequestMethodVec({dnr_api::REQUEST_METHOD_PUT})),
+      {absl::nullopt, absl::nullopt, ParseResult::SUCCESS,
+       flat_rule::RequestMethod_ANY},
+      {absl::nullopt, RequestMethodVec({dnr_api::REQUEST_METHOD_PUT}),
        ParseResult::SUCCESS,
        flat_rule::RequestMethod_ANY & ~flat_rule::RequestMethod_PUT},
-      {std::make_unique<RequestMethodVec>(RequestMethodVec(
-           {dnr_api::REQUEST_METHOD_DELETE, dnr_api::REQUEST_METHOD_GET})),
-       nullptr, ParseResult::SUCCESS,
+      {RequestMethodVec(
+           {dnr_api::REQUEST_METHOD_DELETE, dnr_api::REQUEST_METHOD_GET}),
+       absl::nullopt, ParseResult::SUCCESS,
        flat_rule::RequestMethod_DELETE | flat_rule::RequestMethod_GET},
-      {std::make_unique<RequestMethodVec>(RequestMethodVec(
-           {dnr_api::REQUEST_METHOD_HEAD, dnr_api::REQUEST_METHOD_OPTIONS,
-            dnr_api::REQUEST_METHOD_PATCH})),
-       nullptr, ParseResult::SUCCESS,
+      {RequestMethodVec({dnr_api::REQUEST_METHOD_HEAD,
+                         dnr_api::REQUEST_METHOD_OPTIONS,
+                         dnr_api::REQUEST_METHOD_PATCH}),
+       absl::nullopt, ParseResult::SUCCESS,
        flat_rule::RequestMethod_HEAD | flat_rule::RequestMethod_OPTIONS |
            flat_rule::RequestMethod_PATCH},
-      {std::make_unique<RequestMethodVec>(
-           RequestMethodVec({dnr_api::REQUEST_METHOD_POST})),
-       std::make_unique<RequestMethodVec>(
-           RequestMethodVec({dnr_api::REQUEST_METHOD_POST})),
+      {RequestMethodVec({dnr_api::REQUEST_METHOD_POST}),
+       RequestMethodVec({dnr_api::REQUEST_METHOD_POST}),
        ParseResult::ERROR_REQUEST_METHOD_DUPLICATED,
        flat_rule::RequestMethod_NONE},
-      {std::make_unique<RequestMethodVec>(), nullptr,
+      {{{}},
+       absl::nullopt,
        ParseResult::ERROR_EMPTY_REQUEST_METHODS_LIST,
        flat_rule::RequestMethod_NONE}};
 
@@ -1068,12 +1043,11 @@ TEST_F(IndexedRuleTest, TabID) {
     SCOPED_TRACE(base::StringPrintf("Testing case[%" PRIuS "]", i));
     dnr_api::Rule rule = CreateGenericParsedRule();
     if (cases[i].tab_ids) {
-      rule.condition.tab_ids = std::make_unique<IntVec>(*cases[i].tab_ids);
+      rule.condition.tab_ids = *cases[i].tab_ids;
     }
 
     if (cases[i].excluded_tab_ids) {
-      rule.condition.excluded_tab_ids =
-          std::make_unique<IntVec>(*cases[i].excluded_tab_ids);
+      rule.condition.excluded_tab_ids = *cases[i].excluded_tab_ids;
     }
 
     IndexedRule indexed_rule;

@@ -140,9 +140,7 @@ std::unique_ptr<api::audio::DeviceFilter> ConvertDeviceFilterFromMojom(
   }
 
   if (filter->includedStreamTypes) {
-    result->stream_types =
-        std::make_unique<std::vector<api::audio::StreamType>>(
-            filter->includedStreamTypes->size());
+    result->stream_types.emplace(filter->includedStreamTypes->size());
     std::transform(filter->includedStreamTypes->begin(),
                    filter->includedStreamTypes->end(),
                    result->stream_types->begin(), ConvertStreamTypeFromMojom);

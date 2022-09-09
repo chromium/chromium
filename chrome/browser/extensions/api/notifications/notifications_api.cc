@@ -260,7 +260,7 @@ bool NotificationsApiFunction::CreateNotification(
   if (options->silent)
     optional_fields.silent = *options->silent;
 
-  if (options->buttons.get()) {
+  if (options->buttons) {
     // Currently we allow up to 2 buttons.
     size_t number_of_buttons = options->buttons->size();
 
@@ -297,7 +297,7 @@ bool NotificationsApiFunction::CreateNotification(
   }
 
   // We should have list items if and only if the type is a multiple type.
-  bool has_list_items = options->items.get() && !options->items->empty();
+  bool has_list_items = options->items && !options->items->empty();
   if (has_list_items != (type == message_center::NOTIFICATION_TYPE_MULTIPLE)) {
     *error = kExtraListItemsProvided;
     return false;
@@ -471,7 +471,7 @@ bool NotificationsApiFunction::UpdateNotification(
     notification->set_progress(progress);
   }
 
-  if (options->items.get() && !options->items->empty()) {
+  if (options->items && !options->items->empty()) {
     // We should have list items if and only if the type is a multiple type.
     if (notification->type() != message_center::NOTIFICATION_TYPE_MULTIPLE) {
       *error = kExtraListItemsProvided;

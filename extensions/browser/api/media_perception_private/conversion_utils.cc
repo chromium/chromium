@@ -66,7 +66,7 @@ std::unique_ptr<HotwordDetection> HotwordDetectionProtoToIdl(
       std::make_unique<HotwordDetection>();
 
   if (detection.hotwords_size() > 0) {
-    detection_result->hotwords = std::make_unique<std::vector<Hotword>>();
+    detection_result->hotwords.emplace();
     for (const auto& hotword : detection.hotwords()) {
       detection_result->hotwords->emplace_back(HotwordProtoToIdl(hotword));
     }
@@ -80,7 +80,7 @@ std::unique_ptr<AudioSpectrogram> AudioSpectrogramProtoToIdl(
   std::unique_ptr<AudioSpectrogram> spectrogram_result =
       std::make_unique<AudioSpectrogram>();
   if (spectrogram.values_size() > 0) {
-    spectrogram_result->values = std::make_unique<std::vector<double>>();
+    spectrogram_result->values.emplace();
     for (const auto& value : spectrogram.values()) {
       spectrogram_result->values->emplace_back(value);
     }
@@ -116,8 +116,7 @@ std::unique_ptr<AudioLocalization> AudioLocalizationProtoToIdl(
     localization_result->azimuth_radians = localization.azimuth_radians();
   }
   if (localization.azimuth_scores_size() > 0) {
-    localization_result->azimuth_scores =
-        std::make_unique<std::vector<double>>();
+    localization_result->azimuth_scores.emplace();
     for (const auto& score : localization.azimuth_scores()) {
       localization_result->azimuth_scores->emplace_back(score);
     }
@@ -377,13 +376,12 @@ FramePerception FramePerceptionProtoToIdl(
     frame_perception_result.timestamp = frame_perception.timestamp();
   }
   if (frame_perception.entity_size() > 0) {
-    frame_perception_result.entities = std::make_unique<std::vector<Entity>>();
+    frame_perception_result.entities.emplace();
     for (const auto& entity : frame_perception.entity())
       frame_perception_result.entities->emplace_back(EntityProtoToIdl(entity));
   }
   if (frame_perception.packet_latency_size() > 0) {
-    frame_perception_result.packet_latency =
-        std::make_unique<std::vector<PacketLatency>>();
+    frame_perception_result.packet_latency.emplace();
     for (const auto& packet_latency : frame_perception.packet_latency()) {
       frame_perception_result.packet_latency->emplace_back(
           PacketLatencyProtoToIdl(packet_latency));
@@ -395,8 +393,7 @@ FramePerception FramePerceptionProtoToIdl(
             frame_perception.video_human_presence_detection());
   }
   if (frame_perception.perception_types_size() > 0) {
-    frame_perception_result.frame_perception_types =
-        std::make_unique<std::vector<FramePerceptionType>>();
+    frame_perception_result.frame_perception_types.emplace();
     for (const auto& type : frame_perception.perception_types()) {
       frame_perception_result.frame_perception_types->emplace_back(
           FramePerceptionTypeProtoToIdl(type));
@@ -694,7 +691,7 @@ State StateProtoToIdl(const mri::State& state) {
   if (state.has_whiteboard())
     state_result.whiteboard = WhiteboardProtoToIdl(state.whiteboard());
   if (state.features_size() > 0) {
-    state_result.features = std::make_unique<std::vector<Feature>>();
+    state_result.features.emplace();
     for (const auto& feature : state.features()) {
       const Feature feature_result = FeatureProtoToIdl(feature);
       if (feature_result != FEATURE_NONE)
@@ -703,9 +700,8 @@ State StateProtoToIdl(const mri::State& state) {
   }
 
   if (state.named_template_arguments_size() > 0) {
-    state_result.named_template_arguments =
-        std::make_unique<std::vector<NamedTemplateArgument>>(
-            state.named_template_arguments_size());
+    state_result.named_template_arguments = std::vector<NamedTemplateArgument>(
+        state.named_template_arguments_size());
 
     for (int i = 0; i < state.named_template_arguments_size(); ++i) {
       const mri::State::NamedTemplateArgument& named_template_argument_proto =
@@ -729,21 +725,20 @@ mri::State StateIdlToProto(const State& state) {
   if (state.configuration)
     state_result.set_configuration(*state.configuration);
 
-  if (state.video_stream_param && state.video_stream_param.get() != nullptr) {
-    for (size_t i = 0; i < state.video_stream_param.get()->size(); ++i) {
+  if (state.video_stream_param) {
+    for (const auto& param : *state.video_stream_param) {
       mri::VideoStreamParam* video_stream_param_result =
           state_result.add_video_stream_param();
-      VideoStreamParamIdlToProto(video_stream_param_result,
-                                 state.video_stream_param.get()->at(i));
+      VideoStreamParamIdlToProto(video_stream_param_result, param);
     }
   }
 
   if (state.whiteboard)
     WhiteboardIdlToProto(*state.whiteboard, state_result.mutable_whiteboard());
 
-  if (state.features && state.features.get() != nullptr) {
-    for (size_t i = 0; i < state.features.get()->size(); ++i)
-      state_result.add_features(FeatureIdlToProto(state.features.get()->at(i)));
+  if (state.features) {
+    for (const auto& feature : *state.features)
+      state_result.add_features(FeatureIdlToProto(feature));
   }
 
   if (state.named_template_arguments) {
@@ -768,8 +763,7 @@ MediaPerception MediaPerceptionProtoToIdl(
   }
 
   if (media_perception.frame_perception_size() > 0) {
-    media_perception_result.frame_perceptions =
-        std::make_unique<std::vector<FramePerception>>();
+    media_perception_result.frame_perceptions.emplace();
     for (const auto& frame_perception : media_perception.frame_perception()) {
       media_perception_result.frame_perceptions->emplace_back(
           FramePerceptionProtoToIdl(frame_perception));
@@ -777,8 +771,7 @@ MediaPerception MediaPerceptionProtoToIdl(
   }
 
   if (media_perception.audio_perception_size() > 0) {
-    media_perception_result.audio_perceptions =
-        std::make_unique<std::vector<AudioPerception>>();
+    media_perception_result.audio_perceptions.emplace();
     for (const auto& audio_perception : media_perception.audio_perception()) {
       media_perception_result.audio_perceptions->emplace_back(
           AudioPerceptionProtoToIdl(audio_perception));
@@ -786,8 +779,7 @@ MediaPerception MediaPerceptionProtoToIdl(
   }
 
   if (media_perception.audio_visual_perception_size() > 0) {
-    media_perception_result.audio_visual_perceptions =
-        std::make_unique<std::vector<AudioVisualPerception>>();
+    media_perception_result.audio_visual_perceptions.emplace();
     for (const auto& perception : media_perception.audio_visual_perception()) {
       media_perception_result.audio_visual_perceptions->emplace_back(
           AudioVisualPerceptionProtoToIdl(perception));
@@ -805,8 +797,7 @@ MediaPerception MediaPerceptionProtoToIdl(
 Diagnostics DiagnosticsProtoToIdl(const mri::Diagnostics& diagnostics) {
   Diagnostics diagnostics_result;
   if (diagnostics.perception_sample_size() > 0) {
-    diagnostics_result.perception_samples =
-        std::make_unique<std::vector<PerceptionSample>>();
+    diagnostics_result.perception_samples.emplace();
     for (const auto& perception_sample : diagnostics.perception_sample()) {
       diagnostics_result.perception_samples->emplace_back(
           PerceptionSampleProtoToIdl(perception_sample));

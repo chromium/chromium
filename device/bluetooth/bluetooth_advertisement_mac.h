@@ -9,12 +9,11 @@
 
 #import <CoreBluetooth/CoreBluetooth.h>
 
-#include <memory>
-
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
 #include "device/bluetooth/bluetooth_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -34,7 +33,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisementMac
   };
 
   BluetoothAdvertisementMac(
-      std::unique_ptr<BluetoothAdvertisement::UUIDList> service_uuids,
+      absl::optional<BluetoothAdvertisement::UUIDList> service_uuids,
       BluetoothAdapter::CreateAdvertisementCallback callback,
       BluetoothAdapter::AdvertisementErrorCallback error_callback,
       BluetoothLowEnergyAdvertisementManagerMac* advertisement_manager);
@@ -55,7 +54,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisementMac
 
   bool is_advertisement_pending() { return status_ == ADVERTISEMENT_PENDING; }
 
-  BluetoothAdvertisement::UUIDList service_uuids() { return *service_uuids_; }
+  const BluetoothAdvertisement::UUIDList& service_uuids() {
+    return *service_uuids_;
+  }
 
  private:
   friend class BluetoothLowEnergyAdvertisementManagerMac;
@@ -72,7 +73,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisementMac
 
   void InvokeSuccessCallback();
 
-  std::unique_ptr<BluetoothAdvertisement::UUIDList> service_uuids_;
+  absl::optional<BluetoothAdvertisement::UUIDList> service_uuids_;
   BluetoothAdapter::CreateAdvertisementCallback success_callback_;
   BluetoothAdapter::AdvertisementErrorCallback error_callback_;
   raw_ptr<BluetoothLowEnergyAdvertisementManagerMac> advertisement_manager_;

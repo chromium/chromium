@@ -157,7 +157,7 @@ void SendFeedback(content::BrowserContext* browser_context,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (feedback_info.system_information) {
-    for (SystemInformation& info : *feedback_info.system_information)
+    for (const SystemInformation& info : *feedback_info.system_information)
       feedback_data->AddLog(std::move(info.key), std::move(info.value));
   }
 
@@ -223,7 +223,7 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
   info->description_placeholder = description_placeholder_text;
   info->category_tag = category_tag;
   info->page_url = page_url.spec();
-  info->system_information = std::make_unique<SystemInformationList>();
+  info->system_information.emplace();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   info->from_assistant = from_assistant;
   info->include_bluetooth_logs = include_bluetooth_logs;

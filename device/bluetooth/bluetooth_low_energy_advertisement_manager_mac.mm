@@ -107,7 +107,7 @@ void BluetoothLowEnergyAdvertisementManagerMac::RegisterAdvertisement(
     BluetoothAdapter::AdvertisementErrorCallback error_callback) {
   absl::optional<BluetoothAdvertisement::ErrorCode> error_code;
 
-  std::unique_ptr<BluetoothAdvertisement::UUIDList> service_uuids =
+  const absl::optional<BluetoothAdvertisement::UUIDList>& service_uuids =
       advertisement_data->service_uuids();
   if (!service_uuids || advertisement_data->manufacturer_data() ||
       advertisement_data->solicit_uuids() ||

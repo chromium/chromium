@@ -128,11 +128,11 @@ TEST(JsonSchemaCompilerChoicesTest, PopulateChoiceType) {
   choices::ChoiceType out;
   ASSERT_TRUE(choices::ChoiceType::Populate(value, &out));
   ASSERT_TRUE(out.integers.as_integer);
-  EXPECT_FALSE(out.integers.as_integers.get());
+  EXPECT_FALSE(out.integers.as_integers);
   EXPECT_EQ(4, *out.integers.as_integer);
 
   EXPECT_FALSE(out.strings->as_string);
-  ASSERT_TRUE(out.strings->as_strings.get());
+  ASSERT_TRUE(out.strings->as_strings);
   EXPECT_EQ(strings, *out.strings->as_strings);
 }
 
@@ -156,7 +156,7 @@ TEST(JsonSchemaCompilerChoicesTest, ChoiceTypeToValue) {
 TEST(JsonSchemaCompilerChoicesTest, ReturnChoices) {
   {
     choices::ReturnChoices::Results::Result results;
-    results.as_integers = std::make_unique<std::vector<int>>(Vector(1, 2));
+    results.as_integers = Vector<int>(1, 2);
 
     std::unique_ptr<base::Value> results_value = results.ToValue();
     ASSERT_TRUE(results_value);

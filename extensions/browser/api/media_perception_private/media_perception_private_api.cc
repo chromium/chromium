@@ -64,7 +64,7 @@ MediaPerceptionPrivateSetStateFunction::Run() {
   // Check that video stream parameters are only provided with SetState RUNNING.
   if (params->state.status !=
           extensions::api::media_perception_private::STATUS_RUNNING &&
-      params->state.video_stream_param.get() != nullptr) {
+      params->state.video_stream_param) {
     return RespondNow(
         Error("SetState: status must be RUNNING to set videoStreamParam."));
   }

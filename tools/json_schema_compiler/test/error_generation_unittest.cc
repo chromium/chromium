@@ -285,7 +285,7 @@ TEST(JsonSchemaCompilerErrorTest, OptionalArrayTypeFailure) {
     EXPECT_FALSE(errors::ArrayObject::Populate(*value, &out, &error));
     EXPECT_TRUE(EqualsUtf16("'TheArray': expected list, got integer",
         error));
-    EXPECT_EQ(NULL, out.the_array.get());
+    EXPECT_FALSE(out.the_array.has_value());
   }
 }
 

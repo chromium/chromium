@@ -175,7 +175,7 @@ class FileSystemChooseEntryFunction : public FileSystemEntryFunction {
   static void BuildFileTypeInfo(
       ui::SelectFileDialog::FileTypeInfo* file_type_info,
       const base::FilePath::StringType& suggested_extension,
-      const AcceptOptions* accepts,
+      const absl::optional<AcceptOptions>& accepts,
       const absl::optional<bool>& accepts_all_types);
   static void BuildSuggestion(const absl::optional<std::string>& opt_name,
                               base::FilePath* suggested_name,

@@ -69,11 +69,9 @@ class ErrorTolerantBleAdvertisementImpl
   void AttemptRegistration();
   void AttemptUnregistration();
 
-  std::unique_ptr<device::BluetoothAdvertisement::UUIDList> CreateServiceUuids()
-      const;
+  device::BluetoothAdvertisement::UUIDList CreateServiceUuids() const;
 
-  std::unique_ptr<device::BluetoothAdvertisement::ServiceData>
-  CreateServiceData() const;
+  device::BluetoothAdvertisement::ServiceData CreateServiceData() const;
 
   void OnAdvertisementRegistered(
       scoped_refptr<device::BluetoothAdvertisement> advertisement);

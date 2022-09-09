@@ -220,8 +220,7 @@ void DriveFsEventRouter::OnFilesChanged(
       if (!event.changed_files) {
         event.event_type = extensions::api::file_manager_private::
             FILE_WATCH_EVENT_TYPE_CHANGED;
-        event.changed_files = std::make_unique<
-            std::vector<extensions::api::file_manager_private::FileChange>>();
+        event.changed_files.emplace();
         event.entry.additional_properties.SetStringKey(
             "fileSystemRoot", base::StrCat({ConvertDrivePathToFileSystemUrl(
                                                 base::FilePath(), listener_url)

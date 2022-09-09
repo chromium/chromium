@@ -68,10 +68,8 @@ class BluetoothLowEnergyAdvertisementManagerMacTest : public testing::Test {
         std::make_unique<BluetoothAdvertisement::Data>(
             BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
 
-    std::unique_ptr<BluetoothAdvertisement::UUIDList> uuid_list =
-        std::make_unique<BluetoothAdvertisement::UUIDList>();
-    uuid_list->push_back(kTestUUID);
-
+    BluetoothAdvertisement::UUIDList uuid_list;
+    uuid_list.push_back(kTestUUID);
     advertisement_data->set_service_uuids(std::move(uuid_list));
 
     return advertisement_data;
@@ -194,9 +192,8 @@ TEST_F(BluetoothLowEnergyAdvertisementManagerMacTest, Register_InvalidData) {
       CreateAdvertisementData();
 
   // Advertising service data is not supported.
-  std::unique_ptr<BluetoothAdvertisement::ServiceData> service_data =
-      std::make_unique<BluetoothAdvertisement::ServiceData>();
-  (*service_data)[kTestUUID] = std::vector<uint8_t>(10);
+  BluetoothAdvertisement::ServiceData service_data;
+  service_data[kTestUUID] = std::vector<uint8_t>(10);
   advertisement_data->set_service_data(std::move(service_data));
 
   RegisterAdvertisement(std::move(advertisement_data));
@@ -239,9 +236,8 @@ TEST_F(BluetoothLowEnergyAdvertisementManagerMacTest, Unregister_Success) {
 TEST_F(BluetoothLowEnergyAdvertisementManagerMacTest,
        Unregister_InvalidAdvertisement) {
   scoped_refptr<BluetoothAdvertisementMac> invalid_advertisement =
-      new BluetoothAdvertisementMac(
-          std::make_unique<BluetoothAdvertisement::UUIDList>(),
-          base::DoNothing(), base::DoNothing(), &advertisement_manager_);
+      new BluetoothAdvertisementMac(absl::nullopt, base::DoNothing(),
+                                    base::DoNothing(), &advertisement_manager_);
 
   // Register advertisement.
   RegisterAdvertisement(CreateAdvertisementData());

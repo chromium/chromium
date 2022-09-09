@@ -10,7 +10,7 @@
 namespace device {
 
 BluetoothAdvertisementMac::BluetoothAdvertisementMac(
-    std::unique_ptr<BluetoothAdvertisement::UUIDList> service_uuids,
+    absl::optional<BluetoothAdvertisement::UUIDList> service_uuids,
     BluetoothAdapter::CreateAdvertisementCallback success_callback,
     BluetoothAdapter::AdvertisementErrorCallback error_callback,
     BluetoothLowEnergyAdvertisementManagerMac* advertisement_manager)

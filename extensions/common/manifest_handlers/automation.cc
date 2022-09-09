@@ -303,8 +303,7 @@ std::unique_ptr<Automation> AutomationInfo::AsManifestType(
   as_object->desktop = info.desktop;
   as_object->interact = info.interact;
   if (info.matches.size() > 0)
-    as_object->matches = std::make_unique<std::vector<std::string>>(
-        info.matches.ToStringVector());
+    as_object->matches = info.matches.ToStringVector();
   automation->as_object.reset(as_object);
   return automation;
 }

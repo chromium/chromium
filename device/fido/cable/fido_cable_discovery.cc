@@ -52,9 +52,9 @@ std::unique_ptr<BluetoothAdvertisement::Data> ConstructAdvertisementData(
       BluetoothAdvertisement::AdvertisementType::ADVERTISEMENT_TYPE_BROADCAST);
 
 #if BUILDFLAG(IS_MAC)
-  auto list = std::make_unique<BluetoothAdvertisement::UUIDList>();
-  list->emplace_back(kGoogleCableUUID16);
-  list->emplace_back(fido_parsing_utils::ConvertBytesToUuid(client_eid));
+  BluetoothAdvertisement::UUIDList list;
+  list.emplace_back(kGoogleCableUUID16);
+  list.emplace_back(fido_parsing_utils::ConvertBytesToUuid(client_eid));
   advertisement_data->set_service_uuids(std::move(list));
 
 #elif BUILDFLAG(IS_WIN)
@@ -74,14 +74,13 @@ std::unique_ptr<BluetoothAdvertisement::Data> ConstructAdvertisementData(
       kCableGoogleManufacturerDataLength, kCableGoogleManufacturerDataType,
       kCableFlags, /*version=*/1};
 
-  auto manufacturer_data =
-      std::make_unique<BluetoothAdvertisement::ManufacturerData>();
+  BluetoothAdvertisement::ManufacturerData manufacturer_data;
   std::vector<uint8_t> manufacturer_data_value;
   fido_parsing_utils::Append(&manufacturer_data_value,
                              kCableGoogleManufacturerDataHeader);
   fido_parsing_utils::Append(&manufacturer_data_value, client_eid);
-  manufacturer_data->emplace(kGoogleManufacturerId,
-                             std::move(manufacturer_data_value));
+  manufacturer_data.emplace(kGoogleManufacturerId,
+                            std::move(manufacturer_data_value));
   advertisement_data->set_manufacturer_data(std::move(manufacturer_data));
 
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -92,7 +91,7 @@ std::unique_ptr<BluetoothAdvertisement::Data> ConstructAdvertisementData(
   // Service data for ChromeOS and Linux is 1 byte corresponding to Cable flags,
   // followed by 1 byte corresponding to Cable version number, followed by 16
   // bytes corresponding to client EID.
-  auto service_data = std::make_unique<BluetoothAdvertisement::ServiceData>();
+  BluetoothAdvertisement::ServiceData service_data;
   std::vector<uint8_t> service_data_value(18, 0);
   // Since the remainder of this service data field is a Cable EID, set the 5th
   // bit of the flag byte.
@@ -100,7 +99,7 @@ std::unique_ptr<BluetoothAdvertisement::Data> ConstructAdvertisementData(
   service_data_value[1] = 1 /* version */;
   std::copy(client_eid.begin(), client_eid.end(),
             service_data_value.begin() + 2);
-  service_data->emplace(kGoogleCableUUID128, std::move(service_data_value));
+  service_data.emplace(kGoogleCableUUID128, std::move(service_data_value));
   advertisement_data->set_service_data(std::move(service_data));
 #endif
 

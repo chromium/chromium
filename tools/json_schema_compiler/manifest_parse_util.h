@@ -252,7 +252,7 @@ bool ParseEnumArrayFromDictionary(
     base::StringPiece key,
     StringToEnumConverter<T> converter,
     T none_value,
-    std::unique_ptr<std::vector<T>>* out,
+    absl::optional<std::vector<T>>* out,
     std::u16string* error,
     std::vector<base::StringPiece>* error_path_reversed) {
   DCHECK(out);
@@ -263,9 +263,9 @@ bool ParseEnumArrayFromDictionary(
 
   // Parse errors for optional keys which are specified should still cause a
   // failure.
-  auto result = std::make_unique<std::vector<T>>();
-  if (!ParseEnumArrayFromDictionary(dict, key, converter, none_value,
-                                    result.get(), error, error_path_reversed)) {
+  std::vector<T> result;
+  if (!ParseEnumArrayFromDictionary(dict, key, converter, none_value, &result,
+                                    error, error_path_reversed)) {
     return false;
   }
 

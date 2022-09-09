@@ -167,9 +167,7 @@ std::unique_ptr<extensions::UserScript> ParseContentScript(
 
   // exclude_matches:
   if (script_value.exclude_matches) {
-    const std::vector<std::string>& exclude_matches =
-        *(script_value.exclude_matches.get());
-    for (const std::string& exclude_match : exclude_matches) {
+    for (const std::string& exclude_match : *script_value.exclude_matches) {
       URLPattern pattern(
           UserScript::ValidUserScriptSchemes(allowed_everywhere));
 

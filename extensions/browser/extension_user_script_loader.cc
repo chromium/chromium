@@ -23,6 +23,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/one_shot_event.h"
 #include "base/run_loop.h"
+#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/version.h"
 #include "content/public/browser/browser_context.h"
@@ -303,7 +304,8 @@ UserScriptList ConvertValueToScripts(const Extension& extension,
     script->set_execution_world(ConvertExecutionWorld(content_script->world));
 
     if (!script_parsing::ParseMatchPatterns(
-            content_script->matches, content_script->exclude_matches.get(),
+            content_script->matches,
+            base::OptionalToPtr(content_script->exclude_matches),
             /*definition_index=*/0, extension.creation_flags(),
             scripting::kScriptsCanExecuteEverywhere, valid_schemes,
             scripting::kAllUrlsIncludesChromeUrls, script.get(), &error,
@@ -312,7 +314,8 @@ UserScriptList ConvertValueToScripts(const Extension& extension,
     }
 
     if (!script_parsing::ParseFileSources(
-            &extension, content_script->js.get(), content_script->css.get(),
+            &extension, base::OptionalToPtr(content_script->js),
+            base::OptionalToPtr(content_script->css),
             /*definition_index=*/0, script.get(), &error)) {
       continue;
     }
@@ -335,8 +338,7 @@ api::content_scripts::ContentScript CreateContentScriptObject(
     content_script.matches.push_back(pattern.GetAsString());
 
   if (!script.exclude_url_patterns().is_empty()) {
-    content_script.exclude_matches =
-        std::make_unique<std::vector<std::string>>();
+    content_script.exclude_matches.emplace();
     content_script.exclude_matches->reserve(
         script.exclude_url_patterns().size());
     for (const URLPattern& pattern : script.exclude_url_patterns())
@@ -346,14 +348,14 @@ api::content_scripts::ContentScript CreateContentScriptObject(
   // File paths may be normalized in the returned object and can differ slightly
   // compared to what was originally passed into registerContentScripts.
   if (!script.js_scripts().empty()) {
-    content_script.js = std::make_unique<std::vector<std::string>>();
+    content_script.js.emplace();
     content_script.js->reserve(script.js_scripts().size());
     for (const auto& js_script : script.js_scripts())
       content_script.js->push_back(js_script->relative_path().AsUTF8Unsafe());
   }
 
   if (!script.css_scripts().empty()) {
-    content_script.css = std::make_unique<std::vector<std::string>>();
+    content_script.css.emplace();
     content_script.css->reserve(script.css_scripts().size());
     for (const auto& css_script : script.css_scripts())
       content_script.css->push_back(css_script->relative_path().AsUTF8Unsafe());

@@ -129,13 +129,11 @@ bool GetFileTypesFromAcceptOption(
   std::set<base::FilePath::StringType> extension_set;
   int description_id = 0;
 
-  if (accept_option.mime_types.get()) {
-    std::vector<std::string>* list = accept_option.mime_types.get();
+  if (accept_option.mime_types) {
     bool valid_type = false;
-    for (std::vector<std::string>::const_iterator iter = list->begin();
-         iter != list->end(); ++iter) {
+    for (const auto& item : *accept_option.mime_types) {
       std::vector<base::FilePath::StringType> inner;
-      std::string accept_type = base::ToLowerASCII(*iter);
+      std::string accept_type = base::ToLowerASCII(item);
       net::GetExtensionsForMimeType(accept_type, &inner);
       if (inner.empty())
         continue;
@@ -155,15 +153,12 @@ bool GetFileTypesFromAcceptOption(
     }
   }
 
-  if (accept_option.extensions.get()) {
-    std::vector<std::string>* list = accept_option.extensions.get();
-    for (std::vector<std::string>::const_iterator iter = list->begin();
-         iter != list->end(); ++iter) {
-      std::string extension = base::ToLowerASCII(*iter);
+  if (accept_option.extensions) {
+    for (const auto& item : *accept_option.extensions) {
 #if BUILDFLAG(IS_WIN)
-      extension_set.insert(base::UTF8ToWide(*iter));
+      extension_set.insert(base::UTF8ToWide(item));
 #else
-      extension_set.insert(*iter);
+      extension_set.insert(item);
 #endif
     }
   }
@@ -689,7 +684,7 @@ void FileSystemChooseEntryFunction::OnDirectoryAccessConfirmed(
 void FileSystemChooseEntryFunction::BuildFileTypeInfo(
     ui::SelectFileDialog::FileTypeInfo* file_type_info,
     const base::FilePath::StringType& suggested_extension,
-    const AcceptOptions* accepts,
+    const absl::optional<AcceptOptions>& accepts,
     const absl::optional<bool>& accepts_all_types) {
   file_type_info->include_all_files = accepts_all_types.value_or(true);
 
@@ -823,8 +818,8 @@ ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
     BuildSuggestion(options->suggested_name, &suggested_name,
                     &suggested_extension);
 
-    BuildFileTypeInfo(&file_type_info, suggested_extension,
-                      options->accepts.get(), options->accepts_all_types);
+    BuildFileTypeInfo(&file_type_info, suggested_extension, options->accepts,
+                      options->accepts_all_types);
   }
 
   file_type_info.allowed_paths = ui::SelectFileDialog::FileTypeInfo::ANY_PATH;

@@ -135,21 +135,19 @@ void Adapter::RegisterAdvertisement(const device::BluetoothUUID& service_uuid,
       std::make_unique<device::BluetoothAdvertisement::Data>(
           device::BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
 
-  auto uuid_list = std::make_unique<device::BluetoothAdvertisement::UUIDList>();
-  uuid_list->push_back(service_uuid.value());
+  device::BluetoothAdvertisement::UUIDList uuid_list;
+  uuid_list.push_back(service_uuid.value());
   advertisement_data->set_service_uuids(std::move(uuid_list));
 
   if (!use_scan_response) {
-    auto service_data_map =
-        std::make_unique<device::BluetoothAdvertisement::ServiceData>();
-    service_data_map->emplace(service_uuid.value(), service_data);
+    device::BluetoothAdvertisement::ServiceData service_data_map;
+    service_data_map.emplace(service_uuid.value(), service_data);
     advertisement_data->set_service_data(std::move(service_data_map));
   } else {
     // Require the service uuid to be in 128-bit format.
     DCHECK_EQ(service_uuid.format(),
               device::BluetoothUUID::Format::kFormat128Bit);
-    auto scan_response_data_map =
-        std::make_unique<device::BluetoothAdvertisement::ScanResponseData>();
+    device::BluetoothAdvertisement::ScanResponseData scan_response_data_map;
     // Start with the original scan response data.
     std::vector<uint8_t> scan_response_data(service_data.begin(),
                                             service_data.end());
@@ -167,7 +165,7 @@ void Adapter::RegisterAdvertisement(const device::BluetoothUUID& service_uuid,
                               id_bytes.rend());
     // The platform API only supports AD Type 0x16 "Service Data" which assumes
     // as 16-bit service id.
-    scan_response_data_map->emplace(0x16, scan_response_data);
+    scan_response_data_map.emplace(0x16, scan_response_data);
     advertisement_data->set_scan_response_data(
         std::move(scan_response_data_map));
   }
