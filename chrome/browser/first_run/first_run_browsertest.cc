@@ -234,11 +234,9 @@ const char kWithTrackedPrefs[] =
     "  \"homepage_is_newtabpage\": false\n"
     "}\n";
 // A test fixture that will run in a first run scenario with master_preferences
-// set to kWithTrackedPrefs. Parameterizable on the SettingsEnforcement
-// experiment to be forced.
+// set to kWithTrackedPrefs.
 class FirstRunMasterPrefsWithTrackedPreferences
-    : public FirstRunMasterPrefsBrowserTestT<kWithTrackedPrefs>,
-      public testing::WithParamInterface<std::string> {
+    : public FirstRunMasterPrefsBrowserTestT<kWithTrackedPrefs> {
  public:
   FirstRunMasterPrefsWithTrackedPreferences() {}
 
@@ -250,10 +248,6 @@ class FirstRunMasterPrefsWithTrackedPreferences
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     FirstRunMasterPrefsBrowserTestT::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        switches::kForceFieldTrials,
-        std::string(chrome_prefs::internals::kSettingsEnforcementTrialName) +
-            "/" + GetParam() + "/");
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -265,7 +259,7 @@ class FirstRunMasterPrefsWithTrackedPreferences
   }
 };
 
-IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsWithTrackedPreferences,
+IN_PROC_BROWSER_TEST_F(FirstRunMasterPrefsWithTrackedPreferences,
                        TrackedPreferencesSurviveFirstRun) {
   const PrefService* user_prefs = browser()->profile()->GetPrefs();
   EXPECT_EQ("example.com", user_prefs->GetString(prefs::kHomePage));
@@ -279,16 +273,6 @@ IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsWithTrackedPreferences,
   ASSERT_TRUE(default_homepage_is_ntp_value->is_bool());
   EXPECT_TRUE(default_homepage_is_ntp_value->GetBool());
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    FirstRunMasterPrefsWithTrackedPreferencesInstance,
-    FirstRunMasterPrefsWithTrackedPreferences,
-    testing::Values(
-        chrome_prefs::internals::kSettingsEnforcementGroupNoEnforcement,
-        chrome_prefs::internals::kSettingsEnforcementGroupEnforceAlways,
-        chrome_prefs::internals::kSettingsEnforcementGroupEnforceAlwaysWithDSE,
-        chrome_prefs::internals::
-            kSettingsEnforcementGroupEnforceAlwaysWithExtensionsAndDSE));
 
 #define COMPRESSED_SEED_TEST_VALUE                                             \
   "H4sIAAAAAAAA/+LSME4xsTAySjYzSDQ1S01KSk1KMUg1SjI1Tk4yMjI2NDMzTzEySjRPMxA6xs" \

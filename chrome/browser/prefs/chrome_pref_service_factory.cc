@@ -356,20 +356,6 @@ class ResetOnLoadObserverImpl : public prefs::mojom::ResetOnLoadObserver {
 
 namespace chrome_prefs {
 
-namespace internals {
-
-// Group modifications should be reflected in first_run_browsertest.cc and
-// pref_hash_browsertest.cc.
-const char kSettingsEnforcementTrialName[] = "SettingsEnforcement";
-const char kSettingsEnforcementGroupNoEnforcement[] = "no_enforcement";
-const char kSettingsEnforcementGroupEnforceAlways[] = "enforce_always";
-const char kSettingsEnforcementGroupEnforceAlwaysWithDSE[] =
-    "enforce_always_with_dse";
-const char kSettingsEnforcementGroupEnforceAlwaysWithExtensionsAndDSE[] =
-    "enforce_always_with_extensions_and_dse";
-
-}  // namespace internals
-
 std::unique_ptr<PrefService> CreateLocalState(
     const base::FilePath& pref_filename,
     scoped_refptr<PersistentPrefStore> pref_store,
