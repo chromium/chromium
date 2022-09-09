@@ -18,6 +18,6 @@ promise_test(async (t) => {
   assert_equals(event.type, 'acceleratordown');
   assert_equals(event.acceleratorName, 'Control Alt a');
   assert_true(event.repeat);
-  assert_true(event.bubbles);
+  assert_false(event.bubbles);
   assert_false(event.cancelable);
 });

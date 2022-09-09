@@ -11,6 +11,6 @@ promise_test(async () => {
   assert_equals(accelerator_event.type, 'acceleratordown', 'event type');
   assert_equals(accelerator_event.acceleratorName, 'close-window');
   assert_false(accelerator_event.repeat);
-  assert_true(accelerator_event.bubbles, 'bubbles');
+  assert_false(accelerator_event.bubbles, 'bubbles');
   assert_false(accelerator_event.cancelable, 'cancelable');
 });

@@ -20,8 +20,7 @@ promise_test(async (t) => {
 
   // `Event.bubbles` indicates whether the event bubbles of the DOM tree.
   // AcceleratorEvent doesn't bubble so this should return false.
-  // TODO(b/244518434): Change to assert_false when the event gets fixed.
-  assert_true(event.bubbles);
+  assert_false(event.bubbles);
 
   // Accelerator events are considered to be consumed, i.e. the System Extension
   // always handles them, so there they are not cancelable.

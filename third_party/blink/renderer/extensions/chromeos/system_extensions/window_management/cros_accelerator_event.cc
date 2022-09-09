@@ -19,7 +19,7 @@ CrosAcceleratorEvent* CrosAcceleratorEvent::Create(
 CrosAcceleratorEvent::CrosAcceleratorEvent(
     const AtomicString& type,
     const CrosAcceleratorEventInit* event_init)
-    : Event(type, Bubbles::kYes, Cancelable::kNo),
+    : Event(type, Bubbles::kNo, Cancelable::kNo),
       accelerator_name_(event_init->acceleratorName()),
       repeat_(event_init->repeat()) {}
 
