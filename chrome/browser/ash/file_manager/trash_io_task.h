@@ -114,6 +114,14 @@ class TrashIOTask : public IOTask {
   // in the instance .Trash folder does not exist.
   void SetupSubDirectory(trash::TrashPathsMap::const_iterator& it,
                          const storage::FileSystemURL trash_subdirectory);
+
+  // During low-disk space situations, cryptohome needs a way to identify
+  // folders to purge. Trash should be considered prior to the rest of the
+  // users' profile.
+  void SetDirectoryTracking(
+      base::OnceCallback<void(base::File::Error)> on_setup_complete_callback,
+      const base::FilePath& trash_subdirectory,
+      base::File::Error error);
   void OnSetupSubDirectory(trash::TrashPathsMap::const_iterator& it,
                            const storage::FileSystemURL trash_subdirectory,
                            base::File::Error error);

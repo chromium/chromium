@@ -15,6 +15,7 @@ constexpr char kTrashFolderName[] = ".Trash";
 constexpr char kInfoFolderName[] = "info";
 constexpr char kFilesFolderName[] = "files";
 constexpr char kTrashInfoExtension[] = ".trashinfo";
+constexpr char kTrackedDirectoryName[] = "user.TrackedDirectoryName";
 
 TrashLocation::TrashLocation(const base::FilePath supplied_relative_folder_path,
                              const base::FilePath supplied_mount_point_path,

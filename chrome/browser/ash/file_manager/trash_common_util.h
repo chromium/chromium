@@ -26,6 +26,10 @@ extern const char kFilesFolderName[];
 // Constant representing the ".trashinfo" extension for metadata files.
 extern const char kTrashInfoExtension[];
 
+// Constant representing the extended attribute "user.TrackedDirectoryName" used
+// to track the files and info directories for deletion by cryptohome.
+extern const char kTrackedDirectoryName[];
+
 struct TrashLocation {
   TrashLocation(const base::FilePath supplied_relative_folder_path,
                 const base::FilePath supplied_mount_point_path,

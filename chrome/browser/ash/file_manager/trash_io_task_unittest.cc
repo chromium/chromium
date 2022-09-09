@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/file_manager/trash_io_task.h"
 
+#include <sys/xattr.h>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/rand_util.h"
@@ -59,6 +61,19 @@ MATCHER_P(EntryStatusErrors, matcher, "") {
   return testing::ExplainMatchResult(matcher, errors, result_listener);
 }
 
+std::string GetTrackedExtendedAttributeAsString(const base::FilePath& path) {
+  ssize_t output_size =
+      lgetxattr(path.value().c_str(), trash::kTrackedDirectoryName, nullptr, 0);
+  EXPECT_GT(output_size, 0);
+  std::vector<char> output_value(output_size);
+  EXPECT_GT(lgetxattr(path.value().c_str(), trash::kTrackedDirectoryName,
+                      output_value.data(), output_size),
+            0);
+  std::string xattr;
+  xattr.assign(output_value.data(), output_size);
+  return xattr;
+}
+
 class TrashIOTaskTest : public TrashBaseTest {
  public:
   TrashIOTaskTest() = default;
@@ -70,13 +85,24 @@ class TrashIOTaskTest : public TrashBaseTest {
 void AssertTrashSetup(const base::FilePath& parent_path) {
   base::FilePath trash_path = parent_path.Append(trash::kTrashFolderName);
   ASSERT_TRUE(base::DirectoryExists(trash_path));
-  ASSERT_TRUE(
-      base::DirectoryExists(trash_path.Append(trash::kFilesFolderName)));
-  ASSERT_TRUE(base::DirectoryExists(trash_path.Append(trash::kInfoFolderName)));
+
+  auto files_path = trash_path.Append(trash::kFilesFolderName);
+  ASSERT_TRUE(base::DirectoryExists(files_path));
+
+  auto info_path = trash_path.Append(trash::kInfoFolderName);
+  ASSERT_TRUE(base::DirectoryExists(info_path));
 
   int mode = 0;
   ASSERT_TRUE(base::GetPosixFilePermissions(trash_path, &mode));
   EXPECT_EQ(mode, 0711);
+
+  constexpr char expected_files_xattr[] = "trash_files";
+  auto actual_files_xattr = GetTrackedExtendedAttributeAsString(files_path);
+  EXPECT_EQ(actual_files_xattr, expected_files_xattr);
+
+  constexpr char expected_info_xattr[] = "trash_info";
+  auto actual_info_xattr = GetTrackedExtendedAttributeAsString(info_path);
+  EXPECT_EQ(actual_info_xattr, expected_info_xattr);
 }
 
 void ExpectFileContents(const base::FilePath& path,

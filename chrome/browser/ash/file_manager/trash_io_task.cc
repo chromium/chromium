@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/file_manager/trash_io_task.h"
 
+#include <sys/xattr.h>
+
 #include "base/callback.h"
 #include "base/files/file_util.h"
 #include "base/strings/strcat.h"
@@ -79,6 +81,16 @@ bool SetTrashDirectoryPermissions(const base::FilePath& trash_directory) {
                            base::FILE_PERMISSION_EXECUTE_BY_USER |
                            base::FILE_PERMISSION_EXECUTE_BY_GROUP |
                            base::FILE_PERMISSION_EXECUTE_BY_OTHERS);
+}
+
+base::File::Error SetTrackedExtendedAttribute(const base::FilePath& path) {
+  auto tracked_name = base::StrCat({"trash_", path.BaseName().value()});
+  if (lsetxattr(path.value().c_str(), trash::kTrackedDirectoryName,
+                tracked_name.c_str(), tracked_name.size(), 0) < 0) {
+    PLOG(ERROR) << "Failed to set the xattr";
+    return base::File::FILE_ERROR_FAILED;
+  }
+  return base::File::FILE_OK;
 }
 
 TrashEntry::TrashEntry() : deletion_time(base::Time::Now()) {}
@@ -333,18 +345,40 @@ void TrashIOTask::SetupSubDirectory(
     return;
   }
 
+  auto on_setup_complete_callback = base::BindOnce(
+      &TrashIOTask::OnSetupSubDirectory, weak_ptr_factory_.GetWeakPtr(),
+      base::OwnedRef(it), trash_subdirectory);
+
   content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&StartCreateDirectoryOnIOThread, file_system_context_,
                      trash_subdirectory,
                      base::BindPostTask(
                          base::SequencedTaskRunnerHandle::Get(),
-                         base::BindOnce(&TrashIOTask::OnSetupSubDirectory,
+                         base::BindOnce(&TrashIOTask::SetDirectoryTracking,
                                         weak_ptr_factory_.GetWeakPtr(),
-                                        base::OwnedRef(it), trash_subdirectory),
+                                        std::move(on_setup_complete_callback),
+                                        MakeRelativePathAbsoluteFromBasePath(
+                                            trash_subdirectory.path())),
                          FROM_HERE)),
       base::BindOnce(&TrashIOTask::SetCurrentOperationID,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TrashIOTask::SetDirectoryTracking(
+    base::OnceCallback<void(base::File::Error)> on_setup_complete_callback,
+    const base::FilePath& trash_subdirectory,
+    base::File::Error error) {
+  if (error != base::File::FILE_OK) {
+    std::move(on_setup_complete_callback).Run(error);
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&SetTrackedExtendedAttribute,
+                     std::move(trash_subdirectory)),
+      std::move(on_setup_complete_callback));
 }
 
 void TrashIOTask::OnSetupSubDirectory(
