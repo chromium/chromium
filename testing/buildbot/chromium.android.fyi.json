@@ -149,6 +149,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "--no-wpt-internal",
           "--log-wptreport",
           "--avd-config=../../tools/android/avd/proto/generic_android28.textpb",
           "--use-upstream-wpt"
@@ -7013,6 +7014,9 @@
   "android-pie-arm64-wpt-rel-non-cq": {
     "isolated_scripts": [
       {
+        "args": [
+          "--no-wpt-internal"
+        ],
         "experiment_percentage": 100,
         "isolate_name": "system_webview_wpt",
         "merge": {
@@ -12286,6 +12290,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "--no-wpt-internal",
           "--avd-config=../../tools/android/avd/proto/generic_android28.textpb"
         ],
         "experiment_percentage": 100,
@@ -12340,6 +12345,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "--no-wpt-internal",
           "--avd-config=../../tools/android/avd/proto/generic_android28.textpb",
           "--default-exclude",
           "--include-file=../../third_party/blink/web_tests/android/WPTSmokeTestCases"
@@ -12895,6 +12901,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "--no-wpt-internal",
           "--avd-config=../../tools/android/avd/proto/generic_android28.textpb",
           "--log-wptreport",
           "--use-upstream-wpt"

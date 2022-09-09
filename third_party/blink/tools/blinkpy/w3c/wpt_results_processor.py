@@ -72,6 +72,7 @@ class WPTResultsProcessor(object):
         self.results_dir = results_dir
         self.sink = sink or ResultSinkReporter()
         self.wpt_manifest = self.port.wpt_manifest('external/wpt')
+        self.internal_manifest = self.port.wpt_manifest('wpt_internal')
         self.path_finder = path_finder.PathFinder(self.fs)
         # Provide placeholder properties until the wptreport is processed.
         self.run_info = dict(mozinfo.info)
@@ -186,21 +187,12 @@ class WPTResultsProcessor(object):
                 raw_results_path) as results_file:
             results = json.load(results_file)
 
-        # wptrunner test names exclude the "external/wpt" prefix. Here, we
-        # reintroduce the prefix to create valid paths relative to the web test
-        # root directory in the Chromium source tree.
-        tests = results['tests']
-        prefix_components = self.path_finder.wpt_prefix().split(self.fs.sep)
-        for component in reversed(prefix_components):
-            if component:
-                tests = {component: tests}
-        results['tests'] = tests
         metadata = results.get('metadata') or {}
         test_names = self._extract_artifacts(
             results['tests'],
             delim=results['path_delimiter'],
-            # Unlike the "external/wpt" prefix, this prefix does not actually
-            # exist on disk and only affects how the results are reported.
+            # This prefix does not actually exist on disk and only affects
+            # how the results are reported.
             test_name_prefix=metadata.get('test_name_prefix', ''))
         _log.info('Extracted artifacts for %d tests', len(test_names))
 
@@ -297,21 +289,25 @@ class WPTResultsProcessor(object):
         Raises:
             ValueError: If the expected metadata was unreadable or unparsable.
         """
-        # When looking into the WPT manifest, we omit "external/wpt" from the
-        # web test name, since that part of the path is only relevant in
-        # Chromium.
-        wpt_name = self.path_finder.strip_wpt_path(test_name)
-        # TODO(crbug.com/1299650): Support virtual tests and metadata fallback.
-        test_file_subpath = self.wpt_manifest.file_path_for_test_url(wpt_name)
+        if self.path_finder.is_wpt_internal_path(test_name):
+            test_file_subpath = self.internal_manifest.file_path_for_test_url(
+                test_name[len('wpt_internal/'):])
+            metadata_root = self.path_finder.path_from_web_tests(
+                'wpt_internal')
+        else:
+            # TODO(crbug.com/1299650): Support virtual tests and metadata fallback.
+            test_file_subpath = self.wpt_manifest.file_path_for_test_url(
+                test_name)
+            metadata_root = self.path_finder.path_from_web_tests(
+                'external', 'wpt')
         if not test_file_subpath:
             raise ValueError('test ID did not resolve to a file')
-        metadata_root = self.path_finder.wpt_tests_dir()
         manifest = manifestexpected.get_manifest(metadata_root,
                                                  test_file_subpath, '/',
                                                  self.run_info)
         if not manifest:
             raise ValueError('unable to read ".ini" file from disk')
-        test_manifest = manifest.get_test('/' + wpt_name)
+        test_manifest = manifest.get_test('/' + test_name)
         if not test_manifest:
             raise ValueError('test ID does not exist')
         return wptmanifest.serialize(test_manifest.node)
@@ -404,13 +400,9 @@ class WPTResultsProcessor(object):
                 url = url[1:]
             image_bytes = base64.b64decode(printable_image.strip())
 
-            # When comparing the test name to the image URL, we omit
-            # "external/wpt" from the test name, since that part of the path is
-            # only relevant in Chromium.
-            wpt_name = self.path_finder.strip_wpt_path(test_name)
             screenshot_key = 'expected_image'
             file_suffix = test_failures.FILENAME_SUFFIX_EXPECTED
-            if wpt_name == url:
+            if test_name == url:
                 screenshot_key = 'actual_image'
                 file_suffix = test_failures.FILENAME_SUFFIX_ACTUAL
                 actual_image_bytes = image_bytes
@@ -520,8 +512,12 @@ class WPTResultsProcessor(object):
         for name, paths in (node.get('artifacts') or {}).items():
             for path in paths:
                 artifacts.AddArtifact(name, path)
-        test_path = self.fs.join(self.web_tests_dir,
-                                 _remove_query_params(test_name))
+        if self.path_finder.is_wpt_internal_path(test_name):
+            test_path = self.fs.join(self.web_tests_dir,
+                                     _remove_query_params(test_name))
+        else:
+            test_path = self.fs.join(self.web_tests_dir, 'external', 'wpt',
+                                     _remove_query_params(test_name))
 
         for iteration, (actual,
                         duration) in enumerate(zip(actual_statuses,

@@ -105793,6 +105793,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "--no-wpt-internal",
           "--child-processes=8",
           "--run-by-dir=0",
           "--no-restart-on-new-group",
@@ -105830,6 +105831,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "--no-wpt-internal",
           "webauthn/"
         ],
         "isolate_name": "wpt_tests_isolate",
@@ -105858,6 +105860,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "--no-wpt-internal",
           "infrastructure/testdriver/actions/",
           "input-events/",
           "pointerevents/",

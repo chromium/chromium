@@ -156,6 +156,12 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
         ])
         rest_args.extend(self.product.wpt_args)
 
+        if self.options.run_wpt_internal:
+            rest_args.extend([
+                '--config',
+                self.path_finder.path_from_web_tests("wptrunner.blink.ini")
+            ])
+
         # if metadata was created then add the metadata directory
         # to the list of wpt arguments
         if self._metadata_dir:
@@ -296,6 +302,11 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
                                   'the upstream github wpt to a temporary '
                                   'directory and will use the binary and '
                                   'tests from upstream'))
+        parser.add_argument('--no-wpt-internal',
+                            action='store_false',
+                            dest='run_wpt_internal',
+                            default=True,
+                            help=('Do not run internal WPTs.'))
         parser.add_argument('--flag-specific',
                             choices=sorted(self.port.flag_specific_configs()),
                             help='The name of a flag-specific suite to run.')

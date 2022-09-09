@@ -552,6 +552,7 @@
     'chrome_public_wpt': {
       'chrome_public_wpt': {
         'args': [
+          '--no-wpt-internal',
           '--log-wptreport',
         ],
         'swarming': {
@@ -4493,6 +4494,9 @@
 
     'system_webview_wpt': {
       'system_webview_wpt': {
+        'args': [
+          '--no-wpt-internal',
+        ],
         'swarming': {
           'shards': 25,
           'expiration': 18000,
@@ -4804,6 +4808,9 @@
 
     'weblayer_shell_wpt': {
       'weblayer_shell_wpt': {
+        'args': [
+          '--no-wpt-internal',
+        ],
         'swarming': {
           'shards': 18,
           'expiration': 18000,
@@ -5151,6 +5158,7 @@
     'wpt_web_tests': {
       'wpt_tests_suite': {
         'args': [
+          '--no-wpt-internal',
           '--child-processes=8',
           '--run-by-dir=0',
           '--no-restart-on-new-group',
@@ -5198,6 +5206,7 @@
     'wpt_web_tests_identity': {
       'wpt_tests_suite': {
         'args': [
+          '--no-wpt-internal',
           'webauthn/',
         ],
         'merge': {
@@ -5217,6 +5226,7 @@
     'wpt_web_tests_input': {
       'wpt_tests_suite': {
         'args': [
+          '--no-wpt-internal',
           'infrastructure/testdriver/actions/',
           'input-events/',
           'pointerevents/',

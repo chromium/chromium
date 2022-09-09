@@ -238,6 +238,9 @@ class PathFinder(object):
     def is_wpt_path(self, test_path):
         return test_path.startswith(self.wpt_prefix())
 
+    def is_wpt_internal_path(self, test_path):
+        return test_path.startswith('wpt_internal/')
+
     def is_webdriver_test_path(self, test_path):
         return test_path.startswith(self.webdriver_prefix())
 

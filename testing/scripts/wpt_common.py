@@ -189,10 +189,10 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             test_group = included_tests
             if pattern.startswith('-'):
                 test_group, pattern = excluded_tests, pattern[1:]
-            pattern_on_disk = self.fs.join(
-                self.wpt_root_dir,
-                self.path_finder.strip_wpt_path(pattern),
-            )
+            if self.path_finder.is_wpt_internal_path(pattern):
+                pattern_on_disk = self.path_finder.path_from_web_tests(pattern)
+            else:
+                pattern_on_disk = self.fs.join(self.wpt_root_dir, pattern)
             test_group.extend(glob.glob(pattern_on_disk))
         return included_tests, excluded_tests
 
