@@ -24,14 +24,15 @@
     outline: none;
   }
 
-  :host([aria-selected='true']) .item {
+  :host([aria-selected='true']:not([placeholder])) .item {
     background-color: rgba(var(--cros-color-prominent-rgb),
         var(--personalization-app-second-tone-opacity));
     border-radius:
       calc(var(--personalization-app-grid-item-border-radius) + 4px);
   }
 
-  :host(:not([aria-selected='true'])) iron-icon {
+  :host(:not([aria-selected='true'])) iron-icon,
+  :host([placeholder]) iron-icon {
     display: none;
   }
 

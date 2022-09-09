@@ -132,15 +132,33 @@ suite('WallpaperGridItemTest', function() {
         getComputedStyle(querySelector('iron-icon')!).display, 'none',
         'iron-icon is display none when aria-selected is missing');
 
-    // Select |wallpaperGridItemElement| and verify state.
+    // Select |wallpaperGridItemElement| while it is still loading in
+    // placeholder state.
     wallpaperGridItemElement.selected = true;
     await waitAfterNextRender(wallpaperGridItemElement);
     assertEquals(
         wallpaperGridItemElement.ariaSelected, 'true',
         'aria selected attribute set to true when selected is true');
+    assertEquals(
+        getComputedStyle(querySelector('iron-icon')!).display, 'none',
+        'iron-icon is still display none while image is loading');
+    assertTrue(
+        wallpaperGridItemElement.hasAttribute('placeholder'),
+        'placeholder attribute is set');
+
+    // Supply a src to make the image load.
+    wallpaperGridItemElement.src = {url: createSvgDataUrl('test')};
+    await waitAfterNextRender(wallpaperGridItemElement);
+
+    assertEquals(
+        wallpaperGridItemElement.ariaSelected, 'true',
+        'aria selected attribute is still true');
     assertNotEquals(
         getComputedStyle(querySelector('iron-icon')!).display, 'none',
         'iron-icon is not display none when aria selected is true');
+    assertFalse(
+        wallpaperGridItemElement.hasAttribute('placeholder'),
+        'placeholder attribute is removed');
 
     // Deselect |wallpaperGridItemElement| and verify state.
     wallpaperGridItemElement.selected = false;
