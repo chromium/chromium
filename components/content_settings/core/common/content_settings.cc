@@ -75,7 +75,7 @@ constexpr HistogramValue kHistogramValue[] = {
     {ContentSettingsType::WAKE_LOCK_SYSTEM, 55},
     {ContentSettingsType::LEGACY_COOKIE_ACCESS, 56},
     {ContentSettingsType::FILE_SYSTEM_WRITE_GUARD, 57},
-    {ContentSettingsType::INSTALLED_WEB_APP_METADATA, 58},
+    // Removed INSTALLED_WEB_APP_METADATA in M107.
     {ContentSettingsType::NFC, 59},
     {ContentSettingsType::BLUETOOTH_CHOOSER_DATA, 60},
     {ContentSettingsType::CLIPBOARD_READ_WRITE, 61},

@@ -143,7 +143,8 @@ TEST_F(PrefProviderTest, Observer) {
 }
 
 // Tests that fullscreen, obsolete NFC (with the old semantics, see
-// crbug.com/1275576), and mouselock content settings are cleared.
+// crbug.com/1275576), and obsolete content settings (plugins, mouselock,
+// installed web app metadata) are cleared.
 TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
   static const char kFullscreenPrefPath[] =
       "profile.content_settings.exceptions.fullscreen";
@@ -155,6 +156,8 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
       "profile.content_settings.exceptions.plugins";
   const char kObsoletePluginsDataExceptionsPref[] =
       "profile.content_settings.exceptions.flash_data";
+  const char kObsoleteInstalledWebAppMetadataExceptionsPref[] =
+      "profile.content_settings.exceptions.installed_web_app_metadata";
 #endif
   static const char kGeolocationPrefPath[] =
       "profile.content_settings.exceptions.geolocation";
@@ -179,6 +182,7 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
 #if !BUILDFLAG(IS_ANDROID)
   prefs->Set(kMouselockPrefPath, pref_data);
   prefs->Set(kObsoletePluginsExceptionsPref, pref_data);
+  prefs->Set(kObsoleteInstalledWebAppMetadataExceptionsPref, pref_data);
   prefs->Set(kObsoletePluginsDataExceptionsPref, plugins_data_pref);
 #endif
   prefs->Set(kGeolocationPrefPath, pref_data);
@@ -195,6 +199,8 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
   EXPECT_FALSE(prefs->HasPrefPath(kNfcPrefPath));
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(prefs->HasPrefPath(kMouselockPrefPath));
+  EXPECT_FALSE(
+      prefs->HasPrefPath(kObsoleteInstalledWebAppMetadataExceptionsPref));
   EXPECT_FALSE(prefs->HasPrefPath(kObsoletePluginsExceptionsPref));
   EXPECT_FALSE(prefs->HasPrefPath(kObsoletePluginsDataExceptionsPref));
 #endif

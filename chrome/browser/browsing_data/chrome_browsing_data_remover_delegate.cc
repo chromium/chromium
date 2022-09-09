@@ -782,10 +782,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
 #if !BUILDFLAG(IS_ANDROID)
     host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
-        ContentSettingsType::INSTALLED_WEB_APP_METADATA, delete_begin_,
-        delete_end_, website_settings_filter);
-
-    host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
         ContentSettingsType::INTENT_PICKER_DISPLAY, delete_begin_, delete_end_,
         website_settings_filter);
 

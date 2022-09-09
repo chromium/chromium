@@ -160,10 +160,6 @@ enum class ContentSettingsType : int32_t {
   // File System Access API.
   FILE_SYSTEM_WRITE_GUARD,
 
-  // Content settings for installed web apps that browsing history may be
-  // inferred from e.g. last update check timestamp.
-  INSTALLED_WEB_APP_METADATA,
-
   // Used to store whether to allow a website to exchange data with NFC devices.
   NFC,
 

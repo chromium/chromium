@@ -102,9 +102,6 @@ void SiteDataCountingHelper::CountAndDestroySelfWhenFinished() {
   const ContentSettingsType content_settings[] = {
     ContentSettingsType::DURABLE_STORAGE,
     ContentSettingsType::APP_BANNER,
-#if !BUILDFLAG(IS_ANDROID)
-    ContentSettingsType::INSTALLED_WEB_APP_METADATA,
-#endif
   };
   for (auto type : content_settings) {
     tasks_ += 1;

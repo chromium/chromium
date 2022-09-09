@@ -126,7 +126,8 @@ TEST_F(ContentSettingsDefaultProviderTest, ObservePref) {
 }
 
 // Tests that fullscreen, obsolete NFC (with the old semantics, see
-// crbug.com/1275576), and mouselock content settings are cleared.
+// crbug.com/1275576), and obsolete content settings (plugins, mouselock,
+// installed web app metadata) are cleared.
 TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
   static const char kFullscreenPrefPath[] =
       "profile.default_content_setting_values.fullscreen";
@@ -141,6 +142,8 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
       "profile.default_content_setting_values.flash_data";
   const char kObsoleteFileHandlingDefaultPref[] =
       "profile.default_content_setting_values.file_handling";
+  const char kObsoleteInstalledWebAppMetadataDefaultPref[] =
+      "profile.default_content_setting_values.installed_web_app_metadata";
 #endif
   static const char kGeolocationPrefPath[] =
       "profile.default_content_setting_values.geolocation";
@@ -153,6 +156,8 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
   prefs->SetInteger(kObsoletePluginsDefaultPref, CONTENT_SETTING_ALLOW);
   prefs->SetInteger(kObsoletePluginsDataDefaultPref, CONTENT_SETTING_ALLOW);
   prefs->SetInteger(kObsoleteFileHandlingDefaultPref, CONTENT_SETTING_ALLOW);
+  prefs->SetInteger(kObsoleteInstalledWebAppMetadataDefaultPref,
+                    CONTENT_SETTING_ALLOW);
 #endif
   prefs->SetInteger(kGeolocationPrefPath, CONTENT_SETTING_BLOCK);
 
@@ -168,6 +173,7 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
   EXPECT_FALSE(prefs->HasPrefPath(kObsoletePluginsDefaultPref));
   EXPECT_FALSE(prefs->HasPrefPath(kObsoletePluginsDataDefaultPref));
   EXPECT_FALSE(prefs->HasPrefPath(kObsoleteFileHandlingDefaultPref));
+  EXPECT_FALSE(prefs->HasPrefPath(kObsoleteInstalledWebAppMetadataDefaultPref));
 #endif
   // Check that non-obsolete prefs have not been touched.
   EXPECT_TRUE(prefs->HasPrefPath(kGeolocationPrefPath));

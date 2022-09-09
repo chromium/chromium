@@ -142,7 +142,6 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::WAKE_LOCK_SCREEN, nullptr},
     {ContentSettingsType::WAKE_LOCK_SYSTEM, nullptr},
     {ContentSettingsType::LEGACY_COOKIE_ACCESS, nullptr},
-    {ContentSettingsType::INSTALLED_WEB_APP_METADATA, nullptr},
     {ContentSettingsType::NFC, nullptr},
     {ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA, nullptr},
     {ContentSettingsType::FILE_SYSTEM_READ_GUARD, nullptr},
