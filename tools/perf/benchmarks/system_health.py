@@ -17,13 +17,10 @@ import page_sets
 
 
 SYSTEM_HEALTH_BENCHMARK_UMA = [
-    'Event.Latency.ScrollBegin.TimeToScrollUpdateSwapBegin2',
-    'Event.Latency.ScrollUpdate.TimeToScrollUpdateSwapBegin2',
     'EventLatency.FirstGestureScrollUpdate.Touchscreen.TotalLatency',
     'EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatency',
     'EventLatency.GestureScrollUpdate.Touchscreen.TotalLatency',
-    'EventLatency.GestureScrollUpdate.Wheel.TotalLatency'
-    'Graphics.Smoothness.PercentDroppedFrames.AllSequences',
+    'EventLatency.GestureScrollUpdate.Wheel.TotalLatency',
     'Graphics.Smoothness.PercentDroppedFrames3.AllSequences',
     'Memory.GPU.PeakMemoryUsage2.Scroll',
     'Memory.GPU.PeakMemoryUsage2.PageLoad',
