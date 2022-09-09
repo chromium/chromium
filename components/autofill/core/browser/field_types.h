@@ -21,8 +21,106 @@ namespace autofill {
 //
 // NOTE: When deprecating field types, also update IsValidServerFieldType().
 //
-// The list of all field types natively understood by the Autofill server. A
-// subset of these types is used to store Autofill data in the user's profile.
+// This enum represents the list of all field types natively understood by the
+// Autofill server. A subset of these types is used to store Autofill data in
+// the user's profile.
+//
+// # Phone numbers
+//
+// Here are some examples for how to understand the field types for phone
+// numbers:
+// - US phone number: (650) 234-5678 - US has the country code +1.
+// - German phone number: 089 123456 - Germany has the country code +49.
+//
+// In the following examples whitespaces are only added for readability
+// purposes.
+//
+// PHONE_HOME_COUNTRY_CODE
+//   - US: 1
+//   - DE: 49
+//
+// PHONE_HOME_CITY_CODE: City code without a trunk prefix. Used in combination
+//   with a PHONE_HOME_COUNTRY_CODE.
+//   - US: 650
+//   - DE: 89
+// PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: Like PHONE_HOME_CITY_CODE
+//   with a trunk prefix, if applicable in the number's region. Used when no
+//   PHONE_HOME_COUNTRY_CODE field is present.
+//   - US: 650
+//   - DE: 089
+//
+// PHONE_HOME_NUMBER: Local number without country code and city/area code
+//   - US: 234 5678
+//   - DE: 123456
+//
+// PHONE_HOME_NUMBER_PREFIX:
+// PHONE_HOME_NUMBER_SUFFIX:
+//   PHONE_HOME_NUMBER = PHONE_HOME_NUMBER_PREFIX + PHONE_HOME_NUMBER_SUFFIX.
+//   For the US numbers (650) 234-5678 the types correspond to 234 and 5678.
+//   The 650 is a PHONE_HOME_CITY_CODE or
+//   PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX.
+//   The concept of prefix and suffix is not well defined in the standard
+//   and based on observations from countries which use prefixes and suffixes we
+//   chose that suffixes cover the last 4 digits of the home number and the
+//   prefix the rest.
+//
+// PHONE_HOME_CITY_AND_NUMBER: city and local number with a local trunk prefix
+//   where applicable. This is how one would dial the number from within its
+//   country.
+//   - US: 650 234 5678
+//   - DE: 089 123456
+// PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX: Like
+//   PHONE_HOME_CITY_AND_NUMBER, but never includes a trunk prefix. Used in
+//   combination with a PHONE_HOME_COUNTRY_CODE field.
+//   - US: 650 234 5678
+//   - DE: 89 123456
+//
+// PHONE_HOME_WHOLE_NUMBER: The phone number in the internal storage
+// representation, attempting to preserve the formatting the user provided. As
+// such, this number can be in national and international representation.
+// If the user made no attempt at formatting the number (it consists only of
+// characters of the set [+0123456789], no whitespaces, no parentheses, no
+// hyphens, no slashes, etc), we will make an attempt to format the number in a
+// proper way. If AutofillInferCountryCallingCode is enabled, we will infer the
+// country code and also store that in the formatted number.
+// If a website contains <input autocomplete="tel"> this is what we fill. I.e.,
+// the phone number representation the user tried to give us.
+// With AutofillInferCountryCallingCode, the GetInfo() representation always
+// contains a country code. So for filling purposes, PHONE_HOME_WHOLE_NUMBER is
+// in international format.
+// If we reformat the number ourselves, the GetRawInfo() contains the inferred
+// country code. If we don't reformat the number, the GetRawInfo()
+// representation remains without one. In all countries but the US and Canada,
+// formatting will put a + infront of the country code.
+// TODO(crbug.com/1311937) Clean this up once AutofillInferCountryCallingCode
+// is launched.
+//
+// PHONE_HOME_EXTENSION: Extensions are detected, but not filled. This would
+//   be the part that comes after a PHONE_HOME_WHOLE_NUMBER or
+//   PHONE_HOME_CITY_AND_NUMBER
+//
+// The following would be reasonable representations of phone numbers:
+// - International formats:
+//   - WHOLE_NUMBER
+//   - COUNTRY_CODE, CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX
+//   - COUNTRY_CODE, CITY_CODE, HOME_NUMBER
+//   - COUNTRY_CODE, CITY_CODE, NUMBER_PREFIX, NUMBER_SUFFIX
+// - National formats:
+//   - WHOLE_NUMBER
+//   - CITY_AND_NUMBER
+//   - CITY_CODE_WITH_TRUNK_PREFIX, PHONE_HOME_NUMBER
+//   - CITY_CODE_WITH_TRUNK_PREFIX, NUMBER_PREFIX, NUMBER_SUFFIX
+//
+// There are a few subtleties to be aware of:
+//
+// GetRawInfo() can only be used to access the PHONE_HOME_WHOLE_NUMBER.
+// It returns a formatted number. If the number was not preformatted by the user
+// (i.e. containing formatting characters outside of [+0123456789], we format
+// it ourselves.
+//
+// GetInfo() returns an unformatted number (digits only). It is used for
+// filling!
+//
 enum ServerFieldType {
   // Server indication that it has no data for the requested field.
   NO_SERVER_DATA = 0,
@@ -40,6 +138,7 @@ enum ServerFieldType {
   NAME_FULL = 7,
   NAME_SUFFIX = 8,
   EMAIL_ADDRESS = 9,
+  // Local number without country code and city/area code.
   PHONE_HOME_NUMBER = 10,
   // Never includes a trunk prefix. Used in combination with a
   // PHONE_HOME_COUNTRY_CODE field.
