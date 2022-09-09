@@ -392,6 +392,14 @@ base::Time NotificationChannelsProviderAndroid::GetWebsiteSettingLastModified(
   return channel_entry->second.timestamp;
 }
 
+bool NotificationChannelsProviderAndroid::UpdateLastVisitTime(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsType content_type) {
+  // Last visited tracking is not implemented for this type.
+  return false;
+}
+
 void NotificationChannelsProviderAndroid::SetClockForTesting(
     base::Clock* clock) {
   clock_ = clock;

@@ -11,7 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
@@ -24,16 +23,11 @@
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
-#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
-#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_service.h"
-#include "components/prefs/scoped_user_pref_update.h"
-#include "services/preferences/public/cpp/dictionary_value_update.h"
-#include "services/preferences/public/cpp/scoped_pref_update.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_content_settings_event_info.pbzero.h"
 
@@ -268,6 +262,33 @@ base::Time PrefProvider::GetWebsiteSettingLastModified(
 
   return GetPref(content_type)
       ->GetWebsiteSettingLastModified(primary_pattern, secondary_pattern);
+}
+
+bool PrefProvider::UpdateLastVisitTime(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsType content_type) {
+  if (!supports_type(content_type))
+    return false;
+
+  auto it = GetRuleIterator(content_type, false);
+  Rule rule;
+  while (it->HasNext()) {
+    rule = it->Next();
+    if (rule.primary_pattern == primary_pattern &&
+        rule.secondary_pattern == secondary_pattern) {
+      // This should only be updated for settings that are already tracked.
+      DCHECK(rule.metadata.last_visited != base::Time());
+      // Reset iterator to release lock before updating setting.
+      it.reset();
+      rule.metadata.last_visited = GetCoarseTime(clock_->Now());
+      GetPref(content_type)
+          ->SetWebsiteSetting(rule.primary_pattern, rule.secondary_pattern,
+                              std::move(rule.value), std::move(rule.metadata));
+      return true;
+    }
+  }
+  return false;
 }
 
 void PrefProvider::ClearAllContentSettingsRules(

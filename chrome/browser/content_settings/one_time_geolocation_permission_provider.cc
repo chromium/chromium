@@ -110,6 +110,14 @@ base::Time OneTimeGeolocationPermissionProvider::GetWebsiteSettingLastModified(
   return matching_iterator->second;
 }
 
+bool OneTimeGeolocationPermissionProvider::UpdateLastVisitTime(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsType content_type) {
+  // LastVisit time is not tracked for one-time permissions.
+  return false;
+}
+
 void OneTimeGeolocationPermissionProvider::ClearAllContentSettingsRules(
     ContentSettingsType content_type) {
   if (content_type == ContentSettingsType::GEOLOCATION)
