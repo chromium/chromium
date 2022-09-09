@@ -1054,9 +1054,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
 }
 
 // Tests that prerender is cancelled if a different prerendering starts.
-// TODO(crbug.com/1348636): Test is flaky.
 IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
-                       DISABLED_DifferentSuggestion) {
+                       DifferentSuggestion) {
   base::HistogramTester histogram_tester;
 
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
