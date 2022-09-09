@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/class_property.h"
@@ -139,7 +138,7 @@ class ClassMethodCaller : public PropertySetterBase {
   ~ClassMethodCaller() override = default;
 
   void SetProperty(View* obj) override {
-    base::apply(
+    std::apply(
         Set, std::tuple_cat(std::make_tuple(static_cast<TClass*>(obj)), args_));
   }
 

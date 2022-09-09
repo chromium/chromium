@@ -684,6 +684,22 @@ require default-constructibility of the mapped type.
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/Uv2tUfIwUfQ/m/ffMxCk9uAAAJ)
 ***
 
+### std::apply <sup>[allowed]</sup>
+
+```c++
+static_assert(std::apply(std::plus<>(), std::make_tuple(1, 2)) == 3);
+```
+
+**Description:** Invokes a `Callable` object with a tuple of arguments.
+
+**Documentation:**
+[std::apply](https://en.cppreference.com/w/cpp/utility/apply)
+
+**Notes:**
+*** promo
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/cNZm_g39fyM)
+***
+
 ### Non-member std::size/std::empty/std::data <sup>[allowed]</sup>
 
 ```c++
@@ -1119,22 +1135,6 @@ a regular function.
 **Notes:**
 *** promo
 See also `base::invoke`.
-***
-
-### std::apply <sup>[tbd]</sup>
-
-```c++
-static_assert(std::apply(std::plus<>(), std::make_tuple(1, 2)) == 3);
-```
-
-**Description:** Invokes a `Callable` object with a tuple of arguments.
-
-**Documentation:**
-[std::apply](https://en.cppreference.com/w/cpp/utility/apply)
-
-**Notes:**
-*** promo
-See also `absl::apply` and `base::apply`.
 ***
 
 ### std::byte <sup>[tbd]</sup>
