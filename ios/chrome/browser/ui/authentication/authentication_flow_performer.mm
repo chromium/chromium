@@ -195,9 +195,10 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
               commandHandler:(id<BrowsingDataCommands>)handler {
   DCHECK(browser);
   ChromeBrowserState* browserState = browser->GetBrowserState();
-
-  DCHECK(!AuthenticationServiceFactory::GetForBrowserState(browserState)
-              ->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
+  // The user needs to be signed out when clearing the data to avoid deleting
+  // data on server side too.
+  CHECK(!AuthenticationServiceFactory::GetForBrowserState(browserState)
+             ->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
 
   // Workaround for crbug.com/1003578
   //
