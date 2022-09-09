@@ -252,6 +252,24 @@ class AXPosition {
     return new_position;
   }
 
+  static AXPositionInstance CreateTreePositionAtStartOfAnchor(
+      const AXNode& anchor) {
+    // Initialize the child index:
+    // For a leaf, the child index will be BEFORE_TEXT.
+    // Otherwise the child index will be 0.
+    int child_index = IsLeafNodeForTreePosition(anchor) ? BEFORE_TEXT : 0;
+    AXTreeID tree_id = anchor.tree()->GetAXTreeID();
+    return CreateTreePosition(tree_id, anchor.id(), child_index);
+  }
+
+  static AXPositionInstance CreateTreePositionAtEndOfAnchor(
+      const AXNode& anchor) {
+    // Initialize the child index to the anchor's child count.
+    AXTreeID tree_id = anchor.tree()->GetAXTreeID();
+    return CreateTreePosition(tree_id, anchor.id(),
+                              anchor.GetChildCountCrossingTreeBoundary());
+  }
+
   static AXPositionInstance CreateTextPosition(
       AXTreeID tree_id,
       AXNodeID anchor_id,
@@ -2228,9 +2246,7 @@ class AXPosition {
       case AXPositionKind::NULL_POSITION:
         return CreateNullPosition();
       case AXPositionKind::TREE_POSITION:
-        if (IsLeaf())
-          return CreateTreePosition(tree_id_, anchor_id_, BEFORE_TEXT);
-        return CreateTreePosition(tree_id_, anchor_id_, 0 /* child_index */);
+        return CreateTreePositionAtStartOfAnchor(*GetAnchor());
       case AXPositionKind::TEXT_POSITION:
         return CreateTextPosition(tree_id_, anchor_id_, 0 /* text_offset */,
                                   ax::mojom::TextAffinity::kDownstream);
@@ -2349,15 +2365,8 @@ class AXPosition {
       case AXPositionKind::NULL_POSITION:
         NOTREACHED();
         return CreateNullPosition();
-      case AXPositionKind::TREE_POSITION: {
-        AXPositionInstance child_position =
-            CreateTreePosition(tree_id, child_id, 0 /* child_index */);
-        // If the child's anchor is a leaf node, make this a "before text"
-        // position.
-        if (child_position->IsLeaf())
-          child_position->child_index_ = BEFORE_TEXT;
-        return child_position;
-      }
+      case AXPositionKind::TREE_POSITION:
+        return CreateTreePositionAtStartOfAnchor(*child_anchor);
       case AXPositionKind::TEXT_POSITION:
         return CreateTextPosition(tree_id, child_id, 0 /* text_offset */,
                                   ax::mojom::TextAffinity::kDownstream);
@@ -3578,13 +3587,11 @@ class AXPosition {
       return SlowCompareTo(other);
 
     AXPositionInstance this_uncommon_tree_position =
-        CreateTreePosition(our_ancestors.top()->tree()->GetAXTreeID(),
-                           our_ancestors.top()->id(), 0 /*child_index*/);
+        CreateTreePositionAtStartOfAnchor(*our_ancestors.top());
     int this_uncommon_ancestor_index =
         this_uncommon_tree_position->AnchorIndexInParent();
     AXPositionInstance other_uncommon_tree_position =
-        CreateTreePosition(other_ancestors.top()->tree()->GetAXTreeID(),
-                           other_ancestors.top()->id(), 0 /*child_index*/);
+        CreateTreePositionAtStartOfAnchor(*other_ancestors.top());
     int other_uncommon_ancestor_index =
         other_uncommon_tree_position->AnchorIndexInParent();
     DCHECK_NE(this_uncommon_ancestor_index, other_uncommon_ancestor_index)
