@@ -22,10 +22,10 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -88,7 +88,7 @@ public class TabObserverTest {
         assertFalse("Tab should not be interactable.", mTab.isUserInteractable());
 
         // Exit tab switcher and wait for event again.
-        TabUiTestHelper.clickFirstCardFromTabSwitcher(mActivity);
+        LayoutTestUtils.startShowingAndWaitForLayout(layoutManager, LayoutType.BROWSING, false);
 
         interactabilityHelper.waitForCallback(interactableCallCount);
         assertTrue("Tab should be interactable.", mTab.isUserInteractable());
