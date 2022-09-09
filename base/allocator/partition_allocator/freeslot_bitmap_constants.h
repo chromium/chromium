@@ -12,6 +12,8 @@
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
+#include "base/allocator/partition_allocator/partition_tag_bitmap.h"
+#include "base/allocator/partition_allocator/reservation_offset_table.h"
 
 namespace partition_alloc::internal {
 
@@ -47,6 +49,14 @@ PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
 NumPartitionPagesPerFreeSlotBitmap() {
   return ReservedFreeSlotBitmapSize() / PartitionPageSize();
 }
+
+#if BUILDFLAG(USE_FREESLOT_BITMAP)
+PA_ALWAYS_INLINE uintptr_t SuperPageFreeSlotBitmapAddr(uintptr_t super_page) {
+  PA_DCHECK(!(super_page % kSuperPageAlignment));
+  return super_page + PartitionPageSize() +
+         (IsManagedByNormalBuckets(super_page) ? ReservedTagBitmapSize() : 0);
+}
+#endif
 
 }  // namespace partition_alloc::internal
 

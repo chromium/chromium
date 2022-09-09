@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "base/allocator/partition_allocator/freeslot_bitmap.h"
 #include "base/allocator/partition_allocator/partition_alloc-inl.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
@@ -246,6 +247,15 @@ class PartitionFreelistEntry {
 
     bool same_superpage = (here_address & kSuperPageBaseMask) ==
                           (next_address & kSuperPageBaseMask);
+#if BUILDFLAG(USE_FREESLOT_BITMAP)
+    bool marked_as_free_in_bitmap =
+        for_thread_cache
+            ? true
+            : !FreeSlotBitmapSlotIsUsed(reinterpret_cast<uintptr_t>(next));
+#else
+    bool marked_as_free_in_bitmap = true;
+#endif
+
     // This is necessary but not sufficient when quarantine is enabled, see
     // SuperPagePayloadBegin() in partition_page.h. However we don't want to
     // fetch anything from the root in this function.
@@ -255,7 +265,8 @@ class PartitionFreelistEntry {
     if (for_thread_cache)
       return shadow_ptr_ok & not_in_metadata;
     else
-      return shadow_ptr_ok & same_superpage & not_in_metadata;
+      return shadow_ptr_ok & same_superpage & marked_as_free_in_bitmap &
+             not_in_metadata;
   }
 
   EncodedPartitionFreelistEntryPtr encoded_next_;

@@ -493,14 +493,6 @@ PA_ALWAYS_INLINE uintptr_t SuperPageTagBitmapAddr(uintptr_t super_page) {
   return super_page + PartitionPageSize();
 }
 
-#if BUILDFLAG(USE_FREESLOT_BITMAP)
-PA_ALWAYS_INLINE uintptr_t SuperPageFreeSlotBitmapAddr(uintptr_t super_page) {
-  PA_DCHECK(!(super_page % kSuperPageAlignment));
-  return super_page + PartitionPageSize() +
-         (IsManagedByNormalBuckets(super_page) ? ReservedTagBitmapSize() : 0);
-}
-#endif
-
 PA_ALWAYS_INLINE uintptr_t
 SuperPagePayloadStartOffset(bool is_managed_by_normal_buckets,
                             bool with_quarantine) {

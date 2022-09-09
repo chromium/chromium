@@ -1104,7 +1104,8 @@ TEST_P(PartitionAllocThreadCacheTest, ClearFromTail) {
     uint8_t count = 0;
     auto* head = tcache->buckets_[index].freelist_head;
     while (head) {
-      head = head->GetNext(tcache->buckets_[index].slot_size);
+      head =
+          head->GetNextForThreadCache<true>(tcache->buckets_[index].slot_size);
       count++;
     }
     return count;
