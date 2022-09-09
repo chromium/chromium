@@ -243731,6 +243731,19 @@
         {}
        ]
       ],
+      "mathvariant-basic-transforms-with-default-font.html": [
+       "24c868c49512a4805bcde64df8f59325cd741f59",
+       [
+        null,
+        [
+         [
+          "/mathml/relations/css-styling/mathvariant-basic-transforms-with-default-font-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "mathvariant-bold-fraktur.html": [
        "32d037603bcda2a4ef84aa367c50089ae05b337a",
        [
@@ -285828,7 +285841,7 @@
        []
       ],
       "webkit-line-clamp-008-ref.html": [
-       "dd1304daa9a672c535ad8e52c66e93d9a13c4223",
+       "4ead437830f96be87f75c687c973e21d63021d99",
        []
       ],
       "webkit-line-clamp-009-ref.html": [
@@ -285892,7 +285905,7 @@
        []
       ],
       "webkit-line-clamp-024-ref.html": [
-       "9b81b6f1500d7a174b6ae2c851079a089cb60445",
+       "d4820a1b487a031611b7010a3513fb3daf06d71f",
        []
       ],
       "webkit-line-clamp-025-ref.html": [
@@ -285908,7 +285921,7 @@
        []
       ],
       "webkit-line-clamp-029-ref.html": [
-       "5a26a4fc7bcab6de05d449f4f63c1a1bb8f926fb",
+       "0d18c2a7f55f4f071657ee3d3c4e610f7e8fb05b",
        []
       ],
       "webkit-line-clamp-030-ref.html": [
@@ -285924,7 +285937,7 @@
        []
       ],
       "webkit-line-clamp-035-ref.html": [
-       "f7488ba2ec6ebeae2d281b29586aaedb9effab97",
+       "230218399e31f9dc79ba6aef2856a16be1ae98b4",
        []
       ],
       "webkit-line-clamp-036-ref.html": [
@@ -331253,6 +331266,10 @@
       ],
       "mathvariant-auto-ref.html": [
        "f8eaf7a7751b68c7a0108420b4789cd6fba8a6b3",
+       []
+      ],
+      "mathvariant-basic-transforms-with-default-font-ref.html": [
+       "6ebfd75c2fa6cb16b20eae3dd3c3305fc1e37139",
        []
       ],
       "mathvariant-bold-fraktur-ref.html": [
@@ -400985,8 +401002,15 @@
        {}
       ]
      ],
-     "unreachable-snap-positions.html": [
+     "unreachable-snap-positions-001.html": [
       "ca4f6033cece748bb1b4b39c755569174a75ecb5",
+      [
+       null,
+       {}
+      ]
+     ],
+     "unreachable-snap-positions-002.html": [
+      "a3726d71b3ec440360f763eb4f7bfad145605c7b",
       [
        null,
        {}
@@ -418797,7 +418821,7 @@
      ],
      "scrolling": {
       "iframe-chains.html": [
-       "2d7e1827adad6f668452c4d72846f03de85a2a6e",
+       "fb7d674aae13eee0569987c2c8d635bded7c7018",
        [
         null,
         {
@@ -503439,7 +503463,7 @@
        ]
       ],
       "wheelScroll.html": [
-       "a7d9b2609da763dbfaacab253edb13ca35c16627",
+       "0447c17ef9a5931001c0b60cd5184fa12e913d52",
        [
         null,
         {
@@ -507647,6 +507671,15 @@
       ],
       "unique-identifier-2.html": [
        "d4e69df324a6cf78c1dd5c0a2e216c0703cc1ed2",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
+     "text-and-math": {
+      "basic-mathematical-alphanumeric-symbols-with-default-font.html": [
+       "c1e8d409b9605406c72de2ef941208759972972b",
        [
         null,
         {}
@@ -514719,6 +514752,13 @@
      ],
      "entries-after-bfcache.html": [
       "ef93d1e27e76cc72f8fb24ee711b76361c71f42a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "entries-after-blank-navigation-from-cross-origin.html": [
+      "d527637ed353a37b6e737ba75560c19e27da20fe",
       [
        null,
        {}
@@ -538877,6 +538917,16 @@
       null,
       {}
      ]
+    ],
+    "user-select-on-input-and-contenteditable.html": [
+     "6cbde6914b687596fe179bf525641ee2cb6c8026",
+     [
+      null,
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ]
     ]
    },
    "serial": {
@@ -552424,7 +552474,7 @@
        ]
       ],
       "transform-dynamic-update.html": [
-       "3a65c007de659b64af86b2215331b30366a2102d",
+       "c1ac9197a5f64e260679269e7cf79d1e7ff17192",
        [
         null,
         {}
