@@ -44,6 +44,7 @@
 
 using ::testing::_;
 using ::testing::AtLeast;
+using ::testing::AtMost;
 using ::testing::Between;
 using ::testing::DoAll;
 using ::testing::Eq;
@@ -218,13 +219,7 @@ class StorageTest
 
     // Disallow uploads unless other expectation is set (any later EXPECT_CALL
     // will take precedence over this one).
-    EXPECT_CALL(set_mock_uploader_expectations_, Call(_))
-        .WillRepeatedly(Invoke([](UploaderInterface::UploadReason reason) {
-          return Status(
-              error::UNAVAILABLE,
-              base::StrCat({"Test uploader not provided by the test, reason=",
-                            UploaderInterface::ReasonToString(reason)}));
-        }));
+    EXPECT_CALL(set_mock_uploader_expectations_, Call(_)).Times(0);
     // Encryption is enabled by default.
     ASSERT_TRUE(EncryptionModuleInterface::is_enabled());
     if (is_encryption_enabled()) {
@@ -800,6 +795,17 @@ class StorageTest
     // Make sure all disk is not reserved (files remain, but Storage is not
     // responsible for them anymore).
     ASSERT_THAT(options_.disk_space_resource()->GetUsed(), Eq(0u));
+    // Handle and reject INIT_RESUME (optionally), in case the storage is
+    // recreated.
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(Eq(UploaderInterface::UploadReason::INIT_RESUME)))
+        .Times(AtMost(1))
+        .WillRepeatedly(Invoke([](UploaderInterface::UploadReason reason) {
+          return Status(
+              error::UNAVAILABLE,
+              base::StrCat({"Test uploader not provided by the test, reason=",
+                            UploaderInterface::ReasonToString(reason)}));
+        }));
   }
 
   StatusOr<scoped_refptr<Storage>> CreateTestStorageWithFailedKeyDelivery(
@@ -831,11 +837,13 @@ class StorageTest
             [](UploaderInterface::UploadReason reason,
                UploaderInterface::UploaderInterfaceResultCb start_uploader_cb,
                StorageTest* self) {
+              LOG(ERROR) << "Attempt upload, reason="
+                         << UploaderInterface::ReasonToString(reason);
               auto result = self->set_mock_uploader_expectations_.Call(reason);
-              LOG(ERROR) << "Upload reason="
-                         << UploaderInterface::ReasonToString(reason) << " "
-                         << result.status();
               if (!result.ok()) {
+                LOG(ERROR) << "Upload not allowed, reason="
+                           << UploaderInterface::ReasonToString(reason) << " "
+                           << result.status();
                 std::move(start_uploader_cb).Run(result.status());
                 return;
               }
@@ -1650,7 +1658,7 @@ TEST_P(StorageTest, WriteAndImmediateUploadWithFailure) {
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(Invoke([](UploaderInterface::UploadReason reason) {
-          return Status(error::UNAVAILABLE, "Test uploader unavailable");
+          return Status(error::UNAVAILABLE, "Intended failure in test");
         }))
         .RetiresOnSaturation();
     EXPECT_CALL(set_mock_uploader_expectations_,
