@@ -614,6 +614,25 @@ export function FeedbackFlowTestSuite() {
         true, FeedbackAppHelpContentOutcome.kQuitNoHelpContentClicked);
   });
 
+  // Test that correct metrics are emitted when user quits on
+  // search page because no help content is shown.
+  test('QuitSearchPagesetNoHelpContentDisplayed', async () => {
+    await initializePage();
+    page.setNoHelpContentDisplayedForTesting(true);
+
+    verifyRecordExitPathCalled(
+        false, FeedbackAppExitPath.kQuitNoHelpContentDisplayed);
+    verifyHelpContentOutcomeMetricCalled(
+        false, FeedbackAppHelpContentOutcome.kQuitNoHelpContentDisplayed);
+
+    window.dispatchEvent(new CustomEvent('beforeunload'));
+
+    verifyRecordExitPathCalled(
+        true, FeedbackAppExitPath.kQuitNoHelpContentDisplayed);
+    verifyHelpContentOutcomeMetricCalled(
+        true, FeedbackAppHelpContentOutcome.kQuitNoHelpContentDisplayed);
+  });
+
   // Test that correct exitPathMetrics is emitted when user quits on share data
   // page.
   test('QuitShareDataPageHelpContentClicked', async () => {
@@ -648,5 +667,29 @@ export function FeedbackFlowTestSuite() {
     verifyExitPathMetricsEmitted(
         FeedbackFlowState.CONFIRMATION,
         FeedbackAppExitPath.kSuccessNoHelpContentClicked, false);
+  });
+
+  // Test that correct helpContentOutcomeMetrics is emitted when user click
+  // continue when there is no help content shown.
+  test('HelpContentOutcomeContinuesetNoHelpContentDisplayed', async () => {
+    await initializePage();
+    page.setNoHelpContentDisplayedForTesting(true);
+    verifyHelpContentOutcomeMetricCalled(
+        false, FeedbackAppHelpContentOutcome.kContinueNoHelpContentDisplayed);
+
+    // Now on search page.
+    const activePage = page.shadowRoot.querySelector('.iron-selected');
+    assertTrue(!!activePage);
+    assertEquals('searchPage', activePage.id);
+    const inputElement = activePage.shadowRoot.querySelector('textarea');
+    const continueButton =
+        activePage.shadowRoot.querySelector('#buttonContinue');
+
+    // Enter some text.
+    inputElement.value = 'abc';
+    continueButton.click();
+
+    verifyHelpContentOutcomeMetricCalled(
+        true, FeedbackAppHelpContentOutcome.kContinueNoHelpContentDisplayed);
   });
 }

@@ -68,6 +68,10 @@ export class SearchPageElement extends SearchPageElementBase {
         type: Number,
         notify: true,
       },
+      noHelpContentDisplayed: {
+        type: Boolean,
+        notify: true,
+      },
     };
   }
 
@@ -79,6 +83,9 @@ export class SearchPageElement extends SearchPageElementBase {
 
     /** @private {number} */
     this.helpContentSearchResultCount = 0;
+
+    /** @private {boolean} */
+    this.noHelpContentDisplayed = false;
 
     /**
      * Record the most recent number of characters in the input for which a
@@ -191,6 +198,8 @@ export class SearchPageElement extends SearchPageElementBase {
       isQueryEmpty: isQueryEmpty,
       isPopularContent: isPopularContent,
     };
+
+    this.noHelpContentDisplayed = (data.contentList.length === 0);
 
     this.helpContentSearchResultCount = response.response.results.length;
 

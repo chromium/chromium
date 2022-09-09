@@ -175,7 +175,7 @@ enum FeedbackAppExitPath {
   kQuitSearchPageNoHelpContentClicked,
   // User close on search page because no help content is shown (Offline or
   // Search is down).
-  kQuitNoResultFound,
+  kQuitNoHelpContentDisplayed,
   // User close on share data page after clicking some help contents.
   kQuitShareDataPageHelpContentClicked,
   // User close on share data page without clicking some help contents.
@@ -192,14 +192,14 @@ enum FeedbackAppHelpContentOutcome {
   kContinueHelpContentClicked,
   // User click continue without clicking any help content.
   kContinueNoHelpContentClicked,
-  // User click continue and no result is found in the search.
-  kContinueNoResultFound,
+  // User click continue despite no help content is displayed.
+  kContinueNoHelpContentDisplayed,
   // User quit feedback app after clicking the help content.
   kQuitHelpContentClicked,
   // User quit feedback app without clicking any help content.
   kQuitNoHelpContentClicked,
-  // User quit feedback app and no result is found in the search.
-  kQuitNoResultFound,
+  // User quit feedback app because no help content is displayed.
+  kQuitNoHelpContentDisplayed,
 };
 
 // Provides services needed by the feedback UI to display data and send reports.

@@ -2,7 +2,8 @@
   <iron-pages attr-for-selected="id" selected="[[currentState_]]">
     <search-page id="searchPage" on-continue-click="handleContinueClick_"
         description-template="[[descriptionTemplate_]]"
-        help-content-search-result-count="{{helpContentSearchResultCount_}}">
+        help-content-search-result-count="{{helpContentSearchResultCount_}}"
+        no-help-content-displayed="{{noHelpContentDisplayed_}}">
     </search-page>
     <share-data-page id="shareDataPage" feedback-context="[[feedbackContext_]]"
         should-show-bluetooth-checkbox="[[shouldShowBluetoothCheckbox_]]"

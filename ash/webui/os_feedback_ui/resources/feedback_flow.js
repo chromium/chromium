@@ -27,6 +27,15 @@ const OS_FEEDBACK_UNTRUSTED_ORIGIN = 'chrome-untrusted://os-feedback';
 const HELP_CONTENT_CLICKED = 'help-content-clicked';
 
 /**
+ * Enum for actions on search page.
+ * @enum {string}
+ */
+export const SearchPageAction = {
+  CONTINUE: 'continue',
+  QUIT: 'quit',
+};
+
+/**
  * Enum for feedback flow states.
  * @enum {string}
  */
@@ -217,6 +226,13 @@ export class FeedbackFlowElement extends PolymerElement {
      * @private
      */
     this.helpContentSearchResultCount_;
+
+    /**
+     * Whether there is no help content shown(offline or search is down).
+     * @type {boolean}
+     * @private
+     */
+    this.noHelpContentDisplayed_;
   }
 
   ready() {
@@ -245,7 +261,6 @@ export class FeedbackFlowElement extends PolymerElement {
     window.addEventListener('beforeunload', event => {
       event.preventDefault();
 
-      // TODO(longbowei): Handle kQuitNoResultFound case.
       switch (this.currentState_) {
         case FeedbackFlowState.SEARCH:
           this.recordExitPath_(
@@ -253,6 +268,7 @@ export class FeedbackFlowElement extends PolymerElement {
               FeedbackAppExitPath.kQuitSearchPageNoHelpContentClicked);
           if (!this.helpContentOutcomeMetricEmitted_) {
             this.recordHelpContentOutcome_(
+                SearchPageAction.QUIT,
                 FeedbackAppHelpContentOutcome.kQuitHelpContentClicked,
                 FeedbackAppHelpContentOutcome.kQuitNoHelpContentClicked);
             this.helpContentOutcomeMetricEmitted_ = true;
@@ -325,9 +341,10 @@ export class FeedbackFlowElement extends PolymerElement {
             this.feedbackContext_.isInternalAccount &&
             this.isDescriptionRelatedToBluetooth(this.description_);
         this.fetchScreenshot_();
-        // TODO(longbowei): Handle NoResultFound case.
+
         if (!this.helpContentOutcomeMetricEmitted_) {
           this.recordHelpContentOutcome_(
+              SearchPageAction.CONTINUE,
               FeedbackAppHelpContentOutcome.kContinueHelpContentClicked,
               FeedbackAppHelpContentOutcome.kContinueNoHelpContentClicked);
           this.helpContentOutcomeMetricEmitted_ = true;
@@ -385,12 +402,22 @@ export class FeedbackFlowElement extends PolymerElement {
   }
 
   /**
+   * @param {!SearchPageAction} action
    * @param {!FeedbackAppHelpContentOutcome} outcomeHelpContentClicked
    * @param {!FeedbackAppHelpContentOutcome} outcomeNoHelpContentClicked
    * @private
    */
   recordHelpContentOutcome_(
-      outcomeHelpContentClicked, outcomeNoHelpContentClicked) {
+      action, outcomeHelpContentClicked, outcomeNoHelpContentClicked) {
+    if (this.noHelpContentDisplayed_) {
+      action == SearchPageAction.CONTINUE ?
+          this.feedbackServiceProvider_.recordHelpContentOutcome(
+              FeedbackAppHelpContentOutcome.kContinueNoHelpContentDisplayed) :
+          this.feedbackServiceProvider_.recordHelpContentOutcome(
+              FeedbackAppHelpContentOutcome.kQuitNoHelpContentDisplayed);
+      return;
+    }
+
     this.helpContentClicked_ ?
         this.feedbackServiceProvider_.recordHelpContentOutcome(
             outcomeHelpContentClicked) :
@@ -404,6 +431,11 @@ export class FeedbackFlowElement extends PolymerElement {
    * @private
    */
   recordExitPath_(pathHelpContentClicked, pathNoHelpContentClicked) {
+    if (this.noHelpContentDisplayed_) {
+      this.feedbackServiceProvider_.recordExitPath(
+          FeedbackAppExitPath.kQuitNoHelpContentDisplayed);
+      return;
+    }
     this.helpContentClicked_ ?
         this.feedbackServiceProvider_.recordExitPath(pathHelpContentClicked) :
         this.feedbackServiceProvider_.recordExitPath(pathNoHelpContentClicked);
@@ -435,6 +467,13 @@ export class FeedbackFlowElement extends PolymerElement {
    */
   setHelpContentClickedForTesting(helpContentClicked) {
     this.helpContentClicked_ = helpContentClicked;
+  }
+
+  /**
+   * @param {boolean} noHelpContentDisplayed
+   */
+  setNoHelpContentDisplayedForTesting(noHelpContentDisplayed) {
+    this.noHelpContentDisplayed_ = noHelpContentDisplayed;
   }
 
   /**
