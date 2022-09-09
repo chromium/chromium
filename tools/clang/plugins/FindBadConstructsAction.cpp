@@ -49,8 +49,6 @@ bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
       options_.check_base_classes = true;
     } else if (args[i] == "check-ipc") {
       options_.check_ipc = true;
-    } else if (args[i] == "check-gmock-objects") {
-      // TODO(crbug.com/589969): remove this once we don't pass it
     } else if (args[i] == "check-layout-object-methods") {
       options_.check_layout_object_methods = true;
     } else if (args[i] == "raw-ref-template-as-trivial-member") {
