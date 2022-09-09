@@ -372,7 +372,6 @@
 <translation id="1353980523955420967">PPD файлът не може да бъде намерен. Уверете се, че вашият Chromebook е онлайн, и опитайте отново.</translation>
 <translation id="1354045473509304750">Използването и местенето на камерата ви от <ph name="HOST" /> продължават да са разрешени</translation>
 <translation id="1355088139103479645">Да се изтрият ли всички данни?</translation>
-<translation id="1355466263109342573">Приставката <ph name="PLUGIN_NAME" /> е блокирана</translation>
 <translation id="1358741672408003399">Правопис и граматика</translation>
 <translation id="1359923111303110318">Устройството ви може да бъде отключвано чрез Smart Lock. Натиснете Enter, за да потвърдите.</translation>
 <translation id="1361164813881551742">Ръчно добавяне</translation>
@@ -3129,7 +3128,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3904326018476041253">Услуги за местоположение</translation>
 <translation id="3904849010307028014">Въз основа на взаимодействието ви с даден сайт, като например редовно влизане в профил, той може да изпрати означение за доверие до браузъра ви. Ако след време други посещавани от вас сайтове потърсят и открият валидно означение за доверие, има по-голяма вероятност да ви третират като човек, а не като робот.</translation>
 <translation id="3905761538810670789">Поправяне на приложението</translation>
-<translation id="3908393983276948098">Приставката <ph name="PLUGIN_NAME" /> не е актуална</translation>
 <translation id="3908501907586732282">Активиране на разширението</translation>
 <translation id="3909701002594999354">Показване на всички &amp;контроли</translation>
 <translation id="3909791450649380159">Изрязва&amp;не</translation>
@@ -5555,7 +5553,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6270391203985052864">Сайтовете могат да извеждат подкани за изпращане на известия</translation>
 <translation id="6270770586500173387">Изпращане на <ph name="BEGIN_LINK1" />информация за системата и приложенията<ph name="END_LINK1" />, както и за <ph name="BEGIN_LINK2" />показателите<ph name="END_LINK2" /></translation>
 <translation id="6271348838875430303">поправката е отменена</translation>
-<translation id="6272643420381259437">При изтеглянето на приставката възникна грешка (<ph name="ERROR" />)</translation>
 <translation id="6273677812470008672">Качество</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276210637549544171">Изискват се потребителско име и парола за прокси сървъра <ph name="PROXY_SERVER" />.</translation>
@@ -5766,7 +5763,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6474498546677193336">Прекратяването на споделянето не бе успешно, защото тази папка се използва от приложение. Споделянето ѝ ще бъде прекратено при следващото изключване на устройството с Linux.</translation>
 <translation id="6474884162850599008">Прекратяване на връзката с профила в Google Диск</translation>
 <translation id="6475294023568239942">Освободете място или променете размера на диска за Linux от настройките</translation>
-<translation id="6476138569087741884">Ниво на мащаба при увеличаване на целия екран</translation>
 <translation id="6476482583633999078">Скорост на говора</translation>
 <translation id="6477822444490674459">Синхронизирането на известията не се поддържа за телефони, работещи със служебен потребителски профил. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Да се запази ли опасният файл?</translation>
@@ -6353,6 +6349,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7011797924920577670">прогнозира интересите ви</translation>
 <translation id="7014174261166285193">Инсталацията не бе успешна.</translation>
 <translation id="7014480873681694324">Премахване на открояването</translation>
+<translation id="7014741021609395734">Увеличение</translation>
 <translation id="7017004637493394352">Кажете „Ok Google“ отново</translation>
 <translation id="7017219178341817193">Добавяне на нова страница</translation>
 <translation id="7017354871202642555">Не може да се зададе режим, след като е настроен прозорец.</translation>
@@ -6520,7 +6517,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7201118060536064622">Изтрихте „<ph name="DELETED_ITEM_NAME" />“</translation>
 <translation id="7201420661433230412">Преглед на файловете</translation>
 <translation id="7203150201908454328">Разгънато</translation>
-<translation id="7206693748120342859"><ph name="PLUGIN_NAME" /> се изтегля...</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Изход от страницата}other{Изход от страниците}}</translation>
 <translation id="7207457272187520234">Изпращане на данни за употребата и диагностиката. Понастоящем това устройство автоматично изпраща до Google диагностична информация и данни за употребата на устройството и приложенията. Това ще послужи за подобряване на стабилността на системата и приложенията и др. Някои обобщени данни също така ще подпомогнат приложенията и партньорите на Google, напр. програмистите за Android. Тази настройка е наложена от собственика. Ако настройката „Допълнителна активност в мрежата и приложенията“ е включена за вас, тези данни може да се запазват в профила ви в Google.</translation>
 <translation id="7207631048330366454">Търсене в приложенията</translation>
@@ -7482,6 +7478,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8098616321286360457">Изисква се връзка с мрежата</translation>
 <translation id="810068641062493918">Избрахте „<ph name="LANGUAGE" />“. За отмяна на избора натиснете клавиша „търсене“ + интервал.</translation>
 <translation id="8100972288595615768">Да се изчистят ли данните за сайтовете и разрешенията за <ph name="SITE_NAME" />?</translation>
+<translation id="8101409298456377967">Създавайте, запазвайте и управлявайте паролите си, така че лесно да можете да влизате в сайтовете и приложенията. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Персонализиран цвят</translation>
 <translation id="8101987792947961127">При следващото рестартиране се изисква Powerwash</translation>
 <translation id="81020759409809034">Локално местоположение</translation>
@@ -8103,7 +8100,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8717864919010420084">Копиране на връзката</translation>
 <translation id="8718994464069323380">Открит е сензорен екран</translation>
 <translation id="8719472795285728850">В очакване на активности от разширения...</translation>
-<translation id="8719653885894320876">Изтеглянето на <ph name="PLUGIN_NAME" /> не бе успешно</translation>
 <translation id="8720200012906404956">Търси се мобилна мрежа. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="8720816553731218127">Времето за изчакване на инициализирането на атрибутите за времето за инсталиране изтече.</translation>
 <translation id="8722912030556880711">Изпращане на данни за употребата и диагностиката. Понастоящем това устройство автоматично изпраща до Google диагностична информация и данни за употребата на устройството и приложенията. Това ще послужи за подобряване на стабилността на системата и приложенията и др. Някои обобщени данни също така ще подпомогнат приложенията и партньорите на Google, напр. програмистите за Android. Ако настройката „Допълнителна активност в мрежата и приложенията“ е включена за вас, тези данни може да се запазват в профила ви в Google. <ph name="BEGIN_LINK2" />Научете повече<ph name="END_LINK2" /></translation>

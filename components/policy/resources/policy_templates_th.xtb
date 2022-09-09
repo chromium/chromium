@@ -312,6 +312,7 @@
       หากไม่ได้ตั้งค่า <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> ไว้ ระบบจะใช้ชื่อโฮสต์ที่ URL การค้นหาระบุ</translation>
 <translation id="1312799700549720683">ควบคุมการตั้งค่าการแสดงผล</translation>
 <translation id="131353325527891113">แสดงชื่อผู้ใช้บนหน้าจอการลงชื่อเข้าใช้</translation>
+<translation id="1317658068839330898">ไม่อนุญาตให้ใช้ "<ph name="ASSISTANT_PRODUCT_NAME" />" บนเว็บ</translation>
 <translation id="1327466551276625742">เปิดใช้พรอมต์การกำหนดค่าเครือข่ายเมื่อออฟไลน์</translation>
 <translation id="1330145147221172764">เปิดใช้แป้นพิมพ์บนหน้าจอ</translation>
 <translation id="13356285923490863">ชื่อนโยบาย</translation>
@@ -349,6 +350,7 @@
 <translation id="1361661842732478894">แสดงปุ่มหน้าแรกในแถบเครื่องมือ</translation>
 <translation id="1363275621236827384">เปิดใช้คำค้นหาไปยังเซิร์ฟเวอร์ Quirks สำหรับโปรไฟล์ฮาร์ดแวร์</translation>
 <translation id="1371626834351873151">การลด User Agent จะเปิดใช้สำหรับต้นทางทั้งหมด</translation>
+<translation id="1371851989348083665">อนุญาตให้ใช้ "<ph name="ASSISTANT_PRODUCT_NAME" />" บนเว็บ</translation>
 <translation id="1372618949173323717">ปิดใช้ JavaScript</translation>
 <translation id="1376119291123231789">เปิดใช้โหมดการชาร์จแบตเตอรี่ขั้นสูง</translation>
 <translation id="1384459581748403878">การอ้างอิง: <ph name="REFERENCE_URL" /></translation>
@@ -3987,6 +3989,7 @@
       * "ปิด" หรือไม่ได้ตั้งค่า Chrome จะไม่บังคับใช้โหมดที่จำกัดใน YouTube แต่นโยบายภายนอก เช่น นโยบายของ YouTube อาจยังคงบังคับใช้โหมดที่จำกัด</translation>
 <translation id="5191476996923842491">พฤติกรรมเริ่มต้นสำหรับการปรับฟังก์ชัน setTimeout()</translation>
 <translation id="519247340330463721">กำหนดค่านโยบายที่เกี่ยวข้องกับ Safe Browsing</translation>
+<translation id="5194683382395300627">อนุญาตให้ใช้ "<ph name="ASSISTANT_PRODUCT_NAME" />" บนเว็บ เช่น เพื่อเปิดใช้การเปลี่ยนรหัสผ่านโดยอัตโนมัติ</translation>
 <translation id="5196520640744454600">เปิดใช้คีย์ติดหนึบในหน้าจอการเข้าสู่ระบบ</translation>
 <translation id="5196630732055960309">อนุญาตให้ใช้ File Handling API ในเว็บแอปเหล่านี้</translation>
 <translation id="5206454085187851382">หากมีการเลือก <ph name="PRINTERS_ALLOWLIST" /> ไว้สำหรับ <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> การตั้งค่า <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> จะระบุเครื่องพิมพ์ที่ผู้ใช้จะใช้ได้ จะมีเฉพาะเครื่องพิมพ์ที่มีรหัสตรงกับค่าในนโยบายนี้เท่านั้นที่พร้อมใช้งานสำหรับผู้ใช้ รหัสดังกล่าวต้องตรงกับช่อง <ph name="ID_FIELD" /> หรือ <ph name="GUID_FIELD" /> ในไฟล์ที่ระบุไว้ใน <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /></translation>
@@ -7391,6 +7394,11 @@
 <translation id="8763716376920670835">WebSQL จะเปิดโดยค่าเริ่มต้นตั้งแต่ M101 แต่ก็สามารถปิดใช้ผ่านธงของ Chrome ได้
           หากตั้งค่านโยบายนี้เป็น "เท็จ" หรือไม่ได้ตั้งค่าไว้ ระบบจะปิดใช้ WebSQL ได้
           หากตั้งค่านโยบายนี้เป็น "จริง" ระบบจะปิดใช้ WebSQL ไม่ได้</translation>
+<translation id="8766308369516978190">การตั้งค่านโยบายเป็น "เปิดใช้" จะอนุญาตให้ผู้ใช้ใช้ "<ph name="ASSISTANT_PRODUCT_NAME" />" บนเว็บได้ เช่น เพื่อชำระเงินและเปลี่ยนรหัสผ่านได้เร็วขึ้น การใช้ "<ph name="ASSISTANT_PRODUCT_NAME" />" ต้องได้รับความยินยอมเพิ่มเติมจากผู้ใช้ และ "<ph name="ASSISTANT_PRODUCT_NAME" />" จะทำงานก็ต่อเมื่อผู้ใช้เลือกให้ความยินยอมนี้แม้ว่าจะตั้งค่านโยบายเป็น "เปิดใช้" ก็ตาม
+
+      การตั้งค่านโยบายเป็น "ปิดใช้" จะทำให้ผู้ใช้ใช้ "<ph name="ASSISTANT_PRODUCT_NAME" />" บนเว็บไม่ได้
+
+      หากไม่ตั้งค่านโยบาย ผู้ใช้จะปิด "<ph name="ASSISTANT_PRODUCT_NAME" />" ได้</translation>
 <translation id="8766910236040529804">เปิดใช้คอนเทนเนอร์ของแอปตัวแสดงผล</translation>
 <translation id="8767743923206070405">การตั้งค่านโยบายเป็น "เปิดใช้" จะแสดงปุ่มหน้าแรกในแถบเครื่องมือของ <ph name="PRODUCT_NAME" /> การตั้งค่านโยบายเป็น "ปิดใช้" จะทำให้ปุ่มหน้าแรกไม่ปรากฏขึ้นมา
 

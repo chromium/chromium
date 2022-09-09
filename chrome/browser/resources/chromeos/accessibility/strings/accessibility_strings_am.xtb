@@ -140,6 +140,7 @@
 <translation id="1834891354138622109">አምድ</translation>
 <translation id="1846771122725914429">የብሉቱዝ ብሬይል ማሳያ</translation>
 <translation id="1852018405765032699">ማያ ገጹን በአራት ጣቶች መታ ማድረግ የChromeVox ምናሌዎችን ከፍቶ ይዘጋል። እነዚህ ምናሌዎች ስለትዕዛዞች እና አቋራጮች ጠቃሚ መረጃዎችን ይይዛሉ አንዴ ምናሌዎቹ ከተከፈቱ በኋላ ንጥሎችን ለማሰስ በአንድ ጣት ማንሸራተት እና ንጥሎችን ለማግበር ሁለቴ መታ ማድረግ ይችላሉ። ለመቀጠል ማያ ገጹን በአራት ጣቶች መታ ያድርጉ።</translation>
+<translation id="1864430479908918647">Search+Spaceን ይጫኑ</translation>
 <translation id="1865601187525349519">የጽሑፉ መጨረሻ</translation>
 <translation id="1876229593313240038">doc</translation>
 <translation id="1902396333223336119">ሕዋስ</translation>
@@ -778,6 +779,7 @@
 <translation id="6236061028292614533">ቀጣይ ርዕስ</translation>
 <translation id="6254901459154107917">ቀጣይ አርትዖት ሊደረግ የሚችል የጽሑፍ አካባቢ</translation>
 <translation id="6259464875943891919">ከ<ph name="TYPE" /> ወጥተዋል።</translation>
+<translation id="6280088282605782512">ሁለቴ መታ ያድርጉ</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">መሠረታዊ ቁልፎች፦ ፈልግ</translation>
 <translation id="6305702903308659374">ChromeVox እየተናገረ ሳለ በመደበኛ የድምጽ መጠን ላይ አጫውት</translation>
@@ -981,6 +983,7 @@
 <translation id="7731785449856576010">ምንም ቀጣይ የሚዲያ ንዑስ ፕሮግራም የለም</translation>
 <translation id="7735498529470878067">በመንካት ያስሱ በማያ ገጹ ላይ ስላለው ነገር በፍጥነት እንዲገነዘቡ ያግዘዎታል።</translation>
 <translation id="773906353055481349">በሕዋስ ለማሰስ ፍለጋ+Ctrl+Alt ከቀስቶች ጋር ይጫኑ</translation>
+<translation id="7746976083433980639">ከ<ph name="ACTION" /> እስከ <ph name="LABEL" /></translation>
 <translation id="7763537600611320912"><ph name="FILE_NAME" />ን ማውረድ ተጀምሯል</translation>
 <translation id="7768784765476638775">ለመናገር-ይምረጡ</translation>
 <translation id="7776293189010177726">የChromeVox ምናሌዎችን ክፈት</translation>

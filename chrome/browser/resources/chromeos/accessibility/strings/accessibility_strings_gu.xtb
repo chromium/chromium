@@ -140,6 +140,7 @@
 <translation id="1834891354138622109">કૉલમ</translation>
 <translation id="1846771122725914429">બ્લૂટૂથનું બ્રેઇલ પ્રદર્શન</translation>
 <translation id="1852018405765032699">સ્ક્રીન પર ચાર આંગળી વડે ટૅપ કરવાથી ChromeVox મેનૂ ખુલશે અને બંધ થશે. આ મેનૂમાં આદેશો અને શૉર્ટકટ વિશે સહાયરૂપ માહિતી શામેલ છે. એકવાર મેનૂ ખૂલે પછી, આઇટમ પર નૅવિગેટ કરવા માટે તમે એક આંગળી વડે સ્વાઇપ કરી અને આઇટમ સક્રિય કરવા માટે બે વાર ટૅપ કરી શકો છો. ચાલુ રાખવા માટે, સ્ક્રીન પર ચાર આંગળી વડે ટૅપ કરો.</translation>
+<translation id="1864430479908918647">Search+Space કી દબાવો</translation>
 <translation id="1865601187525349519">ટેક્સ્ટના અંતે</translation>
 <translation id="1876229593313240038">doc</translation>
 <translation id="1902396333223336119">કોષ</translation>
@@ -778,6 +779,7 @@
 <translation id="6236061028292614533">આગલું મથાળું</translation>
 <translation id="6254901459154107917">આગલું સંપાદનયોગ્ય ટેક્સ્ટ ક્ષેત્ર</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> થી બહાર નીકળ્યાં છે.</translation>
+<translation id="6280088282605782512">બે વાર ટૅપ કરો</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">આવશ્યક કી: Search</translation>
 <translation id="6305702903308659374">ChromeVox બોલી રહ્યું હોય ત્યારે પણ સામાન્ય અવાજે ચલાવો</translation>
@@ -981,6 +983,7 @@
 <translation id="7731785449856576010">કોઈ આગલું મીડિયા વિજેટ નથી</translation>
 <translation id="7735498529470878067">'ટચ કરીને શોધખોળ કરો' સુવિધા તમને સ્ક્રીન પર શું છે તે ઝડપથી સમજવામાં સહાય કરે છે.</translation>
 <translation id="773906353055481349">સેલ મુજબ નૅવિગેટ કરવા માટે ઍરો કી સાથે Search+Ctrl+Alt દબાવો</translation>
+<translation id="7746976083433980639"><ph name="ACTION" />થી <ph name="LABEL" /></translation>
 <translation id="7763537600611320912"><ph name="FILE_NAME" />નું ડાઉનલોડ શરૂ થયું</translation>
 <translation id="7768784765476638775">સાંભળવા માટે પસંદ કરો</translation>
 <translation id="7776293189010177726">ChromeVox મેનૂ ખોલો</translation>

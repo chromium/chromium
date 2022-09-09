@@ -372,7 +372,6 @@
 <translation id="1353980523955420967">PPDని కనుగొనడం సాధ్యం కాదు. మీ Chromebook ఇంటర్నెట్‌కు కనెక్ట్ అయ్యి ఉందని నిర్ధారించుకుని, ఆపై మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="1354045473509304750">మీ కెమెరాను ఉపయోగించడానికి, తరలించడానికి <ph name="HOST" />ను అనుమతించడాన్ని కొనసాగించండి</translation>
 <translation id="1355088139103479645">మొత్తం డేటాను తొలగించాలా?</translation>
-<translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> బ్లాక్ చేయబడింది</translation>
 <translation id="1358741672408003399">అక్షరక్రమం మరియు వ్యాకరణం</translation>
 <translation id="1359923111303110318">మీ పరికరాన్ని Smart Lockతో అన్‌లాక్ చేయవచ్చు. అన్‌లాక్ చేయడానికి 'ఎంటర్'ను నొక్కండి.</translation>
 <translation id="1361164813881551742">మాన్యువల్‌గా జోడించండి</translation>
@@ -1802,6 +1801,7 @@
 <translation id="2637400434494156704">పిన్ తప్పు. మీకు 1 ప్రయత్నం మిగిలి ఉంది.</translation>
 <translation id="2638286699381354126">అప్‌డేట్‌...</translation>
 <translation id="2638662041295312666">సైన్ ఇన్ ఇమేజ్</translation>
+<translation id="2640299212685523844">GTKని ఉపయోగించండి</translation>
 <translation id="264083724974021997">మీ ఫోన్‌కు కనెక్ట్ చేయండి - డైలాగ్</translation>
 <translation id="2642111877055905627">సాకర్ బంతి</translation>
 <translation id="2643698698624765890">విండో మెనూలోని ఎక్స్‌టెన్షన్‌లను క్లిక్ చేయడం ద్వారా మీ ఎక్స్‌టెన్షన్‌లను నిర్వహించండి.</translation>
@@ -1963,6 +1963,7 @@
 <translation id="2783829359200813069">ఎన్‌క్రిప్షన్ రకాలను ఎంచుకోండి</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" />తో మీ భద్రతా కీని ఉపయోగించండి</translation>
 <translation id="2785873697295365461">ఫైల్ వివరణలు</translation>
+<translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">లోకల్ బ్రౌజింగ్ డేటా (బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు, హిస్టరీ, మొదలైనవి)ను స్టోర్ చేయండి</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
@@ -2101,6 +2102,7 @@
 <translation id="2902312830803030883">మరిన్ని చర్యలు</translation>
 <translation id="2903457445916429186">ఎంచుకున్న అంశాలను తెరవండి</translation>
 <translation id="2903882649406874750">సెన్సార్‌లను యాక్సెస్ చేయనీయకుండా ఎల్లప్పుడూ <ph name="HOST" />ని బ్లాక్ చేయండి</translation>
+<translation id="2904845070985032877">యానిమేషన్‌లను పాజ్ చేయండి</translation>
 <translation id="2907619724991574506">ప్రారంభ URLలు</translation>
 <translation id="2907798539022650680">'<ph name="NAME" />'కు కనెక్ట్ చేయడంలో విఫలమైంది: <ph name="DETAILS" />
     సర్వర్ మెసేజ్‌: <ph name="SERVER_MSG" /></translation>
@@ -2926,6 +2928,7 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">మీరు మరియు Google</translation>
 <translation id="3722108462506185496">వర్చువల్ మెషిన్ సేవను ప్రారంభించడంలో ఎర్రర్ ఏర్పడింది. దయచేసి మళ్లీ ప్రయత్నించండి.</translation>
+<translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">అందుబాటులో ఉన్న Wi-Fi నెట్‌వర్క్‌లు</translation>
 <translation id="3727187387656390258">పాప్‌అప్‌ను పర్యవేక్షించు</translation>
 <translation id="372722114124766626">ఒకసారి మాత్రమే</translation>
@@ -3005,6 +3008,7 @@
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome మీ కంప్యూటర్‌లో హానికరమైన సాఫ్ట్‌వేర్‌ను కనుగొనలేదు • 1 రోజు క్రితం చెక్ చేయబడింది}other{Chrome మీ కంప్యూటర్‌లో హానికరమైన సాఫ్ట్‌వేర్‌ను కనుగొనలేదు • {NUM_DAYS} రోజుల క్రితం చెక్ చేయబడింది}}</translation>
 <translation id="379500251094592809">సమీప షేరింగ్‌ను ఉపయోగించడానికి, రెండు పరికరాలూ అన్‌లాక్ అయి, దగ్గరగా ఉన్నాయని, వాటిలో బ్లూటూత్ ఆన్ చేసి ఉందని నిర్ధారించుకోండి. మీరు మీ కాంటాక్ట్‌లలో లేని Chromebookతో షేర్ చేస్తుంటే, దానిలో సమీప విజిబిలిటీ ఫీచర్ ఆన్‌లో ఉందని నిర్ధారించుకోండి (సమయాన్ని ఎంచుకోవడం ద్వారా స్టేటస్ ప్రాంతాన్ని తెరిచి, ఆపై సమీప విజిబిలిటీని ఆన్ చేయండి) <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">ఆఫ్ చేయబడి ఉంది</translation>
+<translation id="3795766489237825963">యానిమేషన్‌లను ప్లే చేయండి</translation>
 <translation id="3796648294839530037">ఇష్టమైన నెట్‌వర్క్‌లు:</translation>
 <translation id="3797739167230984533">మీ సంస్థ మీ <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" />ను నిర్వహిస్తోంది<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />” కోసం <ph name="SEARCH_ENGINE" />లో &amp;శోధించండి</translation>
@@ -3131,7 +3135,6 @@
 <translation id="3904326018476041253">లొకేషన్ సర్వీస్‌లు</translation>
 <translation id="3904849010307028014">తరచుగా మీరు ఖాతాకు సైన్ ఇన్ చేయడం వంటి సైట్‌తో మీ ఇంటరాక్షన్ ఆధారంగా, ఆ సైట్ మీ బ్రౌజర్‌కు విశ్వసనీయ టోకెన్‌ను జారీ చేయవచ్చు. తర్వాత, మీరు సందర్శించే ఇతర సైట్‌లు చెక్ చేసి, చెల్లుబాటయ్యే విశ్వసనీయ టోకెన్‌ను కనుగొంటే, వారు మిమ్మల్ని బాట్‌గా కాకుండా ఒక వ్యక్తిగా పరిగణించే అవకాశం ఎక్కువగా ఉంటుంది.</translation>
 <translation id="3905761538810670789">యాప్‌ను సరి చేయి</translation>
-<translation id="3908393983276948098"><ph name="PLUGIN_NAME" /> కాలం చెల్లినది</translation>
 <translation id="3908501907586732282">ఎక్స్‌టెన్ష‌న్‌ను ప్రారంభించు</translation>
 <translation id="3909701002594999354">అన్ని కంట్రోల్‌లను చూడండి</translation>
 <translation id="3909791450649380159">క&amp;త్తిరించు</translation>
@@ -3423,6 +3426,7 @@
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">భాషలు</translation>
 <translation id="4184803915913850597">HID పరికరం (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
+<translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> సెర్చ్</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" />ను సెటప్ చేస్తోంది...</translation>
 <translation id="4190828427319282529">కీబోర్డ్ ఫోకస్‌ను హైలైట్ చేయండి</translation>
 <translation id="4193836101014293726">ఈ ప్రొఫైల్‌ను తొలగించడం సాధ్యపడదు</translation>
@@ -4437,6 +4441,7 @@
 <translation id="5190926251776387065">పోర్ట్‌ను యాక్టివేట్ చేయండి</translation>
 <translation id="5191094172448199359">మీరు ఎంటర్ చేసిన పిన్‌లు మ్యాచ్ అవ్వడం లేదు</translation>
 <translation id="5191251636205085390">థర్డ్-పార్టీ కుక్కీలను భర్తీ చేయడానికి, అలాగే వాటిని కంట్రోల్ చేయడానికి ఉద్దేశించిన కొత్త టెక్నాలిజీల గురించి తెలుసుకోండి</translation>
+<translation id="519185197579575131">QTని ఉపయోగించండి</translation>
 <translation id="5192062846343383368">మీ పర్యవేక్షణ సెట్టింగ్‌లను చూడడానికి Family Link యాప్‌ను తెరవండి</translation>
 <translation id="5193988420012215838">మీ క్లిప్‌బోర్డ్‌కు కోడ్ కాపీ చేయబడింది</translation>
 <translation id="5194256020863090856">ఇది అజ్ఞాత విండోలను మాత్రమే ప్రభావితం చేస్తుంది</translation>
@@ -5556,7 +5561,6 @@
 <translation id="6270391203985052864">నోటిఫికేషన్‌లను పంపడానికి సైట్‌లు అడుగగలవు</translation>
 <translation id="6270770586500173387"><ph name="BEGIN_LINK1" />సిస్టమ్, యాప్‌ సమాచారాన్ని<ph name="END_LINK1" /> మరియు <ph name="BEGIN_LINK2" />గణాంకాలను<ph name="END_LINK2" /> పంపు</translation>
 <translation id="6271348838875430303">కరెక్షన్‌ను తీసివేశారు</translation>
-<translation id="6272643420381259437">ప్లగ్ఇన్‌‌ను డౌన్‌లోడ్ చేస్తున్నప్పుడు ఎర్రర్ (<ph name="ERROR" />) ఏర్పడింది</translation>
 <translation id="6273677812470008672">క్వాలిటీ</translation>
 <translation id="6274202259872570803">స్క్రీన్‌కాస్ట్</translation>
 <translation id="6276210637549544171"><ph name="PROXY_SERVER" /> ప్రాక్సీ కోసం యూజర్‌నేమ్ మరియు పాస్‌వర్డ్ అవసరం.</translation>
@@ -5767,7 +5771,6 @@
 <translation id="6474498546677193336">ఒక యాప్ ఈ ఫోల్డర్‌ను ఉపయోగిస్తోంది కాబట్టి షేరింగ్‌ను తీసివేయలేకపోయాము. Linux మళ్లీ షట్ డౌన్ అయినప్పుడు ఫోల్డర్ షేరింగ్ తీసివేయబడుతుంది.</translation>
 <translation id="6474884162850599008">Google Drive ఖాతాను డిస్‌కనెక్ట్ చేయి</translation>
 <translation id="6475294023568239942">సెట్టింగ్‌లలో డిస్క్ స్పేస్‌ను ఖాళీ చేయండి లేదా Linux డిస్క్ పరిమాణం మార్చండి</translation>
-<translation id="6476138569087741884">ఫుల్ స్క్రీన్ జూమ్ స్థాయి</translation>
 <translation id="6476482583633999078">స్పీచ్ వేగం</translation>
 <translation id="6477822444490674459">వర్క్ ప్రొఫైల్ ఉన్న ఫోన్‌లలో నోటిఫికేషన్ సింకింగ్‌కు సపోర్ట్ ఉండదు. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">అపాయకరమైన ఫైల్‌ను ఉంచాలా?</translation>
@@ -6354,6 +6357,7 @@
 <translation id="7011797924920577670">మీ ఆసక్తులను అంచనా వేస్తుంది</translation>
 <translation id="7014174261166285193">వ్యవస్థాపన విఫలమైంది.</translation>
 <translation id="7014480873681694324">హైలైట్‌ను తీసివేయండి</translation>
+<translation id="7014741021609395734">జూమ్ స్థాయి</translation>
 <translation id="7017004637493394352">మళ్లీ "Ok Google" చెప్పండి</translation>
 <translation id="7017219178341817193">కొత్త పేజీని జోడించండి</translation>
 <translation id="7017354871202642555">విండో సెట్ చేయబడిన తర్వాత మోడ్ సెట్ చేయబడదు.</translation>
@@ -6521,7 +6525,6 @@
 <translation id="7201118060536064622">'<ph name="DELETED_ITEM_NAME" />' తొలగించబడింది</translation>
 <translation id="7201420661433230412">ఫైళ్లను చూడండి</translation>
 <translation id="7203150201908454328">విస్తరించబడింది</translation>
-<translation id="7206693748120342859"><ph name="PLUGIN_NAME" />ని డౌన్‌లోడ్ చేస్తోంది...</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{పేజీ నుండి నిష్క్రమించండి}other{పేజీల నుండి నిష్క్రమించండి}}</translation>
 <translation id="7207457272187520234">వినియోగం &amp; విశ్లేషణల డేటాను పంపండి. ఈ పరికరం ప్రస్తుతం సమస్య విశ్లేషణ డేటాను, పరికరం డేటాను, దానితో పాటు యాప్ వినియోగ డేటాను ఆటోమేటిక్‌గా Googleకు పంపుతోంది. ఇది సిస్టమ్, యాప్ స్థిరత్వానికి, అలాగే ఇతర మెరుగుదలలకు సహాయపడుతుంది. కొంత ఏకీకృత డేటా కూడా Google యాప్‌లకు, Android డెవలపర్‌ల లాంటి భాగస్వాములకు సహాయపడుతుంది. ఈ సెట్టింగ్‌ను యజమాని సెట్ చేశారు. మీ అదనపు వెబ్ &amp; యాప్ యాక్టివిటీ సెట్టింగ్‌ను ఆన్ చేసినట్లయితే, ఈ డేటా మీ Google ఖాతాలో సేవ్ చేయబడవచ్చు.</translation>
 <translation id="7207631048330366454">యాప్‌లను వెతకండి</translation>
@@ -7479,6 +7482,7 @@
 <translation id="8098616321286360457">నెట్‌వర్క్ కనెక్షన్ అవసరం</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> ఎంచుకోబడింది. ఎంపిక రద్దు చేయడానికి 'Search + Space'ను నొక్కండి.</translation>
 <translation id="8100972288595615768"><ph name="SITE_NAME" />లో సైట్ డేటాను, అనుమతులను క్లియర్ చేయాలనుకుంటున్నారా?</translation>
+<translation id="8101409298456377967">మీ పాస్‌వర్డ్‌లను క్రియేట్ చేయండి, సేవ్ చేయండి, అలాగే మేనేజ్ చేయండి, తద్వారా మీరు సైట్‌లకు, యాప్‌లకు సులభంగా సైన్ ఇన్ చేయవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">అనుకూల రంగు</translation>
 <translation id="8101987792947961127">తరువాత రీబూట్‌లో పవర్‌వాష్ అవసరం</translation>
 <translation id="81020759409809034">స్థానిక లొకేషన్</translation>
@@ -8100,7 +8104,6 @@
 <translation id="8717864919010420084">లింక్‌ని కాపీ చేయి</translation>
 <translation id="8718994464069323380">టచ్ స్క్రీన్ గుర్తించబడింది</translation>
 <translation id="8719472795285728850">ఎక్స్‌టెన్షన్ యాక్టివిటీల కోసం వింటోంది...</translation>
-<translation id="8719653885894320876"><ph name="PLUGIN_NAME" /> డౌన్‌లోడ్ విఫలమైంది</translation>
 <translation id="8720200012906404956">మొబైల్ నెట్‌వర్క్‌ కోసం చూస్తోంది. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="8720816553731218127">ఇన్‌స్టాలేషన్-సమయాల లక్షణాలు ప్రారంభిస్తుండగా సమయం మించిపోయింది.</translation>
 <translation id="8722912030556880711">వినియోగం &amp; విశ్లేషణల డేటాను పంపండి. ఈ పరికరం ప్రస్తుతం సమస్య విశ్లేషణ, అలాగే పరికర, యాప్ వినియోగ డేటాను ఆటోమేటిక్‌గా Googleకు పంపుతుంది. ఇది సిస్టమ్, యాప్ స్థిరత్వానికి, అలాగే ఇతర మెరుగుదలలకు సహాయపడుతుంది. కొంత సముదాయ డేటా కూడా Google యాప్‌లకు, అలాగే Android డెవలపర్‌ల లాంటి భాగస్వాములకు సహాయపడుతుంది. మీ అదనపు వెబ్ &amp; యాప్ యాక్టివిటీ సెట్టింగ్‌ను ఆన్ చేసినట్లయితే, ఈ డేటా మీ Google ఖాతాలో సేవ్ చేయబడవచ్చు. <ph name="BEGIN_LINK2" />మరింత తెలుసుకోండి<ph name="END_LINK2" /></translation>

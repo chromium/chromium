@@ -2996,6 +2996,11 @@ Yeni oluşturulan profilin ikincil hesapları olmasına izin verilmemesi dışı
 <translation id="3989829840000169163">Tarayıcıdaki Eski Uzantı Noktalarını Engelle</translation>
 <translation id="3990391739475801018">Pil Tasarrufu Modu devre dışı bırakılır.</translation>
 <translation id="3994043824457743421">Yeni sekme sayfasında orta aralık duyurusunu göster</translation>
+<translation id="3996325823532867220">Bu politika artık desteklenmiyor ancak ilgili <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> politikası belirli platformlarda desteklenebilir.
+
+      Bu ayar etkinleştirildiğinde <ph name="PRODUCT_NAME" /> sunucu sertifikalarının doğrulamasını yerleşik sertifika doğrulayıcıyı kullanarak yerine getirir.
+      Bu ayar devre dışı bırakıldığında ve <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> etkinleştirilmediği takdirde <ph name="PRODUCT_NAME" />, sunucu sertifikalarının doğrulamasını platform tarafından sağlanan eski sertifika doğrulayıcıyı kullanarak yerine getirir.
+      Bu ayar belirtilmezse yerleşik veya eski sertifika doğrulayıcı kullanılabilir.</translation>
 <translation id="3997519162482760140">SAML oturum açma sayfalarında video yakalama cihazlarına erişimin verileceği URL'ler</translation>
 <translation id="4004523942550416237">Google Asistan Voice Match akışını ilk kurulum sırasında gösterme</translation>
 <translation id="4007646377576030214"> Bu politikanın kullanımının M87'de durdurulduğunu ve politikanın M89'da tamamen kaldırıldığını unutmayın. Yönetilen misafir oturumlarının gizlilik uyarılarını yapılandırmak için bunun yerine lütfen <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> politikasını kullanın.

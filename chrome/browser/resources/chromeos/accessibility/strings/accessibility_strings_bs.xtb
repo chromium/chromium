@@ -140,6 +140,7 @@
 <translation id="1834891354138622109">Stupac</translation>
 <translation id="1846771122725914429">Bluetooth Brailleov ekran</translation>
 <translation id="1852018405765032699">Dodirivanjem ekrana s četiri prsta otvaraju se i zatvaraju meniji ChromeVoxa. Ovi meniji sadržavaju korisne informacije o komandama i prečicama. Nakon otvaranja menija možete prevlačiti jednim prstom da se krećete kroz stavke i dvaput ih dodirnuti da ih aktivirate. Da nastavite, dodirnite ekran s četiri prsta.</translation>
+<translation id="1864430479908918647">Pritisnite tipku za pretraživanje i tipku za razmak</translation>
 <translation id="1865601187525349519">Kraj teksta</translation>
 <translation id="1876229593313240038">doc</translation>
 <translation id="1902396333223336119">Mobitel</translation>
@@ -778,6 +779,7 @@
 <translation id="6236061028292614533">Sljedeći naslov</translation>
 <translation id="6254901459154107917">Sljedeće tekstualno područje s mogućnošću uređivanja</translation>
 <translation id="6259464875943891919">Napustitli ste <ph name="TYPE" />.</translation>
+<translation id="6280088282605782512">Dodirnite dvaput</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">Osnovne tipke: Pretraživanje</translation>
 <translation id="6305702903308659374">Reproduciraj pri normalnoj jačini zvuka kada ChromeVox govori</translation>
@@ -981,6 +983,7 @@
 <translation id="7731785449856576010">Nema sljedećeg vidžeta za medije</translation>
 <translation id="7735498529470878067">Istraživanje dodirom vam može pomoći da brzo steknete uvid u ono što se nalazi na ekranu.</translation>
 <translation id="773906353055481349">Za kretanje po ćelijama, pritisnite tipku za pretraživanje + Ctrl + Alt i strelice</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> – <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">Započeto je preuzimanje fajla <ph name="FILE_NAME" /></translation>
 <translation id="7768784765476638775">Odaberite za govor</translation>
 <translation id="7776293189010177726">Otvaranje menija ChromeVoxa</translation>

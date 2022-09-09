@@ -312,6 +312,7 @@
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> niet instelt, wordt de hostnaam gebruikt die door de zoek-URL wordt gespecificeerd.</translation>
 <translation id="1312799700549720683">Beheert weergave-instellingen.</translation>
 <translation id="131353325527891113">Gebruikersnamen tonen in het aanmeldscherm</translation>
+<translation id="1317658068839330898">Het gebruik van <ph name="ASSISTANT_PRODUCT_NAME" /> op internet niet toestaan</translation>
 <translation id="1327466551276625742">Prompt voor netwerkconfiguratie tonen als je offline bent</translation>
 <translation id="1330145147221172764">Schermtoetsenbord aanzetten</translation>
 <translation id="13356285923490863">Naam van beleid</translation>
@@ -349,6 +350,7 @@
 <translation id="1361661842732478894">Startknop op de werkbalk tonen</translation>
 <translation id="1363275621236827384">Query's naar Quirks Server sturen voor hardwareprofielen</translation>
 <translation id="1371626834351873151">Inkorting van user-agent wordt aangezet voor alle origins.</translation>
+<translation id="1371851989348083665">Het gebruik van <ph name="ASSISTANT_PRODUCT_NAME" /> op internet toestaan</translation>
 <translation id="1372618949173323717">JavaScript uitzetten</translation>
 <translation id="1376119291123231789">Geavanceerde batterijoplaadmodus aanzetten</translation>
 <translation id="1384459581748403878">Referentie: <ph name="REFERENCE_URL" /></translation>
@@ -3989,6 +3991,7 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
       * Uit of als je geen waarde instelt, werkt YouTube niet in de beperkte modus in Chrome. De beperkte modus kan echter nog steeds worden afgedwongen door externe beleidsregels zoals het YouTube-beleid.</translation>
 <translation id="5191476996923842491">Standaardgedrag voor vastzetten van de functie setTimeout().</translation>
 <translation id="519247340330463721">Beleid met betrekking tot Safe Browsing configureren.</translation>
+<translation id="5194683382395300627">Toestaan dat <ph name="ASSISTANT_PRODUCT_NAME" /> wordt gebruikt op internet, bijvoorbeeld om wachtwoorden automatisch te wijzigen</translation>
 <translation id="5196520640744454600">Plaktoetsen op het inlogscherm aanzetten</translation>
 <translation id="5196630732055960309">De File Handling API toestaan voor deze web-apps</translation>
 <translation id="5206454085187851382">Als <ph name="PRINTERS_ALLOWLIST" /> wordt gekozen voor <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, kun je door <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> in te stellen aangeven welke printers gebruikers kunnen gebruiken. Alleen printers waarvan de ID's overeenkomen met de waarden in dit beleid, zijn beschikbaar voor de gebruiker. De ID's moeten overeenkomen met het veld <ph name="ID_FIELD" /> of <ph name="GUID_FIELD" /> in het bestand dat is opgegeven in <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
@@ -7395,6 +7398,11 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="8763716376920670835">WebSQL staat standaard aan vanaf M101, maar kan worden uitgezet via Chrome-flag.
           Als dit beleid is ingesteld op False of niet is ingesteld, kan WebSQL worden uitgezet.
           Als dit beleid is ingesteld op True, kan WebSQL niet worden uitgezet.</translation>
+<translation id="8766308369516978190">Als je het beleid toepast, kunnen gebruikers <ph name="ASSISTANT_PRODUCT_NAME" /> gebruiken op internet, bijvoorbeeld voor sneller betalen en wachtwoordwijzigingen. Voor het gebruik van <ph name="ASSISTANT_PRODUCT_NAME" /> is aanvullende toestemming van gebruikers vereist. <ph name="ASSISTANT_PRODUCT_NAME" /> wordt alleen uitgevoerd als gebruikers ervoor kiezen deze toestemming te geven, ook als het beleid wordt toegepast.
+
+      Als je het beleid niet toepast, kunnen gebruikers <ph name="ASSISTANT_PRODUCT_NAME" /> niet gebruiken op internet.
+
+      Als je het beleid niet instelt, kan de gebruiker <ph name="ASSISTANT_PRODUCT_NAME" /> uitzetten.</translation>
 <translation id="8766910236040529804">App-container van weergaveprogramma aanzetten</translation>
 <translation id="8767743923206070405">Als je het beleid toepast, wordt de Homepage-knop in de werkbalk van <ph name="PRODUCT_NAME" /> getoond. Als je het beleid niet toepast, wordt de Homepage-knop niet getoond.
 

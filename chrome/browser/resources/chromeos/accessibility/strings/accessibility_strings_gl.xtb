@@ -140,6 +140,7 @@
 <translation id="1834891354138622109">Columna</translation>
 <translation id="1846771122725914429">Liña braille por Bluetooth</translation>
 <translation id="1852018405765032699">Toca a pantalla con catro dedos se queres abrir ou pechar os menús de ChromeVox, que conteñen información útil sobre os comandos e os atallos. Tras abrir un menú, podes pasar un dedo para navegar polos elementos e tocar dúas veces para activalos. Se queres continuar, toca a pantalla con catro dedos.</translation>
+<translation id="1864430479908918647">Preme Buscar + Espazo</translation>
 <translation id="1865601187525349519">Final do texto</translation>
 <translation id="1876229593313240038">doc</translation>
 <translation id="1902396333223336119">Cela</translation>
@@ -528,6 +529,7 @@
 <translation id="4479068155583208887">Ladrillo</translation>
 <translation id="4482330759234983253">Táboa anterior</translation>
 <translation id="4491109536499578614">Imaxe</translation>
+<translation id="4507332368061453500">Manter premido o elemento actual</translation>
 <translation id="4511186779140817916">Améndoa pálido</translation>
 <translation id="451510441928265982">Non hai ningunha cabeceira anterior de nivel 2</translation>
 <translation id="4515799157838123044">Sombrear contido do fondo</translation>
@@ -777,6 +779,7 @@
 <translation id="6236061028292614533">Seguinte título</translation>
 <translation id="6254901459154107917">Seguinte área de texto editable</translation>
 <translation id="6259464875943891919">Saíuse de <ph name="TYPE" />.</translation>
+<translation id="6280088282605782512">Toca dúas veces</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">Teclas esenciais: Buscar</translation>
 <translation id="6305702903308659374">Manter o volume de reprodución aínda que ChromeVox estea falando</translation>
@@ -980,6 +983,7 @@
 <translation id="7731785449856576010">Non hai ningún widget multimedia posterior</translation>
 <translation id="7735498529470878067">A función Exploración táctil pode axudarche a saber rapidamente o que aparece na pantalla.</translation>
 <translation id="773906353055481349">Preme a tecla de busca+Ctrl+Alt coas frechas para desprazarte polas celas</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> para <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">Iniciouse a descarga de <ph name="FILE_NAME" /></translation>
 <translation id="7768784765476638775">Escoitar selección</translation>
 <translation id="7776293189010177726">Abre menús de ChromeVox</translation>

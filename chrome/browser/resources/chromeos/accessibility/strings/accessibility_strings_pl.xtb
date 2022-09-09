@@ -140,6 +140,7 @@
 <translation id="1834891354138622109">Kolumna</translation>
 <translation id="1846771122725914429">Monitor brajlowski Bluetooth</translation>
 <translation id="1852018405765032699">Dotknięcie ekranu czterema palcami otwiera i zamyka różne menu czytnika ChromeVox. Zawierają one przydatne informacje o poleceniach i skrótach. Gdy menu są otwarte, możesz przechodzić między elementami, przesuwając jednym palcem, i uaktywniać elementy, dotykając dwukrotnie. Aby przejść dalej, dotknij ekranu czterema palcami.</translation>
+<translation id="1864430479908918647">Naciśnij klawisz wyszukiwania i spację</translation>
 <translation id="1865601187525349519">Koniec tekstu</translation>
 <translation id="1876229593313240038">doc</translation>
 <translation id="1902396333223336119">Komórka</translation>
@@ -778,6 +779,7 @@
 <translation id="6236061028292614533">Następny nagłówek</translation>
 <translation id="6254901459154107917">Następny obszar tekstowy do edytowania</translation>
 <translation id="6259464875943891919">Zamknięto <ph name="TYPE" />.</translation>
+<translation id="6280088282605782512">Kliknij dwukrotnie</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">Klawisze podstawowe: klawisz wyszukiwania</translation>
 <translation id="6305702903308659374">Nie zmieniaj głośności odtwarzania, gdy ChromeVox mówi</translation>
@@ -980,6 +982,7 @@
 <translation id="7731785449856576010">Nie ma widżetu następnego pliku multimedialnego</translation>
 <translation id="7735498529470878067">Czytanie dotykiem może pomóc Ci szybko zorientować się, co jest na ekranie.</translation>
 <translation id="773906353055481349">Naciśnij klawisz wyszukiwania + Ctrl + Alt i przechodź między komórkami za pomocą strzałek</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> – <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">Rozpoczęto pobieranie pliku <ph name="FILE_NAME" /></translation>
 <translation id="7768784765476638775">Przeczytaj na głos</translation>
 <translation id="7776293189010177726">Otwórz menu ChromeVox</translation>

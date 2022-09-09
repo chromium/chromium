@@ -140,6 +140,7 @@
 <translation id="1834891354138622109">სვეტი</translation>
 <translation id="1846771122725914429">ბრაილის Bluetooth ეკრანი</translation>
 <translation id="1852018405765032699">ეკრანზე ოთხი თითით შეხება გახსნის და დახურავს ChromeVox მენიუებს. ეს მენიუები შეიცავს სასარგებლო ინფორმაციას ბრძანებებისა და მალსახმობების შესახებ. მენიუების გახსნის შემდეგ ერთეულებში გადასაადგილებლად გადაფურცლეთ ერთი თითით, ხოლო ერთეულების გასააქტიურებლად — შეეხეთ ორმაგად. გასაგრძელებლად შეეხეთ ეკრანს ოთხი თითით.</translation>
+<translation id="1864430479908918647">დააჭირეთ კლავიშთა კომბინაციას Search+შორისი</translation>
 <translation id="1865601187525349519">ტექსტის დასასრული</translation>
 <translation id="1876229593313240038">დოკ</translation>
 <translation id="1902396333223336119">უჯრა</translation>
@@ -778,6 +779,7 @@
 <translation id="6236061028292614533">მომდევნო სათაური</translation>
 <translation id="6254901459154107917">შემდეგი რედაქტირებადი ტექსტის არე</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> დაიხურა.</translation>
+<translation id="6280088282605782512">ორმაგი შეხება</translation>
 <translation id="6282062888058716985">ნავ</translation>
 <translation id="6295699829709583154">ძირითადი კლავიშები: Search</translation>
 <translation id="6305702903308659374">ჩვეულებრივ ხმაზე დაკვრა, როცა ChromeVox საუბრობს</translation>
@@ -980,6 +982,7 @@
 <translation id="7731785449856576010">შემდეგი მედიავიჯეტი არ არის</translation>
 <translation id="7735498529470878067">შეხებით დათვალიერება დაგეხმარებათ, სწრაფად გაერკვეთ იმაში, თუ რა არის მოცემული ეკრანზე.</translation>
 <translation id="773906353055481349">უჯრედებში ნავიგაციისთვის გამოიყენეთ კლავიშთა შემდეგი კომბინაცია: Search+Ctrl+Alt და ისრებიანი კლავიშები</translation>
+<translation id="7746976083433980639"><ph name="ACTION" />, რომ შესრულდეს <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">ჩამოტვირთვა დაიწყო <ph name="FILE_NAME" /></translation>
 <translation id="7768784765476638775">მონიშვნა წარმოსათქმელად</translation>
 <translation id="7776293189010177726">ChromeVox-ის მენიუების გახსნა</translation>

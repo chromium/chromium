@@ -140,6 +140,7 @@
 <translation id="1834891354138622109">ಕಾಲಮ್</translation>
 <translation id="1846771122725914429">ಬ್ಲೂಟೂತ್ ಬ್ರೈಲ್ ಡಿಸ್‌ಪ್ಲೇ</translation>
 <translation id="1852018405765032699">ನಾಲ್ಕು ಬೆರಳುಗಳಿಂದ ಸ್ಕ್ರೀನ್ ಟ್ಯಾಪ್ ಮಾಡುವುದರಿಂದ ChromeVox ಮೆನುಗಳನ್ನು ತೆರೆಯುತ್ತದೆ ಹಾಗೂ ಮುಚ್ಚುತ್ತದೆ. ಈ ಮೆನುಗಳಲ್ಲಿ ಕಮಾಂಡ್‌ಗಳು ಮತ್ತು ಶಾರ್ಟ್‌ಕಟ್‌ಗಳ ಕುರಿತು ಉಪಯುಕ್ತವಾದ ಮಾಹಿತಿಯಿದೆ. ಮೆನುಗಳನ್ನು ತೆರೆದ ನಂತರ, ಐಟಂಗಳ ಮೂಲಕ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ನೀವು ಒಂದು ಬೆರಳಿನಿಂದ ಸ್ವೈಪ್ ಮಾಡಬಹುದು ಮತ್ತು ಐಟಂಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಡಬಲ್-ಟ್ಯಾಪ್ ಮಾಡಿ. ಮುಂದುವರಿಸಲು, ನಾಲ್ಕು ಬೆರಳುಗಳಿಂದ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
+<translation id="1864430479908918647">Search+Space ಅನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="1865601187525349519">ಪಠ್ಯದ ಕೊನೆ</translation>
 <translation id="1876229593313240038">doc</translation>
 <translation id="1902396333223336119">ಸೆಲ್</translation>
@@ -778,6 +779,7 @@
 <translation id="6236061028292614533">ಮುಂದಿನ ಶಿರೋನಾಮೆ</translation>
 <translation id="6254901459154107917">ಮುಂದಿನ ಸಂಪಾದಿಸಬಹುದಾದ ಪಠ್ಯ ಪ್ರದೇಶ</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> ನಿರ್ಗಮಿಸಲಾಗಿದೆ.</translation>
+<translation id="6280088282605782512">ಡಬಲ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">ಅಗತ್ಯ ಕೀಗಳು: ಹುಡುಕಾಟ</translation>
 <translation id="6305702903308659374">ChromeVox ಮಾತನಾಡುತ್ತಿರುವಾಗಲೂ ಸಹ ಸಾಮಾನ್ಯ ವಾಲ್ಯೂಮ್‌‌ನಲ್ಲಿ ಪ್ಲೇ ಮಾಡಿ</translation>
@@ -980,6 +982,7 @@
 <translation id="7731785449856576010">ಯಾವುದೇ ಮುಂದಿನ ಮಾಧ್ಯಮ ವಿಜೆಟ್ ಇಲ್ಲ</translation>
 <translation id="7735498529470878067">ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿ ಏನಿದೆ ಎಂಬುದನ್ನು ತ್ವರಿತವಾಗಿ ತಿಳಿಯಲು ಸ್ಪರ್ಶದ ಮೂಲಕ ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡಿ ಸಹಾಯ ಮಾಡುತ್ತದೆ.</translation>
 <translation id="773906353055481349">ಸೆಲ್ ಪ್ರಕಾರ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು, ಬಾಣಗಳ ಕೀ ಜೊತೆಗೆ Search+Ctrl+Alt ಅನ್ನು ಒತ್ತಿರಿ</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> ನಿಂದ <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">ಡೌನ್‌ಲೋಡ್ ಪ್ರಾರಂಭಗೊಂಡಿದೆ <ph name="FILE_NAME" /></translation>
 <translation id="7768784765476638775">ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿ</translation>
 <translation id="7776293189010177726">ChromeVox ಮೆನುಗಳನ್ನು ತೆರೆಯಿರಿ</translation>

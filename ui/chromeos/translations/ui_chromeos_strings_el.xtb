@@ -285,6 +285,7 @@
 <translation id="3414856743105198592">Η μορφοποίηση του αφαιρούμενου μέσου θα διαγράψει όλα τα δεδομένα. Θέλετε να συνεχίσετε;</translation>
 <translation id="3437801641691368414">Ώρα δημιουργίας</translation>
 <translation id="343907260260897561">Στιγμιαία φωτογραφική μηχανή</translation>
+<translation id="3452106565701029351">Ξεκαρφίτσωμα από τα Γρήγορα αρχεία</translation>
 <translation id="3455931012307786678">Εσθονικά</translation>
 <translation id="3466147780910026086">Σάρωση της συσκευής μέσων σας…</translation>
 <translation id="3468522857997926824">Δημιουργήθηκαν αντίγραφα ασφαλείας για <ph name="FILE_COUNT" /> φωτογραφίες στο <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
@@ -704,6 +705,7 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">ΗΠΑ Workman</translation>
 <translation id="6930242544192836755">Διάρκεια</translation>
+<translation id="6931302001003657424">Καρφίτσωμα στα Γρήγορα αρχεία</translation>
 <translation id="6934241953272494177">Πραγματοποιείται σάρωση της συσκευής μέσων σας…
     <ph name="LINE_BREAK1" />
     Βρέθηκαν <ph name="FILE_COUNT" /> αρχεία</translation>

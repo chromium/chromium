@@ -7390,6 +7390,20 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8656110680728938054">Ativa o Selecionar para ouvir</translation>
 <translation id="8659843732895043951">Permitir a área de transferência nesses sites</translation>
 <translation id="8661297125441579970">Bloquear migração de dados e ARC.</translation>
+<translation id="8664285601317301180">Esta política controla o valor do <ph name="IPP_ATTRIBUTE" /> <ph name="IPP_PROTOCOL" /> (<ph name="INTERNET_PRINTING_PROTOCOL" />) <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> em trabalhos de impressão.
+
+      Se a política for definida como uma string, um item <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> extra vai ser adicionado a cada trabalho de impressão. O membro <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> do item <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> adicionado vai ser definido como o valor da política após a substituição das variáveis.
+
+      As variáveis aceitas são <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" /> e <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />. As variáveis de marcador de posição sem suporte não vão ser substituídas.
+
+      O valor resultante após a substituição das variáveis vai ser considerado válido se consistir apenas em caracteres <ph name="ASCII" /> imprimíveis, com no máximo 255 deles.
+
+      Por motivos de privacidade, esta política se aplica apenas ao se comunicar com uma impressora usando os protocolos <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" /> ou <ph name="IPP_USB_PROTOCOL" />. Além disso, ela só se aplica a impressoras com suporte ao <ph name="CLIENT_NAME_IPP_ATTRIBUTE" />.
+
+      A política se aplica apenas a usuários afiliados.
+
+      Se ela for deixada sem definição ou for definida com um valor vazio ou inválido, nenhum <ph name="CLIENT_INFO_PLACEHOLDER" /> extra vai ser adicionado às solicitações de trabalho de impressão.
+      </translation>
 <translation id="8665314828727504286">Nível de proteção do "Navegação segura"</translation>
 <translation id="8666123502812856425">Se a política for definida, será possível criar uma lista de URLs que especifica quais sites recebem permissão automaticamente para acessar um dispositivo HID que contém uma coleção de nível mais alto com o uso de um HID especificado. Cada item na lista precisa ter os campos "<ph name="USAGES_FIELD_NAME" />" e "<ph name="URLS_FIELD_NAME" />" para que a política seja válida. Cada item em "<ph name="USAGES_FIELD_NAME" />" precisa ter um campo "<ph name="USAGE_PAGE_FIELD_NAME" />" e pode ter um "<ph name="USAGE_FIELD_NAME" />". A omissão de "<ph name="USAGE_FIELD_NAME" />" cria uma política válida para qualquer dispositivo que contém uma coleção de nível mais alto com a página de uso especificada. Um item com um campo "<ph name="USAGE_FIELD_NAME" />" e sem um "<ph name="USAGE_PAGE_FIELD_NAME" />" será inválido e ignorado.
 

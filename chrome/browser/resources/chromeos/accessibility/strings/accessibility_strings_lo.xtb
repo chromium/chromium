@@ -140,6 +140,7 @@
 <translation id="1834891354138622109">ຖັນ</translation>
 <translation id="1846771122725914429">ການສະແດງຜົນອັກສອນນູນຜ່ານ Bluetooth</translation>
 <translation id="1852018405765032699">ການແຕະໜ້າຈໍດ້ວຍສີ່ນິ້ວຈະເປີດ ແລະ ປິດເມນູ ChromeVox. ເມນູເຫຼົ່ານີ້ມີຂໍ້ມູນທີ່ເປັນປະໂຫຍດກ່ຽວກັບຄຳສັ່ງ ແລະ ທາງລັດຕ່າງໆ. ເມື່ອເປີດເມນູແລ້ວ, ທ່ານສາມາດປັດດ້ວຍໜຶ່ງນິ້ວເພື່ອເລື່ອນຜ່ານລາຍການ ແລະ ແຕະສອງເທື່ອເພື່ອເປີດນຳໃຊ້ລາຍການໄດ້. ເພື່ອສືບຕໍ່, ໃຫ້ແຕະໃສ່ໜ້າຈໍດ້ວຍສີ່ນິ້ວ.</translation>
+<translation id="1864430479908918647">ກົດ ຊອກຫາ+ຍະຫວ່າງ</translation>
 <translation id="1865601187525349519">ຈົບຂໍ້ຄວາມ</translation>
 <translation id="1876229593313240038">ເອກະສານ</translation>
 <translation id="1902396333223336119">ເຊລ</translation>
@@ -778,6 +779,7 @@
 <translation id="6236061028292614533">ຫົວ​ຂໍ້​ຕໍ່​ໄປ</translation>
 <translation id="6254901459154107917">ພື້ນທີ່ຂໍ້ຄວາມດັດແກ້ໄດ້ຕໍ່ໄປ</translation>
 <translation id="6259464875943891919">ອອກແລ້ວ <ph name="TYPE" /> .</translation>
+<translation id="6280088282605782512">ແຕະສອງເທື່ອ</translation>
 <translation id="6282062888058716985">ການນໍາ​ທາງ</translation>
 <translation id="6295699829709583154">ປຸ່ມສຳຄັນ: ຊອກຫາ</translation>
 <translation id="6305702903308659374">ຫຼິ້ນໃນລະດັບສຽງປົກກະຕິ ເຖິງແມ່ນວ່າ ChromeVox ກຳລັງເວົ້າຢູ່ກໍຕາມ</translation>
@@ -980,6 +982,7 @@
 <translation id="7731785449856576010">ບໍ່ມີວິກເຈັດສື່ຖັດໄປ</translation>
 <translation id="7735498529470878067">ການສຳຫຼວດໂດຍການສຳຜັດສາມາດຊ່ວຍໃຫ້ທ່ານເຂົ້າໃຈສິ່ງທີ່ຢູ່ໜ້າຈໍໄດ້ຢ່າງວ່ອງໄວ.</translation>
 <translation id="773906353055481349">ກົດປຸ່ມ Search+Ctrl+Alt ພ້ອມລູກສອນເພື່ອເລື່ອນໄປເທື່ອລະເຊວ</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> ຫາ <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">ເລີ່ມການດາວໂຫລດແລ້ວ <ph name="FILE_NAME" /></translation>
 <translation id="7768784765476638775">ເລືອກເພື່ອເວົ້າ</translation>
 <translation id="7776293189010177726">ເປີດເມນູ ChromeVox</translation>

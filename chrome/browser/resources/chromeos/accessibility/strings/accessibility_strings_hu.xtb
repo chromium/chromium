@@ -140,6 +140,7 @@
 <translation id="1834891354138622109">Oszlop</translation>
 <translation id="1846771122725914429">Bluetooth-os Braille-kijelző</translation>
 <translation id="1852018405765032699">Koppintson négy ujjal a képernyőre a ChromeVox-menük megnyitásához vagy bezárásához. Ezek a menük hasznos információkat tartalmaznak a parancsokról és billentyűkombinációkról. A menük megnyitása után egy ujjal csúsztatva navigálhat az elemek között, és dupla koppintással aktiválhatja őket. A folytatáshoz koppintson négy ujjal a képernyőre.</translation>
+<translation id="1864430479908918647">Nyomja meg a Keresés + Szóköz billentyűkombinációt</translation>
 <translation id="1865601187525349519">Szöveg vége</translation>
 <translation id="1876229593313240038">dok</translation>
 <translation id="1902396333223336119">Mobil</translation>
@@ -778,6 +779,7 @@
 <translation id="6236061028292614533">Következő fejléc</translation>
 <translation id="6254901459154107917">Következő szerkeszthető szövegterület</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> bezárva.</translation>
+<translation id="6280088282605782512">Dupla koppintás</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">Alapvető billentyűk: Keresés</translation>
 <translation id="6305702903308659374">Lejátszás normál hangerőn akkor is, ha a ChromeVox beszél</translation>
@@ -980,6 +982,7 @@
 <translation id="7731785449856576010">Nincs következő médiamodul</translation>
 <translation id="7735498529470878067">A Felfedezés érintéssel funkcióval gyorsan megtudhatja, mi található a képernyőn.</translation>
 <translation id="773906353055481349">A cellánkénti mozgáshoz használja a Keresés+Ctrl+Alt és a nyílbillentyűket</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> a következőhöz: <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">A következő fájl letöltése megkezdődött: <ph name="FILE_NAME" /></translation>
 <translation id="7768784765476638775">Felolvasás</translation>
 <translation id="7776293189010177726">ChromeVox-menük megnyitása</translation>

@@ -2963,6 +2963,11 @@
 <translation id="3989829840000169163">屏蔽浏览器旧版扩展点</translation>
 <translation id="3990391739475801018">系统将停用省电模式。</translation>
 <translation id="3994043824457743421">在“新标签页”页面上显示中间槽通知</translation>
+<translation id="3996325823532867220">此政策已不再受支持，但特定平台可能支持相关政策 <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />。
+
+      如果此设置已启用，<ph name="PRODUCT_NAME" /> 将会使用内置的证书验证程序来验证服务器证书。
+      如果此设置已停用，<ph name="PRODUCT_NAME" /> 将会使用平台提供的旧版证书验证程序来验证服务器证书，除非已启用 <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />。
+      如果此设置未配置，系统既可能会使用内置的证书验证程序，也可能会使用旧版证书验证程序。</translation>
 <translation id="3997519162482760140">可通过 SAML 登录页面访问视频捕获设备的网址</translation>
 <translation id="4004523942550416237">在初始设置期间不显示 Google 助理 Voice Match 流程</translation>
 <translation id="4007646377576030214"> 请注意，此政策已在 M87 中弃用，并已从 M89 中移除。请改用 <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> 来配置受管理访客会话的隐私权警告。
