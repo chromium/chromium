@@ -1820,7 +1820,9 @@ void StyleChange::ExtractTextStyles(Document* document,
   }
 
   if (style->GetPropertyCSSValue(CSSPropertyID::kColor)) {
-    apply_font_color_ = GetFontColor(style).SerializeAsCSSColor();
+    // The <font> tag cannot handle rgb colors, so we need to serialize as hex
+    // here in order to continue supporting it.
+    apply_font_color_ = GetFontColor(style).SerializeAsCanvasColor();
     style->RemoveProperty(CSSPropertyID::kColor);
   }
 

@@ -9,7 +9,7 @@ selection_test(
     [
         '<div contenteditable>',
             `<blockquote style="${kIndentStyle}">`,
-                '^<font color="rgb(255, 0, 0)">This text should be blue.</font>|',
+                '^<font color="#ff0000">This text should be blue.</font>|',
             '</blockquote>',
         '</div>',
     ],
@@ -17,7 +17,7 @@ selection_test(
     [
         '<div contenteditable>',
             `<blockquote style="${kIndentStyle}">`,
-                '<font color="rgb(0, 0, 255)">^This text should be blue.|</font>',
+                '<font color="#0000ff">^This text should be blue.|</font>',
             '</blockquote>',
         '</div>',
     ]);

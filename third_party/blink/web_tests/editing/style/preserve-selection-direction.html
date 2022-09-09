@@ -8,7 +8,7 @@ selection_test(
     selection => {
         selection.document.execCommand('foreColor', false, 'green');
     },
-    ['<div contenteditable>Thi<font color="rgb(0, 128, 0)">^s is |</font>some sample text</div>'],
+    ['<div contenteditable>Thi<font color="#008000">^s is |</font>some sample text</div>'],
     'Preserve forward selection direction  - Anchor offset must be smaller than focus offset.');
 
 selection_test(
@@ -16,6 +16,6 @@ selection_test(
   selection => {
      selection.document.execCommand('foreColor', false, 'green');
   },
-  ['<div contenteditable>Thi<font color="rgb(0, 128, 0)">|s is ^</font>some sample text</div>'],
+  ['<div contenteditable>Thi<font color="#008000">|s is ^</font>some sample text</div>'],
   'Preserve backward selection direction  - Anchor offset must be bigger than focus offset.');
 </script>

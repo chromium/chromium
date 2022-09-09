@@ -2,7 +2,7 @@
 "world" should be red:
 | "hello "
 | <font>
-|   color="rgb(255, 0, 0)"
+|   color="#ff0000"
 |   "<#selection-anchor>world<#selection-focus>"
 
 there should be no span or font elements:
