@@ -7840,10 +7840,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIncognitoNtpRevampDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kIncognitoNtpRevamp)},
 
-    {"use-first-party-set", flag_descriptions::kUseFirstPartySetName,
-     flag_descriptions::kUseFirstPartySetDescription, kOsAll,
-     ORIGIN_LIST_VALUE_TYPE(network::switches::kUseFirstPartySet, "")},
-
     {"check-offline-capability", flag_descriptions::kCheckOfflineCapabilityName,
      flag_descriptions::kCheckOfflineCapabilityDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kCheckOfflineCapability,
