@@ -101356,6 +101356,30 @@ others/histograms.xml -->
   <int value="3" label="kNoCacheHandler"/>
 </enum>
 
+<enum name="WaylandTimingEvent">
+<!--
+  WaylandTimingEvent values from components/arc/mojom/metrics.mojom
+
+  Terminology:
+  binder = Android binder events handled by wayland-service.
+  wl = Public wayland interfaces.
+  zaura = Aura shell interface to a wayland surface.
+  zcr = Chrome protocol extension (not part of public wayland).
+  -->
+
+  <int value="0" label="Other unspecified event"/>
+  <int value="1" label="Released clipboard data (binder)"/>
+  <int value="2" label="Fenced buffer released (wl)"/>
+  <int value="3" label="Input keyboard leave (wl)"/>
+  <int value="4" label="Input pointer motion (wl)"/>
+  <int value="5" label="Input pointer leave (wl)"/>
+  <int value="6" label="Aura shell window activated from focus switch (zaura)"/>
+  <int value="7" label="Aura surface occlusion changed (zaura)"/>
+  <int value="8" label="Remote surface window geometry changed (zcr)"/>
+  <int value="9" label="Remote surface window bounds changed in output (zcr)"/>
+  <int value="10" label="Vsync timing update (zcr)"/>
+</enum>
+
 <enum name="WebApkArcInstallResultChromeOS">
   <int value="0" label="Success"/>
   <int value="1" label="Unknown error"/>

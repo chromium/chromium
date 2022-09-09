@@ -2107,13 +2107,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Wayland.LateTiming.Duration" units="ms"
-    expires_after="2023-02-12">
+    expires_after="2023-03-12">
   <owner>alanding@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
     The duration of the Wayland client event processing time in ARC. This metric
     is recorded when the processing end time is late or the duration exceeded
     the expected timing threshold.
+  </summary>
+</histogram>
+
+<histogram name="Arc.Wayland.LateTiming.Event" enum="WaylandTimingEvent"
+    expires_after="2023-03-12">
+  <owner>alanding@google.com</owner>
+  <owner>arc-performance@google.com</owner>
+  <summary>
+    Wayland client event message type in ARC. This metric is recorded when the
+    message processing end time is late or the duration exceeded the expected
+    timing threshold.
   </summary>
 </histogram>
 

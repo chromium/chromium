@@ -1,8 +1,7 @@
 // Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 26
-
+// Next MinVersion: 27
 module arc.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
@@ -347,7 +346,27 @@ enum AndroidDataSubdirectory {
     kDEStorageRootUserDir = 3,
 };
 
-// Next method ID: 30
+// Enumerates the types of Wayland timing events where the message processing
+// completed late and could cause UI jank in ARC apps. This enum is persisted to
+// logs. Existing values should not be changed and new values should only be
+// appended to the end.
+[Extensible]
+enum WaylandTimingEvent {
+  [Default] kOther = 0,
+  kBinderReleaseClipboardData = 1,
+  kWlBufferRelease = 2,
+  kWlKeyboardLeave = 3,
+  kWlPointerMotion = 4,
+  kWlPointerLeave = 5,
+  kZauraShellActivated = 6,
+  kZauraSurfaceOcclusionChanged = 7,
+  kZcrRemoteSurfaceWindowGeometryChanged = 8,
+  kZcrRemoteSurfaceBoundsChangedInOutput = 9,
+  kZcrVsyncTimingUpdate = 10,
+};
+
+// Deprecated method IDs: 25
+// Next method ID: 31
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
   ReportBootProgress@0(array<BootProgressEvent> events,
@@ -450,8 +469,12 @@ interface MetricsHost {
   [MinVersion=22] ReportProvisioningPreSignIn@24();
 
   // Reports the duration of late timing events for Wayland.
-  [MinVersion=23] ReportWaylandLateTimingDuration@25(
+  [MinVersion=23] DEPRECATED_ReportWaylandLateTimingDuration@25(
       mojo_base.mojom.TimeDelta duration);
+
+  // Reports the duration of late timing events for Wayland.
+  [MinVersion=26] ReportWaylandLateTimingEvent@30(
+      WaylandTimingEvent event, mojo_base.mojom.TimeDelta duration);
 
   // Reports the number of directories and non-directory files under the
   // "Play files" folder in ChromeOS Files app except for the "Android" folder.

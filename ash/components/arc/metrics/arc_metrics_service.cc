@@ -132,6 +132,34 @@ std::string AndroidDataSubdirectoryToString(
   return "";
 }
 
+const char* WaylandTimingEventToString(mojom::WaylandTimingEvent event) {
+  switch (event) {
+    case mojom::WaylandTimingEvent::kOther:
+      return ".Other";
+    case mojom::WaylandTimingEvent::kBinderReleaseClipboardData:
+      return ".BinderReleaseClipboardData";
+    case mojom::WaylandTimingEvent::kWlBufferRelease:
+      return ".WlBufferRelease";
+    case mojom::WaylandTimingEvent::kWlKeyboardLeave:
+      return ".WlKeyboardLeave";
+    case mojom::WaylandTimingEvent::kWlPointerMotion:
+      return ".WlPointerMotion";
+    case mojom::WaylandTimingEvent::kWlPointerLeave:
+      return ".WlPointerLeave";
+    case mojom::WaylandTimingEvent::kZauraShellActivated:
+      return ".ZauraShellActivated";
+    case mojom::WaylandTimingEvent::kZauraSurfaceOcclusionChanged:
+      return ".ZauraSurfaceOcclusionChanged";
+    case mojom::WaylandTimingEvent::kZcrRemoteSurfaceWindowGeometryChanged:
+      return ".ZcrRemoteSurfaceWindowGeometryChanged";
+    case mojom::WaylandTimingEvent::kZcrRemoteSurfaceBoundsChangedInOutput:
+      return ".ZcrRemoteSurfaceBoundsChangedInOutput";
+    case mojom::WaylandTimingEvent::kZcrVsyncTimingUpdate:
+      return ".ZcrVsyncTimingUpdate";
+  }
+  NOTREACHED();
+  return "";
+}
 struct LoadAverageHistogram {
   const char* name;
   base::TimeDelta duration;
@@ -749,10 +777,21 @@ void ArcMetricsService::ReportProvisioningPreSignIn() {
   }
 }
 
-void ArcMetricsService::ReportWaylandLateTimingDuration(
+// TODO(b/244908773): Remove deprecated function.
+void ArcMetricsService::DEPRECATED_ReportWaylandLateTimingDuration(
     base::TimeDelta duration) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   base::UmaHistogramLongTimes("Arc.Wayland.LateTiming.Duration", duration);
+}
+
+void ArcMetricsService::ReportWaylandLateTimingEvent(
+    mojom::WaylandTimingEvent event,
+    base::TimeDelta duration) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  const std::string suffix = WaylandTimingEventToString(event);
+  base::UmaHistogramLongTimes(
+      base::StrCat({"Arc.Wayland.LateTiming.Duration", suffix}), duration);
+  base::UmaHistogramEnumeration("Arc.Wayland.LateTiming.Event", event);
 }
 
 void ArcMetricsService::ReportNonAndroidPlayFilesCount(
