@@ -15,6 +15,7 @@
 
 namespace media {
 class AudioTimestampHelper;
+class ConvertingAudioFifo;
 
 // Audio encoder based on macOS's AudioToolbox API. The AudioToolbox
 // API is required to encode codecs that aren't supported by Chromium.
@@ -40,6 +41,8 @@ class MEDIA_EXPORT AudioToolboxAudioEncoder : public AudioEncoder {
   bool CreateEncoder(const AudioEncoderConfig& config,
                      const AudioStreamBasicDescription& output_format);
 
+  void DoEncode(AudioBus* data);
+
   // "Converter" for turning raw audio into encoded samples.
   AudioConverterRef encoder_ = nullptr;
 
@@ -48,6 +51,8 @@ class MEDIA_EXPORT AudioToolboxAudioEncoder : public AudioEncoder {
 
   // Actual sample rate from the encoder, may be different than config.
   uint32_t sample_rate_ = 0u;
+
+  EncoderStatusCB current_done_cb_;
 
   // Callback that delivers encoded frames.
   OutputCB output_cb_;
@@ -58,6 +63,9 @@ class MEDIA_EXPORT AudioToolboxAudioEncoder : public AudioEncoder {
   std::unique_ptr<AudioTimestampHelper> timestamp_helper_;
 
   std::vector<uint8_t> codec_desc_;
+
+  // Ensures the data sent to Encode() matches the encoder's input format.
+  std::unique_ptr<ConvertingAudioFifo> fifo_;
 };
 
 }  // namespace media

@@ -87,8 +87,9 @@ async function main(args) {
   await encoder.flush();
   encoder.close();
 
-  // Maximum amount of padding from supported encoders.
-  timestamp_us += (2112 / config.sampleRate) * 1_000_000;
+  // Maximum amount of padding from supported encoders. Applied twice, since the
+  // flush above can also introduce padding.
+  timestamp_us += 2 * (2112 / config.sampleRate) * 1_000_000;
 
   TEST.assert(decoder_config != null, "No decoder config");
   TEST.assert(outputs.length > 0, "no outputs");

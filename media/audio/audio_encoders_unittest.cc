@@ -532,12 +532,24 @@ TEST_P(AudioEncodersTest, Timestamps) {
     int num_frames =
         AudioTimestampHelper::TimeToFrames(duration, options_.sample_rate);
 
-    size_t expected_padding = GetExpectedPadding();
+    size_t total_frames = num_frames * kCount;
+
+#if HAS_AAC_ENCODER
+    if (options_.codec == AudioCodec::kAAC &&
+        total_frames % kAacFramesPerBuffer) {
+      // We send data in chunks of kAacFramesPerBuffer to the encoder, padding
+      // it with silence when flushing.
+      // Round `total_frames` up to the nearest multiple of kAacFramesPerBuffer.
+      int chunks = (total_frames / kAacFramesPerBuffer) + 1;
+      total_frames = chunks * kAacFramesPerBuffer;
+    }
+#endif
+
+    total_frames += GetExpectedPadding();
 
     // The encoder will have multiple outputs per input if `num_frames` is
     // larger than `frames_per_buffer_`, and fewer outputs per input if it is
     // smaller.
-    size_t total_frames = num_frames * kCount + expected_padding;
     size_t expected_outputs = total_frames / frames_per_buffer_;
 
     // Round up if the division truncated. This is because the encoder will pad
