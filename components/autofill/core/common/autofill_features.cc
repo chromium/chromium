@@ -228,7 +228,7 @@ const base::Feature kAutofillEnableDependentLocalityParsing{
 // extending Autofill's address format by additional fields.
 // TODO(crbug.com/1300548) Remove when launched.
 const base::Feature kAutofillEnableExtendedAddressFormats{
-    "AutofillEnableExtendedAddressFormats", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AutofillEnableExtendedAddressFormats", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to save the first number in a form with multiple phone
 // numbers instead of aborting the import.
