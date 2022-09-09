@@ -489,6 +489,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   }
   void SetNeedsVisualOverflowRecalc();
   void SetNeedsCompositingInputsUpdate();
+  void ScrollContainerStatusChanged();
 
   // Returns the nearest ancestor layer (in containing block hierarchy,
   // not including this layer) that is a scroll container. It's nullptr for
