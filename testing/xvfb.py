@@ -329,7 +329,14 @@ def _run_with_weston(cmd, env, stdoutfile, cwd):
     # If we couldn't find the display after 10 tries, raise an exception.
     if weston_proc_display is None:
       raise _WestonProcessError('Failed to start Weston.')
+
     env['WAYLAND_DISPLAY'] = weston_proc_display
+    if '--chrome-wayland-debugging' in cmd:
+      cmd.remove('--chrome-wayland-debugging')
+      env['WAYLAND_DEBUG'] = '1'
+    else:
+      env['WAYLAND_DEBUG'] = '0'
+
     return test_env.run_executable(cmd, env, stdoutfile, cwd)
   except OSError as e:
     print('Failed to start Weston: %s\n' % str(e), file=sys.stderr)
