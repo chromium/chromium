@@ -680,10 +680,10 @@ TEST_F(NativeInputMethodEngineTest, HandleAutocorrectChangesAutocorrectRange) {
   ui::IMEBridge::Get()->SetInputContextHandler(&mock_handler);
 
   mock_input_method.host->HandleAutocorrect(
-      ime::mojom::AutocorrectSpan::New(gfx::Range(0, 5), u"teh", u"the"));
+      ime::mojom::AutocorrectSpan::New(gfx::Range(0, 3), u"teh", u"the"));
   mock_input_method.host.FlushForTesting();
 
-  EXPECT_EQ(mock_handler.GetAutocorrectRange(), gfx::Range(0, 5));
+  EXPECT_EQ(mock_handler.GetAutocorrectRange(), gfx::Range(0, 3));
 
   InputMethodManager::Shutdown();
 }

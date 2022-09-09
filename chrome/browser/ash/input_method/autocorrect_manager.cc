@@ -55,7 +55,22 @@ void RecordAssistiveSuccess(AssistiveType type) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Success", type);
 }
 
+bool IsAutocorrectSuggestionInSurroundingText(
+    const std::u16string& surrounding_text,
+    const gfx::Range& autocorrect_range,
+    const std::u16string& suggested_text) {
+  if (autocorrect_range.is_empty() ||
+      suggested_text.length() != autocorrect_range.length() ||
+      autocorrect_range.end() > surrounding_text.length()) {
+    return false;
+  }
+
+  return surrounding_text.substr(autocorrect_range.start(),
+                                 autocorrect_range.length()) == suggested_text;
+}
+
 constexpr int kDistanceUntilUnderlineHides = 3;
+constexpr int kMaxValidationTries = 4;
 
 }  // namespace
 
@@ -81,6 +96,14 @@ void AutocorrectManager::HandleAutocorrect(const gfx::Range autocorrect_range,
     AcceptOrClearPendingAutocorrect();
   }
 
+  if (autocorrect_range.is_empty() ||
+      autocorrect_range.length() != current_text.length() ||
+      original_text.empty()) {
+    // TODO(b/161490813): record metrics for invalid arguments.
+    input_context->SetAutocorrectRange(gfx::Range(), base::DoNothing());
+    return;
+  }
+
   input_context->SetAutocorrectRange(
       autocorrect_range,
       base::BindOnce(&AutocorrectManager::ProcessSetAutocorrectRangeDone,
@@ -98,10 +121,6 @@ void AutocorrectManager::ProcessSetAutocorrectRangeDone(
     return;
   }
 
-  if (autocorrect_range.is_empty()) {
-    return;
-  }
-
   in_diacritical_autocorrect_session_ =
       IsCurrentInputMethodExperimentalMultilingual() &&
       diacritics_insensitive_string_comparator_.Equal(original_text,
@@ -112,7 +131,8 @@ void AutocorrectManager::ProcessSetAutocorrectRangeDone(
       ChromeKeyboardControllerClient::Get()->is_keyboard_visible();
 
   pending_autocorrect_ = AutocorrectManager::PendingAutocorrectState(
-      /*original_text=*/original_text, /*start_time=*/base::TimeTicks::Now(),
+      /*original_text=*/original_text, /*suggested_text=*/current_text,
+      /*start_time=*/base::TimeTicks::Now(),
       /*virtual_keyboard_visible=*/virtual_keyboard_visible);
 
   LogAssistiveAutocorrectAction(AutocorrectActions::kUnderlined);
@@ -186,22 +206,48 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
     return;
   }
 
+  if (!pending_autocorrect_->is_validated) {
+    // Validate that the surrounding text matches with pending autocorrect
+    // suggestion. Because of delays in update of surrounding text and
+    // autocorrect range, the validation waits until all these information are
+    // matching with each others (a.k.a. updated). This is necessary for
+    // implementation of autocorrect interactions such as implicit acceptance.
+    pending_autocorrect_->is_validated =
+        IsAutocorrectSuggestionInSurroundingText(
+            text, input_context->GetAutocorrectRange(),
+            pending_autocorrect_->suggested_text);
+    pending_autocorrect_->validation_tries++;
+
+    if (!pending_autocorrect_->is_validated) {
+      // Clear suggestion if multiple trials of validation fails.
+      // This is a guard to prevent unwanted situation that can keep
+      // autocorrect suggestion pending forever.
+      if (pending_autocorrect_->validation_tries >= kMaxValidationTries) {
+        AcceptOrClearPendingAutocorrect();
+      }
+      return;
+    }
+  }
+
   const gfx::Range range = input_context->GetAutocorrectRange();
   const uint32_t cursor_pos_unsigned
       = base::checked_cast<uint32_t>(cursor_pos);
+
+  // If range is empty, it means user has mutated suggestion. So, clear range
+  // and consider autocorrect suggestion as implicitly rejected.
+  if (range.is_empty()) {
+    AcceptOrClearPendingAutocorrect();
+    return;
+  }
 
   // If it is the first call of the event after handling autocorrect range,
   // initialize the variables and do not process the empty range as it is
   // potentially stale.
   if (pending_autocorrect_->num_inserted_chars < 0) {
     pending_autocorrect_->num_inserted_chars = 0;
-  } else if (range.is_empty()) {
-    // If it is not the first call and the range is empty, then it means the
-    // user interaction has cleared the range.
-    AcceptOrClearPendingAutocorrect();
-    return;
   } else if (text.length() > pending_autocorrect_->text_length) {
     // TODO(b/161490813): Fix double counting of emojis and some CJK chars.
+    // TODO(b/161490813): Fix logic for text replace.
 
     // Count characters added between two calls of the event.
     pending_autocorrect_->num_inserted_chars += text.length() -
@@ -262,7 +308,8 @@ void AutocorrectManager::ProcessTextFieldChange() {
 }
 
 void AutocorrectManager::UndoAutocorrect() {
-  if (!pending_autocorrect_.has_value()) {
+  if (!pending_autocorrect_.has_value() ||
+      !pending_autocorrect_->is_validated) {
     return;
   }
 
@@ -312,6 +359,7 @@ void AutocorrectManager::UndoAutocorrect() {
 void AutocorrectManager::ShowUndoWindow(
   gfx::Range range, const std::u16string& text) {
   if (!pending_autocorrect_.has_value() ||
+      !pending_autocorrect_->is_validated ||
       pending_autocorrect_->undo_window_visible) {
     return;
   }
@@ -410,17 +458,27 @@ void AutocorrectManager::AcceptOrClearPendingAutocorrect() {
   ui::IMEInputContextHandlerInterface* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
 
-  // Non-empty autocorrect range means that the user has not modified
-  // autocorrect suggestion to invalidate it. So, it is considered as accepted.
-  if (input_context && !input_context->GetAutocorrectRange().is_empty()) {
-    input_context->SetAutocorrectRange(gfx::Range(),
-                                       base::DoNothing());  // clear underline
+  if (!pending_autocorrect_->is_validated) {
+    // TODO(b/161490813): Record metric for invalid range.
+    LogAssistiveAutocorrectAction(
+        AutocorrectActions::kUserActionClearedUnderline);
+  } else if (input_context &&
+             !input_context->GetAutocorrectRange().is_empty()) {
+    // Non-empty autocorrect range means that the user has not modified
+    // autocorrect suggestion to invalidate it. So, it is considered as
+    // accepted.
     LogAssistiveAutocorrectAction(
       AutocorrectActions::kUserAcceptedAutocorrect);
   } else {
     LogAssistiveAutocorrectAction(
       AutocorrectActions::kUserActionClearedUnderline);
   }
+
+  if (input_context) {
+    input_context->SetAutocorrectRange(gfx::Range(),
+                                       base::DoNothing());  // clear underline
+  }
+
   HideUndoWindow();
   pending_autocorrect_.reset();
 }
@@ -437,9 +495,11 @@ bool AutocorrectManager::DisabledByRule() {
 
 AutocorrectManager::PendingAutocorrectState::PendingAutocorrectState(
     const std::u16string& original_text,
+    const std::u16string& suggested_text,
     const base::TimeTicks& start_time,
     bool virtual_keyboard_visible)
     : original_text(original_text),
+      suggested_text(suggested_text),
       start_time(start_time),
       virtual_keyboard_visible(virtual_keyboard_visible) {}
 
