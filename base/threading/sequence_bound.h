@@ -308,6 +308,14 @@ class SequenceBound {
                                         CrossThreadBindTraits::Unretained(t_)));
   }
 
+  void FlushPostedTasksForTesting() const {
+    DCHECK(!is_null());
+    RunLoop run_loop;
+    CrossThreadBindTraits::PostTask(*impl_task_runner_, FROM_HERE,
+                                    OnceClosure(run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
   // TODO(liberato): Add PostOrCall(), to support cases where synchronous calls
   // are okay if it's the same task runner.
 

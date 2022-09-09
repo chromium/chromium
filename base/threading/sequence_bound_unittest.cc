@@ -458,6 +458,17 @@ TEST_F(SequenceBoundTest, SynchronouslyResetForTest) {
   EXPECT_TRUE(destroyed);
 }
 
+TEST_F(SequenceBoundTest, FlushPostedTasksForTesting) {
+  SequenceBound<BoxedValue> value(background_task_runner_, 0, &logger_);
+
+  value.AsyncCall(&BoxedValue::set_value).WithArgs(42);
+  value.FlushPostedTasksForTesting();
+
+  EXPECT_THAT(logger_.TakeEvents(),
+              ::testing::ElementsAre("constructed BoxedValue = 0",
+                                     "updated BoxedValue from 0 to 42"));
+}
+
 TEST_F(SequenceBoundTest, SmallObject) {
   class EmptyClass {};
   SequenceBound<EmptyClass> value(background_task_runner_);
