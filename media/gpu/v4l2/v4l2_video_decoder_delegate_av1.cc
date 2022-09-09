@@ -4,9 +4,12 @@
 
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_av1.h"
 
+#include <linux/media/av1-ctrls.h>
+
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_decode_surface.h"
 #include "media/gpu/v4l2/v4l2_decode_surface_handler.h"
+#include "third_party/libgav1/src/src/obu_parser.h"
 
 namespace media {
 
@@ -34,6 +37,86 @@ class V4L2AV1Picture : public AV1Picture {
   scoped_refptr<V4L2DecodeSurface> dec_surface_;
 };
 
+namespace {
+// TODO(stevecho): Remove this when AV1 uAPI RFC v3 change
+// (crrev/c/3859126) lands.
+#ifndef BIT
+#define BIT(nr) (1U << (nr))
+#endif
+
+// Section 5.5. Sequence header OBU syntax in the AV1 spec.
+// https://aomediacodec.github.io/av1-spec
+void FillSequenceParams(v4l2_ctrl_av1_sequence& v4l2_seq_params,
+                        const libgav1::ObuSequenceHeader& seq_header) {
+  if (seq_header.still_picture)
+    v4l2_seq_params.flags |= V4L2_AV1_SEQUENCE_FLAG_STILL_PICTURE;
+
+  if (seq_header.use_128x128_superblock)
+    v4l2_seq_params.flags |= V4L2_AV1_SEQUENCE_FLAG_USE_128X128_SUPERBLOCK;
+
+  if (seq_header.enable_filter_intra)
+    v4l2_seq_params.flags |= V4L2_AV1_SEQUENCE_FLAG_ENABLE_FILTER_INTRA;
+
+  if (seq_header.enable_intra_edge_filter)
+    v4l2_seq_params.flags |= V4L2_AV1_SEQUENCE_FLAG_ENABLE_INTRA_EDGE_FILTER;
+
+  if (seq_header.enable_interintra_compound)
+    v4l2_seq_params.flags |= V4L2_AV1_SEQUENCE_FLAG_ENABLE_INTERINTRA_COMPOUND;
+
+  if (seq_header.enable_masked_compound)
+    v4l2_seq_params.flags |= V4L2_AV1_SEQUENCE_FLAG_ENABLE_MASKED_COMPOUND;
+
+  if (seq_header.enable_warped_motion)
+    v4l2_seq_params.flags |= V4L2_AV1_SEQUENCE_FLAG_ENABLE_WARPED_MOTION;
+
+  if (seq_header.enable_dual_filter)
+    v4l2_seq_params.flags |= V4L2_AV1_SEQUENCE_FLAG_ENABLE_DUAL_FILTER;
+
+  if (seq_header.enable_order_hint)
+    v4l2_seq_params.flags |= V4L2_AV1_SEQUENCE_FLAG_ENABLE_ORDER_HINT;
+
+  if (seq_header.enable_jnt_comp)
+    v4l2_seq_params.flags |= V4L2_AV1_SEQUENCE_FLAG_ENABLE_JNT_COMP;
+
+  if (seq_header.enable_ref_frame_mvs)
+    v4l2_seq_params.flags |= V4L2_AV1_SEQUENCE_FLAG_ENABLE_REF_FRAME_MVS;
+
+  if (seq_header.enable_superres)
+    v4l2_seq_params.flags |= V4L2_AV1_SEQUENCE_FLAG_ENABLE_SUPERRES;
+
+  if (seq_header.enable_cdef)
+    v4l2_seq_params.flags |= V4L2_AV1_SEQUENCE_FLAG_ENABLE_CDEF;
+
+  if (seq_header.enable_restoration)
+    v4l2_seq_params.flags |= V4L2_AV1_SEQUENCE_FLAG_ENABLE_RESTORATION;
+
+  if (seq_header.color_config.is_monochrome)
+    v4l2_seq_params.flags |= V4L2_AV1_SEQUENCE_FLAG_MONO_CHROME;
+
+  if (seq_header.color_config.color_range)
+    v4l2_seq_params.flags |= V4L2_AV1_SEQUENCE_FLAG_COLOR_RANGE;
+
+  if (seq_header.color_config.subsampling_x)
+    v4l2_seq_params.flags |= V4L2_AV1_SEQUENCE_FLAG_SUBSAMPLING_X;
+
+  if (seq_header.color_config.subsampling_y)
+    v4l2_seq_params.flags |= V4L2_AV1_SEQUENCE_FLAG_SUBSAMPLING_Y;
+
+  if (seq_header.film_grain_params_present)
+    v4l2_seq_params.flags |= V4L2_AV1_SEQUENCE_FLAG_FILM_GRAIN_PARAMS_PRESENT;
+
+  if (seq_header.color_config.separate_uv_delta_q)
+    v4l2_seq_params.flags |= V4L2_AV1_SEQUENCE_FLAG_SEPARATE_UV_DELTA_Q;
+
+  v4l2_seq_params.seq_profile = seq_header.profile;
+  v4l2_seq_params.order_hint_bits = seq_header.order_hint_bits;
+  v4l2_seq_params.bit_depth = seq_header.color_config.bitdepth;
+  v4l2_seq_params.max_frame_width_minus_1 = seq_header.max_frame_width - 1;
+  v4l2_seq_params.max_frame_height_minus_1 = seq_header.max_frame_height - 1;
+}
+
+}  // namespace
+
 V4L2VideoDecoderDelegateAV1::V4L2VideoDecoderDelegateAV1(
     V4L2DecodeSurfaceHandler* surface_handler,
     V4L2Device* device)
@@ -53,6 +136,21 @@ scoped_refptr<AV1Picture> V4L2VideoDecoderDelegateAV1::CreateAV1Picture(
     return nullptr;
 
   return new V4L2AV1Picture(std::move(dec_surface));
+}
+
+DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
+    const AV1Picture& pic,
+    const libgav1::ObuSequenceHeader& sequence_header,
+    const AV1ReferenceFrameVector& ref_frames,
+    const libgav1::Vector<libgav1::TileBuffer>& tile_buffers,
+    base::span<const uint8_t> data) {
+  struct v4l2_ctrl_av1_sequence v4l2_seq_params = {};
+
+  FillSequenceParams(v4l2_seq_params, sequence_header);
+
+  NOTIMPLEMENTED();
+
+  return DecodeStatus::kFail;
 }
 
 bool V4L2VideoDecoderDelegateAV1::OutputPicture(const AV1Picture& pic) {
