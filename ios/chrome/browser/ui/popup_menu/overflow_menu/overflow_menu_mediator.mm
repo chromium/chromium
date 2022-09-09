@@ -943,7 +943,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     ];
   }
 
-  if (IsNewOverflowMenuCBDActionEnabled()) {
+  // Clear Browsing Data Action is not relevant in incognito, so don't show it.
+  // History is also hidden for similar reasons.
+  if (IsNewOverflowMenuCBDActionEnabled() && !self.isIncognito) {
     self.pageActionsGroup.actions = [@[ self.clearBrowsingDataAction ]
         arrayByAddingObjectsFromArray:basePageActions];
   } else {
