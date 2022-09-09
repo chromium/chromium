@@ -4,13 +4,24 @@
 
 #include "components/browsing_data/content/browsing_data_model.h"
 
+#include "base/barrier_closure.h"
 #include "base/callback.h"
 #include "base/containers/enum_set.h"
+#include "base/memory/weak_ptr.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/storage_partition.h"
+#include "services/network/network_context.h"
+#include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace {
+
+// A number of bytes used to represent data which takes up a practically
+// inperceptible, but non-0 amount of space, such as Trust Tokens.
+constexpr int kSmallAmountOfDataInBytes = 100;
 
 // Visitor which returns the appropriate primary host for a given `data_key`
 // and `storage_type`.
@@ -48,6 +59,113 @@ std::string GetPrimaryHost::operator()<blink::StorageKey>(
 
   NOTREACHED();
   return "";
+}
+
+// Helper which allows the lifetime management of a deletion action to occur
+// separately from the BrowsingDataModel itself.
+struct StorageRemoverHelper {
+  explicit StorageRemoverHelper(
+      content::StoragePartition* storage_partition
+      // TODO(crbug.com/1271155): Inject other dependencies.
+      )
+      : storage_partition_(storage_partition) {}
+
+  void RemoveByPrimaryHost(
+      const std::string& primary_host,
+      const BrowsingDataModel::DataKeyEntries& data_key_entries,
+      base::OnceClosure completed);
+
+ private:
+  // Visitor struct to hold information used for deletion. absl::visit doesn't
+  // support multiple arguments elegently.
+  struct Visitor {
+    raw_ptr<StorageRemoverHelper> helper;
+    BrowsingDataModel::StorageTypeSet types;
+
+    template <class T>
+    void operator()(const T& data_key);
+  };
+
+  // Returns a OnceClosure which can be passed to a storage backend for calling
+  // on deletion completion.
+  base::OnceClosure GetCompleteCallback();
+
+  void BackendFinished();
+
+  bool removing_ = false;
+  base::OnceClosure completed_;
+  size_t callbacks_expected_ = 0;
+  size_t callbacks_seen_ = 0;
+
+  raw_ptr<content::StoragePartition> storage_partition_;
+  base::WeakPtrFactory<StorageRemoverHelper> weak_ptr_factory_{this};
+};
+
+void StorageRemoverHelper::RemoveByPrimaryHost(
+    const std::string& primary_host,
+    const BrowsingDataModel::DataKeyEntries& data_key_entries,
+    base::OnceClosure completed) {
+  // At a helper level, only a single deletion may occur at a time. However
+  // multiple helpers may be associated with a single model.
+  DCHECK(!removing_);
+  removing_ = true;
+
+  completed_ = std::move(completed);
+
+  for (const auto& [key, details] : data_key_entries)
+    absl::visit(Visitor{this, details.storage_types}, key);
+}
+
+template <>
+void StorageRemoverHelper::Visitor::operator()<url::Origin>(
+    const url::Origin& origin) {
+  if (types.Has(BrowsingDataModel::StorageType::kTrustTokens)) {
+    helper->storage_partition_->GetNetworkContext()->DeleteStoredTrustTokens(
+        origin, base::BindOnce(
+                    [](base::OnceClosure complete_callback,
+                       ::network::mojom::DeleteStoredTrustTokensStatus status) {
+                      std::move(complete_callback).Run();
+                    },
+                    helper->GetCompleteCallback()));
+  }
+}
+
+template <>
+void StorageRemoverHelper::Visitor::operator()<blink::StorageKey>(
+    const blink::StorageKey& storage_key) {
+  // TODO(crbug.com/1271155): Implement.
+  NOTREACHED();
+}
+
+base::OnceClosure StorageRemoverHelper::GetCompleteCallback() {
+  callbacks_expected_++;
+  return base::BindOnce(&StorageRemoverHelper::BackendFinished,
+                        weak_ptr_factory_.GetWeakPtr());
+}
+
+void StorageRemoverHelper::BackendFinished() {
+  DCHECK(callbacks_expected_ > callbacks_seen_);
+  callbacks_seen_++;
+
+  if (callbacks_seen_ == callbacks_expected_)
+    std::move(completed_).Run();
+}
+
+void OnTrustTokenIssuanceInfoLoaded(
+    BrowsingDataModel* model,
+    base::OnceClosure loaded_callback,
+    std::vector<::network::mojom::StoredTrustTokensForIssuerPtr> tokens) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  for (const auto& token : tokens) {
+    if (token->count == 0)
+      continue;
+
+    model->AddBrowsingData(token->issuer,
+                           BrowsingDataModel::StorageType::kTrustTokens,
+                           kSmallAmountOfDataInBytes);
+  }
+  std::move(loaded_callback).Run();
 }
 
 }  // namespace
@@ -125,15 +243,31 @@ BrowsingDataModel::Iterator BrowsingDataModel::end() const {
 BrowsingDataModel::~BrowsingDataModel() = default;
 
 void BrowsingDataModel::BuildFromDisk(
-    content::BrowserContext* browsing_context,
+    content::BrowserContext* browser_context,
     base::OnceCallback<void(std::unique_ptr<BrowsingDataModel>)>
         complete_callback) {
-  // TODO(crbug.com/1271155): Implement.
-  NOTREACHED();
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto model = BuildEmpty(browser_context);
+  auto* model_pointer = model.get();
+
+  // This functor will own the unique_ptr for the model during construction,
+  // after which it hands it to the initial caller. This ownership semantic
+  // ensures that raw `this` pointers provided to backends for fetching remain
+  // valid.
+  base::OnceClosure completion = base::BindOnce(
+      [](std::unique_ptr<BrowsingDataModel> model,
+         base::OnceCallback<void(std::unique_ptr<BrowsingDataModel>)>
+             callback) { std::move(callback).Run(std::move(model)); },
+      std::move(model), std::move(complete_callback));
+
+  model_pointer->PopulateFromDisk(std::move(completion));
 }
 
-std::unique_ptr<BrowsingDataModel> BrowsingDataModel::BuildEmpty() {
-  return base::WrapUnique(new BrowsingDataModel());  // Private constructor
+std::unique_ptr<BrowsingDataModel> BrowsingDataModel::BuildEmpty(
+    content::BrowserContext* browser_context) {
+  return base::WrapUnique(new BrowsingDataModel(
+      browser_context->GetDefaultStoragePartition()));  // Private constructor
 }
 
 void BrowsingDataModel::AddBrowsingData(const DataKey& data_key,
@@ -153,8 +287,45 @@ void BrowsingDataModel::AddBrowsingData(const DataKey& data_key,
 
 void BrowsingDataModel::RemoveBrowsingData(const std::string& primary_host,
                                            base::OnceClosure completed) {
-  // TODO(crbug.com/1271155): Implement.
-  NOTREACHED();
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Bind the lifetime of the helper to the lifetime of the callback.
+  auto helper = std::make_unique<StorageRemoverHelper>(storage_partition_);
+  auto* helper_pointer = helper.get();
+
+  base::OnceClosure wrapped_completed = base::BindOnce(
+      [](std::unique_ptr<StorageRemoverHelper> storage_remover,
+         base::OnceClosure completed) { std::move(completed).Run(); },
+      std::move(helper), std::move(completed));
+
+  helper_pointer->RemoveByPrimaryHost(primary_host,
+                                      browsing_data_entries_[primary_host],
+                                      std::move(wrapped_completed));
+
+  // Immediately remove the affected entries from the in-memory model. Different
+  // UI elements have different sync vs. async expectations. Exposing a
+  // completed callback, but updating the model synchronously, serves both.
+  browsing_data_entries_.erase(primary_host);
 }
 
-BrowsingDataModel::BrowsingDataModel() = default;
+void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // TODO(crbug.com/1271155): Derive this from the StorageTypeSet directly.
+  int storage_backend_count = 1;
+
+  base::RepeatingClosure completion =
+      base::BarrierClosure(storage_backend_count, std::move(finished_callback));
+
+  // The public build interfaces for the model ensure that `this` remains valid
+  // until `finished_callback` has been run. Thus, it's safe to pass raw `this`
+  // to backend callbacks.
+
+  // Issued Trust Tokens:
+  storage_partition_->GetNetworkContext()->GetStoredTrustTokenCounts(
+      base::BindOnce(&OnTrustTokenIssuanceInfoLoaded, this, completion));
+}
+
+BrowsingDataModel::BrowsingDataModel(
+    content::StoragePartition* storage_partition)
+    : storage_partition_(storage_partition) {}

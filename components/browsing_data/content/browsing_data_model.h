@@ -15,6 +15,7 @@
 
 namespace content {
 class BrowserContext;
+class StoragePartition;
 }
 
 // Provides a model interface into a collection of Browsing Data for use in the
@@ -28,7 +29,7 @@ class BrowsingDataModel {
   // incomplete implementations, and are marked as such.
   // TODO(crbug.com/1271155): Complete implementations for all browsing data.
   enum class StorageType {
-    kTrustTokens,                // Not fetched from disk or deleted.
+    kTrustTokens,                // Only issuance information considered.
     kPartitionedQuotaStorage,    // Not fetched from disk or deleted.
     kUnpartitionedQuotaStorage,  // Not fetched from disk or deleted.
 
@@ -58,8 +59,9 @@ class BrowsingDataModel {
     // The on-disk size of this storage.
     uint64_t storage_size = 0;
 
-    // The number of "cookies", or practically-0-size items. Only used to
-    // support legacy surfaces, and can hopefully one day be removed.
+    // The number of cookies included in this storage. This is only included to
+    // support legacy UI surfaces.
+    // TODO(crbug.com/1359998): Remove this when UI no longer requires it.
     uint64_t cookie_count = 0;
   };
 
@@ -120,14 +122,15 @@ class BrowsingDataModel {
   ~BrowsingDataModel();
 
   // Consults supported storage backends to create and populate a Model based
-  // on the current state of `browsing_context`.
+  // on the current state of `browser_context`.
   static void BuildFromDisk(
-      content::BrowserContext* browsing_context,
+      content::BrowserContext* browser_context,
       base::OnceCallback<void(std::unique_ptr<BrowsingDataModel>)>
           complete_callback);
 
   // Creates and returns an empty model, for population via AddBrowsingData().
-  static std::unique_ptr<BrowsingDataModel> BuildEmpty();
+  static std::unique_ptr<BrowsingDataModel> BuildEmpty(
+      content::BrowserContext* browser_context);
 
   // Directly add browsing data to the Model. The appropriate BrowsingDataEntry
   // will be created or modified. Typically this should only be used when the
@@ -135,20 +138,31 @@ class BrowsingDataModel {
   void AddBrowsingData(const DataKey& data_key,
                        StorageType storage_type,
                        uint64_t storage_size,
-                       uint64_t cookie_count);
+                       // TODO(crbug.com/1359998): Deprecate cookie count.
+                       uint64_t cookie_count = 0);
 
   // Removes all browsing data associated with `primary_host`, reaches out to
   // all supported storage backends to remove the data, and updates the model.
   // Deletion at more granularity than `primary_host` is purposefully not
   // supported by this model. UI that wishes to support such deletion should
   // consider whether it is really required, and if so, implement it separately.
+  // The in-memory representation of the model is updated immediately, while
+  // actual deletion from disk occurs async, completion reported by `completed`.
   // Invalidates any iterators.
   void RemoveBrowsingData(const std::string& primary_host,
                           base::OnceClosure completed);
 
  private:
-  // Private as one of the BuildX functions should be used instead.
-  BrowsingDataModel();
+  friend class BrowsingDataModelTest;
+
+  // Private as one of the static BuildX functions should be used instead.
+  explicit BrowsingDataModel(
+      content::StoragePartition* storage_partition
+      // TODO(crbug.com/1271155): Inject other dependencies.
+  );
+
+  // Pulls information from disk and populate the model.
+  void PopulateFromDisk(base::OnceClosure finished_callback);
 
   // Backing data structure for this model. Is a map from primary hosts to a
   // list of tuples (stored as a map) of <DataKey, DataDetails>. Building the
@@ -156,6 +170,12 @@ class BrowsingDataModel {
   // fast lookup is required. Similarly, keying the outer map on primary host
   // supports removal by primary host performantly.
   BrowsingDataEntries browsing_data_entries_;
+
+  // Non-owning pointers to storage backends. All derivable from a browser
+  // context, but broken out to allow easier injection in tests.
+  // TODO(crbug.com/1271155): More backends to come, they should all be broken
+  // out from the browser context at the appropriate level.
+  raw_ptr<content::StoragePartition> storage_partition_;
 };
 
 #endif  // COMPONENTS_BROWSING_DATA_CONTENT_BROWSING_DATA_MODEL_H_

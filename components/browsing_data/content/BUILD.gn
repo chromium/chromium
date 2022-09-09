@@ -65,9 +65,11 @@ source_set("unit_tests") {
 
   deps = [
     ":content",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//content/test:test_support",
+    "//services/network:test_support",
     "//testing/gtest",
     "//url",
   ]
@@ -76,6 +78,8 @@ source_set("unit_tests") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "browsing_data_model_test_util.cc",
+    "browsing_data_model_test_util.h",
     "mock_cache_storage_helper.cc",
     "mock_cache_storage_helper.h",
     "mock_cookie_helper.cc",
@@ -98,6 +102,7 @@ source_set("test_support") {
     "//base",
     "//components/services/storage/public/cpp",
     "//content/public/browser",
+    "//testing/gmock",
     "//testing/gtest",
     "//url",
   ]

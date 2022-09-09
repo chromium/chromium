@@ -17,4 +17,5 @@ include_rules = [
   "+storage/browser",
   "+storage/common",
   "+third_party/blink/public",
+  "+services/network",
 ]
