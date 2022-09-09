@@ -66,6 +66,8 @@ PageInfoCookiesContentView::PageInfoCookiesContentView(PageInfo* presenter)
   // to ensure the views order.
   cookies_buttons_container_view_ =
       AddChildView(std::make_unique<PageInfoMainView::ContainerView>());
+  cookies_buttons_container_view_->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
 
   presenter_->InitializeUiState(this, base::DoNothing());
 }
@@ -263,12 +265,17 @@ void PageInfoCookiesContentView::InitBlockingThirdPartyCookiesRow() {
           std::make_unique<PageInfoRowView>());
   blocking_third_party_cookies_row_->SetTitle(title);
   blocking_third_party_cookies_row_->SetIcon(icon);
+  blocking_third_party_cookies_row_->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_ROW);
 
   // The subtext is only visible when third-party cookies are being blocked.
   // At the beginning it's not.
   blocking_third_party_cookies_subtitle_label_ =
       blocking_third_party_cookies_row_->AddSecondaryLabel(u"");
   blocking_third_party_cookies_subtitle_label_->SetVisible(false);
+  blocking_third_party_cookies_subtitle_label_->SetID(
+      PageInfoViewFactory::
+          VIEW_ID_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_SUBTITLE);
 }
 
 void PageInfoCookiesContentView::OnToggleButtonPressed() {
