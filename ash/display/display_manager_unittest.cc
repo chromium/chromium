@@ -65,6 +65,7 @@
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/overlay_transform.h"
+#include "ui/wm/core/compound_event_filter.h"
 
 namespace ash {
 
@@ -1992,6 +1993,58 @@ TEST_F(DisplayManagerTest, Rotate) {
   EXPECT_NE(info.GetActiveRotation(), post_rotation_info.GetActiveRotation());
   EXPECT_EQ(display::Display::ROTATE_180,
             post_rotation_info.GetActiveRotation());
+}
+
+namespace {
+
+class CloseDisplayHandler : public ui::EventHandler {
+ public:
+  CloseDisplayHandler(AshTestBase* test_base, aura::Window* root)
+      : test_base_(test_base), root_(root) {}
+  CloseDisplayHandler(const CloseDisplayHandler&) = delete;
+  CloseDisplayHandler& operator=(const CloseDisplayHandler&) = delete;
+  ~CloseDisplayHandler() override = default;
+
+  // ui::EventHandler:
+  void OnKeyEvent(ui::KeyEvent* event) override {
+    test_base_->UpdateDisplay("300x200");
+    root_->RemovePreTargetHandler(this);
+  }
+
+ private:
+  AshTestBase* test_base_;
+  aura::Window* root_;
+};
+
+}  // namespace
+
+// Make sure that we can emulate disconnecting an external display using
+// Key/MouseEvent while it is in the unified desktop mode. This doesn't happen
+// in real device as the disconnect is trigged by ozone, not by UI events, but
+// this is still useful in the testing environment.
+TEST_F(DisplayManagerTest, CloseDisplayByEvent) {
+  // Don't check root window destruction in unified mode.
+  Shell::GetPrimaryRootWindow()->RemoveObserver(this);
+
+  display_manager()->SetUnifiedDesktopEnabled(true);
+
+  UpdateDisplay("300x200, 600x400");
+  EXPECT_EQ(2u, display_manager()->software_mirroring_display_list().size());
+
+  auto* desktop_root = Shell::GetPrimaryRootWindow();
+  CloseDisplayHandler handler(this, desktop_root);
+  desktop_root->AddPreTargetHandler(&handler);
+
+  auto* mirror_window_controller =
+      Shell::Get()->window_tree_host_manager()->mirror_window_controller();
+  auto* host_root = mirror_window_controller->GetAllRootWindows()[1];
+  ui::test::EventGenerator generator(host_root);
+  generator.PressAndReleaseKey(ui::VKEY_A);
+
+  EXPECT_FALSE(display_manager()->IsInUnifiedMode());
+  EXPECT_EQ(0u, display_manager()->software_mirroring_display_list().size());
+  // the root window the handler was added has already been destroyed.
+  EXPECT_NE(desktop_root, Shell::GetPrimaryRootWindow());
 }
 
 TEST_F(DisplayManagerTest, ResolutionChangeInUnifiedMode) {

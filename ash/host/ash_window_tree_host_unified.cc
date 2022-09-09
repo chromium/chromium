@@ -12,6 +12,7 @@
 #include "ash/host/root_window_transformer.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "ui/aura/window.h"
@@ -34,6 +35,7 @@ class UnifiedEventTargeter : public aura::WindowTargeter {
 
   UnifiedEventTargeter(const UnifiedEventTargeter&) = delete;
   UnifiedEventTargeter& operator=(const UnifiedEventTargeter&) = delete;
+  ~UnifiedEventTargeter() override { delegate_ = nullptr; }
 
   ui::EventTarget* FindTargetForEvent(ui::EventTarget* root,
                                       ui::Event* event) override {
@@ -45,8 +47,11 @@ class UnifiedEventTargeter : public aura::WindowTargeter {
         located_event->ConvertLocationToTarget(
             static_cast<aura::Window*>(nullptr), dst_root_);
       }
+      auto ptr = weak_ptr_factory_.GetWeakPtr();
       std::ignore =
           dst_root_->GetHost()->GetEventSink()->OnEventFromSource(event);
+      if (!ptr)
+        return nullptr;
 
       // Reset the source host.
       delegate_->SetCurrentEventTargeterSourceHost(nullptr);
@@ -62,6 +67,7 @@ class UnifiedEventTargeter : public aura::WindowTargeter {
   aura::Window* src_root_;
   aura::Window* dst_root_;
   AshWindowTreeHostDelegate* delegate_;  // Not owned.
+  base::WeakPtrFactory<UnifiedEventTargeter> weak_ptr_factory_{this};
 };
 
 AshWindowTreeHostUnified::AshWindowTreeHostUnified(
