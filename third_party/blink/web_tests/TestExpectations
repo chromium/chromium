@@ -1650,15 +1650,12 @@ crbug.com/1121942 virtual/layout_ng_printing/printing/page-orientation.html [ Fa
 crbug.com/1121942 virtual/layout_ng_printing/printing/single-line-must-not-be-split-into-two-pages.html [ Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/thead-tfoot-containing-svg-repeat-extra-pages.html [ Crash Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/thead-tfoot-containing-svg-repeat.html [ Crash Failure ]
-crbug.com/1121942 [ Linux ] virtual/layout_ng_printing/printing/vertical-rl.html [ Crash Failure ]
-crbug.com/1121942 [ Mac11 ] virtual/layout_ng_printing/printing/vertical-rl.html [ Crash Failure ]
-crbug.com/1121942 [ Mac12 ] virtual/layout_ng_printing/printing/vertical-rl.html [ Crash Failure ]
-crbug.com/1121942 [ Win ] virtual/layout_ng_printing/printing/vertical-rl.html [ Crash Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/webgl-oversized-printing.html [ Skip ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/width-overflow.html [ Failure ]
 
 # Tests passing with LayoutNGPrinting enabled:
 virtual/layout_ng_printing/printing/fixedpos-in-multicol.html [ Pass ]
+virtual/layout_ng_printing/printing/monolithic-at-page-block-end-horizontal-tb.html [ Pass ]
 
 ### TablesNG
 # crbug.com/958381
@@ -2404,6 +2401,7 @@ crbug.com/381684 [ Win ] fonts/family-fallback-gardiner.html [ Skip ]
 crbug.com/377696 printing/setPrinting.html [ Failure ]
 crbug.com/1311165 printing/fixed-positioned-but-static-headers-and-footers.html [ Failure ]
 crbug.com/1121942 printing/fixedpos-in-multicol.html [ Failure ]
+crbug.com/1121942 printing/monolithic-at-page-block-end-horizontal-tb.html [ Failure ]
 
 crbug.com/1204498 external/wpt/service-workers/service-worker/client-navigate.https.html [ Failure Pass ]
 crbug.com/1223681 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/client-navigate.https.html [ Failure Pass Timeout ]
