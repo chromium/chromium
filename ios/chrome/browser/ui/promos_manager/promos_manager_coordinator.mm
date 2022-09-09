@@ -95,6 +95,8 @@
     id<StandardPromoDisplayHandler> handler = handler_it->second;
 
     [handler handleDisplay];
+
+    [self.mediator recordImpression:handler.identifier];
   } else if (provider_it != _viewProviderPromos.end()) {
     id<StandardPromoViewProvider> provider = provider_it->second;
 
@@ -105,6 +107,8 @@
     [self.baseViewController presentViewController:provider.viewController
                                           animated:YES
                                         completion:nil];
+
+    [self.mediator recordImpression:provider.identifier];
   } else {
     NOTREACHED();
   }

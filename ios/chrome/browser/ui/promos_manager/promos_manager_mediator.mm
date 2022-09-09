@@ -35,6 +35,10 @@
   return self;
 }
 
+- (void)recordImpression:(promos_manager::Promo)promo {
+  _promosManager->RecordImpression(promo);
+}
+
 #pragma mark - PromosManagerSceneAvailabilityObserver
 
 // Queries the PromosManager for the next promo (promos_manager::Promo) to

@@ -34,6 +34,9 @@
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Records the display impression of `promo`.
+- (void)recordImpression:(promos_manager::Promo)promo;
+
 // The Promos Manager used for deciding which promo should be displayed, if any.
 @property(nonatomic, assign) PromosManager* promosManager;
 
