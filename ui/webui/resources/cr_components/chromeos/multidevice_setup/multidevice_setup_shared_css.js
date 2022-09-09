@@ -4,7 +4,7 @@
 
 import '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import '../../../cr_elements/cr_shared_style.css.js';
-import '../../../cr_elements/shared_vars_css.m.js';
+import '../../../cr_elements/cr_shared_vars.css.js';
 import '../../../cr_elements/md_select.css.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 

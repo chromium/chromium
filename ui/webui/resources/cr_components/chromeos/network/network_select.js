@@ -7,7 +7,7 @@
  * networkConfig mojo API calls to populate it.
  */
 
-import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/paper-progress/paper-progress.js';
 import './network_list.js';
 

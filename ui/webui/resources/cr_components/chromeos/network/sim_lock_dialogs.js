@@ -8,7 +8,7 @@
 
 import '../../../cr_elements/cr_button/cr_button.js';
 import '../../../cr_elements/cr_dialog/cr_dialog.js';
-import '../../../cr_elements/icons.m.js';
+import '../../../cr_elements/icons.html.js';
 import '../../../cr_elements/cr_shared_style.css.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';

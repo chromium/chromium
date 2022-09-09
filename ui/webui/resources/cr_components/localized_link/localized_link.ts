@@ -20,7 +20,7 @@
  * string with a link and sometimes returns a normal string.
  */
 
-import '../../cr_elements/shared_vars_css.m.js';
+import '../../cr_elements/cr_shared_vars.css.js';
 import '../../cr_elements/cr_shared_style.css.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.m.js';

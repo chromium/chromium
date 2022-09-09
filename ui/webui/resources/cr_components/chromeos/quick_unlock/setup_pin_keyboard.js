@@ -10,7 +10,7 @@
  *
  */
 
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './pin_keyboard.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';

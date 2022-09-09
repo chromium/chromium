@@ -6,7 +6,7 @@
  * @fileoverview Polymer element for network configuration toggle.
  */
 import '../../../cr_elements/cr_toggle/cr_toggle.js';
-import '../../../cr_elements/shared_vars_css.m.js';
+import '../../../cr_elements/cr_shared_vars.css.js';
 import './cr_policy_network_indicator_mojo.js';
 import './network_shared_css.js';
 

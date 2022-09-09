@@ -14,9 +14,9 @@ import '../../../cr_elements/cr_checkbox/cr_checkbox.js';
 import '../../../cr_elements/cr_dialog/cr_dialog.js';
 import '../../../cr_elements/cr_input/cr_input.js';
 import '../../../cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.js';
-import '../../../cr_elements/icons.m.js';
+import '../../../cr_elements/icons.html.js';
 import '../../../cr_elements/cr_shared_style.css.js';
-import '../../../cr_elements/shared_vars_css.m.js';
+import '../../../cr_elements/cr_shared_vars.css.js';
 import '../../../cr_elements/md_select.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 

@@ -9,7 +9,7 @@
 import '../../../cr_elements/cr_icon_button/cr_icon_button.js';
 import '../../../cr_elements/cr_icons.css.js';
 import '../../../cr_elements/cr_input/cr_input.js';
-import '../../../cr_elements/shared_vars_css.m.js';
+import '../../../cr_elements/cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import './cr_policy_network_indicator_mojo.js';
 import './network_shared_css.js';

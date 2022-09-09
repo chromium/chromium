@@ -7,7 +7,7 @@
  */
 
 import '../../../cr_elements/cr_toggle/cr_toggle.js';
-import '../../../cr_elements/icons.m.js';
+import '../../../cr_elements/icons.html.js';
 import '../../../cr_elements/cr_button/cr_button.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
