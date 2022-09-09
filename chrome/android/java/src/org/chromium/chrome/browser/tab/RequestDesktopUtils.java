@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
+import org.chromium.components.browser_ui.site_settings.SingleCategorySettingsConstants;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsFeatureList;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -328,7 +329,8 @@ public class RequestDesktopUtils {
         boolean previouslyDefaultEnabled = SharedPreferencesManager.getInstance().readBoolean(
                 ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING, false);
         boolean previouslyUpdatedByUser = SharedPreferencesManager.getInstance().contains(
-                SingleCategorySettings.USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY);
+                SingleCategorySettingsConstants
+                        .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY);
 
         return !previouslyDefaultEnabled && !previouslyUpdatedByUser
                 && displaySizeInInches >= ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
@@ -450,7 +452,7 @@ public class RequestDesktopUtils {
 
         // Present the message only if the user has not previously updated the global setting.
         if (SharedPreferencesManager.getInstance().contains(
-                    SingleCategorySettings
+                    SingleCategorySettingsConstants
                             .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY)) {
             return false;
         }

@@ -38,6 +38,11 @@ source_set("android") {
   ]
 }
 
+# Constants only target without dependencies to allow embedders to only include relevant code.
+android_library("constants_java") {
+  sources = [ "java/src/org/chromium/components/browser_ui/site_settings/SingleCategorySettingsConstants.java" ]
+}
+
 android_library("java") {
   sources = [
     "java/src/org/chromium/components/browser_ui/site_settings/AddExceptionPreference.java",
@@ -86,6 +91,7 @@ android_library("java") {
     "//base:jni_java",
     "//build/android:build_java",
     "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/site_settings/android:constants_java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/content_settings/android:content_settings_enums_java",

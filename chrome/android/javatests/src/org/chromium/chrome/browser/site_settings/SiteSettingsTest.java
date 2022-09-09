@@ -77,6 +77,7 @@ import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsP
 import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference.CookieSettingsState;
 import org.chromium.components.browser_ui.site_settings.R;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
+import org.chromium.components.browser_ui.site_settings.SingleCategorySettingsConstants;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsFeatureList;
@@ -173,7 +174,7 @@ public class SiteSettingsTest {
         IncognitoUtils.setEnabledForTesting(null);
         ContextUtils.getAppSharedPreferences()
                 .edit()
-                .remove(SingleCategorySettings
+                .remove(SingleCategorySettingsConstants
                                 .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY)
                 .apply();
     }
@@ -1188,7 +1189,7 @@ public class SiteSettingsTest {
         Assert.assertTrue(
                 "SharedPreference USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY should be updated.",
                 ContextUtils.getAppSharedPreferences().contains(
-                        SingleCategorySettings
+                        SingleCategorySettingsConstants
                                 .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY));
     }
 
@@ -1202,7 +1203,7 @@ public class SiteSettingsTest {
         Assert.assertTrue(
                 "SharedPreference USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY should be updated.",
                 ContextUtils.getAppSharedPreferences().contains(
-                        SingleCategorySettings
+                        SingleCategorySettingsConstants
                                 .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY));
     }
 
