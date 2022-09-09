@@ -58,11 +58,6 @@ void AssertBitset(std::initializer_list<size_t> bits) {
 
 }  // namespace
 
-TEST(CSSBitsetTest, BaseBitCount0) {
-  static_assert(CSSBitsetBase<0>::kChunks == 0, "Correct chunk count");
-  AssertBitset<0>({});
-}
-
 TEST(CSSBitsetTest, BaseBitCount1) {
   static_assert(CSSBitsetBase<1>::kChunks == 1u, "Correct chunk count");
   AssertBitset<1>({});

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
 #include "third_party/blink/renderer/core/css/css_variable_reference_value.h"
 #include "third_party/blink/renderer/core/css/hash_tools.h"
+#include "third_party/blink/renderer/core/css/known_exposed_properties.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
@@ -233,11 +234,25 @@ static CSSPropertyID UnresolvedCSSPropertyID(
   const Property* hash_table_entry = FindProperty(name, length);
   if (!hash_table_entry)
     return CSSPropertyID::kInvalid;
+
   CSSPropertyID property_id = static_cast<CSSPropertyID>(hash_table_entry->id);
-  const CSSProperty& property =
-      CSSProperty::Get(ResolveCSSPropertyID(property_id));
-  bool exposed = IsExposedInMode(execution_context, property, mode);
-  return exposed ? property_id : CSSPropertyID::kInvalid;
+  if (kKnownExposedProperties.Has(property_id)) {
+#if DCHECK_IS_ON()
+    const CSSProperty& property =
+        CSSProperty::Get(ResolveCSSPropertyID(property_id));
+    DCHECK(IsExposedInMode(execution_context, property, mode));
+#endif
+  } else {
+    // The property is behind a runtime flag, so we need to go ahead
+    // and actually do the resolution to see if that flag is on or not.
+    // This should happen only occasionally.
+    const CSSProperty& property =
+        CSSProperty::Get(ResolveCSSPropertyID(property_id));
+    if (!IsExposedInMode(execution_context, property, mode)) {
+      return CSSPropertyID::kInvalid;
+    }
+  }
+  return property_id;
 }
 
 CSSPropertyID UnresolvedCSSPropertyID(const ExecutionContext* execution_context,
