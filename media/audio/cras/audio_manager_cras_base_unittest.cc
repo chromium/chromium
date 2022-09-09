@@ -8,6 +8,7 @@
 #include "media/audio/fake_audio_log_factory.h"
 #include "media/audio/mock_aecdump_recording_manager.h"
 #include "media/audio/test_audio_thread.h"
+#include "media/base/audio_parameters.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,7 +37,7 @@ class MockAudioManagerCrasBase : public AudioManagerCrasBase {
       const std::string& output_device_id,
       const AudioParameters& input_params) {
     return AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
-                           CHANNEL_LAYOUT_STEREO, 44100, 1000);
+                           ChannelLayoutConfig::Stereo(), 44100, 1000);
   }
   bool IsDefault(const std::string& device_id, bool is_input) override {
     return true;
