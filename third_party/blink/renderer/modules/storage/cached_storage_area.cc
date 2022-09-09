@@ -14,9 +14,8 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/trace_event/memory_dump_manager.h"
-#include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
@@ -200,7 +199,7 @@ CachedStorageArea::CachedStorageArea(
   BindStorageArea(std::move(storage_area), local_dom_window);
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "DOMStorage",
-      ThreadScheduler::Current()->DeprecatedDefaultTaskRunner());
+      Thread::MainThread()->GetTaskRunner(MainThreadTaskRunnerRestricted()));
 }
 
 CachedStorageArea::~CachedStorageArea() {
