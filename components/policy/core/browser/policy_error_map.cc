@@ -29,36 +29,46 @@ std::u16string ConvertReplacementToUTF16(const std::string& replacement) {
 
 }  // namespace
 
+bool PolicyErrorMap::Data::operator==(const PolicyErrorMap::Data& other) const {
+  return std::tie(message, level) == std::tie(other.message, other.level);
+}
+
 class PolicyErrorMap::PendingError {
  public:
   PendingError(const std::string& policy_name,
                int message_id,
-               const PolicyErrorPath& error_path)
+               const PolicyErrorPath& error_path,
+               const PolicyMap::MessageType level)
       : PendingError(policy_name,
                      message_id,
                      std::string(),
                      std::string(),
-                     error_path) {}
+                     error_path,
+                     level) {}
   PendingError(const std::string& policy_name,
                int message_id,
                const std::string& replacement_a,
-               const PolicyErrorPath& error_path)
+               const PolicyErrorPath& error_path,
+               const PolicyMap::MessageType level)
       : PendingError(policy_name,
                      message_id,
                      replacement_a,
                      std::string(),
-                     error_path) {}
+                     error_path,
+                     level) {}
 
   PendingError(const std::string& policy_name,
                int message_id,
                const std::string& replacement_a,
                const std::string& replacement_b,
-               const PolicyErrorPath& error_path)
+               const PolicyErrorPath& error_path,
+               const PolicyMap::MessageType level)
       : policy_name_(policy_name),
         message_id_(message_id),
         replacement_a_(replacement_a),
         replacement_b_(replacement_b),
-        error_path_string_(ErrorPathToString(policy_name, error_path)) {
+        error_path_string_(ErrorPathToString(policy_name, error_path)),
+        level_(level) {
     DCHECK(replacement_b.empty() || !replacement_a.empty());
   }
   PendingError(const PendingError&) = delete;
@@ -66,6 +76,8 @@ class PolicyErrorMap::PendingError {
   ~PendingError() = default;
 
   const std::string& policy_name() const { return policy_name_; }
+
+  const PolicyMap::MessageType& level() const { return level_; }
 
   std::u16string GetMessage() const {
     if (error_path_string_.empty())
@@ -98,6 +110,7 @@ class PolicyErrorMap::PendingError {
   std::string replacement_a_;
   std::string replacement_b_;
   std::string error_path_string_;
+  PolicyMap::MessageType level_;
 };
 
 PolicyErrorMap::PolicyErrorMap() = default;
@@ -110,25 +123,29 @@ bool PolicyErrorMap::IsReady() const {
 
 void PolicyErrorMap::AddError(const std::string& policy,
                               int message_id,
-                              PolicyErrorPath error_path) {
-  AddError(std::make_unique<PendingError>(policy, message_id, error_path));
+                              PolicyErrorPath error_path,
+                              PolicyMap::MessageType level) {
+  AddError(
+      std::make_unique<PendingError>(policy, message_id, error_path, level));
 }
 
 void PolicyErrorMap::AddError(const std::string& policy,
                               int message_id,
                               const std::string& replacement,
-                              PolicyErrorPath error_path) {
+                              PolicyErrorPath error_path,
+                              PolicyMap::MessageType level) {
   AddError(std::make_unique<PendingError>(policy, message_id, replacement,
-                                          error_path));
+                                          error_path, level));
 }
 
 void PolicyErrorMap::AddError(const std::string& policy,
                               int message_id,
                               const std::string& replacement_a,
                               const std::string& replacement_b,
-                              PolicyErrorPath error_path) {
+                              PolicyErrorPath error_path,
+                              PolicyMap::MessageType level) {
   AddError(std::make_unique<PendingError>(policy, message_id, replacement_a,
-                                          replacement_b, error_path));
+                                          replacement_b, error_path, level));
 }
 
 bool PolicyErrorMap::HasError(const std::string& policy) {
@@ -139,13 +156,38 @@ bool PolicyErrorMap::HasError(const std::string& policy) {
   return base::Contains(pending_, policy, &PendingError::policy_name);
 }
 
+bool PolicyErrorMap::HasFatalError(const std::string& policy) {
+  std::pair<std::string, PolicyMap::MessageType> fatal_error =
+      std::make_pair(policy, PolicyMap::MessageType::kError);
+  if (IsReady()) {
+    CheckReadyAndConvert();
+    return base::Contains(
+        map_, fatal_error, [](const std::pair<std::string, Data>& entry) {
+          return std::make_pair(entry.first, entry.second.level);
+        });
+  }
+  return base::Contains(pending_, fatal_error, [](const auto& entry) {
+    return std::make_pair(entry->policy_name(), entry->level());
+  });
+}
+
 std::u16string PolicyErrorMap::GetErrors(const std::string& policy) {
   CheckReadyAndConvert();
   std::pair<const_iterator, const_iterator> range = map_.equal_range(policy);
   std::vector<base::StringPiece16> list;
   for (auto it = range.first; it != range.second; ++it)
-    list.push_back(it->second);
+    list.push_back(it->second.message);
   return base::JoinString(list, u"\n");
+}
+
+std::vector<PolicyErrorMap::Data> PolicyErrorMap::GetErrorsMetadata(
+    const std::string& policy) {
+  CheckReadyAndConvert();
+  std::pair<const_iterator, const_iterator> range = map_.equal_range(policy);
+  std::vector<PolicyErrorMap::Data> list;
+  for (auto it = range.first; it != range.second; ++it)
+    list.push_back(it->second);
+  return list;
 }
 
 bool PolicyErrorMap::empty() const {
@@ -184,7 +226,9 @@ void PolicyErrorMap::AddError(std::unique_ptr<PendingError> error) {
 }
 
 void PolicyErrorMap::Convert(PendingError* error) {
-  map_.insert(std::make_pair(error->policy_name(), error->GetMessage()));
+  map_.insert(std::make_pair(
+      error->policy_name(),
+      Data{.message = error->GetMessage(), .level = error->level()}));
 }
 
 void PolicyErrorMap::CheckReadyAndConvert() {

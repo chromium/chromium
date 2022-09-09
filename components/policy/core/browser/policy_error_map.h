@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_export.h"
 
@@ -20,7 +21,13 @@ namespace policy {
 // Collects error messages and their associated policies.
 class POLICY_EXPORT PolicyErrorMap {
  public:
-  typedef std::multimap<std::string, std::u16string> PolicyMapType;
+  struct POLICY_EXPORT Data {
+    bool operator==(const Data& other) const;
+
+    std::u16string message;
+    PolicyMap::MessageType level;
+  };
+  typedef std::multimap<std::string, Data> PolicyMapType;
   typedef PolicyMapType::const_iterator const_iterator;
 
   class PendingError;
@@ -38,32 +45,48 @@ class POLICY_EXPORT PolicyErrorMap {
   // Adds an entry with key |policy|, the error message corresponding to
   // |message_id| in grit/generated_resources.h and its error_path |error_path|
   // to the map.
-  void AddError(const std::string& policy,
-                int message_id,
-                PolicyErrorPath error_path = {});
+  void AddError(
+      const std::string& policy,
+      int message_id,
+      PolicyErrorPath error_path = {},
+      PolicyMap::MessageType error_level = PolicyMap::MessageType::kError);
 
   // Adds an entry with key |policy|, the error message corresponding to
   // |message_id| in grit/generated_resources.h and its error_path |error_path|
   // to the map and replaces the placeholder within the error message with
   // |replacement_string|.
-  void AddError(const std::string& policy,
-                int message_id,
-                const std::string& replacement_string,
-                PolicyErrorPath error_path = {});
+  void AddError(
+      const std::string& policy,
+      int message_id,
+      const std::string& replacement_string,
+      PolicyErrorPath error_path = {},
+      PolicyMap::MessageType error_level = PolicyMap::MessageType::kError);
 
   // Same as AddError above but supports two replacement strings.
-  void AddError(const std::string& policy,
-                int message_id,
-                const std::string& replacement_a,
-                const std::string& replacement_b,
-                PolicyErrorPath error_path = {});
+  void AddError(
+      const std::string& policy,
+      int message_id,
+      const std::string& replacement_a,
+      const std::string& replacement_b,
+      PolicyErrorPath error_path = {},
+      PolicyMap::MessageType error_level = PolicyMap::MessageType::kError);
 
   // Returns true if there is any error for |policy|.
   bool HasError(const std::string& policy);
 
+  // Returns true if there is any fatal error (PolicyMap::MessageType::kError)
+  // for |policy|. Returns false if |policy| only has non-fatal errors
+  // (PolicyMap::MessageType::kInfo or PolicyMap::MessageType::kWarning) or no
+  // errors at all.
+  bool HasFatalError(const std::string& policy);
+
   // Returns all the error messages stored for |policy|, separated by a white
   // space. Returns an empty string if there are no errors for |policy|.
   std::u16string GetErrors(const std::string& policy);
+
+  // Returns all the error metadata stored for |policy|, separated by a white
+  // space. Returns an empty vector if there are no errors for |policy|.
+  std::vector<Data> GetErrorsMetadata(const std::string& policy);
 
   bool empty() const;
   size_t size();

@@ -30,7 +30,7 @@ void LogErrors(std::unique_ptr<PolicyErrorMap> errors,
   DCHECK(errors->IsReady());
   for (auto& pair : *errors) {
     std::u16string policy = base::ASCIIToUTF16(pair.first);
-    DLOG(WARNING) << "Policy " << policy << ": " << pair.second;
+    DLOG(WARNING) << "Policy " << policy << ": " << pair.second.message;
   }
   for (const auto& policy : deprecated_policies) {
     VLOG(1) << "Policy " << policy << " has been deprecated.";

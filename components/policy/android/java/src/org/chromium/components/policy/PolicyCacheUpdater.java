@@ -19,7 +19,7 @@ public class PolicyCacheUpdater {
     // including but not limited to one of following situations:
     //  1) Dangerous policy is ignored on non-fully managed devices.
     //  2) Policy is deprecated and overridden by its replacement.
-    //  3) Any error set by ConfigurationPolicyHandler.
+    //  3) Any fatal error set by ConfigurationPolicyHandler.
     static List<Pair<String, PolicyCache.Type>> sPolicies =
             Arrays.asList(Pair.create("BrowserSignin", PolicyCache.Type.Integer),
                     Pair.create("CloudManagementEnrollmentToken", PolicyCache.Type.String),

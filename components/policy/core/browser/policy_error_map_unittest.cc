@@ -14,26 +14,64 @@ constexpr char kPolicyWithError[] = "policy-error";
 constexpr char kPolicyWithoutError[] = "policy";
 }  // namespace
 
-TEST(PolicyErrorMapTest, HasErrorWithoutResource) {
-  ui::ResourceBundle* original_resource_bundle =
-      ui::ResourceBundle::SwapSharedInstanceForTesting(nullptr);
+class PolicyErrorMapTestResourceBundle : public ::testing::TestWithParam<bool> {
+ public:
+  PolicyErrorMapTestResourceBundle() : has_resource_bundle_(GetParam()) {
+    if (!has_resource_bundle_) {
+      original_resource_bundle_ =
+          ui::ResourceBundle::SwapSharedInstanceForTesting(nullptr);
+    }
+  }
+
+  void TearDown() override {
+    if (!has_resource_bundle_) {
+      ui::ResourceBundle::SwapSharedInstanceForTesting(
+          original_resource_bundle_);
+    }
+  }
+
+  bool has_resource_bundle() { return has_resource_bundle_; }
+
+ private:
+  bool has_resource_bundle_;
+  ui::ResourceBundle* original_resource_bundle_;
+};
+
+TEST_P(PolicyErrorMapTestResourceBundle, CheckForErrorsWithoutFatalErrors) {
   PolicyErrorMap errors;
-  ASSERT_FALSE(errors.IsReady());
-  errors.AddError(kPolicyWithError, IDS_POLICY_BLOCKED);
+  ASSERT_EQ(errors.IsReady(), has_resource_bundle());
+  errors.AddError(kPolicyWithError, IDS_POLICY_BLOCKED, /*error_path=*/{},
+                  PolicyMap::MessageType::kWarning);
+  errors.AddError(kPolicyWithError, IDS_POLICY_BLOCKED, /*error_path=*/{},
+                  PolicyMap::MessageType::kInfo);
 
   EXPECT_TRUE(errors.HasError(kPolicyWithError));
+  EXPECT_FALSE(errors.HasFatalError(kPolicyWithError));
+
   EXPECT_FALSE(errors.HasError(kPolicyWithoutError));
-  ui::ResourceBundle::SwapSharedInstanceForTesting(original_resource_bundle);
+  EXPECT_FALSE(errors.HasFatalError(kPolicyWithoutError));
 }
 
-TEST(PolicyErrorMapTest, HasErrorWithResource) {
+TEST_P(PolicyErrorMapTestResourceBundle, CheckForErrorsWithFatalErrors) {
   PolicyErrorMap errors;
-  ASSERT_TRUE(errors.IsReady());
-  errors.AddError(kPolicyWithError, IDS_POLICY_BLOCKED);
+  ASSERT_EQ(errors.IsReady(), has_resource_bundle());
+  errors.AddError(kPolicyWithError, IDS_POLICY_BLOCKED, /*error_path=*/{},
+                  PolicyMap::MessageType::kError);
+  errors.AddError(kPolicyWithError, IDS_POLICY_BLOCKED, /*error_path=*/{},
+                  PolicyMap::MessageType::kWarning);
+  errors.AddError(kPolicyWithError, IDS_POLICY_BLOCKED, /*error_path=*/{},
+                  PolicyMap::MessageType::kInfo);
 
   EXPECT_TRUE(errors.HasError(kPolicyWithError));
+  EXPECT_TRUE(errors.HasFatalError(kPolicyWithError));
+
   EXPECT_FALSE(errors.HasError(kPolicyWithoutError));
+  EXPECT_FALSE(errors.HasFatalError(kPolicyWithoutError));
 }
+
+INSTANTIATE_TEST_SUITE_P(/* no label */,
+                         PolicyErrorMapTestResourceBundle,
+                         testing::Bool());
 
 TEST(PolicyErrorMapTest, GetErrors) {
   PolicyErrorMap errors;
@@ -79,6 +117,30 @@ TEST(PolicyErrorMapTest, GetErrorsWithBadUnicodeReplacement) {
 
   EXPECT_EQ(errors.GetErrors(kPolicyWithError),
             u"Policy parsing error: <invalid Unicode string>");
+}
+
+TEST(PolicyErrorMapTest, GetErrorsMetadataWithNonfatalError) {
+  PolicyErrorMap errors;
+  ASSERT_TRUE(errors.IsReady());
+  errors.AddError(kPolicyWithError, IDS_POLICY_BLOCKED, {},
+                  PolicyMap::MessageType::kWarning);
+
+  std::vector<PolicyErrorMap::Data> expected = {PolicyErrorMap::Data{
+      .message = u"This policy is blocked, its value will be ignored.",
+      .level = PolicyMap::MessageType::kWarning}};
+  EXPECT_EQ(errors.GetErrorsMetadata(kPolicyWithError), expected);
+}
+
+TEST(PolicyErrorMapTest, GetErrorsMetadataWithFatalError) {
+  PolicyErrorMap errors;
+  ASSERT_TRUE(errors.IsReady());
+  errors.AddError(kPolicyWithError, IDS_POLICY_BLOCKED, {},
+                  PolicyMap::MessageType::kError);
+
+  std::vector<PolicyErrorMap::Data> expected = {PolicyErrorMap::Data{
+      .message = u"This policy is blocked, its value will be ignored.",
+      .level = PolicyMap::MessageType::kError}};
+  EXPECT_EQ(errors.GetErrorsMetadata(kPolicyWithError), expected);
 }
 
 }  // namespace policy
