@@ -114,6 +114,11 @@ const base::Feature kSideSearchFeedback{"SideSearchFeedback",
 const base::Feature kSideSearchDSESupport{"SideSearchDSESupport",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Displays right-click search results of a highlighted text in side panel,
+// So users are not forced to switch to a new tab to view the search results
+const base::Feature kSearchWebInSidePanel{"SearchWebInSidePanel",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Whether to clobber all side search side panels in the current browser window
 // or only the side search in the current tab before read later or lens side
 // panel is open.

@@ -8576,6 +8576,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"side-search-dse-support", flag_descriptions::kSideSearchDSESupportName,
      flag_descriptions::kSideSearchDSESupportDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSideSearchDSESupport)},
+
+    {"search-web-in-side-panel", flag_descriptions::kSearchWebInSidePanelName,
+     flag_descriptions::kSearchWebInSidePanelDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSearchWebInSidePanel)},
 #endif  // defined(TOOLKIT_VIEWS)
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -73,6 +73,7 @@ extern const base::FeatureParam<bool> kSidePanelJourneysOpensFromOmnibox;
 extern const base::Feature kSideSearch;
 extern const base::Feature kSideSearchFeedback;
 extern const base::Feature kSideSearchDSESupport;
+extern const base::Feature kSearchWebInSidePanel;
 extern const base::Feature kClobberAllSideSearchSidePanels;
 
 extern const base::Feature kSideSearchAutoTriggering;
