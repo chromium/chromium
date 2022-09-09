@@ -27,6 +27,8 @@ class ASH_EXPORT GlanceablesUpNextEventItemView : public views::Button {
       const GlanceablesUpNextEventItemView&) = delete;
   ~GlanceablesUpNextEventItemView() override = default;
 
+  views::Label* event_title_label_for_test() { return event_title_label_; }
+
  private:
   friend class GlanceablesTest;
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "ash/ambient/ambient_controller.h"
@@ -333,6 +334,14 @@ TEST_F(GlanceablesTest, UpNextViewOpensCalendarEvent) {
   GetEventItemViews()[1]->AcceleratorPressed(
       ui::Accelerator(ui::KeyboardCode::VKEY_SPACE, 0));
   EXPECT_EQ(GetSystemTrayClient()->show_calendar_event_count(), 1);
+}
+
+TEST_F(GlanceablesTest, UpNextEventItemViewRendersCorrectlyWithoutEventTitle) {
+  google_apis::calendar::CalendarEvent event;
+  GlanceablesUpNextEventItemView view(event);
+
+  EXPECT_EQ(view.GetAccessibleName(), u"(No title)");
+  EXPECT_EQ(view.event_title_label_for_test()->GetText(), u"(No title)");
 }
 
 TEST_F(GlanceablesTest, RestoreViewRendersScreenshot) {

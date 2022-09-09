@@ -9,12 +9,14 @@
 
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_utils.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
@@ -41,14 +43,20 @@ std::u16string GetEventTimeLabelText(const CalendarEvent& event) {
 GlanceablesUpNextEventItemView::GlanceablesUpNextEventItemView(
     CalendarEvent event)
     : event_(event) {
-  SetAccessibleName(base::UTF8ToUTF16(event_.summary()));
+  std::u16string event_title =
+      !event_.summary().empty()
+          ? base::UTF8ToUTF16(event_.summary())
+          : l10n_util::GetStringUTF16(
+                IDS_GLANCEABLES_UP_NEXT_EVENT_EMPTY_TITLE);
+
+  SetAccessibleName(event_title);
   SetCallback(base::BindRepeating(&GlanceablesUpNextEventItemView::OpenEvent,
                                   base::Unretained(this)));
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 10));
 
-  event_title_label_ = AddChildView(
-      std::make_unique<views::Label>(base::UTF8ToUTF16(event_.summary())));
+  event_title_label_ =
+      AddChildView(std::make_unique<views::Label>(event_title));
   event_title_label_->SetAutoColorReadabilityEnabled(false);
   event_title_label_->SetEnabledColor(SK_ColorWHITE);
   event_title_label_->SetHorizontalAlignment(

@@ -5183,6 +5183,9 @@ New install
       <message name="IDS_GLANCEABLES_UP_NEXT_NO_EVENTS" desc="Text label used in the up next section in case if there are no (more) calendar events for today.">
         No events today
       </message>
+      <message name="IDS_GLANCEABLES_UP_NEXT_EVENT_EMPTY_TITLE" desc="Placeholder text for calendar events without title.">
+        (No title)
+      </message>
     </messages>
   </release>
 </grit>
