@@ -4764,6 +4764,12 @@
       'cast_runner_integration_tests_cfv1': {},
       'cast_runner_unittests': {},
       'web_engine_browsertests': {},
+      'web_engine_integration_tests': {
+        'args': [
+          '--',
+          '--vmodule=test_navigation_listener=1',
+        ],
+      },
       'web_engine_integration_tests_cfv1': {
         'args': [
           '--',
