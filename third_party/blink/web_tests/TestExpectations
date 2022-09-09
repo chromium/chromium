@@ -5407,6 +5407,11 @@ crbug.com/1353435 external/wpt/html/editing/dnd/images/007.html [ Timeout ]
 crbug.com/1353435 external/wpt/html/editing/dnd/images/008.html [ Timeout ]
 crbug.com/1353435 external/wpt/html/editing/dnd/images/009.html [ Timeout ]
 crbug.com/1353435 external/wpt/html/editing/dnd/images/010.html [ Timeout ]
+crbug.com/1353435 external/wpt/html/editing/dnd/images/015.html [ Timeout ]
+crbug.com/1353435 external/wpt/html/editing/dnd/images/016.html [ Timeout ]
+crbug.com/1353435 external/wpt/html/editing/dnd/images/017.html [ Timeout ]
+crbug.com/1353435 external/wpt/html/editing/dnd/images/018.html [ Timeout ]
+crbug.com/1353435 external/wpt/html/editing/dnd/images/021.html [ Timeout ]
 
 # Sheriff 2021-02-11
 crbug.com/1177573 http/tests/inspector-protocol/animation/animation-pause.js [ Failure Pass ]
