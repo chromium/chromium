@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -469,6 +470,24 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, NavigationThrottle) {
   EXPECT_EQ(tab_strip->count(), 3);
   EXPECT_EQ(tab_strip->active_index(), 0);
   EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, OpenInChrome) {
+  GURL start_url =
+      embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
+  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+  Browser* app_browser = LaunchWebAppBrowser(browser()->profile(), app_id);
+
+  EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+
+  // 'Open in Chrome' menu item should not be enabled for the pinned home tab.
+  EXPECT_FALSE(
+      app_browser->command_controller()->IsCommandEnabled(IDC_OPEN_IN_CHROME));
+
+  chrome::NewTab(app_browser);
+  // 'Open in Chrome' menu item should be enabled for other tabs.
+  EXPECT_TRUE(
+      app_browser->command_controller()->IsCommandEnabled(IDC_OPEN_IN_CHROME));
 }
 
 }  // namespace web_app
