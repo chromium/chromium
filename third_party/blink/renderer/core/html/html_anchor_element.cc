@@ -458,12 +458,12 @@ void HTMLAnchorElement::HandleClick(Event& event) {
     }
 
     if (auto* navigation_api = NavigationApi::navigation(*window)) {
-      NavigationApi::DispatchParams params(completed_url,
-                                           NavigateEventType::kCrossDocument,
-                                           WebFrameLoadType::kStandard);
+      auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
+          completed_url, NavigateEventType::kCrossDocument,
+          WebFrameLoadType::kStandard);
       if (event.isTrusted())
-        params.involvement = UserNavigationInvolvement::kActivation;
-      params.download_filename = download_attr;
+        params->involvement = UserNavigationInvolvement::kActivation;
+      params->download_filename = download_attr;
       if (navigation_api->DispatchNavigateEvent(params) !=
           NavigationApi::DispatchResult::kContinue) {
         return;

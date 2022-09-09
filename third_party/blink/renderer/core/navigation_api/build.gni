@@ -5,6 +5,8 @@
 blink_core_sources_navigation_api = [
   "navigate_event.cc",
   "navigate_event.h",
+  "navigate_event_dispatch_params.cc",
+  "navigate_event_dispatch_params.h",
   "navigation_api_navigation.cc",
   "navigation_api_navigation.h",
   "navigation_api.cc",

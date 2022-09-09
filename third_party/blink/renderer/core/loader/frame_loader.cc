@@ -791,12 +791,12 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
     if (request.GetNavigationPolicy() == kNavigationPolicyCurrentTab &&
         (!origin_window || origin_window->GetSecurityOrigin()->CanAccess(
                                frame_->DomWindow()->GetSecurityOrigin()))) {
-      NavigationApi::DispatchParams params(
+      auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
           url, NavigateEventType::kCrossDocument, frame_load_type);
-      params.form = request.Form();
+      params->form = request.Form();
       if (request.GetTriggeringEventInfo() ==
           mojom::blink::TriggeringEventInfo::kFromTrustedEvent) {
-        params.involvement = UserNavigationInvolvement::kActivation;
+        params->involvement = UserNavigationInvolvement::kActivation;
       }
       if (navigation_api->DispatchNavigateEvent(params) !=
           NavigationApi::DispatchResult::kContinue) {
@@ -1034,12 +1034,12 @@ void FrameLoader::CommitNavigation(
 
   if (auto* navigation_api = NavigationApi::navigation(*frame_->DomWindow())) {
     if (navigation_params->frame_load_type == WebFrameLoadType::kBackForward) {
-      NavigationApi::DispatchParams params(navigation_params->url,
-                                           NavigateEventType::kCrossDocument,
-                                           WebFrameLoadType::kBackForward);
+      auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
+          navigation_params->url, NavigateEventType::kCrossDocument,
+          WebFrameLoadType::kBackForward);
       if (navigation_params->is_browser_initiated)
-        params.involvement = UserNavigationInvolvement::kBrowserUI;
-      params.destination_item = navigation_params->history_item;
+        params->involvement = UserNavigationInvolvement::kBrowserUI;
+      params->destination_item = navigation_params->history_item;
       auto result = navigation_api->DispatchNavigateEvent(params);
       DCHECK_EQ(result, NavigationApi::DispatchResult::kContinue);
       if (!document_loader_)
