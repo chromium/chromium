@@ -1712,6 +1712,8 @@ PaintLayer* PaintLayer::HitTestLayer(
     // This should be done before walking child layers to avoid that the
     // overflow controls are obscured by the positive child layers.
     if (scrollable_area_ &&
+        layer_fragments[0].background_rect.Intersects(
+            recursion_data.location) &&
         GetLayoutBox()->HitTestOverflowControl(
             result, recursion_data.location, layer_fragments[0].layer_offset)) {
       return this;
