@@ -155,6 +155,20 @@ bool UserUninstalledPreinstalledWebAppPrefs::RemoveByInstallUrl(
   return true;
 }
 
+bool UserUninstalledPreinstalledWebAppPrefs::RemoveByAppId(
+    const AppId& app_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  const base::Value::Dict& ids_to_urls = pref_service_->GetValueDict(
+      prefs::kUserUninstalledPreinstalledWebAppPref);
+
+  // Pref does not contain the app_id, so no need of removal.
+  if (!ids_to_urls.contains(app_id))
+    return false;
+  DictionaryPrefUpdate update(pref_service_,
+                              prefs::kUserUninstalledPreinstalledWebAppPref);
+  return update->RemoveKey(app_id);
+}
+
 bool UserUninstalledPreinstalledWebAppPrefs::AppIdContainsAllUrls(
     const AppId& app_id,
     const base::flat_map<WebAppManagement::Type,

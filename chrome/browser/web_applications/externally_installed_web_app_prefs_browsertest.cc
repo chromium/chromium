@@ -30,6 +30,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace web_app {
 
@@ -623,6 +624,83 @@ IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,
                            UserUninstalledPreinstalledAppMigrationState::
                                kPreinstalledAppDataAlreadyInSync,
                            1);
+}
+
+IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,
+                       FixBadPrefsByRemovingInstallUrl) {
+  PrefService* pref_service = profile()->GetPrefs();
+  ExternallyInstalledWebAppPrefs external_prefs(pref_service);
+  UserUninstalledPreinstalledWebAppPrefs preinstalled_prefs(pref_service);
+  base::HistogramTester tester;
+
+  // Install the web app
+  auto web_app = test::CreateWebApp(GURL("https://example.com/path"),
+                                    WebAppManagement::kDefault);
+  auto id = web_app->app_id();
+  GURL install_url = GURL("https://a.com/");
+  SimulateInstallApp(std::move(web_app));
+  test::AddInstallUrlData(profile()->GetPrefs(), &provider().sync_bridge(), id,
+                          install_url, ExternalInstallSource::kExternalDefault);
+
+  // Add data to both the old prefs and the new prefs
+  external_prefs.Insert(install_url, id,
+                        ExternalInstallSource::kExternalDefault);
+  preinstalled_prefs.Add(id, {install_url});
+
+  // When migrating, the code should detect that the app is still installed, and
+  // remove the new pref.
+  ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
+      pref_service, &provider().sync_bridge());
+
+  EXPECT_THAT(tester.GetAllSamples(kPreinstalledAppMigrationHistogram),
+              testing::IsEmpty());
+
+  EXPECT_THAT(tester.GetAllSamples(
+                  "WebApp.ExternalPrefs.CorruptionFixedInstallUrlsDeleted"),
+              BucketsAre(base::Bucket(/*min=*/1, /*count=*/1)));
+  EXPECT_THAT(
+      tester.GetAllSamples("WebApp.ExternalPrefs.CorruptionFixedRemovedAppId"),
+      BucketsAre(base::Bucket(/*min=*/0, /*count=*/1)));
+
+  EXPECT_FALSE(preinstalled_prefs.DoesAppIdExist(id));
+}
+
+IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,
+                       FixBadPrefsByRemovingAppId) {
+  PrefService* pref_service = profile()->GetPrefs();
+  ExternallyInstalledWebAppPrefs external_prefs(pref_service);
+  UserUninstalledPreinstalledWebAppPrefs preinstalled_prefs(pref_service);
+  base::HistogramTester tester;
+
+  // Install the web app
+  auto web_app = test::CreateWebApp(GURL("https://example.com/path"),
+                                    WebAppManagement::kDefault);
+  auto id = web_app->app_id();
+  GURL install_url = GURL("https://a.com/");
+  SimulateInstallApp(std::move(web_app));
+  // Do NOT add the external data, similating upgrading an old client.
+
+  // Add data to both the old prefs and the new prefs
+  external_prefs.Insert(install_url, id,
+                        ExternalInstallSource::kExternalDefault);
+  preinstalled_prefs.Add(id, {install_url});
+
+  // When migrating, the code should detect that the app is still installed, and
+  // remove the new pref.
+  ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
+      pref_service, &provider().sync_bridge());
+
+  EXPECT_THAT(tester.GetAllSamples(kPreinstalledAppMigrationHistogram),
+              testing::IsEmpty());
+
+  EXPECT_THAT(tester.GetAllSamples(
+                  "WebApp.ExternalPrefs.CorruptionFixedInstallUrlsDeleted"),
+              BucketsAre(base::Bucket(/*min=*/0, /*count=*/1)));
+  EXPECT_THAT(
+      tester.GetAllSamples("WebApp.ExternalPrefs.CorruptionFixedRemovedAppId"),
+      BucketsAre(base::Bucket(/*min=*/1, /*count=*/1)));
+
+  EXPECT_FALSE(preinstalled_prefs.DoesAppIdExist(id));
 }
 
 INSTANTIATE_TEST_SUITE_P(

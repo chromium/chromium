@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/web_applications/externally_installed_prefs_migration_metrics.h"
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -54,6 +55,11 @@ constexpr char kExtensionId[] = "extension_id";
 constexpr char kInstallSource[] = "install_source";
 constexpr char kIsPlaceholder[] = "is_placeholder";
 
+constexpr char kAppIdDeleted[] =
+    "WebApp.ExternalPrefs.CorruptionFixedRemovedAppId";
+constexpr char kInstallUrlsDeleted[] =
+    "WebApp.ExternalPrefs.CorruptionFixedInstallUrlsDeleted";
+
 // Returns the base::Value in |pref_service| corresponding to our stored dict
 // for |app_id|, or nullptr if it doesn't exist.
 const base::Value* GetPreferenceValue(const PrefService* pref_service,
@@ -76,6 +82,41 @@ const base::Value* GetPreferenceValue(const PrefService* pref_service,
     }
   }
   return nullptr;
+}
+// Correct any corruption that has occurred due to Lacros processes starting in
+// inconsistent ways. https://crbug.com/1359205.
+void FixMigrationCorruptionFromLacrosSwitch(PrefService* pref_service,
+                                            const WebAppRegistrar& registrar) {
+  UserUninstalledPreinstalledWebAppPrefs preinstalled_prefs(pref_service);
+  int install_urls_fixed = 0;
+  int app_ids_removed = 0;
+  for (const AppId& app_id : registrar.GetAppIds()) {
+    if (!registrar.IsInstalledByDefaultManagement(app_id)) {
+      continue;
+    }
+    const WebApp* web_app = registrar.GetAppById(app_id);
+    DCHECK(web_app);
+    auto default_config_it = web_app->management_to_external_config_map().find(
+        WebAppManagement::kDefault);
+    // If there is no external config or the install urls are empty, just treat
+    // it as a valid install. The preinstall manager should add to the install
+    // urls when it synchronizes.
+    if (default_config_it ==
+            web_app->management_to_external_config_map().end() ||
+        default_config_it->second.install_urls.empty()) {
+      if (preinstalled_prefs.RemoveByAppId(app_id))
+        ++app_ids_removed;
+      continue;
+    }
+    // Remove all install urls that are legitimately installed. If they are all
+    // removed, then the pref is removed entirely.
+    for (const GURL& install_url : default_config_it->second.install_urls) {
+      if (preinstalled_prefs.RemoveByInstallUrl(app_id, install_url))
+        ++install_urls_fixed;
+    }
+  }
+  base::UmaHistogramCounts100(kAppIdDeleted, app_ids_removed);
+  base::UmaHistogramCounts100(kInstallUrlsDeleted, install_urls_fixed);
 }
 
 }  // namespace
@@ -315,6 +356,8 @@ void ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
       }
     }
   }
+
+  FixMigrationCorruptionFromLacrosSwitch(pref_service, registrar);
 }
 
 // static

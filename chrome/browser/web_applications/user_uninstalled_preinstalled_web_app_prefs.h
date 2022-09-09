@@ -58,6 +58,7 @@ class UserUninstalledPreinstalledWebAppPrefs {
                                          base::flat_set<GURL>& urls);
   int Size();
   bool RemoveByInstallUrl(const AppId& app_id, const GURL& install_url);
+  bool RemoveByAppId(const AppId& app_id);
   bool AppIdContainsAllUrls(
       const AppId& app_id,
       const base::flat_map<WebAppManagement::Type,
