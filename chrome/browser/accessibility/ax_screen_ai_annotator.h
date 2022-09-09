@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -14,31 +15,36 @@
 
 class Browser;
 
+namespace content {
+class BrowserContext;
+}
+
 namespace gfx {
 class Image;
 }
 
 namespace screen_ai {
 
-class AXScreenAIAnnotator : mojom::ScreenAIAnnotatorClient {
+class AXScreenAIAnnotator : public KeyedService,
+                            mojom::ScreenAIAnnotatorClient {
  public:
-  explicit AXScreenAIAnnotator(Browser* browser);
+  explicit AXScreenAIAnnotator(content::BrowserContext* browser_context);
   AXScreenAIAnnotator(const AXScreenAIAnnotator&) = delete;
   AXScreenAIAnnotator& operator=(const AXScreenAIAnnotator&) = delete;
   ~AXScreenAIAnnotator() override;
 
-  // Binds `screen_ai_annotator_` to the Screen AI service.
-  virtual void BindToScreenAIService();
-
   // Takes a screenshot and sends it to `OnScreenshotReceived` through an async
   // call.
-  void Run();
+  void AnnotateScreenshot(Browser* browser);
 
   // TODO(https://crbug.com/1278249): Add
   // mojom::ScreenAIServiceClient::HandleAXTreeUpdate after service side data is
   // ready.
 
  private:
+  // Binds `screen_ai_annotator_` to the Screen AI service.
+  virtual void BindToScreenAIService(content::BrowserContext* browser_context);
+
   // Receives an screenshot and sends it to ScreenAI library for processing.
   // `ax_tree_id` represents the accessibility tree that is associated with the
   // snapshot at the time of triggering the request.
@@ -52,9 +58,6 @@ class AXScreenAIAnnotator : mojom::ScreenAIAnnotatorClient {
   // created by the Service, containing the visual annotations.
   void OnAnnotationPerformed(const ui::AXTreeID& parent_tree_id,
                              const ui::AXTreeID& screen_ai_tree_id);
-
-  // Owns us.
-  raw_ptr<Browser> const browser_;
 
   mojo::Remote<mojom::ScreenAIAnnotator> screen_ai_annotator_;
   mojo::Receiver<mojom::ScreenAIAnnotatorClient> screen_ai_service_client_;

@@ -16,7 +16,8 @@ namespace screen_ai {
 class ScreenAIServiceRouter;
 }
 
-// Factory to get or create an instance of ScreenAIServiceRouter for a Profile.
+// Factory to get or create an instance of ScreenAIServiceRouter for a
+// BrowserContext.
 class ScreenAIServiceRouterFactory : public BrowserContextKeyedServiceFactory {
  public:
   static screen_ai::ScreenAIServiceRouter* GetForBrowserContext(

@@ -289,7 +289,7 @@
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "chrome/browser/accessibility/ax_screen_ai_annotator.h"
-#include "ui/accessibility/accessibility_features.h"
+#include "chrome/browser/accessibility/ax_screen_ai_annotator_factory.h"
 #endif
 
 using base::UserMetricsAction;
@@ -566,10 +566,6 @@ Browser::Browser(const CreateParams& params)
         ->GetDownloadDisplayController()
         ->ListenToFullScreenChanges();
   }
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  CreateScreenAIAnnotatorIfNeeded();
-#endif
 
   BrowserList::AddBrowser(this);
 }
@@ -3168,29 +3164,10 @@ BackgroundContents* Browser::CreateBackgroundContents(
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-// TODO(https://crbug.com/1278249): Create only one AXScreenAIAnnotator per
-// profile and remove this function.
-void Browser::CreateScreenAIAnnotatorIfNeeded() {
-  // TODO(https://crbug.com/1278249): Implement settings to replace flags.
-  if (features::IsPdfOcrEnabled()) {
-    DCHECK(!screen_ai_annotator_);
-    screen_ai_annotator_ =
-        std::make_unique<screen_ai::AXScreenAIAnnotator>(this);
-  }
-}
-
+// TODO(https://1278249): Update function name (and trigger chain) when usage
+// is finalized.
 void Browser::RunScreenAIAnnotator() {
-  if (!screen_ai_annotator_) {
-    screen_ai_annotator_ =
-        std::make_unique<screen_ai::AXScreenAIAnnotator>(this);
-  }
-  screen_ai_annotator_->Run();
+  screen_ai::AXScreenAIAnnotatorFactory::GetForBrowserContext(profile())
+      ->AnnotateScreenshot(this);
 }
-
-void Browser::SetScreenAIAnnotatorForTesting(
-    std::unique_ptr<screen_ai::AXScreenAIAnnotator> annotator) {
-  DCHECK(!screen_ai_annotator_);
-  screen_ai_annotator_.swap(annotator);
-}
-
 #endif

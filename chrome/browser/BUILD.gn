@@ -2461,6 +2461,8 @@ static_library("browser") {
     sources += [
       "accessibility/ax_screen_ai_annotator.cc",
       "accessibility/ax_screen_ai_annotator.h",
+      "accessibility/ax_screen_ai_annotator_factory.cc",
+      "accessibility/ax_screen_ai_annotator_factory.h",
       "component_updater/screen_ai_component_installer.cc",
       "component_updater/screen_ai_component_installer.h",
     ]

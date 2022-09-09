@@ -84,9 +84,8 @@ void ScreenAIService::BindAnnotator(
 
 void ScreenAIService::BindAnnotatorClient(
     mojo::PendingRemote<mojom::ScreenAIAnnotatorClient> annotator_client) {
-  mojo::Remote<mojom::ScreenAIAnnotatorClient> remote(
-      std::move(annotator_client));
-  screen_ai_annotator_clients_.Add(std::move(remote));
+  DCHECK(!screen_ai_annotator_client_.is_bound());
+  screen_ai_annotator_client_.Bind(std::move(annotator_client));
 }
 
 void ScreenAIService::BindMainContentExtractor(
@@ -98,7 +97,7 @@ void ScreenAIService::BindMainContentExtractor(
 
 void ScreenAIService::Annotate(const SkBitmap& image,
                                AnnotationCallback callback) {
-  DCHECK(screen_ai_annotator_clients_.size());
+  DCHECK(screen_ai_annotator_client_.is_bound());
 
   ui::AXTreeUpdate update;
 

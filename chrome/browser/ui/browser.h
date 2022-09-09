@@ -70,12 +70,6 @@ class TabStripModel;
 class TabStripModelDelegate;
 class TabMenuModelDelegate;
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-namespace screen_ai {
-class AXScreenAIAnnotator;
-}
-#endif
-
 namespace blink {
 enum class ProtocolHandlerSecurityLevel;
 }
@@ -757,10 +751,6 @@ class Browser : public TabStripModelObserver,
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void RunScreenAIAnnotator();
-
-  // Ownership will be transferred to browser.
-  void SetScreenAIAnnotatorForTesting(
-      std::unique_ptr<screen_ai::AXScreenAIAnnotator> annotator);
 #endif
 
  private:
@@ -1153,12 +1143,6 @@ class Browser : public TabStripModelObserver,
       const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespace* session_storage_namespace);
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // Creates ScreenAI annotator if accessibility settings imply that the
-  // service is needed.
-  void CreateScreenAIAnnotatorIfNeeded();
-#endif
-
   // Data members /////////////////////////////////////////////////////////////
 
   PrefChangeRegistrar profile_pref_registrar_;
@@ -1312,11 +1296,6 @@ class Browser : public TabStripModelObserver,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<extensions::ExtensionBrowserWindowHelper>
       extension_browser_window_helper_;
-#endif
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // Manages the snapshot processing by ScreenAI, if enabled.
-  std::unique_ptr<screen_ai::AXScreenAIAnnotator> screen_ai_annotator_;
 #endif
 
   const base::ElapsedTimer creation_timer_;

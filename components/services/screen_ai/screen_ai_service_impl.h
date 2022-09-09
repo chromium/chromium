@@ -12,7 +12,8 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
+
 namespace screen_ai {
 
 using AnnotationCallback = base::OnceCallback<void(const ui::AXTreeID&)>;
@@ -92,8 +93,8 @@ class ScreenAIService : public mojom::ScreenAIService,
   // The set of receivers used to receive messages from annotators.
   mojo::ReceiverSet<mojom::ScreenAIAnnotator> screen_ai_annotators_;
 
-  // The set of clients that can receive annotator update messages.
-  mojo::RemoteSet<mojom::ScreenAIAnnotatorClient> screen_ai_annotator_clients_;
+  // The client that can receive annotator update messages.
+  mojo::Remote<mojom::ScreenAIAnnotatorClient> screen_ai_annotator_client_;
 
   // The set of receivers used to receive messages from main content extractors.
   mojo::ReceiverSet<mojom::Screen2xMainContentExtractor>

@@ -13,7 +13,7 @@ screen_ai::ScreenAIServiceRouter*
 ScreenAIServiceRouterFactory::GetForBrowserContext(
     content::BrowserContext* context) {
   return static_cast<screen_ai::ScreenAIServiceRouter*>(
-      GetInstance()->GetServiceForBrowserContext(context, true));
+      GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
 }
 
 // static

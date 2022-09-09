@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "components/services/screen_ai/public/cpp/screen_ai_service_router.h"
 #include "components/services/screen_ai/public/cpp/screen_ai_service_router_factory.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_tree_manager.h"
 #include "ui/gfx/image/image.h"
@@ -16,37 +17,31 @@
 
 namespace screen_ai {
 
-AXScreenAIAnnotator::AXScreenAIAnnotator(Browser* browser)
-    : browser_(browser), screen_ai_service_client_(this) {
-  // TODO(https://crbug.com/1278249): Binding to service in constructor is
-  // needed for PDF use case, as AXScreenAIAnnotator is initialized by the
-  // browser but the actual request goes from PDF renderer to ScreenAI service.
-  // But this fails the screenshot test as it needs to override binding, fix
-  // the issue.
-  BindToScreenAIService();
+AXScreenAIAnnotator::AXScreenAIAnnotator(
+    content::BrowserContext* browser_context)
+    : screen_ai_service_client_(this) {
+  BindToScreenAIService(browser_context);
 }
 
 AXScreenAIAnnotator::~AXScreenAIAnnotator() = default;
 
-void AXScreenAIAnnotator::BindToScreenAIService() {
+void AXScreenAIAnnotator::BindToScreenAIService(
+    content::BrowserContext* browser_context) {
   mojo::PendingReceiver<mojom::ScreenAIAnnotator> screen_ai_receiver =
       screen_ai_annotator_.BindNewPipeAndPassReceiver();
 
   ScreenAIServiceRouter* service_router =
-      ScreenAIServiceRouterFactory::GetForBrowserContext(browser_->profile());
+      ScreenAIServiceRouterFactory::GetForBrowserContext(browser_context);
 
   service_router->BindScreenAIAnnotator(std::move(screen_ai_receiver));
   service_router->BindScreenAIAnnotatorClient(
       screen_ai_service_client_.BindNewPipeAndPassRemote());
 }
 
-void AXScreenAIAnnotator::Run() {
-  if (!screen_ai_annotator_.is_bound())
-    BindToScreenAIService();
-
+void AXScreenAIAnnotator::AnnotateScreenshot(Browser* browser) {
   // Request screenshot from content area of the main frame.
   content::WebContents* web_contents =
-      browser_->tab_strip_model()->GetActiveWebContents();
+      browser->tab_strip_model()->GetActiveWebContents();
   if (!web_contents)
     return;
   gfx::NativeView native_view = web_contents->GetContentNativeView();
