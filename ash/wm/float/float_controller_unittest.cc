@@ -32,6 +32,7 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -44,7 +45,7 @@ NonClientFrameViewAsh* SetUpAndGetFrame(aura::Window* window) {
   // us HTCLIENT.
   auto* frame = NonClientFrameViewAsh::Get(window);
   DCHECK(frame);
-  frame->Layout();
+  views::test::RunScheduledLayout(frame);
   return frame;
 }
 

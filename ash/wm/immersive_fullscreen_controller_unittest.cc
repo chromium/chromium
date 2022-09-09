@@ -34,6 +34,7 @@
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/native/native_view_host.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -208,7 +209,7 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
     gfx::Size window_size = widget_->GetWindowBoundsInScreen().size();
     content_view_ = new views::NativeViewHost();
     content_view_->SetBounds(0, 0, window_size.width(), window_size.height());
-    widget_->GetContentsView()->AddChildView(content_view_);
+    widget_->client_view()->AddChildView(content_view_);
 
     test_api_ =
         std::make_unique<ImmersiveFullscreenControllerTestApi>(controller());
@@ -802,7 +803,7 @@ TEST_F(ImmersiveFullscreenControllerTest, RevealViaGestureChildConsumesEvents) {
           &child_delegate, aura::client::WINDOW_TYPE_CONTROL, 1234,
           gfx::Rect()));
   content_view()->Attach(child.get());
-  content_view()->Layout();
+  views::test::RunScheduledLayout(content_view());
 
   ConsumeEventHandler handler;
   child->AddPreTargetHandler(&handler);

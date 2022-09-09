@@ -11,6 +11,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
@@ -61,7 +62,7 @@ class ScrollViewGradientHelperTest : public views::ViewsTestBase {
     auto contents = std::make_unique<views::View>();
     contents->SetSize({kWidgetWidth, height});
     scroll_view_->SetContents(std::move(contents));
-    scroll_view_->Layout();
+    views::test::RunScheduledLayout(scroll_view_);
   }
 
   bool HasGradientAtTop() {
@@ -107,7 +108,7 @@ TEST_F(ScrollViewGradientHelperTest, HasGradientForViewThatScrolls) {
 
   // Shrink the contents view.
   scroll_view_->contents()->SetSize({kWidgetWidth, 10});
-  scroll_view_->Layout();
+  views::test::RunScheduledLayout(scroll_view_);
   gradient_helper_->UpdateGradientMask();
 
   // Gradient is removed.

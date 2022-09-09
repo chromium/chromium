@@ -17,6 +17,7 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/test/views_test_utils.h"
 
 namespace ash {
 
@@ -273,7 +274,7 @@ TEST_F(MediaStringViewTest, HasNoMaskLayerWithShortText) {
   SimulateMediaMetadataChanged(metadata);
   // Force re-layout.
   for (auto* view : GetContainerViews())
-    view->Layout();
+    views::test::RunScheduledLayout(view);
 
   EXPECT_LT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
@@ -293,7 +294,7 @@ TEST_F(MediaStringViewTest, HasMaskLayerWithLongText) {
   SimulateMediaMetadataChanged(metadata);
   // Force re-layout.
   for (auto* view : GetContainerViews())
-    view->Layout();
+    views::test::RunScheduledLayout(view);
 
   EXPECT_GT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
@@ -313,7 +314,7 @@ TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
   SimulateMediaMetadataChanged(metadata);
   // Force re-layout.
   for (auto* view : GetContainerViews())
-    view->Layout();
+    views::test::RunScheduledLayout(view);
 
   EXPECT_LT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
@@ -326,7 +327,7 @@ TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
   SimulateMediaMetadataChanged(metadata);
   // Force re-layout.
   for (auto* view : GetContainerViews())
-    view->Layout();
+    views::test::RunScheduledLayout(view);
 
   EXPECT_GT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
@@ -339,7 +340,7 @@ TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
   SimulateMediaMetadataChanged(metadata);
   // Force re-layout.
   for (auto* view : GetContainerViews())
-    view->Layout();
+    views::test::RunScheduledLayout(view);
 
   EXPECT_LT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
