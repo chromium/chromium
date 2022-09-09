@@ -1002,7 +1002,7 @@ bool DisplayLockContext::ForceUnlockIfNeeded() {
   // TODO(rakina): If this is after acquire's promise is resolved and update()
   // commit() isn't in progress, the web author won't know that the element
   // got unlocked. Figure out how to notify the author.
-  if (auto* reason = ShouldForceUnlock()) {
+  if (ShouldForceUnlock()) {
     if (IsLocked()) {
       Unlock();
       // If we forced unlocked, then there is a chance that layout containment
