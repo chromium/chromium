@@ -15,10 +15,9 @@
 #include "ash/system/time/calendar_utils.h"
 #include "base/time/time.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/border.h"
@@ -41,7 +40,6 @@ namespace ash {
 // - move fonts/colors/sizes to a config.
 
 GlanceablesUpNextView::GlanceablesUpNextView() {
-  SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(15, 0)));
   SetLayoutManager(std::make_unique<views::FlexLayout>());
 
   calendar_model_ = Shell::Get()->system_tray_model()->calendar_model();
@@ -85,7 +83,7 @@ void GlanceablesUpNextView::CreateEventsListView(
   auto* events_list_layout =
       events_list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical));
-  events_list_layout->set_between_child_spacing(4);
+  events_list_layout->set_between_child_spacing(12);
 
   for (const auto& event : events) {
     event_item_views_.push_back(events_list_view->AddChildView(
@@ -97,7 +95,10 @@ void GlanceablesUpNextView::AddNoEventsLabel() {
   no_events_label_ = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_GLANCEABLES_UP_NEXT_NO_EVENTS)));
   no_events_label_->SetAutoColorReadabilityEnabled(false);
-  no_events_label_->SetEnabledColor(SK_ColorWHITE);
+  no_events_label_->SetEnabledColor(gfx::kGoogleGrey200);
+  no_events_label_->SetFontList(gfx::FontList({"Google Sans"},
+                                              gfx::Font::FontStyle::NORMAL, 14,
+                                              gfx::Font::Weight::MEDIUM));
   no_events_label_->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_LEFT);
 }

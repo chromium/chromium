@@ -15,8 +15,9 @@
 #include "ash/system/time/calendar_utils.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/color_palette.h"
+#include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
@@ -58,14 +59,20 @@ GlanceablesUpNextEventItemView::GlanceablesUpNextEventItemView(
   event_title_label_ =
       AddChildView(std::make_unique<views::Label>(event_title));
   event_title_label_->SetAutoColorReadabilityEnabled(false);
-  event_title_label_->SetEnabledColor(SK_ColorWHITE);
+  event_title_label_->SetEnabledColor(gfx::kGoogleGrey200);
+  event_title_label_->SetFontList(gfx::FontList({"Google Sans"},
+                                                gfx::Font::FontStyle::NORMAL,
+                                                14, gfx::Font::Weight::MEDIUM));
   event_title_label_->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_LEFT);
 
   event_time_label_ = AddChildView(
       std::make_unique<views::Label>(GetEventTimeLabelText(event_)));
   event_time_label_->SetAutoColorReadabilityEnabled(false);
-  event_time_label_->SetEnabledColor(SK_ColorWHITE);
+  event_time_label_->SetEnabledColor(gfx::kGoogleGrey400);
+  event_time_label_->SetFontList(gfx::FontList({"Google Sans"},
+                                               gfx::Font::FontStyle::NORMAL, 13,
+                                               gfx::Font::Weight::NORMAL));
 
   layout->SetFlexForView(event_title_label_, 1);
   layout->SetFlexForView(event_time_label_, 0, true);

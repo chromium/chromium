@@ -10,9 +10,8 @@
 #include "ash/ambient/model/ambient_weather_model.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "base/no_destructor.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -25,17 +24,12 @@ namespace ash {
 namespace {
 
 // Size of the weather icon in DIPs.
-const int kIconSize = 32;
+const int kIconSize = 24;
 
 AmbientWeatherModel* GetWeatherModel() {
   auto* ambient_controller = Shell::Get()->ambient_controller();
   DCHECK(ambient_controller);
   return ambient_controller->GetAmbientWeatherModel();
-}
-
-const gfx::FontList& GetFontList() {
-  static const base::NoDestructor<gfx::FontList> font_list("Google Sans, 32px");
-  return *font_list;
 }
 
 }  // namespace
@@ -62,8 +56,10 @@ GlanceablesWeatherView::GlanceablesWeatherView() {
   temperature_ = AddChildView(std::make_unique<views::Label>());
   temperature_->SetAutoColorReadabilityEnabled(false);
   // TODO(crbug.com/1353119): Use color provider and move to OnThemeChanged().
-  temperature_->SetEnabledColor(SK_ColorWHITE);
-  temperature_->SetFontList(GetFontList());
+  temperature_->SetEnabledColor(gfx::kGoogleGrey200);
+  temperature_->SetFontList(gfx::FontList({"Google Sans"},
+                                          gfx::Font::FontStyle::NORMAL, 24,
+                                          gfx::Font::Weight::NORMAL));
   // Show a hyphen until the real weather data is fetched.
   temperature_->SetText(u"-");
 }
