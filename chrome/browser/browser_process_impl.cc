@@ -986,12 +986,6 @@ void BrowserProcessImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kEulaAccepted, false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
 
-  // TODO(brettw,*): this comment about ResourceBundle was here since
-  // initial commit.  This comment seems unrelated, bit-rotten and
-  // a candidate for removal.
-  // Initialize ResourceBundle which handles files loaded from external
-  // sources. This has to be done before uninstall code path and before prefs
-  // are registered.
   registry->RegisterStringPref(language::prefs::kApplicationLocale,
                                std::string());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
