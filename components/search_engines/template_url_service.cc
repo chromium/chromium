@@ -822,34 +822,12 @@ bool TemplateURLService::IsSideSearchSupportedForDefaultSearchProvider() const {
   return default_provider && default_provider->IsSideSearchSupported();
 }
 
-bool TemplateURLService::IsSideImageSearchSupportedForDefaultSearchProvider()
-    const {
-  const TemplateURL* default_provider = GetDefaultSearchProvider();
-  return default_provider && default_provider->IsSideImageSearchSupported();
-}
-
 GURL TemplateURLService::GenerateSideSearchURLForDefaultSearchProvider(
     const GURL& search_url,
     const std::string& version) const {
   DCHECK(IsSideSearchSupportedForDefaultSearchProvider());
   return GetDefaultSearchProvider()->GenerateSideSearchURL(search_url, version,
                                                            search_terms_data());
-}
-
-GURL TemplateURLService::GenerateSideImageSearchURLForDefaultSearchProvider(
-    const GURL& search_url,
-    const std::string& version) const {
-  DCHECK(IsSideImageSearchSupportedForDefaultSearchProvider());
-  return GetDefaultSearchProvider()->GenerateSideImageSearchURL(search_url,
-                                                                version);
-}
-
-GURL TemplateURLService::RemoveSideImageSearchParamFromURL(
-    const GURL& search_url) const {
-  if (!IsSideImageSearchSupportedForDefaultSearchProvider())
-    return search_url;
-  return GetDefaultSearchProvider()->RemoveSideImageSearchParamFromURL(
-      search_url);
 }
 
 bool TemplateURLService::IsExtensionControlledDefaultSearch() const {

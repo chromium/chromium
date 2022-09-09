@@ -164,10 +164,6 @@ bool IsLensSidePanelEnabled() {
          kEnableSidePanelForLens.Get();
 }
 
-bool IsLensSidePanelEnabledForRegionSearch() {
-  return IsLensSidePanelEnabled() && !IsLensFullscreenSearchEnabled();
-}
-
 bool GetSendImagesAsPng() {
   return base::FeatureList::IsEnabled(kLensStandalone) &&
          base::FeatureList::IsEnabled(kLensTransparentImagesFix);

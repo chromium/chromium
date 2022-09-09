@@ -718,9 +718,6 @@ class TemplateURL {
   const std::string& side_search_param() const {
     return data_.side_search_param;
   }
-  const std::string& side_image_search_param() const {
-    return data_.side_image_search_param;
-  }
   const std::vector<std::string>& alternate_urls() const {
     return data_.alternate_urls;
   }
@@ -854,23 +851,11 @@ class TemplateURL {
   // Returns true if this search engine supports the side search feature.
   bool IsSideSearchSupported() const;
 
-  // Returns true if this search engine supports the side image search feature.
-  bool IsSideImageSearchSupported() const;
-
   // Takes a search URL belonging to this search engine and generates the URL
   // appropriate for the side search side panel.
   GURL GenerateSideSearchURL(const GURL& search_url,
                              const std::string& version,
                              const SearchTermsData& search_terms_data) const;
-
-  // Takes a search URL belonging to this image search engine and generates the
-  // URL appropriate for the image search in the side panel.
-  GURL GenerateSideImageSearchURL(const GURL& image_search_url,
-                                  const std::string& version) const;
-
-  // Takes a search URL that belongs to this image search in the side panel and
-  // removes the side image search param from the URL.
-  GURL RemoveSideImageSearchParamFromURL(const GURL& image_search_url) const;
 
   // TemplateURL internally caches values derived from a passed SearchTermsData
   // to make its functions quick. This method invalidates any cached values and

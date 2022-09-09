@@ -8,8 +8,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search/search.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -19,8 +17,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_features.h"
-#include "components/search_engines/template_url.h"
-#include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -82,8 +78,7 @@ LensUnifiedSidePanelView::LensUnifiedSidePanelView(BrowserView* browser_view) {
   if (lens::features::GetEnableLensSidePanelFooter())
     CreateAndInstallFooter();
 
-  SetContentAndNewTabButtonVisible(/* visible= */ false,
-                                   /* enable_new_tab_button= */ false);
+  SetContentAndNewTabButtonVisible(false, false);
   auto* web_contents = web_view_->GetWebContents();
   web_contents->SetDelegate(this);
   Observe(web_contents);
@@ -93,40 +88,14 @@ content::WebContents* LensUnifiedSidePanelView::GetWebContents() {
   return web_view_->GetWebContents();
 }
 
-TemplateURLService* LensUnifiedSidePanelView::GetTemplateURLService() {
-  auto* web_contents = web_view_->GetWebContents();
-  DCHECK(web_contents);
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  DCHECK(profile);
-  TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile);
-  DCHECK(template_url_service);
-  return template_url_service;
-}
-
-bool LensUnifiedSidePanelView::IsDefaultSearchProviderGoogle() {
-  auto* web_contents = web_view_->GetWebContents();
-  DCHECK(web_contents);
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  DCHECK(profile);
-  return search::DefaultSearchProviderIsGoogle(profile);
-}
-
 void LensUnifiedSidePanelView::LoadResultsInNewTab() {
-  const GURL last_committed_url =
-      web_view_->GetWebContents()->GetLastCommittedURL();
-  const GURL url = IsDefaultSearchProviderGoogle()
-                       ? lens::CreateURLForNewTab(last_committed_url)
-                       : last_committed_url;
+  const GURL url = lens::CreateURLForNewTab(
+      web_view_->GetWebContents()->GetLastCommittedURL());
   // If there is no payload parameter, we will have an empty URL. This means
   // we should return on empty and not close the side panel.
   if (url.is_empty())
     return;
-  const GURL modified_url =
-      GetTemplateURLService()->RemoveSideImageSearchParamFromURL(url);
-  content::OpenURLParams params(modified_url, content::Referrer(),
+  content::OpenURLParams params(url, content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_TYPED,
                                 /*is_renderer_initiated=*/false);
@@ -139,12 +108,6 @@ void LensUnifiedSidePanelView::LoadResultsInNewTab() {
 void LensUnifiedSidePanelView::DocumentOnLoadCompletedInPrimaryMainFrame() {
   auto last_committed_url = web_view_->GetWebContents()->GetLastCommittedURL();
 
-  if (!IsDefaultSearchProviderGoogle()) {
-    SetContentAndNewTabButtonVisible(/* visible= */ true,
-                                     /* enable_new_tab_button= */ true);
-    return;
-  }
-
   // Since Lens Web redirects to the actual UI using HTML redirection, this
   // method gets fired twice. This check ensures we only show the user the
   // rendered page and not the redirect. It also ensures we immediately render
@@ -152,9 +115,7 @@ void LensUnifiedSidePanelView::DocumentOnLoadCompletedInPrimaryMainFrame() {
   // TODO(243935799): Cleanup this check once Lens Web no longer redirects
   if (lens::ShouldPageBeVisible(last_committed_url))
     SetContentAndNewTabButtonVisible(
-        /* visible= */ true,
-        /* enable_new_tab_button= */ lens::IsValidLensResultUrl(
-            last_committed_url));
+        true, lens::IsValidLensResultUrl(last_committed_url));
 }
 
 // Catches case where Chrome errors. I.e. no internet connection
@@ -162,14 +123,9 @@ void LensUnifiedSidePanelView::DocumentOnLoadCompletedInPrimaryMainFrame() {
 void LensUnifiedSidePanelView::PrimaryPageChanged(content::Page& page) {
   auto last_committed_url = web_view_->GetWebContents()->GetLastCommittedURL();
 
-  if (page.GetMainDocument().IsErrorDocument()) {
-    bool enable_new_tab_button =
-        IsDefaultSearchProviderGoogle()
-            ? lens::IsValidLensResultUrl(last_committed_url)
-            : true;
-    SetContentAndNewTabButtonVisible(/* visible= */ true,
-                                     enable_new_tab_button);
-  }
+  if (page.GetMainDocument().IsErrorDocument())
+    SetContentAndNewTabButtonVisible(
+        true, lens::IsValidLensResultUrl(last_committed_url));
 }
 
 bool LensUnifiedSidePanelView::IsLaunchButtonEnabledForTesting() {
@@ -185,8 +141,7 @@ bool LensUnifiedSidePanelView::HandleContextMenu(
 
 void LensUnifiedSidePanelView::OpenUrl(const content::OpenURLParams& params) {
   side_panel_url_params_ = std::make_unique<content::OpenURLParams>(params);
-  SetContentAndNewTabButtonVisible(/* visible= */ false,
-                                   /* enable_new_tab_button= */ false);
+  SetContentAndNewTabButtonVisible(false, false);
   MaybeLoadURLWithParams();
 }
 

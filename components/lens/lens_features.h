@@ -133,11 +133,8 @@ extern bool UseRegionSearchMenuItemAltText3();
 // relevant Lens context menu strings.
 extern bool UseGoogleAsVisualSearchProvider();
 
-// Returns whether the Lens side panel is enabled for image search.
+// Returns whether the Lens side panel is enabled.
 extern bool IsLensSidePanelEnabled();
-
-// Returns whether the Lens side panel is enabled for region search.
-extern bool IsLensSidePanelEnabledForRegionSearch();
 
 // Returns whether to send images to Lens Standalone as PNG
 extern bool GetSendImagesAsPng();

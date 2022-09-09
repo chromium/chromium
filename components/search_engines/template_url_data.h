@@ -40,7 +40,6 @@ struct TemplateURLData {
                   base::StringPiece suggest_url_post_params,
                   base::StringPiece image_url_post_params,
                   base::StringPiece side_search_param,
-                  base::StringPiece side_image_search_param,
                   base::StringPiece favicon_url,
                   base::StringPiece encoding,
                   const base::Value& alternate_urls_list,
@@ -96,10 +95,6 @@ struct TemplateURLData {
   // The parameter appended to the engine's search URL when constructing the URL
   // for the side search side panel.
   std::string side_search_param;
-
-  // The parameter appended to the engine's image URL when constructing the
-  // URL for the image search entry in the side panel.
-  std::string side_image_search_param;
 
   // Favicon for the TemplateURL.
   GURL favicon_url;

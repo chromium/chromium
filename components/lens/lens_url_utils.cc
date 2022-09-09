@@ -109,18 +109,6 @@ std::map<std::string, std::string> GetLensQueryParametersMap(
   return query_parameters;
 }
 
-lens::RenderingEnvironment GetRenderingEnvironment(
-    bool is_side_panel_request,
-    bool is_full_screen_region_search_request) {
-  if (is_full_screen_region_search_request)
-    return lens::RenderingEnvironment::
-        ONELENS_AMBIENT_VISUAL_SEARCH_WEB_FULLSCREEN;
-
-  if (is_side_panel_request)
-    return lens::RenderingEnvironment::ONELENS_DESKTOP_WEB_CHROME_SIDE_PANEL;
-
-  return lens::RenderingEnvironment::ONELENS_DESKTOP_WEB_FULLSCREEN;
-}
 }  // namespace
 
 namespace lens {
@@ -147,12 +135,9 @@ GURL AppendOrReplaceQueryParametersForLensRequest(const GURL& url,
   return modified_url;
 }
 
-std::string GetQueryParametersForLensRequest(
-    lens::EntryPoint ep,
-    bool is_side_panel_request,
-    bool is_full_screen_region_search_request) {
-  auto re = GetRenderingEnvironment(is_side_panel_request,
-                                    is_full_screen_region_search_request);
+std::string GetQueryParametersForLensRequest(lens::EntryPoint ep,
+                                             lens::RenderingEnvironment re,
+                                             bool is_side_panel_request) {
   std::string query_string;
   for (auto const& param :
        GetLensQueryParametersMap(ep, re, is_side_panel_request))

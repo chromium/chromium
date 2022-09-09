@@ -1813,7 +1813,6 @@ class SearchByRegionBrowserTest : public InProcessBrowserTest {
     data.SetURL(GetNonGoogleRegionSearchURL().spec());
     data.image_url = GetNonGoogleRegionSearchURL().spec();
     data.image_url_post_params = kRegionSearchPostParams;
-    data.side_image_search_param = "sideimagesearch";
 
     TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
     ASSERT_TRUE(template_url);
@@ -1947,10 +1946,10 @@ class SearchByRegionWithSidePanelBrowserTest
     // Match strings up to the query.
     std::size_t query_start_pos = side_panel_content.find("?");
     // Match the query parameters, without the value of start_time.
-    EXPECT_THAT(side_panel_content,
-                testing::MatchesRegex(
-                    expected_content.substr(0, query_start_pos) +
-                    ".*ep=crs&re=dcsp&s=csp&st=\\d+&sideimagesearch=1"));
+    EXPECT_THAT(
+        side_panel_content,
+        testing::MatchesRegex(expected_content.substr(0, query_start_pos) +
+                              ".*ep=crs&re=dcsp&s=csp&st=\\d+"));
     quit_closure_.Run();
   }
 
@@ -2056,8 +2055,8 @@ class SearchByRegionWithUnifiedSidePanelBrowserTest
 #endif
 IN_PROC_BROWSER_TEST_F(SearchByRegionWithUnifiedSidePanelBrowserTest,
                        MAYBE_LensRegionSearchWithValidRegionUnifiedSidePanel) {
-  SetupAndLoadPage("/empty.html");
   lens::CreateLensUnifiedSidePanelEntryForTesting(browser());
+  SetupAndLoadPage("/empty.html");
   // We need a base::RunLoop to ensure that our test does not finish until the
   // side panel has opened and we have verified the URL.
   base::RunLoop loop;
@@ -2143,7 +2142,6 @@ class SearchByImageBrowserTest : public InProcessBrowserTest {
     static const char kSearchURL[] = "/search?q={searchTerms}";
     static const char kImageSearchPostParams[] =
         "thumb={google:imageThumbnail}";
-    static const char kSideImageSearchParam[] = "sideimagesearch";
 
     TemplateURLService* model =
         TemplateURLServiceFactory::GetForProfile(browser()->profile());
@@ -2157,7 +2155,6 @@ class SearchByImageBrowserTest : public InProcessBrowserTest {
     data.SetURL(embedded_test_server()->GetURL(kSearchURL).spec());
     data.image_url = GetImageSearchURL().spec();
     data.image_url_post_params = kImageSearchPostParams;
-    data.side_image_search_param = kSideImageSearchParam;
 
     TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
     ASSERT_TRUE(template_url);
