@@ -474,7 +474,7 @@ class TabDragController : public views::WidgetObserver {
                                           std::vector<gfx::Rect>* drag_bounds);
 
   // Calculates and returns the dragged bounds for the non-maximize dragged
-  // browser window. Taks into consideration the initial drag offset so that
+  // browser window. Takes into consideration the initial drag offset so that
   // the dragged tab remains under the |point_in_screen|.
   gfx::Rect CalculateNonMaximizedDraggedBrowserBounds(
       views::Widget* widget,
@@ -648,7 +648,7 @@ class TabDragController : public views::WidgetObserver {
   // The selection model of |attached_context_| before the tabs were attached.
   ui::ListSelectionModel selection_model_before_attach_;
 
-  // What should occur during ConinueDragging when a tab is attempted to be
+  // What should occur during ContinueDragging when a tab is attempted to be
   // detached.
   DetachBehavior detach_behavior_;
 

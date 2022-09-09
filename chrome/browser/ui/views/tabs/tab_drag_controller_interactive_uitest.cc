@@ -134,7 +134,7 @@ class TabDragControllerInteractiveUITestUserData
     : public base::SupportsUserData::Data {
  public:
   explicit TabDragControllerInteractiveUITestUserData(int id) : id_(id) {}
-  ~TabDragControllerInteractiveUITestUserData() override {}
+  ~TabDragControllerInteractiveUITestUserData() override = default;
   int id() { return id_; }
 
  private:
@@ -242,8 +242,7 @@ using ui_test_utils::GetCenterInScreenCoordinates;
 TabDragControllerTest::TabDragControllerTest()
     : browser_list(BrowserList::GetInstance()) {}
 
-TabDragControllerTest::~TabDragControllerTest() {
-}
+TabDragControllerTest::~TabDragControllerTest() = default;
 
 void TabDragControllerTest::StopAnimating(TabStrip* tab_strip) {
   tab_strip->StopAnimating(true);
@@ -354,8 +353,7 @@ class TestDesktopBrowserFrameAura : public DESKTOP_BROWSER_FRAME_AURA {
  public:
   TestDesktopBrowserFrameAura(BrowserFrame* browser_frame,
                               BrowserView* browser_view)
-      : DESKTOP_BROWSER_FRAME_AURA(browser_frame, browser_view),
-        release_capture_(false) {}
+      : DESKTOP_BROWSER_FRAME_AURA(browser_frame, browser_view) {}
   TestDesktopBrowserFrameAura(const TestDesktopBrowserFrameAura&) = delete;
   TestDesktopBrowserFrameAura& operator=(const TestDesktopBrowserFrameAura&) =
       delete;
@@ -375,7 +373,7 @@ class TestDesktopBrowserFrameAura : public DESKTOP_BROWSER_FRAME_AURA {
 
  private:
   // If true ReleaseCapture() is invoked in ClearNativeFocus().
-  bool release_capture_;
+  bool release_capture_ = false;
 };
 
 // Factory for creating a TestDesktopBrowserFrameAura.
@@ -1565,7 +1563,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   Browser* browser2 = CreateAnotherBrowserAndResize();
   TabStrip* tab_strip2 = GetTabStripForBrowser(browser2);
 
-  // Mark the second brower as occluded. NativeWindow occlusion calculation has
+  // Mark the second browser as occluded. NativeWindow occlusion calculation has
   // been disabled in test constructor, so we don't need an actual occluding
   // window.
   browser2->window()
@@ -3242,8 +3240,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
 namespace {
 
-void NewBrowerWindowStateStep2(DetachToBrowserTabDragControllerTest* test,
-                               TabStrip* tab_strip) {
+void NewBrowserWindowStateStep2(DetachToBrowserTabDragControllerTest* test,
+                                TabStrip* tab_strip) {
   // There should be two browser windows, including the newly created one for
   // the dragged tab.
   EXPECT_EQ(3u, test->browser_list->size());
@@ -3264,7 +3262,7 @@ void NewBrowerWindowStateStep2(DetachToBrowserTabDragControllerTest* test,
 // Test that tab dragging can work on a browser window with its initial show
 // state is MAXIMIZED.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       NewBrowerWindowState) {
+                       NewBrowserWindowState) {
   // Create a browser window whose initial show state is MAXIMIZED.
   Browser::CreateParams params(browser()->profile(), /*user_gesture=*/false);
   params.initial_show_state = ui::SHOW_STATE_MAXIMIZED;
@@ -3280,8 +3278,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
             ui::SHOW_STATE_MAXIMIZED);
 
   // Drag it far enough that the first tab detaches.
-  DragTabAndNotify(tab_strip,
-                   base::BindOnce(&NewBrowerWindowStateStep2, this, tab_strip));
+  DragTabAndNotify(
+      tab_strip, base::BindOnce(&NewBrowserWindowStateStep2, this, tab_strip));
 }
 
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
@@ -3341,7 +3339,7 @@ void DragToOverviewWindowStep2(DetachToBrowserTabDragControllerTest* test,
   // for the dragged tab.
   EXPECT_EQ(3u, test->browser_list->size());
 
-  // Put the window that accociated with |target_tab_strip| in overview.
+  // Put the window that associated with |target_tab_strip| in overview.
   test::GetWindowForTabStrip(target_tab_strip)
       ->SetProperty(chromeos::kIsShowingInOverviewKey, true);
 
@@ -3423,7 +3421,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_FALSE(TabDragController::IsActive());
   EXPECT_EQ(1u, browser_list->size());
 
-  // Test that the attached tabstrip doesn't restore focuas as it's currently
+  // Test that the attached tabstrip doesn't restore focus as it's currently
   // showing in overview.
   EXPECT_TRUE(test::GetWindowForTabStrip(tab_strip)->GetProperty(
       chromeos::kIsShowingInOverviewKey));
@@ -3602,7 +3600,7 @@ void DeferredTargetTabStripTestStep2(DetachToBrowserTabDragControllerTest* test,
   // for the dragged tab.
   EXPECT_EQ(3u, test->browser_list->size());
 
-  // Put the window that accociated with |target_tab_strip| in overview.
+  // Put the window that associated with |target_tab_strip| in overview.
   test::GetWindowForTabStrip(target_tab_strip)
       ->SetProperty(chromeos::kIsShowingInOverviewKey, true);
 
@@ -3610,8 +3608,8 @@ void DeferredTargetTabStripTestStep2(DetachToBrowserTabDragControllerTest* test,
   ASSERT_TRUE(
       test->DragInputTo(GetCenterInScreenCoordinates(target_tab_strip)));
 
-  // At this point, |target_tab_strip| should be the deferred target tabstip.
-  // Theoratically the dragged tabstrip will merge into |target_tab_strip| after
+  // At this point, |target_tab_strip| should be the deferred target tabstrip.
+  // Theoretically the dragged tabstrip will merge into |target_tab_strip| after
   // the drag ends.
   EXPECT_TRUE(
       test::GetWindowForTabStrip(target_tab_strip)
@@ -3652,7 +3650,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
 namespace {
 
-// Returns true if the web contents that's accociated with |browser| is using
+// Returns true if the web contents that's associated with |browser| is using
 // fast resize.
 bool WebContentsIsFastResized(Browser* browser) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
@@ -3807,7 +3805,7 @@ void WindowSizeDuringDraggingTestStep2(
 }  // namespace
 
 // TODO(http://crbug.com/1028386): Test fails flakily.
-// Tests that when drgging a tab out of a browser window, the dragged window's
+// Tests that when dragging a tab out of a browser window, the dragged window's
 // size should be equal or larger than its minimum size.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DISABLED_WindowSizeDuringDraggingTest) {
@@ -4319,7 +4317,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   ASSERT_TRUE(TabDragController::IsActive());
 
   // browser2's top chrome should be revealed and the tab strip should be
-  // at normal height while user is tragging tabs_strip2's tabs.
+  // at normal height while user is dragging tabs_strip2's tabs.
   ASSERT_TRUE(immersive_controller2->IsRevealed());
   ASSERT_TRUE(tab_strip2->GetVisible());
 
@@ -4667,7 +4665,7 @@ void SecondFingerPressTestStep2(DetachToBrowserTabDragControllerTest* test,
   // for the dragged tab.
   EXPECT_EQ(3u, test->browser_list->size());
 
-  // Put the window that accociated with |target_tab_strip| in overview.
+  // Put the window that associated with |target_tab_strip| in overview.
   test::GetWindowForTabStrip(target_tab_strip)
       ->SetProperty(chromeos::kIsShowingInOverviewKey, true);
 
@@ -4687,7 +4685,7 @@ void SecondFingerPressTestStep2(DetachToBrowserTabDragControllerTest* test,
 
 }  // namespace
 
-// Tests that when drgging a tab to a browser window that's currently in
+// Tests that when dragging a tab to a browser window that's currently in
 // overview, press the second finger should not cause chrome crash.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
                        SecondFingerPressTest) {
