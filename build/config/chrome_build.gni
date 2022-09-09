@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/browser/chrome_for_testing/buildflags.gni")
-
 declare_args() {
   # Select the desired branding flavor. False means normal Chromium branding,
   # true means official Google Chrome branding (requires extra Google-internal
@@ -14,9 +12,7 @@ declare_args() {
 declare_args() {
   # Refers to the subdirectory for branding in various places including
   # chrome/app/theme.
-  if (is_chrome_for_testing_branded) {
-    branding_path_component = "google_chrome/google_chrome_for_testing"
-  } else if (is_chrome_branded) {
+  if (is_chrome_branded) {
     branding_path_component = "google_chrome"
   } else {
     branding_path_component = "chromium"
