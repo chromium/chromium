@@ -35,6 +35,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/values.h"
@@ -821,7 +822,7 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle,
                         HRESULT expected_error_code) {
   bool done = false;
   static const base::TimeDelta kExpirationTimeout =
-      TestTimeouts::action_max_timeout();
+      2 * TestTimeouts::action_max_timeout();
   base::ElapsedTimer timer;
 
   LONG state_value = 0;
@@ -959,12 +960,12 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle,
         break;
     }
 
-    // TODO(1245992): Remove this logging once we get some confidence that the
-    // code is working correctly and no further debugging is needed.
-    LOG(ERROR) << base::StringPrintf(L"[State: %d][%ls][%ls]\n", state_value,
+    // TODO(crbug.com/1245992): Remove this logging once the code is test
+    // flakiness is eliminated and no further debugging is needed.
+    LOG(ERROR) << base::StringPrintf(L"[State: %d][%ls]%ls", state_value,
                                      stateDescription.c_str(),
                                      extraData.c_str());
-    ::Sleep(100);
+    base::PlatformThread::Sleep(base::Seconds(1));
   }
 
   EXPECT_TRUE(done)
