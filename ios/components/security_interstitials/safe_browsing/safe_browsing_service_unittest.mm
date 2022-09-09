@@ -8,6 +8,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#import "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_service.h"
@@ -584,6 +585,104 @@ TEST_F(SafeBrowsingServiceInitializationTest, GetURLLoaderFactory) {
       /*safe_browsing_metrics_collector=*/nullptr);
 
   EXPECT_TRUE(safe_browsing_service->GetURLLoaderFactory());
+
+  safe_browsing_service->ShutDown();
+  task_environment.RunUntilIdle();
+}
+
+// Verifies that Safe Browsing preference metrics are correctly recorded when
+// Safe Browsing is enabled but Enhanced Safe Browsing is not.
+TEST_F(SafeBrowsingServiceInitializationTest,
+       PreferenceMetricsStandardSafeBrowsing) {
+  web::WebTaskEnvironment task_environment;
+
+  std::unique_ptr<web::FakeBrowserState> browser_state =
+      std::make_unique<web::FakeBrowserState>();
+  std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> prefs =
+      std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+  safe_browsing::RegisterProfilePrefs(prefs->registry());
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  scoped_refptr<SafeBrowsingService> safe_browsing_service =
+      base::MakeRefCounted<SafeBrowsingServiceImpl>();
+  prefs->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+  prefs->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
+  base::HistogramTester histogram_tester;
+  safe_browsing_service->Initialize(
+      prefs.get(), temp_dir.GetPath(),
+      /*safe_browsing_metrics_collector=*/nullptr);
+  histogram_tester.ExpectUniqueSample(
+      safe_browsing::kSafeBrowsingEnabledHistogramName, /*sample=*/1,
+      /*count=*/1);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.Pref.Enhanced",
+                                      /*sample=*/0, /*count=*/1);
+
+  safe_browsing_service->ShutDown();
+  task_environment.RunUntilIdle();
+}
+
+// Verifies that Safe Browsing preference metrics are correctly recorded when
+// Enhanced Safe Browsing is enabled.
+TEST_F(SafeBrowsingServiceInitializationTest,
+       PreferenceMetricsEnhancedSafeBrowsing) {
+  web::WebTaskEnvironment task_environment;
+
+  std::unique_ptr<web::FakeBrowserState> browser_state =
+      std::make_unique<web::FakeBrowserState>();
+  std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> prefs =
+      std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+  safe_browsing::RegisterProfilePrefs(prefs->registry());
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  scoped_refptr<SafeBrowsingService> safe_browsing_service =
+      base::MakeRefCounted<SafeBrowsingServiceImpl>();
+  prefs->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+  prefs->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+  base::HistogramTester histogram_tester;
+  safe_browsing_service->Initialize(
+      prefs.get(), temp_dir.GetPath(),
+      /*safe_browsing_metrics_collector=*/nullptr);
+  histogram_tester.ExpectUniqueSample(
+      safe_browsing::kSafeBrowsingEnabledHistogramName, /*sample=*/1,
+      /*count=*/1);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.Pref.Enhanced",
+                                      /*sample=*/1, /*count=*/1);
+
+  safe_browsing_service->ShutDown();
+  task_environment.RunUntilIdle();
+}
+
+// Verifies that Safe Browsing preference metrics are correctly recorded when
+// Safe Browsing is disabled.
+TEST_F(SafeBrowsingServiceInitializationTest, PreferenceMetricsNoSafeBrowsing) {
+  web::WebTaskEnvironment task_environment;
+
+  std::unique_ptr<web::FakeBrowserState> browser_state =
+      std::make_unique<web::FakeBrowserState>();
+  std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> prefs =
+      std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+  safe_browsing::RegisterProfilePrefs(prefs->registry());
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  scoped_refptr<SafeBrowsingService> safe_browsing_service =
+      base::MakeRefCounted<SafeBrowsingServiceImpl>();
+  prefs->SetBoolean(prefs::kSafeBrowsingEnabled, false);
+  prefs->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
+  base::HistogramTester histogram_tester;
+  safe_browsing_service->Initialize(
+      prefs.get(), temp_dir.GetPath(),
+      /*safe_browsing_metrics_collector=*/nullptr);
+  histogram_tester.ExpectUniqueSample(
+      safe_browsing::kSafeBrowsingEnabledHistogramName, /*sample=*/0,
+      /*count=*/1);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.Pref.Enhanced",
+                                      /*sample=*/0, /*count=*/1);
 
   safe_browsing_service->ShutDown();
   task_environment.RunUntilIdle();
