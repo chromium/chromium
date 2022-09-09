@@ -181,7 +181,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   void OnUrlResult(const GURL& url,
                    SBThreatType threat_type,
                    const ThreatMetadata& metadata,
-                   bool is_from_real_time_check);
+                   bool is_from_real_time_check,
+                   bool timed_out = false);
 
   void CheckUrlImpl(const GURL& url,
                     const std::string& method,
