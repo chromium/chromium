@@ -710,9 +710,12 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
 std::vector<const HoldingSpaceItemView*>
 HoldingSpaceViewDelegate::GetSelection() {
   std::vector<const HoldingSpaceItemView*> selection;
-  for (const HoldingSpaceItemView* view : bubble_->GetHoldingSpaceItemViews()) {
-    if (view->selected())
-      selection.push_back(view);
+  if (bubble_) {  // Maybe be `nullptr` in testing.
+    for (const HoldingSpaceItemView* view :
+         bubble_->GetHoldingSpaceItemViews()) {
+      if (view->selected())
+        selection.push_back(view);
+    }
   }
   DCHECK_EQ(selection.size(), selection_size_);
   return selection;
@@ -730,10 +733,12 @@ void HoldingSpaceViewDelegate::SetSelection(
     const std::vector<std::string>& item_ids) {
   std::vector<HoldingSpaceItemView*> selection;
 
-  for (HoldingSpaceItemView* view : bubble_->GetHoldingSpaceItemViews()) {
-    view->SetSelected(base::Contains(item_ids, view->item_id()));
-    if (view->selected())
-      selection.push_back(view);
+  if (bubble_) {  // May be `nullptr` in testing.
+    for (HoldingSpaceItemView* view : bubble_->GetHoldingSpaceItemViews()) {
+      view->SetSelected(base::Contains(item_ids, view->item_id()));
+      if (view->selected())
+        selection.push_back(view);
+    }
   }
 
   if (selection.size() == 1u) {

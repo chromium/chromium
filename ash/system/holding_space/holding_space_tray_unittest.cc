@@ -365,9 +365,9 @@ class ScopedTransformRecordingLayerDelegate : public ui::LayerDelegate {
 
 }  // namespace
 
-// HoldingSpaceAshTestBase ----------------------------------------------------
+// HoldingSpaceTrayTestBase ----------------------------------------------------
 
-class HoldingSpaceAshTestBase : public AshTestBase {
+class HoldingSpaceTrayTestBase : public AshTestBase {
  public:
   // AshTestBase:
   void SetUp() override {
@@ -519,7 +519,7 @@ class HoldingSpaceAshTestBase : public AshTestBase {
   HoldingSpaceModel holding_space_model_;
 };
 
-class HoldingSpaceTrayTest : public HoldingSpaceAshTestBase {
+class HoldingSpaceTrayTest : public HoldingSpaceTrayTestBase {
  public:
   HoldingSpaceTrayTest() {
     scoped_feature_list_.InitWithFeatureState(
@@ -2033,7 +2033,7 @@ TEST_F(HoldingSpaceTrayTest, DISABLED_EnterAndExitAnimations) {
   UnregisterModelForUser(kSecondaryUserId);
 }
 
-class HoldingSpacePreviewsTrayTest : public HoldingSpaceAshTestBase {};
+using HoldingSpacePreviewsTrayTest = HoldingSpaceTrayTestBase;
 
 TEST_F(HoldingSpacePreviewsTrayTest, HideButtonOnChangeToEmptyModel) {
   MarkTimeOfFirstPin();
@@ -2712,7 +2712,7 @@ TEST_F(HoldingSpacePreviewsTrayTest,
 // Base class for tests of the holding space suggestions section parameterized
 // by the set of holding space item types which are expected to appear there.
 class HoldingSpaceTraySuggestionsSectionTest
-    : public HoldingSpaceAshTestBase,
+    : public HoldingSpaceTrayTestBase,
       public ::testing::WithParamInterface<HoldingSpaceItem::Type> {
  public:
   // Returns the holding space item type given the test parameterization.
@@ -2783,7 +2783,7 @@ TEST_P(HoldingSpaceTraySuggestionsSectionTest, SuggestionsSection) {
 // Base class for tests of the holding space downloads section parameterized by
 // the set of holding space item types which are expected to appear there.
 class HoldingSpaceTrayDownloadsSectionTest
-    : public HoldingSpaceAshTestBase,
+    : public HoldingSpaceTrayTestBase,
       public ::testing::WithParamInterface<HoldingSpaceItem::Type> {
  public:
   // Returns the holding space item type given the test parameterization.
@@ -3216,7 +3216,7 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest, HasAnimatedProgressIndicators) {
 }
 
 class HoldingSpaceTrayPredictableFeatureTest
-    : public HoldingSpaceAshTestBase,
+    : public HoldingSpaceTrayTestBase,
       public ::testing::WithParamInterface<bool> {
  public:
   HoldingSpaceTrayPredictableFeatureTest() {
@@ -3286,7 +3286,7 @@ TEST_P(
 
 // Base class for tests of the holding space icon parameterized by a boolean for
 // the kHoldingSpaceRebrand feature flag.
-class HoldingSpaceTrayIconTest : public HoldingSpaceAshTestBase,
+class HoldingSpaceTrayIconTest : public HoldingSpaceTrayTestBase,
                                  public ::testing::WithParamInterface<bool> {
  public:
   HoldingSpaceTrayIconTest() {
@@ -3329,7 +3329,7 @@ TEST_P(HoldingSpaceTrayIconTest, CheckTrayTooltipText) {
 // and secondary actions on holding space item views. Tests are parameterized by
 // holding space item type.
 class HoldingSpaceTrayPrimaryAndSecondaryActionsTest
-    : public HoldingSpaceAshTestBase,
+    : public HoldingSpaceTrayTestBase,
       public testing::WithParamInterface<HoldingSpaceItem::Type> {
  public:
   // Returns the parameterized holding space item type.

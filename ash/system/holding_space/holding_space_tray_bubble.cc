@@ -322,7 +322,6 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
 
   // Create and customize bubble view.
   TrayBubbleView* bubble_view = new TrayBubbleView(init_params);
-  // Ensure bubble frame does not draw background behind bubble view.
   child_bubble_container_ =
       bubble_view->AddChildView(std::make_unique<ChildBubbleContainer>());
   child_bubble_container_->SetMaxHeight(CalculateMaxHeight());

@@ -50,15 +50,21 @@ DeleteObserverAfterRunning(AnimationCompletedCallback callback) {
       base::Passed(std::move(callback)));
 }
 
-// Returns whether the given holding space `model` contains any initialized
-// items which are supported by the specified holding space item views
-// `section`.
-bool ModelContainsInitializedItemsForSection(
-    const HoldingSpaceModel* model,
-    const HoldingSpaceItemViewsSection* section) {
-  const auto& supported_types = section->supported_types();
+// Returns whether the given holding space item views `section` has content
+// based on whether the active holding space model contains any initialized
+// items which are supported by the `section`. If `section` has a placeholder
+// it will always have content.
+bool HasContentForSection(const HoldingSpaceItemViewsSection* section) {
+  if (section->has_placeholder())
+    return true;
+
+  const auto* model = HoldingSpaceController::Get()->model();
+  if (!model)
+    return false;
+
   return base::ranges::any_of(
-      supported_types, [&model](HoldingSpaceItem::Type supported_type) {
+      section->supported_types(),
+      [&model](HoldingSpaceItem::Type supported_type) {
         return model->ContainsInitializedItemOfType(supported_type);
       });
 }
@@ -144,6 +150,12 @@ void HoldingSpaceTrayChildBubble::Init() {
   layer()->SetOpacity(0.f);
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kBubbleCornerRadius});
 
+  // Placeholder.
+  if (auto placeholder = CreatePlaceholder()) {
+    placeholder_ = AddChildView(std::move(placeholder));
+    layer()->SetOpacity(1.f);
+  }
+
   // Sections.
   for (auto& section : CreateSections()) {
     sections_.push_back(AddChildView(std::move(section)));
@@ -192,10 +204,22 @@ void HoldingSpaceTrayChildBubble::OnHoldingSpaceItemsAdded(
     const std::vector<const HoldingSpaceItem*>& items) {
   // Ignore new items while the bubble is animating out. The bubble content will
   // be updated to match the model after the out animation completes.
-  if (!is_animating_out_) {
-    for (HoldingSpaceItemViewsSection* section : sections_)
-      section->OnHoldingSpaceItemsAdded(items);
+  if (is_animating_out_)
+    return;
+
+  // This child bubble should animate out if it was previously showing its
+  // `placeholder_` but will now transition to showing one or more `sections_`.
+  const bool animate_out =
+      placeholder_ && placeholder_->GetVisible() &&
+      base::ranges::any_of(sections_, &HasContentForSection);
+
+  if (animate_out) {
+    MaybeAnimateOut();
+    return;
   }
+
+  for (HoldingSpaceItemViewsSection* section : sections_)
+    section->OnHoldingSpaceItemsAdded(items);
 }
 
 void HoldingSpaceTrayChildBubble::OnHoldingSpaceItemsRemoved(
@@ -205,18 +229,11 @@ void HoldingSpaceTrayChildBubble::OnHoldingSpaceItemsRemoved(
   if (is_animating_out_)
     return;
 
-  HoldingSpaceModel* model = HoldingSpaceController::Get()->model();
-  DCHECK(model);
-
-  // This child bubble should animate out if the attached model does not
-  // contain initialized items supported by any of its sections. The exception
-  // is if a section has a placeholder to show in lieu of holding space items.
-  // If a placeholder exists, the child bubble should persist.
-  const bool animate_out = base::ranges::none_of(
-      sections_, [&model](const HoldingSpaceItemViewsSection* section) {
-        return section->has_placeholder() ||
-               ModelContainsInitializedItemsForSection(model, section);
-      });
+  // This child bubble should animate out if it does not have a visible
+  // `placeholder_` and will not be showing one or more `sections_`.
+  const bool animate_out =
+      (!placeholder_ || !placeholder_->GetVisible()) &&
+      base::ranges::none_of(sections_, &HasContentForSection);
 
   if (animate_out) {
     MaybeAnimateOut();
@@ -232,10 +249,26 @@ void HoldingSpaceTrayChildBubble::OnHoldingSpaceItemInitialized(
   // Ignore item initialized while the bubble is animating out. The bubble
   // content will be updated to match the model after the out animation
   // completes.
-  if (!is_animating_out_) {
-    for (HoldingSpaceItemViewsSection* section : sections_)
-      section->OnHoldingSpaceItemInitialized(item);
+  if (is_animating_out_)
+    return;
+
+  // This child bubble should animate out if it was previously showing its
+  // `placeholder_` but will now transition to showing one or more `sections_`.
+  const bool animate_out =
+      placeholder_ && placeholder_->GetVisible() &&
+      base::ranges::any_of(sections_, &HasContentForSection);
+
+  if (animate_out) {
+    MaybeAnimateOut();
+    return;
   }
+
+  for (HoldingSpaceItemViewsSection* section : sections_)
+    section->OnHoldingSpaceItemInitialized(item);
+}
+
+std::unique_ptr<views::View> HoldingSpaceTrayChildBubble::CreatePlaceholder() {
+  return nullptr;
 }
 
 const char* HoldingSpaceTrayChildBubble::GetClassName() const {
@@ -251,13 +284,23 @@ void HoldingSpaceTrayChildBubble::ChildVisibilityChanged(views::View* child) {
   if (ignore_child_visibility_changed_)
     return;
 
-  // This child bubble should be visible iff it has visible children.
-  bool visible = false;
-  for (const views::View* c : children()) {
-    if (c->GetVisible()) {
-      visible = true;
-      break;
-    }
+  // This child bubble should be visible iff it has visible children. Note that
+  // if the child bubble has a placeholder, it will always be visible.
+  const bool visible =
+      placeholder_ ||
+      base::ranges::any_of(children(), [](const views::View* child) {
+        return child->GetVisible();
+      });
+
+  if (placeholder_) {
+    // The `placeholder_` should only be visible if all `sections_` are not.
+    // Note that `ChildVisibilityChanged()` events are suppressed here for
+    // `placeholder_` to prevent nested visibility changed events.
+    base::AutoReset reset(&ignore_child_visibility_changed_, true);
+    placeholder_->SetVisible(base::ranges::none_of(
+        sections_, [](const HoldingSpaceItemViewsSection* section) {
+          return section->GetVisible();
+        }));
   }
 
   if (visible != GetVisible()) {
@@ -405,7 +448,7 @@ void HoldingSpaceTrayChildBubble::OnAnimateOutCompleted(bool aborted) {
   }
 
   HoldingSpaceModel* model = HoldingSpaceController::Get()->model();
-  if (!model || model->items().empty())
+  if (!model)
     return;
 
   std::vector<const HoldingSpaceItem*> item_ptrs;
@@ -415,8 +458,18 @@ void HoldingSpaceTrayChildBubble::OnAnimateOutCompleted(bool aborted) {
   // Populating a `section` may cause it's visibility to change if the `model`
   // contains initialized items of types which it supports. This, in turn, will
   // cause visibility of this child bubble to update and animate in if needed.
-  for (HoldingSpaceItemViewsSection* section : sections_)
-    section->OnHoldingSpaceItemsAdded(item_ptrs);
+  if (!item_ptrs.empty()) {
+    for (HoldingSpaceItemViewsSection* section : sections_)
+      section->OnHoldingSpaceItemsAdded(item_ptrs);
+  }
+
+  if (placeholder_) {
+    // The `placeholder_` should only be visible if all `sections_` are not.
+    placeholder_->SetVisible(base::ranges::none_of(
+        sections_, [](const HoldingSpaceItemViewsSection* section) {
+          return section->GetVisible();
+        }));
+  }
 }
 
 }  // namespace ash

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/ash_export.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view.h"
@@ -29,7 +30,7 @@ class HoldingSpaceItemView;
 class HoldingSpaceViewDelegate;
 
 // A section of holding space item views in a `HoldingSpaceTrayChildBubble`.
-class HoldingSpaceItemViewsSection : public views::View {
+class ASH_EXPORT HoldingSpaceItemViewsSection : public views::View {
  public:
   HoldingSpaceItemViewsSection(HoldingSpaceViewDelegate* delegate,
                                std::set<HoldingSpaceItem::Type> supported_types,
