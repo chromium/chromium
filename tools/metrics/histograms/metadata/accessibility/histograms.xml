@@ -359,9 +359,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CaptionSettingsLoadedFromPrefs"
-    enum="BooleanEnabled" expires_after="2022-10-18">
+    enum="BooleanEnabled" expires_after="2023-09-06">
   <owner>evliu@google.com</owner>
-  <owner>media-dev@chromium.org</owner>
+  <owner>chrome-media-ux@google.com</owner>
   <summary>
     Whether custom caption settings were loaded from the user preferences.
     Recorded when WebKit preferences are overridden.
@@ -369,9 +369,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CaptionSettingsLoadedFromSystemSettings"
-    enum="BooleanEnabled" expires_after="2022-10-18">
+    enum="BooleanEnabled" expires_after="2023-09-06">
   <owner>evliu@google.com</owner>
-  <owner>media-dev@chromium.org</owner>
+  <owner>chrome-media-ux@google.com</owner>
   <summary>
     Whether custom caption settings were loaded from the system preferences.
     Recorded when WebKit preferences are overridden.
@@ -1525,9 +1525,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.VTTContainsStyleBlock" enum="BooleanEnabled"
-    expires_after="2022-10-18">
+    expires_after="2023-09-06">
   <owner>evliu@google.com</owner>
-  <owner>media-dev@chromium.org</owner>
+  <owner>chrome-media-ux@google.com</owner>
   <summary>
     Whether a VTT file contains an embedded style block. Recorded when a VTT
     file is parsed.
