@@ -220,6 +220,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
   if (frontend_id > 0) {
     FillAutofillFormData(frontend_id, true);
   } else if (frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY ||
+             frontend_id == POPUP_ITEM_ID_IBAN_ENTRY ||
              frontend_id == POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY) {
     driver_->RendererShouldPreviewFieldWithValue(query_field_.global_id(),
                                                  value);
@@ -251,9 +252,10 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     driver_->RendererShouldAcceptDataListSuggestion(query_field_.global_id(),
                                                     value);
   } else if (frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY ||
+             frontend_id == POPUP_ITEM_ID_IBAN_ENTRY ||
              frontend_id == POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY) {
-    // User selected an Autocomplete or Merchant Promo Code field, so we fill
-    // directly.
+    // User selected an Autocomplete, Merchant Promo Code field or IBAN, so we
+    // fill directly.
     driver_->RendererShouldFillFieldWithValue(query_field_.global_id(), value);
 
     if (frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY)

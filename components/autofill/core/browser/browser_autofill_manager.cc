@@ -464,7 +464,7 @@ BrowserAutofillManager::BrowserAutofillManager(
       app_locale_(app_locale),
       personal_data_(client->GetPersonalDataManager()),
       field_filler_(app_locale, client->GetAddressNormalizer()),
-      single_field_form_fill_router_(client->GetSingleFieldFormFillRouter()),
+      single_field_form_fill_router_(client->CreateSingleFieldFormFillRouter()),
       suggestion_generator_(
           std::make_unique<AutofillSuggestionGenerator>(client,
                                                         personal_data_)) {

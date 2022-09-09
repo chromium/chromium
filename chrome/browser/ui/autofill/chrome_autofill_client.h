@@ -71,6 +71,7 @@ class ChromeAutofillClient
   version_info::Channel GetChannel() const override;
   PersonalDataManager* GetPersonalDataManager() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
+  IBANManager* GetIBANManager() override;
   MerchantPromoCodeManager* GetMerchantPromoCodeManager() override;
   CreditCardCVCAuthenticator* GetCVCAuthenticator() override;
   CreditCardOtpAuthenticator* GetOtpAuthenticator() override;

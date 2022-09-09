@@ -41,14 +41,19 @@ version_info::Channel AutofillClient::GetChannel() const {
   return version_info::Channel::UNKNOWN;
 }
 
+IBANManager* AutofillClient::GetIBANManager() {
+  return nullptr;
+}
+
 MerchantPromoCodeManager* AutofillClient::GetMerchantPromoCodeManager() {
   return nullptr;
 }
 
 std::unique_ptr<SingleFieldFormFillRouter>
-AutofillClient::GetSingleFieldFormFillRouter() {
+AutofillClient::CreateSingleFieldFormFillRouter() {
   return std::make_unique<SingleFieldFormFillRouter>(
-      GetAutocompleteHistoryManager(), GetMerchantPromoCodeManager());
+      GetAutocompleteHistoryManager(), GetIBANManager(),
+      GetMerchantPromoCodeManager());
 }
 
 CreditCardCVCAuthenticator* AutofillClient::GetCVCAuthenticator() {

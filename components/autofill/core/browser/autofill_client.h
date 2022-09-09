@@ -72,6 +72,7 @@ enum class CreditCardFetchResult;
 class CreditCardOtpAuthenticator;
 class FormDataImporter;
 class FormStructure;
+class IBANManager;
 class LogManager;
 class MigratableCreditCard;
 class MerchantPromoCodeManager;
@@ -322,6 +323,9 @@ class AutofillClient : public RiskDataLoader {
   // Gets the AutocompleteHistoryManager instance associated with the client.
   virtual AutocompleteHistoryManager* GetAutocompleteHistoryManager() = 0;
 
+  // Gets the IBANManager instance associated with the client.
+  virtual IBANManager* GetIBANManager();
+
   // Gets the MerchantPromoCodeManager instance associated with the
   // client (can be null for unsupported platforms).
   virtual MerchantPromoCodeManager* GetMerchantPromoCodeManager();
@@ -331,8 +335,9 @@ class AutofillClient : public RiskDataLoader {
   virtual CreditCardOtpAuthenticator* GetOtpAuthenticator();
 
   // Creates and returns a SingleFieldFormFillRouter using the
-  // AutocompleteHistoryManager instance associated with the client.
-  std::unique_ptr<SingleFieldFormFillRouter> GetSingleFieldFormFillRouter();
+  // AutocompleteHistoryManager, IBANManager and MerchantPromoCodeManager
+  // instances associated with the client.
+  std::unique_ptr<SingleFieldFormFillRouter> CreateSingleFieldFormFillRouter();
 
   // Gets the preferences associated with the client.
   virtual PrefService* GetPrefs() = 0;

@@ -5,10 +5,13 @@
 #include "components/autofill/core/browser/mock_single_field_form_fill_router.h"
 
 namespace autofill {
+
 MockSingleFieldFormFillRouter::MockSingleFieldFormFillRouter(
     AutocompleteHistoryManager* autocomplete_history_manager,
+    IBANManager* iban_manager,
     MerchantPromoCodeManager* merchant_promo_code_manager)
     : SingleFieldFormFillRouter(autocomplete_history_manager,
+                                iban_manager,
                                 merchant_promo_code_manager) {}
 
 MockSingleFieldFormFillRouter::~MockSingleFieldFormFillRouter() = default;

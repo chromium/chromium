@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
+#include "components/autofill/core/browser/iban_manager.h"
 #include "components/autofill/core/browser/merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/single_field_form_filler.h"
 #include "components/autofill/core/common/form_data.h"
@@ -18,12 +19,13 @@ class MerchantPromoCodeManager;
 struct SuggestionsContext;
 
 // Owned by AutofillClient, and is one per tab. Routes single field form filling
-// requests, such as choosing whether to direct them to Autocomplete or merchant
-// promo code filling functionality.
+// requests, such as choosing whether to direct them to Autocomplete, merchant
+// promo codes or IBAN.
 class SingleFieldFormFillRouter : public SingleFieldFormFiller {
  public:
   explicit SingleFieldFormFillRouter(
       AutocompleteHistoryManager* autocomplete_history_manager,
+      IBANManager* iban_manager,
       MerchantPromoCodeManager* merchant_promo_code_manager);
   ~SingleFieldFormFillRouter() override;
   SingleFieldFormFillRouter(const SingleFieldFormFillRouter&) = delete;
@@ -62,6 +64,9 @@ class SingleFieldFormFillRouter : public SingleFieldFormFiller {
  private:
   // Handles autocompleting single fields.
   base::WeakPtr<AutocompleteHistoryManager> autocomplete_history_manager_;
+
+  // Handles autofilling IBAN fields (can be null for unsupported platforms).
+  base::WeakPtr<IBANManager> iban_manager_;
 
   // Handles autofilling merchant promo code fields (can be null for unsupported
   // platforms).

@@ -647,6 +647,43 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateInvalidUniqueId) {
 }
 
 // Test that the Autofill delegate still allows previewing and filling
+// specifically of the negative ID for POPUP_ITEM_ID_IBAN_ENTRY.
+TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillsIbanEntry) {
+  IssueOnQuery(kRecentQueryId);
+
+  AutofillClient::PopupOpenArgs open_args;
+  EXPECT_CALL(autofill_client_, ShowAutofillPopup)
+      .WillOnce(testing::SaveArg<0>(&open_args));
+
+  // This should call ShowAutofillPopup.
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back();
+  std::u16string iban_value = u"IE12BOFI90000112345678";
+  suggestions[0].main_text.value = iban_value;
+  suggestions[0].labels = {{Suggestion::Text(u"My doctor's IBAN")}};
+  suggestions[0].frontend_id = POPUP_ITEM_ID_IBAN_ENTRY;
+  external_delegate_->OnSuggestionsReturned(
+      kRecentQueryId, suggestions, /*autoselect_first_suggestion=*/false);
+
+  // The enums must be cast to ints to prevent compile errors on linux_rel.
+  EXPECT_THAT(open_args.suggestions,
+              SuggestionVectorIdsAre(testing::ElementsAre(
+                  static_cast<int>(POPUP_ITEM_ID_IBAN_ENTRY))));
+
+  EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
+  EXPECT_CALL(*autofill_driver_,
+              RendererShouldPreviewFieldWithValue(field_id_, iban_value));
+  external_delegate_->DidSelectSuggestion(iban_value, POPUP_ITEM_ID_IBAN_ENTRY,
+                                          Suggestion::BackendId());
+  EXPECT_CALL(autofill_client_,
+              HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
+  EXPECT_CALL(*autofill_driver_,
+              RendererShouldFillFieldWithValue(field_id_, iban_value));
+  external_delegate_->DidAcceptSuggestion(iban_value, POPUP_ITEM_ID_IBAN_ENTRY,
+                                          Suggestion::Payload{}, 0);
+}
+
+// Test that the Autofill delegate still allows previewing and filling
 // specifically of the negative ID for POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY.
 TEST_F(AutofillExternalDelegateUnitTest,
        ExternalDelegateFillsMerchantPromoCodeEntry) {
@@ -905,7 +942,7 @@ TEST_F(AutofillExternalDelegateUnitTest, IgnoreAutocompleteOffForAutofill) {
 TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillFieldWithValue) {
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion))
-      .Times(2);
+      .Times(3);
   IssueOnQuery(456);
   std::u16string dummy_string(u"baz foo");
   EXPECT_CALL(*autofill_driver_,
@@ -930,6 +967,16 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillFieldWithValue) {
       .Times(1);
   external_delegate_->DidAcceptSuggestion(
       dummy_string, POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY,
+      absl::variant<Suggestion::BackendId, GURL>(), 0);
+  // Test that IBANs get autofilled.
+  EXPECT_CALL(*autofill_driver_,
+              RendererShouldFillFieldWithValue(field_id_, dummy_string));
+  EXPECT_CALL(
+      *autofill_client_.GetMockIBANManager(),
+      OnSingleFieldSuggestionSelected(dummy_string, POPUP_ITEM_ID_IBAN_ENTRY))
+      .Times(1);
+  external_delegate_->DidAcceptSuggestion(
+      dummy_string, POPUP_ITEM_ID_IBAN_ENTRY,
       absl::variant<Suggestion::BackendId, GURL>(), 0);
 }
 

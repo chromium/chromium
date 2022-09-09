@@ -26,6 +26,8 @@ TestAutofillClient::TestAutofillClient(
       form_origin_(GURL("https://example.test")),
       last_committed_url_(GURL("https://example.test")),
       log_manager_(LogManager::Create(&log_router_, base::NullCallback())) {
+  mock_iban_manager_ = std::make_unique<testing::NiceMock<MockIBANManager>>(
+      test_personal_data_manager_.get());
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch("show-autofill-internals"))
     scoped_logging_subscription_.Observe(&log_router_);
@@ -44,6 +46,10 @@ TestPersonalDataManager* TestAutofillClient::GetPersonalDataManager() {
 AutocompleteHistoryManager*
 TestAutofillClient::GetAutocompleteHistoryManager() {
   return &mock_autocomplete_history_manager_;
+}
+
+IBANManager* TestAutofillClient::GetIBANManager() {
+  return mock_iban_manager_.get();
 }
 
 MerchantPromoCodeManager* TestAutofillClient::GetMerchantPromoCodeManager() {
