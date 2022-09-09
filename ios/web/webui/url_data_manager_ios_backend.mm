@@ -54,7 +54,7 @@ const char kChromeURLXFrameOptionsHeader[] = "DENY";
 
 const char kWebUIResourcesHost[] = "resources";
 
-// Returns whether |url| passes some sanity checks and is a valid GURL.
+// Returns whether `url` passes some sanity checks and is a valid GURL.
 bool CheckURLIsValid(const GURL& url) {
   std::vector<std::string> additional_schemes;
   DCHECK(GetWebClient()->IsAppSpecificURL(url) ||
@@ -69,7 +69,7 @@ bool CheckURLIsValid(const GURL& url) {
   return true;
 }
 
-// Parse |url| to get the path which will be used to resolve the request. The
+// Parse `url` to get the path which will be used to resolve the request. The
 // path is the remaining portion after the scheme and hostname.
 void URLToRequestPath(const GURL& url, std::string* path) {
   const std::string& spec = url.possibly_invalid_spec();
@@ -81,7 +81,7 @@ void URLToRequestPath(const GURL& url, std::string* path) {
     path->assign(spec.substr(offset));
 }
 
-// Checks for webui resources path inside the given |url| and return a
+// Checks for webui resources path inside the given `url` and return a
 // fixed one if needed, or the original one otherwise. In js modules,
 // The use of x/../../../../ui/webui/resources is mapped by webkit to
 // x/ui/webui/resources so to not go out of scope of the module.
@@ -105,7 +105,7 @@ GURL RedirectWebUIResources(const GURL url) {
 // calls back once the data is available.
 class URLRequestChromeJob : public net::URLRequestJob {
  public:
-  // |is_incognito| set when job is generated from an incognito profile.
+  // `is_incognito` set when job is generated from an incognito profile.
   URLRequestChromeJob(net::URLRequest* request,
                       BrowserState* browser_state,
                       bool is_incognito);
@@ -123,7 +123,7 @@ class URLRequestChromeJob : public net::URLRequestJob {
   void GetResponseInfo(net::HttpResponseInfo* info) override;
   std::unique_ptr<net::SourceStream> SetUpSourceStream() override;
 
-  // Used to notify that the requested data's |mime_type| is ready.
+  // Used to notify that the requested data's `mime_type` is ready.
   void MimeTypeAvailable(URLDataSourceIOSImpl* source,
                          const std::string& mime_type);
 
@@ -165,7 +165,7 @@ class URLRequestChromeJob : public net::URLRequestJob {
  private:
   friend class URLDataManagerIOSBackend;
 
-  // Do the actual copy from data_ (the data we're serving) into |buf|.
+  // Do the actual copy from data_ (the data we're serving) into `buf`.
   // Separate from ReadRawData so we can handle async I/O.
   int CompleteRead(net::IOBuffer* buf, int buf_size);
 
@@ -254,7 +254,7 @@ void URLRequestChromeJob::Start() {
   DCHECK(browser_state_);
 
   // Obtain the URLDataManagerIOSBackend instance that is associated with
-  // |browser_state_|. Note that this *must* be done on the IO thread.
+  // `browser_state_`. Note that this *must* be done on the IO thread.
   backend_ = browser_state_->GetURLDataManagerIOSBackendOnIOThread();
   DCHECK(backend_);
 
@@ -319,7 +319,7 @@ std::unique_ptr<net::SourceStream> URLRequestChromeJob::SetUpSourceStream() {
     // It is safe to pass the raw replacements directly to the source stream, as
     // both this URLRequestChromeJob and the I18nSourceStream are owned by the
     // same root URLRequest. The replacements are owned by the URLDataSourceImpl
-    // which we keep alive via |source_|, ensuring its lifetime is also bound
+    // which we keep alive via `source_`, ensuring its lifetime is also bound
     // to the safe URLRequest.
     source_stream = ui::I18nSourceStream::Create(
         std::move(source_stream), net::SourceStream::TYPE_NONE, replacements);
@@ -392,8 +392,8 @@ void URLRequestChromeJob::NotifyStartErrorAsync() {
 
 namespace {
 
-// Gets mime type for data that is available from |source| by |path|.
-// After that, notifies |job| that mime type is available. This method
+// Gets mime type for data that is available from `source` by `path`.
+// After that, notifies `job` that mime type is available. This method
 // should be called on the UI thread, but notification is performed on
 // the IO thread.
 void GetMimeTypeOnUI(URLDataSourceIOSImpl* source,
@@ -413,7 +413,7 @@ namespace {
 class ChromeProtocolHandler
     : public net::URLRequestJobFactory::ProtocolHandler {
  public:
-  // |is_incognito| should be set for incognito profiles.
+  // `is_incognito` should be set for incognito profiles.
   ChromeProtocolHandler(BrowserState* browser_state, bool is_incognito)
       : browser_state_(browser_state), is_incognito_(is_incognito) {}
 

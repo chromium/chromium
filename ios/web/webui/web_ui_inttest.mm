@@ -48,7 +48,7 @@ const char kWebUIPageText[] = "WebUI page";
 // Controller for test WebUI.
 class TestUI : public WebUIIOSController {
  public:
-  // Constructs controller from |web_ui| and |ui_handler| which will communicate
+  // Constructs controller from `web_ui` and `ui_handler` which will communicate
   // with test WebUI page.
   TestUI(WebUIIOS* web_ui, const std::string& host, int resource_id)
       : WebUIIOSController(web_ui, host) {
@@ -127,7 +127,7 @@ class WebUITest : public WebTestWithWebState {
 };
 
 // Tests that a web UI page is loaded and that the WebState correctly reports
-// |WebStateImpl::HasWebUI|.
+// `WebStateImpl::HasWebUI`.
 TEST_F(WebUITest, LoadWebUIPage) {
   ASSERT_TRUE(static_cast<WebStateImpl*>(web_state())->HasWebUI());
 

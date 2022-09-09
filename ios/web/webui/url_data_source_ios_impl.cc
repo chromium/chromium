@@ -34,10 +34,10 @@ void URLDataSourceIOSImpl::SendResponse(
     // released it would be deleted again.
     //
     // This scenario occurs with DataSources that make history requests. Such
-    // DataSources do a history query in |StartDataRequest| and the request is
+    // DataSources do a history query in `StartDataRequest` and the request is
     // live until the object is deleted (history requests don't up the ref
     // count). This means it's entirely possible for the DataSource to invoke
-    // |SendResponse| between the time when there are no more refs and the time
+    // `SendResponse` between the time when there are no more refs and the time
     // when the object is deleted.
     return;
   }

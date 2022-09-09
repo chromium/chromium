@@ -30,7 +30,7 @@ namespace web {
 
 namespace {
 
-// Serializes the given |object| to JSON string.
+// Serializes the given `object` to JSON string.
 std::string GetJson(id object) {
   NSData* json_as_data =
       [NSJSONSerialization dataWithJSONObject:object options:0 error:nil];
@@ -40,7 +40,7 @@ std::string GetJson(id object) {
   return base::SysNSStringToUTF8(json_as_string);
 }
 
-// Deserializes the given |json| to an object.
+// Deserializes the given `json` to an object.
 id GetObject(const std::string& json) {
   NSData* json_as_data =
       [base::SysUTF8ToNSString(json) dataUsingEncoding:NSUTF8StringEncoding];

@@ -26,7 +26,7 @@ class WebState;
 class MojoFacade {
  public:
   // Constructs MojoFacade. The calling code must retain ownership of
-  // |web_state|, which cannot be null.
+  // `web_state`, which cannot be null.
   explicit MojoFacade(WebState* web_state);
   ~MojoFacade();
 
@@ -58,34 +58,35 @@ class MojoFacade {
   MessageNameAndArguments GetMessageNameAndArguments(
       const std::string& mojo_message_as_json);
 
-  // Connects to specified Mojo interface. |args| is a dictionary with the
+  // Connects to specified Mojo interface. `args` is a dictionary with the
   // following keys:
   //   - "interfaceName" (a string representing an interface name);
   //   - "requestHandle" (a number representing MojoHandle of the interface
   //     request).
   void HandleMojoBindInterface(base::Value args);
 
-  // Closes the given handle. |args| is a dictionary which must contain "handle"
+  // Closes the given handle. `args` is a dictionary which must contain "handle"
   // key, which is a number representing a MojoHandle.
   void HandleMojoHandleClose(base::Value args);
 
-  // Creates a Mojo message pipe. |args| is unused.
+  // Creates a Mojo message pipe. `args` is unused.
   // Returns a dictionary with the following keys:
   //   - "result" (a number representing MojoResult);
   //   - "handle0" and "handle1" (the numbers representing two endpoints of the
   //     message pipe).
   base::Value HandleMojoCreateMessagePipe(base::Value args);
 
-  // Writes a message to the message pipe endpoint given by handle. |args| is a
+  // Writes a message to the message pipe endpoint given by handle. `args` is a
   // dictionary which must contain the following keys:
   //   - "handle" (a number representing MojoHandle, the endpoint to write to);
-  //   - "buffer" (a base-64 string representing the message data; may be empty);
+  //   - "buffer" (a base-64 string representing the message data; may be
+  //   empty);
   //   - "handles" (an array representing any handles to attach; handles are
   //     transferred and will no longer be valid; may be empty);
   // Returns MojoResult as a number.
   base::Value HandleMojoHandleWriteMessage(base::Value args);
 
-  // Reads a message from the message pipe endpoint given by handle. |args| is
+  // Reads a message from the message pipe endpoint given by handle. `args` is
   // a dictionary which must contain the keys "handle" (a number representing
   // MojoHandle, the endpoint to read from).
   // Returns a dictionary with the following keys:
@@ -96,7 +97,7 @@ class MojoFacade {
   base::Value HandleMojoHandleReadMessage(base::Value args);
 
   // Begins watching a handle for signals to be satisfied or unsatisfiable.
-  // |args| is a dictionary which must contain the following keys:
+  // `args` is a dictionary which must contain the following keys:
   //   - "handle" (a number representing a MojoHandle);
   //   - "signals" (a number representing MojoHandleSignals to watch);
   //   - "callbackId" (a number representing the id which should be passed to
@@ -104,7 +105,7 @@ class MojoFacade {
   // Returns watch id as a number.
   base::Value HandleMojoHandleWatch(base::Value args);
 
-  // Cancels a handle watch initiated by "MojoHandle.watch". |args| is a
+  // Cancels a handle watch initiated by "MojoHandle.watch". `args` is a
   // dictionary which must contain "watchId" key (a number representing id
   // returned from "MojoHandle.watch").
   void HandleMojoWatcherCancel(base::Value args);

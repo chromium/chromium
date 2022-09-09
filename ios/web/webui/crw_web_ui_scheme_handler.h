@@ -14,7 +14,7 @@
 // custom scheme handling of the WKWebView.
 @interface CRWWebUISchemeHandler : NSObject <WKURLSchemeHandler>
 
-// Initializes the handler with the |URLLoaderFactory| used to load the URLs.
+// Initializes the handler with the `URLLoaderFactory` used to load the URLs.
 - (instancetype)initWithURLLoaderFactory:
     (scoped_refptr<network::SharedURLLoaderFactory>)URLLoaderFactory
     NS_DESIGNATED_INITIALIZER;

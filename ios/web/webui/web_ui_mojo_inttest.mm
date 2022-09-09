@@ -42,11 +42,11 @@ const char kTestWebUIURLHost[] = "testwebui";
 const NSTimeInterval kMessageTimeout = 5.0;
 
 // UI handler class which communicates with test WebUI page as follows:
-// - page sends "syn" message to |TestUIHandler|
-// - |TestUIHandler| replies with "ack" message
+// - page sends "syn" message to `TestUIHandler`
+// - `TestUIHandler` replies with "ack" message
 // - page replies back with "fin"
 //
-// Once "fin" is received |IsFinReceived()| call will return true, indicating
+// Once "fin" is received `IsFinReceived()` call will return true, indicating
 // that communication was successful. See test WebUI page code here:
 // ios/web/test/data/mojo_test.js
 class TestUIHandler : public TestUIHandlerMojo {
@@ -87,16 +87,16 @@ class TestUIHandler : public TestUIHandlerMojo {
  private:
   mojo::ReceiverSet<TestUIHandlerMojo> receivers_;
   mojo::Remote<TestPage> page_;
-  // |true| if "syn" has been received.
+  // `true` if "syn" has been received.
   bool syn_received_ = false;
-  // |true| if "fin" has been received.
+  // `true` if "fin" has been received.
   bool fin_received_ = false;
 };
 
 // Controller for test WebUI.
 class TestUI : public WebUIIOSController {
  public:
-  // Constructs controller from |web_ui| and |ui_handler| which will communicate
+  // Constructs controller from `web_ui` and `ui_handler` which will communicate
   // with test WebUI page.
   TestUI(WebUIIOS* web_ui, const std::string& host, TestUIHandler* ui_handler)
       : WebUIIOSController(web_ui, host) {
@@ -122,7 +122,7 @@ class TestUI : public WebUIIOSController {
 // Factory that creates TestUI controller.
 class TestWebUIControllerFactory : public WebUIIOSControllerFactory {
  public:
-  // Constructs a controller factory which will eventually create |ui_handler|.
+  // Constructs a controller factory which will eventually create `ui_handler`.
   explicit TestWebUIControllerFactory(TestUIHandler* ui_handler)
       : ui_handler_(ui_handler) {}
 
@@ -194,7 +194,7 @@ class WebUIMojoTest : public WebIntTest {
 
 // Tests that JS can send messages to the native code and vice versa.
 // TestUIHandler is used for communication and test succeeds only when
-// |TestUIHandler| successfully receives "ack" message from WebUI page.
+// `TestUIHandler` successfully receives "ack" message from WebUI page.
 TEST_F(WebUIMojoTest, MessageExchange) {
   @autoreleasepool {
     url::SchemeHostPort tuple(kTestWebUIScheme, kTestWebUIURLHost, 0);
@@ -204,7 +204,7 @@ TEST_F(WebUIMojoTest, MessageExchange) {
     // when loading the page. TODO(crbug.com/705819): Remove this call.
     web_state()->GetNavigationManager()->LoadIfNecessary();
 
-    // Wait until |TestUIHandler| receives "fin" message from WebUI page.
+    // Wait until `TestUIHandler` receives "fin" message from WebUI page.
     bool fin_received =
         base::test::ios::WaitUntilConditionOrTimeout(kMessageTimeout, ^{
           // Flush any pending tasks. Don't RunUntilIdle() because

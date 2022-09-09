@@ -17,7 +17,7 @@
 #endif
 
 namespace {
-// Returns the error code associated with |URL|.
+// Returns the error code associated with `URL`.
 NSInteger GetErrorCodeForUrl(const GURL& URL) {
   web::WebUIIOSControllerFactory* factory =
       web::WebUIIOSControllerFactoryRegistry::GetInstance();
@@ -110,13 +110,13 @@ NSInteger GetErrorCodeForUrl(const GURL& URL) {
 
 #pragma mark - Private
 
-// Returns a pointer to the |_map| ivar for strongSelf.
+// Returns a pointer to the `_map` ivar for strongSelf.
 - (std::map<id<WKURLSchemeTask>, std::unique_ptr<web::URLFetcherBlockAdapter>>*)
     map {
   return &_map;
 }
 
-// Removes |fetcher| from map of active fetchers.
+// Removes `fetcher` from map of active fetchers.
 - (void)removeFetcher:(web::URLFetcherBlockAdapter*)fetcher {
   _map.erase(std::find_if(
       _map.begin(), _map.end(),
