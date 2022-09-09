@@ -17,9 +17,8 @@ def CheckNoBadDeps(input_api, output_api):
       r'(.+/)?BUILD\.gn',
       r'.+\.gni',
   ]
-  blocklist_pattern = input_api.re.compile(
-      r'^[^#]*//(?:base|third_party|components)')
-  allowlist_pattern = input_api.re.compile(r'^[^#]*//third_party/junit')
+  blocklist_pattern = input_api.re.compile(r'^[^#]*"//(?!build).+?/.*"')
+  allowlist_pattern = input_api.re.compile(r'^[^#]*"//third_party/junit')
 
   warning_message = textwrap.dedent("""
       The //build directory is meant to be as hermetic as possible so that
@@ -45,3 +44,14 @@ def CheckNoBadDeps(input_api, output_api):
     return [output_api.PresubmitPromptOrNotify(warning_message, problems)]
   else:
     return []
+
+
+def CheckPythonTests(input_api, output_api):
+  return input_api.RunTests(
+      input_api.canned_checks.GetUnitTestsInDirectory(
+          input_api,
+          output_api,
+          input_api.PresubmitLocalPath(),
+          files_to_check=[r'.+_(?:unit)?test\.py$'],
+          run_on_python2=False,
+          run_on_python3=True))

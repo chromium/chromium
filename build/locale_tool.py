@@ -507,7 +507,7 @@ class _GetXmlLangAttributeTest(unittest.TestCase):
   }
 
   def test_GetXmlLangAttribute(self):
-    for test_line, expected in self.TEST_DATA.iteritems():
+    for test_line, expected in self.TEST_DATA.items():
       self.assertEquals(_GetXmlLangAttribute(test_line), expected)
 
 
