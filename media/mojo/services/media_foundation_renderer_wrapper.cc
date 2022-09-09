@@ -7,6 +7,7 @@
 #include "base/callback_helpers.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
+#include "media/mojo/services/media_foundation_gpu_info_monitor.h"
 #include "media/mojo/services/mojo_media_log.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -46,19 +47,20 @@ MediaFoundationRendererWrapper::MediaFoundationRendererWrapper(
       renderer_extension_receiver_(this,
                                    std::move(renderer_extension_receiver)),
       client_extension_remote_(std::move(client_extension_remote), task_runner),
-      site_mute_observer_(this),
-      gpu_luid_observer_(this) {
+      site_mute_observer_(this) {
   DVLOG_FUNC(1);
   DCHECK(frame_interfaces_);
 
-  CHROME_LUID adapter_luid;
-  frame_interfaces_->RegisterGpuLuidObserver(
-      gpu_luid_observer_.BindNewPipeAndPassRemote(), &adapter_luid);
-  LUID gpu_process_adapter_luid = ChromeLuidToLuid(adapter_luid);
   renderer_ = std::make_unique<MediaFoundationRenderer>(
       std::move(task_runner),
       std::make_unique<MojoMediaLog>(std::move(media_log_remote), task_runner),
-      gpu_process_adapter_luid);
+      ChromeLuidToLuid(
+          MediaFoundationGpuInfoMonitor::GetInstance()->gpu_luid()));
+
+  luid_update_subscription_ =
+      MediaFoundationGpuInfoMonitor::GetInstance()->AddLuidObserver(
+          base::BindRepeating(&MediaFoundationRendererWrapper::OnGpuLuidChange,
+                              weak_factory_.GetWeakPtr()));
 }
 
 MediaFoundationRendererWrapper::~MediaFoundationRendererWrapper() {
@@ -154,8 +156,7 @@ void MediaFoundationRendererWrapper::OnMuteStateChange(bool muted) {
 
 void MediaFoundationRendererWrapper::OnGpuLuidChange(
     const CHROME_LUID& adapter_luid) {
-  LUID gpu_process_adapter_luid = ChromeLuidToLuid(adapter_luid);
-  renderer_->SetGpuProcessAdapterLuid(gpu_process_adapter_luid);
+  renderer_->SetGpuProcessAdapterLuid(ChromeLuidToLuid(adapter_luid));
 }
 
 void MediaFoundationRendererWrapper::OnReceiveDCOMPSurface(

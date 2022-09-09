@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "media/cdm/win/media_foundation_cdm_module.h"
+#include "media/mojo/services/media_foundation_gpu_info_monitor.h"
 
 namespace media {
 
@@ -48,6 +49,7 @@ void MediaFoundationServiceBroker::OnGpuInfoUpdate(
   // the crash report.
   DVLOG(1) << __func__;
   gpu::SetKeysForCrashLogging(gpu_info);
+  MediaFoundationGpuInfoMonitor::GetInstance()->UpdateGpuInfo(gpu_info);
 }
 
 }  // namespace media

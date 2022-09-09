@@ -6,6 +6,7 @@
 #define MEDIA_MOJO_SERVICES_MEDIA_FOUNDATION_RENDERER_WRAPPER_H_
 
 #include "base/callback.h"
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/media_resource.h"
@@ -27,8 +28,7 @@ namespace media {
 class MediaFoundationRendererWrapper final
     : public Renderer,
       public mojom::MediaFoundationRendererExtension,
-      public mojom::MuteStateObserver,
-      public mojom::GpuLuidObserver {
+      public mojom::MuteStateObserver {
  public:
   using RendererExtension = mojom::MediaFoundationRendererExtension;
   using ClientExtension = mojom::MediaFoundationRendererClientExtension;
@@ -70,10 +70,8 @@ class MediaFoundationRendererWrapper final
   // mojom::MuteStateObserver implementation.
   void OnMuteStateChange(bool muted) override;
 
-  // mojom::GpuLuidObserver
-  void OnGpuLuidChange(const CHROME_LUID& adapter_luid) override;
-
  private:
+  void OnGpuLuidChange(const CHROME_LUID& adapter_luid);
   void OnReceiveDCOMPSurface(GetDCOMPSurfaceCallback callback,
                              base::win::ScopedHandle handle,
                              const std::string& error);
@@ -94,7 +92,8 @@ class MediaFoundationRendererWrapper final
   mojo::Remote<media::mojom::MediaFoundationRendererClientExtension>
       client_extension_remote_;
   mojo::Receiver<mojom::MuteStateObserver> site_mute_observer_;
-  mojo::Receiver<mojom::GpuLuidObserver> gpu_luid_observer_;
+
+  base::CallbackListSubscription luid_update_subscription_;
 
   float volume_ = 1.0;
   bool muted_ = false;  // Whether the site (WebContents) is muted.
