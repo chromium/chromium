@@ -275,7 +275,10 @@ source_set("publisher") {
     "publisher_base.h",
   ]
 
-  deps = [ "//components/services/app_service/public/mojom" ]
+  deps = [
+    ":app_types",
+    "//components/services/app_service/public/mojom",
+  ]
 }
 
 source_set("test_support") {

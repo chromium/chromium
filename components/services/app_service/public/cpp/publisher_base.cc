@@ -8,6 +8,7 @@
 
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "components/services/app_service/public/cpp/features.h"
 
 namespace apps {
 
@@ -53,8 +54,10 @@ void PublisherBase::FlushMojoCallsForTesting() {
 void PublisherBase::Initialize(
     const mojo::Remote<apps::mojom::AppService>& app_service,
     apps::mojom::AppType app_type) {
-  app_service->RegisterPublisher(receiver_.BindNewPipeAndPassRemote(),
-                                 app_type);
+  if (!base::FeatureList::IsEnabled(kStopMojomAppService)) {
+    app_service->RegisterPublisher(receiver_.BindNewPipeAndPassRemote(),
+                                   app_type);
+  }
 }
 
 void PublisherBase::Publish(

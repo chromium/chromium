@@ -111,7 +111,8 @@ void AppServiceProxyAsh::Initialize() {
 
   AppServiceProxyBase::Initialize();
 
-  if (!app_service_.is_connected()) {
+  if (!base::FeatureList::IsEnabled(kStopMojomAppService) &&
+      !app_service_.is_connected()) {
     return;
   }
 

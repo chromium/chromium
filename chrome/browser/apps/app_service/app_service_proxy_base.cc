@@ -157,19 +157,21 @@ void AppServiceProxyBase::Initialize() {
 
   browser_app_launcher_ = std::make_unique<apps::BrowserAppLauncher>(profile_);
 
-  app_service_mojom_impl_ =
-      std::make_unique<apps::AppServiceMojomImpl>(profile_->GetPath());
-  app_service_mojom_impl_->BindReceiver(
-      app_service_.BindNewPipeAndPassReceiver());
+  if (!base::FeatureList::IsEnabled(kStopMojomAppService)) {
+    app_service_mojom_impl_ =
+        std::make_unique<apps::AppServiceMojomImpl>(profile_->GetPath());
 
-  if (app_service_.is_connected()) {
-    // The AppServiceProxy is a subscriber: something that wants to be able to
-    // list all known apps.
-    mojo::PendingRemote<apps::mojom::Subscriber> subscriber;
-    receivers_.Add(this, subscriber.InitWithNewPipeAndPassReceiver());
-    app_service_->RegisterSubscriber(std::move(subscriber), nullptr);
+    app_service_mojom_impl_->BindReceiver(
+        app_service_.BindNewPipeAndPassReceiver());
+
+    if (app_service_.is_connected()) {
+      // The AppServiceProxy is a subscriber: something that wants to be able to
+      // list all known apps.
+      mojo::PendingRemote<apps::mojom::Subscriber> subscriber;
+      receivers_.Add(this, subscriber.InitWithNewPipeAndPassReceiver());
+      app_service_->RegisterSubscriber(std::move(subscriber), nullptr);
+    }
   }
-
   // Make the chrome://app-icon/ resource available.
   content::URLDataSource::Add(profile_,
                               std::make_unique<apps::AppIconSource>(profile_));
