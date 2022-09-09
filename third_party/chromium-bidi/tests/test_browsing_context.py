@@ -149,32 +149,32 @@ async def test_browsingContext_getTreeWithNestedCrossOriginContexts_contextsRetu
 @pytest.mark.asyncio
 async def test_browsingContext_create_eventContextCreatedEmitted(
       websocket, context_id):
-    await subscribe(websocket, ["browsingContext.contextCreated"])
+    await subscribe(websocket, [
+        "browsingContext.contextCreated",
+        "browsingContext.domContentLoaded",
+        "browsingContext.load"])
 
     await send_JSON_command(websocket, {
         "id": 9,
         "method": "browsingContext.create",
         "params": {"type": "tab"}})
 
-    resp = await read_JSON_message(websocket)
+    # Read 4 messages. The order can vary in headless and headful modes, so sort
+    # is needed:
+    # * `browsingContext.create` result.
+    # * `browsingContext.contextCreated` event.
+    # * `browsingContext.domContentLoaded` event.
+    # * `browsingContext.load` event.
+    messages = [await read_JSON_message(websocket),
+                await read_JSON_message(websocket),
+                await read_JSON_message(websocket),
+                await read_JSON_message(websocket)]
 
-    if "params" in resp:
-        event = resp
-        command_result = await read_JSON_message(websocket)
-    else:
-        event = await read_JSON_message(websocket)
-        command_result = resp
+    messages.sort(key=lambda x: x["method"] if "method" in x else "")
+    [command_result, context_created_event, dom_content_loaded_event,
+     load_event] = messages
 
-    new_context_id = event['params']['context']
-
-    # Assert "browsingContext.contextCreated" event emitted.
-    assert event == {
-        "method": "browsingContext.contextCreated",
-        "params": {
-            'context': new_context_id,
-            'parent': None,
-            'children': None,
-            'url': 'about:blank'}}
+    new_context_id = command_result['result']['context']
 
     # Assert command done.
     assert command_result == {
@@ -184,6 +184,34 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
             'parent': None,
             'children': [],
             'url': 'about:blank'}}
+
+    # Assert "browsingContext.contextCreated" event emitted.
+    recursive_compare({
+        "method": "browsingContext.contextCreated",
+        "params": {
+            "context": new_context_id,
+            "url": "about:blank",
+            "children": None,
+            "parent": None}
+    }, context_created_event)
+
+    # Assert "browsingContext.domContentLoaded" event emitted.
+    recursive_compare({
+        "method": "browsingContext.domContentLoaded",
+        "params": {
+            "context": new_context_id,
+            "navigation": any_string,
+            "url": "about:blank"}
+    }, dom_content_loaded_event)
+
+    # Assert "browsingContext.load" event emitted.
+    recursive_compare({
+        "method": "browsingContext.load",
+        "params": {
+            "context": new_context_id,
+            "navigation": any_string,
+            "url": "about:blank"}
+    }, load_event)
 
 
 @pytest.mark.asyncio
@@ -317,7 +345,8 @@ async def test_browsingContext_navigateWaitNone_navigated(websocket,
         "method": "browsingContext.load",
         "params": {
             "context": context_id,
-            "navigation": navigation_id}}
+            "navigation": navigation_id,
+            "url": "data:text/html,<h2>test</h2>"}}
 
     # Wait for `browsingContext.domContentLoaded` event.
     resp = await read_JSON_message(websocket)
@@ -325,7 +354,8 @@ async def test_browsingContext_navigateWaitNone_navigated(websocket,
         "method": "browsingContext.domContentLoaded",
         "params": {
             "context": context_id,
-            "navigation": navigation_id}}
+            "navigation": navigation_id,
+            "url": "data:text/html,<h2>test</h2>"}}
 
 
 @pytest.mark.asyncio
@@ -351,7 +381,8 @@ async def test_browsingContext_navigateWaitInteractive_navigated(websocket,
         "method": "browsingContext.load",
         "params": {
             "context": context_id,
-            "navigation": navigation_id}}
+            "navigation": navigation_id,
+            "url": "data:text/html,<h2>test</h2>"}}
 
     # Wait for `browsingContext.domContentLoaded` event.
     resp = await read_JSON_message(websocket)
@@ -359,7 +390,8 @@ async def test_browsingContext_navigateWaitInteractive_navigated(websocket,
         "method": "browsingContext.domContentLoaded",
         "params": {
             "context": context_id,
-            "navigation": navigation_id}}
+            "navigation": navigation_id,
+            "url": "data:text/html,<h2>test</h2>", }}
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -393,7 +425,8 @@ async def test_browsingContext_navigateWaitComplete_navigated(websocket,
         "method": "browsingContext.load",
         "params": {
             "context": context_id,
-            "navigation": navigation_id}}
+            "navigation": navigation_id,
+            "url": "data:text/html,<h2>test</h2>"}}
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -409,7 +442,8 @@ async def test_browsingContext_navigateWaitComplete_navigated(websocket,
         "method": "browsingContext.domContentLoaded",
         "params": {
             "context": context_id,
-            "navigation": navigation_id}}
+            "navigation": navigation_id,
+            "url": "data:text/html,<h2>test</h2>"}}
 
 
 @pytest.mark.asyncio

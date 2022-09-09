@@ -72,7 +72,8 @@ async def test_nestedBrowsingContext_navigateWaitNone_navigated(websocket, ifram
         "method": "browsingContext.load",
         "params": {
             "context": iframe_id,
-            "navigation": navigation_id}}
+            "navigation": navigation_id,
+            "url": "data:text/html,<h2>test</h2>"}}
 
     # Wait for `browsingContext.domContentLoaded` event.
     resp = await read_JSON_message(websocket)
@@ -80,7 +81,8 @@ async def test_nestedBrowsingContext_navigateWaitNone_navigated(websocket, ifram
         "method": "browsingContext.domContentLoaded",
         "params": {
             "context": iframe_id,
-            "navigation": navigation_id}}
+            "navigation": navigation_id,
+            "url": "data:text/html,<h2>test</h2>"}}
 
 
 @pytest.mark.asyncio
@@ -105,7 +107,8 @@ async def test_nestedBrowsingContext_navigateWaitInteractive_navigated(websocket
         "method": "browsingContext.load",
         "params": {
             "context": iframe_id,
-            "navigation": navigation_id}}
+            "navigation": navigation_id,
+            "url": "data:text/html,<h2>test</h2>"}}
 
     # Wait for `browsingContext.domContentLoaded` event.
     resp = await read_JSON_message(websocket)
@@ -113,7 +116,8 @@ async def test_nestedBrowsingContext_navigateWaitInteractive_navigated(websocket
         "method": "browsingContext.domContentLoaded",
         "params": {
             "context": iframe_id,
-            "navigation": navigation_id}}
+            "navigation": navigation_id,
+            "url": "data:text/html,<h2>test</h2>"}}
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -146,7 +150,8 @@ async def test_nestedBrowsingContext_navigateWaitComplete_navigated(websocket, i
         "method": "browsingContext.load",
         "params": {
             "context": iframe_id,
-            "navigation": navigation_id}}
+            "navigation": navigation_id,
+            "url": "data:text/html,<h2>test</h2>"}}
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -162,7 +167,8 @@ async def test_nestedBrowsingContext_navigateWaitComplete_navigated(websocket, i
         "method": "browsingContext.domContentLoaded",
         "params": {
             "context": iframe_id,
-            "navigation": navigation_id}}
+            "navigation": navigation_id,
+            "url": "data:text/html,<h2>test</h2>"}}
 
 
 @pytest.mark.asyncio
