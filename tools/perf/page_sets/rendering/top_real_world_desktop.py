@@ -288,6 +288,13 @@ class AccuWeather2018Page(TopRealWorldDesktopPage):
         name_suffix=name_suffix,
         extra_browser_args=extra_browser_args)
 
+  def RunNavigateSteps(self, action_runner):
+    super(AccuWeather2018Page, self).RunNavigateSteps(action_runner)
+
+    # Close a pop-up dialog before scrolling.
+    action_runner.WaitForElement(selector=".fc-button-consent")
+    action_runner.TapElement(selector=".fc-button-consent")
+
 
 class Twitch2018Page(TopRealWorldDesktopPage):
   """ Why: #1 games according to Alexa  """
