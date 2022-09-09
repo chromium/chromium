@@ -488,11 +488,6 @@ const base::Feature kAutofillRetrieveOverallPredictionsFromCache{
 const base::Feature kAutofillSaveAndFillVPA{"AutofillSaveAndFillVPA",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables creating a new form section when an unstructured name input
-// containing a |NAME_LAST| field is encountered after a structured name input.
-const base::Feature kAutofillSectionUponRedundantNameInfo{
-    "AutofillSectionUponRedundantNameInfo", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls non-default Autofill API predictions. See crbug.com/1331322.
 const base::Feature kAutofillServerBehaviors{"AutofillServerBehaviors",
                                              base::FEATURE_DISABLED_BY_DEFAULT};

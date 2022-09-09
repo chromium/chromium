@@ -1454,10 +1454,6 @@ void FormStructure::IdentifySectionsWithNewMethod() {
   if (fields_.empty())
     return;
 
-  const bool is_enabled_autofill_redundant_name_sectioning =
-      base::FeatureList::IsEnabled(
-          features::kAutofillSectionUponRedundantNameInfo);
-
   // Use unique local frame tokens of the fields to generate sections.
   base::flat_map<LocalFrameToken, size_t> frame_token_ids;
 
@@ -1499,14 +1495,6 @@ void FormStructure::IdentifySectionsWithNewMethod() {
     // little off.  Hence, ignore this field type as a signal here.
     if (AutofillType(current_type).group() == FieldTypeGroup::kPhoneHome)
       already_saw_current_type = false;
-
-    if (is_enabled_autofill_redundant_name_sectioning) {
-      // Forms sometimes have a different format of inputting names in
-      // different sections. If we believe a new name is being entered, assume
-      // it is a new section (unless there are two identical inputs in a row).
-      if (current_type == NAME_FULL)
-        already_saw_current_type |= (seen_types.count(NAME_LAST) > 0);
-    }
 
     bool ignored_field = !field->IsFocusable();
 
@@ -1617,10 +1605,6 @@ void FormStructure::IdentifySections(bool ignore_autocomplete) {
     return;
   }
 
-  const bool is_enabled_autofill_redundant_name_sectioning =
-      base::FeatureList::IsEnabled(
-          features::kAutofillSectionUponRedundantNameInfo);
-
   // Use unique local frame tokens of the fields to generate sections.
   base::flat_map<LocalFrameToken, size_t> frame_token_ids;
 
@@ -1664,14 +1648,6 @@ void FormStructure::IdentifySections(bool ignore_autocomplete) {
       // little off.  Hence, ignore this field type as a signal here.
       if (AutofillType(current_type).group() == FieldTypeGroup::kPhoneHome)
         already_saw_current_type = false;
-
-      if (is_enabled_autofill_redundant_name_sectioning) {
-        // Forms sometimes have a different format of inputting names in
-        // different sections. If we believe a new name is being entered, assume
-        // it is a new section (unless there are two identical inputs in a row).
-        if (current_type == NAME_FULL)
-          already_saw_current_type |= (seen_types.count(NAME_LAST) > 0);
-      }
 
       bool ignored_field = !field->IsFocusable();
 

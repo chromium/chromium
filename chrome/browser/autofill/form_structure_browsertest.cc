@@ -226,8 +226,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        features::kAutofillEnableNameSurenameParsing,
        // TODO(crbug.com/1190334): Remove once launched.
        features::kAutofillParseMerchantPromoCodeFields,
-       // TODO(crbug.com/1113970): Remove once launched.
-       features::kAutofillSectionUponRedundantNameInfo,
        // TODO(crbug.com/1335549): Remove once launched.
        features::kAutofillParseIBANFields,
        // TODO(crbug.com/1341387): Remove once launched.
