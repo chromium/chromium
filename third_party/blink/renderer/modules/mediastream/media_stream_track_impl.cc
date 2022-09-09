@@ -644,9 +644,6 @@ MediaTrackSettings* MediaStreamTrackImpl::getSettings() const {
       case media::mojom::DisplayCaptureSurfaceType::WINDOW:
         value = "window";
         break;
-      case media::mojom::DisplayCaptureSurfaceType::APPLICATION:
-        value = "application";
-        break;
       case media::mojom::DisplayCaptureSurfaceType::BROWSER:
         value = "browser";
         break;

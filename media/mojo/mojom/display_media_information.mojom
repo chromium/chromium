@@ -6,16 +6,14 @@ module media.mojom;
 
 import "media/mojo/mojom/capture_handle.mojom";
 
-// Mojo equivalent to media::DisplayMediaInformation. See also
-// media/base/display_media_information.h
-
+// Describes the different types of display surface.
 enum DisplayCaptureSurfaceType {
   MONITOR,
   WINDOW,
-  APPLICATION,
   BROWSER,
 };
 
+// Describes the conditions under which the cursor is captured.
 enum CursorCaptureType {
   NEVER,
   ALWAYS,

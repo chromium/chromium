@@ -203,7 +203,7 @@ promise_test(async t => {
   const settings = stream.getVideoTracks()[0].getSettings();
   assert_any(
       assert_equals, settings.displaySurface,
-      ['monitor', 'window', 'application', 'browser']);
+      ['monitor', 'window', 'browser']);
   assert_any(assert_equals, settings.logicalSurface, [true, false]);
   assert_any(assert_equals, settings.cursor, ['never', 'always', 'motion']);
 }, 'getDisplayMedia() with getSettings');
