@@ -334,7 +334,7 @@ public class HistoryClustersMediatorTest {
                 clusterModel.get(HistoryClustersItemProperties.ACCESSIBILITY_STATE));
         assertEquals(shadowOf(clusterModel.get(HistoryClustersItemProperties.END_BUTTON_DRAWABLE))
                              .getCreatedFromResId(),
-                R.drawable.ic_expand_more_black_24dp);
+                R.drawable.ic_expand_less_black_24dp);
         verify(mMetricsLogger).incrementQueryCount();
 
         ListItem visitItem = mModelList.get(1);
