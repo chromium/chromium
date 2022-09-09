@@ -58,16 +58,20 @@ class SandboxedSocketBrokerBrowserTest : public ContentBrowserTest {
       check_sandbox_ = false;
     }
 #else
+#if BUILDFLAG(IS_WIN)
+    if (!sandbox::features::IsAppContainerSandboxSupported())
+      check_sandbox_ = false;
+#endif  // BUILDFLAG(IS_WIN)
     std::vector<base::Feature> enabled_features = {
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
       // Network Service Sandboxing is unconditionally enabled on these
       // platforms.
       sandbox::policy::features::kNetworkServiceSandbox,
-#endif
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
     };
     scoped_feature_list_.InitWithFeatures(enabled_features,
                                           {features::kNetworkServiceInProcess});
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   void SetUp() override {
