@@ -1231,7 +1231,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaParagraph) {
   RunAriaTest(FILE_PATH_LITERAL("aria-paragraph.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaPosinset) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       DISABLED_AccessibilityAriaPosinset) {
   RunAriaTest(FILE_PATH_LITERAL("aria-posinset.html"));
 }
 
