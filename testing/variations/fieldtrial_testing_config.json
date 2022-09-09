@@ -3105,6 +3105,21 @@
             ]
         }
     ],
+    "CrOSEnforceSystemAec": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSEnforceSystemAec"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSEnforceSystemAecNsAgc": [
         {
             "platforms": [
