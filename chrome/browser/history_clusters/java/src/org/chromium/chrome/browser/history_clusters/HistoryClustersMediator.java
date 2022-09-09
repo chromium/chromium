@@ -358,6 +358,12 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         }
     }
 
+    void onHistoryDeletedExternally() {
+        if (mQueryState == null) return;
+        resetModel();
+        startQuery(mQueryState.getQuery());
+    }
+
     private void removeVisit(ClusterVisit visit) {
         VisitMetadata visitMetadata = mVisitMetadataMap.get(visit);
         if (visitMetadata == null) return;

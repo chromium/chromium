@@ -168,6 +168,11 @@ public class HistoryClustersCoordinator extends RecyclerView.OnScrollListener
         return mSelectableListLayout.onBackPressed();
     }
 
+    /** Called to notify the Journeys UI that history has been deleted by some other party. */
+    public void onHistoryDeletedExternally() {
+        mMediator.onHistoryDeletedExternally();
+    }
+
     void inflateActivityView() {
         mAdapter = new SimpleRecyclerViewAdapter(mModelList);
         mAdapter.registerType(

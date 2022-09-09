@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -974,6 +975,22 @@ public class HistoryClustersMediatorTest {
         mMediator.setQueryState(QueryState.forQuery("query", ""));
         fulfillPromise(promise, singletonVisitResult);
         assertEquals(0, mModelList.size());
+    }
+
+    @Test
+    public void testHistoryDeletedExternally() {
+        mMediator.onHistoryDeletedExternally();
+
+        Promise promise = new Promise<>();
+        doReturn(promise).when(mBridge).queryClusters("query");
+
+        mMediator.setQueryState(QueryState.forQuery("query", ""));
+        verify(mBridge, times(1)).queryClusters("query");
+        fulfillPromise(promise, mHistoryClustersResultWithQuery);
+
+        mMediator.onHistoryDeletedExternally();
+        assertThat(mModelList, hasExactItemTypes(ItemType.MORE_PROGRESS));
+        verify(mBridge, times(2)).queryClusters("query");
     }
 
     private <T> void fulfillPromise(Promise<T> promise, T result) {

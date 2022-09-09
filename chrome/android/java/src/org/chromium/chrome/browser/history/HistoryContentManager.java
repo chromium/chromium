@@ -89,6 +89,12 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
 
         /** Called to notify when the user's sign in or pref state has changed. */
         void onUserAccountStateChanged();
+
+        /**
+         * Called when history has been deleted by some party external to the currently visible
+         * history UI, e.g. via "clear browsing data."
+         */
+        void onHistoryDeletedExternally();
     }
     private static final int FAVICON_MAX_CACHE_SIZE_BYTES =
             10 * ConversionUtils.BYTES_PER_MEGABYTE; // 10MB
@@ -298,9 +304,13 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         return !mSelectionDelegate.isSelectionEnabled();
     }
 
-    /** Called to force clear all selected items. */
-    void clearSelection() {
+    /**
+     * Called to notify the content manager that history has been deleted by some party external to
+     * the currently visible history UI, e.g. via "clear browsing data."
+     */
+    void onHistoryDeletedExternally() {
         mSelectionDelegate.clearSelection();
+        mObserver.onHistoryDeletedExternally();
     }
 
     /**

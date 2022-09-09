@@ -206,6 +206,10 @@ public class PageInfoHistoryController
     @Override
     public void onUserAccountStateChanged() {}
 
+    // HistoryContentManager.Observer
+    @Override
+    public void onHistoryDeletedExternally() {}
+
     /** @param provider The {@link HistoryProvider} that is used in place of a real one. */
     @VisibleForTesting
     public static void setProviderForTests(HistoryProvider provider) {
