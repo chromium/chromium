@@ -39,7 +39,6 @@
 #include "base/win/win_util.h"
 #include "chrome/updater/app/server/win/server.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/device_management_task.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/manager.h"
@@ -959,18 +958,13 @@ STDMETHODIMP PolicyStatusImpl::refreshPolicies() {
   // self reference of the COM object, otherwise the server could shutdown if
   // the caller releases its interface pointer when this function returns.
   using PolicyStatusImplPtr = Microsoft::WRL::ComPtr<PolicyStatusImpl>;
-  AppServerSingletonInstance()->main_task_runner()->PostTask(
+  scoped_refptr<ComServerApp> com_server = AppServerSingletonInstance();
+  com_server->main_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](PolicyStatusImplPtr this_obj) {
-            auto device_management_task =
-                base::MakeRefCounted<DeviceManagementTask>(
-                    AppServerSingletonInstance()->config(),
-                    AppServerSingletonInstance()->main_task_runner());
-            device_management_task->RunFetchPolicy(base::BindOnce(
-                [](PolicyStatusImplPtr /*this_obj*/) {}, this_obj));
-          },
-          PolicyStatusImplPtr(this)));
+          &UpdateService::FetchPolicies, com_server->update_service(),
+          base::BindOnce([](PolicyStatusImplPtr /* obj */, int /* result */) {},
+                         PolicyStatusImplPtr(this))));
   return S_OK;
 }
 

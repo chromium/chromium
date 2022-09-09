@@ -4,6 +4,7 @@
 
 #include "chrome/updater/policy/service.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,6 +22,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/policy/dm_policy_manager.h"
+#include "chrome/updater/policy/policy_fetcher.h"
 #include "chrome/updater/policy/policy_manager.h"
 #if BUILDFLAG(IS_WIN)
 #include "chrome/updater/policy/win/group_policy_manager.h"
@@ -31,19 +33,72 @@
 
 namespace updater {
 
+namespace {
+
+// Sorts the managed policy managers ahead of the non-managed ones.
+PolicyService::PolicyManagerVector SortManagers(
+    PolicyService::PolicyManagerVector managers) {
+  base::ranges::stable_sort(
+      managers, [](const std::unique_ptr<PolicyManagerInterface>& lhs,
+                   const std::unique_ptr<PolicyManagerInterface>& rhs) {
+        return lhs->HasActiveDevicePolicies() &&
+               !rhs->HasActiveDevicePolicies();
+      });
+
+  return managers;
+}
+
+PolicyService::PolicyManagerVector CreatePolicyManagerVector(
+    scoped_refptr<ExternalConstants> external_constants,
+    std::unique_ptr<PolicyManagerInterface> dm_policy_manager) {
+  PolicyService::PolicyManagerVector managers;
+  if (external_constants) {
+    managers.push_back(
+        std::make_unique<PolicyManager>(external_constants->GroupPolicies()));
+  }
+
+#if BUILDFLAG(IS_WIN)
+  managers.push_back(std::make_unique<GroupPolicyManager>());
+#endif
+
+  if (!dm_policy_manager)
+    dm_policy_manager = CreateDMPolicyManager();
+  if (dm_policy_manager)
+    managers.push_back(std::move(dm_policy_manager));
+
+#if BUILDFLAG(IS_MAC)
+  // Managed preference policy manager is being deprecated and thus has a lower
+  // priority than DM policy manager.
+  managers.push_back(CreateManagedPreferencePolicyManager());
+#endif
+
+  managers.push_back(GetDefaultValuesPolicyManager());
+
+  return managers;
+}
+
+}  // namespace
+
 PolicyService::PolicyService(PolicyManagerVector managers)
-    : policy_managers_([](auto managers) {
-        // Make sure managed policy managers are ahead of non-managed ones.
-        base::ranges::stable_sort(
-            managers, [](const std::unique_ptr<PolicyManagerInterface>& lhs,
-                         const std::unique_ptr<PolicyManagerInterface>& rhs) {
-              return lhs->HasActiveDevicePolicies() &&
-                     !rhs->HasActiveDevicePolicies();
-            });
-        return managers;
-      }(std::move(managers))) {}
+    : policy_managers_(SortManagers(std::move(managers))) {}
+
+PolicyService::PolicyService(
+    scoped_refptr<ExternalConstants> external_constants)
+    : policy_managers_(
+          SortManagers(CreatePolicyManagerVector(external_constants, nullptr))),
+      external_constants_(external_constants),
+      policy_fetcher_(base::MakeRefCounted<PolicyFetcher>(this)) {}
 
 PolicyService::~PolicyService() = default;
+
+void PolicyService::ResetManagers(
+    std::unique_ptr<PolicyManagerInterface> dm_policy_manager) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  CHECK(dm_policy_manager);
+  policy_managers_ = SortManagers(CreatePolicyManagerVector(
+      external_constants_, std::move(dm_policy_manager)));
+}
 
 std::string PolicyService::source() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -246,26 +301,10 @@ bool PolicyService::QueryAppPolicy(
   return true;
 }
 
-scoped_refptr<PolicyService> PolicyService::Create(
-    scoped_refptr<ExternalConstants> external_constants) {
-  PolicyManagerVector managers;
-  managers.push_back(
-      std::make_unique<PolicyManager>(external_constants->GroupPolicies()));
-#if BUILDFLAG(IS_WIN)
-  managers.push_back(std::make_unique<GroupPolicyManager>());
-#endif
-  std::unique_ptr<PolicyManagerInterface> dm_policy_manager =
-      CreateDMPolicyManager();
-  if (dm_policy_manager)
-    managers.push_back(std::move(dm_policy_manager));
-#if BUILDFLAG(IS_MAC)
-  // Managed preference policy manager is being deprecated and thus has a lower
-  // priority than DM policy manager.
-  managers.push_back(CreateManagedPreferencePolicyManager());
-#endif
-  managers.push_back(GetDefaultValuesPolicyManager());
+void PolicyService::FetchPolicies(base::OnceCallback<void(int)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return base::MakeRefCounted<PolicyService>(std::move(managers));
+  policy_fetcher_->FetchPolicies(std::move(callback));
 }
 
 PolicyServiceProxyConfiguration::PolicyServiceProxyConfiguration() = default;

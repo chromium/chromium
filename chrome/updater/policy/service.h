@@ -19,6 +19,8 @@
 
 namespace updater {
 
+class PolicyFetcher;
+
 // This class contains the aggregate status of a policy value. It determines
 // whether a conflict exists when multiple policy providers set the same policy.
 template <typename T>
@@ -71,12 +73,19 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
       std::vector<std::unique_ptr<PolicyManagerInterface>>;
 
   explicit PolicyService(PolicyManagerVector managers);
+  explicit PolicyService(scoped_refptr<ExternalConstants> external_constants);
   PolicyService(const PolicyService&) = delete;
   PolicyService& operator=(const PolicyService&) = delete;
 
-  // Creates an instance that takes a snapshot of policies from all providers.
-  static scoped_refptr<PolicyService> Create(
-      scoped_refptr<ExternalConstants> external_constants);
+  // Fetches policies from device management and updates the PolicyService
+  // instance. `callback` is passed a result that is `kErrorOk` on success,
+  // `kErrorDMRegistrationFailed` if DM registration fails, or any other error.
+  void FetchPolicies(base::OnceCallback<void(int)> callback);
+
+  // Resets the policy managers within the policy service, including the
+  // provided DM policy manager. The DM policy manager is preloaded separately
+  // in a blocking sequence since it needs to do I/O to load policies.
+  void ResetManagers(std::unique_ptr<PolicyManagerInterface> dm_policy_manager);
 
   std::string source() const;
 
@@ -128,6 +137,9 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   // List of policy providers in descending order of priority. All managed
   // providers should be ahead of non-managed providers.
   PolicyManagerVector policy_managers_;
+
+  const scoped_refptr<ExternalConstants> external_constants_;
+  const scoped_refptr<PolicyFetcher> policy_fetcher_;
 
   // Helper function to query the policy from the managed policy providers and
   // determines the policy status.

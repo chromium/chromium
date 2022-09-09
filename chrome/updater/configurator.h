@@ -83,11 +83,6 @@ class Configurator : public update_client::Configurator {
   scoped_refptr<PolicyService> GetPolicyService() const;
   crx_file::VerifierFormat GetCrxVerifierFormat() const;
 
-  // This reloads the policy managers.
-  // TODO(crbug.com/1353925) - eliminate this function because the instance
-  // of the `Configurator` can't be mutated.
-  void ResetPolicyService();
-
  private:
   friend class base::RefCountedThreadSafe<Configurator>;
   ~Configurator() override;

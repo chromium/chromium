@@ -34,7 +34,6 @@
 #include "chrome/updater/check_for_updates_task.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/device_management_task.h"
 #include "chrome/updater/installer.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/service.h"
@@ -241,24 +240,7 @@ void UpdateServiceImpl::FetchPolicies(base::OnceCallback<void(int)> callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  scoped_refptr<DeviceManagementTask> register_device_task =
-      base::MakeRefCounted<DeviceManagementTask>(config_, main_task_runner_);
-  register_device_task->RunRegisterDevice(base::BindOnce(
-      [](scoped_refptr<DeviceManagementTask> register_device_task,
-         scoped_refptr<Configurator> config,
-         scoped_refptr<base::SequencedTaskRunner> main_task_runner,
-         base::OnceCallback<void(int)> callback) {
-        if (register_device_task->succeeded()) {
-          base::MakeRefCounted<DeviceManagementTask>(config, main_task_runner)
-              ->RunFetchPolicy(base::BindOnce(std::move(callback), kErrorOk));
-        } else {
-          std::move(callback).Run(
-              register_device_task->is_enrollment_mandatory()
-                  ? kErrorDMRegistrationFailed
-                  : kErrorOk);
-        }
-      },
-      register_device_task, config_, main_task_runner_, std::move(callback)));
+  config_->GetPolicyService()->FetchPolicies(std::move(callback));
 }
 
 void UpdateServiceImpl::RegisterApp(
@@ -330,11 +312,15 @@ void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
                                          GetUpdaterScope(), persisted_data_)));
 
   new_tasks.push_back(base::BindOnce(
-      &DeviceManagementTask::RunRegisterDevice,
-      base::MakeRefCounted<DeviceManagementTask>(config_, main_task_runner_)));
-  new_tasks.push_back(base::BindOnce(
-      &DeviceManagementTask::RunFetchPolicy,
-      base::MakeRefCounted<DeviceManagementTask>(config_, main_task_runner_)));
+      [](scoped_refptr<UpdateServiceImpl> update_service_impl,
+         base::OnceClosure callback) {
+        update_service_impl->FetchPolicies(base::BindOnce(
+            [](base::OnceClosure callback, int /* ignore_result */) {
+              std::move(callback).Run();
+            },
+            std::move(callback)));
+      },
+      base::WrapRefCounted(this)));
   new_tasks.push_back(base::BindOnce(
       &CheckForUpdatesTask::Run,
       base::MakeRefCounted<CheckForUpdatesTask>(

@@ -50,7 +50,7 @@ namespace updater {
 Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
                            scoped_refptr<ExternalConstants> external_constants)
     : prefs_(prefs),
-      policy_service_(PolicyService::Create(external_constants)),
+      policy_service_(base::MakeRefCounted<PolicyService>(external_constants)),
       external_constants_(external_constants),
       activity_data_service_(
           std::make_unique<ActivityDataService>(GetUpdaterScope())),
@@ -207,10 +207,6 @@ absl::optional<bool> Configurator::IsMachineExternallyManaged() const {
 
 scoped_refptr<PolicyService> Configurator::GetPolicyService() const {
   return policy_service_;
-}
-
-void Configurator::ResetPolicyService() {
-  policy_service_ = PolicyService::Create(external_constants_);
 }
 
 crx_file::VerifierFormat Configurator::GetCrxVerifierFormat() const {
