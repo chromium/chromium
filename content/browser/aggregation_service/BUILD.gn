@@ -18,14 +18,12 @@ mojom("mojo_bindings") {
         {
           mojom =
               "aggregation_service_internals.mojom.AggregatableReportRequestID"
-          cpp = "::content::AggregationServiceStorage::RequestId"
+          cpp = "::content::AggregatableReportRequestStorageId"
         },
       ]
       traits_headers = [
         "aggregation_service_internals_mojom_traits.h",
-
-        # TODO(linnan): Consider moving `AggregationServiceStorage::RequestId` out of storage class.
-        "aggregation_service_storage.h",
+        "aggregatable_report_request_storage_id.h",
       ]
       traits_sources = [ "aggregation_service_internals_mojom_traits.cc" ]
       traits_deps = [ "//content/common:mojo_bindings" ]

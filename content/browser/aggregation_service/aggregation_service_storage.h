@@ -9,8 +9,8 @@
 
 #include <vector>
 
-#include "base/types/strong_alias.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
+#include "content/browser/aggregation_service/aggregatable_report_request_storage_id.h"
 #include "content/public/browser/storage_partition.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -31,7 +31,7 @@ struct PublicKeyset;
 // single SequenceBound to own the (joint) implementation class.
 class AggregationServiceStorage {
  public:
-  using RequestId = base::StrongAlias<AggregatableReportRequest, int64_t>;
+  using RequestId = AggregatableReportRequestStorageId;
   struct RequestAndId {
     AggregatableReportRequest request;
     RequestId id;

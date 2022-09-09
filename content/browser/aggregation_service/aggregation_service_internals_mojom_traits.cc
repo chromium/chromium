@@ -9,11 +9,11 @@ namespace mojo {
 // static
 bool StructTraits<
     aggregation_service_internals::mojom::AggregatableReportRequestIDDataView,
-    content::AggregationServiceStorage::RequestId>::
+    content::AggregatableReportRequestStorageId>::
     Read(aggregation_service_internals::mojom::
              AggregatableReportRequestIDDataView data,
-         content::AggregationServiceStorage::RequestId* out) {
-  *out = content::AggregationServiceStorage::RequestId(data.value());
+         content::AggregatableReportRequestStorageId* out) {
+  *out = content::AggregatableReportRequestStorageId(data.value());
   return true;
 }
 

@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
+#include "content/browser/aggregation_service/aggregatable_report_request_storage_id.h"
 #include "content/browser/aggregation_service/aggregation_service_internals.mojom.h"
-#include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {
@@ -16,17 +16,16 @@ namespace mojo {
 template <>
 class StructTraits<
     aggregation_service_internals::mojom::AggregatableReportRequestIDDataView,
-    content::AggregationServiceStorage::RequestId> {
+    content::AggregatableReportRequestStorageId> {
  public:
-  static int64_t value(
-      const content::AggregationServiceStorage::RequestId& id) {
+  static int64_t value(const content::AggregatableReportRequestStorageId& id) {
     return *id;
   }
 
   static bool Read(
       aggregation_service_internals::mojom::AggregatableReportRequestIDDataView
           data,
-      content::AggregationServiceStorage::RequestId* out);
+      content::AggregatableReportRequestStorageId* out);
 };
 
 }  // namespace mojo
