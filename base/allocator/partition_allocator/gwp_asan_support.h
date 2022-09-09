@@ -10,6 +10,7 @@
 
 #if BUILDFLAG(ENABLE_GWP_ASAN_SUPPORT)
 
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 
