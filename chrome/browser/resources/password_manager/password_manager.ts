@@ -5,6 +5,7 @@
 import './password_manager_app.js';
 
 export {PasswordManagerAppElement} from './password_manager_app.js';
+export {PasswordsSectionElement} from './passwords_section.js';
 export {Page, Route, RouteObserverMixin, RouteObserverMixinInterface, Router, UrlParam} from './router.js';
 export {PasswordManagerSideBarElement} from './side_bar.js';
 export {PasswordManagerToolbarElement} from './toolbar.js';

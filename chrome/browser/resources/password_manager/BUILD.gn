@@ -15,6 +15,7 @@ build_webui("build") {
     "side_bar.ts",
     "toolbar.ts",
     "settings_section.ts",
+    "passwords_section.ts",
     "prefs/pref_toggle_button.ts",
   ]
   non_web_component_files = [
