@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
+#include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 
@@ -49,7 +50,7 @@ struct ContentSettingPatternSource {
                               base::Value setting_value,
                               const std::string& source,
                               bool incognito,
-                              base::Time expiration = base::Time());
+                              content_settings::RuleMetaData metadata = {});
   ContentSettingPatternSource(const ContentSettingPatternSource& other);
   ContentSettingPatternSource();
   ContentSettingPatternSource& operator=(
@@ -61,7 +62,7 @@ struct ContentSettingPatternSource {
   ContentSettingsPattern primary_pattern;
   ContentSettingsPattern secondary_pattern;
   base::Value setting_value;
-  base::Time expiration;
+  content_settings::RuleMetaData metadata;
   std::string source;
   bool incognito;
 };
@@ -117,7 +118,7 @@ struct SettingInfo {
   SettingSource source;
   ContentSettingsPattern primary_pattern;
   ContentSettingsPattern secondary_pattern;
-  SessionModel session_model;
+  RuleMetaData metadata;
 };
 
 }  // namespace content_settings

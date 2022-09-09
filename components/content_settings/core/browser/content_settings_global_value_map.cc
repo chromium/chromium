@@ -28,8 +28,7 @@ class RuleIteratorSimple : public RuleIterator {
     DCHECK(HasNext());
     is_done_ = true;
     return Rule(ContentSettingsPattern::Wildcard(),
-                ContentSettingsPattern::Wildcard(), base::Value(setting_),
-                base::Time(), SessionModel::Durable);
+                ContentSettingsPattern::Wildcard(), base::Value(setting_), {});
   }
 
  private:

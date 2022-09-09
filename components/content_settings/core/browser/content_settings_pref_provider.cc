@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
@@ -22,7 +23,6 @@
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -230,8 +230,11 @@ bool PrefProvider::SetWebsiteSetting(
   }
 
   GetPref(content_type)
-      ->SetWebsiteSetting(primary_pattern, secondary_pattern, modified_time,
-                          std::move(in_value), constraints);
+      ->SetWebsiteSetting(primary_pattern, secondary_pattern,
+                          std::move(in_value),
+                          {.last_modified = modified_time,
+                           .expiration = constraints.expiration,
+                           .session_model = constraints.session_model});
   return true;
 }
 

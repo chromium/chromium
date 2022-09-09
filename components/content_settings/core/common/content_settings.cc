@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 
 namespace {
@@ -158,11 +159,11 @@ ContentSettingPatternSource::ContentSettingPatternSource(
     base::Value setting_value,
     const std::string& source,
     bool incognito,
-    base::Time expiration)
+    content_settings::RuleMetaData metadata)
     : primary_pattern(primary_pattern),
       secondary_pattern(secondary_pattern),
       setting_value(std::move(setting_value)),
-      expiration(expiration),
+      metadata(metadata),
       source(source),
       incognito(incognito) {}
 
@@ -178,20 +179,21 @@ ContentSettingPatternSource& ContentSettingPatternSource::operator=(
   primary_pattern = other.primary_pattern;
   secondary_pattern = other.secondary_pattern;
   setting_value = other.setting_value.Clone();
-  expiration = other.expiration;
+  metadata = other.metadata;
   source = other.source;
   incognito = other.incognito;
   return *this;
 }
 
-ContentSettingPatternSource::~ContentSettingPatternSource() {}
+ContentSettingPatternSource::~ContentSettingPatternSource() = default;
 
 ContentSetting ContentSettingPatternSource::GetContentSetting() const {
   return content_settings::ValueToContentSetting(setting_value);
 }
 
 bool ContentSettingPatternSource::IsExpired() const {
-  return !expiration.is_null() && expiration < base::Time::Now();
+  return !metadata.expiration.is_null() &&
+         metadata.expiration < base::Time::Now();
 }
 
 // static

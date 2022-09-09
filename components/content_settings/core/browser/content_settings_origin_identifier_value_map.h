@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
+#include "components/content_settings/core/common/content_settings_metadata.h"
 
 class GURL;
 
@@ -36,10 +37,8 @@ class OriginIdentifierValueMap {
   };
 
   struct ValueEntry {
-    base::Time last_modified;
-    base::Time expiration;
     base::Value value;
-    SessionModel session_model;
+    RuleMetaData metadata;
     ValueEntry();
     ~ValueEntry();
   };
@@ -109,9 +108,8 @@ class OriginIdentifierValueMap {
   void SetValue(const ContentSettingsPattern& primary_pattern,
                 const ContentSettingsPattern& secondary_pattern,
                 ContentSettingsType content_type,
-                base::Time last_modified,
                 base::Value value,
-                const ContentSettingConstraints& constraints);
+                const RuleMetaData& metadata);
 
   // Deletes the map entry for the given |primary_pattern|,
   // |secondary_pattern|, |content_type| tuple.

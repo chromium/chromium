@@ -75,7 +75,8 @@ class CookieSettingsTest : public testing::TestWithParam<bool> {
     return ContentSettingPatternSource(
         ContentSettingsPattern::FromString(primary_pattern),
         ContentSettingsPattern::FromString(secondary_pattern),
-        base::Value(setting), std::string(), false /* incognito */, expiration);
+        base::Value(setting), std::string(), false /* incognito */,
+        {.expiration = expiration});
   }
 
   void FastForwardTime(base::TimeDelta delta) {

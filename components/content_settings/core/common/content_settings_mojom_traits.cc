@@ -89,7 +89,8 @@ bool StructTraits<content_settings::mojom::ContentSettingPatternSourceDataView,
   return data.ReadPrimaryPattern(&out->primary_pattern) &&
          data.ReadSecondaryPattern(&out->secondary_pattern) &&
          data.ReadSettingValue(&out->setting_value) &&
-         data.ReadExpiration(&out->expiration) && data.ReadSource(&out->source);
+         data.ReadExpiration(&out->metadata.expiration) &&
+         data.ReadSource(&out->source);
 }
 
 // static

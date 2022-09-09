@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
+#include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 
 namespace content_settings {
@@ -24,8 +25,7 @@ struct Rule {
   Rule(const ContentSettingsPattern& primary_pattern,
        const ContentSettingsPattern& secondary_pattern,
        base::Value value,
-       base::Time expiration,
-       SessionModel session_model);
+       const RuleMetaData& metadata);
 
   Rule(const Rule&) = delete;
   Rule& operator=(const Rule&) = delete;
@@ -38,8 +38,7 @@ struct Rule {
   ContentSettingsPattern primary_pattern;
   ContentSettingsPattern secondary_pattern;
   base::Value value;
-  base::Time expiration;
-  SessionModel session_model;
+  RuleMetaData metadata;
 };
 
 class RuleIterator {

@@ -701,7 +701,7 @@ base::Time HostContentSettingsMap::GetExpirationForTesting(
     content_settings::Rule rule = iterator->Next();
     if (rule.primary_pattern == patterns.first &&
         rule.secondary_pattern == patterns.second) {
-      return rule.expiration;
+      return rule.metadata.expiration;
     }
   }
 
@@ -819,8 +819,9 @@ void HostContentSettingsMap::AddSettingsForOneType(
     // We may be adding settings for only specific rule types. If that's the
     // case and this setting isn't a match, don't add it. We will also avoid
     // adding any expired rules since they are no longer valid.
-    if ((!rule.expiration.is_null() && (rule.expiration < base::Time::Now())) ||
-        (session_model && (session_model != rule.session_model))) {
+    if ((!rule.metadata.expiration.is_null() &&
+         (rule.metadata.expiration < base::Time::Now())) ||
+        (session_model && (session_model != rule.metadata.session_model))) {
       continue;
     }
 
@@ -837,7 +838,7 @@ void HostContentSettingsMap::AddSettingsForOneType(
     settings->emplace_back(rule.primary_pattern, rule.secondary_pattern,
                            std::move(value),
                            kProviderNamesSourceMap[provider_type].provider_name,
-                           incognito, rule.expiration);
+                           incognito, rule.metadata);
   }
 }
 
@@ -919,7 +920,7 @@ base::Value HostContentSettingsMap::GetWebsiteSettingInternal(
   if (info) {
     primary_pattern = &info->primary_pattern;
     secondary_pattern = &info->secondary_pattern;
-    session_model = &info->session_model;
+    session_model = &info->metadata.session_model;
   }
 
   // The list of |content_settings_providers_| is ordered according to their
@@ -995,14 +996,14 @@ base::Value HostContentSettingsMap::GetContentSettingValueAndPatterns(
       const content_settings::Rule& rule = rule_iterator->Next();
       if (rule.primary_pattern.Matches(primary_url) &&
           rule.secondary_pattern.Matches(secondary_url) &&
-          (rule.expiration.is_null() ||
-           (rule.expiration > base::Time::Now()))) {
+          (rule.metadata.expiration.is_null() ||
+           (rule.metadata.expiration > base::Time::Now()))) {
         if (primary_pattern)
           *primary_pattern = rule.primary_pattern;
         if (secondary_pattern)
           *secondary_pattern = rule.secondary_pattern;
         if (session_model)
-          *session_model = rule.session_model;
+          *session_model = rule.metadata.session_model;
         return rule.value.Clone();
       }
     }

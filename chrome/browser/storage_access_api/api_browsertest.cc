@@ -20,6 +20,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -503,16 +504,16 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
   // normally this expired value would be filtered out before sending and time
   // cannot be properly mocked in a browser test.
   ContentSettingsForOneType settings;
-  settings.emplace_back(
+  settings.push_back(ContentSettingPatternSource(
       ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostB)),
       ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostA)),
       base::Value(CONTENT_SETTING_ALLOW), "preference",
-      /*incognito=*/false, expiration_time);
-  settings.emplace_back(
+      /*incognito=*/false, {.expiration = expiration_time}));
+  settings.push_back(ContentSettingPatternSource(
       ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostC)),
       ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostA)),
       base::Value(CONTENT_SETTING_ALLOW), "preference",
-      /*incognito=*/false, base::Time());
+      /*incognito=*/false));
 
   browser()
       ->profile()

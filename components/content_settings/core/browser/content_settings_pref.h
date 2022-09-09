@@ -54,9 +54,8 @@ class ContentSettingsPref {
 
   void SetWebsiteSetting(const ContentSettingsPattern& primary_pattern,
                          const ContentSettingsPattern& secondary_pattern,
-                         base::Time modified_time,
                          base::Value value,
-                         const ContentSettingConstraints& constraints);
+                         const RuleMetaData& metadata);
 
   // Returns the |last_modified| date of a setting.
   base::Time GetWebsiteSettingLastModified(
@@ -86,9 +85,8 @@ class ContentSettingsPref {
   // preference changes.
   void UpdatePref(const ContentSettingsPattern& primary_pattern,
                   const ContentSettingsPattern& secondary_pattern,
-                  const base::Time last_modified,
                   base::Value value,
-                  const ContentSettingConstraints& constraints);
+                  const RuleMetaData& metadata);
 
   // In the debug mode, asserts that |lock_| is not held by this thread. It's
   // ok if some other thread holds |lock_|, as long as it will eventually

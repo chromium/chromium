@@ -39,8 +39,7 @@ class RuleIteratorImpl : public RuleIterator {
     Rule to_return(current_rule_->first.primary_pattern,
                    current_rule_->first.secondary_pattern,
                    current_rule_->second.value.Clone(),
-                   current_rule_->second.expiration,
-                   current_rule_->second.session_model);
+                   current_rule_->second.metadata);
     ++current_rule_;
     return to_return;
   }
@@ -135,16 +134,15 @@ base::Time OriginIdentifierValueMap::GetLastModified(
   auto r = it->second.find(patterns);
   if (r == it->second.end())
     return base::Time();
-  return r->second.last_modified;
+  return r->second.metadata.last_modified;
 }
 
 void OriginIdentifierValueMap::SetValue(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
-    base::Time last_modified,
     base::Value value,
-    const ContentSettingConstraints& constraints) {
+    const RuleMetaData& metadata) {
   DCHECK(primary_pattern.IsValid());
   DCHECK(secondary_pattern.IsValid());
   // TODO(raymes): Remove this after we track down the cause of
@@ -153,9 +151,7 @@ void OriginIdentifierValueMap::SetValue(
   PatternPair patterns(primary_pattern, secondary_pattern);
   ValueEntry* entry = &entries_[content_type][patterns];
   entry->value = std::move(value);
-  entry->last_modified = last_modified;
-  entry->expiration = constraints.expiration;
-  entry->session_model = constraints.session_model;
+  entry->metadata = metadata;
 }
 
 void OriginIdentifierValueMap::DeleteValue(

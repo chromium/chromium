@@ -155,9 +155,8 @@ std::unique_ptr<RuleIterator> ContentSettingsPref::GetRuleIterator(
 void ContentSettingsPref::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    base::Time modified_time,
     base::Value value,
-    const ContentSettingConstraints& constraints) {
+    const RuleMetaData& metadata) {
   DCHECK(value.is_none() || IsValueAllowedForType(value, content_type_));
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(prefs_);
@@ -173,7 +172,7 @@ void ContentSettingsPref::SetWebsiteSetting(
     base::AutoLock auto_lock(lock_);
     if (!value.is_none()) {
       map_to_modify->SetValue(primary_pattern, secondary_pattern, content_type_,
-                              modified_time, value.Clone(), constraints);
+                              value.Clone(), metadata);
     } else {
       map_to_modify->DeleteValue(primary_pattern, secondary_pattern,
                                  content_type_);
@@ -181,8 +180,7 @@ void ContentSettingsPref::SetWebsiteSetting(
   }
   // Update the content settings preference.
   if (!off_the_record_) {
-    UpdatePref(primary_pattern, secondary_pattern, modified_time,
-               std::move(value), constraints);
+    UpdatePref(primary_pattern, secondary_pattern, std::move(value), metadata);
   }
 
   notify_callback_.Run(primary_pattern, secondary_pattern, content_type_);
@@ -319,8 +317,12 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
       DCHECK(IsValueAllowedForType(*value, content_type_));
       value_map_.SetValue(std::move(pattern_pair.first),
                           std::move(pattern_pair.second), content_type_,
-                          last_modified, value->Clone(),
-                          {expiration, session_model});
+                          value->Clone(),
+                          {
+                              .last_modified = last_modified,
+                              .expiration = expiration,
+                              .session_model = session_model,
+                          });
     }
   }
 
@@ -366,9 +368,8 @@ void ContentSettingsPref::OnPrefChanged() {
 void ContentSettingsPref::UpdatePref(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    const base::Time last_modified,
     base::Value value,
-    const ContentSettingConstraints& constraints) {
+    const RuleMetaData& metadata) {
   // Ensure that |lock_| is not held by this thread, since this function will
   // send out notifications (by |~ScopedDictionaryPrefUpdate|).
   AssertLockNotHeld();
@@ -407,15 +408,16 @@ void ContentSettingsPref::UpdatePref(
         settings_dictionary->SetKey(
             kLastModifiedKey,
             base::Value(base::NumberToString(
-                last_modified.ToDeltaSinceWindowsEpoch().InMicroseconds())));
-        settings_dictionary->SetKey(
-            kExpirationKey,
-            base::Value(base::NumberToString(
-                constraints.expiration.ToDeltaSinceWindowsEpoch()
+                metadata.last_modified.ToDeltaSinceWindowsEpoch()
                     .InMicroseconds())));
         settings_dictionary->SetKey(
+            kExpirationKey, base::Value(base::NumberToString(
+                                metadata.expiration.ToDeltaSinceWindowsEpoch()
+                                    .InMicroseconds())));
+
+        settings_dictionary->SetKey(
             kSessionModelKey,
-            base::Value(static_cast<int>(constraints.session_model)));
+            base::Value(static_cast<int>(metadata.session_model)));
       }
 
       // Remove the settings dictionary if it is empty.

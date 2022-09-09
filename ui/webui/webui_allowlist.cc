@@ -121,9 +121,9 @@ void WebUIAllowlist::SetContentSettingsAndNotifyProvider(
 
   {
     base::AutoLock auto_lock(lock_);
-    value_map_.SetValue(primary_pattern, secondary_pattern, type, base::Time(),
+    value_map_.SetValue(primary_pattern, secondary_pattern, type,
                         base::Value(setting),
-                        /* constraints */ {});
+                        /* metadata */ {});
   }
 
   // Notify the provider. |provider_| can be nullptr if

@@ -333,8 +333,7 @@ void PolicyProvider::GetContentSettingsFromPreferences(
 
       // Don't set a timestamp for policy settings.
       value_map->SetValue(pattern_pair.first, secondary_pattern,
-                          entry.content_type, base::Time(),
-                          base::Value(entry.setting), {});
+                          entry.content_type, base::Value(entry.setting), {});
     }
   }
 }
@@ -422,7 +421,7 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences(
 
     value_map->SetValue(pattern, ContentSettingsPattern::Wildcard(),
                         ContentSettingsType::AUTO_SELECT_CERTIFICATE,
-                        base::Time(), setting.Clone(), {});
+                        setting.Clone(), {});
   }
 }
 
@@ -458,7 +457,7 @@ void PolicyProvider::UpdateManagedDefaultSetting(
     // Don't set a timestamp for policy settings.
     value_map_.SetValue(ContentSettingsPattern::Wildcard(),
                         ContentSettingsPattern::Wildcard(), entry.content_type,
-                        base::Time(), base::Value(setting), {});
+                        base::Value(setting), {});
   }
 }
 

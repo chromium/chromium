@@ -97,8 +97,7 @@ class DefaultRuleIterator : public RuleIterator {
     DCHECK(HasNext());
     is_done_ = true;
     return Rule(ContentSettingsPattern::Wildcard(),
-                ContentSettingsPattern::Wildcard(), std::move(value_),
-                base::Time(), SessionModel::Durable);
+                ContentSettingsPattern::Wildcard(), std::move(value_), {});
   }
 
  private:

@@ -264,6 +264,8 @@ class HostContentSettingsMap : public content_settings::Observer,
   // This should only be called on the UI thread.
   void ClearSettingsForOneType(ContentSettingsType content_type);
 
+  // TODO(crbug.com/1345920): This method can be removed since last_modified is
+  // now part of ContentSettingsPatternSource and SettingInfo.
   // Return the |last_modified| date of a content setting. This will only return
   // valid values for settings from the PreferenceProvider. Settings from other
   // providers will return base::Time().

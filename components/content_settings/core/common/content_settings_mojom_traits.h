@@ -105,7 +105,7 @@ struct StructTraits<
   }
 
   static const base::Time& expiration(const ContentSettingPatternSource& r) {
-    return r.expiration;
+    return r.metadata.expiration;
   }
 
   static const std::string& source(const ContentSettingPatternSource& r) {

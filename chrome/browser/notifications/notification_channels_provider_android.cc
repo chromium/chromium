@@ -117,7 +117,7 @@ ContentSetting ChannelStatusToContentSetting(NotificationChannelStatus status) {
 class ChannelsRuleIterator : public content_settings::RuleIterator {
  public:
   explicit ChannelsRuleIterator(std::vector<NotificationChannel> channels)
-      : channels_(std::move(channels)), index_(0) {}
+      : channels_(std::move(channels)) {}
 
   ChannelsRuleIterator(const ChannelsRuleIterator&) = delete;
   ChannelsRuleIterator& operator=(const ChannelsRuleIterator&) = delete;
@@ -127,20 +127,20 @@ class ChannelsRuleIterator : public content_settings::RuleIterator {
 
   content_settings::Rule Next() override {
     DCHECK(HasNext());
+    auto& channel = channels_[index_];
     DCHECK_NE(channels_[index_].status, NotificationChannelStatus::UNAVAILABLE);
     content_settings::Rule rule = content_settings::Rule(
-        ContentSettingsPattern::FromURLNoWildcard(
-            GURL(channels_[index_].origin)),
+        ContentSettingsPattern::FromURLNoWildcard(GURL(channel.origin)),
         ContentSettingsPattern::Wildcard(),
-        base::Value(ChannelStatusToContentSetting(channels_[index_].status)),
-        base::Time(), content_settings::SessionModel::Durable);
+        base::Value(ChannelStatusToContentSetting(channel.status)),
+        {.last_modified = channel.timestamp});
     index_++;
     return rule;
   }
 
  private:
   std::vector<NotificationChannel> channels_;
-  size_t index_;
+  size_t index_ = 0;
 };
 
 // This copies the logic of
@@ -310,6 +310,10 @@ bool NotificationChannelsProviderAndroid::SetWebsiteSetting(
       secondary_pattern == ContentSettingsPattern::Wildcard()) {
     return false;
   }
+
+  // These constraints are not supported for notifications on Android.
+  DCHECK_EQ(constraints.expiration, base::Time());
+  DCHECK_EQ(constraints.session_model, content_settings::SessionModel::Durable);
 
   InitCachedChannels();
 

@@ -30,8 +30,8 @@ class OneTimeRuleIterator : public content_settings::RuleIterator {
     content_settings::Rule rule(
         begin_iterator_->first, ContentSettingsPattern::Wildcard(),
         content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
-        begin_iterator_->second + base::Days(1),
-        content_settings::SessionModel::OneTime);
+        {.expiration = begin_iterator_->second + base::Days(1),
+         .session_model = content_settings::SessionModel::OneTime});
     begin_iterator_++;
     return rule;
   }
