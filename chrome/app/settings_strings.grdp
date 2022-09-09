@@ -798,7 +798,7 @@
     Import passwords
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_CHOOSE_FILE" desc="A button in the dialog for importing passwords from Chrome. Passwords will be imported from the file, which the user will be asked to choose after initiating this action.">
-    Choose file
+    Select file
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_DESCRIPTION_ACCOUNT_STORE_USERS" desc="Text shown to the account store users (who has the option to store passwords localy or in Google Password manager) on the dialog for importing passwords, before the user has chosen the file to import passwords from.">
     To import passwords, select a CSV file
