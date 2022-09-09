@@ -78,7 +78,7 @@ class QuotaReservationBuffer : public base::RefCounted<QuotaReservationBuffer> {
 
   int64_t reserved_quota_;
 
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace storage

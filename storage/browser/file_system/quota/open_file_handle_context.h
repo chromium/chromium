@@ -50,7 +50,7 @@ class OpenFileHandleContext : public base::RefCounted<OpenFileHandleContext> {
 
   scoped_refptr<QuotaReservationBuffer> reservation_buffer_;
 
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace storage

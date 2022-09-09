@@ -63,7 +63,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) OpenFileHandle {
   scoped_refptr<QuotaReservation> reservation_;
   scoped_refptr<OpenFileHandleContext> context_;
 
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace storage
