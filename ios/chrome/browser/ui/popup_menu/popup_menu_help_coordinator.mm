@@ -141,6 +141,7 @@ constexpr base::TimeDelta kMenuTipDelay = base::Seconds(1);
   }
 
   self.inSessionWithPopupMenuIPH = NO;
+  self.uiConfiguration.highlightDestinationsRow = YES;
   [self.overflowMenuBubblePresenter presentInViewController:menu
                                                        view:menu.view
                                                 anchorPoint:anchorPoint];
@@ -266,6 +267,7 @@ constexpr base::TimeDelta kMenuTipDelay = base::Seconds(1);
     [self trackerIPHDidDismissWithSnoozeAction:snoozeAction];
   }
   self.overflowMenuBubblePresenter = nil;
+  self.uiConfiguration.highlightDestinationsRow = NO;
 }
 
 #pragma mark - SceneStateObserver

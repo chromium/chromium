@@ -9,6 +9,8 @@ import SwiftUI
   @Published public var presentingViewControllerHorizontalSizeClass: UserInterfaceSizeClass
   @Published public var presentingViewControllerVerticalSizeClass: UserInterfaceSizeClass
 
+  @Published public var highlightDestinationsRow = false
+
   /// The destination list's frame in screen coordinates.
   public var destinationListScreenFrame: CGRect = .zero
 

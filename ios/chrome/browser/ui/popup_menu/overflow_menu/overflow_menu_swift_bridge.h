@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_metrics_handler.h"
 #include "ui/base/l10n/l10n_util_mac_bridge.h"
 
+#import "ios/chrome/common/material_timing.h"
 #include "ios/chrome/common/ui/colors/swift_bridge.h"
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_OVERFLOW_MENU_OVERFLOW_MENU_SWIFT_BRIDGE_H_

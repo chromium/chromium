@@ -71,6 +71,11 @@ extension Color {
     return Color(kBlueColor)
   }
 
+  /// The blue halo color.
+  public static var blueHalo: Color {
+    return Color(kBlueHaloColor)
+  }
+
   /// The blue500 color.
   public static var blue500: Color {
     return Color(kBlue500Color)

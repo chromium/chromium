@@ -61,7 +61,7 @@ struct OverflowMenuDestinationList: View {
 
   weak var metricsHandler: PopupMenuMetricsHandler?
 
-  var uiConfiguration: OverflowMenuUIConfiguration
+  @ObservedObject var uiConfiguration: OverflowMenuUIConfiguration
 
   /// Tracks the list's current offset, to see when it scrolls.
   @State var listOffset: CGFloat = 0
@@ -101,6 +101,8 @@ struct OverflowMenuDestinationList: View {
             }
           }
         }
+        .background(uiConfiguration.highlightDestinationsRow ? Color.blueHalo : Color.clear)
+        .animation(.linear(duration: kMaterialDuration3))
         .coordinateSpace(name: Constants.coordinateSpaceName)
         .accessibilityIdentifier(kPopupMenuToolsMenuTableViewId)
         .onAppear {
