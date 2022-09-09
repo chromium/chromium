@@ -14,6 +14,8 @@ build_webui("build") {
     "password_manager_app.ts",
     "side_bar.ts",
     "toolbar.ts",
+    "settings_section.ts",
+    "prefs/pref_toggle_button.ts",
   ]
   non_web_component_files = [
     "password_manager.ts",

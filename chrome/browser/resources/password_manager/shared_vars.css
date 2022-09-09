@@ -18,4 +18,8 @@ html {
    * whatever value the percentage of would equal to the max width. */
   --password-manager-main-basis: calc(var(--cr-centered-card-max-width) /
       var(--cr-centered-card-width-percentage));
+  --control-label-spacing: 20px;
+  --section-min-height: 48px;
+  /* Spacing between a control (e.g. checkbox) and its label. */
+  --two-line-section-min-height: 64px;
 }

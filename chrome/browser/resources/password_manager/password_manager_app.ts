@@ -8,6 +8,7 @@ import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './shared_style.css.js';
 import './side_bar.js';
 import './toolbar.js';
+import './settings_section.js';
 
 import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

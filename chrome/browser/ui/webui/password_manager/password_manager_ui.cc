@@ -28,9 +28,12 @@ content::WebUIDataSource* CreatePasswordsUIHTMLSource(Profile* profile) {
       IDR_PASSWORD_MANAGER_PASSWORD_MANAGER_HTML);
 
   static constexpr webui::LocalizedString kStrings[] = {
+      {"autosigninLabel", IDS_PASSWORD_MANAGER_UI_AUTOSIGNIN_TOGGLE_LABEL},
+      {"autosigninDescription", IDS_PASSWORD_MANAGER_UI_AUTOSIGNIN_TOGGLE_DESC},
       {"checkup", IDS_PASSWORD_MANAGER_UI_CHECKUP},
       {"clearSearch", IDS_CLEAR_SEARCH},
       {"passwords", IDS_PASSWORD_MANAGER_UI_PASSWORDS},
+      {"savePasswordsLabel", IDS_PASSWORD_MANAGER_UI_SAVE_PASSWORDS_TOGGLE_LABEL},
       {"searchPrompt", IDS_PASSWORD_MANAGER_UI_SEARCH_PROMPT},
       {"settings", IDS_PASSWORD_MANAGER_UI_SETTINGS},
       {"title", IDS_PASSWORD_MANAGER_UI_TITLE},
