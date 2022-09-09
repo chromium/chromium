@@ -6,6 +6,7 @@
 
 #include "base/guid.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/fast_checkout/fast_checkout_external_action_delegate.h"
@@ -248,6 +249,7 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histogram_tester_;
 
   raw_ptr<autofill_assistant::MockHeadlessScriptController>
       external_script_controller_;
@@ -350,6 +352,10 @@ TEST_F(FastCheckoutClientImplTest, Start_FailsIfNoProfilesOnFile) {
 
   // `FastCheckoutClient` is not running.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
+
+  histogram_tester_.ExpectUniqueSample(
+      autofill::kUmaKeyFastCheckoutTriggerOutcome,
+      autofill::FastCheckoutTriggerOutcome::kFailureNoValidAutofillProfile, 1u);
 }
 
 TEST_F(FastCheckoutClientImplTest, Start_FailsIfNoCompleteProfile) {
@@ -368,6 +374,10 @@ TEST_F(FastCheckoutClientImplTest, Start_FailsIfNoCompleteProfile) {
 
   // `FastCheckoutClient` is not running.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
+
+  histogram_tester_.ExpectUniqueSample(
+      autofill::kUmaKeyFastCheckoutTriggerOutcome,
+      autofill::FastCheckoutTriggerOutcome::kFailureNoValidAutofillProfile, 1u);
 }
 
 TEST_F(FastCheckoutClientImplTest, Start_FailsIfNoCreditCardsOnFile) {
@@ -384,6 +394,10 @@ TEST_F(FastCheckoutClientImplTest, Start_FailsIfNoCreditCardsOnFile) {
 
   // `FastCheckoutClient` is not running.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
+
+  histogram_tester_.ExpectUniqueSample(
+      autofill::kUmaKeyFastCheckoutTriggerOutcome,
+      autofill::FastCheckoutTriggerOutcome::kFailureNoValidCreditCard, 1u);
 }
 
 TEST_F(FastCheckoutClientImplTest, Start_FailsIfNoCompleteorValidCreditCard) {
@@ -404,6 +418,10 @@ TEST_F(FastCheckoutClientImplTest, Start_FailsIfNoCompleteorValidCreditCard) {
 
   // `FastCheckoutClient` is not running.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
+
+  histogram_tester_.ExpectUniqueSample(
+      autofill::kUmaKeyFastCheckoutTriggerOutcome,
+      autofill::FastCheckoutTriggerOutcome::kFailureNoValidCreditCard, 1u);
 }
 
 TEST_F(FastCheckoutClientImplTest,

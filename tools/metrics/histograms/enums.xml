@@ -36495,6 +36495,21 @@ Called by update_extension_permission.py.-->
   <int value="3" label="Cache not available and no request made"/>
 </enum>
 
+<enum name="FastCheckoutTriggerOutcome">
+  <summary>
+    Classifies different outcomes of the attempt to trigger showing a
+    FastCheckout bottomsheet on a form that is known to support FastCheckout and
+    for a user that has the FastCheckout feature enabled.
+  </summary>
+  <int value="0" label="Success: The bottom sheet is shown."/>
+  <int value="1" label="Failure: The sheet has already been shown before."/>
+  <int value="2" label="Failure: The clicked field is not focusable."/>
+  <int value="3" label="Failure: The clicked field is not empty."/>
+  <int value="4" label="Failure: The Autofill Ui cannot be shown."/>
+  <int value="5" label="Failure: There is no valid credit card."/>
+  <int value="6" label="Failure: There is no valid Autofill profile."/>
+</enum>
+
 <enum name="FastPairAccountKeyFailure">
   <int value="0" label="Failed to find the Account Key GATT characteristic"/>
   <int value="1"

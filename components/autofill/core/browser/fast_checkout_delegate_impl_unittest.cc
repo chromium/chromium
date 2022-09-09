@@ -1,23 +1,29 @@
-// Copyright 2022 The Chromium Authors.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/fast_checkout_delegate_impl.h"
+
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/fast_checkout_delegate.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill {
-
-namespace {
+using base::Bucket;
+using base::BucketsAre;
 using testing::_;
 using testing::NiceMock;
 using testing::Ref;
 using testing::Return;
+
+namespace autofill {
+
+namespace {
 
 class MockAutofillDriver : public TestAutofillDriver {
  public:
@@ -48,6 +54,7 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(void, HideFastCheckout, (), (override));
   MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason reason), (override));
 };
+
 }  // namespace
 
 class FastCheckoutDelegateImplTest : public testing::Test {
@@ -85,6 +92,7 @@ class FastCheckoutDelegateImplTest : public testing::Test {
   FormFieldData field_;
 
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
   NiceMock<MockAutofillClient> autofill_client_;
   std::unique_ptr<NiceMock<MockAutofillDriver>> autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
@@ -94,6 +102,10 @@ class FastCheckoutDelegateImplTest : public testing::Test {
 TEST_F(FastCheckoutDelegateImplTest, TryToShowFastCheckoutSucceeds) {
   ASSERT_FALSE(fast_checkout_delegate_->IsShowingFastCheckoutUI());
   TryToShowFastCheckout(/*expected_success=*/true);
+
+  histogram_tester_.ExpectUniqueSample(kUmaKeyFastCheckoutTriggerOutcome,
+                                       FastCheckoutTriggerOutcome::kSuccess,
+                                       1u);
 }
 
 TEST_F(FastCheckoutDelegateImplTest, TryToShowFastCheckoutFailsIfNotSupported) {
@@ -101,6 +113,9 @@ TEST_F(FastCheckoutDelegateImplTest, TryToShowFastCheckoutFailsIfNotSupported) {
   EXPECT_CALL(autofill_client_, IsFastCheckoutSupported)
       .WillOnce(Return(false));
   TryToShowFastCheckout(/*expected_success=*/false);
+
+  // Events are only logged if Fast Checkout is supported and there is a script.
+  histogram_tester_.ExpectTotalCount(kUmaKeyFastCheckoutTriggerOutcome, 0u);
 }
 
 TEST_F(FastCheckoutDelegateImplTest,
@@ -109,6 +124,9 @@ TEST_F(FastCheckoutDelegateImplTest,
   EXPECT_CALL(autofill_client_, IsFastCheckoutTriggerForm)
       .WillOnce(Return(false));
   TryToShowFastCheckout(/*expected_success=*/false);
+
+  // Events are only logged if Fast Checkout is supported and there is a script.
+  histogram_tester_.ExpectTotalCount(kUmaKeyFastCheckoutTriggerOutcome, 0u);
 }
 
 TEST_F(FastCheckoutDelegateImplTest,
@@ -121,6 +139,11 @@ TEST_F(FastCheckoutDelegateImplTest,
       .Times(0);
   EXPECT_FALSE(fast_checkout_delegate_->TryToShowFastCheckout(form_, field_));
   EXPECT_TRUE(fast_checkout_delegate_->IsShowingFastCheckoutUI());
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kUmaKeyFastCheckoutTriggerOutcome),
+      BucketsAre(Bucket(FastCheckoutTriggerOutcome::kSuccess, 1u),
+                 Bucket(FastCheckoutTriggerOutcome::kFailureShownBefore, 1u)));
 }
 
 TEST_F(FastCheckoutDelegateImplTest, TryToShowFastCheckoutFailsIfWasShown) {
@@ -129,6 +152,11 @@ TEST_F(FastCheckoutDelegateImplTest, TryToShowFastCheckoutFailsIfWasShown) {
   // User accepts/dismisses the bottom sheet.
   fast_checkout_delegate_->OnFastCheckoutUIHidden();
   TryToShowFastCheckout(/*expected_success=*/false);
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kUmaKeyFastCheckoutTriggerOutcome),
+      BucketsAre(Bucket(FastCheckoutTriggerOutcome::kSuccess, 1u),
+                 Bucket(FastCheckoutTriggerOutcome::kFailureShownBefore, 1u)));
 }
 
 TEST_F(FastCheckoutDelegateImplTest,
@@ -136,6 +164,10 @@ TEST_F(FastCheckoutDelegateImplTest,
   ASSERT_FALSE(fast_checkout_delegate_->IsShowingFastCheckoutUI());
   field_.is_focusable = false;
   TryToShowFastCheckout(/*expected_success=*/false);
+
+  histogram_tester_.ExpectUniqueSample(
+      kUmaKeyFastCheckoutTriggerOutcome,
+      FastCheckoutTriggerOutcome::kFailureFieldNotFocusable, 1u);
 }
 
 TEST_F(FastCheckoutDelegateImplTest,
@@ -143,12 +175,20 @@ TEST_F(FastCheckoutDelegateImplTest,
   ASSERT_FALSE(fast_checkout_delegate_->IsShowingFastCheckoutUI());
   field_.value = u"Initial value";
   TryToShowFastCheckout(/*expected_success=*/false);
+
+  histogram_tester_.ExpectUniqueSample(
+      kUmaKeyFastCheckoutTriggerOutcome,
+      FastCheckoutTriggerOutcome::kFailureFieldNotEmpty, 1u);
 }
 
 TEST_F(FastCheckoutDelegateImplTest, TryToShowFastCheckoutFailsIfCanNotShowUi) {
   ASSERT_FALSE(fast_checkout_delegate_->IsShowingFastCheckoutUI());
   EXPECT_CALL(*autofill_driver_, CanShowAutofillUi).WillOnce(Return(false));
   TryToShowFastCheckout(/*expected_success=*/false);
+
+  histogram_tester_.ExpectUniqueSample(
+      kUmaKeyFastCheckoutTriggerOutcome,
+      FastCheckoutTriggerOutcome::kFailureCannotShowAutofillUi, 1u);
 }
 
 TEST_F(FastCheckoutDelegateImplTest, TryToShowFastCheckoutFailsIfShowFails) {

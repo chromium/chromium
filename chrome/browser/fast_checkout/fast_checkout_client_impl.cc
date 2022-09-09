@@ -5,6 +5,7 @@
 #include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill_assistant/common_dependencies_chrome.h"
 #include "chrome/browser/fast_checkout/fast_checkout_external_action_delegate.h"
@@ -67,11 +68,18 @@ bool FastCheckoutClientImpl::Start(
 
   autofill::PersonalDataManager* pdm = GetPersonalDataManager();
   DCHECK(pdm);
+  // Trigger only if there is at least 1 valid Autofill profile on file.
+  if (GetValidAddressProfiles(pdm).empty()) {
+    base::UmaHistogramEnumeration(
+        autofill::kUmaKeyFastCheckoutTriggerOutcome,
+        autofill::FastCheckoutTriggerOutcome::kFailureNoValidAutofillProfile);
+    return false;
+  }
   // Trigger only if there is at least 1 complete valid credit card on file.
-  if (GetValidCreditCards(pdm).empty() ||
-      GetValidAddressProfiles(pdm).empty()) {
-    // TODO(crbug.com/1334642): Add to metric that tracks reasons why FC was not
-    // shown.
+  if (GetValidCreditCards(pdm).empty()) {
+    base::UmaHistogramEnumeration(
+        autofill::kUmaKeyFastCheckoutTriggerOutcome,
+        autofill::FastCheckoutTriggerOutcome::kFailureNoValidCreditCard);
     return false;
   }
 

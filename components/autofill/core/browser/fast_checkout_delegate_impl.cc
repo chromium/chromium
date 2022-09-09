@@ -1,8 +1,10 @@
-// Copyright 2022 The Chromium Authors.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/fast_checkout_delegate_impl.h"
+
+#include "base/metrics/histogram_functions.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 
 namespace autofill {
@@ -15,25 +17,50 @@ FastCheckoutDelegateImpl::FastCheckoutDelegateImpl(
 
 FastCheckoutDelegateImpl::~FastCheckoutDelegateImpl() = default;
 
-// TODO(crbug.com/1334642): Add metrics to record reasons why FC is not shown.
 bool FastCheckoutDelegateImpl::TryToShowFastCheckout(
     const FormData& form,
     const FormFieldData& field) {
   // Trigger only on supported platforms.
   if (!manager_->client()->IsFastCheckoutSupported())
     return false;
+
   // Trigger only if the form is a trigger form for FC.
   if (!manager_->client()->IsFastCheckoutTriggerForm(form, field))
     return false;
+
+  // UMA drop out metrics are recorded after this point only to avoid collecting
+  // unnecessary metrics that would dominate the other data points.
   // Trigger only if not shown before.
-  if (fast_checkout_state_ != FastCheckoutState::kNotShownYet)
+  if (fast_checkout_state_ != FastCheckoutState::kNotShownYet) {
+    base::UmaHistogramEnumeration(
+        kUmaKeyFastCheckoutTriggerOutcome,
+        FastCheckoutTriggerOutcome::kFailureShownBefore);
     return false;
-  // Trigger only on focusable empty fields.
-  if (!field.is_focusable || !field.value.empty())
+  }
+
+  // Trigger only on focusable fields.
+  if (!field.is_focusable) {
+    base::UmaHistogramEnumeration(
+        kUmaKeyFastCheckoutTriggerOutcome,
+        FastCheckoutTriggerOutcome::kFailureFieldNotFocusable);
     return false;
+  }
+
+  // Trigger only on empty fields.
+  if (!field.value.empty()) {
+    base::UmaHistogramEnumeration(
+        kUmaKeyFastCheckoutTriggerOutcome,
+        FastCheckoutTriggerOutcome::kFailureFieldNotEmpty);
+    return false;
+  }
+
   // Trigger only if the UI is available.
-  if (!manager_->driver()->CanShowAutofillUi())
+  if (!manager_->driver()->CanShowAutofillUi()) {
+    base::UmaHistogramEnumeration(
+        kUmaKeyFastCheckoutTriggerOutcome,
+        FastCheckoutTriggerOutcome::kFailureCannotShowAutofillUi);
     return false;
+  }
 
   // Finally try showing the surface.
   if (!manager_->client()->ShowFastCheckout(GetWeakPtr()))
@@ -42,6 +69,8 @@ bool FastCheckoutDelegateImpl::TryToShowFastCheckout(
   fast_checkout_state_ = FastCheckoutState::kIsShowing;
   manager_->client()->HideAutofillPopup(
       PopupHidingReason::kOverlappingWithFastCheckoutSurface);
+  base::UmaHistogramEnumeration(kUmaKeyFastCheckoutTriggerOutcome,
+                                FastCheckoutTriggerOutcome::kSuccess);
   return true;
 }
 

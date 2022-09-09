@@ -1236,6 +1236,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.FastCheckout.TriggerOutcome"
+    enum="FastCheckoutTriggerOutcome" expires_after="2023-08-15">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <summary>
+    The outcome of an attempt to trigger a FastCheckout bottomsheet for a user
+    that has the feature enabled and a form on a site for which FastCheckout is
+    known to be available.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FieldCount" units="form fields"
     expires_after="2023-02-12">
   <owner>kolos@chromium.org</owner>
