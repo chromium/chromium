@@ -49,7 +49,8 @@ enum class FingerprintLocation {
   KEYBOARD_TOP_RIGHT = 3,
   RIGHT_SIDE = 4,
   LEFT_SIDE = 5,
-  UNKNOWN = 6,
+  LEFT_OF_POWER_BUTTON_TOP_RIGHT = 6,
+  UNKNOWN = 7,
 };
 
 // Override quick unlock checks for testing.
@@ -130,6 +131,8 @@ FingerprintLocation GetFingerprintLocation();
 // Add fingerprint animations and illustrations. Used for the Fingerprint setup
 // screen and the settings.
 void AddFingerprintResources(content::WebUIDataSource* html_source);
+
+bool IsLeftOfPowerButtonTopRightFingerprint();
 
 }  // namespace quick_unlock
 }  // namespace ash

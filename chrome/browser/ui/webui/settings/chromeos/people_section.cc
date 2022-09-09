@@ -402,6 +402,14 @@ void AddFingerprintResources(content::WebUIDataSource* html_source,
           IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_LEFT_SIDE_ARIA_LABEL;
       aria_label_includes_device = true;
       break;
+    case FingerprintLocation::LEFT_OF_POWER_BUTTON_TOP_RIGHT:
+      DCHECK(ash::quick_unlock::IsLeftOfPowerButtonTopRightFingerprint());
+      instruction_id =
+          IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_LEFT_OF_POWER_BUTTON_TOP_RIGHT;
+      // Use the dialog title as the aria-label, since this location does not
+      // require an aria-label.
+      aria_label_id = IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_TITLE;
+      break;
     case FingerprintLocation::UNKNOWN:
       instruction_id =
           IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD;
@@ -409,8 +417,14 @@ void AddFingerprintResources(content::WebUIDataSource* html_source,
           IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD;
       break;
   }
-  html_source->AddLocalizedString(
-      "configureFingerprintInstructionLocateScannerStep", instruction_id);
+  if (ash::quick_unlock::IsLeftOfPowerButtonTopRightFingerprint()) {
+    html_source->AddString("configureFingerprintInstructionLocateScannerStep",
+                           l10n_util::GetStringFUTF16(
+                               instruction_id, ui::GetChromeOSDeviceName()));
+  } else {
+    html_source->AddLocalizedString(
+        "configureFingerprintInstructionLocateScannerStep", instruction_id);
+  }
   if (aria_label_includes_device) {
     html_source->AddString(
         "configureFingerprintScannerStepAriaLabel",

@@ -100,6 +100,12 @@ void FingerprintSetupScreenHandler::DeclareLocalizedValues(
           IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_LEFT_SIDE_ARIA_LABEL;
       aria_label_includes_device = true;
       break;
+    case quick_unlock::FingerprintLocation::LEFT_OF_POWER_BUTTON_TOP_RIGHT:
+      description_id =
+          IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_LEFT_OF_POWER_BUTTON_TOP_RIGHT;
+      description_id_for_child =
+          IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_LEFT_OF_POWER_BUTTON_TOP_RIGHT_CHILD;
+      break;
     case quick_unlock::FingerprintLocation::UNKNOWN:
       description_id =
           IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION;
@@ -114,6 +120,10 @@ void FingerprintSetupScreenHandler::DeclareLocalizedValues(
                 ui::GetChromeOSDeviceName());
   builder->AddF("setupFingerprintScreenDescriptionForChild",
                 description_id_for_child, ui::GetChromeOSDeviceName());
+
+  if (ash::quick_unlock::IsLeftOfPowerButtonTopRightFingerprint())
+    return;
+
   if (aria_label_includes_device) {
     builder->AddF("setupFingerprintScreenAriaLabel", aria_label_id,
                   ui::GetChromeOSDeviceName());

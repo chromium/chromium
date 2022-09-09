@@ -223,6 +223,8 @@ FingerprintLocation GetFingerprintLocation() {
     return FingerprintLocation::RIGHT_SIDE;
   if (location_info == "left-side")
     return FingerprintLocation::LEFT_SIDE;
+  if (location_info == "left-of-power-button-top-right")
+    return FingerprintLocation::LEFT_OF_POWER_BUTTON_TOP_RIGHT;
   NOTREACHED() << "Not handled value: " << location_info;
   return default_location;
 }
@@ -236,6 +238,11 @@ bool IsFingerprintSupported() {
       base::CommandLine::ForCurrentProcess();
   return base::FeatureList::IsEnabled(features::kQuickUnlockFingerprint) &&
          command_line->HasSwitch(switches::kFingerprintSensorLocation);
+}
+
+bool IsLeftOfPowerButtonTopRightFingerprint() {
+  return GetFingerprintLocation() ==
+         FingerprintLocation::LEFT_OF_POWER_BUTTON_TOP_RIGHT;
 }
 
 bool IsFingerprintEnabled(Profile* profile, Purpose purpose) {
@@ -273,6 +280,12 @@ void AddFingerprintResources(content::WebUIDataSource* html_source) {
     case FingerprintLocation::KEYBOARD_BOTTOM_LEFT:
       resource_id_dark = IDR_FINGERPRINT_LAPTOP_BOTTOM_LEFT_ANIMATION_DARK;
       resource_id_light = IDR_FINGERPRINT_LAPTOP_BOTTOM_LEFT_ANIMATION_LIGHT;
+      break;
+    case FingerprintLocation::LEFT_OF_POWER_BUTTON_TOP_RIGHT:
+      resource_id_dark =
+          IDR_FINGERPRINT_LAPTOP_LEFT_OF_POWER_BUTTON_TOP_RIGHT_ANIMATION_DARK;
+      resource_id_light =
+          IDR_FINGERPRINT_LAPTOP_LEFT_OF_POWER_BUTTON_TOP_RIGHT_ANIMATION_LIGHT;
       break;
     case FingerprintLocation::KEYBOARD_TOP_RIGHT:
     case FingerprintLocation::RIGHT_SIDE:

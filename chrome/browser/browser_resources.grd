@@ -210,6 +210,8 @@
         <include type="BINDATA" compress="gzip" name="IDR_FINGERPRINT_LAPTOP_BOTTOM_LEFT_ANIMATION_LIGHT" file="resources\chromeos\quick_unlock\fingerprint_laptop_bottom_left_light.json"/>
         <include type="BINDATA" compress="gzip" name="IDR_FINGERPRINT_LAPTOP_BOTTOM_RIGHT_ANIMATION_DARK" file="resources\chromeos\quick_unlock\fingerprint_laptop_bottom_right_dark.json"/>
         <include type="BINDATA" compress="gzip" name="IDR_FINGERPRINT_LAPTOP_BOTTOM_RIGHT_ANIMATION_LIGHT" file="resources\chromeos\quick_unlock\fingerprint_laptop_bottom_right_light.json"/>
+        <include type="BINDATA" compress="gzip" name="IDR_FINGERPRINT_LAPTOP_LEFT_OF_POWER_BUTTON_TOP_RIGHT_ANIMATION_LIGHT" file="resources\chromeos\quick_unlock\fingerprint_left_of_power_button_top_right_light.json"/>
+        <include type="BINDATA" compress="gzip" name="IDR_FINGERPRINT_LAPTOP_LEFT_OF_POWER_BUTTON_TOP_RIGHT_ANIMATION_DARK" file="resources\chromeos\quick_unlock\fingerprint_left_of_power_button_top_right_dark.json"/>
         <include type="BINDATA" compress="gzip" name="IDR_FINGERPRINT_TABLET_ANIMATION_DARK" file="resources\chromeos\quick_unlock\fingerprint_tablet_dark.json"/>
         <include type="BINDATA" compress="gzip" name="IDR_FINGERPRINT_TABLET_ANIMATION_LIGHT" file="resources\chromeos\quick_unlock\fingerprint_tablet_light.json"/>
         <include type="BINDATA" compress="gzip" name="IDR_FINGERPRINT_DEFAULT_ANIMATION_DARK" file="resources\chromeos\quick_unlock\fingerprint_default_dark.json"/>
