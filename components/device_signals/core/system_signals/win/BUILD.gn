@@ -28,6 +28,16 @@ static_library("win") {
     "//components/device_signals/core/system_signals",
     "//third_party/abseil-cpp:absl",
   ]
+
+  deps = [
+    "//crypto",
+    "//net",
+  ]
+
+  libs = [
+    "Crypt32.lib",
+    "Imagehlp.lib",
+  ]
 }
 
 source_set("test_support") {

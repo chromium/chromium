@@ -38,6 +38,11 @@
 #include "components/device_signals/core/system_signals/platform_utils.h"  // nogncheck
 #endif  //  BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_WIN)
+#include "base/base_paths.h"
+#include "base/path_service.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
@@ -580,12 +585,72 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
         computeExecutableMetadata: true
       };
 
-      const request = { userContext, options: [fileItem] };
+      const options = [fileItem];
+
+      %s
+
+      const request = { userContext, options };
 
    chrome.enterprise.reportingPrivate.getFileSystemInfo(
     request,
     (fileItems) => {
         chrome.test.assertNoLastError();
+
+        %s
+
+        chrome.test.notifyPass();
+      });
+  )";
+
+  std::string extra_items = "";
+#if BUILDFLAG(IS_WIN)
+  base::FilePath test_data_dir =
+      base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
+          .AppendASCII("components")
+          .AppendASCII("test")
+          .AppendASCII("data")
+          .AppendASCII("device_signals");
+  std::string signed_exe_path =
+      test_data_dir.AppendASCII("signed.exe").AsUTF8Unsafe();
+  base::ReplaceSubstringsAfterOffset(&signed_exe_path, 0U, "\\", "\\\\");
+
+  extra_items = base::StringPrintf(R"(
+    const signedExePath = '%s';
+    options.push({
+      path: signedExePath,
+      computeSha256: true,
+      computeExecutableMetadata: true
+    });
+  )",
+                                   signed_exe_path.c_str());
+  constexpr char kAssertions[] = R"(
+        chrome.test.assertTrue(fileItems instanceof Array);
+        chrome.test.assertEq(2, fileItems.length);
+
+        let expectedFilesCounter = 0;
+        for (const response of fileItems) {
+          if (response.path === executablePath) {
+            chrome.test.assertEq('FOUND', response.presence);
+            chrome.test.assertTrue(!!response.sha256Hash);
+            chrome.test.assertTrue(response.isRunning);
+            chrome.test.assertFalse(!!response.publicKeySha256);
+            ++expectedFilesCounter;
+          } else if (response.path === signedExePath) {
+            chrome.test.assertEq('FOUND', response.presence);
+            chrome.test.assertEq(
+              '4R_6DJ8lI0RTqe3RyyUdRhB_NLU2rXRkKoWErKjBqM4',
+              response.sha256Hash);
+            chrome.test.assertEq(
+              'Rsw3wqh8gUxnMU8j2jGvvBMZqpe6OhIxn_WeEVg-pYQ',
+              response.publicKeySha256);
+            chrome.test.assertFalse(response.isRunning);
+            ++expectedFilesCounter;
+          }
+        }
+        chrome.test.assertEq(fileItems.length, expectedFilesCounter);
+  )";
+#else
+  constexpr char kAssertions[] = R"(
         chrome.test.assertTrue(fileItems instanceof Array);
         chrome.test.assertEq(1, fileItems.length);
 
@@ -594,10 +659,8 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
         chrome.test.assertEq('FOUND', fileItemResponse.presence);
         chrome.test.assertTrue(!!fileItemResponse.sha256Hash);
         chrome.test.assertTrue(fileItemResponse.isRunning);
-
-        chrome.test.notifyPass();
-      });
   )";
+#endif  // BUILDFLAG(IS_WIN)
 
   // Escape all backslashes.
   std::string escaped_file_path = test_runner_file_path->AsUTF8Unsafe();
@@ -605,7 +668,8 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
 
   AccountInfo account_info = SignIn("some-email@example.com");
   RunTest(base::StringPrintf(kTest, account_info.gaia.c_str(),
-                             escaped_file_path.c_str()));
+                             escaped_file_path.c_str(), extra_items.c_str(),
+                             kAssertions));
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

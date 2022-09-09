@@ -20,9 +20,12 @@ namespace device_signals {
 
 namespace {
 
-ExecutableMetadata CreateExecutableMetadata(bool is_running) {
+ExecutableMetadata CreateExecutableMetadata(
+    bool is_running,
+    const absl::optional<std::string>& public_key_hash) {
   ExecutableMetadata metadata;
   metadata.is_running = is_running;
+  metadata.public_key_sha256 = public_key_hash;
   return metadata;
 }
 
@@ -71,10 +74,19 @@ TEST_F(WinExecutableMetadataServiceTest, GetAllExecutableMetadata_Success) {
   EXPECT_CALL(*mock_platform_delegate_, AreExecutablesRunning(executable_files))
       .WillOnce(Return(is_running_map));
 
+  std::string public_key_value = "fake_public_key_value";
+  EXPECT_CALL(*mock_platform_delegate_,
+              GetSigningCertificatePublicKeyHash(running_path))
+      .WillOnce(Return(public_key_value));
+  EXPECT_CALL(*mock_platform_delegate_,
+              GetSigningCertificatePublicKeyHash(not_running_path))
+      .WillOnce(Return(absl::nullopt));
+
   FilePathMap<ExecutableMetadata> expected_metadata_map;
-  expected_metadata_map.insert({running_path, CreateExecutableMetadata(true)});
   expected_metadata_map.insert(
-      {not_running_path, CreateExecutableMetadata(false)});
+      {running_path, CreateExecutableMetadata(true, public_key_value)});
+  expected_metadata_map.insert(
+      {not_running_path, CreateExecutableMetadata(false, absl::nullopt)});
 
   EXPECT_EQ(
       executable_metadata_service_->GetAllExecutableMetadata(executable_files),

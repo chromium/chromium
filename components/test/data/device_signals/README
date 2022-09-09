@@ -1,0 +1,19 @@
+This directory contains some executable files for testing the Binary files
+signals extraction.
+
+Description of the files:
+
+signed.exe
+An executable file that was signed with a self-signed certificate.
+
+unsigned.exe
+An executable file which is not signed.
+
+Instructions for signing an executable:
+signed.exe:
+
+MakeCert -sv test.pvk test.cer (password: "password")
+Cert2SPC test.cer test.spc
+pvk2pfx -pvk test.pvk test.cer (export the private key with the cert)
+copy unsigned.exe signed.exe
+signtool sign /f test.pfx /p password signed.exe

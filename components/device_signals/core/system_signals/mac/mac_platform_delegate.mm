@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #import "base/mac/foundation_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device_signals {
 
@@ -25,6 +26,13 @@ bool MacPlatformDelegate::ResolveFilePath(const base::FilePath& file_path,
   // to the binary too.
   *resolved_file_path = GetBinaryFilePath(*resolved_file_path);
   return true;
+}
+
+absl::optional<std::string>
+MacPlatformDelegate::GetSigningCertificatePublicKeyHash(
+    const base::FilePath& file_path) {
+  // TODO(b:231326198): Implement.
+  return absl::nullopt;
 }
 
 base::FilePath MacPlatformDelegate::GetBinaryFilePath(

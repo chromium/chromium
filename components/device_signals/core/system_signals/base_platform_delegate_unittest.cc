@@ -29,6 +29,12 @@ class TestPlatformDelegate : public BasePlatformDelegate {
               ResolveFilePath,
               (const base::FilePath&, base::FilePath*),
               (override));
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  MOCK_METHOD(absl::optional<std::string>,
+              GetSigningCertificatePublicKeyHash,
+              (const base::FilePath&),
+              (override));
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 };
 
 class BasePlatformDelegateTest : public testing::Test {

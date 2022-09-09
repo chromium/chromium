@@ -17,6 +17,8 @@ class MacPlatformDelegate : public PosixPlatformDelegate {
   // PlatformDelegate:
   bool ResolveFilePath(const base::FilePath& file_path,
                        base::FilePath* resolved_file_path) override;
+  absl::optional<std::string> GetSigningCertificatePublicKeyHash(
+      const base::FilePath& file_path) override;
 
   // Verifies if `file_path` points to an app bundle and then returns the
   // executable path for the file inside the bundle. If `file_path` does not

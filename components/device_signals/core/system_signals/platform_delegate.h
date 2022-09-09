@@ -5,8 +5,12 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_PLATFORM_DELEGATE_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_PLATFORM_DELEGATE_H_
 
+#include <string>
+
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -45,6 +49,16 @@ class PlatformDelegate {
   // `file_paths`.
   virtual FilePathMap<bool> AreExecutablesRunning(
       const FilePathSet& file_paths) = 0;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+  // Returns the public key SHA256 hash of the certificate used to sign an
+  // executable file located at `file_path`. Returns absl::nullopt if no
+  // public key can be retrieved.
+  virtual absl::optional<std::string> GetSigningCertificatePublicKeyHash(
+      const base::FilePath& file_path) = 0;
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 };
 
 }  // namespace device_signals
