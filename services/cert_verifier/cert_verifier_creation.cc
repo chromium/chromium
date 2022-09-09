@@ -37,35 +37,6 @@ namespace cert_verifier {
 
 namespace {
 
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
-bool UsingBuiltinCertVerifier(
-    mojom::CertVerifierCreationParams::CertVerifierImpl mode) {
-  switch (mode) {
-    case mojom::CertVerifierCreationParams::CertVerifierImpl::kDefault:
-      return base::FeatureList::IsEnabled(
-          net::features::kCertVerifierBuiltinFeature);
-    case mojom::CertVerifierCreationParams::CertVerifierImpl::kBuiltin:
-      return true;
-    case mojom::CertVerifierCreationParams::CertVerifierImpl::kSystem:
-      return false;
-  }
-}
-#endif
-
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-bool UsingChromeRootStore(
-    mojom::CertVerifierCreationParams::ChromeRootImpl mode) {
-  switch (mode) {
-    case mojom::CertVerifierCreationParams::ChromeRootImpl::kRootDefault:
-      return base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed);
-    case mojom::CertVerifierCreationParams::ChromeRootImpl::kRootChrome:
-      return true;
-    case mojom::CertVerifierCreationParams::ChromeRootImpl::kRootSystem:
-      return false;
-  }
-}
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-
 #if BUILDFLAG(IS_CHROMEOS)
 crypto::ScopedPK11Slot GetUserSlotRestrictionForChromeOSParams(
     mojom::CertVerifierCreationParams* creation_params) {
@@ -200,17 +171,6 @@ class NewCertVerifyProcBuiltinFactory : public net::CertVerifyProcFactory {
  protected:
   ~NewCertVerifyProcBuiltinFactory() override = default;
 };
-
-// Returns true if creation_params are requesting the creation of a
-// Builtin Verifier using system roots (as opposed to Chrome Root Store).
-bool IsUsingBuiltinWithSystemRoots(
-    const mojom::CertVerifierCreationParams* creation_params) {
-  return creation_params
-             ? UsingBuiltinCertVerifier(
-                   creation_params->use_builtin_cert_verifier)
-             : UsingBuiltinCertVerifier(mojom::CertVerifierCreationParams::
-                                            CertVerifierImpl::kDefault);
-}
 #endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
 
 #if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
@@ -277,18 +237,6 @@ std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateTrialCertVerifier(
 }
 #endif  // BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
 
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-// Check to see if we're using the Chrome Root Store for this verifier.
-// Returns true if Chrome Root Store is on in creation_params.
-bool IsUsingChromeRootStore(
-    const mojom::CertVerifierCreationParams* creation_params) {
-  return creation_params
-             ? UsingChromeRootStore(creation_params->use_chrome_root_store)
-             : UsingChromeRootStore(mojom::CertVerifierCreationParams::
-                                        ChromeRootImpl::kRootDefault);
-}
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-
 }  // namespace
 
 bool IsUsingCertNetFetcher() {
@@ -304,6 +252,7 @@ bool IsUsingCertNetFetcher() {
 }
 
 std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateCertVerifier(
+    mojom::CertVerifierServiceParams* impl_params,
     mojom::CertVerifierCreationParams* creation_params,
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
     const net::ChromeRootStoreData* root_store_data) {
@@ -323,7 +272,7 @@ std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateCertVerifier(
   // enabled in creation_params, that should be interpreted as wanting CRS with
   // Builtin.
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  if (!cert_verifier && IsUsingChromeRootStore(creation_params)) {
+  if (!cert_verifier && impl_params->use_chrome_root_store) {
     scoped_refptr<NewCertVerifyProcChromeRootStoreFactory> proc_factory =
         base::MakeRefCounted<NewCertVerifyProcChromeRootStoreFactory>(
             creation_params);
@@ -334,7 +283,7 @@ std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateCertVerifier(
 #endif
 
 #if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
-  if (!cert_verifier && IsUsingBuiltinWithSystemRoots(creation_params)) {
+  if (!cert_verifier && impl_params->use_builtin_cert_verifier) {
     scoped_refptr<NewCertVerifyProcBuiltinFactory> proc_factory =
         base::MakeRefCounted<NewCertVerifyProcBuiltinFactory>();
     cert_verifier = std::make_unique<net::MultiThreadedCertVerifier>(

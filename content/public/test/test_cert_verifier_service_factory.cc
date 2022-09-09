@@ -10,9 +10,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
 #include "net/net_buildflags.h"
 #include "services/cert_verifier/cert_verifier_service.h"
 #include "services/cert_verifier/cert_verifier_service_factory.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace cert_verifier {
 
@@ -45,6 +48,11 @@ void TestCertVerifierServiceFactoryImpl::GetNewCertVerifier(
   params.creation_params = std::move(creation_params);
 
   captured_params_.push_front(std::move(params));
+}
+
+void TestCertVerifierServiceFactoryImpl::GetServiceParamsForTesting(
+    GetServiceParamsForTestingCallback callback) {
+  delegate_remote_->GetServiceParamsForTesting(std::move(callback));
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -85,7 +93,10 @@ void TestCertVerifierServiceFactoryImpl::InitDelegate() {
       base::SequencedTaskRunnerHandle::Get()
 #endif
   );
-  delegate_->Init(delegate_remote_.BindNewPipeAndPassReceiver());
+  delegate_->Init(content::GetContentClientForTesting()
+                      ->browser()
+                      ->GetCertVerifierServiceParams(),
+                  delegate_remote_.BindNewPipeAndPassReceiver());
 }
 
 TestCertVerifierServiceFactoryImpl::DelegateOwner::DelegateOwner(
@@ -95,16 +106,17 @@ TestCertVerifierServiceFactoryImpl::DelegateOwner::DelegateOwner(
 TestCertVerifierServiceFactoryImpl::DelegateOwner::~DelegateOwner() = default;
 
 void TestCertVerifierServiceFactoryImpl::DelegateOwner::Init(
+    mojom::CertVerifierServiceParamsPtr params,
     mojo::PendingReceiver<cert_verifier::mojom::CertVerifierServiceFactory>
         receiver) {
   if (!owning_task_runner()->RunsTasksInCurrentSequence()) {
     owning_task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&DelegateOwner::Init, this, std::move(receiver)));
+        FROM_HERE, base::BindOnce(&DelegateOwner::Init, this, std::move(params),
+                                  std::move(receiver)));
     return;
   }
-  delegate_ =
-      std::make_unique<CertVerifierServiceFactoryImpl>(std::move(receiver));
+  delegate_ = std::make_unique<CertVerifierServiceFactoryImpl>(
+      std::move(params), std::move(receiver));
 }
 
 }  // namespace cert_verifier

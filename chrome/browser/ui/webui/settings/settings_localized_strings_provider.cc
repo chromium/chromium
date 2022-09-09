@@ -20,6 +20,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/net/cert_verifier_configuration.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
@@ -1637,21 +1638,9 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
       base::FeatureList::IsEnabled(features::kHttpsOnlyMode));
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  bool chrome_root_store_used =
-      base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed);
-#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
-  const PrefService::Preference* chrome_root_store_enabled_pref =
-      g_browser_process->local_state()->FindPreference(
-          prefs::kChromeRootStoreEnabled);
-  if (chrome_root_store_enabled_pref &&
-      chrome_root_store_enabled_pref->IsManaged()) {
-    chrome_root_store_used =
-        chrome_root_store_enabled_pref->GetValue()->GetBool();
-  }
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
-
-  html_source->AddBoolean("showChromeRootStoreCertificates",
-                          chrome_root_store_used);
+  html_source->AddBoolean(
+      "showChromeRootStoreCertificates",
+      GetChromeCertVerifierServiceParams()->use_chrome_root_store);
 
   html_source->AddString("chromeRootStoreHelpCenterURL",
                          chrome::kChromeRootStoreSettingsHelpCenterURL);

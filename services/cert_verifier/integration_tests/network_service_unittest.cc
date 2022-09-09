@@ -53,6 +53,7 @@ class NetworkServiceIntegrationTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         service_(network::NetworkService::CreateForTesting()),
         cert_verifier_service_impl_(
+            /*params=*/nullptr,
             cert_verifier_service_remote_.BindNewPipeAndPassReceiver()) {}
   ~NetworkServiceIntegrationTest() override = default;
 

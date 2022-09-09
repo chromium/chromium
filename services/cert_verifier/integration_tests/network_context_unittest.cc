@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -21,6 +22,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cert_verifier {
 namespace {
@@ -64,6 +66,7 @@ class NetworkContextWithRealCertVerifierTest : public testing::Test {
     if (!cert_verifier_service_factory_) {
       cert_verifier_service_factory_ =
           std::make_unique<CertVerifierServiceFactoryImpl>(
+              GetCertVerifierServiceParams(),
               cert_verifier_service_factory_remote_
                   .BindNewPipeAndPassReceiver());
     }
@@ -75,6 +78,10 @@ class NetworkContextWithRealCertVerifierTest : public testing::Test {
 
     return network::mojom::CertVerifierServiceRemoteParams::New(
         std::move(cert_verifier_service_remote));
+  }
+
+  virtual mojom::CertVerifierServiceParamsPtr GetCertVerifierServiceParams() {
+    return nullptr;
   }
 
   network::mojom::NetworkService* network_service() const {
@@ -149,69 +156,52 @@ std::unique_ptr<network::TestURLLoaderClient> FetchRequest(
 
 }  // namespace
 
-TEST_F(NetworkContextWithRealCertVerifierTest, UseCertVerifierBuiltin) {
-  net::EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  net::test_server::RegisterDefaultHandlers(&test_server);
-  ASSERT_TRUE(test_server.Start());
-
-  // This just happens to be the only histogram that directly records which
-  // verifier was used.
-  const char kBuiltinVerifierHistogram[] =
-      "Net.CertVerifier.NameNormalizationPrivateRoots.Builtin";
-
-  for (bool builtin_verifier_enabled : {false, true}) {
-    SCOPED_TRACE(builtin_verifier_enabled);
-
-    network::mojom::NetworkContextParamsPtr params = CreateContextParams();
-    auto creation_params = mojom::CertVerifierCreationParams::New();
-    creation_params->use_builtin_cert_verifier =
-        builtin_verifier_enabled
-            ? mojom::CertVerifierCreationParams::CertVerifierImpl::kBuiltin
-            : mojom::CertVerifierCreationParams::CertVerifierImpl::kSystem;
-    params->cert_verifier_params =
-        GetCertVerifierParams(std::move(creation_params));
-    std::unique_ptr<network::NetworkContext> network_context =
-        CreateContextWithParams(std::move(params));
-
-    network::ResourceRequest request;
-    request.url = test_server.GetURL("/nocontent");
-    base::HistogramTester histogram_tester;
-    std::unique_ptr<network::TestURLLoaderClient> client =
-        FetchRequest(request, network_context.get());
-    EXPECT_EQ(net::OK, client->completion_status().error_code);
-    histogram_tester.ExpectTotalCount(kBuiltinVerifierHistogram,
-                                      builtin_verifier_enabled ? 1 : 0);
-  }
-}
-
 class NetworkContextCertVerifierBuiltinFeatureFlagTest
     : public NetworkContextWithRealCertVerifierTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<
+          std::tuple<bool, absl::optional<bool>>> {
  public:
-  NetworkContextCertVerifierBuiltinFeatureFlagTest()
-      : use_builtin_cert_verifier_feature_(GetParam()) {
+  NetworkContextCertVerifierBuiltinFeatureFlagTest() {
     scoped_feature_list_.InitWithFeatureState(
         net::features::kCertVerifierBuiltinFeature,
-        use_builtin_cert_verifier_feature_);
+        feature_use_builtin_cert_verifier());
   }
 
-  bool use_builtin_cert_verifier_feature() const {
-    return use_builtin_cert_verifier_feature_;
+  mojom::CertVerifierServiceParamsPtr GetCertVerifierServiceParams() override {
+    mojom::CertVerifierServiceParamsPtr params;
+    if (param_use_builtin_cert_verifier().has_value()) {
+      params = mojom::CertVerifierServiceParams::New();
+      params->use_builtin_cert_verifier = *param_use_builtin_cert_verifier();
+    }
+    return params;
+  }
+
+  bool feature_use_builtin_cert_verifier() const {
+    return std::get<0>(GetParam());
+  }
+
+  absl::optional<bool> param_use_builtin_cert_verifier() const {
+    return std::get<1>(GetParam());
+  }
+
+  bool expected_use_builtin_cert_verifier() const {
+    if (param_use_builtin_cert_verifier().has_value())
+      return *param_use_builtin_cert_verifier();
+    return feature_use_builtin_cert_verifier();
   }
 
  private:
-  const bool use_builtin_cert_verifier_feature_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(NetworkContextCertVerifierBuiltinFeatureFlagTest,
-       DefaultNetworkContextParamsUsesCorrectVerifier) {
+       CombinationOfFeatureFlagAndServiceParamsUsesCorrectVerifier) {
   net::EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTPS);
   net::test_server::RegisterDefaultHandlers(&test_server);
   ASSERT_TRUE(test_server.Start());
 
-  // This just happens to be the only histogram that directly records which
-  // verifier was used.
+  // This just happens to be a histogram that directly records which verifier
+  // was used.
   const char kBuiltinVerifierHistogram[] =
       "Net.CertVerifier.NameNormalizationPrivateRoots.Builtin";
 
@@ -230,11 +220,25 @@ TEST_P(NetworkContextCertVerifierBuiltinFeatureFlagTest,
       FetchRequest(request, network_context.get());
   EXPECT_EQ(net::OK, client->completion_status().error_code);
   histogram_tester.ExpectTotalCount(
-      kBuiltinVerifierHistogram, use_builtin_cert_verifier_feature() ? 1 : 0);
+      kBuiltinVerifierHistogram, expected_use_builtin_cert_verifier() ? 1 : 0);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         NetworkContextCertVerifierBuiltinFeatureFlagTest,
-                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NetworkContextCertVerifierBuiltinFeatureFlagTest,
+    ::testing::Combine(::testing::Bool(),
+                       ::testing::Values(absl::nullopt, false, true)),
+    [](const testing::TestParamInfo<
+        NetworkContextCertVerifierBuiltinFeatureFlagTest::ParamType>& info) {
+      return base::StrCat(
+          {std::get<0>(info.param) ? "FeatureTrue" : "FeatureFalse",
+           std::get<1>(info.param).has_value()
+               ? (*std::get<1>(info.param) ? "ParamTrue" : "ParamFalse")
+               : "ParamNotSet"});
+    });
 #endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
+
+// TODO(mattm): can a root store test be added too? Is there any histogram
+// that can be checked?
+
 }  // namespace cert_verifier

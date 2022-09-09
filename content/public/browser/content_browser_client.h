@@ -946,7 +946,14 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual GeneratedCodeCacheSettings GetGeneratedCodeCacheSettings(
       BrowserContext* context);
 
-  // Informs the embedder that a certificate error has occured.  If
+  // Allows the embedder to control initialization of the
+  // CertVerifierServiceFactory. May return nullptr to use defaults. This must
+  // return the same parameters for the lifetime of the process. Will be called
+  // when the CertVerifierService is created or re-created.
+  virtual cert_verifier::mojom::CertVerifierServiceParamsPtr
+  GetCertVerifierServiceParams();
+
+  // Informs the embedder that a certificate error has occurred. If
   // |overridable| is true and if |strict_enforcement| is false, the user
   // can ignore the error and continue. The embedder can call the callback
   // asynchronously.

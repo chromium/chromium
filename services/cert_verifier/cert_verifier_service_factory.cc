@@ -16,11 +16,11 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/features.h"
 #include "net/cert/cert_net_fetcher.h"
 #include "net/cert/cert_verifier.h"
 #include "net/net_buildflags.h"
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"
-#include "services/cert_verifier/cert_verifier_creation.h"
 #include "services/cert_verifier/cert_verifier_service.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -41,6 +41,7 @@ namespace cert_verifier {
 namespace {
 
 internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
+    mojom::CertVerifierServiceParams* impl_params,
     mojo::PendingReceiver<mojom::CertVerifierService> receiver,
     mojom::CertVerifierCreationParamsPtr creation_params,
     const net::ChromeRootStoreData* root_store_data,
@@ -55,7 +56,7 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
   }
 
   std::unique_ptr<net::CertVerifierWithUpdatableProc> cert_verifier =
-      CreateCertVerifier(creation_params.get(), cert_net_fetcher,
+      CreateCertVerifier(impl_params, creation_params.get(), cert_net_fetcher,
                          root_store_data);
 
   // As an optimization, if the CertNetFetcher isn't used by the CertVerifier,
@@ -98,8 +99,21 @@ std::string GetHash(scoped_refptr<net::ParsedCertificate> cert) {
 }  // namespace
 
 CertVerifierServiceFactoryImpl::CertVerifierServiceFactoryImpl(
+    mojom::CertVerifierServiceParamsPtr params,
     mojo::PendingReceiver<mojom::CertVerifierServiceFactory> receiver)
-    : receiver_(this, std::move(receiver)) {}
+    : service_params_(std::move(params)), receiver_(this, std::move(receiver)) {
+  if (!service_params_) {
+    service_params_ = mojom::CertVerifierServiceParams::New();
+#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
+    service_params_->use_builtin_cert_verifier = base::FeatureList::IsEnabled(
+        net::features::kCertVerifierBuiltinFeature);
+#endif
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+    service_params_->use_chrome_root_store =
+        base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed);
+#endif
+  }
+}
 
 CertVerifierServiceFactoryImpl::~CertVerifierServiceFactoryImpl() = default;
 
@@ -111,19 +125,26 @@ void CertVerifierServiceFactoryImpl::GetNewCertVerifier(
   root_store_data = base::OptionalToPtr(root_store_data_);
 #endif
 
-  internal::CertVerifierServiceImpl* service_impl = GetNewCertVerifierImpl(
-      std::move(receiver), std::move(creation_params), root_store_data,
-      /*out_cert_net_fetcher=*/nullptr);
+  internal::CertVerifierServiceImpl* service_impl =
+      GetNewCertVerifierImpl(service_params_.get(), std::move(receiver),
+                             std::move(creation_params), root_store_data,
+                             /*out_cert_net_fetcher=*/nullptr);
 
   verifier_services_.insert(service_impl);
   service_impl->SetCertVerifierServiceFactory(weak_factory_.GetWeakPtr());
+}
+
+void CertVerifierServiceFactoryImpl::GetServiceParamsForTesting(
+    GetServiceParamsForTestingCallback callback) {
+  std::move(callback).Run(service_params_.Clone());
 }
 
 void CertVerifierServiceFactoryImpl::GetNewCertVerifierForTesting(
     mojo::PendingReceiver<mojom::CertVerifierService> receiver,
     mojom::CertVerifierCreationParamsPtr creation_params,
     scoped_refptr<CertNetFetcherURLLoader>* cert_net_fetcher_ptr) {
-  GetNewCertVerifierImpl(std::move(receiver), std::move(creation_params),
+  GetNewCertVerifierImpl(service_params_.get(), std::move(receiver),
+                         std::move(creation_params),
                          /*root_store_data=*/nullptr, cert_net_fetcher_ptr);
 }
 

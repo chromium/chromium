@@ -213,33 +213,6 @@ void OnAuthPrefsChanged(PrefService* local_state,
       CreateHttpAuthDynamicParams(local_state));
 }
 
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
-bool ShouldUseBuiltinCertVerifier(PrefService* local_state) {
-  // Note: intentionally checking the feature state here rather than falling
-  // back to CertVerifierImpl::kDefault, as browser-side network context
-  // initialization for TrialComparisonCertVerifier depends on knowing which
-  // verifier will be used.
-  return base::FeatureList::IsEnabled(
-      net::features::kCertVerifierBuiltinFeature);
-}
-#endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
-
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-bool ShouldUseChromeRootStore(PrefService* local_state) {
-#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
-  const PrefService::Preference* chrome_root_store_enabled_pref =
-      local_state->FindPreference(prefs::kChromeRootStoreEnabled);
-  if (chrome_root_store_enabled_pref->IsManaged())
-    return chrome_root_store_enabled_pref->GetValue()->GetBool();
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
-  // Note: intentionally checking the feature state here rather than falling
-  // back to ChromeRootImpl::kRootDefault, as browser-side network context
-  // initialization for TrialComparisonCertVerifier depends on knowing which
-  // verifier will be used.
-  return base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed);
-}
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-
 NetworkSandboxState IsNetworkSandboxEnabledInternal() {
   // If previously an attempt to launch the sandboxed process failed, then
   // launch unsandboxed.
@@ -727,9 +700,7 @@ void SystemNetworkContextManager::AddSSLConfigToNetworkContextParams(
 }
 
 void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
-    network::mojom::NetworkContextParams* network_context_params,
-    cert_verifier::mojom::CertVerifierCreationParams*
-        cert_verifier_creation_params) {
+    network::mojom::NetworkContextParams* network_context_params) {
   variations::UpdateCorsExemptHeaderForVariations(network_context_params);
   GoogleURLLoaderThrottle::UpdateCorsExemptHeader(network_context_params);
 
@@ -801,24 +772,6 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
   if (IsCertificateTransparencyEnabled()) {
     network_context_params->enforce_chrome_ct_policy = true;
   }
-
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
-  cert_verifier_creation_params->use_builtin_cert_verifier =
-      ShouldUseBuiltinCertVerifier(local_state_)
-          ? cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
-                kBuiltin
-          : cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
-                kSystem;
-#endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
-
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  cert_verifier_creation_params->use_chrome_root_store =
-      ShouldUseChromeRootStore(local_state_)
-          ? cert_verifier::mojom::CertVerifierCreationParams::ChromeRootImpl::
-                kRootChrome
-          : cert_verifier::mojom::CertVerifierCreationParams::ChromeRootImpl::
-                kRootSystem;
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 }
 
 network::mojom::NetworkContextParamsPtr
@@ -828,8 +781,7 @@ SystemNetworkContextManager::CreateDefaultNetworkContextParams() {
   cert_verifier::mojom::CertVerifierCreationParamsPtr
       cert_verifier_creation_params =
           cert_verifier::mojom::CertVerifierCreationParams::New();
-  ConfigureDefaultNetworkContextParams(network_context_params.get(),
-                                       cert_verifier_creation_params.get());
+  ConfigureDefaultNetworkContextParams(network_context_params.get());
   network_context_params->cert_verifier_params =
       content::GetCertVerifierParams(std::move(cert_verifier_creation_params));
   return network_context_params;

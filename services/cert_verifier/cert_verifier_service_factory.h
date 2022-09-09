@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/net_buildflags.h"
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"
+#include "services/cert_verifier/cert_verifier_creation.h"
 #include "services/cert_verifier/cert_verifier_service.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
@@ -32,7 +33,10 @@ namespace cert_verifier {
 class CertVerifierServiceFactoryImpl
     : public mojom::CertVerifierServiceFactory {
  public:
+  // Creates a CertVerifierServiceFactoryImpl. `params` may be null to use
+  // defaults.
   explicit CertVerifierServiceFactoryImpl(
+      mojom::CertVerifierServiceParamsPtr params,
       mojo::PendingReceiver<mojom::CertVerifierServiceFactory> receiver);
   ~CertVerifierServiceFactoryImpl() override;
 
@@ -40,6 +44,8 @@ class CertVerifierServiceFactoryImpl
   void GetNewCertVerifier(
       mojo::PendingReceiver<mojom::CertVerifierService> receiver,
       mojom::CertVerifierCreationParamsPtr creation_params) override;
+  void GetServiceParamsForTesting(
+      GetServiceParamsForTestingCallback callback) override;
 
   // Performs the same function as above, but stores a ref to the new
   // CertNetFetcherURLLoader in |*cert_net_fetcher_ptr|, if the
@@ -59,6 +65,8 @@ class CertVerifierServiceFactoryImpl
   void RemoveService(internal::CertVerifierServiceImpl* service_impl);
 
  private:
+  mojom::CertVerifierServiceParamsPtr service_params_;
+
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   // The most recent version of the Chrome Root Store that we've seen.
   absl::optional<net::ChromeRootStoreData> root_store_data_;
