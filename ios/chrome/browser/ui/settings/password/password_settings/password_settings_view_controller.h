@@ -7,22 +7,38 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_consumer.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
-// Protocol used to display Passwords Settings.
+// Delegate for the PasswordSettingsViewController to talk to its coordinator.
 @protocol PasswordSettingsPresentationDelegate
 
 // Method invoked when the page is dismissed.
 - (void)passwordSettingsViewControllerDidDismiss;
 
+// Method invoked when the user requests an export of their saved passwords.
+- (void)startExportFlow;
+
 @end
 
-@interface PasswordSettingsViewController : ChromeTableViewController
+// ViewController used to present settings and infrequently-used actions
+// relating to passwords. These are displayed in a submenu, separate from the
+// Password Manager itself.
+@interface PasswordSettingsViewController
+    : ChromeTableViewController <PasswordSettingsConsumer>
 
+// Delegate for communicating with the coordinator.
 @property(nonatomic, weak) id<PasswordSettingsPresentationDelegate>
     presentationDelegate;
 
 - (instancetype)init;
+
+// Returns a rect suitable for anchoring alerts in the password export flow.
+- (CGRect)sourceRectForPasswordExportAlerts;
+
+// Returns a view suitable for anchoring alerts in the password export flow.
+- (UIView*)sourceViewForPasswordExportAlerts;
 
 @end
 

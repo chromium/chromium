@@ -13,10 +13,9 @@ source_set("password") {
     "passwords_coordinator.mm",
     "passwords_mediator.h",
     "passwords_mediator.mm",
-    "saved_passwords_presenter_observer.h",
-    "saved_passwords_presenter_observer.mm",
   ]
   deps = [
+    ":common",
     ":password_ui",
     "//base",
     "//components/autofill/core/common",
@@ -49,6 +48,18 @@ source_set("password") {
     "//url",
   ]
   frameworks = [ "MobileCoreServices.framework" ]
+}
+
+source_set("common") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "saved_passwords_presenter_observer.h",
+    "saved_passwords_presenter_observer.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/password_manager/core/browser",
+  ]
 }
 
 source_set("password_ui") {

@@ -6,18 +6,95 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings/password_export_handler.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_view_controller.h"
+#import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@interface PasswordSettingsCoordinator () <PasswordSettingsPresentationDelegate>
+// Methods to update state in response to actions taken in the Export
+// ActivityViewController.
+@protocol ExportActivityViewControllerDelegate <NSObject>
+
+// Used to reset the export state when the activity view disappears.
+- (void)resetExport;
+
+@end
+
+// Convenience wrapper around ActivityViewController for presenting share sheet
+// at the end of the export flow. We do not use completionWithItemsHandler
+// because it fails sometimes; see crbug.com/820053.
+@interface ExportActivityViewController : UIActivityViewController
+
+- (instancetype)initWithActivityItems:(NSArray*)activityItems
+                             delegate:(id<ExportActivityViewControllerDelegate>)
+                                          delegate;
+
+@end
+
+@implementation ExportActivityViewController {
+  __weak id<ExportActivityViewControllerDelegate> _weakDelegate;
+}
+
+- (instancetype)initWithActivityItems:(NSArray*)activityItems
+                             delegate:(id<ExportActivityViewControllerDelegate>)
+                                          delegate {
+  self = [super initWithActivityItems:activityItems applicationActivities:nil];
+  if (self) {
+    _weakDelegate = delegate;
+  }
+
+  return self;
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+  [_weakDelegate resetExport];
+  [super viewDidDisappear:animated];
+}
+
+@end
+
+@interface PasswordSettingsCoordinator () <
+    ExportActivityViewControllerDelegate,
+    PasswordExportHandler,
+    PasswordSettingsPresentationDelegate> {
+  // Service which gives us a view on users' saved passwords.
+  std::unique_ptr<password_manager::SavedPasswordsPresenter>
+      _savedPasswordsPresenter;
+
+  // Alert informing the user that passwords are being prepared for
+  // export.
+  UIAlertController* _preparingPasswordsAlert;
+}
 
 // Main view controller for this coordinator.
 @property(nonatomic, strong)
     PasswordSettingsViewController* passwordSettingsViewController;
+
+// The coupled mediator.
+@property(nonatomic, strong) PasswordSettingsMediator* mediator;
+
+// Command dispatcher.
+@property(nonatomic, weak) id<ApplicationCommands> dispatcher;
+
+// Module handling reauthentication before accessing sensitive data.
+@property(nonatomic, strong) ReauthenticationModule* reauthModule;
 
 @end
 
@@ -32,10 +109,28 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  self.reauthModule = [[ReauthenticationModule alloc] init];
+
+  _savedPasswordsPresenter =
+      std::make_unique<password_manager::SavedPasswordsPresenter>(
+          IOSChromePasswordStoreFactory::GetForBrowserState(
+              self.browser->GetBrowserState(),
+              ServiceAccessType::EXPLICIT_ACCESS));
+
+  self.mediator = [[PasswordSettingsMediator alloc]
+      initWithReauthenticationModule:self.reauthModule
+             savedPasswordsPresenter:_savedPasswordsPresenter.get()
+                       exportHandler:self];
+
+  self.dispatcher = static_cast<id<ApplicationCommands>>(
+      self.browser->GetCommandDispatcher());
+
   self.passwordSettingsViewController =
       [[PasswordSettingsViewController alloc] init];
 
   self.passwordSettingsViewController.presentationDelegate = self;
+
+  self.mediator.consumer = self.passwordSettingsViewController;
 
   [self.baseViewController
       presentViewController:self.passwordSettingsViewController
@@ -45,12 +140,185 @@
 
 - (void)stop {
   self.passwordSettingsViewController = nil;
+  _preparingPasswordsAlert = nil;
 }
 
 #pragma mark - PasswordSettingsPresentationDelegate
 
 - (void)passwordSettingsViewControllerDidDismiss {
   [self.delegate passwordSettingsCoordinatorDidRemove:self];
+}
+
+- (void)startExportFlow {
+  UIAlertController* exportConfirmation = [UIAlertController
+      alertControllerWithTitle:nil
+                       message:l10n_util::GetNSString(
+                                   IDS_IOS_EXPORT_PASSWORDS_ALERT_MESSAGE)
+                preferredStyle:UIAlertControllerStyleActionSheet];
+  exportConfirmation.view.accessibilityIdentifier =
+      kPasswordSettingsExportConfirmViewId;
+
+  UIAlertAction* cancelAction =
+      [UIAlertAction actionWithTitle:l10n_util::GetNSString(
+                                         IDS_IOS_EXPORT_PASSWORDS_CANCEL_BUTTON)
+                               style:UIAlertActionStyleCancel
+                             handler:^(UIAlertAction* action){
+                             }];
+  [exportConfirmation addAction:cancelAction];
+
+  __weak PasswordSettingsCoordinator* weakSelf = self;
+  UIAlertAction* exportAction = [UIAlertAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS)
+                style:UIAlertActionStyleDefault
+              handler:^(UIAlertAction* action) {
+                PasswordSettingsCoordinator* strongSelf = weakSelf;
+                if (!strongSelf) {
+                  return;
+                }
+                [strongSelf.mediator userDidStartExportFlow];
+              }];
+
+  [exportConfirmation addAction:exportAction];
+
+  exportConfirmation.popoverPresentationController.sourceView =
+      [self.passwordSettingsViewController sourceViewForPasswordExportAlerts];
+  exportConfirmation.popoverPresentationController.sourceRect =
+      [self.passwordSettingsViewController sourceRectForPasswordExportAlerts];
+
+  [self.passwordSettingsViewController presentViewController:exportConfirmation
+                                                    animated:YES
+                                                  completion:nil];
+}
+
+#pragma mark - PasswordExportHandler
+
+- (void)showActivityViewWithActivityItems:(NSArray*)activityItems
+                        completionHandler:(void (^)(NSString* activityType,
+                                                    BOOL completed,
+                                                    NSArray* returnedItems,
+                                                    NSError* activityError))
+                                              completionHandler {
+  ExportActivityViewController* activityViewController =
+      [[ExportActivityViewController alloc] initWithActivityItems:activityItems
+                                                         delegate:self];
+  NSArray* excludedActivityTypes = @[
+    UIActivityTypeAddToReadingList, UIActivityTypeAirDrop,
+    UIActivityTypeCopyToPasteboard, UIActivityTypeOpenInIBooks,
+    UIActivityTypePostToFacebook, UIActivityTypePostToFlickr,
+    UIActivityTypePostToTencentWeibo, UIActivityTypePostToTwitter,
+    UIActivityTypePostToVimeo, UIActivityTypePostToWeibo, UIActivityTypePrint
+  ];
+  [activityViewController setExcludedActivityTypes:excludedActivityTypes];
+
+  [activityViewController setCompletionWithItemsHandler:completionHandler];
+
+  UIView* sourceView =
+      [self.passwordSettingsViewController sourceViewForPasswordExportAlerts];
+  CGRect sourceRect =
+      [self.passwordSettingsViewController sourceRectForPasswordExportAlerts];
+
+  activityViewController.modalPresentationStyle = UIModalPresentationPopover;
+  activityViewController.popoverPresentationController.sourceView = sourceView;
+  activityViewController.popoverPresentationController.sourceRect = sourceRect;
+  activityViewController.popoverPresentationController
+      .permittedArrowDirections =
+      UIPopoverArrowDirectionUp | UIPopoverArrowDirectionDown;
+
+  [self presentViewControllerForExportFlow:activityViewController];
+}
+
+- (void)showExportErrorAlertWithLocalizedReason:(NSString*)localizedReason {
+  UIAlertController* alertController = [UIAlertController
+      alertControllerWithTitle:l10n_util::GetNSString(
+                                   IDS_IOS_EXPORT_PASSWORDS_FAILED_ALERT_TITLE)
+                       message:localizedReason
+                preferredStyle:UIAlertControllerStyleAlert];
+  UIAlertAction* okAction =
+      [UIAlertAction actionWithTitle:l10n_util::GetNSString(IDS_OK)
+                               style:UIAlertActionStyleDefault
+                             handler:nil];
+  [alertController addAction:okAction];
+  [self presentViewControllerForExportFlow:alertController];
+}
+
+- (void)showPreparingPasswordsAlert {
+  _preparingPasswordsAlert = [UIAlertController
+      alertControllerWithTitle:
+          l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS_PREPARING_ALERT_TITLE)
+                       message:nil
+                preferredStyle:UIAlertControllerStyleAlert];
+  __weak PasswordSettingsCoordinator* weakSelf = self;
+  UIAlertAction* cancelAction =
+      [UIAlertAction actionWithTitle:l10n_util::GetNSString(
+                                         IDS_IOS_EXPORT_PASSWORDS_CANCEL_BUTTON)
+                               style:UIAlertActionStyleCancel
+                             handler:^(UIAlertAction*) {
+                               [weakSelf.mediator userDidCancelExportFlow];
+                             }];
+  [_preparingPasswordsAlert addAction:cancelAction];
+  [self.passwordSettingsViewController
+      presentViewController:_preparingPasswordsAlert
+                   animated:YES
+                 completion:nil];
+}
+
+- (void)showSetPasscodeDialog {
+  UIAlertController* alertController = [UIAlertController
+      alertControllerWithTitle:l10n_util::GetNSString(
+                                   IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_TITLE)
+                       message:
+                           l10n_util::GetNSString(
+                               IDS_IOS_SETTINGS_EXPORT_PASSWORDS_SET_UP_SCREENLOCK_CONTENT)
+                preferredStyle:UIAlertControllerStyleAlert];
+
+  ProceduralBlockWithURL blockOpenURL =
+      BlockToOpenURL(self.passwordSettingsViewController, self.dispatcher);
+  UIAlertAction* learnAction = [UIAlertAction
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_LEARN_HOW)
+                style:UIAlertActionStyleDefault
+              handler:^(UIAlertAction*) {
+                blockOpenURL(GURL(kPasscodeArticleURL));
+              }];
+  [alertController addAction:learnAction];
+  UIAlertAction* okAction =
+      [UIAlertAction actionWithTitle:l10n_util::GetNSString(IDS_OK)
+                               style:UIAlertActionStyleDefault
+                             handler:nil];
+  [alertController addAction:okAction];
+  alertController.preferredAction = okAction;
+  [self.passwordSettingsViewController presentViewController:alertController
+                                                    animated:YES
+                                                  completion:nil];
+}
+
+#pragma mark - ExportActivityViewControllerDelegate
+
+- (void)resetExport {
+  [self.mediator userDidCompleteExportFlow];
+}
+
+#pragma mark - Private
+
+// Helper method for presenting several ViewControllers used in the export flow.
+// Ensures that the "Preparing passwords" alert is dismissed when something is
+// ready to replace it.
+- (void)presentViewControllerForExportFlow:(UIViewController*)viewController {
+  if (_preparingPasswordsAlert.beingPresented) {
+    __weak PasswordSettingsCoordinator* weakSelf = self;
+    [_preparingPasswordsAlert
+        dismissViewControllerAnimated:YES
+                           completion:^{
+                             [weakSelf.passwordSettingsViewController
+                                 presentViewController:viewController
+                                              animated:YES
+                                            completion:nil];
+                           }];
+  } else {
+    [self.passwordSettingsViewController presentViewController:viewController
+                                                      animated:YES
+                                                    completion:nil];
+  }
 }
 
 @end
