@@ -129,6 +129,11 @@ views::View* DesktopMediaPickerViewsTestApi::GetSelectedListView() {
   return picker_->dialog_->GetSelectedController()->view_;
 }
 
+DesktopMediaListController*
+DesktopMediaPickerViewsTestApi::GetSelectedController() {
+  return picker_->dialog_->GetSelectedController();
+}
+
 views::Checkbox* DesktopMediaPickerViewsTestApi::GetAudioShareCheckbox() {
   return picker_->dialog_->audio_share_checkbox_;
 }

@@ -11,6 +11,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class DesktopMediaPickerViews;
+class DesktopMediaListController;
 
 namespace ui {
 class KeyEvent;
@@ -47,6 +48,7 @@ class DesktopMediaPickerViewsTestApi {
   DesktopMediaList::Type GetSelectedSourceListType() const;
   absl::optional<int> GetSelectedSourceId() const;
   views::View* GetSelectedListView();
+  DesktopMediaListController* GetSelectedController();
 
  private:
   const views::View* GetSourceAtIndex(size_t index) const;

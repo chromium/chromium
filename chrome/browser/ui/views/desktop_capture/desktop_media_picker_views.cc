@@ -746,6 +746,31 @@ void DesktopMediaPickerDialogView::OnSourceListLayoutChanged() {
   GetWidget()->CenterWindow(new_size);
 }
 
+void DesktopMediaPickerDialogView::OnDelegatedSourceListDismissed() {
+  if (!tabbed_pane_) {
+    Reject();
+    return;
+  }
+
+  size_t fallback_pane_index = std::distance(
+      categories_.begin(),
+      std::find_if(
+          categories_.begin(), categories_.end(), [](const auto& category) {
+            return category.type == DesktopMediaList::Type::kWebContents;
+          }));
+
+  if (fallback_pane_index >= categories_.size()) {
+    Reject();
+    return;
+  }
+
+  categories_[fallback_pane_index].controller->ClearSelection();
+
+  tabbed_pane_->SelectTabAt(fallback_pane_index);
+
+  GetCancelButton()->RequestFocus();
+}
+
 BEGIN_METADATA(DesktopMediaPickerDialogView, views::DialogDelegateView)
 END_METADATA
 

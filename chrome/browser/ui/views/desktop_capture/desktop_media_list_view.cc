@@ -162,6 +162,13 @@ DesktopMediaListView::GetSourceListListener() {
   return this;
 }
 
+void DesktopMediaListView::ClearSelection() {
+  DesktopMediaSourceView* view = GetSelectedView();
+  if (view) {
+    view->ClearSelection();
+  }
+}
+
 void DesktopMediaListView::OnSourceAdded(size_t index) {
   const DesktopMediaList::Source& source = controller_->GetSource(index);
 

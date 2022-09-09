@@ -89,6 +89,7 @@ class DesktopMediaListBase : public DesktopMediaList {
   void OnRefreshComplete();
 
   void OnDelegatedSourceListSelection();
+  void OnDelegatedSourceListDismissed();
 
   bool can_refresh() const { return !refresh_callback_.is_null(); }
 

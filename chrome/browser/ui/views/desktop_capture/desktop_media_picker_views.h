@@ -49,6 +49,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   void AcceptSpecificSource(content::DesktopMediaID source);
   void Reject();
   void OnSourceListLayoutChanged();
+  void OnDelegatedSourceListDismissed();
 
   // Relevant for UMA. (E.g. for DesktopMediaPickerViews to report
   // when the dialog gets dismissed.)

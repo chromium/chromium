@@ -117,6 +117,13 @@ bool DesktopMediaSourceView::GetSelected() const {
   return selected_;
 }
 
+void DesktopMediaSourceView::ClearSelection() {
+  if (!GetSelected())
+    return;
+  SetSelected(false);
+  parent_->OnSelectionChanged();
+}
+
 views::View* DesktopMediaSourceView::GetSelectedViewForGroup(int group) {
   Views neighbours;
   parent()->GetViewsInGroup(group, &neighbours);

@@ -34,7 +34,10 @@ DesktopMediaListController::DesktopMediaListController(
               switches::kThisTabCaptureAutoAccept)),
       auto_reject_this_tab_capture_(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kThisTabCaptureAutoReject)) {}
+              switches::kThisTabCaptureAutoReject)) {
+  DCHECK(dialog_);
+  DCHECK(media_list_);
+}
 
 DesktopMediaListController::~DesktopMediaListController() = default;
 
@@ -93,6 +96,11 @@ void DesktopMediaListController::HideView() {
 absl::optional<content::DesktopMediaID>
 DesktopMediaListController::GetSelection() const {
   return view_ ? view_->GetSelection() : absl::nullopt;
+}
+
+void DesktopMediaListController::ClearSelection() {
+  if (view_)
+    view_->ClearSelection();
 }
 
 void DesktopMediaListController::OnSourceListLayoutChanged() {
@@ -193,6 +201,11 @@ void DesktopMediaListController::OnDelegatedSourceListSelection() {
   if (view_) {
     view_->GetSourceListListener()->OnDelegatedSourceListSelection();
   }
+}
+
+void DesktopMediaListController::OnDelegatedSourceListDismissed() {
+  DCHECK(media_list_->IsSourceListDelegated());
+  dialog_->OnDelegatedSourceListDismissed();
 }
 
 void DesktopMediaListController::OnViewIsDeleting(views::View* view) {

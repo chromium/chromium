@@ -247,3 +247,10 @@ void DesktopMediaListBase::OnDelegatedSourceListSelection() {
   if (observer_)
     observer_->OnDelegatedSourceListSelection();
 }
+
+void DesktopMediaListBase::OnDelegatedSourceListDismissed() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(IsSourceListDelegated());
+  if (observer_)
+    observer_->OnDelegatedSourceListDismissed();
+}

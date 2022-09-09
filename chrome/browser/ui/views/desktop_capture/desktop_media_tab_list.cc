@@ -324,6 +324,12 @@ DesktopMediaTabList::GetSourceListListener() {
   return model_.get();
 }
 
+void DesktopMediaTabList::ClearSelection() {
+  // Changing the selection in the list will ensure that all appropriate change
+  // events are fired.
+  list_->Select(absl::nullopt);
+}
+
 void DesktopMediaTabList::ClearPreview() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   preview_label_->SetText(u"");

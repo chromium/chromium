@@ -48,6 +48,7 @@ class DesktopMediaTabList : public DesktopMediaListController::ListView {
   absl::optional<content::DesktopMediaID> GetSelection() override;
   DesktopMediaListController::SourceListListener* GetSourceListListener()
       override;
+  void ClearSelection() override;
 
   // Called to indicate the preview image of the source indicated by index has
   // been updated.

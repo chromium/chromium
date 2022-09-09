@@ -77,6 +77,9 @@ class DesktopMediaSourceView : public views::View {
   // Returns true if the source is selected.
   bool GetSelected() const;
 
+  // Clears selection from this item, or no-ops if it is not selected.
+  void ClearSelection();
+
   // views::View interface.
   views::View* GetSelectedViewForGroup(int group) override;
   bool IsGroupFocusTraversable() const override;

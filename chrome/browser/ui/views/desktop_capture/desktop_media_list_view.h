@@ -45,6 +45,7 @@ class DesktopMediaListView
   absl::optional<content::DesktopMediaID> GetSelection() override;
   DesktopMediaListController::SourceListListener* GetSourceListListener()
       override;
+  void ClearSelection() override;
 
   // DesktopMediaListController::SourceListListener:
   void OnSourceAdded(size_t index) override;

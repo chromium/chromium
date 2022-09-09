@@ -15,9 +15,11 @@
 
 using content::DesktopMediaID;
 
-FakeDesktopMediaList::FakeDesktopMediaList(DesktopMediaList::Type type)
-    : observer_(nullptr), type_(type) {}
-FakeDesktopMediaList::~FakeDesktopMediaList() {}
+FakeDesktopMediaList::FakeDesktopMediaList(DesktopMediaList::Type type,
+                                           bool is_source_list_delegated)
+    : type_(type), is_source_list_delegated_(is_source_list_delegated) {}
+
+FakeDesktopMediaList::~FakeDesktopMediaList() = default;
 
 void FakeDesktopMediaList::AddSource(int id) {
   AddSourceByFullMediaID(
@@ -98,9 +100,21 @@ void FakeDesktopMediaList::SetPreviewedSource(
     const absl::optional<content::DesktopMediaID>& id) {}
 
 bool FakeDesktopMediaList::IsSourceListDelegated() const {
-  return false;
+  return is_source_list_delegated_;
 }
 
-void FakeDesktopMediaList::FocusList() {}
+void FakeDesktopMediaList::FocusList() {
+  is_focused_ = true;
+}
 
-void FakeDesktopMediaList::HideList() {}
+void FakeDesktopMediaList::HideList() {
+  is_focused_ = false;
+}
+
+void FakeDesktopMediaList::OnDelegatedSourceListSelection() {
+  observer_->OnDelegatedSourceListSelection();
+}
+
+void FakeDesktopMediaList::OnDelegatedSourceListDismissed() {
+  observer_->OnDelegatedSourceListDismissed();
+}

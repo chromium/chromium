@@ -55,6 +55,8 @@ class DesktopMediaListController : public DesktopMediaListObserver,
     // to the backing DesktopMediaList.
     virtual SourceListListener* GetSourceListListener() = 0;
 
+    virtual void ClearSelection() = 0;
+
    protected:
     ListView() = default;
     ~ListView() override = default;
@@ -87,6 +89,8 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   // Returns the DesktopMediaID corresponding to the current selection in this
   // controller's view, if there is one.
   absl::optional<content::DesktopMediaID> GetSelection() const;
+
+  void ClearSelection();
 
   // These three methods are called by the view to inform the controller of
   // events. The first two indicate changes in the visual state of the view; the
@@ -126,6 +130,7 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   void OnSourceThumbnailChanged(int index) override;
   void OnSourcePreviewChanged(size_t index) override;
   void OnDelegatedSourceListSelection() override;
+  void OnDelegatedSourceListDismissed() override;
 
   // ViewObserver:
   void OnViewIsDeleting(views::View* view) override;
