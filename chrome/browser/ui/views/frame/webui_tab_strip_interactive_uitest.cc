@@ -44,8 +44,6 @@
 #include "ui/aura/window.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kMouseDragCompleteCustomEvent);
-
 class WebUITabStripInteractiveTest : public InProcessBrowserTest {
  public:
   WebUITabStripInteractiveTest() {
@@ -54,111 +52,9 @@ class WebUITabStripInteractiveTest : public InProcessBrowserTest {
 
   ~WebUITabStripInteractiveTest() override = default;
 
-  // Convenience method to locate and send a custom event of type `event_type`
-  // on the element with identifier `id`.
-  void SendCustomEvent(ui::ElementIdentifier id,
-                       ui::CustomElementEventType event_type) {
-    auto* const target =
-        ui::ElementTracker::GetElementTracker()->GetUniqueElement(
-            id, browser()->window()->GetElementContext());
-    ASSERT_NE(nullptr, target);
-    ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(target,
-                                                                  event_type);
-  }
-
- protected:
-  using WeakPtr = base::WeakPtr<WebUITabStripInteractiveTest>;
-
-  // Performs a drag by sending mouse events.
-  //
-  // Moves the cursor to `start` and begins a drag to `end` in screen
-  // coordinates (but does not release the mouse button). When the mouse reaches
-  // `end`, an event is sent.
-  //
-  // This can probably be turned into a common utility method for testing things
-  // that happen in the middle of a drag.
-  void PerformDragWithoutRelease(gfx::Point start,
-                                 gfx::Point end,
-                                 ui::ElementIdentifier target_id) {
-    ASSERT_TRUE(ui_controls::SendMouseMoveNotifyWhenDone(
-        start.x(), start.y(),
-        base::BindOnce(
-            [](WeakPtr test, gfx::Point end, ui::ElementIdentifier target_id) {
-              if (!test)
-                return;
-              ASSERT_TRUE(ui_controls::SendMouseEventsNotifyWhenDone(
-                  ui_controls::LEFT, ui_controls::DOWN,
-                  base::BindOnce(
-                      [](WeakPtr test, gfx::Point end,
-                         ui::ElementIdentifier target_id) {
-                        if (!test)
-                          return;
-                        ASSERT_TRUE(ui_controls::SendMouseMoveNotifyWhenDone(
-                            end.x(), end.y(),
-                            base::BindOnce(
-                                &WebUITabStripInteractiveTest::SendCustomEvent,
-                                test, target_id,
-                                kMouseDragCompleteCustomEvent)));
-                      },
-                      test, end, target_id)));
-            },
-            weak_ptr_factory_.GetWeakPtr(), end, target_id)));
-  }
-
-  WeakPtr GetWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void CancelPendingDrag() {
-    drag_ender_ = std::make_unique<DragEnder>(aura::client::GetDragDropClient(
-        browser()->window()->GetNativeWindow()->GetRootWindow()));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Ends any drag currently in progress or that starts during this object's
-  // lifetime. Used to prevent test hangs at the end of a test before TearDown()
-  // is run because a spurious drag starts. See discussion on crbug.com/1352602
-  // for discussion.
-  class DragEnder : public aura::client::DragDropClientObserver {
-   public:
-    explicit DragEnder(aura::client::DragDropClient* client) : client_(client) {
-      if (client_->IsDragDropInProgress()) {
-        PostCancel();
-      } else {
-        scoped_observation_.Observe(client_);
-      }
-    }
-
-    ~DragEnder() override = default;
-
-   private:
-    void OnDragStarted() override {
-      scoped_observation_.Reset();
-      PostCancel();
-    }
-
-    void PostCancel() {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(&DragEnder::CancelDrag,
-                                    weak_ptr_factory_.GetWeakPtr()));
-    }
-
-    void CancelDrag() { client_->DragCancel(); }
-
-    aura::client::DragDropClient* const client_;
-    base::ScopedObservation<aura::client::DragDropClient,
-                            aura::client::DragDropClientObserver>
-        scoped_observation_{this};
-    base::WeakPtrFactory<DragEnder> weak_ptr_factory_{this};
-  };
-
-  std::unique_ptr<DragEnder> drag_ender_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   base::test::ScopedFeatureList feature_override_;
   ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_{true};
-  base::WeakPtrFactory<WebUITabStripInteractiveTest> weak_ptr_factory_{this};
 };
 
 // Regression test for crbug.com/1027375.
@@ -310,6 +206,125 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest, CanUseInImmersiveMode) {
   EXPECT_TRUE(immersive_mode_controller->IsRevealed());
 }
 
+namespace {
+
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kMouseDragCompleteCustomEvent);
+
+// Ends any drag currently in progress or that starts during this object's
+// lifetime. Used to prevent test hangs at the end of a test before TearDown()
+// is run because a spurious drag starts. See crbug.com/1352602 for discussion.
+class DragEnder : public aura::client::DragDropClientObserver {
+ public:
+  explicit DragEnder(aura::client::DragDropClient* client) : client_(client) {
+    if (client_->IsDragDropInProgress()) {
+      PostCancel();
+    } else {
+      scoped_observation_.Observe(client_);
+    }
+  }
+
+  ~DragEnder() override = default;
+
+ private:
+  void OnDragStarted() override {
+    scoped_observation_.Reset();
+    PostCancel();
+  }
+
+  void PostCancel() {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&DragEnder::CancelDrag, weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void CancelDrag() { client_->DragCancel(); }
+
+  aura::client::DragDropClient* const client_;
+  base::ScopedObservation<aura::client::DragDropClient,
+                          aura::client::DragDropClientObserver>
+      scoped_observation_{this};
+  base::WeakPtrFactory<DragEnder> weak_ptr_factory_{this};
+};
+
+}  // namespace
+
+// Test fixture with additional logic for drag/drop.
+class WebUITabStripDragInteractiveTest : public WebUITabStripInteractiveTest {
+ public:
+  WebUITabStripDragInteractiveTest() = default;
+  ~WebUITabStripDragInteractiveTest() override = default;
+
+ protected:
+  // Performs a drag by sending mouse events.
+  //
+  // Moves the cursor to `start` and begins a drag to `end` in screen
+  // coordinates (but does not release the mouse button). When the mouse reaches
+  // `end`, an event is sent.
+  //
+  // This can probably be turned into a common utility method for testing things
+  // that happen in the middle of a drag.
+  void PerformDragWithoutRelease(gfx::Point start,
+                                 gfx::Point end,
+                                 ui::ElementIdentifier target_id) {
+    using WeakPtr = base::WeakPtr<WebUITabStripDragInteractiveTest>;
+    ASSERT_TRUE(ui_controls::SendMouseMoveNotifyWhenDone(
+        start.x(), start.y(),
+        base::BindOnce(
+            [](WeakPtr test, gfx::Point end, ui::ElementIdentifier target_id) {
+              if (!test)
+                return;
+              ASSERT_TRUE(ui_controls::SendMouseEventsNotifyWhenDone(
+                  ui_controls::LEFT, ui_controls::DOWN,
+                  base::BindOnce(
+                      [](WeakPtr test, gfx::Point end,
+                         ui::ElementIdentifier target_id) {
+                        if (!test)
+                          return;
+                        ASSERT_TRUE(ui_controls::SendMouseMoveNotifyWhenDone(
+                            end.x(), end.y(),
+                            base::BindOnce(&WebUITabStripDragInteractiveTest::
+                                               SendCustomEvent,
+                                           test, target_id,
+                                           kMouseDragCompleteCustomEvent)));
+                      },
+                      test, end, target_id)));
+            },
+            weak_ptr_factory_.GetWeakPtr(), end, target_id)));
+  }
+
+  void EndPendingDrag() {
+    // First, send a mouse-up to end the drag.
+    ui_controls::SendMouseEvents(ui_controls::LEFT, ui_controls::UP);
+
+    // Second, due to an interaction between the Linux Ash simulator and certain
+    // Chrome builds, intermittently, a drag operation can start spuriously
+    // after this sequence. Unfortunately, this happens between here and the
+    // TearDown() method, which soft-locks the test (see crbug.com/1352602 for
+    // discussion). Install an observer to detect if this happens and cancel the
+    // drag.
+    auto* const drag_client = aura::client::GetDragDropClient(
+        browser()->window()->GetNativeWindow()->GetRootWindow());
+    drag_ender_ = std::make_unique<DragEnder>(drag_client);
+  }
+
+ private:
+  // Convenience method to locate and send a custom event of type `event_type`
+  // on the element with identifier `id`.
+  void SendCustomEvent(ui::ElementIdentifier id,
+                       ui::CustomElementEventType event_type) {
+    auto* const target =
+        ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+            id, browser()->window()->GetElementContext());
+    ASSERT_NE(nullptr, target);
+    ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(target,
+                                                                  event_type);
+  }
+
+  std::unique_ptr<DragEnder> drag_ender_;
+  base::WeakPtrFactory<WebUITabStripDragInteractiveTest> weak_ptr_factory_{
+      this};
+};
+
 // Regression test for crbug.com/1286203.
 //
 // The original bug was a UAF that happened when a tab closed itself (e.g. via
@@ -339,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest, CanUseInImmersiveMode) {
 //
 // This sequence of events would crash without the associated bugfix. More
 // detail is provided in the actual test sequence.
-IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest, CloseTabDuringDrag) {
+IN_PROC_BROWSER_TEST_F(WebUITabStripDragInteractiveTest, CloseTabDuringDrag) {
   // Add a second tab and set up an object to instrument that tab.
   ASSERT_TRUE(AddTabAtIndex(-1, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabElementId);
@@ -505,23 +520,13 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest, CloseTabDuringDrag) {
                              // finished.
                              EXPECT_EQ(1,
                                        browser()->tab_strip_model()->count());
+
+                             // Be sure to clean up from the drag.
+                             EndPendingDrag();
                            })))
           .Build();
 
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
-
-  // Cleanup.
-
-  // First, send a mouse-up to end the drag.
-  ui_controls::SendMouseEvents(ui_controls::LEFT, ui_controls::UP);
-
-  // Second, due to an interaction between the Linux Ash simulator and certain
-  // Chrome builds, intermittently, a drag operation can start spuriously after
-  // this sequence. Unfortunately, this happens between the test body and the
-  // TearDown() method, which soft-locks the test (see crbug.com/1352602 for
-  // discussion). Install an observer to detect if this happens and cancel the
-  // drag.
-  CancelPendingDrag();
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
