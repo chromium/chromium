@@ -33,19 +33,23 @@ std::string ConvertUTF8(base::StringPiece str) {
 
 CSVPassword::CSVPassword() : status_(Status::kSemanticError) {}
 
-CSVPassword::CSVPassword(GURL url, std::string username, std::string password)
+CSVPassword::CSVPassword(GURL url,
+                         std::string username,
+                         std::string password,
+                         Status status)
     : url_(std::move(url)),
       username_(std::move(username)),
       password_(std::move(password)),
-      status_(Status::kOK) {}
+      status_(status) {}
 
 CSVPassword::CSVPassword(std::string invalid_url,
                          std::string username,
-                         std::string password)
+                         std::string password,
+                         Status status)
     : url_(base::unexpected(std::move(invalid_url))),
       username_(std::move(username)),
       password_(std::move(password)),
-      status_(Status::kOK) {}
+      status_(status) {}
 
 CSVPassword::CSVPassword(const ColumnMap& map, base::StringPiece row) {
   if (row.empty() || map.size() != kLabelCount) {

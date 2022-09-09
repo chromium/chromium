@@ -14,8 +14,21 @@
 namespace mojo {
 
 template <>
+struct EnumTraits<password_manager::mojom::CSVPassword_Status,
+                  password_manager::CSVPassword::Status> {
+  static password_manager::mojom::CSVPassword_Status ToMojom(
+      password_manager::CSVPassword::Status status);
+  static bool FromMojom(password_manager::mojom::CSVPassword_Status status,
+                        password_manager::CSVPassword::Status* output);
+};
+
+template <>
 struct StructTraits<password_manager::mojom::CSVPasswordDataView,
                     password_manager::CSVPassword> {
+  static password_manager::CSVPassword::Status status(
+      const password_manager::CSVPassword& r) {
+    return r.GetParseStatus();
+  }
   static const GURL url(const password_manager::CSVPassword& r) {
     base::expected<GURL, std::string> expected_url = r.GetURL();
     if (expected_url.has_value())

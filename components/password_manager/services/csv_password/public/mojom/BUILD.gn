@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//testing/test.gni")
 
 mojom("mojom") {
   sources = [ "csv_password_parser.mojom" ]
@@ -25,5 +26,26 @@ mojom("mojom") {
       traits_public_deps =
           [ "//components/password_manager/core/browser/import:csv" ]
     },
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "csv_password_parser_traits_unittest.cc" ]
+
+  deps = [
+    ":mojom",
+    "//base",
+    "//base/test:test_support",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gtest",
+  ]
+}
+
+test("csv_password_mojo_unittests") {
+  deps = [
+    ":unit_tests",
+    "//mojo/core/test:run_all_unittests",
   ]
 }

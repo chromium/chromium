@@ -9,14 +9,52 @@
 
 namespace mojo {
 
+password_manager::mojom::CSVPassword_Status
+EnumTraits<password_manager::mojom::CSVPassword_Status,
+           password_manager::CSVPassword::Status>::
+    ToMojom(password_manager::CSVPassword::Status status) {
+  switch (status) {
+    case password_manager::CSVPassword::Status::kOK:
+      return password_manager::mojom::CSVPassword_Status::kOK;
+    case password_manager::CSVPassword::Status::kSyntaxError:
+      return password_manager::mojom::CSVPassword_Status::kSyntaxError;
+    case password_manager::CSVPassword::Status::kSemanticError:
+      return password_manager::mojom::CSVPassword_Status::kSemanticError;
+  }
+  NOTREACHED();
+  return password_manager::mojom::CSVPassword_Status::kSyntaxError;
+}
+
+bool EnumTraits<password_manager::mojom::CSVPassword_Status,
+                password_manager::CSVPassword::Status>::
+    FromMojom(password_manager::mojom::CSVPassword_Status status,
+              password_manager::CSVPassword::Status* out) {
+  switch (status) {
+    case password_manager::mojom::CSVPassword_Status::kOK:
+      *out = password_manager::CSVPassword::Status::kOK;
+      return true;
+    case password_manager::mojom::CSVPassword_Status::kSyntaxError:
+      *out = password_manager::CSVPassword::Status::kSyntaxError;
+      return true;
+    case password_manager::mojom::CSVPassword_Status::kSemanticError:
+      *out = password_manager::CSVPassword::Status::kSemanticError;
+      return true;
+  }
+  return false;
+}
+
 // static
 bool StructTraits<password_manager::mojom::CSVPasswordDataView,
                   password_manager::CSVPassword>::
     Read(password_manager::mojom::CSVPasswordDataView data,
          password_manager::CSVPassword* out) {
+  password_manager::CSVPassword::Status status;
   GURL url;
   std::string username;
   std::string password;
+
+  if (!data.ReadStatus(&status))
+    return false;
   if (!data.ReadUrl(&url))
     return false;
   if (!data.ReadUsername(&username))
@@ -24,14 +62,15 @@ bool StructTraits<password_manager::mojom::CSVPasswordDataView,
   if (!data.ReadPassword(&password))
     return false;
   if (url.is_valid()) {
-    *out = password_manager::CSVPassword(url, username, password);
+    *out = password_manager::CSVPassword(url, username, password, status);
     return true;
   }
   absl::optional<std::string> invalid_url;
   if (!data.ReadInvalidUrl(&invalid_url))
     return false;
   DCHECK(invalid_url.has_value());
-  *out = password_manager::CSVPassword(invalid_url.value(), username, password);
+  *out = password_manager::CSVPassword(invalid_url.value(), username, password,
+                                       status);
   return true;
 }
 
