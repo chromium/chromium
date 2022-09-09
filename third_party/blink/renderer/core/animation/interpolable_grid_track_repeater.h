@@ -21,7 +21,8 @@ class CORE_EXPORT InterpolableGridTrackRepeater final
                                 const NGGridTrackRepeater& repeater);
   static std::unique_ptr<InterpolableGridTrackRepeater> Create(
       const NGGridTrackRepeater& repeater,
-      const Vector<GridTrackSize, 1>& repeater_track_sizes);
+      const Vector<GridTrackSize, 1>& repeater_track_sizes,
+      float zoom);
 
   Vector<GridTrackSize, 1> CreateTrackSizes(
       const CSSToLengthConversionData& conversion_data) const;

@@ -162,8 +162,9 @@ class InheritedGridTrackListChecker
 // static
 std::unique_ptr<InterpolableValue>
 CSSGridTemplatePropertyInterpolationType::CreateInterpolableGridTrackList(
-    const NGGridTrackList& track_list) {
-  return InterpolableGridTrackList::MaybeCreate(track_list);
+    const NGGridTrackList& track_list,
+    float zoom) {
+  return InterpolableGridTrackList::MaybeCreate(track_list, zoom);
 }
 
 PairwiseInterpolationValue
@@ -220,7 +221,8 @@ CSSGridTemplatePropertyInterpolationType::MaybeConvertInherit(
   conversion_checkers.push_back(std::make_unique<InheritedGridTrackListChecker>(
       parent_track_list, property_id_));
   return InterpolationValue(
-      CreateInterpolableGridTrackList(parent_track_list),
+      CreateInterpolableGridTrackList(parent_track_list,
+                                      parent_style->EffectiveZoom()),
       CSSGridTrackListNonInterpolableValue::Create(
           parent_computed_grid_track_list.named_grid_lines,
           parent_computed_grid_track_list.ordered_named_grid_lines));
@@ -235,7 +237,8 @@ InterpolationValue CSSGridTemplatePropertyInterpolationType::
           : style.GridTemplateRows();
   return InterpolationValue(
       CreateInterpolableGridTrackList(
-          computed_grid_track_list.track_sizes.NGTrackList()),
+          computed_grid_track_list.track_sizes.NGTrackList(),
+          style.EffectiveZoom()),
       CSSGridTrackListNonInterpolableValue::Create(
           computed_grid_track_list.named_grid_lines,
           computed_grid_track_list.ordered_named_grid_lines));
@@ -255,7 +258,8 @@ InterpolationValue CSSGridTemplatePropertyInterpolationType::MaybeConvertValue(
       value, computed_grid_track_list, *const_cast<StyleResolverState*>(state));
   return InterpolationValue(
       CreateInterpolableGridTrackList(
-          computed_grid_track_list.track_sizes.NGTrackList()),
+          computed_grid_track_list.track_sizes.NGTrackList(),
+          state->Style()->EffectiveZoom()),
       CSSGridTrackListNonInterpolableValue::Create(
           computed_grid_track_list.named_grid_lines,
           computed_grid_track_list.ordered_named_grid_lines));

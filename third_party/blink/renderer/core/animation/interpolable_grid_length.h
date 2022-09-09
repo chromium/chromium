@@ -31,7 +31,8 @@ class CORE_EXPORT InterpolableGridLength final : public InterpolableValue {
   InterpolableGridLength(std::unique_ptr<InterpolableValue> value,
                          InterpolableGridLengthType type);
   static std::unique_ptr<InterpolableGridLength> Create(
-      const GridLength& grid_length);
+      const GridLength& grid_length,
+      float zoom);
 
   GridLength CreateGridLength(
       const CSSToLengthConversionData& conversion_data) const;

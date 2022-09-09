@@ -50,7 +50,8 @@ InterpolableGridLength::InterpolableGridLength(
 
 // static
 std::unique_ptr<InterpolableGridLength> InterpolableGridLength::Create(
-    const GridLength& grid_length) {
+    const GridLength& grid_length,
+    float zoom) {
   std::unique_ptr<InterpolableValue> value;
   InterpolableGridLengthType type;
   Length length(Length::kAuto);
@@ -58,7 +59,7 @@ std::unique_ptr<InterpolableGridLength> InterpolableGridLength::Create(
     length = grid_length.length();
     value = grid_length.IsContentSized()
                 ? nullptr
-                : InterpolableLength::MaybeConvertLength(length, 1);
+                : InterpolableLength::MaybeConvertLength(length, zoom);
     type = GetInterpolableGridLengthType(length);
   } else {
     value = std::make_unique<InterpolableNumber>(grid_length.Flex());

@@ -22,14 +22,15 @@ InterpolableGridTrackSize::InterpolableGridTrackSize(
 
 // static
 std::unique_ptr<InterpolableGridTrackSize> InterpolableGridTrackSize::Create(
-    const GridTrackSize& grid_track_size) {
+    const GridTrackSize& grid_track_size,
+    float zoom) {
   std::unique_ptr<InterpolableValue> min_value;
   std::unique_ptr<InterpolableValue> max_value;
 
   min_value = InterpolableGridLength::Create(
-      grid_track_size.MinOrFitContentTrackBreadth());
+      grid_track_size.MinOrFitContentTrackBreadth(), zoom);
   max_value = InterpolableGridLength::Create(
-      grid_track_size.MaxOrFitContentTrackBreadth());
+      grid_track_size.MaxOrFitContentTrackBreadth(), zoom);
   DCHECK(min_value);
   DCHECK(max_value);
 

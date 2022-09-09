@@ -19,7 +19,8 @@ InterpolableGridTrackList::InterpolableGridTrackList(
 
 // static
 std::unique_ptr<InterpolableGridTrackList>
-InterpolableGridTrackList::MaybeCreate(const NGGridTrackList& track_list) {
+InterpolableGridTrackList::MaybeCreate(const NGGridTrackList& track_list,
+                                       float zoom) {
   if (track_list.HasAutoRepeater())
     return nullptr;
 
@@ -36,7 +37,8 @@ InterpolableGridTrackList::MaybeCreate(const NGGridTrackList& track_list) {
         track_list.RepeatIndex(i), track_list.RepeatSize(i),
         track_list.RepeatCount(i, 0), track_list.RepeatType(i));
     std::unique_ptr<InterpolableGridTrackRepeater> result =
-        InterpolableGridTrackRepeater::Create(repeater, repeater_track_sizes);
+        InterpolableGridTrackRepeater::Create(repeater, repeater_track_sizes,
+                                              zoom);
     DCHECK(result);
     values->Set(i, std::move(result));
   }

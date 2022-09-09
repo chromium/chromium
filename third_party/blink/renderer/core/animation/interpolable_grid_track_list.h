@@ -19,7 +19,8 @@ class CORE_EXPORT InterpolableGridTrackList : public InterpolableValue {
   InterpolableGridTrackList(std::unique_ptr<InterpolableList> values,
                             double progress);
   static std::unique_ptr<InterpolableGridTrackList> MaybeCreate(
-      const NGGridTrackList& track_list);
+      const NGGridTrackList& track_list,
+      float zoom);
 
   NGGridTrackList CreateNGGridTrackList(
       const CSSToLengthConversionData& conversion_data) const;

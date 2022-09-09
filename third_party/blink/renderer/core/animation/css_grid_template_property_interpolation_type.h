@@ -32,7 +32,8 @@ class CSSGridTemplatePropertyInterpolationType : public CSSInterpolationType {
                  double interpolation_fraction) const final;
 
   static std::unique_ptr<InterpolableValue> CreateInterpolableGridTrackList(
-      const NGGridTrackList& track_list);
+      const NGGridTrackList& track_list,
+      float zoom);
 
  private:
   InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,
