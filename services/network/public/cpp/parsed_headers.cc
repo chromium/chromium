@@ -4,6 +4,7 @@
 
 #include "services/network/public/cpp/parsed_headers.h"
 
+#include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
 #include "net/http/http_response_headers.h"
@@ -16,9 +17,11 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/link_header_parser.h"
 #include "services/network/public/cpp/origin_agent_cluster_parser.h"
+#include "services/network/public/cpp/supports_loading_mode/supports_loading_mode_parser.h"
 #include "services/network/public/cpp/timing_allow_origin_parser.h"
 #include "services/network/public/cpp/variants_header_parser.h"
 #include "services/network/public/cpp/x_frame_options_parser.h"
+#include "services/network/public/mojom/supports_loading_mode.mojom.h"
 
 namespace network {
 
@@ -61,6 +64,14 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
                                    &timing_allow_origin_value)) {
     parsed_headers->timing_allow_origin =
         ParseTimingAllowOrigin(timing_allow_origin_value);
+  }
+
+  network::mojom::SupportsLoadingModePtr result =
+      network::ParseSupportsLoadingMode(*headers);
+  if (!result.is_null() &&
+      base::Contains(result->supported_modes,
+                     network::mojom::LoadingMode::kCredentialedPrerender)) {
+    parsed_headers->is_credentialed_prerender = true;
   }
 
 #if BUILDFLAG(ENABLE_REPORTING)

@@ -14,6 +14,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/public/browser/prerender_trigger_type.h"
+#include "services/network/public/mojom/parsed_headers.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -183,8 +184,13 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
     return CANCEL;
   }
 
-  // TODO(https://crbug.com/1176120): Fallback to NoStatePrefetch.
   url::Origin prerendering_origin = url::Origin::Create(prerendering_url);
+  if (!prerender_host->IsBrowserInitiated() &&
+      prerendering_origin == prerender_host->initiator_origin()) {
+    is_same_site_cross_origin_prerender_ =
+        same_site_cross_origin_prerender_did_redirect_ = false;
+  }
+
   if (prerender_host->IsBrowserInitiated()) {
     // Cancel an embedder triggered prerendering whenever redirected, this
     // redirection can be same-origin or cross-origin to the initial
@@ -229,6 +235,9 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
                 : PrerenderHost::FinalStatus::kCrossOriginNavigation);
         return CANCEL;
       }
+
+      is_same_site_cross_origin_prerender_ = true;
+      same_site_cross_origin_prerender_did_redirect_ = is_redirection;
     } else {
       // Cancel prerendering if this is cross-origin prerendering, cross-origin
       // redirection during prerendering, or cross-origin navigation from a
@@ -247,6 +256,35 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
 NavigationThrottle::ThrottleCheckResult
 PrerenderNavigationThrottle::WillProcessResponse() {
   auto* navigation_request = NavigationRequest::From(navigation_handle());
+
+  FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
+  DCHECK(frame_tree_node->IsMainFrame());
+  DCHECK(frame_tree_node->frame_tree()->is_prerendering());
+
+  PrerenderHostRegistry* prerender_host_registry =
+      frame_tree_node->current_frame_host()
+          ->delegate()
+          ->GetPrerenderHostRegistry();
+
+  // https://wicg.github.io/nav-speculation/prerendering.html#navigate-fetch-patch
+  // "1. If browsingContext is a prerendering browsing context and
+  // responseOrigin is not same origin with incumbentNavigationOrigin, then:"
+  // "1.1. Let loadingModes be the result of getting the supported loading
+  // modes for response."
+  // "1.2. If loadingModes does not contain `credentialed-prerender`, then
+  // set response to a network error."
+  bool is_credentialed_prerender =
+      navigation_request->response() &&
+      navigation_request->response()->parsed_headers->is_credentialed_prerender;
+  if (!is_credentialed_prerender && is_same_site_cross_origin_prerender_) {
+    prerender_host_registry->CancelHost(
+        frame_tree_node->frame_tree_node_id(),
+        same_site_cross_origin_prerender_did_redirect_
+            ? PrerenderHost::FinalStatus::kCrossOriginRedirect
+            : PrerenderHost::FinalStatus::kCrossOriginNavigation);
+    return CANCEL;
+  }
+
   absl::optional<PrerenderHost::FinalStatus> cancel_reason;
 
   // TODO(crbug.com/1318739): Delay until activation instead of cancellation.
@@ -260,14 +298,6 @@ PrerenderNavigationThrottle::WillProcessResponse() {
   }
 
   if (cancel_reason.has_value()) {
-    FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
-    DCHECK(frame_tree_node->frame_tree()->is_prerendering());
-
-    PrerenderHostRegistry* prerender_host_registry =
-        frame_tree_node->current_frame_host()
-            ->delegate()
-            ->GetPrerenderHostRegistry();
-
     prerender_host_registry->CancelHost(frame_tree_node->frame_tree_node_id(),
                                         cancel_reason.value());
     return CANCEL;

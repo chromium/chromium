@@ -37,9 +37,11 @@ TEST(SupportsLoadingModeParserTest, Valid) {
               SupportedModesAre(mojom::LoadingMode::kDefault,
                                 mojom::LoadingMode::kUncredentialedPrefetch));
   EXPECT_THAT(ParseSupportsLoadingMode(
-                  "uncredentialed-prerender, uncredentialed-prefetch"),
+                  "uncredentialed-prerender, credentialed-prerender, "
+                  "uncredentialed-prefetch"),
               SupportedModesAre(mojom::LoadingMode::kDefault,
                                 mojom::LoadingMode::kUncredentialedPrerender,
+                                mojom::LoadingMode::kCredentialedPrerender,
                                 mojom::LoadingMode::kUncredentialedPrefetch));
 }
 

@@ -33,6 +33,9 @@ class PrerenderNavigationThrottle : public NavigationThrottle {
   explicit PrerenderNavigationThrottle(NavigationHandle* navigation_handle);
 
   ThrottleCheckResult WillStartOrRedirectRequest(bool is_redirection);
+
+  bool is_same_site_cross_origin_prerender_ = false;
+  bool same_site_cross_origin_prerender_did_redirect_ = false;
 };
 
 }  // namespace content

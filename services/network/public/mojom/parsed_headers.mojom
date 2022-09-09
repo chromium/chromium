@@ -80,6 +80,12 @@ struct ParsedHeaders {
 
   TimingAllowOrigin? timing_allow_origin;
 
+  // TODO(crbug/1356449): Refactor this to handle Supports-Loading-Mode header
+  // more generally.
+  // Whether the parsed Supports-Loading-Mode header contains the
+  // "credential-prerender" value.
+  bool is_credentialed_prerender = false;
+
   // Parsed mapping of endpoint names to URLs from the Reporting-Endpoints
   // header. Will be null if that header was not present in the response.
   // URLs are represented here as strings, and have not been validated.

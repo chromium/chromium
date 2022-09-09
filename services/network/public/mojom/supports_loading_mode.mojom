@@ -21,6 +21,9 @@ enum LoadingMode {
   // itself after loading when credentials become available, dynamically.
   kUncredentialedPrerender,
 
+  // A mode in which a response opts in to same site cross origin prerendering.
+  kCredentialedPrerender,
+
   // A mode to opt-in to being loaded in a fenced frame. The navigation in the
   // root fenced frame node should not be successful if the mode is not present.
   kFencedFrame,
