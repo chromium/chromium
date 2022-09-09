@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/browsing_topics/browsing_topics_document_supplement.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink.h"
@@ -133,6 +134,7 @@ ScriptPromise BrowsingTopicsDocumentSupplement::GetBrowsingTopics(
   document_host_->GetBrowsingTopics(WTF::Bind(
       [](ScriptPromiseResolver* resolver,
          BrowsingTopicsDocumentSupplement* supplement,
+         base::TimeTicks start_time,
          mojom::blink::GetBrowsingTopicsResultPtr result) {
         DCHECK(resolver);
         DCHECK(supplement);
@@ -160,9 +162,13 @@ ScriptPromise BrowsingTopicsDocumentSupplement::GetBrowsingTopics(
           result_array.push_back(result_topic);
         }
 
+        base::TimeDelta time_to_resolve = base::TimeTicks::Now() - start_time;
+        base::UmaHistogramTimes("BrowsingTopics.JavaScriptAPI.TimeToResolve",
+                                time_to_resolve);
+
         resolver->Resolve(result_array);
       },
-      WrapPersistent(resolver), WrapPersistent(this)));
+      WrapPersistent(resolver), WrapPersistent(this), base::TimeTicks::Now()));
 
   return promise;
 }

@@ -84,6 +84,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BrowsingTopics.JavaScriptAPI.TimeToResolve" units="ms"
+    expires_after="2023-09-08">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Records the time it takes for document.browsingTopics() to resolve. Recorded
+    each time the promise is resolved.
+  </summary>
+</histogram>
+
 <histogram name="BrowsingTopics.SiteDataStorage.InitStatus"
     enum="BooleanSuccess" expires_after="2023-03-14">
   <owner>yaoxia@chromium.org</owner>
