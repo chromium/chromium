@@ -84,6 +84,10 @@ constexpr base::TimeDelta kDefaultKeyAutoRepeatDelay = base::Milliseconds(500);
 constexpr base::TimeDelta kDefaultKeyAutoRepeatInterval =
     base::Milliseconds(50);
 
+// Constants for notification.
+const char kPrivacyIndicatorsNotificationIdPrefix[] = "privacy-indicators";
+const char kPrivacyIndicatorsNotifierId[] = "ash.privacy-indicators";
+
 }  // namespace ash
 
 #endif  // ASH_CONSTANTS_ASH_CONSTANTS_H_

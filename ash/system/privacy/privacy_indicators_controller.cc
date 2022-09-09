@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -18,9 +19,6 @@
 namespace ash {
 
 namespace {
-
-const char kPrivacyIndicatorsNotificationIdPrefix[] = "privacy-indicators";
-const char kPrivacyIndicatorsNotifierId[] = "ash.privacy-indicators";
 
 // Keep track of the button indexes in the privacy indicators notification.
 enum PrivacyIndicatorsNotificationButton { kAppLaunch, kAppSettings };
@@ -96,6 +94,8 @@ void ModifyPrivacyIndicatorsNotification(
   optional_fields.pinned = true;
   // Make the notification low priority so that it is silently added (no popup).
   optional_fields.priority = message_center::LOW_PRIORITY;
+
+  optional_fields.parent_vector_small_image = &kPrivacyIndicatorsIcon;
 
   // Note: The order of buttons added here should match the order in
   // PrivacyIndicatorsNotificationButton.

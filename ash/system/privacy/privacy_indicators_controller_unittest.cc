@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_constants.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/message_center/unified_message_center_view.h"
@@ -21,8 +22,6 @@
 namespace ash {
 
 namespace {
-
-const char kPrivacyIndicatorsNotificationIdPrefix[] = "privacy-indicators";
 
 class TestDelegate : public PrivacyIndicatorsNotificationDelegate {
  public:

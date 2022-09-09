@@ -4,6 +4,7 @@
 
 #include "ash/system/privacy/screen_security_notification_controller.h"
 
+#include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -89,6 +90,15 @@ void ScreenSecurityNotificationController::CreateNotification(
   bool have_privacy_indicators_style =
       features::IsPrivacyIndicatorsEnabled() && !is_capture;
 
+  auto* screen_share_notifier_id = features::IsPrivacyIndicatorsEnabled()
+                                       ? kPrivacyIndicatorsNotifierId
+                                       : kNotifierScreenShare;
+
+  auto screen_share_catalog_name =
+      features::IsPrivacyIndicatorsEnabled()
+          ? NotificationCatalogName::kPrivacyIndicators
+          : NotificationCatalogName::kScreenSecurity;
+
   std::unique_ptr<Notification> notification = CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       is_capture ? kScreenCaptureNotificationId : kScreenShareNotificationId,
@@ -96,8 +106,9 @@ void ScreenSecurityNotificationController::CreateNotification(
       message, std::u16string() /* display_source */, GURL(),
       message_center::NotifierId(
           message_center::NotifierType::SYSTEM_COMPONENT,
-          is_capture ? kNotifierScreenCapture : kNotifierScreenShare,
-          NotificationCatalogName::kScreenSecurity),
+          is_capture ? kNotifierScreenCapture : screen_share_notifier_id,
+          is_capture ? NotificationCatalogName::kScreenSecurity
+                     : screen_share_catalog_name),
       data, std::move(delegate),
       have_privacy_indicators_style ? kPrivacyIndicatorsScreenShareIcon
                                     : kNotificationScreenshareIcon,
@@ -105,8 +116,10 @@ void ScreenSecurityNotificationController::CreateNotification(
 
   notification->set_pinned(true);
 
-  if (have_privacy_indicators_style)
+  if (have_privacy_indicators_style) {
     notification->set_accent_color_id(ui::kColorAshPrivacyIndicatorsBackground);
+    notification->set_parent_vector_small_image(kPrivacyIndicatorsIcon);
+  }
 
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));

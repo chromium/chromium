@@ -135,6 +135,12 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // retain VectorIcon reference.  https://crbug.com/760866
   const gfx::VectorIcon* vector_small_image = &gfx::kNoneIcon;
 
+  // Vector image to display on the parent notification of this notification,
+  // illustrating the source of the group notification that this notification
+  // belongs to. Optional. Note that all notification belongs to the same group
+  // should have the same `parent_vector_small_image`.
+  const gfx::VectorIcon* parent_vector_small_image = &gfx::kNoneIcon;
+
   // Items to display on the notification. Only applicable for notifications
   // that have type NOTIFICATION_TYPE_MULTIPLE.
   std::vector<NotificationItem> items;
@@ -389,6 +395,13 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // See detailed comment in RichNotificationData::vector_small_image.
   void set_vector_small_image(const gfx::VectorIcon& image) {
     optional_fields_.vector_small_image = &image;
+  }
+
+  const gfx::VectorIcon& parent_vector_small_image() const {
+    return *optional_fields_.parent_vector_small_image;
+  }
+  void set_parent_vector_small_image(const gfx::VectorIcon& image) {
+    optional_fields_.parent_vector_small_image = &image;
   }
 
   // Mask the color of |small_image| to the given |color|.

@@ -29,6 +29,7 @@
 #include "ui/message_center/public/cpp/notifier_id.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #endif
 
@@ -162,9 +163,17 @@ Notification* MessageCenterImpl::FindParentNotification(
   // For a notification to have a parent notification, they must have identical
   // notifier_ids. To make sure that the notifications come from
   // the same website for the same user. Also make sure to only group
-  // notifications from web pages with valid origin urls.
-  if (notification->origin_url().is_empty() ||
-      notification->notifier_id().type != NotifierType::WEB_PAGE) {
+  // notifications from web pages with valid origin urls. For system
+  // notifications, currently we only group privacy indicators notification.
+  bool is_privacy_indicators_notification = false;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  is_privacy_indicators_notification =
+      notification->notifier_id().id == ash::kPrivacyIndicatorsNotifierId;
+#endif
+
+  if (!is_privacy_indicators_notification &&
+      (notification->origin_url().is_empty() ||
+       notification->notifier_id().type != NotifierType::WEB_PAGE)) {
     return nullptr;
   }
 
