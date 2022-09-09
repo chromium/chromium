@@ -78,7 +78,8 @@ constexpr char kExampleContent[] = R"({
   "url1": "http://a:123/b",
   "url2": "https://abc.de/12",
   "str1": "123",
-  "str2": "abc" })";
+  "str2": "abc",
+  "emptyStr": "" })";
 
 TEST_F(PrintingOAuth2HttpExchangeTest, ConnectionError) {
   HttpExchangeDefinition def;
@@ -288,11 +289,22 @@ TEST_P(ParamRequired, ParamStringGet) {
   def.response_content = kExampleContent;
   auto status = Exchange(std::move(def));
   EXPECT_EQ(status, printing::oauth2::StatusCode::kOK);
-  // If the param exists, these methods work the same way for any `required`.
+  // If the param exists and is non-empty, this method works the same way for
+  // any `required`.
+  const bool req = GetParam();
   std::string value;
-  EXPECT_TRUE(http_exchange_.ParamStringGet("str1", GetParam(), &value));
+  EXPECT_TRUE(http_exchange_.ParamStringGet("str1", req, &value));
   EXPECT_EQ(value, "123");
-  EXPECT_TRUE(http_exchange_.ParamStringGet("str2", GetParam(), nullptr));
+  EXPECT_TRUE(http_exchange_.ParamStringGet("str2", req, nullptr));
+  // Empty string is not allowed when the parameter is required.
+  const bool out = http_exchange_.ParamStringGet("emptyStr", req, &value);
+  if (req) {
+    EXPECT_FALSE(out);
+    EXPECT_EQ(value, "123");  // the previous value was preserved
+  } else {
+    EXPECT_TRUE(out);
+    EXPECT_EQ(value, "");
+  }
 }
 
 TEST_P(ParamRequired, ParamStringEquals) {

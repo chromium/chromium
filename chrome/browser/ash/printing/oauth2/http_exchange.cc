@@ -338,6 +338,10 @@ bool HttpExchange::ParamStringGet(const std::string& name,
     error_msg_ = base::StrCat({"Field ", name, " must be a string"});
     return false;
   }
+  if (required && node->GetString().empty()) {
+    error_msg_ = base::StrCat({"Field ", name, " cannot be empty"});
+    return false;
+  }
   if (value) {
     *value = node->GetString();
   }

@@ -141,6 +141,7 @@ class HttpExchange {
   // If the field exists and is a string its value is stored in `value`.
   // Sets the error message and returns false when one of the following occurs:
   // * the field is missing and `required` == true
+  // * the field contains an empty string and `required` == true
   // * the field is not a string.
   bool ParamStringGet(const std::string& name,
                       bool required,
