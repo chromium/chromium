@@ -84,6 +84,8 @@ const AcceleratorData kDebugAcceleratorData[] = {
     {true, ui::VKEY_K, kDebugModifier, DEBUG_TRIGGER_CRASH},
     {true, ui::VKEY_G, kDebugModifier, DEBUG_TOGGLE_HUD_DISPLAY},
     {true, ui::VKEY_D, kDebugModifier, DEBUG_TOGGLE_DARK_MODE},
+    {true, ui::VKEY_OEM_4, kDebugModifier, DEBUG_FLOAT_FLING_LEFT},
+    {true, ui::VKEY_OEM_6, kDebugModifier, DEBUG_FLOAT_FLING_RIGHT},
 };
 
 const size_t kDebugAcceleratorDataLength = std::size(kDebugAcceleratorData);

@@ -1766,6 +1766,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case TOGGLE_RESIZE_LOCK_MENU:
       return CanHandleToggleResizeLockMenu();
     case TOGGLE_FLOATING:
+    case DEBUG_FLOAT_FLING_LEFT:
+    case DEBUG_FLOAT_FLING_RIGHT:
       return CanHandleToggleFloatingWindow();
 
     // The following are always enabled.
@@ -2225,6 +2227,10 @@ void AcceleratorControllerImpl::PerformAction(
       break;
     case TOGGLE_DOCKED_MAGNIFIER:
       HandleToggleDockedMagnifier();
+      break;
+    case DEBUG_FLOAT_FLING_LEFT:
+    case DEBUG_FLOAT_FLING_RIGHT:
+      debug::PerformDebugActionIfEnabled(action);
       break;
     case TOGGLE_FLOATING:
       HandleToggleFloating();

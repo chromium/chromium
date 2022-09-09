@@ -22,7 +22,10 @@
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/touch/touch_devices_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_state.h"
+#include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -170,6 +173,23 @@ void HandleTriggerHUDDisplay() {
   hud_display::HUDDisplayView::Toggle();
 }
 
+void HandleFloatFling(AcceleratorAction action) {
+  aura::Window* window = window_util::GetActiveWindow();
+  DCHECK(window);
+
+  auto* window_state = WindowState::Get(window);
+  if (!window_state)
+    return;
+
+  auto* float_controller = Shell::Get()->float_controller();
+
+  if (!window_state->IsFloated())
+    float_controller->ToggleFloat(window);
+
+  float_controller->OnFlingOrSwipeForTablet(
+      window, /*left=*/action == DEBUG_FLOAT_FLING_LEFT, /*up=*/true);
+}
+
 }  // namespace
 
 void PrintUIHierarchies() {
@@ -244,6 +264,10 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
       break;
     case DEBUG_TOGGLE_HUD_DISPLAY:
       HandleTriggerHUDDisplay();
+      break;
+    case DEBUG_FLOAT_FLING_LEFT:
+    case DEBUG_FLOAT_FLING_RIGHT:
+      HandleFloatFling(action);
       break;
     default:
       break;
