@@ -166,6 +166,7 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
     zwp_text_input_v1_send_delete_surrounding_text(
         text_input_, static_cast<uint32_t>(offsets[0]),
         static_cast<uint32_t>(offsets[1] - offsets[0]));
+    wl_client_flush(client());
   }
 
   void SendKey(const ui::KeyEvent& event) override {
