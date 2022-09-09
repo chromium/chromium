@@ -8,6 +8,7 @@ import android.os.SystemClock;
 import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
@@ -40,6 +41,10 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
     private final BooleanSupplier mIsCctFinishing;
     private final BrowserServicesIntentDataProvider mIntent;
 
+    // Getting the package name from the Intent only works when the client is still connected.
+    @Nullable
+    private final String mCachedPackageName;
+
     private long mOnStartTimestampMs;
 
     // This should be kept in sync with the definition |CustomTabsCloseCause|
@@ -62,6 +67,7 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
         mNavigationController = navigationController;
         mIsCctFinishing = isCctFinishing;
         mIntent = intent;
+        mCachedPackageName = mIntent.getClientPackageName();
     }
 
     @Override
@@ -86,7 +92,6 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
 
         if (mIsCctFinishing.getAsBoolean()) {
             long time = System.currentTimeMillis() / DateUtils.SECOND_IN_MILLIS;
-            String packageName = mIntent.getClientPackageName();
             boolean wasUserClose = mCloseCause != CloseCause.AUTOCLOSE;
             boolean isPartial = mIntent.isPartialHeightCustomTab();
 
@@ -95,8 +100,8 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
             // class entirely. Just for the proof-of-concept I tacked the native method onto another
             // class that already have natives.
             CustomTabsOpenTimeRecorderJni.get().recordCustomTabSession(time,
-                    (packageName != null ? packageName : ""), recordDuration, wasUserClose,
-                    isPartial);
+                    (mCachedPackageName != null ? mCachedPackageName : ""), recordDuration,
+                    wasUserClose, isPartial);
         }
 
         mOnStartTimestampMs = 0;
