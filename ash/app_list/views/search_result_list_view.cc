@@ -491,7 +491,7 @@ void SearchResultListView::OnThemeChanged() {
   SearchResultContainerView::OnThemeChanged();
   title_label_->SetEnabledColor(
       AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-          kDeprecatedSearchBoxTextDefaultColor));
+          kDeprecatedSearchBoxTextDefaultColor, GetWidget()));
 }
 
 void SearchResultListView::SearchResultActivated(SearchResultView* view,

@@ -37,7 +37,6 @@ constexpr int kBorderThichness = 2;
 KSVSearchBoxView::KSVSearchBoxView(QueryHandler query_handler)
     : query_handler_(std::move(query_handler)) {
   SetSearchBoxBackgroundCornerRadius(kBorderCornerRadius);
-  UpdateBackgroundColor(GetBackgroundColor());
   search_box()->SetBackgroundColor(SK_ColorTRANSPARENT);
   search_box()->SetColor(GetPrimaryTextColor());
   SetPlaceholderTextAttributes();
@@ -128,12 +127,10 @@ void KSVSearchBoxView::UpdateSearchBoxBorder() {
   if (ShouldUseFocusedColors()) {
     SetBorder(views::CreateRoundedRectBorder(
         kBorderThichness, kBorderCornerRadius, GetBorderColor()));
-    UpdateBackgroundColor(GetBackgroundColor());
     return;
   }
   SetBorder(views::CreateRoundedRectBorder(
       kBorderThichness, kBorderCornerRadius, GetBorderColor()));
-  UpdateBackgroundColor(GetBackgroundColor());
 }
 
 void KSVSearchBoxView::OnSearchBoxActiveChanged(bool active) {
@@ -170,7 +167,8 @@ SkColor KSVSearchBoxView::GetBackgroundColor() {
 
   return ShouldUseFocusedColors()
              ? gfx::kGoogleGrey100
-             : ash::AppListColorProvider::Get()->GetSearchBoxBackgroundColor();
+             : ash::AppListColorProvider::Get()->GetSearchBoxBackgroundColor(
+                   GetWidget());
 }
 
 SkColor KSVSearchBoxView::GetBorderColor() {

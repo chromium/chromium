@@ -54,6 +54,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia.h"
@@ -146,7 +147,8 @@ class SearchBoxFocusHost : public views::View {
 
 SkColor GetBackgroundShieldColor(const std::vector<SkColor>& colors,
                                  float color_opacity,
-                                 bool is_tablet_mode) {
+                                 bool is_tablet_mode,
+                                 views::Widget* app_list_widget) {
   const U8CPU sk_opacity_value = static_cast<U8CPU>(255 * color_opacity);
   SkColor default_color =
       SkColorSetA(kAppListBackgroundColor, sk_opacity_value);
@@ -166,7 +168,7 @@ SkColor GetBackgroundShieldColor(const std::vector<SkColor>& colors,
   }
 
   return SkColorSetA(AppListColorProvider::Get()->GetAppListBackgroundColor(
-                         is_tablet_mode, default_color),
+                         is_tablet_mode, default_color, app_list_widget),
                      sk_opacity_value);
 }
 
@@ -434,16 +436,12 @@ class StateTransitionNotifier : public ui::ImplicitAnimationObserver {
 // The view for the app list background shield which changes color and radius.
 class AppListBackgroundShieldView : public views::View {
  public:
-  explicit AppListBackgroundShieldView(int shelf_background_corner_radius,
-                                       bool is_tablet_mode)
-      : color_(AppListColorProvider::Get()->GetAppListBackgroundColor(
-            is_tablet_mode,
-            /*default_color*/ kAppListBackgroundColor)),
-        shelf_background_corner_radius_(shelf_background_corner_radius) {
+  explicit AppListBackgroundShieldView(int shelf_background_corner_radius)
+      : shelf_background_corner_radius_(shelf_background_corner_radius) {
     SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     layer()->SetFillsBoundsOpaquely(false);
     SetBackgroundRadius(shelf_background_corner_radius_);
-    layer()->SetColor(color_);
+    layer()->SetColor(gfx::kPlaceholderColor);
     layer()->SetName("launcher/BackgroundShield");
   }
 
@@ -609,8 +607,8 @@ void AppListView::InitContents() {
   DCHECK(!search_box_view_);
 
   auto app_list_background_shield =
-      std::make_unique<AppListBackgroundShieldView>(
-          delegate_->GetShelfSize() / 2, delegate_->IsInTabletMode());
+      std::make_unique<AppListBackgroundShieldView>(delegate_->GetShelfSize() /
+                                                    2);
   app_list_background_shield->UpdateBackground(
       /*use_blur*/ !delegate_->IsInTabletMode() && is_background_blur_enabled_);
   app_list_background_shield_ =
@@ -838,7 +836,7 @@ void AppListView::Layout() {
 }
 
 void AppListView::OnThemeChanged() {
-  views::View::OnThemeChanged();
+  views::WidgetDelegateView::OnThemeChanged();
   SetBackgroundShieldColor();
 }
 
@@ -1954,9 +1952,10 @@ void AppListView::SetBackgroundShieldColor() {
     color_opacity = kAppListOpacityWithBlur;
   }
 
-  app_list_background_shield_->UpdateColor(
-      GetBackgroundShieldColor(delegate_->GetWallpaperProminentColors(),
-                               color_opacity, delegate_->IsInTabletMode()));
+  DCHECK(GetWidget());
+  app_list_background_shield_->UpdateColor(GetBackgroundShieldColor(
+      delegate_->GetWallpaperProminentColors(), color_opacity,
+      delegate_->IsInTabletMode(), GetWidget()));
 }
 
 bool AppListView::ShouldIgnoreScrollEvents() {

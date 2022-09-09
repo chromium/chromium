@@ -34,6 +34,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -89,7 +90,8 @@ SearchResultSuggestionChipView::SearchResultSuggestionChipView(
                                2 * ripple_radius);
         const AppListColorProvider* const color_provider =
             AppListColorProvider::Get();
-        const SkColor bg_color = color_provider->GetSearchBoxBackgroundColor();
+        const SkColor bg_color =
+            color_provider->GetSearchBoxBackgroundColor(host->GetWidget());
         return std::make_unique<views::FloodFillInkDropRipple>(
             host->size(), host->GetLocalBounds().InsetsFrom(bounds),
             views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
@@ -152,8 +154,8 @@ void SearchResultSuggestionChipView::OnPaintBackground(gfx::Canvas* canvas) {
   gfx::Rect bounds = GetContentsBounds();
 
   // Background.
-  flags.setColor(
-      AppListColorProvider::Get()->GetSuggestionChipBackgroundColor());
+  flags.setColor(AppListColorProvider::Get()->GetSuggestionChipBackgroundColor(
+      GetWidget()));
   canvas->DrawRoundRect(bounds, height() / 2, flags);
 
   // Focus Ring should only be visible when keyboard traversal is occurring.
@@ -181,7 +183,7 @@ bool SearchResultSuggestionChipView::OnKeyPressed(const ui::KeyEvent& event) {
 void SearchResultSuggestionChipView::OnThemeChanged() {
   views::View::OnThemeChanged();
   text_view_->SetEnabledColor(
-      AppListColorProvider::Get()->GetSuggestionChipTextColor());
+      AppListColorProvider::Get()->GetSuggestionChipTextColor(GetWidget()));
   SchedulePaint();
 }
 
@@ -254,8 +256,6 @@ void SearchResultSuggestionChipView::InitLayout() {
   text_view_->SetFontList(SharedAppListConfig::instance()
                               .search_result_recommendation_title_font());
   SetText(std::u16string());
-  text_view_->SetEnabledColor(
-      AppListColorProvider::Get()->GetSuggestionChipTextColor());
 }
 
 void SearchResultSuggestionChipView::OnButtonPressed(const ui::Event& event) {
