@@ -1648,8 +1648,6 @@ crbug.com/1121942 virtual/layout_ng_printing/printing/page-break-avoid.html [ Fa
 crbug.com/1121942 virtual/layout_ng_printing/printing/page-orientation-propagated.html [ Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/page-orientation.html [ Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/single-line-must-not-be-split-into-two-pages.html [ Failure ]
-crbug.com/1121942 virtual/layout_ng_printing/printing/thead-tfoot-containing-svg-repeat-extra-pages.html [ Crash Failure ]
-crbug.com/1121942 virtual/layout_ng_printing/printing/thead-tfoot-containing-svg-repeat.html [ Crash Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/webgl-oversized-printing.html [ Skip ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/width-overflow.html [ Failure ]
 

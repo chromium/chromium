@@ -1313,13 +1313,18 @@ bool CanPaintMultipleFragments(const LayoutObject& layout_object) {
 
   // It's somewhat problematic and strange to repeat most kinds of
   // LayoutReplaced (how would that make sense for iframes, for instance?). For
-  // now, just allow regular images. We may consider expanding this list in the
-  // future. One reason for being extra strict for the time being is legacy
-  // layout / paint code, but it may be that it doesn't make a lot of sense to
-  // repeat too many types of replaced content, even if we should become
-  // technically capable of doing it.
-  if (layout_box->IsLayoutReplaced())
-    return layout_box->IsLayoutImage() && !layout_box->IsMedia();
+  // now, just allow regular images and SVGs. We may consider expanding this
+  // list in the future. One reason for being extra strict for the time being is
+  // legacy layout / paint code, but it may be that it doesn't make a lot of
+  // sense to repeat too many types of replaced content, even if we should
+  // become technically capable of doing it.
+  if (layout_box->IsLayoutReplaced()) {
+    if (layout_box->IsLayoutImage() && !layout_box->IsMedia())
+      return true;
+    if (layout_box->IsSVGRoot())
+      return true;
+    return false;
+  }
 
   if (auto* element = DynamicTo<Element>(layout_box->GetNode())) {
     // We're already able to support *some* types of form controls, but for now,
