@@ -186,14 +186,6 @@ SkColor AppListColorProviderImpl::GetFolderBackgroundColor() const {
   return SK_ColorWHITE;
 }
 
-SkColor AppListColorProviderImpl::GetFolderBubbleColor() const {
-  if (ShouldUseDarkLightColors()) {
-    return ash_color_provider_->GetControlsLayerColor(
-        ColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
-  }
-  return SkColorSetA(gfx::kGoogleGrey100, 0x7A);
-}
-
 SkColor AppListColorProviderImpl::GetFolderTitleTextColor() const {
   if (ShouldUseDarkLightColors()) {
     return ash_color_provider_->GetContentLayerColor(

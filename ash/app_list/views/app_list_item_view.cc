@@ -22,6 +22,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/dot_indicator.h"
 #include "base/auto_reset.h"
@@ -45,6 +46,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -290,6 +292,9 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
   icon_ = AddChildView(std::make_unique<IconImageView>());
 
   if (is_folder_) {
+    icon_->SetBackground(views::CreateThemedSolidBackground(
+        kColorAshControlBackgroundColorInactive));
+
     // Set background blur for folder icon and use mask layer to clip it into
     // circle. Note that blur is only enabled in tablet mode to improve dragging
     // smoothness.
@@ -804,7 +809,8 @@ void AppListItemView::PaintButtonContents(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setAntiAlias(true);
-  flags.setColor(AppListColorProvider::Get()->GetFolderBubbleColor());
+  flags.setColor(
+      GetColorProvider()->GetColor(kColorAshControlBackgroundColorInactive));
   canvas->DrawCircle(center, preview_circle_radius, flags);
 }
 

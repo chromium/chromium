@@ -37,6 +37,7 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/system_shadow.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
@@ -161,8 +162,8 @@ class BackgroundAnimation : public AppListFolderView::Animation,
     to_rect -= background_view_->bounds().OffsetFromOrigin();
     const SkColor background_color =
         AppListColorProvider::Get()->GetFolderBackgroundColor();
-    const SkColor bubble_color =
-        AppListColorProvider::Get()->GetFolderBubbleColor();
+    const SkColor bubble_color = folder_view_->GetColorProvider()->GetColor(
+        kColorAshControlBackgroundColorInactive);
     const SkColor from_color = show_ ? bubble_color : background_color;
     const SkColor to_color = show_ ? background_color : bubble_color;
 

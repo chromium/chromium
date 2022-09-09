@@ -11,16 +11,13 @@
 
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_item_list.h"
-#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/canvas_image_source.h"
@@ -37,9 +34,6 @@ constexpr int kIconShadowBlur = 5;
 
 // The shadow color of icon.
 constexpr SkColor kIconShadowColor = SkColorSetA(SK_ColorBLACK, 31);
-
-// The default bubble color.
-constexpr SkColor kDefaultBubbleColor = SkColorSetA(gfx::kGoogleGrey100, 0x7A);
 
 // Generates the folder icon with the top 4 child item icons laid in 2x2 tile.
 class FolderImageSource : public gfx::CanvasImageSource {
@@ -118,17 +112,6 @@ void FolderImageSource::DrawIcon(gfx::Canvas* canvas,
 }
 
 void FolderImageSource::Draw(gfx::Canvas* canvas) {
-  // Draw circle for folder bubble.
-  cc::PaintFlags flags;
-  flags.setStyle(cc::PaintFlags::kFill_Style);
-  flags.setAntiAlias(true);
-  flags.setColor(AppListColorProvider::Get()
-                     ? AppListColorProvider::Get()->GetFolderBubbleColor()
-                     : kDefaultBubbleColor);
-  const gfx::PointF bubble_center(size().width() / 2, size().height() / 2);
-  canvas->DrawCircle(bubble_center, app_list_config_.folder_bubble_radius(),
-                     flags);
-
   if (icons_.size() == 0)
     return;
 

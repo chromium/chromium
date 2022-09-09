@@ -47,7 +47,6 @@ class AppListColorProviderImpl : public AppListColorProvider {
   SkColor GetSearchBoxCardBackgroundColor(
       const views::Widget* app_list_widget) const override;
   SkColor GetFolderBackgroundColor() const override;
-  SkColor GetFolderBubbleColor() const override;
   SkColor GetFolderTitleTextColor() const override;
   SkColor GetFolderHintTextColor() const override;
   SkColor GetFolderNameBorderColor(bool active) const override;

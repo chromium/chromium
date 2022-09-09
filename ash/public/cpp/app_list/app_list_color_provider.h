@@ -56,7 +56,6 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
   virtual SkColor GetSearchBoxCardBackgroundColor(
       const views::Widget* app_list_widget) const = 0;
   virtual SkColor GetFolderBackgroundColor() const = 0;
-  virtual SkColor GetFolderBubbleColor() const = 0;
   virtual SkColor GetFolderTitleTextColor() const = 0;
   virtual SkColor GetFolderHintTextColor() const = 0;
   virtual SkColor GetFolderNameBorderColor(bool active) const = 0;
