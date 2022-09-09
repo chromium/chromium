@@ -302,6 +302,7 @@ void GetNonNativeLocalPathMimeType(
           arc_url,
           base::BindOnce(&GetMimeTypeAfterGetMimeTypeForArcContentFileSystem,
                          std::move(callback)));
+      return;
     } else if (base::FilePath(arc::kDocumentsProviderMountPointPath)
                    .IsParent(path)) {
       auto* root_map =
@@ -333,8 +334,8 @@ void GetNonNativeLocalPathMimeType(
       root->ResolveToContentUrl(
           path, base::BindOnce(&OnResolveToContentUrl, std::move(callback),
                                profile, path));
+      return;
     }
-    return;
   }
 
   // We don't have a way to obtain metadata other than drive and FSP. Returns an
