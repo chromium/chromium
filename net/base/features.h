@@ -504,6 +504,8 @@ NET_EXPORT extern const base::Feature kAlpsClientHintParsing;
 // Whether to kill the session on Error::kAcceptChMalformed.
 NET_EXPORT extern const base::Feature kShouldKillSessionOnAcceptChMalformed;
 
+NET_EXPORT extern const base::Feature kCaseInsensitiveCookiePrefix;
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

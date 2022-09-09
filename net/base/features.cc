@@ -360,4 +360,7 @@ const base::Feature kAlpsClientHintParsing{"AlpsClientHintParsing",
 const base::Feature kShouldKillSessionOnAcceptChMalformed{
     "ShouldKillSessionOnAcceptChMalformed", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kCaseInsensitiveCookiePrefix{
+    "CaseInsensitiveCookiePrefix", base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace net::features

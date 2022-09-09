@@ -2417,18 +2417,51 @@ TEST(CanonicalCookieTest, SecureCookiePrefix) {
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
 
-  // A typoed prefix does not have to be Secure.
-  EXPECT_TRUE(CanonicalCookie::Create(
-      https_url, "__secure-A=B; Secure", creation_time, server_time,
-      absl::nullopt /* cookie_partition_key */));
-  EXPECT_TRUE(CanonicalCookie::Create(
+  // Prefixes are case insensitive.
+  EXPECT_FALSE(CanonicalCookie::Create(
       https_url, "__secure-A=C;", creation_time, server_time,
       absl::nullopt /* cookie_partition_key */));
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
+  EXPECT_FALSE(CanonicalCookie::Create(
+      https_url, "__SECURE-A=C;", creation_time, server_time,
+      absl::nullopt /* cookie_partition_key */));
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
+  EXPECT_FALSE(CanonicalCookie::Create(
+      https_url, "__SeCuRe-A=C;", creation_time, server_time,
+      absl::nullopt /* cookie_partition_key */));
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
+
+  {
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitAndDisableFeature(
+        features::kCaseInsensitiveCookiePrefix);
+
+    EXPECT_TRUE(CanonicalCookie::Create(
+        https_url, "__secure-A=C;", creation_time, server_time,
+        absl::nullopt /* cookie_partition_key */));
+    EXPECT_TRUE(CanonicalCookie::Create(
+        https_url, "__SECURE-A=C;", creation_time, server_time,
+        absl::nullopt /* cookie_partition_key */));
+    EXPECT_TRUE(CanonicalCookie::Create(
+        https_url, "__SeCuRe-A=C;", creation_time, server_time,
+        absl::nullopt /* cookie_partition_key */));
+  }
+
+  // A typoed prefix does not have to be Secure.
   EXPECT_TRUE(CanonicalCookie::Create(
       https_url, "__SecureA=B; Secure", creation_time, server_time,
       absl::nullopt /* cookie_partition_key */));
   EXPECT_TRUE(CanonicalCookie::Create(
       https_url, "__SecureA=C;", creation_time, server_time,
+      absl::nullopt /* cookie_partition_key */));
+  EXPECT_TRUE(CanonicalCookie::Create(
+      https_url, "_Secure-A=C;", creation_time, server_time,
+      absl::nullopt /* cookie_partition_key */));
+  EXPECT_TRUE(CanonicalCookie::Create(
+      https_url, "Secure-A=C;", creation_time, server_time,
       absl::nullopt /* cookie_partition_key */));
 
   // A __Secure- cookie can't be set on a non-secure origin.
@@ -2526,12 +2559,54 @@ TEST(CanonicalCookieTest, HostCookiePrefix) {
       https_url, "__Host-A=B; Secure; Path=/;", creation_time, server_time,
       absl::nullopt /* cookie_partition_key */));
 
+  // Prefixes are case insensitive.
+  EXPECT_FALSE(CanonicalCookie::Create(
+      http_url, "__host-A=B; Domain=" + domain + "; Path=/;", creation_time,
+      server_time, absl::nullopt /* cookie_partition_key */, &status));
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
+
+  EXPECT_FALSE(CanonicalCookie::Create(
+      http_url, "__HOST-A=B; Domain=" + domain + "; Path=/;", creation_time,
+      server_time, absl::nullopt /* cookie_partition_key */, &status));
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
+
+  EXPECT_FALSE(CanonicalCookie::Create(
+      http_url, "__HoSt-A=B; Domain=" + domain + "; Path=/;", creation_time,
+      server_time, absl::nullopt /* cookie_partition_key */, &status));
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::EXCLUDE_INVALID_PREFIX}));
+
+  {
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitAndDisableFeature(
+        features::kCaseInsensitiveCookiePrefix);
+
+    EXPECT_TRUE(CanonicalCookie::Create(
+        http_url, "__host-A=B; Domain=" + domain + "; Path=/;", creation_time,
+        server_time, absl::nullopt /* cookie_partition_key */, &status));
+
+    EXPECT_TRUE(CanonicalCookie::Create(
+        http_url, "__HOST-A=B; Domain=" + domain + "; Path=/;", creation_time,
+        server_time, absl::nullopt /* cookie_partition_key */, &status));
+
+    EXPECT_TRUE(CanonicalCookie::Create(
+        http_url, "__HoSt-A=B; Domain=" + domain + "; Path=/;", creation_time,
+        server_time, absl::nullopt /* cookie_partition_key */, &status));
+  }
+
   // Rules don't apply for a typoed prefix.
   EXPECT_TRUE(CanonicalCookie::Create(
-      http_url, "__host-A=B; Domain=" + domain + "; Path=/;", creation_time,
-      server_time, absl::nullopt /* cookie_partition_key */));
-  EXPECT_TRUE(CanonicalCookie::Create(
       https_url, "__HostA=B; Domain=" + domain + "; Secure;", creation_time,
+      server_time, absl::nullopt /* cookie_partition_key */));
+
+  EXPECT_TRUE(CanonicalCookie::Create(
+      https_url, "_Host-A=B; Domain=" + domain + "; Secure;", creation_time,
+      server_time, absl::nullopt /* cookie_partition_key */));
+
+  EXPECT_TRUE(CanonicalCookie::Create(
+      https_url, "Host-A=B; Domain=" + domain + "; Secure;", creation_time,
       server_time, absl::nullopt /* cookie_partition_key */));
 
   // Hidden __Host- prefixes should be rejected.
@@ -3026,9 +3101,14 @@ TEST(CanonicalCookieTest, TestSetCreationDate) {
   EXPECT_EQ(now, cookie->CreationDate());
 }
 
+// TODO(bingler) Expand this
 TEST(CanonicalCookieTest, TestPrefixHistograms) {
   base::HistogramTester histograms;
   const char kCookiePrefixHistogram[] = "Cookie.CookiePrefix";
+  const char kCookiePrefixVariantHistogram[] =
+      "Cookie.CookiePrefix.CaseVariant";
+  const char kVariantValidHistogram[] = "Cookie.CookiePrefix.CaseVariantValid";
+  const char kVariantCountHistogram[] = "Cookie.CookiePrefix.CaseVariantCount";
   GURL https_url("https://www.example.test");
   base::Time creation_time = base::Time::Now();
   absl::optional<base::Time> server_time = absl::nullopt;
@@ -3067,6 +3147,46 @@ TEST(CanonicalCookieTest, TestPrefixHistograms) {
       absl::nullopt /* cookie_partition_key */));
   histograms.ExpectBucketCount(kCookiePrefixHistogram,
                                CanonicalCookie::COOKIE_PREFIX_SECURE, 2);
+
+  // Test prefix case variants
+  const int sensitive_value_host = histograms.GetBucketCount(
+      kCookiePrefixHistogram, CanonicalCookie::COOKIE_PREFIX_HOST);
+  const int sensitive_value_secure = histograms.GetBucketCount(
+      kCookiePrefixHistogram, CanonicalCookie::COOKIE_PREFIX_SECURE);
+
+  EXPECT_TRUE(CanonicalCookie::Create(
+      https_url, "__SECURE-A=B; Path=/; Secure", creation_time, server_time,
+      absl::nullopt /* cookie_partition_key */));
+  histograms.ExpectBucketCount(kCookiePrefixVariantHistogram,
+                               CanonicalCookie::COOKIE_PREFIX_SECURE, 1);
+  histograms.ExpectBucketCount(kCookiePrefixHistogram,
+                               CanonicalCookie::COOKIE_PREFIX_SECURE,
+                               sensitive_value_secure);
+
+  EXPECT_TRUE(CanonicalCookie::Create(
+      https_url, "__HOST-A=B; Path=/; Secure", creation_time, server_time,
+      absl::nullopt /* cookie_partition_key */));
+  histograms.ExpectBucketCount(kCookiePrefixVariantHistogram,
+                               CanonicalCookie::COOKIE_PREFIX_HOST, 1);
+  histograms.ExpectBucketCount(kCookiePrefixHistogram,
+                               CanonicalCookie::COOKIE_PREFIX_HOST,
+                               sensitive_value_host);
+
+  // True indicates a variant
+  histograms.ExpectBucketCount(kVariantCountHistogram, true, 2);
+  histograms.ExpectBucketCount(kVariantCountHistogram, false, 4);
+
+  // Invalid variants
+  EXPECT_FALSE(CanonicalCookie::Create(
+      https_url, "__SECURE-A=B", creation_time, server_time,
+      absl::nullopt /* cookie_partition_key */));
+
+  EXPECT_FALSE(CanonicalCookie::Create(
+      https_url, "__HOST-A=B;", creation_time, server_time,
+      absl::nullopt /* cookie_partition_key */));
+
+  histograms.ExpectBucketCount(kVariantValidHistogram, true, 2);
+  histograms.ExpectBucketCount(kVariantValidHistogram, false, 2);
 }
 
 TEST(CanonicalCookieTest, BuildCookieLine) {
@@ -5315,6 +5435,9 @@ TEST(CanonicalCookieTest, TestHasHiddenPrefixName) {
       {"a__Secure-abc=123", false},
       {"__Host-=", true},
       {"__Host-=123", true},
+      {"__host-=123", true},
+      {"__HOST-=123", true},
+      {"__HoSt-=123", true},
       {"__Host-abc=", true},
       {"__Host-abc=123", true},
       {" __Host-abc=123", true},
@@ -5323,6 +5446,9 @@ TEST(CanonicalCookieTest, TestHasHiddenPrefixName) {
       {"\t __Host-abc=", true},
       {"__Secure-=", true},
       {"__Secure-=123", true},
+      {"__secure-=123", true},
+      {"__SECURE-=123", true},
+      {"__SeCuRe-=123", true},
       {"__Secure-abc=", true},
       {"__Secure-abc=123", true},
       {" __Secure-abc=123", true},

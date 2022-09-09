@@ -10,9 +10,11 @@
 #include <tuple>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "net/base/features.h"
 #include "net/base/net_export.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_constants.h"
@@ -474,11 +476,22 @@ class NET_EXPORT CanonicalCookie {
 
   // Returns the CookiePrefix (or COOKIE_PREFIX_NONE if none) that
   // applies to the given cookie |name|.
-  static CookiePrefix GetCookiePrefix(const std::string& name);
+  static CookiePrefix GetCookiePrefix(const std::string& name) {
+    return GetCookiePrefix(name,
+                           base::FeatureList::IsEnabled(
+                               net::features::kCaseInsensitiveCookiePrefix));
+  }
+
+  // Returns the CookiePrefix (or COOKIE_PREFIX_NONE if none) that
+  // applies to the given cookie |name|. If `check_insensitively` is true then
+  // the string comparison will be performed case insensitively.
+  static CookiePrefix GetCookiePrefix(const std::string& name,
+                                      bool check_insensitively);
   // Records histograms to measure how often cookie prefixes appear in
   // the wild and how often they would be blocked.
-  static void RecordCookiePrefixMetrics(CookiePrefix prefix,
-                                        bool is_cookie_valid);
+  static void RecordCookiePrefixMetrics(CookiePrefix prefix_case_sensitive,
+                                        CookiePrefix prefix_case_insensitive,
+                                        bool is_insensitive_prefix_valid);
   // Returns true if a prefixed cookie does not violate any of the rules
   // for that cookie.
   static bool IsCookiePrefixValid(CookiePrefix prefix,

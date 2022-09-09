@@ -576,9 +576,22 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
       parsed_cookie, creation_time, cookie_server_time);
   cookie_expires = ValidateAndAdjustExpiryDate(cookie_expires, creation_time);
 
-  CookiePrefix prefix = GetCookiePrefix(parsed_cookie.Name());
-  bool is_cookie_prefix_valid = IsCookiePrefixValid(prefix, url, parsed_cookie);
-  RecordCookiePrefixMetrics(prefix, is_cookie_prefix_valid);
+  CookiePrefix prefix_case_sensitive =
+      GetCookiePrefix(parsed_cookie.Name(), /*check_insensitively=*/false);
+  CookiePrefix prefix_case_insensitive =
+      GetCookiePrefix(parsed_cookie.Name(), /*check_insensitively=*/true);
+
+  bool is_sensitive_prefix_valid =
+      IsCookiePrefixValid(prefix_case_sensitive, url, parsed_cookie);
+  bool is_insensitive_prefix_valid =
+      IsCookiePrefixValid(prefix_case_insensitive, url, parsed_cookie);
+  bool is_cookie_prefix_valid =
+      base::FeatureList::IsEnabled(net::features::kCaseInsensitiveCookiePrefix)
+          ? is_insensitive_prefix_valid
+          : is_sensitive_prefix_valid;
+
+  RecordCookiePrefixMetrics(prefix_case_sensitive, prefix_case_insensitive,
+                            is_insensitive_prefix_valid);
 
   if (parsed_cookie.Name() == "") {
     is_cookie_prefix_valid = !HasHiddenPrefixName(parsed_cookie.Value());
@@ -1526,23 +1539,51 @@ std::string CanonicalCookie::BuildCookieAttributesLine(
 
 // static
 CanonicalCookie::CookiePrefix CanonicalCookie::GetCookiePrefix(
-    const std::string& name) {
+    const std::string& name,
+    bool check_insensitively) {
   const char kSecurePrefix[] = "__Secure-";
   const char kHostPrefix[] = "__Host-";
-  if (base::StartsWith(name, kSecurePrefix, base::CompareCase::SENSITIVE))
+
+  base::CompareCase case_sensitivity =
+      check_insensitively ? base::CompareCase::INSENSITIVE_ASCII
+                          : base::CompareCase::SENSITIVE;
+
+  if (base::StartsWith(name, kSecurePrefix, case_sensitivity))
     return CanonicalCookie::COOKIE_PREFIX_SECURE;
-  if (base::StartsWith(name, kHostPrefix, base::CompareCase::SENSITIVE))
+  if (base::StartsWith(name, kHostPrefix, case_sensitivity))
     return CanonicalCookie::COOKIE_PREFIX_HOST;
   return CanonicalCookie::COOKIE_PREFIX_NONE;
 }
 
 // static
 void CanonicalCookie::RecordCookiePrefixMetrics(
-    CanonicalCookie::CookiePrefix prefix,
-    bool is_cookie_valid) {
+    CookiePrefix prefix_case_sensitive,
+    CookiePrefix prefix_case_insensitive,
+    bool is_insensitive_prefix_valid) {
   const char kCookiePrefixHistogram[] = "Cookie.CookiePrefix";
-  UMA_HISTOGRAM_ENUMERATION(kCookiePrefixHistogram, prefix,
+  UMA_HISTOGRAM_ENUMERATION(kCookiePrefixHistogram, prefix_case_sensitive,
                             CanonicalCookie::COOKIE_PREFIX_LAST);
+
+  // For this to be true there must a prefix, so we know it's not
+  // COOKIE_PREFIX_NONE.
+  bool is_case_variant = prefix_case_insensitive != prefix_case_sensitive;
+
+  if (is_case_variant) {
+    const char kCookiePrefixVariantHistogram[] =
+        "Cookie.CookiePrefix.CaseVariant";
+    UMA_HISTOGRAM_ENUMERATION(kCookiePrefixVariantHistogram,
+                              prefix_case_insensitive,
+                              CanonicalCookie::COOKIE_PREFIX_LAST);
+
+    const char kVariantValidHistogram[] =
+        "Cookie.CookiePrefix.CaseVariantValid";
+    UMA_HISTOGRAM_BOOLEAN(kVariantValidHistogram, is_insensitive_prefix_valid);
+  }
+
+  const char kVariantCountHistogram[] = "Cookie.CookiePrefix.CaseVariantCount";
+  if (prefix_case_insensitive > CookiePrefix::COOKIE_PREFIX_NONE) {
+    UMA_HISTOGRAM_BOOLEAN(kVariantCountHistogram, is_case_variant);
+  }
 }
 
 // Returns true if the cookie does not violate any constraints imposed
@@ -1612,7 +1653,8 @@ bool CanonicalCookie::HasHiddenPrefixName(
   const base::StringPiece host_prefix = "__Host-";
 
   // Compare the value to the host_prefix.
-  if (base::StartsWith(value_without_BWS, host_prefix)) {
+  if (base::StartsWith(value_without_BWS, host_prefix,
+                       base::CompareCase::INSENSITIVE_ASCII)) {
     // The prefix matches, now check if the value string contains a subsequent
     // '='.
     if (value_without_BWS.find_first_of('=', host_prefix.size()) !=
@@ -1626,7 +1668,8 @@ bool CanonicalCookie::HasHiddenPrefixName(
   // Do a similar check for the secure prefix
   const base::StringPiece secure_prefix = "__Secure-";
 
-  if (base::StartsWith(value_without_BWS, secure_prefix)) {
+  if (base::StartsWith(value_without_BWS, secure_prefix,
+                       base::CompareCase::INSENSITIVE_ASCII)) {
     if (value_without_BWS.find_first_of('=', secure_prefix.size()) !=
         base::StringPiece::npos) {
       return true;
