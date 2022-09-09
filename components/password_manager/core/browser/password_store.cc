@@ -89,21 +89,17 @@ bool PasswordStore::Init(
   affiliated_match_helper_ = std::move(affiliated_match_helper);
   sync_enabled_or_disabled_cb_ = std::move(sync_enabled_or_disabled_cb);
 
-  // TODO(crbug.com/1226042): Backend might be null in tests, remove this after
-  // tests switch to MockPasswordStoreInterface.
-  if (backend_) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-        "passwords", "PasswordStore::InitOnBackgroundSequence", this);
-    backend_->InitBackend(
-        base::BindRepeating(&PasswordStore::NotifyLoginsChangedOnMainSequence,
-                            this, LoginsChangedTrigger::ExternalUpdate),
-        base::BindPostTask(
-            main_task_runner_,
-            base::BindRepeating(
-                &PasswordStore::NotifySyncEnabledOrDisabledOnMainSequence,
-                this)),
-        base::BindOnce(&PasswordStore::OnInitCompleted, this));
-  }
+  DCHECK(backend_);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+      "passwords", "PasswordStore::InitOnBackgroundSequence", this);
+  backend_->InitBackend(
+      base::BindRepeating(&PasswordStore::NotifyLoginsChangedOnMainSequence,
+                          this, LoginsChangedTrigger::ExternalUpdate),
+      base::BindPostTask(
+          main_task_runner_,
+          base::BindRepeating(
+              &PasswordStore::NotifySyncEnabledOrDisabledOnMainSequence, this)),
+      base::BindOnce(&PasswordStore::OnInitCompleted, this));
   return true;
 }
 
