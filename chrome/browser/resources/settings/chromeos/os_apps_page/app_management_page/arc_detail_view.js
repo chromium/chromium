@@ -10,7 +10,7 @@ import './shared_style.js';
 import 'chrome://resources/cr_components/app_management/icons.html.js';
 import 'chrome://resources/cr_components/app_management/more_permissions_item.js';
 import 'chrome://resources/cr_components/app_management/permission_item.js';
-import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 
 import {getAppIcon, getPermission, getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

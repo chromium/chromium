@@ -14,7 +14,7 @@ import 'chrome://resources/cr_components/chromeos/network/network_shared_css.js'
 import 'chrome://resources/cr_components/chromeos/network/network_siminfo.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_page_host_style.css.js';
-import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './strings.m.js';
 

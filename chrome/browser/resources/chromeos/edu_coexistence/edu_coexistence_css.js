@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.m.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 const template = document.createElement('template');
 template.innerHTML = `
 <dom-module id="edu-coexistence-css">{__html_template__}</dom-module>

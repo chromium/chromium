@@ -7,10 +7,10 @@
  * 'os-settings-search-page' contains search and assistant settings.
  */
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './os_search_selection_dialog.js';
 import '../../controls/extension_controlled_indicator.js';
 import '../../settings_page/settings_animated_pages.js';

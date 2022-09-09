@@ -8,7 +8,7 @@
  * for text-to-speech accessibility settings.
  */
 
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 

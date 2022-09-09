@@ -7,7 +7,7 @@ import 'chrome://resources/cr_components/app_management/icons.html.js';
 import 'chrome://resources/cr_components/app_management/permission_item.js';
 import '../shared_style.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 
 import {getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';

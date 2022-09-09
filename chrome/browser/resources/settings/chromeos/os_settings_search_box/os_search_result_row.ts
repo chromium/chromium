@@ -5,7 +5,7 @@
 /**
  * @fileoverview 'os-search-result-row' is the container for one search result.
  */
-import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import '../os_icons.js';
 import '../../settings_shared.css.js';
 

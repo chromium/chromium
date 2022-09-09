@@ -6,7 +6,7 @@
  * @fileoverview Polymer element for Parental Handoff screen.
  */
 
-import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../components/oobe_icons.m.js';
 import '../../components/common_styles/common_styles.m.js';
