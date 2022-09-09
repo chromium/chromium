@@ -11,7 +11,6 @@
 #include "base/memory/values_equivalent.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "cc/paint/draw_image.h"

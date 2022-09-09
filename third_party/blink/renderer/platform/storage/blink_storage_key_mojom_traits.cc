@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/storage/blink_storage_key_mojom_traits.h"
 
-#include "base/stl_util.h"
 #include "base/types/optional_util.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"

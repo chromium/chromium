@@ -8,7 +8,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_CONTEXT_MENUS_CONTEXT_MENUS_API_HELPERS_H_
 
 #include "base/notreached.h"
-#include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/common/extensions/api/context_menus.h"
 #include "content/public/browser/browser_context.h"

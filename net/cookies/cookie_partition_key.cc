@@ -9,7 +9,6 @@
 
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/types/optional_util.h"
 #include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"

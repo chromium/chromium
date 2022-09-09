@@ -7,7 +7,7 @@
 #include <string>
 
 #include "ash/public/cpp/window_properties.h"
-#include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "ui/aura/window.h"
 #include "ui/views/widget/widget.h"
 

@@ -40,7 +40,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/time/default_tick_clock.h"
 #include "base/types/optional_util.h"
 #include "build/chromeos_buildflags.h"

@@ -20,7 +20,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/fe_drop_shadow.h"
 
-#include "base/stl_util.h"
 #include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_gaussian_blur.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"

@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/loader/resource_load_observer_for_frame.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/types/optional_util.h"
 #include "components/power_scheduler/power_mode_arbiter.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"

@@ -6,7 +6,6 @@
 #define IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_PENDING_UNSAFE_RESOURCE_STORAGE_H_
 
 #include "base/scoped_observation.h"
-#include "base/stl_util.h"
 #include "base/types/optional_util.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #include "components/security_interstitials/core/unsafe_resource.h"

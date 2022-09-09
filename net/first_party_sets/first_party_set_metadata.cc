@@ -6,7 +6,6 @@
 
 #include <tuple>
 
-#include "base/stl_util.h"
 #include "base/types/optional_util.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 

@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
 #include "net/base/schemeful_site.h"

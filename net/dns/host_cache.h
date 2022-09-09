@@ -21,7 +21,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/clamped_math.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/types/optional_util.h"

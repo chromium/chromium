@@ -6,7 +6,6 @@
 
 #include <ostream>
 
-#include "base/stl_util.h"
 #include "base/types/optional_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom-blink.h"

@@ -47,7 +47,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/stl_util.h"
 #include "base/types/optional_util.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"

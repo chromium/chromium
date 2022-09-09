@@ -5,7 +5,6 @@
 #include "chrome/browser/speech/cros_speech_recognition_service.h"
 
 #include "base/files/file_path.h"
-#include "base/stl_util.h"
 #include "base/types/optional_util.h"
 #include "chrome/services/speech/audio_source_fetcher_impl.h"
 #include "chrome/services/speech/cros_speech_recognition_recognizer_impl.h"

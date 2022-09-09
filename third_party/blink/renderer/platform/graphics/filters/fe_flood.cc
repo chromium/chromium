@@ -23,7 +23,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/fe_flood.h"
 
-#include "base/stl_util.h"
 #include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
 #include "third_party/skia/include/core/SkColorFilter.h"

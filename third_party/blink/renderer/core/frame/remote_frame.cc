@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 
-#include "base/stl_util.h"
 #include "base/types/optional_util.h"
 #include "cc/layers/surface_layer.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"

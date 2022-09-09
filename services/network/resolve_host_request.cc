@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_with_source.h"

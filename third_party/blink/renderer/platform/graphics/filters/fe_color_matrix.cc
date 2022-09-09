@@ -23,7 +23,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/fe_color_matrix.h"
 
-#include "base/stl_util.h"
 #include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"

@@ -12,7 +12,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
-#include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"

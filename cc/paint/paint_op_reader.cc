@@ -19,7 +19,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/optional_util.h"
 #include "cc/paint/image_transfer_cache_entry.h"

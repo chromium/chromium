@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "base/stl_util.h"
 #include "base/test/gtest_util.h"
+#include "base/types/optional_util.h"
 #include "components/performance_manager/execution_context/execution_context_registry_impl.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"

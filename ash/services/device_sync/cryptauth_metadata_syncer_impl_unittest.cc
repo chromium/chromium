@@ -30,7 +30,6 @@
 #include "ash/services/device_sync/value_string_encoding.h"
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "base/timer/mock_timer.h"
 #include "base/types/optional_util.h"
 #include "components/prefs/testing_pref_service.h"

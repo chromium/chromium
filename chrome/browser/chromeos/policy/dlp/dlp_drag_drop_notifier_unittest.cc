@@ -4,7 +4,6 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_drag_drop_notifier.h"
 
-#include "base/stl_util.h"
 #include "base/test/mock_callback.h"
 #include "base/types/optional_util.h"
 #include "build/chromeos_buildflags.h"

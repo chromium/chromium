@@ -16,7 +16,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"

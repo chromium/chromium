@@ -5,7 +5,6 @@
 #include "services/network/public/cpp/first_party_sets_mojom_traits.h"
 
 #include "base/containers/flat_map.h"
-#include "base/stl_util.h"
 #include "base/types/optional_util.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "net/base/schemeful_site.h"
