@@ -169,12 +169,8 @@ class _Generator(object):
       needs_blank_line = True
       if prop.description:
         c.Comment(prop.description)
-      # ANY is a base::Value which is abstract and cannot be a direct member, so
-      # we always need to wrap it in a scoped_ptr.
-      is_optional = (
-          prop.optional or prop.type_.property_type == PropertyType.ANY)
       (c.Append('%s %s;' % (
-           self._type_helper.GetCppType(prop.type_, is_optional=is_optional),
+           self._type_helper.GetCppType(prop.type_, is_optional=prop.optional),
            prop.unix_name))
       )
     return c

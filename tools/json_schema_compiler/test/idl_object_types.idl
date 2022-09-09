@@ -13,6 +13,7 @@ namespace idl_object_types {
 
   dictionary BarType {
     any x;
+    any? y;
   };
 
   dictionary BazType {

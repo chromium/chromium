@@ -3605,7 +3605,7 @@ ExtensionFunction::ResponseAction AutotestPrivateSetAllowedPrefFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const std::string& pref_name = params->pref_name;
-  const base::Value& value = *(params->value);
+  const base::Value& value = params->value;
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
   const std::string& err_msg = SetAllowedPref(profile, pref_name, value);
@@ -3632,7 +3632,7 @@ AutotestPrivateSetWhitelistedPrefFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const std::string& pref_name = params->pref_name;
-  const base::Value& value = *(params->value);
+  const base::Value& value = params->value;
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
   const std::string& err_msg = SetAllowedPref(profile, pref_name, value);

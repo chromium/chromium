@@ -42,7 +42,7 @@ namespace settingsPrivate {
     PrefType type;
 
     // The current value of the pref.
-    any value;
+    any? value;
 
     // The policy source of the pref; an undefined value means there is no
     // policy.

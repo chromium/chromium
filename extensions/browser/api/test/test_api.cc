@@ -120,7 +120,7 @@ ExtensionFunction::ResponseAction TestSendScriptResultFunction::Run() {
       api::test::SendScriptResult::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  TestApiObserverRegistry::GetInstance()->NotifyScriptResult(*params->result);
+  TestApiObserverRegistry::GetInstance()->NotifyScriptResult(params->result);
   return RespondNow(NoArguments());
 }
 

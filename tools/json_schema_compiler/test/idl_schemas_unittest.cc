@@ -187,8 +187,9 @@ TEST(IdlCompiler, ObjectTypes) {
   std::unique_ptr<base::DictionaryValue> serialized_bar = b1.ToValue();
   BarType b2;
   EXPECT_TRUE(BarType::Populate(*serialized_bar.get(), &b2));
-  ASSERT_TRUE(b2.x->is_int());
-  EXPECT_EQ(7, b2.x->GetInt());
+  ASSERT_TRUE(b2.x.is_int());
+  EXPECT_EQ(7, b2.x.GetInt());
+  EXPECT_FALSE(b2.y.has_value());
 
   // Test the params to the ObjectFunction1 function.
   base::Value::Dict icon_props_dict;

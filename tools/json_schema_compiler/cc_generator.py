@@ -636,15 +636,12 @@ class _Generator(object):
         else:
           c.Sblock('if (%s) {' % prop_var)
 
-      # ANY is a base::Value which is abstract and cannot be a direct member, so
-      # it will always be a pointer.
-      is_ptr = prop.optional or prop.type_.property_type == PropertyType.ANY
       c.Cblock(self._CreateValueFromType(
           'to_value_result->GetDict().Set("%s", std::move(*%%s));' % prop.name,
           prop.name,
           prop.type_,
           prop_var,
-          is_ptr=is_ptr))
+          is_ptr=prop.optional))
 
       if prop.optional:
         c.Eblock('}')
