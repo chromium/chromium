@@ -252,8 +252,8 @@ gfx::Size GuestViewBase::GetDefaultSize() const {
 
 void GuestViewBase::SetSize(const SetSizeParams& params) {
   bool enable_auto_size = params.enable_auto_size.value_or(auto_size_enabled_);
-  gfx::Size min_size = params.min_size ? *params.min_size : min_auto_size_;
-  gfx::Size max_size = params.max_size ? *params.max_size : max_auto_size_;
+  gfx::Size min_size = params.min_size.value_or(min_auto_size_);
+  gfx::Size max_size = params.max_size.value_or(max_auto_size_);
 
   if (params.normal_size)
     normal_size_ = *params.normal_size;
@@ -797,10 +797,9 @@ void GuestViewBase::SetUpSizing(const base::Value::Dict& params) {
 
   SetSizeParams set_size_params;
   set_size_params.enable_auto_size = auto_size_enabled;
-  set_size_params.min_size = std::make_unique<gfx::Size>(min_width, min_height);
-  set_size_params.max_size = std::make_unique<gfx::Size>(max_width, max_height);
-  set_size_params.normal_size =
-      std::make_unique<gfx::Size>(normal_width, normal_height);
+  set_size_params.min_size.emplace(min_width, min_height);
+  set_size_params.max_size.emplace(max_width, max_height);
+  set_size_params.normal_size.emplace(normal_width, normal_height);
 
   // Call SetSize to apply all the appropriate validation and clipping of
   // values.

@@ -29,21 +29,18 @@ class GuestViewEvent;
 class GuestViewManager;
 
 // A struct of parameters for SetSize(). The parameters are all declared as
-// scoped pointers since they are all optional. Null pointers indicate that the
-// parameter has not been provided, and the last used value should be used. Note
-// that when |enable_auto_size| is true, providing |normal_size| is not
-// meaningful. This is because the normal size of the guestview is overridden
-// whenever autosizing occurs.
-// TODO(crbug.com/1354063): This remaining members of this structure should be
-// converted to absl::optional<T>.
+// optionals. Nullopts indicate that the parameter has not been provided, and
+// the last used value should be used. Note that when |enable_auto_size| is
+// true, providing |normal_size| is not meaningful. This is because the normal
+// size of the guestview is overridden whenever autosizing occurs.
 struct SetSizeParams {
   SetSizeParams();
   ~SetSizeParams();
 
   absl::optional<bool> enable_auto_size;
-  std::unique_ptr<gfx::Size> min_size;
-  std::unique_ptr<gfx::Size> max_size;
-  std::unique_ptr<gfx::Size> normal_size;
+  absl::optional<gfx::Size> min_size;
+  absl::optional<gfx::Size> max_size;
+  absl::optional<gfx::Size> normal_size;
 };
 
 // A GuestViewBase is the base class browser-side API implementation for a

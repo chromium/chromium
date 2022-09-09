@@ -75,7 +75,7 @@ void GuestViewInternalCreateGuestFunction::CreateGuestCallback(
   base::Value::Dict return_params;
   return_params.Set(guest_view::kID, guest_instance_id);
 
-  Respond(OneArgument(base::Value(std::move(return_params))));
+  Respond(WithArguments(std::move(return_params)));
 }
 
 GuestViewInternalSetSizeFunction::GuestViewInternalSetSizeFunction() = default;
@@ -96,16 +96,16 @@ ExtensionFunction::ResponseAction GuestViewInternalSetSizeFunction::Run() {
     set_size_params.enable_auto_size = params->params.enable_auto_size;
   }
   if (params->params.min) {
-    set_size_params.min_size = std::make_unique<gfx::Size>(
-        params->params.min->width, params->params.min->height);
+    set_size_params.min_size.emplace(params->params.min->width,
+                                     params->params.min->height);
   }
   if (params->params.max) {
-    set_size_params.max_size = std::make_unique<gfx::Size>(
-        params->params.max->width, params->params.max->height);
+    set_size_params.max_size.emplace(params->params.max->width,
+                                     params->params.max->height);
   }
   if (params->params.normal) {
-    set_size_params.normal_size = std::make_unique<gfx::Size>(
-        params->params.normal->width, params->params.normal->height);
+    set_size_params.normal_size.emplace(params->params.normal->width,
+                                        params->params.normal->height);
   }
 
   guest->SetSize(set_size_params);
