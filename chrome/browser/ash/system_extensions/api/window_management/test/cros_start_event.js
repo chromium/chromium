@@ -22,5 +22,3 @@ promise_test(async (t) => {
   // The extension starting can't be cancelled.
   assert_false(event.cancelable);
 });
-
-done();

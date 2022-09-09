@@ -12,5 +12,3 @@ promise_test(async () => {
   // Repeating minimize should not change any properties.
   await minimizeAndTest();
 });
-
-done();

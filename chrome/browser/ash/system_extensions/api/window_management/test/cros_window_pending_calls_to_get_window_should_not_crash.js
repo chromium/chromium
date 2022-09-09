@@ -11,5 +11,3 @@ promise_test(async () => {
     window.moveTo(0, 0);
   await movePromise;
 });
-
-done();

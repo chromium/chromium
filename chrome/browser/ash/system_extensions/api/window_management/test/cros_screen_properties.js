@@ -29,5 +29,3 @@ promise_test(async () => {
   // correctly updates y position of display.
   // assert_equals(screens[1].top, 600);
 });
-
-done();

@@ -32,5 +32,3 @@ promise_test(async () => {
   await restoreAndTest();
   await restoreAndTest();
 });
-
-done();

@@ -22,5 +22,3 @@ promise_test(async () => {
   await swa_window.setFullscreen(true);
   await swa_window.close();
 });
-
-done();

@@ -12,5 +12,3 @@ promise_test(async () => {
   await resizeByAndTest(10, 10);
 
 });
-
-done();

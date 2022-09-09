@@ -11,5 +11,3 @@ promise_test(async () => {
     window.setFullscreen(true);
   await fullscreenPromise;
 });
-
-done();

@@ -42,5 +42,3 @@ promise_test(async () => {
   await maximizeAndTest();
   await restoreAndTest();
 });
-
-done();

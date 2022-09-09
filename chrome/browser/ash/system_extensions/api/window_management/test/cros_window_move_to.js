@@ -14,5 +14,3 @@ promise_test(async () => {
 
   await moveToAndTest(x, y);
 });
-
-done();

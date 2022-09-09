@@ -14,5 +14,3 @@ promise_test(async () => {
   assert_true(accelerator_event.bubbles, 'bubbles');
   assert_false(accelerator_event.cancelable, 'cancelable');
 });
-
-done();

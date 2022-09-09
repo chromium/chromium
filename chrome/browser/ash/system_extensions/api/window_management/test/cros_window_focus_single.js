@@ -20,5 +20,3 @@ promise_test(async () => {
 
   await focusAndTest();
 });
-
-done();

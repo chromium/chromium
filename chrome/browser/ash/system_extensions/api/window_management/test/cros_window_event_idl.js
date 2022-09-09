@@ -16,5 +16,3 @@ promise_test(async () => {
   assert_false(window_event.cancelable, 'Window event should not be\
       cancelable');
 });
-
-done();

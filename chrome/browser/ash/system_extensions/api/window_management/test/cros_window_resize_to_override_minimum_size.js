@@ -14,5 +14,3 @@ promise_test(async () => {
 
   await resizeToAndTest(width, height);
 });
-
-done();

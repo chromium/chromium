@@ -12,5 +12,3 @@ promise_test(async () => {
   // Repeating maximize should not change any properties.
   await maximizeAndTest();
 });
-
-done();

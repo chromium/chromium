@@ -15,5 +15,3 @@ promise_test(async () => {
     chromeos.windowManagement.dispatchEvent(new Event('testevent'));
   });
 });
-
-done();

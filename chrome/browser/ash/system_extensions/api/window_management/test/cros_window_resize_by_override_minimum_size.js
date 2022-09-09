@@ -17,5 +17,3 @@ promise_test(async () => {
 
   await resizeByAndTest(deltaWidth, deltaHeight);
 });
-
-done();

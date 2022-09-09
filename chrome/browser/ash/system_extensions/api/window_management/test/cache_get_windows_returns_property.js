@@ -17,5 +17,3 @@ promise_test(async () => {
     assert_not_equals(window, chromeos.windowManagement.windows[index]);
   });
 });
-
-done();

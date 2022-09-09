@@ -12,5 +12,3 @@ promise_test(async () => {
   await setFullscreenAndTest(true);
   await setFullscreenAndTest(true);
 });
-
-done();

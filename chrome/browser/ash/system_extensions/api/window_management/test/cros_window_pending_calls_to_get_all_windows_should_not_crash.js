@@ -10,5 +10,3 @@ promise_test(async () => {
     chromeos.windowManagement.getWindows();
   await getWindowsPromise;
 });
-
-done();

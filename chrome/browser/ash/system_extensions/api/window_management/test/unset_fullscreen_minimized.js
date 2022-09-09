@@ -36,5 +36,3 @@ promise_test(async () => {
   await setFullscreenAndTest(false);
   await assertWindowState("maximized");
 });
-
-done();

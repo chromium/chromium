@@ -96,5 +96,3 @@ promise_test(async () => {
     assert_false(second_window.isFocused);
   }
 });
-
-done();

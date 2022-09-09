@@ -12,5 +12,3 @@ promise_test(async () => {
   // Check that calling twice continues to move the window.
   await moveByAndTest(10, 10);
 });
-
-done();

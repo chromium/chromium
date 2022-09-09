@@ -18,5 +18,3 @@ promise_test(async (t) => {
   const windows = await chromeos.windowManagement.getWindows();
   assert_equals(windows.length, 1);
 });
-
-done();

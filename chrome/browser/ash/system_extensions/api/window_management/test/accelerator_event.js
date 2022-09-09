@@ -27,5 +27,3 @@ promise_test(async (t) => {
   // always handles them, so there they are not cancelable.
   assert_false(event.cancelable);
 });
-
-done();
