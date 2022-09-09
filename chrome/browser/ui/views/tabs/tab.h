@@ -186,6 +186,8 @@ class Tab : public gfx::AnimationDelegate,
     return showing_close_button_;
   }
 
+  raw_ptr<TabCloseButton> close_button() { return close_button_; }
+
  private:
   class TabCloseButtonObserver;
   friend class AlertIndicatorButtonTest;

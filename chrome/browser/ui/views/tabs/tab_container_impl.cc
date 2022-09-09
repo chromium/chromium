@@ -589,7 +589,8 @@ int TabContainerImpl::GetAvailableWidthForTabContainer() const {
 void TabContainerImpl::EnterTabClosingMode(absl::optional<int> override_width,
                                            CloseTabSource source) {
   in_tab_close_ = true;
-  override_available_width_for_tabs_ = override_width;
+  if (override_width.has_value())
+    override_available_width_for_tabs_ = override_width;
 
   resize_layout_timer_.Stop();
   if (source == CLOSE_TAB_FROM_TOUCH)
@@ -1158,7 +1159,6 @@ void TabContainerImpl::UpdateClosingModeOnRemovedTab(int model_index,
             layout_helper_->inactive_tab_width()) {
       size_delta = next_active_tab->width();
     }
-
     override_available_width_for_tabs_ =
         tabs_view_model_.ideal_bounds(model_count).right() - size_delta +
         tab_overlap;

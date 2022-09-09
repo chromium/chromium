@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
@@ -350,6 +351,55 @@ TEST_F(TabContainerTest, ExitsClosingModeAtStandardWidth) {
   tab_container_->RemoveTab(tab_container_->GetTabCount() - 1, false);
   tab_container_->CompleteAnimationAndLayout();
   EXPECT_EQ(tab_container_->GetActiveTabWidth(), standard_width);
+}
+
+// After removing a tab followed by removing a tab in a tabgroup
+// Should bring the subsequent tab to its place as expected in
+// tab closing mode.
+TEST_F(TabContainerTest, RemoveTabInGroupWithTabClosingMode) {
+  AddTab(0, absl::nullopt, TabActive::kActive);
+
+  // Create enough tabs so tabs are not full size.
+  const int standard_width = TabStyleViews::GetStandardWidth();
+
+  // Set a tab_counter to avoid infinite loop
+  int tab_counter = 0;
+  while ((tab_counter < 100) &&
+         (tab_container_->GetActiveTabWidth() == standard_width ||
+          tab_container_->GetTabCount() < 10)) {
+    AddTab(0);
+    tab_container_->CompleteAnimationAndLayout();
+    tab_counter += 1;
+  }
+
+  // add the first two tabs to a group
+  tab_groups::TabGroupId group1 = tab_groups::TabGroupId::GenerateNew();
+  AddTabToGroup(1, group1);
+  AddTabToGroup(2, group1);
+  AddTabToGroup(3, group1);
+
+  // Remove the second from last tab
+  tab_container_->EnterTabClosingMode(absl::nullopt,
+                                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+  tab_container_->RemoveTab(tab_container_->GetTabCount() - 2, false);
+  tab_container_->CompleteAnimationAndLayout();
+
+  // Get the group tab's close button center point
+  Tab* tab = tab_container_->GetTabAtModelIndex(1);
+  raw_ptr<TabCloseButton> tab_close_button = tab->close_button();
+  gfx::Point tab_center = tab_close_button->GetBoundsInScreen().CenterPoint();
+
+  // Remove the tab
+  tab_container_->EnterTabClosingMode(absl::nullopt,
+                                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+  tab_container_->OnGroupContentsChanged(group1);
+  tab_container_->RemoveTab(1, true);
+  tab_container_->CompleteAnimationAndLayout();
+
+  // Check if the next tab moves to its place
+  Tab* tab_next = tab_container_->GetTabAtModelIndex(1);
+  raw_ptr<TabCloseButton> tab_next_close_button = tab_next->close_button();
+  EXPECT_TRUE(tab_next_close_button->GetBoundsInScreen().Contains(tab_center));
 }
 
 // Verifies child view order matches model order.
