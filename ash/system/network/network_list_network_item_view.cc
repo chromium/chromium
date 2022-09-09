@@ -24,7 +24,6 @@
 #include "base/i18n/number_formatting.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
-#include "network_list_network_item_view.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/image/image_skia.h"
@@ -32,6 +31,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 namespace {
@@ -256,10 +256,17 @@ NetworkListNetworkItemView::NetworkListNetworkItemView(
     ViewClickListener* listener)
     : NetworkListItemView(listener) {}
 
-NetworkListNetworkItemView::~NetworkListNetworkItemView() = default;
+NetworkListNetworkItemView::~NetworkListNetworkItemView() {
+  network_icon::NetworkIconAnimation::GetInstance()->RemoveObserver(this);
+}
 
 void NetworkListNetworkItemView::UpdateViewForNetwork(
     const NetworkStatePropertiesPtr& network_properties) {
+  const bool was_connecting = network_properties_
+                                  ? network_properties_->connection_state ==
+                                        chromeos::network_config::mojom::
+                                            ConnectionStateType::kConnecting
+                                  : false;
   network_properties_ = mojo::Clone(network_properties);
 
   Reset();
@@ -290,9 +297,25 @@ void NetworkListNetworkItemView::UpdateViewForNetwork(
     AddPolicyView();
   }
 
+  const bool is_connecting =
+      network_properties_->connection_state ==
+      chromeos::network_config::mojom::ConnectionStateType::kConnecting;
+
+  if (!was_connecting && is_connecting) {
+    network_icon::NetworkIconAnimation::GetInstance()->AddObserver(this);
+  } else if (is_connecting) {
+    network_icon::NetworkIconAnimation::GetInstance()->RemoveObserver(this);
+  }
+
   SetAccessibleName(GenerateAccessibilityLabel(label));
   GetViewAccessibility().OverrideDescription(
       GenerateAccessibilityDescription());
+}
+
+void NetworkListNetworkItemView::NetworkIconChanged() {
+  DCHECK(views::IsViewClass<views::ImageView>(left_view()));
+  static_cast<views::ImageView*>(left_view())
+      ->SetImage(GetNetworkImageForNetwork(network_properties_));
 }
 
 void NetworkListNetworkItemView::SetupCellularSubtext() {
