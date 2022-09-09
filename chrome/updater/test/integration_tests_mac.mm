@@ -323,8 +323,8 @@ void ExpectNotActive(UpdaterScope scope, const std::string& app_id) {
   EXPECT_FALSE(base::PathIsWritable(*path));
 }
 
-void WaitForUpdaterExit(UpdaterScope /*scope*/) {
-  ASSERT_TRUE(WaitFor(base::BindRepeating([]() {
+bool WaitForUpdaterExit(UpdaterScope /*scope*/) {
+  return WaitFor(base::BindRepeating([]() {
     std::string ps_stdout;
     EXPECT_TRUE(base::GetAppOutput({"ps", "ax", "-o", "command"}, &ps_stdout));
     if (ps_stdout.find(GetExecutablePath().BaseName().AsUTF8Unsafe()) ==
@@ -332,7 +332,7 @@ void WaitForUpdaterExit(UpdaterScope /*scope*/) {
       return true;
     }
     return false;
-  })));
+  }));
 }
 
 void SetupRealUpdaterLowerVersion(UpdaterScope scope) {

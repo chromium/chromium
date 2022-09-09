@@ -187,8 +187,8 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("install_app", {Param("app_id", app_id)});
   }
 
-  void WaitForUpdaterExit() const override {
-    updater::test::WaitForUpdaterExit(updater_scope_);
+  bool WaitForUpdaterExit() const override {
+    return updater::test::WaitForUpdaterExit(updater_scope_);
   }
 
 #if BUILDFLAG(IS_WIN)

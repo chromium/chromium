@@ -633,8 +633,8 @@ void ExpectNotActive(UpdaterScope /*scope*/, const std::string& id) {
 
 // Waits for all updater processes to end, including the server process holding
 // the prefs lock.
-void WaitForUpdaterExit(UpdaterScope /*scope*/) {
-  WaitFor(base::BindRepeating([]() { return !IsUpdaterRunning(); }));
+bool WaitForUpdaterExit(UpdaterScope /*scope*/) {
+  return WaitFor(base::BindRepeating([]() { return !IsUpdaterRunning(); }));
 }
 
 // Verify registry entries for all interfaces.
@@ -1495,7 +1495,7 @@ void RunOfflineInstall(UpdaterScope scope, bool is_silent_install) {
   EXPECT_TRUE(process.IsValid());
 
   if (is_silent_install) {
-    WaitForUpdaterExit(scope);
+    EXPECT_TRUE(WaitForUpdaterExit(scope));
   } else {
     // Dismiss the installation completion dialog, then wait for the process
     // exit.

@@ -123,7 +123,7 @@ class IntegrationTest : public ::testing::Test {
     PrintLog();
     CopyLog();
     test_commands_->Uninstall();
-    WaitForUpdaterExit();
+    EXPECT_TRUE(WaitForUpdaterExit());
   }
 
   void ExpectCandidateUninstalled() {
@@ -256,7 +256,9 @@ class IntegrationTest : public ::testing::Test {
     return test_commands_->GetDifferentUserPath();
   }
 
-  void WaitForUpdaterExit() { test_commands_->WaitForUpdaterExit(); }
+  [[nodiscard]] bool WaitForUpdaterExit() {
+    return test_commands_->WaitForUpdaterExit();
+  }
 
   void SetUpTestService() {
 #if BUILDFLAG(IS_WIN)
@@ -338,7 +340,7 @@ class IntegrationTest : public ::testing::Test {
 
 TEST_F(IntegrationTest, InstallUninstall) {
   Install();
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
   ExpectInstalled();
   ExpectVersionActive(kUpdaterVersion);
   ExpectActiveUpdater();
@@ -355,13 +357,13 @@ TEST_F(IntegrationTest, InstallUninstall) {
 // the build that adds `IUpdater::FetchPolicies` is published to CIPD.
 TEST_F(IntegrationTest, DISABLED_OverinstallWorking) {
   SetupRealUpdaterLowerVersion();
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
   ExpectVersionNotActive(kUpdaterVersion);
 
   // A new version hands off installation to the old version, and doesn't
   // change the active version of the updater.
   Install();
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
   ExpectVersionNotActive(kUpdaterVersion);
 
   Uninstall();
@@ -375,13 +377,13 @@ TEST_F(IntegrationTest, DISABLED_OverinstallWorking) {
 #endif
 TEST_F(IntegrationTest, MAYBE_OverinstallBroken) {
   SetupRealUpdaterLowerVersion();
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
   DeleteUpdaterDirectory();
 
   // Since the old version is not working, the new version should install and
   // become active.
   Install();
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
   ExpectVersionActive(kUpdaterVersion);
 
   Uninstall();
@@ -390,12 +392,12 @@ TEST_F(IntegrationTest, MAYBE_OverinstallBroken) {
 TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
   Install();
   ExpectInstalled();
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
   SetupFakeUpdaterHigherVersion();
   ExpectVersionNotActive(kUpdaterVersion);
 
   RunWake(0);
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
 
   ExpectCandidateUninstalled();
   // The candidate uninstall should not have altered global prefs.
@@ -410,7 +412,7 @@ TEST_F(IntegrationTest, QualifyUpdater) {
   ScopedServer test_server(test_commands_);
   Install();
   ExpectInstalled();
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
   SetupFakeUpdaterLowerVersion();
   ExpectVersionNotActive(kUpdaterVersion);
 
@@ -418,7 +420,7 @@ TEST_F(IntegrationTest, QualifyUpdater) {
                        base::Version("0.1"), base::Version("0.2"));
 
   RunWake(0);
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
 
   // This instance is now qualified and should activate itself and check itself
   // for updates on the next check.
@@ -427,7 +429,7 @@ TEST_F(IntegrationTest, QualifyUpdater) {
                            base::StringPrintf(".*%s.*", kUpdaterAppId))},
       ")]}'\n");
   RunWake(0);
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
   ExpectVersionActive(kUpdaterVersion);
 
   Uninstall();
@@ -443,7 +445,7 @@ TEST_F(IntegrationTest, SelfUpdate) {
                        base::Version(kUpdaterVersion), next_version);
 
   RunWake(0);
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
   ExpectAppVersion(kUpdaterAppId, next_version);
 
   Uninstall();
@@ -504,7 +506,7 @@ TEST_F(IntegrationTest, UpdateApp) {
   const std::string kInstallDataIndex("test_install_data_index");
   ExpectUpdateSequence(&test_server, kAppId, kInstallDataIndex, v1, v2);
   Update(kAppId, kInstallDataIndex);
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
   ExpectAppVersion(kAppId, v2);
   ExpectLastChecked();
   ExpectLastStarted();
@@ -532,7 +534,7 @@ TEST_F(IntegrationTest, ForceInstallApp) {
   ExpectUpdateSequence(&test_server, kAppId, "", v0point1, v1);
   RunWake(0);
 
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
   ExpectAppVersion(kAppId, v1);
 
   Uninstall();
@@ -647,14 +649,14 @@ TEST_F(IntegrationTest, UninstallCmdLine) {
   // Running the uninstall command does not uninstall this instance of the
   // updater right after installing it (not enough server starts).
   RunUninstallCmdLine();
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
   ExpectInstalled();
 
   SetServerStarts(24);
 
   // Uninstall the idle updater.
   RunUninstallCmdLine();
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -664,14 +666,14 @@ TEST_F(IntegrationTest, UnregisterUninstalledApp) {
   InstallApp("test1");
   InstallApp("test2");
 
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
   ExpectVersionActive(kUpdaterVersion);
   ExpectActiveUpdater();
   UninstallApp("test1");
 
   RunWake(0);
 
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
   ExpectInstalled();
   ExpectNotRegistered("test1");
   ExpectRegistered("test2");
@@ -681,28 +683,28 @@ TEST_F(IntegrationTest, UnregisterUninstalledApp) {
 
 TEST_F(IntegrationTest, UninstallIfMaxServerWakesBeforeRegistrationExceeded) {
   Install();
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
   ExpectInstalled();
   SetServerStarts(24);
   RunWake(0);
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
 }
 
 TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
   Install();
   InstallApp("test1");
   ExpectInstalled();
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
   // TODO(crbug.com/1287235): The test is flaky without the following line.
   SetServerStarts(24);
   RunWake(0);
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
   ExpectInstalled();
   ExpectVersionActive(kUpdaterVersion);
   ExpectActiveUpdater();
   UninstallApp("test1");
   RunWake(0);
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
 }
 
 // Windows does not currently have a concept of app ownership, so this
@@ -716,12 +718,12 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
 
   InstallApp("test1");
   InstallApp("test2");
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
 
   SetExistenceCheckerPath("test1", GetDifferentUserPath());
 
   RunWake(0);
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
 
   ExpectNotRegistered("test1");
   ExpectRegistered("test2");
@@ -753,11 +755,11 @@ TEST_F(IntegrationTest, MAYBE_SelfUpdateFromOldReal) {
   ExpectUpdateSequence(&test_server, kQualificationAppId, "",
                        base::Version("0.1"), base::Version("0.2"));
   RunWake(0);
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
 
   // Activate the new instance. (It should not check itself for updates.)
   RunWake(0);
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
 
   ExpectVersionActive(kUpdaterVersion);
   Uninstall();
@@ -892,7 +894,7 @@ TEST_F(IntegrationTest, RecoveryNoUpdater) {
   const std::string appid = "test1";
   const base::Version version("0.1");
   RunRecoveryComponent(appid, version);
-  WaitForUpdaterExit();
+  EXPECT_TRUE(WaitForUpdaterExit());
   ExpectInstalled();
   ExpectActiveUpdater();
   ExpectAppVersion(appid, version);

@@ -68,7 +68,7 @@ class IntegrationTestCommands
   virtual void DeleteUpdaterDirectory() const = 0;
   virtual void PrintLog() const = 0;
   virtual base::FilePath GetDifferentUserPath() const = 0;
-  virtual void WaitForUpdaterExit() const = 0;
+  [[nodiscard]] virtual bool WaitForUpdaterExit() const = 0;
 #if BUILDFLAG(IS_WIN)
   virtual void ExpectInterfacesRegistered() const = 0;
   virtual void ExpectMarshalInterfaceSucceeds() const = 0;

@@ -71,7 +71,7 @@ void CopyLog(const base::FilePath& src_dir);
 
 // Waits for a given predicate to become true, testing it by polling. Returns
 // true if the predicate becomes true before a timeout, otherwise returns false.
-bool WaitFor(base::RepeatingCallback<bool()> predicate);
+[[nodiscard]] bool WaitFor(base::RepeatingCallback<bool()> predicate);
 
 // Returns the path to the updater data dir.
 absl::optional<base::FilePath> GetDataDirPath(UpdaterScope scope);
@@ -172,7 +172,7 @@ void ExpectAppVersion(UpdaterScope scope,
 
 void RegisterApp(UpdaterScope scope, const std::string& app_id);
 
-void WaitForUpdaterExit(UpdaterScope scope);
+[[nodiscard]] bool WaitForUpdaterExit(UpdaterScope scope);
 
 #if BUILDFLAG(IS_WIN)
 void ExpectInterfacesRegistered(UpdaterScope scope);

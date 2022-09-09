@@ -32,8 +32,9 @@ absl::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {
   return absl::nullopt;
 }
 
-void WaitForUpdaterExit(UpdaterScope scope) {
+bool WaitForUpdaterExit(UpdaterScope scope) {
   NOTREACHED();
+  return false;
 }
 
 absl::optional<base::FilePath> GetDataDirPath(UpdaterScope scope) {
