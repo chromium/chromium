@@ -983,6 +983,7 @@ extern const char kSigninInterceptionEnabled[];
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kEchoCheckedOffers[];
 extern const char kLacrosSecondaryProfilesAllowed[];
+extern const char kLacrosDataBackwardMigrationMode[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 extern const char kCryptAuthDeviceId[];

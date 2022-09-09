@@ -32432,6 +32432,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1009" label="BatterySaverModeAvailability"/>
   <int value="1010" label="TabDiscardingExceptions"/>
   <int value="1011" label="AssistantWebEnabled"/>
+  <int value="1012" label="LacrosDataBackwardMigrationMode"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

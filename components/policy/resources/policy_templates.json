@@ -29901,6 +29901,58 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       In the future it will be possible to make <ph name="LACROS_NAME">Lacros</ph> the only available browser in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> with <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE">lacros_only</ph> value.''',
     },
     {
+      'name': 'LacrosDataBackwardMigrationMode',
+      'owners': ['janagrill@google.com', 'vsavu@google.com'],
+      'type': 'string-enum',
+      'schema': {
+        'type': 'string',
+        'enum': [
+          'remove_all',
+          'keep_safe_data',
+          'keep_all'
+        ],
+      },
+      'items': [
+        {
+          'name': 'none',
+          'value': 'none',
+          'caption': '''After <ph name="LACROS_NAME">Lacros</ph> is disabled, data migration is not performed. The <ph name="LACROS_NAME">Lacros</ph> folder is removed and users continue using the remaining data.''',
+        },
+        {
+          'name': 'keep_none',
+          'value': 'keep_none',
+          'caption': '''After <ph name="LACROS_NAME">Lacros</ph> is disabled, all user data is removed on next login.''',
+        },
+        {
+          'name': 'keep_safe_data',
+          'value': 'keep_safe_data',
+          'caption': '''After <ph name="LACROS_NAME">Lacros</ph> is disabled, we attempt to keep as much user data as possible, while removing all browser data.''',
+        },
+        {
+          'name': 'keep_all',
+          'value': 'keep_all',
+          'caption': '''After <ph name="LACROS_NAME">Lacros</ph> is disabled, we attempt to migrate all data.''',
+        },
+      ],
+      'future_on': ['chrome_os'],
+      'features': {
+        'dynamic_refresh': False,
+        'per_profile': False,
+      },
+      'example_value': "keep_all",
+      'default': "none",
+      'id': 1012,
+      'caption': '''Choose what happens with user data after <ph name="LACROS_NAME">Lacros</ph> is disabled''',
+      'tags': [],
+      'desc': '''This setting decides how much user data is kept after <ph name="LACROS_NAME">Lacros</ph> is disabled.
+
+      If the policy is set to <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE">keep_none</ph>, all user data is removed. This is the safest option.
+
+      If the policy is set to <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA">keep_safe_data</ph>, most user data is removed. Only browser independent files are kept (such as Downloads).
+
+      If the policy is set to <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL">keep_all</ph>, all user data is kept. This option has a high risk of failure, requiring a powerwash to recover.''',
+    },
+    {
       'name': 'IntegratedWebAuthenticationAllowed',
       'owners': ['acostinas@chromium.org', 'pmarko@chromium.org'],
       'type': 'main',
@@ -34205,6 +34257,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 438, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 1011,
+  'highest_id_currently_used': 1012,
   'highest_atomic_group_id_currently_used': 43
 }
