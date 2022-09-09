@@ -2767,8 +2767,10 @@ TEST_F(DownloadProtectionServiceTest,
 
   // Report successfully sent if user opted-in extended reporting, not in
   // incognito, download item has a token stored and the download is detected to
-  // be dangerous.
-  EXPECT_CALL(item, IsDangerous()).WillRepeatedly(Return(true));
+  // be dangerous and bypassed by the user.
+  EXPECT_CALL(item, IsDangerous()).WillRepeatedly(Return(false));
+  EXPECT_CALL(item, GetDangerType())
+      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED));
   auto validate_report_contents = [this, token](bool show_download_in_folder) {
     ClientSafeBrowsingReportRequest expected_report;
     expected_report.set_url(GURL::EmptyGURL().spec());
