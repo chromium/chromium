@@ -125,6 +125,8 @@ class ProjectorCaptureModeIntegrationHelper {
   // has been called.
   void SetUp();
 
+  bool CanStartProjectorSession() const;
+
   // Starts a new projector capture session.
   void StartProjectorModeSession();
 

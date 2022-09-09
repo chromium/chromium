@@ -93,7 +93,6 @@ class ASH_EXPORT CaptureModeController
     return capture_mode_session_.get();
   }
   gfx::Rect user_capture_region() const { return user_capture_region_; }
-  bool enable_audio_recording() const { return enable_audio_recording_; }
   bool is_recording_in_progress() const {
     return is_initializing_recording_ ||
            (video_recording_watcher_ &&
@@ -105,6 +104,14 @@ class ASH_EXPORT CaptureModeController
   // capture_mode_util::IsCaptureModeActive().
   bool IsActive() const;
 
+  // Returns true if audio recording is enabled. This takes into account the
+  // `AudioCaptureAllowed` policy.
+  bool GetAudioRecordingEnabled() const;
+
+  // Returns true if audio recording is forced disabled by the
+  // `AudioCaptureAllowed` policy.
+  bool IsAudioCaptureDisabledByPolicy() const;
+
   // Sets the capture source/type, which will be applied to an ongoing capture
   // session (if any), or to a future capture session when Start() is called.
   void SetSource(CaptureModeSource source);
@@ -112,7 +119,8 @@ class ASH_EXPORT CaptureModeController
 
   // Sets the audio recording flag, which will be applied to any future
   // recordings (cannot be set mid recording), or to a future capture mode
-  // session when Start() is called.
+  // session when Start() is called. The effective enabled state takes into
+  // account the `AudioCaptureAllowed` policy.
   void EnableAudioRecording(bool enable_audio_recording);
 
   // Starts a new capture session with the most-recently used |type_| and
@@ -491,7 +499,9 @@ class ASH_EXPORT CaptureModeController
 
   // Remember the user selected audio preference of whether to record audio or
   // not for a video, between sessions. Initially, this value is set to false,
-  // ensuring that this is an opt-in feature.
+  // ensuring that this is an opt-in feature. Note that this value will always
+  // be overwritten by the `AudioCaptureAllowed` policy, when
+  // `GetAudioRecordingEnabled()` is called.
   bool enable_audio_recording_ = false;
 
   // If true, the 3-second countdown UI will be skipped, and video recording

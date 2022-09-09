@@ -92,15 +92,18 @@ class CaptureModeMenuHeader
                 : nullptr) {
     icon_view_->SetImageSize(kIconSize);
     icon_view_->SetPreferredSize(kIconSize);
-    const auto icon_color = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kButtonIconColor);
-    icon_view_->SetImage(gfx::CreateVectorIcon(icon, icon_color));
+    auto* color_provider = AshColorProvider::Get();
+    icon_view_->SetImage(gfx::CreateVectorIcon(
+        icon, color_provider->GetContentLayerColor(
+                  AshColorProvider::ContentLayerType::kButtonIconColor)));
 
     if (managed_icon_view_) {
       managed_icon_view_->SetImageSize(kIconSize);
       managed_icon_view_->SetPreferredSize(kIconSize);
-      managed_icon_view_->SetImage(
-          gfx::CreateVectorIcon(kCaptureModeManagedIcon, icon_color));
+      managed_icon_view_->SetImage(gfx::CreateVectorIcon(
+          kCaptureModeManagedIcon,
+          color_provider->GetContentLayerColor(
+              AshColorProvider::ContentLayerType::kIconColorSecondary)));
       managed_icon_view_->SetTooltipText(
           l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_MANAGED_BY_POLICY));
     }
@@ -114,6 +117,8 @@ class CaptureModeMenuHeader
   CaptureModeMenuHeader(const CaptureModeMenuHeader&) = delete;
   CaptureModeMenuHeader& operator=(const CaptureModeMenuHeader&) = delete;
   ~CaptureModeMenuHeader() override = default;
+
+  bool is_managed_by_policy() const { return !!managed_icon_view_; }
 
   const std::u16string& GetHeaderLabel() const {
     return label_view_->GetText();
@@ -306,6 +311,10 @@ CaptureModeMenuGroup::CaptureModeMenuGroup(Delegate* delegate,
 }
 
 CaptureModeMenuGroup::~CaptureModeMenuGroup() = default;
+
+bool CaptureModeMenuGroup::IsManagedByPolicy() const {
+  return menu_header_->is_managed_by_policy();
+}
 
 void CaptureModeMenuGroup::AddOption(std::u16string option_label,
                                      int option_id) {

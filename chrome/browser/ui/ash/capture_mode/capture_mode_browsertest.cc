@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -14,7 +13,6 @@
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_observer.h"
@@ -26,16 +24,16 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/aura/env.h"
-#include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -758,6 +756,19 @@ IN_PROC_BROWSER_TEST_F(CaptureModeSettingsBrowserTest,
   EXPECT_EQ(transient_root->GetId(),
             ash::kShellWindowId_CaptureModeFolderSelectionDialogOwner);
   EXPECT_NE(transient_root, browser()->window()->GetNativeWindow());
+}
+
+IN_PROC_BROWSER_TEST_F(CaptureModeSettingsBrowserTest,
+                       AudioCaptureDisabledByPolicy) {
+  ash::CaptureModeTestApi test_api;
+  test_api.SetAudioRecordingEnabled(true);
+  EXPECT_TRUE(test_api.GetAudioRecordingEnabled());
+
+  auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  prefs->SetBoolean(prefs::kAudioCaptureAllowed, false);
+  EXPECT_FALSE(test_api.GetAudioRecordingEnabled());
+  prefs->SetBoolean(prefs::kAudioCaptureAllowed, true);
+  EXPECT_TRUE(test_api.GetAudioRecordingEnabled());
 }
 
 // This test fixture tests the chromeos-linux path of camera video frames coming

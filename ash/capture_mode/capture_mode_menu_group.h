@@ -55,6 +55,10 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   CaptureModeMenuGroup& operator=(const CaptureModeMenuGroup&) = delete;
   ~CaptureModeMenuGroup() override;
 
+  // Returns true if this menu group is for a setting that is managed by a
+  // policy set by admins.
+  bool IsManagedByPolicy() const;
+
   // Adds an option which has text and a checked image icon to the the menu
   // group. When the option is selected, its checked icon is visible. Otherwise
   // its checked icon is invisible. One and only one option's checked icon is

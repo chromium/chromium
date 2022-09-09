@@ -52,6 +52,9 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   void set_is_camera_disabled_by_policy(bool value) {
     is_camera_disabled_by_policy_ = value;
   }
+  void set_is_audio_capture_disabled_by_policy(bool value) {
+    is_audio_capture_disabled_by_policy_ = value;
+  }
   void set_fake_drive_fs_free_bytes(int64_t bytes) {
     fake_drive_fs_free_bytes_ = bytes;
   }
@@ -112,6 +115,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
       override;
   void GetDriveFsFreeSpaceBytes(OnGotDriveFsFreeSpace callback) override;
   bool IsCameraDisabledByPolicy() const override;
+  bool IsAudioCaptureDisabledByPolicy() const override;
 
  private:
   std::unique_ptr<recording::RecordingServiceTestApi> recording_service_;
@@ -123,6 +127,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   bool is_allowed_by_policy_ = true;
   bool should_save_after_dlp_check_ = true;
   bool is_camera_disabled_by_policy_ = false;
+  bool is_audio_capture_disabled_by_policy_ = false;
   base::ScopedTempDir fake_drive_fs_mount_path_;
   base::ScopedTempDir fake_android_files_path_;
   base::ScopedTempDir fake_linux_files_path_;

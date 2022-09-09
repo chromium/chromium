@@ -72,6 +72,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       override;
   void GetDriveFsFreeSpaceBytes(ash::OnGotDriveFsFreeSpace callback) override;
   bool IsCameraDisabledByPolicy() const override;
+  bool IsAudioCaptureDisabledByPolicy() const override;
 
  private:
   // Called back by the Drive integration service when the quota usage is

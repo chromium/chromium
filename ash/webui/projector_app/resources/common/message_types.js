@@ -64,4 +64,6 @@ export const NewScreencastPreconditionReason = {
   // Soda installation errors:
   SODA_INSTALLATION_ERROR_UNSPECIFIED_ERROR: 0,
   SODA_INSTALLATION_ERROR_NEEDS_REBOOT: 11,
+
+  AUDIO_CAPTURE_DISABLED_BY_POLICY: 12,
 };

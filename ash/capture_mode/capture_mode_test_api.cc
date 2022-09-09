@@ -111,6 +111,10 @@ void CaptureModeTestApi::SetAudioRecordingEnabled(bool enabled) {
   controller_->enable_audio_recording_ = enabled;
 }
 
+bool CaptureModeTestApi::GetAudioRecordingEnabled() const {
+  return controller_->GetAudioRecordingEnabled();
+}
+
 void CaptureModeTestApi::FlushRecordingServiceForTesting() {
   DCHECK(controller_->is_recording_in_progress());
   controller_->recording_service_remote_.FlushForTesting();

@@ -270,10 +270,18 @@ ProjectorControllerImpl::GetNewScreencastPrecondition() const {
     return result;
   }
 
-  if (CaptureModeController::Get()->is_recording_in_progress()) {
+  auto* capture_mode_controller = CaptureModeController::Get();
+  if (capture_mode_controller->is_recording_in_progress()) {
     result.state = NewScreencastPreconditionState::kDisabled;
     result.reasons = {
         NewScreencastPreconditionReason::kScreenRecordingInProgress};
+    return result;
+  }
+
+  if (capture_mode_controller->IsAudioCaptureDisabledByPolicy()) {
+    result.state = NewScreencastPreconditionState::kDisabled;
+    result.reasons = {
+        NewScreencastPreconditionReason::kAudioCaptureDisabledByPolicy};
     return result;
   }
 

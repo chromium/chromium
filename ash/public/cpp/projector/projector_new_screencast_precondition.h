@@ -44,7 +44,9 @@ enum class ASH_PUBLIC_EXPORT NewScreencastPreconditionReason {
 
   // Soda installation errors.
   kSodaInstallationErrorUnspecified = 0,
-  kSodaInstallationErrorNeedsReboot = 1
+  kSodaInstallationErrorNeedsReboot = 11,
+
+  kAudioCaptureDisabledByPolicy = 12,
 };
 
 // Struct used to provide the new screen cast precondition state and the reasons

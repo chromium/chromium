@@ -883,7 +883,7 @@ void CaptureModeSession::ReportSessionHistograms() {
 
   RecordCaptureModeSwitchesFromInitialMode(capture_source_changed_);
   RecordCaptureModeConfiguration(controller_->type(), controller_->source(),
-                                 controller_->enable_audio_recording(),
+                                 controller_->GetAudioRecordingEnabled(),
                                  is_in_projector_mode_);
 }
 

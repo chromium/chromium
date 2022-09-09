@@ -262,6 +262,11 @@ bool ChromeCaptureModeDelegate::IsCameraDisabledByPolicy() const {
                               g_browser_process->local_state());
 }
 
+bool ChromeCaptureModeDelegate::IsAudioCaptureDisabledByPolicy() const {
+  return !ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
+      prefs::kAudioCaptureAllowed);
+}
+
 void ChromeCaptureModeDelegate::OnGetDriveQuotaUsage(
     ash::OnGotDriveFsFreeSpace callback,
     drive::FileError error,

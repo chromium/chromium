@@ -83,13 +83,6 @@ class ASH_EXPORT CaptureModeSettingsView
   void OnAvailableCamerasChanged(const CameraInfoList& cameras) override;
   void OnSelectedCameraChanged(const CameraId& camera_id) override;
 
-  // For tests only:
-  CaptureModeMenuGroup* GetAudioInputMenuGroupForTesting() {
-    return audio_input_menu_group_;
-  }
-  views::View* GetMicrophoneOptionForTesting();
-  views::View* GetOffOptionForTesting();
-
  private:
   friend class CaptureModeSettingsTestApi;
 

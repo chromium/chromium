@@ -61,27 +61,36 @@ CaptureModeSettingsView::CaptureModeSettingsView(CaptureModeSession* session,
     : capture_mode_session_(session) {
   auto* controller = CaptureModeController::Get();
   if (!controller->is_recording_in_progress()) {
+    const bool audio_capture_managed_by_policy =
+        controller->IsAudioCaptureDisabledByPolicy();
+
+    DCHECK(!audio_capture_managed_by_policy || !is_in_projector_mode)
+        << "A projector session should not be allowed to begin if audio "
+           "recording is diabled by policy.";
+
     audio_input_menu_group_ =
         AddChildView(std::make_unique<CaptureModeMenuGroup>(
             this, kCaptureModeMicIcon,
-            l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT)));
+            l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT),
+            audio_capture_managed_by_policy));
 
     if (!is_in_projector_mode) {
       audio_input_menu_group_->AddOption(
           l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_OFF),
           kAudioOff);
     }
-    audio_input_menu_group_->AddOption(
-        l10n_util::GetStringUTF16(
-            IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_MICROPHONE),
-        kAudioMicrophone);
-  }
 
-  if (!controller->is_recording_in_progress()) {
+    if (!audio_capture_managed_by_policy) {
+      audio_input_menu_group_->AddOption(
+          l10n_util::GetStringUTF16(
+              IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_MICROPHONE),
+          kAudioMicrophone);
+    }
+
     separator_1_ = AddChildView(std::make_unique<views::Separator>());
     separator_1_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
     auto* camera_controller = controller->camera_controller();
-    const bool managed_by_policy =
+    const bool camera_managed_by_policy =
         camera_controller->IsCameraDisabledByPolicy();
     // Even if the camera feature is managed by policy, we still want to observe
     // the camera controller, since we need to be notified with camera additions
@@ -90,9 +99,10 @@ CaptureModeSettingsView::CaptureModeSettingsView(CaptureModeSession* session,
     camera_menu_group_ = AddChildView(std::make_unique<CaptureModeMenuGroup>(
         this, kCaptureModeCameraIcon,
         l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_CAMERA),
-        managed_by_policy));
+        camera_managed_by_policy));
 
-    AddCameraOptions(camera_controller->available_cameras(), managed_by_policy);
+    AddCameraOptions(camera_controller->available_cameras(),
+                     camera_managed_by_policy);
   }
 
   if (!is_in_projector_mode) {
@@ -229,9 +239,9 @@ bool CaptureModeSettingsView::IsOptionChecked(int option_id) const {
   auto* camera_controller = controller->camera_controller();
   switch (option_id) {
     case kAudioOff:
-      return !CaptureModeController::Get()->enable_audio_recording();
+      return !CaptureModeController::Get()->GetAudioRecordingEnabled();
     case kAudioMicrophone:
-      return CaptureModeController::Get()->enable_audio_recording();
+      return CaptureModeController::Get()->GetAudioRecordingEnabled();
     case kDownloadsFolder:
       return GetCurrentCaptureFolder().is_default_downloads_folder ||
              !is_custom_folder_available_.value_or(false);
@@ -250,9 +260,14 @@ bool CaptureModeSettingsView::IsOptionChecked(int option_id) const {
 }
 
 bool CaptureModeSettingsView::IsOptionEnabled(int option_id) const {
+  const bool audio_capture_managed_by_policy =
+      CaptureModeController::Get()->IsAudioCaptureDisabledByPolicy();
   switch (option_id) {
     case kAudioOff:
-      return !capture_mode_session_->is_in_projector_mode();
+      return !audio_capture_managed_by_policy &&
+             !capture_mode_session_->is_in_projector_mode();
+    case kAudioMicrophone:
+      return !audio_capture_managed_by_policy;
     case kCustomFolder:
       return is_custom_folder_available_.value_or(false);
     case kCameraOff: {
@@ -261,7 +276,6 @@ bool CaptureModeSettingsView::IsOptionEnabled(int option_id) const {
       DCHECK(camera_controller);
       return !camera_controller->IsCameraDisabledByPolicy();
     }
-    case kAudioMicrophone:
     case kDownloadsFolder:
     default:
       return true;
@@ -290,15 +304,6 @@ void CaptureModeSettingsView::OnAvailableCamerasChanged(
 void CaptureModeSettingsView::OnSelectedCameraChanged(
     const CameraId& camera_id) {
   // TODO(conniekxu): Implement this function.
-}
-
-views::View* CaptureModeSettingsView::GetMicrophoneOptionForTesting() {
-  return audio_input_menu_group_->GetOptionForTesting(  // IN-TEST
-      kAudioMicrophone);                                // IN-TEST
-}
-
-views::View* CaptureModeSettingsView::GetOffOptionForTesting() {
-  return audio_input_menu_group_->GetOptionForTesting(kAudioOff);  // IN-TEST
 }
 
 void CaptureModeSettingsView::OnSelectFolderMenuItemPressed() {

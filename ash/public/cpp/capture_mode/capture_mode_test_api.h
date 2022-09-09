@@ -99,6 +99,10 @@ class ASH_EXPORT CaptureModeTestApi {
   // only be called before recording starts, otherwise it has no effect.
   void SetAudioRecordingEnabled(bool enabled);
 
+  // Returns the effective enabled state of audio recording which takes into
+  // account the `AudioCaptureAllowed` policy.
+  bool GetAudioRecordingEnabled() const;
+
   // Flushes the recording service pipe synchronously. Can only be called while
   // recording is in progress.
   void FlushRecordingServiceForTesting();

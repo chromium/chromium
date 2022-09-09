@@ -461,6 +461,14 @@ bool CaptureModeController::IsActive() const {
   return capture_mode_session_ && !capture_mode_session_->is_shutting_down();
 }
 
+bool CaptureModeController::GetAudioRecordingEnabled() const {
+  return enable_audio_recording_ && !IsAudioCaptureDisabledByPolicy();
+}
+
+bool CaptureModeController::IsAudioCaptureDisabledByPolicy() const {
+  return delegate_->IsAudioCaptureDisabledByPolicy();
+}
+
 void CaptureModeController::SetSource(CaptureModeSource source) {
   if (source == source_)
     return;
@@ -970,7 +978,7 @@ void CaptureModeController::LaunchRecordingServiceAndStartRecording(
   // is ok since the |audio_stream_factory| parameter in the recording service
   // APIs is optional, and can be not bound.
   mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory;
-  if (enable_audio_recording_) {
+  if (GetAudioRecordingEnabled()) {
     delegate_->BindAudioStreamFactory(
         audio_stream_factory.InitWithNewPipeAndPassReceiver());
   }
@@ -1556,6 +1564,18 @@ void CaptureModeController::OnDlpRestrictionCheckedAtCountDownFinished(
   capture_mode_session_->set_can_exit_on_escape(false);
 
   if (capture_mode_session_->is_in_projector_mode()) {
+    // Before creating the DriveFS folder for the screencast, check if audio
+    // recording cannot be done due to admin policy. In this case we just abort
+    // the recording by stopping the capture mode session without starting any
+    // recording. This will eventually call
+    // `ProjectorControllerImpl::OnRecordingStartAborted()` which should take
+    // care of cleaning up the Projector state, and updating the preconditions
+    // for the "New screencast" button.
+    if (!GetAudioRecordingEnabled()) {
+      Stop();
+      return;
+    }
+
     ProjectorControllerImpl::Get()->CreateScreencastContainerFolder(
         base::BindOnce(
             &CaptureModeController::OnProjectorContainerFolderCreated,
@@ -1610,6 +1630,10 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
     SetType(CaptureModeType::kImage);
   } else if (entry_type == CaptureModeEntryType::kProjector) {
     DCHECK(features::IsProjectorEnabled());
+    DCHECK(!delegate_->IsAudioCaptureDisabledByPolicy())
+        << "A projector session should not be allowed to begin if audio "
+           "capture is disabled by policy.";
+
     for_projector = true;
     // TODO(afakhry): Discuss with PM whether we want this to affect the audio
     // settings of future generic capture mode sessions.
