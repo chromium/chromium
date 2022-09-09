@@ -1191,7 +1191,7 @@ void CloudPolicyClient::OnRegisterCompleted(
           base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
       if (configuration_seed && configuration_seed->is_dict()) {
         configuration_seed_ = std::make_unique<base::Value::Dict>(
-            std::move(configuration_seed->GetDict()));
+            std::move(*configuration_seed).TakeDict());
       } else {
         configuration_seed_.reset();
         LOG(ERROR) << "Failed to parse configuration seed";

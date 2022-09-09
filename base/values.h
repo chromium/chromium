@@ -348,7 +348,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // Callers that want to transfer ownership can use std::move() in conjunction
   // with one of the mutable variants below, e.g.:
   //   std::string taken_string = std::move(value.GetString());
-  //   base::Value::Dict taken_dict = std::move(value.GetDict());
   const std::string& GetString() const;
   std::string& GetString();
   const BlobStorage& GetBlob() const;
@@ -360,8 +359,9 @@ class BASE_EXPORT GSL_OWNER Value {
   // Transfers ownership of the underlying value. Similarly to `Get...()`
   // variants above, fails with a `CHECK()` on a type mismatch. After
   // transferring the ownership `*this` is in a valid, but unspecified, state.
-  // Prefer over `std::move(value.GetList())` so clang-tidy can warn about
+  // Prefer over `std::move(value.Get...())` so clang-tidy can warn about
   // potential use-after-move mistakes.
+  Dict TakeDict() &&;
   List TakeList() &&;
 
   // Represents a dictionary of string keys to Values.

@@ -263,7 +263,7 @@ Value ParseJson(StringPiece json) {
 Value::Dict ParseJsonDict(StringPiece json) {
   absl::optional<Value> result =
       ParseJsonHelper(json, /*expected_type=*/Value::Type::DICT);
-  return result.has_value() ? std::move(result->GetDict()) : Value::Dict();
+  return result.has_value() ? std::move(*result).TakeDict() : Value::Dict();
 }
 
 Value::List ParseJsonList(StringPiece json) {

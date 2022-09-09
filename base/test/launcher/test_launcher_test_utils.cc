@@ -155,7 +155,7 @@ absl::optional<Value::Dict> ReadSummary(const FilePath& path) {
   CHECK(ReadFileToStringWithMaxSize(path, &json, size));
   absl::optional<Value> value = JSONReader::Read(json);
   if (value && value->is_dict())
-    result = std::move(value->GetDict());
+    result = std::move(*value).TakeDict();
 
   return result;
 }

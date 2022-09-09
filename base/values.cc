@@ -354,6 +354,10 @@ Value::List& Value::GetList() {
   return absl::get<List>(data_);
 }
 
+Value::Dict Value::TakeDict() && {
+  return std::move(GetDict());
+}
+
 Value::List Value::TakeList() && {
   return std::move(GetList());
 }

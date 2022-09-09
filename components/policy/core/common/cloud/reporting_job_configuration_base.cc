@@ -244,9 +244,10 @@ void ReportingJobConfigurationBase::OnURLLoadComplete(
     }
   }
 
-  auto response_dict = response && response->is_dict()
-                           ? absl::make_optional(std::move(response->GetDict()))
-                           : absl::nullopt;
+  auto response_dict =
+      response && response->is_dict()
+          ? absl::make_optional(std::move(*response).TakeDict())
+          : absl::nullopt;
   std::move(callback_).Run(job, status, response_code,
                            std::move(response_dict));
 }
