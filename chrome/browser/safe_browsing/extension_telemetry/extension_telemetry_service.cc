@@ -317,6 +317,9 @@ void ExtensionTelemetryService::CreateAndUploadReport() {
 }
 
 void ExtensionTelemetryService::OnUploadComplete(bool success) {
+  if (success) {
+    SetLastUploadTimeForExtensionTelemetry(*pref_service_, base::Time::Now());
+  }
   if (base::FeatureList::IsEnabled(kExtensionTelemetryPersistence) &&
       enabled_ && !persister_.is_null()) {
     // Upload saved report(s) if there are any.
@@ -327,7 +330,6 @@ void ExtensionTelemetryService::OnUploadComplete(bool success) {
                          weak_factory_.GetWeakPtr());
       persister_.AsyncCall(&ExtensionTelemetryPersister::ReadReport)
           .Then(std::move(read_callback));
-      SetLastUploadTimeForExtensionTelemetry(*pref_service_, base::Time::Now());
     } else {
       // Save report to disk on a failed upload.
       std::string write_string;
