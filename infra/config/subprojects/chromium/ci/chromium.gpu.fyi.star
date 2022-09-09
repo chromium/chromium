@@ -59,6 +59,24 @@ def gpu_fyi_windows_builder(*, name, **kwargs):
 
 ci.thin_tester(
     name = "Android FYI Release (NVIDIA Shield TV)",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "enable_reclient",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder_rel_mb",
+        ),
+        run_tests_serially = True,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Android|P32|NVDA",
         short_name = "STV",
@@ -68,6 +86,23 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Android FYI Release (Nexus 5)",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "enable_reclient",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder_rel_mb",
+        ),
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Android|L32",
         short_name = "N5",
@@ -106,6 +141,23 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Android FYI Release (Pixel 2)",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "enable_reclient",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder_rel_mb",
+        ),
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Android|P32|QCOM",
         short_name = "P2",
@@ -115,6 +167,23 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Android FYI Release (Pixel 4)",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "enable_reclient",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder_rel_mb",
+        ),
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Android|R32|QCOM",
         short_name = "P4",
@@ -259,6 +328,22 @@ ci.gpu.linux_builder(
 
 ci.gpu.linux_builder(
     name = "GPU FYI Android arm Builder",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "enable_reclient",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder_rel_mb",
+        ),
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Android|Builder",
         short_name = "arm",

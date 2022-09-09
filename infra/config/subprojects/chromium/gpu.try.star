@@ -54,6 +54,10 @@ def gpu_android_builder(*, name, **kwargs):
 gpu_android_builder(
     name = "gpu-fyi-try-android-l-nexus-5-32",
     pool = "luci.chromium.gpu.android.nexus5.try",
+    mirrors = [
+        "ci/GPU FYI Android arm Builder",
+        "ci/Android FYI Release (Nexus 5)",
+    ],
 )
 
 gpu_android_builder(
@@ -68,16 +72,28 @@ gpu_android_builder(
 gpu_android_builder(
     name = "gpu-fyi-try-android-nvidia-shield-tv",
     pool = "luci.chromium.gpu.android.nvidia.shield.tv.try",
+    mirrors = [
+        "ci/GPU FYI Android arm Builder",
+        "ci/Android FYI Release (NVIDIA Shield TV)",
+    ],
 )
 
 gpu_android_builder(
     name = "gpu-fyi-try-android-p-pixel-2-32",
     pool = "luci.chromium.gpu.android.pixel2.chromium.try",
+    mirrors = [
+        "ci/GPU FYI Android arm Builder",
+        "ci/Android FYI Release (Pixel 2)",
+    ],
 )
 
 gpu_android_builder(
     name = "gpu-fyi-try-android-r-pixel-4-32",
     pool = "luci.chromium.gpu.android.pixel4.try",
+    mirrors = [
+        "ci/GPU FYI Android arm Builder",
+        "ci/Android FYI Release (Pixel 4)",
+    ],
 )
 
 gpu_android_builder(
