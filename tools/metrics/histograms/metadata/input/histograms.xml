@@ -78,6 +78,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.Assistive.AutocorrectV2.Actions.PK"
+    enum="IMEAutocorrectActions" expires_after="2022-12-15">
+  <owner>mehrab@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The histogram records assistive autocorrect actions such as showing,
+    reverting, rejecting and accepting an autocorrect suggestion. The actions
+    are recorded after they are performed on Physical Keyboard inputs.
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.Assistive.AutocorrectV2.Actions.VK"
+    enum="IMEAutocorrectActions" expires_after="2022-12-15">
+  <owner>mehrab@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The histogram records assistive autocorrect actions such as showing,
+    reverting, rejecting and accepting an autocorrect suggestion. The actions
+    are recorded after they are performed on Virtual Keyboard inputs.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.Assistive.CandidateGenerationTime.MultiWord"
     units="ms" expires_after="2022-10-04">
   <owner>curtismcmullan@google.com</owner>

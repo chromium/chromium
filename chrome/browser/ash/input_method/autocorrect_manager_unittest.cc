@@ -38,6 +38,10 @@ constexpr char kAutocorrectActionHistogramName[] =
     "InputMethod.Assistive.Autocorrect.Actions";
 constexpr char kVKAutocorrectActionHistogramName[] =
     "InputMethod.Assistive.Autocorrect.Actions.VK";
+constexpr char kVKAutocorrectV2ActionHistogramName[] =
+    "InputMethod.Assistive.AutocorrectV2.Actions.VK";
+constexpr char kPKAutocorrectV2ActionHistogramName[] =
+    "InputMethod.Assistive.AutocorrectV2.Actions.PK";
 
 // A helper for testing autocorrect histograms. There are redundant metrics
 // for each autocorrect action and the helper ensures that all the relevant
@@ -61,6 +65,13 @@ void ExpectAutocorrectHistograms(const base::HistogramTester& histogram_tester,
     histogram_tester.ExpectBucketCount(kVKAutocorrectActionHistogramName,
                                        AutocorrectActions::kWindowShown,
                                        window_shown);
+    histogram_tester.ExpectBucketCount(kVKAutocorrectV2ActionHistogramName,
+                                       AutocorrectActions::kWindowShown,
+                                       window_shown);
+  } else {
+    histogram_tester.ExpectBucketCount(kPKAutocorrectV2ActionHistogramName,
+                                       AutocorrectActions::kWindowShown,
+                                       window_shown);
   }
 
   // Underlined metrics.
@@ -72,6 +83,13 @@ void ExpectAutocorrectHistograms(const base::HistogramTester& histogram_tester,
                                      underlined);
   if (visible_vk) {
     histogram_tester.ExpectBucketCount(kVKAutocorrectActionHistogramName,
+                                       AutocorrectActions::kUnderlined,
+                                       underlined);
+    histogram_tester.ExpectBucketCount(kVKAutocorrectV2ActionHistogramName,
+                                       AutocorrectActions::kUnderlined,
+                                       underlined);
+  } else {
+    histogram_tester.ExpectBucketCount(kPKAutocorrectV2ActionHistogramName,
                                        AutocorrectActions::kUnderlined,
                                        underlined);
   }
@@ -87,6 +105,11 @@ void ExpectAutocorrectHistograms(const base::HistogramTester& histogram_tester,
   if (visible_vk) {
     histogram_tester.ExpectBucketCount(kVKAutocorrectActionHistogramName,
                                        AutocorrectActions::kReverted, reverted);
+    histogram_tester.ExpectBucketCount(kVKAutocorrectV2ActionHistogramName,
+                                       AutocorrectActions::kReverted, reverted);
+  } else {
+    histogram_tester.ExpectBucketCount(kPKAutocorrectV2ActionHistogramName,
+                                       AutocorrectActions::kReverted, reverted);
   }
 
   // Accept metrics.
@@ -96,6 +119,13 @@ void ExpectAutocorrectHistograms(const base::HistogramTester& histogram_tester,
   if (visible_vk) {
     histogram_tester.ExpectBucketCount(
         kVKAutocorrectActionHistogramName,
+        AutocorrectActions::kUserAcceptedAutocorrect, accepted);
+    histogram_tester.ExpectBucketCount(
+        kVKAutocorrectV2ActionHistogramName,
+        AutocorrectActions::kUserAcceptedAutocorrect, accepted);
+  } else {
+    histogram_tester.ExpectBucketCount(
+        kPKAutocorrectV2ActionHistogramName,
         AutocorrectActions::kUserAcceptedAutocorrect, accepted);
   }
 
@@ -114,6 +144,15 @@ void ExpectAutocorrectHistograms(const base::HistogramTester& histogram_tester,
         kVKAutocorrectActionHistogramName,
         AutocorrectActions::kUserExitedTextFieldWithUnderline,
         exited_text_field_with_underline);
+    histogram_tester.ExpectBucketCount(
+        kVKAutocorrectV2ActionHistogramName,
+        AutocorrectActions::kUserExitedTextFieldWithUnderline,
+        exited_text_field_with_underline);
+  } else {
+    histogram_tester.ExpectBucketCount(
+        kPKAutocorrectV2ActionHistogramName,
+        AutocorrectActions::kUserExitedTextFieldWithUnderline,
+        exited_text_field_with_underline);
   }
 
   const int total_actions =
@@ -129,6 +168,10 @@ void ExpectAutocorrectHistograms(const base::HistogramTester& histogram_tester,
                                     total_actions);
   histogram_tester.ExpectTotalCount(kVKAutocorrectActionHistogramName,
                                     visible_vk ? total_actions : 0);
+  histogram_tester.ExpectTotalCount(kVKAutocorrectV2ActionHistogramName,
+                                    visible_vk ? total_actions : 0);
+  histogram_tester.ExpectTotalCount(kPKAutocorrectV2ActionHistogramName,
+                                    visible_vk ? 0 : total_actions);
 }
 
 // A helper to create properties for hidden undo window.
@@ -1093,55 +1136,6 @@ TEST_F(AutocorrectManagerTest,
 }
 
 TEST_F(AutocorrectManagerTest,
-       RecordMetricsForVkWhenVkWasVisibleAtUnderlineTime) {
-  // VK is visible at the time of suggesting an autocorrect.
-  keyboard_client_->set_keyboard_visible_for_test(true);
-  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
-
-  // To suppress strict mock.
-  EXPECT_CALL(mock_suggestion_handler_, SetAssistiveWindowProperties(_, _, _));
-
-  // VK is made hidden, but still the metrics need to be recorded for VK
-  // given VK was visible at underline time.
-  keyboard_client_->set_keyboard_visible_for_test(false);
-  manager_.OnSurroundingTextChanged(u"the ", 1, 1);
-
-  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/true,
-                              /*window_shown=*/1, /*underlined=*/1,
-                              /*reverted=*/0, /*accepted=*/0,
-                              /*cleared_underline=*/0);
-}
-
-TEST_F(AutocorrectManagerTest,
-       DoesNotRecordMetricsForVkWhenVkWasNotVisibleAtUnderlineTime) {
-  // VK is not visible at the time of suggesting an autocorrect.
-  keyboard_client_->set_keyboard_visible_for_test(false);
-  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
-
-  // To suppress strict mock.
-  EXPECT_CALL(mock_suggestion_handler_, SetAssistiveWindowProperties(_, _, _));
-
-  // VK is made visible, but still metrics must not be recorded for VK
-  // as it was not visible at the time of underline.
-  keyboard_client_->set_keyboard_visible_for_test(true);
-  manager_.OnSurroundingTextChanged(u"the ", 1, 1);
-
-  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
-                              /*window_shown=*/1, /*underlined=*/1,
-                              /*reverted=*/0, /*accepted=*/0,
-                              /*cleared_underline=*/0);
-}
-
-TEST_F(AutocorrectManagerTest, HandleAutocorrectRecordsMetricsWhenVkIsVisible) {
-  keyboard_client_->set_keyboard_visible_for_test(true);
-  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
-  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/true,
-                              /*window_shown=*/0, /*underlined=*/1,
-                              /*reverted=*/0, /*accepted=*/0,
-                              /*cleared_underline=*/0);
-}
-
-TEST_F(AutocorrectManagerTest,
        HandleAutocorrectRecordsMetricsWhenNoPendingAutocorrectExists) {
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
   ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
@@ -1465,6 +1459,93 @@ TEST_F(AutocorrectManagerTest,
                               /*exited_text_field_with_underline=*/0);
 }
 
+TEST_F(AutocorrectManagerTest,
+       RecordMetricsForVkWhenVkWasVisibleAtUnderlineTime) {
+  // VK is visible at the time of suggesting an autocorrect.
+  keyboard_client_->set_keyboard_visible_for_test(true);
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  // To suppress strict mock.
+  EXPECT_CALL(mock_suggestion_handler_, SetAssistiveWindowProperties(_, _, _));
+
+  // VK is made hidden, but still the metrics need to be recorded for VK
+  // given VK was visible at underline time.
+  keyboard_client_->set_keyboard_visible_for_test(false);
+  manager_.OnSurroundingTextChanged(u"the ", 1, 1);
+
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/true,
+                              /*window_shown=*/1, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/0);
+}
+
+TEST_F(AutocorrectManagerTest,
+       DoesNotRecordMetricsForVkWhenVkWasNotVisibleAtUnderlineTime) {
+  // VK is not visible at the time of suggesting an autocorrect.
+  keyboard_client_->set_keyboard_visible_for_test(false);
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  // To suppress strict mock.
+  EXPECT_CALL(mock_suggestion_handler_, SetAssistiveWindowProperties(_, _, _));
+
+  // VK is made visible, but still metrics must not be recorded for VK
+  // as it was not visible at the time of underline.
+  keyboard_client_->set_keyboard_visible_for_test(true);
+  manager_.OnSurroundingTextChanged(u"the ", 1, 1);
+
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/1, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/0);
+}
+
+TEST_F(AutocorrectManagerTest, UndoRecordsMetricsAfterRevert) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+
+  manager_.UndoAutocorrect();
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/0, /*underlined=*/1,
+                              /*reverted=*/1, /*accepted=*/0,
+                              /*cleared_underline=*/0,
+                              /*exited_text_field_with_underline=*/0);
+}
+
+TEST_F(AutocorrectManagerTest, HandleAutocorrectRecordsMetricsWhenVkIsVisible) {
+  keyboard_client_->set_keyboard_visible_for_test(true);
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/true,
+                              /*window_shown=*/0, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/0);
+}
+
+TEST_F(AutocorrectManagerTest, ExitingTextFieldRecordsMetricsWhenVkIsVisible) {
+  keyboard_client_->set_keyboard_visible_for_test(true);
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnBlur();
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/true,
+                              /*window_shown=*/0, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/0,
+                              /*exited_text_field_with_underline=*/1);
+}
+
+TEST_F(AutocorrectManagerTest,
+       AcceptingAutocorrectRecordsMetricsWhenVkIsVisible) {
+  keyboard_client_->set_keyboard_visible_for_test(true);
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+
+  // Implicitly accept autocorrect
+  manager_.OnSurroundingTextChanged(u"the abc", 7, 7);
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/true,
+                              /*window_shown=*/0, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/1,
+                              /*cleared_underline=*/0,
+                              /*exited_text_field_with_underline=*/0);
+}
+
 TEST_F(AutocorrectManagerTest, ThreeValidationFailuresDoesNotClearRange) {
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
@@ -1513,6 +1594,36 @@ TEST_F(AutocorrectManagerTest,
   manager_.OnSurroundingTextChanged(u"teh ", 4, 4);
 
   ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/0, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/1,
+                              /*exited_text_field_with_underline=*/0);
+}
+
+TEST_F(AutocorrectManagerTest, UndoRecordsMetricsWhenVkIsVisible) {
+  keyboard_client_->set_keyboard_visible_for_test(true);
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+
+  manager_.UndoAutocorrect();
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/true,
+                              /*window_shown=*/0, /*underlined=*/1,
+                              /*reverted=*/1, /*accepted=*/0,
+                              /*cleared_underline=*/0,
+                              /*exited_text_field_with_underline=*/0);
+}
+
+TEST_F(AutocorrectManagerTest,
+       ClearingAutocorrectRecordsMetricsWhenVkIsVisible) {
+  keyboard_client_->set_keyboard_visible_for_test(true);
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(),
+                                                      base::DoNothing());
+  manager_.OnSurroundingTextChanged(u"teh ", 4, 4);
+
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/true,
                               /*window_shown=*/0, /*underlined=*/1,
                               /*reverted=*/0, /*accepted=*/0,
                               /*cleared_underline=*/1,
@@ -1628,6 +1739,20 @@ TEST_F(AutocorrectManagerTest, RangeAndSuggestionMismatchDoesNotRecordMetrics) {
                               /*reverted=*/0, /*accepted=*/0,
                               /*cleared_underline=*/0,
                               /*exited_text_field_with_underline=*/0);
+}
+
+TEST_F(AutocorrectManagerTest, ShowingUndoWindowRecordsMetricsWhenVkIsVisible) {
+  keyboard_client_->set_keyboard_visible_for_test(true);
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  // This suppresses strict mock.
+  EXPECT_CALL(mock_suggestion_handler_, SetAssistiveWindowProperties(_, _, _));
+
+  manager_.OnSurroundingTextChanged(u"the", 0, 0);
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/true,
+                              /*window_shown=*/1, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/0);
 }
 
 }  // namespace

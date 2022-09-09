@@ -141,8 +141,6 @@ void AutocorrectManager::ProcessSetAutocorrectRangeDone(
 
 void AutocorrectManager::LogAssistiveAutocorrectAction(
     AutocorrectActions action) {
-  // TODO(b/161490813): Add a new metric to measure the impact of new changes.
-  //   The new metric should have separate buckets for vk and pk.
   base::UmaHistogramEnumeration("InputMethod.Assistive.Autocorrect.Actions",
                                 action);
 
@@ -150,6 +148,11 @@ void AutocorrectManager::LogAssistiveAutocorrectAction(
       pending_autocorrect_->virtual_keyboard_visible) {
     base::UmaHistogramEnumeration(
         "InputMethod.Assistive.Autocorrect.Actions.VK", action);
+    base::UmaHistogramEnumeration(
+        "InputMethod.Assistive.AutocorrectV2.Actions.VK", action);
+  } else {
+    base::UmaHistogramEnumeration(
+        "InputMethod.Assistive.AutocorrectV2.Actions.PK", action);
   }
 
   if (IsCurrentInputMethodExperimentalMultilingual()) {

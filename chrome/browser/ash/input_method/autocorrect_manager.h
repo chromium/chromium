@@ -18,9 +18,10 @@
 namespace ash {
 namespace input_method {
 
+// Must match with IMEAutocorrectActions in enums.xml
+//
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Needs to match ImeAutocorrectActions
-// in enums.xml.
+// numeric values should never be reused.
 enum class AutocorrectActions {
   kWindowShown = 0,
   kUnderlined = 1,
