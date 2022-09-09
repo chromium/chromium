@@ -70,7 +70,9 @@ class NetworkPortalNotificationController
   // has been detected. On click the captive portal login page is opened in the
   // browser.
   std::unique_ptr<message_center::Notification>
-  CreateDefaultCaptivePortalNotification(const ash::NetworkState* network);
+  CreateDefaultCaptivePortalNotification(
+      const ash::NetworkState* network,
+      NetworkState::PortalState portal_state);
 
   // NetworkStateHandlerObserver:
   void PortalStateChanged(const NetworkState* network,

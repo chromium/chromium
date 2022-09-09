@@ -54,22 +54,42 @@ std::unique_ptr<message_center::Notification> CreatePost2022Notification(
     const ash::NetworkState* network,
     scoped_refptr<message_center::NotificationDelegate> delegate,
     message_center::NotifierId notifier_id,
-    bool is_wifi) {
+    bool is_wifi,
+    NetworkState::PortalState portal_state) {
+  int message;
+  message_center::ButtonInfo button;
   message_center::RichNotificationData data;
-  data.buttons.emplace_back(message_center::ButtonInfo(
-      l10n_util::GetStringUTF16(IDS_NEW_PORTAL_DETECTION_NOTIFICATION_BUTTON)));
-  std::unique_ptr<message_center::Notification> notification;
-  notification = ash::CreateSystemNotification(
-      message_center::NOTIFICATION_TYPE_SIMPLE,
-      NetworkPortalNotificationController::kNotificationId,
-      l10n_util::GetStringUTF16(
-          is_wifi ? IDS_NEW_PORTAL_DETECTION_NOTIFICATION_TITLE_WIFI
-                  : IDS_NEW_PORTAL_DETECTION_NOTIFICATION_TITLE_WIRED),
-      l10n_util::GetStringFUTF16(IDS_NEW_PORTAL_DETECTION_NOTIFICATION_MESSAGE,
-                                 base::UTF8ToUTF16(network->name())),
-      /*display_source=*/std::u16string(), /*origin_url=*/GURL(), notifier_id,
-      data, std::move(delegate), kNotificationCaptivePortalIcon,
-      message_center::SystemNotificationWarningLevel::NORMAL);
+  switch (portal_state) {
+    case NetworkState::PortalState::kPortal:
+      message = IDS_NEW_PORTAL_DETECTION_NOTIFICATION_MESSAGE;
+      button.title = l10n_util::GetStringUTF16(
+          IDS_NEW_PORTAL_DETECTION_NOTIFICATION_BUTTON);
+      data.buttons.emplace_back(std::move(button));
+      break;
+    case NetworkState::PortalState::kPortalSuspected:
+      message = IDS_NEW_PORTAL_SUSPECTED_DETECTION_NOTIFICATION_MESSAGE;
+      button.title = l10n_util::GetStringUTF16(
+          IDS_NEW_PORTAL_SUSPECTED_DETECTION_NOTIFICATION_BUTTON);
+      data.buttons.emplace_back(std::move(button));
+      break;
+    default:
+      NOTREACHED();
+      return nullptr;
+  }
+
+  std::unique_ptr<message_center::Notification> notification =
+      ash::CreateSystemNotification(
+          message_center::NOTIFICATION_TYPE_SIMPLE,
+          NetworkPortalNotificationController::kNotificationId,
+          l10n_util::GetStringUTF16(
+              is_wifi ? IDS_NEW_PORTAL_DETECTION_NOTIFICATION_TITLE_WIFI
+                      : IDS_NEW_PORTAL_DETECTION_NOTIFICATION_TITLE_WIRED),
+          l10n_util::GetStringFUTF16(message,
+                                     base::UTF8ToUTF16(network->name())),
+          /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
+          notifier_id, data, std::move(delegate),
+          kNotificationCaptivePortalIcon,
+          message_center::SystemNotificationWarningLevel::NORMAL);
   notification->set_never_timeout(true);
   return notification;
 }
@@ -206,7 +226,9 @@ void NetworkPortalNotificationController::PortalStateChanged(
   last_network_guid_ = network->guid();
 
   std::unique_ptr<message_center::Notification> notification =
-      CreateDefaultCaptivePortalNotification(network);
+      CreateDefaultCaptivePortalNotification(network, portal_state);
+  DCHECK(notification) << "Notification not created for portal state: "
+                       << portal_state;
   SystemNotificationHelper::GetInstance()->Display(*notification);
 }
 
@@ -242,7 +264,8 @@ void NetworkPortalNotificationController::OnDialogDestroyed(
 
 std::unique_ptr<message_center::Notification>
 NetworkPortalNotificationController::CreateDefaultCaptivePortalNotification(
-    const ash::NetworkState* network) {
+    const ash::NetworkState* network,
+    NetworkState::PortalState portal_state) {
   auto delegate =
       base::MakeRefCounted<NetworkPortalNotificationControllerDelegate>(
           network->guid(), weak_factory_.GetWeakPtr());
@@ -253,8 +276,8 @@ NetworkPortalNotificationController::CreateDefaultCaptivePortalNotification(
   bool is_wifi = NetworkTypePattern::WiFi().MatchesType(network->type());
   std::unique_ptr<message_center::Notification> notification;
   if (ash::features::IsCaptivePortalUI2022Enabled()) {
-    notification =
-        CreatePost2022Notification(network, delegate, notifier_id, is_wifi);
+    notification = CreatePost2022Notification(network, delegate, notifier_id,
+                                              is_wifi, portal_state);
   } else {
     notification =
         CreatePre2022Notification(network, delegate, notifier_id, is_wifi);
