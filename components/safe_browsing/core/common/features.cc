@@ -147,6 +147,12 @@ const base::Feature kSendSampledPingsForProtegoAllowlistDomains{
     "SafeBrowsingSendSampledPingsForProtegoAllowlistDomains",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kSevenZipReaderInInstaller{
+    "SafeBrowsingSevenZipReaderInInstaller", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kSevenZipEvaluationEnabled{
+    "SafeBrowsingSevenZipEvaluationEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kSuspiciousSiteTriggerQuotaFeature{
     "SafeBrowsingSuspiciousSiteTriggerQuota", base::FEATURE_ENABLED_BY_DEFAULT};
 

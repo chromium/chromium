@@ -143,6 +143,12 @@ extern const base::Feature kSuspiciousSiteTriggerQuotaFeature;
 // the allowlist to Safe Browsing.
 extern const base::Feature kSendSampledPingsForProtegoAllowlistDomains;
 
+// Killswitch for using the SevenZipReader in the installer.
+extern const base::Feature kSevenZipReaderInInstaller;
+
+// Controls whether the new 7z evaluation is performed on downloads.
+extern const base::Feature kSevenZipEvaluationEnabled;
+
 // Status of the SimplifiedUrlDisplay experiments. This does not control the
 // individual experiments, those are controlled by their own feature flags.
 // The feature is only set by Finch so that we can differentiate between
