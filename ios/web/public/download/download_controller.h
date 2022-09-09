@@ -82,7 +82,7 @@ class WebState;
 //
 class DownloadController {
  public:
-  // Returns DownloadController for the given |browser_state|. |browser_state|
+  // Returns DownloadController for the given `browser_state`. `browser_state`
   // must not be null.
   static DownloadController* FromBrowserState(BrowserState* browser_state);
 
@@ -91,7 +91,7 @@ class DownloadController {
   // must not call this method to initiate a renderer-initiated download (those
   // downloads are created automatically).
   // In order to resume the download after the application relaunch clients have
-  // to pass |identifier| obtained from
+  // to pass `identifier` obtained from
   // application:handleEventsForBackgroundURLSession:completionHandler:
   // UIApplicationDelegate callback. The rest of arguments should be taken
   // from DownloadTask, which was suspended when the application has been
@@ -105,7 +105,7 @@ class DownloadController {
                                   int64_t total_bytes,
                                   const std::string& mime_type) = 0;
 
-  // Creates a new native download task. This method uses |download| which
+  // Creates a new native download task. This method uses `download` which
   // is used to perform downloads using WKDownload instead of NSURLSession
   // and will be supported from iOS 15+.
   virtual void CreateNativeDownloadTask(WebState* web_state,
