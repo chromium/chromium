@@ -227,7 +227,19 @@ void PrefetchService::PrefetchUrl(
 
   RecordExistingPrefetchWithMatchingURL(prefetch_container);
 
-  DCHECK(all_prefetches_.find(prefetch_container_key) == all_prefetches_.end());
+  // A newly submitted prefetch could already be in |all_prefetches_| if and
+  // only if:
+  //   1) There was a same origin navigaition that used the same renderer.
+  //   2) Both pages requested a prefetch for the same URL.
+  //   3) The prefetch from the first page had at least started its network
+  //      request (which would mean that it is in |owned_prefetches_| and owned
+  //      by the prefetch service).
+  // If this happens, then we just delete the old prefetch and add the new
+  // prefetch to |all_prefetches_|.
+  auto prefetch_iter = all_prefetches_.find(prefetch_container_key);
+  if (prefetch_iter != all_prefetches_.end()) {
+    ResetPrefetch(prefetch_iter->second);
+  }
   all_prefetches_[prefetch_container_key] = prefetch_container;
 
   CheckEligibilityOfPrefetch(
@@ -1013,9 +1025,7 @@ void PrefetchService::RecordExistingPrefetchWithMatchingURL(
   bool matching_prefetch = false;
   for (const auto& prefetch_iter : all_prefetches_) {
     if (prefetch_iter.second &&
-        prefetch_iter.second->GetURL() == prefetch_container->GetURL() &&
-        prefetch_iter.second->GetReferringRenderFrameHostId() !=
-            prefetch_container->GetReferringRenderFrameHostId()) {
+        prefetch_iter.second->GetURL() == prefetch_container->GetURL()) {
       matching_prefetch = true;
       break;
     }
