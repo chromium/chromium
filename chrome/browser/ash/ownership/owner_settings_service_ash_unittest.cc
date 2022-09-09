@@ -108,7 +108,8 @@ class OwnerSettingsServiceAshTest : public DeviceSettingsTestBase {
     provider_ = std::make_unique<DeviceSettingsProvider>(
         base::BindRepeating(&OnPrefChanged), device_settings_service_.get(),
         TestingBrowserProcess::GetGlobal()->local_state());
-    owner_key_util_->SetPrivateKey(device_policy_->GetSigningKey());
+    owner_key_util_->ImportPrivateKeyAndSetPublicKey(
+        device_policy_->GetSigningKey());
     InitOwner(
         AccountId::FromUserEmail(device_policy_->policy_data().username()),
         true);
@@ -380,8 +381,7 @@ TEST_F(OwnerSettingsServiceAshTest, MigrateFeatureFlagsAlreadyMigrated) {
       FeatureFlagsMigrationStatus::kAlreadyMigrated, 1);
 }
 
-class OwnerSettingsServiceAshNoOwnerTest
-    : public OwnerSettingsServiceAshTest {
+class OwnerSettingsServiceAshNoOwnerTest : public OwnerSettingsServiceAshTest {
  public:
   OwnerSettingsServiceAshNoOwnerTest() {}
 
@@ -412,7 +412,8 @@ TEST_F(OwnerSettingsServiceAshNoOwnerTest, SingleSetTest) {
 TEST_F(OwnerSettingsServiceAshNoOwnerTest, TakeOwnershipForceAllowlist) {
   EXPECT_FALSE(FindInListValue(device_policy_->policy_data().username(),
                                provider_->Get(kAccountsPrefUsers)));
-  owner_key_util_->SetPrivateKey(device_policy_->GetSigningKey());
+  owner_key_util_->ImportPrivateKeyAndSetPublicKey(
+      device_policy_->GetSigningKey());
   InitOwner(AccountId::FromUserEmail(device_policy_->policy_data().username()),
             true);
   ReloadDeviceSettings();

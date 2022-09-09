@@ -38,8 +38,8 @@
 
 namespace em = enterprise_management;
 
-using testing::Mock;
 using testing::_;
+using testing::Mock;
 
 namespace ash {
 namespace {
@@ -135,9 +135,8 @@ TEST_F(SessionManagerOperationTest, LoadNoPolicyNoKey) {
       base::BindOnce(&SessionManagerOperationTest::OnOperationCompleted,
                      base::Unretained(this)));
 
-  EXPECT_CALL(*this,
-              OnOperationCompleted(
-                  &op, DeviceSettingsService::STORE_KEY_UNAVAILABLE));
+  EXPECT_CALL(*this, OnOperationCompleted(
+                         &op, DeviceSettingsService::STORE_KEY_UNAVAILABLE));
   op.Start(&session_manager_client_, owner_key_util_, nullptr);
   content::RunAllTasksUntilIdle();
   Mock::VerifyAndClearExpectations(this);
@@ -156,9 +155,8 @@ TEST_F(SessionManagerOperationTest, LoadOwnerKey) {
       base::BindOnce(&SessionManagerOperationTest::OnOperationCompleted,
                      base::Unretained(this)));
 
-  EXPECT_CALL(*this,
-              OnOperationCompleted(
-                  &op, DeviceSettingsService::STORE_NO_POLICY));
+  EXPECT_CALL(
+      *this, OnOperationCompleted(&op, DeviceSettingsService::STORE_NO_POLICY));
   op.Start(&session_manager_client_, owner_key_util_, nullptr);
   content::RunAllTasksUntilIdle();
   Mock::VerifyAndClearExpectations(this);
@@ -199,8 +197,7 @@ TEST_F(SessionManagerOperationTest, LoadImmediately) {
                      base::Unretained(this)));
 
   EXPECT_CALL(*this,
-              OnOperationCompleted(
-                  &op, DeviceSettingsService::STORE_SUCCESS));
+              OnOperationCompleted(&op, DeviceSettingsService::STORE_SUCCESS));
   op.Start(&session_manager_client_, owner_key_util_, nullptr);
   content::RunAllTasksUntilIdle();
   Mock::VerifyAndClearExpectations(this);
@@ -214,7 +211,7 @@ TEST_F(SessionManagerOperationTest, LoadImmediately) {
 }
 
 TEST_F(SessionManagerOperationTest, RestartLoad) {
-  owner_key_util_->SetPrivateKey(policy_.GetSigningKey());
+  owner_key_util_->ImportPrivateKeyAndSetPublicKey(policy_.GetSigningKey());
   session_manager_client_.set_device_policy(policy_.GetBlob());
   LoadSettingsOperation op(
       false /* force_key_load */, true /* cloud_validations */,
@@ -245,7 +242,8 @@ TEST_F(SessionManagerOperationTest, RestartLoad) {
         policy->payload().mutable_metrics_enabled()->set_metrics_enabled(true);
         policy->Build();
         session_manager_client->set_device_policy(policy->GetBlob());
-        owner_key_util->SetPrivateKey(policy->GetSigningKey());
+        owner_key_util->ImportPrivateKeyAndSetPublicKey(
+            policy->GetSigningKey());
 
         // And restart the operation.
         EXPECT_CALL(*test, OnOperationCompleted(
@@ -279,8 +277,7 @@ TEST_F(SessionManagerOperationTest, StoreSettings) {
       policy_.GetCopy());
 
   EXPECT_CALL(*this,
-              OnOperationCompleted(
-                  &op, DeviceSettingsService::STORE_SUCCESS));
+              OnOperationCompleted(&op, DeviceSettingsService::STORE_SUCCESS));
   op.Start(&session_manager_client_, owner_key_util_, nullptr);
   content::RunAllTasksUntilIdle();
   Mock::VerifyAndClearExpectations(this);

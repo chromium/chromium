@@ -66,7 +66,8 @@ class CrosSettingsTest : public testing::Test {
     fake_session_manager_client_.set_device_policy(device_policy_.GetBlob());
     owner_key_util_->SetPublicKeyFromPrivateKey(
         *device_policy_.GetSigningKey());
-    owner_key_util_->SetPrivateKey(device_policy_.GetSigningKey());
+    owner_key_util_->ImportPrivateKeyAndSetPublicKey(
+        device_policy_.GetSigningKey());
     OwnerSettingsServiceAshFactory::GetInstance()->SetOwnerKeyUtilForTesting(
         owner_key_util_);
     DeviceSettingsService::Get()->SetSessionManager(

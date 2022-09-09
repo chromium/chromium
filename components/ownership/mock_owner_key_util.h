@@ -46,8 +46,11 @@ class OWNERSHIP_EXPORT MockOwnerKeyUtil : public OwnerKeyUtil {
   // configure the private key.
   void SetPublicKeyFromPrivateKey(const crypto::RSAPrivateKey& key);
 
-  // Sets the private key (also configures the public key).
-  void SetPrivateKey(std::unique_ptr<crypto::RSAPrivateKey> key);
+  // Imports the private key into NSS, so it can be found later.
+  // Also extracts the public key and sets it for this mock object (equivalent
+  // to calling `SetPublicKeyFromPrivateKey`).
+  void ImportPrivateKeyAndSetPublicKey(
+      std::unique_ptr<crypto::RSAPrivateKey> key);
 
  private:
   ~MockOwnerKeyUtil() override;
