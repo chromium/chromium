@@ -79,13 +79,15 @@ const TriggerContext::Options kDefaultCCTOptions = {
     std::string(), /* is_cct = */ true,
     false,         false,
     std::string(), false,
-    false,         false};
+    false,         false,
+    true};
 
 const TriggerContext::Options kDefaultNonCCTOptions = {
     std::string(), /* is_cct = */ false,
     false,         false,
     std::string(), false,
-    false,         false};
+    false,         false,
+    true};
 
 // The set of feature combinations to test.
 const TestFeatureConfig kTestFeatureConfigs[] = {
@@ -350,7 +352,7 @@ TEST_P(StartupUtilParametrizedTest, InvalidParameterCombinationsShouldFail) {
                       {"ENABLED", "true"}, {"START_IMMEDIATELY", "true"}}),
               {std::string(), /* is_cct = */ true, false, false,
                /* initial_url = */ "https://www.example.com", false, false,
-               false}},
+               false, true}},
           {.msbb_setting_enabled = true,
            .proactive_help_setting_enabled = true,
            .feature_module_installed = true}),

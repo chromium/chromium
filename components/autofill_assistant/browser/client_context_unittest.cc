@@ -118,6 +118,7 @@ TEST_F(ClientContextTest, UpdatesToClientContext) {
       /* is_in_chrome_triggered = */ true,
       /* is_externally_triggered = */ false,
       /* skip_autofill_assistant_onboarding = */ false,
+      /* suppress_browsing_features = */ true,
   });
   auto actual_client_context = client_context.AsProto();
   EXPECT_THAT(actual_client_context.experiment_ids(), Eq("1,2,3"));
@@ -168,6 +169,7 @@ TEST_F(ClientContextTest, WindowSizeIsClearedIfNoLongerAvailable) {
       /* is_in_chrome_triggered = */ false,
       /* is_externally_triggered = */ false,
       /* skip_autofill_assistant_onboarding = */ false,
+      /* suppress_browsing_features = */ true,
   });
 
   actual_client_context = client_context.AsProto();
@@ -194,6 +196,7 @@ TEST_F(ClientContextTest, AccountMatching) {
       /* is_in_chrome_triggered = */ false,
       /* is_externally_triggered = */ false,
       /* skip_autofill_assistant_onboarding = */ false,
+      /* suppress_browsing_features = */ true,
   });
   EXPECT_THAT(client_context.AsProto().accounts_matching_status(),
               Eq(ClientContextProto::ACCOUNTS_MATCHING));
@@ -210,6 +213,7 @@ TEST_F(ClientContextTest, AccountMatching) {
       /* is_in_chrome_triggered = */ false,
       /* is_externally_triggered = */ false,
       /* skip_autofill_assistant_onboarding = */ false,
+      /* suppress_browsing_features = */ true,
   });
   EXPECT_THAT(client_context.AsProto().accounts_matching_status(),
               Eq(ClientContextProto::ACCOUNTS_NOT_MATCHING));

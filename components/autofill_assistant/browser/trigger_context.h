@@ -18,6 +18,7 @@ class TriggerContext {
  public:
   // Helper struct to facilitate instantiating this class.
   struct Options {
+    Options();
     Options(const std::string& experiment_ids,
             bool is_cct,
             bool onboarding_shown,
@@ -25,9 +26,10 @@ class TriggerContext {
             const std::string& initial_url,
             bool is_in_chrome_triggered,
             bool is_externally_triggered,
-            bool skip_autofill_assistant_onboarding);
-    Options();
+            bool skip_autofill_assistant_onboarding,
+            bool suppress_browsing_features);
     ~Options();
+
     std::string experiment_ids;
     bool is_cct = false;
     bool onboarding_shown = false;
@@ -36,6 +38,7 @@ class TriggerContext {
     bool is_in_chrome_triggered = false;
     bool is_externally_triggered = false;
     bool skip_autofill_assistant_onboarding = false;
+    bool suppress_browsing_features = true;
   };
 
   // Creates an empty trigger context.
@@ -59,7 +62,8 @@ class TriggerContext {
                  const std::string& initial_url,
                  bool is_in_chrome_triggered,
                  bool is_externally_triggered,
-                 bool skip_autofill_assistant_onboarding);
+                 bool skip_autofill_assistant_onboarding,
+                 bool suppress_browsing_features);
 
   // Creates a trigger context that contains the merged contents of all input
   // instances at the time of calling (does not reference |contexts| after
@@ -113,6 +117,10 @@ class TriggerContext {
   // and the default onboarding flow should be skipped.
   virtual bool GetSkipAutofillAssistantOnboarding() const;
 
+  // Returns whether browsing features, such as the keyboard, Autofill,
+  // translation, etc.  should be suppressed while a flow is running.
+  virtual bool GetSuppressBrowsingFeatures() const;
+
   // Returns the trigger type of the trigger script that was shown and accepted
   // at the beginning of the flow, if any.
   virtual TriggerScriptProto::TriggerUIType GetTriggerUIType() const;
@@ -134,6 +142,7 @@ class TriggerContext {
   bool is_in_chrome_triggered_ = false;
   bool is_externally_triggered_ = false;
   bool skip_autofill_assistant_onboarding_ = false;
+  bool suppress_browsing_features_ = true;
 
   // The initial url at the time of triggering.
   std::string initial_url_;

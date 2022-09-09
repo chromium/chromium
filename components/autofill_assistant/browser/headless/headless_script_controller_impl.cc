@@ -57,18 +57,19 @@ void HeadlessScriptControllerImpl::StartScript(
 
   script_ended_callback_ = std::move(script_ended_callback);
   onboarding_successful_callback_ = std::move(onboarding_successful_callback);
-  auto parameters = std::make_unique<ScriptParameters>(script_parameters);
   auto trigger_context = std::make_unique<TriggerContext>(
-      std::move(parameters),
-      /* experiment_ids = */ "",
-      starter_->GetPlatformDependencies()->IsCustomTab(*web_contents_),
-      /*onboarding_shown = */ false,
-      /*is_direct_action = */ false,
-      /* initial_url = */ "",
-      /* is_in_chrome_triggered = */ true,
-      /* is_externally_triggered = */ true,
-      /* skip_autofill_assistant_onboarding = */
-      !use_autofill_assistant_onboarding);
+      std::make_unique<ScriptParameters>(script_parameters),
+      TriggerContext::Options{
+          /* experiment_ids = */ "",
+          starter_->GetPlatformDependencies()->IsCustomTab(*web_contents_),
+          /*onboarding_shown = */ false,
+          /*is_direct_action = */ false,
+          /* initial_url = */ "",
+          /* is_in_chrome_triggered = */ true,
+          /* is_externally_triggered = */ true,
+          /* skip_autofill_assistant_onboarding = */
+          !use_autofill_assistant_onboarding,
+          /* suppress_browsing_features = */ true});
   starter_->CanStart(
       std::move(trigger_context),
       base::BindOnce(&HeadlessScriptControllerImpl::OnReadyToStart,

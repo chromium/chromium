@@ -226,7 +226,8 @@ TEST_F(TriggerScriptCoordinatorTest, StartSendsOnlyApprovedFields) {
                           /* initial_url = */ "https://www.example.com",
                           /* is_in_chrome_triggered = */ true,
                           /* is_externally_triggered = */ false,
-                          /* skip_autofill_assistant_onboarding = */ false),
+                          /* skip_autofill_assistant_onboarding = */ false,
+                          /* suppress_browsing_features = */ true),
                       mock_callback_.Get());
 }
 
@@ -1872,7 +1873,8 @@ TEST_P(TriggerScriptCoordinatorParameterizedTest,
                           /* initial_url = */ "https://not-example.com/",
                           /* is_in_chrome_triggered = */ true,
                           /* is_externally_triggered = */ false,
-                          /* skip_autofill_assistant_onboarding = */ false),
+                          /* skip_autofill_assistant_onboarding = */ false,
+                          /* suppress_browsing_features = */ true),
                       mock_callback_.Get());
 
   if (!is_matching_url) {

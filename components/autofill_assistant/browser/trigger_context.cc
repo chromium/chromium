@@ -8,22 +8,24 @@
 
 namespace autofill_assistant {
 
-TriggerContext::Options::Options(const std::string& _experiment_ids,
-                                 bool _is_cct,
-                                 bool _onboarding_shown,
-                                 bool _is_direct_action,
-                                 const std::string& _initial_url,
-                                 bool _is_in_chrome_triggered,
-                                 bool _is_externally_triggered,
-                                 bool _skip_autofill_assistant_onboarding)
-    : experiment_ids(_experiment_ids),
-      is_cct(_is_cct),
-      onboarding_shown(_onboarding_shown),
-      is_direct_action(_is_direct_action),
-      initial_url(_initial_url),
-      is_in_chrome_triggered(_is_in_chrome_triggered),
-      is_externally_triggered(_is_externally_triggered),
-      skip_autofill_assistant_onboarding(_skip_autofill_assistant_onboarding) {}
+TriggerContext::Options::Options(const std::string& experiment_ids,
+                                 bool is_cct,
+                                 bool onboarding_shown,
+                                 bool is_direct_action,
+                                 const std::string& initial_url,
+                                 bool is_in_chrome_triggered,
+                                 bool is_externally_triggered,
+                                 bool skip_autofill_assistant_onboarding,
+                                 bool suppress_browsing_features)
+    : experiment_ids(experiment_ids),
+      is_cct(is_cct),
+      onboarding_shown(onboarding_shown),
+      is_direct_action(is_direct_action),
+      initial_url(initial_url),
+      is_in_chrome_triggered(is_in_chrome_triggered),
+      is_externally_triggered(is_externally_triggered),
+      skip_autofill_assistant_onboarding(skip_autofill_assistant_onboarding),
+      suppress_browsing_features(suppress_browsing_features) {}
 
 TriggerContext::Options::Options() = default;
 TriggerContext::Options::~Options() = default;
@@ -42,7 +44,8 @@ TriggerContext::TriggerContext(
                      options.initial_url,
                      options.is_in_chrome_triggered,
                      options.is_externally_triggered,
-                     options.skip_autofill_assistant_onboarding) {}
+                     options.skip_autofill_assistant_onboarding,
+                     options.suppress_browsing_features) {}
 
 TriggerContext::TriggerContext(
     std::unique_ptr<ScriptParameters> script_parameters,
@@ -53,7 +56,8 @@ TriggerContext::TriggerContext(
     const std::string& initial_url,
     bool is_in_chrome_triggered,
     bool is_externally_triggered,
-    bool skip_autofill_assistant_onboarding)
+    bool skip_autofill_assistant_onboarding,
+    bool suppress_browsing_features)
     : script_parameters_(std::move(script_parameters)),
       experiment_ids_(std::move(experiment_ids)),
       cct_(is_cct),
@@ -62,6 +66,7 @@ TriggerContext::TriggerContext(
       is_in_chrome_triggered_(is_in_chrome_triggered),
       is_externally_triggered_(is_externally_triggered),
       skip_autofill_assistant_onboarding_(skip_autofill_assistant_onboarding),
+      suppress_browsing_features_(suppress_browsing_features),
       initial_url_(initial_url) {}
 
 TriggerContext::TriggerContext(std::vector<const TriggerContext*> contexts)
@@ -86,6 +91,7 @@ TriggerContext::TriggerContext(std::vector<const TriggerContext*> contexts)
     is_externally_triggered_ |= context->GetIsExternallyTriggered();
     skip_autofill_assistant_onboarding_ |=
         context->GetSkipAutofillAssistantOnboarding();
+    suppress_browsing_features_ &= context->GetSuppressBrowsingFeatures();
     if (initial_url_.empty()) {
       initial_url_ = context->GetInitialUrl();
     }
@@ -159,6 +165,10 @@ bool TriggerContext::GetIsExternallyTriggered() const {
 bool TriggerContext::GetSkipAutofillAssistantOnboarding() const {
   return skip_autofill_assistant_onboarding_ ||
          script_parameters_->GetIsNoRoundtrip().value_or(false);
+}
+
+bool TriggerContext::GetSuppressBrowsingFeatures() const {
+  return suppress_browsing_features_;
 }
 
 }  // namespace autofill_assistant

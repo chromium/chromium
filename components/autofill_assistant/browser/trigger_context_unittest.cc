@@ -35,7 +35,8 @@ TEST(TriggerContextTest, Create) {
       /* initial_url = */ "https://www.example.com",
       /* is_in_chrome_triggered = */ true,
       /* is_externally_triggered = */ true,
-      /* skip_autofill_assistant_onboarding = */ true};
+      /* skip_autofill_assistant_onboarding = */ true,
+      /* suppress_browsing_features = */ true};
   EXPECT_THAT(
       context.GetScriptParameters().ToProto(),
       UnorderedElementsAreArray(base::flat_map<std::string, std::string>(
@@ -48,6 +49,7 @@ TEST(TriggerContextTest, Create) {
   EXPECT_TRUE(context.GetInChromeTriggered());
   EXPECT_TRUE(context.GetIsExternallyTriggered());
   EXPECT_TRUE(context.GetSkipAutofillAssistantOnboarding());
+  EXPECT_TRUE(context.GetSuppressBrowsingFeatures());
   EXPECT_EQ(context.GetTriggerUIType(),
             TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE);
 
@@ -69,7 +71,8 @@ TEST(TriggerContextTest, SkipOnboardingForNoRoundtripScripts) {
                             /* initial_url = */ "https://www.example.com",
                             /* is_in_chrome_triggered = */ true,
                             /* is_externally_triggered = */ true,
-                            /* skip_autofill_assistant_onboarding = */ false};
+                            /* skip_autofill_assistant_onboarding = */ false,
+                            /* suppress_browsing_features = */ false};
   EXPECT_TRUE(context.GetSkipAutofillAssistantOnboarding());
 }
 
@@ -84,6 +87,7 @@ TEST(TriggerContextTest, MergeEmpty) {
   EXPECT_FALSE(merged.GetInChromeTriggered());
   EXPECT_EQ(merged.GetTriggerUIType(),
             TriggerScriptProto::UNSPECIFIED_TRIGGER_UI_TYPE);
+  EXPECT_TRUE(merged.GetSuppressBrowsingFeatures());
 }
 
 TEST(TriggerContextTest, MergeEmptyWithNonEmpty) {
@@ -126,7 +130,8 @@ TEST(TriggerContextTest, MergeNonEmptyWithNonEmpty) {
       /* initial_url = */ "https://www.example.com",
       /* is_in_chrome_triggered = */ true,
       /* is_externally_triggered = */ true,
-      /* skip_autofill_assistant_onboarding = */ true};
+      /* skip_autofill_assistant_onboarding = */ true,
+      /* suppress_browsing_features = */ false};
   context2.SetTriggerUIType(
       TriggerScriptProto::SHOPPING_CHECKOUT_FIRST_TIME_USER);
 
@@ -145,6 +150,7 @@ TEST(TriggerContextTest, MergeNonEmptyWithNonEmpty) {
   EXPECT_TRUE(merged.GetInChromeTriggered());
   EXPECT_TRUE(merged.GetIsExternallyTriggered());
   EXPECT_TRUE(merged.GetSkipAutofillAssistantOnboarding());
+  EXPECT_FALSE(merged.GetSuppressBrowsingFeatures());
   EXPECT_EQ(merged.GetTriggerUIType(),
             TriggerScriptProto::SHOPPING_CHECKOUT_FIRST_TIME_USER);
 }
