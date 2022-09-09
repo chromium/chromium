@@ -641,7 +641,7 @@ class _Generator(object):
       # it will always be a pointer.
       is_ptr = prop.optional or prop.type_.property_type == PropertyType.ANY
       c.Cblock(self._CreateValueFromType(
-          'to_value_result->SetWithoutPathExpansion("%s", %%s);' % prop.name,
+          'to_value_result->GetDict().Set("%s", std::move(*%%s));' % prop.name,
           prop.name,
           prop.type_,
           prop_var,
@@ -656,7 +656,7 @@ class _Generator(object):
       else:
         (c.Sblock('for (const auto& it : additional_properties) {')
           .Cblock(self._CreateValueFromType(
-              'to_value_result->SetWithoutPathExpansion(it.first, %s);',
+              'to_value_result->GetDict().Set(it.first, std::move(*%s));',
               type_.additional_properties.name,
               type_.additional_properties,
               'it.second'))

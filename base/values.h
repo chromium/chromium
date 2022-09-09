@@ -1357,13 +1357,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   // otherwise.
   ListValue* SetList(StringPiece path, std::unique_ptr<ListValue> in_value);
 
-  // Like Set(), but without special treatment of '.'.  This allows e.g. URLs to
-  // be used as paths.
-  //
-  // DEPRECATED: prefer `Value::Dict::Set()`.
-  Value* SetWithoutPathExpansion(StringPiece key,
-                                 std::unique_ptr<Value> in_value);
-
   // Gets the Value associated with the given path starting from this object.
   // A path has the form "<key>" or "<key>.<key>.[...]", where "." indexes
   // into the next DictionaryValue down.  If the path can be resolved

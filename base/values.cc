@@ -1669,8 +1669,16 @@ Value* DictionaryValue::Set(StringPiece path, std::unique_ptr<Value> in_value) {
     current_path = current_path.substr(delimiter_position + 1);
   }
 
-  return static_cast<DictionaryValue*>(current_dictionary)
-      ->SetWithoutPathExpansion(current_path, std::move(in_value));
+  // NOTE: We can't use |insert_or_assign| here, as only |try_emplace| does
+  // an explicit conversion from StringPiece to std::string if necessary.
+  auto result = static_cast<DictionaryValue*>(current_dictionary)
+                    ->dict()
+                    .try_emplace(current_path, std::move(in_value));
+  if (!result.second) {
+    // in_value is guaranteed to be still intact at this point.
+    result.first->second = std::move(in_value);
+  }
+  return result.first->second.get();
 }
 
 Value* DictionaryValue::SetBoolean(StringPiece path, bool in_value) {
@@ -1693,19 +1701,6 @@ Value* DictionaryValue::SetString(StringPiece path,
 ListValue* DictionaryValue::SetList(StringPiece path,
                                     std::unique_ptr<ListValue> in_value) {
   return static_cast<ListValue*>(Set(path, std::move(in_value)));
-}
-
-Value* DictionaryValue::SetWithoutPathExpansion(
-    StringPiece key,
-    std::unique_ptr<Value> in_value) {
-  // NOTE: We can't use |insert_or_assign| here, as only |try_emplace| does
-  // an explicit conversion from StringPiece to std::string if necessary.
-  auto result = dict().try_emplace(key, std::move(in_value));
-  if (!result.second) {
-    // in_value is guaranteed to be still intact at this point.
-    result.first->second = std::move(in_value);
-  }
-  return result.first->second.get();
 }
 
 bool DictionaryValue::Get(StringPiece path, const Value** out_value) const {

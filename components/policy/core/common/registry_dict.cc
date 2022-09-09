@@ -321,7 +321,7 @@ std::unique_ptr<base::Value> RegistryDict::ConvertToJSON(
           std::unique_ptr<base::Value> converted =
               entry->second->ConvertToJSON(subschema);
           if (converted) {
-            result->SetWithoutPathExpansion(entry->first, std::move(converted));
+            result->GetDict().Set(entry->first, std::move(*converted));
             break;
           }
         }

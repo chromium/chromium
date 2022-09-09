@@ -1658,32 +1658,6 @@ TEST(ValuesTest, DictionarySetReturnsPointer) {
   }
 }
 
-// Tests the deprecated version of SetWithoutPathExpansion.
-// TODO(estade): remove.
-TEST(ValuesTest, DictionaryWithoutPathExpansionDeprecated) {
-  DictionaryValue dict;
-  dict.Set("this.is.expanded", std::make_unique<Value>());
-  dict.SetWithoutPathExpansion("this.isnt.expanded", std::make_unique<Value>());
-
-  EXPECT_FALSE(dict.FindKey("this.is.expanded"));
-  EXPECT_TRUE(dict.FindKey("this"));
-  Value* value1;
-  EXPECT_TRUE(dict.Get("this", &value1));
-  ASSERT_TRUE(dict.GetDict().FindDict("this"));
-  DictionaryValue* value2 =
-      static_cast<DictionaryValue*>(dict.GetDict().Find("this"));
-  ASSERT_TRUE(value2);
-  EXPECT_EQ(value1, value2);
-  EXPECT_EQ(1U, value2->DictSize());
-
-  EXPECT_TRUE(dict.FindKey("this.isnt.expanded"));
-  Value* value3;
-  EXPECT_FALSE(dict.Get("this.isnt.expanded", &value3));
-  Value* value4 = dict.FindKey("this.isnt.expanded");
-  ASSERT_TRUE(value4);
-  EXPECT_EQ(Value::Type::NONE, value4->type());
-}
-
 TEST(ValuesTest, Clone) {
   Value::Dict original_dict;
   Value* null_weak = original_dict.Set("null", Value());
