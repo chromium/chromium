@@ -85,7 +85,7 @@ void FeatureListQueryProcessor::ProcessFeatureList(
     for (int i = 0; i < model_metadata.features_size(); ++i) {
       proto::InputFeature input_feature;
       input_feature.mutable_uma_feature()->CopyFrom(model_metadata.features(i));
-      data_to_process[Data::DataType::OUTPUT_UMA].emplace(
+      data_to_process[Data::DataType::INPUT_UMA].emplace(
           std::make_pair(in_index, std::move(input_feature)));
       in_index++;
     }
