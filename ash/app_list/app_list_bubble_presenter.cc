@@ -25,7 +25,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/tray/tray_background_view.h"
-#include "ash/wm/container_finder.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -34,7 +33,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
-#include "ui/aura/client/focus_client.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -43,6 +41,7 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace ash {
 namespace {
@@ -238,6 +237,7 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
     bubble_widget_->widget_delegate()->SetEnableArrowKeyTraversal(true);
 
     bubble_widget_->AddObserver(this);
+    Shell::Get()->activation_client()->AddObserver(this);
     // Set up event filter to close the bubble for clicks outside the bubble
     // that don't cause window activation changes (e.g. clicks on wallpaper or
     // blank areas of shelf).
@@ -256,9 +256,6 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
     // Refresh suggestions now that zero-state search data is updated.
     bubble_view_->UpdateSuggestions();
     bubble_event_filter_->SetButton(home_button);
-    // The observer for the correct display will be added below.
-    aura::client::GetFocusClient(bubble_widget_->GetNativeWindow())
-        ->RemoveObserver(this);
   }
 
   // The widget bounds sometimes depend on the height of the apps grid, so set
@@ -269,11 +266,6 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
   // Bubble launcher is always keyboard traversable. Update every show in case
   // we are coming out of tablet mode.
   controller_->SetKeyboardTraversalMode(true);
-
-  // The focus client is tied to the root window, so update the observer every
-  // time the bubble is shown to make sure it tracks the right display.
-  aura::client::GetFocusClient(bubble_widget_->GetNativeWindow())
-      ->AddObserver(this);
 
   shelf_observer_.Reset();
   shelf_observer_.Observe(shelf);
@@ -402,15 +394,15 @@ void AppListBubblePresenter::OnWidgetDestroying(views::Widget* widget) {
   // called on monitor disconnect. Clean up state.
   // `bubble_event_filter_` holds a pointer to the widget.
   bubble_event_filter_.reset();
-  aura::client::GetFocusClient(bubble_widget_->GetNativeView())
-      ->RemoveObserver(this);
+  Shell::Get()->activation_client()->RemoveObserver(this);
   bubble_widget_->RemoveObserver(this);
   bubble_widget_ = nullptr;
   bubble_view_ = nullptr;
 }
 
-void AppListBubblePresenter::OnWindowFocused(aura::Window* gained_focus,
-                                             aura::Window* lost_focus) {
+void AppListBubblePresenter::OnWindowActivated(ActivationReason reason,
+                                               aura::Window* gained_active,
+                                               aura::Window* lost_active) {
   if (!is_target_visibility_show_)
     return;
 
@@ -418,14 +410,23 @@ void AppListBubblePresenter::OnWindowFocused(aura::Window* gained_focus,
       bubble_widget_->GetNativeWindow()->parent();
 
   // If the bubble or one of its children (e.g. an uninstall dialog) gained
-  // focus, the bubble should stay open.
-  if (gained_focus && app_list_container->Contains(gained_focus))
+  // activation, the bubble should stay open.
+  if (gained_active && app_list_container->Contains(gained_active))
     return;
 
-  // Otherwise, if the bubble or one of its children lost focus, the bubble
-  // should close.
-  if (lost_focus && app_list_container->Contains(lost_focus))
+  // Closing the bubble for "press" type events is handled by
+  // `bubble_event_filter_`. Activation can change when a user merely moves the
+  // cursor outside the app list bounds, so losing activation should not close
+  // the bubble.
+  if (reason == wm::ActivationChangeObserver::ActivationReason::INPUT_EVENT)
+    return;
+
+  // Otherwise, if the bubble or one of its children lost activation or if
+  // something other than the bubble gains activation, the bubble should close.
+  if ((lost_active && app_list_container->Contains(lost_active)) ||
+      (gained_active && !app_list_container->Contains(gained_active))) {
     Dismiss();
+  }
 }
 
 void AppListBubblePresenter::OnDisplayMetricsChanged(

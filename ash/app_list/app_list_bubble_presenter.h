@@ -17,9 +17,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/aura/client/focus_change_observer.h"
 #include "ui/display/display_observer.h"
 #include "ui/views/widget/widget_observer.h"
+#include "ui/wm/public/activation_change_observer.h"
 
 namespace aura {
 class Window;
@@ -35,11 +35,10 @@ enum class AppListSortOrder;
 // Manages the UI for the bubble launcher used in clamshell mode. Handles
 // showing and hiding the UI, as well as bounds computations. Only one bubble
 // can be visible at a time, across all displays.
-class ASH_EXPORT AppListBubblePresenter
-    : public views::WidgetObserver,
-      public aura::client::FocusChangeObserver,
-      public display::DisplayObserver,
-      public ShelfObserver {
+class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver,
+                                          public wm::ActivationChangeObserver,
+                                          public display::DisplayObserver,
+                                          public ShelfObserver {
  public:
   explicit AppListBubblePresenter(AppListControllerImpl* controller);
   AppListBubblePresenter(const AppListBubblePresenter&) = delete;
@@ -88,9 +87,13 @@ class ASH_EXPORT AppListBubblePresenter
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  // aura::client::FocusChangeObserver:
-  void OnWindowFocused(aura::Window* gained_focus,
-                       aura::Window* lost_focus) override;
+  // wm::ActivationChangeObserver:
+  void OnWindowActivating(ActivationReason reason,
+                          aura::Window* gaining_active,
+                          aura::Window* losing_active) override {}
+  void OnWindowActivated(ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override;
 
   // DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,

@@ -652,6 +652,118 @@ TEST_F(AppListBubblePresenterTest, CanOpenBubbleThenOpenSystemTray) {
   EXPECT_TRUE(GetPrimaryUnifiedSystemTray()->IsBubbleShown());
 }
 
+class AppListBubblePresenterFocusFollowsCursorTest
+    : public AppListBubblePresenterTest {
+ public:
+  AppListBubblePresenterFocusFollowsCursorTest() {
+    scoped_features_.InitAndEnableFeature(::features::kFocusFollowsCursor);
+  }
+  ~AppListBubblePresenterFocusFollowsCursorTest() override = default;
+
+  base::test::ScopedFeatureList scoped_features_;
+};
+
+// Regression test for https://crbug.com/1316250.
+TEST_F(AppListBubblePresenterFocusFollowsCursorTest,
+       HoverOverWindowDoesNotHideBubble) {
+  // Create a widget, which will activate itself when the launcher closes.
+  std::unique_ptr<views::Widget> widget =
+      TestWidgetBuilder()
+          .SetBounds(gfx::Rect(gfx::Point(1, 1), gfx::Size(100, 100)))
+          .SetShow(true)
+          .BuildOwnsNativeWidget();
+
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  EXPECT_FALSE(presenter->IsShowing());
+  EXPECT_TRUE(widget->IsActive());
+
+  // Show the bubble and verify that it is active.
+  presenter->Show(GetPrimaryDisplay().id());
+  views::Widget* bubble_widget = presenter->bubble_widget_for_test();
+  auto* search_box_view = GetAppListTestHelper()->GetBubbleSearchBoxView();
+  GetEventGenerator()->MoveMouseTo(
+      bubble_widget->GetWindowBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(presenter->IsShowing());
+  EXPECT_TRUE(bubble_widget->IsActive());
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+  EXPECT_FALSE(widget->IsActive());
+
+  // Move the mouse onto an empty space. Activation of the bubble shouldn't be
+  // lost.
+  ASSERT_FALSE(widget->GetWindowBoundsInScreen().Contains(0, 0));
+  ASSERT_FALSE(bubble_widget->GetWindowBoundsInScreen().Contains(0, 0));
+  GetEventGenerator()->MoveMouseTo(0, 0);
+  EXPECT_TRUE(presenter->IsShowing());
+  EXPECT_TRUE(bubble_widget->IsActive());
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+  EXPECT_FALSE(widget->IsActive());
+
+  // Move the mouse onto the window. Verify that the bubble is still showing,
+  // but activation has moved to the window.
+  gfx::Point widget_center = widget->GetWindowBoundsInScreen().CenterPoint();
+  ASSERT_FALSE(
+      bubble_widget->GetWindowBoundsInScreen().Contains(widget_center));
+  GetEventGenerator()->MoveMouseTo(widget_center);
+  EXPECT_TRUE(presenter->IsShowing());
+  EXPECT_FALSE(bubble_widget->IsActive());
+  EXPECT_FALSE(search_box_view->search_box()->HasFocus());
+  EXPECT_TRUE(widget->IsActive());
+
+  // Verify that user inputs do not go to the bubble search box while it is not
+  // focused even though the bubble is showing.
+  PressAndReleaseKey(ui::VKEY_A);
+  PressAndReleaseKey(ui::VKEY_B);
+  PressAndReleaseKey(ui::VKEY_C);
+  EXPECT_TRUE(search_box_view->search_box()->GetText().empty());
+
+  // Clicking outside the bubble should close it.
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_FALSE(presenter->IsShowing());
+  EXPECT_TRUE(widget->IsActive());
+}
+
+// Tests that creating a new window while the bubble is showing will hide it,
+// regardless of if it was active or not.
+TEST_F(AppListBubblePresenterFocusFollowsCursorTest,
+       CreatingNewWindowHidesBubble) {
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+  EXPECT_TRUE(presenter->IsShowing());
+
+  // Create a new widget and verify it is active and that the bubble is hidden.
+  std::unique_ptr<views::Widget> widget =
+      TestWidgetBuilder()
+          .SetBounds(gfx::Rect(gfx::Point(1, 1), gfx::Size(100, 100)))
+          .SetShow(true)
+          .BuildOwnsNativeWidget();
+  EXPECT_FALSE(presenter->IsShowing());
+  EXPECT_TRUE(widget->IsActive());
+
+  // Show the bubble and verify that it is active.
+  presenter->Show(GetPrimaryDisplay().id());
+  views::Widget* bubble_widget = presenter->bubble_widget_for_test();
+  GetEventGenerator()->MoveMouseTo(
+      bubble_widget->GetWindowBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(presenter->IsShowing());
+  EXPECT_TRUE(bubble_widget->IsActive());
+  EXPECT_FALSE(widget->IsActive());
+
+  // Hover over the window. Verify that the bubble is still showing, but
+  // activation has moved to the window.
+  gfx::Point widget_center = widget->GetWindowBoundsInScreen().CenterPoint();
+  ASSERT_FALSE(
+      bubble_widget->GetWindowBoundsInScreen().Contains(widget_center));
+  GetEventGenerator()->MoveMouseTo(widget_center);
+  EXPECT_TRUE(presenter->IsShowing());
+  EXPECT_FALSE(bubble_widget->IsActive());
+  EXPECT_TRUE(widget->IsActive());
+
+  // Create another widget, which will hide the bubble.
+  std::unique_ptr<views::Widget> widget_2 =
+      TestWidgetBuilder().SetShow(true).BuildOwnsNativeWidget();
+  EXPECT_FALSE(presenter->IsShowing());
+}
+
 TEST_P(AppListBubbleBoundsTest, BubbleOpensInBottomLeftForBottomShelf) {
   GetShelfForTestDisplay()->SetAlignment(ShelfAlignment::kBottom);
 
