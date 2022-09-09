@@ -1721,6 +1721,10 @@ const base::Feature kWifiSyncApplyDeletes{"WifiSyncApplyDeletes",
 const base::Feature kWindowsFollowCursor{"WindowsFollowCursor",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables an experimental feature that lets users easily layout, resize and
+// position their windows using only mouse and touch gestures.
+const base::Feature kWmMode{"WmMode", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables Fresnel Device Active reporting on ChromeOS.
 const base::Feature kDeviceActiveClient{"DeviceActiveClient",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
@@ -2599,6 +2603,10 @@ bool IsWebUITabStripTabDragIntegrationEnabled() {
 
 bool IsWifiSyncAndroidEnabled() {
   return base::FeatureList::IsEnabled(kWifiSyncAndroid);
+}
+
+bool IsWmModeEnabled() {
+  return base::FeatureList::IsEnabled(kWmMode);
 }
 
 bool ShouldArcAndGuestOsFileTasksUseAppService() {

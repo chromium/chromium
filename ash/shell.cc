@@ -194,6 +194,7 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_shadow_controller_delegate.h"
 #include "ash/wm/workspace_controller.h"
+#include "ash/wm_mode/wm_mode_controller.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
@@ -687,6 +688,8 @@ Shell::~Shell() {
   // Resets the text context menu implementation factory.
   views::ViewsTextServicesContextMenuChromeos::SetImplFactory(
       base::NullCallback());
+
+  wm_mode_controller_.reset();
 
   event_rewriter_controller_.reset();
 
@@ -1467,6 +1470,9 @@ void Shell::Init(
 
   if (chromeos::wm::features::IsFloatWindowEnabled())
     float_controller_ = std::make_unique<FloatController>();
+
+  if (features::IsWmModeEnabled())
+    wm_mode_controller_ = std::make_unique<WmModeController>();
 
   // Injects the factory which fulfills the implementation of the text context
   // menu exclusive to CrOS.

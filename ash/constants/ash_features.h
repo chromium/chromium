@@ -699,6 +699,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kWifiSyncAndroid;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kWifiSyncApplyDeletes;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kWindowsFollowCursor;
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kWmMode;
 
 // Keep alphabetized.
 
@@ -930,6 +931,7 @@ bool IsWallpaperGooglePhotosIntegrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWallpaperPerDeskEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWebUITabStripTabDragIntegrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWifiSyncAndroidEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWmModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool ShouldArcAndGuestOsFileTasksUseAppService();
 // TODO(michaelpg): Remove after M71 branch to re-enable Play Store by default.
