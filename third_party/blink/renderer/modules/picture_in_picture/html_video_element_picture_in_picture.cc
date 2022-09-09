@@ -9,14 +9,14 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
-#include "third_party/blink/renderer/modules/picture_in_picture/picture_in_picture_controller_impl.h"
 #include "third_party/blink/renderer/modules/picture_in_picture/picture_in_picture_window.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
-using Status = PictureInPictureControllerImpl::Status;
+using Status = PictureInPictureController::Status;
 
 namespace {
 
@@ -51,7 +51,7 @@ ScriptPromise HTMLVideoElementPictureInPicture::requestPictureInPicture(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   auto promise = resolver->Promise();
 
-  PictureInPictureControllerImpl::From(element.GetDocument())
+  PictureInPictureController::From(element.GetDocument())
       .EnterPictureInPicture(&element, resolver);
 
   return promise;
@@ -77,8 +77,8 @@ void HTMLVideoElementPictureInPicture::SetBooleanAttribute(
 
   Document& document = element.GetDocument();
   TreeScope& scope = element.GetTreeScope();
-  PictureInPictureControllerImpl& controller =
-      PictureInPictureControllerImpl::From(document);
+  PictureInPictureController& controller =
+      PictureInPictureController::From(document);
 
   if (name == html_names::kDisablepictureinpictureAttr && value &&
       controller.PictureInPictureElement(scope) == &element) {
@@ -91,8 +91,8 @@ void HTMLVideoElementPictureInPicture::CheckIfPictureInPictureIsAllowed(
     HTMLVideoElement& element,
     ExceptionState& exception_state) {
   Document& document = element.GetDocument();
-  PictureInPictureControllerImpl& controller =
-      PictureInPictureControllerImpl::From(document);
+  PictureInPictureController& controller =
+      PictureInPictureController::From(document);
 
   switch (controller.IsElementAllowed(element, /*report_failure=*/true)) {
     case Status::kFrameDetached:

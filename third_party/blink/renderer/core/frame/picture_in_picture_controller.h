@@ -14,6 +14,7 @@ class Document;
 class Element;
 class HTMLVideoElement;
 class ScriptPromiseResolver;
+class TreeScope;
 
 // PictureInPictureController allows to know if Picture-in-Picture is allowed
 // for a video element in Blink outside of modules/ module. It
@@ -60,7 +61,8 @@ class CORE_EXPORT PictureInPictureController
 
   // Returns whether a given video element in a document associated with the
   // controller is allowed to request Picture-in-Picture.
-  virtual Status IsElementAllowed(const HTMLVideoElement&) const = 0;
+  virtual Status IsElementAllowed(const HTMLVideoElement&,
+                                  bool report_failure = false) const = 0;
 
   // Should be called when an element has exited Picture-in-Picture.
   virtual void OnExitedPictureInPicture(ScriptPromiseResolver*) = 0;
@@ -76,6 +78,14 @@ class CORE_EXPORT PictureInPictureController
 
   // Notifies that one of the states used by Picture-in-Picture has changed.
   virtual void OnPictureInPictureStateChange() = 0;
+
+  // Returns element currently in Picture-in-Picture if any. Null otherwise.
+  virtual Element* PictureInPictureElement() const = 0;
+  virtual Element* PictureInPictureElement(TreeScope&) const = 0;
+
+  // Returns whether system allows Picture-in-Picture feature or not for
+  // the associated document.
+  virtual bool PictureInPictureEnabled() const = 0;
 
   void Trace(Visitor*) const override;
 

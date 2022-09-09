@@ -8,8 +8,8 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
-#include "third_party/blink/renderer/modules/picture_in_picture/picture_in_picture_controller_impl.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -26,8 +26,7 @@ const char kNoPictureInPictureElement[] =
 
 // static
 bool DocumentPictureInPicture::pictureInPictureEnabled(Document& document) {
-  return PictureInPictureControllerImpl::From(document)
-      .PictureInPictureEnabled();
+  return PictureInPictureController::From(document).PictureInPictureEnabled();
 }
 
 // static
@@ -35,8 +34,8 @@ ScriptPromise DocumentPictureInPicture::exitPictureInPicture(
     ScriptState* script_state,
     Document& document,
     ExceptionState& exception_state) {
-  PictureInPictureControllerImpl& controller =
-      PictureInPictureControllerImpl::From(document);
+  PictureInPictureController& controller =
+      PictureInPictureController::From(document);
   Element* picture_in_picture_element = controller.PictureInPictureElement();
 
   if (!picture_in_picture_element) {
@@ -56,7 +55,7 @@ ScriptPromise DocumentPictureInPicture::exitPictureInPicture(
 
 // static
 Element* DocumentPictureInPicture::pictureInPictureElement(TreeScope& scope) {
-  return PictureInPictureControllerImpl::From(scope.GetDocument())
+  return PictureInPictureController::From(scope.GetDocument())
       .PictureInPictureElement(scope);
 }
 

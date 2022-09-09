@@ -7,11 +7,11 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
-#include "third_party/blink/renderer/modules/picture_in_picture/picture_in_picture_controller_impl.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 
 namespace blink {
@@ -80,8 +80,8 @@ void MediaControlPictureInPictureButtonElement::DefaultEventHandler(
     Event& event) {
   if (event.type() == event_type_names::kClick ||
       event.type() == event_type_names::kGesturetap) {
-    PictureInPictureControllerImpl& controller =
-        PictureInPictureControllerImpl::From(MediaElement().GetDocument());
+    PictureInPictureController& controller =
+        PictureInPictureController::From(MediaElement().GetDocument());
 
     auto* video_element = &To<HTMLVideoElement>(MediaElement());
     if (PictureInPictureController::IsElementInPictureInPicture(

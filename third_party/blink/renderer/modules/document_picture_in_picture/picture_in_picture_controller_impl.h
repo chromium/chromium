@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_CONTROLLER_IMPL_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_CONTROLLER_IMPL_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_DOCUMENT_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_CONTROLLER_IMPL_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_DOCUMENT_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_CONTROLLER_IMPL_H_
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom-blink.h"
@@ -54,20 +54,12 @@ class MODULES_EXPORT PictureInPictureControllerImpl
   // Should be called before any other call to make sure a document is attached.
   static PictureInPictureControllerImpl& From(Document&);
 
-  // Returns whether system allows Picture-in-Picture feature or not for
-  // the associated document.
-  bool PictureInPictureEnabled() const;
-
   // Returns whether the document associated with the controller is allowed to
   // request Picture-in-Picture.
   Status IsDocumentAllowed(bool report_failure) const;
 
   // Returns the Picture-in-Picture window if there is any.
   PictureInPictureWindow* pictureInPictureWindow() const;
-
-  // Returns element currently in Picture-in-Picture if any. Null otherwise.
-  Element* PictureInPictureElement() const;
-  Element* PictureInPictureElement(TreeScope&) const;
 
   // Returns video element whose autoPictureInPicture attribute was set most
   // recently.
@@ -92,12 +84,13 @@ class MODULES_EXPORT PictureInPictureControllerImpl
   void ExitPictureInPicture(HTMLVideoElement*, ScriptPromiseResolver*) override;
   void AddToAutoPictureInPictureElementsList(HTMLVideoElement*) override;
   void RemoveFromAutoPictureInPictureElementsList(HTMLVideoElement*) override;
-  Status IsElementAllowed(const HTMLVideoElement&) const override;
   bool IsPictureInPictureElement(const Element*) const override;
   void OnPictureInPictureStateChange() override;
-
-  // Returns whether a video element is allowed to enter PiP.
-  Status IsElementAllowed(const HTMLVideoElement&, bool report_failure) const;
+  Element* PictureInPictureElement() const override;
+  Element* PictureInPictureElement(TreeScope&) const override;
+  bool PictureInPictureEnabled() const override;
+  Status IsElementAllowed(const HTMLVideoElement&,
+                          bool report_failure) const override;
 
   // Implementation of PictureInPictureSessionObserver.
   void OnWindowSizeChanged(const gfx::Size&) override;
@@ -173,4 +166,4 @@ class MODULES_EXPORT PictureInPictureControllerImpl
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_CONTROLLER_IMPL_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_DOCUMENT_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_CONTROLLER_IMPL_H_

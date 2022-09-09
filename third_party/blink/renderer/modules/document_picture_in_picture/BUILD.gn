@@ -6,6 +6,8 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("document_picture_in_picture") {
   sources = [
+    "picture_in_picture_controller_impl.cc",
+    "picture_in_picture_controller_impl.h",
     "window_picture_in_picture.cc",
     "window_picture_in_picture.h",
   ]
