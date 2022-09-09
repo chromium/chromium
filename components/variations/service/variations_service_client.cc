@@ -46,4 +46,9 @@ Study::FormFactor VariationsServiceClient::GetCurrentFormFactor() {
   return Study::DESKTOP;
 }
 
+std::unique_ptr<SeedResponse>
+VariationsServiceClient::TakeSeedFromNativeVariationsSeedStore() {
+  return nullptr;
+}
+
 }  // namespace variations

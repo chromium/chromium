@@ -52,10 +52,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "components/variations/android/variations_seed_bridge.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace variations {
 namespace {
 
@@ -237,14 +233,18 @@ bool IsFetchingEnabled() {
   return true;
 }
 
+// Returns the already downloaded first run seed, and clear the seed from the
+// native-side prefs. At this point, the seed has already been fetched from the
+// native seed storage, so it's no longer needed there. This is done regardless
+// if we fail or succeed below - since if we succeed, we're good to go and if we
+// fail, we probably don't want to keep around the bad content anyway.
 std::unique_ptr<SeedResponse> MaybeImportFirstRunSeed(
+    VariationsServiceClient* client,
     PrefService* local_state) {
-#if BUILDFLAG(IS_ANDROID)
   if (!local_state->HasPrefPath(prefs::kVariationsSeedSignature)) {
-    DVLOG(1) << "Importing first run seed from Java preferences.";
-    return android::GetVariationsFirstRunSeed();
+    DVLOG(1) << "Importing first run seed from native preferences.";
+    return client->TakeSeedFromNativeVariationsSeedStore();
   }
-#endif
   return nullptr;
 }
 
@@ -341,12 +341,13 @@ VariationsService::VariationsService(
       policy_pref_service_(local_state),
       resource_request_allowed_notifier_(std::move(notifier)),
       safe_seed_manager_(local_state),
-      field_trial_creator_(client_.get(),
-                           std::make_unique<VariationsSeedStore>(
-                               local_state,
-                               MaybeImportFirstRunSeed(local_state),
-                               /*signature_verification_enabled=*/true),
-                           ui_string_overrider) {
+      field_trial_creator_(
+          client_.get(),
+          std::make_unique<VariationsSeedStore>(
+              local_state,
+              MaybeImportFirstRunSeed(client_.get(), local_state),
+              /*signature_verification_enabled=*/true),
+          ui_string_overrider) {
   DCHECK(client_);
   DCHECK(resource_request_allowed_notifier_);
 

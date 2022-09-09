@@ -375,15 +375,6 @@ void VariationsSeedStore::ImportInitialSeed(
     return;
   }
 
-  // Clear the Java-side seed prefs. At this point, the seed has
-  // already been fetched from the Java side, so it's no longer
-  // needed there. This is done regardless if we fail or succeed
-  // below - since if we succeed, we're good to go and if we fail,
-  // we probably don't want to keep around the bad content anyway.
-  if (use_first_run_prefs_) {
-    android::ClearJavaFirstRunPrefs();
-  }
-
   if (initial_seed->date == 0) {
     RecordFirstRunSeedImportResult(
         FirstRunSeedImportResult::FAIL_INVALID_RESPONSE_DATE);

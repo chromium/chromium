@@ -1228,25 +1228,15 @@ TEST_P(VariationsSeedStoreFirstRunPrefsTest, FirstRunPrefsAllowed) {
 
   seed = android::GetVariationsFirstRunSeed();
 
+  // VariationsSeedStore must not modify Java prefs at all.
+  EXPECT_EQ(test_seed_data, seed->data);
+  EXPECT_EQ(test_seed_signature, seed->signature);
+  EXPECT_EQ(test_seed_country, seed->country);
+  EXPECT_EQ(test_response_date, seed->date);
+  EXPECT_EQ(test_is_gzip_compressed, seed->is_gzip_compressed);
   if (use_first_run_prefs) {
-    // VariationsSeedStore should clear the first run seed prefs, so
-    // GetVariationsFirstRunSeed() should return default values.
-    EXPECT_EQ("", seed->data);
-    EXPECT_EQ("", seed->signature);
-    EXPECT_EQ("", seed->country);
-    EXPECT_EQ(0, seed->date);
-    EXPECT_FALSE(seed->is_gzip_compressed);
-
-    // VariationsSeedStore should signal to Java that it has saved the seed in
-    // native prefs.
     EXPECT_TRUE(android::HasMarkedPrefsForTesting());
   } else {
-    // VariationsSeedStore must not modify Java prefs at all.
-    EXPECT_EQ(test_seed_data, seed->data);
-    EXPECT_EQ(test_seed_signature, seed->signature);
-    EXPECT_EQ(test_seed_country, seed->country);
-    EXPECT_EQ(test_response_date, seed->date);
-    EXPECT_EQ(test_is_gzip_compressed, seed->is_gzip_compressed);
     EXPECT_FALSE(android::HasMarkedPrefsForTesting());
   }
 

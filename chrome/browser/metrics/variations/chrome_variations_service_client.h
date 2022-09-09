@@ -34,6 +34,8 @@ class ChromeVariationsServiceClient
   bool OverridesRestrictParameter(std::string* parameter) override;
   variations::Study::FormFactor GetCurrentFormFactor() override;
   bool IsEnterprise() override;
+  std::unique_ptr<variations::SeedResponse>
+  TakeSeedFromNativeVariationsSeedStore() override;
 
  private:
   // variations::VariationsServiceClient:

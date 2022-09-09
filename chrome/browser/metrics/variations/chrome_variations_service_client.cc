@@ -11,12 +11,17 @@
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/common/channel_info.h"
+#include "components/variations/seed_response.h"
 #include "components/variations/service/variations_service_client.h"
 #include "components/version_info/version_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/upgrade_detector/build_state.h"
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/variations/android/variations_seed_bridge.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -87,4 +92,16 @@ bool ChromeVariationsServiceClient::IsEnterprise() {
 
 version_info::Channel ChromeVariationsServiceClient::GetChannel() {
   return chrome::GetChannel();
+}
+
+std::unique_ptr<variations::SeedResponse>
+ChromeVariationsServiceClient::TakeSeedFromNativeVariationsSeedStore() {
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<variations::SeedResponse> seed =
+      variations::android::GetVariationsFirstRunSeed();
+  variations::android::ClearJavaFirstRunPrefs();
+  return seed;
+#else
+  return nullptr;
+#endif
 }
