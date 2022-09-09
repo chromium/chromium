@@ -5,8 +5,6 @@
 # This header file defines the "sysroot" variable which is the absolute path
 # of the sysroot. If no sysroot applies, the variable will be an empty string.
 
-import("//build/config/chrome_build.gni")
-
 declare_args() {
   # The path of the sysroot that is applied when compiling using the target
   # toolchain.
