@@ -1,148 +1,148 @@
 This is a testharness.js-based test.
-Found 144 tests; 18 PASS, 126 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 144 tests; 63 PASS, 81 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS sRGB all numbers
-FAIL sRGB all percent assert_equals: expected "color(srgb 1 0.5 0.2)" but got "rgb(0, 0, 0)"
-FAIL sRGB mixed number and percent assert_equals: expected "color(srgb 1 0.5 0.2)" but got "rgb(0, 0, 0)"
-FAIL sRGB mixed number and percent 2 assert_equals: expected "color(srgb 1 0.5 0.2)" but got "rgb(0, 0, 0)"
+PASS sRGB all percent
+PASS sRGB mixed number and percent
+PASS sRGB mixed number and percent 2
 FAIL sRGB all none assert_equals: expected "color(srgb 0 0 0)" but got "color(srgb none none none)"
 FAIL sRGB number and none assert_equals: expected "color(srgb 1 0 0.2)" but got "color(srgb 1 none 0.2)"
-FAIL sRGB percent and none assert_equals: expected "color(srgb 1 0 0.2)" but got "rgb(0, 0, 0)"
-FAIL sRGB number, percent and none assert_equals: expected "color(srgb 1 0 0.2)" but got "rgb(0, 0, 0)"
+FAIL sRGB percent and none assert_equals: expected "color(srgb 1 0 0.2)" but got "color(srgb 1 none 0.2)"
+FAIL sRGB number, percent and none assert_equals: expected "color(srgb 1 0 0.2)" but got "color(srgb 1 none 0.2)"
 PASS sRGB with alpha, all numbers
-FAIL sRGB with alpha, all percent assert_equals: expected "color(srgb 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
-FAIL sRGB with alpha, mixed number and percent assert_equals: expected "color(srgb 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
-FAIL sRGB with alpha, mixed number and percent 2 assert_equals: expected "color(srgb 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
+FAIL sRGB with alpha, all percent assert_equals: expected "color(srgb 1 0.5 0.2 / 0.6)" but got "color(srgb 1 0.5 0.2)"
+PASS sRGB with alpha, mixed number and percent
+PASS sRGB with alpha, mixed number and percent 2
 FAIL sRGB with alpha, all none assert_equals: expected "color(srgb 0 0 0 / 0)" but got "color(srgb none none none / none)"
 FAIL sRGB with alpha, number and none assert_equals: expected "color(srgb 1 0 0.2 / 0)" but got "color(srgb 1 none 0.2 / none)"
-FAIL sRGB with alpha, percent and none assert_equals: expected "color(srgb 1 0 0.2 / 0.3)" but got "rgb(0, 0, 0)"
-FAIL sRGB with alpha, number, percent and none assert_equals: expected "color(srgb 1 0 0.2 / 0.237)" but got "rgb(0, 0, 0)"
+FAIL sRGB with alpha, percent and none assert_equals: expected "color(srgb 1 0 0.2 / 0.3)" but got "color(srgb 1 none 0.2 / 0.3)"
+FAIL sRGB with alpha, number, percent and none assert_equals: expected "color(srgb 1 0 0.2 / 0.237)" but got "color(srgb 1 none 0.2 / 0.237)"
 PASS Linear-light sRGB all numbers
-FAIL Linear-light sRGB all percent assert_equals: expected "color(srgb-linear 1 0.5 0.2)" but got "rgb(0, 0, 0)"
-FAIL Linear-light sRGB mixed number and percent assert_equals: expected "color(srgb-linear 1 0.5 0.2)" but got "rgb(0, 0, 0)"
-FAIL Linear-light sRGB mixed number and percent 2 assert_equals: expected "color(srgb-linear 1 0.5 0.2)" but got "rgb(0, 0, 0)"
+PASS Linear-light sRGB all percent
+PASS Linear-light sRGB mixed number and percent
+PASS Linear-light sRGB mixed number and percent 2
 FAIL Linear-light sRGB all none assert_equals: expected "color(srgb-linear 0 0 0)" but got "color(srgb-linear none none none)"
 FAIL Linear-light sRGB number and none assert_equals: expected "color(srgb-linear 1 0 0.2)" but got "color(srgb-linear 1 none 0.2)"
-FAIL Linear-light sRGB percent and none assert_equals: expected "color(srgb-linear 1 0 0.2)" but got "rgb(0, 0, 0)"
-FAIL Linear-light sRGB number, percent and none assert_equals: expected "color(srgb-linear 1 0 0.2)" but got "rgb(0, 0, 0)"
+FAIL Linear-light sRGB percent and none assert_equals: expected "color(srgb-linear 1 0 0.2)" but got "color(srgb-linear 1 none 0.2)"
+FAIL Linear-light sRGB number, percent and none assert_equals: expected "color(srgb-linear 1 0 0.2)" but got "color(srgb-linear 1 none 0.2)"
 PASS Linear-light sRGB with alpha, all numbers
-FAIL Linear-light sRGB with alpha, all percent assert_equals: expected "color(srgb-linear 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
-FAIL Linear-light sRGB with alpha, mixed number and percent assert_equals: expected "color(srgb-linear 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
-FAIL Linear-light sRGB with alpha, mixed number and percent 2 assert_equals: expected "color(srgb-linear 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
+FAIL Linear-light sRGB with alpha, all percent assert_equals: expected "color(srgb-linear 1 0.5 0.2 / 0.6)" but got "color(srgb-linear 1 0.5 0.2)"
+PASS Linear-light sRGB with alpha, mixed number and percent
+PASS Linear-light sRGB with alpha, mixed number and percent 2
 FAIL Linear-light sRGB with alpha, all none assert_equals: expected "color(srgb-linear 0 0 0 / 0)" but got "color(srgb-linear none none none / none)"
 FAIL Linear-light sRGB with alpha, number and none assert_equals: expected "color(srgb-linear 1 0 0.2 / 0)" but got "color(srgb-linear 1 none 0.2 / none)"
-FAIL Linear-light sRGB with alpha, percent and none assert_equals: expected "color(srgb-linear 1 0 0.2 / 0.3)" but got "rgb(0, 0, 0)"
-FAIL Linear-light sRGB with alpha, number, percent and none assert_equals: expected "color(srgb-linear 1 0 0.2 / 0.237)" but got "rgb(0, 0, 0)"
+FAIL Linear-light sRGB with alpha, percent and none assert_equals: expected "color(srgb-linear 1 0 0.2 / 0.3)" but got "color(srgb-linear 1 none 0.2 / 0.3)"
+FAIL Linear-light sRGB with alpha, number, percent and none assert_equals: expected "color(srgb-linear 1 0 0.2 / 0.237)" but got "color(srgb-linear 1 none 0.2 / 0.237)"
 PASS Display P3 all numbers
-FAIL Display P3 all percent assert_equals: expected "color(display-p3 1 0.5 0.2)" but got "rgb(0, 0, 0)"
-FAIL Display P3 mixed number and percent assert_equals: expected "color(display-p3 1 0.5 0.2)" but got "rgb(0, 0, 0)"
-FAIL Display P3 mixed number and percent 2 assert_equals: expected "color(display-p3 1 0.5 0.2)" but got "rgb(0, 0, 0)"
+PASS Display P3 all percent
+PASS Display P3 mixed number and percent
+PASS Display P3 mixed number and percent 2
 FAIL Display P3 all none assert_equals: expected "color(display-p3 0 0 0)" but got "color(display-p3 none none none)"
 FAIL Display P3 number and none assert_equals: expected "color(display-p3 1 0 0.2)" but got "color(display-p3 1 none 0.2)"
-FAIL Display P3 percent and none assert_equals: expected "color(display-p3 1 0 0.2)" but got "rgb(0, 0, 0)"
-FAIL Display P3 number, percent and none assert_equals: expected "color(display-p3 1 0 0.2)" but got "rgb(0, 0, 0)"
+FAIL Display P3 percent and none assert_equals: expected "color(display-p3 1 0 0.2)" but got "color(display-p3 1 none 0.2)"
+FAIL Display P3 number, percent and none assert_equals: expected "color(display-p3 1 0 0.2)" but got "color(display-p3 1 none 0.2)"
 PASS Display P3 with alpha, all numbers
-FAIL Display P3 with alpha, all percent assert_equals: expected "color(display-p3 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
-FAIL Display P3 with alpha, mixed number and percent assert_equals: expected "color(display-p3 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
-FAIL Display P3 with alpha, mixed number and percent 2 assert_equals: expected "color(display-p3 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
+FAIL Display P3 with alpha, all percent assert_equals: expected "color(display-p3 1 0.5 0.2 / 0.6)" but got "color(display-p3 1 0.5 0.2)"
+PASS Display P3 with alpha, mixed number and percent
+PASS Display P3 with alpha, mixed number and percent 2
 FAIL Display P3 with alpha, all none assert_equals: expected "color(display-p3 0 0 0 / 0)" but got "color(display-p3 none none none / none)"
 FAIL Display P3 with alpha, number and none assert_equals: expected "color(display-p3 1 0 0.2 / 0)" but got "color(display-p3 1 none 0.2 / none)"
-FAIL Display P3 with alpha, percent and none assert_equals: expected "color(display-p3 1 0 0.2 / 0.3)" but got "rgb(0, 0, 0)"
-FAIL Display P3 with alpha, number, percent and none assert_equals: expected "color(display-p3 1 0 0.2 / 0.237)" but got "rgb(0, 0, 0)"
+FAIL Display P3 with alpha, percent and none assert_equals: expected "color(display-p3 1 0 0.2 / 0.3)" but got "color(display-p3 1 none 0.2 / 0.3)"
+FAIL Display P3 with alpha, number, percent and none assert_equals: expected "color(display-p3 1 0 0.2 / 0.237)" but got "color(display-p3 1 none 0.2 / 0.237)"
 PASS A98 RGB all numbers
-FAIL A98 RGB all percent assert_equals: expected "color(a98-rgb 1 0.5 0.2)" but got "rgb(0, 0, 0)"
-FAIL A98 RGB mixed number and percent assert_equals: expected "color(a98-rgb 1 0.5 0.2)" but got "rgb(0, 0, 0)"
-FAIL A98 RGB mixed number and percent 2 assert_equals: expected "color(a98-rgb 1 0.5 0.2)" but got "rgb(0, 0, 0)"
+PASS A98 RGB all percent
+PASS A98 RGB mixed number and percent
+PASS A98 RGB mixed number and percent 2
 FAIL A98 RGB all none assert_equals: expected "color(a98-rgb 0 0 0)" but got "color(a98-rgb none none none)"
 FAIL A98 RGB number and none assert_equals: expected "color(a98-rgb 1 0 0.2)" but got "color(a98-rgb 1 none 0.2)"
-FAIL A98 RGB percent and none assert_equals: expected "color(a98-rgb 1 0 0.2)" but got "rgb(0, 0, 0)"
-FAIL A98 RGB number, percent and none assert_equals: expected "color(a98-rgb 1 0 0.2)" but got "rgb(0, 0, 0)"
+FAIL A98 RGB percent and none assert_equals: expected "color(a98-rgb 1 0 0.2)" but got "color(a98-rgb 1 none 0.2)"
+FAIL A98 RGB number, percent and none assert_equals: expected "color(a98-rgb 1 0 0.2)" but got "color(a98-rgb 1 none 0.2)"
 PASS A98 RGB with alpha, all numbers
-FAIL A98 RGB with alpha, all percent assert_equals: expected "color(a98-rgb 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
-FAIL A98 RGB with alpha, mixed number and percent assert_equals: expected "color(a98-rgb 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
-FAIL A98 RGB with alpha, mixed number and percent 2 assert_equals: expected "color(a98-rgb 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
+FAIL A98 RGB with alpha, all percent assert_equals: expected "color(a98-rgb 1 0.5 0.2 / 0.6)" but got "color(a98-rgb 1 0.5 0.2)"
+PASS A98 RGB with alpha, mixed number and percent
+PASS A98 RGB with alpha, mixed number and percent 2
 FAIL A98 RGB with alpha, all none assert_equals: expected "color(a98-rgb 0 0 0 / 0)" but got "color(a98-rgb none none none / none)"
 FAIL A98 RGB with alpha, number and none assert_equals: expected "color(a98-rgb 1 0 0.2 / 0)" but got "color(a98-rgb 1 none 0.2 / none)"
-FAIL A98 RGB with alpha, percent and none assert_equals: expected "color(a98-rgb 1 0 0.2 / 0.3)" but got "rgb(0, 0, 0)"
-FAIL A98 RGB with alpha, number, percent and none assert_equals: expected "color(a98-rgb 1 0 0.2 / 0.237)" but got "rgb(0, 0, 0)"
+FAIL A98 RGB with alpha, percent and none assert_equals: expected "color(a98-rgb 1 0 0.2 / 0.3)" but got "color(a98-rgb 1 none 0.2 / 0.3)"
+FAIL A98 RGB with alpha, number, percent and none assert_equals: expected "color(a98-rgb 1 0 0.2 / 0.237)" but got "color(a98-rgb 1 none 0.2 / 0.237)"
 PASS ProPhoto RGB all numbers
-FAIL ProPhoto RGB all percent assert_equals: expected "color(prophoto-rgb 1 0.5 0.2)" but got "rgb(0, 0, 0)"
-FAIL ProPhoto RGB mixed number and percent assert_equals: expected "color(prophoto-rgb 1 0.5 0.2)" but got "rgb(0, 0, 0)"
-FAIL ProPhoto RGB mixed number and percent 2 assert_equals: expected "color(prophoto-rgb 1 0.5 0.2)" but got "rgb(0, 0, 0)"
+PASS ProPhoto RGB all percent
+PASS ProPhoto RGB mixed number and percent
+PASS ProPhoto RGB mixed number and percent 2
 FAIL ProPhoto RGB all none assert_equals: expected "color(prophoto-rgb 0 0 0)" but got "color(prophoto-rgb none none none)"
 FAIL ProPhoto RGB number and none assert_equals: expected "color(prophoto-rgb 1 0 0.2)" but got "color(prophoto-rgb 1 none 0.2)"
-FAIL ProPhoto RGB percent and none assert_equals: expected "color(prophoto-rgb 1 0 0.2)" but got "rgb(0, 0, 0)"
-FAIL ProPhoto RGB number, percent and none assert_equals: expected "color(prophoto-rgb 1 0 0.2)" but got "rgb(0, 0, 0)"
+FAIL ProPhoto RGB percent and none assert_equals: expected "color(prophoto-rgb 1 0 0.2)" but got "color(prophoto-rgb 1 none 0.2)"
+FAIL ProPhoto RGB number, percent and none assert_equals: expected "color(prophoto-rgb 1 0 0.2)" but got "color(prophoto-rgb 1 none 0.2)"
 PASS ProPhoto RGB with alpha, all numbers
-FAIL ProPhoto RGB with alpha, all percent assert_equals: expected "color(prophoto-rgb 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
-FAIL ProPhoto RGB with alpha, mixed number and percent assert_equals: expected "color(prophoto-rgb 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
-FAIL ProPhoto RGB with alpha, mixed number and percent 2 assert_equals: expected "color(prophoto-rgb 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
+FAIL ProPhoto RGB with alpha, all percent assert_equals: expected "color(prophoto-rgb 1 0.5 0.2 / 0.6)" but got "color(prophoto-rgb 1 0.5 0.2)"
+PASS ProPhoto RGB with alpha, mixed number and percent
+PASS ProPhoto RGB with alpha, mixed number and percent 2
 FAIL ProPhoto RGB with alpha, all none assert_equals: expected "color(prophoto-rgb 0 0 0 / 0)" but got "color(prophoto-rgb none none none / none)"
 FAIL ProPhoto RGB with alpha, number and none assert_equals: expected "color(prophoto-rgb 1 0 0.2 / 0)" but got "color(prophoto-rgb 1 none 0.2 / none)"
-FAIL ProPhoto RGB with alpha, percent and none assert_equals: expected "color(prophoto-rgb 1 0 0.2 / 0.3)" but got "rgb(0, 0, 0)"
-FAIL ProPhoto RGB with alpha, number, percent and none assert_equals: expected "color(prophoto-rgb 1 0 0.2 / 0.237)" but got "rgb(0, 0, 0)"
+FAIL ProPhoto RGB with alpha, percent and none assert_equals: expected "color(prophoto-rgb 1 0 0.2 / 0.3)" but got "color(prophoto-rgb 1 none 0.2 / 0.3)"
+FAIL ProPhoto RGB with alpha, number, percent and none assert_equals: expected "color(prophoto-rgb 1 0 0.2 / 0.237)" but got "color(prophoto-rgb 1 none 0.2 / 0.237)"
 PASS Rec BT.2020 all numbers
-FAIL Rec BT.2020 all percent assert_equals: expected "color(rec2020 1 0.5 0.2)" but got "rgb(0, 0, 0)"
-FAIL Rec BT.2020 mixed number and percent assert_equals: expected "color(rec2020 1 0.5 0.2)" but got "rgb(0, 0, 0)"
-FAIL Rec BT.2020 mixed number and percent 2 assert_equals: expected "color(rec2020 1 0.5 0.2)" but got "rgb(0, 0, 0)"
+PASS Rec BT.2020 all percent
+PASS Rec BT.2020 mixed number and percent
+PASS Rec BT.2020 mixed number and percent 2
 FAIL Rec BT.2020 all none assert_equals: expected "color(rec2020 0 0 0)" but got "color(rec2020 none none none)"
 FAIL Rec BT.2020 number and none assert_equals: expected "color(rec2020 1 0 0.2)" but got "color(rec2020 1 none 0.2)"
-FAIL Rec BT.2020 percent and none assert_equals: expected "color(rec2020 1 0 0.2)" but got "rgb(0, 0, 0)"
-FAIL Rec BT.2020 number, percent and none assert_equals: expected "color(rec2020 1 0 0.2)" but got "rgb(0, 0, 0)"
+FAIL Rec BT.2020 percent and none assert_equals: expected "color(rec2020 1 0 0.2)" but got "color(rec2020 1 none 0.2)"
+FAIL Rec BT.2020 number, percent and none assert_equals: expected "color(rec2020 1 0 0.2)" but got "color(rec2020 1 none 0.2)"
 PASS Rec BT.2020 with alpha, all numbers
-FAIL Rec BT.2020 with alpha, all percent assert_equals: expected "color(rec2020 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
-FAIL Rec BT.2020 with alpha, mixed number and percent assert_equals: expected "color(rec2020 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
-FAIL Rec BT.2020 with alpha, mixed number and percent 2 assert_equals: expected "color(rec2020 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
+FAIL Rec BT.2020 with alpha, all percent assert_equals: expected "color(rec2020 1 0.5 0.2 / 0.6)" but got "color(rec2020 1 0.5 0.2)"
+PASS Rec BT.2020 with alpha, mixed number and percent
+PASS Rec BT.2020 with alpha, mixed number and percent 2
 FAIL Rec BT.2020 with alpha, all none assert_equals: expected "color(rec2020 0 0 0 / 0)" but got "color(rec2020 none none none / none)"
 FAIL Rec BT.2020 with alpha, number and none assert_equals: expected "color(rec2020 1 0 0.2 / 0)" but got "color(rec2020 1 none 0.2 / none)"
-FAIL Rec BT.2020 with alpha, percent and none assert_equals: expected "color(rec2020 1 0 0.2 / 0.3)" but got "rgb(0, 0, 0)"
-FAIL Rec BT.2020 with alpha, number, percent and none assert_equals: expected "color(rec2020 1 0 0.2 / 0.237)" but got "rgb(0, 0, 0)"
+FAIL Rec BT.2020 with alpha, percent and none assert_equals: expected "color(rec2020 1 0 0.2 / 0.3)" but got "color(rec2020 1 none 0.2 / 0.3)"
+FAIL Rec BT.2020 with alpha, number, percent and none assert_equals: expected "color(rec2020 1 0 0.2 / 0.237)" but got "color(rec2020 1 none 0.2 / 0.237)"
 PASS CIE XYZ D50 all numbers
-FAIL CIE XYZ D50 all percent assert_equals: expected "color(xyz-d50 1 0.5 0.2)" but got "rgb(0, 0, 0)"
-FAIL CIE XYZ D50 mixed number and percent assert_equals: expected "color(xyz-d50 1 0.5 0.2)" but got "rgb(0, 0, 0)"
-FAIL CIE XYZ D50 mixed number and percent 2 assert_equals: expected "color(xyz-d50 1 0.5 0.2)" but got "rgb(0, 0, 0)"
+PASS CIE XYZ D50 all percent
+PASS CIE XYZ D50 mixed number and percent
+PASS CIE XYZ D50 mixed number and percent 2
 FAIL CIE XYZ D50 all none assert_equals: expected "color(xyz-d50 0 0 0)" but got "color(xyz-d50 none none none)"
 FAIL CIE XYZ D50 number and none assert_equals: expected "color(xyz-d50 1 0 0.2)" but got "color(xyz-d50 1 none 0.2)"
-FAIL CIE XYZ D50 percent and none assert_equals: expected "color(xyz-d50 1 0 0.2)" but got "rgb(0, 0, 0)"
-FAIL CIE XYZ D50 number, percent and none assert_equals: expected "color(xyz-d50 1 0 0.2)" but got "rgb(0, 0, 0)"
+FAIL CIE XYZ D50 percent and none assert_equals: expected "color(xyz-d50 1 0 0.2)" but got "color(xyz-d50 1 none 0.2)"
+FAIL CIE XYZ D50 number, percent and none assert_equals: expected "color(xyz-d50 1 0 0.2)" but got "color(xyz-d50 1 none 0.2)"
 PASS CIE XYZ D50 with alpha, all numbers
-FAIL CIE XYZ D50 with alpha, all percent assert_equals: expected "color(xyz-d50 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
-FAIL CIE XYZ D50 with alpha, mixed number and percent assert_equals: expected "color(xyz-d50 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
-FAIL CIE XYZ D50 with alpha, mixed number and percent 2 assert_equals: expected "color(xyz-d50 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
+FAIL CIE XYZ D50 with alpha, all percent assert_equals: expected "color(xyz-d50 1 0.5 0.2 / 0.6)" but got "color(xyz-d50 1 0.5 0.2)"
+PASS CIE XYZ D50 with alpha, mixed number and percent
+PASS CIE XYZ D50 with alpha, mixed number and percent 2
 FAIL CIE XYZ D50 with alpha, all none assert_equals: expected "color(xyz-d50 0 0 0 / 0)" but got "color(xyz-d50 none none none / none)"
 FAIL CIE XYZ D50 with alpha, number and none assert_equals: expected "color(xyz-d50 1 0 0.2 / 0)" but got "color(xyz-d50 1 none 0.2 / none)"
-FAIL CIE XYZ D50 with alpha, percent and none assert_equals: expected "color(xyz-d50 1 0 0.2 / 0.3)" but got "rgb(0, 0, 0)"
-FAIL CIE XYZ D50 with alpha, number, percent and none assert_equals: expected "color(xyz-d50 1 0 0.2 / 0.237)" but got "rgb(0, 0, 0)"
+FAIL CIE XYZ D50 with alpha, percent and none assert_equals: expected "color(xyz-d50 1 0 0.2 / 0.3)" but got "color(xyz-d50 1 none 0.2 / 0.3)"
+FAIL CIE XYZ D50 with alpha, number, percent and none assert_equals: expected "color(xyz-d50 1 0 0.2 / 0.237)" but got "color(xyz-d50 1 none 0.2 / 0.237)"
 PASS CIE XYZ D65 all numbers
-FAIL CIE XYZ D65 all percent assert_equals: expected "color(xyz-d65 1 0.5 0.2)" but got "rgb(0, 0, 0)"
-FAIL CIE XYZ D65 mixed number and percent assert_equals: expected "color(xyz-d65 1 0.5 0.2)" but got "rgb(0, 0, 0)"
-FAIL CIE XYZ D65 mixed number and percent 2 assert_equals: expected "color(xyz-d65 1 0.5 0.2)" but got "rgb(0, 0, 0)"
+PASS CIE XYZ D65 all percent
+PASS CIE XYZ D65 mixed number and percent
+PASS CIE XYZ D65 mixed number and percent 2
 FAIL CIE XYZ D65 all none assert_equals: expected "color(xyz-d65 0 0 0)" but got "color(xyz-d65 none none none)"
 FAIL CIE XYZ D65 number and none assert_equals: expected "color(xyz-d65 1 0 0.2)" but got "color(xyz-d65 1 none 0.2)"
-FAIL CIE XYZ D65 percent and none assert_equals: expected "color(xyz-d65 1 0 0.2)" but got "rgb(0, 0, 0)"
-FAIL CIE XYZ D65 number, percent and none assert_equals: expected "color(xyz-d65 1 0 0.2)" but got "rgb(0, 0, 0)"
+FAIL CIE XYZ D65 percent and none assert_equals: expected "color(xyz-d65 1 0 0.2)" but got "color(xyz-d65 1 none 0.2)"
+FAIL CIE XYZ D65 number, percent and none assert_equals: expected "color(xyz-d65 1 0 0.2)" but got "color(xyz-d65 1 none 0.2)"
 PASS CIE XYZ D65 with alpha, all numbers
-FAIL CIE XYZ D65 with alpha, all percent assert_equals: expected "color(xyz-d65 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
-FAIL CIE XYZ D65 with alpha, mixed number and percent assert_equals: expected "color(xyz-d65 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
-FAIL CIE XYZ D65 with alpha, mixed number and percent 2 assert_equals: expected "color(xyz-d65 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
+FAIL CIE XYZ D65 with alpha, all percent assert_equals: expected "color(xyz-d65 1 0.5 0.2 / 0.6)" but got "color(xyz-d65 1 0.5 0.2)"
+PASS CIE XYZ D65 with alpha, mixed number and percent
+PASS CIE XYZ D65 with alpha, mixed number and percent 2
 FAIL CIE XYZ D65 with alpha, all none assert_equals: expected "color(xyz-d65 0 0 0 / 0)" but got "color(xyz-d65 none none none / none)"
 FAIL CIE XYZ D65 with alpha, number and none assert_equals: expected "color(xyz-d65 1 0 0.2 / 0)" but got "color(xyz-d65 1 none 0.2 / none)"
-FAIL CIE XYZ D65 with alpha, percent and none assert_equals: expected "color(xyz-d65 1 0 0.2 / 0.3)" but got "rgb(0, 0, 0)"
-FAIL CIE XYZ D65 with alpha, number, percent and none assert_equals: expected "color(xyz-d65 1 0 0.2 / 0.237)" but got "rgb(0, 0, 0)"
+FAIL CIE XYZ D65 with alpha, percent and none assert_equals: expected "color(xyz-d65 1 0 0.2 / 0.3)" but got "color(xyz-d65 1 none 0.2 / 0.3)"
+FAIL CIE XYZ D65 with alpha, number, percent and none assert_equals: expected "color(xyz-d65 1 0 0.2 / 0.237)" but got "color(xyz-d65 1 none 0.2 / 0.237)"
 PASS CIE XYZ (implicit D65) all numbers
-FAIL CIE XYZ (implicit D65) all percent assert_equals: expected "color(xyz-d65 1 0.5 0.2)" but got "rgb(0, 0, 0)"
-FAIL CIE XYZ (implicit D65) mixed number and percent assert_equals: expected "color(xyz-d65 1 0.5 0.2)" but got "rgb(0, 0, 0)"
-FAIL CIE XYZ (implicit D65) mixed number and percent 2 assert_equals: expected "color(xyz-d65 1 0.5 0.2)" but got "rgb(0, 0, 0)"
+PASS CIE XYZ (implicit D65) all percent
+PASS CIE XYZ (implicit D65) mixed number and percent
+PASS CIE XYZ (implicit D65) mixed number and percent 2
 FAIL CIE XYZ (implicit D65) all none assert_equals: expected "color(xyz-d65 0 0 0)" but got "color(xyz-d65 none none none)"
 FAIL CIE XYZ (implicit D65) number and none assert_equals: expected "color(xyz-d65 1 0 0.2)" but got "color(xyz-d65 1 none 0.2)"
-FAIL CIE XYZ (implicit D65) percent and none assert_equals: expected "color(xyz-d65 1 0 0.2)" but got "rgb(0, 0, 0)"
-FAIL CIE XYZ (implicit D65) number, percent and none assert_equals: expected "color(xyz-d65 1 0 0.2)" but got "rgb(0, 0, 0)"
+FAIL CIE XYZ (implicit D65) percent and none assert_equals: expected "color(xyz-d65 1 0 0.2)" but got "color(xyz-d65 1 none 0.2)"
+FAIL CIE XYZ (implicit D65) number, percent and none assert_equals: expected "color(xyz-d65 1 0 0.2)" but got "color(xyz-d65 1 none 0.2)"
 PASS CIE XYZ (implicit D65) with alpha, all numbers
-FAIL CIE XYZ (implicit D65) with alpha, all percent assert_equals: expected "color(xyz-d65 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
-FAIL CIE XYZ (implicit D65) with alpha, mixed number and percent assert_equals: expected "color(xyz-d65 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
-FAIL CIE XYZ (implicit D65) with alpha, mixed number and percent 2 assert_equals: expected "color(xyz-d65 1 0.5 0.2 / 0.6)" but got "rgb(0, 0, 0)"
+FAIL CIE XYZ (implicit D65) with alpha, all percent assert_equals: expected "color(xyz-d65 1 0.5 0.2 / 0.6)" but got "color(xyz-d65 1 0.5 0.2)"
+PASS CIE XYZ (implicit D65) with alpha, mixed number and percent
+PASS CIE XYZ (implicit D65) with alpha, mixed number and percent 2
 FAIL CIE XYZ (implicit D65) with alpha, all none assert_equals: expected "color(xyz-d65 0 0 0 / 0)" but got "color(xyz-d65 none none none / none)"
 FAIL CIE XYZ (implicit D65) with alpha, number and none assert_equals: expected "color(xyz-d65 1 0 0.2 / 0)" but got "color(xyz-d65 1 none 0.2 / none)"
-FAIL CIE XYZ (implicit D65) with alpha, percent and none assert_equals: expected "color(xyz-d65 1 0 0.2 / 0.3)" but got "rgb(0, 0, 0)"
-FAIL CIE XYZ (implicit D65) with alpha, number, percent and none assert_equals: expected "color(xyz-d65 1 0 0.2 / 0.237)" but got "rgb(0, 0, 0)"
+FAIL CIE XYZ (implicit D65) with alpha, percent and none assert_equals: expected "color(xyz-d65 1 0 0.2 / 0.3)" but got "color(xyz-d65 1 none 0.2 / 0.3)"
+FAIL CIE XYZ (implicit D65) with alpha, number, percent and none assert_equals: expected "color(xyz-d65 1 0 0.2 / 0.237)" but got "color(xyz-d65 1 none 0.2 / 0.237)"
 Harness: the test ran to completion.
 

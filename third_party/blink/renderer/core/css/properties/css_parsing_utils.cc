@@ -1685,40 +1685,39 @@ static bool ParseColorFunctionParameters(CSSParserTokenRange& range,
   DCHECK(range.Peek().FunctionId() == CSSValueID::kColor);
   CSSParserTokenRange args = ConsumeFunction(range);
   // First argument is the colorspace
-  CSSValueID color_space_id_ = args.ConsumeIncludingWhitespace().Id();
-  Color::ColorFunctionSpace color_space;
-  switch (color_space_id_) {
+  CSSValueID colorspace_id_ = args.ConsumeIncludingWhitespace().Id();
+  Color::ColorFunctionSpace colorspace;
+  switch (colorspace_id_) {
     case CSSValueID::kSRGB:
-      color_space = Color::ColorFunctionSpace::kSRGB;
+      colorspace = Color::ColorFunctionSpace::kSRGB;
       break;
     case CSSValueID::kRec2020:
-      color_space = Color::ColorFunctionSpace::kRec2020;
+      colorspace = Color::ColorFunctionSpace::kRec2020;
       break;
     case CSSValueID::kSRGBLinear:
-      color_space = Color::ColorFunctionSpace::kSRGBLinear;
+      colorspace = Color::ColorFunctionSpace::kSRGBLinear;
       break;
     case CSSValueID::kDisplayP3:
-      color_space = Color::ColorFunctionSpace::kDisplayP3;
+      colorspace = Color::ColorFunctionSpace::kDisplayP3;
       break;
     case CSSValueID::kA98Rgb:
-      color_space = Color::ColorFunctionSpace::kA98RGB;
+      colorspace = Color::ColorFunctionSpace::kA98RGB;
       break;
     case CSSValueID::kProphotoRgb:
-      color_space = Color::ColorFunctionSpace::kProPhotoRGB;
+      colorspace = Color::ColorFunctionSpace::kProPhotoRGB;
       break;
     case CSSValueID::kXyzD50:
-      color_space = Color::ColorFunctionSpace::kXYZD50;
+      colorspace = Color::ColorFunctionSpace::kXYZD50;
       break;
     case CSSValueID::kXyz:
     case CSSValueID::kXyzD65:
-      color_space = Color::ColorFunctionSpace::kXYZD65;
+      colorspace = Color::ColorFunctionSpace::kXYZD65;
       break;
     default:
       return false;
   }
 
   absl::optional<double> params[3];
-  CSSPrimitiveValue* value;
   bool has_commas = false;
   bool has_none = false;
   for (absl::optional<double>& param : params) {
@@ -1728,19 +1727,30 @@ static bool ParseColorFunctionParameters(CSSParserTokenRange& range,
       has_none = true;
       continue;
     }
-    value = ConsumeNumber(args, context, CSSPrimitiveValue::ValueRange::kAll);
-    if (value)
+
+    CSSPrimitiveValue* value =
+        ConsumeNumber(args, context, CSSPrimitiveValue::ValueRange::kAll);
+    if (value) {
       param = value->GetDoubleValue();
-    else
-      param = 0.0;
+      continue;
+    }
+
+    value = ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
+    if (value) {
+      param = value->GetDoubleValue() / 100.0;
+      continue;
+    }
+
+    // Missing components default to zero.
+    param = 0.0;
   }
   if (has_commas && has_none)
     return false;
 
   absl::optional<double> alpha = ConsumeAlphaWithLeadingSlash(args, context);
 
-  result = Color::FromColorFunction(color_space, params[0], params[1],
-                                    params[2], alpha);
+  result = Color::FromColorFunction(colorspace, params[0], params[1], params[2],
+                                    alpha);
   return args.AtEnd();
 }
 
