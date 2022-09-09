@@ -97,3 +97,6 @@ const base::Feature kMapsExperienceKit{"MapsExperienceKit",
 
 const base::Feature kEnableMiniMap{"EnableMiniMap",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kSendVariationDataWithSearchByImage{
+    "SendVariationDataWithSearchByImage", base::FEATURE_ENABLED_BY_DEFAULT};

@@ -45,6 +45,7 @@ source_set("web") {
     "//components/search_engines",
     "//components/strings",
     "//components/ukm/ios:ukm_url_recorder",
+    "//components/variations/net",
     "//ios/chrome/app/application_delegate:observing_app_state_agent",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser",

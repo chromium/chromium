@@ -115,4 +115,8 @@ extern const base::Feature kMapsExperienceKit;
 // Feature flag to enable Mini Map in experience kit.
 extern const base::Feature kEnableMiniMap;
 
+// Feature flag to enable sending variation data with search by image requests.
+// This is a temporary kill-switch flag for M106.
+extern const base::Feature kSendVariationDataWithSearchByImage;
+
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

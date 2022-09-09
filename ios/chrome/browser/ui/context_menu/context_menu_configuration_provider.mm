@@ -43,6 +43,7 @@
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web/image_fetch/image_fetch_tab_helper.h"
+#import "ios/chrome/browser/web/web_navigation_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -406,9 +407,21 @@ NSString* const kContextMenuEllipsis = @"…";
           imageData, URL,
           ios::TemplateURLServiceFactory::GetForBrowserState(
               self.browser->GetBrowserState()));
+  const BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
+
+  // Apply variation header data to the params.
+  // This flag guard is only for M106 and can be used as a killswitch in case
+  // this causes issues.
+  if (base::FeatureList::IsEnabled(kSendVariationDataWithSearchByImage)) {
+    NSMutableDictionary* combinedExtraHeaders =
+        [web_navigation_util::VariationHeadersForURL(webParams.url, isIncognito)
+            mutableCopy];
+    [combinedExtraHeaders addEntriesFromDictionary:webParams.extra_headers];
+    webParams.extra_headers = [combinedExtraHeaders copy];
+  }
 
   UrlLoadParams params = UrlLoadParams::InNewTab(webParams);
-  params.in_incognito = self.browser->GetBrowserState()->IsOffTheRecord();
+  params.in_incognito = isIncognito;
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
 }
 

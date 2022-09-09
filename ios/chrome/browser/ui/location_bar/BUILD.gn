@@ -36,7 +36,6 @@ source_set("location_bar") {
     "//components/search_engines",
     "//components/security_state/ios",
     "//components/strings",
-    "//components/variations/net",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
     "//ios/chrome/browser",

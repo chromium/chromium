@@ -6,12 +6,14 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/variations/net/variations_http_headers.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
-#include "url/gurl.h"
+#import "services/network/public/cpp/resource_request.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -35,6 +37,32 @@ web::NavigationManager::WebLoadParams CreateWebLoadParams(
     params.extra_headers = @{@"Content-Type" : contentType};
   }
   return params;
+}
+
+NSDictionary<NSString*, NSString*>* VariationHeadersForURL(const GURL& url,
+                                                           bool is_incognito) {
+  NSMutableDictionary* result = [NSMutableDictionary dictionary];
+
+  network::ResourceRequest resource_request;
+  if (!variations::AppendVariationsHeaderUnknownSignedIn(
+          url,
+          is_incognito ? variations::InIncognito::kYes
+                       : variations::InIncognito::kNo,
+          &resource_request)) {
+    // AppendVariationsHeaderUnknownSignedIn returns NO if custom headers
+    // were not added. In that case, return an empty dictionary.
+    return @{};
+  }
+  // The variations header appears in cors_exempt_headers rather than in
+  // headers.
+  net::HttpRequestHeaders::Iterator header_iterator(
+      resource_request.cors_exempt_headers);
+  while (header_iterator.GetNext()) {
+    NSString* name = base::SysUTF8ToNSString(header_iterator.name());
+    NSString* value = base::SysUTF8ToNSString(header_iterator.value());
+    result[name] = value;
+  }
+  return [result copy];
 }
 
 void GoBack(web::WebState* web_state) {
