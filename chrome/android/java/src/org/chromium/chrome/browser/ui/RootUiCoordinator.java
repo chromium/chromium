@@ -822,7 +822,7 @@ public class RootUiCoordinator
     /**
      * @return The primary display size of the device, in inches.
      */
-    protected double getPrimaryDisplaySizeInInches() {
+    public double getPrimaryDisplaySizeInInches() {
         DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(mActivity);
         double xInches = display.getDisplayWidth() / display.getXdpi();
         double yInches = display.getDisplayHeight() / display.getYdpi();
