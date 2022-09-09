@@ -27,6 +27,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/accessibility/accessibility_features.h"
+#endif
+
 namespace {
 typedef base::StringTokenizerT<std::u16string, std::u16string::const_iterator>
     StringTokenizer16;
@@ -340,7 +344,16 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
     }
     const std::string* url = pedal_value.FindStringKey("url");
     if (!url->empty()) {
-      pedal->SetNavigationUrl(GURL(*url));
+      GURL gurl = GURL(*url);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      if (::features::IsAccessibilityOSSettingsVisibilityEnabled() &&
+          *url == "chrome://os-settings/manageAccessibility") {
+        // TODO(crbug.com/1360601): Update omnibox pedal json source after A11y
+        // Settings Revamp rollout complete.
+        gurl = GURL("chrome://os-settings/osAccessibility");
+      }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+      pedal->SetNavigationUrl(gurl);
     }
 
     OmniboxPedal::TokenSequence verbatim_sequence(0);

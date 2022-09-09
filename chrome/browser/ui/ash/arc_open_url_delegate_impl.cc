@@ -59,6 +59,7 @@
 #include "net/base/url_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -409,8 +410,13 @@ void ArcOpenUrlDelegateImpl::OpenArcCustomTab(
 void ArcOpenUrlDelegateImpl::OpenChromePageFromArc(ChromePage page) {
   if (auto* it = kOSSettingsMap.find(page); it != kOSSettingsMap.end()) {
     Profile* profile = ProfileManager::GetActiveUserProfile();
+    std::string sub_page = it->second;
+    if (features::IsAccessibilityOSSettingsVisibilityEnabled() &&
+        it->first == ChromePage::MANAGEACCESSIBILITY) {
+      sub_page = chromeos::settings::mojom::kAccessibilitySectionPath;
+    }
     chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile,
-                                                                 it->second);
+                                                                 sub_page);
     return;
   }
 
