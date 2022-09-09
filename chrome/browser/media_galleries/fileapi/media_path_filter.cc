@@ -137,7 +137,7 @@ bool MediaPathFilter::ShouldSkip(const base::FilePath& path) {
 
 MediaPathFilter::MediaPathFilter()
     : initialized_(false) {
-  sequence_checker_.DetachFromSequence();
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 MediaPathFilter::~MediaPathFilter() {
@@ -157,7 +157,7 @@ MediaGalleryFileType MediaPathFilter::GetType(const base::FilePath& path) {
 }
 
 void MediaPathFilter::EnsureInitialized() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (initialized_)
     return;
 

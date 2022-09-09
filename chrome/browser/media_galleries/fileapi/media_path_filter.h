@@ -63,7 +63,7 @@ class MediaPathFilter {
       MediaGalleryFileType type);
 
   // Checks |initialized_| is only accessed on one sequence.
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
   bool initialized_;
   MediaFileExtensionMap media_file_extensions_map_;
 };
