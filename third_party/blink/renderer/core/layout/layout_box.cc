@@ -722,11 +722,6 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
     }
   }
 
-  if (old_style && old_style->IsScrollContainer() != IsScrollContainer()) {
-    if (auto* layer = EnclosingLayer())
-      layer->ScrollContainerStatusChanged();
-  }
-
   UpdateShapeOutsideInfoAfterStyleChange(*Style(), old_style);
   UpdateGridPositionAfterStyleChange(old_style);
 
@@ -1000,6 +995,10 @@ void LayoutBox::UpdateFromStyle() {
                                ShouldApplyPaintContainment()) &&
                               RespectsCSSOverflow();
   if (should_clip_overflow != HasNonVisibleOverflow()) {
+    if (GetScrollableArea()) {
+      GetScrollableArea()->InvalidateAllStickyConstraints();
+      GetScrollableArea()->InvalidateAllAnchorPositionedLayers();
+    }
     // The overflow clip paint property depends on whether overflow clip is
     // present so we need to update paint properties if this changes.
     SetNeedsPaintPropertyUpdate();

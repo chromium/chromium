@@ -806,21 +806,6 @@ void PaintLayer::SetNeedsCompositingInputsUpdate() {
   MarkAncestorChainForFlagsUpdate();
 }
 
-void PaintLayer::ScrollContainerStatusChanged() {
-  SetNeedsCompositingInputsUpdate();
-
-  // Invalidate sticky layers and anchor positioned layers in ancestor
-  // scrollable areas. We could invalidate only the affected scrollable areas,
-  // but it's complicated considering the change of containing block
-  // relationship for out-of-flow descendants. This function is called rarely.
-  for (auto* layer = this; layer; layer = layer->Parent()) {
-    if (auto* scrollable_area = layer->GetScrollableArea()) {
-      scrollable_area->InvalidateAllStickyConstraints();
-      scrollable_area->InvalidateAllAnchorPositionedLayers();
-    }
-  }
-}
-
 void PaintLayer::SetNeedsVisualOverflowRecalc() {
   DCHECK(IsSelfPaintingLayer());
 #if DCHECK_IS_ON()
