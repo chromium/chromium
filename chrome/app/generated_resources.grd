@@ -13586,6 +13586,15 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ERROR_SCREEN_DESCRIPTION" desc="The description shown in the side panel when an error with the script execution occurred." translateable="false">
         Check the site and try changing your password.
       </message>
+      <message name="IDS_AUTOFILL_ASSISTANT_ASSISTANT_STOPPED_BUBBLE_TRY_AGAIN" desc="The reset link label shown in the assistant stopped bubble." translateable="false">
+       Try again
+      </message>
+      <message name="IDS_AUTOFILL_ASSISTANT_ASSISTANT_STOPPED_BUBBLE_DESCRIPTION" desc="The description shown in the assistant stopped bubble." translateable="false">
+        Your password didn't change. To change it, try again and leave this tab and side panel open. <ph name="LINK_TEXT">$1<ex>Try again</ex></ph>
+      </message>
+      <message name="IDS_AUTOFILL_ASSISTANT_ASSISTANT_STOPPED_BUBBLE_TITLE" desc="The title shown in the assistant stopped bubble." translateable="false">
+        Google Assistant stopped
+      </message>
     </if>
 
     <!-- Battery Saver Toolbar strings  -->

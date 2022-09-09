@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/apc_scrim_manager.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_display_delegate.h"
+#include "chrome/browser/ui/autofill_assistant/password_change/assistant_stopped_bubble_coordinator.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/channel_info.h"
 #include "components/autofill_assistant/browser/public/autofill_assistant_factory.h"
@@ -187,6 +188,9 @@ void ApcClientImpl::OnOnboardingComplete(bool success) {
         debug_run_information_.value().socket_id;
   }
 
+  assistant_stopped_bubble_coordinator_ =
+      CreateAssistantStoppedBubbleCoordinator();
+
   scrim_manager_ = CreateApcScrimManager();
 
   website_login_manager_ = CreateWebsiteLoginManager();
@@ -220,6 +224,9 @@ void ApcClientImpl::OnRunComplete(
 }
 
 void ApcClientImpl::OnHidden() {
+  if (is_running_) {
+    assistant_stopped_bubble_coordinator_->Show();
+  }
   Stop(/*success=*/false);
 
   // The two resets below are not included in `Stop()`, since we may wish to
@@ -232,6 +239,11 @@ void ApcClientImpl::CloseSidePanel() {
   side_panel_coordinator_.reset();
 }
 
+std::unique_ptr<AssistantStoppedBubbleCoordinator>
+ApcClientImpl::CreateAssistantStoppedBubbleCoordinator() {
+  return AssistantStoppedBubbleCoordinator::Create(&GetWebContents(), url_,
+                                                   username_);
+}
 std::unique_ptr<ApcOnboardingCoordinator>
 ApcClientImpl::CreateOnboardingCoordinator() {
   return ApcOnboardingCoordinator::Create(&GetWebContents());
