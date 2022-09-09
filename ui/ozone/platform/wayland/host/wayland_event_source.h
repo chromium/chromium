@@ -205,6 +205,9 @@ class WaylandEventSource : public PlatformEventSource,
   // For touch events.
   absl::optional<PointerDetails> AmendStylusData(PointerId pointer_id) const;
 
+  // Wrap up method to support async pointer down/up event processing.
+  void OnPointerButtonEventInternal(WaylandWindow* window);
+
   // Wrap up method to support async touch release processing.
   void OnTouchReleaseInternal(PointerId id);
 

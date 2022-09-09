@@ -296,13 +296,9 @@ void WaylandEventSource::OnPointerButtonEvent(
   if (window)
     window_manager_->SetPointerFocusedWindow(window);
 
-  auto closure =
-      window ? base::BindOnce(
-                   [](WaylandWindowManager* wwm, WaylandWindow* window) {
-                     wwm->SetPointerFocusedWindow(window);
-                   },
-                   window_manager_, prev_focused_window)
-             : base::NullCallback();
+  auto closure = base::BindOnce(
+      &WaylandEventSource::OnPointerButtonEventInternal, base::Unretained(this),
+      (window ? prev_focused_window : nullptr));
 
   pointer_flags_ = type == ET_MOUSE_PRESSED
                        ? (pointer_flags_ | changed_button)
@@ -328,6 +324,11 @@ void WaylandEventSource::OnPointerButtonEvent(
 
   if (!closure.is_null())
     std::move(closure).Run();
+}
+
+void WaylandEventSource::OnPointerButtonEventInternal(WaylandWindow* window) {
+  if (window)
+    window_manager_->SetPointerFocusedWindow(window);
 }
 
 void WaylandEventSource::OnPointerMotionEvent(
