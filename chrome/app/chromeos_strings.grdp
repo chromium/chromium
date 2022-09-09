@@ -6087,6 +6087,9 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_SUGGESTION_AUTOCORRECT_UNDONE" desc="String announced by screenreader when an autocorrected word is reverted. Example, user types 'hllo', system autocorrects to 'hello' but then that autocorrection is manually undone by the user.">
     correction undone
   </message>
+  <message name="IDS_SUGGESTION_AUTOCORRECT_UNDO_TEXT" desc="Label for autocorrect undo button in undo window.">
+    Undo
+  </message>
   <message name="IDS_SUGGESTION_AUTOCORRECT_UNDO_BUTTON" desc="String announced by screenreader when a button to undo an autocorrect is highlighted. Example, user types 'hllo', system autocorrects to 'hello', user then prepares to revert the autocorrect.">
     Undo autocorrect button. Revert to <ph name="TYPED_WORD">$1<ex>hllo</ex></ph>.  Press enter to activate, escape to dismiss.
   </message>

@@ -9,6 +9,8 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/input_method/ui/border_factory.h"
 #include "chrome/browser/ash/input_method/ui/colors.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -22,7 +24,6 @@ namespace ui {
 namespace ime {
 
 namespace {
-constexpr char16_t kUndoButtonText[] = u"Undo";
 constexpr int kHeight = 28;
 constexpr int kPadding = 0;
 constexpr int kIconSize = 16;
@@ -42,11 +43,15 @@ UndoWindow::UndoWindow(gfx::NativeView parent, AssistiveDelegate* delegate)
   SetArrow(views::BubbleBorder::Arrow::BOTTOM_LEFT);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
+
+  std::u16string undo_button_text =
+      l10n_util::GetStringUTF16(IDS_SUGGESTION_AUTOCORRECT_UNDO_TEXT);
+
   undo_button_ = AddChildView(std::make_unique<views::LabelButton>(
       base::BindRepeating(&UndoWindow::UndoButtonPressed,
                           base::Unretained(this)),
-      kUndoButtonText));
-  undo_button_->SetText(kUndoButtonText);
+      undo_button_text));
+  undo_button_->SetText(undo_button_text);
   undo_button_->SetImageLabelSpacing(
       views::LayoutProvider::Get()->GetDistanceMetric(
           views::DistanceMetric::DISTANCE_RELATED_BUTTON_HORIZONTAL));
