@@ -57,6 +57,8 @@ class CORE_EXPORT NGBlockChildIterator {
   wtf_size_t child_token_idx_;
 
   absl::optional<wtf_size_t> child_idx_;
+
+  bool did_handle_first_child_ = false;
 };
 
 struct NGBlockChildIterator::Entry {

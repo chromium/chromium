@@ -45,6 +45,25 @@ NGBlockChildIterator::Entry NGBlockChildIterator::NextChild(
                  previous_inline_break_token, absl::nullopt);
   }
 
+  if (did_handle_first_child_) {
+    if (break_token_) {
+      const auto& child_break_tokens = break_token_->ChildBreakTokens();
+      if (child_token_idx_ == child_break_tokens.size()) {
+        // We reached the last child break token. Prepare for the next unstarted
+        // sibling, and forget the parent break token.
+        if (!break_token_->HasSeenAllChildren()) {
+          AdvanceToNextChild(
+              child_break_tokens[child_token_idx_ - 1]->InputNode());
+        }
+        break_token_ = nullptr;
+      }
+    } else if (next_unstarted_child_) {
+      AdvanceToNextChild(next_unstarted_child_);
+    }
+  } else {
+    did_handle_first_child_ = true;
+  }
+
   const NGBreakToken* current_child_break_token = nullptr;
   absl::optional<wtf_size_t> current_child_idx;
   NGLayoutInputNode current_child = next_unstarted_child_;
@@ -65,19 +84,20 @@ NGBlockChildIterator::Entry NGBlockChildIterator::NextChild(
       }
       current_child_idx = child_idx_;
     }
-
-    if (child_token_idx_ == child_break_tokens.size()) {
-      // We reached the last child break token. Prepare for the next unstarted
-      // sibling, and forget the parent break token.
-      if (!break_token_->HasSeenAllChildren())
-        AdvanceToNextChild(current_child);
-      break_token_ = nullptr;
-    }
   } else if (next_unstarted_child_) {
     current_child_idx = child_idx_;
-    AdvanceToNextChild(next_unstarted_child_);
   }
 
+  // Layout of a preceding sibling may have triggered removal of a
+  // later sibling. Container query evaluations may trigger such
+  // removals. As long as we just walk the node siblings, we're
+  // fine, but if the later sibling was among the incoming
+  // child break tokens, we now have a problem (but hopefully an
+  // impossible scenario)
+#if DCHECK_IS_ON()
+  if (const LayoutBox* box = current_child.GetLayoutBox())
+    DCHECK(box->IsLayoutNGObjectForCanvasFormattedText() || box->Parent());
+#endif
   return Entry(current_child, current_child_break_token, current_child_idx);
 }
 
