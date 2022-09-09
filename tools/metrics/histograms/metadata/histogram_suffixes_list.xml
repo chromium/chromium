@@ -10055,9 +10055,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="Apps.PaginationTransition.DragScroll.PresentationTime.MaxLatency"/>
   <affected-histogram name="Apps.StateTransition.AnimationSmoothness"/>
-  <affected-histogram name="Apps.StateTransition.Drag.PresentationTime"/>
-  <affected-histogram
-      name="Apps.StateTransition.Drag.PresentationTime.MaxLatency"/>
   <affected-histogram name="Ash.LoginAnimation.Duration"/>
   <affected-histogram name="Ash.LoginAnimation.Jank"/>
   <affected-histogram name="Ash.LoginAnimation.Smoothness"/>

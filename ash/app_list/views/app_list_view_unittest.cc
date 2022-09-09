@@ -2002,42 +2002,6 @@ TEST_F(AppListViewPeekingTest, EmptySearchTextStillPeeking) {
   ASSERT_EQ(ash::AppListViewState::kPeeking, view_->app_list_state());
 }
 
-TEST_F(AppListViewPeekingTest, UpwardMouseWheelScrollTransitionsToFullscreen) {
-  base::HistogramTester histogram_tester;
-
-  Initialize(false /*is_tablet_mode*/);
-  delegate_->GetTestModel()->PopulateApps(kInitialItems);
-  Show();
-  EXPECT_EQ(AppListViewState::kPeeking, view_->app_list_state());
-
-  view_->HandleScroll(gfx::Point(0, 0), gfx::Vector2d(0, 30),
-                      ui::ET_MOUSEWHEEL);
-
-  EXPECT_EQ(ash::AppListViewState::kFullscreenAllApps, view_->app_list_state());
-  // This should use animation instead of drag.
-  // TODO(oshima): Test AnimationSmoothness.
-  histogram_tester.ExpectTotalCount(
-      "Apps.StateTransition.Drag.PresentationTime.ClamshellMode", 0);
-
-  auto grid_bounds = gfx::RectF(apps_grid_view()->bounds());
-  views::View::ConvertRectToTarget(apps_grid_view(), view_, &grid_bounds);
-
-  view_->HandleScroll(gfx::ToRoundedPoint(grid_bounds.CenterPoint()),
-                      gfx::Vector2d(0, 30), ui::ET_MOUSEWHEEL);
-  EXPECT_EQ(ash::AppListViewState::kFullscreenAllApps, view_->app_list_state());
-
-  // Scrolls inside or to the side of the apps grid should not dismiss.
-  view_->HandleScroll(
-      gfx::ToRoundedPoint(grid_bounds.left_center()) + gfx::Vector2d(-20, 0),
-      gfx::Vector2d(0, -30), ui::ET_MOUSEWHEEL);
-  ASSERT_EQ(0, delegate_->dismiss_count());
-
-  // Scroll above the app list should dismiss.
-  view_->HandleScroll(gfx::Point(0, 0), gfx::Vector2d(0, -30),
-                      ui::ET_MOUSEWHEEL);
-  ASSERT_EQ(1, delegate_->dismiss_count());
-}
-
 TEST_F(AppListViewPeekingTest,
        DownwardMouseWheelScrollDismissesPeekingLauncher) {
   Initialize(false /*is_tablet_mode*/);
@@ -2050,22 +2014,6 @@ TEST_F(AppListViewPeekingTest,
   view_->HandleScroll(gfx::Point(0, 0), gfx::Vector2d(0, -30),
                       ui::ET_MOUSEWHEEL);
   EXPECT_EQ(1, delegate_->dismiss_count());
-}
-
-TEST_F(AppListViewPeekingTest, UpwardGestureScrollTransitionsToFullscreen) {
-  base::HistogramTester histogram_tester;
-  Initialize(false /*is_tablet_mode*/);
-  delegate_->GetTestModel()->PopulateApps(kInitialItems);
-  Show();
-  EXPECT_EQ(AppListViewState::kPeeking, view_->app_list_state());
-
-  view_->HandleScroll(gfx::Point(0, 0), gfx::Vector2d(0, 30), ui::ET_SCROLL);
-
-  EXPECT_EQ(ash::AppListViewState::kFullscreenAllApps, view_->app_list_state());
-  // This should use animation instead of drag.
-  // TODO(oshima): Test AnimationSmoothness.
-  histogram_tester.ExpectTotalCount(
-      "Apps.StateTransition.Drag.PresentationTime.ClamshellMode", 0);
 }
 
 TEST_F(AppListViewPeekingTest, DownwardGestureScrollDismissesPeekingLauncher) {

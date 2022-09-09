@@ -2817,33 +2817,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram base="true" name="Apps.StateTransition.Drag.PresentationTime"
-    units="ms" expires_after="2022-10-17">
-<!-- Name completed by histogram_suffixes
-     name="TabletOrClamshellMode" -->
-
-  <owner>omrilio@chromium.org</owner>
-  <owner>tbarzic@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    Presentation time of the app launcher drag operation in milliseconds.
-  </summary>
-</histogram>
-
-<histogram base="true"
-    name="Apps.StateTransition.Drag.PresentationTime.MaxLatency" units="ms"
-    expires_after="2022-10-17">
-<!-- Name completed by histogram_suffixes
-     name="TabletOrClamshellMode" -->
-
-  <owner>omrilio@chromium.org</owner>
-  <owner>tbarzic@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    Maximum latency of the presentation time of the app laucnher drag operation.
-  </summary>
-</histogram>
-
 <histogram name="Apps.TimeBetweenAppInstallAndLaunch{TabletOrClamshell}"
     units="ms" expires_after="M112">
   <owner>tbarzic@chromium.org</owner>
