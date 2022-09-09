@@ -30,6 +30,7 @@ NSString* const kUserAgentKey = @"userAgentKey";
 NSString* const kStableIdentifierKey = @"stableIdentifier";
 NSString* const kSerializedUserDataKey = @"serializedUserData";
 NSString* const kLastActiveTimeKey = @"lastActiveTime";
+NSString* const kCreationTimeKey = @"creationTime";
 
 // Deprecated, used for backward compatibility.
 // TODO(crbug.com/1278308): Remove this key.
@@ -142,6 +143,11 @@ NSString* const kTabIdKey = @"TabId";
       _lastActiveTime = base::Time::FromDeltaSinceWindowsEpoch(
           base::Microseconds([decoder decodeInt64ForKey:kLastActiveTimeKey]));
     }
+
+    if ([decoder containsValueForKey:kCreationTimeKey]) {
+      _creationTime = base::Time::FromDeltaSinceWindowsEpoch(
+          base::Microseconds([decoder decodeInt64ForKey:kCreationTimeKey]));
+    }
   }
   return self;
 }
@@ -171,6 +177,11 @@ NSString* const kTabIdKey = @"TabId";
     [coder
         encodeInt64:_lastActiveTime.ToDeltaSinceWindowsEpoch().InMicroseconds()
              forKey:kLastActiveTimeKey];
+  }
+
+  if (!_creationTime.is_null()) {
+    [coder encodeInt64:_creationTime.ToDeltaSinceWindowsEpoch().InMicroseconds()
+                forKey:kCreationTimeKey];
   }
 }
 

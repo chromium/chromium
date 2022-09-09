@@ -45,6 +45,7 @@ class FakeWebState : public WebState {
   void DidCoverWebContent() override;
   void DidRevealWebContent() override;
   base::Time GetLastActiveTime() const final;
+  base::Time GetCreationTime() const final;
   void WasShown() override;
   void WasHidden() override;
   void SetKeepRenderProcessAlive(bool keep_alive) override;
@@ -194,6 +195,7 @@ class FakeWebState : public WebState {
   bool can_take_snapshot_ = false;
   bool is_closed_ = false;
   base::Time last_active_time_ = base::Time::Now();
+  base::Time creation_time_ = base::Time::Now();
   int navigation_item_count_ = 0;
   FaviconStatus favicon_status_;
   GURL url_;

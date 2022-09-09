@@ -247,6 +247,9 @@ class WebState : public base::SupportsUserData {
   // created or shown with WasShown()).
   virtual base::Time GetLastActiveTime() const = 0;
 
+  // Get the creation time of the WebState.
+  virtual base::Time GetCreationTime() const = 0;
+
   // Must be called when the WebState becomes shown/hidden.
   virtual void WasShown() = 0;
   virtual void WasHidden() = 0;

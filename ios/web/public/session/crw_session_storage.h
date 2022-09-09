@@ -27,6 +27,7 @@
 @property(nonatomic, assign) web::UserAgentType userAgentType;
 @property(nonatomic, copy) NSString* stableIdentifier;
 @property(nonatomic, assign) base::Time lastActiveTime;
+@property(nonatomic, assign) base::Time creationTime;
 
 @end
 

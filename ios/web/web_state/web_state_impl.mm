@@ -396,6 +396,10 @@ base::Time WebStateImpl::GetLastActiveTime() const {
                         : saved_->GetLastActiveTime();
 }
 
+base::Time WebStateImpl::GetCreationTime() const {
+  return LIKELY(pimpl_) ? pimpl_->GetCreationTime() : saved_->GetCreationTime();
+}
+
 void WebStateImpl::WasShown() {
   RealizedState()->WasShown();
 }

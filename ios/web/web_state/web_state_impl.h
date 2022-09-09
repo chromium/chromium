@@ -265,6 +265,7 @@ class WebStateImpl final : public WebState {
   void DidCoverWebContent() final;
   void DidRevealWebContent() final;
   base::Time GetLastActiveTime() const final;
+  base::Time GetCreationTime() const final;
   void WasShown() final;
   void WasHidden() final;
   void SetKeepRenderProcessAlive(bool keep_alive) final;

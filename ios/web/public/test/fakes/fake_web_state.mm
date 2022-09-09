@@ -122,6 +122,10 @@ base::Time FakeWebState::GetLastActiveTime() const {
   return last_active_time_;
 }
 
+base::Time FakeWebState::GetCreationTime() const {
+  return creation_time_;
+}
+
 void FakeWebState::WasShown() {
   if (!is_visible_)
     last_active_time_ = base::Time::Now();

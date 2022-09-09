@@ -36,6 +36,7 @@ CRWSessionStorage* SessionStorageBuilder::BuildStorage(
 
   CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
   session_storage.lastActiveTime = web_state.GetLastActiveTime();
+  session_storage.creationTime = web_state.GetCreationTime();
   session_storage.stableIdentifier = web_state.GetStableIdentifier();
   session_storage.hasOpener = web_state.HasOpener();
   session_storage.lastCommittedItemIndex =

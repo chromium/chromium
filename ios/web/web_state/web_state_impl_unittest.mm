@@ -1205,6 +1205,7 @@ TEST_F(WebStateImplTest, VisibilitychangeEventFired) {
 // Test that changing visibility update the WebState last active time.
 TEST_F(WebStateImplTest, LastActiveTimeUpdatedWhenBecomeVisible) {
   base::Time last_active_time = web_state_->GetLastActiveTime();
+  base::Time creation_time = web_state_->GetCreationTime();
 
   // Spin the RunLoop a bit to ensure that the active time changes.
   {
@@ -1220,6 +1221,7 @@ TEST_F(WebStateImplTest, LastActiveTimeUpdatedWhenBecomeVisible) {
   // Mark the WebState has visible. The last active time should be updated.
   web_state_->WasShown();
   EXPECT_GT(web_state_->GetLastActiveTime(), last_active_time);
+  EXPECT_EQ(web_state_->GetCreationTime(), creation_time);
 }
 
 // Tests that WebState sessionState data doesn't load things with unsafe

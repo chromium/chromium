@@ -137,6 +137,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   void DidCoverWebContent();
   void DidRevealWebContent();
   base::Time GetLastActiveTime() const;
+  base::Time GetCreationTime() const;
   void WasShown();
   void WasHidden();
   void SetKeepRenderProcessAlive(bool keep_alive);
@@ -270,6 +271,9 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   // The time that this WebState was last made active. The initial value is
   // the WebState's creation time.
   base::Time last_active_time_ = base::Time::Now();
+
+  // The WebState's creation time.
+  base::Time creation_time_ = base::Time::Now();
 
   // The most recently restored session history that has not yet committed in
   // the WKWebView. This is reset in OnNavigationItemCommitted().

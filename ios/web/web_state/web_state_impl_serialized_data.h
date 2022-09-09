@@ -48,6 +48,7 @@ class WebStateImpl::SerializedData {
 
   // WebState:
   base::Time GetLastActiveTime() const;
+  base::Time GetCreationTime() const;
   BrowserState* GetBrowserState() const;
   NSString* GetStableIdentifier() const;
   const std::u16string& GetTitle() const;
