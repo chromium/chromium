@@ -204,7 +204,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   // Return true if new buffers are allocated.
   virtual bool EnsureMinNumberOfBuffers(int n) = 0;
 
-  // Enqueue a GPU taks to create a shared image with the specified params and
+  // Enqueue a GPU task to create a shared image with the specified params and
   // returns the mailbox.
   // Note: |kTopLeft_GrSurfaceOrigin| and |kPremul_SkAlphaType| params are used
   // for all images.
@@ -214,7 +214,12 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
                                          uint32_t usage,
                                          gpu::SurfaceHandle surface_handle) = 0;
 
-  // Enqueue a GPU taks to delete the specified shared image.
+  // Enqueue a GPU task to create a 1x1 shared image of the specified color.
+  virtual gpu::Mailbox CreateSolidColorSharedImage(
+      const SkColor4f& color,
+      const gfx::ColorSpace& color_space) = 0;
+
+  // Enqueue a GPU task to delete the specified shared image.
   virtual void DestroySharedImage(const gpu::Mailbox& mailbox) = 0;
 };
 

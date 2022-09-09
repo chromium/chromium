@@ -348,6 +348,11 @@ SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
   // first.
   output_device_.reset();
 
+  // Destroy solid color shared images created by this class.
+  for (gpu::Mailbox& mb : solid_color_images_) {
+    shared_image_factory_->DestroySharedImage(mb);
+  }
+
   // Destroy shared images created by this class.
   for (auto& entry : skia_representations_) {
     shared_image_factory_->DestroySharedImage(entry.first);
@@ -1707,20 +1712,6 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
 
     if (MakeCurrent(/*need_framebuffer=*/true)) {
       if (gl_surface_->IsSurfaceless()) {
-#if defined(USE_OZONE)
-        [[maybe_unused]] bool needs_background_image =
-            ui::OzonePlatform::GetInstance()
-                ->GetPlatformRuntimeProperties()
-                .needs_background_image;
-        [[maybe_unused]] bool supports_non_backed_solid_color_images =
-            ui::OzonePlatform::GetInstance()
-                ->GetPlatformRuntimeProperties()
-                .supports_non_backed_solid_color_buffers;
-#else   // defined(USE_OZONE)
-        [[maybe_unused]] bool needs_background_image = false;
-        [[maybe_unused]] bool supports_non_backed_solid_color_images = false;
-#endif  // !defined(USE_OZONE)
-
 #if !BUILDFLAG(IS_WIN)
         output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
             std::make_unique<OutputPresenterGL>(
@@ -1728,8 +1719,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
                 shared_image_representation_factory_.get()),
             dependency_, shared_image_representation_factory_.get(),
             shared_gpu_deps_->memory_tracker(),
-            GetDidSwapBuffersCompleteCallback(), needs_background_image,
-            supports_non_backed_solid_color_images);
+            GetDidSwapBuffersCompleteCallback());
 #else   // !BUILDFLAG(IS_WIN)
         NOTIMPLEMENTED();
 #endif  // BUILDFLAG(IS_WIN)
@@ -1778,20 +1768,6 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
   }
 #endif
 
-#if defined(USE_OZONE)
-  [[maybe_unused]] bool needs_background_image =
-      ui::OzonePlatform::GetInstance()
-          ->GetPlatformRuntimeProperties()
-          .needs_background_image;
-  [[maybe_unused]] bool supports_non_backed_solid_color_images =
-      ui::OzonePlatform::GetInstance()
-          ->GetPlatformRuntimeProperties()
-          .supports_non_backed_solid_color_buffers;
-#else   // defined(USE_OZONE)
-  [[maybe_unused]] bool needs_background_image = false;
-  [[maybe_unused]] bool supports_non_backed_solid_color_images = false;
-#endif  // !defined(USE_OZONE)
-
 #if !BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_FUCHSIA)
   auto output_presenter = OutputPresenterFuchsia::Create(
@@ -1810,8 +1786,8 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
     output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
         std::move(output_presenter), dependency_,
         shared_image_representation_factory_.get(),
-        shared_gpu_deps_->memory_tracker(), GetDidSwapBuffersCompleteCallback(),
-        needs_background_image, supports_non_backed_solid_color_images);
+        shared_gpu_deps_->memory_tracker(),
+        GetDidSwapBuffersCompleteCallback());
     return true;
   }
 #endif  // !BUILDFLAG(IS_WIN)
@@ -2281,11 +2257,34 @@ void SkiaOutputSurfaceImplOnGpu::CreateSharedImage(
   skia_representations_.emplace(mailbox, nullptr);
 }
 
+void SkiaOutputSurfaceImplOnGpu::CreateSolidColorSharedImage(
+    gpu::Mailbox mailbox,
+    const SkColor4f& color,
+    const gfx::ColorSpace& color_space) {
+  // Create a 1x1 pixel span of the colour in RGBA format.
+  gfx::Size size(1, 1);
+  // Premultiply the SkColor4f to support transparent quads.
+  SkColor4f premul{color[0] * color[3], color[1] * color[3],
+                   color[2] * color[3], color[3]};
+  const uint32_t premul_rgba_bytes = premul.toBytes_RGBA();
+  auto pixel_span = base::make_span(
+      reinterpret_cast<const uint8_t*>(&premul_rgba_bytes), sizeof(uint32_t));
+
+  // TODO(crbug.com/1360538) Some work is needed to properly support F16 format.
+  shared_image_factory_->CreateSharedImage(
+      mailbox, RGBA_8888, size, color_space, kTopLeft_GrSurfaceOrigin,
+      kPremul_SkAlphaType,
+      gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY,
+      pixel_span);
+  solid_color_images_.insert(mailbox);
+}
+
 void SkiaOutputSurfaceImplOnGpu::DestroySharedImage(gpu::Mailbox mailbox) {
   shared_image_factory_->DestroySharedImage(mailbox);
   // The write access should be destroyed already.
   DCHECK(!overlay_pass_accesses_.contains(mailbox));
   skia_representations_.erase(mailbox);
+  solid_color_images_.erase(mailbox);
 }
 
 gpu::SkiaImageRepresentation* SkiaOutputSurfaceImplOnGpu::GetSkiaRepresentation(

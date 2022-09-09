@@ -135,6 +135,13 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     // True when SkiaRenderer allocates and maintains a buffer queue of images
     // for the root render pass.
     bool renderer_allocates_images = false;
+    // Wayland only: determines whether BufferQueue needs a background image to
+    // be stacked below an AcceleratedWidget to make a widget opaque.
+    bool needs_background_image = false;
+    // Whether the platform supports non-backed solid color overlays. The
+    // Wayland backend is able to delegate these overlays without buffer
+    // backings depending on the availability of a certain protocol.
+    bool supports_non_backed_solid_color_overlays = false;
 
     // SkColorType for all supported buffer formats.
     SkColorType sk_color_types[static_cast<int>(gfx::BufferFormat::LAST) + 1] =

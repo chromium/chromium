@@ -31,9 +31,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
       SkiaOutputSurfaceDependency* deps,
       gpu::SharedImageRepresentationFactory* representation_factory,
       gpu::MemoryTracker* memory_tracker,
-      const DidSwapBufferCompleteCallback& did_swap_buffer_complete_callback,
-      bool needs_background_image,
-      bool supports_non_backed_solid_color_images);
+      const DidSwapBufferCompleteCallback& did_swap_buffer_complete_callback);
 
   ~SkiaOutputDeviceBufferQueue() override;
 
@@ -87,8 +85,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
 
   gfx::Size GetSwapBuffersSize();
   bool RecreateImages();
-
-  void MaybeScheduleBackgroundImage();
 
   // Given an overlay mailbox, returns the corresponding OverlayData* from
   // |overlays_|. Inserts an OverlayData if mailbox is not in |overlays_|.
@@ -144,29 +140,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   // key.
   base::flat_set<OverlayData, OverlayDataComparator> overlays_;
 
-#if defined(USE_OZONE)
-  const gpu::Mailbox GetImageMailboxForColor(const SkColor4f& color);
-
-  // TODO(crbug.com/1342015): Move this to SkColor4f.
-  // All in-flight solid color images are held in this container until a swap
-  // buffer with the identifying mailbox releases them.
-  base::flat_map<gpu::Mailbox,
-                 std::pair<SkColor, std::unique_ptr<OutputPresenter::Image>>>
-      solid_color_images_;
-
-  std::unordered_multimap<SkColor, std::unique_ptr<OutputPresenter::Image>>
-      solid_color_cache_;
-#endif
   // Set to true if no image is to be used for the primary plane of this frame.
   bool current_frame_has_no_primary_plane_ = false;
-  // Whether or not the platform needs occluded background images. Wayland needs
-  // it for opaque accelerated widgets and event wiring. Please see details on
-  // the number of background images below.
-  bool needs_background_image_ = false;
-  // Whether the platform supports non-backed solid color overlays. The Wayland
-  // backend is able to delegate these overlays without buffer backings
-  // depending on the availability of a certain protocol.
-  bool supports_non_backed_solid_color_images_ = false;
   // Whether |SchedulePrimaryPlane| needs to wait for a paint before scheduling
   // This works around an edge case for unpromoting fullscreen quads.
   bool primary_plane_waiting_on_paint_ = false;

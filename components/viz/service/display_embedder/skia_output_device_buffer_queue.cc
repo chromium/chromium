@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/debug/alias.h"
-#include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
@@ -28,16 +27,18 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/config/gpu_finch_features.h"
-#include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
-#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_image.h"
 #include "ui/gl/gl_surface.h"
+
+#if defined(USE_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif  // defined(USE_OZONE)
 
 namespace {
 base::TimeTicks g_last_reshape_failure = base::TimeTicks();
@@ -133,22 +134,28 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
     SkiaOutputSurfaceDependency* deps,
     gpu::SharedImageRepresentationFactory* representation_factory,
     gpu::MemoryTracker* memory_tracker,
-    const DidSwapBufferCompleteCallback& did_swap_buffer_complete_callback,
-    bool needs_background_image,
-    bool supports_non_backed_solid_color_images)
+    const DidSwapBufferCompleteCallback& did_swap_buffer_complete_callback)
     : SkiaOutputDevice(deps->GetSharedContextState()->gr_context(),
                        memory_tracker,
                        did_swap_buffer_complete_callback),
       presenter_(std::move(presenter)),
       context_state_(deps->GetSharedContextState()),
-      representation_factory_(representation_factory),
-      needs_background_image_(needs_background_image),
-      supports_non_backed_solid_color_images_(
-          supports_non_backed_solid_color_images) {
+      representation_factory_(representation_factory) {
+#if defined(USE_OZONE)
+  capabilities_.needs_background_image = ui::OzonePlatform::GetInstance()
+                                             ->GetPlatformRuntimeProperties()
+                                             .needs_background_image;
+  capabilities_.supports_non_backed_solid_color_overlays =
+      ui::OzonePlatform::GetInstance()
+          ->GetPlatformRuntimeProperties()
+          .supports_non_backed_solid_color_buffers;
+#endif  // defined(USE_OZONE)
+
   capabilities_.uses_default_gl_framebuffer = false;
   capabilities_.preserve_buffer_content = true;
   capabilities_.only_invalidates_damage_rect = false;
   capabilities_.number_of_buffers = 3;
+
 #if BUILDFLAG(IS_ANDROID)
   capabilities_.renderer_allocates_images = true;
   if (::features::IncreaseBufferCountForHighFrameRate()) {
@@ -260,9 +267,6 @@ bool SkiaOutputDeviceBufferQueue::IsPrimaryPlaneOverlay() const {
 void SkiaOutputDeviceBufferQueue::SchedulePrimaryPlane(
     const absl::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>&
         plane) {
-  // See |needs_background_image|.
-  MaybeScheduleBackgroundImage();
-
   if (plane) {
     DCHECK(!capabilities_.renderer_allocates_images);
     // If the current_image_ is nullptr, it means there is no change on the
@@ -298,48 +302,6 @@ void SkiaOutputDeviceBufferQueue::SchedulePrimaryPlane(
     }
   }
 }
-
-#if defined(USE_OZONE)
-const gpu::Mailbox SkiaOutputDeviceBufferQueue::GetImageMailboxForColor(
-    const SkColor4f& color) {
-  // Currently the Wayland protocol does not have protocol to support solid
-  // color quads natively as surfaces. Here we create tiny 4x4 image buffers
-  // in the color space of the frame buffer and clear them to the quad's solid
-  // color. These freshly created buffers are then treated like any other
-  // overlay via the mailbox interface.
-  std::unique_ptr<OutputPresenter::Image> solid_color = nullptr;
-  // First try for an existing same color image.
-  auto it = solid_color_cache_.find(color.toSkColor());
-  if (it != solid_color_cache_.end()) {
-    // This is a prefect color match so use this directly.
-    solid_color = std::move(it->second);
-    solid_color_cache_.erase(it);
-  } else {
-    // Try to reuse an existing image even if the color is different.
-    // Only do this if there are more cached images than those in flight (a
-    // sensible upper bound).
-    if (!solid_color_cache_.empty() &&
-        solid_color_cache_.size() > solid_color_images_.size()) {
-      it = solid_color_cache_.begin();
-      solid_color = std::move(it->second);
-      solid_color_cache_.erase(it);
-    } else {
-      // Worst case allocate a new image. This definitely will occur on startup.
-      solid_color =
-          presenter_->AllocateSingleImage(color_space_, gfx::Size(4, 4));
-    }
-    solid_color->BeginWriteSkia(/*sample_count=*/1);
-    solid_color->sk_surface()->getCanvas()->clear(color);
-    solid_color->EndWriteSkia(/*force_flush=*/true);
-  }
-  DCHECK(solid_color);
-  auto image_mailbox = solid_color->skia_representation()->mailbox();
-  solid_color_images_.insert(std::make_pair(
-      image_mailbox,
-      std::make_pair(color.toSkColor(), std::move(solid_color))));
-  return image_mailbox;
-}
-#endif
 
 SkiaOutputDeviceBufferQueue::OverlayData*
 SkiaOutputDeviceBufferQueue::GetOrCreateOverlayData(const gpu::Mailbox& mailbox,
@@ -421,14 +383,9 @@ void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
 #if defined(USE_OZONE)
     if (overlay.is_solid_color) {
       DCHECK(overlay.color.has_value());
-      // TODO(msisov): reconsider this once Linux Wayland compositors also
-      // support that. See https://bit.ly/2ZqUO0w.
-      if (!supports_non_backed_solid_color_images_) {
-        mailbox = GetImageMailboxForColor(overlay.color.value());
-      } else {
-        presenter_->ScheduleOverlayPlane(overlay, nullptr, nullptr);
-        continue;
-      }
+      DCHECK(capabilities_.supports_non_backed_solid_color_overlays);
+      presenter_->ScheduleOverlayPlane(overlay, nullptr, nullptr);
+      continue;
     }
 #endif
 
@@ -599,19 +556,6 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
     it->Unref();
   }
 
-#if defined(USE_OZONE)
-  std::set<gpu::Mailbox> released_solid_color_overlays;
-  for (const auto& mailbox : overlay_mailboxes) {
-    auto it = solid_color_images_.find(mailbox);
-    if (it != solid_color_images_.end()) {
-      released_solid_color_overlays.insert(mailbox);
-      solid_color_cache_.insert(
-          std::make_pair(it->second.first, std::move(it->second.second)));
-      solid_color_images_.erase(it);
-    }
-  }
-#endif
-
   // Code below can destroy last representation of the overlay shared image. On
   // MacOS it needs context to be current.
 #if BUILDFLAG(IS_APPLE)
@@ -626,23 +570,11 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
 
   std::vector<gpu::Mailbox> released_overlays;
   auto on_overlay_release =
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
       [&released_overlays](const OverlayData& overlay) {
         // Right now, only macOS needs to return maliboxes of released
         // overlays, so SkiaRenderer can unlock resources for them.
         released_overlays.push_back(overlay.mailbox());
-      };
-#elif defined(USE_OZONE)
-      [&released_overlays,
-       &released_solid_color_overlays](const OverlayData& overlay) {
-        // Delegated compositing on Ozone needs to return mailboxes of released
-        // overlays, so SkiaRenderer can unlock resources for them. However, the
-        // solid color buffers originating in this class and should not
-        // propagate up to SkiaRenderer.
-        if (released_solid_color_overlays.find(overlay.mailbox()) ==
-            released_solid_color_overlays.end()) {
-          released_overlays.push_back(overlay.mailbox());
-        }
       };
 #else
       [](const OverlayData& overlay) {};
@@ -746,36 +678,6 @@ bool SkiaOutputDeviceBufferQueue::RecreateImages() {
 
   DCHECK(images_.empty() || images_.size() == number_to_allocate);
   return !images_.empty();
-}
-
-void SkiaOutputDeviceBufferQueue::MaybeScheduleBackgroundImage() {
-  if (!needs_background_image_)
-    return;
-
-  gpu::OverlayImageRepresentation::ScopedReadAccess* access = nullptr;
-  OutputPresenter::OverlayPlaneCandidate candidate;
-#if defined(USE_OZONE)
-  candidate.color_space = color_space_;
-  candidate.display_rect = gfx::RectF(gfx::SizeF(viewport_size_));
-  candidate.color = SkColors::kTransparent;
-  candidate.plane_z_order = INT32_MIN;
-  candidate.is_solid_color = supports_non_backed_solid_color_images_;
-  if (!supports_non_backed_solid_color_images_) {
-    auto mailbox = GetImageMailboxForColor(candidate.color.value());
-    DCHECK(mailbox.IsSharedImage());
-
-    auto* overlay_data = GetOrCreateOverlayData(mailbox);
-    DCHECK(overlay_data);
-
-    access = overlay_data->scoped_read_access();
-    pending_overlay_mailboxes_.emplace_back(mailbox);
-  }
-#else   //  defined(USE_OZONE)
-  NOTREACHED();
-#endif  //  !defined(USE_OZONE)
-
-  presenter_->ScheduleOverlayPlane(candidate, access,
-                                   /*acquire_fence=*/nullptr);
 }
 
 SkSurface* SkiaOutputDeviceBufferQueue::BeginPaint(

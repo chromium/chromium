@@ -106,6 +106,9 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
                                  const gfx::ColorSpace& color_space,
                                  uint32_t usage,
                                  gpu::SurfaceHandle surface_handle) override;
+  gpu::Mailbox CreateSolidColorSharedImage(
+      const SkColor4f& color,
+      const gfx::ColorSpace& color_space) override;
   void DestroySharedImage(const gpu::Mailbox& mailbox) override {}
 
   // ExternalUseClient implementation:

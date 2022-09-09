@@ -319,20 +319,12 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
 
     auto present_callback = GetDidSwapBuffersCompleteCallback();
 
-    bool supports_non_backed_solid_color_buffers = false;
-#if defined(USE_OZONE)
-    supports_non_backed_solid_color_buffers =
-        ui::OzonePlatform::GetInstance()
-            ->GetPlatformRuntimeProperties()
-            .supports_non_backed_solid_color_buffers;
-#endif
     output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
         std::make_unique<OutputPresenterGL>(
             gl_surface_, dependency_.get(), shared_image_factory_.get(),
             shared_image_representation_factory_.get()),
         dependency_.get(), shared_image_representation_factory_.get(),
-        memory_tracker_.get(), present_callback, false,
-        supports_non_backed_solid_color_buffers);
+        memory_tracker_.get(), present_callback);
   }
 
   void TearDownOnGpu() override {

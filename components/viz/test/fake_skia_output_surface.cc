@@ -397,4 +397,10 @@ gpu::Mailbox FakeSkiaOutputSurface::CreateSharedImage(
   return gpu::Mailbox::GenerateForSharedImage();
 }
 
+gpu::Mailbox FakeSkiaOutputSurface::CreateSolidColorSharedImage(
+    const SkColor4f& color,
+    const gfx::ColorSpace& color_space) {
+  return gpu::Mailbox::GenerateForSharedImage();
+}
+
 }  // namespace viz

@@ -116,6 +116,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   struct DrawQuadParams;
   struct DrawRPDQParams;
   struct RenderPassOverlayParams;
+  struct OverlayLock;
   class ScopedSkImageBuilder;
   class ScopedYUVSkImageBuilder;
 
@@ -266,7 +267,6 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // be sent to GPU scheduler.
   void FlushOutputSurface();
 
-  // A map from RenderPass id to the texture used to draw the RenderPass from.
   struct RenderPassBacking {
     gfx::Size size;
     bool generate_mipmap;
@@ -302,6 +302,26 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
     return static_cast<DisplayResourceProviderSkia*>(resource_provider_);
   }
 
+#if defined(USE_OZONE)
+  // Gets a cached or new mailbox for a 1x1 shared image of the specified color.
+  // There will only be one allocated image for a given color at any time which
+  // can be reused for same-colored quads in the same frame or across frames.
+  const gpu::Mailbox GetImageMailboxForColor(const SkColor4f& color);
+
+  // Append a viewport sized transparent solid color overlay to overlay_list if
+  // capabilities().needs_background_image = true.
+  void MaybeScheduleBackgroundImage(
+      OverlayProcessorInterface::CandidateList& candidate_list);
+
+  // Given locks that have either been swapped or skipped, if any correspond to
+  // solid color mailboxes, decrement their use_count in |solid_color_buffers_|.
+  // If capabilities().supports_non_backed_solid_color_overlays = true, there is
+  // nothing to be done.
+  void MaybeDecrementSolidColorBuffers(
+      std::vector<OverlayLock>& finished_locks);
+#endif
+
+  // A map from RenderPass id to the texture used to draw the RenderPass from.
   base::flat_map<AggregatedRenderPassId, RenderPassBacking>
       render_pass_backings_;
   sk_sp<SkColorSpace> RenderPassBackingSkColorSpace(
@@ -455,6 +475,20 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // Used to get mailboxes for the root render pass when
   // capabilities().renderer_allocates_images = true.
   std::unique_ptr<BufferQueue> buffer_queue_;
+
+#if defined(USE_OZONE)
+  struct SolidColorBuffer {
+    gpu::Mailbox mailbox;
+    int use_count;
+  };
+
+  // Solid color buffers allocated on necessary platforms. The same image
+  // can be reused for multiple same-color quads, and use count is tracked.
+  // Entries will be erased and their SharedImages destroyed in the next
+  // SwapBuffers() if their use_count reaches 0.
+  // TODO(crbug.com/1342015): Move this to SkColor4f.
+  base::flat_map<SkColor, SolidColorBuffer> solid_color_buffers_;
+#endif
 };
 
 }  // namespace viz
