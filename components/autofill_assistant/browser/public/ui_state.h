@@ -11,7 +11,10 @@ enum class UIState {
   // Autofill Assistant UI is not being shown.
   kNotShown = 0,
   // Autofill Assistant UI is being shown.
-  kShown
+  kShown = 1,
+  // Autofill Assistant UI is being shown but no browsing feature suppression
+  // (such as Autofill, translation, etc.) is expected.
+  kShownWithoutBrowsingFeatureSuppression = 2,
 };
 }  // namespace autofill_assistant
 

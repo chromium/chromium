@@ -209,7 +209,16 @@ void Controller::RequireUI() {
 void Controller::SetUiShown(bool shown) {
   ui_shown_ = shown;
   if (runtime_manager_) {
-    runtime_manager_->SetUIState(shown ? UIState::kShown : UIState::kNotShown);
+    // By default, browsing features are suppressed during `UIState::kShown`.
+    // Therefore set a special state if no suppression is desired.
+    if (shown && trigger_context_ &&
+        !trigger_context_->GetSuppressBrowsingFeatures()) {
+      runtime_manager_->SetUIState(
+          UIState::kShownWithoutBrowsingFeatureSuppression);
+    } else {
+      runtime_manager_->SetUIState(shown ? UIState::kShown
+                                         : UIState::kNotShown);
+    }
   }
 
   for (ControllerObserver& observer : observers_) {

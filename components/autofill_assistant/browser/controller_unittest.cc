@@ -2222,6 +2222,25 @@ TEST_F(ControllerTest, NotifyRuntimeManagerOnUiStateChange) {
   controller_->SetUiShown(false);
 }
 
+TEST_F(ControllerTest,
+       NotifyRuntimeManagerOnUiStateChangeWithoutBrowsingFeatureSuppression) {
+  // Simulate starting a script without browsing feature suppression.
+  TriggerContext::Options options;
+  options.suppress_browsing_features = false;
+  Start("https://www.example.fr",
+        std::make_unique<TriggerContext>(
+            /* parameters = */ std::make_unique<ScriptParameters>(), options));
+
+  // Then the "shown" state reflects that no browsing feature suppression is
+  // intended.
+  EXPECT_CALL(*mock_runtime_manager_,
+              SetUIState(UIState::kShownWithoutBrowsingFeatureSuppression));
+  controller_->SetUiShown(true);
+
+  EXPECT_CALL(*mock_runtime_manager_, SetUIState(UIState::kNotShown));
+  controller_->SetUiShown(false);
+}
+
 TEST_F(ControllerTest, RuntimeManagerDestroyed) {
   mock_runtime_manager_.reset();
   // This method should not crash.
