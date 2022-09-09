@@ -212,7 +212,7 @@ GetCRLStatusForCert(const der::Input& cert_serial,
 //        the |thisUpdate| field in the CRL TBSCertList. Responses older than
 //        |max_age| will be considered invalid.
 [[nodiscard]] NET_EXPORT CRLRevocationStatus
-CheckCRL(base::StringPiece raw_crl,
+CheckCRL(std::string_view raw_crl,
          const ParsedCertificateList& valid_chain,
          size_t target_cert_index,
          const ParsedDistributionPoint& cert_dp,

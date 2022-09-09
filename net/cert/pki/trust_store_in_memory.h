@@ -73,8 +73,7 @@ class NET_EXPORT TrustStoreInMemory : public TrustStore {
   };
 
   // Multimap from normalized subject -> Entry.
-  std::unordered_multimap<base::StringPiece, Entry, base::StringPieceHash>
-      entries_;
+  std::unordered_multimap<std::string_view, Entry> entries_;
 
   // Adds a certificate with the specified trust settings. Both trusted and
   // distrusted certificates require a full DER match.

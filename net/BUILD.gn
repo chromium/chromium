@@ -366,6 +366,8 @@ component("net") {
     "cert/pki/signature_algorithm.h",
     "cert/pki/simple_path_builder_delegate.cc",
     "cert/pki/simple_path_builder_delegate.h",
+    "cert/pki/string_util.cc",
+    "cert/pki/string_util.h",
     "cert/pki/trust_store.cc",
     "cert/pki/trust_store.h",
     "cert/pki/trust_store_collection.cc",

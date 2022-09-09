@@ -162,7 +162,7 @@ class PathBuilderPkitsTestDelegate {
         crl_ders, verify_time, /*max_age=*/base::Days(365 * 2), 1024,
         SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1);
 
-    base::StringPiece test_number = info.test_number;
+    std::string_view test_number = info.test_number;
     if (test_number == "4.4.19" || test_number == "4.5.3" ||
         test_number == "4.5.4" || test_number == "4.5.6") {
       // 4.4.19 - fails since CRL is signed by a certificate that is not part

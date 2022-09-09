@@ -536,7 +536,7 @@ TEST(ParseAuthorityInfoAccess, BasicTests) {
     EXPECT_EQ(der::Input(location_der), desc.access_location);
   }
 
-  std::vector<base::StringPiece> ca_issuers_uris, ocsp_uris;
+  std::vector<std::string_view> ca_issuers_uris, ocsp_uris;
   ASSERT_TRUE(ParseAuthorityInfoAccessURIs(der::Input(der), &ca_issuers_uris,
                                            &ocsp_uris));
   ASSERT_EQ(1u, ca_issuers_uris.size());
@@ -578,7 +578,7 @@ TEST(ParseAuthorityInfoAccess, NoOcspOrCaIssuersURIs) {
                                   0x03, 0x13, 0x03, 0x66, 0x6f, 0x6f};
   EXPECT_EQ(der::Input(location_der), desc.access_location);
 
-  std::vector<base::StringPiece> ca_issuers_uris, ocsp_uris;
+  std::vector<std::string_view> ca_issuers_uris, ocsp_uris;
   // ParseAuthorityInfoAccessURIs should still return success since it was a
   // valid AuthorityInfoAccess extension, even though it did not contain any
   // elements we care about, and both output vectors should be empty.
@@ -610,7 +610,7 @@ TEST(ParseAuthorityInfoAccess, IncompleteAccessDescription) {
   std::vector<AuthorityInfoAccessDescription> access_descriptions;
   EXPECT_FALSE(ParseAuthorityInfoAccess(der::Input(der), &access_descriptions));
 
-  std::vector<base::StringPiece> ca_issuers_uris, ocsp_uris;
+  std::vector<std::string_view> ca_issuers_uris, ocsp_uris;
   EXPECT_FALSE(ParseAuthorityInfoAccessURIs(der::Input(der), &ca_issuers_uris,
                                             &ocsp_uris));
 }
@@ -633,7 +633,7 @@ TEST(ParseAuthorityInfoAccess, ExtraDataInAccessDescription) {
   std::vector<AuthorityInfoAccessDescription> access_descriptions;
   EXPECT_FALSE(ParseAuthorityInfoAccess(der::Input(der), &access_descriptions));
 
-  std::vector<base::StringPiece> ca_issuers_uris, ocsp_uris;
+  std::vector<std::string_view> ca_issuers_uris, ocsp_uris;
   EXPECT_FALSE(ParseAuthorityInfoAccessURIs(der::Input(der), &ca_issuers_uris,
                                             &ocsp_uris));
 }
@@ -645,7 +645,7 @@ TEST(ParseAuthorityInfoAccess, EmptySequence) {
   std::vector<AuthorityInfoAccessDescription> access_descriptions;
   EXPECT_FALSE(ParseAuthorityInfoAccess(der::Input(der), &access_descriptions));
 
-  std::vector<base::StringPiece> ca_issuers_uris, ocsp_uris;
+  std::vector<std::string_view> ca_issuers_uris, ocsp_uris;
   EXPECT_FALSE(ParseAuthorityInfoAccessURIs(der::Input(der), &ca_issuers_uris,
                                             &ocsp_uris));
 }

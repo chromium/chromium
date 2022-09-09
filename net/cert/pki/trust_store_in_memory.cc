@@ -45,7 +45,7 @@ void TrustStoreInMemory::AddCertificateWithUnspecifiedTrust(
 
 void TrustStoreInMemory::SyncGetIssuersOf(const ParsedCertificate* cert,
                                           ParsedCertificateList* issuers) {
-  auto range = entries_.equal_range(cert->normalized_issuer().AsStringPiece());
+  auto range = entries_.equal_range(cert->normalized_issuer().AsStringView());
   for (auto it = range.first; it != range.second; ++it)
     issuers->push_back(it->second.cert);
 }
@@ -73,12 +73,12 @@ void TrustStoreInMemory::AddCertificate(scoped_refptr<ParsedCertificate> cert,
 
   // TODO(mattm): should this check for duplicate certificates?
   entries_.insert(
-      std::make_pair(entry.cert->normalized_subject().AsStringPiece(), entry));
+      std::make_pair(entry.cert->normalized_subject().AsStringView(), entry));
 }
 
 const TrustStoreInMemory::Entry* TrustStoreInMemory::GetEntry(
     const ParsedCertificate* cert) const {
-  auto range = entries_.equal_range(cert->normalized_subject().AsStringPiece());
+  auto range = entries_.equal_range(cert->normalized_subject().AsStringView());
   for (auto it = range.first; it != range.second; ++it) {
     if (cert == it->second.cert.get() ||
         cert->der_cert() == it->second.cert->der_cert()) {

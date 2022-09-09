@@ -775,13 +775,17 @@ absl::optional<std::string> ProcessGeneralNames(
   }
   for (const auto& rfc822_name : names.rfc822_names) {
     // TODO(mattm): do something about newlines (or other control chars)?
-    rv += FormatGeneralName(IDS_CERT_GENERAL_NAME_RFC822_NAME, rfc822_name);
+    rv += FormatGeneralName(
+        IDS_CERT_GENERAL_NAME_RFC822_NAME,
+        base::StringPiece(rfc822_name.data(), rfc822_name.size()));
   }
   for (const auto& dns_name : names.dns_names) {
     // TODO(mattm): Should probably do ProcessIDN on dnsNames from
     // subjectAltName like we do on subject commonName?
     // TODO(mattm): do something about newlines (or other control chars)?
-    rv += FormatGeneralName(IDS_CERT_GENERAL_NAME_DNS_NAME, dns_name);
+    rv +=
+        FormatGeneralName(IDS_CERT_GENERAL_NAME_DNS_NAME,
+                          base::StringPiece(dns_name.data(), dns_name.size()));
   }
   for (const auto& x400_address : names.x400_addresses) {
     rv += FormatGeneralName(IDS_CERT_GENERAL_NAME_X400_ADDRESS,
@@ -801,8 +805,10 @@ absl::optional<std::string> ProcessGeneralNames(
   for (const auto& uniform_resource_identifier :
        names.uniform_resource_identifiers) {
     // TODO(mattm): do something about newlines (or other control chars)?
-    rv += FormatGeneralName(IDS_CERT_GENERAL_NAME_URI,
-                            uniform_resource_identifier);
+    rv += FormatGeneralName(
+        IDS_CERT_GENERAL_NAME_URI,
+        base::StringPiece(uniform_resource_identifier.data(),
+                          uniform_resource_identifier.size()));
   }
   for (const auto& ip_address : names.ip_addresses) {
     rv += FormatGeneralName(IDS_CERT_GENERAL_NAME_IP_ADDRESS,
