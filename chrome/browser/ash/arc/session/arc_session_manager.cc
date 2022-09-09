@@ -88,14 +88,10 @@ ArcSessionManager* g_arc_session_manager = nullptr;
 // Allows the session manager to skip creating UI in unit tests.
 bool g_ui_enabled = true;
 
-absl::optional<bool> g_enable_check_android_management_in_tests;
-
 constexpr const char kArcSaltPath[] = "/var/lib/misc/arc_salt";
 
 constexpr const char kArcPrepareHostGeneratedDirJobName[] =
     "arc_2dprepare_2dhost_2dgenerated_2ddir";
-
-constexpr base::TimeDelta kWaitForPoliciesTimeout = base::Seconds(20);
 
 // Maximum amount of time we'll wait for ARC to finish booting up. Once this
 // timeout expires, keep ARC running in case the user wants to file feedback,
@@ -517,7 +513,7 @@ void ArcSessionManager::SetArcTermsOfServiceOobeNegotiatorEnabledForTesting(
 
 // static
 void ArcSessionManager::EnableCheckAndroidManagementForTesting(bool enable) {
-  g_enable_check_android_management_in_tests = enable;
+  ArcRequirementChecker::EnableCheckAndroidManagementForTesting(enable);
 }
 
 void ArcSessionManager::OnSessionStopped(ArcStopReason reason,
@@ -773,9 +769,6 @@ void ArcSessionManager::Initialize() {
       multi_user_util::GetAccountIdFromProfile(profile_));
   data_remover_ = std::make_unique<ArcDataRemover>(prefs, cryptohome_id);
 
-  if (g_enable_check_android_management_in_tests.value_or(g_ui_enabled))
-    ArcAndroidManagementChecker::StartClient();
-
   // Chrome may be shut down before completing ARC data removal.
   // For such a case, start removing the data now, if necessary.
   MaybeStartArcDataRemoval();
@@ -844,7 +837,6 @@ void ArcSessionManager::ResetArcState() {
   arc_sign_in_timer_.Stop();
   playstore_launcher_.reset();
   requirement_checker_.reset();
-  wait_for_policy_timer_.AbandonAndStop();
 }
 
 void ArcSessionManager::AddObserver(ArcSessionManagerObserver* observer) {
@@ -930,7 +922,10 @@ bool ArcSessionManager::IsPlaystoreLaunchRequestedForTesting() const {
 
 void ArcSessionManager::OnBackgroundAndroidManagementCheckedForTesting(
     ArcAndroidManagementChecker::CheckResult result) {
-  OnBackgroundAndroidManagementChecked(result);
+  DCHECK(requirement_checker_);
+  requirement_checker_
+      ->OnBackgroundAndroidManagementCheckedForTesting(  // IN-TEST
+          result);
 }
 
 void ArcSessionManager::OnVmStarted(
@@ -1055,14 +1050,14 @@ bool ArcSessionManager::RequestEnableImpl() {
   if (start_arc_directly) {
     StartArc();
     // Check Android management in parallel.
-    // Note: StartBackgroundAndroidManagementCheck() may call
-    // OnBackgroundAndroidManagementChecked() synchronously (or
-    // asynchronously). In the callback, Google Play Store enabled preference
-    // can be set to false if Android management is enabled, and it triggers
-    // RequestDisable() via ArcPlayStoreEnabledPreferenceHandler.
+    // Note: StartBackgroundRequirementManagementChecks() may call
+    // OnBackgroundRequirementChecksDone() synchronously (or asynchronously). In
+    // the callback, Google Play Store enabled preference can be set to false if
+    // Android management is enabled, and it triggers RequestDisable() via
+    // ArcPlayStoreEnabledPreferenceHandler.
     // Thus, StartArc() should be called so that disabling should work even
     // if synchronous call case.
-    StartBackgroundAndroidManagementCheck();
+    StartBackgroundRequirementChecks();
     return true;
   }
 
@@ -1237,104 +1232,40 @@ void ArcSessionManager::OnAndroidManagementChecked(
   }
 }
 
-void ArcSessionManager::StartBackgroundAndroidManagementCheck() {
+void ArcSessionManager::StartBackgroundRequirementChecks() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(state_, State::ACTIVE);
   DCHECK(!requirement_checker_);
 
-  // Skip Android management check for testing.
-  // We also skip Android management check for Kiosk and Public Session mode,
-  // because they don't use real google accounts.
-  if (IsArcOptInVerificationDisabled() || IsRobotOrOfflineDemoAccountMode() ||
-      (!g_ui_enabled &&
-       !g_enable_check_android_management_in_tests.value_or(false))) {
+  // We skip Android management check for Kiosk and Public Session mode, because
+  // they don't use real google accounts.
+  if (IsArcOptInVerificationDisabled() || IsRobotOrOfflineDemoAccountMode()) {
     return;
   }
 
   requirement_checker_ = std::make_unique<ArcRequirementChecker>(
       this, profile_, support_host_.get());
-  requirement_checker_->StartBackgroundAndroidManagementCheck();
+  requirement_checker_->StartBackgroundChecks(
+      base::BindOnce(&ArcSessionManager::OnBackgroundRequirementChecksDone,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ArcSessionManager::OnBackgroundAndroidManagementChecked(
-    ArcAndroidManagementChecker::CheckResult result) {
+void ArcSessionManager::OnBackgroundRequirementChecksDone(
+    ArcRequirementChecker::BackgroundCheckResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(requirement_checker_);
 
-  if (g_enable_check_android_management_in_tests.value_or(true)) {
-    DCHECK(requirement_checker_);
-    requirement_checker_.reset();
-  }
+  requirement_checker_.reset();
 
   switch (result) {
-    case ArcAndroidManagementChecker::CheckResult::ALLOWED:
-      // Do nothing. ARC should be started already.
+    case ArcRequirementChecker::BackgroundCheckResult::kNoActionRequired:
       break;
-    case ArcAndroidManagementChecker::CheckResult::DISALLOWED:
-      if (base::FeatureList::IsEnabled(
-              arc::kEnableUnmanagedToManagedTransitionFeature)) {
-        WaitForPoliciesLoad();
-      } else {
-        SetArcPlayStoreEnabledForProfile(profile_, false /* enabled */);
-      }
+    case ArcRequirementChecker::BackgroundCheckResult::kArcShouldBeDisabled:
+      SetArcPlayStoreEnabledForProfile(profile_, false);
       break;
-    case ArcAndroidManagementChecker::CheckResult::ERROR:
-      // This code should not be reached. For background check,
-      // retry_on_error should be set.
-      NOTREACHED();
-  }
-}
-
-void ArcSessionManager::WaitForPoliciesLoad() {
-  auto* policy_service =
-      profile()->GetProfilePolicyConnector()->policy_service();
-
-  // User might be transitioning to managed state, wait for policies load
-  // to confirm.
-  if (policy_service->IsFirstPolicyLoadComplete(policy::POLICY_DOMAIN_CHROME)) {
-    OnFirstPoliciesLoadedOrTimeout();
-  } else {
-    profile_->GetProfilePolicyConnector()->policy_service()->AddObserver(
-        policy::POLICY_DOMAIN_CHROME, this);
-    wait_for_policy_timer_.Start(
-        FROM_HERE, kWaitForPoliciesTimeout,
-        base::BindOnce(&ArcSessionManager::OnFirstPoliciesLoadedOrTimeout,
-                       base::Unretained(this)));
-  }
-}
-
-void ArcSessionManager::OnFirstPoliciesLoaded(policy::PolicyDomain domain) {
-  DCHECK(domain == policy::POLICY_DOMAIN_CHROME);
-
-  wait_for_policy_timer_.Stop();
-  OnFirstPoliciesLoadedOrTimeout();
-}
-
-void ArcSessionManager::OnFirstPoliciesLoadedOrTimeout() {
-  profile_->GetProfilePolicyConnector()->policy_service()->RemoveObserver(
-      policy::POLICY_DOMAIN_CHROME, this);
-
-  // OnFirstPoliciesLoaded callback is triggered for both unmanaged and managed
-  // users, we need to check user state here.
-  // If timeout comes before policies are loaded, we fallback to calling
-  // SetArcPlayStoreEnabledForProfile(profile_, false).
-  if (arc::policy_util::IsAccountManaged(profile_)) {
-    // User has become managed, notify ARC by setting transition preference,
-    // which is eventually passed to ARC via ArcSession parameters.
-    profile_->GetPrefs()->SetInteger(
-        arc::prefs::kArcManagementTransition,
-        static_cast<int>(arc::ArcManagementTransition::UNMANAGED_TO_MANAGED));
-
-    // Restart ARC to perform managed re-provisioning.
-    // kArcIsManaged and kArcSignedIn are not reset during the restart.
-    // In case of successful re-provisioning, OnProvisioningFinished is called
-    // and kArcIsManaged is updated.
-    // In case of re-provisioning failure, ARC data is removed and transition
-    // preference is reset.
-    // In case Chrome is terminated during re-provisioning, user transition will
-    // be detected in ProfileManager::InitProfileUserPrefs, on next startup.
-    StopAndEnableArc();
-  } else {
-    SetArcPlayStoreEnabledForProfile(profile_, false /* enabled */);
+    case ArcRequirementChecker::BackgroundCheckResult::kArcShouldBeRestarted:
+      StopAndEnableArc();
+      break;
   }
 }
 

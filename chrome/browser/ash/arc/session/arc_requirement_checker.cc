@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ash/arc/session/arc_requirement_checker.h"
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/optin/arc_terms_of_service_default_negotiator.h"
 #include "chrome/browser/ash/arc/optin/arc_terms_of_service_oobe_negotiator.h"
+#include "chrome/browser/ash/arc/policy/arc_policy_util.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -17,6 +20,8 @@
 namespace arc {
 
 namespace {
+
+constexpr base::TimeDelta kWaitForPoliciesTimeout = base::Seconds(20);
 
 // Flags used to control behaviors for tests.
 // TODO(b/241886729): Remove or simplify these flags.
@@ -27,6 +32,8 @@ bool g_ui_enabled = true;
 // Allows the session manager to create ArcTermsOfServiceOobeNegotiator in
 // tests, even when the tests are set to skip creating UI.
 bool g_enable_arc_terms_of_service_oobe_negotiator_in_tests = false;
+
+absl::optional<bool> g_enable_check_android_management_in_tests;
 
 // Updates UMA with user cancel only if error is not currently shown.
 // TODO(hashimoto): Remove the duplicate in arc_session_manager.cc.
@@ -45,9 +52,15 @@ void MaybeUpdateOptInCancelUMA(const ArcSupportHost* support_host) {
 ArcRequirementChecker::ArcRequirementChecker(Delegate* delegate,
                                              Profile* profile,
                                              ArcSupportHost* support_host)
-    : delegate_(delegate), profile_(profile), support_host_(support_host) {}
+    : delegate_(delegate), profile_(profile), support_host_(support_host) {
+  if (g_enable_check_android_management_in_tests.value_or(g_ui_enabled))
+    ArcAndroidManagementChecker::StartClient();
+}
 
-ArcRequirementChecker::~ArcRequirementChecker() = default;
+ArcRequirementChecker::~ArcRequirementChecker() {
+  profile_->GetProfilePolicyConnector()->policy_service()->RemoveObserver(
+      policy::POLICY_DOMAIN_CHROME, this);
+}
 
 // static
 void ArcRequirementChecker::SetUiEnabledForTesting(bool enabled) {
@@ -60,6 +73,12 @@ void ArcRequirementChecker::SetArcTermsOfServiceOobeNegotiatorEnabledForTesting(
   g_enable_arc_terms_of_service_oobe_negotiator_in_tests = enabled;
 }
 
+// static
+void ArcRequirementChecker::EnableCheckAndroidManagementForTesting(
+    bool enable) {
+  g_enable_check_android_management_in_tests = enable;
+}
+
 void ArcRequirementChecker::EmulateRequirementCheckCompletionForTesting() {
   if (state_ == State::kNegotiatingTermsOfService)
     OnTermsOfServiceNegotiated(true);
@@ -67,6 +86,11 @@ void ArcRequirementChecker::EmulateRequirementCheckCompletionForTesting() {
     OnAndroidManagementChecked(
         ArcAndroidManagementChecker::CheckResult::ALLOWED);
   }
+}
+
+void ArcRequirementChecker::OnBackgroundAndroidManagementCheckedForTesting(
+    ArcAndroidManagementChecker::CheckResult result) {
+  OnBackgroundAndroidManagementChecked(result);
 }
 
 void ArcRequirementChecker::StartRequirementChecks(
@@ -108,18 +132,35 @@ void ArcRequirementChecker::StartRequirementChecks(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ArcRequirementChecker::StartBackgroundAndroidManagementCheck() {
+void ArcRequirementChecker::StartBackgroundChecks(
+    StartBackgroundChecksCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(state_, State::kStopped);
   DCHECK(!android_management_checker_);
+  DCHECK(!background_check_callback_);
+  DCHECK(!wait_for_policy_timer_.IsRunning());
 
   state_ = State::kCheckingAndroidManagementBackground;
+  background_check_callback_ = std::move(callback);
+
+  // Skip Android management check for testing.
+  if (!g_enable_check_android_management_in_tests.value_or(g_ui_enabled))
+    return;
 
   android_management_checker_ = std::make_unique<ArcAndroidManagementChecker>(
       profile_, true /* retry_on_error */);
   android_management_checker_->StartCheck(base::BindOnce(
       &ArcRequirementChecker::OnBackgroundAndroidManagementChecked,
       weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ArcRequirementChecker::OnFirstPoliciesLoaded(policy::PolicyDomain domain) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_EQ(state_, State::kWaitingForPoliciesBackground);
+  DCHECK_EQ(domain, policy::POLICY_DOMAIN_CHROME);
+
+  wait_for_policy_timer_.Stop();
+  OnFirstPoliciesLoadedOrTimeout();
 }
 
 void ArcRequirementChecker::OnTermsOfServiceNegotiated(bool accepted) {
@@ -185,10 +226,94 @@ void ArcRequirementChecker::OnBackgroundAndroidManagementChecked(
     ArcAndroidManagementChecker::CheckResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(state_, State::kCheckingAndroidManagementBackground);
-  DCHECK(android_management_checker_);
-  android_management_checker_.reset();
+  DCHECK(background_check_callback_);
+
+  if (g_enable_check_android_management_in_tests.value_or(true)) {
+    DCHECK(android_management_checker_);
+    android_management_checker_.reset();
+  }
+
+  switch (result) {
+    case ArcAndroidManagementChecker::CheckResult::ALLOWED:
+      // Do nothing. ARC should be started already.
+      state_ = State::kStopped;
+      std::move(background_check_callback_)
+          .Run(BackgroundCheckResult::kNoActionRequired);
+      break;
+    case ArcAndroidManagementChecker::CheckResult::DISALLOWED:
+      if (base::FeatureList::IsEnabled(
+              arc::kEnableUnmanagedToManagedTransitionFeature)) {
+        state_ = State::kWaitingForPoliciesBackground;
+        WaitForPoliciesLoad();
+      } else {
+        state_ = State::kStopped;
+        std::move(background_check_callback_)
+            .Run(BackgroundCheckResult::kArcShouldBeDisabled);
+      }
+      break;
+    case ArcAndroidManagementChecker::CheckResult::ERROR:
+      // This code should not be reached. For background check,
+      // retry_on_error should be set.
+      NOTREACHED();
+  }
+}
+
+void ArcRequirementChecker::WaitForPoliciesLoad() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_EQ(state_, State::kWaitingForPoliciesBackground);
+
+  auto* policy_service =
+      profile_->GetProfilePolicyConnector()->policy_service();
+
+  // User might be transitioning to managed state, wait for policies load
+  // to confirm.
+  if (policy_service->IsFirstPolicyLoadComplete(policy::POLICY_DOMAIN_CHROME)) {
+    OnFirstPoliciesLoadedOrTimeout();
+  } else {
+    profile_->GetProfilePolicyConnector()->policy_service()->AddObserver(
+        policy::POLICY_DOMAIN_CHROME, this);
+    wait_for_policy_timer_.Start(
+        FROM_HERE, kWaitForPoliciesTimeout,
+        base::BindOnce(&ArcRequirementChecker::OnFirstPoliciesLoadedOrTimeout,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void ArcRequirementChecker::OnFirstPoliciesLoadedOrTimeout() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_EQ(state_, State::kWaitingForPoliciesBackground);
+  DCHECK(background_check_callback_);
+
   state_ = State::kStopped;
-  delegate_->OnBackgroundAndroidManagementChecked(result);
+
+  profile_->GetProfilePolicyConnector()->policy_service()->RemoveObserver(
+      policy::POLICY_DOMAIN_CHROME, this);
+
+  // OnFirstPoliciesLoaded callback is triggered for both unmanaged and managed
+  // users, we need to check user state here.
+  // If timeout comes before policies are loaded, we fallback to calling
+  // SetArcPlayStoreEnabledForProfile(profile_, false).
+  if (arc::policy_util::IsAccountManaged(profile_)) {
+    // User has become managed, notify ARC by setting transition preference,
+    // which is eventually passed to ARC via ArcSession parameters.
+    profile_->GetPrefs()->SetInteger(
+        arc::prefs::kArcManagementTransition,
+        static_cast<int>(arc::ArcManagementTransition::UNMANAGED_TO_MANAGED));
+
+    // Restart ARC to perform managed re-provisioning.
+    // kArcIsManaged and kArcSignedIn are not reset during the restart.
+    // In case of successful re-provisioning, OnProvisioningFinished is called
+    // and kArcIsManaged is updated.
+    // In case of re-provisioning failure, ARC data is removed and transition
+    // preference is reset.
+    // In case Chrome is terminated during re-provisioning, user transition will
+    // be detected in ProfileManager::InitProfileUserPrefs, on next startup.
+    std::move(background_check_callback_)
+        .Run(BackgroundCheckResult::kArcShouldBeRestarted);
+  } else {
+    std::move(background_check_callback_)
+        .Run(BackgroundCheckResult::kArcShouldBeDisabled);
+  }
 }
 
 }  // namespace arc

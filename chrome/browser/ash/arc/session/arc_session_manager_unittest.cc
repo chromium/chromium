@@ -1967,16 +1967,17 @@ TEST_P(ArcTransitionToManagedTest, TransitionFlow) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatureState(kEnableUnmanagedToManagedTransitionFeature,
                                     transition_feature_enabled());
+  // Set up the situation that provisioning is successfully done in the
+  // previous session.
   profile()->GetPrefs()->SetBoolean(prefs::kArcEnabled, true);
+  profile()->GetPrefs()->SetBoolean(prefs::kArcTermsAccepted, true);
+  profile()->GetPrefs()->SetBoolean(prefs::kArcSignedIn, true);
 
   // Initialize ARC.
   arc_session_manager()->SetProfile(profile());
   arc_session_manager()->Initialize();
   arc_session_manager()->RequestEnable();
-  base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(ArcSessionManager::State::CHECKING_REQUIREMENTS,
-            arc_session_manager()->state());
-  arc_session_manager()->EmulateRequirementCheckCompletionForTesting();
+  ASSERT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
 
   // Emulate user management state change.
   profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(
@@ -1985,7 +1986,6 @@ TEST_P(ArcTransitionToManagedTest, TransitionFlow) {
   // Android management check response.
   arc_session_manager()->OnBackgroundAndroidManagementCheckedForTesting(
       ArcAndroidManagementChecker::CheckResult::DISALLOWED);
-  base::RunLoop().RunUntilIdle();
 
   // Verify ARC state and ARC transition value.
   EXPECT_EQ(profile()->GetPrefs()->GetBoolean(prefs::kArcEnabled),

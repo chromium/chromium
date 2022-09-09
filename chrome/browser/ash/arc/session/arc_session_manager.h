@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/policy/arc/android_management_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
-#include "components/policy/core/common/policy_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -58,7 +57,6 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
                           public ArcSupportHost::ErrorDelegate,
                           public ash::SessionManagerClient::Observer,
                           public ash::ConciergeClient::VmObserver,
-                          public policy::PolicyService::Observer,
                           public ArcRequirementChecker::Delegate {
  public:
   // Represents each State of ARC session.
@@ -318,9 +316,6 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   void OnVmStopped(
       const vm_tools::concierge::VmStoppedSignal& vm_signal) override;
 
-  // policy::PolicyServer::Observer override.
-  void OnFirstPoliciesLoaded(policy::PolicyDomain domain) override;
-
   // Getter for |vm_info_|.
   // If ARCVM is not running, return absl::nullopt.
   const absl::optional<vm_tools::concierge::VmInfo>& GetVmInfo() const;
@@ -352,21 +347,23 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   void OnArcOptInManagementCheckStarted() override;
   void OnAndroidManagementChecked(
       ArcAndroidManagementChecker::CheckResult result) override;
-  void OnBackgroundAndroidManagementChecked(
-      ArcAndroidManagementChecker::CheckResult result) override;
 
   void ShutdownSession();
   void ResetArcState();
   void OnArcSignInTimeout();
 
-  // Starts Android management check in background (in parallel with starting
+  // Starts requirement checks in background (in parallel with starting
   // ARC). This is for secondary or later ARC enabling.
   // The reason running them in parallel is for performance. The secondary or
   // later ARC enabling is typically on "logging into Chrome" for the user who
   // already opted in to use Google Play Store. In such a case, network is
   // typically not yet ready. Thus, if we block ARC boot, it delays several
   // seconds, which is not very user friendly.
-  void StartBackgroundAndroidManagementCheck();
+  void StartBackgroundRequirementChecks();
+
+  // Called when the background requirement checks are done.
+  void OnBackgroundRequirementChecksDone(
+      ArcRequirementChecker::BackgroundCheckResult result);
 
   // Requests to start ARC instance. Also, updates the internal state to
   // ACTIVE.
@@ -419,13 +416,6 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // Called when ExpandPropertyFilesAndReadSalt is done.
   void OnExpandPropertyFilesAndReadSalt(ExpansionResult result);
 
-  // Sets up a timer to wait for policies load, or immediately calls
-  // OnFirstPoliciesLoadedOrTimeout.
-  void WaitForPoliciesLoad();
-  // Called when first policies are loaded or when wait_for_policy_timer_
-  // expires.
-  void OnFirstPoliciesLoadedOrTimeout();
-
   std::unique_ptr<ArcSessionRunner> arc_session_runner_;
   std::unique_ptr<AdbSideloadingAvailabilityDelegateImpl>
       adb_sideloading_availability_delegate_;
@@ -474,10 +464,6 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   absl::optional<bool> property_files_expansion_result_;
 
   absl::optional<vm_tools::concierge::VmInfo> vm_info_;
-
-  // Timer to wait for policiesin case we are suspecting the user might be
-  // transitioning to the managed state.
-  base::OneShotTimer wait_for_policy_timer_;
 
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
 
