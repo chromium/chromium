@@ -34,6 +34,7 @@ class SidePanelEntry final {
     kReadAnything,
     kUserNote,
     kFeed,
+    kWebView,
     // Contextual Entries
     kSideSearch,
     kLens,

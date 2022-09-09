@@ -1435,6 +1435,9 @@ extern const char kSidePanelJourneysFlagId[];
 extern const char kSidePanelJourneysName[];
 extern const char kSidePanelJourneysDescription[];
 
+extern const char kSidePanelWebViewName[];
+extern const char kSidePanelWebViewDescription[];
+
 extern const char kSharingDesktopScreenshotsName[];
 extern const char kSharingDesktopScreenshotsDescription[];
 

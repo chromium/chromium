@@ -35,6 +35,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ReadingList"/>
   <variant name="SideSearch"/>
   <variant name="UserNotes"/>
+  <variant name="WebView"/>
 </variants>
 
 <variants name="TabSwitchingType">

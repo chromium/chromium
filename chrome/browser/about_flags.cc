@@ -5717,6 +5717,10 @@ const FeatureEntry kFeatureEntries[] = {
          kSidePanelJourneysOpensFromOmniboxVariations,
          "SidePanelJourneys")},
 
+    {"side-panel-web-view", flag_descriptions::kSidePanelWebViewName,
+     flag_descriptions::kSidePanelWebViewDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSidePanelWebView)},
+
     {flag_descriptions::kUnifiedSidePanelFlagId,
      flag_descriptions::kUnifiedSidePanelName,
      flag_descriptions::kUnifiedSidePanelDescription, kOsDesktop,

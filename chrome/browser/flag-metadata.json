@@ -6044,6 +6044,11 @@
     "expiry_milestone" : 110
   },
   {
+    "name": "side-panel-web-view",
+    "owners": [ "ellyjones" ],
+    "expiry_milestone": 110
+  },
+  {
     "name" : "side-search",
     "owners": [ "chrome-cros@google.com", "tluk" ],
     "expiry_milestone" : 107

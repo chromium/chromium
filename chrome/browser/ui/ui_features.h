@@ -67,6 +67,8 @@ extern const base::Feature kSplitTabStrip;
 // ui_features.cc. This is currently temporarily in reading_list_switches.h.
 extern const base::Feature kSidePanelImprovedClobbering;
 
+extern const base::Feature kSidePanelWebView;
+
 extern const base::Feature kSidePanelJourneys;
 extern const base::FeatureParam<bool> kSidePanelJourneysOpensFromOmnibox;
 

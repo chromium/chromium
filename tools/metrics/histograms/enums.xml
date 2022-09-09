@@ -57086,6 +57086,7 @@ from previous Chrome versions.
       label="DebugHistoryInterventionNoUserActivation:disabled"/>
   <int value="-1588702520" label="WebOTPCrossDevice:disabled"/>
   <int value="-1586642651" label="MaterialDesignExtensions:disabled"/>
+  <int value="-1586295595" label="SidePanelWebView:disabled"/>
   <int value="-1585733447" label="ContextualSearchUnityIntegration:disabled"/>
   <int value="-1584944853" label="TrilinearFiltering:enabled"/>
   <int value="-1584795743" label="AccessibilityOSSettingsVisibility:enabled"/>
@@ -57614,6 +57615,7 @@ from previous Chrome versions.
   <int value="-1285790931" label="FencedFrames:disabled"/>
   <int value="-1285021473" label="save-page-as-mhtml"/>
   <int value="-1284637134" label="pull-to-refresh"/>
+  <int value="-1284303269" label="SidePanelWebView:enabled"/>
   <int value="-1283306503" label="LensSearchOptimizations:disabled"/>
   <int value="-1283164264" label="CroshSWA:disabled"/>
   <int value="-1282992935"

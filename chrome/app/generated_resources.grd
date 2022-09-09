@@ -13584,7 +13584,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Google Assistant stopped
       </message>
     </if>
-
     <!-- Battery Saver Toolbar strings  -->
     <if expr="not is_android">
       <message name="IDS_BATTERY_SAVER_BUTTON_TOOLTIP" desc="The tooltip for the battery saver toolbar button">
@@ -13612,6 +13611,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Memory Saver is on
       </message>
     </if>
+    <message name="IDS_ACCNAME_SIDEBAR_WEBVIEW_LOCATION_BAR" desc="The accessible name of the sidebar webview's location bar.">
+      Location
+    </message>
+    <message name="IDS_SIDEBAR_WEBVIEW_TITLE" desc="The menu entry name for the sidebar webview.">
+      Webview
+    </message>
   </messages>
 </release>
 </grit>

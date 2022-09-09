@@ -142,6 +142,9 @@ const base::FeatureParam<int> kSideSearchAutoTriggeringReturnCount{
 const base::Feature kSidePanelImprovedClobbering{
     "SidePanelImprovedClobbering", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSidePanelWebView{"SidePanelWebView",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kSidePanelJourneys{"SidePanelJourneys",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 // If enabled, and the main flag is also enabled, the Journeys omnibox
