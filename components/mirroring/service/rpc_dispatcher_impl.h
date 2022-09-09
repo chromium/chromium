@@ -28,7 +28,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RpcDispatcherImpl final
   // RpcDispatcher overrides.
   void Subscribe(RpcDispatcher::ResponseCallback callback) override;
   void Unsubscribe() override;
-  void SendOutboundMessage(base::span<const uint8_t> message) override;
+  bool SendOutboundMessage(base::span<const uint8_t> message) override;
 
  private:
   void ProcessResponse(RpcDispatcher::ResponseCallback callback,

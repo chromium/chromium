@@ -49,7 +49,7 @@ void RpcDispatcherImpl::Unsubscribe() {
   is_subscribed_ = false;
 }
 
-void RpcDispatcherImpl::SendOutboundMessage(base::span<const uint8_t> message) {
+bool RpcDispatcherImpl::SendOutboundMessage(base::span<const uint8_t> message) {
   std::string encoded_rpc;
   base::Base64Encode(
       base::StringPiece(reinterpret_cast<const char*>(message.data()),
@@ -64,6 +64,7 @@ void RpcDispatcherImpl::SendOutboundMessage(base::span<const uint8_t> message) {
       base::JSONWriter::Write(rpc, &rpc_message->json_format_data);
   DCHECK(did_serialize_rpc);
   message_dispatcher_->SendOutboundMessage(std::move(rpc_message));
+  return true;
 }
 
 }  // namespace mirroring

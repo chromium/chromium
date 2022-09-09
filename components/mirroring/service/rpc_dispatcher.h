@@ -29,14 +29,18 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RpcDispatcher {
 
   // Handles registration for RPC messages. Currently only one callback that
   // receives all RPC messages is allowed. Multiple calls to `Subscribe` will
-  // overwrite the currently set callback.
+  // overwrite the currently set callback. Callbacks should be executed
+  // on the same sequence that RpcDispatcher is instantiated.
   virtual void Subscribe(ResponseCallback callback) = 0;
   virtual void Unsubscribe() = 0;
 
   // Requests to send outbound `message` to the remoting implementation on the
   // receiver. The message is routed based on the already encoded RPC message
   // `handle`.
-  virtual void SendOutboundMessage(base::span<const uint8_t> message) = 0;
+  //
+  // Returns `true` if the message was sent (or queued to be sent
+  // asynchronously) successfully.
+  virtual bool SendOutboundMessage(base::span<const uint8_t> message) = 0;
 };
 
 }  // namespace mirroring
