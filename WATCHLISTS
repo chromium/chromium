@@ -1672,6 +1672,9 @@
     'privacy_budget': {
       'filepath': 'privacy_budget',
     },
+    'profile_keyed_service': {
+      'filepath': 'chrome/browser/profiles/profile_keyed_service_browsertest.cc',
+    },
     'push_messaging': {
       'filepath': 'push_messaging'
     },
@@ -2826,6 +2829,7 @@
     'preview_features': ['chrome-lite-pages+watch@google.com'],
     'print_preview': ['print-reviews+preview@chromium.org'],
     'privacy_budget': ['antoniosartori+watch-privacy_budget@chromium.org'],
+    'profile_keyed_service': ['rsult@google.com'],
     'push_messaging': ['peter@chromium.org'],
     'quick_answers': ['croissant-eng+reviews@chromium.org'],
     'relaunch_notification': ['grt+watch@chromium.org'],
