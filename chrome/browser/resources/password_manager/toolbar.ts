@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 
 import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
@@ -27,6 +28,14 @@ export class PasswordManagerToolbarElement extends RouteObserverMixin
   static get template() {
     return getTemplate();
   }
+
+  static get properties() {
+    return {
+      narrow: Boolean,
+    };
+  }
+
+  narrow: boolean;
 
   override currentRouteChanged(newRoute: Route, _oldRoute: Route): void {
     this.updateSearchTerm(newRoute.queryParameters);

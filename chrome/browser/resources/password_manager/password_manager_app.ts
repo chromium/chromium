@@ -11,8 +11,10 @@ import './toolbar.js';
 import './settings_section.js';
 import './passwords_section.js';
 
+import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
+import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomIf, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './password_manager_app.html.js';
 import {Page, Route, RouteObserverMixin} from './router.js';
@@ -21,9 +23,11 @@ import {PasswordManagerToolbarElement} from './toolbar.js';
 
 export interface PasswordManagerAppElement {
   $: {
-    toolbar: PasswordManagerToolbarElement,
-    sidebar: PasswordManagerSideBarElement,
     content: IronPagesElement,
+    drawer: CrDrawerElement,
+    drawerTemplate: DomIf,
+    sidebar: PasswordManagerSideBarElement,
+    toolbar: PasswordManagerToolbarElement,
   };
 }
 
@@ -40,13 +44,44 @@ export class PasswordManagerAppElement extends RouteObserverMixin
   static get properties() {
     return {
       selectedPage_: String,
+
+      narrow_: {
+        type: Boolean,
+        observer: 'onNarrowChanged_',
+      },
     };
   }
 
   private selectedPage_: Page;
+  private narrow_: boolean;
+
+  override ready() {
+    super.ready();
+
+    // Lazy-create the drawer the first time it is opened or swiped into view.
+    listenOnce(this.$.drawer, 'cr-drawer-opening', () => {
+      this.$.drawerTemplate.if = true;
+    });
+
+    this.addEventListener('cr-toolbar-menu-tap', this.onMenuButtonTap_);
+  }
 
   override currentRouteChanged(route: Route): void {
     this.selectedPage_ = route.page;
+  }
+
+  private onNarrowChanged_() {
+    if (this.$.drawer.open && !this.narrow_) {
+      this.$.drawer.close();
+    }
+  }
+
+  private onMenuButtonTap_() {
+    this.$.drawer.toggle();
+  }
+
+  setNarrowForTesting(state: boolean) {
+    this.narrow_ = state;
   }
 }
 declare global {
