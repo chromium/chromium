@@ -1421,23 +1421,12 @@ TEST_P(FormDataImporterTest,
            {ADDRESS_HOME_COUNTRY, kDefaultCountry}})});
 }
 
+// Test that even from unfocusable fields we import.
 TEST_P(FormDataImporterTest, ImportAddressProfiles_UnFocussableFields) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultProfileFormStructure();
   // Set the Address line field as unfocusable.
   form_structure->field(4)->is_focusable = false;
-
-  base::test::ScopedFeatureList unfocusable_feature;
-
-  // With the feature disabled, there should be no import.
-  unfocusable_feature.InitAndDisableFeature(
-      features::kAutofillProfileImportFromUnfocusableFields);
-  ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
-
-  unfocusable_feature.Reset();
-  // In contrast, with the feature enabled, there should be import.
-  unfocusable_feature.InitAndEnableFeature(
-      features::kAutofillProfileImportFromUnfocusableFields);
   ImportAddressProfileAndVerifyImportOfDefaultProfile(*form_structure);
 }
 
