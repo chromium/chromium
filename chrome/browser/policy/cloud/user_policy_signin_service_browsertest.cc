@@ -361,11 +361,10 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, BasicSignin) {
   CreateTurnSyncOnHelper();
   WaitForSyncConfirmation();
 
-  // Policies are applied even before the user confirms.
+  // Policies are applied right before the sync confirmation is shown.
   EXPECT_EQ(signin::ConsentLevel::kSignin,
             signin::GetPrimaryAccountConsentLevel(identity_manager()));
-  WaitForPrefValue(profile()->GetPrefs(), prefs::kShowHomeButton,
-                   base::Value(true));
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
 
   // Opt-in to Sync.
   ConfirmSync(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
@@ -382,11 +381,10 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, UndoSignin) {
   CreateTurnSyncOnHelper();
   WaitForSyncConfirmation();
 
-  // Policies are applied even before the user confirms.
+  // Policies are applied right before the sync confirmation is shown.
   EXPECT_EQ(signin::ConsentLevel::kSignin,
             signin::GetPrimaryAccountConsentLevel(identity_manager()));
-  WaitForPrefValue(profile()->GetPrefs(), prefs::kShowHomeButton,
-                   base::Value(true));
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
 
   // Cancel sync.
   ConfirmSync(LoginUIService::ABORT_SYNC);
@@ -417,11 +415,10 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, ConcurrentSignin) {
   set_policy_hanging(false);
   WaitForSyncConfirmation();
 
-  // Policies are applied even before the user confirms.
+  // Policies are applied right before the sync confirmation is shown.
   EXPECT_EQ(signin::ConsentLevel::kSignin,
             signin::GetPrimaryAccountConsentLevel(identity_manager()));
-  WaitForPrefValue(profile()->GetPrefs(), prefs::kShowHomeButton,
-                   base::Value(true));
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
 
   // Confirm the signin.
   ConfirmSync(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
@@ -446,11 +443,10 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest,
   CreateTurnSyncOnHelper();
   WaitForSyncConfirmation();
 
-  // Policies are applied even before the user confirms.
+  // Policies are applied right before the sync confirmation is shown.
   EXPECT_EQ(signin::ConsentLevel::kSignin,
             signin::GetPrimaryAccountConsentLevel(identity_manager()));
-  WaitForPrefValue(profile()->GetPrefs(), prefs::kShowHomeButton,
-                   base::Value(true));
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
 
   // Cancel sync.
   ConfirmSync(LoginUIService::ABORT_SYNC);

@@ -26,6 +26,7 @@
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
@@ -48,6 +49,8 @@
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#include "components/policy/core/common/mock_policy_service.h"
+#include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/consent_level.h"
@@ -256,6 +259,28 @@ class FakeUserPolicySigninService : public policy::UserPolicySigninService {
   bool is_hanging_ = false;
 };
 
+class FakePolicyService : public policy::MockPolicyService {
+ public:
+  void SimulateCloudPolicyUpdate() {
+    ASSERT_TRUE(observer_);
+    // `provider` must match `UserCloudPolicyManager` which is nullptr in tests.
+    observer_->OnProviderUpdatePropagated(/*provider=*/nullptr);
+  }
+
+  // policy::MockPolicyService:
+  void AddProviderUpdateObserver(ProviderUpdateObserver* observer) override {
+    ASSERT_FALSE(observer_);
+    observer_ = observer;
+  }
+  void RemoveProviderUpdateObserver(ProviderUpdateObserver* observer) override {
+    ASSERT_EQ(observer, observer_);
+    observer_ = nullptr;
+  }
+
+ private:
+  policy::PolicyService::ProviderUpdateObserver* observer_ = nullptr;
+};
+
 std::unique_ptr<KeyedService> BuildMockSyncService(
     content::BrowserContext* context) {
   auto service = std::make_unique<testing::NiceMock<syncer::MockSyncService>>();
@@ -393,12 +418,21 @@ class TurnSyncOnHelperTest : public testing::Test {
   signin::IdentityTestEnvironment* identity_test_env() {
     return identity_test_env_profile_adaptor_->identity_test_env();
   }
+  content::BrowserTaskEnvironment* task_environment() {
+    return &task_environment_;
+  }
   signin::IdentityManager* identity_manager() {
     return identity_test_env()->identity_manager();
   }
   const CoreAccountId& account_id() { return account_id_; }
   FakeUserPolicySigninService* user_policy_signin_service() {
     return user_policy_signin_service_;
+  }
+  FakePolicyService* policy_service(Profile* profile = nullptr) {
+    if (!profile)
+      profile = profile_;
+    return static_cast<FakePolicyService*>(
+        profile->GetProfilePolicyConnector()->policy_service());
   }
   const std::string initial_device_id() { return initial_device_id_; }
   int delegate_destroyed() const { return delegate_destroyed_; }
@@ -424,6 +458,7 @@ class TurnSyncOnHelperTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     profile_builder.SetIsMainProfile(Profile::IsMainProfilePath(path));
 #endif
+    profile_builder.SetPolicyService(std::make_unique<FakePolicyService>());
 
     return IdentityTestEnvironmentProfileAdaptor::
         CreateProfileForIdentityTestEnvironment(
@@ -720,7 +755,8 @@ class TurnSyncOnHelperTest : public testing::Test {
   bool expected_sync_settings_shown_ = false;
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
   ScopedTestingLocalState local_state_;
   CoreAccountId account_id_;
@@ -1105,6 +1141,7 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountContinueAlreadyManaged) {
   chrome::enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
   // Signin flow.
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  policy_service()->SimulateCloudPolicyUpdate();
   // Check expectations.
   // This was already a signed-in and managed enterprise account so we keep the
   // user signed-in, overriding SigninAbortedMode::REMOVE_ACCOUNT.
@@ -1161,7 +1198,7 @@ TEST_F(TurnSyncOnHelperTest, EnterpriseConfirmationAbort) {
 }
 
 // Continue after the enterprise confirmation prompt.
-TEST_F(TurnSyncOnHelperTest, DISABLED_EnterpriseConfirmationContinue) {
+TEST_F(TurnSyncOnHelperTest, EnterpriseConfirmationContinue) {
   // Set expectations.
   expected_enterprise_confirmation_email_ = kEmail;
   expected_sync_confirmation_shown_ = true;
@@ -1171,10 +1208,10 @@ TEST_F(TurnSyncOnHelperTest, DISABLED_EnterpriseConfirmationContinue) {
   enterprise_choice_ = signin::SIGNIN_CHOICE_CONTINUE;
   // Signin flow.
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  policy_service()->SimulateCloudPolicyUpdate();
   // Check expectations.
-  EXPECT_FALSE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id()));
+  // Account is kept if the user accespts account management.
+  CheckSyncAborted(/*kept_account=*/true);
   CheckDelegateCalls();
 }
 
@@ -1207,6 +1244,7 @@ TEST_F(TurnSyncOnHelperTest, EnterpriseConfirmationNewProfile) {
   signin::SetPrimaryAccount(new_identity_manager, core_account_info.email,
                             signin::ConsentLevel::kSignin);
 #endif
+  policy_service(created_profile)->SimulateCloudPolicyUpdate();
 
   AccountRemovedWaiter account_removed_waiter(identity_manager(), account_id());
   account_removed_waiter.Wait();
@@ -1214,6 +1252,40 @@ TEST_F(TurnSyncOnHelperTest, EnterpriseConfirmationNewProfile) {
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id()));
+  CheckDelegateCalls();
+}
+
+// Wait for cloud policy to be merged before showing sync confirmation.
+TEST_F(TurnSyncOnHelperTest, LoadPolicyBeforeShowingSyncConfirmation) {
+  // Configure the test.
+  user_policy_signin_service()->set_dm_token("foo");
+  user_policy_signin_service()->set_client_id("bar");
+  chrome::enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
+  // Signin flow.
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  // Sync confirmation is awaiting a policy update.
+  CheckDelegateCalls();
+
+  policy_service()->SimulateCloudPolicyUpdate();
+  expected_sync_confirmation_shown_ = true;
+  CheckDelegateCalls();
+}
+
+// Cloud policy update times out.
+TEST_F(TurnSyncOnHelperTest, LoadPolicyBeforeShowingSyncConfirmation_Timeout) {
+  // Configure the test.
+  user_policy_signin_service()->set_dm_token("foo");
+  user_policy_signin_service()->set_client_id("bar");
+  chrome::enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
+  // Signin flow.
+  CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  // Sync confirmation is awaiting a policy update.
+  CheckDelegateCalls();
+
+  // `timeout_delta` must be bigger than `kPolicyUpdateTimeout`.
+  base::TimeDelta timeout_delta = base::Seconds(4);
+  task_environment()->FastForwardBy(timeout_delta);
+  expected_sync_confirmation_shown_ = true;
   CheckDelegateCalls();
 }
 
@@ -1254,6 +1326,8 @@ TEST_F(TurnSyncOnHelperTest, SignedInAccountUndoSyncKeepAccount) {
                             signin::ConsentLevel::kSignin);
 #endif
 
+  policy_service(created_profile)->SimulateCloudPolicyUpdate();
+
   // The account is removed from the source profile.
   AccountRemovedWaiter account_removed_waiter(identity_manager(), account_id());
   account_removed_waiter.Wait();
@@ -1290,6 +1364,7 @@ TEST_F(TurnSyncOnHelperTest, SignedInAccountUndoSyncRemoveAccount) {
 
   // Signin flow.
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  policy_service()->SimulateCloudPolicyUpdate();
   // This was already a signed-in and managed enterprise account so we keep the
   // user signed-in, overriding SigninAbortedMode::REMOVE_ACCOUNT.
   CheckSyncAborted(/*kept_account=*/true);
