@@ -158,6 +158,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ACROSS_IFRAMES,
                     "Enable Autofill for frame-transcending forms (forms whose fields live in "
                             + "different frames)."),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_COUNTRY_FROM_LOCAL_NAME,
+                    "Chrome needs to map country names to country codes. If enabled, the lookup "
+                            + "considers all locales that are registered for a country."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_DEPENDENT_LOCALITY_PARSING,
                     "Enables parsing dependent locality fields (e.g. Bairros in Brazil)."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_RANKING_FORMULA,

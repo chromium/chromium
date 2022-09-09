@@ -124,6 +124,14 @@ const base::Feature kAutofillConsiderVariationCountryCodeForPhoneNumbers{
     "AutofillConsiderVariationCountryCodeForPhoneNumbers",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Chrome needs to map country names ("Italy"/"Italien") to country codes
+// ("IT"). If enabled, the lookup considers all locales that are registered
+// for a country. This helps in case a Chrome fails to determine the language
+// of a website.
+// TODO(crbug.com/1360502): Cleanup when launched.
+const base::Feature kAutofillCountryFromLocalName{
+    "AutofillCountryFromLocalName", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, three address profiles are created for testing.
 const base::Feature kAutofillCreateDataForTest{
     "AutofillCreateDataForTest", base::FEATURE_DISABLED_BY_DEFAULT};
