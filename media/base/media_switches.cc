@@ -190,7 +190,7 @@ const char kOverrideEnabledCdmInterfaceVersion[] =
 
 // Overrides hardware secure codecs support for testing. If specified, real
 // platform hardware secure codecs check will be skipped. Valid codecs are:
-// - video: "vp8", "vp9", "avc1", "hevc", "dolbyvision"
+// - video: "vp8", "vp9", "avc1", "hevc", "dolbyvision", "av01"
 // - video that does not support clear lead: `<video>-no-clearlead`, where
 //   <video> is from the list above.
 // - audio: "mp4a", "vorbis"
