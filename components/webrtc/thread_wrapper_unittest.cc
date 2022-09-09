@@ -71,12 +71,12 @@ class ThreadWrapperTest : public testing::Test {
 
   void SetUp() override {
     ThreadWrapper::EnsureForCurrentMessageLoop();
-    thread_ = rtc::Thread::Current();
+    thread_ = ThreadWrapper::current();
   }
 
   // ThreadWrapper destroys itself when |message_loop_| is destroyed.
   base::test::SingleThreadTaskEnvironment task_environment_;
-  raw_ptr<rtc::Thread> thread_;
+  raw_ptr<ThreadWrapper> thread_;
   MockMessageHandler handler1_;
   MockMessageHandler handler2_;
 };
@@ -87,10 +87,10 @@ TEST_F(ThreadWrapperTest, Post) {
   rtc::MessageData* data3 = new rtc::MessageData();
   rtc::MessageData* data4 = new rtc::MessageData();
 
-  thread_->Post(RTC_FROM_HERE, &handler1_, kTestMessage1, data1);
-  thread_->Post(RTC_FROM_HERE, &handler1_, kTestMessage2, data2);
-  thread_->Post(RTC_FROM_HERE, &handler2_, kTestMessage1, data3);
-  thread_->Post(RTC_FROM_HERE, &handler2_, kTestMessage1, data4);
+  thread_->Post(RTC_FROM_HERE, &handler1_, kTestMessage1, data1, false);
+  thread_->Post(RTC_FROM_HERE, &handler1_, kTestMessage2, data2, false);
+  thread_->Post(RTC_FROM_HERE, &handler2_, kTestMessage1, data3, false);
+  thread_->Post(RTC_FROM_HERE, &handler2_, kTestMessage1, data4, false);
 
   InSequence in_seq;
 
@@ -147,12 +147,12 @@ TEST_F(ThreadWrapperTest, PostDelayed) {
 }
 
 TEST_F(ThreadWrapperTest, Clear) {
-  thread_->Post(RTC_FROM_HERE, &handler1_, kTestMessage1, NULL);
-  thread_->Post(RTC_FROM_HERE, &handler1_, kTestMessage2, NULL);
-  thread_->Post(RTC_FROM_HERE, &handler2_, kTestMessage1, NULL);
-  thread_->Post(RTC_FROM_HERE, &handler2_, kTestMessage2, NULL);
+  thread_->Post(RTC_FROM_HERE, &handler1_, kTestMessage1, NULL, false);
+  thread_->Post(RTC_FROM_HERE, &handler1_, kTestMessage2, NULL, false);
+  thread_->Post(RTC_FROM_HERE, &handler2_, kTestMessage1, NULL, false);
+  thread_->Post(RTC_FROM_HERE, &handler2_, kTestMessage2, NULL, false);
 
-  thread_->Clear(&handler1_, kTestMessage2);
+  thread_->Clear(&handler1_, kTestMessage2, nullptr);
 
   InSequence in_seq;
 
@@ -180,7 +180,7 @@ TEST_F(ThreadWrapperTest, ClearDelayed) {
   thread_->PostDelayed(RTC_FROM_HERE, kTestDelayMs4, &handler2_, kTestMessage1,
                        NULL);
 
-  thread_->Clear(&handler1_, kTestMessage2);
+  thread_->Clear(&handler1_, kTestMessage2, nullptr);
 
   InSequence in_seq;
 
@@ -207,7 +207,7 @@ TEST_F(ThreadWrapperTest, ClearDestroyed) {
   {
     MockMessageHandler handler;
     handler_ptr = &handler;
-    thread_->Post(RTC_FROM_HERE, &handler, kTestMessage1, NULL);
+    thread_->Post(RTC_FROM_HERE, &handler, kTestMessage1, NULL, false);
   }
   rtc::MessageList removed;
   thread_->Clear(handler_ptr, rtc::MQID_ANY, &removed);
@@ -225,7 +225,7 @@ TEST_F(ThreadWrapperTest, SendSameThread) {
   thread_->Send(RTC_FROM_HERE, &handler1_, kTestMessage1, data);
 }
 
-void InitializeWrapperForNewThread(rtc::Thread** thread,
+void InitializeWrapperForNewThread(ThreadWrapper** thread,
                                    base::WaitableEvent* done_event) {
   ThreadWrapper::EnsureForCurrentMessageLoop();
   ThreadWrapper::current()->set_send_allowed(true);
@@ -244,7 +244,7 @@ TEST_F(ThreadWrapperTest, SendToOtherThread) {
   base::WaitableEvent initialized_event(
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
-  rtc::Thread* target;
+  ThreadWrapper* target;
   second_thread.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&InitializeWrapperForNewThread, &target,
                                 &initialized_event));
@@ -275,7 +275,7 @@ TEST_F(ThreadWrapperTest, SendDuringSend) {
   base::WaitableEvent initialized_event(
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
-  rtc::Thread* target;
+  ThreadWrapper* target;
   second_thread.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&InitializeWrapperForNewThread, &target,
                                 &initialized_event));
