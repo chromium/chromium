@@ -203,6 +203,9 @@ class TrayAccessibilityTest
   bool IsBubbleOpen() { return tray_test_api_->IsTrayBubbleOpen(); }
 
   void ClickVirtualKeyboardOnDetailMenu() {
+    // Scroll the detailed view to show the virtual keyboard option.
+    tray_test_api_->ScrollToShowView(
+        ash::VIEW_ID_ACCESSIBILITY_VIRTUAL_KEYBOARD);
     tray_test_api_->ClickBubbleView(
         ash::VIEW_ID_ACCESSIBILITY_VIRTUAL_KEYBOARD);
   }

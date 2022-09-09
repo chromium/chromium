@@ -87,8 +87,12 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   void SetVectorIcon(const gfx::VectorIcon& icon);
 
   // Sets the button's background color. Note, do this only when the button
-  // wants to have different color from the default one.
+  // wants to have a different background color from the default one.
   void SetBackgroundColor(const SkColor background_color);
+  // Sets the button's toggled background color if the button is togglable.
+  // Note, do this only when the button wants to have a different toggled
+  // background color from the default one.
+  void SetBackgroundToggledColor(const SkColor background_toggled_color);
 
   // Sets the button's background image. The |background_image| is resized to
   // fit the button. Note, if set, |background_image| is painted on top of
@@ -98,6 +102,10 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   // Sets the icon's color. If the button is togglable, this will be the color
   // when it's not toggled.
   void SetIconColor(const SkColor icon_color);
+  // Sets the button's toggled icon color if the button is toggable. Note, do
+  // this only when the button wants to have a different toggled icon color from
+  // the default one.
+  void SetIconToggledColor(const SkColor icon_toggled_color);
 
   // Sets the size to use for the vector icon in DIPs.
   void SetIconSize(int size);
@@ -129,7 +137,9 @@ class ASH_EXPORT IconButton : public views::ImageButton {
 
   // Customized value for button's background color or icon's color.
   absl::optional<SkColor> background_color_;
+  absl::optional<SkColor> background_toggled_color_;
   absl::optional<SkColor> icon_color_;
+  absl::optional<SkColor> icon_toggled_color_;
 
   // Custom value for icon size (usually used to make the icon smaller).
   absl::optional<int> icon_size_;

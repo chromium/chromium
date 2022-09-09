@@ -35,15 +35,13 @@ constexpr int kSmallButtonSize = 32;
 constexpr int kMediumButtonSize = 36;
 constexpr int kLargeButtonSize = 48;
 
-constexpr int kBorderSize = 4;
-
 // Icon size of the small, medium and large size buttons.
 constexpr int kIconSize = 20;
 // Icon size of the extra small size button.
 constexpr int kXSmallIconSize = 16;
 
 // The gap between the focus ring and the button's content.
-constexpr gfx::Insets kFocusRingPadding(1);
+constexpr int kFocusRingPadding = 2;
 
 int GetButtonSizeOnType(IconButton::Type type) {
   switch (type) {
@@ -100,10 +98,6 @@ IconButton::IconButton(PressedCallback callback,
       icon_(icon),
       is_togglable_(is_togglable) {
   int button_size = GetButtonSizeOnType(type);
-  if (has_border) {
-    button_size += 2 * kBorderSize;
-    SetBorder(views::CreateEmptyBorder(kBorderSize));
-  }
   SetPreferredSize(gfx::Size(button_size, button_size));
 
   SetImageHorizontalAlignment(ALIGN_CENTER);
@@ -111,18 +105,18 @@ IconButton::IconButton(PressedCallback callback,
   StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
                                    /*highlight_on_hover=*/false,
                                    /*highlight_on_focus=*/false);
-  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
-  if (has_border) {
-    // The focus ring will be around the whole button's bounds, but the inkdrop
-    // will have the same size as the content.
-    views::FocusRing::Get(this)->SetPathGenerator(
-        std::make_unique<views::CircleHighlightPathGenerator>(
-            kFocusRingPadding));
-    views::InstallCircleHighlightPathGenerator(this, gfx::Insets(kBorderSize));
 
-  } else {
-    views::InstallCircleHighlightPathGenerator(this);
+  auto* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetColorId(ui::kColorAshFocusRing);
+  if (has_border) {
+    // The focus ring will have the outline padding with the bounds of the
+    // buttons.
+    focus_ring->SetPathGenerator(
+        std::make_unique<views::CircleHighlightPathGenerator>(-gfx::Insets(
+            focus_ring->GetHaloThickness() / 2 + kFocusRingPadding)));
   }
+
+  views::InstallCircleHighlightPathGenerator(this);
 }
 
 IconButton::IconButton(PressedCallback callback,
@@ -163,6 +157,15 @@ void IconButton::SetBackgroundColor(const SkColor background_color) {
   SchedulePaint();
 }
 
+void IconButton::SetBackgroundToggledColor(
+    const SkColor background_toggled_color) {
+  if (!is_togglable_ || background_toggled_color == background_toggled_color_)
+    return;
+
+  background_toggled_color_ = background_toggled_color;
+  SchedulePaint();
+}
+
 void IconButton::SetBackgroundImage(const gfx::ImageSkia& background_image) {
   background_image_ = gfx::ImageSkiaOperations::CreateResizedImage(
       background_image, skia::ImageOperations::RESIZE_BEST, GetPreferredSize());
@@ -173,6 +176,14 @@ void IconButton::SetIconColor(const SkColor icon_color) {
   if (icon_color_ == icon_color)
     return;
   icon_color_ = icon_color;
+  UpdateVectorIcon();
+}
+
+void IconButton::SetIconToggledColor(const SkColor icon_toggled_color) {
+  if (!is_togglable_ || icon_toggled_color == icon_toggled_color_)
+    return;
+
+  icon_toggled_color_ = icon_toggled_color;
   UpdateVectorIcon();
 }
 
@@ -195,31 +206,33 @@ void IconButton::PaintButtonContents(gfx::Canvas* canvas) {
   if (!GetWidget())
     return;
 
-  if (!IsFloatingIconButton(type_)) {
+  const bool toggled_on =
+      toggled_ && (GetEnabled() ||
+                   button_behavior_ ==
+                       DisabledButtonBehavior::kCanDisplayDisabledToggleValue);
+  if (!IsFloatingIconButton(type_) || toggled_on) {
     const gfx::Rect rect(GetContentsBounds());
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
 
     const bool is_jellyroll_enabled = features::IsJellyrollEnabled();
+    auto* color_provider = GetColorProvider();
 
-    ui::ColorId color_id =
-        is_jellyroll_enabled
-            ? cros_tokens::kCrosSysSysOnBase
-            : static_cast<ui::ColorId>(kColorAshControlBackgroundColorInactive);
-    bool should_show_button_toggled_on =
-        toggled_ &&
-        (GetEnabled() ||
-         button_behavior_ ==
-             DisabledButtonBehavior::kCanDisplayDisabledToggleValue);
-    if (should_show_button_toggled_on) {
-      color_id =
-          is_jellyroll_enabled
-              ? cros_tokens::kCrosSysSysPrimaryContainer
-              : static_cast<ui::ColorId>(kColorAshControlBackgroundColorActive);
-    }
+    SkColor normal_background_color =
+        background_color_.value_or(color_provider->GetColor(
+            is_jellyroll_enabled
+                ? cros_tokens::kCrosSysSysOnBase
+                : static_cast<ui::ColorId>(
+                      kColorAshControlBackgroundColorInactive)));
+
+    SkColor toggled_background_color =
+        background_toggled_color_.value_or(color_provider->GetColor(
+            is_jellyroll_enabled ? cros_tokens::kCrosSysSysPrimaryContainer
+                                 : static_cast<ui::ColorId>(
+                                       kColorAshControlBackgroundColorActive)));
 
     SkColor color =
-        background_color_.value_or(GetColorProvider()->GetColor(color_id));
+        toggled_on ? toggled_background_color : normal_background_color;
 
     // If the button is disabled, apply opacity filter to the color.
     if (!GetEnabled())
@@ -279,10 +292,11 @@ void IconButton::UpdateVectorIcon() {
           is_jellyroll_enabled
               ? cros_tokens::kCrosSysOnSurface
               : static_cast<ui::ColorId>(kColorAshButtonIconColor)));
-  const SkColor toggled_icon_color = color_provider->GetColor(
-      is_jellyroll_enabled
-          ? cros_tokens::kCrosSysSysOnPrimaryContainer
-          : static_cast<ui::ColorId>(kColorAshButtonIconColorPrimary));
+  const SkColor toggled_icon_color =
+      icon_toggled_color_.value_or(color_provider->GetColor(
+          is_jellyroll_enabled
+              ? cros_tokens::kCrosSysSysOnPrimaryContainer
+              : static_cast<ui::ColorId>(kColorAshButtonIconColorPrimary)));
   const SkColor icon_color = toggled_ ? toggled_icon_color : normal_icon_color;
   const int icon_size = icon_size_.value_or(GetIconSizeOnType(type_));
 

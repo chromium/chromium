@@ -51,6 +51,9 @@ class ASH_EXPORT SystemTrayTestApi {
   // If |open_tray| is true, it also opens system tray bubble.
   bool IsBubbleViewVisible(int view_id, bool open_tray);
 
+  // If the view is in a scroll contents, scrolls the bubble to shown the view.
+  void ScrollToShowView(int view_id);
+
   // Clicks the view |view_id|.
   void ClickBubbleView(int view_id);
 
