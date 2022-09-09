@@ -6933,6 +6933,9 @@ crbug.com/1358298 external/wpt/html/cross-origin-embedder-policy/require-corp.ht
 # Disable more gpu test on linux dbg
 crbug.com/1356664 [ Debug Linux ] virtual/no-alloc-direct-call/fast/canvas/disconnected-canvas-lost-gpu-context.html [ Failure Pass ]
 
+# Disable scrolling flake on win
+crbug.com/1359541 [ Win ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/mouse-scrolling-on-div-custom-scrollbar.html [ Failure Timeout Pass ]
+
 # Sheriff 2022-09-07
 crbug.com/1360691 [ Debug Linux ] fast/canvas/disconnected-canvas-lost-gpu-context.html [ Failure ]
 
