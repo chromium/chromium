@@ -1147,21 +1147,6 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
       }
     }
 
-    if (!options->publicKey()->hasUserVerification()) {
-      resolver->DomWindow()->AddConsoleMessage(
-          MakeGarbageCollected<ConsoleMessage>(
-              mojom::blink::ConsoleMessageSource::kJavaScript,
-              mojom::blink::ConsoleMessageLevel::kWarning,
-              "publicKey.userVerification was not set to any value in Web "
-              "Authentication navigator.credentials.get() call. This defaults "
-              "to "
-              "'preferred', which is probably not what you want. If in doubt, "
-              "set "
-              "to 'discouraged'. See "
-              "https://chromium.googlesource.com/chromium/src/+/master/content/"
-              "browser/webauth/uv_preferred.md for details."));
-    }
-
     if (options->publicKey()->hasUserVerification() &&
         !mojo::ConvertTo<
             absl::optional<mojom::blink::UserVerificationRequirement>>(
@@ -1615,22 +1600,6 @@ ScriptPromise CredentialsContainer::create(
               "Ignoring unknown "
               "publicKey.authenticatorSelection.authnticatorAttachment value"));
     }
-  }
-
-  if (options->publicKey()->hasAuthenticatorSelection() &&
-      !options->publicKey()->authenticatorSelection()->hasUserVerification()) {
-    resolver->DomWindow()->AddConsoleMessage(
-        MakeGarbageCollected<ConsoleMessage>(
-            mojom::blink::ConsoleMessageSource::kJavaScript,
-            mojom::blink::ConsoleMessageLevel::kWarning,
-            "publicKey.authenticatorSelection.userVerification was not set "
-            "to "
-            "any value in Web Authentication navigator.credentials.create() "
-            "call. This defaults to 'preferred', which is probably not what "
-            "you "
-            "want. If in doubt, set to 'discouraged'. See "
-            "https://chromium.googlesource.com/chromium/src/+/master/content/"
-            "browser/webauth/uv_preferred.md for details"));
   }
 
   if (options->publicKey()->hasAuthenticatorSelection() &&
