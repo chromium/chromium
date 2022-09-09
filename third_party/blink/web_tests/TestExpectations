@@ -6939,4 +6939,4 @@ crbug.com/1356664 [ Debug Linux ] virtual/no-alloc-direct-call/fast/canvas/disco
 # Sheriff 2022-09-07
 crbug.com/1360691 [ Debug Linux ] fast/canvas/disconnected-canvas-lost-gpu-context.html [ Failure ]
 
-http/tests/media/autoplay/document-user-activation-navigation-click.html [ Skip ]
+crbug.com/1361518 http/tests/media/autoplay/document-user-activation-navigation-click.html [ Skip ]
