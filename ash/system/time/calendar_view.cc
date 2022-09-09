@@ -1087,7 +1087,7 @@ void CalendarView::CloseEventList() {
   // Updates `scroll_view_`'s accessible name without the selected date.
   scroll_view_->GetViewAccessibility().OverrideName(l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_BUBBLE_ACCESSIBLE_DESCRIPTION,
-      calendar_utils::GetMonthNameAndYear(
+      calendar_utils::GetMonthDayYearWeek(
           calendar_view_controller_->currently_shown_date())));
   scroll_view_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
                                          /*send_native_event=*/true);

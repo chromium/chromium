@@ -10,6 +10,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "calendar_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -38,7 +39,7 @@ std::u16string UnifiedCalendarViewController::GetAccessibleName() const {
             : base::Time::Now();
   return l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_BUBBLE_ACCESSIBLE_DESCRIPTION,
-      base::TimeFormatWithPattern(current_time, "MMMM yyyy"));
+      calendar_utils::GetMonthDayYearWeek(current_time));
 }
 
 }  // namespace ash
