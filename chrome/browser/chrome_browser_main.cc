@@ -118,7 +118,6 @@
 #include "chrome/common/media/media_resource_provider.h"
 #include "chrome/common/net/net_resource_provider.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/printing/printing_init.h"
 #include "chrome/common/profiler/thread_profiler.h"
 #include "chrome/common/profiler/thread_profiler_configuration.h"
 #include "chrome/common/profiler/unwind_util.h"
@@ -312,6 +311,10 @@
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/plugin_prefs.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "chrome/common/printing/printing_init.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !defined(OFFICIAL_BUILD)
@@ -1696,7 +1699,9 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW) && !defined(OFFICIAL_BUILD)
 
+#if BUILDFLAG(ENABLE_PRINTING)
   printing::InitializeProcessForPrinting();
+#endif
 
   HandleTestParameters(*base::CommandLine::ForCurrentProcess());
 
