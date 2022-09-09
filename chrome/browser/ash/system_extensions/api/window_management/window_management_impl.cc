@@ -13,6 +13,9 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -26,13 +29,41 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
+namespace ash {
+
 namespace {
+
+bool IsForWebAppTab(const apps::InstanceUpdate& update) {
+  Browser* browser =
+      chrome::FindBrowserWithWindow(update.Window()->GetToplevelWindow());
+  // Another type of window e.g. crostini, arc, etc.
+  if (!browser) {
+    return false;
+  }
+
+  // Web app windows.
+  if (browser->is_type_app() || browser->is_type_app_popup()) {
+    return false;
+  }
+
+  // Regular browser window.
+  if (update.Window() == browser->window()->GetNativeWindow()) {
+    return false;
+  }
+
+  // Web App tab.
+  return true;
+}
+
 blink::mojom::CrosWindowInfoPtr CrosWindowInfo(
     const base::UnguessableToken& id,
     apps::InstanceRegistry& registry) {
   blink::mojom::CrosWindowInfoPtr window;
 
   registry.ForOneInstance(id, [&window](const apps::InstanceUpdate& update) {
+    if (IsForWebAppTab(update))
+      return;
+
     aura::Window* target = update.Window()->GetToplevelWindow();
     views::Widget* widget =
         views::Widget::GetTopLevelWidgetForNativeView(target);
@@ -72,9 +103,8 @@ blink::mojom::CrosWindowInfoPtr CrosWindowInfo(
 
   return window;
 }
-}  // namespace
 
-namespace ash {
+}  // namespace
 
 WindowManagementImpl::WindowManagementImpl(
     int32_t render_process_host_id,

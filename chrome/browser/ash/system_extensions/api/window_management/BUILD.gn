@@ -27,6 +27,7 @@ source_set("window_management") {
     "//ash",
     "//chrome/browser/ash/system_extensions",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
     "//components/keyed_service/content",
     "//components/services/app_service/public/cpp:instance_update",
     "//components/services/app_service/public/mojom",

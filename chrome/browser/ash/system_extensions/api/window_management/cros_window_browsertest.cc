@@ -316,6 +316,32 @@ class CrosWindowManagementBrowserTest : public SystemExtensionsApiBrowserTest {
  protected:
   TestSystemWebAppInstallation& swa_installation() { return *installation_; }
 
+  // Installs and launches a Web App that opens in a tab.
+  void InstallAndLaunchBrowserWebApp() {
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    const GURL start_url =
+        embedded_test_server()->GetURL("/web_apps/basic.html");
+
+    // Install a web app with `browser` display mode, so that it launched
+    // in a tab in regular browser window.
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    web_app_info->start_url = start_url;
+    web_app_info->user_display_mode = web_app::UserDisplayMode::kBrowser;
+    const web_app::AppId app_id = web_app::test::InstallWebApp(
+        browser()->profile(), std::move(web_app_info));
+    web_app::AppReadinessWaiter(browser()->profile(), app_id).Await();
+
+    // Launch app through App Service proxy and wait for it to open.
+    auto* const proxy =
+        apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+
+    ui_test_utils::TabAddedWaiter waiter(browser());
+    proxy->Launch(app_id,
+                  /*event_flags=*/0, apps::LaunchSource::kFromAppListGrid);
+    waiter.Wait();
+  }
+
  private:
   mojo::UniqueReceiverSet<
       system_extensions_test::mojom::CrosWindowManagementTestHelper>
@@ -452,32 +478,19 @@ IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowClose) {
 }
 
 IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowWebAppTab) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  const GURL start_url = embedded_test_server()->GetURL("/web_apps/basic.html");
-
-  // Install sample web app to open in tabbed mode.
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
-  web_app_info->start_url = start_url;
-  web_app_info->user_display_mode = web_app::UserDisplayMode::kBrowser;
-  const web_app::AppId app_id = web_app::test::InstallWebApp(
-      browser()->profile(), std::move(web_app_info));
-  web_app::AppReadinessWaiter(browser()->profile(), app_id).Await();
-
-  // Launch app through App Service proxy and wait for open.
-  auto* const proxy =
-      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
-
-  ui_test_utils::TabAddedWaiter waiter(browser());
-  proxy->Launch(app_id,
-                /*event_flags=*/0, apps::LaunchSource::kFromAppListGrid);
-  waiter.Wait();
+  InstallAndLaunchBrowserWebApp();
 
   // Unfocus the web app.
   chrome::SelectPreviousTab(browser());
 
   // Run test which calls .getWindows().
   RunTest("cros_window_web_app_tab.js");
+}
+
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, IgnoreWebAppTabs) {
+  InstallAndLaunchBrowserWebApp();
+
+  RunTest("cros_ignore_web_app_tabs.js");
 }
 
 IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,
