@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {OnlineImageType, PersonalizationRouter, WallpaperImages} from 'chrome://personalization/js/personalization_app.js';
+import {OnlineImageType, PersonalizationRouter, WallpaperGridItem, WallpaperImages} from 'chrome://personalization/js/personalization_app.js';
 import {assertDeepEquals, assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
@@ -51,9 +51,9 @@ suite('WallpaperImagesTest', function() {
 
   test('sets aria-selected for current wallpaper asset id', async () => {
     wallpaperImagesElement = await createWithDefaultData();
-    const selectedElement: HTMLDivElement =
+    const selectedElement: WallpaperGridItem =
         wallpaperImagesElement.shadowRoot!.querySelector(
-            `.photo-inner-container[aria-selected='true']`)!;
+            `${WallpaperGridItem.is}[aria-selected='true']`)!;
 
     assertEquals(
         selectedElement!.dataset['assetId'],
@@ -62,7 +62,7 @@ suite('WallpaperImagesTest', function() {
 
     const notSelectedElements: HTMLDivElement[] =
         Array.from(wallpaperImagesElement.shadowRoot!.querySelectorAll(
-            `.photo-inner-container[aria-selected='false']`));
+            `${WallpaperGridItem.is}[aria-selected='false']`));
 
     const uniqueUnitIds =
         new Set(wallpaperProvider.images!.map(img => img.unitId));
@@ -129,9 +129,9 @@ suite('WallpaperImagesTest', function() {
     assertDeepEquals(
         ['1', '2'],
         Array
-            .from(
-                wallpaperImagesElement.shadowRoot!
-                    .querySelectorAll<HTMLDivElement>('.photo-inner-container'))
+            .from(wallpaperImagesElement.shadowRoot!
+                      .querySelectorAll<WallpaperGridItem>(
+                          `${WallpaperGridItem.is}:not([hidden])`))
             .map(elem => elem.dataset['assetId']),
         'expected asset ids are displayed for collectionId `id_0`');
 
@@ -141,9 +141,9 @@ suite('WallpaperImagesTest', function() {
     assertDeepEquals(
         ['10', '20'],
         Array
-            .from(
-                wallpaperImagesElement.shadowRoot!
-                    .querySelectorAll<HTMLDivElement>('.photo-inner-container'))
+            .from(wallpaperImagesElement.shadowRoot!
+                      .querySelectorAll<WallpaperGridItem>(
+                          `${WallpaperGridItem.is}:not([hidden])`))
             .map(elem => elem.dataset['assetId']),
         'expected asset ids are displayed for collectionId `id_1`');
   });
@@ -151,9 +151,9 @@ suite('WallpaperImagesTest', function() {
   test('displays dark light tile for images with same unitId', async () => {
     wallpaperImagesElement = await createWithDefaultData();
 
-    const elements =
-        Array.from(wallpaperImagesElement.shadowRoot!.querySelectorAll(
-            '.photo-inner-container'));
+    const elements = Array.from(
+        wallpaperImagesElement.shadowRoot!.querySelectorAll<WallpaperGridItem>(
+            `${WallpaperGridItem.is}:not([hidden])`));
 
     assertDeepEquals(
         ['Image 0 light', 'Image 2'], elements.map(elem => elem.ariaLabel),
@@ -161,11 +161,10 @@ suite('WallpaperImagesTest', function() {
 
     assertDeepEquals(
         [
-          'chrome://image/?https://images.googleusercontent.com/1',
-          'chrome://image/?https://images.googleusercontent.com/0',
+          {url: 'https://images.googleusercontent.com/1'},
+          {url: 'https://images.googleusercontent.com/0'},
         ],
-        Array.from(elements[0]!.querySelectorAll('img')).map(img => img.src),
-        'dark/light mode image has dark light variant urls');
+        elements[0]?.src, 'dark/light mode image has dark light variant urls');
 
     assertEquals(
         OnlineImageType.kLight,
@@ -174,16 +173,15 @@ suite('WallpaperImagesTest', function() {
         'light image is first');
 
     assertDeepEquals(
-        ['chrome://image/?https://images.googleusercontent.com/2'],
-        Array.from(elements[1]!.querySelectorAll('img')).map(img => img.src),
+        [{url: 'https://images.googleusercontent.com/2'}], elements[1]?.src,
         'image 2 does not have dark light mode variants');
   });
 
   test('selects an image when clicked', async () => {
     wallpaperImagesElement = await createWithDefaultData();
     wallpaperImagesElement.shadowRoot!
-        .querySelector<HTMLDivElement>(
-            `.photo-inner-container[data-asset-id='2']`)!.click();
+        .querySelector<WallpaperGridItem>(
+            `${WallpaperGridItem.is}[data-asset-id='2']`)!.click();
     const [assetId, previewMode] =
         await wallpaperProvider.whenCalled('selectWallpaper');
     assertEquals(2n, assetId, 'correct asset id is passed');
@@ -197,15 +195,21 @@ suite('WallpaperImagesTest', function() {
     const reloadPromise = new Promise<void>(resolve => {
       PersonalizationRouter.reloadAtWallpaper = resolve;
     });
-    wallpaperImagesElement = await createWithDefaultData();
+    const collectionId = wallpaperProvider.collections![0]!.id;
     // Set all collections to have null images.
-    personalizationStore.data.wallpaper.backdrop.images =
-        Object.keys(personalizationStore.data.wallpaper.backdrop.images)
-            .reduce((result, next) => {
-              result[next] = null;
-              return result;
-            }, {} as Record<string, null>);
-    personalizationStore.notifyObservers();
+    personalizationStore.data.wallpaper = {
+      ...personalizationStore.data.wallpaper,
+      backdrop: {
+        collections: wallpaperProvider.collections,
+        images: {[collectionId]: null},
+      },
+      loading: {
+        ...personalizationStore.data.wallpaper.loading,
+        collections: false,
+        images: {[collectionId]: false},
+      },
+    };
+    wallpaperImagesElement = initElement(WallpaperImages, {collectionId});
 
     await reloadPromise;
 

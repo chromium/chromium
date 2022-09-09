@@ -282,15 +282,15 @@ export class WallpaperImages extends WithPersonalizationStore {
     return getLoadingPlaceholderAnimationDelay(index);
   }
 
-  private getAriaSelected_(
+  private isTileSelected_(
       tile: ImageTile, selectedAssetId: bigint|null,
-      pendingSelectedAssetId: bigint|null): string {
+      pendingSelectedAssetId: bigint|null): boolean {
     // Make sure that both are bigint (not undefined) and equal.
-    return (typeof selectedAssetId === 'bigint' && !!tile &&
-                tile.assetId === selectedAssetId && !pendingSelectedAssetId ||
-            typeof pendingSelectedAssetId === 'bigint' && !!tile &&
-                tile.assetId === pendingSelectedAssetId)
-        .toString();
+    return (
+        typeof selectedAssetId === 'bigint' && !!tile &&
+            tile.assetId === selectedAssetId && !pendingSelectedAssetId ||
+        typeof pendingSelectedAssetId === 'bigint' && !!tile &&
+            tile.assetId === pendingSelectedAssetId);
   }
 
   private getClassForImg_(index: number, tile: ImageTile): string {
@@ -322,7 +322,10 @@ export class WallpaperImages extends WithPersonalizationStore {
     selectWallpaper(selectedImage, getWallpaperProvider(), this.getStore());
   }
 
-  private getAriaLabel_(tile: ImageTile): string {
+  private getAriaLabel_(tile: number|ImageTile): string {
+    if (this.isLoadingTile_(tile)) {
+      return this.i18n('ariaLabelLoading');
+    }
     return tile.attribution!.join(' ');
   }
 

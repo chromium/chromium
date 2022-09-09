@@ -37,24 +37,19 @@ suite('WallpaperGridItemTest', function() {
         wallpaperGridItemElement.hasAttribute('placeholder'),
         'placeholder attribute is set when no src is supplied');
 
-    // Verify state.
-    const img = querySelector('img');
-    assertEquals(img?.getAttribute('auto-src'), null);
-    assertEquals(img?.getAttribute('aria-hidden'), 'true');
-    assertEquals(img?.hasAttribute('clear-src'), true);
-    assertEquals(img?.hasAttribute('hidden'), true);
-    assertEquals(img?.hasAttribute('is-google-photos'), true);
-    assertEquals(querySelector('.text'), null);
-    assertEquals(querySelector('.primary-text'), null);
-    assertEquals(querySelector('.secondary-text'), null);
+    assertEquals(
+        querySelector('img'), null, 'no image is shown in empty state');
   });
 
-  test('displays image', async () => {
+  test('displays single image', async () => {
     const src: Url = {url: createSvgDataUrl('svg-test')};
 
     // Initialize |wallpaperGridItemElement|.
     wallpaperGridItemElement = initElement(WallpaperGridItem, {src});
-    const img = querySelector('img');
+    const images =
+        wallpaperGridItemElement!.shadowRoot!.querySelectorAll('img');
+    assertEquals(images.length, 1, 'only one image is shown');
+    const img = images[0];
     assertTrue(img!.hasAttribute('hidden'), 'image should be hidden at first');
     assertTrue(
         wallpaperGridItemElement.hasAttribute('placeholder'),
@@ -75,9 +70,52 @@ suite('WallpaperGridItemTest', function() {
     assertFalse(
         img!.hasAttribute('hidden'),
         'no longer hidden because image has loaded');
+  });
+
+  test('forwards is-google-photos argument', async () => {
+    const src: Url[] = [
+      {url: createSvgDataUrl('0')},
+      {url: createSvgDataUrl('1')},
+    ];
+
+    wallpaperGridItemElement = initElement(WallpaperGridItem, {src});
+    await waitAfterNextRender(wallpaperGridItemElement);
+
+    const images = wallpaperGridItemElement.shadowRoot?.querySelectorAll('img');
+    assertEquals(images?.length, src.length, 'correct number of images shown');
+    for (const image of images!) {
+      assertFalse(
+          image.hasAttribute('is-google-photos'), 'is-google-photos not set');
+    }
+
+    wallpaperGridItemElement.isGooglePhotos = true;
+    await waitAfterNextRender(wallpaperGridItemElement);
+    const isGooglePhotosImages =
+        wallpaperGridItemElement.shadowRoot?.querySelectorAll('img');
     assertEquals(
-        img?.hasAttribute('is-google-photos'), true,
-        'is-google-photos is always set');
+        isGooglePhotosImages?.length, src.length,
+        'still correct number of images');
+    for (const image of isGooglePhotosImages!) {
+      assertTrue(
+          image.hasAttribute('is-google-photos'), 'is-google-photos is set');
+    }
+  });
+
+  test('updates to new image', async () => {
+    const src: Url = {url: createSvgDataUrl('svg-test')};
+
+    // Initialize |wallpaperGridItemElement|.
+    wallpaperGridItemElement = initElement(WallpaperGridItem, {src});
+    await waitAfterNextRender(wallpaperGridItemElement);
+
+    assertFalse(
+        wallpaperGridItemElement.hasAttribute('placeholder'),
+        'placeholder attribute removed when first image finished loading');
+
+    const images =
+        wallpaperGridItemElement!.shadowRoot!.querySelectorAll('img');
+    assertEquals(images.length, 1, 'only one image is shown');
+    const img = images[0];
 
     // Update state. Note that |img| is hidden as |imageSrc| hasn't yet loaded.
     const newSrc: Url = {url: src.url.replace('red', 'blue')};
@@ -85,10 +123,35 @@ suite('WallpaperGridItemTest', function() {
     assertTrue(
         wallpaperGridItemElement.hasAttribute('placeholder'),
         'placeholder attribute set while new image is loading');
-    assertEquals(img?.getAttribute('auto-src'), newSrc.url, 'new url is set');
     assertTrue(
         img!.hasAttribute('hidden'),
         'image should be hidden because src changed');
+    // dom-repeat takes another render to finalize setting new url.
+    await waitAfterNextRender(
+        wallpaperGridItemElement.shadowRoot!.querySelector('dom-repeat')!);
+    assertEquals(img?.getAttribute('auto-src'), newSrc.url, 'new url is set');
+  });
+
+  test('displays first two images', async () => {
+    const src: Url[] = [
+      {url: createSvgDataUrl('svg-0')},
+      {url: createSvgDataUrl('svg-1')},
+      {url: createSvgDataUrl('not-shown')},
+    ];
+
+    // Initialize |wallpaperGridItemElement|.
+    wallpaperGridItemElement = initElement(WallpaperGridItem, {src});
+    await waitAfterNextRender(wallpaperGridItemElement);
+
+    const images =
+        wallpaperGridItemElement!.shadowRoot!.querySelectorAll('img');
+    assertEquals(images.length, 2, 'only first two images displayed');
+
+    images.forEach((img, index) => {
+      assertEquals(
+          img.getAttribute('auto-src'), src[index]?.url,
+          `url matches at index ${index}`);
+    });
   });
 
   test('displays primary text', async () => {

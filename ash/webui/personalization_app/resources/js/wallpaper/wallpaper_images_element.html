@@ -2,42 +2,26 @@
 <main id="main" tabindex="-1"
     aria-label$="[[getMainAriaLabel_(collectionId, collections_)]]">
   <iron-media-query query="(prefers-color-scheme: dark)"
-    query-matches="{{isDarkModeActive}}">
+      query-matches="{{isDarkModeActive}}">
   </iron-media-query>
-  <images-grid id="imagesGrid" tiles="[[tiles_]]" selectedAssetId="[[selectedAssetId_]]" pendingSelectedAssetId="[[pendingSelectedAssetId_]]"></images-grid>
   <template is="dom-if" if="[[tiles_]]">
     <iron-list grid items="[[tiles_]]" role="listbox"
         aria-setsize$="[[tiles_.length]]">
       <template>
-        <div class="photo-container">
-          <template is="dom-if" if="[[isLoadingTile_(item)]]">
-            <div tabindex$="[[tabIndex]]"
-                role="option"
-                class="photo-inner-container placeholder"
-                style$="[[getLoadingPlaceholderAnimationDelay_(index)]]"
-                aria-posinset$="[[getAriaIndex_(index)]]"
-                aria-label="$i18n{ariaLabelLoading}"
-                aria-disabled="true"></div>
-          </template>
-          <template is="dom-if" if="[[isImageTile_(item)]]">
-            <div class="photo-inner-container" tabindex$="[[tabIndex]]"
-                role="option" data-asset-id$="[[item.assetId]]"
-                data-unit-id$="[[item.unitId]]" on-click="onImageSelected_"
-                on-keypress="onImageSelected_"
-                aria-posinset$="[[getAriaIndex_(index)]]"
-                aria-selected$="[[getAriaSelected_(item, selectedAssetId_, pendingSelectedAssetId_)]]"
-                aria-label$="[[getAriaLabel_(item)]]">
-              <div class="photo-images-container">
-                <div class="photo-images-border"></div>
-                <template is="dom-repeat" items="[[item.preview]]" as="preview">
-                  <img is="cr-auto-img" class$="[[getClassForImg_(index, item)]]"
-                      auto-src="[[preview.url]]" aria-hidden="true" clear-src>
-                </template>
-                <iron-icon icon="personalization:checkmark"></iron-icon>
-              </div>
-            </div>
-          </template>
-        </div>
+        <wallpaper-grid-item
+            aria-disabled$="[[isLoadingTile_(item)]]"
+            aria-label$="[[getAriaLabel_(item)]]"
+            aria-posinset$="[[getAriaIndex_(index)]]"
+            data-asset-id$="[[item.assetId]]"
+            data-unit-id$="[[item.unitId]]"
+            index="[[index]]"
+            on-click="onImageSelected_"
+            on-keypress="onImageSelected_"
+            role="option"
+            selected="[[isTileSelected_(item, selectedAssetId_, pendingSelectedAssetId_)]]"
+            src="[[item.preview]]"
+            tabindex$="[[tabIndex]]">
+        </wallpaper-grid-item>
       </template>
     </iron-list>
   </template>
