@@ -39,8 +39,7 @@
 #endif  //  BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)
-#include "base/base_paths.h"
-#include "base/path_service.h"
+#include "components/device_signals/test/test_constants.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -604,28 +603,39 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
 
   std::string extra_items = "";
 #if BUILDFLAG(IS_WIN)
-  base::FilePath test_data_dir =
-      base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
-          .AppendASCII("components")
-          .AppendASCII("test")
-          .AppendASCII("data")
-          .AppendASCII("device_signals");
   std::string signed_exe_path =
-      test_data_dir.AppendASCII("signed.exe").AsUTF8Unsafe();
+      device_signals::test::GetSignedExePath().AsUTF8Unsafe();
   base::ReplaceSubstringsAfterOffset(&signed_exe_path, 0U, "\\", "\\\\");
 
-  extra_items = base::StringPrintf(R"(
+  std::string metadata_exe_path =
+      device_signals::test::GetMetadataExePath().AsUTF8Unsafe();
+  base::ReplaceSubstringsAfterOffset(&metadata_exe_path, 0U, "\\", "\\\\");
+
+  extra_items = base::StringPrintf(
+      R"(
     const signedExePath = '%s';
     options.push({
       path: signedExePath,
       computeSha256: true,
       computeExecutableMetadata: true
     });
+
+    const metadataExePath = '%s';
+    const metadataName = '%s';
+    const metadataVersion = '%s';
+    options.push({
+      path: metadataExePath,
+      computeSha256: true,
+      computeExecutableMetadata: true
+    });
   )",
-                                   signed_exe_path.c_str());
+      signed_exe_path.c_str(), metadata_exe_path.c_str(),
+      device_signals::test::GetMetadataProductName().c_str(),
+      device_signals::test::GetMetadataProductVersion().c_str());
+
   constexpr char kAssertions[] = R"(
         chrome.test.assertTrue(fileItems instanceof Array);
-        chrome.test.assertEq(2, fileItems.length);
+        chrome.test.assertEq(3, fileItems.length);
 
         let expectedFilesCounter = 0;
         for (const response of fileItems) {
@@ -643,6 +653,18 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
             chrome.test.assertEq(
               'Rsw3wqh8gUxnMU8j2jGvvBMZqpe6OhIxn_WeEVg-pYQ',
               response.publicKeySha256);
+            chrome.test.assertFalse(response.isRunning);
+            chrome.test.assertFalse(!!response.productName);
+            chrome.test.assertFalse(!!response.version);
+            ++expectedFilesCounter;
+          } else if (response.path === metadataExePath) {
+            chrome.test.assertEq('FOUND', response.presence);
+            chrome.test.assertEq(
+              'bLHEy9cl0WbDjNsdsSCGp1wRGT0tdp8ML56xyrh0W48',
+              response.sha256Hash);
+            chrome.test.assertEq(metadataName, response.productName);
+            chrome.test.assertEq(metadataVersion, response.version);
+            chrome.test.assertFalse(!!response.publicKeySha256);
             chrome.test.assertFalse(response.isRunning);
             ++expectedFilesCounter;
           }

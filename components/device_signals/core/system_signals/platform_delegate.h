@@ -12,6 +12,10 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "components/device_signals/core/system_signals/platform_utils.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 namespace base {
 class FilePath;
 }  // namespace base
@@ -51,6 +55,24 @@ class PlatformDelegate {
       const FilePathSet& file_paths) = 0;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+  struct ProductMetadata {
+    ProductMetadata();
+
+    ProductMetadata(const ProductMetadata&);
+    ProductMetadata& operator=(const ProductMetadata&);
+
+    ~ProductMetadata();
+
+    absl::optional<std::string> name = absl::nullopt;
+    absl::optional<std::string> version = absl::nullopt;
+  };
+
+  // Returns product metadata for a given `file_path`.
+  // On Windows, this looks at file metadata.
+  // On Mac, it looks for app bundle metadata.
+  virtual absl::optional<ProductMetadata> GetProductMetadata(
+      const base::FilePath& file_path) = 0;
 
   // Returns the public key SHA256 hash of the certificate used to sign an
   // executable file located at `file_path`. Returns absl::nullopt if no

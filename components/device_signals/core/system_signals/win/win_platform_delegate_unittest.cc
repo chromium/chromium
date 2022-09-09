@@ -12,9 +12,9 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "components/device_signals/test/test_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device_signals {
@@ -45,12 +45,6 @@ class WinPlatformDelegateTest : public testing::Test {
 
     env_->SetVar(kEnvironmentVariableName,
                  scoped_dir_.GetPath().AsUTF8Unsafe());
-
-    test_data_dir_ = base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
-                         .AppendASCII("components")
-                         .AppendASCII("test")
-                         .AppendASCII("data")
-                         .AppendASCII("device_signals");
   }
 
   ~WinPlatformDelegateTest() override {
@@ -59,7 +53,6 @@ class WinPlatformDelegateTest : public testing::Test {
 
   base::ScopedTempDir scoped_dir_;
   base::FilePath absolute_file_path_;
-  base::FilePath test_data_dir_;
   std::unique_ptr<base::Environment> env_;
   WinPlatformDelegate platform_delegate_;
 };
@@ -97,7 +90,7 @@ TEST_F(WinPlatformDelegateTest,
 }
 
 TEST_F(WinPlatformDelegateTest, GetSigningCertificatePublicKeyHash_Signed) {
-  base::FilePath signed_exe_path = test_data_dir_.AppendASCII("signed.exe");
+  base::FilePath signed_exe_path = test::GetSignedExePath();
   ASSERT_TRUE(base::PathExists(signed_exe_path));
 
   auto public_key =
@@ -109,12 +102,30 @@ TEST_F(WinPlatformDelegateTest, GetSigningCertificatePublicKeyHash_Signed) {
   EXPECT_EQ(base64_encoded_public_key, kExpectedBase64PublicKey);
 }
 
-TEST_F(WinPlatformDelegateTest, GetSigningCertificatePublicKeyHash_Unsigned) {
-  base::FilePath unsigned_exe_path = test_data_dir_.AppendASCII("unsigned.exe");
-  ASSERT_TRUE(base::PathExists(unsigned_exe_path));
+TEST_F(WinPlatformDelegateTest, GetSigningCertificatePublicKeyHash_Empty) {
+  base::FilePath empty_exe_path = test::GetEmptyExePath();
+  ASSERT_TRUE(base::PathExists(empty_exe_path));
 
   EXPECT_FALSE(
-      platform_delegate_.GetSigningCertificatePublicKeyHash(unsigned_exe_path));
+      platform_delegate_.GetSigningCertificatePublicKeyHash(empty_exe_path));
+}
+
+TEST_F(WinPlatformDelegateTest, GetProductMetadata_Success) {
+  base::FilePath metadata_exe_path = test::GetMetadataExePath();
+  ASSERT_TRUE(base::PathExists(metadata_exe_path));
+
+  auto metadata = platform_delegate_.GetProductMetadata(metadata_exe_path);
+
+  ASSERT_TRUE(metadata);
+  EXPECT_EQ(metadata->name, test::GetMetadataProductName());
+  EXPECT_EQ(metadata->version, test::GetMetadataProductVersion());
+}
+
+TEST_F(WinPlatformDelegateTest, GetProductMetadata_Empty) {
+  base::FilePath empty_exe_path = test::GetEmptyExePath();
+  ASSERT_TRUE(base::PathExists(empty_exe_path));
+
+  EXPECT_FALSE(platform_delegate_.GetProductMetadata(empty_exe_path));
 }
 
 }  // namespace device_signals

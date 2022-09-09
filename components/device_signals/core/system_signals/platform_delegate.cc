@@ -20,4 +20,17 @@ bool CustomFilePathComparator::operator()(const base::FilePath& a,
 #endif
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+PlatformDelegate::ProductMetadata::ProductMetadata() = default;
+
+PlatformDelegate::ProductMetadata::ProductMetadata(
+    const PlatformDelegate::ProductMetadata&) = default;
+PlatformDelegate::ProductMetadata& PlatformDelegate::ProductMetadata::operator=(
+    const PlatformDelegate::ProductMetadata&) = default;
+
+PlatformDelegate::ProductMetadata::~ProductMetadata() = default;
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 }  // namespace device_signals

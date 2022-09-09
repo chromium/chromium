@@ -31,10 +31,15 @@ WinExecutableMetadataService::GetAllExecutableMetadata(
       executable_metadata.is_running = files_are_running_map[file_path];
     }
 
+    auto product_metadata = platform_delegate_->GetProductMetadata(file_path);
+    if (product_metadata) {
+      executable_metadata.product_name = product_metadata->name;
+      executable_metadata.version = product_metadata->version;
+    }
+
     executable_metadata.public_key_sha256 =
         platform_delegate_->GetSigningCertificatePublicKeyHash(file_path);
 
-    // TODO(b:231472965): Add product version and name signals.
     file_paths_to_metadata_map[file_path] = executable_metadata;
   }
 

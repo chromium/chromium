@@ -6,8 +6,14 @@ Description of the files:
 signed.exe
 An executable file that was signed with a self-signed certificate.
 
-unsigned.exe
-An executable file which is not signed.
+metadata.exe
+An executable file which exposes metadata such as:
+- File version: 1.0.0.1
+- Product version: 1.0.0.2
+- Product name: Test Product Name
+
+empty.exe
+An executable file which has no metadata and is not signed.
 
 Instructions for signing an executable:
 signed.exe:

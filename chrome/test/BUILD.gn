@@ -3118,6 +3118,7 @@ if (!is_android) {
           "//chrome/browser/enterprise/connectors/device_trust/common",
           "//components/device_signals/core/common",
           "//components/device_signals/core/common:features",
+          "//components/device_signals/test:test_support",
         ]
       }
 

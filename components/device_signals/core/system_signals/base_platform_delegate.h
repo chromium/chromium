@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_BASE_PLATFORM_DELEGATE_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_BASE_PLATFORM_DELEGATE_H_
 
+#include "build/build_config.h"
 #include "components/device_signals/core/system_signals/platform_delegate.h"
 
 namespace device_signals {
@@ -20,6 +21,11 @@ class BasePlatformDelegate : public PlatformDelegate {
   bool DirectoryExists(const base::FilePath& file_path) const override;
   FilePathMap<bool> AreExecutablesRunning(
       const FilePathSet& file_paths) override;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  absl::optional<ProductMetadata> GetProductMetadata(
+      const base::FilePath& file_path) override;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
  protected:
   BasePlatformDelegate();

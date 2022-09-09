@@ -30,6 +30,10 @@ class TestPlatformDelegate : public BasePlatformDelegate {
               (const base::FilePath&, base::FilePath*),
               (override));
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  MOCK_METHOD(absl::optional<ProductMetadata>,
+              GetProductMetadata,
+              (const base::FilePath&),
+              (override));
   MOCK_METHOD(absl::optional<std::string>,
               GetSigningCertificatePublicKeyHash,
               (const base::FilePath&),
