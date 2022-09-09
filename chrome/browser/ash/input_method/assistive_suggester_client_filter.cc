@@ -199,8 +199,15 @@ void ReturnEnabledSuggestions(
     AssistiveSuggesterSwitch::FetchEnabledSuggestionsCallback callback,
     WindowProperties window_properties,
     const absl::optional<GURL>& current_url) {
+  // Deny-list (will block if matched, otherwise allow)
+  bool diacritic_suggestions_allowed =
+      !IsMatchedApp(kDeniedAppsForDiacritics, window_properties);
+
+  // TODO(b/245469813): Investigate if denied is intentional for suggesters
+  // below is intentional.
   if (!current_url.has_value()) {
-    std::move(callback).Run(AssistiveSuggesterSwitch::EnabledSuggestions{});
+    std::move(callback).Run(AssistiveSuggesterSwitch::EnabledSuggestions{
+        .diacritic_suggestions = diacritic_suggestions_allowed});
     return;
   }
 
@@ -221,10 +228,6 @@ void ReturnEnabledSuggestions(
       IsMatchedUrlWithPathPrefix(kAllowedDomainAndPathsForPersonalInfoSuggester,
                                  *current_url) ||
       IsMatchedApp(kAllowedAppsForPersonalInfoSuggester, window_properties);
-
-  // Deny-list (will block if matched, otherwise allow)
-  bool diacritic_suggestions_allowed =
-      !IsMatchedApp(kDeniedAppsForDiacritics, window_properties);
 
   std::move(callback).Run(AssistiveSuggesterSwitch::EnabledSuggestions{
       .emoji_suggestions = emoji_suggestions_allowed,
