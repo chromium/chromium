@@ -219,6 +219,8 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
 
   // Test helpers.
   void ClearUserSessionsForTest();
+  void SetSignoutScreenshotHandlerForTest(
+      std::unique_ptr<SignoutScreenshotHandler> handler);
 
  private:
   friend class TestSessionControllerClient;
@@ -262,6 +264,10 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
 
   // Proceeds with signout after the (optional) signout screenshot is taken.
   void ProceedWithSignOut();
+
+  // Proceeds with restart to update after the (optional) signout screenshot is
+  // taken.
+  void ProceedWithRestartToUpdate();
 
   // Client interface to session manager code (chrome).
   SessionControllerClient* client_ = nullptr;

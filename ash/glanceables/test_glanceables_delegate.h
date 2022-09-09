@@ -24,10 +24,14 @@ class TestGlanceablesDelegate : public GlanceablesDelegate {
 
   int restore_session_count() { return restore_session_count_; }
   int on_glanceables_closed_count() { return on_glanceables_closed_count_; }
+  void set_should_take_signout_screenshot(bool value) {
+    should_take_signout_screenshot_ = value;
+  }
 
  private:
   int restore_session_count_ = 0;
   int on_glanceables_closed_count_ = 0;
+  bool should_take_signout_screenshot_ = false;
 };
 
 }  // namespace ash

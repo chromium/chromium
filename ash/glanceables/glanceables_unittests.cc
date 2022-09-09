@@ -19,6 +19,7 @@
 #include "ash/glanceables/glanceables_view.h"
 #include "ash/glanceables/glanceables_weather_view.h"
 #include "ash/glanceables/glanceables_welcome_label.h"
+#include "ash/glanceables/signout_screenshot_handler.h"
 #include "ash/glanceables/test_glanceables_delegate.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
@@ -59,6 +60,19 @@
 
 namespace ash {
 namespace {
+
+// A SignoutScreenshotHandler that skips taking the screenshot and invokes its
+// done callback immediately.
+class TestSignoutScreenshotHandler : public SignoutScreenshotHandler {
+ public:
+  // SignoutScreenshotHandler:
+  void TakeScreenshot(base::OnceClosure done_callback) override {
+    ++take_screenshot_count_;
+    std::move(done_callback).Run();
+  }
+
+  int take_screenshot_count_ = 0;
+};
 
 AmbientWeatherModel* GetWeatherModel() {
   return Shell::Get()->ambient_controller()->GetAmbientWeatherModel();
@@ -490,6 +504,25 @@ TEST_F(GlanceablesTest, UnminimizingOneWindowRestoresAllWindows) {
   // Both windows are restored.
   EXPECT_TRUE(WindowState::Get(back_window.get())->IsNormalStateType());
   EXPECT_TRUE(WindowState::Get(front_window.get())->IsNormalStateType());
+}
+
+TEST_F(GlanceablesTest, RequestRestartForUpdateTakesScreenshot) {
+  GetTestDelegate()->set_should_take_signout_screenshot(true);
+
+  auto* session_controller = Shell::Get()->session_controller();
+  auto screenshot_handler = std::make_unique<TestSignoutScreenshotHandler>();
+  auto* screenshot_handler_ptr = screenshot_handler.get();
+  session_controller->SetSignoutScreenshotHandlerForTest(
+      std::move(screenshot_handler));
+
+  session_controller->RequestRestartForUpdate();
+
+  // Screenshot was taken.
+  EXPECT_EQ(1, screenshot_handler_ptr->take_screenshot_count_);
+
+  // Restart was requested.
+  EXPECT_EQ(1,
+            GetSessionControllerClient()->request_restart_for_update_count());
 }
 
 TEST_F(GlanceablesTest, RecordSignoutScreenshotDurationMetric) {

@@ -234,6 +234,18 @@ void SessionControllerImpl::ProceedWithSignOut() {
 }
 
 void SessionControllerImpl::RequestRestartForUpdate() {
+  if (features::AreGlanceablesEnabled() &&
+      Shell::Get()->glanceables_controller()->ShouldTakeSignoutScreenshot()) {
+    DCHECK(IsActiveUserSessionStarted());
+    signout_screenshot_handler_->TakeScreenshot(
+        base::BindOnce(&SessionControllerImpl::ProceedWithRestartToUpdate,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+  ProceedWithRestartToUpdate();
+}
+
+void SessionControllerImpl::ProceedWithRestartToUpdate() {
   if (client_)
     client_->RequestRestartForUpdate();
 }
@@ -470,6 +482,11 @@ void SessionControllerImpl::ClearUserSessionsForTest() {
   last_active_user_prefs_ = nullptr;
   active_session_id_ = 0u;
   primary_session_id_ = 0u;
+}
+
+void SessionControllerImpl::SetSignoutScreenshotHandlerForTest(
+    std::unique_ptr<SignoutScreenshotHandler> handler) {
+  signout_screenshot_handler_ = std::move(handler);
 }
 
 void SessionControllerImpl::SetIsDemoSession() {

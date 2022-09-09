@@ -31,8 +31,8 @@ class ASH_EXPORT SignoutScreenshotHandler {
   virtual ~SignoutScreenshotHandler();
 
   // Takes a screenshot of the windows on the active desk and writes it to disk.
-  // Invokes `done_callback` when done.
-  void TakeScreenshot(base::OnceClosure done_callback);
+  // Invokes `done_callback` when done. Virtual for testing.
+  virtual void TakeScreenshot(base::OnceClosure done_callback);
 
   void set_screenshot_path_for_test(const base::FilePath& path) {
     screenshot_path_for_test_ = path;
