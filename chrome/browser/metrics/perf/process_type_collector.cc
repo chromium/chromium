@@ -185,6 +185,8 @@ std::map<uint32_t, Thread> ProcessTypeCollector::ParseThreadTypes(
       thread = Thread::COMPOSITOR_THREAD;
     } else if (comm_cmd.starts_with("ThreadPool")) {
       thread = Thread::THREAD_POOL_THREAD;
+    } else if (comm_cmd.starts_with("DrmThread")) {
+      thread = Thread::DRM_THREAD;
     } else if (comm_cmd.starts_with("GpuMemory")) {
       thread = Thread::GPU_MEMORY_THREAD;
     } else if (comm_cmd.starts_with("MemoryInfra")) {

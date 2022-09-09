@@ -97,6 +97,7 @@ void GetExampleThreadTypeDataset(std::string* ps_output,
   19001 19008 DedicatedWorker   /opt/google/chrome/chrome --type=renderer
   19123 19234 ServiceWorker t   /opt/google/chrome/chrome --type=renderer
   19321 19335 WebRTC_Signalin   /opt/google/chrome/chrome --type=renderer
+  19321 19345 DrmThread         /opt/google/chrome/chrome --type=gpu-process
   12345 12456 OtherThread       /opt/google/chrome/chrome --ppapi-flash-path=...
   21609 21609 chrome            /run/lacros/chrome --ozone-platform=wayland
   21643 21667 ThreadPoolServi   /run/lacros/chrome --type=gpu-process
@@ -136,6 +137,7 @@ void GetExampleThreadTypeDataset(std::string* ps_output,
   thread_types->insert(std::pair(19008, Thread::DEDICATED_WORKER_THREAD));
   thread_types->insert(std::pair(19234, Thread::SERVICE_WORKER_THREAD));
   thread_types->insert(std::pair(19335, Thread::WEBRTC_THREAD));
+  thread_types->insert(std::pair(19345, Thread::DRM_THREAD));
   thread_types->insert(std::pair(12456, Thread::OTHER_THREAD));
   thread_types->insert(std::pair(21609, Thread::MAIN_THREAD));
   thread_types->insert(std::pair(21667, Thread::THREAD_POOL_THREAD));
