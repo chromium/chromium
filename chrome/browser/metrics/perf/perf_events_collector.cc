@@ -317,7 +317,7 @@ std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_aarch64(
   std::vector<WeightAndValue> cmds;
 
   if (base::FeatureList::IsEnabled(kCWPCollectsETM) &&
-      (model == "TROGDOR" || model == "HEROBRINE")) {
+      (model == "TROGDOR" || model == "STRONGBAD" || model == "HEROBRINE")) {
     cmds.emplace_back(WeightAndValue(50.0, kPerfCyclesHGCmd));
     cmds.emplace_back(WeightAndValue(20.0, kPerfFPCallgraphHGCmd));
     cmds.emplace_back(WeightAndValue(30.0, kPerfETMCmd));
