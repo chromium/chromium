@@ -22,16 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Windows.ApplockerRunning" enum="Boolean" expires_after="M83">
-  <owner>forshaw@chromium.org</owner>
-  <owner>wfh@chromium.org</owner>
-  <summary>
-    Records if the APPID driver is running which indicates Applocker is enabled
-    and running. This does not guarantee that Applocker is configured to enforce
-    any rules. Reported once per browser session, on startup.
-  </summary>
-</histogram>
-
 <histogram name="Windows.CetAvailable" enum="BooleanAvailable"
     expires_after="2022-12-01">
   <owner>ajgo@chromium.org</owner>
