@@ -27,6 +27,7 @@ enable_dav1d_decoder = false
 # enable_extensions = false
 
 enable_hidpi = false
+enable_libaom = false
 enable_library_cdms = false
 enable_logging_override = true
 enable_pdf = false
