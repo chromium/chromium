@@ -165,7 +165,7 @@ bool HasAutotestPrivate(const ExtensionFunction& function) {
              mojom::APIPermissionID::kAutoTestPrivate);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // |edid| is available only to Chrome OS kiosk mode applications.
 bool ShouldRestrictEdidInformation(const ExtensionFunction& function) {
   if (function.extension()) {
@@ -231,16 +231,11 @@ ExtensionFunction::ResponseAction SystemDisplayGetInfoFunction::Run() {
 
 void SystemDisplayGetInfoFunction::Response(
     DisplayInfoProvider::DisplayUnitInfoList all_displays_info) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   if (ShouldRestrictEdidInformation(*this)) {
     for (auto& display_info : all_displays_info)
       display_info.edid.reset();
   }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Kiosk mode work for Lacros has not been scoped out. For now, just strip
-  // all EDID information by default.
-  for (auto& display_info : all_displays_info)
-    display_info.edid.reset();
 #endif
   Respond(ArgumentList(display::GetInfo::Results::Create(all_displays_info)));
 }
