@@ -241,18 +241,18 @@ bool CastContentRendererClient::IsSupportedAudioType(
 
 bool CastContentRendererClient::IsSupportedVideoType(
     const ::media::VideoType& type) {
-// TODO(servolk): make use of eotf.
+  // TODO(servolk): make use of eotf.
 
   // TODO(1066567): Check attached screen for support of type.hdr_metadata_type.
-if (type.hdr_metadata_type != ::gfx::HdrMetadataType::kNone) {
-  NOTIMPLEMENTED() << "HdrMetadataType support signaling not implemented.";
-  return false;
-}
+  if (type.hdr_metadata_type != ::gfx::HdrMetadataType::kNone) {
+    NOTIMPLEMENTED() << "HdrMetadataType support signaling not implemented.";
+    return false;
+  }
 
 #if BUILDFLAG(IS_ANDROID)
-return supported_profiles_->IsSupportedVideoConfig(
-    media::ToCastVideoCodec(type.codec, type.profile),
-    media::ToCastVideoProfile(type.profile), type.level);
+  return supported_profiles_->IsSupportedVideoConfig(
+      media::ToCastVideoCodec(type.codec, type.profile),
+      media::ToCastVideoProfile(type.profile), type.level);
 #else
   return media::MediaCapabilitiesShlib::IsSupportedVideoConfig(
       media::ToCastVideoCodec(type.codec, type.profile),
