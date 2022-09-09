@@ -157,7 +157,7 @@ IOSIOThread::Globals::Globals() : system_request_context_leak_checker(this) {}
 
 IOSIOThread::Globals::~Globals() {}
 
-// |local_state| is passed in explicitly in order to (1) reduce implicit
+// `local_state` is passed in explicitly in order to (1) reduce implicit
 // dependencies and (2) make IOSIOThread more flexible for testing.
 IOSIOThread::IOSIOThread(PrefService* local_state, net::NetLog* net_log)
     : net_log_(net_log), globals_(nullptr), weak_factory_(this) {

@@ -51,10 +51,10 @@ struct CookieStoreConfig {
     COOKIE_STORE_IOS  // CookieStoreIOS backend.
   };
 
-  // If |path| is empty, then this specifies an in-memory cookie store.
-  // With in-memory cookie stores, |session_cookie_mode| must be
+  // If `path` is empty, then this specifies an in-memory cookie store.
+  // With in-memory cookie stores, `session_cookie_mode` must be
   // EPHEMERAL_SESSION_COOKIES.
-  // Note: If |crypto_delegate| is non-null, it must outlive any CookieStores
+  // Note: If `crypto_delegate` is non-null, it must outlive any CookieStores
   // created using this config.
   CookieStoreConfig(const base::FilePath& path,
                     SessionCookieMode session_cookie_mode,
@@ -84,7 +84,7 @@ std::unique_ptr<net::CookieStore> CreateCookieStore(
 // last time cookies have been cleared.
 bool ShouldClearSessionCookies();
 
-// Clears the session cookies for |browser_state|.
+// Clears the session cookies for `browser_state`.
 void ClearSessionCookies(web::BrowserState* browser_state);
 
 }  // namespace cookie_util

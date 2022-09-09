@@ -10,11 +10,11 @@
 namespace credential_provider_extension {
 
 // Queries Keychain Services for the passed identifier password.
-// Returns nil if |identifier| is nil or if no password found for |identifier|.
+// Returns nil if `identifier` is nil or if no password found for `identifier`.
 NSString* PasswordWithKeychainIdentifier(NSString* identifier);
 
-// Stores |password| in Keychain Services using |identifier| as its identifier
-// for later query. Returns |YES| if saving was successful and |NO| otherwise.
+// Stores `password` in Keychain Services using `identifier` as its identifier
+// for later query. Returns `YES` if saving was successful and `NO` otherwise.
 BOOL StorePasswordInKeychain(NSString* password, NSString* identifier);
 
 }  // namespace credential_provider_extension

@@ -52,7 +52,7 @@ scoped_refptr<net::SQLitePersistentCookieStore> CreatePersistentCookieStore(
           restore_old_session_cookies, crypto_delegate));
 }
 
-// Creates a CookieMonster configured by |config|.
+// Creates a CookieMonster configured by `config`.
 std::unique_ptr<net::CookieMonster> CreateCookieMonster(
     const CookieStoreConfig& config,
     net::NetLog* net_log) {
@@ -121,7 +121,7 @@ bool ShouldClearSessionCookies() {
   return clear_cookies;
 }
 
-// Clears the session cookies for |profile|.
+// Clears the session cookies for `browser_state`.
 void ClearSessionCookies(web::BrowserState* browser_state) {
   scoped_refptr<net::URLRequestContextGetter> getter =
       browser_state->GetRequestContext();

@@ -85,7 +85,7 @@ class IOSIOThread : public web::WebThreadDelegate {
     SystemRequestContextLeakChecker system_request_context_leak_checker;
   };
 
-  // |net_log| must either outlive the IOSIOThread or be NULL.
+  // `net_log` must either outlive the IOSIOThread or be NULL.
   IOSIOThread(PrefService* local_state, net::NetLog* net_log);
 
   IOSIOThread(const IOSIOThread&) = delete;

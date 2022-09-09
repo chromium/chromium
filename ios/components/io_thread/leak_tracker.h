@@ -99,7 +99,7 @@ class LeakTracker : public base::LinkNode<LeakTracker<T>> {
 
     CHECK_EQ(0u, count);
 
-    // Hack to keep |stacktraces| and |count| alive (so compiler
+    // Hack to keep `stacktraces` and `count` alive (so compiler
     // doesn't optimize it out, and it will appear in mini-dumps).
     if (count == 0x1234) {
       for (size_t i = 0; i < kMaxStackTracesToCopyOntoStack; ++i)
