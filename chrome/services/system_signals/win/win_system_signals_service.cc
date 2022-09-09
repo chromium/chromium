@@ -7,9 +7,9 @@
 #include "base/win/windows_version.h"
 #include "chrome/services/system_signals/win/metrics_utils.h"
 #include "components/device_signals/core/common/common_types.h"
+#include "components/device_signals/core/system_signals/executable_metadata_service.h"
 #include "components/device_signals/core/system_signals/file_system_service.h"
 #include "components/device_signals/core/system_signals/platform_delegate.h"
-#include "components/device_signals/core/system_signals/win/win_executable_metadata_service.h"
 #include "components/device_signals/core/system_signals/win/win_platform_delegate.h"
 #include "components/device_signals/core/system_signals/win/wmi_client.h"
 #include "components/device_signals/core/system_signals/win/wmi_client_impl.h"
@@ -24,7 +24,7 @@ WinSystemSignalsService::WinSystemSignalsService(
           std::move(receiver),
           device_signals::FileSystemService::Create(
               std::make_unique<device_signals::WinPlatformDelegate>(),
-              std::make_unique<device_signals::WinExecutableMetadataService>(
+              device_signals::ExecutableMetadataService::Create(
                   std::make_unique<device_signals::WinPlatformDelegate>())),
           std::make_unique<device_signals::WmiClientImpl>(),
           std::make_unique<device_signals::WscClientImpl>()) {}

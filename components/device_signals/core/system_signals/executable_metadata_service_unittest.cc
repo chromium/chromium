@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/device_signals/core/system_signals/linux/linux_executable_metadata_service.h"
+#include "components/device_signals/core/system_signals/executable_metadata_service.h"
 
 #include <memory>
 #include <utility>
@@ -20,30 +20,32 @@ namespace device_signals {
 
 namespace {
 
-ExecutableMetadata CreateExecutableMetadata(bool is_running) {
+ExecutableMetadata CreateExecutableMetadata(
+    bool is_running,
+    const absl::optional<std::string>& public_key_hash) {
   ExecutableMetadata metadata;
   metadata.is_running = is_running;
+  metadata.public_key_sha256 = public_key_hash;
   return metadata;
 }
 
 }  // namespace
 
-class LinuxExecutableMetadataServiceTest : public testing::Test {
+class ExecutableMetadataServiceTest : public testing::Test {
  protected:
-  LinuxExecutableMetadataServiceTest() {
+  ExecutableMetadataServiceTest() {
     auto mock_platform_delegate = std::make_unique<MockPlatformDelegate>();
     mock_platform_delegate_ = mock_platform_delegate.get();
 
     executable_metadata_service_ =
-        std::make_unique<LinuxExecutableMetadataService>(
-            std::move(mock_platform_delegate));
+        ExecutableMetadataService::Create(std::move(mock_platform_delegate));
   }
 
   MockPlatformDelegate* mock_platform_delegate_;
-  std::unique_ptr<LinuxExecutableMetadataService> executable_metadata_service_;
+  std::unique_ptr<ExecutableMetadataService> executable_metadata_service_;
 };
 
-TEST_F(LinuxExecutableMetadataServiceTest, GetAllExecutableMetadata_Empty) {
+TEST_F(ExecutableMetadataServiceTest, GetAllExecutableMetadata_Empty) {
   FilePathSet empty_set;
 
   EXPECT_CALL(*mock_platform_delegate_, AreExecutablesRunning(empty_set))
@@ -54,11 +56,11 @@ TEST_F(LinuxExecutableMetadataServiceTest, GetAllExecutableMetadata_Empty) {
             empty_map);
 }
 
-TEST_F(LinuxExecutableMetadataServiceTest, GetAllExecutableMetadata_Success) {
+TEST_F(ExecutableMetadataServiceTest, GetAllExecutableMetadata_Success) {
   base::FilePath running_path =
-      base::FilePath::FromUTF8Unsafe("/some/running/file/path");
+      base::FilePath::FromUTF8Unsafe("C:\\some\\running\\file\\path.exe");
   base::FilePath not_running_path =
-      base::FilePath::FromUTF8Unsafe("/some/file/path");
+      base::FilePath::FromUTF8Unsafe("C:\\some\\file\\path.exe");
 
   FilePathSet executable_files;
   executable_files.insert(running_path);
@@ -71,10 +73,19 @@ TEST_F(LinuxExecutableMetadataServiceTest, GetAllExecutableMetadata_Success) {
   EXPECT_CALL(*mock_platform_delegate_, AreExecutablesRunning(executable_files))
       .WillOnce(Return(is_running_map));
 
+  std::string public_key_value = "fake_public_key_value";
+  EXPECT_CALL(*mock_platform_delegate_,
+              GetSigningCertificatePublicKeyHash(running_path))
+      .WillOnce(Return(public_key_value));
+  EXPECT_CALL(*mock_platform_delegate_,
+              GetSigningCertificatePublicKeyHash(not_running_path))
+      .WillOnce(Return(absl::nullopt));
+
   FilePathMap<ExecutableMetadata> expected_metadata_map;
-  expected_metadata_map.insert({running_path, CreateExecutableMetadata(true)});
   expected_metadata_map.insert(
-      {not_running_path, CreateExecutableMetadata(false)});
+      {running_path, CreateExecutableMetadata(true, public_key_value)});
+  expected_metadata_map.insert(
+      {not_running_path, CreateExecutableMetadata(false, absl::nullopt)});
 
   EXPECT_EQ(
       executable_metadata_service_->GetAllExecutableMetadata(executable_files),

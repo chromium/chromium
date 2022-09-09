@@ -54,8 +54,6 @@ class PlatformDelegate {
   virtual FilePathMap<bool> AreExecutablesRunning(
       const FilePathSet& file_paths) = 0;
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-
   struct ProductMetadata {
     ProductMetadata();
 
@@ -72,15 +70,13 @@ class PlatformDelegate {
   // On Windows, this looks at file metadata.
   // On Mac, it looks for app bundle metadata.
   virtual absl::optional<ProductMetadata> GetProductMetadata(
-      const base::FilePath& file_path) = 0;
+      const base::FilePath& file_path);
 
   // Returns the public key SHA256 hash of the certificate used to sign an
   // executable file located at `file_path`. Returns absl::nullopt if no
   // public key can be retrieved.
   virtual absl::optional<std::string> GetSigningCertificatePublicKeyHash(
-      const base::FilePath& file_path) = 0;
-
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+      const base::FilePath& file_path);
 };
 
 }  // namespace device_signals

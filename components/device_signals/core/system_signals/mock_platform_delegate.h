@@ -27,8 +27,6 @@ class MockPlatformDelegate : public PlatformDelegate {
               AreExecutablesRunning,
               (const FilePathSet&),
               (override));
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   MOCK_METHOD(absl::optional<ProductMetadata>,
               GetProductMetadata,
               (const base::FilePath&),
@@ -37,7 +35,6 @@ class MockPlatformDelegate : public PlatformDelegate {
               GetSigningCertificatePublicKeyHash,
               (const base::FilePath&),
               (override));
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 };
 
 }  // namespace device_signals

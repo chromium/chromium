@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "components/device_signals/core/common/common_types.h"
+#include "components/device_signals/core/system_signals/executable_metadata_service.h"
 #include "components/device_signals/core/system_signals/file_system_service.h"
-#include "components/device_signals/core/system_signals/linux/linux_executable_metadata_service.h"
 #include "components/device_signals/core/system_signals/linux/linux_platform_delegate.h"
 #include "components/device_signals/core/system_signals/platform_delegate.h"
 
@@ -20,7 +20,7 @@ LinuxSystemSignalsService::LinuxSystemSignalsService(
           std::move(receiver),
           device_signals::FileSystemService::Create(
               std::make_unique<device_signals::LinuxPlatformDelegate>(),
-              std::make_unique<device_signals::LinuxExecutableMetadataService>(
+              device_signals::ExecutableMetadataService::Create(
                   std::make_unique<device_signals::LinuxPlatformDelegate>()))) {
 }
 

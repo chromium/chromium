@@ -20,8 +20,6 @@ bool CustomFilePathComparator::operator()(const base::FilePath& a,
 #endif
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-
 PlatformDelegate::ProductMetadata::ProductMetadata() = default;
 
 PlatformDelegate::ProductMetadata::ProductMetadata(
@@ -31,6 +29,15 @@ PlatformDelegate::ProductMetadata& PlatformDelegate::ProductMetadata::operator=(
 
 PlatformDelegate::ProductMetadata::~ProductMetadata() = default;
 
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+absl::optional<PlatformDelegate::ProductMetadata>
+PlatformDelegate::GetProductMetadata(const base::FilePath& file_path) {
+  return absl::nullopt;
+}
+
+absl::optional<std::string>
+PlatformDelegate::GetSigningCertificatePublicKeyHash(
+    const base::FilePath& file_path) {
+  return absl::nullopt;
+}
 
 }  // namespace device_signals

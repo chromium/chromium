@@ -17,6 +17,9 @@ class ExecutableMetadataService {
  public:
   virtual ~ExecutableMetadataService();
 
+  static std::unique_ptr<ExecutableMetadataService> Create(
+      std::unique_ptr<PlatformDelegate> platform_delegate);
+
   // Collects and returns executable metadata for all the files in `file_paths`.
   virtual FilePathMap<ExecutableMetadata> GetAllExecutableMetadata(
       const FilePathSet& file_paths) = 0;

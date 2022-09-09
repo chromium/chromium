@@ -4,7 +4,6 @@
 
 static_library("win") {
   public = [
-    "win_executable_metadata_service.h",
     "win_platform_delegate.h",
     "wmi_client.h",
     "wmi_client_impl.h",
@@ -13,7 +12,6 @@ static_library("win") {
   ]
 
   sources = [
-    "win_executable_metadata_service.cc",
     "win_platform_delegate.cc",
     "wmi_client.cc",
     "wmi_client_impl.cc",
@@ -63,7 +61,6 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "win_executable_metadata_service_unittest.cc",
     "win_platform_delegate_unittest.cc",
     "wmi_client_impl_unittest.cc",
     "wsc_client_impl_unittest.cc",
