@@ -14,6 +14,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/scoped_feature_list.h"
@@ -370,8 +371,10 @@ TEST_F(DWriteFontProxyLocalMatchingTest, TestLookupMode) {
   std::string dwrite_version =
       base::UTF16ToUTF8(dwrite_version_info->product_version());
 
-  int dwrite_major_version_number =
-      std::stoi(dwrite_version.substr(0, dwrite_version.find(".")));
+  int dwrite_major_version_number = 0;
+  ASSERT_TRUE(
+      base::StringToInt(dwrite_version.substr(0, dwrite_version.find(".")),
+                        &dwrite_major_version_number));
 
   blink::mojom::UniqueFontLookupMode expected_lookup_mode;
   if (dwrite_major_version_number >=
