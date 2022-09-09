@@ -8,6 +8,11 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {str, strf, util} from '../../../common/js/util.js';
 
 /**
+ * Selector used by tast tests to identify when the storage meter is empty.
+ */
+const tastEmptySpaceId = 'tast-storage-meter-empty';
+
+/**
  * @typedef {{totalSize: number, usedSize: number, warningMessage: string}}
  */
 export let SpaceInfo;
@@ -119,6 +124,8 @@ export class GearMenu {
       this.volumeSpaceInnerBar_.style.width = '100%';
     }
 
+    this.volumeSpaceInfo.classList.remove(tastEmptySpaceId);
+
     spaceInfoPromise.then(
         spaceInfo => {
           if (this.spaceInfoPromise_ != spaceInfoPromise) {
@@ -134,17 +141,22 @@ export class GearMenu {
             return;
           }
 
+          const remainingSize = spaceInfo.totalSize - spaceInfo.usedSize;
+
           if (spaceInfo.totalSize >= 0) {
-            const usedSpace = spaceInfo.usedSize;
+            if (remainingSize <= 0) {
+              this.volumeSpaceInfo.classList.add(tastEmptySpaceId);
+            }
+
             this.volumeSpaceInnerBar_.style.width =
-                Math.min(100, 100 * usedSpace / spaceInfo.totalSize) + '%';
+                Math.min(100, 100 * spaceInfo.usedSize / spaceInfo.totalSize) +
+                '%';
 
             this.volumeSpaceOuterBar_.hidden = false;
 
             this.volumeSpaceInfoLabel_.textContent = strf(
                 'SPACE_AVAILABLE',
-                util.bytesToString(
-                    Math.max(0, spaceInfo.totalSize - spaceInfo.usedSize)));
+                util.bytesToString(Math.max(0, remainingSize)));
           } else {
             // User has unlimited individual storage.
             this.volumeSpaceInfoLabel_.textContent =
