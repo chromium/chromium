@@ -272,6 +272,16 @@ class AutoConnectHandlerTest : public testing::Test {
     return helper_.ConfigureService(shill_json_string);
   }
 
+  void CheckServiceAutoConnectProperty(const std::string& service_path,
+                                       bool expected_auto_connect) {
+    const base::Value* properties =
+        helper().service_test()->GetServiceProperties(service_path);
+    absl::optional<bool> auto_connect =
+        properties->FindBoolKey(shill::kAutoConnectProperty);
+    EXPECT_TRUE(auto_connect);
+    EXPECT_EQ(*auto_connect, expected_auto_connect);
+  }
+
   NetworkStateTestHelper& helper() { return helper_; }
 
   base::test::TaskEnvironment task_environment_;
@@ -689,12 +699,10 @@ TEST_F(AutoConnectHandlerTest,
   EXPECT_TRUE(helper().profile_test()->HasService(cellular1_service_path));
   EXPECT_TRUE(helper().profile_test()->HasService(cellular2_service_path));
   EXPECT_TRUE(helper().profile_test()->HasService(cellular3_service_path));
-  const base::Value* properties =
-      helper().service_test()->GetServiceProperties(cellular1_service_path);
-  absl::optional<bool> auto_connect =
-      properties->FindBoolKey(shill::kAutoConnectProperty);
-  ASSERT_TRUE(auto_connect);
-  EXPECT_TRUE(*auto_connect);
+  CheckServiceAutoConnectProperty(cellular1_service_path,
+                                  /*expected_auto_connect=*/true);
+  CheckServiceAutoConnectProperty(cellular3_service_path,
+                                  /*expected_auto_connect=*/true);
   histogram_tester.ExpectTotalCount(kESimDisconnectByPolicyHistogram, 0);
   histogram_tester.ExpectTotalCount(kPSimDisconnectByPolicyHistogram, 0);
 
@@ -711,11 +719,10 @@ TEST_F(AutoConnectHandlerTest,
   EXPECT_EQ(shill::kStateIdle, GetServiceState(cellular1_service_path));
   EXPECT_EQ(shill::kStateIdle, GetServiceState(cellular2_service_path));
   EXPECT_EQ(shill::kStateIdle, GetServiceState(cellular3_service_path));
-  properties =
-      helper().service_test()->GetServiceProperties(cellular1_service_path);
-  auto_connect = properties->FindBoolKey(shill::kAutoConnectProperty);
-  ASSERT_TRUE(auto_connect);
-  EXPECT_FALSE(*auto_connect);
+  CheckServiceAutoConnectProperty(cellular1_service_path,
+                                  /*expected_auto_connect=*/false);
+  CheckServiceAutoConnectProperty(cellular3_service_path,
+                                  /*expected_auto_connect=*/false);
 
   histogram_tester.ExpectTotalCount(kESimDisconnectByPolicyHistogram, 1);
   histogram_tester.ExpectBucketCount(kESimDisconnectByPolicyHistogram, true, 1);
@@ -752,11 +759,16 @@ TEST_F(AutoConnectHandlerTest,
       base::Value(true));
   SetupDevicePolicy(kCellularPolicy, global_config);
 
-  // Cellular1's service configuration should be not removed because it's a
-  // pSIM network. Cellular3's service configuration should be removed because
-  // it's an eSIM network.
+  // Cellular1 and Cellular3's service configuration should be not removed
+  // because they are cellular networks and auto connect property should set
+  // to false since they are unmanaged networks.
   EXPECT_TRUE(helper().profile_test()->HasService(cellular1_service_path));
-  EXPECT_FALSE(helper().profile_test()->HasService(cellular3_service_path));
+  EXPECT_TRUE(helper().profile_test()->HasService(cellular3_service_path));
+  CheckServiceAutoConnectProperty(cellular1_service_path,
+                                  /*expected_auto_connect=*/false);
+  CheckServiceAutoConnectProperty(cellular3_service_path,
+                                  /*expected_auto_connect=*/false);
+
   histogram_tester.ExpectTotalCount(kESimDisconnectByPolicyHistogram, 1);
   histogram_tester.ExpectBucketCount(kESimDisconnectByPolicyHistogram, true, 1);
   histogram_tester.ExpectTotalCount(kPSimDisconnectByPolicyHistogram, 1);

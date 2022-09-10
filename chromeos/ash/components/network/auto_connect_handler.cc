@@ -363,20 +363,16 @@ void AutoConnectHandler::DisconnectAndRemoveConfigOrDisableAutoConnect(
       // Disconnect blocked network.
       if (network->IsConnectingOrConnected())
         DisconnectNetwork(network);
-      if (!network->IsInProfile())
-        continue;
 
-      // Remove configuration if it's in profile and it's either an eSIM
-      // Cellular network or WiFi network with
-      // AllowOnlyPolicyWiFiToConnectIfAvailable
-      const bool isESim = is_cellular_type && !network->eid().empty();
-      const bool isPSim = is_cellular_type && network->eid().empty();
-      if (isESim || (!is_cellular_type && !available_only)) {
-        RemoveNetworkConfigurationForNetwork(network->path());
-      } else if (isPSim) {
-        // Only disable auto-connect for pSIM cellular networks.
+      // Disable auto connect property for all unmanaged cellular networks.
+      // Otherwise if only removes its network configuration, turn off and on
+      // cellular device will enforce modem connect to unmanaged cellular
+      // network.
+      if (is_cellular_type) {
         DisableAutoconnectForNetwork(network->path(),
                                      ::onc::network_config::kCellular);
+      } else if (network->IsInProfile() && !available_only) {
+        RemoveNetworkConfigurationForNetwork(network->path());
       }
     } else if (only_managed_autoconnect) {
       // Disconnect & disable auto-connect.
