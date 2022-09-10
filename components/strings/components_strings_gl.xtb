@@ -319,7 +319,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="173080396488393970">Este tipo de tarxeta non é compatible</translation>
 <translation id="1733064249834771892">tipos de letra</translation>
 <translation id="1734864079702812349">Amex</translation>
-<translation id="1734878702283171397">Tenta poñerte en contacto co administrador do sistema.</translation>
+<translation id="1734878702283171397">Tenta poñerte en contacto coa persoa que administra o sistema.</translation>
 <translation id="1736420071277903564">Ordenador</translation>
 <translation id="1740951997222943430">Introduce un mes de caducidade válido</translation>
 <translation id="1741613555002899862">Debe especificarse e ser unha cadea válida cando DnsOverHttpsMode é <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -1299,7 +1299,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4500587658229086076">contido inseguro</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
 <translation id="4506176782989081258">Erro de validación: <ph name="VALIDATION_ERROR" /></translation>
-<translation id="4506599922270137252">Poñerte en contacto co administrador do sistema</translation>
+<translation id="4506599922270137252">Poñerte en contacto coa persoa que administra o sistema</translation>
 <translation id="450710068430902550">Compartindo co administrador</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tab e, a continuación, Intro para traducir esta páxina co Tradutor de Google</translation>
 <translation id="4510487217173779431">Chou4 (sobre)</translation>
@@ -1667,7 +1667,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5490432419156082418">Enderezos e moito máis</translation>
 <translation id="5492298309214877701">Este sitio da intranet da empresa, da organización ou da escola ten o mesmo URL que un sitio web externo.
     <ph name="LINE_BREAK" />
-    Tenta pórte en contacto co administrador do sistema.</translation>
+    Tenta pórte en contacto coa persoa que administra o sistema.</translation>
 <translation id="549333378215107354">Tamaño 3</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Marcadores xestionados</translation>
@@ -2738,7 +2738,7 @@ Detalles adicionais:
 <translation id="8522552481199248698">Chrome pode axudarche a protexer a túa Conta de Google e a cambiar o teu contrasinal.</translation>
 <translation id="8530813470445476232">Borra o historial de navegación, as cookies, a memoria caché e moito máis na configuración de Chrome</translation>
 <translation id="853332391023689529">Camionetas pickup</translation>
-<translation id="8533619373899488139">Visita &lt;strong&gt;chrome://policy&lt;/strong&gt; para ver a lista dos URL bloqueados e outras políticas aplicadas polo teu administrador do sistema.</translation>
+<translation id="8533619373899488139">Visita &lt;strong&gt;chrome://policy&lt;/strong&gt; para ver a lista dos URL bloqueados e outras políticas aplicadas pola persoa que administra o sistema.</translation>
 <translation id="8539500321752640291">Queres conceder 2 permisos?</translation>
 <translation id="8541158209346794904">Dispositivo Bluetooth</translation>
 <translation id="8542014550340843547">Tres grampas na parte inferior</translation>
