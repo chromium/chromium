@@ -441,7 +441,7 @@ class AppListBackgroundShieldView : public views::View {
     SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     layer()->SetFillsBoundsOpaquely(false);
     SetBackgroundRadius(shelf_background_corner_radius_);
-    layer()->SetColor(gfx::kPlaceholderColor);
+    layer()->SetColor(color_);
     layer()->SetName("launcher/BackgroundShield");
   }
 
@@ -527,7 +527,7 @@ class AppListBackgroundShieldView : public views::View {
 
   float corner_radius_ = 0.0f;
 
-  SkColor color_;
+  SkColor color_ = gfx::kPlaceholderColor;
 
   int shelf_background_corner_radius_ = 0;
 };
