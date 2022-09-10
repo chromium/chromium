@@ -218,7 +218,12 @@ def _run_tests(work_dir, skia_util, *args):
   path_seed = seed_helper.get_test_seed_file_path(hardcoded_seed_path)
 
   user_data_dir = tempfile.mkdtemp()
+  crash_dump_dir = tempfile.mkdtemp()
   _, log_file = tempfile.mkstemp()
+
+  # Crashpad is a separate process and its dump locations is set via env
+  # variable.
+  os.environ['BREAKPAD_DUMP_LOCATION'] = crash_dump_dir
 
   chrome_options = ChromeOptions()
   chrome_options.binary_location = path_chrome
@@ -274,14 +279,18 @@ def _run_tests(work_dir, skia_util, *args):
 
     driver.quit()
 
-  except WebDriverException as e:
-    logging.error('Chrome exited abnormally, likely due to a crash.\n%s', e)
-    return 1
   except NoSuchElementException as e:
     logging.error('Failed to find the expected web element.\n%s', e)
     return 1
+  except WebDriverException as e:
+    if os.listdir(crash_dump_dir):
+      logging.error('Chrome crashed and exited abnormally.\n%s', e)
+    else:
+      logging.error('Uncaught WebDriver exception thrown.\n%s', e)
+    return 1
   finally:
     shutil.rmtree(user_data_dir, ignore_errors=True)
+    shutil.rmtree(crash_dump_dir, ignore_errors=True)
 
     # Print logs for debugging purpose.
     with open(log_file) as f:
