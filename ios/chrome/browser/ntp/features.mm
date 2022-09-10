@@ -69,6 +69,16 @@ void SaveFeedBackgroundRefreshEnabledForNextColdStart() {
        forKey:kEnableFeedBackgroundRefreshForNextColdStart];
 }
 
+void SetFeedRefreshTimestamp(NSDate* timestamp, NSString* NSUserDefaultsKey) {
+  NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
+  dateFormatter.dateStyle = NSDateFormatterShortStyle;
+  dateFormatter.timeStyle = NSDateFormatterShortStyle;
+  dateFormatter.locale = [NSLocale autoupdatingCurrentLocale];
+  [[NSUserDefaults standardUserDefaults]
+      setObject:[dateFormatter stringFromDate:timestamp]
+         forKey:NSUserDefaultsKey];
+}
+
 bool IsFeedOverrideDefaultsEnabled() {
   if (GetChannel() == version_info::Channel::STABLE) {
     return false;

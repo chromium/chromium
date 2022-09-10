@@ -26,9 +26,45 @@
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
-			<string>Last Refresh Timestamp</string>
+			<string>FeedModel didBeginReload Timestamp</string>
 			<key>Key</key>
-			<string>FeedLastRefreshTimestamp</string>
+			<string>FeedModelDidBeginReloadTimestamp</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>KeyboardType</key>
+			<string>Alphabet</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>RefreshFeedModel Timestamp</string>
+			<key>Key</key>
+			<string>RefreshFeedModelTimestamp</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>KeyboardType</key>
+			<string>Alphabet</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>RefreshFeedForced Timestamp</string>
+			<key>Key</key>
+			<string>RefreshFeedForcedTimestamp</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>KeyboardType</key>
+			<string>Alphabet</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Last Background Refresh Timestamp</string>
+			<key>Key</key>
+			<string>FeedLastBackgroundRefreshTimestamp</string>
 			<key>DefaultValue</key>
 			<string></string>
 			<key>KeyboardType</key>

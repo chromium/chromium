@@ -17,6 +17,12 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+// NSUserDefaults key for the last time background refresh was called.
+NSString* const kFeedLastBackgroundRefreshTimestamp =
+    @"FeedLastBackgroundRefreshTimestamp";
+}  // namespace
+
 @implementation FeedAppAgent
 
 #pragma mark - AppStateObserver
@@ -218,6 +224,7 @@
     title = @"Feed Bg Refresh Failure";
   }
   [self maybeRequestNotification:title];
+  SetFeedRefreshTimestamp([NSDate now], kFeedLastBackgroundRefreshTimestamp);
 }
 
 @end

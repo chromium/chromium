@@ -58,6 +58,10 @@ bool IsFeedBackgroundRefreshEnabled();
 // DCHECKs on the availability of `base::FeatureList`.
 void SaveFeedBackgroundRefreshEnabledForNextColdStart();
 
+// Sets `timestamp` for key `NSUserDefaultsKey` to be displayed in Experimental
+// Settings in the Settings App. This is not available in stable.
+void SetFeedRefreshTimestamp(NSDate* timestamp, NSString* NSUserDefaultsKey);
+
 // Returns the override value from Experimental Settings in the Settings App. If
 // enabled, all values in Experimental Settings will override all corresponding
 // defaults.
