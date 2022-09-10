@@ -75,7 +75,7 @@
 <translation id="162175252992296058">ፖርቱጋልኛ በአሜሪካ ዓለም አቀፍ ቁልፍ ሰሌዳ</translation>
 <translation id="1629521517399325891">የተጠቃሚ እውቅና ማረጋገጫ ለአውታረ መረብ ማረጋገጫ አይገኝም።</translation>
 <translation id="1641780993263690097">የቻይንኛ ፒንዪን</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> ፋይሎች ከመስመር ውጪ እንዲገኙ በመደረግ ላይ</translation>
+<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> ፋይሎች ከመስመር ውጭ እንዲገኙ በመደረግ ላይ</translation>
 <translation id="164969095109328410">የChrome መሣሪያ</translation>
 <translation id="1661867754829461514">ፒን ይጎድላል</translation>
 <translation id="166439687370499867">የተጋራ አውታረ መረብ ውቅረቶችን መለወጥ አይፈቀድም</translation>
@@ -108,7 +108,7 @@
 <translation id="1832073788765803750">ባለግማሽ ስፋት ካታካና</translation>
 <translation id="1834290891154666894">ልክ ያልሆነ የርዕስ አማራጭ ስም ዝምድና ግቤት</translation>
 <translation id="1838709767668011582">የGoogle ጣቢያ</translation>
-<translation id="1844692022597038441">ይህ ፋይል ከመስመር ውጪ አይገኝም።</translation>
+<translation id="1844692022597038441">ይህ ፋይል ከመስመር ውጭ አይገኝም።</translation>
 <translation id="1853795129690976061">ይህ አቃፊ ለLinux ተጋርቷል</translation>
 <translation id="1864756863218646478">ፋይሉ ሊገኝ አልቻለም።</translation>
 <translation id="1884013283844450420">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ አገናኝ</translation>
@@ -235,7 +235,7 @@
 <translation id="3003189754374775221">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ <ph name="NETWORK_PROVIDER_NAME" />፣ ሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ ተገናኝ</translation>
 <translation id="3003633581067744647">ወደ የድንክዬ እይታ ቀይር</translation>
 <translation id="3016566519832145558">ማስጠንቀቂያ፦ እነዚህ ፋይሎች ጊዜያዊ የሆኑና የአንጻፊ ቦታ ነጻ ለማስለቀቅ በራስ-ሰር ሊሰረዙ የሚችሉ ናቸው።</translation>
-<translation id="3029114385395636667">ሰነዶችን፣ ሉሆችን እና ስላይዶችን ከመስመር ውጭ እንዲገኙ ለማድረግ ከመስመር ውጪ Google ሰነዶችን ያንቁ።</translation>
+<translation id="3029114385395636667">ሰነዶችን፣ ሉሆችን እና ስላይዶችን ከመስመር ውጭ እንዲገኙ ለማድረግ ከመስመር ውጭ Google ሰነዶችን ያንቁ።</translation>
 <translation id="303198083543495566">ጂኦግራፊ</translation>
 <translation id="3047197340186497470">ቻይንኛ ዳዪ</translation>
 <translation id="3057861065630527966">የእርስዎን ፎቶዎች እና ቪዲዮዎች በምትኬ ያስቀምጡ</translation>
@@ -323,7 +323,7 @@
 <translation id="3741243925913727067">የእርስዎን ሚዲያ መሣሪያ ፎቶዎች እና ቪዲዮዎች ወደ Google Drive በምትኬ ያስቀምጡ።</translation>
 <translation id="3749289110408117711">የፋይል ስም</translation>
 <translation id="3780536599611287598">ፋይሎችን ወደ '<ph name="FOLDER_NAME" />' ለማንቀሳቀስ ፈቃድ የልዎትም።</translation>
-<translation id="3786301125658655746">ከመስመር ውጪ ነዎት</translation>
+<translation id="3786301125658655746">ከመስመር ውጭ ነዎት</translation>
 <translation id="3789841737615482174">ጫን  </translation>
 <translation id="3793469551756281394"><ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> ገደማ ይቀራል</translation>
 <translation id="3798449238516105146">ስሪት</translation>
@@ -503,7 +503,7 @@
 <translation id="5234764350956374838">አሰናብት</translation>
 <translation id="5253070652067921974">የተፈጠረው በ</translation>
 <translation id="5257456363153333584">የውሃ ተርብ</translation>
-<translation id="5262311848634918433"><ph name="MARKUP_1" />ከየትኛውም ቦታ ሆነው ፋይሎችን ይድረሱባቸው፣ ከመስመር ውጪ ሆነውም እንኳ።<ph name="MARKUP_2" />
+<translation id="5262311848634918433"><ph name="MARKUP_1" />ከየትኛውም ቦታ ሆነው ፋይሎችን ይድረሱባቸው፣ ከመስመር ውጭ ሆነውም እንኳ።<ph name="MARKUP_2" />
         በGoogle Drive ውስጥ ያሉ ፋይሎች የተዘመኑ እና ከማንኛውም መሣሪያ ተደራሽ የሆኑ ናቸው።<ph name="MARKUP_3" />
         <ph name="MARKUP_4" />የፋይሎችዎ ደህንነት ይጠብቁ።<ph name="MARKUP_5" />
         መሣሪያዎ ምንም ነገር ቢሆን ፋይሎችዎ በጥንቃቄ Google Drive ላይ ተከማችተዋል።<ph name="MARKUP_6" />
@@ -610,7 +610,7 @@
 <translation id="613750717151263950">ጃፓንኛ በአሜሪካ ቁልፍ ሰሌዳ</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />፣ ምንም አውታረ መረብ የለም</translation>
 <translation id="6146563240635539929">ቪዲዮዎች</translation>
-<translation id="6150853954427645995">ይህን ፋይል ከመስመር ውጪ ለመጠቀም መስመር ላይ ተመልሰው ይሂዱ፣ ፋይሉን በቀኝ ጠቅ ያድርጉትና የ<ph name="OFFLINE_CHECKBOX_NAME" /> አማራጩን ይምረጡ።</translation>
+<translation id="6150853954427645995">ይህን ፋይል ከመስመር ውጭ ለመጠቀም መስመር ላይ ተመልሰው ይሂዱ፣ ፋይሉን በቀኝ ጠቅ ያድርጉትና የ<ph name="OFFLINE_CHECKBOX_NAME" /> አማራጩን ይምረጡ።</translation>
 <translation id="6164412158936057769">ቢራቢሮዎች</translation>
 <translation id="6165508094623778733">የበለጠ ለመረዳት</translation>
 <translation id="6170470584681422115">ሳንድዊች</translation>
@@ -725,7 +725,7 @@
 <translation id="7135561821015524160">ከናዳ ፎነቲክ</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="7165320105431587207">አውታረ መረቡን ማዋቀር አልተሳካም</translation>
-<translation id="7170041865419449892">ከክልል ውጪ</translation>
+<translation id="7170041865419449892">ከክልል ውጭ</translation>
 <translation id="7180611975245234373">አድስ</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ጊባ</translation>
 <translation id="7191454237977785534">ፋይል አስቀምጥ እንደ</translation>
@@ -771,7 +771,7 @@
 <translation id="7553492409867692754">የLinux መተግበሪያዎች በ<ph name="FOLDER_NAME" /> አቃፊ ውስጥ ያሉ ፋይሎችን እንዲደርስ ይፍቀዱ</translation>
 <translation id="7575645593344061397">«<ph name="FILENAME" />»ን ወደነበሩበት በመመለስ ላይ...</translation>
 <translation id="7589661784326793847">አንድ ሰከንድ ብቻ ይጠብቁ</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" />ን ከመስመር ውጪ እንዲገኝ በማድረግ ላይ</translation>
+<translation id="7592775719802218421"><ph name="FILE_NAME" />ን ከመስመር ውጭ እንዲገኝ በማድረግ ላይ</translation>
 <translation id="7600126690270271294">ሰርቢኛ</translation>
 <translation id="7603724359189955920">ፍርግርግ</translation>
 <translation id="7627790789328695202">ውይ፣ <ph name="FILE_NAME" /> አስቀድሞ አለ። ዳግም ይሰይሙትና እንደገና ይሞክሩ።</translation>
@@ -793,8 +793,8 @@
 <translation id="7760449188139285140">ቻይንኛ ዉቢ</translation>
 <translation id="7765158879357617694">ውሰድ</translation>
 <translation id="7774365994322694683">ወፍ</translation>
-<translation id="7788080748068240085">«<ph name="FILE_NAME" />»ን ከመስመር ውጪ ለማስቀመጥ ተጨማሪ የሆነ <ph name="TOTAL_FILE_SIZE" /> የማከማቻ ቦታ ነጻ ማስለቀቅ አለብዎት፦<ph name="MARKUP_1" />
-        <ph name="MARKUP_2" />ከአሁን በኋላ ከመስመር ውጪ ለመድረስ የማያስፈልጉዎትን ፋይሎች ይንቀሱ<ph name="MARKUP_3" />
+<translation id="7788080748068240085">«<ph name="FILE_NAME" />»ን ከመስመር ውጭ ለማስቀመጥ ተጨማሪ የሆነ <ph name="TOTAL_FILE_SIZE" /> የማከማቻ ቦታ ነጻ ማስለቀቅ አለብዎት፦<ph name="MARKUP_1" />
+        <ph name="MARKUP_2" />ከአሁን በኋላ ከመስመር ውጭ ለመድረስ የማያስፈልጉዎትን ፋይሎች ይንቀሱ<ph name="MARKUP_3" />
         <ph name="MARKUP_4" />ፋይሎችን ከወረዱ ማስቀመጫ አቃፊዎ ይሰርዙ<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">ለመሣሪያው ቅርጸት ይስሩለት</translation>
 <translation id="7799329977874311193">የኤች ቲ ኤም ኤል ሰነድ</translation>
@@ -852,7 +852,7 @@
 <translation id="8179976553408161302">አስገባ</translation>
 <translation id="8193175696669055101">የመሳሪያ ሞዴል</translation>
 <translation id="8208580316430297579">ሥነ ጥበብ</translation>
-<translation id="8223479393428528563">እነዚህን ፋይሎች ከመስመር ውጪ ለመጠቀም ለማስቀመጥ ተመልሰው መስመር ላይ ይሂዱ፣ ፋይሎቹን በቀኝ ጠቅ ያድርጉ፣ እና የ<ph name="OFFLINE_CHECKBOX_NAME" /> አማራጩን ይምረጡ።</translation>
+<translation id="8223479393428528563">እነዚህን ፋይሎች ከመስመር ውጭ ለመጠቀም ለማስቀመጥ ተመልሰው መስመር ላይ ይሂዱ፣ ፋይሎቹን በቀኝ ጠቅ ያድርጉ፣ እና የ<ph name="OFFLINE_CHECKBOX_NAME" /> አማራጩን ይምረጡ።</translation>
 <translation id="8249296373107784235">አጨንግፍ</translation>
 <translation id="8250690786522693009">ላቲን</translation>
 <translation id="8250920743982581267">ሰነዶች</translation>
@@ -888,7 +888,7 @@
 <translation id="8475647382427415476">Google Drive አሁን «<ph name="FILENAME" />» ማስመር አልቻለም። Google Drive ቆይቶ እንደገና ይሞክራል።</translation>
 <translation id="8477649328507734757">አሹር</translation>
 <translation id="8484284835977497781">ከቅርብ ጊዜ ፎቶዎችዎ ውስጥ ይምረጡ።</translation>
-<translation id="8487700953926739672">ከመስመር ውጪ ይገኛል</translation>
+<translation id="8487700953926739672">ከመስመር ውጭ ይገኛል</translation>
 <translation id="8492972329130824181">የቤት አውታረ መረብ አይገኝም። ለማገናኘት የተንቀሳቃሽ ስልክ የውሂብ ዝውውር መንቃት አለበት።</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> ንጥሎችን ሰርስሮ በማውጣት ላይ...</translation>
 <translation id="8521441079177373948">ዩኬ</translation>
@@ -975,7 +975,7 @@
 <translation id="945522503751344254">ግብረመልስ ላክ</translation>
 <translation id="947144732524271678">ከ<ph name="FROM_ENTRY_NAME" /> እስከ <ph name="TO_ENTRY_NAME" /> ያሉ የ<ph name="ENTRY_COUNT" /> ግቤቶች ክልል ተመርጧል።</translation>
 <translation id="965477715979482472">እንግሊዝኛ (ደቡብ አፍሪካ)</translation>
-<translation id="981121421437150478">ከመስመር ውጪ</translation>
+<translation id="981121421437150478">ከመስመር ውጭ</translation>
 <translation id="988685240266037636">«<ph name="FILE_NAME" />» ፋይል አስቀድሞ አለ። ሊተኩት ይፈልጋሉ?</translation>
 <translation id="992401651319295351">እርስዎ <ph name="RETRIES" /> ቀሪ ሙከራዎች አሉዎት። አዲስ ፒን እስኪያዋቅሩ ድረስ ይህን አውታረ መረብ መጠቀም አይችሉም።</translation>
 <translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> ሜባ</translation>

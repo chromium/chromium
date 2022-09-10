@@ -168,7 +168,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">በአቅራቢያ ያሉ መሣሪያዎችን ለማግኘት ብሉቱዝን ያብሩ</translation>
-<translation id="2340422556570134524">ከማየት ውጪ የማይፈቅድ ሳይጠበቅ በርቷል። በድጋሚ ከመሞከርዎ በፊት እባክዎ ራስዎ ከማየት ውጪ የማይፈቅድን ያጥፉት።</translation>
+<translation id="2340422556570134524">ከማየት ውጭ የማይፈቅድ ሳይጠበቅ በርቷል። በድጋሚ ከመሞከርዎ በፊት እባክዎ ራስዎ ከማየት ውጭ የማይፈቅድን ያጥፉት።</translation>
 <translation id="2346474577291266260">እጅግ በጣም ጥሩ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">ቀጥል</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />ብቁ ያልሆኑ ክፍለ-አካላት<ph name="LINK_END" /> ተገኝተዋል። ይህ መጫኑን ለማረጋገጥ ከመረጡ እባክዎ አሁን ያድርጉት።</translation>
@@ -669,7 +669,7 @@
 <translation id="6961170852793647506">ለመጀመር ሰነድዎን በቃኚው ላይ ያስቀምጡት</translation>
 <translation id="6965382102122355670">እሺ</translation>
 <translation id="6977381486153291903">የጽኑ ትዕዛዝ ክለሳ</translation>
-<translation id="6995564396478647735">ከማየት ውጪ የማይፈቅድ ሁነታ መብራቱን ያረጋግጡ</translation>
+<translation id="6995564396478647735">ከማየት ውጭ የማይፈቅድ ሁነታ መብራቱን ያረጋግጡ</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ይህን መሣሪያ የሚያስተዳድር ሲሆን የተጎበኙ ድረ-ገጾች፣ የይለፍ ቃላት እና ኢሜይል ጨምሮ የሁሉም የተጠቃሚ እንቅስቃሴ መዳረሻ አለው።</translation>
 <translation id="7040230719604914234">ከዋኝ</translation>
 <translation id="7041549558901442110">መሣሪያ አልተገናኘም።</translation>
@@ -680,7 +680,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">አልተሳካም - ማረጋግጥ አልተሳካም</translation>
 <translation id="7103252855940681301">መሣሪያ <ph name="INDEX" /> ከ<ph name="COUNT" /> <ph name="NAME" /> ተብሎ ተሰይሟል</translation>
-<translation id="7126228745139711113">ከማየት ውጪ የማይፈቅድ ጠፍቷል</translation>
+<translation id="7126228745139711113">ከማየት ውጭ የማይፈቅድ ጠፍቷል</translation>
 <translation id="7134436342991564651">{0,plural, =1{የስም አገልጋይ}one{የስም አገልጋዩች}other{የስም አገልጋዩች}}</translation>
 <translation id="7143207342074048698">በመያያዝ ላይ</translation>
 <translation id="7144878232160441200">እንደገና ሞክር</translation>
@@ -772,7 +772,7 @@
 <translation id="80398733265834479">ራስ-ሰር ቀለም ሁነታን አንቃ</translation>
 <translation id="8041089156583427627">ግብረ መልስ ላክ</translation>
 <translation id="8045012663542226664">የማይክሮፎን ድምጸ-ከል ማድረጊያ</translation>
-<translation id="8063022551652308521">ከማየት ውጪ የማይፈቅድ አሁንም እንደጠፋ ነው። ለመቀጠል ከማየት ውጪ የማይፈቅድን ያብሩት።</translation>
+<translation id="8063022551652308521">ከማየት ውጭ የማይፈቅድ አሁንም እንደጠፋ ነው። ለመቀጠል ከማየት ውጭ የማይፈቅድን ያብሩት።</translation>
 <translation id="8075838845814659848">የሚቀረው ኃይል መሙላት</translation>
 <translation id="8082366717211101304">ከAndroid መተግበሪያዎች ዲኤንኤስን መፍታት አልተቻለም</translation>
 <translation id="8083281199617904460">ይህ የጥገና ሂደት ለሰለጠነ የጥገና ቴክኒሺያን የታሰበ ነው። የተበላሹ ክፍለ-አካላትን ከተኩ በኋላ ብቻ ይጀምሩ።</translation>
