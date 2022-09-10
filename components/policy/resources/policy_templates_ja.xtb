@@ -1668,9 +1668,6 @@
 <translation id="274769314493317695"><ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" /> の値に <ph name="PRINTERS_WHITELIST" /> が選択されている場合、<ph name="NATIVE_PRINTERS_BULK_WHITELIST_POLICY_NAME" /> でユーザーが使用できるプリンタを指定できます。ユーザーは、このポリシーで指定されている値に ID が一致するプリンタのみを使用できます。この ID は、<ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> で指定されたファイル内の「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドに対応している必要があります。
 
       このポリシーはサポートが終了しています。代わりに <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> を使用してください。</translation>
-<translation id="2751959596774212778">セキュアでないコンテキストでの WebSQL は M107 の時点ではデフォルトでオフになっており、M110 では完全に削除されます。
-          このポリシーを false に設定するか未設定のままにした場合、セキュアでないコンテキストでの WebSQL は M106 の終了時までオンのままになり、M107 からオフになります。
-          このポリシーを true に設定した場合、セキュアでないコンテキストでの WebSQL は有効になります。</translation>
 <translation id="2752046642026416564">このポリシーを有効に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> はユーザーレベルでインストールされたネイティブ メッセージング ホストを使用できます。
 
       このポリシーを無効に設定した場合、<ph name="PRODUCT_NAME" /> はシステムレベルでインストールされたネイティブ メッセージング ホストのみを使用できます。</translation>

@@ -1745,9 +1745,6 @@ Dit beleid vereist aanvullende instellingen om van kracht te worden. Ga naar htt
 <translation id="274769314493317695">Als <ph name="PRINTERS_WHITELIST" /> wordt gekozen voor <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />, kun je door <ph name="NATIVE_PRINTERS_BULK_WHITELIST_POLICY_NAME" /> in te stellen aangeven welke printers gebruikers kunnen gebruiken. Alleen printers waarvan de ID's overeenkomen met de waarden in dit beleid, zijn beschikbaar voor de gebruiker. De ID's moeten overeenkomen met het veld <ph name="ID_FIELD" /> of <ph name="GUID_FIELD" /> in het bestand dat is opgegeven in <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.
 
       Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />.</translation>
-<translation id="2751959596774212778">WebSQL in niet-beveiligde contexten staat standaard uit vanaf M107 en wordt helemaal verwijderd in M110.
-          Als je dit beleid instelt op False of niet instelt, blijft WebSQL in niet-beveiligde contexten aanstaan tot het einde van M106. Daarna staat het uit vanaf M107.
-          Als je dit beleid instelt op True, wordt WebSQL in niet-beveiligde contexten aangezet.</translation>
 <translation id="2752046642026416564">Als je het beleid toepast of niet instelt, kan <ph name="PRODUCT_NAME" /> de hosts voor systeemeigen berichten gebruiken die zijn geïnstalleerd op gebruikersniveau.
 
       Als je het beleid niet toepast, kan <ph name="PRODUCT_NAME" /> deze hosts alleen gebruiken als ze zijn geïnstalleerd op systeemniveau.</translation>

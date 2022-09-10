@@ -1120,7 +1120,6 @@
 <translation id="2028449514182362831">需要動作感應器的功能將無法運作</translation>
 <translation id="202918510990975568">請輸入您的密碼以進行安全性和登入設定</translation>
 <translation id="2030455719695904263">觸控板</translation>
-<translation id="2031385797619033640">按一下即可允許「<ph name="EXTENSIONS_REQUESTING_ACCESS" />」讀取及變更 <ph name="ORIGIN" />：</translation>
 <translation id="2031639749079821948">您的密碼已儲存在 Google 帳戶中</translation>
 <translation id="2031914984822377766">新增偏好的<ph name="LINK_BEGIN" />網站語言<ph name="LINK_END" />。系統會將文字翻譯成清單頂部的語言。</translation>
 <translation id="2033758234986231162">無法與您的手機維持連線狀態。請確認您的手機在附近且已解鎖，並已開啟藍牙和 Wi-Fi。</translation>
@@ -1239,7 +1238,6 @@
 <translation id="2127372758936585790">低功率充電器</translation>
 <translation id="212862741129535676">頻率狀態佔用率</translation>
 <translation id="212876957201860463">正在準備設定您的流動裝置…</translation>
-<translation id="2129825002735785149">更新外掛程式</translation>
 <translation id="2131077480075264">由於「<ph name="IMPORT_NAME" />」不允許，因此無法安裝「<ph name="APP_NAME" />」</translation>
 <translation id="21354425047973905">隱藏 PIN</translation>
 <translation id="2135456203358955318">固定的放大鏡</translation>
@@ -4004,6 +4002,7 @@
 <translation id="474609389162964566">說出「Ok Google」即可存取「Google 助理」</translation>
 <translation id="4746351372139058112">Messages</translation>
 <translation id="4748783296226936791">網站通常會連接 HID 裝置，以提供使用非標準鍵盤、遊戲控制器和其他裝置等功能</translation>
+<translation id="4749960740855309258">開啟新分頁</translation>
 <translation id="4750185073185658673">在手機上查看其他權限。請確保手機的藍牙和 Wi-Fi 已開啟。</translation>
 <translation id="4750394297954878236">建議</translation>
 <translation id="475088594373173692">第一位使用者</translation>
@@ -4412,7 +4411,6 @@
 <translation id="5161251470972801814">來自「<ph name="VENDOR_NAME" />」的 USB 裝置</translation>
 <translation id="5162905305237671850">已封鎖 <ph name="DEVICE_TYPE" /></translation>
 <translation id="5163910114647549394">分頁移咗去分頁欄嘅最尾</translation>
-<translation id="5166596762332123936"><ph name="PLUGIN_NAME" /> 因版本過舊而被封鎖</translation>
 <translation id="516747639689914043">超文本傳輸協定 (HTTP)</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5171045022955879922">搜尋或輸入網址</translation>
@@ -4452,7 +4450,6 @@
 <translation id="520568280985468584">已成功新增網絡。流動網絡可能需時幾分鐘才能啟用。</translation>
 <translation id="5206215183583316675">要刪除「<ph name="CERTIFICATE_NAME" />」嗎？</translation>
 <translation id="520621735928254154">憑證匯入錯誤</translation>
-<translation id="5206562235913517859">零售商商店 ID 為 ABC-1234 格式</translation>
 <translation id="5207949376430453814">突顯文字插入符號</translation>
 <translation id="520840839826327499">「<ph name="SERVICE_NAME" />」想檢查您是否使用符合資格的 Chrome OS 裝置。</translation>
 <translation id="5208548918290612795">儲存「<ph name="WEB_DRIVE" />」驗證憑證</translation>
@@ -4713,13 +4710,11 @@
 <translation id="5463625433003343978">正在尋找裝置…</translation>
 <translation id="5463845647891602726">如要增加可用空間，請刪除裝置內的檔案</translation>
 <translation id="5463856536939868464">選單包含隱藏的書籤</translation>
-<translation id="5464632865477611176">執行 (只限這次)</translation>
 <translation id="5464660706533281090">兒童使用者無法變更此設定。</translation>
 <translation id="5466374726908360271">貼上並搜尋「<ph name="SEARCH_TERMS" />」 (&amp;S)</translation>
 <translation id="5467207440419968613">已封鎖<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" /></translation>
 <translation id="5468173180030470402">正在尋找檔案共用</translation>
 <translation id="5468330507528805311">網絡共享狀態：</translation>
-<translation id="5468881191994555667">選擇檔案</translation>
 <translation id="5469852975082458401">您可使用文字游標導覽網頁。按 F7 即可關閉。</translation>
 <translation id="5470735824776589490">您必須先重新啟動裝置，才能透過執行 Powerwash 重設裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">您好！呢個係文字轉語音嘅聲音。</translation>
@@ -5608,7 +5603,6 @@
 <translation id="6318944945640833942">偵測不到打印機，請再次輸入打印機位址。</translation>
 <translation id="6322370287306604163">指紋加快解鎖速度</translation>
 <translation id="6322559670748154781">此檔案不常下載，因此已被進階保護功能封鎖</translation>
-<translation id="6324083483652497048">按一下即可允許這些擴充程式讀取及變更 <ph name="ORIGIN" />：</translation>
 <translation id="6324916366299863871">編輯捷徑</translation>
 <translation id="6325191661371220117">停用自動啟動功能</translation>
 <translation id="6326175484149238433">從 Chrome 中移除</translation>
@@ -8122,7 +8116,6 @@
 <translation id="8734073480934656039">啟用這項設定後，Kiosk 應用程式會在裝置開機時自動啟動。</translation>
 <translation id="8734674662128056360">第三方 Cookie 封鎖功能</translation>
 <translation id="8734755021067981851">未連接任何 USB 裝置。</translation>
-<translation id="873545264931343897"><ph name="PLUGIN_NAME" /> 完成更新後，重新載入網頁即可啟動外掛程式</translation>
 <translation id="8736288397686080465">這個網站已在背景更新。</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">揀要將網頁翻譯成邊種語言</translation>

@@ -141,6 +141,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="1834891354138622109">کالم</translation>
 <translation id="1846771122725914429">بلوٹوتھ بریل ڈسپلے</translation>
 <translation id="1852018405765032699">‏چار انگلیوں سے اسکرین پر تھپتھپانے سے ChromeVox مینوز کھل اور بند ہو جائیں گے۔ ان مینوز میں کمانڈز اور شارٹ کٹس کے بارے میں مفید معلومات شامل ہیں۔ مینوز کے کھل جانے کے بعد، آپ آئٹمز پر نیویگیٹ کرنے کے لیے ایک انگلی سے سوائپ کر سکتے ہیں اور آئٹمز کو فعال کرنے کے لیے دو بار تھپتھپا سکتے ہیں۔ جاری رکھنے کے لیے، چار انگلیوں سے اسکرین پر تھپتھپائیں۔</translation>
+<translation id="1864430479908918647">‏Search+Space دبائیں</translation>
 <translation id="1865601187525349519">متن کا اختتام</translation>
 <translation id="1876229593313240038">doc</translation>
 <translation id="1902396333223336119">سیل</translation>
@@ -779,6 +780,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="6236061028292614533">اگلی سرخی</translation>
 <translation id="6254901459154107917">اگلا قابل ترمیم متن ایریا</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> سے خارج ہو گئے۔</translation>
+<translation id="6280088282605782512">دو بار تھپتھپائیں</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">‏ضروری کلیدیں: Search</translation>
 <translation id="6305702903308659374">‏ChromeVox بول رہا ہو تب بھی حسب معمول آواز میں چلائیں</translation>
@@ -982,6 +984,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="7731785449856576010">کوئی اگلا میڈیا ویجیٹ نہیں ہے</translation>
 <translation id="7735498529470878067">ٹچ کے ذریعے دریافت کرنے سے آپ کو اسکرین پر موجود چیزوں کے بارے میں فوری طور پر معلومات حاصل کرنے میں مدد مل سکتی ہے۔</translation>
 <translation id="773906353055481349">‏سیل کے لحاظ سے نیویگیٹ کرنے کیلئے تیروں کے ساتھ Search+Ctrl+Alt دبائیں</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> تا <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">ڈاؤن لوڈ شروع ہو گیا <ph name="FILE_NAME" /></translation>
 <translation id="7768784765476638775">سننے کیلئے منتخب کریں</translation>
 <translation id="7776293189010177726">‏ChromeVox مینوز کھولیں</translation>

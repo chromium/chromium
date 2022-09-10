@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">A comprimir <ph name="NUMBER_OF_ITEMS" /> itens…</translation>
 <translation id="1722687688096767818">A adicionar o perfil…</translation>
 <translation id="1726100011689679555">Servidores de nomes</translation>
+<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> itens movidos para o lixo</translation>
 <translation id="1729953886957086472">Alemão (Alemanha)</translation>
 <translation id="1730235522912993863">Chinês cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> itens copiados.</translation>
@@ -214,6 +215,7 @@
 <translation id="2888807692577297075">Nenhum item corresponde a &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Informações</translation>
 <translation id="2902734494705624966">EUA alargado</translation>
+<translation id="2906052776158021882">A mover <ph name="NUMBER_OF_ITEMS" /> itens para o lixo</translation>
 <translation id="290843123675549676">Marati</translation>
 <translation id="2923240520113693977">Estónio</translation>
 <translation id="2938685643439809023">Mongol</translation>
@@ -476,6 +478,7 @@
 <translation id="5068919226082848014">Piza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> de ficheiros serão eliminados</translation>
 <translation id="508423945471810158">A mover <ph name="NUMBER_OF_ITEMS" /> itens para <ph name="FOLDER_NAME" />…</translation>
+<translation id="5092200349368278146"><ph name="FILE_NAME" /> movido para o lixo</translation>
 <translation id="509429900233858213">Ocorreu um erro.</translation>
 <translation id="5098629044894065541">Hebraico</translation>
 <translation id="5102922915594634436">Gerir pastas sincronizadas</translation>
@@ -581,6 +584,7 @@
 <translation id="5845721951356578987">Enfermeiro</translation>
 <translation id="5861477046012235702">Jogador</translation>
 <translation id="5864471791310927901">A procura DHCP falhou</translation>
+<translation id="5887342613489958822">A mover <ph name="FILE_NAME" /> para o lixo</translation>
 <translation id="5896749729057314184">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Desativada, Intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, Detalhes</translation>
 <translation id="5911887972742538906">Ocorreu um erro durante a instalação da sua aplicação para Linux.</translation>
 <translation id="5912396950572065471">Formato</translation>

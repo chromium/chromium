@@ -1764,9 +1764,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="274769314493317695">Jika <ph name="PRINTERS_WHITELIST" /> dipilih untuk <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />, menyetel <ph name="NATIVE_PRINTERS_BULK_WHITELIST_POLICY_NAME" /> akan menentukan printer yang dapat digunakan oleh pengguna. Hanya printer dengan ID yang cocok dengan nilai dalam kebijakan ini yang akan tersedia bagi pengguna. ID harus sesuai dengan kolom <ph name="ID_FIELD" /> atau <ph name="GUID_FIELD" /> dalam file yang ditentukan di <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.
 
       Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />.</translation>
-<translation id="2751959596774212778">WebSQL di konteks tidak aman akan nonaktif secara default mulai M107 dan akan sepenuhnya dihapus di M110.
-          Jika kebijakan ini disetel ke salah (false) atau tidak disetel, WebSQL di konteks tidak aman akan tetap aktif hingga akhir M106, lalu nonaktif mulai M107.
-          Jika kebijakan ini disetel ke benar (true), WebSQL di konteks tidak aman akan diaktifkan.</translation>
 <translation id="2752046642026416564">Jika kebijakan disetel ke Aktif atau tidak disetel, <ph name="PRODUCT_NAME" /> dapat menggunakan host pesan native yang diinstal di tingkat pengguna.
 
       Menyetel kebijakan ke Nonaktif berarti <ph name="PRODUCT_NAME" /> hanya dapat menggunakan host ini jika diinstal di tingkat sistem.</translation>

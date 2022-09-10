@@ -1736,9 +1736,6 @@
 <translation id="274769314493317695">如果为 <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_WHITELIST" />，您便可通过设置 <ph name="NATIVE_PRINTERS_BULK_WHITELIST_POLICY_NAME" /> 来指定用户可以使用哪些打印机。用户将只能使用那些符合条件（ID 与此政策中所列的值匹配）的打印机。ID 必须与 <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。
 
       此政策已被弃用，请改用 <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />。</translation>
-<translation id="2751959596774212778">自 M107 起，不安全情境中的 WebSQL 默认处于关闭状态，并将在 M110 中被完全移除。
-          如果此政策设为 false 或未设置，不安全情境中的 WebSQL 将保持开启状态至 M106 结束时，然后自 M107 起会默认处于关闭状态。
-          如果此政策设为 true，系统将启用不安全情境中的 WebSQL。</translation>
 <translation id="2752046642026416564">如果此政策已启用或未设置，<ph name="PRODUCT_NAME" /> 便可使用在用户级安装的本地消息传递主机。
 
       如果此政策已停用，<ph name="PRODUCT_NAME" /> 将只能使用在系统级安装的本地消息传递主机。</translation>

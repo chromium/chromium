@@ -1758,9 +1758,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="274769314493317695">Si <ph name="PRINTERS_WHITELIST" /> est sélectionné pour la règle <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />, la définition de <ph name="NATIVE_PRINTERS_BULK_WHITELIST_POLICY_NAME" /> indique les imprimantes accessibles aux utilisateurs. Seules les imprimantes dont les ID correspondent aux valeurs définies dans cette règle sont proposées aux utilisateurs. Ces ID doivent correspondre à ceux indiqués dans les champs <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> du fichier spécifié dans la règle <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.
 
       Cette règle étant obsolète, veuillez utiliser la règle <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> à la place.</translation>
-<translation id="2751959596774212778">Dans les contextes non sécurisés, WebSQL est désactivé par défaut à partir de M107 et sera entièrement supprimé dans M110.
-          Si cette règle est définie sur "False" ou n'est pas configurée, WebSQL restera activé dans des contextes non sécurisés jusqu'à la fin de M106, puis sera désactivé à partir de M107.
-          Si cette règle est définie sur "True", WebSQL est activé dans des contextes non sécurisés.</translation>
 <translation id="2752046642026416564">Si cette règle est activée ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> peut utiliser les hôtes de messagerie native installés au niveau de l'utilisateur.
 
       Si elle est désactivée, <ph name="PRODUCT_NAME" /> ne peut utiliser ces hôtes que s'ils sont installés au niveau du système.</translation>

@@ -1110,7 +1110,6 @@
 <translation id="2028449514182362831">Функцыі, якім патрэбны датчыкі руху, не будуць працаваць</translation>
 <translation id="202918510990975568">Каб наладзіць сістэму бяспекі і працэдуру ўваходу, увядзіце пароль</translation>
 <translation id="2030455719695904263">Сэнсарная панэль</translation>
-<translation id="2031385797619033640">Націсніце, каб дазволіць пашырэнню "<ph name="EXTENSIONS_REQUESTING_ACCESS" />" чытаць і змяняць сайт <ph name="ORIGIN" />:</translation>
 <translation id="2031639749079821948">Пароль захаваны ва Уліковым запісе Google</translation>
 <translation id="2031914984822377766">Дадайце прыярытэтныя <ph name="LINK_BEGIN" />мовы для вэб-сайтаў<ph name="LINK_END" />. Пры перакладзе будзе выкарыстоўвацца першая мова ў спісе.</translation>
 <translation id="2033758234986231162">Не ўдалося захаваць падключэнне да вашага тэлефона. Упэўніцеся, што тэлефон разблакіраваны, знаходзіцца паблізу і што на ім уключаны Bluetooth і Wi-Fi.</translation>
@@ -1229,7 +1228,6 @@
 <translation id="2127372758936585790">Зарадная прылада малой магутнасці</translation>
 <translation id="212862741129535676">Працэнт загрузкі па частотах</translation>
 <translation id="212876957201860463">Ідзе падрыхтоўка сотавай прылады да наладжвання...</translation>
-<translation id="2129825002735785149">Абнавіць убудову</translation>
 <translation id="2131077480075264">Не атрымалася ўсталяваць праграму "<ph name="APP_NAME" />", бо "<ph name="IMPORT_NAME" />" яе не дазваляе</translation>
 <translation id="21354425047973905">Не паказваць PIN-коды</translation>
 <translation id="2135456203358955318">Прыстыкаваная лупа</translation>
@@ -3990,6 +3988,7 @@
 <translation id="474609389162964566">Актывуйце Памочніка галасавой камандай "Ok Google"</translation>
 <translation id="4746351372139058112">Паведамленні</translation>
 <translation id="4748783296226936791">Сайты звычайна падключаюцца да прылад HID для забеспячэння работы функцый, якія выкарыстоўваюць нестандартныя клавіятуры, гульнявыя кантролеры і іншыя прылады</translation>
+<translation id="4749960740855309258">Адкрыць новую ўкладку</translation>
 <translation id="4750185073185658673">Вам трэба даць яшчэ некалькі дазволаў на сваім тэлефоне. Упэўніцеся, што на ім уключаны Bluetooth і Wi-Fi.</translation>
 <translation id="4750394297954878236">Прапановы</translation>
 <translation id="475088594373173692">Першы карыстальнік</translation>
@@ -4398,7 +4397,6 @@
 <translation id="5161251470972801814">Прылады USB ад пастаўшчыка "<ph name="VENDOR_NAME" />"</translation>
 <translation id="5162905305237671850">Прылада "<ph name="DEVICE_TYPE" />" заблакіравана</translation>
 <translation id="5163910114647549394">Укладка перамешчана ў канец панэлі</translation>
-<translation id="5166596762332123936">Убудова "<ph name="PLUGIN_NAME" />" заблакіравана, бо яна састарэла.</translation>
 <translation id="516747639689914043">Пратакол перадачы гіпертэксту (HTTP)</translation>
 <translation id="5170568018924773124">Паказаць у папцы</translation>
 <translation id="5171045022955879922">Знайдзіце або ўвядзіце URL-адрас</translation>
@@ -4438,7 +4436,6 @@
 <translation id="520568280985468584">Сотавая сетка дададзена. Яе актывацыя можа заняць некалькі хвілін.</translation>
 <translation id="5206215183583316675">Выдаліць "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="520621735928254154">Памылка імпарту сертыфіката</translation>
-<translation id="5206562235913517859">Ідэнтыфікатар крамы рознічнага гандлю ў фармаце ABC-1234</translation>
 <translation id="5207949376430453814">Указваць на курсор рэдагавання тэксту</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> запытвае дазвол праверыць, ці выкарыстоўваеце вы прыдатную прыладу Chrome OS.</translation>
 <translation id="5208548918290612795">Захоўванне токена аўтэнтыфікацыі сэрвісу <ph name="WEB_DRIVE" /></translation>
@@ -4699,13 +4696,11 @@
 <translation id="5463625433003343978">Ідзе пошук прылад...</translation>
 <translation id="5463845647891602726">Каб вызваліць месца, выдаліце файлы з прылады</translation>
 <translation id="5463856536939868464">Меню са схаванымі закладкамі</translation>
-<translation id="5464632865477611176">Запусціць гэты раз</translation>
 <translation id="5464660706533281090">Карыстальнік-дзіця не можа змяняць гэту наладу.</translation>
 <translation id="5466374726908360271">У&amp;ставіць і шукаць па запыце "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="5467207440419968613">Заблакіравана: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5468173180030470402">Ідзе пошук файлаабменнікаў</translation>
 <translation id="5468330507528805311">Стан рэжыму мадэма:</translation>
-<translation id="5468881191994555667">Выбраць файл</translation>
 <translation id="5469852975082458401">Вы можаце перамяшчацца па старонках з дапамогай тэкставага курсора. Каб выключыць гэту функцыю, націсніце клавішу F7.</translation>
 <translation id="5470735824776589490">Трэба перазапусціць прыладу, перш чым скідваць налады з дапамогай Powerwash. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Вітаю! Мой голас будзе выкарыстоўвацца для сінтэзу маўлення.</translation>
@@ -5595,7 +5590,6 @@
 <translation id="6318944945640833942">Не ўдалося знайсці прынтар. Увядзіце адрас прынтара яшчэ раз.</translation>
 <translation id="6322370287306604163">Разблакіроўку прылады можна зрабіць хутчэйшай, выкарыстоўваючы адбітак пальца</translation>
 <translation id="6322559670748154781">Гэты файл звычайна не спампоўваецца і быў заблакіраваны Палепшанай абаронай</translation>
-<translation id="6324083483652497048">Націсніце, каб дазволіць гэтым пашырэнням чытаць і змяняць сайт <ph name="ORIGIN" />:</translation>
 <translation id="6324916366299863871">Рэдагаваць ярлык</translation>
 <translation id="6325191661371220117">Выключыць аўтаматычны запуск</translation>
 <translation id="6326175484149238433">Выдаліць з Chrome</translation>
@@ -8113,7 +8107,6 @@
 <translation id="8734073480934656039">Калі гэта налада будзе ўключана, праграмы-кіёскі будуць аўтаматычна запускацца пры запуску АС.</translation>
 <translation id="8734674662128056360">Блакіроўка старонніх файлаў cookie</translation>
 <translation id="8734755021067981851">Няма падключаных USB-прылад.</translation>
-<translation id="873545264931343897">Калі <ph name="PLUGIN_NAME" /> скончыць абнаўленне, перазагрузіце старонку, каб актываваць гэту ўбудову</translation>
 <translation id="8736288397686080465">Гэты сайт быў абноўлены ў фоне.</translation>
 <translation id="8737709691285775803">Фіктыўныя</translation>
 <translation id="8737914367566358838">Выберыце, на якую мову перакласці старонку</translation>

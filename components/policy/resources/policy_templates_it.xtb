@@ -1759,9 +1759,6 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="274769314493317695">Se per il criterio <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" /> viene selezionata l'opzione <ph name="PRINTERS_WHITELIST" />, la configurazione del criterio <ph name="NATIVE_PRINTERS_BULK_WHITELIST_POLICY_NAME" /> consente di specificare le stampanti che possono essere utilizzate dagli utenti. Soltanto le stampanti con ID corrispondenti ai valori specificati in questo criterio saranno a disposizione degli utenti. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nel criterio <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.
 
       Questo criterio è deprecato. Usa il criterio <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />.</translation>
-<translation id="2751959596774212778">WebSQL in contesti non sicuri è disattivato per impostazione predefinita a partire da M107 e verrà completamente rimosso in M110.
-          Se il criterio viene impostato su false o se non viene configurato, in contesti non sicuri WebSQL rimarrà attivo fino alla fine di M106, quindi disattivato da M107.
-          Se questo criterio viene impostato su true, in contesti non sicuri WebSQL verrà attivato.</translation>
 <translation id="2752046642026416564">Se il criterio viene impostato su Attivato o se non viene configurato, <ph name="PRODUCT_NAME" /> può utilizzare gli host di messaggistica nativi installati a livello di utente.
 
       Se viene impostato su Disattivato, <ph name="PRODUCT_NAME" /> può utilizzare questi host solo se sono installati a livello di sistema.</translation>

@@ -140,6 +140,7 @@
 <translation id="1834891354138622109">Stupac</translation>
 <translation id="1846771122725914429">Bluetooth brajev redak</translation>
 <translation id="1852018405765032699">Dodirivanjem zaslona četirima prstima otvaraju se i zatvaraju ChromeVoxovi izbornici. Ti izbornici sadrže korisne informacije o naredbama i prečacima. Nakon što ih otvorite, možete se kretati kroz stavke tako da prelazite po njima jednim prstom i aktivirati ih tako da ih dvaput dodirnete. Da biste nastavili, dodirnite zaslon četirima prstima.</translation>
+<translation id="1864430479908918647">Pritisnite Pretraživanje + razmaknicu</translation>
 <translation id="1865601187525349519">Završetak teksta</translation>
 <translation id="1876229593313240038">dokm</translation>
 <translation id="1902396333223336119">Ćelija</translation>
@@ -778,6 +779,7 @@
 <translation id="6236061028292614533">Sljedeći naslov</translation>
 <translation id="6254901459154107917">Sljedeće tekstualno područje s mogućnošću uređivanja</translation>
 <translation id="6259464875943891919">Napustili ste <ph name="TYPE" />.</translation>
+<translation id="6280088282605782512">Dodirnite dvaput</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">Ključne tipke: tipka za pretraživanje</translation>
 <translation id="6305702903308659374">Zadrži normalnu glasnoću reprodukcije čak i kad ChromeVox govori</translation>
@@ -981,6 +983,7 @@
 <translation id="7731785449856576010">Nema sljedećeg widgeta medija</translation>
 <translation id="7735498529470878067">Istraživanje dodirom može vam pomoći da brzo dobijete uvid u to što se nalazi na zaslonu.</translation>
 <translation id="773906353055481349">Za kretanje od ćelije do ćelije pritisnite tipku za pretraživanje + Ctrl + Alt i strelice</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> – <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">Započelo je preuzimanje datoteke <ph name="FILE_NAME" /></translation>
 <translation id="7768784765476638775">Odabir za govor</translation>
 <translation id="7776293189010177726">Otvaranje ChromeVoxovih izbornika</translation>

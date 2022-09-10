@@ -140,6 +140,7 @@
 <translation id="1834891354138622109">Колона</translation>
 <translation id="1846771122725914429">Екран за брајово писмо со Bluetooth</translation>
 <translation id="1852018405765032699">Менијата на ChromeVox се отвораат и затвораат со допирање на екранот со четири прста. Овие менија содржат корисни информации за наредби и кратенки. Кога се отворени, може да повлекувате со еден прст за да се движите низ ставките и да допирате двапати за да активирате ставки. За да продолжите, допрете го екранот со четири прста.</translation>
+<translation id="1864430479908918647">Притиснете „Пребарување + празно место“</translation>
 <translation id="1865601187525349519">Крај на текст</translation>
 <translation id="1876229593313240038">документ</translation>
 <translation id="1902396333223336119">Ќелија</translation>
@@ -779,6 +780,7 @@
 <translation id="6236061028292614533">Следен наслов</translation>
 <translation id="6254901459154107917">Следна област за уредување текст</translation>
 <translation id="6259464875943891919">Излеговте од <ph name="TYPE" />.</translation>
+<translation id="6280088282605782512">Допрете двапати</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">Основни копчиња: Search</translation>
 <translation id="6305702903308659374">Пуштај со нормална јачина на звук дури и кога зборува ChromeVox</translation>
@@ -982,6 +984,7 @@
 <translation id="7731785449856576010">Нема следен виџет за аудиовизуелни содржини</translation>
 <translation id="7735498529470878067">„Истражувај со допир“ може да ви помогне брзо да ги разгледате работите на екранот.</translation>
 <translation id="773906353055481349">Притиснете Search+Ctrl+Alt со стрелките за навигација по ќелија</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> за да <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">Преземањето на <ph name="FILE_NAME" /> започна</translation>
 <translation id="7768784765476638775">Изберете за говор</translation>
 <translation id="7776293189010177726">Отворете ги менијата на ChromeVox</translation>

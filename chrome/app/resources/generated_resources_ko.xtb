@@ -1120,7 +1120,6 @@
 <translation id="2028449514182362831">움직임 감지 센서가 필요한 기능이 작동하지 않음</translation>
 <translation id="202918510990975568">비밀번호를 입력하여 보안을 구성하고 로그인하세요.</translation>
 <translation id="2030455719695904263">트랙패드</translation>
-<translation id="2031385797619033640">클릭하여 <ph name="EXTENSIONS_REQUESTING_ACCESS" /> 확장 프로그램이 <ph name="ORIGIN" /> 사이트를 읽고 변경하도록 허용합니다.</translation>
 <translation id="2031639749079821948">비밀번호가 Google 계정에 저장되었습니다.</translation>
 <translation id="2031914984822377766">선호하는 <ph name="LINK_BEGIN" />웹사이트 언어<ph name="LINK_END" />를 추가하세요. 번역 시 목록의 가장 위에 있는 언어가 사용됩니다.</translation>
 <translation id="2033758234986231162">휴대전화와 연결을 유지할 수 없습니다. 휴대전화가 근처에 있고, 잠금 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
@@ -1239,7 +1238,6 @@
 <translation id="2127372758936585790">저출력 충전기</translation>
 <translation id="212862741129535676">주파수 상태 점유율</translation>
 <translation id="212876957201860463">휴대기기 설정 준비 중...</translation>
-<translation id="2129825002735785149">플러그인 업데이트</translation>
 <translation id="2131077480075264"><ph name="IMPORT_NAME" />에서 허용하지 않으므로 '<ph name="APP_NAME" />'을(를) 설치할 수 없습니다.</translation>
 <translation id="21354425047973905">PIN 숨기기</translation>
 <translation id="2135456203358955318">고정 돋보기</translation>
@@ -4009,6 +4007,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="474609389162964566">"Hey Google"로 어시스턴트에 액세스</translation>
 <translation id="4746351372139058112">메시지</translation>
 <translation id="4748783296226936791">사이트에서는 흔히 사용되지 않는 키보드, 게임 컨트롤러, 기타 기기가 필요한 기능을 지원하기 위해 주로 HID 기기에 연결합니다.</translation>
+<translation id="4749960740855309258">새 탭 열기</translation>
 <translation id="4750185073185658673">휴대전화에서 몇 가지 권한을 추가로 검토하세요. 휴대전화의 블루투스 및 Wi-Fi가 켜져 있어야 합니다.</translation>
 <translation id="4750394297954878236">추천</translation>
 <translation id="475088594373173692">첫 번째 사용자</translation>
@@ -4417,7 +4416,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5161251470972801814">USB 기기(업체: <ph name="VENDOR_NAME" />)</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> 차단됨</translation>
 <translation id="5163910114647549394">탭스트립 끝으로 탭을 이동함</translation>
-<translation id="5166596762332123936"><ph name="PLUGIN_NAME" />이(가) 오래되어 차단되었습니다</translation>
 <translation id="516747639689914043">하이퍼텍스트 전송 프로토콜(HTTP)</translation>
 <translation id="5170568018924773124">폴더 열기</translation>
 <translation id="5171045022955879922">검색 또는 URL 입력</translation>
@@ -4458,7 +4456,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="520568280985468584">네트워크가 추가되었습니다. 셀룰러 네트워크가 활성화되려면 몇 분 정도 걸릴 수 있습니다.</translation>
 <translation id="5206215183583316675">'<ph name="CERTIFICATE_NAME" />'을(를) 삭제하시겠습니까?</translation>
 <translation id="520621735928254154">인증서 가져오기 오류</translation>
-<translation id="5206562235913517859">소매업체 매장 ID 형식: ABC-1234</translation>
 <translation id="5207949376430453814">텍스트 캐럿 강조표시</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" />에서 내가 사용 중인 ChromeOS 기기가 적합한지 확인하려고 합니다.</translation>
 <translation id="5208548918290612795"><ph name="WEB_DRIVE" /> 인증 토큰을 저장하는 중</translation>
@@ -4719,13 +4716,11 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5463625433003343978">기기를 찾는 중...</translation>
 <translation id="5463845647891602726">여유 공간을 늘리려면 기기에서 파일을 삭제하세요.</translation>
 <translation id="5463856536939868464">숨은 북마크를 포함하는 메뉴</translation>
-<translation id="5464632865477611176">이번만 실행</translation>
 <translation id="5464660706533281090">이 설정은 자녀 사용자가 변경할 수 없습니다.</translation>
 <translation id="5466374726908360271">'<ph name="SEARCH_TERMS" />' 붙여넣기 및 검색(&amp;S)</translation>
 <translation id="5467207440419968613"><ph name="PERMISSION_1" /> 및 <ph name="PERMISSION_2" /> 차단함</translation>
 <translation id="5468173180030470402">파일 공유 찾는 중</translation>
 <translation id="5468330507528805311">테더링 상태:</translation>
-<translation id="5468881191994555667">파일 선택</translation>
 <translation id="5469852975082458401">텍스트 커서로 페이지를 탐색할 수 있습니다. 사용 중지하려면 F7을 누르세요.</translation>
 <translation id="5470735824776589490">기기를 파워워시로 재설정하기 전에 다시 시작해야 합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">안녕하세요. 텍스트 음성 변환의 음성입니다.</translation>
@@ -5616,7 +5611,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6318944945640833942">프린터를 찾을 수 없습니다. 프린터 주소를 다시 입력해 주세요.</translation>
 <translation id="6322370287306604163">지문으로 신속하게 잠금 해제</translation>
 <translation id="6322559670748154781">일반적으로 다운로드하지 않는 파일이며, 고급 보호 기능으로 차단되었습니다</translation>
-<translation id="6324083483652497048">클릭하여 다음 확장 프로그램이 <ph name="ORIGIN" /> 사이트를 읽고 변경하도록 허용합니다.</translation>
 <translation id="6324916366299863871">바로가기 수정</translation>
 <translation id="6325191661371220117">자동 실행 사용 안함</translation>
 <translation id="6326175484149238433">Chrome에서 삭제</translation>
@@ -8131,7 +8125,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8734073480934656039">이 설정을 사용하면 시작 시 키오스크 애플리케이션이 자동으로 실행됩니다.</translation>
 <translation id="8734674662128056360">타사 쿠키 차단</translation>
 <translation id="8734755021067981851">연결된 USB 기기가 없습니다.</translation>
-<translation id="873545264931343897"><ph name="PLUGIN_NAME" /> 업데이트가 완료되면 페이지를 새로고침하여 활성화하세요.</translation>
 <translation id="8736288397686080465">이 사이트는 백그라운드에서 업데이트되었습니다.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">페이지를 번역할 언어 선택</translation>

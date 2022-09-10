@@ -140,6 +140,7 @@
 <translation id="1834891354138622109">Sleja</translation>
 <translation id="1846771122725914429">Bluetooth Braila displejs</translation>
 <translation id="1852018405765032699">Pieskaroties ekrānam ar četriem pirkstiem, tiks atvērtas un aizvērtas ChromeVox izvēlnes. Šajās izvēlnēs ir noderīga informācija par komandām un īsinājumtaustiņiem. Kad izvēlnes ir atvērtas, varat vilkt ar vienu pirkstu, lai pārvietotos pa vienumiem, un veikt dubultskārienu, lai aktivizētu vienumus. Lai turpinātu, pieskarieties ekrānam ar četriem pirkstiem.</translation>
+<translation id="1864430479908918647">Vienlaikus nospiediet meklēšanas taustiņu un atstarpes taustiņu</translation>
 <translation id="1865601187525349519">Teksta beigas</translation>
 <translation id="1876229593313240038">dokuments</translation>
 <translation id="1902396333223336119">Šūna</translation>
@@ -778,6 +779,7 @@
 <translation id="6236061028292614533">Nākamais virsraksts</translation>
 <translation id="6254901459154107917">Nākamais rediģējamais teksta apgabals</translation>
 <translation id="6259464875943891919">Tika aizvērts <ph name="TYPE" />.</translation>
+<translation id="6280088282605782512">Veiciet dubultskārienu</translation>
 <translation id="6282062888058716985">navigācija</translation>
 <translation id="6295699829709583154">Svarīgākie taustiņi: meklēšanas taustiņš</translation>
 <translation id="6305702903308659374">Atskaņot parastā skaļumā ChromeVox komentāru izvades laikā</translation>
@@ -981,6 +983,7 @@
 <translation id="7731785449856576010">Nav nākamā multivides logrīka.</translation>
 <translation id="7735498529470878067">Pārlūkošana pieskaroties var palīdzēt ātri uzzināt, kāds saturs tiek rādīts ekrānā.</translation>
 <translation id="773906353055481349">Lai pārvietotos pa vienai šūnai, vienlaicīgi ar kādu no bulttaustiņiem nospiediet meklēšanas, vadīšanas un alternēšanas taustiņu.</translation>
+<translation id="7746976083433980639"><ph name="ACTION" />, lai aktivizētu šādu darbību: <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">Faila “<ph name="FILE_NAME" />” lejupielāde ir sākta</translation>
 <translation id="7768784765476638775">Atlasīt, lai izrunātu</translation>
 <translation id="7776293189010177726">Atvērt ChromeVox izvēlnes</translation>

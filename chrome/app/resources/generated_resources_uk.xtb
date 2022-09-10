@@ -1123,7 +1123,6 @@
 <translation id="2028449514182362831">Функції, яким потрібні датчики руху, не працюватимуть</translation>
 <translation id="202918510990975568">Введіть пароль, щоб налаштувати параметри безпеки та входу</translation>
 <translation id="2030455719695904263">Сенсорна панель</translation>
-<translation id="2031385797619033640">Натисніть, щоб дозволити розширенню (<ph name="EXTENSIONS_REQUESTING_ACCESS" />) переглядати та змінювати сайт <ph name="ORIGIN" />:</translation>
 <translation id="2031639749079821948">Ваш пароль збережено в обліковому записі Google</translation>
 <translation id="2031914984822377766">Додайте <ph name="LINK_BEGIN" />мови для веб-сайту<ph name="LINK_END" />. Текст перекладатиметься на першу мову зі списку.</translation>
 <translation id="2033758234986231162">Пристрій не може підтримувати зв’язок із телефоном. Переконайтеся, що ваш телефон поблизу й розблокований, а Bluetooth і Wi-Fi увімкнено.</translation>
@@ -1242,7 +1241,6 @@
 <translation id="2127372758936585790">Зарядний пристрій низької потужності</translation>
 <translation id="212862741129535676">Відсоток заряду акумулятора, який використовує стан частоти</translation>
 <translation id="212876957201860463">Підготовка до налаштування мобільного пристрою…</translation>
-<translation id="2129825002735785149">Оновити плагін</translation>
 <translation id="2131077480075264">Не вдається встановити додаток <ph name="APP_NAME" />, оскільки він заборонений в <ph name="IMPORT_NAME" /></translation>
 <translation id="21354425047973905">Сховати PIN-коди</translation>
 <translation id="2135456203358955318">Закріплена лупа</translation>
@@ -4007,6 +4005,7 @@
 <translation id="474609389162964566">Активуйте Асистента командою "Ok Google"</translation>
 <translation id="4746351372139058112">Повідомлення</translation>
 <translation id="4748783296226936791">Сайти зазвичай підключаються до пристроїв HID для роботи функцій, які використовують нестандартні клавіатури, ігрові контролери й інші пристрої</translation>
+<translation id="4749960740855309258">Відкрити нову вкладку</translation>
 <translation id="4750185073185658673">Перейдіть на телефон і перегляньте ще кілька дозволів. Переконайтеся, що на ньому ввімкнено Bluetooth і Wi-Fi.</translation>
 <translation id="4750394297954878236">Пропозиції</translation>
 <translation id="475088594373173692">Перший користувач</translation>
@@ -4415,7 +4414,6 @@
 <translation id="5161251470972801814">Пристрої USB від постачальника "<ph name="VENDOR_NAME" />"</translation>
 <translation id="5162905305237671850">Пристрій <ph name="DEVICE_TYPE" /> заблоковано</translation>
 <translation id="5163910114647549394">Вкладку переміщено на кінець панелі</translation>
-<translation id="5166596762332123936">Плагін <ph name="PLUGIN_NAME" /> заблоковано, оскільки він застарів</translation>
 <translation id="516747639689914043">Hypertext Transport Protocol (HTTP)</translation>
 <translation id="5170568018924773124">Показати в папці</translation>
 <translation id="5171045022955879922">Введіть запит або URL-адресу</translation>
@@ -4455,7 +4453,6 @@
 <translation id="520568280985468584">Мобільну мережу додано. Для її активації може знадобитися кілька хвилин.</translation>
 <translation id="5206215183583316675">Видалити сертифікат "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="520621735928254154">Не вдалось імпортувати сертифікат</translation>
-<translation id="5206562235913517859">Введіть ідентифікатор роздрібного магазину у форматі ABC-1234</translation>
 <translation id="5207949376430453814">Підсвічувати місце введення тексту</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> хоче перевірити, чи користуєтеся ви придатним пристроєм з ОС Chrome.</translation>
 <translation id="5208548918290612795">Зберігання маркера автентифікації сервісу <ph name="WEB_DRIVE" /></translation>
@@ -4716,13 +4713,11 @@
 <translation id="5463625433003343978">Пошук пристроїв…</translation>
 <translation id="5463845647891602726">Щоб звільнити місце, видаліть файли з пристрою</translation>
 <translation id="5463856536939868464">Меню, яке містить сховані закладки</translation>
-<translation id="5464632865477611176">Запустити цього разу</translation>
 <translation id="5464660706533281090">Дитина не може змінювати це налаштування.</translation>
 <translation id="5466374726908360271">Вставити й шукати "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="5467207440419968613">Заблоковано: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5468173180030470402">Пошук файлообмінників</translation>
 <translation id="5468330507528805311">Статус точки доступу:</translation>
-<translation id="5468881191994555667">Вибрати файл</translation>
 <translation id="5469852975082458401">Ви можете оглядати сторінки за допомогою текстового курсора. Щоб вимкнути цей режим, натисніть F7.</translation>
 <translation id="5470735824776589490">Перш ніж скинути налаштування за допомогою функції Powerwash, потрібно перезапустити пристрій. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Вітаю! Я – голос для синтезу мовлення.</translation>
@@ -5610,7 +5605,6 @@
 <translation id="6318944945640833942">Не вдалося виявити принтер. Введіть його адресу знову.</translation>
 <translation id="6322370287306604163">Розблоковуйте пристрій швидше за допомогою відбитка пальця</translation>
 <translation id="6322559670748154781">Додатковий захист заблокував цей файл, оскільки його рідко завантажують</translation>
-<translation id="6324083483652497048">Натисніть, щоб дозволити вказаним розширенням переглядати та змінювати сайт <ph name="ORIGIN" />:</translation>
 <translation id="6324916366299863871">Змінити ярлик</translation>
 <translation id="6325191661371220117">Вимкнути автозапуск</translation>
 <translation id="6326175484149238433">Видалити з Chrome</translation>
@@ -8130,7 +8124,6 @@
 <translation id="8734073480934656039">Якщо ввімкнути це налаштування, додатки для терміналів запускатимуться автоматично під час запуску комп’ютера.</translation>
 <translation id="8734674662128056360">Блокування файлів cookie третіх сторін</translation>
 <translation id="8734755021067981851">Немає підключених пристроїв USB.</translation>
-<translation id="873545264931343897">Коли оновлення плагіна <ph name="PLUGIN_NAME" /> закінчиться, оновіть сторінку, щоб активувати його</translation>
 <translation id="8736288397686080465">Цей сайт оновлено у фоновому режимі.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Виберіть, якою мовою перекласти сторінку</translation>

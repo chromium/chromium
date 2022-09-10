@@ -1121,7 +1121,6 @@
 <translation id="2028449514182362831">Функциите на коишто им требаат сензорите за движење нема да работат</translation>
 <translation id="202918510990975568">Внесете ја лозинката за да ги конфигурирате безбедноста и најавувањето</translation>
 <translation id="2030455719695904263">Подлога на допир</translation>
-<translation id="2031385797619033640">Кликнете за да се дозволи <ph name="EXTENSIONS_REQUESTING_ACCESS" /> да го чита или менува <ph name="ORIGIN" />:</translation>
 <translation id="2031639749079821948">Вашата лозинка е зачувана во сметката на Google</translation>
 <translation id="2031914984822377766">Додајте ги претпочитаните <ph name="LINK_BEGIN" />јазици за веб-сајтови<ph name="LINK_END" />. Првиот јазик на списокот ќе се користи за преводи.</translation>
 <translation id="2033758234986231162">Не може да се одржи врска со телефонот. Проверете дали телефонот е во близина и отклучен и дали се вклучени Bluetooth и Wi-Fi.</translation>
@@ -1240,7 +1239,6 @@
 <translation id="2127372758936585790">Полнач со ниско напојување</translation>
 <translation id="212862741129535676">Процент на зафатеност на фреквентна состојба</translation>
 <translation id="212876957201860463">Се подготвуваме да го поставиме вашиот мобилен уред…</translation>
-<translation id="2129825002735785149">Ажурирајте го приклучокот</translation>
 <translation id="2131077480075264">Не може да го инсталира „<ph name="APP_NAME" />“ бидејќи не е дозволено од „<ph name="IMPORT_NAME" />“</translation>
 <translation id="21354425047973905">Сокријте ги PIN-кодовите</translation>
 <translation id="2135456203358955318">Закотвена лупа</translation>
@@ -1803,6 +1801,7 @@
 <translation id="2637400434494156704">Погрешен PIN. Имате уште еден обид.</translation>
 <translation id="2638286699381354126">Ажурирај...</translation>
 <translation id="2638662041295312666">Слика при најавување</translation>
+<translation id="2640299212685523844">Користи GTK</translation>
 <translation id="264083724974021997">Поврзете се со телефонот - дијалог</translation>
 <translation id="2642111877055905627">Фудбалска топка</translation>
 <translation id="2643698698624765890">Уредувајте ги наставките со кликнување на Наставки во менито Прозорец.</translation>
@@ -1964,6 +1963,7 @@
 <translation id="2783829359200813069">Избор на типови шифрирање</translation>
 <translation id="2783952358106015700">Користете го безбедносниот клуч со <ph name="APP_NAME" /></translation>
 <translation id="2785873697295365461">Опишувачи на датотеки</translation>
+<translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">Зачувувај ги локалните податоци од прелистувањето (обележувачи, лозинки, историја итн.)</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
@@ -2102,6 +2102,7 @@
 <translation id="2902312830803030883">Повеќе дејства</translation>
 <translation id="2903457445916429186">Отвори ги избраните ставки</translation>
 <translation id="2903882649406874750">Секогаш блокирај го пристапот на <ph name="HOST" /> до сензорите</translation>
+<translation id="2904845070985032877">Паузирај ги анимациите</translation>
 <translation id="2907619724991574506">URL-врски за стартување</translation>
 <translation id="2907798539022650680">Не успеа да се поврзе на „<ph name="NAME" />“: <ph name="DETAILS" />
     Порака од серверот: <ph name="SERVER_MSG" /></translation>
@@ -2927,6 +2928,7 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Вие и Google</translation>
 <translation id="3722108462506185496">Грешка при стартувањето на услугата за виртуелна машина. Обидете се повторно.</translation>
+<translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Достапни Wi-Fi мрежи</translation>
 <translation id="3727187387656390258">Провери појавен прозорец</translation>
 <translation id="372722114124766626">Само еднаш</translation>
@@ -3006,6 +3008,7 @@
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome не најде штетен софтвер на вашиот компјутер • Проверено пред 1 ден}one{Chrome не најде штетен софтвер на вашиот компјутер • Проверено пред {NUM_DAYS} ден}other{Chrome не најде штетен софтвер на вашиот компјутер • Проверено пред {NUM_DAYS} дена}}</translation>
 <translation id="379500251094592809">За да користите „Споделување во близина“, проверете дали двата уреда се отклучени, блиску еден до друг и дали имаат вклучено Bluetooth. Ако споделувате со Chromebook што не е во вашите контакти, проверете дали има вклучено „Видливост во близина“ (отворете ја статусната област, така што ќе го изберете времето, а потоа вклучете „Видливост во близина“) <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Исклучено</translation>
+<translation id="3795766489237825963">Пушти ги анимациите</translation>
 <translation id="3796648294839530037">Омилени мрежи:</translation>
 <translation id="3797739167230984533">Вашиот <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> е управуван<ph name="END_LINK" /> од организацијата</translation>
 <translation id="3797900183766075808">&amp;Пребарај „<ph name="SEARCH_TERMS" />“ на <ph name="SEARCH_ENGINE" /></translation>
@@ -3423,6 +3426,7 @@
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Јазици</translation>
 <translation id="4184803915913850597">HID-уред (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
+<translation id="4186749321808907788"><ph name="QUERY_NAME" /> - Пребарување на <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="4187424053537113647">Се поставува <ph name="APP_NAME" />…</translation>
 <translation id="4190828427319282529">Нагласи го фокусот на тастатурата</translation>
 <translation id="4193836101014293726">Не може да се избрише профилов</translation>
@@ -4005,6 +4009,7 @@
 <translation id="474609389162964566">Пристапувајте до вашиот „Помошник“ со „Ok Google“</translation>
 <translation id="4746351372139058112">Пораки</translation>
 <translation id="4748783296226936791">Сајтовите обично се поврзуваат со HID-уреди за функции што користат невообичаени тастатури, контролери за игри и други уреди</translation>
+<translation id="4749960740855309258">Отворете нова картичка</translation>
 <translation id="4750185073185658673">Одете на телефонот за да прегледате уште неколку дозволи. Проверете дали се вклучени Bluetooth и Wi-Fi на телефонот.</translation>
 <translation id="4750394297954878236">Предлози</translation>
 <translation id="475088594373173692">Прв корисник</translation>
@@ -4413,7 +4418,6 @@
 <translation id="5161251470972801814">USB-уреди од <ph name="VENDOR_NAME" /></translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> е блокиран</translation>
 <translation id="5163910114647549394">Картичката е преместена на крајот од лентата со картички</translation>
-<translation id="5166596762332123936"><ph name="PLUGIN_NAME" /> е блокиран затоа што е застарен</translation>
 <translation id="516747639689914043">Протокол за пренос на хипертекст (HTTP)</translation>
 <translation id="5170568018924773124">Прикажи во папка</translation>
 <translation id="5171045022955879922">Барај или впиши URL</translation>
@@ -4437,6 +4441,7 @@
 <translation id="5190926251776387065">Активирај ја портата</translation>
 <translation id="5191094172448199359">PIN-кодовите што ги внесовте не се совпаѓаат</translation>
 <translation id="5191251636205085390">Дознајте за новите технологии што имаат за цел да ги заменат колачињата на трети лица и контролирајте ги</translation>
+<translation id="519185197579575131">Користи QT</translation>
 <translation id="5192062846343383368">Отворете ја апликацијата Family Link за да ги видите поставките за надзор</translation>
 <translation id="5193988420012215838">Копирано во привремената меморија</translation>
 <translation id="5194256020863090856">Ова влијае само на прозорците „Инкогнито“</translation>
@@ -4453,7 +4458,6 @@
 <translation id="520568280985468584">Мрежата е успешно додадена. Може да поминат неколку минути пред мобилната мрежа да стане активна.</translation>
 <translation id="5206215183583316675">Да се избрише „<ph name="CERTIFICATE_NAME" />“?</translation>
 <translation id="520621735928254154">Грешка при увезување сертификат</translation>
-<translation id="5206562235913517859">ID на малопродажната продавница е во формат ABC-1234</translation>
 <translation id="5207949376430453814">Нагласи го каретот за текст</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> сака да провери дали користите уред со Chrome OS што ги исполнува условите.</translation>
 <translation id="5208548918290612795">Се складира токенот за проверка на <ph name="WEB_DRIVE" /></translation>
@@ -4714,13 +4718,11 @@
 <translation id="5463625433003343978">Се бараат уреди…</translation>
 <translation id="5463845647891602726">За да го зголемите слободниот простор, избришете датотеки од уредот</translation>
 <translation id="5463856536939868464">Мени што содржи сокриени обележувачи</translation>
-<translation id="5464632865477611176">Активирај овојпат</translation>
 <translation id="5464660706533281090">Ако корисникот е дете, нема да може да ја промени поставкава.</translation>
 <translation id="5466374726908360271">&amp;Залепи и пребарај „<ph name="SEARCH_TERMS" />“</translation>
 <translation id="5467207440419968613">Блокирани: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5468173180030470402">Се бараат споделувања датотеки</translation>
 <translation id="5468330507528805311">Статус на интернет преку мобилен:</translation>
-<translation id="5468881191994555667">Изберете датотека</translation>
 <translation id="5469852975082458401">Може да се движите низ страниците со курсорот за текст. Притиснете F7 за да исклучите.</translation>
 <translation id="5470735824776589490">Треба да го рестартирате уредот за да може да го ресетирате со Powerwash. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="5471768120198416576">Здраво! Јас сум вашиот глас за функцијата „Од текст до говор“.</translation>
@@ -5375,6 +5377,7 @@
 <translation id="6087960857463881712">Прекрасно лице</translation>
 <translation id="608912389580139775">За да ја додадете страницава во списокот за читање, допрете на иконата за обележувач</translation>
 <translation id="6091761513005122595">Споделувањето е успешно монтирано.</translation>
+<translation id="6093803049406781019">Избриши го профилот</translation>
 <translation id="6093888419484831006">Се откажува ажурирањето...</translation>
 <translation id="6095541101974653012">Одјавени сте.</translation>
 <translation id="6095984072944024315">−</translation>
@@ -5610,7 +5613,6 @@
 <translation id="6318944945640833942">Не може да се открие печатач. Внесете ја адресата на печатачот повторно.</translation>
 <translation id="6322370287306604163">Отклучувајте побрзо со отпечаток</translation>
 <translation id="6322559670748154781">Датотекава обично не се презема и е блокирана од „Напредна заштита“</translation>
-<translation id="6324083483652497048">Кликнете за да дозволите екстензииве да го читаат и менуваат <ph name="ORIGIN" />:</translation>
 <translation id="6324916366299863871">Изменете ја кратенката</translation>
 <translation id="6325191661371220117">Оневозможи автоматско стартување</translation>
 <translation id="6326175484149238433">Отстрани од Chrome</translation>
@@ -8128,7 +8130,6 @@
 <translation id="8734073480934656039">Со овозможување на оваа поставка се дозволува киоск-апликациите автоматски да се активираат при стартување.</translation>
 <translation id="8734674662128056360">Блокирање колачиња од трета страна</translation>
 <translation id="8734755021067981851">Не се прикачени уреди со USB.</translation>
-<translation id="873545264931343897">Кога <ph name="PLUGIN_NAME" /> ќе заврши со ажурирање, повторно вчитајте ја страницата за да го активирате</translation>
 <translation id="8736288397686080465">Локацијава се ажурираше во заднина.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Изберете го јазикот за превод на страницата</translation>
