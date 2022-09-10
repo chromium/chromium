@@ -34,7 +34,6 @@
 #include "device/gamepad/test_support/fake_igamepad_statics.h"
 #include "device/gamepad/test_support/fake_winrt_wgi_environment.h"
 #include "device/gamepad/test_support/wgi_test_error_code.h"
-#include "device/gamepad/wgi_data_fetcher_win.h"
 #include "device/gamepad/wgi_gamepad_device.h"
 #include "services/device/device_service_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
