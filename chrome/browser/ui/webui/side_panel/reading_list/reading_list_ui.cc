@@ -160,6 +160,7 @@ void ReadingListUI::BindInterface(
 }
 
 void ReadingListUI::CreateShoppingListHandler(
+    mojo::PendingRemote<shopping_list::mojom::Page> page,
     mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandler> receiver) {
   Profile* const profile = Profile::FromWebUI(web_ui());
   bookmarks::BookmarkModel* bookmark_model =
@@ -167,7 +168,7 @@ void ReadingListUI::CreateShoppingListHandler(
   commerce::ShoppingService* shopping_service =
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
   shopping_list_handler_ = std::make_unique<commerce::ShoppingListHandler>(
-      std::move(receiver), bookmark_model, shopping_service,
+      std::move(page), std::move(receiver), bookmark_model, shopping_service,
       g_browser_process->GetApplicationLocale());
 }
 

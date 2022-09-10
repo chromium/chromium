@@ -57,9 +57,18 @@ export class ShoppingListElement extends PolymerElement {
       BookmarksApiProxyImpl.getInstance();
   private shoppingListApi_: ShoppingListApiProxy =
       ShoppingListApiProxyImpl.getInstance();
+  private listenerIds_: number[] = [];
 
   override connectedCallback() {
     super.connectedCallback();
+
+    const callbackRouter = this.shoppingListApi_.getCallbackRouter();
+    this.listenerIds_.push(
+        callbackRouter.priceTrackedForBookmark.addListener(
+            (bookmarkId: bigint) => this.onBookmarkPriceTracked(bookmarkId)),
+        callbackRouter.priceUntrackedForBookmark.addListener(
+            (bookmarkId: bigint) => this.onBookmarkPriceUntracked(bookmarkId)),
+    );
     try {
       this.open_ =
           JSON.parse(window.localStorage[LOCAL_STORAGE_EXPAND_STATUS_KEY]);
@@ -67,6 +76,13 @@ export class ShoppingListElement extends PolymerElement {
       this.open_ = true;
       window.localStorage[LOCAL_STORAGE_EXPAND_STATUS_KEY] = this.open_;
     }
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+
+    this.listenerIds_.forEach(
+        id => this.shoppingListApi_.getCallbackRouter().removeListener(id));
   }
 
   private getFaviconUrl_(url: string): string {
@@ -149,6 +165,22 @@ export class ShoppingListElement extends PolymerElement {
     return this.untrackedItems_.includes(item) ?
         loadTimeData.getString('shoppingListTrackPriceButtonDescription') :
         loadTimeData.getString('shoppingListUntrackPriceButtonDescription');
+  }
+
+  private onBookmarkPriceTracked(bookmarkId: bigint) {
+    this.untrackedItems_ =
+        this.untrackedItems_.filter(item => item.bookmarkId !== bookmarkId);
+  }
+
+  private onBookmarkPriceUntracked(bookmarkId: bigint) {
+    const untrackedItem =
+        this.productInfos.find(item => item.bookmarkId === bookmarkId);
+    if (untrackedItem === undefined) {
+      return;
+    }
+    if (!this.untrackedItems_.includes(untrackedItem)) {
+      this.push('untrackedItems_', untrackedItem);
+    }
   }
 }
 

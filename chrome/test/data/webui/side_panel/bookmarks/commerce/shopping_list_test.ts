@@ -91,6 +91,23 @@ suite('SidePanelShoppingListTest', () => {
         loadTimeData.getString('shoppingListUntrackPriceButtonDescription'));
   }
 
+  function checkActionButtonStatus(
+      actionButton: HTMLElement, isTracking: boolean): void {
+    if (isTracking) {
+      assertEquals(
+          actionButton.getAttribute('iron-icon'), ACTION_BUTTON_UNTRACK_IMAGE);
+      assertEquals(
+          actionButton.getAttribute('title'),
+          loadTimeData.getString('shoppingListUntrackPriceButtonDescription'));
+    } else {
+      assertEquals(
+          actionButton.getAttribute('iron-icon'), ACTION_BUTTON_TRACK_IMAGE);
+      assertEquals(
+          actionButton.getAttribute('title'),
+          loadTimeData.getString('shoppingListTrackPriceButtonDescription'));
+    }
+  }
+
   setup(async () => {
     document.body.innerHTML = '';
 
@@ -199,19 +216,45 @@ suite('SidePanelShoppingListTest', () => {
     actionButton.click();
     let id = await shoppingListApi.whenCalled('untrackPriceForBookmark');
     assertEquals(id, products[0]!.bookmarkId);
-    assertEquals(
-        actionButton.getAttribute('iron-icon'), ACTION_BUTTON_TRACK_IMAGE);
-    assertEquals(
-        actionButton.getAttribute('title'),
-        loadTimeData.getString('shoppingListTrackPriceButtonDescription'));
+    checkActionButtonStatus(actionButton, false);
 
     actionButton.click();
     id = await shoppingListApi.whenCalled('trackPriceForBookmark');
     assertEquals(id, products[0]!.bookmarkId);
-    assertEquals(
-        actionButton.getAttribute('iron-icon'), ACTION_BUTTON_UNTRACK_IMAGE);
-    assertEquals(
-        actionButton.getAttribute('title'),
-        loadTimeData.getString('shoppingListUntrackPriceButtonDescription'));
+    checkActionButtonStatus(actionButton, true);
+  });
+
+  test('ObservesTrackAndUntrackPrice', async () => {
+    // Manually untrack price for bookmark with ID 3.
+    const actionButtonA = getProductElements(shoppingList)[0]!.querySelector(
+                              '.action-button')! as HTMLElement;
+    actionButtonA.click();
+    const id = await shoppingListApi.whenCalled('untrackPriceForBookmark');
+    assertEquals(id, products[0]!.bookmarkId);
+    checkActionButtonStatus(actionButtonA, false);
+
+    shoppingListApi.getCallbackRouterRemote().priceTrackedForBookmark(
+        BigInt('3'));
+    await flushTasks();
+    checkActionButtonStatus(actionButtonA, true);
+
+    shoppingListApi.getCallbackRouterRemote().priceUntrackedForBookmark(
+        BigInt('3'));
+    await flushTasks();
+    checkActionButtonStatus(actionButtonA, false);
+
+    // Track/untrack actions for unrelated bookmarks will be no-op.
+    const actionButtonB = getProductElements(shoppingList)[1]!.querySelector(
+                              '.action-button')! as HTMLElement;
+    shoppingListApi.getCallbackRouterRemote().priceTrackedForBookmark(
+        BigInt('5'));
+    await flushTasks();
+    checkActionButtonStatus(actionButtonA, false);
+    checkActionButtonStatus(actionButtonB, true);
+    shoppingListApi.getCallbackRouterRemote().priceUntrackedForBookmark(
+        BigInt('5'));
+    await flushTasks();
+    checkActionButtonStatus(actionButtonA, false);
+    checkActionButtonStatus(actionButtonB, true);
   });
 });

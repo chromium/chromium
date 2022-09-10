@@ -8,12 +8,15 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "components/bookmarks/browser/base_bookmark_model_observer.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/mojom/shopping_list.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace bookmarks {
-class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
@@ -21,9 +24,11 @@ namespace commerce {
 
 class ShoppingService;
 
-class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler {
+class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
+                            public bookmarks::BaseBookmarkModelObserver {
  public:
   ShoppingListHandler(
+      mojo::PendingRemote<shopping_list::mojom::Page> page,
       mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandler> receiver,
       bookmarks::BookmarkModel* bookmark_model,
       ShoppingService* shopping_service,
@@ -38,6 +43,11 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler {
   void TrackPriceForBookmark(int64_t bookmark_id) override;
   void UntrackPriceForBookmark(int64_t bookmark_id) override;
 
+  // bookmarks::BaseBookmarkModelObserver
+  void BookmarkModelChanged() override;
+  void BookmarkMetaInfoChanged(bookmarks::BookmarkModel* model,
+                               const bookmarks::BookmarkNode* node) override;
+
   static std::vector<shopping_list::mojom::BookmarkProductInfoPtr>
   BookmarkListToMojoList(
       bookmarks::BookmarkModel& model,
@@ -45,6 +55,7 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler {
       const std::string& locale);
 
  private:
+  mojo::Remote<shopping_list::mojom::Page> remote_page_;
   mojo::Receiver<shopping_list::mojom::ShoppingListHandler> receiver_;
   // The bookmark model and shopping service will outlive this implementation
   // since it is a keyed service bound to the browser context (which in turn has
@@ -53,6 +64,10 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler {
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   raw_ptr<ShoppingService> shopping_service_;
   const std::string locale_;
+  // Automatically remove this observer from its host when destroyed.
+  base::ScopedObservation<bookmarks::BookmarkModel,
+                          bookmarks::BookmarkModelObserver>
+      scoped_observation_{this};
 };
 
 }  // namespace commerce

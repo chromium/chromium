@@ -4,26 +4,55 @@
 
 #include <memory>
 
+#include "base/callback.h"
+#include "base/test/task_environment.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/commerce/core/mock_shopping_service.h"
+#include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/commerce/core/webui/shopping_list_handler.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace commerce {
 namespace {
 
+class MockPage : public shopping_list::mojom::Page {
+ public:
+  MockPage() = default;
+  ~MockPage() override = default;
+
+  mojo::PendingRemote<shopping_list::mojom::Page> BindAndGetRemote() {
+    DCHECK(!receiver_.is_bound());
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+  mojo::Receiver<shopping_list::mojom::Page> receiver_{this};
+
+  MOCK_METHOD1(PriceTrackedForBookmark, void(int64_t bookmark_id));
+  MOCK_METHOD1(PriceUntrackedForBookmark, void(int64_t bookmark_id));
+};
+
 class ShoppingListHandlerTest : public testing::Test {
  protected:
   void SetUp() override {
     bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
+    shopping_service_ = std::make_unique<MockShoppingService>();
+    handler_ = std::make_unique<commerce::ShoppingListHandler>(
+        page_.BindAndGetRemote(),
+        mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandler>(),
+        bookmark_model_.get(), shopping_service_.get(), "en-us");
   }
 
+  MockPage page_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  std::unique_ptr<MockShoppingService> shopping_service_;
+  std::unique_ptr<commerce::ShoppingListHandler> handler_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(ShoppingListHandlerTest, ConvertToMojoTypes) {
@@ -42,6 +71,37 @@ TEST_F(ShoppingListHandlerTest, ConvertToMojoTypes) {
   EXPECT_EQ(mojo_list[0]->info->current_price, "$1.23");
   EXPECT_EQ(mojo_list[0]->info->domain, "example.com");
   EXPECT_EQ(mojo_list[0]->info->title, "product 1");
+}
+
+TEST_F(ShoppingListHandlerTest, PageUpdateForPriceTrackChange) {
+  const bookmarks::BookmarkNode* product = AddProductBookmark(
+      bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
+      true, 1230000, "usd");
+
+  EXPECT_CALL(page_, PriceUntrackedForBookmark(product->id()));
+  base::RunLoop run_loop;
+  SetPriceTrackingStateForBookmark(
+      shopping_service_.get(), bookmark_model_.get(), product, false,
+      base::BindOnce(
+          [](base::RunLoop* run_loop, bool success) {
+            EXPECT_TRUE(success);
+            run_loop->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(IsBookmarkPriceTracked(bookmark_model_.get(), product));
+}
+
+TEST_F(ShoppingListHandlerTest, PageNotUpdateForIrrelevantChange) {
+  const bookmarks::BookmarkNode* node =
+      bookmark_model_->AddNewURL(bookmark_model_->other_node(), 0, u"product 1",
+                                 GURL("http://example.com/1"));
+  EXPECT_FALSE(IsBookmarkPriceTracked(bookmark_model_.get(), node));
+
+  EXPECT_CALL(page_, PriceTrackedForBookmark(node->id())).Times(0);
+  EXPECT_CALL(page_, PriceUntrackedForBookmark(node->id())).Times(0);
+  bookmark_model_->SetNodeMetaInfo(node, "test_key", "test_value");
 }
 
 }  // namespace

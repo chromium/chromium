@@ -31,10 +31,12 @@ source_set("unit_tests") {
 
   deps = [
     ":webui",
+    "../mojom:mojo_bindings",
     "//base/test:test_support",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
     "//components/commerce/core:shopping_service_test_support",
+    "//mojo/public/cpp/bindings",
     "//testing/gtest",
     "//url:url",
   ]

@@ -11,6 +11,8 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/commerce/core/shopping_service.h"
+#include "components/power_bookmarks/core/power_bookmark_utils.h"
+#include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -31,14 +33,18 @@ using shopping_list::mojom::BookmarkProductInfo;
 using shopping_list::mojom::BookmarkProductInfoPtr;
 
 ShoppingListHandler::ShoppingListHandler(
+    mojo::PendingRemote<shopping_list::mojom::Page> remote_page,
     mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandler> receiver,
     bookmarks::BookmarkModel* bookmark_model,
     ShoppingService* shopping_service,
     const std::string& locale)
-    : receiver_(this, std::move(receiver)),
+    : remote_page_(std::move(remote_page)),
+      receiver_(this, std::move(receiver)),
       bookmark_model_(bookmark_model),
       shopping_service_(shopping_service),
-      locale_(locale) {}
+      locale_(locale) {
+  scoped_observation_.Observe(bookmark_model);
+}
 
 ShoppingListHandler::~ShoppingListHandler() = default;
 
@@ -69,6 +75,23 @@ void ShoppingListHandler::UntrackPriceForBookmark(int64_t bookmark_id) {
       shopping_service_, bookmark_model_,
       bookmarks::GetBookmarkNodeByID(bookmark_model_, bookmark_id), false,
       base::DoNothing());
+}
+
+void ShoppingListHandler::BookmarkModelChanged() {}
+
+void ShoppingListHandler::BookmarkMetaInfoChanged(
+    bookmarks::BookmarkModel* model,
+    const bookmarks::BookmarkNode* node) {
+  std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+      power_bookmarks::GetNodePowerBookmarkMeta(model, node);
+  if (!meta || !meta->has_shopping_specifics())
+    return;
+
+  if (commerce::IsBookmarkPriceTracked(model, node)) {
+    remote_page_->PriceTrackedForBookmark(node->id());
+  } else {
+    remote_page_->PriceUntrackedForBookmark(node->id());
+  }
 }
 
 std::vector<BookmarkProductInfoPtr> ShoppingListHandler::BookmarkListToMojoList(
@@ -122,5 +145,4 @@ std::vector<BookmarkProductInfoPtr> ShoppingListHandler::BookmarkListToMojoList(
 
   return info_list;
 }
-
 }  // namespace commerce
