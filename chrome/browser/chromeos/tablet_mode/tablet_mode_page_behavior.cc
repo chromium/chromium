@@ -21,7 +21,6 @@
 
 TabletModePageBehavior::TabletModePageBehavior() {
   display::Screen::GetScreen()->AddObserver(this);
-  OnTabletModeToggled(chromeos::TabletState::Get()->InTabletMode());
 }
 
 TabletModePageBehavior::~TabletModePageBehavior() {

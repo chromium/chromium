@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/display/tablet_state.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 namespace ui {
@@ -38,6 +39,7 @@ class WaylandZAuraShell : public wl::GlobalObjectRegistrar<WaylandZAuraShell> {
   std::string GetDeskName(int index) const;
   int GetNumberOfDesks();
   int GetActiveDeskIndex() const;
+  display::TabletState GetTabletState() const;
 
  private:
   // zaura_shell_listeners

@@ -136,6 +136,7 @@ class WaylandScreen : public PlatformScreen {
 
   wl::Object<zwp_idle_inhibitor_v1> idle_inhibitor_;
   uint32_t screen_saver_suspension_count_ = 0;
+  display::TabletState tablet_state_;
 
   base::WeakPtrFactory<WaylandScreen> weak_factory_;
 };

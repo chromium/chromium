@@ -303,6 +303,7 @@ class WaylandConnection {
     return tablet_layout_state_ == display::TabletState::kInTabletMode ||
            tablet_layout_state_ == display::TabletState::kEnteringTabletMode;
   }
+  display::TabletState GetTabletState() { return tablet_layout_state_; }
 
   const gfx::PointF MaybeConvertLocation(const gfx::PointF& location,
                                          const WaylandWindow* window) const;

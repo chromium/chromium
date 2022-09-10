@@ -102,19 +102,22 @@ void WaylandZAuraShell::OnLayoutMode(void* data,
   auto* self = static_cast<WaylandZAuraShell*>(data);
   auto* connection = self->connection_.get();
   auto* screen = connection->wayland_output_manager()->wayland_screen();
-  // |screen| is null in some unit test suites.
-  if (!screen)
-    return;
 
   switch (layout_mode) {
     case ZAURA_SHELL_LAYOUT_MODE_WINDOWED:
-      screen->OnTabletStateChanged(display::TabletState::kInClamshellMode);
       connection->set_tablet_layout_state(
           display::TabletState::kInClamshellMode);
+      // |screen| is null in some unit test suites or if it's called eariler
+      // than screen initialization.
+      if (screen)
+        screen->OnTabletStateChanged(display::TabletState::kInClamshellMode);
       return;
     case ZAURA_SHELL_LAYOUT_MODE_TABLET:
-      screen->OnTabletStateChanged(display::TabletState::kInTabletMode);
       connection->set_tablet_layout_state(display::TabletState::kInTabletMode);
+      // |screen| is null in some unit test suites or if it's called eariler
+      // than screen initialization.
+      if (screen)
+        screen->OnTabletStateChanged(display::TabletState::kInTabletMode);
       return;
   }
 }

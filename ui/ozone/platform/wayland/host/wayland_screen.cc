@@ -117,6 +117,8 @@ WaylandScreen::WaylandScreen(WaylandConnection* connection)
     image_format_no_alpha_ = image_format_alpha_;
   if (!image_format_hdr_)
     image_format_hdr_ = image_format_alpha_;
+
+  tablet_state_ = connection_->GetTabletState();
 }
 
 WaylandScreen::~WaylandScreen() = default;
@@ -254,10 +256,11 @@ void WaylandScreen::AddOrUpdateDisplay(WaylandOutput::Id output_id,
 }
 
 void WaylandScreen::OnTabletStateChanged(display::TabletState tablet_state) {
+  tablet_state_ = tablet_state;
+
   auto* observer_list = display_list_.observers();
-  for (auto& observer : *observer_list) {
+  for (auto& observer : *observer_list)
     observer.OnDisplayTabletStateChanged(tablet_state);
-  }
 }
 
 base::WeakPtr<WaylandScreen> WaylandScreen::GetWeakPtr() {
@@ -456,6 +459,7 @@ base::TimeDelta WaylandScreen::CalculateIdleTime() const {
 
 void WaylandScreen::AddObserver(display::DisplayObserver* observer) {
   display_list_.AddObserver(observer);
+  observer->OnDisplayTabletStateChanged(tablet_state_);
 }
 
 void WaylandScreen::RemoveObserver(display::DisplayObserver* observer) {
