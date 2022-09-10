@@ -48,6 +48,7 @@ MESSAGE_TIMEOUT_TEST_LOG = 1
 HTML_FILENAME = os.path.join('webgpu-cts', 'test_page.html')
 
 JAVASCRIPT_DURATION = 'javascript_duration'
+MAY_EXONERATE = 'may_exonerate'
 MESSAGE_TYPE_TEST_STARTED = 'TEST_STARTED'
 MESSAGE_TYPE_TEST_HEARTBEAT = 'TEST_HEARTBEAT'
 MESSAGE_TYPE_TEST_STATUS = 'TEST_STATUS'
@@ -272,6 +273,22 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       else:
         yield (TestNameFromInputs(*test_inputs), HTML_FILENAME, test_inputs)
 
+  def _DetermineRetryWorkaround(self, exception: Exception) -> bool:
+    # Instances of WebGpuMessageTimeoutError:
+    # https://luci-analysis.appspot.com/p/chromium/rules/b9130da14f0fcab5d6ee415d209bf71b
+    # https://luci-analysis.appspot.com/p/chromium/rules/6aea7ea7df4734c677f4fc5944f3b66a
+    if not isinstance(exception, WebGpuMessageTimeoutError):
+      return False
+
+    if self.browser.GetAllUnsymbolizedMinidumpPaths():
+      # There were some crashes, potentially expected. Don't automatically
+      # retry the test.
+      return False
+
+    # Otherwise, there were no crashes and we got a `WebGpuMessageTimeoutError`.
+    # Retry in case the timeout was a flake.
+    return True
+
   def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     self._query, self._run_in_worker = args
     # Only a single instance is used to run tests despite a number of instances
@@ -279,6 +296,8 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # this state so we don't accidentally keep it around from a previous test.
     if JAVASCRIPT_DURATION in self.additionalTags:
       del self.additionalTags[JAVASCRIPT_DURATION]
+    if MAY_EXONERATE in self.additionalTags:
+      del self.additionalTags[MAY_EXONERATE]
 
     try:
       first_load = self._NavigateIfNecessary(test_path)
@@ -300,6 +319,10 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     except websockets.exceptions.ConnectionClosedOK as e:
       raise RuntimeError(
           'Detected closed websocket - likely caused by renderer crash') from e
+    except WebGpuMessageTimeoutError as e:
+      self.additionalTags[MAY_EXONERATE] = str(
+          self._DetermineRetryWorkaround(e))
+      raise
     finally:
       WebGpuCtsIntegrationTest.total_tests_run += 1
 
@@ -387,7 +410,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
         if time.time() - start_time > global_timeout:
           self.HandleDurationTagOnFailure(message_state, global_timeout)
-          raise WebGpuTimeoutError(
+          raise WebGpuTestTimeoutError(
               'Hit %.3f second global timeout. Message state: %s' %
               (global_timeout, message_state))
 
@@ -426,7 +449,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                                            response_type)
       except asyncio.TimeoutError as e:
         self.HandleDurationTagOnFailure(message_state, global_timeout)
-        raise WebGpuTimeoutError(
+        raise WebGpuMessageTimeoutError(
             'Timed out waiting %.3f seconds for a message. Message state: %s' %
             (timeout, message_state)) from e
     return result
@@ -513,7 +536,11 @@ class WebGpuMessageProtocolError(RuntimeError):
   pass
 
 
-class WebGpuTimeoutError(RuntimeError):
+class WebGpuMessageTimeoutError(RuntimeError):
+  pass
+
+
+class WebGpuTestTimeoutError(RuntimeError):
   pass
 
 

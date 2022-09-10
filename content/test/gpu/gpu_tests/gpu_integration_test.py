@@ -423,6 +423,24 @@ class GpuIntegrationTest(
         return True
     return False
 
+  # pylint: disable=no-self-use
+  def _DetermineRetryWorkaround(self, exception: Exception) -> bool:
+    """Potentially allows retries depending on the exception type.
+
+    This is a temporary workaround for flaky timeouts in the WebGPU CTS which
+    should not be kept long term. See crbug.com/1353938.
+
+    Args:
+      exception: The exception the test failed with.
+
+    Returns:
+      A boolean indicating whether a retry on failure should be forced.
+    """
+    del exception
+    return False
+
+  # pylint: enable=no-self-use
+
   def _EnsureScreenOn(self) -> None:
     """Ensures the screen is on for applicable platforms."""
     os_name = self.browser.platform.GetOSName()
@@ -447,7 +465,9 @@ class GpuIntegrationTest(
       self.programmaticSkipIsExpected = True
       # pylint: enable=attribute-defined-outside-init
       raise
-    except Exception:
+    except Exception as e:
+      if not should_retry_on_failure:
+        should_retry_on_failure = self._DetermineRetryWorkaround(e)
       if ResultType.Failure in expected_results or should_retry_on_failure:
         self._HandleExpectedFailureOrFlake(test_name, expected_crashes,
                                            should_retry_on_failure)
