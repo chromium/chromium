@@ -454,6 +454,46 @@ const CSSAnimationUpdate* GetPendingAnimationUpdate(Node& node) {
 
 }  // namespace
 
+void CSSAnimations::CalculateScrollTimelineUpdate(CSSAnimationUpdate& update,
+                                                  Element& animating_element,
+                                                  const ComputedStyle& style) {
+  Document& document = animating_element.GetDocument();
+
+  const AtomicString& name = style.ScrollTimelineName();
+  TimelineAxis axis = style.ScrollTimelineAxis();
+
+  const CSSAnimations::TimelineData* timeline_data =
+      GetTimelineData(animating_element);
+
+  CSSScrollTimeline* existing_timeline =
+      timeline_data ? timeline_data->GetScrollTimeline() : nullptr;
+  CSSScrollTimeline* new_timeline = nullptr;
+
+  if (!name.IsEmpty()) {
+    // If the computed values of scroll-timeline-* would produce a
+    // CSSScrollTimeline identical to the existing one, we reuse the existing
+    // one instead.
+    CSSScrollTimeline::Options options(document,
+                                       ScrollTimeline::ReferenceType::kSource,
+                                       &animating_element, name, axis);
+    // No need to change the timeline if it would be the same as the previous.
+    if (existing_timeline && existing_timeline->Matches(options))
+      return;
+    new_timeline =
+        MakeGarbageCollected<CSSScrollTimeline>(&document, std::move(options));
+    // It is not allowed for a style update to create timelines that
+    // needs timing updates (i.e.
+    // AnimationTimeline::NeedsAnimationTimingUpdate() must return false).
+    // Servicing animations after creation preserves this invariant by
+    // ensuring the last-update time of the timeline is equal to the current
+    // time.
+    new_timeline->ServiceAnimations(kTimingUpdateOnDemand);
+  }
+
+  if (new_timeline != existing_timeline)
+    update.SetChangedScrollTimeline(new_timeline);
+}
+
 const CSSAnimations::TimelineData* CSSAnimations::GetTimelineData(
     const Element& element) {
   const ElementAnimations* element_animations = element.GetElementAnimations();
@@ -475,7 +515,7 @@ CSSScrollTimeline* CSSAnimations::FindTimelineForNode(
   // The pending CSSScrollTimeline (if any) takes precedence over the
   // timeline stored on CSSAnimations::TimelineData.
   absl::optional<CSSScrollTimeline*> pending_timeline =
-      update ? update->NewScrollTimeline()
+      update ? update->ChangedScrollTimeline()
              : absl::optional<CSSScrollTimeline*>();
   CSSScrollTimeline* pending_aware_timeline =
       pending_timeline.value_or(existing_timeline);
@@ -685,42 +725,7 @@ void CSSAnimations::CalculateCompositorAnimationUpdate(
 void CSSAnimations::CalculateTimelineUpdate(CSSAnimationUpdate& update,
                                             Element& animating_element,
                                             const ComputedStyle& style) {
-  Document& document = animating_element.GetDocument();
-
-  const AtomicString& name = style.ScrollTimelineName();
-  TimelineAxis axis = style.ScrollTimelineAxis();
-
-  const CSSAnimations::TimelineData* timeline_data =
-      GetTimelineData(animating_element);
-  CSSScrollTimeline* existing_timeline =
-      timeline_data ? timeline_data->GetScrollTimeline() : nullptr;
-
-  CSSScrollTimeline* new_scroll_timeline = nullptr;
-
-  if (!name.IsEmpty()) {
-    // If the computed values of scroll-timeline-* would produce a
-    // CSSScrollTimeline identical to the existing one, we reuse the existing
-    // one instead.
-    CSSScrollTimeline::Options options(document,
-                                       ScrollTimeline::ReferenceType::kSource,
-                                       &animating_element, name, axis);
-    if (existing_timeline && existing_timeline->Matches(options)) {
-      new_scroll_timeline = existing_timeline;
-    } else {
-      new_scroll_timeline = MakeGarbageCollected<CSSScrollTimeline>(
-          &document, std::move(options));
-      // It is not allowed for a style update to create timelines that
-      // needs timing updates (i.e.
-      // AnimationTimeline::NeedsAnimationTimingUpdate() must return false).
-      // Servicing animations after creation preserves this invariant by
-      // ensuring the last-update time of the timeline is equal to the current
-      // time.
-      new_scroll_timeline->ServiceAnimations(kTimingUpdateOnDemand);
-    }
-  }
-
-  if (new_scroll_timeline != existing_timeline)
-    update.SetNewScrollTimeline(new_scroll_timeline);
+  CalculateScrollTimelineUpdate(update, animating_element, style);
 }
 
 void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
@@ -1208,9 +1213,9 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
     return;
   }
 
-  if (absl::optional<CSSScrollTimeline*> new_timeline =
-          pending_update_.NewScrollTimeline()) {
-    timeline_data_.SetScrollTimeline(*new_timeline);
+  if (absl::optional<CSSScrollTimeline*> changed_timeline =
+          pending_update_.ChangedScrollTimeline()) {
+    timeline_data_.SetScrollTimeline(*changed_timeline);
   }
 
   for (wtf_size_t paused_index :

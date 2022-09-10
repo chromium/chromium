@@ -265,6 +265,10 @@ class CORE_EXPORT CSSAnimations final {
       CSSAnimationUpdate&,
       const Element& animating_element);
 
+  static void CalculateScrollTimelineUpdate(CSSAnimationUpdate&,
+                                            Element& animating_element,
+                                            const ComputedStyle&);
+
   static const TimelineData* GetTimelineData(const Element&);
 
   static CSSScrollTimeline* FindTimelineForNode(const AtomicString& name,

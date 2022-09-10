@@ -173,8 +173,8 @@ class CORE_EXPORT CSSAnimationUpdate final {
     finished_transitions_.insert(property);
   }
 
-  void SetNewScrollTimeline(CSSScrollTimeline* timeline) {
-    new_scroll_timeline_ = timeline;
+  void SetChangedScrollTimeline(CSSScrollTimeline* timeline) {
+    changed_scroll_timeline_ = timeline;
     scroll_timeline_changed_ = true;
   }
 
@@ -222,10 +222,10 @@ class CORE_EXPORT CSSAnimationUpdate final {
   // A non-nullptr value means that the scroll-timeline was replaced with a
   // a new one, a nullptr value means the scroll-timeline was removed,
   // and absl::nullopt means there was no change.
-  absl::optional<CSSScrollTimeline*> NewScrollTimeline() const {
+  absl::optional<CSSScrollTimeline*> ChangedScrollTimeline() const {
     if (!scroll_timeline_changed_)
       return absl::nullopt;
-    return new_scroll_timeline_.Get();
+    return changed_scroll_timeline_.Get();
   }
   void AdoptActiveInterpolationsForAnimations(
       ActiveInterpolationsMap& new_map) {
@@ -266,7 +266,7 @@ class CORE_EXPORT CSSAnimationUpdate final {
     visitor->Trace(updated_compositor_keyframes_);
     visitor->Trace(active_interpolations_for_animations_);
     visitor->Trace(active_interpolations_for_transitions_);
-    visitor->Trace(new_scroll_timeline_);
+    visitor->Trace(changed_scroll_timeline_);
   }
 
  private:
@@ -290,7 +290,7 @@ class CORE_EXPORT CSSAnimationUpdate final {
   HashSet<PropertyHandle> cancelled_transitions_;
   HashSet<PropertyHandle> finished_transitions_;
 
-  Member<CSSScrollTimeline> new_scroll_timeline_ = nullptr;
+  Member<CSSScrollTimeline> changed_scroll_timeline_ = nullptr;
   bool scroll_timeline_changed_ = false;
 
   ActiveInterpolationsMap active_interpolations_for_animations_;
