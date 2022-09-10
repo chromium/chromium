@@ -7,6 +7,7 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/system_tray.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
@@ -128,7 +129,6 @@ END_METADATA
 
 FloatingAccessibilityView::FloatingAccessibilityView(Delegate* delegate)
     : delegate_(delegate) {
-
   Shelf* shelf = RootWindowController::ForTargetRootWindow()->shelf();
   std::unique_ptr<views::View> feature_buttons_container =
       CreateButtonRowContainer(kPanelPositionButtonPadding);
@@ -194,9 +194,12 @@ FloatingAccessibilityView::FloatingAccessibilityView(Delegate* delegate)
   }
 }
 
-FloatingAccessibilityView::~FloatingAccessibilityView() {}
+FloatingAccessibilityView::~FloatingAccessibilityView() {
+  KeyboardController::Get()->RemoveObserver(this);
+}
 
 void FloatingAccessibilityView::Initialize() {
+  KeyboardController::Get()->AddObserver(this);
   for (auto* feature_view :
        {dictation_button_, select_to_speak_button_, virtual_keyboard_button_}) {
     feature_view->Initialize();
@@ -282,6 +285,13 @@ void FloatingAccessibilityView::OnViewVisibilityChanged(
   if (observed_view != starting_view)
     return;
   delegate_->OnLayoutChanged();
+}
+
+void FloatingAccessibilityView::OnKeyboardVisibilityChanged(bool visible) {
+  // To avoid the collision with the virtual keyboard
+  // Accessibility tray is closed after opening the virtual keyboard tray
+  if (visible)
+    delegate_->OnDetailedMenuEnabled(false);
 }
 
 BEGIN_METADATA(FloatingAccessibilityView, views::BoxLayoutView)

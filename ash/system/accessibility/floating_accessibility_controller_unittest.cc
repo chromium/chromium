@@ -83,6 +83,15 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
     return controller() && controller()->detailed_menu_controller_.get();
   }
 
+  void WaitUntilAccessibilityTrayClosed() {
+    // Waiting until accessibility tray is closed
+    // after being notified from the observer.
+    base::RunLoop run_loop;
+    while (detailed_view_shown()) {
+      run_loop.RunUntilIdle();
+    }
+  }
+
   views::View* GetMenuButton(FloatingAccessibilityView::ButtonId button_id) {
     FloatingAccessibilityView* view = menu_view();
     if (!view)
@@ -98,6 +107,14 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
   ImeMenuTray* GetImeTray() {
     ImeMenuTray* result = menu_view() ? menu_view()->ime_button_ : nullptr;
     EXPECT_NE(result, nullptr) << "Ime tray is not currently visible";
+    return result;
+  }
+
+  TrayBackgroundView* GetVirtualKeyboardTray() {
+    TrayBackgroundView* result =
+        menu_view() ? menu_view()->virtual_keyboard_button_ : nullptr;
+    EXPECT_NE(result, nullptr)
+        << "Virtual keyboard tray is not currently visible";
     return result;
   }
 
@@ -146,6 +163,21 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
                                   const std::vector<ImeInfo>& available_imes) {
     Shell::Get()->ime_controller()->RefreshIme(current_ime_id, available_imes,
                                                std::vector<ImeMenuItem>());
+  }
+
+  void ClickOnAccessibilityTrayButton() {
+    views::View* button =
+        GetMenuButton(FloatingAccessibilityView::ButtonId::kSettingsList);
+    ui::GestureEvent event = CreateTapEvent();
+    button->OnGestureEvent(&event);
+  }
+
+  void EnableAndClickOnVirtualKeyboardTrayButton() {
+    accessibility_controller()->virtual_keyboard().SetEnabled(true);
+    views::View* button =
+        GetMenuButton(FloatingAccessibilityView::ButtonId::kVirtualKeyboard);
+    ui::GestureEvent event = CreateTapEvent();
+    button->OnGestureEvent(&event);
   }
 
   // Setup one language
@@ -258,6 +290,21 @@ TEST_F(FloatingAccessibilityControllerTest, ShowingMenuAfterPrefUpdate) {
   // should show/hide on enabled state change.
   accessibility_controller()->floating_menu().SetEnabled(true);
   EXPECT_FALSE(controller() == nullptr);
+}
+
+TEST_F(FloatingAccessibilityControllerTest,
+       AccessibilityTrayClosedWhenVirtualKeyboardTrayIsShown) {
+  SetUpVisibleMenu();
+
+  ClickOnAccessibilityTrayButton();
+  EXPECT_TRUE(detailed_view_shown());
+
+  EnableAndClickOnVirtualKeyboardTrayButton();
+  EXPECT_TRUE(GetVirtualKeyboardTray()->is_active());
+
+  WaitUntilAccessibilityTrayClosed();
+
+  EXPECT_FALSE(detailed_view_shown());
 }
 
 TEST_F(FloatingAccessibilityControllerTest, CanChangePosition) {
