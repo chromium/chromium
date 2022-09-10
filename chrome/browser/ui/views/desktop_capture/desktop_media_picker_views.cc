@@ -70,6 +70,10 @@ DesktopMediaID::Id AcceleratedWidgetToDesktopMediaId(
 }
 #endif
 
+const base::Feature kWarnUserOfSystemWideLocalAudioSuppression CONSTINIT{
+    "WarnUserOfSystemWideLocalAudioSuppression",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 enum class GCBCMResult {
   kDialogDismissed = 0,                  // Tab/window closed, navigation, etc.
   kUserCancelled = 1,                    // User explicitly cancelled.
@@ -180,11 +184,16 @@ void RecordUmaSelection(DialogType dialog_type,
   }
 }
 
-std::u16string GetLabelForAudioCheckbox(DesktopMediaList::Type type) {
+std::u16string GetLabelForAudioCheckbox(DesktopMediaList::Type type,
+                                        bool local_audio_suppression) {
   switch (type) {
     case DesktopMediaList::Type::kScreen:
       return l10n_util::GetStringUTF16(
-          IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_SCREEN);
+          local_audio_suppression &&
+                  base::FeatureList::IsEnabled(
+                      kWarnUserOfSystemWideLocalAudioSuppression)
+              ? IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_SCREEN_WITH_MUTE_WARNING
+              : IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_SCREEN);
     case DesktopMediaList::Type::kWindow:
       return l10n_util::GetStringUTF16(
           IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_WINDOW);
@@ -297,6 +306,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
     DesktopMediaPickerViews* parent,
     std::vector<std::unique_ptr<DesktopMediaList>> source_lists)
     : audio_requested_(params.request_audio),
+      suppress_local_audio_playback_(params.suppress_local_audio_playback),
       capturer_global_id_(
           params.web_contents
               ? params.web_contents->GetPrimaryMainFrame()->GetGlobalId()
@@ -574,6 +584,7 @@ void DesktopMediaPickerDialogView::TabSelectedAt(int index) {
   if (previously_selected_category_ == index)
     return;
   SetAudioCheckboxAt(index);
+  MaybeSetAudioCheckboxMaxSize();
   categories_[previously_selected_category_].controller->HideView();
   categories_[index].controller->FocusView();
   DialogModelChanged();
@@ -603,10 +614,11 @@ void DesktopMediaPickerDialogView::SetAudioCheckboxAt(int index) {
 
   if (category.audio_offered) {
     std::unique_ptr<views::Checkbox> audio_share_checkbox =
-        std::make_unique<views::Checkbox>(
-            GetLabelForAudioCheckbox(category.type));
+        std::make_unique<views::Checkbox>(GetLabelForAudioCheckbox(
+            category.type, suppress_local_audio_playback_));
     audio_share_checkbox->SetVisible(true);
     audio_share_checkbox->SetChecked(category.audio_checked);
+    audio_share_checkbox->SetMultiLine(true);
     audio_share_checkbox_ = SetExtraView(std::move(audio_share_checkbox));
   } else {
     if (audio_share_checkbox_) {
@@ -614,6 +626,28 @@ void DesktopMediaPickerDialogView::SetAudioCheckboxAt(int index) {
     }
     audio_share_checkbox_ = nullptr;
   }
+}
+
+void DesktopMediaPickerDialogView::MaybeSetAudioCheckboxMaxSize() {
+  if (!base::FeatureList::IsEnabled(
+          kWarnUserOfSystemWideLocalAudioSuppression) ||
+      !audio_share_checkbox_) {
+    return;
+  }
+
+  const int buttons_width = GetCancelButton()->width() +
+                            ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                views::DISTANCE_RELATED_BUTTON_HORIZONTAL) +
+                            GetOkButton()->width();
+
+  const int max_width = CalculatePreferredSize().width() - buttons_width -
+                        ChromeLayoutProvider::Get()
+                            ->GetInsetsMetric(views::INSETS_DIALOG_BUTTON_ROW)
+                            .width() -
+                        ChromeLayoutProvider::Get()->GetDistanceMetric(
+                            views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
+
+  audio_share_checkbox_->SetMaxSize(gfx::Size(max_width, 0));
 }
 
 int DesktopMediaPickerDialogView::GetSelectedTabIndex() const {
@@ -711,6 +745,11 @@ bool DesktopMediaPickerDialogView::Cancel() {
 
 bool DesktopMediaPickerDialogView::ShouldShowCloseButton() const {
   return false;
+}
+
+void DesktopMediaPickerDialogView::OnWidgetInitialized() {
+  views::DialogDelegateView::OnWidgetInitialized();
+  MaybeSetAudioCheckboxMaxSize();
 }
 
 void DesktopMediaPickerDialogView::OnSelectionChanged() {

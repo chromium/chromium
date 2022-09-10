@@ -66,6 +66,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   bool Accept() override;
   bool Cancel() override;
   bool ShouldShowCloseButton() const override;
+  void OnWidgetInitialized() override;
 
  private:
   friend class DesktopMediaPickerViewsTestApi;
@@ -91,6 +92,8 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
   void SetAudioCheckboxAt(int index);
 
+  void MaybeSetAudioCheckboxMaxSize();
+
   void OnSourceTypeSwitched(int index);
 
   int GetSelectedTabIndex() const;
@@ -101,6 +104,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   DesktopMediaList::Type GetSelectedSourceListType() const;
 
   const bool audio_requested_;
+  const bool suppress_local_audio_playback_;  // Effective only if audio shared.
   const content::GlobalRenderFrameHostId capturer_global_id_;
 
   raw_ptr<DesktopMediaPickerViews> parent_;
