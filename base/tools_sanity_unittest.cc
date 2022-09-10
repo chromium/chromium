@@ -89,14 +89,10 @@ void WriteValueOutOfArrayBoundsRight(char *ptr, size_t size) {
 void MakeSomeErrors(char *ptr, size_t size) {
   ReadUninitializedValue(ptr);
 
-  HARMFUL_ACCESS(ReadValueOutOfArrayBoundsLeft(ptr),
-                 "2 bytes to the left");
-  HARMFUL_ACCESS(ReadValueOutOfArrayBoundsRight(ptr, size),
-                 "1 bytes to the right");
-  HARMFUL_ACCESS(WriteValueOutOfArrayBoundsLeft(ptr),
-                 "1 bytes to the left");
-  HARMFUL_ACCESS(WriteValueOutOfArrayBoundsRight(ptr, size),
-                 "0 bytes to the right");
+  HARMFUL_ACCESS(ReadValueOutOfArrayBoundsLeft(ptr), "2 bytes before");
+  HARMFUL_ACCESS(ReadValueOutOfArrayBoundsRight(ptr, size), "1 bytes after");
+  HARMFUL_ACCESS(WriteValueOutOfArrayBoundsLeft(ptr), "1 bytes before");
+  HARMFUL_ACCESS(WriteValueOutOfArrayBoundsRight(ptr, size), "0 bytes after");
 }
 
 }  // namespace
@@ -254,11 +250,11 @@ TEST(ToolsSanityTest, DISABLED_AddressSanitizerGlobalOOBCrashTest) {
 
 #ifndef HARMFUL_ACCESS_IS_NOOP
 TEST(ToolsSanityTest, AsanHeapOverflow) {
-  HARMFUL_ACCESS(debug::AsanHeapOverflow(), "to the right");
+  HARMFUL_ACCESS(debug::AsanHeapOverflow(), "after");
 }
 
 TEST(ToolsSanityTest, AsanHeapUnderflow) {
-  HARMFUL_ACCESS(debug::AsanHeapUnderflow(), "to the left");
+  HARMFUL_ACCESS(debug::AsanHeapUnderflow(), "before");
 }
 
 TEST(ToolsSanityTest, AsanHeapUseAfterFree) {
