@@ -19,6 +19,12 @@ namespace autofill {
 using absl::optional;
 using syncer::ModelError;
 
+// Simplify checking for optional errors and returning only when present.
+#define RETURN_IF_ERROR(x)              \
+  if (optional<ModelError> error = x) { \
+    return error;                       \
+  }
+
 AutofillProfileSyncDifferenceTracker::AutofillProfileSyncDifferenceTracker(
     AutofillTable* table)
     : table_(table) {}
@@ -130,7 +136,7 @@ AutofillProfileSyncDifferenceTracker::IncorporateRemoteProfile(
         //     propagate to the sync bridge). Still, it's good to treat this
         //     case here for robustness.
         delete_from_sync_.insert(local_storage_key);
-        DeleteFromLocal(local_storage_key);
+        RETURN_IF_ERROR(DeleteFromLocal(local_storage_key));
       } else {
         // We keep the local entity and delete the remote one.
         // Ensure that a verified profile can never revert back to an unverified
@@ -164,8 +170,7 @@ optional<ModelError>
 AutofillProfileSyncDifferenceTracker::IncorporateRemoteDelete(
     const std::string& storage_key) {
   DCHECK(!storage_key.empty());
-  DeleteFromLocal(storage_key);
-  return absl::nullopt;
+  return DeleteFromLocal(storage_key);
 }
 
 optional<ModelError> AutofillProfileSyncDifferenceTracker::FlushToLocal(
@@ -214,11 +219,14 @@ optional<AutofillProfile> AutofillProfileSyncDifferenceTracker::ReadEntry(
   return absl::nullopt;
 }
 
-void AutofillProfileSyncDifferenceTracker::DeleteFromLocal(
+optional<ModelError> AutofillProfileSyncDifferenceTracker::DeleteFromLocal(
     const std::string& storage_key) {
-  DCHECK(GetLocalOnlyEntries());
+  if (!GetLocalOnlyEntries()) {
+    return ModelError(FROM_HERE, "Failed reading from WebDatabase.");
+  }
   delete_from_local_.insert(storage_key);
   GetLocalOnlyEntries()->erase(storage_key);
+  return absl::nullopt;
 }
 
 std::map<std::string, std::unique_ptr<AutofillProfile>>*
@@ -268,8 +276,8 @@ optional<ModelError> AutofillProfileInitialSyncDifferenceTracker::FlushToSync(
     std::vector<std::unique_ptr<AutofillProfile>>* profiles_to_upload_to_sync,
     std::vector<std::string>* profiles_to_delete_from_sync) {
   // First, flush standard updates to sync.
-  AutofillProfileSyncDifferenceTracker::FlushToSync(
-      profiles_to_upload_to_sync, profiles_to_delete_from_sync);
+  RETURN_IF_ERROR(AutofillProfileSyncDifferenceTracker::FlushToSync(
+      profiles_to_upload_to_sync, profiles_to_delete_from_sync));
 
   // For initial sync, we additionally need to upload all local only entries.
   if (!GetLocalOnlyEntries()) {
@@ -330,7 +338,7 @@ AutofillProfileInitialSyncDifferenceTracker::MergeSimilarEntriesForInitialSync(
       // merged version is stored to local.
     }
 
-    DeleteFromLocal(GetStorageKeyFromAutofillProfile(*local));
+    RETURN_IF_ERROR(DeleteFromLocal(GetStorageKeyFromAutofillProfile(*local)));
   }
 
   return absl::nullopt;

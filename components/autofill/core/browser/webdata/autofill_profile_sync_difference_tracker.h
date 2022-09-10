@@ -42,24 +42,24 @@ class AutofillProfileSyncDifferenceTracker {
 
   // Adds a new |remote| entry to the diff tracker, originating from the sync
   // server. The provided |remote| entry must be valid.
-  absl::optional<syncer::ModelError> IncorporateRemoteProfile(
+  [[nodiscard]] absl::optional<syncer::ModelError> IncorporateRemoteProfile(
       std::unique_ptr<AutofillProfile> remote);
 
   // Informs the diff tracker that the entry with |storage_key| has been deleted
   // from the sync server. |storage_key| must be non-empty.
-  virtual absl::optional<syncer::ModelError> IncorporateRemoteDelete(
-      const std::string& storage_key);
+  [[nodiscard]] virtual absl::optional<syncer::ModelError>
+  IncorporateRemoteDelete(const std::string& storage_key);
 
   // Writes all local changes to the provided autofill |table_|. After flushing,
   // not further remote changes should get incorporated.
-  absl::optional<syncer::ModelError> FlushToLocal(
+  [[nodiscard]] absl::optional<syncer::ModelError> FlushToLocal(
       base::OnceClosure autofill_changes_callback);
 
   // Writes into |profiles_to_upload_to_sync| all autofill profiles to be sent
   // to the sync server, and into |profiles_to_delete_from_sync| the storage
   // keys of all profiles to be deleted from the server. After flushing, no
   // further remote changes should get incorporated.
-  virtual absl::optional<syncer::ModelError> FlushToSync(
+  [[nodiscard]] virtual absl::optional<syncer::ModelError> FlushToSync(
       std::vector<std::unique_ptr<AutofillProfile>>* profiles_to_upload_to_sync,
       std::vector<std::string>* profiles_to_delete_from_sync);
 
@@ -77,7 +77,8 @@ class AutofillProfileSyncDifferenceTracker {
 
   // Informs the tracker that a local entry with |storage_key| should get
   // deleted.
-  void DeleteFromLocal(const std::string& storage_key);
+  [[nodiscard]] absl::optional<syncer::ModelError> DeleteFromLocal(
+      const std::string& storage_key);
 
   // Accessor for data that is only stored local. Initializes the data if
   // needed. Returns nullptr if initialization failed.
@@ -126,18 +127,18 @@ class AutofillProfileInitialSyncDifferenceTracker
 
   ~AutofillProfileInitialSyncDifferenceTracker() override;
 
-  absl::optional<syncer::ModelError> IncorporateRemoteDelete(
+  [[nodiscard]] absl::optional<syncer::ModelError> IncorporateRemoteDelete(
       const std::string& storage_key) override;
 
-  absl::optional<syncer::ModelError> FlushToSync(
+  [[nodiscard]] absl::optional<syncer::ModelError> FlushToSync(
       std::vector<std::unique_ptr<AutofillProfile>>* profiles_to_upload_to_sync,
       std::vector<std::string>* profiles_to_delete_from_sync) override;
 
   // Performs an additional pass through remote entries incorporated from sync
   // to find any similarities with local entries. Should be run after all
   // entries get incorporated but before flushing results to local/sync.
-  absl::optional<syncer::ModelError> MergeSimilarEntriesForInitialSync(
-      const std::string& app_locale);
+  [[nodiscard]] absl::optional<syncer::ModelError>
+  MergeSimilarEntriesForInitialSync(const std::string& app_locale);
 
  private:
   // Returns a local entry that is mergeable with |remote| if it exists.
