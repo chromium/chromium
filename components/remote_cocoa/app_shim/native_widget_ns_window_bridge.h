@@ -186,6 +186,9 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
     return fullscreen_controller_.IsInFullscreenTransition();
   }
 
+  bool CanGoBack() const { return can_go_back_; }
+  bool CanGoForward() const { return can_go_forward_; }
+
   // Whether to run a custom animation for the provided |transition|.
   bool ShouldRunCustomAnimationFor(
       remote_cocoa::mojom::VisibilityTransition transition) const;
@@ -286,6 +289,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   void DisableImmersiveFullscreen() override;
   void UpdateToolbarVisibility(bool always_show) override;
   void OnTopContainerViewBoundsChanged(const gfx::Rect& bounds) override;
+  void SetCanGoBack(bool can_go_back) override;
+  void SetCanGoForward(bool can_go_back) override;
 
   // Return true if [NSApp updateWindows] needs to be called after updating the
   // TextInputClient.
@@ -423,6 +428,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
 
   // This is present iff the window has been created in headless mode.
   absl::optional<HeadlessModeWindow> headless_mode_window_;
+
+  // This tracks whether current window can go back or go forward.
+  bool can_go_back_ = false;
+  bool can_go_forward_ = false;
 
   display::ScopedDisplayObserver display_observer_{this};
 

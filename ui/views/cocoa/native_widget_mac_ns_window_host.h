@@ -249,6 +249,10 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   void RemoveRemoteWindowControlsOverlayView(
       remote_cocoa::mojom::WindowControlsOverlayNSViewType overlay_type);
 
+  // Notify PWA whether can GoBack/GoForward.
+  void CanGoBack(bool can_go_back);
+  void CanGoForward(bool can_go_forward);
+
  private:
   friend class TextInputHost;
 

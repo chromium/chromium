@@ -4,11 +4,7 @@
 
 #import "chrome/browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper.h"
 
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
 #import "chrome/browser/ui/cocoa/history_overlay_controller.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "ui/events/blink/did_overscroll_params.h"
@@ -367,28 +363,14 @@ BOOL forceMagicMouse = NO;
 
 - (void)navigateBrowserInDirection:
             (history_swiper::NavigationDirection)direction {
-  Browser* browser = chrome::FindBrowserWithWindow(
-      _historyOverlay.view.window);
-  if (browser) {
-    if (direction == history_swiper::kForwards)
-      chrome::GoForward(browser, WindowOpenDisposition::CURRENT_TAB);
-    else
-      chrome::GoBack(browser, WindowOpenDisposition::CURRENT_TAB);
-  }
+  [_delegate navigateInDirection:direction
+                        onWindow:_historyOverlay.view.window];
 }
 
 - (BOOL)browserCanNavigateInDirection:
         (history_swiper::NavigationDirection)direction
                                 event:(NSEvent*)event {
-  Browser* browser = chrome::FindBrowserWithWindow([event window]);
-  if (!browser)
-    return NO;
-
-  if (direction == history_swiper::kForwards) {
-    return chrome::CanGoForward(browser);
-  } else {
-    return chrome::CanGoBack(browser);
-  }
+  return [_delegate canNavigateInDirection:direction onWindow:[event window]];
 }
 
 - (BOOL)handleMagicMouseWheelEvent:(NSEvent*)theEvent {
@@ -472,13 +454,11 @@ BOOL forceMagicMouse = NO;
 
           // |gestureAmount| obeys -[NSEvent isDirectionInvertedFromDevice]
           // automatically.
-          Browser* browser =
-              chrome::FindBrowserWithWindow(historyOverlay.view.window);
-          if (ended && browser) {
-            if (isRightScroll)
-              chrome::GoForward(browser, WindowOpenDisposition::CURRENT_TAB);
-            else
-              chrome::GoBack(browser, WindowOpenDisposition::CURRENT_TAB);
+          if (ended) {
+            [_delegate
+                navigateInDirection:isRightScroll ? history_swiper::kForwards
+                                                  : history_swiper::kBackwards
+                           onWindow:historyOverlay.view.window];
           }
 
           if (ended || isComplete) {

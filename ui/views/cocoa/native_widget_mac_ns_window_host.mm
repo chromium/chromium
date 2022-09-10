@@ -833,6 +833,14 @@ void NativeWidgetMacNSWindowHost::RemoveRemoteWindowControlsOverlayView(
     remote_cocoa::mojom::WindowControlsOverlayNSViewType overlay_type) {
   GetNSWindowMojo()->RemoveWindowControlsOverlayNSView(overlay_type);
 }
+
+void NativeWidgetMacNSWindowHost::CanGoBack(bool can_go_back) {
+  GetNSWindowMojo()->SetCanGoBack(can_go_back);
+}
+
+void NativeWidgetMacNSWindowHost::CanGoForward(bool can_go_forward) {
+  GetNSWindowMojo()->SetCanGoForward(can_go_forward);
+}
 ////////////////////////////////////////////////////////////////////////////////
 // NativeWidgetMacNSWindowHost, remote_cocoa::BridgedNativeWidgetHostHelper:
 

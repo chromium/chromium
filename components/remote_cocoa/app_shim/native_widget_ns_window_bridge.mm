@@ -925,6 +925,14 @@ void NativeWidgetNSWindowBridge::OnTopContainerViewBoundsChanged(
   immersive_mode_controller_->OnTopViewBoundsChanged(bounds);
 }
 
+void NativeWidgetNSWindowBridge::SetCanGoBack(bool can_go_back) {
+  can_go_back_ = can_go_back;
+}
+
+void NativeWidgetNSWindowBridge::SetCanGoForward(bool can_go_forward) {
+  can_go_forward_ = can_go_forward;
+}
+
 void NativeWidgetNSWindowBridge::OnWindowWillClose() {
   fullscreen_controller_.OnWindowWillClose();
 

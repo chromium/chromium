@@ -31,6 +31,7 @@ class ScopedNativeScreen;
 @class AppShimDelegate;
 @class ProfileMenuTarget;
 @class ApplicationDockMenuTarget;
+@protocol RenderWidgetHostViewMacDelegate;
 
 // The AppShimController is responsible for launching and maintaining the
 // connection with the main Chrome process, and generally controls the lifetime
@@ -149,6 +150,14 @@ class AppShimController : public chrome::mojom::AppShim {
   // chrome::kSingletonLockFilename in the specified |user_data_dir|.
   static base::scoped_nsobject<NSRunningApplication>
   FindChromeFromSingletonLock(const base::FilePath& user_data_dir);
+
+  static void CreateRenderWidgetHostNSView(
+      uint64_t view_id,
+      mojo::ScopedInterfaceEndpointHandle host_handle,
+      mojo::ScopedInterfaceEndpointHandle view_request_handle);
+
+  static NSObject<RenderWidgetHostViewMacDelegate>*
+  CreateRenderWidgetHostViewDelegate(uint64_t view_id);
 
   const Params params_;
 

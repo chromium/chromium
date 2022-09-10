@@ -11,12 +11,16 @@
 #include "content/common/cursors/webcursor.h"
 #include "content/common/mac/attributed_string_type_converters.h"
 #import "skia/ext/skia_utils_mac.h"
+#include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #import "ui/base/cocoa/animation_utils.h"
 #include "ui/base/mojom/attributed_string.mojom.h"
 #include "ui/display/screen.h"
+#include "ui/events/blink/did_overscroll_params.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
+
+using blink::WebGestureEvent;
 
 namespace remote_cocoa {
 
@@ -297,6 +301,34 @@ void RenderWidgetHostNSViewBridge::ShowSharingServicePicker(
 void RenderWidgetHostNSViewBridge::Destroy() {
   if (destroy_callback_)
     std::move(destroy_callback_).Run();
+}
+
+void RenderWidgetHostNSViewBridge::GestureScrollEventAck(
+    std::unique_ptr<blink::WebCoalescedInputEvent> event,
+    bool consumed) {
+  if (!event ||
+      !blink::WebInputEvent::IsGestureEventType(event->Event().GetType())) {
+    DLOG(ERROR) << "Absent or non-GestureEventType event.";
+    return;
+  }
+
+  const blink::WebGestureEvent& gesture_event =
+      static_cast<const blink::WebGestureEvent&>(event->Event());
+  [cocoa_view_ processedGestureScrollEvent:gesture_event consumed:consumed];
+}
+
+void RenderWidgetHostNSViewBridge::DidOverscroll(
+    blink::mojom::DidOverscrollParamsPtr overscroll) {
+  if (!overscroll) {
+    DLOG(ERROR) << "Overscroll argument is nullptr.";
+    return;
+  }
+
+  ui::DidOverscrollParams params = {
+      overscroll->accumulated_overscroll, overscroll->latest_overscroll_delta,
+      overscroll->current_fling_velocity,
+      overscroll->causal_event_viewport_point, overscroll->overscroll_behavior};
+  [cocoa_view_ processedOverscroll:params];
 }
 
 }  // namespace remote_cocoa

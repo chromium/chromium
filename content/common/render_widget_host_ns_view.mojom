@@ -108,6 +108,12 @@ interface RenderWidgetHostNSView {
   // delivered later than they should. This method is called before closing the
   // remote, and is treated as if a close notification was received.
   Destroy();
+
+  // Ack gesture scroll event from the renderer.
+  GestureScrollEventAck(blink.mojom.Event event, bool consumed);
+
+  // Ack overscroll message from the renderer.
+  DidOverscroll(blink.mojom.DidOverscrollParams params);
 };
 
 // The interface through which the RenderWidgetHostViewCocoa NSView in the app

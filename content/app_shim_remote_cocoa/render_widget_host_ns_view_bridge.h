@@ -85,6 +85,10 @@ class RenderWidgetHostNSViewBridge : public mojom::RenderWidgetHostNSView,
       const std::vector<std::string>& file_paths,
       ShowSharingServicePickerCallback callback) override;
   void Destroy() override;
+  void GestureScrollEventAck(
+      std::unique_ptr<blink::WebCoalescedInputEvent> event,
+      bool consumed) override;
+  void DidOverscroll(blink::mojom::DidOverscrollParamsPtr params) override;
 
  private:
   bool IsPopup() const { return !!popup_window_; }

@@ -26,6 +26,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app_shim/app_shim_delegate.h"
+#include "chrome/app_shim/app_shim_render_widget_host_view_mac_delegate.h"
 #include "chrome/browser/ui/cocoa/browser_window_command_handler.h"
 #include "chrome/browser/ui/cocoa/chrome_command_dispatcher_delegate.h"
 #include "chrome/browser/ui/cocoa/main_menu_builder.h"
@@ -462,8 +463,26 @@ void AppShimController::CreateRemoteCocoaApplication(
         receiver) {
   remote_cocoa::ApplicationBridge::Get()->BindReceiver(std::move(receiver));
   remote_cocoa::ApplicationBridge::Get()->SetContentNSViewCreateCallbacks(
-      base::BindRepeating(remote_cocoa::CreateRenderWidgetHostNSView),
+      base::BindRepeating(&AppShimController::CreateRenderWidgetHostNSView),
       base::BindRepeating(remote_cocoa::CreateWebContentsNSView));
+}
+
+void AppShimController::CreateRenderWidgetHostNSView(
+    uint64_t view_id,
+    mojo::ScopedInterfaceEndpointHandle host_handle,
+    mojo::ScopedInterfaceEndpointHandle view_request_handle) {
+  remote_cocoa::RenderWidgetHostViewMacDelegateCallback
+      responder_delegate_creation_callback = base::BindOnce(
+          &AppShimController::CreateRenderWidgetHostViewDelegate, view_id);
+  remote_cocoa::CreateRenderWidgetHostNSView(
+      view_id, std::move(host_handle), std::move(view_request_handle),
+      std::move(responder_delegate_creation_callback));
+}
+
+NSObject<RenderWidgetHostViewMacDelegate>*
+AppShimController::CreateRenderWidgetHostViewDelegate(uint64_t view_id) {
+  return [[AppShimRenderWidgetHostViewMacDelegate alloc]
+      initWithRenderWidgetHostNSViewID:view_id];
 }
 
 void AppShimController::CreateCommandDispatcherForWidget(uint64_t widget_id) {

@@ -53,6 +53,7 @@
 #include "skia/ext/skia_utils_mac.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #import "ui/base/clipboard/clipboard_util_mac.h"
 #include "ui/base/cocoa/animation_utils.h"
@@ -1376,9 +1377,13 @@ void RenderWidgetHostViewMac::GestureEventAck(
   switch (event.GetType()) {
     case WebInputEvent::Type::kGestureScrollBegin:
     case WebInputEvent::Type::kGestureScrollUpdate:
-    case WebInputEvent::Type::kGestureScrollEnd:
-      [GetInProcessNSView() processedGestureScrollEvent:event
-                                               consumed:consumed];
+    case WebInputEvent::Type::kGestureScrollEnd: {
+      auto input_event = std::make_unique<blink::WebCoalescedInputEvent>(
+          event.Clone(), std::vector<std::unique_ptr<blink::WebInputEvent>>{},
+          std::vector<std::unique_ptr<blink::WebInputEvent>>{},
+          ui::LatencyInfo());
+      ns_view_->GestureScrollEventAck(std::move(input_event), consumed);
+    }
       return;
     default:
       break;
@@ -1406,7 +1411,10 @@ void RenderWidgetHostViewMac::ProcessAckedTouchEvent(
 
 void RenderWidgetHostViewMac::DidOverscroll(
     const ui::DidOverscrollParams& params) {
-  [GetInProcessNSView() processedOverscroll:params];
+  ns_view_->DidOverscroll(blink::mojom::DidOverscrollParams::New(
+      params.accumulated_overscroll, params.latest_overscroll_delta,
+      params.current_fling_velocity, params.causal_event_viewport_point,
+      params.overscroll_behavior));
 }
 
 std::unique_ptr<SyntheticGestureTarget>

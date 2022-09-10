@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/frame/native_browser_frame.h"
 
 #import "base/mac/scoped_nsobject.h"
+#include "chrome/browser/command_observer.h"
 #include "ui/views/widget/native_widget_mac.h"
 
 class BrowserFrame;
@@ -21,7 +22,8 @@ class BrowserView;
 //  the window frame for the Chrome browser window.
 //
 class BrowserFrameMac : public views::NativeWidgetMac,
-                        public NativeBrowserFrame {
+                        public NativeBrowserFrame,
+                        public CommandObserver {
  public:
   BrowserFrameMac(BrowserFrame* browser_frame, BrowserView* browser_view);
 
@@ -74,6 +76,9 @@ class BrowserFrameMac : public views::NativeWidgetMac,
 
   // Overridden from NativeBrowserFrame:
   int GetMinimizeButtonOffset() const override;
+
+  // Overridden from CommandObserver:
+  void EnabledStateChangedForCommand(int id, bool enabled) override;
 
  private:
   raw_ptr<BrowserView> browser_view_;  // Weak. Our ClientView.

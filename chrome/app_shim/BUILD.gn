@@ -16,6 +16,8 @@ source_set("app_shim") {
     "app_shim_controller.mm",
     "app_shim_delegate.h",
     "app_shim_delegate.mm",
+    "app_shim_render_widget_host_view_mac_delegate.h",
+    "app_shim_render_widget_host_view_mac_delegate.mm",
     "chrome_main_app_mode_mac.mm",
   ]
 
@@ -24,6 +26,7 @@ source_set("app_shim") {
     "//build:chromeos_buildflags",
     "//chrome:strings",
     "//chrome/app:command_ids",
+    "//chrome/browser/renderer_host:history_swiper",
     "//chrome/browser/ui",
     "//chrome/common",
     "//chrome/common:mojo_bindings",
