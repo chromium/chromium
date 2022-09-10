@@ -1,0 +1,10 @@
+include_rules = [
+  # The WebUI examples is a simple embedder, so it only uses content's public API.
+  "+content/public",
+
+  # Sandbox is part of the main initialization.
+  "+sandbox",
+
+  # The WebUI examples is an embedder so it must work with resource bundles.
+  "+ui/base/resource",
+]

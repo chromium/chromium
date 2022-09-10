@@ -310,6 +310,7 @@ group("gn_all") {
     deps += [
       "//ui/aura:aura_demo",
       "//ui/aura:aura_unittests",
+      "//ui/webui/examples:webui_examples",
       "//ui/wm:wm_unittests",
     ]
   }

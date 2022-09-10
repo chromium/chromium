@@ -1,0 +1,77 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/repack.gni")
+import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
+
+assert(use_aura)
+
+static_library("webui_examples_lib") {
+  testonly = true
+
+  sources = [
+    "app/main_delegate.cc",
+    "app/main_delegate.h",
+    "browser/browser_context.cc",
+    "browser/browser_context.h",
+    "browser/browser_main_parts.cc",
+    "browser/browser_main_parts.h",
+    "browser/content_browser_client.cc",
+    "browser/content_browser_client.h",
+    "common/content_client.cc",
+    "common/content_client.h",
+  ]
+
+  data_deps = [ "//tools/v8_context_snapshot" ]
+
+  deps = [
+    ":pak",
+    "//base",
+    "//content/public/app",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/display",
+    "//url",
+  ]
+}
+
+repack("pak") {
+  testonly = true
+  sources = [
+    "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
+    "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
+    "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
+    "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
+  ]
+  deps = [
+    "//third_party/blink/public:resources",
+    "//third_party/blink/public:scaled_resources_100_percent",
+    "//ui/strings",
+  ]
+  output = "$root_out_dir/webui_examples.pak"
+}
+
+executable("webui_examples") {
+  testonly = true
+
+  sources = [ "app/main.cc" ]
+
+  deps = [
+    ":webui_examples_lib",
+    "//base",
+    "//content/public/app",
+  ]
+
+  if (is_win) {
+    configs += [ "//build/config/win:windowed" ]
+
+    deps += [
+      "//build/win:default_exe_manifest",
+      "//content:sandbox_helper_win",
+      "//sandbox/win:sandbox",
+    ]
+  }
+}
