@@ -19,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/content/browser/content_autofill_driver_test_api.h"
 #include "components/autofill/content/browser/content_autofill_router.h"
+#include "components/autofill/content/browser/content_autofill_router_test_api.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
@@ -686,6 +687,16 @@ TEST_P(ContentAutofillDriverTest, PreviewFieldWithValue) {
   EXPECT_TRUE(
       fake_agent_.GetString16PreviewFieldWithValue(field, &output_value));
   EXPECT_EQ(input_value, output_value);
+}
+
+TEST_P(ContentAutofillDriverTest, SetShouldSuppressKeyboard) {
+  auto driver_test_api = ContentAutofillDriverTestApi(driver_.get());
+  ASSERT_FALSE(driver_test_api.should_suppress_keyboard());
+  ContentAutofillRouterTestApi(&driver_test_api.autofill_router())
+      .set_last_queried_source(driver_.get());
+
+  driver_->SetShouldSuppressKeyboard(true);
+  EXPECT_TRUE(driver_test_api.should_suppress_keyboard());
 }
 
 INSTANTIATE_TEST_SUITE_P(ContentAutofillDriverTest,

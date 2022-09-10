@@ -32,6 +32,8 @@ class ContentAutofillDriverTestApi {
     return driver_->GetFormWithFrameAndFormMetaData(form);
   }
 
+  bool should_suppress_keyboard() { return driver_->should_suppress_keyboard_; }
+
  private:
   // Non-null pointer to wrapped ContentAutofillDriver.
   raw_ptr<ContentAutofillDriver> driver_;

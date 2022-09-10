@@ -226,9 +226,15 @@ class ContentAutofillDriver : public AutofillDriver,
       const content::RenderWidgetHost::KeyPressEventCallback& handler);
   void UnsetKeyPressHandler();
 
+  // Sets whether the keyboard should be suppressed. Used to keep the keyboard
+  // hidden while the bottom sheet (e.g. Touch To Fill) is shown. Forwarded to
+  // the last-queried source remembered by ContentAutofillRouter.
+  void SetShouldSuppressKeyboard(bool suppress);
+
   // Callbacks that are called also in other functions by ContentAutofillRouter.
   void FocusNoLongerOnFormCallback(bool had_interacted_form);
   void UnsetKeyPressHandlerCallback();
+  void SetShouldSuppressKeyboardCallback(bool suppress);
 
  private:
   friend class ContentAutofillDriverTestApi;
@@ -363,6 +369,11 @@ class ContentAutofillDriver : public AutofillDriver,
   mojo::AssociatedReceiver<mojom::AutofillDriver> receiver_{this};
 
   mojo::AssociatedRemote<mojom::AutofillAgent> autofill_agent_;
+
+  bool should_suppress_keyboard_ = false;
+
+  content::RenderWidgetHost::SuppressShowingImeCallback
+      suppress_showing_ime_callback_;
 };
 
 }  // namespace autofill

@@ -19,6 +19,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -1883,33 +1884,35 @@ void RenderWidgetHostImpl::DisableResizeAckCheckForTesting() {
 
 void RenderWidgetHostImpl::AddKeyPressEventCallback(
     const KeyPressEventCallback& callback) {
+  DCHECK(!base::Contains(key_press_event_callbacks_, callback));
   key_press_event_callbacks_.push_back(callback);
 }
 
 void RenderWidgetHostImpl::RemoveKeyPressEventCallback(
     const KeyPressEventCallback& callback) {
-  for (size_t i = 0; i < key_press_event_callbacks_.size(); ++i) {
-    if (key_press_event_callbacks_[i] == callback) {
-      key_press_event_callbacks_.erase(
-          key_press_event_callbacks_.begin() + i);
-      return;
-    }
-  }
+  base::Erase(key_press_event_callbacks_, callback);
 }
 
 void RenderWidgetHostImpl::AddMouseEventCallback(
     const MouseEventCallback& callback) {
+  DCHECK(!base::Contains(mouse_event_callbacks_, callback));
   mouse_event_callbacks_.push_back(callback);
 }
 
 void RenderWidgetHostImpl::RemoveMouseEventCallback(
     const MouseEventCallback& callback) {
-  for (size_t i = 0; i < mouse_event_callbacks_.size(); ++i) {
-    if (mouse_event_callbacks_[i] == callback) {
-      mouse_event_callbacks_.erase(mouse_event_callbacks_.begin() + i);
-      return;
-    }
-  }
+  base::Erase(mouse_event_callbacks_, callback);
+}
+
+void RenderWidgetHostImpl::AddSuppressShowingImeCallback(
+    const SuppressShowingImeCallback& callback) {
+  DCHECK(!base::Contains(suppress_showing_ime_callbacks_, callback));
+  suppress_showing_ime_callbacks_.push_back(callback);
+}
+
+void RenderWidgetHostImpl::RemoveSuppressShowingImeCallback(
+    const SuppressShowingImeCallback& callback) {
+  base::Erase(suppress_showing_ime_callbacks_, callback);
 }
 
 void RenderWidgetHostImpl::AddInputEventObserver(
@@ -2883,8 +2886,15 @@ TouchEmulator* RenderWidgetHostImpl::GetExistingTouchEmulator() {
 
 void RenderWidgetHostImpl::TextInputStateChanged(
     ui::mojom::TextInputStatePtr state) {
-  if (view_)
-    view_->TextInputStateChanged(*state);
+  if (!view_)
+    return;
+  for (auto& callback : suppress_showing_ime_callbacks_) {
+    if (callback.Run()) {
+      state->always_hide_ime = true;
+      break;
+    }
+  }
+  view_->TextInputStateChanged(*state);
 }
 
 void RenderWidgetHostImpl::OnImeCompositionRangeChanged(

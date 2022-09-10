@@ -41,6 +41,9 @@ class TouchToFillCreditCardController
   void Hide();
 
  private:
+  // Called after the surface gets shown or hidden.
+  void SetShouldSuppressKeyboard(bool suppress);
+
   // TouchToFillCreditCardViewController:
   // Called whenever the surface gets hidden (regardless of the cause).
   void OnDismissed(JNIEnv* env) override;

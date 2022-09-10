@@ -8,6 +8,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/callback.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "components/autofill/content/browser/bad_message.h"
@@ -45,12 +46,26 @@ namespace autofill {
 ContentAutofillDriver::ContentAutofillDriver(
     content::RenderFrameHost* render_frame_host,
     ContentAutofillRouter* autofill_router)
-    : render_frame_host_(render_frame_host),
-      autofill_router_(autofill_router) {}
+    : render_frame_host_(render_frame_host), autofill_router_(autofill_router) {
+  if (render_frame_host_) {  // Can be nullptr only in tests.
+    suppress_showing_ime_callback_ = base::BindRepeating(
+        [](const ContentAutofillDriver* driver) {
+          return driver->should_suppress_keyboard_;
+        },
+        base::Unretained(this));
+    render_frame_host_->GetRenderWidgetHost()->AddSuppressShowingImeCallback(
+        suppress_showing_ime_callback_);
+  }
+}
 
 ContentAutofillDriver::~ContentAutofillDriver() {
   if (autofill_router_)  // Can be nullptr only in tests.
     autofill_router_->UnregisterDriver(this);
+
+  if (render_frame_host_) {  // Can be nullptr only in tests.
+    render_frame_host_->GetRenderWidgetHost()->RemoveSuppressShowingImeCallback(
+        suppress_showing_ime_callback_);
+  }
 }
 
 void ContentAutofillDriver::TriggerReparse() {
@@ -604,6 +619,10 @@ void ContentAutofillDriver::UnsetKeyPressHandlerCallback() {
   key_press_handler_.Reset();
 }
 
+void ContentAutofillDriver::SetShouldSuppressKeyboardCallback(bool suppress) {
+  should_suppress_keyboard_ = suppress;
+}
+
 void ContentAutofillDriver::SetKeyPressHandler(
     const content::RenderWidgetHost::KeyPressEventCallback& handler) {
   autofill_router().SetKeyPressHandler(
@@ -624,6 +643,13 @@ void ContentAutofillDriver::UnsetKeyPressHandler() {
   autofill_router().UnsetKeyPressHandler(
       this, [](ContentAutofillDriver* target) {
         target->UnsetKeyPressHandlerCallback();
+      });
+}
+
+void ContentAutofillDriver::SetShouldSuppressKeyboard(bool suppress) {
+  autofill_router().SetShouldSuppressKeyboard(
+      this, suppress, [](ContentAutofillDriver* target, bool suppress) {
+        target->SetShouldSuppressKeyboardCallback(suppress);
       });
 }
 

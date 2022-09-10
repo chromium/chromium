@@ -248,6 +248,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       const KeyPressEventCallback& callback) override;
   void AddMouseEventCallback(const MouseEventCallback& callback) override;
   void RemoveMouseEventCallback(const MouseEventCallback& callback) override;
+  void AddSuppressShowingImeCallback(
+      const SuppressShowingImeCallback& callback) override;
+  void RemoveSuppressShowingImeCallback(
+      const SuppressShowingImeCallback& callback) override;
   void AddInputEventObserver(
       RenderWidgetHost::InputEventObserver* observer) override;
   void RemoveInputEventObserver(
@@ -1276,6 +1280,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   // Mouse event callbacks.
   std::vector<MouseEventCallback> mouse_event_callbacks_;
+
+  // Suppress showing keyboard callbacks.
+  std::vector<SuppressShowingImeCallback> suppress_showing_ime_callbacks_;
 
   // Input event callbacks.
   base::ObserverList<RenderWidgetHost::InputEventObserver>::Unchecked

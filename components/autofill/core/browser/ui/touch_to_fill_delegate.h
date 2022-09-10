@@ -7,10 +7,16 @@
 
 namespace autofill {
 
-// An interface for interaction with the corresponding UI controller.
+class AutofillDriver;
+
+// An interface for interaction with the bottom sheet UI controller, which is
+// `TouchToFillCreditCardController` on Android. The delegate will supply the
+// data to show and will be notified of events by the controller.
 class TouchToFillDelegate {
  public:
   // TODO(crbug.com/1247698): Define the API.
+  virtual AutofillDriver* GetDriver() = 0;
+
   virtual ~TouchToFillDelegate() = default;
 };
 

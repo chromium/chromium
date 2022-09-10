@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/touch_to_fill_delegate_impl.h"
 
+#include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -78,6 +79,10 @@ void TouchToFillDelegateImpl::HideTouchToFill() {
 void TouchToFillDelegateImpl::Reset() {
   HideTouchToFill();
   ttf_credit_card_state_ = TouchToFillState::kShouldShow;
+}
+
+AutofillDriver* TouchToFillDelegateImpl::GetDriver() {
+  return manager_->driver();
 }
 
 base::WeakPtr<TouchToFillDelegateImpl> TouchToFillDelegateImpl::GetWeakPtr() {

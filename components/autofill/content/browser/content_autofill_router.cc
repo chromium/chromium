@@ -106,8 +106,10 @@ void ContentAutofillRouter::UnregisterDriver(ContentAutofillDriver* driver) {
 
 void ContentAutofillRouter::SetLastQueriedSource(
     ContentAutofillDriver* source) {
-  if (last_queried_source_ && last_queried_target_ != source)
+  if (last_queried_source_ && last_queried_target_ != source) {
     last_queried_source_->UnsetKeyPressHandlerCallback();
+    last_queried_source_->SetShouldSuppressKeyboardCallback(false);
+  }
   last_queried_source_ = source;
 }
 
@@ -157,6 +159,24 @@ void ContentAutofillRouter::UnsetKeyPressHandler(
     return;
 
   callback(last_queried_source_);
+}
+
+void ContentAutofillRouter::SetShouldSuppressKeyboard(
+    ContentAutofillDriver* source,
+    bool suppress,
+    void (*callback)(ContentAutofillDriver* target, bool suppress)) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
+    callback(source, suppress);
+    return;
+  }
+
+  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
+
+  // TODO(crbug.com/1247698): Double check if this could happen.
+  if (!last_queried_source_)
+    return;
+
+  callback(last_queried_source_, suppress);
 }
 
 // Routing of events called by the renderer:
