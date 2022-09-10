@@ -395,8 +395,8 @@ void AutocompleteResult::SortAndCull(
     }
   }
 
-  // Run sanity checks on the default match to make sure all the suggestions
-  // are congruent with the user's input. Skip checks in these cases:
+  // If the user explicitly typed a scheme, the default match should have the
+  // same scheme. This doesn't apply in these cases:
   //  - If the default match has no |destination_url|. An example of this is the
   //    default match after the user has tabbed into keyword search mode, but
   //    has not typed a query yet.
@@ -404,7 +404,9 @@ void AutocompleteResult::SortAndCull(
   //    modes, there is no explicit user input so these checks don't make sense.
   auto* default_match = this->default_match();
   if (default_match && default_match->destination_url.is_valid() &&
-      input.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT) {
+      input.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT &&
+      input.type() == metrics::OmniboxInputType::URL &&
+      input.parts().scheme.is_nonempty()) {
     const std::u16string debug_info =
         u"fill_into_edit=" + default_match->fill_into_edit + u", provider=" +
         ((default_match->provider != nullptr)
@@ -412,21 +414,10 @@ void AutocompleteResult::SortAndCull(
              : std::u16string()) +
         u", input=" + input.text();
 
-    if (AutocompleteMatch::IsSearchType(default_match->type)) {
-      // We shouldn't get query matches for URL inputs.
-      DCHECK_NE(metrics::OmniboxInputType::URL, input.type()) << debug_info;
-    } else {
-      // If the user explicitly typed a scheme, the default match should
-      // have the same scheme.
-      if ((input.type() == metrics::OmniboxInputType::URL) &&
-          input.parts().scheme.is_nonempty()) {
-        const std::string& in_scheme = base::UTF16ToUTF8(input.scheme());
-        const std::string& dest_scheme =
-            default_match->destination_url.scheme();
-        DCHECK(url_formatter::IsEquivalentScheme(in_scheme, dest_scheme))
-            << debug_info;
-      }
-    }
+    const std::string& in_scheme = base::UTF16ToUTF8(input.scheme());
+    const std::string& dest_scheme = default_match->destination_url.scheme();
+    DCHECK(url_formatter::IsEquivalentScheme(in_scheme, dest_scheme))
+        << debug_info;
   }
 }
 
