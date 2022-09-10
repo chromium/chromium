@@ -362,6 +362,7 @@ https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/u/util-lin
 https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/v/valgrind/valgrind_3.16.1-1_armhf.deb
 https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/v/vulkan-loader/libvulkan1_1.2.182.0-2~bpo11+1_armhf.deb
 https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/v/vulkan-loader/libvulkan-dev_1.2.182.0-2~bpo11+1_armhf.deb
+https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/w/wayland/libwayland-bin_1.18.0-2~exp1.1_armhf.deb
 https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/w/wayland/libwayland-client0_1.18.0-2~exp1.1_armhf.deb
 https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/w/wayland/libwayland-cursor0_1.18.0-2~exp1.1_armhf.deb
 https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/w/wayland/libwayland-dev_1.18.0-2~exp1.1_armhf.deb

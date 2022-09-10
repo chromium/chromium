@@ -320,6 +320,7 @@ DEBIAN_PACKAGES="\
   libvulkan-dev
   libvulkan1
   libwacom2
+  libwayland-bin
   libwayland-client0
   libwayland-cursor0
   libwayland-dev
