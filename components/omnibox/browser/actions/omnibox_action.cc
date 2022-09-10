@@ -46,7 +46,7 @@ size_t EstimateMemoryUsage(const OmniboxAction::LabelStrings& self) {
 
 // =============================================================================
 
-bool OmniboxAction::Client::OpenJourneys() {
+bool OmniboxAction::Client::OpenJourneys(const std::string& query) {
   return false;
 }
 

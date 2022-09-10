@@ -102,7 +102,8 @@ HistoryClustersAction::HistoryClustersAction(
           GURL(base::StringPrintf(
               "chrome://history/journeys?q=%s",
               base::EscapeQueryParamValue(query, /*use_plus=*/false).c_str()))),
-      matched_keyword_data_(matched_keyword_data) {
+      matched_keyword_data_(matched_keyword_data),
+      query_(query) {
 #if BUILDFLAG(IS_ANDROID)
     CreateOrUpdateJavaObject(query);
 #endif
@@ -153,7 +154,7 @@ void HistoryClustersAction::RecordActionShown(size_t position,
 }
 
 void HistoryClustersAction::Execute(ExecutionContext& context) const {
-  if (context.client_.OpenJourneys()) {
+  if (context.client_.OpenJourneys(query_)) {
     // If the client opens Journeys in the Side Panel, we are done.
     return;
   }

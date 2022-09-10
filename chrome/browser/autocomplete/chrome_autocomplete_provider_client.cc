@@ -454,7 +454,7 @@ void ChromeAutocompleteProviderClient::CloseIncognitoWindows() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-bool ChromeAutocompleteProviderClient::OpenJourneys() {
+bool ChromeAutocompleteProviderClient::OpenJourneys(const std::string& query) {
 #if !BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(features::kUnifiedSidePanel) ||
       !base::FeatureList::IsEnabled(features::kSidePanelJourneys) ||
