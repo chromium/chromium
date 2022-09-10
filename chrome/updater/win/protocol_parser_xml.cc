@@ -78,20 +78,36 @@ bool ReadStringAttribute(IXMLDOMNode* node,
 }  // namespace
 
 bool ProtocolParserXML::ParseAction(IXMLDOMNode* node, Results* results) {
-  if (!results->list.back().manifest.run.empty()) {
-    // All actions except the first one are ignored.
-    return true;
-  }
-
-  if (!ReadStringAttribute(node, L"run", &results->list.back().manifest.run) ||
-      results->list.back().manifest.run.empty()) {
-    ParseError("Missing `run` attribute in <action>");
+  std::string event;
+  if (!ReadStringAttribute(node, L"event", &event)) {
+    ParseError("Missing `event` attribute in <action>");
     return false;
   }
 
-  ReadStringAttribute(node, L"arguments",
-                      &results->list.back().manifest.arguments);
-  return true;
+  if (event == "install") {
+    if (!results->list.back().manifest.run.empty()) {
+      // Only parse the first install action and ignore the rest.
+      return true;
+    }
+
+    if (!ReadStringAttribute(node, L"run",
+                             &results->list.back().manifest.run) ||
+        results->list.back().manifest.run.empty()) {
+      ParseError("Missing `run` attribute in <action>");
+      return false;
+    }
+
+    ReadStringAttribute(node, L"arguments",
+                        &results->list.back().manifest.arguments);
+    return true;
+  } else if (event == "postinstall") {
+    // TODO(crbug.com/1286574): Handle `postinstall` action when `Result` class
+    // implements it.
+    return true;
+  } else {
+    ParseError("Unsupported `event` type in <action>: %s", event.c_str());
+    return false;
+  }
 }
 
 bool ProtocolParserXML::ParseActions(IXMLDOMNode* node, Results* results) {
@@ -146,7 +162,7 @@ bool ProtocolParserXML::ParseData(IXMLDOMNode* node, Results* results) {
   base::win::ScopedBstr text;
   HRESULT hr = node->get_text(text.Receive());
   if (FAILED(hr)) {
-    ParseError("Failed to get text from <data>: 0x%x", hr);
+    ParseError("Failed to get text from <data>: %#x", hr);
     return false;
   }
   data.text = base::SysWideToUTF8(text.Get());
@@ -205,6 +221,13 @@ bool ProtocolParserXML::ParsePackages(IXMLDOMNode* node, Results* results) {
 }
 
 bool ProtocolParserXML::ParseResponse(IXMLDOMNode* node, Results* results) {
+  std::string protocol_version;
+  if (!ReadStringAttribute(node, L"protocol", &protocol_version) ||
+      protocol_version != "3.0") {
+    ParseError("Unsupported protocol version: %s", protocol_version.c_str());
+    return false;
+  }
+
   return ParseChildren(
       {
           {L"app", &ProtocolParserXML::ParseApp},
@@ -286,14 +309,14 @@ bool ProtocolParserXML::ParseChildren(const ElementHandlerMap& handler_map,
 
   HRESULT hr = node->get_childNodes(&children_list);
   if (FAILED(hr)) {
-    ParseError("Failed to get child elements: 0x%x", hr);
+    ParseError("Failed to get child elements: %#x", hr);
     return false;
   }
 
   long num_children = 0;
   hr = children_list->get_length(&num_children);
   if (FAILED(hr)) {
-    ParseError("Failed to get the number of child elements: 0x%x", hr);
+    ParseError("Failed to get the number of child elements: %#x", hr);
     return false;
   }
 
@@ -301,14 +324,14 @@ bool ProtocolParserXML::ParseChildren(const ElementHandlerMap& handler_map,
     Microsoft::WRL::ComPtr<IXMLDOMNode> child_node;
     hr = children_list->get_item(i, &child_node);
     if (FAILED(hr)) {
-      ParseError("Failed to get %d-th child element: 0x%x", i, hr);
+      ParseError("Failed to get %d-th child element: %#x", i, hr);
       return false;
     }
 
     DOMNodeType type = NODE_INVALID;
     hr = child_node->get_nodeType(&type);
     if (FAILED(hr)) {
-      ParseError("Failed to get %d-th child element type: 0x%x", i, hr);
+      ParseError("Failed to get %d-th child element type: %#x", i, hr);
       return false;
     }
 
@@ -329,12 +352,12 @@ bool ProtocolParserXML::DoParse(const std::string& response_xml,
   HRESULT hr = ::CoCreateInstance(CLSID_DOMDocument30, nullptr, CLSCTX_ALL,
                                   IID_IXMLDOMDocument, &xmldoc);
   if (FAILED(hr)) {
-    ParseError("IXMLDOMDocument.CoCreateInstance failed: 0x%x", hr);
+    ParseError("IXMLDOMDocument.CoCreateInstance failed: %#x", hr);
     return false;
   }
   hr = xmldoc->put_resolveExternals(VARIANT_FALSE);
   if (FAILED(hr)) {
-    ParseError("IXMLDOMDocument.put_resolveExternals failed: 0x%x", hr);
+    ParseError("IXMLDOMDocument.put_resolveExternals failed: %#x", hr);
     return false;
   }
 
@@ -343,14 +366,14 @@ bool ProtocolParserXML::DoParse(const std::string& response_xml,
       base::win::ScopedBstr(base::SysUTF8ToWide(response_xml).c_str());
   hr = xmldoc->loadXML(xml_bstr.Get(), &is_successful);
   if (FAILED(hr)) {
-    ParseError("Load maniftest failed: 0x%x", hr);
+    ParseError("Load manifest failed: %#x", hr);
     return false;
   }
 
   Microsoft::WRL::ComPtr<IXMLDOMElement> root_node;
   hr = xmldoc->get_documentElement(&root_node);
   if (FAILED(hr) || !root_node) {
-    ParseError("Load maniftest failed: 0x%x", hr);
+    ParseError("Load manifest failed: %#x", hr);
     return false;
   }
 
