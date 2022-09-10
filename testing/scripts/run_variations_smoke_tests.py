@@ -249,8 +249,6 @@ def _run_tests(work_dir, skia_util, *args):
 
     # Run test cases: visit urls and verify certain web elements are rendered
     # correctly.
-    # TODO(crbug.com/1234404): Investigate pixel/layout based testing instead of
-    # DOM based testing to verify that rendering is working properly.
     for t in _TEST_CASES:
       driver.get(t['url'])
       driver.set_window_size(1280, 1024)
