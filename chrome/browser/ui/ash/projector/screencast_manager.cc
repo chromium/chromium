@@ -9,6 +9,7 @@
 
 #include "ash/webui/projector_app/projector_screencast.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
+#include "base/bind.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -19,12 +20,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/chromeos/extensions/file_manager/scoped_suppress_drive_notifications_for_path.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/projector/projector_drivefs_provider.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "chrome/services/media_gallery_util/public/cpp/local_media_data_source_factory.h"
 #include "chrome/services/media_gallery_util/public/cpp/safe_media_metadata_parser.h"
 #include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
-#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -104,8 +106,36 @@ void GetVideoMetadata(const base::FilePath& video_path,
                      std::move(callback), video_path, std::move(parser))));
 }
 
-void OnVideoFilePathLocated(
-    scoped_refptr<base::SequencedTaskRunner> video_metadata_task_runner,
+}  // namespace
+
+// CreateSingleThreadTaskRunner for `video_metadata_task_runner` since
+// LocalMediaDataSource requires a single thread context.
+ScreencastManager::ScreencastManager()
+    : video_metadata_task_runner_(
+          base::ThreadPool::CreateSingleThreadTaskRunner({base::MayBlock()})) {}
+ScreencastManager::~ScreencastManager() = default;
+
+void ScreencastManager::GetVideo(
+    const std::string& video_file_id,
+    const std::string& resource_key,
+    ProjectorAppClient::OnGetVideoCallback callback) const {
+  // TODO(b/237089852): Handle the resource key once LocateFilesByItemIds()
+  // supports it.
+
+  drive::DriveIntegrationService* integration_service =
+      ProjectorDriveFsProvider::GetActiveDriveIntegrationService();
+  integration_service->LocateFilesByItemIds(
+      {video_file_id},
+      base::BindOnce(&ScreencastManager::OnVideoFilePathLocated,
+                     weak_ptr_factory_.GetWeakPtr(), video_file_id,
+                     std::move(callback)));
+}
+
+void ScreencastManager::ResetScopeSuppressDriveNotifications() {
+  suppress_drive_notifications_for_path_.reset();
+}
+
+void ScreencastManager::OnVideoFilePathLocated(
     const std::string& video_id,
     ProjectorAppClient::OnGetVideoCallback callback,
     absl::optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths) {
@@ -139,6 +169,14 @@ void OnVideoFilePathLocated(
   const base::FilePath& mounted_path =
       ProjectorDriveFsProvider::GetDriveFsMountPointPath();
   const base::FilePath& video_path = mounted_path.Append(relative_drivefs_path);
+
+  // Suppresses the notification before calling GetVideoMetadata, which might
+  // trigger file syncing event that triggers Drive notifications.
+  suppress_drive_notifications_for_path_ =
+      std::make_unique<file_manager::ScopedSuppressDriveNotificationsForPath>(
+          ProfileManager::GetActiveUserProfile(),
+          base::FilePath("/").Append(relative_drivefs_path));
+
   // Post task to:
   // 1. Fill the video duration which also serves the purpose of video file
   // validation.
@@ -146,33 +184,9 @@ void OnVideoFilePathLocated(
   // 3. Trigger `callback`.
   auto video = std::make_unique<ProjectorScreencastVideo>();
   video->file_id = video_id;
-  video_metadata_task_runner->PostTask(
+  video_metadata_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&GetVideoMetadata, video_path, std::move(video),
                                 std::move(callback)));
-}
-
-}  // namespace
-
-// CreateSingleThreadTaskRunner for `video_metadata_task_runner` since
-// LocalMediaDataSource requires a single thread context.
-ScreencastManager::ScreencastManager()
-    : video_metadata_task_runner_(
-          base::ThreadPool::CreateSingleThreadTaskRunner({base::MayBlock()})) {}
-ScreencastManager::~ScreencastManager() = default;
-
-void ScreencastManager::GetVideo(
-    const std::string& video_file_id,
-    const std::string& resource_key,
-    ProjectorAppClient::OnGetVideoCallback callback) const {
-  // TODO(b/237089852): Handle the resource key once LocateFilesByItemIds()
-  // supports it.
-
-  drive::DriveIntegrationService* integration_service =
-      ProjectorDriveFsProvider::GetActiveDriveIntegrationService();
-  integration_service->LocateFilesByItemIds(
-      {video_file_id},
-      base::BindOnce(&OnVideoFilePathLocated, video_metadata_task_runner_,
-                     video_file_id, std::move(callback)));
 }
 
 }  // namespace ash

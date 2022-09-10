@@ -10,6 +10,7 @@
 #include "ash/webui/grit/ash_projector_app_trusted_resources_map.h"
 #include "ash/webui/grit/ash_projector_common_resources.h"
 #include "ash/webui/grit/ash_projector_common_resources_map.h"
+#include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/projector_message_handler.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "components/prefs/pref_service.h"
@@ -60,9 +61,12 @@ TrustedProjectorUI::TrustedProjectorUI(content::WebUI* web_ui,
   // The requested WebUI is hosting the Projector SWA.
   web_ui->AddMessageHandler(
       std::make_unique<ProjectorMessageHandler>(pref_service));
+  ProjectorAppClient::Get()->NotifyAppUIActive(true);
 }
 
-TrustedProjectorUI::~TrustedProjectorUI() = default;
+TrustedProjectorUI::~TrustedProjectorUI() {
+  ProjectorAppClient::Get()->NotifyAppUIActive(false);
+}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(TrustedProjectorUI)
 

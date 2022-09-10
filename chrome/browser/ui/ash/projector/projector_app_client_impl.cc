@@ -191,3 +191,8 @@ void ProjectorAppClientImpl::Clear() {
   DCHECK(annotator_message_handler_);
   annotator_message_handler_->Clear();
 }
+
+void ProjectorAppClientImpl::NotifyAppUIActive(bool active) {
+  if (!active)
+    screencast_manager_.ResetScopeSuppressDriveNotifications();
+}

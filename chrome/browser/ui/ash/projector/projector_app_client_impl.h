@@ -63,6 +63,7 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
       ash::AnnotatorMessageHandler* handler) override;
   void SetTool(const ash::AnnotatorTool& tool) override;
   void Clear() override;
+  void NotifyAppUIActive(bool active) override;
 
   ash::AnnotatorMessageHandler* get_annotator_message_handler_for_test() {
     return annotator_message_handler_;

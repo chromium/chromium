@@ -59,6 +59,7 @@ class MockAppClient : public ProjectorAppClient {
   MOCK_METHOD1(ResetAnnotatorMessageHandler, void(AnnotatorMessageHandler*));
   MOCK_METHOD1(SetTool, void(const AnnotatorTool&));
   MOCK_METHOD0(Clear, void());
+  MOCK_METHOD1(NotifyAppUIActive, void(bool active));
 
   void SetAutomaticIssueOfAccessTokens(bool success);
   void WaitForAccessRequest(const std::string& account_email);

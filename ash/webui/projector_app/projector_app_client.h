@@ -176,6 +176,10 @@ class ProjectorAppClient {
   // Clears the contents of the annotator canvas.
   virtual void Clear() = 0;
 
+  // Called with true by the initiation and false by the destruction of
+  // projector trusted UI .
+  virtual void NotifyAppUIActive(bool active) = 0;
+
  protected:
   ProjectorAppClient();
   virtual ~ProjectorAppClient();

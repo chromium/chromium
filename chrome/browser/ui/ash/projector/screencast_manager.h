@@ -8,10 +8,16 @@
 #include <string>
 
 #include "ash/webui/projector_app/projector_app_client.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
 }  // namespace base
+
+namespace file_manager {
+class ScopedSuppressDriveNotificationsForPath;
+}
 
 namespace ash {
 
@@ -31,9 +37,27 @@ class ScreencastManager {
                 const std::string& resource_key,
                 ProjectorAppClient::OnGetVideoCallback callback) const;
 
+  // Resets `suppress_drive_notifications_for_path_`. Called when the app UI is
+  // destroyed or the path doesn't pass the video duration check.
+  void ResetScopeSuppressDriveNotifications();
+
  private:
+  // If `paths` has no error, suppresses the notification for the give path and
+  // triggers video duration verification on `video_metadata_task_runner_`.
+  void OnVideoFilePathLocated(
+      const std::string& video_id,
+      ProjectorAppClient::OnGetVideoCallback callback,
+      absl::optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths);
+
   // The task runner to get video metadata.
   scoped_refptr<base::SequencedTaskRunner> video_metadata_task_runner_;
+
+  // The video path to ignore for for Drive system notification when the
+  // Projector app is active.
+  std::unique_ptr<file_manager::ScopedSuppressDriveNotificationsForPath>
+      suppress_drive_notifications_for_path_;
+
+  base::WeakPtrFactory<ScreencastManager> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
