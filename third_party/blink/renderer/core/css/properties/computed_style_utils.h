@@ -148,6 +148,8 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* CreateTimingFunctionValue(const TimingFunction*);
   static CSSValue* ValueForAnimationTimingFunction(const CSSTimingData*);
   static CSSValue* ValueForAnimationTimeline(const StyleTimeline&);
+  static CSSValue* SingleValueForViewTimelineShorthand(const AtomicString& name,
+                                                       TimelineAxis);
   static CSSValueList* ValuesForBorderRadiusCorner(const LengthSize&,
                                                    const ComputedStyle&);
   static CSSValue* ValueForBorderRadiusCorner(const LengthSize&,
@@ -269,6 +271,7 @@ class CORE_EXPORT ComputedStyleUtils {
                                      const ComputedStyle&);
   static CSSValue* ValueForStyleName(const StyleName&);
   static CSSValue* ValueForStyleNameOrKeyword(const StyleNameOrKeyword&);
+  static CSSValue* ValueForCustomIdentOrNone(const AtomicString&);
   static const CSSValue* ValueForStyleAutoColor(const ComputedStyle&,
                                                 const StyleAutoColor&,
                                                 CSSValuePhase);

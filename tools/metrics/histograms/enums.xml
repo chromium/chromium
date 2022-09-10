@@ -64808,6 +64808,10 @@ Called by update_use_counter_css.py.-->
   <int value="725" label="scroll-timeline"/>
   <int value="726" label="scroll-timeline-name"/>
   <int value="727" label="scroll-timeline-axis"/>
+  <int value="728" label="view-timeline"/>
+  <int value="729" label="view-timeline-axis"/>
+  <int value="730" label="view-timeline-inset"/>
+  <int value="731" label="view-timeline-name"/>
 </enum>
 
 <enum name="MappedEditingCommands">

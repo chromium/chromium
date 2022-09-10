@@ -3534,16 +3534,40 @@ bool ConsumeAnimationShorthand(
   return true;
 }
 
-CSSValue* ConsumeScrollTimelineAxis(CSSParserTokenRange& range) {
+CSSValue* ConsumeSingleTimelineAxis(CSSParserTokenRange& range) {
   return ConsumeIdent<CSSValueID::kBlock, CSSValueID::kInline,
                       CSSValueID::kVertical, CSSValueID::kHorizontal>(range);
 }
 
-CSSValue* ConsumeScrollTimelineName(CSSParserTokenRange& range,
+CSSValue* ConsumeSingleTimelineName(CSSParserTokenRange& range,
                                     const CSSParserContext& context) {
   if (CSSValue* value = ConsumeIdent<CSSValueID::kNone>(range))
     return value;
   return ConsumeCustomIdentConservatively(range, context);
+}
+
+namespace {
+
+CSSValue* ConsumeSingleTimelineInsetSide(CSSParserTokenRange& range,
+                                         const CSSParserContext& context) {
+  if (CSSValue* ident = ConsumeIdent<CSSValueID::kAuto>(range))
+    return ident;
+  return ConsumeLengthOrPercent(range, context,
+                                CSSPrimitiveValue::ValueRange::kAll);
+}
+
+}  // namespace
+
+CSSValue* ConsumeSingleTimelineInset(CSSParserTokenRange& range,
+                                     const CSSParserContext& context) {
+  CSSValue* start = ConsumeSingleTimelineInsetSide(range, context);
+  if (!start)
+    return nullptr;
+  CSSValue* end = ConsumeSingleTimelineInsetSide(range, context);
+  if (!end)
+    end = start;
+  return MakeGarbageCollected<CSSValuePair>(start, end,
+                                            CSSValuePair::kDropIdenticalValues);
 }
 
 void AddBackgroundValue(CSSValue*& list, CSSValue* value) {

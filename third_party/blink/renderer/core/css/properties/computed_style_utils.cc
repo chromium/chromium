@@ -1860,6 +1860,16 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTimeline(
   return MakeGarbageCollected<cssvalue::CSSScrollValue>(axis, scroller);
 }
 
+CSSValue* ComputedStyleUtils::SingleValueForViewTimelineShorthand(
+    const AtomicString& name,
+    TimelineAxis axis) {
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*ValueForCustomIdentOrNone(name));
+  if (axis != TimelineAxis::kBlock)
+    list->Append(*CSSIdentifierValue::Create(axis));
+  return list;
+}
+
 CSSValueList* ComputedStyleUtils::ValuesForBorderRadiusCorner(
     const LengthSize& radius,
     const ComputedStyle& style) {
@@ -3088,6 +3098,13 @@ CSSValue* ComputedStyleUtils::ValueForStyleNameOrKeyword(
   if (value.IsKeyword())
     return CSSIdentifierValue::Create(value.GetKeyword());
   return ValueForStyleName(value.GetName());
+}
+
+CSSValue* ComputedStyleUtils::ValueForCustomIdentOrNone(
+    const AtomicString& ident) {
+  if (ident.IsEmpty())
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  return MakeGarbageCollected<CSSCustomIdentValue>(ident);
 }
 
 const CSSValue* ComputedStyleUtils::ValueForStyleAutoColor(

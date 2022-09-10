@@ -320,9 +320,11 @@ bool ConsumeAnimationShorthand(
     const CSSParserContext&,
     bool use_legacy_parsing);
 
-CSSValue* ConsumeScrollTimelineAxis(CSSParserTokenRange&);
-CSSValue* ConsumeScrollTimelineName(CSSParserTokenRange&,
+CSSValue* ConsumeSingleTimelineAxis(CSSParserTokenRange&);
+CSSValue* ConsumeSingleTimelineName(CSSParserTokenRange&,
                                     const CSSParserContext&);
+CSSValue* ConsumeSingleTimelineInset(CSSParserTokenRange&,
+                                     const CSSParserContext&);
 
 void AddBackgroundValue(CSSValue*& list, CSSValue*);
 CSSValue* ConsumeBackgroundAttachment(CSSParserTokenRange&);

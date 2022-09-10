@@ -39,6 +39,8 @@ ALIGNMENT_ORDER = [
     'TransformOperations',
     'Vector<CSSPropertyID>',
     'Vector<AtomicString>',
+    'Vector<TimelineAxis>',
+    'Vector<TimelineInset>',
     'GridPosition',
     'AtomicString',
     'scoped_refptr',

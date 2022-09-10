@@ -2598,4 +2598,47 @@ StyleBuilderConverter::ConvertOverflowClipMargin(StyleResolverState& state,
   return StyleOverflowClipMargin(reference_box, margin);
 }
 
+Vector<TimelineAxis> StyleBuilderConverter::ConvertViewTimelineAxis(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  Vector<TimelineAxis> axes;
+  for (const Member<const CSSValue>& item : To<CSSValueList>(value)) {
+    axes.push_back(To<CSSIdentifierValue>(*item).ConvertTo<TimelineAxis>());
+  }
+  return axes;
+}
+
+namespace {
+
+TimelineInset ConvertSingleTimelineInset(StyleResolverState& state,
+                                         const CSSValue& value) {
+  const CSSValuePair& pair = To<CSSValuePair>(value);
+  Length start =
+      StyleBuilderConverter::ConvertLengthOrAuto(state, pair.First());
+  Length end = StyleBuilderConverter::ConvertLengthOrAuto(state, pair.Second());
+  return TimelineInset(start, end);
+}
+
+}  // namespace
+
+Vector<TimelineInset> StyleBuilderConverter::ConvertViewTimelineInset(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  Vector<TimelineInset> insets;
+  for (const Member<const CSSValue>& item : To<CSSValueList>(value)) {
+    insets.push_back(ConvertSingleTimelineInset(state, *item));
+  }
+  return insets;
+}
+
+Vector<AtomicString> StyleBuilderConverter::ConvertViewTimelineName(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  Vector<AtomicString> names;
+  for (const Member<const CSSValue>& item : To<CSSValueList>(value)) {
+    names.push_back(ConvertNoneOrCustomIdent(state, *item));
+  }
+  return names;
+}
+
 }  // namespace blink

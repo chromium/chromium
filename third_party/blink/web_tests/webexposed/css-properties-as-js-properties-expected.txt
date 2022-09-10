@@ -457,6 +457,10 @@ userSelect
 userZoom
 vectorEffect
 verticalAlign
+viewTimeline
+viewTimelineAxis
+viewTimelineInset
+viewTimelineName
 visibility
 webkitAlignContent
 webkitAlignItems

@@ -763,6 +763,13 @@
       name: "CSSViewportUnits4",
       status: "experimental",
     },
+    // Support for view-timeline.
+    //
+    // https://drafts.csswg.org/scroll-animations-1/#view-timeline-shorthand
+    {
+      name: "CSSViewTimeline",
+      status: "test",
+    },
     {
       name: "CustomElementDefaultStyle",
       status: "experimental",
@@ -2021,7 +2028,7 @@
     {
       name: "ScrollTimeline",
       status: "experimental",
-      implied_by: ["AnimationWorklet", "CSSScrollTimeline"]
+      implied_by: ["AnimationWorklet", "CSSScrollTimeline", "CSSViewTimeline"]
     },
     // Implements documentElement.scrollTop/Left and bodyElement.scrollTop/Left
     // as per the spec, matching other Web engines.

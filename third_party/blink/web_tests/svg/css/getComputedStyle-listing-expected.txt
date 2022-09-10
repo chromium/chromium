@@ -355,6 +355,9 @@ unicode-bidi: normal
 user-select: auto
 vector-effect: none
 vertical-align: baseline
+view-timeline-axis: block
+view-timeline-inset: 0px
+view-timeline-name: none
 visibility: visible
 white-space: normal
 widows: 2

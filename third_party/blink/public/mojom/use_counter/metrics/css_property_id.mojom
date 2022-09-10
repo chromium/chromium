@@ -778,6 +778,10 @@ enum CSSSampleId {
     kScrollTimeline = 725,
     kScrollTimelineName = 726,
     kScrollTimelineAxis = 727,
+    kViewTimeline = 728,
+    kViewTimelineAxis = 729,
+    kViewTimelineInset = 730,
+    kViewTimelineName = 731,
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).
     // 2. Run the src/tools/metrics/histograms/update_use_counter_css.py script

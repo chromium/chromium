@@ -392,6 +392,9 @@ All changes to this list should go through Blink's feature review process: http:
     user-select
     vector-effect
     vertical-align
+    view-timeline-axis
+    view-timeline-inset
+    view-timeline-name
     visibility
     white-space
     widows
@@ -759,6 +762,9 @@ All changes to this list should go through Blink's feature review process: http:
         transition-duration
         transition-property
         transition-timing-function
+    view-timeline
+        view-timeline-axis
+        view-timeline-name
 
 [ALIASES]
     -epub-caption-side
