@@ -14,9 +14,6 @@
 
 #include "base/check.h"
 #include "base/ranges/algorithm.h"
-// TODO(https://crbug.com/1356184): Remove this. Temporarily forward to ease the
-// migration to the new location.
-#include "base/types/optional_util.h"
 
 namespace base {
 
