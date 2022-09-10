@@ -168,15 +168,14 @@ void XRRigidTransform::EnsureInverse() {
   // the caching is safe.
   if (!inverse_) {
     EnsureMatrix();
-    if (matrix_->IsInvertible()) {
-      inverse_ = MakeGarbageCollected<XRRigidTransform>(matrix_->Inverse());
-    } else {
+    TransformationMatrix inverse;
+    if (!matrix_->GetInverse(&inverse)) {
       DLOG(ERROR) << "Matrix was not invertible: " << matrix_->ToString();
       // TODO(https://crbug.com/1258611): Define behavior for non-invertible
       // matrices. Note that this is consistent with earlier behavior, which
       // just always passed matrix_->Inverse() whether it was invertible or not.
-      inverse_ = MakeGarbageCollected<XRRigidTransform>(TransformationMatrix());
     }
+    inverse_ = MakeGarbageCollected<XRRigidTransform>(inverse);
     inverse_->inverse_ = this;
   }
 }

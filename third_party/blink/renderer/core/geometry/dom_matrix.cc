@@ -292,18 +292,9 @@ DOMMatrix* DOMMatrix::perspectiveSelf(double p) {
 }
 
 DOMMatrix* DOMMatrix::invertSelf() {
-  if (is2d_) {
-    AffineTransform affine_transform = matrix_.ToAffineTransform();
-    if (affine_transform.IsInvertible()) {
-      matrix_ = TransformationMatrix(affine_transform.Inverse());
-      return this;
-    }
-  } else {
-    if (matrix_.IsInvertible()) {
-      matrix_ = matrix_.Inverse();
-      return this;
-    }
-  }
+  if (matrix_.GetInverse(&matrix_))
+    return this;
+
   SetNAN();
   SetIs2D(false);
   return this;

@@ -160,9 +160,8 @@ void GeometryMapperTransformCache::UpdateScreenTransform(
   auto to_screen_flattened = screen_transform_->to_screen;
   to_screen_flattened.FlattenTo2d();
   screen_transform_->projection_from_screen_is_valid =
-      to_screen_flattened.IsInvertible();
-  if (screen_transform_->projection_from_screen_is_valid)
-    screen_transform_->projection_from_screen = to_screen_flattened.Inverse();
+      to_screen_flattened.GetInverse(
+          &screen_transform_->projection_from_screen);
 
   screen_transform_->has_animation |= node.HasActiveTransformAnimation();
 }

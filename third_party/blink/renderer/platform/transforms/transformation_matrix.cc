@@ -99,7 +99,8 @@ bool TransformationMatrix::Decompose(DecomposedType& result) const {
   Double4 inverse_c1 = c1;
   Double4 inverse_c2 = c2;
   Double4 inverse_c3 = c3;
-  if (!InverseWithDouble4Cols(inverse_c0, inverse_c1, inverse_c2, inverse_c3))
+  if (!InverseWithDouble4Cols<false>(inverse_c0, inverse_c1, inverse_c2,
+                                     inverse_c3))
     return false;
 
   // First, isolate perspective.
@@ -921,11 +922,29 @@ gfx::QuadF TransformationMatrix::InternalMapQuad(const gfx::QuadF& q) const {
                     InternalMapPoint(q.p3()), InternalMapPoint(q.p4()));
 }
 
-// This is based on
-// https://github.com/niswegmann/small-matrix-inverse/blob/master/invert4x4_llvm.h,
-// which is based on Intel AP-928 "Streaming SIMD Extensions - Inverse of 4x4
-// Matrix": https://drive.google.com/file/d/0B9rh9tVI0J5mX1RUam5nZm85OFE/view.
+bool TransformationMatrix::IsInvertible() const {
+  return InternalInverse<true>(nullptr);
+}
+
+TransformationMatrix TransformationMatrix::Inverse() const {
+  TransformationMatrix m;
+  InternalInverse<false>(&m);
+  return m;
+}
+
+bool TransformationMatrix::GetInverse(TransformationMatrix* m) const {
+  DCHECK(m);
+  if (InternalInverse<false>(m))
+    return true;
+
+  m->MakeIdentity();
+  return false;
+}
+
+template <bool check_invertibility_only>
 bool TransformationMatrix::InternalInverse(TransformationMatrix* result) const {
+  DCHECK_EQ(check_invertibility_only, !result);
+
   if (IsIdentityOrTranslation()) {
     // Identity matrix.
     if (All(Col(3) == Double4{0, 0, 0, 1})) {
@@ -935,7 +954,7 @@ bool TransformationMatrix::InternalInverse(TransformationMatrix* result) const {
     }
 
     // Translation.
-    if (result) {
+    if (!check_invertibility_only) {
       result->SetMatrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -matrix_[3][0],
                         -matrix_[3][1], -matrix_[3][2], 1);
     }
@@ -947,10 +966,9 @@ bool TransformationMatrix::InternalInverse(TransformationMatrix* result) const {
   Double4 c2 = Col(2);
   Double4 c3 = Col(3);
 
-  bool check_invertiblility_only = !result;
   bool invertible =
-      InverseWithDouble4Cols(c0, c1, c2, c3, check_invertiblility_only);
-  if (invertible && result) {
+      InverseWithDouble4Cols<check_invertibility_only>(c0, c1, c2, c3);
+  if (invertible && !check_invertibility_only) {
     result->SetCol(0, c0);
     result->SetCol(1, c1);
     result->SetCol(2, c2);
@@ -959,12 +977,15 @@ bool TransformationMatrix::InternalInverse(TransformationMatrix* result) const {
   return invertible;
 }
 
-bool TransformationMatrix::InverseWithDouble4Cols(
-    Double4& c0,
-    Double4& c1,
-    Double4& c2,
-    Double4& c3,
-    bool check_invertiblility_only) {
+// This is based on
+// https://github.com/niswegmann/small-matrix-inverse/blob/master/invert4x4_llvm.h,
+// which is based on Intel AP-928 "Streaming SIMD Extensions - Inverse of 4x4
+// Matrix": https://drive.google.com/file/d/0B9rh9tVI0J5mX1RUam5nZm85OFE/view.
+template <bool check_invertibility_only>
+bool TransformationMatrix::InverseWithDouble4Cols(Double4& c0,
+                                                  Double4& c1,
+                                                  Double4& c2,
+                                                  Double4& c3) {
   // Note that r1 and r3 have components 2/3 and 0/1 swapped.
   Double4 r0 = {c0.s0, c1.s0, c2.s0, c3.s0};
   Double4 r1 = {c2.s1, c3.s1, c0.s1, c1.s1};
@@ -1003,7 +1024,7 @@ bool TransformationMatrix::InverseWithDouble4Cols(
   det += swap_in_pairs(det);
   if (!std::isnormal(det.x))
     return false;
-  if (check_invertiblility_only)
+  if (check_invertibility_only)
     return true;
 
   c2 = swap_hi_lo(r0 * t - c2);

@@ -340,15 +340,17 @@ class PLATFORM_EXPORT TransformationMatrix {
   //
   TransformationMatrix& Zoom(double zoom_factor);
 
-  bool IsInvertible() const { return InternalInverse(); }
+  bool IsInvertible() const;
 
   // This method returns the identity matrix if it is not invertible.
-  // Use IsInvertible() before calling this if you need to know.
-  [[nodiscard]] TransformationMatrix Inverse() const {
-    TransformationMatrix m;
-    InternalInverse(&m);
-    return m;
-  }
+  // Use GetInverse() if you also need to know the invertibility.
+  [[nodiscard]] TransformationMatrix Inverse() const;
+
+  // If this matrix is invertible, this method sets |result| to the inverse of
+  // this matrix and returns true, otherwise sets |result| to identity and
+  // returns false. |result| can't be null (but is not a reference to be
+  // consistent with gfx::Transform::GetInverse()).
+  [[nodiscard]] bool GetInverse(TransformationMatrix* result) const;
 
   // decompose the matrix into its component parts
   typedef struct {
@@ -467,7 +469,8 @@ class PLATFORM_EXPORT TransformationMatrix {
   gfx::PointF InternalMapPoint(const gfx::PointF&) const;
   gfx::Point3F InternalMapPoint(const gfx::Point3F&) const;
   gfx::QuadF InternalMapQuad(const gfx::QuadF&) const;
-  bool InternalInverse(TransformationMatrix* result = nullptr) const;
+  template <bool check_invertibility_only>
+  bool InternalInverse(TransformationMatrix* result) const;
 
   void SetMatrix(const Matrix4& m) { memcpy(&matrix_, &m, sizeof(Matrix4)); }
 
@@ -515,12 +518,11 @@ class PLATFORM_EXPORT TransformationMatrix {
     return v.s0 + v.s1 + v.s2 + v.s3;
   }
 
-  ALWAYS_INLINE static bool InverseWithDouble4Cols(
-      Double4& c0,
-      Double4& c1,
-      Double4& c2,
-      Double4& c3,
-      bool check_invertibility_only = false);
+  template <bool check_invertibility_only>
+  ALWAYS_INLINE static bool InverseWithDouble4Cols(Double4& c0,
+                                                   Double4& c1,
+                                                   Double4& c2,
+                                                   Double4& c3);
 
   Matrix4 matrix_;
 };
