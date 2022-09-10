@@ -17,8 +17,6 @@ using common assumptions about how builders are configured.
 These builders must pass before a CL may land that affects files outside of
 //docs and //infra/config.
 
-* [android-binary-size](https://ci.chromium.org/p/chromium/builders/try/android-binary-size) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-binary-size"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-binary-size""))
-
 * [android-marshmallow-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/android-marshmallow-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-marshmallow-arm64-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-marshmallow-arm64-rel""))
 
 * [android-marshmallow-x86-rel](https://ci.chromium.org/p/chromium/builders/try/android-marshmallow-x86-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-marshmallow-x86-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-marshmallow-x86-rel""))
@@ -492,6 +490,9 @@ as required builders.
 
 * [android-12l-x64-dbg](https://ci.chromium.org/p/chromium/builders/try/android-12l-x64-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-12l-x64-dbg"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-12l-x64-dbg""))
   * Experiment percentage: 2.0
+
+* [android-binary-size](https://ci.chromium.org/p/chromium/builders/try/android-binary-size) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-binary-size"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-binary-size""))
+  * Experiment percentage: 100.0
 
 * [android-marshmallow-x86-rel-reclient](https://ci.chromium.org/p/chromium/builders/try/android-marshmallow-x86-rel-reclient) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-marshmallow-x86-rel-reclient"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-marshmallow-x86-rel-reclient""))
   * Experiment percentage: 5.0
