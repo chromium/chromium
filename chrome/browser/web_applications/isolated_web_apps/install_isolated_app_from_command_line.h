@@ -20,13 +20,14 @@ class Profile;
 
 namespace web_app {
 
+void SetNextInstallationDoneCallbackForTesting(
+    base::OnceCallback<void()> done_callback);
+
 std::vector<GURL> GetAppsToInstallFromCommandLine(
     const base::CommandLine& command_line);
 
-void MaybeInstallAppFromCommandLine(
-    const base::CommandLine& command_line,
-    Profile& profile,
-    base::OnceCallback<void()> done = base::DoNothing());
+void MaybeInstallAppFromCommandLine(const base::CommandLine& command_line,
+                                    Profile& profile);
 
 }  // namespace web_app
 

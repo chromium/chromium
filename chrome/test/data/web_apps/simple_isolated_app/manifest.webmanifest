@@ -1,0 +1,15 @@
+{
+  "name": "Isolated App w/o service worker",
+  "icons": [
+    {
+      "src": "256x256-green.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/basic.html",
+  "scope": "/",
+  "display": "standalone",
+  "isolated_storage": true,
+  "id": "/"
+}

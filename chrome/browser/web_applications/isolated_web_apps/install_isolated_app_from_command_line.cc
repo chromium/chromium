@@ -10,9 +10,10 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
-#include "base/callback_forward.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/install_isolated_app_command.h"
@@ -20,13 +21,14 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "chrome/common/chrome_switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web_app {
 
 namespace {
 
-base::RepeatingCallback<void(GURL url, base::OnceCallback<void()> callback)>
+base::RepeatingCallback<void(GURL url, base::OnceClosure callback)>
 CreateProductionInstallApplicationFromUrl(Profile& profile) {
   WebAppProvider* provider = WebAppProvider::GetForWebApps(&profile);
 
@@ -39,15 +41,14 @@ CreateProductionInstallApplicationFromUrl(Profile& profile) {
   }
 
   return base::BindRepeating(
-      [](WebAppProvider& provider, GURL url,
-         base::OnceCallback<void()> callback) {
+      [](WebAppProvider& provider, GURL url, base::OnceClosure callback) {
         DCHECK(!callback.is_null());
 
         provider.on_registry_ready().Post(
             FROM_HERE,
             base::BindOnce(
                 [](WebAppProvider& provider, GURL url,
-                   base::OnceCallback<void()> callback) {
+                   base::OnceClosure callback) {
                   std::unique_ptr<WebAppUrlLoader> url_loader =
                       std::make_unique<WebAppUrlLoader>();
 
@@ -80,7 +81,32 @@ CreateProductionInstallApplicationFromUrl(Profile& profile) {
       std::ref(*provider));
 }
 
+struct NextDoneCallbackHolder {
+  base::OnceClosure Get() {
+    auto value = std::move(next_done_callback_).value_or(base::DoNothing());
+    next_done_callback_ = absl::nullopt;
+    return value;
+  }
+
+  void Set(base::OnceClosure next_done_callback) {
+    next_done_callback_ = std::move(next_done_callback);
+  }
+
+  static NextDoneCallbackHolder& GetInstance() {
+    static base::NoDestructor<NextDoneCallbackHolder> kInstance{};
+    return *kInstance;
+  }
+
+ private:
+  absl::optional<base::OnceClosure> next_done_callback_;
+};
+
 }  // namespace
+
+void SetNextInstallationDoneCallbackForTesting(  // IN-TEST
+    base::OnceClosure done_callback) {
+  NextDoneCallbackHolder::GetInstance().Set(std::move(done_callback));
+}
 
 std::vector<GURL> GetAppsToInstallFromCommandLine(
     const base::CommandLine& command_line) {
@@ -103,9 +129,9 @@ std::vector<GURL> GetAppsToInstallFromCommandLine(
 
 void MaybeInstallAppFromCommandLine(
     const base::CommandLine& command_line,
-    base::RepeatingCallback<void(GURL url, base::OnceCallback<void()> callback)>
+    base::RepeatingCallback<void(GURL url, base::OnceClosure callback)>
         install_application_from_url,
-    base::OnceCallback<void()> done) {
+    base::OnceClosure done) {
   DCHECK(!done.is_null());
 
   const std::vector<GURL> apps_to_install =
@@ -118,8 +144,8 @@ void MaybeInstallAppFromCommandLine(
 }
 
 void MaybeInstallAppFromCommandLine(const base::CommandLine& command_line,
-                                    Profile& profile,
-                                    base::OnceCallback<void()> done) {
+                                    Profile& profile) {
+  base::OnceClosure done = NextDoneCallbackHolder::GetInstance().Get();
   DCHECK(!done.is_null());
   MaybeInstallAppFromCommandLine(
       command_line, CreateProductionInstallApplicationFromUrl(profile),
