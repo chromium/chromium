@@ -8,6 +8,7 @@ import argparse
 import json
 import os
 import sys
+import time
 
 from typing import Optional, Tuple
 
@@ -50,12 +51,20 @@ def flash(system_image_dir: str,
             and get_sdk_hash(system_image_dir) == _get_system_info(target)):
         return
     manifest = os.path.join(system_image_dir, 'flash-manifest.manifest')
-    if serial_num:
-        with ScopedFfxConfig('discovery.zedboot.enabled', 'true'):
-            run_ffx_command(('target', 'reboot', '-b'), target, check=False)
-        run_ffx_command(('target', 'flash', manifest), serial_num)
-    else:
-        run_ffx_command(('target', 'flash', manifest), target)
+    with ScopedFfxConfig('fastboot.reboot.reconnect_timeout', '120'):
+        if serial_num:
+            with ScopedFfxConfig('discovery.zedboot.enabled', 'true'):
+                run_ffx_command(('target', 'reboot', '-b'),
+                                target,
+                                check=False)
+            for _ in range(10):
+                time.sleep(10)
+                if run_ffx_command(('target', 'list', serial_num),
+                                   check=False).returncode == 0:
+                    break
+            run_ffx_command(('target', 'flash', manifest), serial_num)
+        else:
+            run_ffx_command(('target', 'flash', manifest), target)
     run_ffx_command(('target', 'wait'), target)
 
 

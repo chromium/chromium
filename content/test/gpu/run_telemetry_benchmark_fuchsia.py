@@ -6,19 +6,13 @@
 
 from __future__ import print_function
 
-import os
 import sys
 
 import fuchsia_util
-import gpu_path_util
 
 
 def main():
-  telemetry_script = [
-      os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'tools', 'perf',
-                   'run_benchmark')
-  ]
-  return fuchsia_util.RunTestOnFuchsiaDevice(telemetry_script)
+  return fuchsia_util.RunTestOnFuchsiaDevice('perf')
 
 
 if __name__ == '__main__':
