@@ -653,14 +653,28 @@ class TestImporter(object):
         This is the same as invoking the `wpt-update-expectations` script.
         """
         _log.info('Adding test expectations lines to TestExpectations.')
-        self.rebaselined_tests, self.new_test_expectations = (
+        tests_to_rebaseline = set()
+
+        to_rebaseline, self.new_test_expectations = (
             self._expectations_updater.update_expectations())
+        tests_to_rebaseline.update(to_rebaseline)
 
         _log.info('Adding test expectations lines for disable-layout-ng')
-        self._expectations_updater.update_expectations_for_flag_specific('disable-layout-ng')
+        to_rebaseline, _ = (
+            self._expectations_updater.update_expectations_for_flag_specific(
+                'disable-layout-ng'))
+        tests_to_rebaseline.update(to_rebaseline)
 
         _log.info('Adding test expectations lines for disable-site-isolation-trials')
-        self._expectations_updater.update_expectations_for_flag_specific('disable-site-isolation-trials')
+        to_rebaseline, _ = (
+            self._expectations_updater.update_expectations_for_flag_specific(
+                'disable-site-isolation-trials'))
+        tests_to_rebaseline.update(to_rebaseline)
+
+        self._expectations_updater.download_text_baselines(
+            list(tests_to_rebaseline))
+
+        self.rebaselined_tests = sorted(tests_to_rebaseline)
 
     def _get_last_imported_wpt_revision(self):
         """Finds the last imported WPT revision."""
