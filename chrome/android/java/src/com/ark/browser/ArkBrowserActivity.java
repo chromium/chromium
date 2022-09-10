@@ -35,10 +35,16 @@ import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
 import com.ark.browser.core.utils.ContentUtils;
+
+import org.chromium.chrome.browser.download.DownloadItem;
+import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.flags.ChromeSessionState;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import com.ark.browser.core.utils.NavigationPredictorBridge;
+
+import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
@@ -47,6 +53,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
+import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -55,6 +62,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class ArkBrowserActivity extends AsyncInitializationActivity {
 
@@ -194,6 +202,8 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
 
     @Override
     protected void onInitialLayoutInflationComplete() {
+        DownloadManagerService.getDownloadManagerService().initForBackgroundTask();
+
         ViewGroup rootView = (ViewGroup) getWindow().getDecorView().getRootView();
 
         mViewHolder = findViewById(R.id.compositor_view_holder);
@@ -228,6 +238,36 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
         }
 
         mViewHolder.onStart();
+
+
+        DownloadManagerService.getDownloadManagerService().addDownloadObserver(new DownloadManagerService.DownloadObserver() {
+            @Override
+            public void onAllDownloadsRetrieved(List<DownloadItem> list, ProfileKey profileKey) {
+                ArkLogger.e(ArkBrowserActivity.class, "onAllDownloadsRetrieved size=" + list.size());
+            }
+
+            @Override
+            public void onDownloadItemCreated(DownloadItem item) {
+                ArkLogger.e(ArkBrowserActivity.class, "onDownloadItemCreated item=" + item);
+            }
+
+            @Override
+            public void onDownloadItemUpdated(DownloadItem item) {
+                ArkLogger.e(ArkBrowserActivity.class, "onDownloadItemUpdated item=" + item);
+            }
+
+            @Override
+            public void onDownloadItemRemoved(String guid) {
+                ArkLogger.e(ArkBrowserActivity.class, "onDownloadItemRemoved guid=" + guid);
+            }
+
+            @Override
+            public void onAddOrReplaceDownloadSharedPreferenceEntry(ContentId id) {
+                ArkLogger.e(ArkBrowserActivity.class, "onAddOrReplaceDownloadSharedPreferenceEntry id=" + id);
+            }
+        });
+        DownloadManagerService.getDownloadManagerService()
+                .getAllDownloads(OTRProfileID.getPrimaryOTRProfileID());
 
     }
 

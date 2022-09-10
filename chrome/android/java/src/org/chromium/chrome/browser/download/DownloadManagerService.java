@@ -22,6 +22,8 @@ import android.util.Pair;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.ark.browser.utils.ArkLogger;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
@@ -267,6 +269,7 @@ public class DownloadManagerService implements DownloadController.Observer,
      * Initializes download related systems for background task.
      */
     public void initForBackgroundTask() {
+        ArkLogger.e(DownloadManagerService.class, "initForBackgroundTask");
         getNativeDownloadManagerService();
     }
 

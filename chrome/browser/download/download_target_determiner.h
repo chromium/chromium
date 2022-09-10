@@ -208,6 +208,13 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   // - STATE_DETERMINE_LOCAL_PATH.
   Result DoRequestConfirmation();
 
+    // Callback invoked after the file picker completes. Cancels the download if
+    // the user cancels the file picker.
+    void ShowPromptDone(
+            DownloadConfirmationResult result,
+            const base::FilePath& virtual_path,
+            absl::optional<download::DownloadSchedule> download_schedule);
+
   // Callback invoked after the file picker completes. Cancels the download if
   // the user cancels the file picker.
   void RequestConfirmationDone(

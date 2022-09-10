@@ -64,6 +64,15 @@ public class OfflineItem implements Cloneable {
             result = 31 * result + unit;
             return result;
         }
+
+        @Override
+        public String toString() {
+            return "Progress{" +
+                    "value=" + value +
+                    ", max=" + max +
+                    ", unit=" + unit +
+                    '}';
+        }
     }
 
     public ContentId id;

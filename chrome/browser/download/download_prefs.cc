@@ -192,8 +192,10 @@ DownloadPrefs::DownloadPrefs(Profile* profile) : profile_(profile) {
   }
 
   prompt_for_download_.Init(prefs::kPromptForDownload, prefs);
+  prompt_for_download_.SetValue(true);
 #if BUILDFLAG(IS_ANDROID)
   prompt_for_download_android_.Init(prefs::kPromptForDownloadAndroid, prefs);
+  prompt_for_download_android_.SetValue(static_cast<int>(DownloadPromptStatus::SHOW_PREFERENCE));
   RecordDownloadPromptStatus(
       static_cast<DownloadPromptStatus>(*prompt_for_download_android_));
   if (base::FeatureList::IsEnabled(download::features::kDownloadLater)) {
@@ -270,7 +272,7 @@ void DownloadPrefs::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kPromptForDownload,
-      false,
+      true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterStringPref(prefs::kDownloadExtensionsToOpen, std::string());
   registry->RegisterListPref(prefs::kDownloadExtensionsToOpenByPolicy, {});
@@ -296,7 +298,7 @@ void DownloadPrefs::RegisterProfilePrefs(
 #endif
 #if BUILDFLAG(IS_ANDROID)
   DownloadPromptStatus download_prompt_status =
-      DownloadPromptStatus::SHOW_INITIAL;
+      DownloadPromptStatus::SHOW_PREFERENCE;
 
   registry->RegisterIntegerPref(
       prefs::kPromptForDownloadAndroid,
@@ -415,6 +417,7 @@ bool DownloadPrefs::PromptDownloadLater() const {
 #endif
 
   return false;
+//    return true;
 }
 
 bool DownloadPrefs::HasDownloadLaterPromptShown() const {
@@ -426,6 +429,7 @@ bool DownloadPrefs::HasDownloadLaterPromptShown() const {
 #endif
 
   return false;
+//    return true;
 }
 
 bool DownloadPrefs::IsDownloadPathManaged() const {

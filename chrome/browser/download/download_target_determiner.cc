@@ -275,6 +275,15 @@ DownloadTargetDeterminer::Result
   }
   DVLOG(20) << "Generated virtual path: " << virtual_path_.AsUTF8Unsafe();
 
+  if (confirmation_reason_ != DownloadConfirmationReason::NONE) {
+     delegate_->RequestConfirmation(
+        download_, virtual_path_, confirmation_reason_,
+        base::BindRepeating(
+           &DownloadTargetDeterminer::ShowPromptDone,
+           weak_ptr_factory_.GetWeakPtr()));
+     return QUIT_DOLOOP;
+  }
+
   return CONTINUE;
 }
 
@@ -523,6 +532,7 @@ DownloadTargetDeterminer::DoRequestConfirmation() {
 #if BUILDFLAG(IS_ANDROID)
     // If we were looping back to check the user-confirmed path from the
     // dialog, and there were no additional errors, continue.
+    LOG(ERROR) << "DoRequestConfirmation is_checking_dialog_confirmed_path_=" << is_checking_dialog_confirmed_path_;
     if (is_checking_dialog_confirmed_path_ &&
         (confirmation_reason_ == DownloadConfirmationReason::PREFERENCE ||
          confirmation_reason_ == DownloadConfirmationReason::NONE)) {
@@ -543,6 +553,42 @@ DownloadTargetDeterminer::DoRequestConfirmation() {
   }
 
   return CONTINUE;
+}
+
+void DownloadTargetDeterminer::ShowPromptDone(
+        DownloadConfirmationResult result,
+        const base::FilePath& virtual_path,
+        absl::optional<download::DownloadSchedule> download_schedule) {
+#if BUILDFLAG(IS_ANDROID)
+    is_checking_dialog_confirmed_path_ = false;
+  download_schedule_ = std::move(download_schedule);
+#endif
+    if (result == DownloadConfirmationResult::CANCELED) {
+        RecordDownloadCancelReason(DownloadCancelReason::kTargetConfirmationResult);
+        ScheduleCallbackAndDeleteSelf(
+                download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED);
+        return;
+    }
+
+    // If the user wasn't prompted, then we need to clear the
+    // confirmation_reason_. This way it's clear that user has not given consent
+    // to download this resource.
+    if (result == DownloadConfirmationResult::CONTINUE_WITHOUT_CONFIRMATION)
+        confirmation_reason_ = DownloadConfirmationReason::NONE;
+
+    virtual_path_ = virtual_path;
+
+#if BUILDFLAG(IS_ANDROID)
+    if (result == DownloadConfirmationResult::CONFIRMED_WITH_DIALOG) {
+        // Double check the user-selected path is valid by looping back.
+        is_checking_dialog_confirmed_path_ = true;
+        confirmation_reason_ = DownloadConfirmationReason::NONE;
+        next_state_ = STATE_SET_MIXED_CONTENT_STATUS;
+    }
+#endif
+
+    download_prefs_->SetSaveFilePath(virtual_path_.DirName());
+    DoLoop();
 }
 
 void DownloadTargetDeterminer::RequestConfirmationDone(
@@ -592,6 +638,8 @@ DownloadTargetDeterminer::Result
   DCHECK(!virtual_path_.empty());
   DCHECK(local_path_.empty());
 
+  LOG(ERROR) << "DownloadTargetDeterminer::DoDetermineLocalPath";
+
   next_state_ = STATE_DETERMINE_MIME_TYPE;
 
   delegate_->DetermineLocalPath(
@@ -638,6 +686,7 @@ DownloadTargetDeterminer::Result
   DCHECK(mime_type_.empty());
 
   next_state_ = STATE_DETERMINE_IF_HANDLED_SAFELY_BY_BROWSER;
+  LOG(ERROR) << "DownloadTargetDeterminer::DoDetermineMimeType";
   if (virtual_path_ == local_path_
 #if BUILDFLAG(IS_ANDROID)
       || local_path_.IsContentUri()
@@ -729,6 +778,8 @@ DownloadTargetDeterminer::Result
   DCHECK(!local_path_.empty());
   DCHECK(!is_filetype_handled_safely_);
 
+  LOG(ERROR) << "DownloadTargetDeterminer::DoDetermineIfHandledSafely";
+
   next_state_ = STATE_DETERMINE_IF_ADOBE_READER_UP_TO_DATE;
 
   if (mime_type_.empty())
@@ -812,6 +863,8 @@ DownloadTargetDeterminer::Result
   DCHECK(!virtual_path_.empty());
   next_state_ = STATE_CHECK_VISITED_REFERRER_BEFORE;
 
+  LOG(ERROR) << "DownloadTargetDeterminer::DoCheckDownloadUrl";
+
   // If user has validated a dangerous download, don't check.
   if (danger_type_ == download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED)
     return CONTINUE;
@@ -836,6 +889,8 @@ DownloadTargetDeterminer::Result
     DownloadTargetDeterminer::DoCheckVisitedReferrerBefore() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   next_state_ = STATE_DETERMINE_INTERMEDIATE_PATH;
+
+  LOG(ERROR) << "DownloadTargetDeterminer::DoCheckVisitedReferrerBefore";
 
   // Checking if there are prior visits to the referrer is only necessary if the
   // danger level of the download depends on the file type.
@@ -910,6 +965,8 @@ DownloadTargetDeterminer::Result
   DCHECK(intermediate_path_.empty());
   DCHECK(!virtual_path_.MatchesExtension(kCrdownloadSuffix));
   DCHECK(!local_path_.MatchesExtension(kCrdownloadSuffix));
+
+  LOG(ERROR) << "DownloadTargetDeterminer::DoDetermineIntermediatePath";
 
   next_state_ = STATE_NONE;
 
@@ -992,7 +1049,7 @@ DownloadTargetDeterminer::Result
 void DownloadTargetDeterminer::ScheduleCallbackAndDeleteSelf(
     download::DownloadInterruptReason result) {
   DCHECK(download_);
-  DVLOG(20) << "Scheduling callback. Virtual:" << virtual_path_.AsUTF8Unsafe()
+    LOG(ERROR) << "Scheduling callback. Virtual:" << virtual_path_.AsUTF8Unsafe()
             << " Local:" << local_path_.AsUTF8Unsafe()
             << " Intermediate:" << intermediate_path_.AsUTF8Unsafe()
             << " Confirmation reason:" << static_cast<int>(confirmation_reason_)
@@ -1093,6 +1150,8 @@ DownloadConfirmationReason DownloadTargetDeterminer::NeedsConfirmation(
   // The user may still be prompted even if this pref is disabled due to, for
   // example, there being an unresolvable filename conflict or the target path
   // is not writeable.
+  LOG(ERROR) << "NeedsConfirmation PromptForDownload=" << download_prefs_->PromptForDownload()
+             << " PromptDownloadLater=" << download_prefs_->PromptDownloadLater();
   return (download_prefs_->PromptForDownload() ||
           download_prefs_->PromptDownloadLater())
              ? DownloadConfirmationReason::PREFERENCE

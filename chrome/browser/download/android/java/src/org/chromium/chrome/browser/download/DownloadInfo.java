@@ -248,6 +248,46 @@ public final class DownloadInfo {
         return mSchedule;
     }
 
+    @Override
+    public String toString() {
+        return "DownloadInfo{" +
+                "mUrl=" + mUrl +
+                ", mUserAgent='" + mUserAgent + '\'' +
+                ", mMimeType='" + mMimeType + '\'' +
+                ", mCookie='" + mCookie + '\'' +
+                ", mFileName='" + mFileName + '\'' +
+                ", mDescription='" + mDescription + '\'' +
+                ", mFilePath='" + mFilePath + '\'' +
+                ", mReferrer='" + mReferrer + '\'' +
+                ", mOriginalUrl='" + mOriginalUrl + '\'' +
+                ", mBytesReceived=" + mBytesReceived +
+                ", mBytesTotalSize=" + mBytesTotalSize +
+                ", mDownloadGuid='" + mDownloadGuid + '\'' +
+                ", mHasUserGesture=" + mHasUserGesture +
+                ", mContentDisposition='" + mContentDisposition + '\'' +
+                ", mIsGETRequest=" + mIsGETRequest +
+                ", mProgress=" + mProgress +
+                ", mTimeRemainingInMillis=" + mTimeRemainingInMillis +
+                ", mIsResumable=" + mIsResumable +
+                ", mIsPaused=" + mIsPaused +
+                ", mIsOffTheRecord=" + mIsOffTheRecord +
+                ", mOTRProfileId=" + mOTRProfileId +
+                ", mIsOfflinePage=" + mIsOfflinePage +
+                ", mState=" + mState +
+                ", mLastAccessTime=" + mLastAccessTime +
+                ", mIsDangerous=" + mIsDangerous +
+                ", mContentId=" + mContentId +
+                ", mIsOpenable=" + mIsOpenable +
+                ", mIsTransient=" + mIsTransient +
+                ", mIsParallelDownload=" + mIsParallelDownload +
+                ", mIcon=" + mIcon +
+                ", mPendingState=" + mPendingState +
+                ", mFailState=" + mFailState +
+                ", mShouldPromoteOrigin=" + mShouldPromoteOrigin +
+                ", mSchedule=" + mSchedule +
+                '}';
+    }
+
     /**
      * Helper method to build a {@link DownloadInfo} from an {@link OfflineItem}.
      * @param item    The {@link OfflineItem} to mimic.

@@ -34,4 +34,12 @@ public class OfflineItemSchedule {
      * value is 0.
      */
     public final long startTimeMs;
+
+    @Override
+    public String toString() {
+        return "OfflineItemSchedule{" +
+                "onlyOnWifi=" + onlyOnWifi +
+                ", startTimeMs=" + startTimeMs +
+                '}';
+    }
 }

@@ -53,12 +53,15 @@ void DownloadDialogBridge::ShowDialog(
     bool show_date_time_picker,
     bool is_incognito,
     DialogCallback dialog_callback) {
+    LOG(ERROR) << "ShowDialog native_window=" << native_window;
   if (!native_window)
     return;
 
   UMA_HISTOGRAM_ENUMERATION("MobileDownload.Location.Dialog.Type", dialog_type);
 
   dialog_callback_ = std::move(dialog_callback);
+
+  LOG(ERROR) << "ShowDialog dialog_type=" << static_cast<std::underlying_type<DownloadLocationDialogType>::type>(dialog_type);
 
   // This shouldn't happen, but if it does, cancel download.
   if (dialog_type == DownloadLocationDialogType::NO_DIALOG) {
@@ -68,6 +71,8 @@ void DownloadDialogBridge::ShowDialog(
     CompleteSelection(std::move(dialog_result));
     return;
   }
+
+  LOG(ERROR) << "ShowDialog is_dialog_showing_=" << is_dialog_showing_;
 
   // If dialog is showing, run the callback to continue without confirmation.
   if (is_dialog_showing_) {

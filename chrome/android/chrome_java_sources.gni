@@ -12,6 +12,7 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ArkWindowAndroid.java",
   "java/src/com/ark/browser/ArkBrowserActivity.java",
 
+  "java/src/com/ark/browser/core/BookmarkBridge.java",
   "java/src/com/ark/browser/core/UserAgentManager.java",
   "java/src/com/ark/browser/core/utils/ContentUtils.java",
   "java/src/com/ark/browser/core/utils/NavigationPredictorBridge.java",
@@ -145,7 +146,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/background_sync/PeriodicBackgroundSyncChromeWakeUpTask.java",
   "java/src/org/chromium/chrome/browser/background_task_scheduler/ChromeBackgroundTaskFactory.java",
   "java/src/org/chromium/chrome/browser/background_task_scheduler/ChromeNativeBackgroundTaskDelegate.java",
-  "java/src/org/chromium/chrome/browser/bookmarks/BookmarkBridge.java",
   "java/src/org/chromium/chrome/browser/browsing_data/BrowsingDataBridge.java",
   "java/src/org/chromium/chrome/browser/browsing_data/BrowsingDataCounterBridge.java",
   "java/src/org/chromium/chrome/browser/browsing_data/UrlFilter.java",

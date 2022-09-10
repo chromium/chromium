@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.download.service;
 
 import android.content.Context;
 
+import com.ark.browser.utils.ArkLogger;
+
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -62,6 +64,7 @@ public class DownloadBackgroundTask extends NativeBackgroundTask {
         // from native as well.
         assert BrowserStartupController.getInstance().isFullBrowserStarted()
                 || mStartsMinimalBrowser;
+        ArkLogger.e(DownloadBackgroundTask.class, "onStartTaskWithNative");
         DownloadManagerService.getDownloadManagerService().initForBackgroundTask();
         ProfileKey key = ProfileKey.getLastUsedRegularProfileKey();
         DownloadBackgroundTaskJni.get().startBackgroundTask(DownloadBackgroundTask.this, key,

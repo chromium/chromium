@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.download;
 
 import android.app.Activity;
+import android.widget.Toast;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -50,7 +51,7 @@ public class DuplicateDownloadDialogBridge {
             onConfirmed(callbackId, false);
             return;
         }
-        // TODO
+        Toast.makeText(activity, "Show Duplicate Download Dialog", Toast.LENGTH_SHORT).show();
     }
 
     @CalledByNative

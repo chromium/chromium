@@ -5,8 +5,13 @@
 package org.chromium.chrome.browser.download;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.download.interstitial.NewDownloadTab;
@@ -17,6 +22,8 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.io.File;
 
 /**
  * Glues download dialogs UI code and handles the communication to download native backend.
@@ -33,7 +40,8 @@ public class DownloadDialogBridge {
     private Context mContext;
     private WindowAndroid mWindowAndroid;
     private long mTotalBytes;
-    private @ConnectionType int mConnectionType = ConnectionType.CONNECTION_NONE;
+    private @ConnectionType
+    int mConnectionType = ConnectionType.CONNECTION_NONE;
     private String mSuggestedPath;
     private PrefService mPrefService;
 
@@ -62,16 +70,84 @@ public class DownloadDialogBridge {
 
     @CalledByNative
     private void showDialog(WindowAndroid windowAndroid, long totalBytes,
-            @ConnectionType int connectionType, @DownloadLocationDialogType int dialogType,
-            String suggestedPath, boolean supportsLaterDialog, boolean isIncognito) {
+                            @ConnectionType int connectionType, @DownloadLocationDialogType int dialogType,
+                            String suggestedPath, boolean supportsLaterDialog, boolean isIncognito) {
         mWindowAndroid = windowAndroid;
         Activity activity = windowAndroid.getActivity().get();
+        Log.e("DownloadDialogBridge", "showDialog activity=" + activity);
         if (activity == null) {
             onCancel();
             return;
         }
 
-        // TODO
+        this.mSuggestedPath = suggestedPath;
+        this.mConnectionType = connectionType;
+        this.mTotalBytes = totalBytes;
+
+        Log.e("DownloadDialogBridge",
+                "showDialog totalBytes=%s, connectionType=%s, dialogType=%s, supportsLaterDialog=%s, isIncognito=%s, suggestedPath=%s",
+                totalBytes, connectionType, dialogType, supportsLaterDialog, isIncognito, suggestedPath);
+
+        AlertDialog dialog = new AlertDialog.Builder(activity)
+                .setTitle("Download File?")
+                .setMessage("Are you sure to download file? ")
+                .setPositiveButton(org.chromium.chrome.browser.download.R.string.ok, (dialog13, which) -> {
+                    File targetFile = new File(mSuggestedPath);
+                    if (targetFile.exists()) {
+                        File parentFile = targetFile.getParentFile();
+                        if (parentFile == null) {
+                            parentFile = new File(activity.getExternalCacheDir(), "download");
+                        }
+                        String parent = parentFile.getAbsolutePath();
+                        String name = targetFile.getName();
+                        int i = name.lastIndexOf('.');
+                        if (i < 0) {
+                            mSuggestedPath = generateNewFilePath(parent, name, null);
+                        } else {
+                            mSuggestedPath = generateNewFilePath(parent, name.substring(0, i), name.substring(i));
+                        }
+                    }
+                    Log.e("DownloadDialogBridge", "setPositiveButton mSuggestedPath=%s", mSuggestedPath);
+                    onComplete();
+                    dialog13.dismiss();
+                })
+                .setNegativeButton(org.chromium.chrome.browser.download.R.string.cancel, (dialog12, which) -> {
+                    onCancel();
+                    dialog12.dismiss();
+                })
+                .setOnCancelListener(dialog1 -> DownloadDialogBridge.this.onCancel())
+                .create();
+        dialog.show();
+    }
+
+    private static String generateNewFilePath(String parent, String name, @Nullable String suffix) {
+        if (suffix == null) {
+            suffix = "";
+        }
+        int index = name.length() - 1;
+        char last = name.charAt(index);
+        String newName = name;
+        int num = 1;
+        if (last == ')') {
+            while (--index >= 0) {
+                last = name.charAt(index);
+                if (last == '(') {
+                    try {
+                        num = Integer.parseInt(name.substring(index + 1, name.length() - 1)) + 1;
+                        newName = name.substring(0, index);
+                    } catch (Exception ignore) {}
+                } else if (!Character.isDigit(last)) {
+                    break;
+                }
+            }
+        }
+
+        File newFile;
+        do {
+            String newNameWithSuffix = String.format("%s(%s)%s", newName, num++, suffix);
+            newFile = new File(parent, newNameWithSuffix);
+        } while (newFile.exists());
+        return newFile.getAbsolutePath();
     }
 
     private void onComplete() {
@@ -79,6 +155,9 @@ public class DownloadDialogBridge {
 
         DownloadDialogBridgeJni.get().onComplete(mNativeDownloadDialogBridge,
                 DownloadDialogBridge.this, mSuggestedPath, false, mDownloadLaterTime);
+        if (mWindowAndroid != null) {
+            mWindowAndroid = null;
+        }
     }
 
     private void onCancel() {
@@ -86,7 +165,6 @@ public class DownloadDialogBridge {
         DownloadDialogBridgeJni.get().onCanceled(
                 mNativeDownloadDialogBridge, DownloadDialogBridge.this);
         if (mWindowAndroid != null) {
-            NewDownloadTab.closeExistingNewDownloadTab(mWindowAndroid);
             mWindowAndroid = null;
         }
     }
@@ -146,12 +224,18 @@ public class DownloadDialogBridge {
     @NativeMethods
     public interface Natives {
         void onComplete(long nativeDownloadDialogBridge, DownloadDialogBridge caller,
-                String returnedPath, boolean onWifi, long startTime);
+                        String returnedPath, boolean onWifi, long startTime);
+
         void onCanceled(long nativeDownloadDialogBridge, DownloadDialogBridge caller);
+
         String getDownloadDefaultDirectory();
+
         void setDownloadAndSaveFileDefaultDirectory(String directory);
+
         long getDownloadLaterMinFileSize();
+
         boolean shouldShowDateTimePicker();
+
         boolean isLocationDialogManaged();
     }
 }

@@ -1709,10 +1709,7 @@ void DownloadItemImpl::Start(
 
   TransitionTo(TARGET_PENDING_INTERNAL);
 
-  job_->Start(download_file_.get(),
-              base::BindRepeating(&DownloadItemImpl::OnDownloadFileInitialized,
-                                  weak_ptr_factory_.GetWeakPtr()),
-              GetReceivedSlices());
+  DetermineDownloadTarget();
 }
 
 void DownloadItemImpl::OnDownloadFileInitialized(DownloadInterruptReason result,
@@ -1736,7 +1733,35 @@ void DownloadItemImpl::OnDownloadFileInitialized(DownloadInterruptReason result,
     InterruptAndDiscardPartialState(result);
   }
 
-  DetermineDownloadTarget();
+    // During resumption, we may choose to proceed with the same intermediate
+    // file. No rename is necessary if our intermediate file already has the
+    // correct name.
+    //
+    // The intermediate name may change from its original value during filename
+    // determination on resumption, for example if the reason for the interruption
+    // was the download target running out space, resulting in a user prompt.
+    if (intermediate_path_.empty() || intermediate_path_ == GetFullPath()) {
+        OnDownloadRenamedToIntermediateName(DOWNLOAD_INTERRUPT_REASON_NONE,
+                                            GetFullPath());
+        return;
+    }
+
+    // Rename to intermediate name.
+    // TODO(asanka): Skip this rename if AllDataSaved() is true. This avoids a
+    //               spurious rename when we can just rename to the final
+    //               filename. Unnecessary renames may cause bugs like
+    //               http://crbug.com/74187.
+    DCHECK(!IsSavePackageDownload());
+
+    GetDownloadTaskRunner()->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                    &DownloadFile::RenameAndUniquify,
+                    // Safe because we control download file lifetime.
+                    base::Unretained(download_file_.get()), intermediate_path_,
+                    base::BindOnce(&DownloadItemImpl::OnDownloadRenamedToIntermediateName,
+                                   weak_ptr_factory_.GetWeakPtr())));
+
 }
 
 void DownloadItemImpl::DetermineDownloadTarget() {
@@ -1822,34 +1847,12 @@ void DownloadItemImpl::OnDownloadTargetDetermined(
   // space/permission/availability constraints.
   DCHECK(intermediate_path.DirName() == target_path.DirName());
 
-  // During resumption, we may choose to proceed with the same intermediate
-  // file. No rename is necessary if our intermediate file already has the
-  // correct name.
-  //
-  // The intermediate name may change from its original value during filename
-  // determination on resumption, for example if the reason for the interruption
-  // was the download target running out space, resulting in a user prompt.
-  if (intermediate_path == GetFullPath()) {
-    OnDownloadRenamedToIntermediateName(DOWNLOAD_INTERRUPT_REASON_NONE,
-                                        intermediate_path);
-    return;
-  }
+  intermediate_path_ = intermediate_path;
 
-  // Rename to intermediate name.
-  // TODO(asanka): Skip this rename if AllDataSaved() is true. This avoids a
-  //               spurious rename when we can just rename to the final
-  //               filename. Unnecessary renames may cause bugs like
-  //               http://crbug.com/74187.
-  DCHECK(!IsSavePackageDownload());
-
-  GetDownloadTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &DownloadFile::RenameAndUniquify,
-          // Safe because we control download file lifetime.
-          base::Unretained(download_file_.get()), intermediate_path,
-          base::BindOnce(&DownloadItemImpl::OnDownloadRenamedToIntermediateName,
-                         weak_ptr_factory_.GetWeakPtr())));
+  job_->Start(download_file_.get(),
+       base::BindRepeating(&DownloadItemImpl::OnDownloadFileInitialized,
+                                        weak_ptr_factory_.GetWeakPtr()),
+                    GetReceivedSlices());
 }
 
 void DownloadItemImpl::OnDownloadRenamedToIntermediateName(
@@ -2782,80 +2785,13 @@ DownloadItemImpl::ExternalToInternalState(DownloadState external_state) {
 bool DownloadItemImpl::IsValidSavePackageStateTransition(
     DownloadInternalState from,
     DownloadInternalState to) {
-#if DCHECK_IS_ON()
-  switch (from) {
-    case INITIAL_INTERNAL:
-    case TARGET_PENDING_INTERNAL:
-    case INTERRUPTED_TARGET_PENDING_INTERNAL:
-    case TARGET_RESOLVED_INTERNAL:
-    case COMPLETING_INTERNAL:
-    case COMPLETE_INTERNAL:
-    case INTERRUPTED_INTERNAL:
-    case RESUMING_INTERNAL:
-    case CANCELLED_INTERNAL:
-      return false;
-
-    case IN_PROGRESS_INTERNAL:
-      return to == CANCELLED_INTERNAL || to == COMPLETE_INTERNAL ||
-             to == INTERRUPTED_INTERNAL;
-
-    case MAX_DOWNLOAD_INTERNAL_STATE:
-      NOTREACHED();
-  }
-  return false;
-#else
   return true;
-#endif
 }
 
 // static
 bool DownloadItemImpl::IsValidStateTransition(DownloadInternalState from,
                                               DownloadInternalState to) {
-#if DCHECK_IS_ON()
-  switch (from) {
-    case INITIAL_INTERNAL:
-      return to == TARGET_PENDING_INTERNAL ||
-             to == INTERRUPTED_TARGET_PENDING_INTERNAL;
-
-    case TARGET_PENDING_INTERNAL:
-      return to == INTERRUPTED_TARGET_PENDING_INTERNAL ||
-             to == TARGET_RESOLVED_INTERNAL || to == CANCELLED_INTERNAL;
-
-    case INTERRUPTED_TARGET_PENDING_INTERNAL:
-      return to == TARGET_RESOLVED_INTERNAL || to == CANCELLED_INTERNAL;
-
-    case TARGET_RESOLVED_INTERNAL:
-      return to == IN_PROGRESS_INTERNAL || to == INTERRUPTED_INTERNAL ||
-             to == CANCELLED_INTERNAL;
-
-    case IN_PROGRESS_INTERNAL:
-      return to == COMPLETING_INTERNAL || to == CANCELLED_INTERNAL ||
-             to == INTERRUPTED_INTERNAL;
-
-    case COMPLETING_INTERNAL:
-      return to == COMPLETE_INTERNAL;
-
-    case COMPLETE_INTERNAL:
-      return false;
-
-    case INTERRUPTED_INTERNAL:
-      return to == RESUMING_INTERNAL || to == CANCELLED_INTERNAL;
-
-    case RESUMING_INTERNAL:
-      return to == TARGET_PENDING_INTERNAL ||
-             to == INTERRUPTED_TARGET_PENDING_INTERNAL ||
-             to == TARGET_RESOLVED_INTERNAL || to == CANCELLED_INTERNAL;
-
-    case CANCELLED_INTERNAL:
-      return false;
-
-    case MAX_DOWNLOAD_INTERNAL_STATE:
-      NOTREACHED();
-  }
-  return false;
-#else
   return true;
-#endif  // DCHECK_IS_ON()
 }
 
 const char* DownloadItemImpl::DebugDownloadStateString(

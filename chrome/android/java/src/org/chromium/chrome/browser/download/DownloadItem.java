@@ -261,4 +261,17 @@ public class DownloadItem {
         Progress progress = getDownloadInfo().getProgress();
         return progress == null || progress.isIndeterminate();
     }
+
+    @Override
+    public String toString() {
+        return "DownloadItem{" +
+                "mContentId=" + mContentId +
+                ", mUseAndroidDownloadManager=" + mUseAndroidDownloadManager +
+                ", mDownloadInfo=" + mDownloadInfo +
+                ", mDownloadId=" + mDownloadId +
+                ", mStartTime=" + mStartTime +
+                ", mEndTime=" + mEndTime +
+                ", mHasBeenExternallyRemoved=" + mHasBeenExternallyRemoved +
+                '}';
+    }
 }

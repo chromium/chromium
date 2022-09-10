@@ -2322,6 +2322,7 @@ if (android_64bit_target_cpu) {
 
 generate_jni("chrome_jni_headers") {
   sources = [
+    "java/src/com/ark/browser/core/BookmarkBridge.java",
     "java/src/com/ark/browser/core/utils/ContentUtils.java",
     "java/src/com/ark/browser/core/utils/NavigationPredictorBridge.java",
     "java/src/com/ark/browser/core/utils/PolicyAuditor.java",
@@ -2357,7 +2358,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/background_sync/BackgroundSyncBackgroundTask.java",
     "java/src/org/chromium/chrome/browser/background_sync/BackgroundSyncBackgroundTaskScheduler.java",
     "java/src/org/chromium/chrome/browser/background_sync/PeriodicBackgroundSyncChromeWakeUpTask.java",
-    "java/src/org/chromium/chrome/browser/bookmarks/BookmarkBridge.java",
     "java/src/org/chromium/chrome/browser/browsing_data/BrowsingDataBridge.java",
     "java/src/org/chromium/chrome/browser/browsing_data/BrowsingDataCounterBridge.java",
     "java/src/org/chromium/chrome/browser/browsing_data/UrlFilterBridge.java",

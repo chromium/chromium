@@ -762,6 +762,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   // considered to be |GetTargetFilePath().BaseName()|.
   base::FilePath display_name_;
 
+  base::FilePath intermediate_path_;
+
   // Number of bytes wasted.
   int64_t bytes_wasted_ = 0;
 
