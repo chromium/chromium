@@ -37,6 +37,8 @@ class CONTENT_EXPORT FileChooserImpl : public blink::mojom::FileChooser,
 
     // FileSelectListener overrides:
 
+    // TODO(xiaochengh): Move |file| to the end of the argument list to match
+    // the argument ordering of FileChooserImpl::FileSelected().
     void FileSelected(std::vector<blink::mojom::FileChooserFileInfoPtr> files,
                       const base::FilePath& base_dir,
                       blink::mojom::FileChooserParams::Mode mode) override;
@@ -68,9 +70,9 @@ class CONTENT_EXPORT FileChooserImpl : public blink::mojom::FileChooser,
 
   ~FileChooserImpl() override;
 
-  void FileSelected(std::vector<blink::mojom::FileChooserFileInfoPtr> files,
-                    const base::FilePath& base_dir,
-                    blink::mojom::FileChooserParams::Mode mode);
+  void FileSelected(const base::FilePath& base_dir,
+                    blink::mojom::FileChooserParams::Mode mode,
+                    std::vector<blink::mojom::FileChooserFileInfoPtr> files);
 
   void FileSelectionCanceled();
 
@@ -81,6 +83,10 @@ class CONTENT_EXPORT FileChooserImpl : public blink::mojom::FileChooser,
   void EnumerateChosenDirectory(
       const base::FilePath& directory_path,
       EnumerateChosenDirectoryCallback callback) override;
+
+  base::WeakPtr<FileChooserImpl> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
 
  private:
   explicit FileChooserImpl(RenderFrameHostImpl* render_frame_host);
@@ -95,6 +101,8 @@ class CONTENT_EXPORT FileChooserImpl : public blink::mojom::FileChooser,
   raw_ptr<RenderFrameHostImpl> render_frame_host_;
   scoped_refptr<FileSelectListenerImpl> listener_impl_;
   base::OnceCallback<void(blink::mojom::FileChooserResultPtr)> callback_;
+
+  base::WeakPtrFactory<FileChooserImpl> weak_factory_{this};
 };
 
 }  // namespace content
