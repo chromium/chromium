@@ -2048,7 +2048,7 @@ crbug.com/1147859 virtual/dark-mode-default/dark-mode/colors/selection.html [ Fa
 crbug.com/1147859 wpt_internal/css/css-pseudo/target-text-002.html [ Failure ]
 
 # CSS Anchor Positioning is only implemented in ng.
-crbug.com/1309178 wpt_internal/css/css-anchor-position/* [ Skip ]
+crbug.com/1309178 external/wpt/css/css-anchor-position/* [ Skip ]
 
 crbug.com/1303102 external/wpt/css/css-images/object-view-box* [ Skip ]
 
