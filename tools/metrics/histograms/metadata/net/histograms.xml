@@ -1124,8 +1124,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.ProbeSequence.ConfigChange.Failure.AttemptTime"
-    units="ms" expires_after="2022-07-11">
-  <owner>ericorth@chromium.org</owner>
+    units="ms" expires_after="2023-01-11">
+  <owner>awillia@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>
     Duration of time taken by a probe attempt to fail. The time is measured
@@ -1134,8 +1134,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.ProbeSequence.ConfigChange.Success.AttemptTime"
-    units="ms" expires_after="2022-07-11">
-  <owner>ericorth@chromium.org</owner>
+    units="ms" expires_after="2023-01-11">
+  <owner>awillia@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>
     Duration of time taken by a probe attempt to succeed. The time is measured
@@ -1144,8 +1144,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.ProbeSequence.NetworkChange.Failure.AttemptTime"
-    units="ms" expires_after="2022-06-26">
-  <owner>ericorth@chromium.org</owner>
+    units="ms" expires_after="2023-01-11">
+  <owner>awillia@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>
     Duration of time taken by a probe attempt to fail. The time is measured
@@ -1154,8 +1154,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.ProbeSequence.NetworkChange.Success.AttemptTime"
-    units="ms" expires_after="2022-06-26">
-  <owner>ericorth@chromium.org</owner>
+    units="ms" expires_after="2023-01-11">
+  <owner>awillia@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>
     Duration of time taken by a probe attempt to succeed. The time is measured
