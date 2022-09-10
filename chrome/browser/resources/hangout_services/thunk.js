@@ -229,6 +229,13 @@ function onChooseDesktopMediaPort(port) {
       const options = message['options'] ||
           {systemAudio: 'include', selfBrowserSurface: 'include'};
 
+      // For historical reasons, default to the common behavior of users
+      // of the Hangouts Extension, but still allow users of this API
+      // to explicitly set their own value.
+      if (!('suppressLocalAudioPlaybackIntended' in options)) {
+        options['suppressLocalAudioPlaybackIntended'] = true;
+      }
+
       let cancelId = null;
       const tab = port.sender.tab;
       if (tab) {

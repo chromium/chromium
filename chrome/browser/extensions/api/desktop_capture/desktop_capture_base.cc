@@ -83,6 +83,7 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
     const std::vector<api::desktop_capture::DesktopCaptureSourceType>& sources,
     bool exclude_system_audio,
     bool exclude_self_browser_surface,
+    bool suppress_local_audio_playback_intended,
     content::RenderFrameHost* render_frame_host,
     const GURL& origin,
     const std::u16string target_name) {
@@ -157,6 +158,9 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
   picker_params.target_name = target_name;
   picker_params.request_audio = request_audio;
   picker_params.exclude_system_audio = exclude_system_audio;
+  // TODO(crbug.com/1354189): Plumb suppressLocalAudioPlaybackIntended down
+  // to the picker and use to determine if a warning should be shown
+  // to the user.
   picker_controller_ =
       std::make_unique<DesktopMediaPickerController>(g_picker_factory);
   picker_params.restricted_by_policy =

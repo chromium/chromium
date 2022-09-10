@@ -112,9 +112,14 @@ DesktopCaptureChooseDesktopMediaFunction::Run() {
       params->options->self_browser_surface ==
           api::desktop_capture::SELF_CAPTURE_PREFERENCE_ENUM_EXCLUDE;
 
+  const bool suppress_local_audio_playback_intended =
+      params->options &&
+      params->options->suppress_local_audio_playback_intended;
+
   return Execute(params->sources, exclude_system_audio,
-                 exclude_self_browser_surface, target_render_frame_host, origin,
-                 target_name);
+                 exclude_self_browser_surface,
+                 suppress_local_audio_playback_intended,
+                 target_render_frame_host, origin, target_name);
 }
 
 std::string DesktopCaptureChooseDesktopMediaFunction::GetExtensionTargetName()

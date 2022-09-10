@@ -42,6 +42,15 @@ class DesktopCaptureChooseDesktopMediaFunctionBase : public ExtensionFunction {
   // It is therefore provided to the extension function rather than
   // to getUserMedia(), as is the case for other constraints.
   //
+  // |suppress_local_audio_playback_intended| is an indication of what the
+  // application *intends* to set. This flag is necessary because the
+  // media-picker shown to the user shows a warning that local system audio will
+  // be suppressed when that is the case, so this flag has to be plumbed down
+  // with the other flags that affect the picker. However, unlike the other
+  // flags, this one only communicates intent, and has no other effect.
+  // It is a necessary evil, a work-around to address crbug.com/1354189.
+  // This will go away once the Extension API itself goes away.
+  //
   // |origin| is the origin for which the stream is created.
   //
   // |target_name| is the display name of the stream target.
@@ -50,6 +59,7 @@ class DesktopCaptureChooseDesktopMediaFunctionBase : public ExtensionFunction {
           sources,
       bool exclude_system_audio,
       bool exclude_self_browser_surface,
+      bool suppress_local_audio_playback_intended,
       content::RenderFrameHost* render_frame_host,
       const GURL& origin,
       const std::u16string target_name);
