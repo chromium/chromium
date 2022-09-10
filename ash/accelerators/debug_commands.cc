@@ -37,6 +37,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -122,6 +123,29 @@ void HandleToggleDarkMode() {
 
   if (auto* controller = DarkLightModeControllerImpl::Get())
     controller->ToggleColorMode();
+}
+
+void HandleToggleDynamicColor() {
+  if (!ash::features::IsJellyEnabled()) {
+    // Only toggle colors when Dynamic Colors are enabled.
+    return;
+  }
+  static int index = 0;
+  SkColor color;
+  switch (++index % 2) {
+    case 0:
+      color = SK_ColorGREEN;
+      break;
+    case 1:
+      color = SK_ColorRED;
+      break;
+  }
+
+  // This behavior is similar to the way that color changes in production, but
+  // it may not match exactly.
+  auto* theme = ui::NativeTheme::GetInstanceForNativeUi();
+  theme->set_user_color(color);
+  theme->NotifyOnNativeThemeUpdated();
 }
 
 void HandleToggleGlanceables() {
@@ -243,6 +267,9 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
       break;
     case DEBUG_TOGGLE_DARK_MODE:
       HandleToggleDarkMode();
+      break;
+    case DEBUG_TOGGLE_DYNAMIC_COLOR:
+      HandleToggleDynamicColor();
       break;
     case DEBUG_TOGGLE_GLANCEABLES:
       HandleToggleGlanceables();
