@@ -45,6 +45,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -315,6 +316,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
       kNewUrl, *GetActiveWebContents(), gfx::Size(50, 50));
 
   old_prerender_observer.WaitForDestroyed();
+  content::NavigationHandleObserver activation_observer(GetActiveWebContents(),
+                                                        kNewUrl);
   StartOmniboxNavigationAndWaitForActivation(kNewUrl);
 
   EXPECT_TRUE(IsPrerenderingNavigation());
@@ -322,8 +325,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
 
   {
     // Check that we store two entries for both new and old entry.
-    ukm::SourceId ukm_source_id =
-        GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
     auto ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
         content::test::kPreloadingAttemptUkmMetrics);
@@ -387,15 +389,15 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_DirectURLInput",
       /*PrerenderHost::FinalStatus::kTriggerDestroyed*/ 16, 0);
-
+  content::NavigationHandleObserver activation_observer(GetActiveWebContents(),
+                                                        kPrerenderingUrl);
   StartOmniboxNavigationAndWaitForActivation(kPrerenderingUrl);
 
   EXPECT_TRUE(IsPrerenderingNavigation());
   EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(), kPrerenderingUrl);
 
   {
-    ukm::SourceId ukm_source_id =
-        GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
     auto ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
         content::test::kPreloadingAttemptUkmMetrics);
@@ -901,6 +903,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
       std::end(autocomplete_controller->result()), is_prerender_match);
   ASSERT_NE(prerender_match, std::end(autocomplete_controller->result()));
 
+  content::NavigationHandleObserver activation_observer(
+      GetActiveWebContents(), prerender_match->destination_url);
   SelectAutocompleteMatchAndWaitForActivation(*prerender_match, host_id);
   EXPECT_TRUE(IsPrerenderingNavigation());
 
@@ -918,8 +922,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   {
     // Check that we store one entry corresponding to the prerender prediction
     // and attempt.
-    ukm::SourceId ukm_source_id =
-        GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
         content::test::kPreloadingAttemptUkmMetrics);
@@ -1002,6 +1005,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
       std::begin(autocomplete_controller->result()),
       std::end(autocomplete_controller->result()), is_prerender_match);
   ASSERT_NE(prerender_match, std::end(autocomplete_controller->result()));
+  content::NavigationHandleObserver activation_observer(
+      GetActiveWebContents(), prerender_match->destination_url);
   SelectAutocompleteMatchAndWaitForActivation(*prerender_match, host_id);
   EXPECT_TRUE(IsPrerenderingNavigation());
   base::RunLoop().RunUntilIdle();
@@ -1009,8 +1014,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   {
     // Check that we store two entries corresponding to both the prererendering
     // attempts.
-    ukm::SourceId ukm_source_id =
-        GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
     auto ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
         content::test::kPreloadingAttemptUkmMetrics);
@@ -1092,14 +1096,16 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
       std::begin(autocomplete_controller->result()),
       std::end(autocomplete_controller->result()), is_prerender_match);
   ASSERT_NE(prerender_match, std::end(autocomplete_controller->result()));
+
+  content::NavigationHandleObserver activation_observer(
+      GetActiveWebContents(), prerender_match->destination_url);
   SelectAutocompleteMatchAndWaitForActivation(*prerender_match, host_id2);
   EXPECT_TRUE(IsPrerenderingNavigation());
 
   {
     // Check that we store two entries corresponding to both the prererendering
     // attempts.
-    ukm::SourceId ukm_source_id =
-        GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
     auto ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
         content::test::kPreloadingAttemptUkmMetrics);

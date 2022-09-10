@@ -30,6 +30,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -538,6 +539,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
   content::test::PrerenderHostObserver prerender_observer(
       *GetActiveWebContents(), expected_prerender_url);
+  content::NavigationHandleObserver activation_observer(GetActiveWebContents(),
+                                                        expected_prerender_url);
   NavigateToPrerenderedResult(expected_prerender_url);
   prerender_observer.WaitForActivation();
   histogram_tester.ExpectUniqueSample(
@@ -551,8 +554,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   {
     // Check that we store one entry corresponding to the prerender prediction
     // and attempt with prefetch hints.
-    ukm::SourceId ukm_source_id =
-        GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
         content::test::kPreloadingAttemptUkmMetrics);
@@ -647,6 +649,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   // Activate.
   content::test::PrerenderHostObserver prerender_observer(
       *GetActiveWebContents(), expected_prerender_url);
+  content::NavigationHandleObserver activation_observer(GetActiveWebContents(),
+                                                        expected_prerender_url);
   NavigateToPrerenderedResult(expected_prerender_url);
   prerender_observer.WaitForActivation();
   histogram_tester.ExpectUniqueSample(
@@ -654,8 +658,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
       SearchPrefetchStatus::kPrerenderActivated, 1);
 
   {
-    ukm::SourceId ukm_source_id =
-        GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
     auto ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
         content::test::kPreloadingAttemptUkmMetrics);
@@ -1175,11 +1178,12 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedHoldbackBrowserTest,
   registry_observer.WaitForTrigger(expected_prerender_url);
 
   // Navigate to flush the metrics.
+  content::NavigationHandleObserver activation_observer(GetActiveWebContents(),
+                                                        expected_prerender_url);
   ASSERT_TRUE(
       content::NavigateToURL(GetActiveWebContents(), expected_prerender_url));
   {
-    ukm::SourceId ukm_source_id =
-        GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
     auto ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
         content::test::kPreloadingAttemptUkmMetrics);

@@ -50,7 +50,7 @@ class CONTENT_EXPORT PreloadingDataImpl
 
   // WebContentsObserver override.
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
-  void PrimaryPageChanged(Page& page) override;
+  void DidFinishNavigation(NavigationHandle* navigation_handle) override;
   void WebContentsDestroyed() override;
 
  private:

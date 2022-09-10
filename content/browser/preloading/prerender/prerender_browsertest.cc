@@ -138,6 +138,11 @@ RenderFrameHost* FindRenderFrameHost(Page& page, const GURL& url) {
       page, base::BindRepeating(&content::FrameHasSourceUrl, url));
 }
 
+ukm::SourceId ToSourceId(int64_t navigation_id) {
+  return ukm::ConvertToSourceId(navigation_id,
+                                ukm::SourceIdType::NAVIGATION_ID);
+}
+
 // Example class which inherits the DocumentUserData, all the data is
 // associated to the lifetime of the document.
 class DocumentData : public DocumentUserData<DocumentData> {
@@ -173,7 +178,8 @@ PreloadingFailureReason ToPreloadingFailureReason(
           PreloadingFailureReason::kPreloadingFailureReasonCommonEnd));
 }
 
-class PrerenderBrowserTest : public ContentBrowserTest {
+class PrerenderBrowserTest : public ContentBrowserTest,
+                             public WebContentsObserver {
  public:
   using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
 
@@ -204,6 +210,7 @@ class PrerenderBrowserTest : public ContentBrowserTest {
     ssl_server_.SetSSLConfig(
         net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
     ASSERT_TRUE(ssl_server_.Start());
+    WebContentsObserver::Observe(shell()->web_contents());
 
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
@@ -445,10 +452,18 @@ class PrerenderBrowserTest : public ContentBrowserTest {
 
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
+  // Stores all the navigation_ids for all navigations. This is used to check
+  // that we record UKMs for correct SourceIds.
+  std::vector<int64_t> navigation_ids_;
+
  protected:
   net::test_server::EmbeddedTestServer& ssl_server() { return ssl_server_; }
 
  private:
+  void DidStartNavigation(NavigationHandle* handle) override {
+    navigation_ids_.push_back(handle->GetNavigationId());
+  }
+
   net::test_server::EmbeddedTestServer ssl_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
 
@@ -478,6 +493,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationRulesPrerender) {
   ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
 
+  NavigationHandleObserver activation_observer(web_contents(),
+                                               kPrerenderingUrl);
   NavigatePrimaryPage(kPrerenderingUrl);
 
   // The prerender host should be consumed.
@@ -488,9 +505,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationRulesPrerender) {
   ExpectFinalStatusForSpeculationRule(PrerenderHost::FinalStatus::kActivated);
 
   {
-    // Cross-check that both Preloading.Prediction and Preloading.Attempt UKMs
+    // Cross-check that both Preloading_Prediction and Preloading_Attempt UKMs
     // are logged on successful activation for speculation rules prerender.
-    ukm::SourceId ukm_source_id = PrimaryPageSourceId();
+    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName, test::kPreloadingAttemptUkmMetrics);
     auto prediction_ukm_entries =
@@ -499,8 +516,25 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationRulesPrerender) {
     EXPECT_EQ(prediction_ukm_entries.size(), 1u);
     EXPECT_EQ(attempt_ukm_entries.size(), 1u);
 
+    auto prerender_page_load_ukm_entries =
+        test_ukm_recorder()->GetEntriesByName(
+            ukm::builders::PrerenderPageLoad::kEntryName);
+
+    // Check that Preloading_Attempt, Preloading_Prediction and
+    // PrerenderPageLoad are all associated with the same SourceId.
+    // There are three navigations
+    // 1) Navigation to initial Url
+    // 2) Navigation inside prerender frame tree
+    // 3) Prerender activation navigation => navigation_ids_[2].
+    // activation_id represents the SourceId for activation navigation. Check
+    // that all the UKM events are logged for this SourceId.
+    ukm::SourceId activation_id = ToSourceId(navigation_ids_[2]);
+    EXPECT_EQ(activation_id, prerender_page_load_ukm_entries.back()->source_id);
+    EXPECT_EQ(activation_id, prediction_ukm_entries.back().source_id);
+    EXPECT_EQ(activation_id, attempt_ukm_entries.back().source_id);
+
     UkmEntry attempt_expected_entry = attempt_ukm_entry_builder().BuildEntry(
-        ukm_source_id, PreloadingType::kPrerender,
+        activation_id, PreloadingType::kPrerender,
         PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
         PreloadingTriggeringOutcome::kSuccess,
         PreloadingFailureReason::kUnspecified,
@@ -1317,6 +1351,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SameOriginRedirection) {
   // redirect.
   RedirectChainObserver activation_redirect_chain_observer(
       *shell()->web_contents(), kRedirectedUrl);
+
+  NavigationHandleObserver activation_observer(web_contents(),
+                                               kPrerenderingUrl);
   NavigatePrimaryPage(kPrerenderingUrl);
   ASSERT_EQ(1u, activation_redirect_chain_observer.redirect_chain().size());
   EXPECT_EQ(kRedirectedUrl,
@@ -1326,7 +1363,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SameOriginRedirection) {
     // Cross-check that in case redirection when the prerender navigates and
     // user ends up navigating to the redirected URL. accurate_triggering is
     // true.
-    ukm::SourceId ukm_source_id = PrimaryPageSourceId();
+    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName, test::kPreloadingAttemptUkmMetrics);
 
@@ -5227,11 +5264,14 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AddSpeculationRulesMultipleTimes) {
       PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded);
 
   // Navigate primary page to flush the metrics.
+  NavigationHandleObserver activation_observer(web_contents(),
+                                               kFirstPrerenderingUrl);
   NavigatePrimaryPage(kFirstPrerenderingUrl);
   {
     // Verify that we log the correct metrics associated with case when we hit
     // max prerenders exceeded.
-    ukm::SourceId ukm_source_id = PrimaryPageSourceId();
+    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
+
     auto ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName, test::kPreloadingAttemptUkmMetrics);
     auto prediction_ukm_entries =
@@ -5864,6 +5904,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderSameSiteCrossOriginBrowserTest,
 
   RedirectChainObserver activation_redirect_chain_observer(
       *shell()->web_contents(), kRedirectedUrl);
+  NavigationHandleObserver activation_observer(web_contents(),
+                                               kPrerenderingUrl);
   NavigatePrimaryPage(kPrerenderingUrl);
   ASSERT_EQ(1u, activation_redirect_chain_observer.redirect_chain().size());
   EXPECT_EQ(kRedirectedUrl,
@@ -5879,7 +5921,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSameSiteCrossOriginBrowserTest,
     // Cross-check that in case redirection when the prerender navigates and
     // user ends up navigating to the redirected URL. accurate_triggering is
     // true.
-    ukm::SourceId ukm_source_id = PrimaryPageSourceId();
+    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName, test::kPreloadingAttemptUkmMetrics);
 
@@ -5937,6 +5979,8 @@ IN_PROC_BROWSER_TEST_F(
 
   RedirectChainObserver activation_redirect_chain_observer(
       *shell()->web_contents(), kRedirectedUrl);
+  NavigationHandleObserver activation_observer(web_contents(),
+                                               kPrerenderingUrl);
   NavigatePrimaryPage(kPrerenderingUrl);
   ASSERT_EQ(1u, activation_redirect_chain_observer.redirect_chain().size());
   EXPECT_EQ(kRedirectedUrl,
@@ -5953,7 +5997,7 @@ IN_PROC_BROWSER_TEST_F(
     // Cross-check that in case redirection when the prerender navigates and
     // user ends up navigating to the redirected URL. accurate_triggering is
     // true.
-    ukm::SourceId ukm_source_id = PrimaryPageSourceId();
+    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName, test::kPreloadingAttemptUkmMetrics);
 
@@ -6535,6 +6579,22 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, GetPageUkmSourceId) {
   // from the primary main frame.
   EXPECT_NE(current_frame_host()->GetPageUkmSourceId(), nav_request_id);
   EXPECT_EQ(prerender_rfh->GetPageUkmSourceId(), nav_request_id);
+
+  // Activate the prerendered page and check that the
+  // RenderFrameHost::GetPageUkmSourceId and
+  // NavigationHandle::GetNextPageUkmSourceId() for prerender activation
+  // navigation are different.
+  test::PrerenderHostObserver host_observer(*web_contents(), kPrerenderingUrl);
+  NavigationHandleObserver activation_observer(web_contents(),
+                                               kPrerenderingUrl);
+  NavigatePrimaryPage(kPrerenderingUrl);
+  EXPECT_TRUE(host_observer.was_activated());
+
+  ukm::SourceId activation_nav_request_id =
+      activation_observer.next_page_ukm_source_id();
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
+            prerender_rfh->GetPageUkmSourceId());
+  EXPECT_NE(prerender_rfh->GetPageUkmSourceId(), activation_nav_request_id);
 }
 
 class PrerenderPurposePrefetchBrowserTest : public PrerenderBrowserTest {
@@ -7011,10 +7071,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderPreloaderHoldbackBrowserTest,
   registry_observer.WaitForTrigger(kPrerenderingUrl);
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
 
+  NavigationHandleObserver activation_observer(web_contents(),
+                                               kPrerenderingUrl);
   NavigatePrimaryPage(kPrerenderingUrl);
   {
     // Cross-check that PreloadingHoldbackStatus is correctly set.
-    ukm::SourceId ukm_source_id = PrimaryPageSourceId();
+    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName, test::kPreloadingAttemptUkmMetrics);
 

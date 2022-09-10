@@ -84,9 +84,25 @@ PreloadingDataImpl::PreloadingDataImpl(WebContents* web_contents)
 
 PreloadingDataImpl::~PreloadingDataImpl() = default;
 
-void PreloadingDataImpl::PrimaryPageChanged(Page& page) {
+void PreloadingDataImpl::DidFinishNavigation(
+    NavigationHandle* navigation_handle) {
+  auto* navigation_request = NavigationRequest::From(navigation_handle);
+
+  // Record UKMs for primary page navigations only. The reason we don't use
+  // WebContentsObserver::PrimaryPageChanged is because we want to get the
+  // navigation UkmSourceId which is different from
+  // RenderFrameHost::GetPageUkmSourceId for prerender activation.
+  // TODO(crbug.com/1299330): Switch to PrimaryPageChanged once we align
+  // RenderFrameHost::GetPageUkmSourceId with
+  // PageLoadTracker::GetPageUKMSourceId.
+  if (!navigation_request->IsInPrimaryMainFrame() ||
+      navigation_request->IsSameDocument() ||
+      !navigation_request->HasCommitted()) {
+    return;
+  }
+
   ukm::SourceId navigated_page_source_id =
-      page.GetMainDocument().GetPageUkmSourceId();
+      navigation_request->GetNextPageUkmSourceId();
 
   // Log the UKMs also on navigation when the user ends up navigating. Please
   // note that we currently log the metrics on the primary page to analyze
