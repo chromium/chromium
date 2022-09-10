@@ -206,8 +206,6 @@ enum class IncompatibleNsswitchReason {
 void RecordIncompatibleNsswitchReason(
     IncompatibleNsswitchReason reason,
     absl::optional<NsswitchReader::Service> service_token) {
-  base::UmaHistogramEnumeration("Net.DNS.DnsConfig.Nsswitch.IncompatibleReason",
-                                reason);
   if (service_token) {
     base::UmaHistogramEnumeration(
         "Net.DNS.DnsConfig.Nsswitch.IncompatibleService",
@@ -472,8 +470,6 @@ class DnsConfigServiceLinux::ConfigReader : public SerialWorker {
       if (dns_config_ && !dns_config_->unhandled_options) {
         std::vector<NsswitchReader::ServiceSpecification> nsswitch_hosts =
             nsswitch_reader_->ReadAndParseHosts();
-        base::UmaHistogramCounts100("Net.DNS.DnsConfig.Nsswitch.NumServices",
-                                    nsswitch_hosts.size());
         dns_config_->unhandled_options =
             !IsNsswitchConfigCompatible(nsswitch_hosts);
         base::UmaHistogramBoolean("Net.DNS.DnsConfig.Nsswitch.Compatible",

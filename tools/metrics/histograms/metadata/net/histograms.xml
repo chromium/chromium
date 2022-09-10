@@ -636,17 +636,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.DNS.DnsConfig.Nsswitch.IncompatibleReason"
-    enum="NsswitchIncompatibleReason" expires_after="2022-01-15">
-  <owner>ericorth@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    Reason enumeration of why a read and parsed nsswitch.conf DNS configuration
-    file was considered incompatible with Chrome, leading to Chrome's built-in
-    DNS resolver being disabled.
-  </summary>
-</histogram>
-
 <histogram name="Net.DNS.DnsConfig.Nsswitch.IncompatibleService"
     enum="NsswitchService" expires_after="2023-02-12">
   <owner>ericorth@chromium.org</owner>
@@ -670,16 +659,6 @@ chromium-metrics-reviews@google.com.
     of an nsswitch.conf. Recorded when a resolv.conf file is successfully read
     by Chrome and the DNS configuration read from the resolv.conf file is
     considered compatible with Chrome.
-  </summary>
-</histogram>
-
-<histogram name="Net.DNS.DnsConfig.Nsswitch.NumServices" units="#services"
-    expires_after="2022-01-15">
-  <owner>ericorth@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    Number of services parsed from the nsswitch.conf DNS configuration file.
-    Reported whenever the file is read and parsed.
   </summary>
 </histogram>
 
