@@ -3306,6 +3306,13 @@ crbug.com/626703 external/wpt/css/css-text-decor/text-decoration-skip-spaces-003
 crbug.com/626703 external/wpt/css/css-text-decor/text-decoration-skip-spaces-004.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] external/wpt/mathml/presentation-markup/operators/op-dict-5.html [ Failure ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/mathml/presentation-markup/operators/op-dict-5.html [ Failure ]
+crbug.com/626703 [ Mac11 ] external/wpt/mathml/presentation-markup/operators/op-dict-5.html [ Failure ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/mathml/presentation-markup/operators/op-dict-5.html [ Failure ]
+crbug.com/626703 [ Mac12 ] external/wpt/mathml/presentation-markup/operators/op-dict-5.html [ Failure ]
+crbug.com/626703 [ Mac12-arm64 ] external/wpt/mathml/presentation-markup/operators/op-dict-5.html [ Failure ]
+crbug.com/626703 external/wpt/mathml/presentation-markup/operators/op-dict-7.html [ Failure ]
 crbug.com/626703 [ Mac11 ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-2.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/mathml/relations/css-styling/mathvariant-basic-transforms-with-default-font.html [ Failure ]
 crbug.com/626703 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-iframe.html [ Failure ]
@@ -6945,7 +6952,7 @@ crbug.com/1358298 external/wpt/html/cross-origin-embedder-policy/require-corp.ht
 crbug.com/1356664 [ Debug Linux ] virtual/no-alloc-direct-call/fast/canvas/disconnected-canvas-lost-gpu-context.html [ Failure Pass ]
 
 # Disable scrolling flake on win
-crbug.com/1359541 [ Win ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/mouse-scrolling-on-div-custom-scrollbar.html [ Failure Timeout Pass ]
+crbug.com/1359541 [ Win ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/mouse-scrolling-on-div-custom-scrollbar.html [ Failure Pass Timeout ]
 
 # Sheriff 2022-09-07
 crbug.com/1360691 [ Debug Linux ] fast/canvas/disconnected-canvas-lost-gpu-context.html [ Failure ]

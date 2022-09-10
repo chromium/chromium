@@ -3,6 +3,7 @@ from typing import Any, Mapping
 
 import pytest
 import webdriver
+from webdriver.bidi.modules.script import ContextTarget
 
 
 @pytest.fixture
@@ -37,3 +38,19 @@ def wait_for_event(bidi_session, event_loop):
 
         return future
     return wait_for_event
+
+@pytest.fixture
+def current_time(bidi_session, top_context):
+    """Get the current time stamp in ms from the remote end.
+
+    This is required especially when tests are run on different devices like
+    for Android, where it's not guaranteed that both machines are in sync.
+    """
+    async def _():
+        result = await bidi_session.script.evaluate(
+            expression="Date.now()",
+            target=ContextTarget(top_context["context"]),
+            await_promise=True)
+        return result["value"]
+
+    return _

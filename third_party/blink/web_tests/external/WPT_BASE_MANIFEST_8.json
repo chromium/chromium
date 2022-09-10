@@ -243146,6 +243146,149 @@
         ],
         {}
        ]
+      ],
+      "op-dict-1.html": [
+       "cdfcca4a576147301fcd5869b99539bd440244cf",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/operators/op-dict-1-notref.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "op-dict-12.html": [
+       "7d75c4c174c67d12a71a266e3921b64a95465710",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/operators/op-dict-12-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "op-dict-13.html": [
+       "1b7c6bf38f9128a66e76d24b7e984e4d17aae8cc",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/operators/op-dict-13-notref.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "op-dict-2.html": [
+       "0a26fcae7878323a77c2f5c80cf6778825780293",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/operators/op-dict-2-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "op-dict-3.html": [
+       "bf54ef858232ca53aa7904f5fba83f56172af415",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/operators/op-dict-3-notref.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "op-dict-4.html": [
+       "f847890aa703c0332a4159109e849b2efd288679",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/operators/op-dict-4-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "op-dict-5.html": [
+       "8c8260d4cdda835063ae35dae3e1e073102773b2",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/operators/op-dict-5-notref.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "op-dict-6.html": [
+       "6be4cc90a70ad833b6b118a238b677c5315ed9f6",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/operators/op-dict-6-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "op-dict-7.html": [
+       "04496eb4f3c5476e118017885757f971191a51ea",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/operators/op-dict-7-notref.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "op-dict-8.html": [
+       "0f9b81900e9f971d04c984abc8e57b5263c34733",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/operators/op-dict-8-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "op-dict-9.html": [
+       "1e833e31a0b8161eb5d94b5dc0d78b82c3dde07e",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/operators/op-dict-9-notref.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
       ]
      },
      "radicals": {
@@ -267882,10 +268025,6 @@
       []
      ],
      "parsing": {
-      "color-computed-expected.txt": [
-       "9009b00ba0f531972c8c70764a773e18768426b9",
-       []
-      ],
       "color-contrast-computed-expected.txt": [
        "c461b75c1d1b998b5b89996ca9ea664fedaa6596",
        []
@@ -267903,11 +268042,11 @@
        []
       ],
       "color-mixed-num-pct-expected.txt": [
-       "f92c4b5960d064290826ae5b5038622973e899d8",
+       "642975c16e0e871ce84ef6bac3d29861c8a7b7c0",
        []
       ],
       "color-valid-expected.txt": [
-       "bd6ee1cfa7d8d5bf7ae0aae5f03750dbdeee6836",
+       "c940877fec21bd79248e0be639ff6a4d2c252e04",
        []
       ],
       "relative-color-computed-expected.txt": [
@@ -289160,6 +289299,10 @@
       ],
       "auto-007-expected.txt": [
        "da58f5295545b4bdb8836870ee8e7da5a36b1e24",
+       []
+      ],
+      "auto-008-expected.txt": [
+       "5f790b0da30ea92e789a36d0d25527ad6a15f075",
        []
       ],
       "contain-intrinsic-size-001-ref.html": [
@@ -315519,8 +315662,12 @@
        ]
       },
       "wide-gamut-canvas": {
+       "2d.color.space.p3.fillText-expected.txt": [
+        "7004b89f4f2139ac8562b924c3a881022366aa95",
+        []
+       ],
        "2d.color.space.p3.strokeText-expected.txt": [
-        "1c513c8c191ca877b903a5f1cdbca20607d1248f",
+        "8a753f4f699d2072aea87a08d604e8cafb812b28",
         []
        ]
       }
@@ -318039,44 +318186,8 @@
        }
       },
       "images": {
-       "001.html": [
-        "6367703b8500777720ff91d7c02c41bc43edd7c4",
-        []
-       ],
-       "002.html": [
-        "e1c90d952455ffe076473dfbe4bab49e02e7e02a",
-        []
-       ],
        "003.html": [
         "e2b3ac1a8dc556e1d519786fa27e2cd686a5d79f",
-        []
-       ],
-       "004.html": [
-        "56719d297ac7f264a8500cd3f07955fd4368e463",
-        []
-       ],
-       "005.html": [
-        "d1415bdb9c834bcb158ca4ecef05b97ae829c5c6",
-        []
-       ],
-       "006.xhtml": [
-        "db8285feec9b17b4765d888ee7cc65810f9bb3c9",
-        []
-       ],
-       "007.xhtml": [
-        "6443363abc276c44a3353c2757bbd88ee6522da6",
-        []
-       ],
-       "008.xhtml": [
-        "09cbdae03cc98ba94f835e2429f5108f7a29034e",
-        []
-       ],
-       "009.xhtml": [
-        "0bb3bce3b51c1d8c5e8d66f91d5952a49d6e3eeb",
-        []
-       ],
-       "010.xhtml": [
-        "6ff3a3d7ccbcac2dd2ddb16516875148cdcecd40",
         []
        ],
        "011.xhtml": [
@@ -319371,6 +319482,10 @@
        ],
        "pass.png": [
         "2fa1e0ac0663a65deae6602621521cc2844b93de",
+        []
+       ],
+       "test-helper.js": [
+        "a40711193114dff0f83aac80e221618ee4ae6e90",
         []
        ]
       },
@@ -331042,6 +331157,50 @@
       ],
       "mo-single-char-and-children-ref.html": [
        "6b4ccc775c345dc19ade781409a65d85f6ddace9",
+       []
+      ],
+      "op-dict-1-notref.html": [
+       "5650be19363c0e27979c2cc49ce1063ca73655e9",
+       []
+      ],
+      "op-dict-12-ref.html": [
+       "3365b47d39580d2d79266b0dae3fc0f8fc96dd95",
+       []
+      ],
+      "op-dict-13-notref.html": [
+       "e9e7614836ac372a1938fa8906a247dd990c28ee",
+       []
+      ],
+      "op-dict-2-ref.html": [
+       "9c910f8411dd5d8383d19a86c1ed2acee25fd379",
+       []
+      ],
+      "op-dict-3-notref.html": [
+       "9c910f8411dd5d8383d19a86c1ed2acee25fd379",
+       []
+      ],
+      "op-dict-4-ref.html": [
+       "a501e45c8c8a23c280175671f2c4bb9062c61ee3",
+       []
+      ],
+      "op-dict-5-notref.html": [
+       "7ab29e376929da34167d5ba596e0d3a6c8abfff7",
+       []
+      ],
+      "op-dict-6-ref.html": [
+       "cb642c49281eb6ccd1fb2d8861d687adffe816e2",
+       []
+      ],
+      "op-dict-7-notref.html": [
+       "78dd19555840fcbbca25db61f2f5d2679f5389f8",
+       []
+      ],
+      "op-dict-8-ref.html": [
+       "b51ce01f36e422f3d930869c8b78c2770841ed32",
+       []
+      ],
+      "op-dict-9-notref.html": [
+       "b976536fac416789cfeb145874a32c539005bd56",
        []
       ],
       "support": {
@@ -346941,11 +347100,11 @@
        []
       ],
       "fixtures_bidi.py": [
-       "8fe169d242835172a6b9126780224e71bdaddad4",
+       "f8eae48ae33283fe1673d50e1b740209a52868cb",
        []
       ],
       "fixtures_http.py": [
-       "c0683dd7cc1ae03962f75d94023e3dc05383698b",
+       "42a74ba41fbc4d4943650fc6cfa23e24561b679c",
        []
       ],
       "helpers.py": [
@@ -348694,7 +348853,7 @@
     ],
     "resources": {
      "webtransport-test-helpers.sub.js": [
-      "61ea1e4f80411aa4233548403ac61fb7a418363e",
+      "7237cbbf28be659fd8d537894cfb527dfec3d1bc",
       []
      ]
     }
@@ -388246,7 +388405,7 @@
        ]
       ],
       "color-invalid.html": [
-       "9fe81bb4c3d2638899215a0ea8c96cbd2db7ad53",
+       "fa63beaa3fa9d03e282ce752cdba3f56e748732b",
        [
         null,
         {}
@@ -388281,7 +388440,7 @@
        ]
       ],
       "color-valid.html": [
-       "d585d80235147bc5ce96a8e5c55b6676d357a01c",
+       "ab9272ce032c038feeb6fd35a7e41a315ebceb33",
        [
         null,
         {}
@@ -388586,7 +388745,7 @@
        ]
       ],
       "at-container-parsing.html": [
-       "58e2b26bcf3b70ae8ba991f921996c407bf5eaa3",
+       "6c1bf369c6213b5ecdb9010b551ec030f97899d4",
        [
         null,
         {}
@@ -388901,7 +389060,7 @@
        ]
       ],
       "custom-property-style-queries.html": [
-       "10e8e55561f346ef49d5b12cac144805d4375264",
+       "7a11d45c3133f72c9bcff1e724180152a637cfed",
        [
         null,
         {}
@@ -402394,6 +402553,13 @@
       ],
       "auto-007.html": [
        "02501264c8c2fe08fc28419f3cf3f48e03330657",
+       [
+        null,
+        {}
+       ]
+      ],
+      "auto-008.html": [
+       "652710192f01de02c51574987f0be1babe90fe0d",
        [
         null,
         {}
@@ -481594,6 +481760,89 @@
         {}
        ]
       ],
+      "images": {
+       "001.html": [
+        "dcc31664e75494d06cb36cca442c646fcb12c04d",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "002.html": [
+        "9756eb26da43cd0faad3fb7235ff2a2ff2917160",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "004.html": [
+        "829608f537c299a45becc34f485c120ce85e120d",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "005.html": [
+        "c625f44685d6c5dae5cfd7516ea071ae052cf208",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "006.html": [
+        "4a8b159f65f964c7c61a35629b19ce52e126786a",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "007.html": [
+        "afacc9205cceeb9a4d5065a0f4587fd3ffcd072b",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "008.html": [
+        "2747c60ff6b31813350a139cea872bbed9e56135",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "009.html": [
+        "ebb252ab0bc75e34b9c3cb769824b686e5935756",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "010.html": [
+        "d41b36c261a733829e8fc0c256f65bc1e4255a54",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ]
+      },
       "synthetic": {
        "001.html": [
         "c0bf8a5776a53954d2e40945cc4ddf6577910236",
@@ -537339,7 +537588,7 @@
      ]
     ],
     "getdisplaymedia.https.html": [
-     "ebd35ff29fd3594d34474e43fd779701d454f407",
+     "33e70acacbf6a3d88adb7e8626afee1dbfa6abb3",
      [
       null,
       {
@@ -584810,7 +585059,7 @@
      ]
     ],
     "streams-echo.https.any.js": [
-     "b3c89b17c5e3db53bc0b04a93581ec61f3455c05",
+     "8ec698e7a49537e91f8a7ff439e85d97c8d6ee0d",
      [
       "webtransport/streams-echo.https.any.html",
       {
