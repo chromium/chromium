@@ -95,9 +95,3 @@ additional_apk {
   version: "8YCNotfbM5tOtTRFFJNfDpolC4TMZt2N61WY66WI4JwC"
   dest_path: "generic_android32_foldable/gmscore_apks"
 }
-
-privileged_apk {
-  package_name: "chrome_internal/third_party/google3/apks/phonesky/x86_64"
-  version: "p9OVYnWIa1jcAyUr1v7MjV8XD9PcogQ5yntxGrvO7NkC"
-  dest_path: "generic_android32_foldable/phonesky_apks"
-}
