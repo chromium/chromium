@@ -511,6 +511,7 @@ crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-item-aspect-ratio-str
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-item-aspect-ratio-stretch-3.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-item-aspect-ratio-stretch-4.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-inline-baseline.html [ Failure ]
+crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-justify-baseline-001.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-row-axis-self-baseline-synthesized-001.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-row-axis-self-baseline-synthesized-002.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-row-axis-self-baseline-synthesized-003.html [ Failure ]

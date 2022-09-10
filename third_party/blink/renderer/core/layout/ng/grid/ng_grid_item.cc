@@ -172,15 +172,17 @@ BaselineGroup DetermineBaselineGroup(
   // direction. This is to ensure the inline-start offset (for the grid-item)
   // matches the baseline offset we calculate.
   const bool is_ltr = container_writing_direction.IsLtr();
-  if ((baseline_writing_mode == WritingMode::kHorizontalTb) == is_ltr)
-    return BaselineGroup::kMajor;
+  switch (baseline_writing_mode) {
+    case WritingMode::kHorizontalTb:
+    case WritingMode::kVerticalLr:
+    case WritingMode::kSidewaysLr:
+      return is_ltr ? BaselineGroup::kMajor : BaselineGroup::kMinor;
+    case WritingMode::kVerticalRl:
+    case WritingMode::kSidewaysRl:
+      return is_ltr ? BaselineGroup::kMinor : BaselineGroup::kMajor;
+  }
 
-  if ((baseline_writing_mode == WritingMode::kVerticalLr) == is_ltr)
-    return BaselineGroup::kMajor;
-
-  if ((baseline_writing_mode == WritingMode::kVerticalRl) == !is_ltr)
-    return BaselineGroup::kMajor;
-
+  NOTREACHED();
   return BaselineGroup::kMinor;
 }
 
