@@ -527,7 +527,7 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
             std::make_unique<ClientDownloadResponse>(response)));
 
     if (!token.empty())
-      SetDownloadPingToken(token);
+      SetDownloadProtectionData(token, response.verdict());
 
     bool upload_requested = response.upload();
     MaybeStorePingsForDownload(result, upload_requested,

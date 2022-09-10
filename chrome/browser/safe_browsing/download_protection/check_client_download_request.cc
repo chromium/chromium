@@ -214,10 +214,11 @@ void CheckClientDownloadRequest::NotifySendRequest(
       request->referrer_chain().size());
 }
 
-void CheckClientDownloadRequest::SetDownloadPingToken(
-    const std::string& token) {
+void CheckClientDownloadRequest::SetDownloadProtectionData(
+    const std::string& token,
+    const ClientDownloadResponse::Verdict& verdict) {
   DCHECK(!token.empty());
-  DownloadProtectionService::SetDownloadPingToken(item_, token);
+  DownloadProtectionService::SetDownloadProtectionData(item_, token, verdict);
 }
 
 void CheckClientDownloadRequest::MaybeStorePingsForDownload(

@@ -174,10 +174,15 @@ class DownloadProtectionService {
 
   double allowlist_sample_rate() const { return allowlist_sample_rate_; }
 
-  static void SetDownloadPingToken(download::DownloadItem* item,
-                                   const std::string& token);
+  static void SetDownloadProtectionData(
+      download::DownloadItem* item,
+      const std::string& token,
+      const ClientDownloadResponse::Verdict& verdict);
 
   static std::string GetDownloadPingToken(const download::DownloadItem* item);
+
+  static ClientDownloadResponse::Verdict GetDownloadProtectionVerdict(
+      const download::DownloadItem* item);
 
   // Sends dangerous download opened report when download is opened or
   // shown in folder, and if the following conditions are met:
@@ -251,21 +256,27 @@ class DownloadProtectionService {
   FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
                            VerifyReferrerChainLengthForExtendedReporting);
 
-  static const void* const kDownloadPingTokenKey;
+  static const void* const kDownloadProtectionDataKey;
 
-  // Helper class for easy setting and getting token string.
-  class DownloadPingToken : public base::SupportsUserData::Data {
+  // Helper class for easy setting and getting data related to download
+  // protection. The data is only set when the server returns an unsafe verdict
+  // (i.e. not safe or unknown).
+  class DownloadProtectionData : public base::SupportsUserData::Data {
    public:
-    explicit DownloadPingToken(const std::string& token)
-        : token_string_(token) {}
+    explicit DownloadProtectionData(
+        const std::string& token,
+        const ClientDownloadResponse::Verdict& verdict)
+        : token_string_(token), verdict_(verdict) {}
 
-    DownloadPingToken(const DownloadPingToken&) = delete;
-    DownloadPingToken& operator=(const DownloadPingToken&) = delete;
+    DownloadProtectionData(const DownloadProtectionData&) = delete;
+    DownloadProtectionData& operator=(const DownloadProtectionData&) = delete;
 
     std::string token_string() { return token_string_; }
+    ClientDownloadResponse::Verdict verdict() { return verdict_; }
 
    private:
     std::string token_string_;
+    ClientDownloadResponse::Verdict verdict_;
   };
 
   // Cancels all requests in |download_requests_|, and empties it, releasing

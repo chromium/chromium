@@ -84,8 +84,9 @@ void CheckFileSystemAccessWriteRequest::NotifySendRequest(
       request->referrer_chain().size());
 }
 
-void CheckFileSystemAccessWriteRequest::SetDownloadPingToken(
-    const std::string& token) {
+void CheckFileSystemAccessWriteRequest::SetDownloadProtectionData(
+    const std::string& token,
+    const ClientDownloadResponse::Verdict& verdict) {
   // TODO(https://crbug.com/996797): Actually store token for
   // IncidentReportingService usage.
 }

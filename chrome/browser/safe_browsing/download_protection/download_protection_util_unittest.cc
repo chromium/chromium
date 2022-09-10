@@ -106,34 +106,4 @@ TEST(DownloadProtectionUtilTest, GetCertificateAllowlistStrings) {
   EXPECT_THAT(allowlist_strings, ElementsAre());
 }
 
-TEST(DownloadProtectionUtilTest, DownloadDangerTypeToDownloadResponseVerdict) {
-  struct TestCases {
-    download::DownloadDangerType danger_type;
-    ClientDownloadResponse::Verdict expected_download_verdict;
-  } test_cases[] = {
-      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL,
-       ClientDownloadResponse::DANGEROUS},
-      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT,
-       ClientDownloadResponse::DANGEROUS},
-      {download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT,
-       ClientDownloadResponse::UNCOMMON},
-      {download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
-       ClientDownloadResponse::POTENTIALLY_UNWANTED},
-      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST,
-       ClientDownloadResponse::DANGEROUS_HOST},
-      {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
-       ClientDownloadResponse::DANGEROUS_ACCOUNT_COMPROMISE},
-      {download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING,
-       ClientDownloadResponse::SAFE},
-      {download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE,
-       ClientDownloadResponse::SAFE},
-      {download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE,
-       ClientDownloadResponse::SAFE}};
-  for (auto& test_case : test_cases) {
-    EXPECT_EQ(
-        test_case.expected_download_verdict,
-        DownloadDangerTypeToDownloadResponseVerdict(test_case.danger_type));
-  }
-}
-
 }  // namespace safe_browsing

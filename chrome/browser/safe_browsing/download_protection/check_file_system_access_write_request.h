@@ -47,7 +47,9 @@ class CheckFileSystemAccessWriteRequest
   base::WeakPtr<CheckClientDownloadRequestBase> GetWeakPtr() override;
 
   void NotifySendRequest(const ClientDownloadRequest* request) override;
-  void SetDownloadPingToken(const std::string& token) override;
+  void SetDownloadProtectionData(
+      const std::string& token,
+      const ClientDownloadResponse::Verdict& verdict) override;
   void MaybeStorePingsForDownload(DownloadCheckResult result,
                                   bool upload_requested,
                                   const std::string& request_data,

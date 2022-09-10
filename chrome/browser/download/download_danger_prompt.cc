@@ -31,8 +31,8 @@ void DownloadDangerPrompt::SendSafeBrowsingDownloadReport(
     bool did_proceed,
     download::DownloadItem* download) {
   ClientDownloadResponse::Verdict download_verdict =
-      safe_browsing::DownloadDangerTypeToDownloadResponseVerdict(
-          download->GetDangerType());
+      safe_browsing::DownloadProtectionService::GetDownloadProtectionVerdict(
+          download);
   if (download_verdict == ClientDownloadResponse::SAFE) {
     // Don't send report if the verdict is SAFE.
     return;

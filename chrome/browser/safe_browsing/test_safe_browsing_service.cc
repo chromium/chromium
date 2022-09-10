@@ -95,7 +95,7 @@ bool TestSafeBrowsingService::SendDownloadReport(
   auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
   report->set_type(report_type);
   report->set_download_verdict(
-      DownloadDangerTypeToDownloadResponseVerdict(download->GetDangerType()));
+      DownloadProtectionService::GetDownloadProtectionVerdict(download));
   report->set_url(download->GetURL().spec());
   report->set_did_proceed(did_proceed);
   if (show_download_in_folder) {

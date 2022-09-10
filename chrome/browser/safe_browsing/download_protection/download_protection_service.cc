@@ -145,8 +145,8 @@ void MaybeLogSecuritySensitiveDownloadEvent(
 
 }  // namespace
 
-const void* const DownloadProtectionService::kDownloadPingTokenKey =
-    &kDownloadPingTokenKey;
+const void* const DownloadProtectionService::kDownloadProtectionDataKey =
+    &kDownloadProtectionDataKey;
 
 DownloadProtectionService::DownloadProtectionService(
     SafeBrowsingService* sb_service)
@@ -438,23 +438,36 @@ void DownloadProtectionService::ShowDetailsForDownload(
                              ui::PAGE_TRANSITION_LINK, false));
 }
 
-void DownloadProtectionService::SetDownloadPingToken(
+void DownloadProtectionService::SetDownloadProtectionData(
     download::DownloadItem* item,
-    const std::string& token) {
+    const std::string& token,
+    const ClientDownloadResponse::Verdict& verdict) {
   if (item) {
-    item->SetUserData(kDownloadPingTokenKey,
-                      std::make_unique<DownloadPingToken>(token));
+    item->SetUserData(kDownloadProtectionDataKey,
+                      std::make_unique<DownloadProtectionData>(token, verdict));
   }
 }
 
 std::string DownloadProtectionService::GetDownloadPingToken(
     const download::DownloadItem* item) {
-  base::SupportsUserData::Data* token_data =
-      item->GetUserData(kDownloadPingTokenKey);
-  if (token_data)
-    return static_cast<DownloadPingToken*>(token_data)->token_string();
+  base::SupportsUserData::Data* protection_data =
+      item->GetUserData(kDownloadProtectionDataKey);
+  if (protection_data)
+    return static_cast<DownloadProtectionData*>(protection_data)
+        ->token_string();
   else
     return std::string();
+}
+
+ClientDownloadResponse::Verdict
+DownloadProtectionService::GetDownloadProtectionVerdict(
+    const download::DownloadItem* item) {
+  base::SupportsUserData::Data* protection_data =
+      item->GetUserData(kDownloadProtectionDataKey);
+  if (protection_data)
+    return static_cast<DownloadProtectionData*>(protection_data)->verdict();
+  else
+    return ClientDownloadResponse::SAFE;
 }
 
 void DownloadProtectionService::MaybeSendDangerousDownloadOpenedReport(

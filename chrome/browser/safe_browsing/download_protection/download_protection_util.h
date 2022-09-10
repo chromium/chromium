@@ -125,11 +125,6 @@ void GetCertificateAllowlistStrings(
 
 GURL GetFileSystemAccessDownloadUrl(const GURL& frame_url);
 
-// Converts download danger type back to download response verdict. Returns
-// SAFE if there is no corresponding verdict type for the danger type.
-ClientDownloadResponse::Verdict DownloadDangerTypeToDownloadResponseVerdict(
-    download::DownloadDangerType download_danger_type);
-
 }  // namespace safe_browsing
 
 #endif  // CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DOWNLOAD_PROTECTION_UTIL_H_
