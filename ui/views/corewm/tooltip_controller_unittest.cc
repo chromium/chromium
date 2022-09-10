@@ -49,9 +49,7 @@
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #endif
 
-namespace views {
-namespace corewm {
-namespace test {
+namespace views::corewm::test {
 namespace {
 
 views::Widget* CreateWidget(aura::Window* root) {
@@ -297,9 +295,8 @@ TEST_F(TooltipControllerTest, TooltipBounds) {
     // bottom-right corner of the cursor.
     gfx::Rect bounds =
         test::TooltipAuraTestApi(tooltip_aura_)
-            .GetTooltipBounds(
-                tooltip_size,
-                {anchor_point, TooltipPositionBehavior::kRelativeToCursor});
+            .GetTooltipBounds(tooltip_size,
+                              {anchor_point, TooltipTrigger::kCursor});
     gfx::Point expected_position(anchor_point.x() + TooltipAura::kCursorOffsetX,
                                  a_expected_y);
     EXPECT_EQ(bounds, gfx::Rect(expected_position, tooltip_size));
@@ -307,9 +304,8 @@ TEST_F(TooltipControllerTest, TooltipBounds) {
     // B. When not attached to the cursor, the tooltip should be horizontally
     // centered with the anchor point.
     bounds = test::TooltipAuraTestApi(tooltip_aura_)
-                 .GetTooltipBounds(
-                     tooltip_size,
-                     {anchor_point, TooltipPositionBehavior::kCentered});
+                 .GetTooltipBounds(tooltip_size,
+                                   {anchor_point, TooltipTrigger::kKeyboard});
     expected_position =
         gfx::Point(anchor_point.x() - tooltip_size.width() / 2, b_expected_y);
     EXPECT_EQ(bounds, gfx::Rect(expected_position, tooltip_size));
@@ -323,18 +319,16 @@ TEST_F(TooltipControllerTest, TooltipBounds) {
     // bottom-right corner of the cursor.
     gfx::Rect bounds =
         test::TooltipAuraTestApi(tooltip_aura_)
-            .GetTooltipBounds(
-                tooltip_size,
-                {anchor_point, TooltipPositionBehavior::kRelativeToCursor});
+            .GetTooltipBounds(tooltip_size,
+                              {anchor_point, TooltipTrigger::kCursor});
     gfx::Point expected_position(0, a_expected_y);
     EXPECT_EQ(bounds, gfx::Rect(expected_position, tooltip_size));
 
     // B. When not attached to the cursor, the tooltip should be horizontally
     // centered with the anchor point.
     bounds = test::TooltipAuraTestApi(tooltip_aura_)
-                 .GetTooltipBounds(
-                     tooltip_size,
-                     {anchor_point, TooltipPositionBehavior::kCentered});
+                 .GetTooltipBounds(tooltip_size,
+                                   {anchor_point, TooltipTrigger::kKeyboard});
     expected_position = gfx::Point(0, b_expected_y);
     EXPECT_EQ(bounds, gfx::Rect(expected_position, tooltip_size));
   }
@@ -347,9 +341,8 @@ TEST_F(TooltipControllerTest, TooltipBounds) {
     // bottom-right corner of the cursor.
     gfx::Rect bounds =
         test::TooltipAuraTestApi(tooltip_aura_)
-            .GetTooltipBounds(
-                tooltip_size,
-                {anchor_point, TooltipPositionBehavior::kRelativeToCursor});
+            .GetTooltipBounds(tooltip_size,
+                              {anchor_point, TooltipTrigger::kCursor});
     gfx::Point expected_position(display_bounds.right() - tooltip_size.width(),
                                  a_expected_y);
     EXPECT_EQ(bounds, gfx::Rect(expected_position, tooltip_size));
@@ -357,9 +350,8 @@ TEST_F(TooltipControllerTest, TooltipBounds) {
     // B. When not attached to the cursor, the tooltip should be horizontally
     // centered with the anchor point.
     bounds = test::TooltipAuraTestApi(tooltip_aura_)
-                 .GetTooltipBounds(
-                     tooltip_size,
-                     {anchor_point, TooltipPositionBehavior::kCentered});
+                 .GetTooltipBounds(tooltip_size,
+                                   {anchor_point, TooltipTrigger::kKeyboard});
     expected_position =
         gfx::Point(display_bounds.right() - tooltip_size.width(), b_expected_y);
     EXPECT_EQ(bounds, gfx::Rect(expected_position, tooltip_size));
@@ -372,9 +364,8 @@ TEST_F(TooltipControllerTest, TooltipBounds) {
     // bottom-right corner of the cursor.
     gfx::Rect bounds =
         test::TooltipAuraTestApi(tooltip_aura_)
-            .GetTooltipBounds(
-                tooltip_size,
-                {anchor_point, TooltipPositionBehavior::kRelativeToCursor});
+            .GetTooltipBounds(tooltip_size,
+                              {anchor_point, TooltipTrigger::kCursor});
     gfx::Point expected_position(anchor_point.x() + TooltipAura::kCursorOffsetX,
                                  anchor_point.y() - tooltip_size.height());
     EXPECT_EQ(bounds, gfx::Rect(expected_position, tooltip_size));
@@ -382,9 +373,8 @@ TEST_F(TooltipControllerTest, TooltipBounds) {
     // B. When not attached to the cursor, the tooltip should be horizontally
     // centered with the anchor point.
     bounds = test::TooltipAuraTestApi(tooltip_aura_)
-                 .GetTooltipBounds(
-                     tooltip_size,
-                     {anchor_point, TooltipPositionBehavior::kCentered});
+                 .GetTooltipBounds(tooltip_size,
+                                   {anchor_point, TooltipTrigger::kKeyboard});
     expected_position = gfx::Point(anchor_point.x() - tooltip_size.width() / 2,
                                    anchor_point.y() - tooltip_size.height());
     EXPECT_EQ(bounds, gfx::Rect(expected_position, tooltip_size));
@@ -1388,6 +1378,4 @@ TEST_F(TooltipStateManagerTest, UpdatePositionIfNeeded) {
   helper_->SetTooltipShowDelayEnable(false);
 }
 
-}  // namespace test
-}  // namespace corewm
-}  // namespace views
+}  // namespace views::corewm::test

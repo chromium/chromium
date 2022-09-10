@@ -92,7 +92,7 @@ void TooltipWin::PositionTooltip() {
   gfx::Rect tooltip_bounds(screen_point, size);
   // Align the center of the tooltip with the position when the tooltip is not
   // following the cursor.
-  if (position_.behavior == TooltipPositionBehavior::kCentered)
+  if (position_.trigger == TooltipTrigger::kKeyboard)
     tooltip_bounds.Offset(-size.width() / 2, 0);
   else if (base::i18n::IsRTL())
     tooltip_bounds.Offset(-size.width(), 0);

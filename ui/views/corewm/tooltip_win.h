@@ -15,8 +15,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/corewm/tooltip.h"
 
-namespace views {
-namespace corewm {
+namespace views::corewm {
 
 // Implementation of Tooltip that uses the native win32 control for showing the
 // tooltip.
@@ -78,7 +77,6 @@ class VIEWS_EXPORT TooltipWin : public Tooltip {
   float override_scale_ = 0.0f;
 };
 
-}  // namespace corewm
-}  // namespace views
+}  // namespace views::corewm
 
 #endif  // UI_VIEWS_COREWM_TOOLTIP_WIN_H_

@@ -159,8 +159,7 @@ END_METADATA
 
 }  // namespace
 
-namespace views {
-namespace corewm {
+namespace views::corewm {
 
 // static
 const char TooltipAura::kWidgetName[] = "TooltipAura";
@@ -202,11 +201,11 @@ gfx::Rect TooltipAura::GetTooltipBounds(const gfx::Size& tooltip_size,
   // When the tooltip is showing up as a result of a cursor event, the tooltip
   // needs to show up at the bottom-right corner of the cursor. When it's not,
   // it has to be centered with the anchor point with pass it.
-  switch (position.behavior) {
-    case TooltipPositionBehavior::kCentered:
+  switch (position.trigger) {
+    case TooltipTrigger::kKeyboard:
       tooltip_rect.Offset(-tooltip_size.width() / 2, 0);
       break;
-    case TooltipPositionBehavior::kRelativeToCursor: {
+    case TooltipTrigger::kCursor: {
       const int x_offset =
           base::i18n::IsRTL() ? -tooltip_size.width() : kCursorOffsetX;
       tooltip_rect.Offset(x_offset, kCursorOffsetY);
@@ -215,10 +214,9 @@ gfx::Rect TooltipAura::GetTooltipBounds(const gfx::Size& tooltip_size,
   }
 
   anchor->anchor_gravity = ui::OwnedWindowAnchorGravity::kBottomRight;
-  anchor->anchor_position =
-      position.behavior == TooltipPositionBehavior::kRelativeToCursor
-          ? ui::OwnedWindowAnchorPosition::kBottomRight
-          : ui::OwnedWindowAnchorPosition::kTop;
+  anchor->anchor_position = position.trigger == TooltipTrigger::kCursor
+                                ? ui::OwnedWindowAnchorPosition::kBottomRight
+                                : ui::OwnedWindowAnchorPosition::kTop;
   anchor->constraint_adjustment =
       ui::OwnedWindowConstraintAdjustment::kAdjustmentSlideX |
       ui::OwnedWindowConstraintAdjustment::kAdjustmentSlideY |
@@ -364,5 +362,4 @@ void TooltipAura::OnWidgetDestroying(views::Widget* widget) {
   tooltip_window_ = nullptr;
 }
 
-}  // namespace corewm
-}  // namespace views
+}  // namespace views::corewm
