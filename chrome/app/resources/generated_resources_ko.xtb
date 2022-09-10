@@ -1007,6 +1007,7 @@
 <translation id="1915307458270490472">종료</translation>
 <translation id="1916502483199172559">기본 빨간색 아바타</translation>
 <translation id="1918141783557917887">작게(&amp;S)</translation>
+<translation id="1919872106782726755">지문을 설정하려면 자녀가 키보드 오른쪽 상단의 전원 버튼 옆에 있는 지문 센서를 터치하게 하세요. 자녀의 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="1920390473494685033">연락처</translation>
 <translation id="1921544956190977703">위험한 웹사이트, 다운로드 항목, 확장 프로그램에 대응하는 Chrome의 가장 강력한 보안 기능이 적용됩니다.</translation>
 <translation id="1921584744613111023"><ph name="DPI" />dpi</translation>
@@ -6912,6 +6913,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7634566076839829401">문제가 발생했습니다. 다시 시도해 주세요.</translation>
 <translation id="7635048370253485243">관리자가 고정함</translation>
 <translation id="7636919061354591437">이 기기에 설치</translation>
+<translation id="7637253234491814483">키보드 오른쪽 상단의 전원 버튼 옆에 있는 지문 센서를 터치합니다. 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="7637593984496473097">디스크 공간이 충분하지 않음</translation>
 <translation id="7639914187072011620">SAML 리디렉션 URL을 서버에서 가져올 수 없습니다.</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" />에서 저장한 비밀번호를 사용하여 적합한 사이트에 자동 로그인합니다.</translation>
