@@ -20,11 +20,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
-
-namespace ui {
-class ColorChangeHandler;
-}
 
 namespace ash {
 
@@ -50,10 +45,6 @@ class SampleSystemWebAppUI : public ui::MojoWebUIController,
   void BindInterface(
       mojo::PendingReceiver<mojom::sample_swa::PageHandlerFactory> factory);
 
-  void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          receiver);
-
   void CreateParentPage(
       mojo::PendingRemote<mojom::sample_swa::ChildUntrustedPage> child_page,
       mojo::PendingReceiver<mojom::sample_swa::ParentTrustedPage> parent_page);
@@ -72,10 +63,6 @@ class SampleSystemWebAppUI : public ui::MojoWebUIController,
   // matches the lifetime of the page. If the WebUIController is re-used for
   // same-origin navigations, it is recreated when the navigation commits.
   std::unique_ptr<PageHandler> sample_page_handler_;
-
-  // The color change handler notifies the WebUI when the color provider
-  // changes.
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   // Called navigating to a WebUI page to create page handler.
   void WebUIPrimaryPageChanged(content::Page& page) override;

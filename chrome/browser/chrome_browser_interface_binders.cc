@@ -1331,8 +1331,7 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
   registry.ForWebUI<ash::SampleSystemWebAppUI>()
-      .Add<ash::mojom::sample_swa::PageHandlerFactory>()
-      .Add<color_change_listener::mojom::PageHandler>();
+      .Add<ash::mojom::sample_swa::PageHandlerFactory>();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
