@@ -307,7 +307,7 @@ AutocompleteController::AutocompleteController(
       zero_suggest_provider_(nullptr),
       on_device_head_provider_(nullptr),
       stop_timer_duration_(OmniboxFieldTrial::StopTimerFieldTrialDuration()),
-      update_debouncer_(
+      notify_changed_debouncer_(
           OmniboxFieldTrial::
               kAutocompleteStabilityUpdateResultDebounceFromLastRun.Get(),
           OmniboxFieldTrial::kAutocompleteStabilityUpdateResultDebounceDelay
@@ -621,7 +621,7 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   // signals to the controller so it doesn't realize that anything was
   // cleared or changed.  Even if the default match hasn't changed, we
   // need the edit model to update the display.
-  DelayedUpdateResult(false, true);
+  UpdateResult(false, true);
 
   in_start_ = false;
 
@@ -711,7 +711,7 @@ void AutocompleteController::ExpireCopiedEntries() {
   // The first true makes UpdateResult() clear out the results and
   // regenerate them, thus ensuring that no results from the previous
   // result set remain.
-  DelayedUpdateResult(true, false);
+  UpdateResult(true, false);
 }
 
 void AutocompleteController::OnProviderUpdate(
@@ -736,10 +736,8 @@ void AutocompleteController::OnProviderUpdate(
   CheckIfDone();
   // Multiple providers may provide synchronous results, so we only update the
   // results if we're not in Start().
-  if (done_)
+  if (updated_matches || done_)
     UpdateResult(false, false);
-  else if (updated_matches)
-    DelayedUpdateResult(false, false);
 }
 
 void AutocompleteController::AddProviderAndTriggeringLogs(
@@ -878,7 +876,6 @@ void AutocompleteController::UpdateResult(
     bool regenerate_result,
     bool force_notify_default_match_changed) {
   TRACE_EVENT0("omnibox", "AutocompleteController::UpdateResult");
-  update_debouncer_.CancelRequest();
 
   absl::optional<AutocompleteMatch> last_default_match;
   std::u16string last_default_associated_keyword;
@@ -1008,15 +1005,8 @@ void AutocompleteController::UpdateResult(
         OmniboxTriggeredFeatureService::Feature::kRichAutocompletion);
   }
 
-  NotifyChanged(force_notify_default_match_changed || notify_default_match);
-}
-
-void AutocompleteController::DelayedUpdateResult(
-    bool regenerate_result,
-    bool force_notify_default_match_changed) {
-  update_debouncer_.RequestRun(base::BindOnce(
-      &AutocompleteController::UpdateResult, base::Unretained(this),
-      regenerate_result, force_notify_default_match_changed));
+  DelayedNotifyChanged(force_notify_default_match_changed ||
+                       notify_default_match);
 }
 
 void AutocompleteController::UpdateAssociatedKeywords(
@@ -1201,9 +1191,22 @@ void AutocompleteController::UpdateAssistedQueryStats(
   }
 }
 
-void AutocompleteController::NotifyChanged(bool notify_default_match) {
+void AutocompleteController::NotifyChanged() {
   for (Observer& obs : observers_)
-    obs.OnResultChanged(this, notify_default_match);
+    obs.OnResultChanged(this, notify_changed_default_match_);
+  notify_changed_debouncer_.CancelRequest();
+  notify_changed_default_match_ = false;
+}
+
+void AutocompleteController::DelayedNotifyChanged(bool notify_default_match) {
+  if (notify_default_match)
+    notify_changed_default_match_ = true;
+  if (done_ || in_start_) {
+    NotifyChanged();
+  } else {
+    notify_changed_debouncer_.RequestRun(base::BindOnce(
+        &AutocompleteController::NotifyChanged, base::Unretained(this)));
+  }
 }
 
 void AutocompleteController::CheckIfDone() {
@@ -1262,7 +1265,7 @@ void AutocompleteController::StopHelper(bool clear_result,
     result_.Reset();
     // NOTE: We pass in false since we're trying to only clear the popup, not
     // touch the edit... this is all a mess and should be cleaned up :(
-    NotifyChanged(false);
+    DelayedNotifyChanged(false);
   }
 }
 

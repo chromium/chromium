@@ -285,10 +285,6 @@ class AutocompleteController : public AutocompleteProviderListener,
   void UpdateResult(bool regenerate_result,
                     bool force_notify_default_match_changed);
 
-  // Invokes `UpdateResult()` through `update_debouncer_`.
-  void DelayedUpdateResult(bool regenerate_result,
-                           bool force_notify_default_match_changed);
-
   // Updates |result| to populate each match's |associated_keyword| if that
   // match can show a keyword hint.  |result| should be sorted by
   // relevance before this is called.
@@ -305,7 +301,10 @@ class AutocompleteController : public AutocompleteProviderListener,
 
   // Calls AutocompleteController::Observer::OnResultChanged() and if done sends
   // AUTOCOMPLETE_CONTROLLER_RESULT_READY.
-  void NotifyChanged(bool notify_default_match);
+  void NotifyChanged();
+
+  // Invokes `NotifyChanged()` through `notify_changed_debouncer_`.
+  void DelayedNotifyChanged(bool notify_default_match);
 
   // Updates |done_| to be accurate with respect to current providers' statuses.
   void CheckIfDone();
@@ -399,12 +398,19 @@ class AutocompleteController : public AutocompleteProviderListener,
   // to read the whole dropdown and doesn't expect it to change.
   base::TimeDelta stop_timer_duration_;
 
-  // Debouncer to avoid invoking `UpdateResult()` in quick succession. The last
-  // call, i.e. when all providers complete and `done_` is set true, is immune
-  // to this restriction. Other calls, including the sync update, are delayed.
-  // Only applies when the `kAutocompleteStability` is enabled with the
-  // corresponding params set.
-  AutocompleteProviderDebouncer update_debouncer_;
+  // Debouncer to avoid invoking `NotifyChange()` after updating results in
+  // quick succession. The last call, i.e. when all providers complete and
+  // `done_` is set true; and the 1st call, i.e. the sync update, are immune to
+  // this restriction. Calls not succeeding a result update (i.e. a call from
+  // closing the popup) bypass the delay as well./ Only applies when the
+  // `kAutocompleteStability` is enabled with the corresponding params set.
+  AutocompleteProviderDebouncer notify_changed_debouncer_;
+
+  // Tracks if any delayed `DelayedNotifyChanged()` call since the last
+  // `NotifyChanged()` call changed the default match. Otherwise, if there have
+  // been 2 delayed calls, the 1st having changed the default, the latter not,
+  // `NotifyChanged()` couldn't know of the former.
+  bool notify_changed_default_match_ = false;
 
   // True if a query is not currently running.
   bool done_;

@@ -3629,6 +3629,31 @@
             ]
         }
     ],
+    "DesktopOmniboxPostAutocompletionUpdateResultDebounce": [
+        {
+            "platforms": [
+                "android",
+                "chromeos_lacros",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "AutocompleteStabilityUpdateResultDebounceDelay": "20",
+                        "AutocompleteStabilityUpdateResultDebounceFromLastRun": "true"
+                    },
+                    "enable_features": [
+                        "OmniboxUpdateResultDebounce"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopOmniboxRichAutocompletion": [
         {
             "platforms": [
