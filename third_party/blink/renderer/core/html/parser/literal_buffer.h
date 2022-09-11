@@ -260,13 +260,10 @@ class UCharLiteralBuffer : public LiteralBufferBase<UChar, kInlineSize> {
     this->AppendLiteralImpl(val);
   }
 
-  void Append(const String& string) {
-    if (string.IsEmpty())
-      return;
-    if (string.Is8Bit())
-      this->AppendSpan(string.Span8());
-    else
-      this->AppendSpan(string.Span16());
+  void Append(const String& string) { AppendStringOrView(string); }
+
+  void Append(const StringView& string_view) {
+    AppendStringOrView(string_view);
   }
 
   String AsString() const {
@@ -290,6 +287,20 @@ class UCharLiteralBuffer : public LiteralBufferBase<UChar, kInlineSize> {
   ALWAYS_INLINE bool Is8Bit() const { return is_8bit_; }
 
  private:
+  template <typename StringOrView>
+  void AppendStringOrView(const StringOrView& s) {
+    if (s.IsEmpty())
+      return;
+    if (s.Is8Bit()) {
+      this->AppendSpan(s.Span8());
+    } else {
+      auto span = s.Span16();
+      for (size_t i = 0; i < span.size() && is_8bit_; ++i)
+        is_8bit_ &= (span[i] <= 0xFF);
+      this->AppendSpan(span);
+    }
+  }
+
   // Needed for operator=.
   template <wtf_size_t kOtherInlineSize>
   friend class UCharLiteralBuffer;

@@ -322,7 +322,7 @@ bool HTMLElementStack::IsHTMLIntegrationPoint(HTMLStackItem* item) {
   if (!item->IsElementNode())
     return false;
   if (item->HasTagName(mathml_names::kAnnotationXmlTag)) {
-    Attribute* encoding_attr =
+    const Attribute* encoding_attr =
         item->GetAttributeItem(mathml_names::kEncodingAttr);
     if (encoding_attr) {
       const String& encoding = encoding_attr->Value();

@@ -126,7 +126,7 @@ void HTMLFormattingElementList::TryToEnsureNoahsArkConditionQuickly(
   HeapVector<Member<HTMLStackItem>, 10> candidates;
 
   wtf_size_t new_item_attribute_count =
-      static_cast<wtf_size_t>(new_item->Attributes().size());
+      static_cast<wtf_size_t>(new_item->GetAttributeCount());
 
   for (wtf_size_t i = entries_.size(); i;) {
     --i;
@@ -139,7 +139,7 @@ void HTMLFormattingElementList::TryToEnsureNoahsArkConditionQuickly(
     if (new_item->LocalName() != candidate->LocalName() ||
         new_item->NamespaceURI() != candidate->NamespaceURI())
       continue;
-    if (candidate->Attributes().size() != new_item_attribute_count)
+    if (candidate->GetAttributeCount() != new_item_attribute_count)
       continue;
 
     candidates.push_back(candidate);
@@ -165,26 +165,29 @@ void HTMLFormattingElementList::EnsureNoahsArkCondition(
   HeapVector<Member<HTMLStackItem>> remaining_candidates;
   remaining_candidates.ReserveInitialCapacity(candidates.size());
 
-  for (const auto& attribute : new_item->Attributes()) {
-    for (const auto& candidate : candidates) {
-      // These properties should already have been checked by
-      // tryToEnsureNoahsArkConditionQuickly.
-      DCHECK_EQ(new_item->Attributes().size(), candidate->Attributes().size());
-      DCHECK_EQ(new_item->LocalName(), candidate->LocalName());
-      DCHECK_EQ(new_item->NamespaceURI(), candidate->NamespaceURI());
+  if (new_item->GetAttributeCount()) {
+    for (const auto& attribute : new_item->GetElementData()->Attributes()) {
+      for (const auto& candidate : candidates) {
+        // These properties should already have been checked by
+        // tryToEnsureNoahsArkConditionQuickly.
+        DCHECK_EQ(new_item->GetAttributeCount(),
+                  candidate->GetAttributeCount());
+        DCHECK_EQ(new_item->LocalName(), candidate->LocalName());
+        DCHECK_EQ(new_item->NamespaceURI(), candidate->NamespaceURI());
 
-      Attribute* candidate_attribute =
-          candidate->GetAttributeItem(attribute.GetName());
-      if (candidate_attribute &&
-          candidate_attribute->Value() == attribute.Value())
-        remaining_candidates.push_back(candidate);
+        const Attribute* candidate_attribute =
+            candidate->GetElementData()->Attributes().Find(attribute.GetName());
+        if (candidate_attribute &&
+            candidate_attribute->Value() == attribute.Value())
+          remaining_candidates.push_back(candidate);
+      }
+
+      if (remaining_candidates.size() < kNoahsArkCapacity)
+        return;
+
+      candidates.swap(remaining_candidates);
+      remaining_candidates.Shrink(0);
     }
-
-    if (remaining_candidates.size() < kNoahsArkCapacity)
-      return;
-
-    candidates.swap(remaining_candidates);
-    remaining_candidates.Shrink(0);
   }
 
   // Inductively, we shouldn't spin this loop very many times. It's possible,

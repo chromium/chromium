@@ -33,6 +33,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ELEMENT_DATA_H_
 
 #include "build/build_config.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/attribute_collection.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
@@ -157,12 +158,14 @@ class ElementData : public GarbageCollected<ElementData> {
 // the parser during page load for elements that have identical attributes. This
 // is a memory optimization since it's very common for many elements to have
 // duplicate sets of attributes (ex. the same classes).
-class ShareableElementData final : public ElementData {
+class CORE_EXPORT ShareableElementData final : public ElementData {
  public:
   static ShareableElementData* CreateWithAttributes(
-      const Vector<Attribute, kAttributePrealloc>&);
+      const Vector<Attribute, kAttributePrealloc>&,
+      bool has_duplicate_attribute = false);
 
-  explicit ShareableElementData(const Vector<Attribute, kAttributePrealloc>&);
+  explicit ShareableElementData(const Vector<Attribute, kAttributePrealloc>&,
+                                bool has_duplicate_attribute = false);
   explicit ShareableElementData(const UniqueElementData&);
   ~ShareableElementData();
 
@@ -171,6 +174,14 @@ class ShareableElementData final : public ElementData {
   }
 
   AttributeCollection Attributes() const;
+
+  uint32_t NumberOfAttributes() const { return bit_field_.get<ArraySize>(); }
+
+  // Set by the html parser if the attributes contained at least one duplicate
+  // attribute. In the case of duplicates, the html parser (specifically
+  // AtomicHTMLToken) only keeps the first value. The HTMLParser applies this
+  // boolean to Node::HasDuplicateAttributes().
+  bool has_duplicate_attribute_ = false;
 
   Attribute attribute_array_[0];
 };
@@ -234,7 +245,7 @@ inline AttributeCollection ElementData::Attributes() const {
 }
 
 inline AttributeCollection ShareableElementData::Attributes() const {
-  return AttributeCollection(attribute_array_, bit_field_.get<ArraySize>());
+  return AttributeCollection(attribute_array_, NumberOfAttributes());
 }
 
 inline AttributeCollection UniqueElementData::Attributes() const {

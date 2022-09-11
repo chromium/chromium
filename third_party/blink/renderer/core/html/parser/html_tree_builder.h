@@ -164,9 +164,7 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
   void ProcessCharacterBuffer(CharacterTokenBuffer&);
   inline void ProcessCharacterBufferForInBody(CharacterTokenBuffer&);
 
-  void ProcessFakeStartTag(
-      html_names::HTMLTag tag,
-      const Vector<Attribute>& attributes = Vector<Attribute>());
+  void ProcessFakeStartTag(html_names::HTMLTag tag);
   void ProcessFakeEndTag(html_names::HTMLTag tag);
   void ProcessFakeEndTag(const HTMLStackItem& stack_item);
   void ProcessFakePEndTagIfPInButtonScope();

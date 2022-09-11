@@ -123,7 +123,7 @@ class TokenPreloadScanner {
  private:
   class StartTagScanner;
 
-  void HandleMetaNameAttribute(const HTMLToken& token,
+  void HandleMetaNameAttribute(const HTMLToken::AttributeList& attribute_list,
                                MetaCHValues& meta_ch_values,
                                absl::optional<ViewportDescription>* viewport);
 
@@ -134,7 +134,7 @@ class TokenPreloadScanner {
                          absl::optional<ViewportDescription>*,
                          bool* is_csp_meta_tag);
 
-  void UpdatePredictedBaseURL(const HTMLToken&);
+  void UpdatePredictedBaseURL(const HTMLToken::AttributeList& attribute_list);
 
   struct PictureData {
     PictureData() : source_size(0.0), source_size_set(false), picked(false) {}

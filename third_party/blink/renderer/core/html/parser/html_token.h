@@ -32,6 +32,7 @@
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
+#include "third_party/blink/renderer/core/html/parser/html_attribute_buffer.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/parser/literal_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -79,6 +80,7 @@ class HTMLToken {
     kEndOfFile,
   };
 
+  // TODO(https://crbug.com/1361410): remove this.
   class Attribute {
     DISALLOW_NEW();
 
@@ -118,6 +120,8 @@ class HTMLToken {
     AtomicString GetValue() const { return value_.AsAtomicString(); }
 
     const UCharLiteralBuffer<32>& NameBuffer() const { return name_; }
+    UCharLiteralBuffer<32>& NameBuffer() { return name_; }
+    UCharLiteralBuffer<32>& ValueBuffer() { return value_; }
 
     String NameAttemptStaticStringCreation() const {
       return AttemptStaticStringCreation(name_, kLikely8Bit);
@@ -127,7 +131,8 @@ class HTMLToken {
     void AppendToName(UChar c) { name_.AddChar(c); }
 
     String Value8BitIfNecessary() const {
-      // TODO(sky): remove this function and convert callers to Value() once
+      // TODO(https://crbug.com/1331076): remove this function and convert
+      // callers to Value() once
       // `g_literal_buffer_create_string_with_encoding` is removed.
       if (!g_literal_buffer_create_string_with_encoding)
         return StringImpl::Create8BitIfPossible(value_.data(), value_.size());
@@ -176,6 +181,7 @@ class HTMLToken {
     type_ = kUninitialized;
     range_.Clear();
     range_.start = 0;
+    attribute_buffer_.Clear();
     base_offset_ = 0;
     data_.clear();
   }
@@ -299,8 +305,7 @@ class HTMLToken {
     DCHECK_EQ(type_, kUninitialized);
     type_ = kStartTag;
     self_closing_ = false;
-    current_attribute_ = nullptr;
-    attributes_.clear();
+    DCHECK(attribute_buffer_.IsEmpty());
 
     data_.AddChar(character);
   }
@@ -309,8 +314,7 @@ class HTMLToken {
     DCHECK_EQ(type_, kUninitialized);
     type_ = kEndTag;
     self_closing_ = false;
-    current_attribute_ = nullptr;
-    attributes_.clear();
+    DCHECK(attribute_buffer_.IsEmpty());
 
     data_.AddChar(character);
   }
@@ -319,70 +323,50 @@ class HTMLToken {
     DCHECK_EQ(type_, kUninitialized);
     type_ = kEndTag;
     self_closing_ = false;
-    current_attribute_ = nullptr;
-    attributes_.clear();
+    DCHECK(attribute_buffer_.IsEmpty());
 
     data_.AppendLiteral(characters);
   }
 
   void AddNewAttribute() {
     DCHECK(type_ == kStartTag || type_ == kEndTag);
-    attributes_.Grow(attributes_.size() + 1);
-    current_attribute_ = &attributes_.back();
-    current_attribute_->MutableNameRange().Clear();
-    current_attribute_->MutableValueRange().Clear();
+    attribute_buffer_.AddNewAttribute();
   }
 
   void BeginAttributeName(int offset) {
-    current_attribute_->MutableNameRange().start = offset - base_offset_;
-    current_attribute_->NameRange().CheckValidStart();
+    attribute_buffer_.BeginAttributeName(offset - base_offset_);
   }
 
   void EndAttributeName(int offset) {
-    int index = offset - base_offset_;
-    current_attribute_->MutableNameRange().end = index;
-    current_attribute_->NameRange().CheckValid();
-    current_attribute_->MutableValueRange().start = index;
-    current_attribute_->MutableValueRange().end = index;
+    attribute_buffer_.EndAttributeName(offset - base_offset_);
   }
 
   void BeginAttributeValue(int offset) {
-    current_attribute_->MutableValueRange().Clear();
-    current_attribute_->MutableValueRange().start = offset - base_offset_;
-    current_attribute_->ValueRange().CheckValidStart();
+    attribute_buffer_.BeginAttributeValue(offset - base_offset_);
   }
 
   void EndAttributeValue(int offset) {
-    current_attribute_->MutableValueRange().end = offset - base_offset_;
-    current_attribute_->ValueRange().CheckValid();
+    attribute_buffer_.EndAttributeValue(offset - base_offset_);
   }
 
   void AppendToAttributeName(UChar character) {
     DCHECK(character);
     DCHECK(type_ == kStartTag || type_ == kEndTag);
-    current_attribute_->NameRange().CheckValidStart();
-    current_attribute_->AppendToName(character);
+    attribute_buffer_.AppendToAttributeName(character);
   }
 
   void AppendToAttributeValue(UChar character) {
     DCHECK(character);
     DCHECK(type_ == kStartTag || type_ == kEndTag);
-    current_attribute_->ValueRange().CheckValidStart();
-    current_attribute_->AppendToValue(character);
+    attribute_buffer_.AppendToAttributeValue(character);
   }
 
-  const AttributeList& Attributes() const {
-    DCHECK(type_ == kStartTag || type_ == kEndTag);
-    return attributes_;
+  const HTMLAttributeBuffer& AttributeBuffer() const {
+    return attribute_buffer_;
   }
 
-  const Attribute* GetAttributeItem(const QualifiedName& name) const {
-    for (unsigned i = 0; i < attributes_.size(); ++i) {
-      if (attributes_.at(i).GetName() == name.LocalName())
-        return &attributes_.at(i);
-    }
-    return nullptr;
-  }
+  // TODO(https://crbug.com/1361410): remove this.
+  AttributeList CreateAttributeList() const;
 
   /* Character Tokens */
 
@@ -439,10 +423,8 @@ class HTMLToken {
 
   // For StartTag and EndTag
   bool self_closing_;
-  AttributeList attributes_;
 
-  // A pointer into attributes_ used during lexing.
-  Attribute* current_attribute_;
+  HTMLAttributeBuffer attribute_buffer_;
 
   // For DOCTYPE
   std::unique_ptr<DoctypeData> doctype_data_;

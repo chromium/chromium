@@ -73,9 +73,12 @@ static const unsigned kMaximumHTMLParserDOMTreeDepth = 512;
 
 void HTMLConstructionSite::SetAttributes(Element* element,
                                          AtomicHTMLToken* token) {
-  if (!is_scripting_content_allowed_)
-    element->StripScriptingAttributes(token->Attributes());
-  element->ParserSetAttributes(token->Attributes());
+  ShareableElementData* element_data = token->GetElementData();
+  if (!is_scripting_content_allowed_ && element_data) {
+    element_data = element->StripScriptingAttributes(element_data);
+    token->SetElementData(element_data);
+  }
+  element->ParserSetAttributes(element_data);
   if (token->HasDuplicateAttribute()) {
     // UseCounter is not free, and only the first call matters. Only call to it
     // if necessary.
@@ -454,10 +457,10 @@ void HTMLConstructionSite::InsertHTMLHtmlStartTagBeforeHTML(
 void HTMLConstructionSite::MergeAttributesFromTokenIntoElement(
     AtomicHTMLToken* token,
     Element* element) {
-  if (token->Attributes().IsEmpty())
+  if (!token->GetElementData())
     return;
 
-  for (const auto& token_attribute : token->Attributes()) {
+  for (const auto& token_attribute : token->GetElementData()->Attributes()) {
     if (element->AttributesWithoutUpdate().FindIndex(
             token_attribute.GetName()) == kNotFound)
       element->setAttribute(token_attribute.GetName(), token_attribute.Value());
@@ -985,8 +988,10 @@ Element* HTMLConstructionSite::CreateElement(
     // "8. Append each attribute in the given token to element." We don't use
     // setAttributes here because the custom element constructor may have
     // manipulated attributes.
-    for (const auto& attribute : token->Attributes())
-      element->setAttribute(attribute.GetName(), attribute.Value());
+    if (token->GetElementData()) {
+      for (const auto& attribute : token->GetElementData()->Attributes())
+        element->setAttribute(attribute.GetName(), attribute.Value());
+    }
 
     // "9. If will execute script is true, then ..." etc. The CEReactionsScope
     // and ThrowOnDynamicMarkupInsertionCountIncrementer destructors implement
@@ -1065,17 +1070,9 @@ Element* HTMLConstructionSite::CreateElement(
 
 HTMLStackItem* HTMLConstructionSite::CreateElementFromSavedToken(
     HTMLStackItem* item) {
-  Element* element;
-  // NOTE: Moving from item -> token -> item copies the Attribute vector twice!
-  Vector<Attribute> attributes;
-  attributes.ReserveInitialCapacity(
-      static_cast<wtf_size_t>(item->Attributes().size()));
-  for (Attribute& attr : item->Attributes()) {
-    attributes.push_back(std::move(attr));
-  }
   AtomicHTMLToken fake_token(HTMLToken::kStartTag, item->GetTokenName(),
-                             std::move(attributes));
-  element = CreateElement(&fake_token, item->NamespaceURI());
+                             item->GetElementData());
+  Element* element = CreateElement(&fake_token, item->NamespaceURI());
   return HTMLStackItem::Create(element, &fake_token, item->NamespaceURI());
 }
 

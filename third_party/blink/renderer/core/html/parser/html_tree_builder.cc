@@ -407,11 +407,10 @@ void HTMLTreeBuilder::ProcessDoctypeToken(AtomicHTMLToken* token) {
   ParseError(token);
 }
 
-void HTMLTreeBuilder::ProcessFakeStartTag(HTMLTag tag,
-                                          const Vector<Attribute>& attributes) {
+void HTMLTreeBuilder::ProcessFakeStartTag(HTMLTag tag) {
   // FIXME: We'll need a fancier conversion than just "localName" for SVG/MathML
   // tags.
-  AtomicHTMLToken fake_token(HTMLToken::kStartTag, tag, attributes);
+  AtomicHTMLToken fake_token(HTMLToken::kStartTag, tag);
   ProcessStartTag(&fake_token);
 }
 
@@ -512,6 +511,36 @@ void AdjustSVGTagNameCase(AtomicHTMLToken* token) {
   }
 }
 
+void RemapAttributeNames(const PrefixedNameToQualifiedNameMap& map,
+                         AtomicHTMLToken* token) {
+  ShareableElementData* element_data = token->GetElementData();
+  if (!element_data)
+    return;
+
+  absl::optional<Vector<Attribute, kAttributePrealloc>> updated_attributes;
+  const AttributeCollection attributes = element_data->Attributes();
+  const unsigned num_attributes = attributes.size();
+  for (unsigned i = 0; i < num_attributes; ++i) {
+    const auto& attr = attributes[i];
+    const auto map_iter = map.find(attr.LocalName());
+    if (map_iter != map.end()) {
+      if (!updated_attributes) {
+        updated_attributes.emplace();
+        updated_attributes->ReserveInitialCapacity(num_attributes);
+        for (unsigned j = 0; j < i; ++j)
+          updated_attributes->push_back(attributes[j]);
+      }
+      updated_attributes->push_back(Attribute(map_iter->value, attr.Value()));
+    } else if (updated_attributes) {
+      updated_attributes->push_back(attr);
+    }
+  }
+  if (!updated_attributes)
+    return;
+  token->SetElementData(
+      ShareableElementData::CreateWithAttributes(*updated_attributes));
+}
+
 template <std::unique_ptr<const QualifiedName* []> getAttrs(),
           unsigned length,
           bool forSVG>
@@ -527,14 +556,7 @@ void AdjustAttributes(AtomicHTMLToken* token) {
       AddManualLocalName(case_map, "viewTarget");
     }
   }
-
-  for (auto& token_attribute : token->Attributes()) {
-    const auto it = case_map->find(token_attribute.LocalName());
-    if (it != case_map->end()) {
-      DCHECK(!it->value.LocalName().IsNull());
-      token_attribute.ParserSetName(it->value);
-    }
-  }
+  RemapAttributeNames(*case_map, token);
 }
 
 // https://html.spec.whatwg.org/C/#adjust-svg-attributes
@@ -579,15 +601,7 @@ void AdjustForeignAttributes(AtomicHTMLToken* token) {
     map->insert("xmlns:xlink", QualifiedName(g_xmlns_atom, g_xlink_atom,
                                              xmlns_names::kNamespaceURI));
   }
-
-  for (unsigned i = 0; i < token->Attributes().size(); ++i) {
-    Attribute& token_attribute = token->Attributes().at(i);
-    const auto it = map->find(token_attribute.LocalName());
-    if (it != map->end()) {
-      DCHECK(!it->value.LocalName().IsNull());
-      token_attribute.ParserSetName(it->value);
-    }
-  }
+  RemapAttributeNames(*map, token);
 }
 
 }  // namespace
@@ -682,7 +696,7 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
       // Per spec https://html.spec.whatwg.org/C/#parsing-main-inbody,
       // section "A start tag whose tag name is "input""
 
-      Attribute* type_attribute =
+      const Attribute* type_attribute =
           token->GetAttributeItem(html_names::kTypeAttr);
       bool disable_frameset =
           !type_attribute ||
@@ -934,7 +948,7 @@ DeclarativeShadowRootType DeclarativeShadowRootTypeFromToken(
     AtomicHTMLToken* token,
     const Document& document,
     bool include_shadow_roots) {
-  Attribute* type_attribute =
+  const Attribute* type_attribute =
       token->GetAttributeItem(html_names::kShadowrootAttr);
   if (!type_attribute)
     return DeclarativeShadowRootType::kNone;
@@ -1124,7 +1138,7 @@ void HTMLTreeBuilder::ProcessStartTagForInTable(AtomicHTMLToken* token) {
       ProcessStartTagForInHead(token);
       return;
     case HTMLTag::kInput: {
-      Attribute* type_attribute =
+      const Attribute* type_attribute =
           token->GetAttributeItem(html_names::kTypeAttr);
       if (type_attribute &&
           EqualIgnoringASCIICase(type_attribute->Value(), "hidden")) {

@@ -67,32 +67,17 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
       : node_(node),
         token_name_(token->GetTokenName()),
         namespace_uri_(namespace_uri),
-        num_token_attributes_(token->Attributes().size()),
-        is_document_fragment_node_(false) {
-    // We rely on Create() allocating extra memory past our end for the
-    // attributes.
-    for (wtf_size_t i = 0; i < token->Attributes().size(); ++i) {
-      new (TokenAttributesData() + i) Attribute(token->Attributes()[i]);
-    }
-  }
+        is_document_fragment_node_(false),
+        element_data_(token->GetElementData()) {}
 
-  ~HTMLStackItem() {
-    // We need to clean up the attributes we initialized in the constructor
-    // manually, since they are not stored in a regular member.
-    if (num_token_attributes_ > 0) {
-      for (Attribute& attribute : Attributes()) {
-        attribute.~Attribute();
-      }
-    }
-  }
+  ~HTMLStackItem() = default;
 
   static HTMLStackItem* Create(
       ContainerNode* node,
       AtomicHTMLToken* token,
       const AtomicString& namespace_uri = html_names::xhtmlNamespaceURI) {
-    return MakeGarbageCollected<HTMLStackItem>(
-        AdditionalBytes(token->Attributes().size() * sizeof(Attribute)),
-        base::PassKey<HTMLStackItem>(), node, token, namespace_uri);
+    return MakeGarbageCollected<HTMLStackItem>(base::PassKey<HTMLStackItem>(),
+                                               node, token, namespace_uri);
   }
 
   Element* GetElement() const { return To<Element>(node_.Get()); }
@@ -105,18 +90,15 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
   const AtomicString& LocalName() const { return token_name_.GetLocalName(); }
 
   const HTMLTokenName& GetTokenName() const { return token_name_; }
+  ShareableElementData* GetElementData() { return element_data_; }
 
-  const base::span<Attribute> Attributes() {
-    DCHECK(LocalName());
-    return {TokenAttributesData(), num_token_attributes_};
+  wtf_size_t GetAttributeCount() const {
+    return element_data_ ? element_data_->NumberOfAttributes() : 0u;
   }
-  const base::span<const Attribute> Attributes() const {
+  const Attribute* GetAttributeItem(const QualifiedName& attribute_name) {
     DCHECK(LocalName());
-    return {TokenAttributesData(), num_token_attributes_};
-  }
-  Attribute* GetAttributeItem(const QualifiedName& attribute_name) {
-    DCHECK(LocalName());
-    return FindAttributeInVector(Attributes(), attribute_name);
+    return element_data_ ? element_data_->Attributes().Find(attribute_name)
+                         : nullptr;
   }
 
   html_names::HTMLTag GetHTMLTag() const { return token_name_.GetHTMLTag(); }
@@ -296,7 +278,10 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
     return false;
   }
 
-  void Trace(Visitor* visitor) const { visitor->Trace(node_); }
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(node_);
+    visitor->Trace(element_data_);
+  }
 
  private:
   // The attributes are stored directly after the HTMLStackItem in memory
@@ -315,8 +300,8 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
 
   HTMLTokenName token_name_;
   AtomicString namespace_uri_;
-  wtf_size_t num_token_attributes_ = 0;
   bool is_document_fragment_node_;
+  Member<ShareableElementData> element_data_;
 };
 
 }  // namespace blink

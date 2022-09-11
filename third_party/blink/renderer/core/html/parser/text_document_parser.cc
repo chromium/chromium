@@ -55,22 +55,24 @@ void TextDocumentParser::InsertFakePreElement() {
   // create two fake tokens and pass them to the tree builder rather than
   // sending fake bytes through the front-end of the parser to avoid disturbing
   // the line/column number calculations.
-  Vector<Attribute> attributes;
+  Vector<Attribute, kAttributePrealloc> attributes;
 
   // Allow the browser to display the text file in dark mode if it is set as
   // the preferred color scheme.
   attributes.push_back(Attribute(html_names::kNameAttr, "color-scheme"));
   attributes.push_back(Attribute(html_names::kContentAttr, "light dark"));
-  AtomicHTMLToken fake_meta(HTMLToken::kStartTag, html_names::HTMLTag::kMeta,
-                            attributes);
+  AtomicHTMLToken fake_meta(
+      HTMLToken::kStartTag, html_names::HTMLTag::kMeta,
+      ShareableElementData::CreateWithAttributes(attributes));
   TreeBuilder()->ConstructTree(&fake_meta);
   attributes.clear();
 
   // Wrap the actual contents of the text file in <pre>.
   attributes.push_back(Attribute(
       html_names::kStyleAttr, "word-wrap: break-word; white-space: pre-wrap;"));
-  AtomicHTMLToken fake_pre(HTMLToken::kStartTag, html_names::HTMLTag::kPre,
-                           attributes);
+  AtomicHTMLToken fake_pre(
+      HTMLToken::kStartTag, html_names::HTMLTag::kPre,
+      ShareableElementData::CreateWithAttributes(attributes));
   TreeBuilder()->ConstructTree(&fake_pre);
 
   // The document could have been detached by an extension while the

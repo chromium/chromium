@@ -82,6 +82,24 @@ namespace blink {
 
 namespace {
 
+const HTMLToken::Attribute* FindAttributeItem(
+    const HTMLToken::AttributeList& attribute_list,
+    const QualifiedName& name) {
+  const AtomicString& local_name = name.LocalName();
+  for (const auto& attr : attribute_list) {
+    if (attr.GetName() == local_name)
+      return &attr;
+  }
+  return nullptr;
+}
+
+void EnsureAttributeList(
+    const HTMLToken& token,
+    absl::optional<HTMLToken::AttributeList>& attribute_list) {
+  if (!attribute_list)
+    attribute_list.emplace(token.CreateAttributeList());
+}
+
 bool Match(const AtomicString& name, const QualifiedName& q_name) {
   return q_name.LocalName() == name;
 }
@@ -194,10 +212,13 @@ class TokenPreloadScanner::StartTagScanner {
 
   bool GetMatched() const { return matched_; }
 
-  void ProcessAttributes(const HTMLToken::AttributeList& attributes) {
+  void ProcessAttributes(
+      const HTMLToken& token,
+      absl::optional<HTMLToken::AttributeList>& attribute_list) {
     if (!tag_impl_)
       return;
-    for (const HTMLToken::Attribute& html_token_attribute : attributes) {
+    EnsureAttributeList(token, attribute_list);
+    for (const HTMLToken::Attribute& html_token_attribute : *attribute_list) {
       AtomicString attribute_name(html_token_attribute.GetName());
       String attribute_value = html_token_attribute.Value8BitIfNecessary();
       ProcessAttribute(attribute_name, attribute_value);
@@ -851,17 +872,17 @@ static void HandleMetaReferrer(const String& attribute_value,
 }
 
 void TokenPreloadScanner::HandleMetaNameAttribute(
-    const HTMLToken& token,
+    const HTMLToken::AttributeList& attribute_list,
     MetaCHValues& meta_ch_values,
     absl::optional<ViewportDescription>* viewport) {
   const HTMLToken::Attribute* name_attribute =
-      token.GetAttributeItem(html_names::kNameAttr);
+      FindAttributeItem(attribute_list, html_names::kNameAttr);
   if (!name_attribute)
     return;
 
   String name_attribute_value(name_attribute->Value());
   const HTMLToken::Attribute* content_attribute =
-      token.GetAttributeItem(html_names::kContentAttr);
+      FindAttributeItem(attribute_list, html_names::kContentAttr);
   if (!content_attribute)
     return;
 
@@ -941,11 +962,13 @@ void TokenPreloadScanner::ScanCommon(
         in_style_ = true;
         css_scanner_.SetInBody(seen_img_ || seen_body_);
       }
+      absl::optional<HTMLToken::AttributeList> attribute_list;
       if (Match(tag_impl, html_names::kScriptTag)) {
         in_script_ = true;
 
+        EnsureAttributeList(token, attribute_list);
         const HTMLToken::Attribute* type_attribute =
-            token.GetAttributeItem(html_names::kTypeAttr);
+            FindAttributeItem(*attribute_list, html_names::kTypeAttr);
         if (type_attribute &&
             ScriptLoader::GetScriptTypeAtPrepare(
                 type_attribute->Value(),
@@ -958,12 +981,14 @@ void TokenPreloadScanner::ScanCommon(
         // The first <base> element is the one that wins.
         if (!predicted_base_element_url_.IsEmpty())
           return;
-        UpdatePredictedBaseURL(token);
+        EnsureAttributeList(token, attribute_list);
+        UpdatePredictedBaseURL(*attribute_list);
         return;
       }
       if (Match(tag_impl, html_names::kMetaTag)) {
+        EnsureAttributeList(token, attribute_list);
         const HTMLToken::Attribute* equiv_attribute =
-            token.GetAttributeItem(html_names::kHttpEquivAttr);
+            FindAttributeItem(*attribute_list, html_names::kHttpEquivAttr);
         if (equiv_attribute) {
           String equiv_attribute_value(equiv_attribute->Value());
           if (EqualIgnoringASCIICase(equiv_attribute_value,
@@ -974,7 +999,7 @@ void TokenPreloadScanner::ScanCommon(
                      RuntimeEnabledFeatures::
                          ClientHintsMetaHTTPEquivAcceptCHEnabled()) {
             const HTMLToken::Attribute* content_attribute =
-                token.GetAttributeItem(html_names::kContentAttr);
+                FindAttributeItem(*attribute_list, html_names::kContentAttr);
             if (content_attribute) {
               meta_ch_values.push_back(
                   MetaCHValue{.value = content_attribute->GetValue(),
@@ -987,7 +1012,7 @@ void TokenPreloadScanner::ScanCommon(
                      RuntimeEnabledFeatures::
                          ClientHintsMetaEquivDelegateCHEnabled()) {
             const HTMLToken::Attribute* content_attribute =
-                token.GetAttributeItem(html_names::kContentAttr);
+                FindAttributeItem(*attribute_list, html_names::kContentAttr);
             if (content_attribute) {
               meta_ch_values.push_back(
                   MetaCHValue{.value = content_attribute->GetValue(),
@@ -999,7 +1024,7 @@ void TokenPreloadScanner::ScanCommon(
           return;
         }
 
-        HandleMetaNameAttribute(token, meta_ch_values, viewport);
+        HandleMetaNameAttribute(*attribute_list, meta_ch_values, viewport);
       }
 
       if (Match(tag_impl, html_names::kBodyTag)) {
@@ -1022,7 +1047,7 @@ void TokenPreloadScanner::ScanCommon(
           tag_impl, media_values_, document_parameters_->integrity_features,
           scanner_type_, priority_hints_origin_trial_enabled_,
           &document_parameters_->disabled_image_types);
-      scanner.ProcessAttributes(token.Attributes());
+      scanner.ProcessAttributes(token, attribute_list);
 
       if (in_picture_ && media_values_->Width())
         scanner.HandlePictureSourceURL(picture_data_);
@@ -1043,10 +1068,11 @@ void TokenPreloadScanner::ScanCommon(
   }
 }
 
-void TokenPreloadScanner::UpdatePredictedBaseURL(const HTMLToken& token) {
+void TokenPreloadScanner::UpdatePredictedBaseURL(
+    const HTMLToken::AttributeList& attribute_list) {
   DCHECK(predicted_base_element_url_.IsEmpty());
   if (const HTMLToken::Attribute* href_attribute =
-          token.GetAttributeItem(html_names::kHrefAttr)) {
+          FindAttributeItem(attribute_list, html_names::kHrefAttr)) {
     KURL url(document_url_, StripLeadingAndTrailingHTMLSpaces(
                                 href_attribute->Value8BitIfNecessary()));
     bool is_valid_base_url =

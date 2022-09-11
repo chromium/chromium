@@ -27,9 +27,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ELEMENT_DATA_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ELEMENT_DATA_CACHE_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -37,19 +39,33 @@ namespace blink {
 
 class ShareableElementData;
 
-class ElementDataCache final : public GarbageCollected<ElementDataCache> {
+// ElementDataCache caches ShareableElementData. It caches in two ways:
+// - by attribute list (Vector<Attribute>). This is used by xml documents.
+// - by a string representation of the attribute list. This is used by html
+//   documents. The string comes from HTMLAttributeBuffer, see it for details.
+// This cache is maintained by Document, and Document drops the cache soon
+// after loading completes.
+class CORE_EXPORT ElementDataCache final
+    : public GarbageCollected<ElementDataCache> {
  public:
   ElementDataCache();
 
   ShareableElementData* CachedShareableElementDataWithAttributes(
       const Vector<Attribute, kAttributePrealloc>&);
 
+  ShareableElementData* GetCachedDataByString(const AtomicString& string);
+
+  void AddDataForString(const AtomicString& string, ShareableElementData& data);
+
   void Trace(Visitor*) const;
 
  private:
   typedef HeapHashMap<unsigned, Member<ShareableElementData>, AlreadyHashed>
       ShareableElementDataCache;
+  using ShareableElementDataCacheStringKey =
+      HeapHashMap<AtomicString, Member<ShareableElementData>>;
   ShareableElementDataCache shareable_element_data_cache_;
+  ShareableElementDataCacheStringKey shareable_element_data_cache_by_string_;
 };
 
 }  // namespace blink
