@@ -11,18 +11,6 @@ namespace gfx {
 
 namespace {
 
-// TODO(https://crbug.com/skia/13721): Add these operators to Skia source.
-bool operator==(const SkColorSpacePrimaries& a,
-                const SkColorSpacePrimaries& b) {
-  return a.fRX == b.fRX && a.fRY == b.fRY && a.fGX == b.fGX && a.fGY == b.fGY &&
-         a.fBX == b.fBX && a.fBY == b.fBY && a.fWX == b.fWX && a.fWY == b.fWY;
-}
-
-bool operator!=(const SkColorSpacePrimaries& a,
-                const SkColorSpacePrimaries& b) {
-  return !(a == b);
-}
-
 const ContentColorUsage kAllColorUsages[] = {
     ContentColorUsage::kSRGB,
     ContentColorUsage::kWideColorGamut,
@@ -133,9 +121,9 @@ bool DisplayColorSpaces::SupportsHDR() const {
 }
 
 SkColorSpacePrimaries DisplayColorSpaces::GetPrimaries() const {
-  // TODO(https://crbug.com/1274220): Store this directly, rather than inferring
-  // it from the raster color space.
-  return GetRasterColorSpace().GetColorSpacePrimaries();
+  // TODO(https://crbug.com/1274220): Use `primaries_`, once it is set on all
+  // platforms.
+  return GetRasterColorSpace().GetPrimaries();
 }
 
 void DisplayColorSpaces::SetPrimaries(const SkColorSpacePrimaries& primaries) {

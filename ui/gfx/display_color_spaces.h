@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "skia/ext/skcolorspace_primaries.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/buffer_types.h"
@@ -135,7 +136,7 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
 
   gfx::ColorSpace color_spaces_[kConfigCount];
   gfx::BufferFormat buffer_formats_[kConfigCount];
-  SkColorSpacePrimaries primaries_ = {0};
+  SkColorSpacePrimaries primaries_ = skia::kSkColorSpacePrimariesSRGB;
   float sdr_max_luminance_nits_ = ColorSpace::kDefaultSDRWhiteLevel;
   float hdr_max_luminance_relative_ = 1.f;
 };

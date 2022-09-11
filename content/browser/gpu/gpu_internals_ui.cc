@@ -425,6 +425,9 @@ base::Value::List GetDisplayInfo() {
       }
     }
     display_info.Append(display::BuildGpuInfoEntry(
+        "Color volume", skia::SkColorSpacePrimariesToString(
+                            display.color_spaces().GetPrimaries())));
+    display_info.Append(display::BuildGpuInfoEntry(
         "SDR white level in nits",
         base::NumberToString(display.color_spaces().GetSDRMaxLuminanceNits())));
     display_info.Append(display::BuildGpuInfoEntry(

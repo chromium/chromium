@@ -337,7 +337,7 @@ class COLOR_SPACE_EXPORT ColorSpace {
 
   // Return the RGB and whitepoint coordinates of the ColorSpace's
   // chromaticity. Assumes D65 whitepoint in the case of a custom PrimaryID.
-  SkColorSpacePrimaries GetColorSpacePrimaries() const;
+  SkColorSpacePrimaries GetPrimaries() const;
   void GetPrimaryMatrix(skcms_Matrix3x3* to_XYZD50) const;
   SkM44 GetPrimaryMatrix() const;
 

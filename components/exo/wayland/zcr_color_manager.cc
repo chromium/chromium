@@ -51,7 +51,7 @@ class ColorManagerColorSpace {
   explicit ColorManagerColorSpace(gfx::ColorSpace color_space)
       : color_space(color_space),
         eotf(ui::wayland::ToColorManagerEOTF(color_space.GetTransferID())),
-        primaries(color_space.GetColorSpacePrimaries()) {}
+        primaries(color_space.GetPrimaries()) {}
 
   ColorManagerColorSpace(gfx::ColorSpace color_space,
                          zcr_color_manager_v1_eotf_names eotf,
@@ -89,9 +89,7 @@ class NameBasedColorSpace final : public ColorManagerColorSpace {
       zcr_color_manager_v1_chromaticity_names chromaticity,
       zcr_color_manager_v1_eotf_names eotf,
       zcr_color_manager_v1_whitepoint_names whitepoint)
-      : ColorManagerColorSpace(color_space,
-                               eotf,
-                               color_space.GetColorSpacePrimaries()),
+      : ColorManagerColorSpace(color_space, eotf, color_space.GetPrimaries()),
         chromaticity(ui::wayland::ToColorManagerChromaticity(
             color_space.GetPrimaryID())),
         whitepoint(whitepoint) {}

@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
+#include "skia/ext/skcolorspace_primaries.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkICC.h"
@@ -26,10 +27,6 @@
 namespace gfx {
 
 namespace {
-
-static bool IsAlmostZero(float value) {
-  return std::abs(value) < std::numeric_limits<float>::epsilon();
-}
 
 static bool FloatsEqualWithinTolerance(const float* a,
                                        const float* b,
@@ -457,22 +454,7 @@ std::string ColorSpace::ToString() const {
     PRINT_ENUM_CASE(PrimaryID, APPLE_GENERIC_RGB)
     PRINT_ENUM_CASE(PrimaryID, WIDE_GAMUT_COLOR_SPIN)
     case PrimaryID::CUSTOM:
-      // |custom_primary_matrix_| is in row-major order.
-      const float sum_R = custom_primary_matrix_[0] +
-                          custom_primary_matrix_[3] + custom_primary_matrix_[6];
-      const float sum_G = custom_primary_matrix_[1] +
-                          custom_primary_matrix_[4] + custom_primary_matrix_[7];
-      const float sum_B = custom_primary_matrix_[2] +
-                          custom_primary_matrix_[5] + custom_primary_matrix_[8];
-      if (IsAlmostZero(sum_R) || IsAlmostZero(sum_G) || IsAlmostZero(sum_B))
-        break;
-
-      ss << "{primaries_d50_referred: [[" << (custom_primary_matrix_[0] / sum_R)
-         << ", " << (custom_primary_matrix_[3] / sum_R) << "], "
-         << " [" << (custom_primary_matrix_[1] / sum_G) << ", "
-         << (custom_primary_matrix_[4] / sum_G) << "], "
-         << " [" << (custom_primary_matrix_[2] / sum_B) << ", "
-         << (custom_primary_matrix_[5] / sum_B) << "]]";
+      ss << skia::SkColorSpacePrimariesToString(GetPrimaries());
       break;
   }
   ss << ", transfer:";
@@ -772,25 +754,10 @@ bool ColorSpace::Contains(const ColorSpace& other) const {
 SkColorSpacePrimaries ColorSpace::GetColorSpacePrimaries(
     PrimaryID primary_id,
     const skcms_Matrix3x3* custom_primary_matrix = nullptr) {
-  SkColorSpacePrimaries primaries = {0};
+  SkColorSpacePrimaries primaries = skia::kSkColorSpacePrimariesZero;
 
-  if (custom_primary_matrix && primary_id == PrimaryID::CUSTOM) {
-    auto* matrix = custom_primary_matrix->vals;
-    const float sum_R = matrix[0][0] + matrix[1][0] + matrix[2][0];
-    const float sum_G = matrix[0][1] + matrix[1][1] + matrix[2][1];
-    const float sum_B = matrix[0][2] + matrix[1][2] + matrix[2][2];
-    primaries.fRX = matrix[0][0] / sum_R;
-    primaries.fRY = matrix[1][0] / sum_R;
-    primaries.fGX = matrix[0][1] / sum_G;
-    primaries.fGY = matrix[1][1] / sum_G;
-    primaries.fBX = matrix[0][2] / sum_B;
-    primaries.fBY = matrix[1][2] / sum_B;
-    // TODO(b/229646816): Currently only returns D65 whitepoint. If possible,
-    //  try to return an original whitepoint in the future.
-    primaries.fWX = 0.3127f;
-    primaries.fWY = 0.3290f;
-    return primaries;
-  }
+  if (custom_primary_matrix && primary_id == PrimaryID::CUSTOM)
+    return skia::GetD65PrimariesFromToXYZD50Matrix(*custom_primary_matrix);
 
   switch (primary_id) {
     case ColorSpace::PrimaryID::CUSTOM:
@@ -802,15 +769,7 @@ SkColorSpacePrimaries ColorSpace::GetColorSpacePrimaries(
       // in case we somehow get an id which is not listed in the switch.
       // (We don't want to use "default", because we want the compiler
       //  to tell us if we forgot some enum values.)
-      primaries.fRX = 0.640f;
-      primaries.fRY = 0.330f;
-      primaries.fGX = 0.300f;
-      primaries.fGY = 0.600f;
-      primaries.fBX = 0.150f;
-      primaries.fBY = 0.060f;
-      primaries.fWX = 0.3127f;
-      primaries.fWY = 0.3290f;
-      break;
+      return skia::kSkColorSpacePrimariesSRGB;
 
     case ColorSpace::PrimaryID::BT470M:
       primaries.fRX = 0.67f;
@@ -858,15 +817,7 @@ SkColorSpacePrimaries ColorSpace::GetColorSpacePrimaries(
       break;
 
     case ColorSpace::PrimaryID::WIDE_GAMUT_COLOR_SPIN:
-      primaries.fRX = 0.01f;
-      primaries.fRY = 0.98f;
-      primaries.fGX = 0.01f;
-      primaries.fGY = 0.01f;
-      primaries.fBX = 0.98f;
-      primaries.fBY = 0.01f;
-      primaries.fWX = 0.3127f;
-      primaries.fWY = 0.3290f;
-      break;
+      return skia::kSkColorSpacePrimariesWideGamutColorSpin;
 
     case ColorSpace::PrimaryID::FILM:
       primaries.fRX = 0.681f;
@@ -880,15 +831,7 @@ SkColorSpacePrimaries ColorSpace::GetColorSpacePrimaries(
       break;
 
     case ColorSpace::PrimaryID::BT2020:
-      primaries.fRX = 0.708f;
-      primaries.fRY = 0.292f;
-      primaries.fGX = 0.170f;
-      primaries.fGY = 0.797f;
-      primaries.fBX = 0.131f;
-      primaries.fBY = 0.046f;
-      primaries.fWX = 0.3127f;
-      primaries.fWY = 0.3290f;
-      break;
+      return skia::kSkColorSpacePrimariesRec2020;
 
     case ColorSpace::PrimaryID::SMPTEST428_1:
       primaries.fRX = 1.0f;
@@ -913,15 +856,7 @@ SkColorSpacePrimaries ColorSpace::GetColorSpacePrimaries(
       break;
 
     case ColorSpace::PrimaryID::P3:
-      primaries.fRX = 0.680f;
-      primaries.fRY = 0.320f;
-      primaries.fGX = 0.265f;
-      primaries.fGY = 0.690f;
-      primaries.fBX = 0.150f;
-      primaries.fBY = 0.060f;
-      primaries.fWX = 0.3127f;
-      primaries.fWY = 0.3290f;
-      break;
+      return skia::kSkColorSpacePrimariesP3;
 
     case ColorSpace::PrimaryID::XYZ_D50:
       primaries.fRX = 1.0f;
@@ -948,7 +883,7 @@ SkColorSpacePrimaries ColorSpace::GetColorSpacePrimaries(
   return primaries;
 }
 
-SkColorSpacePrimaries ColorSpace::GetColorSpacePrimaries() const {
+SkColorSpacePrimaries ColorSpace::GetPrimaries() const {
   skcms_Matrix3x3 matrix;
   memcpy(&matrix, custom_primary_matrix_, 9 * sizeof(float));
   return GetColorSpacePrimaries(primaries_, &matrix);

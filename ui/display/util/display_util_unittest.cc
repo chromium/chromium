@@ -210,7 +210,7 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
       3);
 
   // Test with a display that supports HDR: Chromebook Samsung Galaxy (kohaku).
-  constexpr SkColorSpacePrimaries expected_hdr_primaries = {.fRX = 0.67960f,
+  constexpr SkColorSpacePrimaries expected_hdr_primaries = {.fRX = 0.67970f,
                                                             .fRY = 0.31930f,
                                                             .fGX = 0.23240f,
                                                             .fGY = 0.71870f,

@@ -212,8 +212,7 @@ source_set("skcms") {
 
   public = [ "//third_party/skia/modules/skcms/skcms.h" ]
   include_dirs = [ "//third_party/skia/modules/skcms" ]
-  sources =
-      rebase_path(skcms_sources, ".", "//third_party/skia/modules/skcms")
+  sources = rebase_path(skcms_sources, ".", "//third_party/skia/modules/skcms")
 }
 
 component("skia") {
@@ -243,6 +242,8 @@ component("skia") {
     "ext/recursive_gaussian_convolution.h",
     "ext/rgba_to_yuva.cc",
     "ext/rgba_to_yuva.h",
+    "ext/skcolorspace_primaries.cc",
+    "ext/skcolorspace_primaries.h",
     "ext/skia_histogram.cc",
     "ext/skia_histogram.h",
     "ext/skia_memory_dump_provider.cc",
@@ -423,9 +424,7 @@ component("skia") {
       "//third_party/skia/src/ports/SkTypeface_win_dw.cpp",
     ]
   } else {
-    sources += [
-      "//third_party/skia/src/ports/SkOSFile_posix.cpp",
-    ]
+    sources += [ "//third_party/skia/src/ports/SkOSFile_posix.cpp" ]
   }
 
   if (is_apple) {
@@ -930,6 +929,7 @@ test("skia_unittests") {
     "ext/image_operations_unittest.cc",
     "ext/platform_canvas_unittest.cc",
     "ext/recursive_gaussian_convolution_unittest.cc",
+    "ext/skcolorspace_primaries_unittest.cc",
     "ext/skia_memory_dump_provider_unittest.cc",
     "ext/skia_utils_base_unittest.cc",
   ]
