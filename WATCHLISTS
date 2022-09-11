@@ -17,6 +17,10 @@
       'filepath': 'ash/accelerators/accelerator_table\.cc' \
                   '|chrome/browser/ui/views/accelerator_table\.cc',
     },
+    'accelerators': {
+      'filepath': 'ash/accelerators/|'\
+                  'ash/public/cpp/accelerator.*',
+    },
     'accessibility': {
       'filepath': 'accessibility' \
                   '|braille' \
@@ -1789,6 +1793,9 @@
       'filepath': 'ash/webui/shimless_rma/'\
                   '|chrome/test/data/webui/chromeos/shimless_rma/',
     },
+   'shortcut_customization_ui': {
+      'filepath': 'ash/webui/shortcut_customization_ui/',
+    },
     'site_engagement': {
       'filepath': 'chrome/browser/engagement/|'\
                   'chrome/browser/ui/webui/engagement/',
@@ -2179,6 +2186,8 @@
     'about_flags': ['asvitkine+watch@chromium.org',
                     'jmedley+watch@chromium.org'],
     'accelerator_table': ['yusukes+watch@chromium.org'],
+    'accelerators': ['zentaro+watch-accelerators@chromium.org',
+                     'jimmyxgong+watch-accelerators@chromium.org'],
     'accessibility': ['abigailbklein+watch@google.com',
                       'akihiroota@chromium.org',
                       'dtseng+watch@chromium.org',
@@ -2874,6 +2883,8 @@
     'shimless_rma': ['zentaro+watch-shimless@chromium.org',
                      'jimmyxgong+watch-shimless@chromium.org',
                      'michaelcheco+watch-shimless@google.com'],
+    'shortcut_customization_ui':
+        ['jimmyxgong+watch-shortcut-customization-ui@chromium.org'],
     'site_engagement': ['dominickn+watch-engagement@chromium.org'],
     'site_instance': ['ajwong+watch@chromium.org',
                       'alexmos+watch@chromium.org',
