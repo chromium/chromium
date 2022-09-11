@@ -29,6 +29,12 @@ ShelfItem ShelfTestUtil::AddAppShortcutWithIcon(const std::string& id,
     item.status = STATUS_RUNNING;
   item.id = ShelfID(id);
   item.image = icon;
+
+  // All focusable objects are expected to have an accessible name to pass
+  // the accessibility paint checks. ShelfAppButton will use the item's
+  // title as the accessible name. Since this item is purely for testing,
+  // use its id as the title in order for the unit tests to pass the checks.
+  item.title = base::UTF8ToUTF16(id);
   controller->model()->Add(item,
                            std::make_unique<TestShelfItemDelegate>(item.id));
   return item;
