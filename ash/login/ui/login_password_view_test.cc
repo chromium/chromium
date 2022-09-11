@@ -45,6 +45,10 @@ class LoginPasswordViewTest : public LoginTestBase {
 
     view_ = new LoginPasswordView(
         CreateDefaultLoginPalette(/*color_provider=*/nullptr));
+
+    // Focusable views are expected to have accessible names in order to pass
+    // the accessibility paint checks.
+    view_->SetAccessibleName(u"Password");
     view_->Init(
         base::BindRepeating(&LoginPasswordViewTest::OnPasswordSubmit,
                             base::Unretained(this)),
