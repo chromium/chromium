@@ -38,8 +38,10 @@ function onload_test()
     // However, this assertion will fail if the test executes fast enough such that the marks occur
     // at the same clock time. This is more likely in browsers such as Firefox that reduce the
     // precision of the clock exposed through this API to mitigate timing attacks. To mitigate the
-    // test failure, we sleep.
-    sleep_milliseconds(1);
+    // test failure, we sleep. Firefox may round timestamps to the nearest millisecond in either
+    // direction - e.g. 10ms & 11.999ms may both round to 11ms - so we need to sleep at least 2ms to
+    // avoid test failures. To be safe, we sleep 3ms.
+    sleep_milliseconds(3);
 
     // Following cases test for scenarios that measure names are tied twice.
     mark_names.forEach(function(name) {
