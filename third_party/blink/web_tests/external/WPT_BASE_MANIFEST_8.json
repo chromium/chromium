@@ -97759,7 +97759,7 @@
       ]
      ],
      "contain-size-monolithic-001.html": [
-      "42e8216462186f8c04442c6cbbc31e70821b5caa",
+      "0e101bbab1b296ab46a607d2f952c17ba4243bd4",
       [
        null,
        [
@@ -97768,7 +97768,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            16
+           ],
+           [
+            0,
+            2
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "contain-size-monolithic-002.html": [
@@ -289512,7 +289528,7 @@
      ],
      "contain-intrinsic-size": {
       "auto-006-expected.txt": [
-       "0ca0e43a5194c7dd5302793a3a5bac2436739c50",
+       "eff3c4aa450bf3eb462719b7df1f79bb4a9f504e",
        []
       ],
       "auto-007-expected.txt": [
@@ -403019,7 +403035,7 @@
        ]
       ],
       "auto-006.html": [
-       "adc2a6dcdea93fd2677fd6b0b840fb7b3befe5fb",
+       "7276e2ed5d718dc4a259ed1cd0c7e42dad51c120",
        [
         null,
         {}
@@ -413306,6 +413322,13 @@
      ],
      "getComputedStyle-display-none-002.html": [
       "12fb7fc3f8cf7dc46f99794f4aee7669b6fea7b6",
+      [
+       null,
+       {}
+      ]
+     ],
+     "getComputedStyle-display-none-003.html": [
+      "7ea45055882e4ceb694837e3b0168458de5ad350",
       [
        null,
        {}

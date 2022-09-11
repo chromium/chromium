@@ -10,6 +10,7 @@
 <link rel="help" href="https://github.com/w3c/csswg-drafts/issues/7532">
 <link rel="help" href="https://github.com/w3c/csswg-drafts/issues/7539">
 <link rel="help" href="https://github.com/w3c/csswg-drafts/issues/7564">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/7606">
 <meta name="assert" content="Tests that the last remembered size is properly updated or removed" />
 
 <style>
@@ -39,6 +40,9 @@
 }
 .flex {
   display: flex;
+}
+.inline {
+  display: inline;
 }
 </style>
 
@@ -361,4 +365,42 @@ promise_test(async function() {
   parent.appendChild(target);
   checkSize(1, 2, "Size containment with no last remembered size");
 }, "Disconnected element ends up losing last remembered size even if size was 0x0");
+
+promise_test(async function() {
+  this.add_cleanup(cleanup);
+  target.classList.add("cis-auto");
+  contents.classList.add("size-100-50");
+  checkSize(100, 50, "Sizing normally");
+
+  await nextRendering();
+  target.classList.add("inline");
+  checkSize(0, 0, "Non-atomic inline box");
+
+  await nextRendering();
+  target.classList.remove("inline");
+  target.classList.add("skip-contents");
+  contents.classList.remove("size-100-50");
+  checkSize(100, 50, "Still using previous last remembered size");
+}, "Last remembered size survives becoming inline");
+
+promise_test(async function() {
+  this.add_cleanup(cleanup);
+  target.classList.add("cis-auto");
+  contents.classList.add("size-100-50");
+  checkSize(100, 50, "Sizing normally");
+
+  await nextRendering();
+  target.classList.add("inline");
+  checkSize(0, 0, "Non-atomic inline box");
+
+  await nextRendering();
+  target.classList.remove("inline");
+  contents.classList.remove("size-100-50");
+  checkSize(0, 0, "Sizing normally to 0x0");
+
+  await nextRendering();
+  target.classList.add("skip-contents");
+  contents.classList.add("size-100-50");
+  checkSize(0, 0, "Last remembered size is now 0x0");
+}, "Last remembered size can be set to 0x0 after losing display:inline");
 </script>

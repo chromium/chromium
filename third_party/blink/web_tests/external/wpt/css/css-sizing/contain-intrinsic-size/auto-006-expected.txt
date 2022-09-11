@@ -14,5 +14,7 @@ FAIL Last remembered size can be removed synchronously assert_equals: Size conta
 PASS Disconnected element can briefly keep last remembered size
 FAIL Disconnected element ends up losing last remembered size assert_equals: Size containment with no last remembered size - clientWidth expected 1 but got 100
 FAIL Disconnected element ends up losing last remembered size even if size was 0x0 assert_equals: Size containment with no last remembered size - clientWidth expected 1 but got 100
+FAIL Last remembered size survives becoming inline assert_equals: Still using previous last remembered size - clientWidth expected 100 but got 0
+PASS Last remembered size can be set to 0x0 after losing display:inline
 Harness: the test ran to completion.
 
