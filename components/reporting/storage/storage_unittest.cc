@@ -739,6 +739,16 @@ class StorageTest
   StatusOr<scoped_refptr<Storage>> CreateTestStorage(
       const StorageOptions& options,
       scoped_refptr<EncryptionModuleInterface> encryption_module) {
+    // Handle and reject PERIODIC (optionally), as long as there is no explicit
+    // expectation set.
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
+        .WillRepeatedly(Invoke([](UploaderInterface::UploadReason reason) {
+          return Status(
+              error::UNAVAILABLE,
+              base::StrCat({"Test uploader not provided by the test, reason=",
+                            UploaderInterface::ReasonToString(reason)}));
+        }));
     // Initialize Storage with no key.
     test::TestEvent<StatusOr<scoped_refptr<Storage>>> e;
     test_compression_module_ =

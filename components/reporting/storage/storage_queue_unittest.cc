@@ -563,6 +563,16 @@ class StorageQueueTest
   // and returns the corresponding result of the operation.
   StatusOr<scoped_refptr<StorageQueue>> CreateTestStorageQueue(
       const QueueOptions& options) {
+    // Handle and reject PERIODIC (optionally), as long as there is no explicit
+    // expectation set.
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
+        .WillRepeatedly(Invoke([](UploaderInterface::UploadReason reason) {
+          return Status(
+              error::UNAVAILABLE,
+              base::StrCat({"Test uploader not provided by the test, reason=",
+                            UploaderInterface::ReasonToString(reason)}));
+        }));
     CreateTestEncryptionModuleOrDie();
     test::TestEvent<StatusOr<scoped_refptr<StorageQueue>>>
         storage_queue_create_event;
