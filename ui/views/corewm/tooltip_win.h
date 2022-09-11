@@ -47,7 +47,8 @@ class VIEWS_EXPORT TooltipWin : public Tooltip {
   int GetMaxWidth(const gfx::Point& location) const override;
   void Update(aura::Window* window,
               const std::u16string& tooltip_text,
-              const TooltipPosition& position) override;
+              const gfx::Point& position,
+              const TooltipTrigger trigger) override;
   void Show() override;
   void Hide() override;
   bool IsVisible() override;
@@ -69,8 +70,10 @@ class VIEWS_EXPORT TooltipWin : public Tooltip {
   bool showing_;
 
   // In order to position the tooltip we need to know the size. The size is only
-  // available from TTN_SHOW, so we have to cache it.
-  TooltipPosition position_;
+  // available from TTN_SHOW, so we have to cache `anchor_point_` and `trigger_`
+  // which are required to calculate its position.
+  gfx::Point anchor_point_;
+  TooltipTrigger trigger_ = TooltipTrigger::kCursor;
 
   // What the scale was the last time we overrode the font, to see if we can
   // re-use our previous override.

@@ -54,9 +54,11 @@ class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
 
   // Adjusts the bounds given by the arguments to fit inside the desktop
   // and returns the adjusted bounds, and also sets anchor information to
-  // |anchor|.
+  // `anchor`.
+  // `anchor_point` is an absolute position, not relative to the window.
   gfx::Rect GetTooltipBounds(const gfx::Size& tooltip_size,
-                             const TooltipPosition& position,
+                             const gfx::Point& anchor_point,
+                             const TooltipTrigger trigger,
                              ui::OwnedWindowAnchor* anchor);
 
   // Sets |widget_| to a new instance of TooltipWidget. Additional information
@@ -71,7 +73,8 @@ class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
   int GetMaxWidth(const gfx::Point& location) const override;
   void Update(aura::Window* window,
               const std::u16string& tooltip_text,
-              const TooltipPosition& position) override;
+              const gfx::Point& position,
+              const TooltipTrigger trigger) override;
   void Show() override;
   void Hide() override;
   bool IsVisible() override;

@@ -10,9 +10,7 @@
 #include "ui/gfx/render_text.h"
 #include "ui/views/corewm/tooltip_aura.h"
 
-namespace views {
-namespace corewm {
-namespace test {
+namespace views::corewm::test {
 
 gfx::RenderText* TooltipAuraTestApi::GetRenderText() {
   return tooltip_aura_->GetRenderTextForTest();
@@ -22,13 +20,12 @@ void TooltipAuraTestApi::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   return tooltip_aura_->GetAccessibleNodeDataForTest(node_data);
 }
 
-gfx::Rect TooltipAuraTestApi::GetTooltipBounds(
-    const gfx::Size& tooltip_size,
-    const TooltipPosition& position) {
+gfx::Rect TooltipAuraTestApi::GetTooltipBounds(const gfx::Size& tooltip_size,
+                                               const gfx::Point& anchor_point,
+                                               const TooltipTrigger trigger) {
   ui::OwnedWindowAnchor anchor;
-  return tooltip_aura_->GetTooltipBounds(tooltip_size, position, &anchor);
+  return tooltip_aura_->GetTooltipBounds(tooltip_size, anchor_point, trigger,
+                                         &anchor);
 }
 
-}  // namespace test
-}  // namespace corewm
-}  // namespace views
+}  // namespace views::corewm::test

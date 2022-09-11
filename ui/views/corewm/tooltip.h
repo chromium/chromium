@@ -21,14 +21,6 @@ enum class TooltipTrigger {
   kKeyboard,
 };
 
-struct VIEWS_EXPORT TooltipPosition {
-  gfx::Point anchor_point;
-
-  // Enumerates how the tooltip was shown. The trigger impacts the placement of
-  // the tooltip.
-  TooltipTrigger trigger = TooltipTrigger::kCursor;
-};
-
 // Tooltip is responsible for showing the tooltip in an appropriate manner.
 // Tooltip is used by TooltipController.
 class VIEWS_EXPORT Tooltip {
@@ -39,9 +31,11 @@ class VIEWS_EXPORT Tooltip {
   virtual int GetMaxWidth(const gfx::Point& location) const = 0;
 
   // Updates the text on the tooltip and resizes to fit.
+  // `position` is relative to `window` and in `window` coordinate space.
   virtual void Update(aura::Window* window,
                       const std::u16string& tooltip_text,
-                      const TooltipPosition& position) = 0;
+                      const gfx::Point& position,
+                      const TooltipTrigger trigger) = 0;
 
   // Shows the tooltip at the specified location (in screen coordinates).
   virtual void Show() = 0;

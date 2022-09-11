@@ -195,13 +195,14 @@ void TooltipAura::GetAccessibleNodeDataForTest(ui::AXNodeData* node_data) {
 }
 
 gfx::Rect TooltipAura::GetTooltipBounds(const gfx::Size& tooltip_size,
-                                        const TooltipPosition& position,
+                                        const gfx::Point& anchor_point,
+                                        const TooltipTrigger trigger,
                                         ui::OwnedWindowAnchor* anchor) {
-  gfx::Rect tooltip_rect(position.anchor_point, tooltip_size);
+  gfx::Rect tooltip_rect(anchor_point, tooltip_size);
   // When the tooltip is showing up as a result of a cursor event, the tooltip
   // needs to show up at the bottom-right corner of the cursor. When it's not,
   // it has to be centered with the anchor point with pass it.
-  switch (position.trigger) {
+  switch (trigger) {
     case TooltipTrigger::kKeyboard:
       tooltip_rect.Offset(-tooltip_size.width() / 2, 0);
       break;
@@ -214,7 +215,7 @@ gfx::Rect TooltipAura::GetTooltipBounds(const gfx::Size& tooltip_size,
   }
 
   anchor->anchor_gravity = ui::OwnedWindowAnchorGravity::kBottomRight;
-  anchor->anchor_position = position.trigger == TooltipTrigger::kCursor
+  anchor->anchor_position = trigger == TooltipTrigger::kCursor
                                 ? ui::OwnedWindowAnchorPosition::kBottomRight
                                 : ui::OwnedWindowAnchorPosition::kTop;
   anchor->constraint_adjustment =
@@ -223,11 +224,11 @@ gfx::Rect TooltipAura::GetTooltipBounds(const gfx::Size& tooltip_size,
       ui::OwnedWindowConstraintAdjustment::kAdjustmentFlipY;
   // TODO(msisov): handle RTL.
   anchor->anchor_rect =
-      gfx::Rect(position.anchor_point, {kCursorOffsetX, kCursorOffsetY});
+      gfx::Rect(anchor_point, {kCursorOffsetX, kCursorOffsetY});
 
   display::Screen* screen = display::Screen::GetScreen();
   gfx::Rect display_bounds(
-      screen->GetDisplayNearestPoint(position.anchor_point).bounds());
+      screen->GetDisplayNearestPoint(anchor_point).bounds());
 
   // If tooltip is out of bounds on the x axis, we simply shift it
   // horizontally by the offset variation.
@@ -243,7 +244,7 @@ gfx::Rect TooltipAura::GetTooltipBounds(const gfx::Size& tooltip_size,
   // If tooltip is out of bounds on the y axis, we flip it to appear above the
   // mouse cursor instead of below.
   if (tooltip_rect.bottom() > display_bounds.bottom())
-    tooltip_rect.set_y(position.anchor_point.y() - tooltip_size.height());
+    tooltip_rect.set_y(anchor_point.y() - tooltip_size.height());
 
   tooltip_rect.AdjustToFit(display_bounds);
   return tooltip_rect;
@@ -293,7 +294,8 @@ int TooltipAura::GetMaxWidth(const gfx::Point& location) const {
 
 void TooltipAura::Update(aura::Window* window,
                          const std::u16string& tooltip_text,
-                         const TooltipPosition& position) {
+                         const gfx::Point& position,
+                         const TooltipTrigger trigger) {
   // Hide() must be called before showing the next tooltip.  See also the
   // comment in Hide().
   DCHECK(!widget_);
@@ -301,11 +303,13 @@ void TooltipAura::Update(aura::Window* window,
   tooltip_window_ = window;
 
   auto new_tooltip_view = std::make_unique<TooltipView>();
-  new_tooltip_view->SetMaxWidth(GetMaxWidth(position.anchor_point));
+  gfx::Point anchor_point =
+      position + window->GetBoundsInScreen().OffsetFromOrigin();
+  new_tooltip_view->SetMaxWidth(GetMaxWidth(anchor_point));
   new_tooltip_view->SetText(tooltip_text);
   ui::OwnedWindowAnchor anchor;
-  auto bounds =
-      GetTooltipBounds(new_tooltip_view->GetPreferredSize(), position, &anchor);
+  auto bounds = GetTooltipBounds(new_tooltip_view->GetPreferredSize(),
+                                 anchor_point, trigger, &anchor);
   CreateTooltipWidget(bounds, anchor);
   widget_->SetTooltipView(std::move(new_tooltip_view));
   widget_->AddObserver(this);
