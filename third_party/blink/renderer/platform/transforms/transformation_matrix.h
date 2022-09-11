@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkM44.h"
+#include "ui/gfx/geometry/double4.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -79,12 +80,6 @@ class PLATFORM_EXPORT TransformationMatrix {
   // | matrix_[0][1] matrix_[1][1] matrix_[2][1] matrix_[3][1] |
   // | matrix_[0][2] matrix_[1][2] matrix_[2][2] matrix_[3][2] |
   // | matrix_[0][3] matrix_[1][3] matrix_[2][3] matrix_[3][3] |
-  struct Matrix4 {
-    using Column = double[4];
-    Column& operator[](size_t i) { return columns[i]; }
-    const Column& operator[](size_t i) const { return columns[i]; }
-    Column columns[4];
-  };
 
   TransformationMatrix() {
     MakeIdentity();
@@ -183,10 +178,7 @@ class PLATFORM_EXPORT TransformationMatrix {
     matrix_[3][3] = m44;
   }
 
-  TransformationMatrix& operator=(const TransformationMatrix& t) {
-    SetMatrix(t.matrix_);
-    return *this;
-  }
+  TransformationMatrix& operator=(const TransformationMatrix&) = default;
 
   TransformationMatrix& MakeIdentity() {
     SetMatrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
@@ -194,7 +186,7 @@ class PLATFORM_EXPORT TransformationMatrix {
   }
 
   bool IsIdentity() const {
-    return All(
+    return gfx::AllTrue(
         (Col(0) == Double4{1, 0, 0, 0}) & (Col(1) == Double4{0, 1, 0, 0}) &
         (Col(2) == Double4{0, 0, 1, 0}) & (Col(3) == Double4{0, 0, 0, 1}));
   }
@@ -390,8 +382,8 @@ class PLATFORM_EXPORT TransformationMatrix {
   void FlattenTo2d();
 
   bool operator==(const TransformationMatrix& m2) const {
-    return All((Col(0) == m2.Col(0)) & (Col(1) == m2.Col(1)) &
-               (Col(2) == m2.Col(2)) & (Col(3) == m2.Col(3)));
+    return gfx::AllTrue((Col(0) == m2.Col(0)) & (Col(1) == m2.Col(1)) &
+                        (Col(2) == m2.Col(2)) & (Col(3) == m2.Col(3)));
   }
 
   bool operator!=(const TransformationMatrix& other) const {
@@ -412,13 +404,13 @@ class PLATFORM_EXPORT TransformationMatrix {
 
   bool IsFlat() const {
     return matrix_[0][2] == 0.f && matrix_[1][2] == 0.f &&
-           All(Col(2) == Double4{0, 0, 1, 0}) && matrix_[3][2] == 0.f;
+           gfx::AllTrue(Col(2) == Double4{0, 0, 1, 0}) && matrix_[3][2] == 0.f;
   }
 
   bool IsIdentityOrTranslation() const {
-    return All((Col(0) == Double4{1, 0, 0, 0}) &
-               (Col(1) == Double4{0, 1, 0, 0}) &
-               (Col(2) == Double4{0, 0, 1, 0})) &&
+    return gfx::AllTrue((Col(0) == Double4{1, 0, 0, 0}) &
+                        (Col(1) == Double4{0, 1, 0, 0}) &
+                        (Col(2) == Double4{0, 0, 1, 0})) &&
            matrix_[3][3] == 1;
   }
 
@@ -429,9 +421,9 @@ class PLATFORM_EXPORT TransformationMatrix {
   bool Is2DProportionalUpscaleAndOr2DTranslation() const {
     if (matrix_[0][0] < 1 || matrix_[0][0] != matrix_[1][1])
       return false;
-    return All((Col(0) == Double4{matrix_[0][0], 0, 0, 0}) &
-               (Col(1) == Double4{0, matrix_[1][1], 0, 0}) &
-               (Col(2) == Double4{0, 0, 1, 0})) &&
+    return gfx::AllTrue((Col(0) == Double4{matrix_[0][0], 0, 0, 0}) &
+                        (Col(1) == Double4{0, matrix_[1][1], 0, 0}) &
+                        (Col(2) == Double4{0, 0, 1, 0})) &&
            matrix_[3][2] == 0 && matrix_[3][3] == 1;
   }
 
@@ -442,8 +434,8 @@ class PLATFORM_EXPORT TransformationMatrix {
   bool Preserves2dAxisAlignment() const;
 
   bool HasPerspective() const {
-    return !All(Double4{matrix_[0][3], matrix_[1][3], matrix_[2][3],
-                        matrix_[3][3]} == Double4{0, 0, 0, 1});
+    return !gfx::AllTrue(Double4{matrix_[0][3], matrix_[1][3], matrix_[2][3],
+                                 matrix_[3][3]} == Double4{0, 0, 0, 1});
   }
 
   // If this transformation is identity or 2D translation, returns the
@@ -472,50 +464,17 @@ class PLATFORM_EXPORT TransformationMatrix {
   template <bool check_invertibility_only>
   bool InternalInverse(TransformationMatrix* result) const;
 
-  void SetMatrix(const Matrix4& m) { memcpy(&matrix_, &m, sizeof(Matrix4)); }
-
   static float ClampToFloat(double value) {
     return UNLIKELY(std::isnan(value)) ? 0 : ClampTo<float>(value);
   }
 
-#if defined(__clang__)
-  template <typename T>
-  using VectorExt4 = T __attribute__((ext_vector_type(4)));
-#elif defined(__GNUC__)
-  template <typename T>
-  struct Vector4Helper {
-    typedef T __attribute__((vector_size(4 * sizeof(T)))) type;
-  };
-  template <typename T>
-  using VectorExt4 = Vector4Helper<T>::type;
-#else
-#error Unsupported compiler.
-#endif
-
-  using Double4 = VectorExt4<double>;
+  using Double4 = gfx::Double4;
 
   ALWAYS_INLINE Double4 Col(int c) const {
-    return {matrix_[c][0], matrix_[c][1], matrix_[c][2], matrix_[c][3]};
+    return gfx::LoadDouble4(matrix_[c]);
   }
   ALWAYS_INLINE void SetCol(int c, Double4 v) {
-    matrix_[c][0] = v.s0;
-    matrix_[c][1] = v.s1;
-    matrix_[c][2] = v.s2;
-    matrix_[c][3] = v.s3;
-  }
-
-  // VectorExt4<integral_type> is the result type of Double4 operations that
-  // would produce bool results if they were original scalar operators, e.g.
-  //   auto result = double4_a == double4_b;
-  // A zero value of a component of |result| means false, otherwise true.
-  // This function checks whether all 4 components in |result| are true.
-  template <typename T>
-  static T All(VectorExt4<T> v) {
-    return v.s0 & v.s1 & v.s2 & v.s3;
-  }
-
-  ALWAYS_INLINE static double Sum(Double4 v) {
-    return v.s0 + v.s1 + v.s2 + v.s3;
+    gfx::StoreDouble4(v, matrix_[c]);
   }
 
   template <bool check_invertibility_only>
@@ -524,7 +483,7 @@ class PLATFORM_EXPORT TransformationMatrix {
                                                    Double4& c2,
                                                    Double4& c3);
 
-  Matrix4 matrix_;
+  double matrix_[4][4];
 };
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&,

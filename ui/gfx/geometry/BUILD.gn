@@ -14,6 +14,7 @@ component("geometry") {
     "cubic_bezier.h",
     "dip_util.cc",
     "dip_util.h",
+    "double4.h",
     "geometry_export.h",
     "insets.cc",
     "insets.h",

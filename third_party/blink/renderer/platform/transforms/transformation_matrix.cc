@@ -81,19 +81,19 @@ bool TransformationMatrix::Decompose(DecomposedType& result) const {
   Double4 c3 = Col(3);
 
   // Normalize the matrix.
-  if (!std::isnormal(c3.s3))
+  if (!std::isnormal(c3[3]))
     return false;
 
-  Double4 inv_w = 1.0 / c3.s3;
+  double inv_w = 1.0 / c3[3];
   c0 *= inv_w;
   c1 *= inv_w;
   c2 *= inv_w;
   c3 *= inv_w;
 
-  Double4 perspective = {c0.s3, c1.s3, c2.s3, 1.0};
+  Double4 perspective = {c0[3], c1[3], c2[3], 1.0};
   // Clear the perspective partition.
-  c0.s3 = c1.s3 = c2.s3 = 0;
-  c3.s3 = 1;
+  c0[3] = c1[3] = c2[3] = 0;
+  c3[3] = 1;
 
   Double4 inverse_c0 = c0;
   Double4 inverse_c1 = c1;
@@ -104,12 +104,12 @@ bool TransformationMatrix::Decompose(DecomposedType& result) const {
     return false;
 
   // First, isolate perspective.
-  if (!All(perspective == Double4{0, 0, 0, 1})) {
+  if (!gfx::AllTrue(perspective == Double4{0, 0, 0, 1})) {
     // Solve the equation by multiplying perspective by the inverse.
-    result.perspective_x = Sum(perspective * inverse_c0);
-    result.perspective_y = Sum(perspective * inverse_c1);
-    result.perspective_z = Sum(perspective * inverse_c2);
-    result.perspective_w = Sum(perspective * inverse_c3);
+    result.perspective_x = gfx::Sum(perspective * inverse_c0);
+    result.perspective_y = gfx::Sum(perspective * inverse_c1);
+    result.perspective_z = gfx::Sum(perspective * inverse_c2);
+    result.perspective_w = gfx::Sum(perspective * inverse_c3);
   } else {
     // No perspective.
     result.perspective_x = result.perspective_y = result.perspective_z = 0;
@@ -117,12 +117,12 @@ bool TransformationMatrix::Decompose(DecomposedType& result) const {
   }
 
   // Next take care of translation (easy).
-  result.translate_x = c3.s0;
-  c3.s0 = 0;
-  result.translate_y = c3.s1;
-  c3.s1 = 0;
-  result.translate_z = c3.s2;
-  c3.s2 = 0;
+  result.translate_x = c3[0];
+  c3[0] = 0;
+  result.translate_y = c3[1];
+  c3[1] = 0;
+  result.translate_z = c3[2];
+  c3[2] = 0;
 
   // Note: Deviating from the spec in terms of variable naming. The matrix is
   // stored on column major order and not row major. Using the variable 'row'
@@ -130,7 +130,7 @@ bool TransformationMatrix::Decompose(DecomposedType& result) const {
   // confusion, specifically in sorting out rotations.
 
   // From now on, only the first 3 components of the Double4 column is used.
-  auto sum3 = [](Double4 c) -> double { return c.s0 + c.s1 + c.s2; };
+  auto sum3 = [](Double4 c) -> double { return c[0] + c[1] + c[2]; };
   auto extract_scale = [&sum3](Double4& c, double& scale) -> bool {
     scale = std::sqrt(sum3(c * c));
     if (!std::isnormal(scale))
@@ -170,7 +170,8 @@ bool TransformationMatrix::Decompose(DecomposedType& result) const {
   // Check for a coordinate system flip.  If the determinant
   // is -1, then negate the matrix and the scaling factors.
   auto cross3 = [](Double4 a, Double4 b) -> Double4 {
-    return a.s1203 * b.s2013 - a.s2013 * b.s1203;
+    return Double4{a[1], a[2], a[0], a[3]} * Double4{b[2], b[0], b[1], b[3]} -
+           Double4{a[2], a[0], a[1], a[3]} * Double4{b[1], b[2], b[0], b[3]};
   };
   Double4 pdum3 = cross3(c1, c2);
   if (sum3(c0 * pdum3) < 0) {
@@ -219,7 +220,7 @@ bool TransformationMatrix::Decompose(DecomposedType& result) const {
 
   double r, s, t, x, y, z, w;
 
-  t = c0.s0 + c1.s1 + c2.s2;  // trace of Q
+  t = c0[0] + c1[1] + c2[2];  // trace of Q
 
   // https://en.wikipedia.org/wiki/Rotation_matrix#Quaternion
   if (1 + t > 0.001) {
@@ -228,33 +229,33 @@ bool TransformationMatrix::Decompose(DecomposedType& result) const {
     r = std::sqrt(1.0 + t);
     s = 0.5 / r;
     w = 0.5 * r;
-    x = (c1.s2 - c2.s1) * s;
-    y = (c2.s0 - c0.s2) * s;
-    z = (c0.s1 - c1.s0) * s;
-  } else if (c0.s0 > c1.s1 && c0.s0 > c2.s2) {
+    x = (c1[2] - c2[1]) * s;
+    y = (c2[0] - c0[2]) * s;
+    z = (c0[1] - c1[0]) * s;
+  } else if (c0[0] > c1[1] && c0[0] > c2[2]) {
     // Q_xx is largest.
-    r = std::sqrt(1.0 + c0.s0 - c1.s1 - c2.s2);
+    r = std::sqrt(1.0 + c0[0] - c1[1] - c2[2]);
     s = 0.5 / r;
     x = 0.5 * r;
-    y = (c1.s0 - c0.s1) * s;
-    z = (c2.s0 + c0.s2) * s;
-    w = (c1.s2 - c2.s1) * s;
-  } else if (c1.s1 > c2.s2) {
+    y = (c1[0] - c0[1]) * s;
+    z = (c2[0] + c0[2]) * s;
+    w = (c1[2] - c2[1]) * s;
+  } else if (c1[1] > c2[2]) {
     // Q_yy is largest.
-    r = std::sqrt(1.0 - c0.s0 + c1.s1 - c2.s2);
+    r = std::sqrt(1.0 - c0[0] + c1[1] - c2[2]);
     s = 0.5 / r;
-    x = (c1.s0 + c0.s1) * s;
+    x = (c1[0] + c0[1]) * s;
     y = 0.5 * r;
-    z = (c2.s1 + c1.s2) * s;
-    w = (c2.s0 - c0.s2) * s;
+    z = (c2[1] + c1[2]) * s;
+    w = (c2[0] - c0[2]) * s;
   } else {
     // Q_zz is largest.
-    r = std::sqrt(1.0 - c0.s0 - c1.s1 + c2.s2);
+    r = std::sqrt(1.0 - c0[0] - c1[1] + c2[2]);
     s = 0.5 / r;
-    x = (c2.s0 + c0.s2) * s;
-    y = (c2.s1 + c1.s2) * s;
+    x = (c2[0] + c0[2]) * s;
+    y = (c2[1] + c1[2]) * s;
     z = 0.5 * r;
-    w = (c0.s1 - c1.s0) * s;
+    w = (c0[1] - c1[0]) * s;
   }
 
   result.quaternion_x = x;
@@ -861,7 +862,7 @@ TransformationMatrix& TransformationMatrix::Multiply(
   auto c3 = Col(3);
 
   auto compute = [&](Double4 r) {
-    return c0 * r.s0 + c1 * r.s1 + c2 * r.s2 + c3 * r.s3;
+    return c0 * r[0] + c1 * r[1] + c2 * r[2] + c3 * r[3];
   };
 
   SetCol(0, compute(mat.Col(0)));
@@ -947,7 +948,7 @@ bool TransformationMatrix::InternalInverse(TransformationMatrix* result) const {
 
   if (IsIdentityOrTranslation()) {
     // Identity matrix.
-    if (All(Col(3) == Double4{0, 0, 0, 1})) {
+    if (gfx::AllTrue(Col(3) == Double4{0, 0, 0, 1})) {
       if (result)
         result->MakeIdentity();
       return true;
@@ -987,13 +988,17 @@ bool TransformationMatrix::InverseWithDouble4Cols(Double4& c0,
                                                   Double4& c2,
                                                   Double4& c3) {
   // Note that r1 and r3 have components 2/3 and 0/1 swapped.
-  Double4 r0 = {c0.s0, c1.s0, c2.s0, c3.s0};
-  Double4 r1 = {c2.s1, c3.s1, c0.s1, c1.s1};
-  Double4 r2 = {c0.s2, c1.s2, c2.s2, c3.s2};
-  Double4 r3 = {c2.s3, c3.s3, c0.s3, c1.s3};
+  Double4 r0 = {c0[0], c1[0], c2[0], c3[0]};
+  Double4 r1 = {c2[1], c3[1], c0[1], c1[1]};
+  Double4 r2 = {c0[2], c1[2], c2[2], c3[2]};
+  Double4 r3 = {c2[3], c3[3], c0[3], c1[3]};
 
-  auto swap_hi_lo = [](Double4 v) -> Double4 { return v.s2301; };
-  auto swap_in_pairs = [](Double4 v) -> Double4 { return v.s1032; };
+  auto swap_hi_lo = [](Double4 v) -> Double4 {
+    return {v[2], v[3], v[0], v[1]};
+  };
+  auto swap_in_pairs = [](Double4 v) -> Double4 {
+    return {v[1], v[0], v[3], v[2]};
+  };
 
   Double4 t = swap_in_pairs(r2 * r3);
   c0 = r1 * t;
@@ -1022,7 +1027,7 @@ bool TransformationMatrix::InverseWithDouble4Cols(Double4& c0,
   Double4 det = r0 * c0;
   det += swap_hi_lo(det);
   det += swap_in_pairs(det);
-  if (!std::isnormal(det.x))
+  if (!std::isnormal(det[0]))
     return false;
   if (check_invertibility_only)
     return true;
