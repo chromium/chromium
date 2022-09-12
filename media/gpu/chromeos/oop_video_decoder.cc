@@ -222,7 +222,8 @@ void OOPVideoDecoder::OnInitializeDone(const DecoderStatus& status,
   CHECK(!has_error_);
 
   if (!status.is_ok() ||
-      (decoder_type != VideoDecoderType::kVaapi &&
+      (decoder_type != VideoDecoderType::kVda &&
+       decoder_type != VideoDecoderType::kVaapi &&
        decoder_type != VideoDecoderType::kV4L2) ||
       (decoder_type_ != VideoDecoderType::kUnknown &&
        decoder_type_ != decoder_type)) {
