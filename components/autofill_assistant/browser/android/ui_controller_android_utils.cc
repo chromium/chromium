@@ -652,13 +652,14 @@ std::unique_ptr<TriggerContext> CreateTriggerContext(
       env, jdevice_only_parameter_names, jdevice_only_parameter_values));
   return std::make_unique<TriggerContext>(
       std::move(script_parameters),
-      SafeConvertJavaStringToNative(env, jexperiment_ids), is_custom_tab,
-      onboarding_shown, is_direct_action,
-      SafeConvertJavaStringToNative(env, jinitial_url),
-      /* is_in_chrome_triggered = */ false,
-      /* is_externally_triggered = */ false,
-      /* skip_autofill_assistant_onboarding = */ false,
-      /* suppress_browsing_features = */ true);
+      TriggerContext::Options(
+          SafeConvertJavaStringToNative(env, jexperiment_ids), is_custom_tab,
+          onboarding_shown, is_direct_action,
+          SafeConvertJavaStringToNative(env, jinitial_url),
+          /* is_in_chrome_triggered = */ false,
+          /* is_externally_triggered = */ false,
+          /* skip_autofill_assistant_onboarding = */ false,
+          /* suppress_browsing_features = */ true));
 }
 
 std::unique_ptr<Service> GetServiceToInject(JNIEnv* env,

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <numeric>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
@@ -13,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/intent_strings.h"
+#include "components/autofill_assistant/browser/script_parameters.h"
 #include "components/autofill_assistant/browser/startup_util.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"

@@ -219,15 +219,16 @@ TEST_F(TriggerScriptCoordinatorTest, StartSendsOnlyApprovedFields) {
                       std::make_unique<TriggerContext>(
                           /* params = */ std::make_unique<ScriptParameters>(
                               input_script_params),
-                          /* exp = */ "1,2,4",
-                          /* is_cct = */ true,
-                          /* onboarding_shown = */ true,
-                          /* is_direct_action = */ true,
-                          /* initial_url = */ "https://www.example.com",
-                          /* is_in_chrome_triggered = */ true,
-                          /* is_externally_triggered = */ false,
-                          /* skip_autofill_assistant_onboarding = */ false,
-                          /* suppress_browsing_features = */ true),
+                          TriggerContext::Options(
+                              /* experiment_ids = */ "1,2,4",
+                              /* is_cct = */ true,
+                              /* onboarding_shown = */ true,
+                              /* is_direct_action = */ true,
+                              /* initial_url = */ "https://www.example.com",
+                              /* is_in_chrome_triggered = */ true,
+                              /* is_externally_triggered = */ false,
+                              /* skip_autofill_assistant_onboarding = */ false,
+                              /* suppress_browsing_features = */ true)),
                       mock_callback_.Get());
 }
 
@@ -1866,15 +1867,16 @@ TEST_P(TriggerScriptCoordinatorParameterizedTest,
                       std::make_unique<TriggerContext>(
                           /* params = */ std::make_unique<ScriptParameters>(
                               input_script_params),
-                          /* exp = */ "1,2,4",
-                          /* is_cct = */ true,
-                          /* onboarding_shown = */ true,
-                          /* is_direct_action = */ true,
-                          /* initial_url = */ "https://not-example.com/",
-                          /* is_in_chrome_triggered = */ true,
-                          /* is_externally_triggered = */ false,
-                          /* skip_autofill_assistant_onboarding = */ false,
-                          /* suppress_browsing_features = */ true),
+                          TriggerContext::Options(
+                              /* experiment_ids = */ "1,2,4",
+                              /* is_cct = */ true,
+                              /* onboarding_shown = */ true,
+                              /* is_direct_action = */ true,
+                              /* initial_url = */ "https://not-example.com/",
+                              /* is_in_chrome_triggered = */ true,
+                              /* is_externally_triggered = */ false,
+                              /* skip_autofill_assistant_onboarding = */ false,
+                              /* suppress_browsing_features = */ true)),
                       mock_callback_.Get());
 
   if (!is_matching_url) {

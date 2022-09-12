@@ -4,7 +4,10 @@
 
 #include "components/autofill_assistant/browser/trigger_context.h"
 
+#include <string>
+
 #include "base/strings/string_split.h"
+#include "components/autofill_assistant/browser/script_parameters.h"
 
 namespace autofill_assistant {
 
@@ -36,38 +39,17 @@ TriggerContext::TriggerContext()
 TriggerContext::TriggerContext(
     std::unique_ptr<ScriptParameters> script_parameters,
     const Options& options)
-    : TriggerContext(std::move(script_parameters),
-                     options.experiment_ids,
-                     options.is_cct,
-                     options.onboarding_shown,
-                     options.is_direct_action,
-                     options.initial_url,
-                     options.is_in_chrome_triggered,
-                     options.is_externally_triggered,
-                     options.skip_autofill_assistant_onboarding,
-                     options.suppress_browsing_features) {}
-
-TriggerContext::TriggerContext(
-    std::unique_ptr<ScriptParameters> script_parameters,
-    const std::string& experiment_ids,
-    bool is_cct,
-    bool onboarding_shown,
-    bool is_direct_action,
-    const std::string& initial_url,
-    bool is_in_chrome_triggered,
-    bool is_externally_triggered,
-    bool skip_autofill_assistant_onboarding,
-    bool suppress_browsing_features)
     : script_parameters_(std::move(script_parameters)),
-      experiment_ids_(std::move(experiment_ids)),
-      cct_(is_cct),
-      onboarding_shown_(onboarding_shown),
-      direct_action_(is_direct_action),
-      is_in_chrome_triggered_(is_in_chrome_triggered),
-      is_externally_triggered_(is_externally_triggered),
-      skip_autofill_assistant_onboarding_(skip_autofill_assistant_onboarding),
-      suppress_browsing_features_(suppress_browsing_features),
-      initial_url_(initial_url) {}
+      experiment_ids_(options.experiment_ids),
+      cct_(options.is_cct),
+      onboarding_shown_(options.onboarding_shown),
+      direct_action_(options.is_direct_action),
+      is_in_chrome_triggered_(options.is_in_chrome_triggered),
+      is_externally_triggered_(options.is_externally_triggered),
+      skip_autofill_assistant_onboarding_(
+          options.skip_autofill_assistant_onboarding),
+      suppress_browsing_features_(options.suppress_browsing_features),
+      initial_url_(options.initial_url) {}
 
 TriggerContext::TriggerContext(std::vector<const TriggerContext*> contexts)
     : TriggerContext() {
