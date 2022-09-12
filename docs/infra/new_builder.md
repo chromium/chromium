@@ -93,9 +93,12 @@ bots, you'll likely need a large number of hosts to handle the load in parallel.
 For CI / waterfall builders or manually triggered try builders, you'll typically
 only need a single host.
 
-To acquire the hosts, please file a [capacity bug][1] (internal) and describe
-the amount needed, along with any specialized hardware that's required (e.g.
-mac hardware, attached mobile devices, a specific GPU, etc.).
+To acquire the hosts, please file a [resource request][1] (internal) and
+describe the amount needed, along with any specialized hardware that's required
+(e.g. mac hardware, attached mobile devices, a specific GPU, etc.). Note that
+even if there's hardware currently available for the new builder, a resource
+request will still be needed if the footprint of the new builder equates to
+at least 10 VMs or 100 CPU cores.
 
 See [infradata docs][4] (internal) for information on how to register
 the hardware to be used by your builder.
@@ -656,7 +659,7 @@ If you're in need of further assistance, if you're not sure about
 one or more steps, or if you found this documentation lacking, please
 reach out to infra-dev@chromium.org or [file a bug][19]!
 
-[1]: http://go/file-chrome-resource-bug
+[1]: http://go/i-need-hw
 [3]: https://bit.ly/chromium-build-naming
 [4]: http://go/chromium-hardware
 [5]: https://chromium.googlesource.com/chromium/tools/build/+/HEAD/recipes/recipe_modules/chromium_tests_builder_config
