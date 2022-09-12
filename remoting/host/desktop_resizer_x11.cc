@@ -17,7 +17,6 @@
 #include "remoting/host/x11_crtc_resizer.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/randr.h"
-#include "ui/gfx/x/scoped_ignore_errors.h"
 
 // On Linux, we use the xrandr extension to change the desktop resolution.
 //
@@ -162,12 +161,6 @@ void DesktopResizerX11::SetResolution(const ScreenResolution& resolution,
                                       webrtc::ScreenId screen_id) {
   if (!has_randr_ || !is_virtual_session_)
     return;
-
-  // Ignore X errors encountered while resizing the display. We might hit an
-  // error, for example if xrandr has been used to add a mode with the same
-  // name as our mode, or to remove it. We don't want to terminate the process
-  // if this happens.
-  x11::ScopedIgnoreErrors ignore_errors(connection_);
 
   // Grab the X server while we're changing the display resolution. This ensures
   // that the display configuration doesn't change under our feet.
