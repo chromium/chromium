@@ -457,18 +457,19 @@ void DownloadController::OnDownloadUpdated(DownloadItem* item) {
 }
 
 void DownloadController::OnDangerousDownload(DownloadItem* item) {
+  LOG(ERROR) << "DownloadController::OnDangerousDownload";
   WebContents* web_contents = content::DownloadItemUtils::GetWebContents(item);
-  if (!web_contents) {
-    auto download_manager_getter = std::make_unique<DownloadManagerGetter>(
-        content::DownloadItemUtils::GetBrowserContext(item)
-            ->GetDownloadManager());
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&RemoveDownloadItem, std::move(download_manager_getter),
-                       item->GetGuid()));
-    item->RemoveObserver(this);
-    return;
-  }
+//  if (!web_contents) {
+//    auto download_manager_getter = std::make_unique<DownloadManagerGetter>(
+//        content::DownloadItemUtils::GetBrowserContext(item)
+//            ->GetDownloadManager());
+//    content::GetUIThreadTaskRunner({})->PostTask(
+//        FROM_HERE,
+//        base::BindOnce(&RemoveDownloadItem, std::move(download_manager_getter),
+//                       item->GetGuid()));
+//    item->RemoveObserver(this);
+//    return;
+//  }
 
   ui::ViewAndroid* view_android =
       web_contents ? web_contents->GetNativeView() : nullptr;

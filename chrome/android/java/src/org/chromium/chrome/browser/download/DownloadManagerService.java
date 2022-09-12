@@ -910,7 +910,7 @@ public class DownloadManagerService implements DownloadController.Observer,
                 hasUserGesture ? UmaDownloadResumption.CLICKED : UmaDownloadResumption.AUTO_STARTED;
         DownloadNotificationUmaHelper.recordDownloadResumptionHistogram(uma);
         if (progress == null) {
-            assert !item.getDownloadInfo().isPaused();
+//            assert !item.getDownloadInfo().isPaused();
             // If the download was not resumed before, the browser must have been killed while the
             // download is active.
             if (!sFirstSeenDownloadIds.contains(item.getId())) {
@@ -925,7 +925,7 @@ public class DownloadManagerService implements DownloadController.Observer,
             // If user manually resumes a download, update the connection type that the download
             // can start. If the previous connection type is metered, manually resuming on an
             // unmetered network should not affect the original connection type.
-            if (!progress.mCanDownloadWhileMetered) {
+            if (progress != null && !progress.mCanDownloadWhileMetered) {
                 progress.mCanDownloadWhileMetered =
                         isActiveNetworkMetered(ContextUtils.getApplicationContext());
             }

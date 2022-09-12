@@ -1001,6 +1001,8 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!download->IsTransient());
 
+  LOG(ERROR) << "ChromeDownloadManagerDelegate::RequestConfirmation";
+
 // TODO(xingliu): We should abstract a DownloadFilePicker interface and make all
 // platform use it.
 #if BUILDFLAG(IS_ANDROID)
@@ -1014,24 +1016,40 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
       return;
     }
 
-    if (!web_contents || reason == DownloadConfirmationReason::UNEXPECTED) {
+    if (!web_contents) {
+        if (reason == DownloadConfirmationReason::PREFERENCE) {
+            std::move(callback).Run(
+                DownloadConfirmationResult::CONTINUE_WITHOUT_CONFIRMATION,
+                suggested_path, absl::nullopt /*download_schedule*/);
+            return;
+        }
+        if (reason == DownloadConfirmationReason::TARGET_PATH_NOT_WRITEABLE) {
+            OnDownloadCanceled(download, true /* has_no_external_storage */);
+            std::move(callback).Run(DownloadConfirmationResult::CANCELED,
+                                    base::FilePath(),
+                                    absl::nullopt /*download_schedule*/);
+            return;
+        }
+    }
+
+    if (reason == DownloadConfirmationReason::UNEXPECTED) {
       // If there are no web_contents and there are no errors (ie. location
       // dialog is only being requested because of a user preference),
       // continue.
-      if (reason == DownloadConfirmationReason::PREFERENCE) {
-        std::move(callback).Run(
-            DownloadConfirmationResult::CONTINUE_WITHOUT_CONFIRMATION,
-            suggested_path, absl::nullopt /*download_schedule*/);
-        return;
-      }
+//      if (reason == DownloadConfirmationReason::PREFERENCE) {
+//        std::move(callback).Run(
+//            DownloadConfirmationResult::CONTINUE_WITHOUT_CONFIRMATION,
+//            suggested_path, absl::nullopt /*download_schedule*/);
+//        return;
+//      }
 
-      if (reason == DownloadConfirmationReason::TARGET_PATH_NOT_WRITEABLE) {
-        OnDownloadCanceled(download, true /* has_no_external_storage */);
-        std::move(callback).Run(DownloadConfirmationResult::CANCELED,
-                                base::FilePath(),
-                                absl::nullopt /*download_schedule*/);
-        return;
-      }
+//      if (reason == DownloadConfirmationReason::TARGET_PATH_NOT_WRITEABLE) {
+//        OnDownloadCanceled(download, true /* has_no_external_storage */);
+//        std::move(callback).Run(DownloadConfirmationResult::CANCELED,
+//                                base::FilePath(),
+//                                absl::nullopt /*download_schedule*/);
+//        return;
+//      }
 
       // If we cannot reserve the path and the WebContents is already gone,
       // there is no way to prompt user for a dialog. This could happen after
@@ -1054,6 +1072,15 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
                                 base::FilePath(),
                                 absl::nullopt /*download_schedule*/);
         return;
+      }
+
+      if (!web_contents) {
+//          std::move(callback).Run(
+//                DownloadConfirmationResult::CONTINUE_WITHOUT_CONFIRMATION,
+//                suggested_path, absl::nullopt /*download_schedule*/);
+          DuplicateDownloadDialogBridgeDelegate::GetInstance()->CreateDialog(
+            download, suggested_path, web_contents, std::move(callback));
+          return;
       }
 
       bool show_download_later_dialog = ShouldShowDownloadLaterDialog(download);
@@ -1093,12 +1120,16 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
         dialog_type = DownloadLocationDialogType::NAME_TOO_LONG;
         break;
 
+      case DownloadConfirmationReason::DANGEROUS:
+        dialog_type = DownloadLocationDialogType::DANGEROUS;
+        break;
+
       case DownloadConfirmationReason::PREFERENCE:
       default:
         break;
     }
 
-    gfx::NativeWindow native_window = web_contents->GetTopLevelNativeWindow();
+    gfx::NativeWindow native_window = web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr;
     ShowDownloadDialog(
         native_window, download->GetTotalBytes(), dialog_type, suggested_path,
         ShouldShowDownloadLaterDialog(download),

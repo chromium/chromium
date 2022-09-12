@@ -249,6 +249,100 @@ public final class DownloadInfo {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DownloadInfo that = (DownloadInfo) o;
+
+        if (mBytesReceived != that.mBytesReceived) return false;
+        if (mBytesTotalSize != that.mBytesTotalSize) return false;
+        if (mHasUserGesture != that.mHasUserGesture) return false;
+        if (mIsGETRequest != that.mIsGETRequest) return false;
+        if (mTimeRemainingInMillis != that.mTimeRemainingInMillis) return false;
+        if (mIsResumable != that.mIsResumable) return false;
+        if (mIsPaused != that.mIsPaused) return false;
+        if (mIsOffTheRecord != that.mIsOffTheRecord) return false;
+        if (mIsOfflinePage != that.mIsOfflinePage) return false;
+        if (mState != that.mState) return false;
+        if (mLastAccessTime != that.mLastAccessTime) return false;
+        if (mIsDangerous != that.mIsDangerous) return false;
+        if (mIsOpenable != that.mIsOpenable) return false;
+        if (mIsTransient != that.mIsTransient) return false;
+        if (mIsParallelDownload != that.mIsParallelDownload) return false;
+        if (mPendingState != that.mPendingState) return false;
+        if (mFailState != that.mFailState) return false;
+        if (mShouldPromoteOrigin != that.mShouldPromoteOrigin) return false;
+        if (mUrl != null ? !mUrl.equals(that.mUrl) : that.mUrl != null) return false;
+        if (mUserAgent != null ? !mUserAgent.equals(that.mUserAgent) : that.mUserAgent != null)
+            return false;
+        if (mMimeType != null ? !mMimeType.equals(that.mMimeType) : that.mMimeType != null)
+            return false;
+        if (mCookie != null ? !mCookie.equals(that.mCookie) : that.mCookie != null) return false;
+        if (mFileName != null ? !mFileName.equals(that.mFileName) : that.mFileName != null)
+            return false;
+        if (mDescription != null ? !mDescription.equals(that.mDescription) : that.mDescription != null)
+            return false;
+        if (mFilePath != null ? !mFilePath.equals(that.mFilePath) : that.mFilePath != null)
+            return false;
+        if (mReferrer != null ? !mReferrer.equals(that.mReferrer) : that.mReferrer != null)
+            return false;
+        if (mOriginalUrl != null ? !mOriginalUrl.equals(that.mOriginalUrl) : that.mOriginalUrl != null)
+            return false;
+        if (mDownloadGuid != null ? !mDownloadGuid.equals(that.mDownloadGuid) : that.mDownloadGuid != null)
+            return false;
+        if (mContentDisposition != null ? !mContentDisposition.equals(that.mContentDisposition) : that.mContentDisposition != null)
+            return false;
+        if (mProgress != null ? !mProgress.equals(that.mProgress) : that.mProgress != null)
+            return false;
+        if (mOTRProfileId != null ? !mOTRProfileId.equals(that.mOTRProfileId) : that.mOTRProfileId != null)
+            return false;
+        if (mContentId != null ? !mContentId.equals(that.mContentId) : that.mContentId != null)
+            return false;
+        if (mIcon != null ? !mIcon.equals(that.mIcon) : that.mIcon != null) return false;
+        return mSchedule != null ? mSchedule.equals(that.mSchedule) : that.mSchedule == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = mUrl != null ? mUrl.hashCode() : 0;
+        result = 31 * result + (mUserAgent != null ? mUserAgent.hashCode() : 0);
+        result = 31 * result + (mMimeType != null ? mMimeType.hashCode() : 0);
+        result = 31 * result + (mCookie != null ? mCookie.hashCode() : 0);
+        result = 31 * result + (mFileName != null ? mFileName.hashCode() : 0);
+        result = 31 * result + (mDescription != null ? mDescription.hashCode() : 0);
+        result = 31 * result + (mFilePath != null ? mFilePath.hashCode() : 0);
+        result = 31 * result + (mReferrer != null ? mReferrer.hashCode() : 0);
+        result = 31 * result + (mOriginalUrl != null ? mOriginalUrl.hashCode() : 0);
+        result = 31 * result + (int) (mBytesReceived ^ (mBytesReceived >>> 32));
+        result = 31 * result + (int) (mBytesTotalSize ^ (mBytesTotalSize >>> 32));
+        result = 31 * result + (mDownloadGuid != null ? mDownloadGuid.hashCode() : 0);
+        result = 31 * result + (mHasUserGesture ? 1 : 0);
+        result = 31 * result + (mContentDisposition != null ? mContentDisposition.hashCode() : 0);
+        result = 31 * result + (mIsGETRequest ? 1 : 0);
+        result = 31 * result + (mProgress != null ? mProgress.hashCode() : 0);
+        result = 31 * result + (int) (mTimeRemainingInMillis ^ (mTimeRemainingInMillis >>> 32));
+        result = 31 * result + (mIsResumable ? 1 : 0);
+        result = 31 * result + (mIsPaused ? 1 : 0);
+        result = 31 * result + (mIsOffTheRecord ? 1 : 0);
+        result = 31 * result + (mOTRProfileId != null ? mOTRProfileId.hashCode() : 0);
+        result = 31 * result + (mIsOfflinePage ? 1 : 0);
+        result = 31 * result + mState;
+        result = 31 * result + (int) (mLastAccessTime ^ (mLastAccessTime >>> 32));
+        result = 31 * result + (mIsDangerous ? 1 : 0);
+        result = 31 * result + (mContentId != null ? mContentId.hashCode() : 0);
+        result = 31 * result + (mIsOpenable ? 1 : 0);
+        result = 31 * result + (mIsTransient ? 1 : 0);
+        result = 31 * result + (mIsParallelDownload ? 1 : 0);
+        result = 31 * result + (mIcon != null ? mIcon.hashCode() : 0);
+        result = 31 * result + mPendingState;
+        result = 31 * result + mFailState;
+        result = 31 * result + (mShouldPromoteOrigin ? 1 : 0);
+        result = 31 * result + (mSchedule != null ? mSchedule.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "DownloadInfo{" +
                 "mUrl=" + mUrl +

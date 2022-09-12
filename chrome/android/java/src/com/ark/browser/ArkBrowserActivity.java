@@ -23,6 +23,7 @@ import com.ark.browser.core.UserAgentManager;
 import com.ark.browser.tab.TabListManager;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITabGroup;
+import com.ark.browser.ui.dialog.MainMenuDialog;
 import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.Callback;
@@ -238,37 +239,6 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
         }
 
         mViewHolder.onStart();
-
-
-        DownloadManagerService.getDownloadManagerService().addDownloadObserver(new DownloadManagerService.DownloadObserver() {
-            @Override
-            public void onAllDownloadsRetrieved(List<DownloadItem> list, ProfileKey profileKey) {
-                ArkLogger.e(ArkBrowserActivity.class, "onAllDownloadsRetrieved size=" + list.size());
-            }
-
-            @Override
-            public void onDownloadItemCreated(DownloadItem item) {
-                ArkLogger.e(ArkBrowserActivity.class, "onDownloadItemCreated item=" + item);
-            }
-
-            @Override
-            public void onDownloadItemUpdated(DownloadItem item) {
-                ArkLogger.e(ArkBrowserActivity.class, "onDownloadItemUpdated item=" + item);
-            }
-
-            @Override
-            public void onDownloadItemRemoved(String guid) {
-                ArkLogger.e(ArkBrowserActivity.class, "onDownloadItemRemoved guid=" + guid);
-            }
-
-            @Override
-            public void onAddOrReplaceDownloadSharedPreferenceEntry(ContentId id) {
-                ArkLogger.e(ArkBrowserActivity.class, "onAddOrReplaceDownloadSharedPreferenceEntry id=" + id);
-            }
-        });
-        DownloadManagerService.getDownloadManagerService()
-                .getAllDownloads(OTRProfileID.getPrimaryOTRProfileID());
-
     }
 
     @Override
@@ -357,7 +327,7 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
                 });
 
                 ImageView btnMenu = findViewById(R.id.btn_menu);
-                btnMenu.setOnClickListener(v -> showMenuDialog());
+                btnMenu.setOnClickListener(v -> MainMenuDialog.show(ArkBrowserActivity.this));
 
 
                 TraceEvent.end("setContentView(R.layout.main)");
@@ -474,84 +444,6 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
                 }
             });
         }
-    }
-
-    private void showMenuDialog() {
-        View view = LayoutInflater.from(ArkBrowserActivity.this).inflate(R.layout.layout_menu, null);
-
-        AlertDialog dialog = new AlertDialog.Builder(ArkBrowserActivity.this)
-                .setView(view)
-                .create();
-
-        TextView userAgentButton = view.findViewById(R.id.btn_user_agent);
-        userAgentButton.setOnClickListener(v -> {
-            dialog.dismiss();
-            showUserAgentSelector();
-        });
-
-        TextView refreshButton = view.findViewById(R.id.btn_refresh);
-        refreshButton.setOnClickListener(v -> {
-            Tab tab = getActivityTab();
-            if (tab != null) {
-                tab.reload();
-            }
-            dialog.dismiss();
-        });
-
-        dialog.show();
-
-        //设置弹窗在底部
-        Window window = dialog.getWindow();
-        window.setGravity(Gravity.BOTTOM);
-
-        WindowManager m = getWindowManager();
-        Display d = m.getDefaultDisplay(); //为获取屏幕宽、高
-        WindowManager.LayoutParams p = dialog.getWindow().getAttributes(); //获取对话框当前的参数值
-        p.width = d.getWidth(); //宽度设置为屏幕
-        dialog.getWindow().setAttributes(p); //设置生效
-
-    }
-
-    private void showUserAgentSelector() {
-        Tab tab = getActivityTab();
-
-        String title;
-        String host;
-        int index;
-        String[] items;
-        if (tab == null) {
-            title = "选择浏览器标识";
-            host = "default";
-            index = UserAgentManager.getDefaultUserAgentIndex();
-            items = UserAgentManager.getUserAgentNames();
-        } else {
-            host = tab.getUrl().getHost();
-            title = "选择浏览器标识:" + host;
-            index = UserAgentManager.getUserAgentIndexByUrl(host) + 1;
-            String[] names = UserAgentManager.getUserAgentNames();
-            items = new String[names.length + 1];
-            items[0] = "默认UA";
-            System.arraycopy(names, 0, items, 1, names.length);
-        }
-        ArkLogger.e(ArkBrowserActivity.class, "showUserAgentSelector index=" + index + " items=" + Arrays.toString(items));
-        AlertDialog selector = new AlertDialog.Builder(ArkBrowserActivity.this)
-                .setTitle(title)
-                .setSingleChoiceItems(items, index, (dialog, which) -> {
-                    if (tab == null) {
-                        UserAgentManager.setDefaultUserAgentIndex(which);
-                    } else {
-                        which -= 1;
-                        UserAgentManager.setUserAgentByUrl(host, which);
-                        if (tab.getWebContents() != null) {
-                            UserAgentManager.UserAgent ua = UserAgentManager.getUserAgent(which);
-                            ContentUtils.setUserAgentOverride(tab.getWebContents(), ua);
-                        }
-                    }
-
-                    dialog.dismiss();
-                })
-                .create();
-        selector.show();
     }
 
 }

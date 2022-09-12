@@ -11,9 +11,11 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.download.DownloadLocationDialogType;
 import org.chromium.chrome.browser.download.interstitial.NewDownloadTab;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -69,12 +71,28 @@ public class DownloadDialogBridge {
     }
 
     @CalledByNative
-    private void showDialog(WindowAndroid windowAndroid, long totalBytes,
+    private void showDialog(@Nullable WindowAndroid windowAndroid, long totalBytes,
                             @ConnectionType int connectionType, @DownloadLocationDialogType int dialogType,
                             String suggestedPath, boolean supportsLaterDialog, boolean isIncognito) {
         mWindowAndroid = windowAndroid;
-        Activity activity = windowAndroid.getActivity().get();
-        Log.e("DownloadDialogBridge", "showDialog activity=" + activity);
+        Activity activity;
+//        if (activity == null) {
+//            activity = ApplicationStatus.getLastTrackedFocusedActivity();
+//            Log.e("DownloadDialogBridge", "showDialog getLastTrackedFocusedActivity activity=" + activity);
+//            if (activity == null) {
+//                onCancel();
+//                return;
+//            }
+//        }
+
+        if (windowAndroid == null) {
+            activity = ApplicationStatus.getLastTrackedFocusedActivity();
+        } else {
+            activity = windowAndroid.getActivity().get();
+        }
+        Log.e("DownloadDialogBridge", "showDialog windowAndroid="
+                + windowAndroid + " activity=" + activity);
+
         if (activity == null) {
             onCancel();
             return;
@@ -88,35 +106,54 @@ public class DownloadDialogBridge {
                 "showDialog totalBytes=%s, connectionType=%s, dialogType=%s, supportsLaterDialog=%s, isIncognito=%s, suggestedPath=%s",
                 totalBytes, connectionType, dialogType, supportsLaterDialog, isIncognito, suggestedPath);
 
-        AlertDialog dialog = new AlertDialog.Builder(activity)
-                .setTitle("Download File?")
-                .setMessage("Are you sure to download file? ")
-                .setPositiveButton(org.chromium.chrome.browser.download.R.string.ok, (dialog13, which) -> {
-                    File targetFile = new File(mSuggestedPath);
-                    if (targetFile.exists()) {
-                        File parentFile = targetFile.getParentFile();
-                        if (parentFile == null) {
-                            parentFile = new File(activity.getExternalCacheDir(), "download");
+        AlertDialog dialog;
+        if (dialogType == DownloadLocationDialogType.DANGEROUS) {
+            dialog = new AlertDialog.Builder(activity)
+                    .setTitle("Download Dangerous File?")
+                    .setMessage("Are you sure to download this dangerous file? ")
+                    .setPositiveButton(org.chromium.chrome.browser.download.R.string.ok, (dialog13, which) -> {
+                        onComplete();
+                        dialog13.dismiss();
+                    })
+                    .setNegativeButton(org.chromium.chrome.browser.download.R.string.cancel, (dialog12, which) -> {
+                        onCancel();
+                        dialog12.dismiss();
+                    })
+                    .setOnCancelListener(dialog1 -> DownloadDialogBridge.this.onCancel())
+                    .create();
+        } else {
+            dialog = new AlertDialog.Builder(activity)
+                    .setTitle("Download File?")
+                    .setMessage("Are you sure to download file? ")
+                    .setPositiveButton(org.chromium.chrome.browser.download.R.string.ok, (dialog13, which) -> {
+                        File targetFile = new File(mSuggestedPath);
+                        if (targetFile.exists()) {
+                            File parentFile = targetFile.getParentFile();
+                            if (parentFile == null) {
+                                parentFile = new File(activity.getExternalCacheDir(), "download");
+                            }
+                            String parent = parentFile.getAbsolutePath();
+                            String name = targetFile.getName();
+                            int i = name.lastIndexOf('.');
+                            if (i < 0) {
+                                mSuggestedPath = generateNewFilePath(parent, name, null);
+                            } else {
+                                mSuggestedPath = generateNewFilePath(parent, name.substring(0, i), name.substring(i));
+                            }
                         }
-                        String parent = parentFile.getAbsolutePath();
-                        String name = targetFile.getName();
-                        int i = name.lastIndexOf('.');
-                        if (i < 0) {
-                            mSuggestedPath = generateNewFilePath(parent, name, null);
-                        } else {
-                            mSuggestedPath = generateNewFilePath(parent, name.substring(0, i), name.substring(i));
-                        }
-                    }
-                    Log.e("DownloadDialogBridge", "setPositiveButton mSuggestedPath=%s", mSuggestedPath);
-                    onComplete();
-                    dialog13.dismiss();
-                })
-                .setNegativeButton(org.chromium.chrome.browser.download.R.string.cancel, (dialog12, which) -> {
-                    onCancel();
-                    dialog12.dismiss();
-                })
-                .setOnCancelListener(dialog1 -> DownloadDialogBridge.this.onCancel())
-                .create();
+                        Log.e("DownloadDialogBridge", "setPositiveButton mSuggestedPath=%s", mSuggestedPath);
+                        onComplete();
+                        dialog13.dismiss();
+                    })
+                    .setNegativeButton(org.chromium.chrome.browser.download.R.string.cancel, (dialog12, which) -> {
+                        onCancel();
+                        dialog12.dismiss();
+                    })
+                    .setOnCancelListener(dialog1 -> DownloadDialogBridge.this.onCancel())
+                    .create();
+        }
+
+
         dialog.show();
     }
 

@@ -18,7 +18,8 @@ enum class DownloadLocationDialogType {
   NAME_CONFLICT = 4,  // Error dialog, there is already a file with that name.
   NAME_TOO_LONG = 5,  // Error dialog, the file name is too long.
   LOCATION_SUGGESTION = 6,  // Dialog showing alternative location suggestion.
-  kMaxValue = LOCATION_SUGGESTION
+  DANGEROUS = 7,  // Dangerous.
+  kMaxValue = DANGEROUS
 };
 
 // Result of download location dialog.

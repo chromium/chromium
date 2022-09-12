@@ -53,6 +53,9 @@ chrome_java_sources = [
   "java/src/com/ark/browser/tab/core/TabGroupImpl.java",
   "java/src/com/ark/browser/tab/core/TabImpl.java",
 
+  "java/src/com/ark/browser/ui/dialog/DownloadManagerDialog.java",
+  "java/src/com/ark/browser/ui/dialog/MainMenuDialog.java",
+  "java/src/com/ark/browser/ui/dialog/UserAgentSelector.java",
   "java/src/com/ark/browser/ui/drawable/MaterialProgressDrawable.java",
   "java/src/com/ark/browser/ui/widget/DrawableTintTextView.java",
   "java/src/com/ark/browser/ui/widget/ShadowCircleImageView.java",

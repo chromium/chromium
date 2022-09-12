@@ -59,10 +59,10 @@
             />
 
         <com.ark.browser.ui.widget.DrawableTintTextView
-            android:id="@+id/btn_refresh1"
+            android:id="@+id/btn_download_manager"
             style="@style/menu_item"
-            android:drawableTop="@drawable/ic_refresh"
-            android:text="刷新"
+            android:drawableTop="@drawable/ic_file_download_24dp"
+            android:text="下载"
             />
 
         <com.ark.browser.ui.widget.DrawableTintTextView

@@ -5,10 +5,17 @@
 package org.chromium.chrome.browser.download;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.widget.Toast;
 
+import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.io.File;
 
 /**
  * Glues dangerous download dialogs UI code and handles the communication to download native
@@ -46,7 +53,50 @@ public class DangerousDownloadDialogBridge {
             onCancel(guid);
             return;
         }
-        // TODO
+
+        Toast.makeText(activity, "TODO showDangerousDialog", Toast.LENGTH_SHORT).show();
+
+        AlertDialog dialog = new AlertDialog.Builder(activity)
+                .setTitle("Download Dangerous File?")
+                .setMessage("Are you sure to download this dangerous file? ")
+                .setPositiveButton(org.chromium.chrome.browser.download.R.string.ok, (dialog13, which) -> {
+                    DangerousDownloadDialogBridge.this.onAccepted(guid);
+                    dialog13.dismiss();
+                })
+                .setNegativeButton(org.chromium.chrome.browser.download.R.string.cancel, (dialog12, which) -> {
+                    DangerousDownloadDialogBridge.this.onCancel(guid);
+                    dialog12.dismiss();
+                })
+                .setOnCancelListener(dialog1 -> DangerousDownloadDialogBridge.this.onCancel(guid))
+                .create();
+        dialog.show();
+    }
+
+    @CalledByNative
+    public void showGlobalDialog(String guid, String fileName,
+                           long totalBytes, int iconId, boolean isOffTheRecord) {
+        Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
+        if (activity == null) {
+            Toast.makeText(ContextUtils.getApplicationContext(),
+                    "showGlobalDialog activity is null!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Toast.makeText(activity, "TODO showGlobalDialog", Toast.LENGTH_SHORT).show();
+
+        AlertDialog dialog = new AlertDialog.Builder(activity)
+                .setTitle("Download Dangerous File?")
+                .setMessage("Are you sure to download this dangerous file? ")
+                .setPositiveButton(org.chromium.chrome.browser.download.R.string.ok, (dialog13, which) -> {
+                    DangerousDownloadDialogBridge.this.onAccepted(guid);
+                    dialog13.dismiss();
+                })
+                .setNegativeButton(org.chromium.chrome.browser.download.R.string.cancel, (dialog12, which) -> {
+                    DangerousDownloadDialogBridge.this.onCancel(guid);
+                    dialog12.dismiss();
+                })
+                .setOnCancelListener(dialog1 -> DangerousDownloadDialogBridge.this.onCancel(guid))
+                .create();
+        dialog.show();
     }
 
     @CalledByNative

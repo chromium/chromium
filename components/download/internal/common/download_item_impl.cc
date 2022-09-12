@@ -652,6 +652,7 @@ void DownloadItemImpl::Resume(bool user_resume) {
     case IN_PROGRESS_INTERNAL:
       if (!IsPaused())
         return;
+      last_reason_ = DOWNLOAD_INTERRUPT_REASON_NONE;
       paused_ = false;
       if (job_)
         job_->Resume(true);
@@ -662,6 +663,7 @@ void DownloadItemImpl::Resume(bool user_resume) {
 
     case INTERRUPTED_INTERNAL:
       UpdateResumptionInfo(paused_ || user_resume);
+      last_reason_ = DOWNLOAD_INTERRUPT_REASON_NONE;
       paused_ = false;
       if (auto_resume_count_ >= kMaxAutoResumeAttempts) {
         RecordAutoResumeCountLimitReached(GetLastReason());
@@ -1848,6 +1850,7 @@ void DownloadItemImpl::OnDownloadTargetDetermined(
   DCHECK(intermediate_path.DirName() == target_path.DirName());
 
   intermediate_path_ = intermediate_path;
+  last_reason_ = DOWNLOAD_INTERRUPT_REASON_NONE;
 
   job_->Start(download_file_.get(),
        base::BindRepeating(&DownloadItemImpl::OnDownloadFileInitialized,

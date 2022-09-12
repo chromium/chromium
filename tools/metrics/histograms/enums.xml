@@ -25585,6 +25585,7 @@ Called by update_document_policy_enum.py.-->
   <int value="4" label="NAME_CONFLICT"/>
   <int value="5" label="NAME_TOO_LONG"/>
   <int value="6" label="LOCATION_SUGGESTION"/>
+  <int value="7" label="DANGEROUS"/>
 </enum>
 
 <enum name="DownloadLocationDirectoryType">

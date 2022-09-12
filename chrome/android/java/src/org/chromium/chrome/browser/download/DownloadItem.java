@@ -9,10 +9,12 @@ import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.components.download.DownloadState;
 import org.chromium.components.download.ResumeMode;
 import org.chromium.components.offline_items_collection.ContentId;
+import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
 import org.chromium.components.offline_items_collection.OfflineItemFilter;
 import org.chromium.components.offline_items_collection.OfflineItemState;
+import org.chromium.components.offline_items_collection.PendingState;
 
 /**
  * A generic class representing a download item. The item can be either downloaded through the
@@ -260,6 +262,71 @@ public class DownloadItem {
     public boolean isIndeterminate() {
         Progress progress = getDownloadInfo().getProgress();
         return progress == null || progress.isIndeterminate();
+    }
+
+    public boolean isComplete() {
+        return mDownloadInfo.state() == DownloadState.COMPLETE && mDownloadInfo.getBytesReceived() != 0;
+    }
+
+    public boolean isPaused() {
+
+        // Only the native downloads backend knows about the download.
+        if (mDownloadInfo.state() == DownloadState.IN_PROGRESS) {
+            return mDownloadInfo.isPaused();
+        } else {
+            return mDownloadInfo.state() == DownloadState.INTERRUPTED
+                    && mDownloadInfo.getPendingState() == PendingState.NOT_PENDING;
+        }
+
+//        return DownloadUtils.isDownloadPaused(this);
+    }
+
+    public boolean isPending() {
+        return mDownloadInfo.state() == DownloadState.INTERRUPTED
+                && mDownloadInfo.getPendingState() != PendingState.NOT_PENDING;
+//        return !isFailed() && DownloadUtils.isDownloadPending(this);
+    }
+
+    public boolean isDownloading() {
+        return !isPaused() && mDownloadInfo.state() == DownloadState.IN_PROGRESS;
+    }
+
+    public boolean isInterrupted() {
+        return mDownloadInfo.state() == DownloadState.INTERRUPTED;
+    }
+
+    public boolean isCanceled() {
+        return mDownloadInfo.state() == DownloadState.CANCELLED;
+    }
+
+    public boolean isFailed() {
+        int state = mDownloadInfo.state();
+        if (state != DownloadState.INTERRUPTED && state != DownloadState.CANCELLED) {
+            return false;
+        }
+        return mDownloadInfo.getFailState() != FailState.NO_FAILURE;
+//        return !isComplete() && !isDownloading() && !isPaused() && !isPending() && !isCanceled();
+    }
+
+    public boolean canPause() {
+        return !isComplete() && !isPaused() && isDownloading() || isPending();
+    }
+
+    public boolean canResume() {
+        if (isDownloading()) {
+            return false;
+        }
+        if (isFailed()) {
+            @ResumeMode
+            int resumeMode = DownloadUtils.getResumeMode(
+                    mDownloadInfo.getUrl().getSpec(), mDownloadInfo.getFailState());
+            return resumeMode == ResumeMode.IMMEDIATE_CONTINUE || resumeMode == ResumeMode.USER_CONTINUE;
+        }
+        return !isComplete() && mDownloadInfo.isResumable() && isPaused();
+    }
+
+    public boolean canRetry() {
+        return !isComplete() && !canPause() && !canResume();
     }
 
     @Override

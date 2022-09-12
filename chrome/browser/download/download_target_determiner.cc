@@ -139,6 +139,7 @@ void DownloadTargetDeterminer::DoLoop() {
   do {
     State current_state = next_state_;
     next_state_ = STATE_NONE;
+    LOG(ERROR) << "DownloadTargetDeterminer::DoLoop current_state=" << current_state;
 
     switch (current_state) {
       case STATE_GENERATE_TARGET_PATH:
@@ -171,11 +172,11 @@ void DownloadTargetDeterminer::DoLoop() {
       case STATE_CHECK_DOWNLOAD_URL:
         result = DoCheckDownloadUrl();
         break;
-      case STATE_DETERMINE_INTERMEDIATE_PATH:
-        result = DoDetermineIntermediatePath();
-        break;
       case STATE_CHECK_VISITED_REFERRER_BEFORE:
         result = DoCheckVisitedReferrerBefore();
+        break;
+      case STATE_DETERMINE_INTERMEDIATE_PATH:
+        result = DoDetermineIntermediatePath();
         break;
       case STATE_NONE:
         NOTREACHED();
@@ -197,6 +198,8 @@ DownloadTargetDeterminer::Result
   DCHECK_EQ(confirmation_reason_, DownloadConfirmationReason::NONE);
   DCHECK(!should_notify_extensions_);
   bool is_forced_path = !download_->GetForcedFilePath().empty();
+
+  LOG(ERROR) << "DownloadTargetDeterminer::DoGenerateTargetPath";
 
   next_state_ = STATE_SET_MIXED_CONTENT_STATUS;
 
@@ -541,6 +544,9 @@ DownloadTargetDeterminer::DoRequestConfirmation() {
     }
 #endif
 
+    LOG(ERROR) << "DoRequestConfirmation confirmation_reason_="
+               << static_cast<std::underlying_type<DownloadConfirmationReason>::type>(confirmation_reason_);
+
     // If there is a non-neutral confirmation reason, prompt the user.
     if (confirmation_reason_ != DownloadConfirmationReason::NONE) {
       delegate_->RequestConfirmation(
@@ -591,12 +597,34 @@ void DownloadTargetDeterminer::ShowPromptDone(
     DoLoop();
 }
 
+void DownloadTargetDeterminer::RequestConfirmationDangerousDone(
+        DownloadConfirmationResult result,
+        const base::FilePath& virtual_path,
+        absl::optional<download::DownloadSchedule> download_schedule) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    DCHECK(!download_->IsTransient());
+
+//    danger_type_ = download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
+    danger_level_ = DownloadFileType::NOT_DANGEROUS;
+    if (result == DownloadConfirmationResult::CANCELED) {
+        danger_type_ = download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
+        ScheduleCallbackAndDeleteSelf(
+                download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED);
+        return;
+    }
+    danger_type_ = download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED;
+    confirmation_reason_ = DownloadConfirmationReason::NONE;
+//    download_->ValidateDangerousDownload();
+    ScheduleCallbackAndDeleteSelf(download::DOWNLOAD_INTERRUPT_REASON_NONE);
+}
+
 void DownloadTargetDeterminer::RequestConfirmationDone(
     DownloadConfirmationResult result,
     const base::FilePath& virtual_path,
     absl::optional<download::DownloadSchedule> download_schedule) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!download_->IsTransient());
+
   DVLOG(20) << "User selected path:" << virtual_path.AsUTF8Unsafe();
 #if BUILDFLAG(IS_ANDROID)
   is_checking_dialog_confirmed_path_ = false;
@@ -863,7 +891,7 @@ DownloadTargetDeterminer::Result
   DCHECK(!virtual_path_.empty());
   next_state_ = STATE_CHECK_VISITED_REFERRER_BEFORE;
 
-  LOG(ERROR) << "DownloadTargetDeterminer::DoCheckDownloadUrl";
+  LOG(ERROR) << "DownloadTargetDeterminer::DoCheckDownloadUrl danger_type=" << danger_type_;
 
   // If user has validated a dangerous download, don't check.
   if (danger_type_ == download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED)
@@ -881,6 +909,7 @@ void DownloadTargetDeterminer::CheckDownloadUrlDone(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DVLOG(20) << "URL Check Result:" << danger_type;
   DCHECK_EQ(STATE_CHECK_VISITED_REFERRER_BEFORE, next_state_);
+  LOG(ERROR) << "URL Check Result:" << danger_type;
   danger_type_ = danger_type;
   DoLoop();
 }
@@ -890,7 +919,7 @@ DownloadTargetDeterminer::Result
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   next_state_ = STATE_DETERMINE_INTERMEDIATE_PATH;
 
-  LOG(ERROR) << "DownloadTargetDeterminer::DoCheckVisitedReferrerBefore";
+  LOG(ERROR) << "DownloadTargetDeterminer::DoCheckVisitedReferrerBefore danger_type=" << danger_type_;
 
   // Checking if there are prior visits to the referrer is only necessary if the
   // danger level of the download depends on the file type.
@@ -966,7 +995,7 @@ DownloadTargetDeterminer::Result
   DCHECK(!virtual_path_.MatchesExtension(kCrdownloadSuffix));
   DCHECK(!local_path_.MatchesExtension(kCrdownloadSuffix));
 
-  LOG(ERROR) << "DownloadTargetDeterminer::DoDetermineIntermediatePath";
+  LOG(ERROR) << "DownloadTargetDeterminer::DoDetermineIntermediatePath danger_type=" << danger_type_;
 
   next_state_ = STATE_NONE;
 
@@ -1015,6 +1044,10 @@ DownloadTargetDeterminer::Result
     intermediate_path_ = GetCrDownloadPath(local_path_);
     return COMPLETE;
   }
+//  else {
+//    ScheduleCallbackAndDeleteSelf(download::DOWNLOAD_INTERRUPT_REASON_FILE_SECURITY_CHECK_FAILED);
+//    return QUIT_DOLOOP;
+//  }
 
   // If this is a resumed download, then re-use the existing intermediate path
   // if one is available. A resumed download shouldn't cause a non-dangerous
@@ -1022,8 +1055,8 @@ DownloadTargetDeterminer::Result
   // intermediate file should already be in the correct form.
   if (is_resumption_ && !download_->GetFullPath().empty() &&
       local_path_.DirName() == download_->GetFullPath().DirName()) {
-    DCHECK_NE(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-              download_->GetDangerType());
+//    DCHECK_NE(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+//              download_->GetDangerType());
     DCHECK_EQ(kCrdownloadSuffix, download_->GetFullPath().Extension());
     intermediate_path_ = download_->GetFullPath();
     return COMPLETE;
@@ -1056,6 +1089,21 @@ void DownloadTargetDeterminer::ScheduleCallbackAndDeleteSelf(
             << " Danger type:" << danger_type_
             << " Danger level:" << danger_level_
             << " Result:" << static_cast<int>(result);
+
+
+
+    if (danger_type_ != download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS
+            && danger_type_ != download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED) {
+        delegate_->RequestConfirmation(
+                download_, virtual_path_, DownloadConfirmationReason::DANGEROUS,
+                base::BindRepeating(
+                        &DownloadTargetDeterminer::RequestConfirmationDangerousDone,
+                        weak_ptr_factory_.GetWeakPtr()));
+        return;
+    }
+
+
+
   std::unique_ptr<DownloadTargetInfo> target_info(new DownloadTargetInfo);
 
   target_info->target_path = local_path_;

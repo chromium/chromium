@@ -5,8 +5,12 @@
 package org.chromium.chrome.browser.download;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
@@ -44,14 +48,33 @@ public class DuplicateDownloadDialogBridge {
      * @param callbackId Pointer to the native callback.
      */
     @CalledByNative
-    public void showDialog(WindowAndroid windowAndroid, String filePath, String pageUrl,
-            long totalBytes, boolean duplicateExists, OTRProfileID otrProfileID, long callbackId) {
-        Activity activity = windowAndroid.getActivity().get();
+    public void showDialog(@Nullable WindowAndroid windowAndroid, String filePath, String pageUrl,
+                           long totalBytes, boolean duplicateExists, OTRProfileID otrProfileID, long callbackId) {
+        Activity activity;
+        if (windowAndroid == null) {
+            activity = ApplicationStatus.getLastTrackedFocusedActivity();
+        } else {
+            activity = windowAndroid.getActivity().get();
+        }
         if (activity == null) {
             onConfirmed(callbackId, false);
             return;
         }
-        Toast.makeText(activity, "Show Duplicate Download Dialog", Toast.LENGTH_SHORT).show();
+        AlertDialog dialog = new AlertDialog.Builder(activity)
+                .setTitle("Download Duplicate File?")
+                .setMessage("Are you sure to download this duplicate file? ")
+                .setPositiveButton(org.chromium.chrome.browser.download.R.string.ok, (dialog13, which) -> {
+                    onConfirmed(callbackId, true);
+                    dialog13.dismiss();
+                })
+                .setNegativeButton(org.chromium.chrome.browser.download.R.string.cancel, (dialog12, which) -> {
+                    onConfirmed(callbackId, false);
+                    dialog12.dismiss();
+                })
+                .setOnCancelListener(dialog1 -> onConfirmed(callbackId, false))
+                .create();
+        dialog.show();
+
     }
 
     @CalledByNative

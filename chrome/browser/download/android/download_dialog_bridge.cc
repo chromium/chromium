@@ -54,8 +54,8 @@ void DownloadDialogBridge::ShowDialog(
     bool is_incognito,
     DialogCallback dialog_callback) {
     LOG(ERROR) << "ShowDialog native_window=" << native_window;
-  if (!native_window)
-    return;
+//  if (!native_window)
+//    return;
 
   UMA_HISTOGRAM_ENUMERATION("MobileDownload.Location.Dialog.Type", dialog_type);
 
@@ -88,7 +88,7 @@ void DownloadDialogBridge::ShowDialog(
 
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_DownloadDialogBridge_showDialog(
-      env, java_obj_, native_window->GetJavaObject(),
+      env, java_obj_, native_window ? native_window->GetJavaObject() : nullptr,
       static_cast<long>(total_bytes), static_cast<int>(connection_type),
       static_cast<int>(dialog_type),
       base::android::ConvertUTF8ToJavaString(env,

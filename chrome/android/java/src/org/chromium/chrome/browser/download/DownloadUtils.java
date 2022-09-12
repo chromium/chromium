@@ -371,6 +371,13 @@ public class DownloadUtils {
         }
     }
 
+    public static boolean openFile(Context context, DownloadItem item) {
+        DownloadInfo info = item.getDownloadInfo();
+        return openFile(info.getFilePath(), info.getMimeType(), info.getDownloadGuid(),
+                null, info.getOriginalUrl(), info.getReferrer(),
+                DownloadOpenSource.DOWNLOAD_HOME, context);
+    }
+
     /**
      * Opens a file in Chrome or in another app if appropriate.
      * @param filePath Path to the file to open, can be a content Uri.
@@ -383,8 +390,8 @@ public class DownloadUtils {
      * @return whether the file could successfully be opened.
      */
     public static boolean openFile(String filePath, String mimeType, String downloadGuid,
-            OTRProfileID otrProfileID, String originalUrl, String referrer,
-            @DownloadOpenSource int source, Context context) {
+                                   OTRProfileID otrProfileID, String originalUrl, String referrer,
+                                   @DownloadOpenSource int source, Context context) {
         DownloadMetrics.recordDownloadOpen(source, mimeType);
         DownloadManagerService service = DownloadManagerService.getDownloadManagerService();
 

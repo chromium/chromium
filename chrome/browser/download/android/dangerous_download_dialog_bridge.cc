@@ -43,10 +43,10 @@ void DangerousDownloadDialogBridge::Show(download::DownloadItem* download_item,
                 download_item) != download_items_.end()) {
     return;
   }
-  if (!window_android) {
-    download_item->Remove();
-    return;
-  }
+//  if (!window_android) {
+//    download_item->Remove();
+//    return;
+//  }
   download_item->AddObserver(this);
   download_items_.push_back(download_item);
 
@@ -57,15 +57,29 @@ void DangerousDownloadDialogBridge::Show(download::DownloadItem* download_item,
   bool isOffTheRecord =
       Profile::FromBrowserContext(browser_context)->IsOffTheRecord();
 
-  Java_DangerousDownloadDialogBridge_showDialog(
-      env, java_object_, window_android->GetJavaObject(),
-      base::android::ConvertUTF8ToJavaString(env, download_item->GetGuid()),
-      base::android::ConvertUTF16ToJavaString(
-          env,
-          base::UTF8ToUTF16(download_item->GetFileNameToReportUser().value())),
-      download_item->GetTotalBytes(),
-      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_WARNING),
-      isOffTheRecord);
+    if (window_android) {
+        Java_DangerousDownloadDialogBridge_showDialog(
+                env, java_object_, window_android->GetJavaObject(),
+                base::android::ConvertUTF8ToJavaString(env, download_item->GetGuid()),
+                base::android::ConvertUTF16ToJavaString(
+                        env,
+                        base::UTF8ToUTF16(download_item->GetFileNameToReportUser().value())),
+                download_item->GetTotalBytes(),
+                ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_WARNING),
+                isOffTheRecord);
+    } else {
+        Java_DangerousDownloadDialogBridge_showGlobalDialog(
+                env, java_object_,
+                base::android::ConvertUTF8ToJavaString(env, download_item->GetGuid()),
+                base::android::ConvertUTF16ToJavaString(
+                        env,
+                        base::UTF8ToUTF16(download_item->GetFileNameToReportUser().value())),
+                download_item->GetTotalBytes(),
+                ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_WARNING),
+                isOffTheRecord);
+    }
+
+
 }
 
 void DangerousDownloadDialogBridge::OnDownloadDestroyed(

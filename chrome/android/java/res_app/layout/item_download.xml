@@ -1,0 +1,104 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:paddingHorizontal="8dp"
+    android:paddingVertical="6dp"
+    >
+
+    <ImageView
+        android:id="@+id/iv_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="24dp"
+        android:gravity="center"
+        android:src="@drawable/ic_drive_file_24dp"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@id/iv_icon"
+        android:layout_toStartOf="@id/btn_action"
+        android:orientation="vertical"
+        android:paddingVertical="8dp"
+        android:layout_marginEnd="16dp"
+        >
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:text="XXX.xx"
+            android:textColor="#333333"
+            android:textSize="15sp"
+            />
+
+        <!--        <ProgressBar-->
+        <!--            android:id="@+id/progress_bar"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="3dp"-->
+        <!--            android:progressDrawable="@drawable/bg_progress_bar"-->
+        <!--            android:max="100"-->
+        <!--            android:layout_marginTop="8dp"-->
+        <!--            style="@android:style/Widget.ProgressBar.Horizontal"-->
+        <!--            />-->
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_marginTop="8dp"
+            style="?android:attr/progressBarStyleHorizontal"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            >
+
+            <TextView
+                android:id="@+id/tv_size"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:singleLine="true"
+                android:text="100.00MB"
+                android:textColor="#cccccc"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:singleLine="true"
+                android:text="100%"
+                android:textColor="#cccccc"
+                android:textSize="12sp"
+
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/btn_action"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:padding="8dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="10dp"
+        android:src="@drawable/ic_download_pending"
+        android:background="?android:attr/actionBarItemBackground"
+        android:tint="#333333" />
+
+</RelativeLayout>

@@ -48,9 +48,21 @@ void DuplicateDownloadDialogBridge::Show(
     bool duplicate_request_exists,
     content::WebContents* web_contents,
     DuplicateDownloadDialogCallback callback) {
-  DCHECK(web_contents);
+//  DCHECK(web_contents);
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> j_otr_profile_id;
+  if (!web_contents) {
+      jlong callback_id = reinterpret_cast<jlong>(
+              new DuplicateDownloadDialogCallback(std::move(callback)));
+      validator_.AddJavaCallback(callback_id);
+      Java_DuplicateDownloadDialogBridge_showDialog(
+              env, java_object_, nullptr,
+              base::android::ConvertUTF16ToJavaString(env,
+                                                      base::UTF8ToUTF16(file_path)),
+              base::android::ConvertUTF16ToJavaString(env, base::UTF8ToUTF16(page_url)),
+              total_bytes, duplicate_request_exists, j_otr_profile_id, callback_id);
+      return;
+  }
   ui::WindowAndroid* window_android = web_contents->GetTopLevelNativeWindow();
   if (!window_android) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
