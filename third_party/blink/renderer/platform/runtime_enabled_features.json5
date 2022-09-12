@@ -1099,7 +1099,7 @@
       // Also enabled when blink::features::kFileHandlingAPI is overridden
       // on the command line (or via chrome://flags).
       name: "FileHandling",
-      depends_on: ["FileSystemAccess"],
+      depends_on: ["FileSystemAccessLocal"],
       status: {"Android": "test", "default": "experimental"},
       origin_trial_feature_name: "FileHandling",
       origin_trial_os: ["win", "mac", "linux", "fuchsia", "chromeos"],
@@ -1115,8 +1115,10 @@
       status: "stable",
     },
     {
+      // Shared objects by OPFS and non-OPFS File System Access API.
       name: "FileSystemAccess",
-      status: {"Android": "test", "default": "stable"},
+      implied_by: ["FileSystemAccessLocal", "FileSystemAccessOriginPrivate"],
+      
     },
     {
       name: "FileSystemAccessAccessHandle",
@@ -1126,6 +1128,16 @@
       // In-development features for the File System Access API.
       name: "FileSystemAccessAPIExperimental",
       status: "experimental",
+    },
+    {
+      // Non-OPFS File System Access API.
+      name: "FileSystemAccessLocal",
+      status: {"Android": "test", "default": "stable"},
+    },
+    {
+      // OPFS File System Access API.
+      name: "FileSystemAccessOriginPrivate",
+      status: {"Android": "experimental", "default": "stable"},
     },
     {
       name: "FirstPartySets",
