@@ -91,6 +91,15 @@
       }
     ]
   },
+  "win-chrome-reclient": {
+    "additional_compile_targets": [
+      "base_unittests",
+      "chrome",
+      "chrome_official_builder",
+      "chrome_sizes",
+      "variations_smoke_tests"
+    ]
+  },
   "win-finch-smoke-chrome": {
     "isolated_scripts": [
       {

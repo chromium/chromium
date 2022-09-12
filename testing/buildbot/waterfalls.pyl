@@ -6729,6 +6729,17 @@
           'isolated_scripts': 'chrome_finch_smoke_tests',
         },
       },
+      'win-chrome-reclient': {
+        'additional_compile_targets': [
+           # same build target as win-chrome even if it doesn't run the tests
+          'base_unittests',
+          'chrome',
+          'chrome_official_builder',
+          'chrome_sizes',
+          'variations_smoke_tests',
+        ],
+        # no tests, stay compile only.
+      },
       'win-finch-smoke-chrome': {
         'mixins': [
           'chrome-finch-swarming-pool',
