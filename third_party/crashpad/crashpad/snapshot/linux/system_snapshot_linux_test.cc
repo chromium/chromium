@@ -29,7 +29,12 @@ namespace crashpad {
 namespace test {
 namespace {
 
-TEST(SystemSnapshotLinux, Basic) {
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_Basic DISABLED_Basic
+#else
+#define MAYBE_Basic Basic
+#endif
+TEST(SystemSnapshotLinux, MAYBE_Basic) {
   FakePtraceConnection connection;
   ASSERT_TRUE(connection.Initialize(getpid()));
 

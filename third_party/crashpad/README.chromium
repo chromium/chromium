@@ -49,3 +49,4 @@ Local Modifications:
  - Qualified calls to bit_cast<>() with base::.
  - MultiprocessExec.MultiprocessExec is disabled entirely on the Mac.
    https://crbug.com/1341377
+ - SystemSnapshotLinux.Basic is disabled on Android: https://crbug.com/1362091
