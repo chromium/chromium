@@ -313,6 +313,7 @@ grit("file_manager_gen_resources") {
 
 html_to_wrapper("html_wrapper_files") {
   in_files = ts_templates
+  template = "native"
 }
 
 # GRD for test files.
