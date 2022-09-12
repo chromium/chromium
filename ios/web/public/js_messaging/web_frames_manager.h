@@ -35,7 +35,7 @@ class WebFramesManager {
   // NOTE: Due to the asynchronous nature of JavaScript to native messsaging,
   // this object may be outdated.
   virtual WebFrame* GetMainWebFrame() = 0;
-  // Returns the web frame with |frame_id|, if one exists.
+  // Returns the web frame with `frame_id`, if one exists.
   // NOTE: Due to the asynchronous nature of JavaScript to native messsaging,
   // this object may be outdated and the WebFrame returned by this method may
   // not back a real frame in the web page.
