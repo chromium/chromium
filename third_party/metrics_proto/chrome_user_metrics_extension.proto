@@ -16,6 +16,7 @@ import "chrome_os_app_list_launch_event.proto";
 import "custom_tab_session.proto";
 import "histogram_event.proto";
 import "omnibox_event.proto";
+
 import "printer_event.proto";
 import "reporting_info.proto";
 import "sampled_profile.proto";
