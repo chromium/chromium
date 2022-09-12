@@ -662,7 +662,7 @@
     Notes can save up to <ph name="CHARACTER_LIMIT">$1<ex>1000</ex></ph> characters.
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_TIMED_OUT" desc="Title for the dialog which shows when the password manager authentication is expired.">
-    Passwords timed out
+    Google Password Manager timed out
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_TIMED_OUT_DESCRIPTION" desc="Body text for the dialog which shows when the password manager authentication is expired.">
     {NUM_MINS, plural,
