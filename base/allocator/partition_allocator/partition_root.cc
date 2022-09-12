@@ -443,7 +443,8 @@ static size_t PartitionPurgeSlotSpan(
       PA_DCHECK(num_new_entries == num_slots - slot_span->num_allocated_slots);
 
 #if BUILDFLAG(USE_FREESLOT_BITMAP)
-      FreeSlotBitmapReset(slot_span_start + (slot_size * num_slots), end_addr);
+      FreeSlotBitmapReset(slot_span_start + (slot_size * num_slots), end_addr,
+                          slot_size);
 #endif
 
       // Discard the memory.

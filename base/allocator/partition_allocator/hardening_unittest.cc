@@ -142,7 +142,7 @@ TEST(HardeningTest, SuccessfulCorruption) {
 #if BUILDFLAG(USE_FREESLOT_BITMAP)
   // This part crashes with freeslot bitmap because it detects freelist
   // corruptions, which is rather desirable behavior.
-  EXPECT_DEATH_IF_SUPPORTED(root.Alloc(kAllocSize, ""));
+  EXPECT_DEATH_IF_SUPPORTED(root.Alloc(kAllocSize, ""), "");
 #else
   // Next allocation is what was in
   // root->bucket->active_slot_span_head->freelist_head, so not the corrupted

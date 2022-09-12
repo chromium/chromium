@@ -25,18 +25,19 @@ PA_ALWAYS_INLINE uintptr_t GetFreeSlotBitmapAddressForPointer(uintptr_t ptr) {
 }
 
 // Calculates the cell address and the offset inside the cell corresponding to
-// the |slot_address|.
+// the |slot_start|.
 PA_ALWAYS_INLINE std::pair<FreeSlotBitmapCellType*, size_t>
-GetFreeSlotBitmapCellPtrAndBitIndex(uintptr_t slot_address) {
-  uintptr_t slot_superpage_offset = slot_address & kSuperPageOffsetMask;
+GetFreeSlotBitmapCellPtrAndBitIndex(uintptr_t slot_start) {
+  uintptr_t slot_superpage_offset = slot_start & kSuperPageOffsetMask;
   uintptr_t superpage_bitmap_start =
-      GetFreeSlotBitmapAddressForPointer(slot_address);
+      GetFreeSlotBitmapAddressForPointer(slot_start);
   uintptr_t cell_addr = base::bits::AlignDown(
-      superpage_bitmap_start + (slot_superpage_offset / kAlignment) / CHAR_BIT,
+      superpage_bitmap_start +
+          (slot_superpage_offset / kSmallestBucket) / CHAR_BIT,
       sizeof(FreeSlotBitmapCellType));
   PA_DCHECK(cell_addr < superpage_bitmap_start + kFreeSlotBitmapSize);
   size_t bit_index =
-      (slot_superpage_offset / kAlignment) & kFreeSlotBitmapOffsetMask;
+      (slot_superpage_offset / kSmallestBucket) & kFreeSlotBitmapOffsetMask;
   PA_DCHECK(bit_index < kFreeSlotBitmapBitsPerCell);
   return {reinterpret_cast<FreeSlotBitmapCellType*>(cell_addr), bit_index};
 }
@@ -56,65 +57,80 @@ PA_ALWAYS_INLINE FreeSlotBitmapCellType CellWithTrailingOnes(size_t n) {
          static_cast<FreeSlotBitmapCellType>(1);
 }
 
-// Returns true if the bit corresponding to |address| is used( = 0)
-PA_ALWAYS_INLINE bool FreeSlotBitmapSlotIsUsed(uintptr_t address) {
-  auto [cell, bit_index] = GetFreeSlotBitmapCellPtrAndBitIndex(address);
+// Returns true if the bit corresponding to |slot_start| is used( = 0)
+PA_ALWAYS_INLINE bool FreeSlotBitmapSlotIsUsed(uintptr_t slot_start) {
+  auto [cell, bit_index] = GetFreeSlotBitmapCellPtrAndBitIndex(slot_start);
   return (*cell & CellWithAOne(bit_index)) == 0;
 }
 
-// Mark the bit corresponding to |address| as used( = 0).
-PA_ALWAYS_INLINE void FreeSlotBitmapMarkSlotAsUsed(uintptr_t address) {
-  PA_DCHECK(!FreeSlotBitmapSlotIsUsed(address));
-  auto [cell, bit_index] = GetFreeSlotBitmapCellPtrAndBitIndex(address);
+// Mark the bit corresponding to |slot_start| as used( = 0).
+PA_ALWAYS_INLINE void FreeSlotBitmapMarkSlotAsUsed(uintptr_t slot_start) {
+  PA_CHECK(!FreeSlotBitmapSlotIsUsed(slot_start));
+  auto [cell, bit_index] = GetFreeSlotBitmapCellPtrAndBitIndex(slot_start);
   *cell &= ~CellWithAOne(bit_index);
 }
 
-// Mark the bit corresponding to |address| as free( = 1).
-PA_ALWAYS_INLINE void FreeSlotBitmapMarkSlotAsFree(uintptr_t address) {
-  PA_DCHECK(FreeSlotBitmapSlotIsUsed(address));
-  auto [cell, bit_index] = GetFreeSlotBitmapCellPtrAndBitIndex(address);
+// Mark the bit corresponding to |slot_start| as free( = 1).
+PA_ALWAYS_INLINE void FreeSlotBitmapMarkSlotAsFree(uintptr_t slot_start) {
+  PA_CHECK(FreeSlotBitmapSlotIsUsed(slot_start));
+  auto [cell, bit_index] = GetFreeSlotBitmapCellPtrAndBitIndex(slot_start);
   *cell |= CellWithAOne(bit_index);
 }
 
-// Sets all the bits corresponding to [begin_addr, end_addr) to 0.
+// Resets (= set to 0) all the bits corresponding to the slot-start addresses
+// within [begin_addr, end_addr). |begin_addr| has to be the beginning of a
+// slot, but |end_addr| does not.
 PA_ALWAYS_INLINE void FreeSlotBitmapReset(uintptr_t begin_addr,
-                                          uintptr_t end_addr) {
+                                          uintptr_t end_addr,
+                                          uintptr_t slot_size) {
   PA_DCHECK(begin_addr <= end_addr);
+  // |end_addr| has to be kSmallestBucket-aligned.
+  PA_DCHECK(end_addr & (kSmallestBucket - 1) == 0u);
+  for (uintptr_t slot_start = begin_addr; slot_start < end_addr;
+       slot_start += slot_size) {
+    auto [cell, bit_index] = GetFreeSlotBitmapCellPtrAndBitIndex(slot_start);
+    *cell &= ~CellWithAOne(bit_index);
+  }
+
+#if BUILDFLAG(PA_DCHECK_IS_ON)
+  // Checks if the cells that are meant to contain only unset bits are really 0.
   auto [begin_cell, begin_bit_index] =
       GetFreeSlotBitmapCellPtrAndBitIndex(begin_addr);
   auto [end_cell, end_bit_index] =
       GetFreeSlotBitmapCellPtrAndBitIndex(end_addr);
 
-  if (begin_cell == end_cell) {
-    *begin_cell &= (CellWithTrailingOnes(begin_bit_index) |
-                    ~CellWithTrailingOnes(end_bit_index));
-    return;
-  }
-
   // The bits that should be marked to 0 are |begin_bit_index|th bit of
-  // |begin_cell| to |end_bit_index - 1|th bit of |end_cell|. We can just set
-  // all the bits to 0 for the cells between [begin_cell + 1, end_cell). For the
-  // |begin_cell| and |end_cell|, we have to handle them separately to only mark
-  // the partial bits. | begin_cell |     |...|     | end_cell |
+  // |begin_cell| to |end_bit_index - 1|th bit of |end_cell|. We verify all the
+  // bits are set to 0 for the cells between [begin_cell + 1, end_cell). For the
+  // |begin_cell| and |end_cell|, we have to handle them separately to only
+  // check the partial bits.
+  // | begin_cell |     |...|     | end_cell |
   // |11...100...0|0...0|...|0...0|0...01...1|
   //        ^                           ^
   //        |                           |
   //    begin_addr                   end_addr
 
+  if (begin_cell == end_cell) {
+    PA_DCHECK((*begin_cell & (~CellWithTrailingOnes(begin_bit_index) &
+                              CellWithTrailingOnes(end_bit_index))) == 0u);
+  }
+
   if (begin_bit_index != 0) {
-    // Sets [begin_bit_index, kFreeSlotBitmapBitsPerCell) in the begin_cell to 0
-    *begin_cell &= CellWithTrailingOnes(begin_bit_index);
+    // Checks the bits between [begin_bit_index, kFreeSlotBitmapBitsPerCell) in
+    // the begin_cell are 0
+    PA_DCHECK((*begin_cell & ~CellWithTrailingOnes(begin_bit_index)) == 0u);
     ++begin_cell;
   }
 
   if (end_bit_index != 0) {
-    // Sets [0, end_bit_index) in the end_cell to 0
-    *end_cell &= ~CellWithTrailingOnes(end_bit_index);
+    // Checks the bits between [0, end_bit_index) in the end_cell are 0
+    PA_DCHECK((*end_cell & CellWithTrailingOnes(end_bit_index)) == 0u);
   }
 
   for (FreeSlotBitmapCellType* cell = begin_cell; cell != end_cell; ++cell) {
-    *cell = static_cast<FreeSlotBitmapCellType>(0);
+    PA_DCHECK(*cell == 0u);
   }
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 }
 
 }  // namespace partition_alloc::internal

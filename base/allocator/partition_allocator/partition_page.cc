@@ -230,7 +230,8 @@ void SlotSpanMetadata<thread_safe>::Decommit(PartitionRoot<thread_safe>* root) {
       PageAccessibilityDisposition::kAllowKeepForPerf);
 
 #if BUILDFLAG(USE_FREESLOT_BITMAP)
-  FreeSlotBitmapReset(slot_span_start, slot_span_start + size_to_decommit);
+  FreeSlotBitmapReset(slot_span_start, slot_span_start + size_to_decommit,
+                      bucket->slot_size);
 #endif
 
   // We actually leave the decommitted slot span in the active list. We'll sweep
