@@ -2,28 +2,34 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# //.vpython doesn't have scipy, so we have to use our own .vpython file.
-# The wheel specs are from //v8/tools/callstats.py.vpython and //.vpython.
+# //.vpython3 doesn't have scipy, so we have to use our own .vpython3 file.
+# The wheel specs are from //v8/tools/callstats.py.vpython and //.vpython3.
 
-# pandas for python3 is not yet available in cipd.
-# TODO(crbug.com/1130251): update to python3
-python_version: "2.7"
+python_version: "3.8"
 
 wheel: <
   name: "infra/python/wheels/scipy/${vpython_platform}"
-  version: "version:0.19.0"
+  version: "version:1.7.1"
   match_tag: <
-    abi: "cp27mu"
+    abi: "cp38"
     platform: "manylinux1_i686"
   >
   match_tag: <
-    abi: "cp27mu"
+    abi: "cp38"
     platform: "manylinux1_x86_64"
   >
 >
 wheel: <
   name: "infra/python/wheels/numpy/${vpython_platform}"
-  version: "version:1.11.3"
+  version: "version:1.22.1"
+  match_tag: <
+    abi: "cp38"
+    platform: "manylinux1_i686"
+  >
+  match_tag: <
+    abi: "cp38"
+    platform: "manylinux1_x86_64"
+  >
 >
 wheel: <
   name: "infra/python/wheels/six-py2_py3"
@@ -33,29 +39,31 @@ wheel: <
   name: "infra/python/wheels/pandas/${vpython_platform}"
   version: "version:0.23.4"
   match_tag: <
-    platform: "win32"
+    abi: "cp38"
+    platform: "windows-x64"
   >
   match_tag: <
-    platform: "win_amd64"
+    abi: "cp38"
+    platform: "windows-x86"
   >
   match_tag: <
-    abi: "cp27mu"
-    platform: "manylinux1_i686"
+    abi: "cp38"
+    platform: "manylinux-x64"
   >
   match_tag: <
-    abi: "cp27mu"
-    platform: "manylinux1_x86_64"
+    abi: "cp38"
+    platform: "mac-x64"
   >
   match_tag: <
-    platform: "macosx_10_6_intel"
+    abi: "cp38"
+    platform: "mac-arm64"
   >
 >
 wheel: <
   name: "infra/python/wheels/pytz-py2_py3"
-  version: "version:2018.4"
+  version: "version:2021.1"
 >
 wheel: <
   name: "infra/python/wheels/python-dateutil-py2_py3"
-  version: "version:2.7.3"
+  version: "version:2.8.1"
 >
-
