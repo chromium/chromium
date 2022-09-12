@@ -268271,10 +268271,6 @@
        "3d1143afb9aa8978ead0a69ac82f64368319a53e",
        []
       ],
-      "color-mixed-num-pct-expected.txt": [
-       "642975c16e0e871ce84ef6bac3d29861c8a7b7c0",
-       []
-      ],
       "color-valid-expected.txt": [
        "c940877fec21bd79248e0be639ff6a4d2c252e04",
        []
@@ -330534,6 +330530,10 @@
       "c26ccea030303a18a9f1aa4e46d8ddd3af5b05bf",
       []
      ],
+     "intersection-ratio-with-fractional-bounds-in-iframe-content.html": [
+      "696ebf6ebe5cf2dc27c7b028744de7a5584090b9",
+      []
+     ],
      "nested-cross-origin-child-iframe.sub.html": [
       "78f3d2ca26c41ad7dcbb039e869edf0378c55bd0",
       []
@@ -332835,6 +332835,10 @@
     ],
     "MediaStream-removetrack.https-expected.txt": [
      "59a51268f3a3ede5d0d8c903f20e0bb7b5a83a68",
+     []
+    ],
+    "MediaStreamTrack-iframe-transfer.https-expected.txt": [
+     "194daa7253e2a1e630b2b6cb4dafe941eaa0a380",
      []
     ],
     "MediaStreamTrack-transfer.https-expected.txt": [
@@ -388923,7 +388927,7 @@
        ]
       ],
       "color-mixed-num-pct.html": [
-       "c0f586da8081823c7aa10ca72f54357fe7a1525d",
+       "dac6bc35471b2e076d3cb305454deb0048d4268e",
        [
         null,
         {}
@@ -500518,7 +500522,7 @@
       ]
      ],
      "chained-setTimeout.tentative.html": [
-      "b815adab605a33405004556e479dbe53d32cf091",
+      "4a2f6c561e23e7efe41980f000ad5f29b537ccd8",
       [
        null,
        {
@@ -500527,7 +500531,7 @@
       ]
      ],
      "consumption-crossorigin.sub.tentative.html": [
-      "ebeeb935c062979bd9758bc4cc66d2ed516976ec",
+      "07585306fc4fefcb9d8a0178acebe489e0367e41",
       [
        null,
        {
@@ -500537,7 +500541,7 @@
       ]
      ],
      "consumption-sameorigin.tentative.html": [
-      "4ca361c87e03324255462a686ffaba65873d678d",
+      "893dfa3bf90f7a463ca0d9656afa18727c8ed7c1",
       [
        null,
        {
@@ -500555,14 +500559,14 @@
       ]
      ],
      "message-event-init.tentative.html": [
-      "8e2b1d07014e8bd754d943e11672fff0719bbb74",
+      "1f3ef551704f7124861b04953af248361efd367d",
       [
        null,
        {}
       ]
      ],
      "navigation-state-reset-crossorigin.sub.tentative.html": [
-      "595a12ca70f9d0fd2fd4b9a53f876fa91d5a149e",
+      "fc188d237f2808a1ead621ae919e2fe4ecee2027",
       [
        null,
        {
@@ -500571,7 +500575,7 @@
       ]
      ],
      "navigation-state-reset-sameorigin.tentative.html": [
-      "412b01fcb3b9235510b33c7e56c037fdd21b92c4",
+      "271124c0dae7b62b4eb57c4f43351a4f21debffc",
       [
        null,
        {
@@ -500579,8 +500583,8 @@
        }
       ]
      ],
-     "no-activation-thru-escape-key.html": [
-      "27988d16030777f94f50cccfb9c1e4f9256b7cac",
+     "no-activation-thru-escape-key.tentative.html": [
+      "da873fd7b3b0a53ef58a51df2031a0263b7b4162",
       [
        null,
        {
@@ -500590,7 +500594,7 @@
       ]
      ],
      "propagation-crossorigin.sub.tentative.html": [
-      "467dfb81b75c3ace7f2186856f7404995ee7f24c",
+      "09d90091dc07ffc358bddbe1d51d282aa33af73b",
       [
        null,
        {
@@ -500600,7 +500604,16 @@
       ]
      ],
      "propagation-sameorigin.tentative.html": [
-      "97c9077d5d941c52f8f92aed06bb9f10cbaae429",
+      "4b09634f2d91dabc5f7847a52ec9a49d844ea04a",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "user-activation-interface.tentative.html": [
+      "2e03eae3355f692b47a7bda4287936956b10d4ac",
       [
        null,
        {
@@ -504837,6 +504850,13 @@
     ],
     "intersection-ratio-with-fractional-bounds-2.html": [
      "1e250accd8e43e84050f735cdd42f30d1ef7f931",
+     [
+      null,
+      {}
+     ]
+    ],
+    "intersection-ratio-with-fractional-bounds-in-iframe.html": [
+     "b00f8ddaf6d3a8ebd241fe56c9dc60adc54f5bc4",
      [
       null,
       {}
@@ -510524,7 +510544,7 @@
      ]
     ],
     "MediaStreamTrack-iframe-transfer.https.html": [
-     "1dfc872e5ab4241de0a87682eb5c529af413d894",
+     "54fc2b2d164eef7a322891b21b2e483eb55da07a",
      [
       null,
       {}
