@@ -2231,6 +2231,36 @@ TEST_P(PaintLayerTest, HitTestOverlayResizer) {
   }
 }
 
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1313268): Fix this test on Fuchsia and re-enable.
+#define MAYBE_HitTestScrollbarUnderClip DISABLED_HitTestScrollbarUnderClip
+#else
+#define MAYBE_HitTestScrollbarUnderClip HitTestScrollbarUnderClip
+#endif
+
+TEST_P(PaintLayerTest, MAYBE_HitTestScrollbarUnderClip) {
+  USE_NON_OVERLAY_SCROLLBARS();
+
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin: 50px; }</style>
+    <div style="overflow: hidden; width: 200px; height: 100px">
+      <div id="target" style="width: 200px; height: 200px; overflow: scroll">
+        <!-- This relative div triggers crbug.com/1360860. -->
+        <div style="position: relative"></div>
+      </div>
+    </div>
+    <div id="below" style="height: 200px"></div>
+  )HTML");
+
+  // Hit the visible part of the vertical scrollbar.
+  EXPECT_EQ(GetDocument().getElementById("target"), HitTest(245, 100));
+  // Should not hit the hidden part of the vertical scrollbar, the hidden
+  // horizontal scrollbar, or the hidden scroll corner.
+  EXPECT_EQ(GetDocument().getElementById("below"), HitTest(245, 200));
+  EXPECT_EQ(GetDocument().getElementById("below"), HitTest(150, 245));
+  EXPECT_EQ(GetDocument().getElementById("below"), HitTest(245, 245));
+}
+
 TEST_P(PaintLayerTest, InlineWithBackdropFilterHasPaintLayer) {
   SetBodyInnerHTML(
       "<map id='target' style='backdrop-filter: invert(1);'></map>");
