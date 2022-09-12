@@ -499,7 +499,18 @@ void MultiplexRouter::DetachEndpointClient(
 
   DCHECK(IsValidInterfaceId(id));
 
+  // Avoid warning when endpoints are removed at non-deterministic points,
+  // e.g. during GC.
+  if (recordreplay::AreEventsDisallowed()) {
+    recordreplay::BeginPassThroughEvents();
+  }
+
   MayAutoLock locker(&lock_);
+
+  if (recordreplay::AreEventsDisallowed()) {
+    recordreplay::EndPassThroughEvents();
+  }
+
   DCHECK(base::Contains(endpoints_, id));
 
   InterfaceEndpoint* endpoint = endpoints_[id].get();
