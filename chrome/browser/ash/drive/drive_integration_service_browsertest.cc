@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/base_switches.h"
@@ -13,10 +15,10 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/ash/drive/drive_integration_service_browser_test_base.h"
+#include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chromeos/ash/components/drivefs/fake_drivefs.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_test_utils.h"
@@ -28,13 +30,52 @@ using ::base::test::RunClosure;
 using ::base::test::RunOnceCallback;
 using testing::_;
 
-using DriveIntegrationServiceBrowserTest =
-    DriveIntegrationServiceBrowserTestBase;
+class DriveIntegrationServiceBrowserTest : public InProcessBrowserTest {
+ public:
+  bool SetUpUserDataDirectory() override {
+    return drive::SetUpUserDataDirectoryForDriveFsTest();
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    create_drive_integration_service_ = base::BindRepeating(
+        &DriveIntegrationServiceBrowserTest::CreateDriveIntegrationService,
+        base::Unretained(this));
+    service_factory_for_test_ = std::make_unique<
+        drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>(
+        &create_drive_integration_service_);
+  }
+
+  drivefs::FakeDriveFs* GetFakeDriveFsForProfile(Profile* profile) {
+    return &fake_drivefs_helpers_[profile]->fake_drivefs();
+  }
+
+ protected:
+  virtual drive::DriveIntegrationService* CreateDriveIntegrationService(
+      Profile* profile) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath mount_path = profile->GetPath().Append("drivefs");
+    fake_drivefs_helpers_[profile] =
+        std::make_unique<drive::FakeDriveFsHelper>(profile, mount_path);
+    auto* integration_service = new drive::DriveIntegrationService(
+        profile, std::string(), mount_path,
+        fake_drivefs_helpers_[profile]->CreateFakeDriveFsListenerFactory());
+    return integration_service;
+  }
+
+ private:
+  drive::DriveIntegrationServiceFactory::FactoryCallback
+      create_drive_integration_service_;
+  std::unique_ptr<drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>
+      service_factory_for_test_;
+  std::map<Profile*, std::unique_ptr<drive::FakeDriveFsHelper>>
+      fake_drivefs_helpers_;
+};
 
 // Verify DriveIntegrationService is created during login.
-IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest, CreatedDuringLogin) {
-  EXPECT_TRUE(
-      DriveIntegrationServiceFactory::FindForProfile(browser()->profile()));
+IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest,
+                       CreatedDuringLogin) {
+  EXPECT_TRUE(DriveIntegrationServiceFactory::FindForProfile(
+      browser()->profile()));
 }
 
 IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest,
@@ -203,32 +244,41 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest, GetMetadata) {
 
 IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest,
                        LocateFilesByItemIds) {
-  Profile* profile = browser()->profile();
-  InitTestFileMountRoot(profile);
-  AddDriveFileWithRelativePath(profile, /*drive_file_id=*/"abc123",
-                               /*directory_path=*/base::FilePath(""),
-                               /*new_file_relative_path=*/nullptr,
-                               /*new_file_absolute_path=*/nullptr);
-  base::FilePath relative_file_path;
-  AddDriveFileWithRelativePath(profile, /*drive_file_id=*/"qwertyqwerty",
-                               /*directory_path=*/base::FilePath("aa"),
-                               &relative_file_path,
-                               /*new_file_absolute_path=*/nullptr);
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  auto* drive_service =
+      DriveIntegrationServiceFactory::FindForProfile(browser()->profile());
+  drivefs::FakeDriveFs* fake = GetFakeDriveFsForProfile(browser()->profile());
+
+  base::FilePath mount_path = drive_service->GetMountPointPath();
+  base::FilePath path;
+  base::CreateTemporaryFileInDir(mount_path, &path);
+  base::FilePath some_file("/");
+  CHECK(mount_path.AppendRelativePath(path, &some_file));
+  base::FilePath dir_path;
+  base::CreateTemporaryDirInDir(mount_path, "tmp-", &dir_path);
+  base::CreateTemporaryFileInDir(dir_path, &path);
+  base::FilePath some_other_file("/");
+  CHECK(mount_path.AppendRelativePath(path, &some_other_file));
+
+  fake->SetMetadata(some_file, "text/plain", some_file.BaseName().value(),
+                    false, false, {}, {}, "abc123", "");
+  fake->SetMetadata(some_other_file, "text/plain", some_file.BaseName().value(),
+                    false, false, {}, {}, "qwertyqwerty", "");
+
   {
     base::RunLoop run_loop;
     auto quit_closure = run_loop.QuitClosure();
-    DriveIntegrationServiceFactory::FindForProfile(profile)
-        ->LocateFilesByItemIds(
-            {"qwertyqwerty", "foobar"},
-            base::BindLambdaForTesting(
-                [=](absl::optional<
-                    std::vector<drivefs::mojom::FilePathOrErrorPtr>> result) {
-                  ASSERT_EQ(2u, result->size());
-                  EXPECT_EQ(relative_file_path, base::FilePath("/").Append(
-                                                    result->at(0)->get_path()));
-                  EXPECT_EQ(FILE_ERROR_NOT_FOUND, result->at(1)->get_error());
-                  quit_closure.Run();
-                }));
+    drive_service->LocateFilesByItemIds(
+        {"qwertyqwerty", "foobar"},
+        base::BindLambdaForTesting(
+            [=](absl::optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>>
+                    result) {
+              ASSERT_EQ(2u, result->size());
+              EXPECT_EQ(some_other_file,
+                        base::FilePath("/").Append(result->at(0)->get_path()));
+              EXPECT_EQ(FILE_ERROR_NOT_FOUND, result->at(1)->get_error());
+              quit_closure.Run();
+            }));
     run_loop.Run();
   }
 }

@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
-#include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
 #include "chrome/browser/ui/app_list/search/files/item_suggest_cache.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
@@ -28,13 +27,13 @@ class Profile;
 
 namespace app_list {
 struct FileSuggestData;
+class FileSuggestKeyedService;
 class SearchController;
 
 class ZeroStateDriveProvider : public SearchProvider,
                                public drive::DriveIntegrationServiceObserver,
                                public session_manager::SessionManagerObserver,
-                               public chromeos::PowerManagerClient::Observer,
-                               public FileSuggestKeyedService::Observer {
+                               public chromeos::PowerManagerClient::Observer {
  public:
   ZeroStateDriveProvider(Profile* profile,
                          SearchController* search_controller,
@@ -75,6 +74,9 @@ class ZeroStateDriveProvider : public SearchProvider,
       const absl::optional<std::string>& prediction_reason,
       const float relevance);
 
+  // Callback for when the ItemSuggestCache updates its results.
+  void OnCacheUpdated();
+
   // Requests an update from the ItemSuggestCache, but only if the call is long
   // enough after the provider was constructed. This helps ease resource
   // contention at login, and prevents the call from failing because Google auth
@@ -82,15 +84,12 @@ class ZeroStateDriveProvider : public SearchProvider,
   // this does nothing.
   void MaybeUpdateCache();
 
-  // FileSuggestKeyedService::Observer:
-  void OnFileSuggestionUpdated(
-      FileSuggestKeyedService::SuggestionType type) override;
-
   Profile* const profile_;
   drive::DriveIntegrationService* const drive_service_;
   session_manager::SessionManager* const session_manager_;
 
   const base::raw_ptr<FileSuggestKeyedService> file_suggest_service_;
+  base::CallbackListSubscription item_suggest_subscription_;
 
   const base::Time construction_time_;
   base::TimeTicks query_start_time_;
@@ -107,9 +106,6 @@ class ZeroStateDriveProvider : public SearchProvider,
   base::ScopedObservation<chromeos::PowerManagerClient,
                           chromeos::PowerManagerClient::Observer>
       power_observation_{this};
-  base::ScopedObservation<FileSuggestKeyedService,
-                          FileSuggestKeyedService::Observer>
-      file_suggest_service_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 

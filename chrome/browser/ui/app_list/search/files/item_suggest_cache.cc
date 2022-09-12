@@ -300,13 +300,6 @@ void ItemSuggestCache::MaybeUpdateCache() {
       signin::ConsentLevel::kSync);
 }
 
-void ItemSuggestCache::UpdateCacheWithJsonForTest(
-    const std::string json_response) {
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      json_response, base::BindOnce(&ItemSuggestCache::OnJsonParsed,
-                                    weak_factory_.GetWeakPtr()));
-}
-
 void ItemSuggestCache::OnTokenReceived(GoogleServiceAuthError error,
                                        signin::AccessTokenInfo token_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -32,15 +32,9 @@ class FileSuggestKeyedService : public KeyedService {
       base::OnceCallback<void(absl::optional<std::vector<FileSuggestData>>)>;
 
   // The types of the managed suggestion data.
-  enum class SuggestionType {
-    // The drive file suggestion.
+  enum class SuggestDataType {
+    // The drive files' suggestion data.
     kItemSuggest
-  };
-
-  class Observer : public base::CheckedObserver {
-   public:
-    // Called when file suggestions change.
-    virtual void OnFileSuggestionUpdated(SuggestionType type) {}
   };
 
   explicit FileSuggestKeyedService(Profile* profile);
@@ -53,11 +47,8 @@ class FileSuggestKeyedService : public KeyedService {
   // the callback. The returned suggestions have been filtered by the file
   // last modification time. Only the files that have been modified more
   // recently than a threshold are returned.
-  void GetSuggestFileData(SuggestionType type, GetSuggestDataCallback callback);
-
-  // Adds/Removes an observer.
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  void GetSuggestFileData(SuggestDataType type,
+                          GetSuggestDataCallback callback);
 
   // Requests to update the data in `item_suggest_cache_`. Only used by the zero
   // state drive provider. Overridden for tests.
@@ -69,16 +60,14 @@ class FileSuggestKeyedService : public KeyedService {
   virtual void MaybeUpdateItemSuggestCache(
       base::PassKey<ZeroStateDriveProvider>);
 
-  ItemSuggestCache* item_suggest_cache_for_test() {
-    return item_suggest_cache_.get();
-  }
+  // Registers a callback to be run whenever data in `item_suggest_cache_`
+  // updated.
+  base::CallbackListSubscription RegisterItemSuggestUpdateCallback(
+      ItemSuggestCache::OnResultsCallback callback);
 
  private:
   // Drive file related member functions ---------------------------------------
   // TODO(https://crbug.com/1360992): move these members to a separate class.
-
-  // Called whenever `item_suggest_cache_` updates.
-  void OnItemSuggestCacheUpdated();
 
   // Handles `GetSuggestFileData()` for drive files.
   void GetDriveSuggestFileData(GetSuggestDataCallback callback);
@@ -107,9 +96,6 @@ class FileSuggestKeyedService : public KeyedService {
   // validation) is fetched.
   std::unique_ptr<ItemSuggestCache> item_suggest_cache_;
 
-  // Guards the callback registered on `item_suggest_cache_`.
-  base::CallbackListSubscription item_suggest_subscription_;
-
   // The callbacks that run when the drive suggest results are ready.
   // Use a callback list to handle the edge case that multiple data consumers
   // wait for the drive suggest results.
@@ -119,8 +105,6 @@ class FileSuggestKeyedService : public KeyedService {
   // A drive file needs to have been modified more recently than this to be
   // considered valid.
   const base::TimeDelta drive_file_max_last_modified_time_;
-
-  base::ObserverList<Observer> observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
