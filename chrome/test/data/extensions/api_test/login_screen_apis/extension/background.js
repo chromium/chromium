@@ -123,7 +123,7 @@ const tests = {
   'LoginExitCurrentSession': () => {
     chrome.test.getConfig(config => {
       chrome.login.exitCurrentSession(config.customArg);
-      // No check for success as browser process exists.
+      // No check for success as browser process exits.
     });
   },
   'LoginFetchDataForNextLoginAttempt': () => {
@@ -143,10 +143,8 @@ const tests = {
   },
   'LoginUnlockManagedGuestSession': () => {
     chrome.test.getConfig(config => {
-      chrome.login.unlockManagedGuestSession(config.customArg, () => {
-        chrome.test.assertNoLastError();
-        chrome.test.succeed();
-      });
+      chrome.login.unlockManagedGuestSession(config.customArg);
+      // No check for success as browser process exits.
     });
   },
   'LoginUnlockManagedGuestSessionWrongPassword': () => {

@@ -8,7 +8,7 @@
   <app appid='oclffehlkdgibkainkilopaalpdobkan'>
     <updatecheck
         codebase='http://mock.http/extensions/api_test/login_screen_apis/extension.crx'
-        version='1.26' />
+        version='1.27' />
   </app>
   <app appid='ofcpkomnogjenhfajfjadjmjppbegnad'>
     <updatecheck
