@@ -134,6 +134,7 @@ void TargetDeviceConnectionBrokerImpl::GetBluetoothAdapter() {
 void TargetDeviceConnectionBrokerImpl::OnGetBluetoothAdapter(
     scoped_refptr<device::BluetoothAdapter> adapter) {
   bluetooth_adapter_ = adapter;
+  MaybeNotifyFeatureStatus();
 
   if (deferred_start_advertising_callback_) {
     std::move(deferred_start_advertising_callback_).Run();

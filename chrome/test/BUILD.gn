@@ -2431,7 +2431,7 @@ if (!is_android) {
       deps += [ "//components/permissions/prediction_service" ]
     }
 
-    # If this target is used on Android in the future, these browser/speech/*
+    #If this target is used on Android in the future, these browser / speech/*
     # files will probably not be applicable.
     sources += [
       "../browser/speech/extension_api/tts_extension_apitest.cc",
@@ -4076,7 +4076,10 @@ if (!is_android) {
       ]
       if (!is_official_build) {
         sources += [ "../browser/ash/web_applications/sample_system_web_app_integration_browsertest.cc" ]
-        deps += [ "//ash/webui/sample_system_web_app_ui" ]
+        deps += [
+          "//ash/webui/sample_system_web_app_ui",
+          "//chrome/browser/ash/login/oobe_quick_start/connectivity:test_support",
+        ]
       }
       if (use_dbus) {
         deps += [ "//dbus:test_support" ]
