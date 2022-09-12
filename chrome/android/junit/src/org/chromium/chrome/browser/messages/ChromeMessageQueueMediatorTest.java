@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.messages;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,7 +37,6 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.features.start_surface.StartSurface;
-import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
@@ -110,15 +110,28 @@ public class ChromeMessageQueueMediatorTest {
     public void testLayoutStateChange() {
         final ArgumentCaptor<LayoutStateObserver> observer =
                 ArgumentCaptor.forClass(LayoutStateObserver.class);
-        final ArgumentCaptor<StartSurface.StateObserver> stateObserver =
-                ArgumentCaptor.forClass(StartSurface.StateObserver.class);
         doNothing().when(mLayoutStateProvider).addObserver(observer.capture());
-        doNothing().when(mStartSurface).addStateChangeObserver(stateObserver.capture());
         initMediator();
-        stateObserver.getValue().onStateChanged(StartSurfaceState.SHOWN_TABSWITCHER, false);
+        observer.getValue().onStartedShowing(LayoutType.TAB_SWITCHER, false);
         verify(mMessageDispatcher).suspend();
         observer.getValue().onFinishedShowing(LayoutType.BROWSING);
-        verify(mMessageDispatcher).resume(anyInt());
+        verify(mMessageDispatcher).resume(EXPECTED_TOKEN);
+    }
+
+    /**
+     * Test start surface does not suspend the message queue.
+     */
+    @Test
+    public void testLayoutStateChange_withStartSurface() {
+        final ArgumentCaptor<LayoutStateObserver> observer =
+                ArgumentCaptor.forClass(LayoutStateObserver.class);
+        doNothing().when(mLayoutStateProvider).addObserver(observer.capture());
+        when(mStartSurface.isShowingStartSurfaceHomepage()).thenReturn(true);
+        initMediator();
+        observer.getValue().onStartedShowing(LayoutType.TAB_SWITCHER, false);
+        verify(mMessageDispatcher, never()).suspend();
+        observer.getValue().onFinishedShowing(LayoutType.BROWSING);
+        verify(mMessageDispatcher, never()).resume(anyInt());
     }
 
     /**
