@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/picture_in_picture/picture_in_picture_window.h"
 
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -17,17 +16,8 @@ PictureInPictureWindow::PictureInPictureWindow(
     const gfx::Size& size)
     : ExecutionContextClient(execution_context), size_(size) {}
 
-PictureInPictureWindow::PictureInPictureWindow(
-    ExecutionContext* execution_context,
-    const gfx::Size& size,
-    Document* document)
-    : ExecutionContextClient(execution_context),
-      size_(size),
-      document_(document) {}
-
 void PictureInPictureWindow::OnClose() {
   size_ = gfx::Size();
-  document_.Clear();
 }
 
 void PictureInPictureWindow::OnResize(const gfx::Size& size) {
@@ -59,7 +49,6 @@ bool PictureInPictureWindow::HasPendingActivity() const {
 }
 
 void PictureInPictureWindow::Trace(Visitor* visitor) const {
-  visitor->Trace(document_);
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }

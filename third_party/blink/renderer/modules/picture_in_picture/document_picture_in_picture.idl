@@ -5,7 +5,7 @@
 // https://wicg.github.io/picture-in-picture/#document-extensions
 // https://wicg.github.io/picture-in-picture/#documentorshadowroot-extension
 [
-    ImplementedAs=DocumentPictureInPicture,
+    ImplementedAs=DocumentVideoPictureInPicture,
     RuntimeEnabled=PictureInPictureAPI
 ]
 partial interface Document {

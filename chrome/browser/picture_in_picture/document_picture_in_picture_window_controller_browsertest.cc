@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_EQ(true, EvalJs(active_web_contents,
-                         "window.requestPictureInPictureWindow()"
+                         "navigator.documentPictureInPicture.requestWindow()"
                          ".then(w => true)"));
   base::RunLoop().RunUntilIdle();
 
@@ -335,5 +335,5 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 
   // In an insecure context, there should not be a method.
   EXPECT_EQ(false, EvalJs(active_web_contents,
-                          "'requestPictureInPictureWindow' in window"));
+                          "'documentPictureInPicture' in navigator"));
 }

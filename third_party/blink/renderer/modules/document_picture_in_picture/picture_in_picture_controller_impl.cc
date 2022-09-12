@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
+#include "third_party/blink/renderer/modules/document_picture_in_picture/document_picture_in_picture_session.h"
 #include "third_party/blink/renderer/modules/picture_in_picture/picture_in_picture_event.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -200,8 +201,8 @@ void PictureInPictureControllerImpl::OnEnteredPictureInPicture(
     return;
   }
 
-  picture_in_picture_session_.reset();
-  picture_in_picture_session_.Bind(
+  video_picture_in_picture_session_.reset();
+  video_picture_in_picture_session_.Bind(
       std::move(session_remote),
       element->GetDocument().GetTaskRunner(TaskType::kMediaElementEvent));
   if (IsElementAllowed(*element, /*report_failure=*/true) != Status::kEnabled) {
@@ -221,6 +222,11 @@ void PictureInPictureControllerImpl::OnEnteredPictureInPicture(
 
   if (picture_in_picture_element_)
     OnExitedPictureInPicture(nullptr);
+
+  if (document_picture_in_picture_session_) {
+    // TODO(crbug.com/1360452): close the window too.
+    document_picture_in_picture_session_ = nullptr;
+  }
 
   picture_in_picture_element_ = element;
   picture_in_picture_element_->OnEnteredPictureInPicture();
@@ -255,10 +261,10 @@ void PictureInPictureControllerImpl::ExitPictureInPicture(
   if (!EnsureService())
     return;
 
-  if (!picture_in_picture_session_.is_bound())
+  if (!video_picture_in_picture_session_.is_bound())
     return;
 
-  picture_in_picture_session_->Stop(
+  video_picture_in_picture_session_->Stop(
       WTF::Bind(&PictureInPictureControllerImpl::OnExitedPictureInPicture,
                 WrapPersistent(this), WrapPersistent(resolver)));
   session_observer_receiver_.reset();
@@ -306,6 +312,11 @@ void PictureInPictureControllerImpl::OnExitedPictureInPicture(
 PictureInPictureWindow* PictureInPictureControllerImpl::pictureInPictureWindow()
     const {
   return picture_in_picture_window_;
+}
+
+DocumentPictureInPictureSession*
+PictureInPictureControllerImpl::documentPictureInPictureSession() const {
+  return document_picture_in_picture_session_;
 }
 
 Element* PictureInPictureControllerImpl::PictureInPictureElement() const {
@@ -370,6 +381,10 @@ bool PictureInPictureControllerImpl::IsEnterAutoPictureInPictureAllowed()
 
   // Don't allow if there's already an element in Auto Picture-in-Picture.
   if (picture_in_picture_element_)
+    return false;
+
+  // Don't allow if there's already a Document Picture-in-Picture session.
+  if (document_picture_in_picture_session_)
     return false;
 
   // Don't allow if there's no element eligible to enter Auto Picture-in-Picture
@@ -437,10 +452,8 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
   DCHECK(pip_document);
   pip_document->SetBaseURLOverride(opener.document()->BaseURL());
 
-  // TODO(https://crbug.com/1329638): Return a type specific to document pip
-  // instead of a shared interface between the two APIs.
-  picture_in_picture_window_ = MakeGarbageCollected<PictureInPictureWindow>(
-      GetExecutionContext(), gfx::Size(), pip_document);
+  document_picture_in_picture_session_ =
+      MakeGarbageCollected<DocumentPictureInPictureSession>(local_dom_window);
 
   // Copy style sheets, if requested.
   if (options->copyStyleSheets()) {
@@ -464,7 +477,7 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
   }
 
   // TODO(https://crbug.com/1329698): Resolve this in a posted task instead.
-  resolver->Resolve(picture_in_picture_window_);
+  resolver->Resolve(document_picture_in_picture_session_);
 }
 
 void PictureInPictureControllerImpl::PageVisibilityChanged() {
@@ -501,7 +514,7 @@ void PictureInPictureControllerImpl::OnPictureInPictureStateChange() {
   picture_in_picture_element_->BindMediaPlayerReceiver(
       media_player_remote.InitWithNewEndpointAndPassReceiver());
 
-  picture_in_picture_session_->Update(
+  video_picture_in_picture_session_->Update(
       picture_in_picture_element_->GetWebMediaPlayer()->GetDelegateId(),
       std::move(media_player_remote),
       picture_in_picture_element_->GetWebMediaPlayer()->GetSurfaceId().value(),
@@ -531,9 +544,10 @@ void PictureInPictureControllerImpl::Trace(Visitor* visitor) const {
   visitor->Trace(picture_in_picture_element_);
   visitor->Trace(auto_picture_in_picture_elements_);
   visitor->Trace(picture_in_picture_window_);
+  visitor->Trace(document_picture_in_picture_session_);
   visitor->Trace(session_observer_receiver_);
   visitor->Trace(picture_in_picture_service_);
-  visitor->Trace(picture_in_picture_session_);
+  visitor->Trace(video_picture_in_picture_session_);
   PictureInPictureController::Trace(visitor);
   PageVisibilityObserver::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
@@ -546,7 +560,7 @@ PictureInPictureControllerImpl::PictureInPictureControllerImpl(
       ExecutionContextClient(document.GetExecutionContext()),
       session_observer_receiver_(this, document.GetExecutionContext()),
       picture_in_picture_service_(document.GetExecutionContext()),
-      picture_in_picture_session_(document.GetExecutionContext()) {}
+      video_picture_in_picture_session_(document.GetExecutionContext()) {}
 
 bool PictureInPictureControllerImpl::EnsureService() {
   if (picture_in_picture_service_.is_bound())

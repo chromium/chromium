@@ -13,7 +13,6 @@
 
 namespace blink {
 
-class Document;
 class ExecutionContext;
 
 // The PictureInPictureWindow is meant to be used only by
@@ -31,15 +30,11 @@ class PictureInPictureWindow
   // Create a Picture-in-Picture window for an HTMLVideoElement.
   PictureInPictureWindow(ExecutionContext*, const gfx::Size& size);
 
-  // Create a Picture-in-Picture window containing a Document.
-  PictureInPictureWindow(ExecutionContext*, const gfx::Size&, Document*);
-
   PictureInPictureWindow(const PictureInPictureWindow&) = delete;
   PictureInPictureWindow& operator=(const PictureInPictureWindow&) = delete;
 
   int width() const { return size_.width(); }
   int height() const { return size_.height(); }
-  Document* document() const { return document_.Get(); }
 
   // Called when Picture-in-Picture window state is closed.
   void OnClose();
@@ -68,10 +63,6 @@ class PictureInPictureWindow
  private:
   // The Picture-in-Picture window size in pixels.
   gfx::Size size_;
-
-  // The Document hosted by this Picture-in-Picture window. This is always null
-  // for video Picture-in-Picture.
-  Member<Document> document_;
 };
 
 }  // namespace blink

@@ -1,19 +1,19 @@
 <script>
-var pipWindow;
+var pipSession;
 async function createDocumentPipWindow() {
-    pipWindow = await window.requestPictureInPictureWindow();
-    pipWindow.document.write("Hello, world.<a name='top'>top</a>");
+    pipSession = await navigator.documentPictureInPicture.requestWindow();
+    pipSession.document.write("Hello, world.<a name='top'>top</a>");
     return true;
 }
 
 function navigateInDocumentPipWindow(url) {
-    pipWindow.document.location.href = url;
+    pipSession.document.location.href = url;
     return true;
 }
 
 function addScriptToPictureInPictureWindow() {
-    pipWindow.document.write("<script>document.testvalue = 123;<\/script>");
-    return pipWindow.document.testvalue == 123;
+    pipSession.document.write("<script>document.testvalue = 123;<\/script>");
+    return pipSession.document.testvalue == 123;
 }
 
 </script>

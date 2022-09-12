@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/picture_in_picture/document_picture_in_picture.h"
+#include "third_party/blink/renderer/modules/picture_in_picture/document_video_picture_in_picture.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -25,12 +25,13 @@ const char kNoPictureInPictureElement[] =
 }  // namespace
 
 // static
-bool DocumentPictureInPicture::pictureInPictureEnabled(Document& document) {
+bool DocumentVideoPictureInPicture::pictureInPictureEnabled(
+    Document& document) {
   return PictureInPictureController::From(document).PictureInPictureEnabled();
 }
 
 // static
-ScriptPromise DocumentPictureInPicture::exitPictureInPicture(
+ScriptPromise DocumentVideoPictureInPicture::exitPictureInPicture(
     ScriptState* script_state,
     Document& document,
     ExceptionState& exception_state) {
@@ -54,7 +55,8 @@ ScriptPromise DocumentPictureInPicture::exitPictureInPicture(
 }
 
 // static
-Element* DocumentPictureInPicture::pictureInPictureElement(TreeScope& scope) {
+Element* DocumentVideoPictureInPicture::pictureInPictureElement(
+    TreeScope& scope) {
   return PictureInPictureController::From(scope.GetDocument())
       .PictureInPictureElement(scope);
 }

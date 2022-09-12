@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PICTURE_IN_PICTURE_DOCUMENT_PICTURE_IN_PICTURE_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_PICTURE_IN_PICTURE_DOCUMENT_PICTURE_IN_PICTURE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PICTURE_IN_PICTURE_DOCUMENT_VIDEO_PICTURE_IN_PICTURE_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_PICTURE_IN_PICTURE_DOCUMENT_VIDEO_PICTURE_IN_PICTURE_H_
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -16,8 +16,8 @@ class ScriptPromise;
 class ScriptState;
 class TreeScope;
 
-class DocumentPictureInPicture {
-  STATIC_ONLY(DocumentPictureInPicture);
+class DocumentVideoPictureInPicture {
+  STATIC_ONLY(DocumentVideoPictureInPicture);
 
  public:
   static bool pictureInPictureEnabled(Document&);
@@ -31,4 +31,4 @@ class DocumentPictureInPicture {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_PICTURE_IN_PICTURE_DOCUMENT_PICTURE_IN_PICTURE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_PICTURE_IN_PICTURE_DOCUMENT_VIDEO_PICTURE_IN_PICTURE_H_

@@ -8,5 +8,9 @@
     SecureContext
 ]
 partial interface Window {
-    [CallWith=ScriptState, RaisesException, Measure, NewObject] Promise<PictureInPictureWindow> requestPictureInPictureWindow(optional PictureInPictureWindowOptions options = {});
+    // TODO(crbug.com/1361409): This call will be removed before
+    // DocumentPictureInPictureAPI is enabled.  It's just for backwards
+    // compatibility temporarily, until the new API via
+    // DocumentPictureInPicture is ready to replace it.
+    [CallWith=ScriptState, RaisesException, Measure, NewObject] Promise<DocumentPictureInPictureSession> requestPictureInPictureWindow(optional PictureInPictureWindowOptions options = {});
 };

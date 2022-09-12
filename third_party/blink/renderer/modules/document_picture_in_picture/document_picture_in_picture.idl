@@ -1,0 +1,14 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://steimelchrome.github.io/draft_spec.html#api
+[
+    Exposed=Window,
+    SecureContext,
+    RuntimeEnabled=DocumentPictureInPictureAPI
+]
+interface DocumentPictureInPicture {
+  [CallWith=ScriptState, RaisesException, NewObject] Promise<DocumentPictureInPictureSession> requestWindow(optional PictureInPictureWindowOptions options = {});
+  [CallWith=ScriptState] readonly attribute DocumentPictureInPictureSession session;
+};
