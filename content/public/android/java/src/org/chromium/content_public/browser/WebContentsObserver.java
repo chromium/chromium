@@ -145,14 +145,20 @@ public abstract class WebContentsObserver {
     public void primaryMainDocumentElementAvailable() {}
 
     /**
-     * Notifies that a load has finished for a given frame.
+     * Notifies that a load has finished for the primary main frame.
      * @param rfhId Identifier of the navigating frame.
      * @param url The validated URL that is being navigated to.
      * @param isKnownValid Whether the URL is known to be valid.
-     * @param isInPrimaryMainFrame Whether the load is happening for the primary main frame.
      * @param rfhLifecycleState The lifecycle state of the associated frame.
      */
-    public void didFinishLoad(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid,
+    public void didFinishLoadInPrimaryMainFrame(GlobalRenderFrameHostId rfhId, GURL url,
+            boolean isKnownValid, @LifecycleState int rfhLifecycleState) {}
+
+    /**
+     * TODO(crbug.com/1351884) Remove when NotifyJavaSpuriouslyToMeasurePerf experiment is finished.
+     * No-op, for measuring performance of calling didFinishLoad in only the primary main frame.
+     */
+    public void didFinishLoadNoop(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid,
             boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {}
 
     /**

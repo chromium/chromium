@@ -151,8 +151,8 @@ public class PolicyAuditorBridgeTest {
         final CallbackHelper loadFinishCallback = new CallbackHelper();
         WebContentsObserver observer = new WebContentsObserver() {
             @Override
-            public void didFinishLoad(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid,
-                    boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {
+            public void didFinishLoadInPrimaryMainFrame(GlobalRenderFrameHostId rfhId, GURL url,
+                    boolean isKnownValid, @LifecycleState int rfhLifecycleState) {
                 loadFinishCallback.notifyCalled();
             }
         };

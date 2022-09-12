@@ -192,15 +192,22 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         }
 
         @Override
-        public void didFinishLoad(GlobalRenderFrameHostId frameId, GURL url, boolean isKnownValid,
-                boolean isInPrimaryMainFrame, @LifecycleState int frameLifecycleState) {
+        public void didFinishLoadInPrimaryMainFrame(GlobalRenderFrameHostId frameId, GURL url,
+                boolean isKnownValid, @LifecycleState int frameLifecycleState) {
             assert isKnownValid;
             if (frameLifecycleState == LifecycleState.ACTIVE) {
                 if (mTab.getNativePage() != null) {
                     mTab.pushNativePageStateToNavigationEntry();
                 }
-                if (isInPrimaryMainFrame) mTab.didFinishPageLoad(url);
+                mTab.didFinishPageLoad(url);
             }
+        }
+
+        @Override
+        public void didFinishLoadNoop(GlobalRenderFrameHostId frameId, GURL url,
+                boolean isKnownValid, boolean isInPrimaryMainFrame,
+                @LifecycleState int frameLifecycleState) {
+            if (!isInPrimaryMainFrame) return;
         }
 
         @Override

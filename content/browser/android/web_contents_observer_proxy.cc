@@ -183,17 +183,30 @@ void WebContentsObserverProxy::DidFinishNavigation(
 
 void WebContentsObserverProxy::DidFinishLoad(RenderFrameHost* render_frame_host,
                                              const GURL& validated_url) {
+  // TODO(crbug.com/1351884) Remove when NotifyJavaSupriouslyToMeasurePerf
+  // experiment is finished.
+  TRACE_EVENT0("browser", "Java_WebContentsObserverProxy_DidFinishLoad");
+
   JNIEnv* env = AttachCurrentThread();
 
   GURL url = validated_url;
   bool assume_valid = SetToBaseURLForDataURLIfNeeded(&url);
 
-  Java_WebContentsObserverProxy_didFinishLoad(
-      env, java_observer_, render_frame_host->GetProcess()->GetID(),
-      render_frame_host->GetRoutingID(),
-      url::GURLAndroid::FromNativeGURL(env, url), assume_valid,
-      render_frame_host->IsInPrimaryMainFrame(),
-      static_cast<jint>(render_frame_host->GetLifecycleState()));
+  if (render_frame_host->IsInPrimaryMainFrame()) {
+    Java_WebContentsObserverProxy_didFinishLoadInPrimaryMainFrame(
+        env, java_observer_, render_frame_host->GetProcess()->GetID(),
+        render_frame_host->GetRoutingID(),
+        url::GURLAndroid::FromNativeGURL(env, url), assume_valid,
+        static_cast<jint>(render_frame_host->GetLifecycleState()));
+  } else if (base::FeatureList::IsEnabled(
+                 features::kNotifyJavaSpuriouslyToMeasurePerf)) {
+    Java_WebContentsObserverProxy_didFinishLoadNoop(
+        env, java_observer_, render_frame_host->GetProcess()->GetID(),
+        render_frame_host->GetRoutingID(),
+        url::GURLAndroid::FromNativeGURL(env, url), assume_valid,
+        render_frame_host->IsInPrimaryMainFrame(),
+        static_cast<jint>(render_frame_host->GetLifecycleState()));
+  }
 }
 
 void WebContentsObserverProxy::DOMContentLoaded(

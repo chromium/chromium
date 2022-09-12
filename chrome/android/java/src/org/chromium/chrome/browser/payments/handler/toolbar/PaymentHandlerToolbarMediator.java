@@ -73,8 +73,8 @@ import org.chromium.url.GURL;
 
     // WebContentsObserver:
     @Override
-    public void didFinishLoad(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid,
-            boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {
+    public void didFinishLoadInPrimaryMainFrame(GlobalRenderFrameHostId rfhId, GURL url,
+            boolean isKnownValid, @LifecycleState int rfhLifecycleState) {
         if (rfhLifecycleState != LifecycleState.ACTIVE) return;
         // Hides the Progress Bar after a delay to make sure it is rendered for at least
         // a few frames, otherwise its completion won't be visually noticeable.
@@ -83,6 +83,14 @@ import org.chromium.url.GURL;
             mModel.set(PaymentHandlerToolbarProperties.PROGRESS_VISIBLE, false);
             mHideProgressBarHandler = null;
         }, HIDE_PROGRESS_BAR_DELAY_MS);
+    }
+
+    @Override
+    public void didFinishLoadNoop(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid,
+            boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {
+        // In case something goes wrong, we can enable NotifyJavaSpuriouslyToMeasurePerf so
+        // didFinishLoad has the same behavior as before.
+        didFinishLoadInPrimaryMainFrame(rfhId, url, isKnownValid, rfhLifecycleState);
     }
 
     @Override

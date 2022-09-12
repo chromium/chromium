@@ -61,14 +61,12 @@ public class AwWebContentsObserverTest {
     @Feature({"AndroidWebView"})
     public void testOnPageFinished() throws Throwable {
         GlobalRenderFrameHostId frameId = new GlobalRenderFrameHostId(-1, -1);
-        boolean mainFrame = true;
-        boolean subFrame = false;
         final TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
                 mContentsClient.getOnPageFinishedHelper();
 
         int callCount = onPageFinishedHelper.getCallCount();
-        mWebContentsObserver.didFinishLoad(
-                frameId, mExampleURL, true, mainFrame, LifecycleState.ACTIVE);
+        mWebContentsObserver.didFinishLoadInPrimaryMainFrame(
+                frameId, mExampleURL, true, LifecycleState.ACTIVE);
         mWebContentsObserver.didStopLoading(mExampleURL, true);
         onPageFinishedHelper.waitForCallback(callCount);
         Assert.assertEquals("onPageFinished should be called for main frame navigations.",
@@ -76,27 +74,11 @@ public class AwWebContentsObserverTest {
         Assert.assertEquals("onPageFinished should be called for main frame navigations.",
                 mExampleURL.getSpec(), onPageFinishedHelper.getUrl());
 
-        // In order to check that callbacks are *not* firing, first we execute code
-        // that shoudn't emit callbacks, then code that emits a callback, and check that we
-        // have got only one callback, and that its URL is from the last call. Since
-        // callbacks are serialized, that means we didn't have a callback for the first call.
         callCount = onPageFinishedHelper.getCallCount();
-        mWebContentsObserver.didFinishLoad(
-                frameId, mExampleURL, true, subFrame, LifecycleState.ACTIVE);
-        mWebContentsObserver.didFinishLoad(
-                frameId, mSyncURL, true, mainFrame, LifecycleState.ACTIVE);
-        mWebContentsObserver.didStopLoading(mSyncURL, true);
-        onPageFinishedHelper.waitForCallback(callCount);
-        Assert.assertEquals("onPageFinished should only be called for the main frame.",
-                callCount + 1, onPageFinishedHelper.getCallCount());
-        Assert.assertEquals("onPageFinished should only be called for the main frame.",
-                mSyncURL.getSpec(), onPageFinishedHelper.getUrl());
-
-        callCount = onPageFinishedHelper.getCallCount();
-        mWebContentsObserver.didFinishLoad(
-                frameId, mUnreachableWebDataUrl, false, mainFrame, LifecycleState.ACTIVE);
-        mWebContentsObserver.didFinishLoad(
-                frameId, mSyncURL, true, mainFrame, LifecycleState.ACTIVE);
+        mWebContentsObserver.didFinishLoadInPrimaryMainFrame(
+                frameId, mUnreachableWebDataUrl, false, LifecycleState.ACTIVE);
+        mWebContentsObserver.didFinishLoadInPrimaryMainFrame(
+                frameId, mSyncURL, true, LifecycleState.ACTIVE);
         mWebContentsObserver.didStopLoading(mSyncURL, true);
         onPageFinishedHelper.waitForCallback(callCount);
         Assert.assertEquals("onPageFinished should not be called for the error url.", callCount + 1,
@@ -104,14 +86,11 @@ public class AwWebContentsObserverTest {
         Assert.assertEquals("onPageFinished should not be called for the error url.",
                 mSyncURL.getSpec(), onPageFinishedHelper.getUrl());
 
-        String baseUrl = null;
         boolean isInMainFrame = true;
         boolean isErrorPage = false;
         boolean isSameDocument = true;
         boolean fragmentNavigation = true;
         boolean isRendererInitiated = true;
-        int errorCode = 0;
-        int httpStatusCode = 200;
         callCount = onPageFinishedHelper.getCallCount();
         simulateNavigation(mExampleURL, isInMainFrame, isErrorPage, !isSameDocument,
                 !fragmentNavigation, !isRendererInitiated, PageTransition.TYPED);
@@ -126,8 +105,8 @@ public class AwWebContentsObserverTest {
         callCount = onPageFinishedHelper.getCallCount();
         simulateNavigation(mExampleURL, isInMainFrame, isErrorPage, !isSameDocument,
                 !fragmentNavigation, !isRendererInitiated, PageTransition.TYPED);
-        mWebContentsObserver.didFinishLoad(
-                frameId, mSyncURL, true, mainFrame, LifecycleState.ACTIVE);
+        mWebContentsObserver.didFinishLoadInPrimaryMainFrame(
+                frameId, mSyncURL, true, LifecycleState.ACTIVE);
         mWebContentsObserver.didStopLoading(mSyncURL, true);
         onPageFinishedHelper.waitForCallback(callCount);
         onPageFinishedHelper.waitForCallback(callCount);

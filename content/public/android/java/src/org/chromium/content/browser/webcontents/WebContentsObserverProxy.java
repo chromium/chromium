@@ -263,19 +263,37 @@ class WebContentsObserverProxy extends WebContentsObserver {
     }
 
     @CalledByNative
-    private void didFinishLoad(int renderProcessId, int renderFrameId, GURL url,
+    private void didFinishLoadInPrimaryMainFrame(int renderProcessId, int renderFrameId, GURL url,
+            boolean isKnownValid, @LifecycleState int frameLifecycleState) {
+        didFinishLoadInPrimaryMainFrame(new GlobalRenderFrameHostId(renderProcessId, renderFrameId),
+                url, isKnownValid, frameLifecycleState);
+    }
+
+    @Override
+    public void didFinishLoadInPrimaryMainFrame(GlobalRenderFrameHostId rfhId, GURL url,
+            boolean isKnownValid, @LifecycleState int rfhLifecycleState) {
+        handleObserverCall();
+        for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
+            mObserversIterator.next().didFinishLoadInPrimaryMainFrame(
+                    rfhId, url, isKnownValid, rfhLifecycleState);
+        }
+        finishObserverCall();
+    }
+
+    @CalledByNative
+    private void didFinishLoadNoop(int renderProcessId, int renderFrameId, GURL url,
             boolean isKnownValid, boolean isInPrimaryMainFrame,
             @LifecycleState int frameLifecycleState) {
-        didFinishLoad(new GlobalRenderFrameHostId(renderProcessId, renderFrameId), url,
+        didFinishLoadNoop(new GlobalRenderFrameHostId(renderProcessId, renderFrameId), url,
                 isKnownValid, isInPrimaryMainFrame, frameLifecycleState);
     }
 
     @Override
-    public void didFinishLoad(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid,
+    public void didFinishLoadNoop(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid,
             boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {
         handleObserverCall();
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
-            mObserversIterator.next().didFinishLoad(
+            mObserversIterator.next().didFinishLoadNoop(
                     rfhId, url, isKnownValid, isInPrimaryMainFrame, rfhLifecycleState);
         }
         finishObserverCall();

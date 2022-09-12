@@ -84,8 +84,6 @@ import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageStateHandler;
 import org.chromium.components.messages.MessagesTestHelper;
-import org.chromium.content_public.browser.GlobalRenderFrameHostId;
-import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -1085,9 +1083,8 @@ public class UrlOverridingTest {
         final CallbackHelper frameFinishCallback = new CallbackHelper();
         WebContentsObserver observer = new WebContentsObserver() {
             @Override
-            public void didFinishLoad(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid,
-                    boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {
-                if (!isInPrimaryMainFrame) frameFinishCallback.notifyCalled();
+            public void didStopLoading(GURL url, boolean isKnownValid) {
+                frameFinishCallback.notifyCalled();
             }
         };
         TestThreadUtils.runOnUiThreadBlocking(
