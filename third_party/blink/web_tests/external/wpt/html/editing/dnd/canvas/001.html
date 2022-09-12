@@ -1,5 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="../resources/test-helper.js"></script>
 <head>
 <title>Canvas drag and drop carrying image as dataURL</title>
 <style type="text/css">
@@ -31,7 +36,6 @@ function start(event)
 <div
   ondragenter="event.preventDefault()"
   ondragover="return false"
-  ondrop="addImage(event)"
 />
 <script type="application/ecmascript">
 var canvas = document.querySelector('canvas'),
@@ -45,6 +49,19 @@ for(var x = 0; x != 50; x++)
   c.lineTo(x,100-x);
   c.closePath();
   c.fill();}
+async function test() {
+  const canvas = document.querySelector('canvas');
+  const div = document.querySelector('div');
+  function onDropCallBack(event) {
+    addImage(event);
+    const img = document.querySelector('img');
+    assert_equals(img.src, canvas.toDataURL('image/png'));
+    return true;
+  }
+
+  dragDropTest(canvas, div, onDropCallBack, 'Dragging the canvas to the bottom div should turn it green');
+}
+test();
 </script>
 </body>
 </html>
