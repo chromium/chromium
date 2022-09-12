@@ -942,8 +942,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   ASSERT_TRUE(RunExtensionTest("webrequest/test_cors")) << message_;
 }
 
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_WebRequestRedirects DISABLED_WebRequestRedirects
+#else
+#define MAYBE_WebRequestRedirects WebRequestRedirects
+#endif
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
-                       WebRequestRedirects) {
+                       MAYBE_WebRequestRedirects) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest/test_redirects")) << message_;
 }
