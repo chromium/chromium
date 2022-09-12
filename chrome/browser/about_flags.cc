@@ -2870,87 +2870,68 @@ const FeatureEntry::FeatureVariation kLargeFaviconFromGoogleVariations[] = {
 // Empty params configures the feature to apply a simple threshold to one
 // sample.
 
-const FeatureEntry::FeatureParam kSnoopingProtectionPrecision[] = {
-    {"SnoopingProtection_filter_config_case", "2"},
-    {"SnoopingProtection_positive_count_threshold", "1"},
-    {"SnoopingProtection_negative_count_threshold", "1"},
-    {"SnoopingProtection_uncertain_count_threshold", "1"},
-    {"SnoopingProtection_positive_score_threshold", "0"},
-    {"SnoopingProtection_negative_score_threshold", "0"}};
-
-const FeatureEntry::FeatureParam kSnoopingProtectionConfidence[] = {
+const FeatureEntry::FeatureParam kSnoopingProtection2Frames[] = {
     {"SnoopingProtection_filter_config_case", "2"},
     {"SnoopingProtection_positive_count_threshold", "2"},
     {"SnoopingProtection_negative_count_threshold", "2"},
     {"SnoopingProtection_uncertain_count_threshold", "2"},
-    {"SnoopingProtection_positive_score_threshold", "0"},
-    {"SnoopingProtection_negative_score_threshold", "0"}};
-
-const FeatureEntry::FeatureParam kSnoopingProtectionThreshold20[] = {
-    {"SnoopingProtection_filter_config_case", "2"},
-    {"SnoopingProtection_positive_count_threshold", "1"},
-    {"SnoopingProtection_negative_count_threshold", "1"},
-    {"SnoopingProtection_uncertain_count_threshold", "1"},
-    {"SnoopingProtection_positive_score_threshold", "20"},
-    {"SnoopingProtection_negative_score_threshold", "20"}};
-
-const FeatureEntry::FeatureParam kSnoopingProtectionThresholdMinus20[] = {
-    {"SnoopingProtection_filter_config_case", "2"},
-    {"SnoopingProtection_positive_count_threshold", "1"},
-    {"SnoopingProtection_negative_count_threshold", "1"},
-    {"SnoopingProtection_uncertain_count_threshold", "1"},
-    {"SnoopingProtection_positive_score_threshold", "-20"},
-    {"SnoopingProtection_negative_score_threshold", "-20"}};
-
-const FeatureEntry::FeatureParam kSnoopingProtectionThreshold40[] = {
-    {"SnoopingProtection_filter_config_case", "2"},
-    {"SnoopingProtection_positive_count_threshold", "1"},
-    {"SnoopingProtection_negative_count_threshold", "1"},
-    {"SnoopingProtection_uncertain_count_threshold", "1"},
     {"SnoopingProtection_positive_score_threshold", "40"},
     {"SnoopingProtection_negative_score_threshold", "40"}};
 
-const FeatureEntry::FeatureParam kSnoopingProtectionThresholdMinus40[] = {
+const FeatureEntry::FeatureParam kSnoopingProtection5Frames[] = {
     {"SnoopingProtection_filter_config_case", "2"},
-    {"SnoopingProtection_positive_count_threshold", "1"},
-    {"SnoopingProtection_negative_count_threshold", "1"},
-    {"SnoopingProtection_uncertain_count_threshold", "1"},
-    {"SnoopingProtection_positive_score_threshold", "-40"},
-    {"SnoopingProtection_negative_score_threshold", "-40"}};
+    {"SnoopingProtection_positive_count_threshold", "5"},
+    {"SnoopingProtection_negative_count_threshold", "5"},
+    {"SnoopingProtection_uncertain_count_threshold", "5"},
+    {"SnoopingProtection_positive_score_threshold", "40"},
+    {"SnoopingProtection_negative_score_threshold", "40"}};
+
+const FeatureEntry::FeatureParam kSnoopingProtectionThreshold20[] = {
+    {"SnoopingProtection_filter_config_case", "2"},
+    {"SnoopingProtection_positive_count_threshold", "3"},
+    {"SnoopingProtection_negative_count_threshold", "3"},
+    {"SnoopingProtection_uncertain_count_threshold", "3"},
+    {"SnoopingProtection_positive_score_threshold", "20"},
+    {"SnoopingProtection_negative_score_threshold", "20"}};
+
+const FeatureEntry::FeatureParam kSnoopingProtectionThreshold40[] = {
+    {"SnoopingProtection_filter_config_case", "2"},
+    {"SnoopingProtection_positive_count_threshold", "3"},
+    {"SnoopingProtection_negative_count_threshold", "3"},
+    {"SnoopingProtection_uncertain_count_threshold", "3"},
+    {"SnoopingProtection_positive_score_threshold", "40"},
+    {"SnoopingProtection_negative_score_threshold", "40"}};
 
 const FeatureEntry::FeatureParam kSnoopingProtectionThreshold60[] = {
     {"SnoopingProtection_filter_config_case", "2"},
-    {"SnoopingProtection_positive_count_threshold", "1"},
-    {"SnoopingProtection_negative_count_threshold", "1"},
-    {"SnoopingProtection_uncertain_count_threshold", "1"},
+    {"SnoopingProtection_positive_count_threshold", "3"},
+    {"SnoopingProtection_negative_count_threshold", "3"},
+    {"SnoopingProtection_uncertain_count_threshold", "3"},
     {"SnoopingProtection_positive_score_threshold", "60"},
     {"SnoopingProtection_negative_score_threshold", "60"}};
 
-const FeatureEntry::FeatureParam kSnoopingProtectionThresholdMinus60[] = {
+const FeatureEntry::FeatureParam kSnoopingProtectionThreshold80[] = {
     {"SnoopingProtection_filter_config_case", "2"},
-    {"SnoopingProtection_positive_count_threshold", "1"},
-    {"SnoopingProtection_negative_count_threshold", "1"},
-    {"SnoopingProtection_uncertain_count_threshold", "1"},
-    {"SnoopingProtection_positive_score_threshold", "-60"},
-    {"SnoopingProtection_negative_score_threshold", "-60"}};
+    {"SnoopingProtection_positive_count_threshold", "3"},
+    {"SnoopingProtection_negative_count_threshold", "3"},
+    {"SnoopingProtection_uncertain_count_threshold", "3"},
+    {"SnoopingProtection_positive_score_threshold", "80"},
+    {"SnoopingProtection_negative_score_threshold", "80"}};
 
 const FeatureEntry::FeatureVariation kSnoopingProtectionVariations[] = {
-    {"Precise", kSnoopingProtectionPrecision,
-     std::size(kSnoopingProtectionPrecision), nullptr},
-    {"Slow Precise", kSnoopingProtectionConfidence,
-     std::size(kSnoopingProtectionConfidence), nullptr},
+    {"2Frames", kSnoopingProtection2Frames,
+     std::size(kSnoopingProtection2Frames), nullptr},
+    {"5Frames", kSnoopingProtection5Frames,
+     std::size(kSnoopingProtection5Frames), nullptr},
     {"Threshold20", kSnoopingProtectionThreshold20,
      std::size(kSnoopingProtectionThreshold20), nullptr},
-    {"Threshold-20", kSnoopingProtectionThresholdMinus20,
-     std::size(kSnoopingProtectionThresholdMinus20), nullptr},
     {"Threshold40", kSnoopingProtectionThreshold40,
      std::size(kSnoopingProtectionThreshold40), nullptr},
-    {"Threshold-40", kSnoopingProtectionThresholdMinus40,
-     std::size(kSnoopingProtectionThresholdMinus40), nullptr},
     {"Threshold60", kSnoopingProtectionThreshold60,
      std::size(kSnoopingProtectionThreshold60), nullptr},
-    {"Threshold-60", kSnoopingProtectionThresholdMinus60,
-     std::size(kSnoopingProtectionThresholdMinus60), nullptr},
+    {"Threshold80", kSnoopingProtectionThreshold80,
+     std::size(kSnoopingProtectionThreshold80), nullptr},
+
 };
 
 const FeatureEntry::FeatureParam kQuickDim10s[] = {

@@ -60,8 +60,8 @@ hps::FeatureConfig GetDefaultSnoopingProtectionConfig() {
   filter_config.set_positive_count_threshold(3);
   filter_config.set_negative_count_threshold(3);
   filter_config.set_uncertain_count_threshold(3);
-  filter_config.set_positive_score_threshold(20);
-  filter_config.set_negative_score_threshold(20);
+  filter_config.set_positive_score_threshold(40);
+  filter_config.set_negative_score_threshold(40);
 
   return config;
 }
