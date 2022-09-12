@@ -141,6 +141,8 @@ class CORE_EXPORT LayoutTextFragment : public LayoutText {
   void UpdateHitTestResult(HitTestResult&,
                            const PhysicalOffset&) const override;
 
+  DOMNodeId OwnerNodeId() const final;
+
   unsigned start_;
   unsigned fragment_length_;
   bool is_remaining_text_layout_object_;
