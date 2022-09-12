@@ -267,8 +267,8 @@ void PasswordChangeRunView::ShowUseGeneratedPasswordPrompt(
 }
 
 void PasswordChangeRunView::ShowStartingScreen(const GURL& url) {
-  SetTopIcon(
-      autofill_assistant::password_change::TopIcon::TOP_ICON_UNSPECIFIED);
+  SetTopIcon(autofill_assistant::password_change::TopIcon::
+                 TOP_ICON_OPEN_SITE_SETTINGS);
 
   const std::u16string formatted_url = url_formatter::FormatUrl(
       url,
