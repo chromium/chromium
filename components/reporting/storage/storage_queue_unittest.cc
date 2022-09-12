@@ -1673,7 +1673,7 @@ TEST_P(StorageQueueTest, WriteAndImmediateUploadWithFailure) {
 TEST_P(StorageQueueTest, WriteAndImmediateUploadWithoutConfirmation) {
   CreateTestStorageQueueOrDie(
       BuildStorageQueueOptionsImmediate().set_upload_retry_delay(
-          base::Seconds(1)));
+          base::Seconds(5)));
 
   // Write a record as Immediate, initiating an upload which fails
   // and then restarts.
@@ -1703,7 +1703,7 @@ TEST_P(StorageQueueTest, WriteAndImmediateUploadWithoutConfirmation) {
                   .Complete();
             }))
         .RetiresOnSaturation();
-    task_environment_.FastForwardBy(base::Seconds(1));
+    task_environment_.FastForwardBy(base::Seconds(5));
   }
 
   // Confirm 0 and make sure no retry happens (since everything is confirmed).
@@ -1712,7 +1712,7 @@ TEST_P(StorageQueueTest, WriteAndImmediateUploadWithoutConfirmation) {
       .Times(0);
 
   ConfirmOrDie(/*sequencing_id=*/0);
-  task_environment_.FastForwardBy(base::Seconds(1));
+  task_environment_.FastForwardBy(base::Seconds(10));
 }
 
 TEST_P(StorageQueueTest, WriteEncryptFailure) {

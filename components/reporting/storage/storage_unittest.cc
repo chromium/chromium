@@ -1824,7 +1824,7 @@ TEST_P(StorageTest, KeyDeliveryFailureOnNewStorage) {
   key_delivery_failure_.store(true);
   for (size_t failure = 1; failure < kFailuresCount; ++failure) {
     // Failing attempt to write
-    const Status write_result = WriteString(FAST_BATCH, kData[0]);
+    const Status write_result = WriteString(MANUAL_BATCH, kData[0]);
     EXPECT_FALSE(write_result.ok());
     EXPECT_THAT(write_result.error_code(), Eq(error::FAILED_PRECONDITION))
         << write_result;
@@ -1839,29 +1839,34 @@ TEST_P(StorageTest, KeyDeliveryFailureOnNewStorage) {
   // Set uploader expectations for any queue; expect no records and need
   // key. Make sure no uploads happen, and key is requested.
   key_delivery_failure_.store(false);
-  EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(Eq(UploaderInterface::UploadReason::KEY_DELIVERY)))
-      .Times(AtLeast(1))
-      .WillRepeatedly(Invoke([this](UploaderInterface::UploadReason) {
-        return TestUploader::SetKeyDelivery(this).Complete();
-      }));
+  {
+    test::TestCallbackAutoWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(Eq(UploaderInterface::UploadReason::KEY_DELIVERY)))
+        .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason) {
+          auto result = TestUploader::SetKeyDelivery(this).Complete();
+          waiter.Signal();
+          return result;
+        }))
+        .RetiresOnSaturation();
 
-  // Forward time to trigger upload
-  task_environment_.FastForwardBy(base::Seconds(1));
+    // Forward time to trigger upload
+    task_environment_.FastForwardBy(base::Seconds(1));
+  }
 
   // Successfully write data
-  WriteStringOrDie(FAST_BATCH, kData[0]);
-  WriteStringOrDie(FAST_BATCH, kData[1]);
-  WriteStringOrDie(FAST_BATCH, kData[2]);
+  WriteStringOrDie(MANUAL_BATCH, kData[0]);
+  WriteStringOrDie(MANUAL_BATCH, kData[1]);
+  WriteStringOrDie(MANUAL_BATCH, kData[2]);
 
   // Set uploader expectations.
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
+                Call(Eq(UploaderInterface::UploadReason::MANUAL)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
-              return TestUploader::SetUp(FAST_BATCH, &waiter, this)
+              return TestUploader::SetUp(MANUAL_BATCH, &waiter, this)
                   .Required(0, kData[0])
                   .Required(1, kData[1])
                   .Required(2, kData[2])
@@ -1869,26 +1874,26 @@ TEST_P(StorageTest, KeyDeliveryFailureOnNewStorage) {
             }))
         .RetiresOnSaturation();
 
-    // Trigger successful upload.
-    task_environment_.FastForwardBy(base::Seconds(1));
+    // Trigger upload.
+    EXPECT_OK(storage_->Flush(MANUAL_BATCH));
   }
 
   ResetTestStorage();
 
   // Reopen and write more data.
   CreateTestStorageOrDie(BuildTestStorageOptions());
-  WriteStringOrDie(FAST_BATCH, kMoreData[0]);
-  WriteStringOrDie(FAST_BATCH, kMoreData[1]);
-  WriteStringOrDie(FAST_BATCH, kMoreData[2]);
+  WriteStringOrDie(MANUAL_BATCH, kMoreData[0]);
+  WriteStringOrDie(MANUAL_BATCH, kMoreData[1]);
+  WriteStringOrDie(MANUAL_BATCH, kMoreData[2]);
 
   // Set uploader expectations.
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
+                Call(Eq(UploaderInterface::UploadReason::MANUAL)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
-              return TestUploader::SetUp(FAST_BATCH, &waiter, this)
+              return TestUploader::SetUp(MANUAL_BATCH, &waiter, this)
                   .Required(0, kData[0])
                   .Required(1, kData[1])
                   .Required(2, kData[2])
@@ -1900,7 +1905,7 @@ TEST_P(StorageTest, KeyDeliveryFailureOnNewStorage) {
         .RetiresOnSaturation();
 
     // Trigger upload.
-    task_environment_.FastForwardBy(base::Seconds(1));
+    EXPECT_OK(storage_->Flush(MANUAL_BATCH));
   }
 }
 
