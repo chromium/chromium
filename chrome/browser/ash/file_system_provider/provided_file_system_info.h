@@ -50,6 +50,7 @@ class ProviderId {
   ProviderType GetType() const;
 
   bool operator==(const ProviderId& other) const;
+  bool operator!=(const ProviderId& other) const;
   bool operator<(const ProviderId& other) const;
 
  private:

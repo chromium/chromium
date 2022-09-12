@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/file_manager/url_constants.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
@@ -132,6 +134,28 @@ Profile* GetProfileWithAppService(Profile* profile) {
   }
 }
 
+// TODO(petermarshall): This can be removed along with ParseFilesAppActionId()
+// in file_tasks.cc as the legacy files app has been removed.
+std::string ToSwaActionId(const std::string& action_id) {
+  return std::string(ash::file_manager::kChromeUIFileManagerURL) + "?" +
+         action_id;
+}
+
+// True if |launch_entry| represents a task which opens the file by getting the
+// URL for a file rather than by opening the local contents of the file.
+bool IsFilesAppUrlOpener(const apps::IntentLaunchInfo& launch_entry) {
+  if (launch_entry.app_id != kFileManagerSwaAppId) {
+    return false;
+  }
+  return launch_entry.activity_name == ToSwaActionId(kActionIdOpenInOffice) ||
+         launch_entry.activity_name ==
+             ToSwaActionId(kActionIdWebDriveOfficeWord) ||
+         launch_entry.activity_name ==
+             ToSwaActionId(kActionIdWebDriveOfficeExcel) ||
+         launch_entry.activity_name ==
+             ToSwaActionId(kActionIdWebDriveOfficePowerPoint);
+}
+
 void FindAppServiceTasks(Profile* profile,
                          const std::vector<extensions::EntryInfo>& entries,
                          const std::vector<GURL>& file_urls,
@@ -201,9 +225,11 @@ void FindAppServiceTasks(Profile* profile,
 
     if (app_type == apps::AppType::kWeb ||
         app_type == apps::AppType::kSystemWeb) {
-      // Media app and other SWAs can handle "non-native" files.
+      // Media app and other SWAs can handle "non-native" files, as can special
+      // tasks which only access the file via URL.
       if (has_non_native_file &&
-          !web_app::IsSystemAppIdWithFileHandlers(launch_entry.app_id)) {
+          !(web_app::IsSystemAppIdWithFileHandlers(launch_entry.app_id) ||
+            IsFilesAppUrlOpener(launch_entry))) {
         continue;
       }
 

@@ -46,6 +46,7 @@
 #include "chrome/browser/ash/file_manager/url_util.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
+#include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/launch_util.h"
@@ -471,12 +472,57 @@ bool ExecuteWebDriveOfficeTask(Profile* profile,
   }
 }
 
-bool ODFSInstalled() {
-  return false;
+using ash::file_system_provider::ProvidedFileSystemInfo;
+using ash::file_system_provider::ProviderId;
+using ash::file_system_provider::Service;
+
+const char kODFSExtensionId[] = "ajdgmkbkgifbokednjgbmieaemeighkg";
+
+bool ODFSMounted(Profile* profile) {
+  ProviderId provider_id = ProviderId::CreateFromExtensionId(kODFSExtensionId);
+
+  Service* service = Service::Get(profile);
+  std::vector<ProvidedFileSystemInfo> file_systems =
+      service->GetProvidedFileSystemInfoList(provider_id);
+
+  // Assume any file system mounted by ODFS is the correct one.
+  return !file_systems.empty();
 }
 
 bool FileIsOnODFS(const FileSystemURL& url, Profile* profile) {
-  return false;
+  ash::file_system_provider::util::FileSystemURLParser parser(url);
+  if (!parser.Parse()) {
+    LOG(ERROR) << "Path not in FSP";
+    return false;
+  }
+
+  ProviderId provider_id = ProviderId::CreateFromExtensionId(kODFSExtensionId);
+  if (parser.file_system()->GetFileSystemInfo().provider_id() != provider_id) {
+    LOG(ERROR) << "Path on another FSP";
+    return false;
+  }
+  return true;
+}
+
+const char kOpenWebActionId[] = "OPEN_WEB";
+
+// Pre-condition: |url| is for a file which is on ODFS already.
+void OpenODFSUrl(const FileSystemURL& url) {
+  ash::file_system_provider::util::FileSystemURLParser parser(url);
+  if (!parser.Parse()) {
+    LOG(ERROR) << "Path not in FSP";
+    // TODO(petermarshall): Launch QuickOffice or other fallback
+    return;
+  }
+
+  parser.file_system()->ExecuteAction(
+      {parser.file_path()}, kOpenWebActionId,
+      base::BindOnce([](base::File::Error result) {
+        if (result != base::File::Error::FILE_OK) {
+          LOG(ERROR) << "Error executing action: " << result;
+          // TODO(petermarshall): Launch QuickOffice or other fallback.
+        }
+      }));
 }
 
 bool ExecuteOpenInOfficeTask(Profile* profile,
@@ -491,20 +537,22 @@ bool ExecuteOpenInOfficeTask(Profile* profile,
     return false;
   }
 
-  if (ODFSInstalled()) {
+  if (ODFSMounted(profile)) {
     if (FileIsOnODFS(file_urls.front(), profile)) {
-      // The file is already on ODFS: Open the URL.
-      // TODO(petermarshall): Open URL.
+      OpenODFSUrl(file_urls.front());
+      LOG(ERROR) << "File is on ODFS";
       return true;
     } else {
       // We need to move the file to ODFS first. This flow will eventually open
       // the file in the browser, too.
       // TODO(petermarshall): Move to ODFS.
+      LOG(ERROR) << "File can be moved to ODFS";
       return true;
     }
   } else {
     // TODO(petermarshall): Launch QuickOffice or other fallback and return
     // true.
+    LOG(ERROR) << "ODFS not available/mounted";
     return false;
   }
 }
