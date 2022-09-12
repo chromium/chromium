@@ -90,8 +90,8 @@ void BindMachineLearningService(
 
 void BindLanguagePacks(
     content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<chromeos::language::mojom::LanguagePacks> receiver) {
-  chromeos::language_packs::LanguagePacksImpl::GetInstance().BindReceiver(
+    mojo::PendingReceiver<ash::language::mojom::LanguagePacks> receiver) {
+  ash::language_packs::LanguagePacksImpl::GetInstance().BindReceiver(
       std::move(receiver));
 }
 
@@ -156,7 +156,7 @@ void PopulateChromeFrameBindersForExtension(
   if (extension->id() == ash::extension_ime_util::kXkbExtensionId) {
     binder_map->Add<ash::ime::mojom::InputEngineManager>(
         base::BindRepeating(&BindInputEngineManager));
-    binder_map->Add<chromeos::language::mojom::LanguagePacks>(
+    binder_map->Add<ash::language::mojom::LanguagePacks>(
         base::BindRepeating(&BindLanguagePacks));
     binder_map->Add<chromeos::machine_learning::mojom::MachineLearningService>(
         base::BindRepeating(&BindMachineLearningService));
@@ -224,7 +224,7 @@ void PopulateChromeFrameBindersForExtension(
   if (extension->id() == extension_misc::kGoogleSpeechSynthesisExtensionId) {
     binder_map->Add<chromeos::tts::mojom::GoogleTtsStream>(
         base::BindRepeating(&BindGoogleTtsStream));
-    binder_map->Add<chromeos::language::mojom::LanguagePacks>(
+    binder_map->Add<ash::language::mojom::LanguagePacks>(
         base::BindRepeating(&BindLanguagePacks));
   }
 

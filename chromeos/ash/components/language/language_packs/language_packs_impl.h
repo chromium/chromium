@@ -12,9 +12,9 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
-namespace chromeos::language_packs {
+namespace ash::language_packs {
 
-class LanguagePacksImpl : public chromeos::language::mojom::LanguagePacks {
+class LanguagePacksImpl : public ash::language::mojom::LanguagePacks {
  public:
   // Singleton getter
   static LanguagePacksImpl& GetInstance();
@@ -26,22 +26,22 @@ class LanguagePacksImpl : public chromeos::language::mojom::LanguagePacks {
   ~LanguagePacksImpl() override;
 
   void BindReceiver(
-      mojo::PendingReceiver<language::mojom::LanguagePacks> receiver);
+      mojo::PendingReceiver<ash::language::mojom::LanguagePacks> receiver);
 
   // mojom::LanguagePacks interface methods.
-  void GetPackInfo(chromeos::language::mojom::FeatureId feature_id,
+  void GetPackInfo(ash::language::mojom::FeatureId feature_id,
                    const std::string& language,
                    GetPackInfoCallback callback) override;
-  void InstallPack(chromeos::language::mojom::FeatureId feature_id,
+  void InstallPack(ash::language::mojom::FeatureId feature_id,
                    const std::string& language,
                    InstallPackCallback callback) override;
-  void InstallBasePack(chromeos::language::mojom::FeatureId feature_id,
+  void InstallBasePack(ash::language::mojom::FeatureId feature_id,
                        InstallBasePackCallback callback) override;
 
  private:
-  mojo::ReceiverSet<chromeos::language::mojom::LanguagePacks> receivers_;
+  mojo::ReceiverSet<ash::language::mojom::LanguagePacks> receivers_;
 };
 
-}  // namespace chromeos::language_packs
+}  // namespace ash::language_packs
 
 #endif  // CHROMEOS_ASH_COMPONENTS_LANGUAGE_LANGUAGE_PACKS_LANGUAGE_PACKS_IMPL_H_

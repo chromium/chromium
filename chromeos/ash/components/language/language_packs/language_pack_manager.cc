@@ -17,7 +17,7 @@
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos::language_packs {
+namespace ash::language_packs {
 namespace {
 
 // PackResult that is returned by an invalid feature ID is specified.
@@ -301,4 +301,4 @@ LanguagePackManager* LanguagePackManager::GetInstance() {
   return instance.get();
 }
 
-}  // namespace chromeos::language_packs
+}  // namespace ash::language_packs

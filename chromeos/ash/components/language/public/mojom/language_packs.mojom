@@ -6,7 +6,7 @@
 // It allows clients to check, request and observe the files managed by
 // Language Packs.
 
-module chromeos.language.mojom;
+module ash.language.mojom;
 
 // ID of the Feature using LanguagePacks.
 // These values are persisted to logs. Entries should not be renumbered and

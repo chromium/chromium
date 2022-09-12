@@ -12,7 +12,7 @@
 #include "base/test/metrics/histogram_enum_reader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos::language_packs {
+namespace ash::language_packs {
 
 TEST(LanguagePackMetricsTest, CheckLanguageCodes) {
   const std::vector<std::string> language_codes = {
@@ -47,4 +47,4 @@ TEST(LanguagePackMetricsTest, CheckLanguageCodes) {
       << missing_codes;
 }
 
-}  // namespace chromeos::language_packs
+}  // namespace ash::language_packs
