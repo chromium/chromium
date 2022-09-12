@@ -12,16 +12,25 @@ import {UserAction} from './cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
 import {getTemplate} from './cloud_upload_dialog.html.js';
 
+export enum UploadType {
+  ONE_DRIVE = 0,
+  DRIVE = 1,
+}
+
 /**
  * @fileoverview
  * 'cloud-upload' defines the UI for the "Upload to cloud" workflow.
  */
 
 export class CloudUploadElement extends HTMLElement {
+  uploadType: UploadType|undefined;
+  fileName: string;
+
   constructor() {
     super();
-    const template = document.createElement('template');
-    template.innerHTML = getTemplate() as string;
+    this.fileName = '';
+    this.processDialogArgs();
+    const template = this.createTemplate();
     const fragment = template.content.cloneNode(true);
     this.attachShadow({mode: 'open'}).appendChild(fragment);
   }
@@ -39,37 +48,65 @@ export class CloudUploadElement extends HTMLElement {
   }
 
   async connectedCallback() {
-    const cancelButton = this.$('#cancel-button');
+    const cancelButton = this.$('#cancel-button')! as HTMLElement;
+    const uploadButton = this.$('#upload-button')! as HTMLElement;
     cancelButton.addEventListener('click', () => this.onCancelButtonClick());
-    const uploadButton = this.$('#upload-button');
     uploadButton.addEventListener('click', () => this.onUploadButtonClick());
+  }
 
-    let fileName = '';
+  processDialogArgs() {
     try {
       const dialogArgs = this.proxy.getDialogArguments();
       assert(dialogArgs);
       const args = JSON.parse(dialogArgs);
       assert(args);
       assert(args.fileName);
-      fileName = args.fileName;
+      assert(args.uploadType);
+      this.fileName = args.fileName;
+      switch (args.uploadType) {
+        case 'OneDrive':
+          this.uploadType = UploadType.ONE_DRIVE;
+          break;
+        case 'Drive':
+          this.uploadType = UploadType.DRIVE;
+          break;
+      }
     } catch (e) {
       // TODO(b/243095484) Define expected behavior.
       console.error(`Unable to get dialog arguments . Error: ${e}.`);
     }
-    this.$('#path').innerText = `File name: ${fileName}`;
+  }
 
-    let destinationPath = '';
-    try {
-      const {uploadPath} = await this.proxy.handler.getUploadPath();
-      assert(uploadPath.path);
-      destinationPath = uploadPath.path;
-    } catch (e) {
-      // TODO(b/243095484) Define expected behavior.
-      console.error(`Unable to get upload path. Error: ${e}.`);
+  createTemplate(): HTMLTemplateElement {
+    const template = document.createElement('template');
+    template.innerHTML = getTemplate() as string;
+    const fragment = template.content;
+    const titleElement =
+        fragment.querySelector('div[slot="title"]')! as HTMLElement;
+    const uploadMessageElement =
+        fragment.querySelector('#upload-message')! as HTMLElement;
+    const fileNameElement =
+        fragment.querySelector('#file-name')! as HTMLElement;
+    const uploadButton =
+        fragment.querySelector('#upload-button')! as HTMLElement;
+
+    switch (this.uploadType) {
+      case UploadType.ONE_DRIVE:
+        titleElement.innerText = 'Upload to OneDrive';
+        uploadMessageElement.innerText =
+            'Upload your file to OneDrive to open with Office.';
+        uploadButton.innerText = 'Upload to OneDrive';
+        break;
+      case UploadType.DRIVE:
+        titleElement.innerText = 'Upload to Drive';
+        uploadMessageElement.innerText =
+            'Upload your file to Google Drive to open with Google Docs.';
+        uploadButton.innerText = 'Upload to Drive';
+        break;
     }
-    const uploadLocationElement = this.$('#upload-location');
-    uploadLocationElement.innerText = `Upload location: ${destinationPath}`;
-    uploadLocationElement.toggleAttribute('hidden', false);
+    fileNameElement.innerText = `File name: ${this.fileName}`;
+
+    return template;
   }
 
   private onCancelButtonClick(): void {

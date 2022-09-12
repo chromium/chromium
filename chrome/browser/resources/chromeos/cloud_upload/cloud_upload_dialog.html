@@ -12,19 +12,18 @@
 <cr-dialog show-on-attach>
   <!-- TODO: Use localized strings -->
   <div slot="title">
-    Upload to Drive
+    Upload to Cloud
   </div>
   <div slot="body">
-    Upload your file to Google Drive to open with Google Docs.
-    <div id="path" style="margin-top: 1rem"></div>
-    <div id="upload-location" style="margin-top: 1rem" hidden></div>
+    <div id="upload-message" style="margin-top: 1rem"></div>
+    <div id="file-name" style="margin-top: 1rem"></div>
   </div>
   <div slot="button-container">
     <cr-button id="cancel-button" class="cancel-button">
       Cancel
     </cr-button>
     <cr-button id="upload-button" class="action-button">
-      Upload to Drive
+      Upload
     </cr-button>
   </div>
 </cr-dialog>

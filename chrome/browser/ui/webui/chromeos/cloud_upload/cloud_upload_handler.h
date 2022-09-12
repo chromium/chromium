@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/chromeos/extensions/file_manager/scoped_suppress_drive_notifications_for_path.h"
+#include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_notification_manager.h"
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
@@ -39,12 +40,10 @@ class CloudUploadHandler
  public:
   using UploadCallback = base::OnceCallback<void(const GURL&)>;
 
-  // Generates the upload destination path.
-  static base::FilePath GenerateUploadFolderPath(Profile* profile);
-
   // Starts the upload workflow for the file specified at construct time.
   static void UploadToCloud(Profile* profile,
                             const storage::FileSystemURL& source_url,
+                            const UploadType upload_type,
                             UploadCallback callback);
 
   CloudUploadHandler(const CloudUploadHandler&) = delete;

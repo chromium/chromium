@@ -25,7 +25,6 @@ class CloudUploadPageHandler
   using RespondAndCloseCallback =
       base::OnceCallback<void(mojom::UserAction action)>;
   explicit CloudUploadPageHandler(
-      Profile* profile,
       mojo::PendingReceiver<chromeos::cloud_upload::mojom::PageHandler>
           pending_page_handler,
       RespondAndCloseCallback callback);
@@ -36,11 +35,9 @@ class CloudUploadPageHandler
   ~CloudUploadPageHandler() override;
 
   // chromeos::cloud_upload::mojom::PageHandler:
-  void GetUploadPath(GetUploadPathCallback callback) override;
   void RespondAndClose(mojom::UserAction action) override;
 
  private:
-  Profile* profile_;
   mojo::Receiver<chromeos::cloud_upload::mojom::PageHandler> receiver_;
   RespondAndCloseCallback callback_;
 

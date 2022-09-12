@@ -457,8 +457,8 @@ bool ExecuteWebDriveOfficeTask(Profile* profile,
     } else {
       // We need to move the file to Drive first. This flow will eventually
       // open the file in the browser, too.
-      return chromeos::cloud_upload::CloudUploadDialog::Show(profile,
-                                                             file_urls);
+      return chromeos::cloud_upload::CloudUploadDialog::Show(
+          profile, file_urls, chromeos::cloud_upload::UploadType::kDrive);
     }
   } else {
     UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName,

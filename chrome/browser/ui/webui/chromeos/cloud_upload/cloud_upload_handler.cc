@@ -57,19 +57,15 @@ void CreateDirectoryOnIOThread(
 }  // namespace
 
 // static.
-base::FilePath CloudUploadHandler::GenerateUploadFolderPath(Profile* profile) {
-  drive::DriveIntegrationService* integration_service =
-      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
-  return integration_service
-             ? integration_service->GetMountPointPath().Append("root").Append(
-                   kDestinationFolder)
-             : base::FilePath();
-}
-
-// static.
 void CloudUploadHandler::UploadToCloud(Profile* profile,
                                        const storage::FileSystemURL& source_url,
+                                       const UploadType upload_type,
                                        UploadCallback callback) {
+  if (upload_type == UploadType::kOneDrive) {
+    std::move(callback).Run(GURL());
+    return;
+  }
+
   scoped_refptr<CloudUploadHandler> cloud_upload_handler =
       new CloudUploadHandler(profile, source_url);
   // Keep `cloud_upload_handler` alive until `UploadToCloudDone` executes.
@@ -136,13 +132,9 @@ void CloudUploadHandler::Run(UploadCallback callback) {
   drive_integration_service_->GetDriveFsHost()->AddObserver(this);
 
   // Destination url.
-  base::FilePath destination_folder_path = GenerateUploadFolderPath(profile_);
-  if (destination_folder_path.empty()) {
-    OnEndUpload(GURL(),
-                "Unable to generate destination folder path, the drive "
-                "integration service might not be available");
-    return;
-  }
+  base::FilePath destination_folder_path =
+      drive_integration_service_->GetMountPointPath().Append("root").Append(
+          kDestinationFolder);
   storage::FileSystemURL destination_folder_url = FilePathToFileSystemURL(
       profile_, file_system_context_, destination_folder_path);
   // TODO (b/243095484) Define error behavior.

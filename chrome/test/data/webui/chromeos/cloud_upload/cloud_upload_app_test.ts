@@ -6,7 +6,7 @@ import 'chrome://cloud-upload/cloud_upload_dialog.js';
 
 import {PageHandlerRemote, UserAction} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
-import {CloudUploadElement} from 'chrome://cloud-upload/cloud_upload_dialog.js';
+import {CloudUploadElement, UploadType} from 'chrome://cloud-upload/cloud_upload_dialog.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -16,35 +16,23 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
  */
 class CloudUploadTestBrowserProxy implements CloudUploadBrowserProxy {
   handler: PageHandlerRemote&TestBrowserProxy;
+  uploadType: UploadType;
 
-  constructor() {
+  constructor(uploadType: UploadType) {
     this.handler = TestBrowserProxy.fromClass(PageHandlerRemote);
+    this.uploadType = uploadType;
   }
 
   getDialogArguments() {
-    return JSON.stringify({fileName: 'file.docx'});
+    switch (this.uploadType) {
+      case UploadType.ONE_DRIVE:
+        return JSON.stringify({fileName: 'file.docx', uploadType: 'OneDrive'});
+      case UploadType.DRIVE:
+        return JSON.stringify({fileName: 'file.docx', uploadType: 'Drive'});
+      default:
+        return JSON.stringify({fileName: 'file.docx', uploadType: ''});
+    }
   }
-}
-
-/**
- * Wait for `f` to evaluate to true. Evaluation interval is 100ms, throws an
- * error if the 5s timeout is reached.
- */
-async function waitFor(f: () => boolean) {
-  return new Promise((resolve, reject) => {
-    const intervalId = setInterval(() => {
-      if (f()) {
-        clearInterval(intervalId);
-        clearTimeout(timeoutId);
-        resolve(undefined);
-      }
-    }, 100);
-
-    const timeoutId = setTimeout(() => {
-      clearInterval(intervalId);
-      reject(new Error('waitFor has timed out'));
-    }, 5000);
-  });
 }
 
 suite('<cloud-upload>', () => {
@@ -55,8 +43,16 @@ suite('<cloud-upload>', () => {
   /* The BrowserProxy element to make assertions on when mojo methods are
      called. */
   let testProxy: CloudUploadTestBrowserProxy;
-  /* Upload path, response from the `getUploadPath` mojo method. */
-  const uploadPath = '/from Chromebook';
+
+  const setupForUploadType = (uploadType: UploadType) => {
+    testProxy = new CloudUploadTestBrowserProxy(uploadType);
+    CloudUploadBrowserProxy.setInstance(testProxy);
+
+    // Creates and attaches the <cloud-upload> element to the DOM tree.
+    cloudUploadApp =
+        document.createElement('cloud-upload') as CloudUploadElement;
+    container.appendChild(cloudUploadApp);
+  };
 
   /**
    * Runs prior to all the tests running, attaches a div to enable isolated
@@ -65,25 +61,6 @@ suite('<cloud-upload>', () => {
   suiteSetup(() => {
     container = document.createElement('div');
     document.body.appendChild(container);
-    testProxy = new CloudUploadTestBrowserProxy();
-    CloudUploadBrowserProxy.setInstance(testProxy);
-  });
-
-  /**
-   * Runs before each test.
-   */
-  setup(() => {
-    // Sets `getUploadPath` to return the 'from Chromebook' static string.
-    // Called on <cloud-upload>'s connectedCallback.
-    testProxy.handler.setResultFor('getUploadPath', {
-      uploadPath: {
-        path: uploadPath,
-      },
-    });
-    // Creates and attaches the <cloud-upload> element to the DOM tree.
-    cloudUploadApp =
-        document.createElement('cloud-upload') as CloudUploadElement;
-    container.appendChild(cloudUploadApp);
   });
 
   /**
@@ -96,15 +73,25 @@ suite('<cloud-upload>', () => {
   });
 
   /**
-   * Tests that the upload path is correctly displayed when the <cloud-upload>
-   * element is attached.
+   * Tests that the dialog's content is correct for OneDrive.
    */
-  test('Upload location', async () => {
-    const uploadLocationElement = cloudUploadApp.$('#upload-location');
-    // Wait for the #upload-location element (initially empty) to update.
-    await waitFor(() => !!uploadLocationElement.innerText);
-    assertEquals(
-        `Upload location: ${uploadPath}`, uploadLocationElement.innerText);
+  test('Upload to OneDrive - title', async () => {
+    setupForUploadType(UploadType.ONE_DRIVE);
+    const titleElement = cloudUploadApp.$('div[slot="title"]');
+    const uploadButton = cloudUploadApp.$('#upload-button');
+    assertEquals(`Upload to OneDrive`, titleElement.innerText);
+    assertEquals(`Upload to OneDrive`, uploadButton.innerText);
+  });
+
+  /**
+   * Tests that the dialog's content is correct for Drive.
+   */
+  test('Upload to Drive - title', async () => {
+    setupForUploadType(UploadType.DRIVE);
+    const titleElement = cloudUploadApp.$('div[slot="title"]');
+    const uploadButton = cloudUploadApp.$('#upload-button');
+    assertEquals(`Upload to Drive`, titleElement.innerText);
+    assertEquals(`Upload to Drive`, uploadButton.innerText);
   });
 
   /**
@@ -112,6 +99,7 @@ suite('<cloud-upload>', () => {
    * mojo request.
    */
   test('Upload button', async () => {
+    setupForUploadType(UploadType.DRIVE);
     cloudUploadApp.$('#upload-button').click();
     await testProxy.handler.whenCalled('respondAndClose');
     assertEquals(1, testProxy.handler.getCallCount('respondAndClose'));
@@ -124,6 +112,7 @@ suite('<cloud-upload>', () => {
    * mojo request.
    */
   test('Cancel button', async () => {
+    setupForUploadType(UploadType.DRIVE);
     cloudUploadApp.$('#cancel-button').click();
     await testProxy.handler.whenCalled('respondAndClose');
     assertEquals(1, testProxy.handler.getCallCount('respondAndClose'));
