@@ -32,7 +32,6 @@ extern const char kAutofillCreditCardSigninPromoImpressionCount[];
 // kAutofillProfileEnabled instead.
 extern const char kAutofillEnabledDeprecated[];
 extern const char kAutofillIBANEnabled[];
-extern const char kAutofillJapanCityFieldMigratedDeprecated[];
 extern const char kAutofillLastVersionDeduped[];
 extern const char kAutofillLastVersionDisusedAddressesDeleted[];
 extern const char kAutofillLastVersionDisusedCreditCardsDeleted[];

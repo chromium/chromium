@@ -50,10 +50,6 @@ const char kAutofillCreditCardSigninPromoImpressionCount[] =
 // Boolean that is true if Autofill is enabled and allowed to save data.
 const char kAutofillEnabledDeprecated[] = "autofill.enabled";
 
-// Deprecated 10/2019.
-const char kAutofillJapanCityFieldMigratedDeprecated[] =
-    "autofill.japan_city_field_migrated_to_street_address";
-
 // Boolean that is true if Autofill is enabled and allowed to save IBAN data.
 extern const char kAutofillIBANEnabled[] = "autofill.iban_enabled";
 
@@ -116,9 +112,6 @@ const char kAutocompleteLastVersionRetentionPolicy[] =
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Synced prefs. Used for cross-device choices, e.g., credit card Autofill.
   registry->RegisterBooleanPref(
-      prefs::kAutofillEnabledDeprecated, true,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(
       prefs::kAutofillProfileEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(
@@ -159,41 +152,14 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(prefs::kAutofillSyncTransportOptIn);
 
   // Deprecated prefs registered for migration.
-  registry->RegisterBooleanPref(kAutofillJapanCityFieldMigratedDeprecated,
-                                false);
+  registry->RegisterBooleanPref(
+      prefs::kAutofillEnabledDeprecated, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
-void MigrateDeprecatedAutofillPrefs(PrefService* prefs) {
-  // If kAutofillCreditCardEnabled and kAutofillProfileEnabled prefs are
-  // currently using their default value and kAutofillEnabledDeprecated has a
-  // non-default value, override the valuAues of the new prefs. The following
-  // blocks should execute only once and are needed for those users who had
-  // Autofill disabled before introduction of the fine-grained prefs.
-  // TODO(crbug.com/870328): Remove these once M70- users are sufficiently low.
-  const PrefService::Preference* deprecated_autofill_pref =
-      prefs->FindPreference(prefs::kAutofillEnabledDeprecated);
-  DCHECK(deprecated_autofill_pref);
-
-  const PrefService::Preference* autofill_credit_card_pref =
-      prefs->FindPreference(prefs::kAutofillCreditCardEnabled);
-  DCHECK(autofill_credit_card_pref);
-  if (autofill_credit_card_pref->IsDefaultValue() &&
-      !deprecated_autofill_pref->IsDefaultValue()) {
-    prefs->SetBoolean(kAutofillCreditCardEnabled,
-                      prefs->GetBoolean(kAutofillEnabledDeprecated));
-  }
-
-  const PrefService::Preference* autofill_profile_pref =
-      prefs->FindPreference(prefs::kAutofillProfileEnabled);
-  DCHECK(autofill_profile_pref);
-  if (autofill_profile_pref->IsDefaultValue() &&
-      !deprecated_autofill_pref->IsDefaultValue()) {
-    prefs->SetBoolean(kAutofillProfileEnabled,
-                      prefs->GetBoolean(kAutofillEnabledDeprecated));
-  }
-
-  // Added 10/2019.
-  prefs->ClearPref(kAutofillJapanCityFieldMigratedDeprecated);
+void MigrateDeprecatedAutofillPrefs(PrefService* pref_service) {
+  // Added 09/2022.
+  pref_service->ClearPref(prefs::kAutofillEnabledDeprecated);
 }
 
 bool IsAutocompleteEnabled(const PrefService* prefs) {
