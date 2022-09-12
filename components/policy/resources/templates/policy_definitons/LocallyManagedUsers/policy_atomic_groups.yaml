@@ -1,0 +1,6 @@
+SupervisedUsers:
+  caption: Supervised users
+  policies:
+  - SupervisedUsersEnabled
+  - SupervisedUserCreationEnabled
+  - SupervisedUserContentProviderEnabled

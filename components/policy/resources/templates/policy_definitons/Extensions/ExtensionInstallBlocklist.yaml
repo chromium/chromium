@@ -1,0 +1,28 @@
+caption: Configure extension installation blocklist
+desc: |-
+  Allows you to specify which extensions the users can NOT install. Extensions already installed will be disabled if blocked, without a way for the user to enable them. Once an extension disabled due to the blocklist is removed from it, it will automatically get re-enabled.
+
+            A blocklist value of '*' means all extensions are blocked unless they are explicitly listed in the allowlist.
+
+            If this policy is left not set the user can install any extension in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+example_value:
+- extension_id1
+- extension_id2
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+label: Extension IDs the user should be prevented from installing (or * for all)
+owners:
+- lazyboy@chromium.org
+- file://extensions/OWNERS
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome.*:86-
+- chrome_os:86-
+tags: []
+type: list

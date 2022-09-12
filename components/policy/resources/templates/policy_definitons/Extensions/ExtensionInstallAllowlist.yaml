@@ -1,0 +1,28 @@
+caption: Configure extension installation allow list
+desc: |-
+  Setting the policy specifies which extensions are not subject to the blocklist.
+
+         A blocklist value of <ph name="ALL_EXTENSIONS">*</ph> means all extensions are blocked and users can only install extensions listed in the allow list.
+
+         By default, all extensions are allowed. But, if you prohibited extensions by policy, use the list of allowed extensions to change that policy.
+example_value:
+- extension_id1
+- extension_id2
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+label: Extension IDs to exempt from the blocklist
+owners:
+- rdevlin.cronin@chromium.org
+- file://extensions/OWNERS
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome.*:86-
+- chrome_os:86-
+tags: []
+type: list
