@@ -383,9 +383,9 @@ void ServiceWorkerVersion::RegisterStatusChangeCallback(
 ServiceWorkerVersionInfo ServiceWorkerVersion::GetInfo() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ServiceWorkerVersionInfo info(
-      running_status(), status(), fetch_handler_existence(), script_url(),
-      scope(), key(), registration_id(), version_id(),
-      embedded_worker()->process_id(), embedded_worker()->thread_id(),
+      running_status(), status(), fetch_handler_type_, script_url(), scope(),
+      key(), registration_id(), version_id(), embedded_worker()->process_id(),
+      embedded_worker()->thread_id(),
       embedded_worker()->worker_devtools_agent_route_id(), ukm_source_id(),
       ancestor_frame_type_);
   for (const auto& controllee : controllee_map_) {

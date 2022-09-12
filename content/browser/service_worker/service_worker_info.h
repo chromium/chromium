@@ -36,7 +36,7 @@ struct CONTENT_EXPORT ServiceWorkerVersionInfo
   ServiceWorkerVersionInfo(
       EmbeddedWorkerStatus running_status,
       ServiceWorkerVersion::Status status,
-      ServiceWorkerVersion::FetchHandlerExistence fetch_handler_existence,
+      absl::optional<ServiceWorkerVersion::FetchHandlerType> fetch_handler_type,
       const GURL& script_url,
       const GURL& scope,
       const blink::StorageKey& storage_key,
@@ -52,7 +52,7 @@ struct CONTENT_EXPORT ServiceWorkerVersionInfo
 
   EmbeddedWorkerStatus running_status;
   ServiceWorkerVersion::Status status;
-  ServiceWorkerVersion::FetchHandlerExistence fetch_handler_existence;
+  absl::optional<ServiceWorkerVersion::FetchHandlerType> fetch_handler_type;
   blink::mojom::NavigationPreloadState navigation_preload_state;
   GURL script_url;
   int thread_id;

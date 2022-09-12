@@ -119,16 +119,24 @@ base::Value::Dict UpdateVersionInfo(const ServiceWorkerVersionInfo& version) {
       break;
   }
 
-  switch (version.fetch_handler_existence) {
-    case ServiceWorkerVersion::FetchHandlerExistence::UNKNOWN:
-      info.Set("fetch_handler_existence", "UNKNOWN");
-      break;
-    case ServiceWorkerVersion::FetchHandlerExistence::EXISTS:
-      info.Set("fetch_handler_existence", "EXISTS");
-      break;
-    case ServiceWorkerVersion::FetchHandlerExistence::DOES_NOT_EXIST:
-      info.Set("fetch_handler_existence", "DOES_NOT_EXIST");
-      break;
+  if (version.fetch_handler_type) {
+    switch (*version.fetch_handler_type) {
+      case ServiceWorkerVersion::FetchHandlerType::kNoHandler:
+        info.Set("fetch_handler_existence", "DOES_NOT_EXIST");
+        info.Set("fetch_handler_type", "NO_HANDLER");
+        break;
+      case ServiceWorkerVersion::FetchHandlerType::kNotSkippable:
+        info.Set("fetch_handler_existence", "EXISTS");
+        info.Set("fetch_handler_type", "NOT_SKIPPABLE");
+        break;
+      case ServiceWorkerVersion::FetchHandlerType::kEmptyFetchHandler:
+        info.Set("fetch_handler_existence", "EXISTS");
+        info.Set("fetch_handler_type", "EMPTY_FETCH_HANDLER");
+        break;
+    }
+  } else {
+    info.Set("fetch_handler_existence", "UNKNOWN");
+    info.Set("fetch_handler_type", "UNKNOWN");
   }
 
   info.Set("script_url", version.script_url.spec());
