@@ -263,7 +263,12 @@ struct MediaSerializer<VideoTransformation> {
 template <>
 struct MediaSerializer<VideoColorSpace> {
   static inline base::Value Serialize(const VideoColorSpace& value) {
-    return base::Value(value.ToGfxColorSpace().ToString());
+    base::Value result(base::Value::Type::DICTIONARY);
+    FIELD_SERIALIZE("primaries", value.primaries);
+    FIELD_SERIALIZE("transfer", value.transfer);
+    FIELD_SERIALIZE("matrix", value.matrix);
+    FIELD_SERIALIZE("range", value.range);
+    return result;
   }
 };
 
@@ -480,6 +485,97 @@ struct MediaSerializer<base::Location> {
                     value.file_name() ? value.file_name() : "unknown");
     FIELD_SERIALIZE(StatusConstants::kLineKey, value.line_number());
     return result;
+  }
+};
+
+#define ENUM_CASE_TO_STRING(ENUM_NAME) \
+  case ENUM_NAME:                      \
+    return base::Value(##ENUM_NAME);
+
+#define ENUM_CLASS_CASE_TO_STRING(ENUM_CLASS, ENUM_NAME) \
+  case ENUM_CLASS::ENUM_NAME:                            \
+    return base::Value(#ENUM_NAME);
+
+// Enum (simple)
+template <>
+struct MediaSerializer<VideoColorSpace::PrimaryID> {
+  static inline base::Value Serialize(VideoColorSpace::PrimaryID value) {
+    switch (value) {
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, INVALID);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, BT709);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, UNSPECIFIED);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, BT470M);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, BT470BG);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, SMPTE170M);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, SMPTE240M);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, FILM);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, BT2020);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, SMPTEST428_1);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, SMPTEST431_2);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, SMPTEST432_1);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::PrimaryID, EBU_3213_E);
+    }
+  }
+};
+
+// Enum (simple)
+template <>
+struct MediaSerializer<VideoColorSpace::TransferID> {
+  static inline base::Value Serialize(VideoColorSpace::TransferID value) {
+    switch (value) {
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, INVALID);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, BT709);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, UNSPECIFIED);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, GAMMA22);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, GAMMA28);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, SMPTE170M);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, SMPTE240M);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, LINEAR);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, LOG);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, LOG_SQRT);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, IEC61966_2_4);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, BT1361_ECG);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, IEC61966_2_1);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, BT2020_10);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, BT2020_12);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, SMPTEST2084);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, SMPTEST428_1);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::TransferID, ARIB_STD_B67);
+    }
+  }
+};
+
+// Enum (simple)
+template <>
+struct MediaSerializer<VideoColorSpace::MatrixID> {
+  static inline base::Value Serialize(VideoColorSpace::MatrixID value) {
+    switch (value) {
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::MatrixID, RGB);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::MatrixID, BT709);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::MatrixID, UNSPECIFIED);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::MatrixID, FCC);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::MatrixID, BT470BG);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::MatrixID, SMPTE170M);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::MatrixID, SMPTE240M);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::MatrixID, YCOCG);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::MatrixID, BT2020_NCL);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::MatrixID, BT2020_CL);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::MatrixID, YDZDX);
+      ENUM_CLASS_CASE_TO_STRING(VideoColorSpace::MatrixID, INVALID);
+    }
+  }
+};
+
+// Enum (simple)
+template <>
+struct MediaSerializer<gfx::ColorSpace::RangeID> {
+  static inline base::Value Serialize(gfx::ColorSpace::RangeID value) {
+    switch (value) {
+      ENUM_CLASS_CASE_TO_STRING(gfx::ColorSpace::RangeID, INVALID);
+      ENUM_CLASS_CASE_TO_STRING(gfx::ColorSpace::RangeID, LIMITED);
+      ENUM_CLASS_CASE_TO_STRING(gfx::ColorSpace::RangeID, FULL);
+      ENUM_CLASS_CASE_TO_STRING(gfx::ColorSpace::RangeID, DERIVED);
+    }
   }
 };
 
