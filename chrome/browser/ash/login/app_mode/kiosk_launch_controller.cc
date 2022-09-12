@@ -564,6 +564,7 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
   // placeholder. Force launching the app is not possible in case installation
   // fails.
   if (kiosk_app_id_.type == KioskAppType::kWebApp &&
+      error == KioskAppLaunchError::Error::kUnableToInstall &&
       (!base::FeatureList::IsEnabled(features::kKioskEnableAppService) ||
        crosapi::browser_util::IsLacrosEnabled())) {
     HandleWebAppInstallFailed();
