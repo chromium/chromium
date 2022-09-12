@@ -233,7 +233,19 @@ int Node::CreatePortPair(PortRef* port0_ref, PortRef* port1_ref) {
 
 int Node::SetUserData(const PortRef& port_ref,
                       scoped_refptr<UserData> user_data) {
+  // The user data might be cleared during destructors that run at
+  // non-deterministic points. Pass through events while taking the
+  // lock to avoid a warning.
+  if (recordreplay::AreEventsDisallowed()) {
+    recordreplay::BeginPassThroughEvents();
+  }
+
   SinglePortLocker locker(&port_ref);
+
+  if (recordreplay::AreEventsDisallowed()) {
+    recordreplay::EndPassThroughEvents();
+  }
+
   auto* port = locker.port();
   if (port->state == Port::kClosed)
     return ERROR_PORT_STATE_UNEXPECTED;
