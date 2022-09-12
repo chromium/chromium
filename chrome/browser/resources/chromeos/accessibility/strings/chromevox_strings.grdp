@@ -2339,8 +2339,14 @@
   <message desc="The action to press search key and space key at the same time. This is used to announce a hint to the user that the current control is clickable. e.g. Press Search+Space to activate" name="IDS_CHROMEVOX_ACTION_SEARCH_PLUS_SPACE" is_accessibility_with_no_ui="true">
     Press Search+Space
   </message>
+  <message desc="The action to press search key, shift key and space key at the same time. This is used to announce a hint to the user that the current control is long clickable. e.g. Press Search+Shift+Space to long click" name="IDS_CHROMEVOX_ACTION_SEARCH_PLUS_SHIFT_PLUS_SPACE" is_accessibility_with_no_ui="true">
+    Press Search+Shift+Space
+  </message>
   <message desc="The action to activate the current focus. This is used to announce a hint to the user that the current control is clickable e.g. Press Search+Space to activate" name="IDS_CHROMEVOX_LABEL_ACTIVATE" is_accessibility_with_no_ui="true">
     activate
+  </message>
+  <message desc="The action to press and hold on the current focus. This is used to announce a hint to the user that the current control is long clickable e.g. Press Search+Shift+Space to long click" name="IDS_CHROMEVOX_LABEL_LONG_CLICK" is_accessibility_with_no_ui="true">
+    long click
   </message>
   <message desc="A hint to the user that the current control has a list of auto completions." name="IDS_CHROMEVOX_HINT_AUTOCOMPLETE_LIST">
     Press up or down arrow for auto completions

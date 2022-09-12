@@ -1427,6 +1427,56 @@ AX_TEST_F(
           o.speechOutputForTest);
     });
 
+AX_TEST_F(
+    'ChromeVoxOutputE2ETest', 'DelayHintWithLongClickLabel', async function() {
+      const site = `<button>OK</button>`;
+      const root = await this.runWithLoadedTree(site);
+      const button = root.children[0];
+      const range = CursorRange.fromNode(button);
+
+      let o = new Output().withSpeech(range, null, 'navigate');
+
+      // Force a few properties to be set so that hints are triggered.
+      Object.defineProperty(button, 'longClickable', {get: () => true});
+      Object.defineProperty(
+          button, 'longClickLabel', {get: () => 'long click label'});
+
+      o = new Output().withSpeech(range, null, 'navigate');
+      assertEqualsJSON(
+          {
+            string_: 'OK|Press Search+Shift+Space to long click label',
+            spans_: [{value: {delay: true}, start: 3, end: 47}],
+          },
+          o.speechOutputForTest);
+    });
+
+AX_TEST_F(
+    'ChromeVoxOutputE2ETest', 'DelayHintLongClickFollowsClick',
+    async function() {
+      const site = `<button>OK</button>`;
+      const root = await this.runWithLoadedTree(site);
+      const button = root.children[0];
+      const range = CursorRange.fromNode(button);
+
+      let o = new Output().withSpeech(range, null, 'navigate');
+
+      // Force a few properties to be set so that hints are triggered.
+      Object.defineProperty(button, 'clickable', {get: () => true});
+      Object.defineProperty(button, 'longClickable', {get: () => true});
+
+      o = new Output().withSpeech(range, null, 'navigate');
+      assertEqualsJSON(
+          {
+            string_: 'OK|Press Search+Space to activate|' +
+                'Press Search+Shift+Space to long click',
+            spans_: [
+              {value: {delay: true}, start: 3, end: 33},
+              {start: 34, end: 72},
+            ],
+          },
+          o.speechOutputForTest);
+    });
+
 AX_TEST_F('ChromeVoxOutputE2ETest', 'WithoutFocusRing', async function() {
   const site = `<button></button>`;
   const root = await this.runWithLoadedTree(site);

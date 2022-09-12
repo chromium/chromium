@@ -2310,6 +2310,17 @@ export class Output {
       });
     }
 
+    if (AutomationPredicate.longClickable(node)) {
+      ret.push({
+        msgId: 'hint_actionable',
+        subs: [
+          Msgs.getMsg('action_search_plus_shift_plus_space', []),
+          node.longClickLabel ? node.longClickLabel :
+                                Msgs.getMsg('label_long_click', []),
+        ],
+      });
+    }
+
     if (node.autoComplete === 'list' || node.autoComplete === 'both' ||
         node.state[StateType.AUTOFILL_AVAILABLE]) {
       ret.push({msgId: 'hint_autocomplete_list'});

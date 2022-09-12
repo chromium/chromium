@@ -941,6 +941,21 @@ AutomationPredicate.clickable = AutomationPredicate.match({
   anyAttribute: {clickable: true},
 });
 
+/**
+ * Returns if the node is long clickable.
+ * @param {!AutomationNode} node
+ * @return {boolean}
+ */
+AutomationPredicate.longClickable = AutomationPredicate.match({
+  anyPredicate: [
+    node => {
+      return node.standardActions.includes(
+          chrome.automation.ActionType.LONG_CLICK);
+    },
+  ],
+  anyAttribute: {longClickable: true},
+});
+
 // Table related predicates.
 /**
  * Returns if the node has a cell like role.
