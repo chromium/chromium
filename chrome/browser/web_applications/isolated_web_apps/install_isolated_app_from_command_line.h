@@ -5,11 +5,8 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_INSTALL_ISOLATED_APP_FROM_COMMAND_LINE_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_INSTALL_ISOLATED_APP_FROM_COMMAND_LINE_H_
 
-#include <string>
-#include <vector>
-
 #include "base/callback.h"
-#include "base/callback_helpers.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class CommandLine;
@@ -20,10 +17,9 @@ class Profile;
 
 namespace web_app {
 
-void SetNextInstallationDoneCallbackForTesting(
-    base::OnceCallback<void()> done_callback);
+void SetNextInstallationDoneCallbackForTesting(base::OnceClosure done_callback);
 
-std::vector<GURL> GetAppsToInstallFromCommandLine(
+absl::optional<GURL> GetAppToInstallFromCommandLine(
     const base::CommandLine& command_line);
 
 void MaybeInstallAppFromCommandLine(const base::CommandLine& command_line,

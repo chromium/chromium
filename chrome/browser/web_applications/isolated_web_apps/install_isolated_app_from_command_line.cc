@@ -8,13 +8,12 @@
 #include <string>
 #include <vector>
 
-#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_split.h"
+#include "base/strings/string_piece.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/install_isolated_app_command.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -108,23 +107,18 @@ void SetNextInstallationDoneCallbackForTesting(  // IN-TEST
   NextDoneCallbackHolder::GetInstance().Set(std::move(done_callback));
 }
 
-std::vector<GURL> GetAppsToInstallFromCommandLine(
+absl::optional<GURL> GetAppToInstallFromCommandLine(
     const base::CommandLine& command_line) {
-  std::vector<std::string> switch_values = base::SplitString(
-      command_line.GetSwitchValueASCII(switches::kInstallIsolatedAppsAtStartup),
-      ",", base::WhitespaceHandling::TRIM_WHITESPACE,
-      base::SplitResult::SPLIT_WANT_NONEMPTY);
+  std::string switch_value =
+      command_line.GetSwitchValueASCII(switches::kInstallIsolatedAppsAtStartup);
 
-  std::vector<GURL> app_urls;
-  for (const std::string& switch_value : switch_values) {
-    GURL app_url{switch_value};
-    if (app_url.is_valid()) {
-      app_urls.push_back(app_url);
-    } else {
-      LOG(ERROR) << "Invalid application URL: \"" << switch_value << "\"";
-    }
+  GURL url{switch_value};
+
+  if (!url.is_valid()) {
+    return absl::nullopt;
   }
-  return app_urls;
+
+  return url;
 }
 
 void MaybeInstallAppFromCommandLine(
@@ -134,19 +128,21 @@ void MaybeInstallAppFromCommandLine(
     base::OnceClosure done) {
   DCHECK(!done.is_null());
 
-  const std::vector<GURL> apps_to_install =
-      GetAppsToInstallFromCommandLine(command_line);
-  auto barrier = base::BarrierClosure(apps_to_install.size(), std::move(done));
-
-  for (const GURL& url : apps_to_install) {
-    install_application_from_url.Run(url, barrier);
+  absl::optional<GURL> app_to_install =
+      GetAppToInstallFromCommandLine(command_line);
+  if (!app_to_install.has_value()) {
+    std::move(done).Run();
+    return;
   }
+
+  install_application_from_url.Run(*app_to_install, std::move(done));
 }
 
 void MaybeInstallAppFromCommandLine(const base::CommandLine& command_line,
                                     Profile& profile) {
   base::OnceClosure done = NextDoneCallbackHolder::GetInstance().Get();
   DCHECK(!done.is_null());
+
   MaybeInstallAppFromCommandLine(
       command_line, CreateProductionInstallApplicationFromUrl(profile),
       std::move(done));

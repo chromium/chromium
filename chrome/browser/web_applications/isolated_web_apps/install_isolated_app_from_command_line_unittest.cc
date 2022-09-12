@@ -4,9 +4,6 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_app_from_command_line.h"
 
-#include <string>
-#include <vector>
-
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/strings/string_piece.h"
@@ -15,14 +12,14 @@
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web_app {
 namespace {
 
 using ::testing::Eq;
-using ::testing::IsEmpty;
-using ::testing::UnorderedElementsAre;
+using ::testing::Optional;
 
 base::CommandLine CreateDefaultCommandLine(base::StringPiece flag_value) {
   base::CommandLine command_line{base::CommandLine::NoProgram::NO_PROGRAM};
@@ -31,65 +28,42 @@ base::CommandLine CreateDefaultCommandLine(base::StringPiece flag_value) {
   return command_line;
 }
 
-class InstallIsolatedAppFromCommandLineFlag : public ::testing::Test {
+class InstallIsolatedAppFromCommandLineFlagTest : public ::testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
-TEST_F(InstallIsolatedAppFromCommandLineFlag, InstallsAppFromCommandLineFlag) {
-  EXPECT_THAT(GetAppsToInstallFromCommandLine(
+TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
+       InstallsAppFromCommandLineFlag) {
+  EXPECT_THAT(GetAppToInstallFromCommandLine(
                   CreateDefaultCommandLine("http://example.com")),
-              UnorderedElementsAre(Eq(GURL("http://example.com"))));
+              Optional(Eq(GURL("http://example.com"))));
 }
 
-TEST_F(InstallIsolatedAppFromCommandLineFlag,
+TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
        InstallsDifferentAppFromCommandLineFlag) {
-  EXPECT_THAT(GetAppsToInstallFromCommandLine(
+  EXPECT_THAT(GetAppToInstallFromCommandLine(
                   CreateDefaultCommandLine("http://different-example.com")),
-              UnorderedElementsAre(Eq(GURL("http://different-example.com"))));
+              Optional(Eq(GURL("http://different-example.com"))));
 }
 
-TEST_F(InstallIsolatedAppFromCommandLineFlag,
-       InstallsMultipleCommaSeparatedAppsFromCommandLineFlag) {
-  EXPECT_THAT(GetAppsToInstallFromCommandLine(CreateDefaultCommandLine(
-                  "http://app.com,http://app2.com,http://app3.com")),
-              UnorderedElementsAre(Eq(GURL("http://app.com")),
-                                   Eq(GURL("http://app2.com")),
-                                   Eq(GURL("http://app3.com"))));
+TEST_F(InstallIsolatedAppFromCommandLineFlagTest, NoneForInvalidUrls) {
+  EXPECT_THAT(
+      GetAppToInstallFromCommandLine(CreateDefaultCommandLine("badurl")),
+      Eq(absl::nullopt));
 }
 
-TEST_F(InstallIsolatedAppFromCommandLineFlag, RemoveWhitespacesBetweenAppUrls) {
-  EXPECT_THAT(GetAppsToInstallFromCommandLine(CreateDefaultCommandLine(
-                  "  http://app.com  ,  http://app2.com")),
-              UnorderedElementsAre(Eq(GURL("http://app.com")),
-                                   Eq(GURL("http://app2.com"))));
-}
-
-TEST_F(InstallIsolatedAppFromCommandLineFlag, RemoveEmptyUrls) {
-  EXPECT_THAT(GetAppsToInstallFromCommandLine(CreateDefaultCommandLine(
-                  ",  ,http://app.com  ,,,, http://app2.com,,")),
-              UnorderedElementsAre(Eq(GURL("http://app.com")),
-                                   Eq(GURL("http://app2.com"))));
-}
-
-TEST_F(InstallIsolatedAppFromCommandLineFlag, RemoveInvalidUrls) {
-  EXPECT_THAT(GetAppsToInstallFromCommandLine(CreateDefaultCommandLine(
-                  "badurl,http://app.com,badurl2,http://app2.com,badurl3")),
-              UnorderedElementsAre(Eq(GURL("http://app.com")),
-                                   Eq(GURL("http://app2.com"))));
-}
-
-TEST_F(InstallIsolatedAppFromCommandLineFlag,
+TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
        DoNotCallInstallationWhenFlagIsEmpty) {
-  EXPECT_THAT(GetAppsToInstallFromCommandLine(CreateDefaultCommandLine("")),
-              IsEmpty());
+  EXPECT_THAT(GetAppToInstallFromCommandLine(CreateDefaultCommandLine("")),
+              Eq(absl::nullopt));
 }
 
-TEST_F(InstallIsolatedAppFromCommandLineFlag,
+TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
        DoNotCallInstallationWhenFlagIsNotPresent) {
   const base::CommandLine command_line{
       base::CommandLine::NoProgram::NO_PROGRAM};
-  EXPECT_THAT(GetAppsToInstallFromCommandLine(command_line), IsEmpty());
+  EXPECT_THAT(GetAppToInstallFromCommandLine(command_line), Eq(absl::nullopt));
 }
 
 }  // namespace
