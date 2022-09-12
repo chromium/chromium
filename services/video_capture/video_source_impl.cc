@@ -45,7 +45,7 @@ void VideoSourceImpl::CreatePushSubscription(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto subscription = std::make_unique<PushVideoStreamSubscriptionImpl>(
       std::move(subscription_receiver), std::move(subscriber),
-      requested_settings, std::move(callback), &broadcaster_, &device_);
+      requested_settings, std::move(callback), &broadcaster_);
   subscription->SetOnClosedHandler(base::BindOnce(
       &VideoSourceImpl::OnPushSubscriptionClosedOrDisconnectedOrDiscarded,
       weak_factory_.GetWeakPtr(), subscription.get()));
@@ -82,6 +82,11 @@ void VideoSourceImpl::CreatePushSubscription(
 
 void VideoSourceImpl::OnClientDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Stop |device_| when lose connection with VideoSourceImpl client.
+  if (device_)
+    device_->StopInProcess();
+
   if (receivers_.empty()) {
     // Note: Invoking this callback may synchronously trigger the destruction of
     // |this|, so no more member access should be done after it.
@@ -100,25 +105,24 @@ void VideoSourceImpl::StartDeviceWithSettings(
 
   device_start_settings_ = requested_settings;
   device_status_ = DeviceStatus::kStartingAsynchronously;
-  device_factory_->CreateDevice(
-      device_id_, device_.BindNewPipeAndPassReceiver(),
+  device_factory_->CreateDeviceInProcess(
+      device_id_,
       base::BindOnce(&VideoSourceImpl::OnCreateDeviceResponse,
                      weak_factory_.GetWeakPtr(), std::move(scoped_trace)));
 }
 
 void VideoSourceImpl::OnCreateDeviceResponse(
     std::unique_ptr<ScopedCaptureTrace> scoped_trace,
-    media::VideoCaptureError result_code) {
+    DeviceInProcessInfo info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (result_code == media::VideoCaptureError::kNone) {
+  if (info.result_code == media::VideoCaptureError::kNone) {
     if (scoped_trace)
       scoped_trace->AddStep("StartDevice");
 
     // Device was created successfully.
-    broadcaster_video_frame_handler_.reset();
-    device_->Start(device_start_settings_,
-                   broadcaster_video_frame_handler_.BindNewPipeAndPassRemote());
+    device_ = info.device;
+    device_->StartInProcess(device_start_settings_, broadcaster_.GetWeakPtr());
     device_status_ = DeviceStatus::kStarted;
     if (push_subscriptions_.empty()) {
       StopDeviceAsynchronously();
@@ -126,13 +130,14 @@ void VideoSourceImpl::OnCreateDeviceResponse(
     }
     for (auto& entry : push_subscriptions_) {
       auto& subscription = entry.second;
+      subscription->SetDevice(device_);
       subscription->OnDeviceStartSucceededWithSettings(device_start_settings_);
     }
     return;
   }
   for (auto& entry : push_subscriptions_) {
     auto& subscription = entry.second;
-    subscription->OnDeviceStartFailed(result_code);
+    subscription->OnDeviceStartFailed(info.result_code);
   }
   push_subscriptions_.clear();
   device_status_ = DeviceStatus::kNotStarted;
@@ -185,7 +190,8 @@ void VideoSourceImpl::StopDeviceAsynchronously() {
 
   // Stop the device by closing the connection to it. Stopping is complete when
   // OnStopDeviceComplete() gets invoked.
-  device_.reset();
+  device_factory_->StopDeviceInProcess(device_id_);
+  device_ = nullptr;
   device_status_ = DeviceStatus::kStoppingAsynchronously;
 }
 

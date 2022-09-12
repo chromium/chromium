@@ -79,6 +79,15 @@ class VirtualDeviceEnabledDeviceFactory::VirtualDeviceEntry {
 
   void ResetConsumerReceiver() { consumer_receiver_.reset(); }
 
+  Device* GetDevice() {
+    if (shared_memory_device_)
+      return shared_memory_device_.get();
+    else if (texture_device_)
+      return texture_device_.get();
+    else
+      return gmb_device_.get();
+  }
+
   void StopDevice() {
     if (shared_memory_device_)
       shared_memory_device_->Stop();
@@ -153,6 +162,28 @@ void VirtualDeviceEnabledDeviceFactory::CreateDevice(
 
   device_factory_->CreateDevice(device_id, std::move(device_receiver),
                                 std::move(callback));
+}
+
+void VirtualDeviceEnabledDeviceFactory::CreateDeviceInProcess(
+    const std::string& device_id,
+    CreateDeviceInProcessCallback callback) {
+  auto virtual_device_iter = virtual_devices_by_id_.find(device_id);
+  if (virtual_device_iter != virtual_devices_by_id_.end()) {
+    // The requested virtual device is already used by another client.
+    // Revoke the access for the current client.
+    VirtualDeviceEntry& device_entry = virtual_device_iter->second;
+    DeviceInProcessInfo info{device_entry.GetDevice(),
+                             media::VideoCaptureError::kNone};
+    std::move(callback).Run(std::move(info));
+    return;
+  }
+
+  return device_factory_->CreateDeviceInProcess(device_id, std::move(callback));
+}
+
+void VirtualDeviceEnabledDeviceFactory::StopDeviceInProcess(
+    const std::string device_id) {
+  device_factory_->StopDeviceInProcess(device_id);
 }
 
 void VirtualDeviceEnabledDeviceFactory::AddSharedMemoryVirtualDevice(

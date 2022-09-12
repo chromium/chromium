@@ -55,6 +55,7 @@ class VideoSourceImpl : public mojom::VideoSource {
     kStarted,
     kStoppingAsynchronously
   };
+  using DeviceInProcessInfo = DeviceFactory::DeviceInProcessInfo;
 
   using ScopedCaptureTrace =
       media::TypedScopedAsyncTrace<media::TraceCategory::kVideoAndImageCapture>;
@@ -63,7 +64,7 @@ class VideoSourceImpl : public mojom::VideoSource {
   void StartDeviceWithSettings(
       const media::VideoCaptureParams& requested_settings);
   void OnCreateDeviceResponse(std::unique_ptr<ScopedCaptureTrace> scoped_trace,
-                              media::VideoCaptureError result_code);
+                              DeviceInProcessInfo info);
   void OnPushSubscriptionClosedOrDisconnectedOrDiscarded(
       PushVideoStreamSubscriptionImpl* subscription,
       base::OnceClosure done_cb);
@@ -80,10 +81,8 @@ class VideoSourceImpl : public mojom::VideoSource {
            std::unique_ptr<PushVideoStreamSubscriptionImpl>>
       push_subscriptions_;
   BroadcastingReceiver broadcaster_;
-  mojo::Receiver<mojom::VideoFrameHandler> broadcaster_video_frame_handler_{
-      &broadcaster_};
   DeviceStatus device_status_;
-  mojo::Remote<mojom::Device> device_;
+  raw_ptr<Device> device_;
   media::VideoCaptureParams device_start_settings_;
   bool restart_device_once_when_stop_complete_;
 

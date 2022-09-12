@@ -16,18 +16,14 @@ PushVideoStreamSubscriptionImpl::PushVideoStreamSubscriptionImpl(
     mojo::PendingRemote<mojom::VideoFrameHandler> subscriber,
     const media::VideoCaptureParams& requested_settings,
     mojom::VideoSource::CreatePushSubscriptionCallback creation_callback,
-    BroadcastingReceiver* broadcaster,
-    mojo::Remote<mojom::Device>* device)
+    BroadcastingReceiver* broadcaster)
     : receiver_(this, std::move(subscription_receiver)),
       subscriber_(std::move(subscriber)),
       requested_settings_(requested_settings),
       creation_callback_(std::move(creation_callback)),
       broadcaster_(broadcaster),
-      device_(device),
-      status_(Status::kCreationCallbackNotYetRun),
       broadcaster_client_id_(0) {
   DCHECK(broadcaster_);
-  DCHECK(device_);
 }
 
 PushVideoStreamSubscriptionImpl::~PushVideoStreamSubscriptionImpl() = default;
@@ -107,7 +103,7 @@ void PushVideoStreamSubscriptionImpl::GetPhotoState(
     case Status::kNotYetActivated:  // Fall through.
     case Status::kActive:           // Fall through.
     case Status::kSuspended:
-      (*device_)->GetPhotoState(std::move(callback));
+      device_->GetPhotoState(std::move(callback));
       return;
   }
 }
@@ -123,7 +119,7 @@ void PushVideoStreamSubscriptionImpl::SetPhotoOptions(
     case Status::kNotYetActivated:  // Fall through.
     case Status::kActive:           // Fall through.
     case Status::kSuspended:
-      (*device_)->SetPhotoOptions(std::move(settings), std::move(callback));
+      device_->SetPhotoOptions(std::move(settings), std::move(callback));
       return;
   }
 }
@@ -137,7 +133,7 @@ void PushVideoStreamSubscriptionImpl::TakePhoto(TakePhotoCallback callback) {
     case Status::kNotYetActivated:  // Fall through.
     case Status::kActive:           // Fall through.
     case Status::kSuspended:
-      (*device_)->TakePhoto(std::move(callback));
+      device_->TakePhoto(std::move(callback));
       return;
   }
 }
@@ -178,7 +174,7 @@ void PushVideoStreamSubscriptionImpl::ProcessFeedback(
     case Status::kNotYetActivated:  // Fall through.
     case Status::kActive:           // Fall through.
     case Status::kSuspended:
-      (*device_)->ProcessFeedback(feedback);
+      device_->ProcessFeedback(feedback);
       return;
   }
 }
