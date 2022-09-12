@@ -25,6 +25,9 @@ class TabletModeMultitaskMenuEventHandler : public ui::EventHandler {
   ~TabletModeMultitaskMenuEventHandler() override;
 
   // ui::EventHandler:
+  // TODO(crbug.com/1336836): Temporarily allow mouse wheel events to show or
+  // hide the multitask menu for developers. Remove this before launch.
+  void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
   void CloseMultitaskMenu();
