@@ -136,10 +136,6 @@ chrome::FeedbackSource MapToChromeSource(
 // given directory, instead of the default directory.
 bool OpenFilesSwa(Profile* const profile,
                   base::FilePath target_directory = {}) {
-  if (!ash::features::IsFileManagerSwaEnabled()) {
-    return false;
-  }
-
   GURL directory_url;
   if (!target_directory.empty() &&
       !file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(

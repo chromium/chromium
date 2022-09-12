@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -379,16 +378,6 @@ void ComponentLoader::AddChromeApp() {
       l10n_util::GetStringUTF8(IDS_CHROME_SHORTCUT_DESCRIPTION));
 }
 
-void ComponentLoader::AddFileManagerExtension() {
-  if (!ash::features::IsFileManagerSwaEnabled()) {
-    AddWithNameAndDescription(
-        IDR_FILEMANAGER_MANIFEST,
-        base::FilePath(FILE_PATH_LITERAL("file_manager")),
-        l10n_util::GetStringUTF8(IDS_FILEMANAGER_APP_NAME),
-        l10n_util::GetStringUTF8(IDS_FILEMANAGER_APP_DESCRIPTION));
-  }
-}
-
 void ComponentLoader::AddImageLoaderExtension() {
   Add(IDR_IMAGE_LOADER_MANIFEST,
       base::FilePath(FILE_PATH_LITERAL("image_loader")));
@@ -467,9 +456,6 @@ void ComponentLoader::AddDefaultComponentExtensionsForKioskMode(
     return;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Component extensions needed for kiosk apps.
-  AddFileManagerExtension();
-
   // Add virtual keyboard.
   AddKeyboardApp();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -530,7 +516,6 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
           switches::kLoadGuestModeTestExtension));
       AddGuestModeTestExtension(path);
     }
-    AddFileManagerExtension();
     AddImageLoaderExtension();
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

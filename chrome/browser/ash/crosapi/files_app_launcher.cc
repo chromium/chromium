@@ -6,27 +6,15 @@
 
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/check.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 
 namespace crosapi {
-namespace {
-
-// Returns the app_id for files.app, depending on whether it is
-// switched to SWA already or not.
-std::string GetFileManagerAppId() {
-  return ash::features::IsFileManagerSwaEnabled()
-             ? file_manager::kFileManagerSwaAppId
-             : file_manager::kFileManagerAppId;
-}
-
-}  // namespace
 
 FilesAppLauncher::FilesAppLauncher(apps::AppServiceProxy* proxy)
-    : proxy_(proxy), app_id_(GetFileManagerAppId()) {}
+    : proxy_(proxy) {}
 
 FilesAppLauncher::~FilesAppLauncher() = default;
 
@@ -35,7 +23,7 @@ void FilesAppLauncher::Launch(base::OnceClosure callback) {
   DCHECK(!callback.is_null());
 
   auto& instance_registry = proxy_->InstanceRegistry();
-  if (instance_registry.ContainsAppId(app_id_)) {
+  if (instance_registry.ContainsAppId(file_manager::kFileManagerSwaAppId)) {
     std::move(callback).Run();
     return;
   }
@@ -44,9 +32,11 @@ void FilesAppLauncher::Launch(base::OnceClosure callback) {
 
   auto& app_registry = proxy_->AppRegistryCache();
   bool is_ready = false;
-  app_registry.ForOneApp(app_id_, [&is_ready](const apps::AppUpdate& update) {
-    is_ready = update.Readiness() == apps::Readiness::kReady;
-  });
+  app_registry.ForOneApp(file_manager::kFileManagerSwaAppId,
+                         [&is_ready](const apps::AppUpdate& update) {
+                           is_ready =
+                               update.Readiness() == apps::Readiness::kReady;
+                         });
   if (is_ready) {
     // Files.app is already ready, so launch it.
     LaunchInternal();
@@ -69,7 +59,7 @@ void FilesAppLauncher::LaunchInternal() {
 }
 
 void FilesAppLauncher::OnAppUpdate(const apps::AppUpdate& update) {
-  if (update.AppId() != app_id_)
+  if (update.AppId() != file_manager::kFileManagerSwaAppId)
     return;
 
   if (update.Readiness() != apps::Readiness::kReady)
@@ -88,7 +78,7 @@ void FilesAppLauncher::OnAppRegistryCacheWillBeDestroyed(
 }
 
 void FilesAppLauncher::OnInstanceUpdate(const apps::InstanceUpdate& update) {
-  if (update.AppId() != app_id_)
+  if (update.AppId() != file_manager::kFileManagerSwaAppId)
     return;
 
   // So launching is progressed. Stop observing and run the callback

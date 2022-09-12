@@ -1705,8 +1705,7 @@ void WebAppPublisherHelper::LaunchAppWithIntentImpl(
 std::string WebAppPublisherHelper::GetPolicyId(const WebApp& web_app) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // File Manager SWA uses File Manager Extension's ID for policy.
-  if (chromeos::features::IsFileManagerSwaEnabled() &&
-      web_app.app_id() == file_manager::kFileManagerSwaAppId) {
+  if (web_app.app_id() == file_manager::kFileManagerSwaAppId) {
     return file_manager::kFileManagerAppId;
   }
 #endif

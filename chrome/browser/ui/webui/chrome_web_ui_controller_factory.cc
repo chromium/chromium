@@ -958,9 +958,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<chromeos::LockScreenNetworkUI>;
   }
   if (url.host_piece() == ash::file_manager::kChromeUIFileManagerHost) {
-    if (!ash::features::IsFileManagerSwaEnabled()) {
-      return nullptr;
-    }
     return &NewComponentUI<ash::file_manager::FileManagerUI,
                            ChromeFileManagerUIDelegate>;
   }

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_FILES_APP_LAUNCHER_H_
 #define CHROME_BROWSER_ASH_CROSAPI_FILES_APP_LAUNCHER_H_
 
-#include <string>
-
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
@@ -46,9 +44,6 @@ class FilesAppLauncher : public apps::AppRegistryCache::Observer,
       apps::InstanceRegistry* cache) override;
 
   apps::AppServiceProxy* const proxy_;
-
-  // AppId for files.app, depending on whether or not switched to SWA.
-  const std::string app_id_;
 
   base::OnceClosure callback_;
 

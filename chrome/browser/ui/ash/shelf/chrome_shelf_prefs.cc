@@ -604,11 +604,7 @@ void ChromeShelfPrefs::SkipPinnedAppsFromSyncForTest() {
 
 void ChromeShelfPrefs::MigrateFilesChromeAppToSWA(
     app_list::AppListSyncableService* syncable_service) {
-  bool is_swa_enabled = chromeos::features::IsFileManagerSwaEnabled();
-
-  if (!is_swa_enabled ||
-      (is_swa_enabled &&
-       GetPrefs()->GetBoolean(ash::prefs::kFilesAppUIPrefsMigrated))) {
+  if (GetPrefs()->GetBoolean(ash::prefs::kFilesAppUIPrefsMigrated)) {
     return;
   }
 
