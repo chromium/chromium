@@ -580,6 +580,12 @@ const FeatureEntry::FeatureVariation kAutofillBrandingIOSVariations[] = {
     {"(Monotone)", kAutofillBrandingIOSMonotone,
      std::size(kAutofillBrandingIOSMonotone), nullptr}};
 
+const FeatureEntry::FeatureParam kIOSNewPostRestoreExperienceMinimal[] = {
+    {kIOSNewPostRestoreExperienceParam, "minimal"}};
+const FeatureEntry::FeatureVariation kIOSNewPostRestoreExperienceVariations[] =
+    {{"minimal", kIOSNewPostRestoreExperienceMinimal,
+      std::size(kIOSNewPostRestoreExperienceMinimal), nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -1246,6 +1252,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"app-store-rating", flag_descriptions::kAppStoreRatingName,
      flag_descriptions::kAppStoreRatingDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAppStoreRating)},
+    {"ios-new-post-restore-experience",
+     flag_descriptions::kIOSNewPostRestoreExperienceName,
+     flag_descriptions::kIOSNewPostRestoreExperienceDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSNewPostRestoreExperience,
+                                    kIOSNewPostRestoreExperienceVariations,
+                                    "IOSNewPostRestoreExperience")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

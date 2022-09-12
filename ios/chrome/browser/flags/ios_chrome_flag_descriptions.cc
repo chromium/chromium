@@ -405,6 +405,11 @@ const char kIOSEnablePasswordManagerBrandingUpdateName[] =
 const char kIOSEnablePasswordManagerBrandingUpdateDescription[] =
     "Updates icons, strings, and views for Google Password Manager.";
 
+const char kIOSNewPostRestoreExperienceName[] = "New Post Restore Experience";
+const char kIOSNewPostRestoreExperienceDescription[] =
+    "When enabled, a prompt will be presented after a device restore to "
+    "allow the user to sign in again.";
+
 const char kIOSPasswordUISplitName[] = "Password Manager UI Split";
 const char kIOSPasswordUISplitDescription[] =
     "Splits Password Settings and "

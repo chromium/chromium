@@ -363,6 +363,11 @@ extern const char kIOS3PIntentsInIncognitoDescription[];
 extern const char kIOSEnablePasswordManagerBrandingUpdateName[];
 extern const char kIOSEnablePasswordManagerBrandingUpdateDescription[];
 
+// Title and description for the flag to enable the new iOS post-restore
+// sign-in prompt.
+extern const char kIOSNewPostRestoreExperienceName[];
+extern const char kIOSNewPostRestoreExperienceDescription[];
+
 // Title and description for the flag to split password settings and password
 // management into two separate UIs.
 extern const char kIOSPasswordUISplitName[];
