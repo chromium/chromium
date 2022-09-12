@@ -62,18 +62,12 @@ std::set<SiteInstanceGroup*> CollectSiteInstanceGroups(FrameTree* tree) {
 FrameTreeNode* GetInnerTreeMainFrameNode(FrameTreeNode* node) {
   FrameTreeNode* inner_main_frame_tree_node = FrameTreeNode::GloballyFindByID(
       node->current_frame_host()->inner_tree_main_frame_tree_node_id());
-  RenderFrameHostImpl* inner_tree_main_frame =
-      inner_main_frame_tree_node
-          ? inner_main_frame_tree_node->current_frame_host()
-          : nullptr;
 
-  if (inner_tree_main_frame) {
-    DCHECK_NE(node->frame_tree(), inner_tree_main_frame->frame_tree());
-    DCHECK(inner_tree_main_frame->frame_tree_node());
+  if (inner_main_frame_tree_node) {
+    DCHECK_NE(node->frame_tree(), inner_main_frame_tree_node->frame_tree());
   }
 
-  return inner_tree_main_frame ? inner_tree_main_frame->frame_tree_node()
-                               : nullptr;
+  return inner_main_frame_tree_node;
 }
 
 }  // namespace
