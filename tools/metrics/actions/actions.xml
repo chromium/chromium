@@ -3810,6 +3810,14 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Autofill_BrandingTapped">
+  <owner>ginnyhuang@chromium.org</owner>
+  <description>
+    The user has tapped on the Chrome logo inside the input accessory bar for
+    autofill. (iOS only)
+  </description>
+</action>
+
 <action name="Autofill_ClearedForm">
   <owner>battre@chromium.org</owner>
   <description>
