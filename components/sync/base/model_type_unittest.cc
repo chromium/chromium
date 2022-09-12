@@ -152,5 +152,27 @@ TEST_F(ModelTypeTest, ModelTypeNotificationTypeMapping) {
   }
 }
 
+TEST_F(ModelTypeTest, ModelTypesSubsetsSanity) {
+  // UserTypes and ControlTypes shouldn't overlap.
+  EXPECT_TRUE(Intersection(UserTypes(), ControlTypes()).Empty());
+
+  // UserTypes should contain all *UserTypes.
+  EXPECT_TRUE(UserTypes().HasAll(AlwaysPreferredUserTypes()));
+  EXPECT_TRUE(UserTypes().HasAll(AlwaysEncryptedUserTypes()));
+  EXPECT_TRUE(UserTypes().HasAll(LowPriorityUserTypes()));
+  EXPECT_TRUE(UserTypes().HasAll(HighPriorityUserTypes()));
+
+  // Low-prio types and high-prio types shouldn't overlap.
+  EXPECT_TRUE(
+      Intersection(LowPriorityUserTypes(), HighPriorityUserTypes()).Empty());
+
+  // The always-encrypted types should be encryptable.
+  EXPECT_TRUE(EncryptableUserTypes().HasAll(AlwaysEncryptedUserTypes()));
+
+  // Commit-only types are meant for consumption on the server, and so should
+  // not be encryptable (with a custom passphrase).
+  EXPECT_TRUE(Intersection(CommitOnlyTypes(), EncryptableUserTypes()).Empty());
+}
+
 }  // namespace
 }  // namespace syncer
