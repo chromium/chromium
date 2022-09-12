@@ -32,7 +32,7 @@ class NativeThemeAuraTest : public testing::Test {
 
   SkPath PathForArrow(const gfx::Rect& rect,
                       NativeTheme::Part direction) const {
-    return theme_.PathForArrow(rect, direction);
+    return theme_.PathForArrow(BoundingRectForArrow(rect), direction);
   }
 
   gfx::Rect BoundingRectForArrow(const gfx::Rect& rect) const {

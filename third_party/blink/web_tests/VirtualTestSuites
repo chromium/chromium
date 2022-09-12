@@ -614,6 +614,29 @@
     "args": ["--disable-features=OverlayScrollbar"]
   },
   {
+    "prefix": "fluent-non-overlay-scrollbar",
+    "platforms": ["Win"],
+    "bases": [],
+    "args": ["--enable-features=FluentScrollbar",
+             "--enable-threaded-compositing"]
+  },
+  {
+    "prefix": "fluent-non-overlay-scrollbar-dsf-150",
+    "platforms": ["Win"],
+    "bases": ["virtual/fluent-non-overlay-scrollbar/composited"],
+    "args": ["--enable-features=FluentScrollbar",
+             "--enable-threaded-compositing",
+             "--force-device-scale-factor=1.5"]
+  },
+  {
+    "prefix": "fluent-non-overlay-scrollbar-dsf-200",
+    "platforms": ["Win"],
+    "bases": ["virtual/fluent-non-overlay-scrollbar/composited"],
+    "args": ["--enable-features=FluentScrollbar",
+             "--enable-threaded-compositing",
+             "--force-device-scale-factor=2"]
+  },
+  {
     "prefix": "text-antialias",
     "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
     "bases": [],

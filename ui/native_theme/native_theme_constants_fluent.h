@@ -1,0 +1,41 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef UI_NATIVE_THEME_NATIVE_THEME_CONSTANTS_FLUENT_H_
+#define UI_NATIVE_THEME_NATIVE_THEME_CONSTANTS_FLUENT_H_
+
+namespace ui {
+
+constexpr int kFluentScrollbarThickness = 14;
+constexpr int kFluentScrollbarThumbThickness = 6;
+
+// A sufficiently large value ensures the most round curve for the corners of
+// the scrollbar thumb.
+constexpr int kFluentScrollbarThumbRadius = 999;
+
+// The value represents button height for the vertical scrollbar and width for
+// the horizontal. Another side for the corresponding orientation is the same as
+// the track thickness.
+constexpr int kFluentScrollbarButtonSideLength = 18;
+
+// Arrow rect side length. The height and width of the rect are equal.
+constexpr int kFluentScrollbarArrowRectLength = 8;
+
+// Arrow rect side length when the button is pressed. The height and width of
+// the rect are equal.
+constexpr int kFluentScrollbarPressedArrowRectLength = 7;
+
+// Use this length only when the font that contains arrow icons is not present
+// on the device and the default arrows are painted using SkPath. Since the
+// scrollbar thickness is an even number, we shift the odd rect from the
+// button's center. Also, we can avoid the usage of anti-aliasing, which tends
+// to produce visual defects on specific scales.
+constexpr int kFluentScrollbarPressedArrowRectFallbackLength = 6;
+
+// Offset the arrow icon by this amount off-center, away from the thumb.
+constexpr int kFluentScrollbarArrowOffset = 1;
+
+}  // namespace ui
+
+#endif  // UI_NATIVE_THEME_NATIVE_THEME_CONSTANTS_FLUENT_H_

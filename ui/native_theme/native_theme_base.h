@@ -239,6 +239,7 @@ class NATIVE_THEME_EXPORT NativeThemeBase : public NativeTheme {
                   const gfx::Rect& rect,
                   Part direction,
                   SkColor color) const;
+  SkPath PathForArrow(const gfx::Rect& bounding_rect, Part direction) const;
 
   // Returns the color used to draw the arrow.
   SkColor GetArrowColor(State state, ColorScheme color_scheme) const;
@@ -262,7 +263,6 @@ class NATIVE_THEME_EXPORT NativeThemeBase : public NativeTheme {
  private:
   friend class NativeThemeAuraTest;
 
-  SkPath PathForArrow(const gfx::Rect& rect, Part direction) const;
   gfx::Rect BoundingRectForArrow(const gfx::Rect& rect) const;
 
   void DrawVertLine(cc::PaintCanvas* canvas,

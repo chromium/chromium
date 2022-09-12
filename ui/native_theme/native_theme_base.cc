@@ -470,14 +470,13 @@ void NativeThemeBase::PaintArrow(cc::PaintCanvas* gc,
   cc::PaintFlags flags;
   flags.setColor(color);
 
-  SkPath path = PathForArrow(rect, direction);
+  SkPath path = PathForArrow(BoundingRectForArrow(rect), direction);
 
   gc->drawPath(path, flags);
 }
 
-SkPath NativeThemeBase::PathForArrow(const gfx::Rect& rect,
+SkPath NativeThemeBase::PathForArrow(const gfx::Rect& bounding_rect,
                                      Part direction) const {
-  gfx::Rect bounding_rect = BoundingRectForArrow(rect);
   const gfx::PointF center = gfx::RectF(bounding_rect).CenterPoint();
   SkPath path;
   SkMatrix transform;
