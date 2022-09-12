@@ -57,6 +57,28 @@ public abstract class BrowserServicesIntentDataProvider {
         int V2_NOTIFICATION_OR_SNACKBAR = 1;
     }
 
+    @IntDef({ACTIVITY_HEIGHT_DEFAULT, ACTIVITY_HEIGHT_ADJUSTABLE, ACTIVITY_HEIGHT_FIXED})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ActivityResizeBehavior {}
+
+    /**
+     * Applies the default resize behavior for the Custom Tab Activity when it behaves as a
+     * bottom sheet. Same as {@link #ACTIVITY_HEIGHT_ADJUSTABLE}.
+     */
+    public static final int ACTIVITY_HEIGHT_DEFAULT = 0;
+
+    /**
+     * The Custom Tab Activity, when it behaves as a bottom sheet, can be manually resized by the
+     * user.
+     */
+    public static final int ACTIVITY_HEIGHT_ADJUSTABLE = 1;
+
+    /**
+     * The Custom Tab Activity, when it behaves as a bottom sheet, cannot be manually resized by
+     * the user.
+     */
+    public static final int ACTIVITY_HEIGHT_FIXED = 2;
+
     @IntDef({CLOSE_BUTTON_POSITION_DEFAULT, CLOSE_BUTTON_POSITION_START, CLOSE_BUTTON_POSITION_END})
     @Retention(RetentionPolicy.SOURCE)
     public @interface CloseButtonPosition {}

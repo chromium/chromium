@@ -68,6 +68,7 @@ public class MainActivity
      * Minimal height the bottom sheet CCT should show is half of the display height.
      */
     private static final float MINIMAL_HEIGHT_RATIO = 0.5f;
+    private static final int ACTIVITY_HEIGHT_FIXED = 2;
 
     private EditText mEditText;
     private CustomTabsSession mCustomTabsSession;
@@ -367,7 +368,8 @@ public class MainActivity
 
             if (!mPcctResizableCheckbox.isChecked()) {
                 customTabsIntent.intent.putExtra(
-                        "androidx.browser.customtabs.extra.PARTIAL_CUSTOM_TAB_FIXED_HEIGHT", true);
+                        "androidx.browser.customtabs.extra.ACTIVITY_RESIZE_BEHAVIOR",
+                        ACTIVITY_HEIGHT_FIXED);
             }
 
             customTabsIntent.launchUrl(this, Uri.parse(url));

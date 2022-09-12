@@ -170,6 +170,14 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_HEIGHT_IN_PIXEL";
 
     /**
+     * Extra that, if set in combination with
+     * {@link CustomTabsIntent#EXTRA_INITIAL_ACTIVITY_HEIGHT_PX}, defines the resize behavior of
+     * the Custom Tab Activity’s height when it behaves as a bottom sheet.
+     */
+    public static final String EXTRA_ACTIVITY_RESIZE_BEHAVIOR =
+            "androidx.browser.customtabs.extra.ACTIVITY_RESIZE_BEHAVIOR";
+
+    /**
      * Extra that, if set, makes the toolbar's top corner radii to be x pixels. This will only have
      * effect if the custom tab is behaving as a bottom sheet. Currently, this is capped at 16dp.
      */
@@ -182,12 +190,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      */
     public static final String EXTRA_CLOSE_BUTTON_POSITION =
             "androidx.browser.customtabs.extra.CLOSE_BUTTON_POSITION";
-
-    /**
-     * Extra that, if set, disallows the resizing of the Partial Custom Tab.
-     */
-    public static final String EXTRA_PARTIAL_CUSTOM_TAB_FIXED_HEIGHT =
-            "androidx.browser.customtabs.extra.PARTIAL_CUSTOM_TAB_FIXED_HEIGHT";
 
     private static final String DEFAULT_POLICY_PARAM_NAME = "default_policy";
     private static final String DEFAULT_POLICY_USE_DENYLIST = "use-denylist";
@@ -410,8 +412,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             mPartialTabToolbarCornerRadius = defaultToolbarCornerRadius;
         }
 
-        mIsPartialCustomTabFixedHeight = IntentUtils.safeGetBooleanExtra(
-                intent, EXTRA_PARTIAL_CUSTOM_TAB_FIXED_HEIGHT, false);
+        // The default behavior is that the pcct is resizable.
+        @ActivityResizeBehavior
+        int activityResizeBehavior = IntentUtils.safeGetIntExtra(
+                intent, EXTRA_ACTIVITY_RESIZE_BEHAVIOR, ACTIVITY_HEIGHT_DEFAULT);
+        mIsPartialCustomTabFixedHeight =
+                activityResizeBehavior == ACTIVITY_HEIGHT_FIXED ? true : false;
     }
 
     private void updateExtraMenuItems(List<Bundle> menuItems) {
