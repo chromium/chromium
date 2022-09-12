@@ -6583,6 +6583,10 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "DisableFileSystemInfo": "true",
+                        "DisableSettings": "true"
+                    },
                     "enable_features": [
                         "NewEvSignalsEnabled"
                     ]
