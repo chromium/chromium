@@ -18,11 +18,15 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+const char kPriceTrackingNotifications[] = "enable_price_notification";
+}  // namespace
+
 bool IsPriceAlertsEligible(web::BrowserState* browser_state) {
   if (browser_state->IsOffTheRecord()) {
     return false;
   }
-  // Price drop annotations are only enabled for en_US
+  // Price drop annotations are only enabled for en_US.
   NSLocale* current_locale = [NSLocale currentLocale];
   if (![@"en_US" isEqualToString:current_locale.localeIdentifier]) {
     return false;
@@ -44,4 +48,11 @@ bool IsPriceAlertsEligible(web::BrowserState* browser_state) {
     return false;
   }
   return true;
+}
+
+// Determine if price drop notifications are enabled.
+bool IsPriceNotificationsEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      commerce::kCommercePriceTracking, kPriceTrackingNotifications,
+      /** default_value */ false);
 }
