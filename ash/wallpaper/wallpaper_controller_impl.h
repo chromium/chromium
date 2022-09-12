@@ -468,7 +468,6 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // Handler to receive Fetch*Wallpaper variants callbacks.
   void OnWallpaperVariantsFetched(WallpaperType type,
-                                  bool start_daily_refresh_timer,
                                   SetWallpaperCallback callback,
                                   absl::optional<OnlineWallpaperParams> params);
 
