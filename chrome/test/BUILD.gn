@@ -2725,7 +2725,6 @@ if (!is_android) {
           "//ash/webui/personalization_app:browser_tests_js",
           "//ash/webui/system_apps:browser_tests",
           "//ash/webui/system_extensions_internals_ui:browser_tests_js",
-          "//chrome/browser/resources/gaia_auth_host:browser_tests",
           "//chrome/test/data/webui:browser_tests_js_mojo_lite_webui",
           "//chromeos/ash/components/human_presence:browser_tests_js",
         ]

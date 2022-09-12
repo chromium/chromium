@@ -62,30 +62,6 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-# Since js2gtest()s don't compile in some scenarios when include_js_tests is
-# false, and since this file may be loaded even when it's false, we need to make
-# sure the js2gtest() target only exists in this file when it works.
-if (is_chromeos_ash && include_js_tests) {
-  js2gtest("login_unitjs_tests") {
-    # These could be unit tests, except they need a browser context in order
-    # to construct a DOMParser object - so they are webui tests.
-    test_type = "webui"
-    sources = [ "saml_password_attributes_test.unitjs" ]
-    gen_include_files = [
-      "saml_password_attributes.js",
-      "saml_timestamps.js",
-      "//ui/webui/resources/js/cr.js",
-      "//ui/webui/resources/js/util.js",
-    ]
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  }
-
-  source_set("browser_tests") {
-    testonly = true
-    deps = [ ":login_unitjs_tests" ]
-  }
-}
-
 js_type_check("closure_compile") {
   closure_flags =
       default_closure_args + [
