@@ -994,10 +994,10 @@ bool TransformationMatrix::InverseWithDouble4Cols(Double4& c0,
   Double4 r3 = {c2[3], c3[3], c0[3], c1[3]};
 
   auto swap_hi_lo = [](Double4 v) -> Double4 {
-    return {v[2], v[3], v[0], v[1]};
+    return Double4{v[2], v[3], v[0], v[1]};
   };
   auto swap_in_pairs = [](Double4 v) -> Double4 {
-    return {v[1], v[0], v[3], v[2]};
+    return Double4{v[1], v[0], v[3], v[2]};
   };
 
   Double4 t = swap_in_pairs(r2 * r3);

@@ -52,7 +52,7 @@ ALWAYS_INLINE double Sum(Double4 v) {
 }
 
 ALWAYS_INLINE Double4 LoadDouble4(const double s[4]) {
-  return {s[0], s[1], s[2], s[3]};
+  return Double4{s[0], s[1], s[2], s[3]};
 }
 
 ALWAYS_INLINE void StoreDouble4(Double4 v, double d[4]) {
