@@ -5245,6 +5245,21 @@
             ]
         }
     ],
+    "IOSCVCPromptV2": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableNewCardUnmaskPromptView"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSCrashReportBreadcrumbs": [
         {
             "platforms": [
