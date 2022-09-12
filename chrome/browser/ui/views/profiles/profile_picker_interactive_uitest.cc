@@ -21,6 +21,7 @@
 #include "content/public/test/test_utils.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -114,6 +115,14 @@ class ProfilePickerInteractiveUiTest : public ProfilePickerTestBase {
 #endif
     ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
         widget()->GetNativeWindow(), key, control, shift, alt, command));
+  }
+
+  void SimulateUserActivation() {
+    content::UpdateUserActivationStateInterceptor user_activation_interceptor(
+        web_contents()->GetPrimaryMainFrame());
+    user_activation_interceptor.UpdateUserActivationState(
+        blink::mojom::UserActivationUpdateType::kNotifyActivation,
+        blink::mojom::UserActivationNotificationType::kTest);
   }
 };
 
@@ -283,4 +292,21 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
   // Navigating back once again does nothing.
   SendBackKeyboardCommand();
   EXPECT_EQ(web_contents()->GetController().GetPendingEntry(), nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
+                       NavigateBackFromNewProfileWithKeyboard) {
+  ShowAndFocusPicker(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile,
+                     GURL("chrome://profile-picker/new-profile"));
+  EXPECT_EQ(2, web_contents()->GetController().GetEntryCount());
+  EXPECT_EQ(1, web_contents()->GetController().GetLastCommittedEntryIndex());
+
+  // For applying the history manipulation, it needs user activation.
+  SimulateUserActivation();
+  EXPECT_TRUE(web_contents()->GetController().CanGoBack());
+
+  // Navigate back with the keyboard.
+  SendBackKeyboardCommand();
+  WaitForLoadStop(GURL("chrome://profile-picker"));
+  EXPECT_EQ(0, web_contents()->GetController().GetLastCommittedEntryIndex());
 }
