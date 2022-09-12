@@ -448,19 +448,14 @@ void PasswordsPrivateDelegateImpl::OsReauthCall(
 
   biometric_authenticator_ = std::move(biometric_authenticator);
 #elif BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(
+  scoped_refptr<device_reauth::BiometricAuthenticator> biometric_authenticator =
+      ChromeBiometricAuthenticatorFactory::GetInstance()
+          ->GetOrCreateBiometricAuthenticator();
+  // TODO(crbug.com/1358442): Remove this check.
+  if (biometric_authenticator->CanAuthenticate(
+          device_reauth::BiometricAuthRequester::kPasswordsInSettings) &&
+      base::FeatureList::IsEnabled(
           password_manager::features::kBiometricAuthenticationInSettings)) {
-    scoped_refptr<device_reauth::BiometricAuthenticator>
-        biometric_authenticator =
-            ChromeBiometricAuthenticatorFactory::GetInstance()
-                ->GetOrCreateBiometricAuthenticator();
-    // TODO(crbug.com/1358442): Remove this check.
-    if (!biometric_authenticator->CanAuthenticate(
-            device_reauth::BiometricAuthRequester::kPasswordsInSettings)) {
-      bool result = password_manager_util_mac::AuthenticateUser(purpose);
-      std::move(callback).Run(result);
-      return;
-    }
     base::OnceCallback<void()> on_reauth_completed =
         base::BindOnce(&PasswordsPrivateDelegateImpl::OnReauthCompleted,
                        weak_ptr_factory_.GetWeakPtr());
