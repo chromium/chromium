@@ -75,7 +75,7 @@ BrowserNonClientFrameViewMac::BrowserNonClientFrameViewMac(
             &BrowserNonClientFrameViewMac::UpdateFullscreenTopUI,
             base::Unretained(this)));
   }
-  if (!base::FeatureList::IsEnabled(features::kImmersiveFullscreen)) {
+  if (!browser_view->UsesImmersiveFullscreenMode()) {
     fullscreen_toolbar_controller_.reset(
         [[FullscreenToolbarController alloc] initWithBrowserView:browser_view]);
     [fullscreen_toolbar_controller_
@@ -116,7 +116,7 @@ BrowserNonClientFrameViewMac::~BrowserNonClientFrameViewMac() {
 // BrowserNonClientFrameViewMac, BrowserNonClientFrameView implementation:
 
 void BrowserNonClientFrameViewMac::OnFullscreenStateChanged() {
-  if (base::FeatureList::IsEnabled(features::kImmersiveFullscreen)) {
+  if (browser_view()->UsesImmersiveFullscreenMode()) {
     browser_view()->immersive_mode_controller()->SetEnabled(
         browser_view()->IsFullscreen());
     return;
@@ -206,7 +206,7 @@ int BrowserNonClientFrameViewMac::GetThemeBackgroundXInset() const {
 }
 
 void BrowserNonClientFrameViewMac::UpdateFullscreenTopUI() {
-  if (base::FeatureList::IsEnabled(features::kImmersiveFullscreen))
+  if (browser_view()->UsesImmersiveFullscreenMode())
     return;
 
   FullscreenToolbarStyle old_style =
@@ -505,7 +505,7 @@ int BrowserNonClientFrameViewMac::TopUIFullscreenYOffset() const {
   CGFloat title_bar_height =
       NSHeight([NSWindow frameRectForContentRect:NSZeroRect
                                        styleMask:NSWindowStyleMaskTitled]);
-  if (base::FeatureList::IsEnabled(features::kImmersiveFullscreen))
+  if (browser_view()->UsesImmersiveFullscreenMode())
     return menu_bar_height == 0 ? 0 : menu_bar_height + title_bar_height;
   return [[fullscreen_toolbar_controller_ menubarTracker] menubarFraction] *
          (menu_bar_height + title_bar_height);

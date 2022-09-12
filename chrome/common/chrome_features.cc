@@ -571,6 +571,11 @@ const base::Feature kHttpsOnlyMode{"HttpsOnlyMode",
 #if BUILDFLAG(IS_MAC)
 const base::Feature kImmersiveFullscreen{"ImmersiveFullscreen",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables immerisve fullscreen mode for PWA windows. The above feature only
+// affects non-PWA windows.
+const base::Feature kImmersiveFullscreenPWAs{"ImmersiveFullscreenPWAs",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

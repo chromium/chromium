@@ -128,10 +128,13 @@ class ImmersiveModeController {
   base::ObserverList<Observer>::Unchecked observers_;
 };
 
+class BrowserView;
+
 namespace chrome {
 
 // Implemented in immersive_mode_controller_factory.cc.
-std::unique_ptr<ImmersiveModeController> CreateImmersiveModeController();
+std::unique_ptr<ImmersiveModeController> CreateImmersiveModeController(
+    const BrowserView* browser_view);
 
 }  // namespace chrome
 

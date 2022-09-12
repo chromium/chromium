@@ -12,17 +12,18 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_mac.h"
-#include "chrome/common/chrome_features.h"
 #endif
 
 namespace chrome {
 
-std::unique_ptr<ImmersiveModeController> CreateImmersiveModeController() {
+std::unique_ptr<ImmersiveModeController> CreateImmersiveModeController(
+    const BrowserView* browser_view) {
 #if BUILDFLAG(IS_CHROMEOS)
   return std::make_unique<ImmersiveModeControllerChromeos>();
 #elif BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(features::kImmersiveFullscreen)) {
+  if (browser_view->UsesImmersiveFullscreenMode()) {
     return CreateImmersiveModeControllerMac();
   }
   return std::make_unique<ImmersiveModeControllerStub>();

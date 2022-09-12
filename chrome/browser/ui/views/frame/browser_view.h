@@ -190,6 +190,11 @@ class BrowserView : public BrowserWindow,
 
 #if BUILDFLAG(IS_MAC)
   views::Widget* overlay_widget() { return overlay_widget_.get(); }
+
+  // Returns if this browser view will use immersive fullscreen mode, based
+  // on the state of the two relevant base::Features, as well as the type of
+  // browser this is a view for.
+  bool UsesImmersiveFullscreenMode() const;
 #endif
 
   // Container for the web contents.

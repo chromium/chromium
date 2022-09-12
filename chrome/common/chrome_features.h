@@ -403,6 +403,8 @@ extern const base::Feature kHttpsOnlyMode;
 #if BUILDFLAG(IS_MAC)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kImmersiveFullscreen;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kImmersiveFullscreenPWAs;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

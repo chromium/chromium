@@ -848,7 +848,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   }
 
   browser_->tab_strip_model()->AddObserver(this);
-  immersive_mode_controller_ = chrome::CreateImmersiveModeController();
+  immersive_mode_controller_ = chrome::CreateImmersiveModeController(this);
 
   // Top container holds tab strip region and toolbar and lives at the front of
   // the view hierarchy.
@@ -1099,6 +1099,14 @@ int BrowserView::GetTabStripHeight() const {
   // So return what the tabstrip height _ought_ to be right now.
   return GetTabStripVisible() ? tabstrip_->GetPreferredSize().height() : 0;
 }
+
+#if BUILDFLAG(IS_MAC)
+bool BrowserView::UsesImmersiveFullscreenMode() const {
+  return base::FeatureList::IsEnabled(GetIsWebAppType()
+                                          ? features::kImmersiveFullscreenPWAs
+                                          : features::kImmersiveFullscreen);
+}
+#endif
 
 TabSearchBubbleHost* BrowserView::GetTabSearchBubbleHost() {
   if (auto* tab_search_host = frame_->GetFrameView()->GetTabSearchBubbleHost())
@@ -2453,7 +2461,7 @@ bool BrowserView::IsToolbarVisible() const {
   }
   // Immersive full screen makes it possible to display the toolbar when
   // kShowFullscreenToolbar is not set.
-  if (!base::FeatureList::IsEnabled(features::kImmersiveFullscreen)) {
+  if (!UsesImmersiveFullscreenMode()) {
     if (IsFullscreen() && !show_fullscreen_toolbar) {
       return false;
     }
@@ -3432,6 +3440,7 @@ views::View* BrowserView::CreateOverlayView() {
 
 #if BUILDFLAG(IS_MAC)
 views::View* BrowserView::CreateMacOverlayView() {
+  DCHECK(UsesImmersiveFullscreenMode());
   views::Widget::InitParams params;
   params.type = views::Widget::InitParams::TYPE_POPUP;
   params.child = true;

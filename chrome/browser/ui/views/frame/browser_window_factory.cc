@@ -62,7 +62,7 @@ BrowserWindow* BrowserWindow::CreateBrowserWindow(
   browser_frame->InitBrowserFrame();
 
 #if BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(features::kImmersiveFullscreen)) {
+  if (view->UsesImmersiveFullscreenMode()) {
     // This needs to happen after BrowserFrame has been initialized. It creates
     // a new Widget that copies the theme from BrowserFrame.
     view->CreateMacOverlayView();
