@@ -41,7 +41,6 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "components/account_manager_core/account.h"
 #include "components/signin/public/identity_manager/tribool.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 namespace signin {
