@@ -289,7 +289,7 @@ const base::Feature kIPHBadgedTranslateManualTriggerFeature{
 const base::Feature kIPHDiscoverFeedHeaderFeature{
     "IPH_DiscoverFeedHeaderMenu", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHDefaultSiteViewFeature{
-    "IPH_DefaultSiteView", base::FEATURE_DISABLED_BY_DEFAULT};
+    "IPH_DefaultSiteView", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHPasswordSuggestionsFeature{
     "IPH_PasswordSuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHFollowWhileBrowsingFeature{

@@ -203,11 +203,6 @@ const char kDefaultBrowserIntentsShowSettingsDescription[] =
     "When enabled, external apps can trigger the settings screen showing "
     "default browser tutorial.";
 
-const char kAddSettingForDefaultPageModeName[] = "Let user choose default mode";
-const char kAddSettingForDefaultPageModeDescription[] =
-    "When enabled, the user can choose if they want the page in Desktop or "
-    "Mobile mode.";
-
 const char kDelayThresholdMinutesToUpdateGaiaCookieName[] =
     "Delay for polling (in minutes) to verify the existence of GAIA cookies.";
 const char kDelayThresholdMinutesToUpdateGaiaCookieDescription[] =

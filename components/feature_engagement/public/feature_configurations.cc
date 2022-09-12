@@ -949,6 +949,27 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) ||
         // BUILDFLAG(IS_FUCHSIA)
 
+#if BUILDFLAG(IS_IOS)
+  if (kIPHDefaultSiteViewFeature.name == feature->name) {
+    // A config that shows an IPH on the overflow menu button advertising the
+    // Default Page Mode feature when the user has requested the Desktop version
+    // of a website 3 times in 60 days. It will be shown every other year unless
+    // the user interacted with the setting in the past 2 years.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->used =
+        EventConfig("default_site_view_used", Comparator(EQUAL, 0), 720, 720);
+    config->trigger =
+        EventConfig("default_site_view_shown", Comparator(EQUAL, 0), 720, 720);
+    config->event_configs.insert(
+        EventConfig("desktop_version_requested",
+                    Comparator(GREATER_THAN_OR_EQUAL, 3), 60, 60));
+    return config;
+  }
+#endif  // BUILDFLAG(IS_IOS)
+
   if (kIPHDummyFeature.name == feature->name) {
     // Only used for tests. Various magic tricks are used below to ensure this
     // config is invalid and unusable.

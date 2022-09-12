@@ -130,12 +130,6 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
 
 @implementation RequestDesktopMobileSiteTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(kAddSettingForDefaultPageMode);
-  return config;
-}
-
 #pragma mark - Helper
 
 // Sets the default mode to the passed `defaultMode`.

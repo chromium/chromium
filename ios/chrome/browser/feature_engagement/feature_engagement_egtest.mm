@@ -470,6 +470,8 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
              @"Waiting for the Long Press tip.");
 }
 
+// Verifies that the IPH for Request desktop is shown after 3 requests of the
+// desktop version of a website.
 - (void)testRequestDesktopTip {
   GREYAssert([FeatureEngagementAppInterface enableDefaultSiteViewTipTriggering],
              @"Feature Engagement tracker did not load");
@@ -508,6 +510,68 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
 
   [[EarlGrey selectElementWithMatcher:DefaultSiteViewTip()]
       assertWithMatcher:grey_nil()];
+}
+
+// Verifies that the IPH for Request desktop is not shown if the user interacted
+// with the default page mode.
+- (void)testRequestDesktopTipAfterChangingDefaultPageMode {
+  GREYAssert([FeatureEngagementAppInterface enableDefaultSiteViewTipTriggering],
+             @"Feature Engagement tracker did not load");
+
+  [self togglePageMode];
+
+  self.testServer->AddDefaultHandlers();
+
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start");
+
+  // Request the desktop version of a website, this should not trigger the tip.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
+  RequestDesktopVersion();
+
+  [[EarlGrey selectElementWithMatcher:DefaultSiteViewTip()]
+      assertWithMatcher:grey_nil()];
+
+  // Second time, still no tip.
+  [ChromeEarlGreyUI openNewTab];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
+  RequestDesktopVersion();
+
+  [[EarlGrey selectElementWithMatcher:DefaultSiteViewTip()]
+      assertWithMatcher:grey_nil()];
+
+  // Third time, the tip should still not be shown.
+  [ChromeEarlGreyUI openNewTab];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
+  RequestDesktopVersion();
+
+  [[EarlGrey selectElementWithMatcher:DefaultSiteViewTip()]
+      assertWithMatcher:grey_nil()];
+}
+
+#pragma mark - Helpers
+
+// Toggles the page mode from Mobile to Desktop and then back to Mobile.
+- (void)togglePageMode {
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::ContentSettingsButton()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_DEFAULT_PAGE_MODE_LABEL)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::StaticTextWithAccessibilityLabelId(
+                     IDS_IOS_DEFAULT_PAGE_MODE_DESKTOP)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabelId(
+                         IDS_IOS_DEFAULT_PAGE_MODE_MOBILE),
+                     grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      performAction:grey_tap()];
 }
 
 @end

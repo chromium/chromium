@@ -174,11 +174,6 @@ extern const char kDefaultBrowserFullscreenPromoExperimentDescription[];
 extern const char kDefaultBrowserIntentsShowSettingsName[];
 extern const char kDefaultBrowserIntentsShowSettingsDescription[];
 
-// Title and description for the flag that is used to let the user choose the
-// default mode (Mobile/Desktop) they would like to use when requesting a page.
-extern const char kAddSettingForDefaultPageModeName[];
-extern const char kAddSettingForDefaultPageModeDescription[];
-
 // Title and description for the flag to control the delay (in minutes) for
 // polling for the existence of Gaia cookies for google.com.
 extern const char kDelayThresholdMinutesToUpdateGaiaCookieName[];

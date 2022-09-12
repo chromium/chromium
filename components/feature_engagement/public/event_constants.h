@@ -107,8 +107,8 @@ extern const char kDiscoverFeedLoaded[];
 // The user has requested the desktop version of a page.
 extern const char kDesktopVersionRequested[];
 
-// The default site view tip is shown.
-extern const char kDefaultSiteViewShown[];
+// The default site view mode has been used.
+extern const char kDefaultSiteViewUsed[];
 
 // Autofill displayed password suggestions.
 extern const char kPasswordSuggestionsShown[];

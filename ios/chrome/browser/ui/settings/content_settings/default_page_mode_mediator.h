@@ -8,23 +8,29 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/ui/settings/content_settings/default_page_mode.h"
+#import "ios/chrome/browser/ui/settings/content_settings/default_page_mode_table_view_controller_delegate.h"
+
+namespace feature_engagement {
+class Tracker;
+}
 
 @protocol DefaultPageModeConsumer;
 class HostContentSettingsMap;
 
 // Mediator for the screen allowing the user to choose the default mode
 // (Desktop/Mobile) for loading pages.
-@interface DefaultPageModeMediator : NSObject
+@interface DefaultPageModeMediator
+    : NSObject <DefaultPageModeTableViewControllerDelegate>
 
+// Initializes the mediator with `settingsMaps` for storing the page mode and
+// `tracker` for recording its updates.
 - (instancetype)initWithSettingsMap:(HostContentSettingsMap*)settingsMap
+                            tracker:(feature_engagement::Tracker*)tracker
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 @property(nonatomic, weak) id<DefaultPageModeConsumer> consumer;
-
-// Sets the default mode for loading a page.
-- (void)setDefaultMode:(DefaultPageMode)defaultMode;
 
 @end
 

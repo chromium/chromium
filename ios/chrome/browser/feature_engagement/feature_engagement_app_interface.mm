@@ -197,8 +197,10 @@ class ScopedFeatureListHolder {
   default_site_view_tip_params["availability"] = "any";
   default_site_view_tip_params["session_rate"] = "<3";
   default_site_view_tip_params["event_used"] =
-      "name:default_site_view_shown;comparator:==0;window:720;storage:720";
+      "name:default_site_view_used;comparator:==0;window:720;storage:720";
   default_site_view_tip_params["event_trigger"] =
+      "name:default_site_view_shown;comparator:==0;window:720;storage:720";
+  default_site_view_tip_params["event_1"] =
       "name:desktop_version_requested;comparator:>=3;window:60;storage:60";
 
   ScopedFeatureListHolder::GetInstance()

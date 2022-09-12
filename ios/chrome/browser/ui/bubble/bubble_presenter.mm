@@ -281,8 +281,6 @@ const CGFloat kBubblePresentationDelay = 1;
     return;
 
   self.defaultPageModeTipBubblePresenter = presenter;
-  feature_engagement::TrackerFactory::GetForBrowserState(self.browserState)
-      ->NotifyEvent(feature_engagement::events::kDefaultSiteViewShown);
   base::UmaHistogramBoolean("IOS.IPH.DefaultSite.Presented", true);
 }
 

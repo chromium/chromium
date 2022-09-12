@@ -191,11 +191,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
         toSectionWithIdentifier:SectionIdentifierSettings];
   }
 
-  if (base::FeatureList::IsEnabled(kAddSettingForDefaultPageMode)) {
-    self.defaultModeItem = [self defaultSiteMode];
-    [model addItem:self.defaultModeItem
-        toSectionWithIdentifier:SectionIdentifierSettings];
-  }
+  self.defaultModeItem = [self defaultSiteMode];
+  [model addItem:self.defaultModeItem
+      toSectionWithIdentifier:SectionIdentifierSettings];
 }
 
 #pragma mark - SettingsControllerProtocol

@@ -1257,11 +1257,6 @@
     "expiry_milestone": 108
   },
   {
-    "name": "default-mode-ua",
-    "owners": [ "gambard", "bling-flags@google.com" ],
-    "expiry_milestone": 107
-  },
-  {
     "name": "deferred-font-shaping",
     "owners": [ "tkent", "layout-dev" ],
     "expiry_milestone": 110
