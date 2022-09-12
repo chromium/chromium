@@ -366,7 +366,11 @@ bool SandboxLinux::InitializeSandbox(sandbox::mojom::Sandbox sandbox_type,
       sandbox_failure_fatal = switch_value != "no";
     }
 
-    if (sandbox_failure_fatal) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    CHECK(process_type != switches::kGpuProcess || sandbox_failure_fatal);
+#endif
+
+    if (sandbox_failure_fatal && !IsUnsandboxedSandboxType(sandbox_type)) {
       error_message += " Try waiting for /proc to be updated.";
       LOG(ERROR) << error_message;
       // This will return if /proc/self eventually reports this process is

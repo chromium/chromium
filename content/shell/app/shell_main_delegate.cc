@@ -327,6 +327,11 @@ void ShellMainDelegate::InitializeResourceBundle() {
 }
 
 absl::optional<int> ShellMainDelegate::PreBrowserMain() {
+  absl::optional<int> exit_code =
+      content::ContentMainDelegate::PreBrowserMain();
+  if (exit_code.has_value())
+    return exit_code;
+
 #if BUILDFLAG(IS_MAC)
   RegisterShellCrApp();
 #endif

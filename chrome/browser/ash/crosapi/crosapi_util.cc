@@ -131,6 +131,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
+#include "content/public/common/content_switches.h"
 #include "device/bluetooth/floss/floss_features.h"
 #include "media/capture/mojom/video_capture.mojom.h"
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
@@ -582,6 +583,11 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
       base::FeatureList::IsEnabled(chromeos::wm::features::kFloatWindow);
   params->is_cloud_gaming_device =
       chromeos::features::IsCloudGamingDeviceEnabled();
+  params->gpu_sandbox_start_mode =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kGpuSandboxStartEarly)
+          ? crosapi::mojom::BrowserInitParams::GpuSandboxStartMode::kEarly
+          : crosapi::mojom::BrowserInitParams::GpuSandboxStartMode::kNormal;
 
   return params;
 }

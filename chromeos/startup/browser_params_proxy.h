@@ -120,6 +120,9 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsCloudGamingDevice() const;
 
+  crosapi::mojom::BrowserInitParams::GpuSandboxStartMode GpuSandboxStartMode()
+      const;
+
  private:
   friend base::NoDestructor<BrowserParamsProxy>;
 

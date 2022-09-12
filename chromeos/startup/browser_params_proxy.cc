@@ -238,4 +238,9 @@ bool BrowserParamsProxy::IsCloudGamingDevice() const {
   return BrowserInitParams::Get()->is_cloud_gaming_device;
 }
 
+crosapi::mojom::BrowserInitParams::GpuSandboxStartMode
+BrowserParamsProxy::GpuSandboxStartMode() const {
+  return BrowserInitParams::Get()->gpu_sandbox_start_mode;
+}
+
 }  // namespace chromeos

@@ -45,6 +45,10 @@ specific_include_rules = {
     # TODO(b/192563524): remove it when the legacy video decoder is replaced for
     # all devices.
     "+ui/ozone/public/ozone_switches.h",
+
+    # For using chromeos::BrowserParamsProxy which is needed on LaCrOS to decide
+    # if the GPU process sandbox needs to be started early.
+    "+chromeos/startup/browser_params_proxy.h",
   ],
 
   ".*unittest\.cc": [
