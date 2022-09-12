@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "components/sync/engine/commit_contribution.h"
 #include "components/sync/engine/commit_contributor.h"
@@ -42,34 +41,30 @@ Commit::ContributionMap CommitProcessor::GatherCommitContributions(
   // NIGORI contributions are always gathered to make sure that no encrypted
   // data gets committed before the corresponding NIGORI commit, which can
   // otherwise lead to data loss if the commit fails partially.
-  size_t num_entries =
-      GatherCommitContributionsForType(NIGORI, max_entries, &contributions);
-  if (num_entries > 0) {
+  if (GatherCommitContributionsForType(NIGORI, max_entries, &contributions) >
+      0) {
     // Encryptable entities cannot get combined in the same commit with NIGORI.
     // NIGORI commits are rare so to keep it simple and to play it safe, the
     // processor does not combine any other entities with NIGORI.
     return contributions;
   }
 
-  num_entries += GatherCommitContributionsForTypes(
-      GetUserTypesForCurrentCommitPhase(), max_entries - num_entries,
-      &contributions);
-  DCHECK_LE(num_entries, max_entries);
-  if (num_entries < max_entries) {
-    // Move to the next phase because there are no further commit contributions
-    // for this phase at this moment (as there's still capacity left). Even if
-    // new contributions for this phase appear while this commit is in flight,
-    // they will get ignored until the next nudge. This prevents infinite commit
-    // cycles.
-    phase_ = IncrementGatheringPhase(phase_);
-
-    if (num_entries == 0) {
-      // If there are no entries in this phase, return contributions from the
-      // next phase immediately. Otherwise, the processor gathers contribution
-      // from the next phase in the next commit.
-      return GatherCommitContributions(max_entries);
+  size_t num_entries = 0;
+  do {
+    num_entries += GatherCommitContributionsForTypes(
+        GetUserTypesForCurrentCommitPhase(), max_entries - num_entries,
+        &contributions);
+    DCHECK_LE(num_entries, max_entries);
+    if (num_entries < max_entries) {
+      // Move to the next phase because there are no further commit
+      // contributions for this phase at this moment (as there's still capacity
+      // left). Even if new contributions for this phase appear while this
+      // commit is in flight, they will get ignored until the next nudge. This
+      // prevents infinite commit cycles.
+      phase_ = IncrementGatheringPhase(phase_);
     }
-  }
+  } while (phase_ != GatheringPhase::kDone && num_entries < max_entries);
+
   return contributions;
 }
 

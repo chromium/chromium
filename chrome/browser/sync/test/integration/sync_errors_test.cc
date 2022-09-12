@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest,
                        PRE_ShouldResendUncommittedEntitiesAfterBrowserRestart) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
-  GetFakeServer()->SetHttpError(net::HTTP_INTERNAL_SERVER_ERROR);
+  GetFakeServer()->TriggerCommitError(sync_pb::SyncEnums::TRANSIENT_ERROR);
   syncer::UserEventService* event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
   const sync_pb::UserEventSpecifics specifics =
