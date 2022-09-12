@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/network/hotspot_util.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
@@ -66,6 +67,19 @@ std::string MojomSecurityToString(
     case WiFiSecurityMode::kWpa2Wpa3:
       return shill::kSecurityWpa2Wpa3;
   }
+}
+
+std::string HexEncode(const std::string& ssid) {
+  return base::HexEncode(ssid.c_str(), ssid.size());
+}
+
+std::string HexDecode(const std::string& hex_ssid) {
+  std::string ssid;
+  if (!base::HexStringToString(hex_ssid, &ssid)) {
+    NET_LOG(ERROR) << "Error decoding HexSSID: " << hex_ssid;
+  }
+
+  return ssid;
 }
 
 }  // namespace
@@ -146,7 +160,7 @@ hotspot_config::mojom::HotspotConfigPtr ShillTetheringConfigToMojomConfig(
   if (!ssid) {
     NET_LOG(ERROR) << "SSID not found in tethering config.";
   }
-  result->ssid = ssid ? *ssid : std::string();
+  result->ssid = ssid ? HexDecode(*ssid) : std::string();
   const std::string* passphrase = shill_tethering_config.GetDict().FindString(
       shill::kTetheringConfPassphraseProperty);
   if (!passphrase) {
@@ -169,7 +183,7 @@ base::Value MojomConfigToShillConfig(
       shill::kTetheringConfSecurityProperty,
       base::Value(MojomSecurityToString(mojom_config->security)));
   result.GetDict().Set(shill::kTetheringConfSSIDProperty,
-                       base::Value(mojom_config->ssid));
+                       base::Value(HexEncode(mojom_config->ssid)));
   result.GetDict().Set(shill::kTetheringConfPassphraseProperty,
                        base::Value(mojom_config->passphrase));
   return result;
