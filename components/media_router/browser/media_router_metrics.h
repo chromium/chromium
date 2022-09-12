@@ -56,11 +56,17 @@ enum class DialogActivationLocationAndCastMode {
   kSharingHubAndPresentation,
   kSharingHubAndTabMirror,
   kSharingHubAndDesktopMirror,
+  kPinnedIconAndRemotePlayback,
+  kEphemeralIconAndRemotePlayback,
+  kContextMenuAndRemotePlayback,
+  kPageAndRemotePlayback,
+  kAppMenuAndRemotePlayback,
+  kSharingHubAndRemotePlayback,
 
   // NOTE: Do not reorder existing entries, and add entries only immediately
   // above this line. Remember to also update
   // tools/metrics/histograms/enums.xml.
-  kMaxValue = kSharingHubAndDesktopMirror
+  kMaxValue = kSharingHubAndRemotePlayback,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

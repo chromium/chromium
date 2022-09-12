@@ -65648,6 +65648,12 @@ Called by update_use_counter_css.py.-->
   <int value="20" label="Sharing Hub and presentation"/>
   <int value="21" label="Sharing Hub and tab mirroring"/>
   <int value="22" label="Sharing Hub and desktop mirroring"/>
+  <int value="23" label="Pinned toolbar icon and remote playback"/>
+  <int value="24" label="Ephemeral icon and remote playback"/>
+  <int value="25" label="Context menu and remote playback"/>
+  <int value="26" label="Page and remote playback"/>
+  <int value="27" label="App menu and remote playback"/>
+  <int value="28" label="Sharing Hub and remote playback"/>
 </enum>
 
 <enum name="MediaRouterDialParseMessageResult">

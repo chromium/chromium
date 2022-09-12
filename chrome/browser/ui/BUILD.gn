@@ -1168,7 +1168,6 @@ static_library("ui") {
       "media_router/cast_dialog_model.h",
       "media_router/cast_modes_with_media_sources.cc",
       "media_router/cast_modes_with_media_sources.h",
-      "media_router/media_cast_mode.cc",
       "media_router/media_cast_mode.h",
       "media_router/media_route_starter.cc",
       "media_router/media_route_starter.h",

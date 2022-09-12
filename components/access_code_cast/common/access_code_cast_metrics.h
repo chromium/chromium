@@ -41,10 +41,11 @@ enum class AccessCodeCastCastMode {
   kPresentation = 0,
   kTabMirror = 1,
   kDesktopMirror = 2,
+  kRemotePlayback = 3,
 
   // NOTE: Do not reorder existing entries, and add entries only immediately
   // above this line.
-  kMaxValue = kDesktopMirror
+  kMaxValue = kRemotePlayback,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

@@ -53,8 +53,6 @@ class QueryResultManager::MediaSourceMediaSinksObserver
     *sink_ids = latest_sink_ids_;
   }
 
-  MediaCastMode cast_mode() const { return cast_mode_; }
-
  private:
   const MediaCastMode cast_mode_;
   const MediaSource source_;

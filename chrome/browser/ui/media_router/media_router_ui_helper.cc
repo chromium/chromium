@@ -23,6 +23,7 @@ namespace {
 const int kCreateRouteTimeoutSeconds = 20;
 const int kCreateRouteTimeoutSecondsForTab = 60;
 const int kCreateRouteTimeoutSecondsForDesktop = 120;
+const int kCreateRouteTimeoutSecondsForRemotePlayback = 60;
 
 #if BUILDFLAG(IS_MAC)
 absl::optional<bool> g_screen_capture_allowed_for_testing;
@@ -58,6 +59,8 @@ base::TimeDelta GetRouteRequestTimeout(MediaCastMode cast_mode) {
       return base::Seconds(kCreateRouteTimeoutSecondsForTab);
     case DESKTOP_MIRROR:
       return base::Seconds(kCreateRouteTimeoutSecondsForDesktop);
+    case REMOTE_PLAYBACK:
+      return base::Seconds(kCreateRouteTimeoutSecondsForRemotePlayback);
     default:
       NOTREACHED();
       return base::TimeDelta();

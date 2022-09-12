@@ -389,9 +389,9 @@ void MediaRouterUI::SendIssueForRouteTimeout(
     case PRESENTATION:
       DLOG_IF(ERROR, presentation_request_source_name.empty())
           << "Empty presentation request source name.";
-      issue_title =
-          l10n_util::GetStringFUTF8(IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT,
-                                    presentation_request_source_name);
+      issue_title = l10n_util::GetStringFUTF8(
+          IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT_WITH_HOSTNAME,
+          presentation_request_source_name);
       break;
     case TAB_MIRROR:
       issue_title = l10n_util::GetStringUTF8(
@@ -400,6 +400,10 @@ void MediaRouterUI::SendIssueForRouteTimeout(
     case DESKTOP_MIRROR:
       issue_title = l10n_util::GetStringUTF8(
           IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT_FOR_DESKTOP);
+      break;
+    case REMOTE_PLAYBACK:
+      issue_title =
+          l10n_util::GetStringUTF8(IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT);
       break;
   }
 

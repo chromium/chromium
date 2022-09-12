@@ -106,8 +106,7 @@ class MediaRouteStarter : public content::PresentationObserver {
                            OnPresentationRequestSourceUpdated);
   FRIEND_TEST_ALL_PREFIXES(MediaRouteStarterTest, GetScreenCapturePermission);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterViewsUITest, SetDialogHeader);
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterViewsUITest,
-                           RouteCreationTimeoutForPresentation);
+  FRIEND_TEST_ALL_PREFIXES(MediaRouterViewsUITest, RouteCreationTimeout);
 
   void InitPresentationSources(const CastModeSet& initial_modes);
   void InitMirroringSources(const CastModeSet& initial_modes);

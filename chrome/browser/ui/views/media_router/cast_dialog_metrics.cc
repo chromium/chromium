@@ -34,6 +34,9 @@ DialogActivationLocationAndCastMode GetActivationLocationAndCastMode(
           case MediaCastMode::DESKTOP_MIRROR:
             return DialogActivationLocationAndCastMode::
                 kPinnedIconAndDesktopMirror;
+          case MediaCastMode::REMOTE_PLAYBACK:
+            return DialogActivationLocationAndCastMode::
+                kPinnedIconAndRemotePlayback;
         }
       } else {
         switch (cast_mode) {
@@ -46,6 +49,9 @@ DialogActivationLocationAndCastMode GetActivationLocationAndCastMode(
           case MediaCastMode::DESKTOP_MIRROR:
             return DialogActivationLocationAndCastMode::
                 kEphemeralIconAndDesktopMirror;
+          case MediaCastMode::REMOTE_PLAYBACK:
+            return DialogActivationLocationAndCastMode::
+                kEphemeralIconAndRemotePlayback;
         }
       }
       break;
@@ -59,6 +65,9 @@ DialogActivationLocationAndCastMode GetActivationLocationAndCastMode(
         case MediaCastMode::DESKTOP_MIRROR:
           return DialogActivationLocationAndCastMode::
               kContextMenuAndDesktopMirror;
+        case MediaCastMode::REMOTE_PLAYBACK:
+          return DialogActivationLocationAndCastMode::
+              kContextMenuAndRemotePlayback;
       }
       break;
     case MediaRouterDialogActivationLocation::PAGE:
@@ -69,6 +78,8 @@ DialogActivationLocationAndCastMode GetActivationLocationAndCastMode(
           return DialogActivationLocationAndCastMode::kPageAndTabMirror;
         case MediaCastMode::DESKTOP_MIRROR:
           return DialogActivationLocationAndCastMode::kPageAndDesktopMirror;
+        case MediaCastMode::REMOTE_PLAYBACK:
+          return DialogActivationLocationAndCastMode::kPageAndRemotePlayback;
       }
       break;
     case MediaRouterDialogActivationLocation::APP_MENU:
@@ -79,6 +90,8 @@ DialogActivationLocationAndCastMode GetActivationLocationAndCastMode(
           return DialogActivationLocationAndCastMode::kAppMenuAndTabMirror;
         case MediaCastMode::DESKTOP_MIRROR:
           return DialogActivationLocationAndCastMode::kAppMenuAndDesktopMirror;
+        case MediaCastMode::REMOTE_PLAYBACK:
+          return DialogActivationLocationAndCastMode::kAppMenuAndRemotePlayback;
       }
       break;
     case MediaRouterDialogActivationLocation::SHARING_HUB:
@@ -91,6 +104,9 @@ DialogActivationLocationAndCastMode GetActivationLocationAndCastMode(
         case MediaCastMode::DESKTOP_MIRROR:
           return DialogActivationLocationAndCastMode::
               kSharingHubAndDesktopMirror;
+        case MediaCastMode::REMOTE_PLAYBACK:
+          return DialogActivationLocationAndCastMode::
+              kSharingHubAndRemotePlayback;
       }
       break;
     // |OVERFLOW_MENU| refers to extension icons hidden in the app menu. That

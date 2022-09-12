@@ -142,8 +142,9 @@ class MediaRouterUI : public CastDialogController,
   FRIEND_TEST_ALL_PREFIXES(MediaRouterViewsUITest, ShowDomainForHangouts);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterViewsUIIncognitoTest,
                            HidesCloudSinksForIncognito);
+  FRIEND_TEST_ALL_PREFIXES(MediaRouterViewsUITest, RouteCreationTimeout);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterViewsUITest,
-                           RouteCreationTimeoutForPresentation);
+                           RouteCreationTimeoutIssueTitle);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterViewsUITest,
                            DesktopMirroringFailsWhenDisallowedOnMac);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterViewsUITest,

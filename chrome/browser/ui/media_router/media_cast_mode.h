@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_MEDIA_ROUTER_MEDIA_CAST_MODE_H_
 
 #include <set>
-#include <string>
 
 namespace media_router {
 
@@ -26,18 +25,12 @@ enum MediaCastMode {
   // Capture the entire desktop and stream it to a media sink.  Available when
   // there is a compatible sink.
   DESKTOP_MIRROR = 0x4,
+  // Capture the media element and stream it to a media sink. Available when
+  // there is a compatible sink.
+  REMOTE_PLAYBACK = 0x8,
 };
 
 using CastModeSet = std::set<MediaCastMode>;
-
-// Returns a localized description string for |mode| and |host|
-// (e.g. google.com).
-std::string MediaCastModeToDescription(MediaCastMode mode,
-                                       const std::string& host);
-
-// Returns true if |cast_mode_num| is a valid MediaCastMode, false otherwise.
-bool IsValidCastModeNum(int cast_mode_num);
-
 }  // namespace media_router
 
 #endif  // CHROME_BROWSER_UI_MEDIA_ROUTER_MEDIA_CAST_MODE_H_

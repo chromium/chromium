@@ -77,6 +77,8 @@ AccessCodeCastCastMode CastModeMetricsHelper(MediaCastMode mode) {
       return AccessCodeCastCastMode::kTabMirror;
     case MediaCastMode::DESKTOP_MIRROR:
       return AccessCodeCastCastMode::kDesktopMirror;
+    case MediaCastMode::REMOTE_PLAYBACK:
+      return AccessCodeCastCastMode::kRemotePlayback;
     default:
       NOTREACHED();
       return AccessCodeCastCastMode::kPresentation;
