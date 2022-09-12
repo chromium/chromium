@@ -106,6 +106,7 @@ class FrameNodeImpl
   bool is_audible() const;
   const absl::optional<gfx::Rect>& viewport_intersection() const;
   Visibility visibility() const;
+  uint64_t resident_set_kb_estimate() const;
 
   // Setters are not thread safe.
   void SetIsCurrent(bool is_current);
@@ -114,6 +115,7 @@ class FrameNodeImpl
   void SetIsAudible(bool is_audible);
   void SetViewportIntersection(const gfx::Rect& viewport_intersection);
   void SetVisibility(Visibility visibility);
+  void SetResidentSetKbEstimate(uint64_t rss_estimate);
 
   // Invoked when a navigation is committed in the frame.
   void OnNavigationCommitted(const GURL& url, bool same_document);
@@ -188,6 +190,7 @@ class FrameNodeImpl
   bool IsAudible() const override;
   const absl::optional<gfx::Rect>& GetViewportIntersection() const override;
   Visibility GetVisibility() const override;
+  uint64_t GetResidentSetKbEstimate() const override;
 
   // Properties associated with a Document, which are reset when a
   // different-document navigation is committed in the frame.
@@ -279,6 +282,8 @@ class FrameNodeImpl
 
   // The set of pages that have been embedded by this frame.
   base::flat_set<PageNodeImpl*> embedded_page_nodes_;
+
+  uint64_t resident_set_kb_estimate_ = 0;
 
   // Does *not* change when a navigation is committed.
   ObservedProperty::NotifiesOnlyOnChanges<

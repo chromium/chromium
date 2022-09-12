@@ -190,6 +190,11 @@ const base::flat_set<FrameNodeImpl*>& ProcessNodeImpl::frame_nodes() const {
   return frame_nodes_;
 }
 
+const base::flat_set<WorkerNodeImpl*>& ProcessNodeImpl::worker_nodes() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return worker_nodes_;
+}
+
 PageNodeImpl* ProcessNodeImpl::GetPageNodeIfExclusive() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

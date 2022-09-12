@@ -104,6 +104,7 @@ class ProcessNodeImpl
   }
 
   const base::flat_set<FrameNodeImpl*>& frame_nodes() const;
+  const base::flat_set<WorkerNodeImpl*>& worker_nodes() const;
 
   // Returns the render process id (equivalent to RenderProcessHost::GetID()),
   // or ChildProcessHost::kInvalidUniqueID if this is not a renderer.

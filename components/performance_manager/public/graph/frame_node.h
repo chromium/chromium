@@ -217,6 +217,11 @@ class FrameNode : public Node {
   // Returns a proxy to the RenderFrameHost associated with this node. The
   // proxy may only be dereferenced on the UI thread.
   virtual const RenderFrameHostProxy& GetRenderFrameHostProxy() const = 0;
+
+  // Returns the most recently estimated resident set of the frame, in
+  // kilobytes. This is an estimate because RSS is computed by process, and a
+  // process can host multiple frames.
+  virtual uint64_t GetResidentSetKbEstimate() const = 0;
 };
 
 // Pure virtual observer interface. Derive from this if you want to be forced to

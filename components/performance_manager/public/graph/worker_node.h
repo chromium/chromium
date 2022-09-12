@@ -116,6 +116,11 @@ class WorkerNode : public Node {
   // Returns the current priority of the worker, and the reason for the worker
   // having that particular priority.
   virtual const PriorityAndReason& GetPriorityAndReason() const = 0;
+
+  // Returns the most recently estimated resident set of the worker, in
+  // kilobytes. This is an estimate because RSS is computed by process, and a
+  // process can host multiple workers.
+  virtual uint64_t GetResidentSetKbEstimate() const = 0;
 };
 
 // Pure virtual observer interface. Derive from this if you want to be forced to
