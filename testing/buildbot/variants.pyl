@@ -802,8 +802,8 @@
   'CROS_ATLAS_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_chrome_version': '107.0.5283.0',
-      'cros_img': 'atlas-release/R107-15105.0.0',
+      'cros_chrome_version': '107.0.5293.0',
+      'cros_img': 'atlas-release/R107-15110.0.0',
     },
     'enabled': True,
     'identifier': 'ATLAS_RELEASE_LKGM',
@@ -838,8 +838,8 @@
   'CROS_EVE_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '107.0.5283.0',
-      'cros_img': 'eve-release/R107-15105.0.0',
+      'cros_chrome_version': '107.0.5293.0',
+      'cros_img': 'eve-release/R107-15110.0.0',
     },
     'enabled': True,
     'identifier': 'EVE_RELEASE_LKGM',
@@ -920,8 +920,8 @@
   'CROS_HEROBRINE_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'herobrine',
-      'cros_chrome_version': '107.0.5283.0',
-      'cros_img': 'herobrine-release/R107-15099.0.0',
+      'cros_chrome_version': '107.0.5293.0',
+      'cros_img': 'herobrine-release/R107-15110.0.0',
     },
     'enabled': True,
     'identifier': 'HEROBRINE_RELEASE_LKGM',
@@ -1031,8 +1031,8 @@
   'CROS_STRONGBAD_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_chrome_version': '107.0.5283.0',
-      'cros_img': 'strongbad-release/R107-15105.0.0',
+      'cros_chrome_version': '107.0.5293.0',
+      'cros_img': 'strongbad-release/R107-15110.0.0',
     },
     'enabled': True,
     'identifier': 'STRONGBAD_RELEASE_LKGM',
