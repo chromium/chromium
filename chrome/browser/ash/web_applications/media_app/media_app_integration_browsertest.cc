@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/webui/media_app_ui/buildflags.h"
@@ -30,7 +31,12 @@
 #include "chrome/browser/ash/file_manager/app_service_file_tasks.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/hats/hats_config.h"
+#include "chrome/browser/ash/hats/hats_notification_controller.h"
 #include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/ash/web_applications/media_app/media_web_app_info.h"
@@ -127,7 +133,22 @@ bool ExtractBoolInGlobalScope(content::WebContents* web_ui,
 
 class MediaAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
  public:
-  MediaAppIntegrationTest() = default;
+  MediaAppIntegrationTest() {
+    // Init with survey triggers enabled to ensure no bad interactions.
+    // Always enable because not all bots run with
+    // fieldtrial_testing_config.json. Simplify (slightly) by using the same
+    // survey trigger ID in the params.
+    const base::FieldTrialParams survey_params{
+        {"prob", "1"},  // 100% probability for testing.
+        {"survey_cycle_length", "90"},
+        {"survey_start_date_ms", "1662336000000"},
+        {"trigger_id", "s5EmUqzvY0jBnuKU19R0Tdf9ticy"}};
+
+    feature_list_.InitWithFeaturesAndParameters(
+        {{ash::kHatsMediaAppPdfSurvey.feature, survey_params},
+         {ash::kHatsPhotosExperienceSurvey.feature, survey_params}},
+        {});
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SystemWebAppIntegrationTest::SetUpCommandLine(command_line);
@@ -172,6 +193,7 @@ class MediaAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
 
  protected:
   ash::NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -1794,6 +1816,32 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MaybeTriggerPhotosHats) {
 
   // Avoid leaving a ref to the std::string about to be destroyed.
   SetPhotosExperienceSurveyTriggerAppIdForTesting("");
+}
+
+// Tests the survey trigger codepaths without kForceHappinessTrackingSystem,
+// which skips over some important coverage.
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, SurveyTriggers) {
+  // Surveys only trigger for the device owner. Fake it.
+  scoped_testing_cros_settings_.device_settings()->Set(
+      ash::kDeviceOwner, base::Value(ash::ProfileHelper::Get()
+                                         ->GetUserByProfile(profile())
+                                         ->GetAccountId()
+                                         .GetUserEmail()));
+
+  // Do some consistency checks. If these fail then the method we want to test
+  // will bail out early.
+  EXPECT_TRUE(ash::ProfileHelper::IsOwnerProfile(profile()));
+  EXPECT_TRUE(
+      base::FeatureList::IsEnabled(ash::kHatsMediaAppPdfSurvey.feature));
+  EXPECT_TRUE(
+      base::FeatureList::IsEnabled(ash::kHatsPhotosExperienceSurvey.feature));
+
+  // The constructor configures the survey features with a 100% probability, so
+  // it should always trigger.
+  EXPECT_TRUE(ash::HatsNotificationController::ShouldShowSurveyToProfile(
+      profile(), ash::kHatsMediaAppPdfSurvey));
+  EXPECT_TRUE(ash::HatsNotificationController::ShouldShowSurveyToProfile(
+      profile(), ash::kHatsPhotosExperienceSurvey));
 }
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, CapturesUserActionsForHats) {

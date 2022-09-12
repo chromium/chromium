@@ -4914,6 +4914,28 @@
             ]
         }
     ],
+    "HappinessTrackingMediaAppPdf": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "prob": "0.0174",
+                        "survey_cycle_length": "90",
+                        "survey_start_date_ms": "1662336000000",
+                        "trigger_id": "s5EmUqzvY0jBnuKU19R0Tdf9ticy"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingMediaAppPdf"
+                    ]
+                }
+            ]
+        }
+    ],
     "HappinessTrackingPersonalizationAvatar": [
         {
             "platforms": [
@@ -4975,6 +4997,28 @@
                     },
                     "enable_features": [
                         "HappinessTrackingPersonalizationWallpaper"
+                    ]
+                }
+            ]
+        }
+    ],
+    "HappinessTrackingPhotosExperience": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "prob": "0.0174",
+                        "survey_cycle_length": "90",
+                        "survey_start_date_ms": "1662336000000",
+                        "trigger_id": "TGGtMoxqP0jBnuKU19R0Vwye2rn4"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingPhotosExperience"
                     ]
                 }
             ]

@@ -462,6 +462,13 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       ::prefs::kHatsPersonalizationWallpaperSurveyIsSelected, false);
 
+  // MediaApp HaTS prefs for Pdf and Photos experiences.
+  registry->RegisterInt64Pref(::prefs::kHatsMediaAppPdfCycleEndTs, 0);
+  registry->RegisterBooleanPref(::prefs::kHatsMediaAppPdfIsSelected, false);
+  registry->RegisterInt64Pref(::prefs::kHatsPhotosExperienceCycleEndTs, 0);
+  registry->RegisterBooleanPref(::prefs::kHatsPhotosExperienceIsSelected,
+                                false);
+
   registry->RegisterBooleanPref(::prefs::kPinUnlockFeatureNotificationShown,
                                 false);
   registry->RegisterBooleanPref(
