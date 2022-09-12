@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
 
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
 #import "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_controller.h"
 
@@ -55,13 +56,20 @@ void CardUnmaskPromptViewBridge::ControllerGone() {
 }
 
 void CardUnmaskPromptViewBridge::DisableAndWaitForVerification() {
-  NOTIMPLEMENTED();
+  [prompt_view_controller_ showLoadingState];
 }
 
 void CardUnmaskPromptViewBridge::GotVerificationResult(
     const std::u16string& error_message,
     bool allow_retry) {
-  NOTIMPLEMENTED();
+  // No error. Dismiss the prompt.
+  if (error_message.empty()) {
+    PerformClose();
+  } else {
+    [prompt_view_controller_
+        showErrorAlertWithMessage:base::SysUTF16ToNSString(error_message)
+                   closeOnDismiss:!allow_retry];
+  }
 }
 
 CardUnmaskPromptController* CardUnmaskPromptViewBridge::GetController() {

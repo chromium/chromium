@@ -198,10 +198,7 @@ TEST_F(PaymentRequestFullCardRequesterTest, PresentAndDismissLegacyPrompt) {
 // prompt, when the new prompt feature flag is enabled, the full card is
 // requested and when the user enters the CVC/expiration information
 // respectively.
-// This test will fail until the new cvc prompt is fully implemented.
-// TODO(crbug.com/1347184)
-TEST_F(PaymentRequestFullCardRequesterTest,
-       DISABLED_PresentAndDismissNewPrompt) {
+TEST_F(PaymentRequestFullCardRequesterTest, PresentAndDismissNewPrompt) {
   scoped_feature_list_.InitAndEnableFeature(
       autofill::features::kAutofillEnableNewCardUnmaskPromptView);
 

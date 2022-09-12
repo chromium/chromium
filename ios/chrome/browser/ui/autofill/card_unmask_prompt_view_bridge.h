@@ -37,7 +37,7 @@ class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
   CardUnmaskPromptController* GetController();
 
   // Closes the view.
-  void PerformClose();
+  virtual void PerformClose();
 
   // Called when `navigation_controller_` was dismissed.
   // This call destroys `this`.
@@ -50,13 +50,13 @@ class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
   // Created on `Show` and destroyed when 'this' is destroyed.
   CardUnmaskPromptViewController* prompt_view_controller_;
 
+  // The controller `this` queries for logic and state.
+  CardUnmaskPromptController* controller_;  // weak
+
  private:
   // Deletes self. Called after CardUnmaskPromptViewController finishes
   // dismissing its own UI elements.
   void DeleteSelf();
-
-  // The controller `this` queries for logic and state.
-  CardUnmaskPromptController* controller_;  // weak
 
   // Weak reference to the view controller used to present UI.
   __weak UIViewController* base_view_controller_;

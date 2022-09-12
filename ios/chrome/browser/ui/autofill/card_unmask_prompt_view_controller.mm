@@ -66,7 +66,7 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   UIBarButtonItem* _confirmButton;
   // Owns `self`.
   autofill::CardUnmaskPromptViewBridge* _bridge;  // weak
-  // Model of the cvc input cell.
+  // Model of the CVC input cell.
   TableViewTextEditItem* _CVCInputItem;
   // Model of the footer.
   TableViewLinkHeaderFooterItem* _footerItem;
@@ -74,6 +74,12 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   CVCHeaderItem* _headerItem;
   // Model of the expiration date input cell.
   ExpirationDateEditItem* _expirationDateInputItem;
+  // Flag indicating that we should set the focus in either the CVC or
+  // expiration date fields once the tableView is reloaded. After the view shows
+  // the CVC form or the expiration form, we want to focus the CVC and
+  // expiration date fields respectively. When transitioning from one form to
+  // the other, we activate this flag so the focus is updated.
+  BOOL _shouldUpdateFocus;
 }
 
 @end
@@ -85,6 +91,8 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 
   if (self) {
     _bridge = bridge;
+    // Focus CVC field after initial load.
+    _shouldUpdateFocus = YES;
   }
 
   return self;
@@ -113,6 +121,8 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   self.navigationItem.leftBarButtonItem = [self createCancelButton];
 
   _confirmButton = [self createConfirmButton];
+  // Disable confirm button until valid input is entered.
+  _confirmButton.enabled = NO;
   self.navigationItem.rightBarButtonItem = _confirmButton;
 
   [self loadModel];
@@ -134,10 +144,45 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   _CVCInputItem = [self createCVCInputItem];
   [self.tableViewModel addItem:_CVCInputItem
        toSectionWithIdentifier:SectionIdentifierInputs];
+}
 
-  _footerItem = [self createFooterItem];
-  [self.tableViewModel setFooter:_footerItem
-        forSectionWithIdentifier:SectionIdentifierInputs];
+#pragma mark - Public
+
+- (void)showLoadingState {
+  self.tableView.userInteractionEnabled = NO;
+
+  UIActivityIndicatorView* activityIndicator = [[UIActivityIndicatorView alloc]
+      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+  UIBarButtonItem* barButton =
+      [[UIBarButtonItem alloc] initWithCustomView:activityIndicator];
+  self.navigationItem.rightBarButtonItem = barButton;
+  [activityIndicator startAnimating];
+}
+
+- (void)showErrorAlertWithMessage:(NSString*)message
+                   closeOnDismiss:(BOOL)closeOnDismiss {
+  // Restore confirm button to navigation bar.
+  self.navigationItem.rightBarButtonItem = _confirmButton;
+
+  UIAlertController* errorAlert = [UIAlertController
+      alertControllerWithTitle:
+          l10n_util::GetNSString(
+              IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_ALERT_TITLE)
+                       message:message
+                preferredStyle:UIAlertControllerStyleAlert];
+
+  auto* __weak weakSelf = self;
+  UIAlertAction* okAction = [UIAlertAction
+      actionWithTitle:l10n_util::GetNSString(IDS_OK)
+                style:UIAlertActionStyleCancel
+              handler:^(UIAlertAction* action) {
+                [weakSelf onErrorAlertDismissedAndShouldCloseOnDismiss:
+                              closeOnDismiss];
+              }];
+
+  [errorAlert addAction:okAction];
+
+  [self presentViewController:errorAlert animated:YES completion:nil];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -156,7 +201,20 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 }
 
 - (void)onVerifyTapped {
-  NOTIMPLEMENTED();
+  autofill::CardUnmaskPromptController* controller = _bridge->GetController();
+
+  NSString* CVC = _CVCInputItem.textFieldValue;
+  NSString* month = nil;
+  NSString* year = nil;
+
+  if (_expirationDateInputItem) {
+    month = _expirationDateInputItem.month;
+    year = _expirationDateInputItem.year;
+  }
+
+  controller->OnUnmaskPromptAccepted(
+      base::SysNSStringToUTF16(CVC), base::SysNSStringToUTF16(month),
+      base::SysNSStringToUTF16(year), /*enable_fido_auth=*/false);
 }
 
 #pragma mark - Private
@@ -167,6 +225,14 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 //   - CVC input field.
 //   - Update expiration date input field.
 - (void)showUpdateExpirationDateForm {
+  // Check if the expiration date form is already being shown.
+  // After submitting a form and receiving an error result, this method might
+  // get called to switch to the expiration date form. If the expiration date
+  // form was already being displayed, no changes are needed.
+  if (_expirationDateInputItem) {
+    return;
+  }
+
   // Load instructions for updating the expiration date.
   [self updateInstructions];
 
@@ -175,7 +241,37 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   // The footer is not displayed when updating the expiration date.
   [self removeFooterItem];
 
+  // Change focus to expiration date field once the cells are loaded.
+  _shouldUpdateFocus = YES;
+
   [self reloadAllSections];
+
+  [self updateConfirmButtonState];
+}
+
+// Displays a footer with a link to update the expiration date of the card.
+// If the footer is already displayed, this method has no effects.
+- (void)showUpdateExpirationDateLink {
+  // Check if the link is already being displayed.
+  // After submitting a form and receiving an error result, this method might
+  // get called. If the link is already displayed, no changes are needed.
+  if (_footerItem) {
+    return;
+  }
+
+  _footerItem = [self createFooterItem];
+  [self.tableViewModel setFooter:_footerItem
+        forSectionWithIdentifier:SectionIdentifierInputs];
+
+  // Restore focus to CVC input field after the section is reloaded.
+  _shouldUpdateFocus = YES;
+
+  // Reload inputs section to display footer.
+  NSIndexSet* indexSet = [[NSIndexSet alloc]
+      initWithIndex:[self.tableViewModel
+                        sectionForSectionIdentifier:SectionIdentifierInputs]];
+  [self.tableView reloadSections:indexSet
+                withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 // Returns a newly created item for the header of the section.
@@ -216,21 +312,21 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   return confirmButton;
 }
 
-// Returns the model for the cvc input cell.
+// Returns the model for the CVC input cell.
 - (TableViewTextEditItem*)createCVCInputItem {
   autofill::CardUnmaskPromptController* controller = _bridge->GetController();
 
-  TableViewTextEditItem* cvcInputItem =
+  TableViewTextEditItem* CVCInputItem =
       [[TableViewTextEditItem alloc] initWithType:ItemTypeCVCInput];
-  cvcInputItem.delegate = self;
-  cvcInputItem.textFieldName =
+  CVCInputItem.delegate = self;
+  CVCInputItem.textFieldName =
       l10n_util::GetNSString(IDS_AUTOFILL_CARD_UNMASK_PROMPT_CVC_FIELD_TITLE);
-  cvcInputItem.keyboardType = UIKeyboardTypeNumberPad;
-  cvcInputItem.hideIcon = YES;
-  cvcInputItem.textFieldEnabled = YES;
-  cvcInputItem.identifyingIcon = NativeImage(controller->GetCvcImageRid());
+  CVCInputItem.keyboardType = UIKeyboardTypeNumberPad;
+  CVCInputItem.hideIcon = YES;
+  CVCInputItem.textFieldEnabled = YES;
+  CVCInputItem.identifyingIcon = NativeImage(controller->GetCvcImageRid());
 
-  return cvcInputItem;
+  return CVCInputItem;
 }
 
 // Returns a newly created item for the footer of the section.
@@ -291,18 +387,63 @@ const char kFooterDummyLinkTarget[] = "about:blank";
                 withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
+// Returns YES if the CVC value entered matches the expected CVC format.
+// The actual correctness of the CVC is verified by the server when the form is
+// submitted.
+- (BOOL)isCVCInputValid {
+  return _bridge->GetController()->InputCvcIsValid(
+      base::SysNSStringToUTF16(_CVCInputItem.textFieldValue));
+}
+
+// Returns YES if the expiration date entered matches the expected format or if
+// the expiration date input is not being displayed. The actual correctness of
+// the expiration date is verified by the server when the form is submitted.
+- (BOOL)isExpirationInputValid {
+  if (!_expirationDateInputItem) {
+    return YES;
+  }
+
+  return _bridge->GetController()->InputExpirationIsValid(
+      base::SysNSStringToUTF16(_expirationDateInputItem.month),
+      base::SysNSStringToUTF16(_expirationDateInputItem.year));
+}
+
+// Enables the confirm button in the navigation bar iff the values for CVC and
+// expiration date entered by the user are valid.
+- (void)updateConfirmButtonState {
+  _confirmButton.enabled =
+      [self isCVCInputValid] && [self isExpirationInputValid];
+}
+
+// Updates `self` after the error alert was dismissed.
+// When `closeOnDismiss` is YES, `self` is dismissed.
+- (void)onErrorAlertDismissedAndShouldCloseOnDismiss:(BOOL)closeOnDismiss {
+  if (closeOnDismiss) {
+    _bridge->PerformClose();
+    return;
+  }
+  // Interactions were disabled in the loading state.
+  // Enabling them after the alert is dismissed.
+  self.tableView.userInteractionEnabled = YES;
+  // Check if we need to switch to the update expiration date form.
+  if (_bridge->GetController()->ShouldRequestExpirationDate()) {
+    [self showUpdateExpirationDateForm];
+  } else {
+    // Display the expiration date link after an error verifying the CVC.
+    [self showUpdateExpirationDateLink];
+  }
+}
+
 #pragma mark - TableViewTextEditItemDelegate
 
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewItem {
-  NOTIMPLEMENTED();
+  [self updateConfirmButtonState];
 }
 
 - (void)tableViewItemDidBeginEditing:(TableViewTextEditItem*)tableViewItem {
-  NOTIMPLEMENTED();
 }
 
 - (void)tableViewItemDidEndEditing:(TableViewTextEditItem*)tableViewItem {
-  NOTIMPLEMENTED();
 }
 
 #pragma mark - UITableViewDelegate
@@ -333,6 +474,31 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   }
   // Default spacing when no footer.
   return kEmptyFooterHeight;
+}
+
+- (void)tableView:(UITableView*)tableView
+      willDisplayCell:(UITableViewCell*)cell
+    forRowAtIndexPath:(NSIndexPath*)indexPath {
+  // Only update focus for cells with input fields and when update focus is
+  // needed.
+  if (!_shouldUpdateFocus ||
+      ![cell isKindOfClass:TableViewTextEditCell.class]) {
+    return;
+  }
+  // When we're about to display the CVC form or expiration date form for
+  // the first time focus the textField on the right cell.
+  TableViewTextEditCell* rowCell =
+      base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
+
+  auto rowItemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
+  // If the expiration date cell is displayed then we're transitioning to the
+  // expiration date form. Only focus the CVC cell when we're not transitioning
+  // to the expiration date form.
+  if (rowItemType == ItemTypeExpirationDateInput ||
+      (rowItemType == ItemTypeCVCInput && !_expirationDateInputItem)) {
+    [rowCell.textField becomeFirstResponder];
+    _shouldUpdateFocus = NO;
+  }
 }
 
 #pragma mark - UITableViewDataSource
@@ -368,7 +534,7 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 
 - (void)expirationDateEditItemDidChange:(ExpirationDateEditItem*)item {
   // Handle expiration date selections.
-  NOTIMPLEMENTED();
+  [self updateConfirmButtonState];
 }
 
 @end

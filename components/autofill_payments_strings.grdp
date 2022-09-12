@@ -366,6 +366,9 @@
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_EXPIRATION_DATE_FIELD_TITLE" desc="The name of the field for the expiration date of the credit card in the card unmasking dialog.">
       Expiration Date
     </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_ERROR_ALERT_TITLE" desc="Text to be displayed as the title of the error alert in the card unmasking dialog.">
+      Something Went Wrong
+    </message>
   </if>
   <if expr="is_ios">
     <if expr="_google_chrome">

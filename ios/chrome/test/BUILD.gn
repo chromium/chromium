@@ -271,6 +271,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/authentication/signin_sync:unit_tests",
     "//ios/chrome/browser/ui/authentication/unified_consent:unit_tests",
     "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser:unit_tests",
+    "//ios/chrome/browser/ui/autofill:unit_tests",
     "//ios/chrome/browser/ui/autofill/cells:unit_tests",
     "//ios/chrome/browser/ui/autofill/form_input_accessory:unit_tests",
     "//ios/chrome/browser/ui/autofill/manual_fill:unit_tests",

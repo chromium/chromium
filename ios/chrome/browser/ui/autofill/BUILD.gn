@@ -244,3 +244,20 @@ source_set("features") {
   ]
   public_deps = [ "//base" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "card_unmask_prompt_view_controller_unittest.mm" ]
+  deps = [
+    ":bridges",
+    "//base/test:test_support",
+    "//components/autofill/core/browser",
+    "//components/prefs:test_support",
+    "//ios/chrome/browser/ui/autofill/cells",
+    "//ios/chrome/browser/ui/table_view:test_support",
+    "//ios/chrome/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
