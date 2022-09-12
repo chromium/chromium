@@ -84,8 +84,6 @@ action("verify_gen_ts_dep_list") {
 }
 
 action("verify_regenerate_internal_cts_html") {
-  # Call wrapper script run_regenerate_internal_cts_html because
-  # this script only works with vpython (not vpython3).
   script = "scripts/run_regenerate_internal_cts_html.py"
   inputs = [
              "scripts/compile_src.py",
