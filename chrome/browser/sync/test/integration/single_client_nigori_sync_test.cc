@@ -1263,9 +1263,14 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     SingleClientNigoriWithWebApiTest,
     ShoudRecordTrustedVaultErrorShownOnStartupWhenErrorShown) {
+  // 4 days is an arbitrary value between 3 days and 7 days to allow testing
+  // histogram suffixes.
+  const base::Time migration_time = base::Time::Now() - base::Days(4);
+
   // Mimic the account being already using a trusted vault passphrase.
-  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics({kTestEncryptionKey}),
-                        GetFakeServer());
+  SetNigoriInFakeServer(
+      BuildTrustedVaultNigoriSpecifics({kTestEncryptionKey}, migration_time),
+      GetFakeServer());
 
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(SetupSync());
@@ -1277,8 +1282,22 @@ IN_PROC_BROWSER_TEST_F(
                                              GetProfile(0)->GetPrefs()));
 
   histogram_tester.ExpectUniqueSample("Sync.TrustedVaultErrorShownOnStartup",
-                                      /*sample=*/1,
+                                      /*sample=*/true,
                                       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultErrorShownOnStartup.MigratedLast28Days",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultErrorShownOnStartup.MigratedLast7Days",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Sync.TrustedVaultErrorShownOnStartup.MigratedLast3Days",
+      /*count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Sync.TrustedVaultErrorShownOnStartup.MigratedLastDay",
+      /*count=*/0);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1323,7 +1342,7 @@ IN_PROC_BROWSER_TEST_F(
                                               GetProfile(0)->GetPrefs()));
 
   histogram_tester.ExpectUniqueSample("Sync.TrustedVaultErrorShownOnStartup",
-                                      /*sample=*/0,
+                                      /*sample=*/false,
                                       /*expected_bucket_count=*/1);
 }
 
@@ -1331,15 +1350,20 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
                        ShouldReportDegradedTrustedVaultRecoverability) {
   base::HistogramTester histogram_tester;
 
+  // 4 days is an arbitrary value between 3 days and 7 days to allow testing
+  // histogram suffixes.
+  const base::Time migration_time = base::Time::Now() - base::Days(4);
+
   // Mimic the key being available upon startup but recoverability degraded.
   const std::vector<uint8_t> trusted_vault_key =
       GetSecurityDomainsServer()->RotateTrustedVaultKey(
           /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
   GetSecurityDomainsServer()->RequirePublicKeyToAvoidRecoverabilityDegraded(
       kTestRecoveryMethodPublicKey);
-  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
-                            /*trusted_vault_keys=*/{trusted_vault_key}),
-                        GetFakeServer());
+  SetNigoriInFakeServer(
+      BuildTrustedVaultNigoriSpecifics(
+          /*trusted_vault_keys=*/{trusted_vault_key}, migration_time),
+      GetFakeServer());
   ASSERT_TRUE(SetupClients());
   GetSyncService(0)->AddTrustedVaultDecryptionKeysFromWeb(
       kGaiaId, GetSecurityDomainsServer()->GetAllTrustedVaultKeys(),
@@ -1400,6 +1424,20 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
   histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultRecoverabilityDegradedOnStartup",
       /*sample=*/true, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultRecoverabilityDegradedOnStartup.MigratedLast28Days",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultRecoverabilityDegradedOnStartup.MigratedLast7Days",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Sync.TrustedVaultRecoverabilityDegradedOnStartup.MigratedLast3Days",
+      /*count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Sync.TrustedVaultRecoverabilityDegradedOnStartup.MigratedLastDay",
+      /*count=*/0);
 
   // TODO(crbug.com/1201659): Verify the recovery method hint added to the fake
   // server.

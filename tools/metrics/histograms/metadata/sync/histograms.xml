@@ -65,6 +65,24 @@ chromium-metrics-reviews@google.com.
   <variant name=".WORKSPACE_DESK" summary="WORKSPACE_DESK"/>
 </variants>
 
+<variants name="TrustedVaultTimeSinceMigrationSuffix">
+  <variant name=""
+      summary="Includes data for users that went through migration any time
+               (including unknown and invalid)."/>
+  <variant name=".MigratedLast3Days"
+      summary="Includes data for users that went through migration during the
+               last 3 days (wrt recording the metrics)."/>
+  <variant name=".MigratedLast7Days"
+      summary="Includes data for users that went through migration during the
+               last 7 days (wrt recording the metrics)."/>
+  <variant name=".MigratedLast28Days"
+      summary="Includes data for users that went through migration during the
+               last 28 days (wrt recording the metrics)."/>
+  <variant name=".MigratedLastDay"
+      summary="Includes data for users that went through migration during the
+               last day (wrt recording the metrics)."/>
+</variants>
+
 <histogram name="FCMInvalidations.SubscriptionResponseCodeForTopic{Topic}"
     enum="HttpResponseCode" expires_after="never">
 <!-- TODO(crbug.com/1266807): Move back to */invalidation/histograms.xml once
@@ -1223,8 +1241,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.TrustedVaultErrorShownOnStartup" enum="Boolean"
-    expires_after="2023-01-15">
+<histogram
+    name="Sync.TrustedVaultErrorShownOnStartup{TrustedVaultTimeSinceMigrationSuffix}"
+    enum="Boolean" expires_after="2023-01-15">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -1232,7 +1251,11 @@ chromium-metrics-reviews@google.com.
     Records whether user action was required to fetch trusted vault keys upon
     startup. Recorded only if trusted vault passphrase type is used and at most
     once per browser/profile lifetime.
+
+    {TrustedVaultTimeSinceMigrationSuffix}
   </summary>
+  <token key="TrustedVaultTimeSinceMigrationSuffix"
+      variants="TrustedVaultTimeSinceMigrationSuffix"/>
 </histogram>
 
 <histogram name="Sync.TrustedVaultFetchedKeysCount" units="keys"
@@ -1299,7 +1322,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.TrustedVaultRecoverabilityDegradedOnStartup"
+<histogram
+    name="Sync.TrustedVaultRecoverabilityDegradedOnStartup{TrustedVaultTimeSinceMigrationSuffix}"
     enum="Boolean" expires_after="2023-01-15">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
@@ -1309,7 +1333,11 @@ chromium-metrics-reviews@google.com.
     trusted vault keys. Recorded only if trusted vault passphrase type is used,
     when keys are locally available and at most once per browser/profile
     lifetime.
+
+    {TrustedVaultTimeSinceMigrationSuffix}
   </summary>
+  <token key="TrustedVaultTimeSinceMigrationSuffix"
+      variants="TrustedVaultTimeSinceMigrationSuffix"/>
 </histogram>
 
 <histogram name="Sync.TrustedVaultURLFetchResponse{Reason}"

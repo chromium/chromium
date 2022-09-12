@@ -36,6 +36,7 @@
 #include "components/sync/driver/sync_api_component_factory.h"
 #include "components/sync/driver/sync_auth_manager.h"
 #include "components/sync/driver/sync_type_preference_provider.h"
+#include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/engine/engine_components_factory_impl.h"
 #include "components/sync/engine/net/http_bridge.h"
@@ -957,12 +958,15 @@ void SyncServiceImpl::CryptoRequiredUserActionChanged() {
 
   if (should_record_trusted_vault_error_shown_on_startup_ &&
       crypto_.IsTrustedVaultKeyRequiredStateKnown() && IsSyncFeatureEnabled()) {
+    DCHECK(engine_);
+
     should_record_trusted_vault_error_shown_on_startup_ = false;
     if (crypto_.GetPassphraseType() ==
         PassphraseType::kTrustedVaultPassphrase) {
-      base::UmaHistogramBoolean(
+      RecordTrustedVaultHistogramBooleanWithMigrationSuffix(
           "Sync.TrustedVaultErrorShownOnStartup",
-          user_settings_->IsTrustedVaultKeyRequiredForPreferredDataTypes());
+          user_settings_->IsTrustedVaultKeyRequiredForPreferredDataTypes(),
+          engine_->GetDetailedStatus());
     }
   }
 }

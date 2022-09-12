@@ -22,9 +22,11 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/sync_prefs.h"
+#include "components/sync/base/time.h"
 #include "components/sync/driver/trusted_vault_client.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
+#include "components/sync/engine/sync_status.h"
 #include "components/sync/test/mock_sync_engine.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,6 +44,7 @@ using testing::Ne;
 using testing::Not;
 using testing::NotNull;
 using testing::Return;
+using testing::ReturnRef;
 using testing::SaveArg;
 
 sync_pb::EncryptedData MakeEncryptedData(
@@ -1194,6 +1197,10 @@ TEST_F(SyncServiceCryptoTest,
 
 TEST_F(SyncServiceCryptoTest,
        ShouldNotReportDegradedRecoverabilityUponInitialization) {
+  const SyncStatus kEmptySyncStatus;
+  ON_CALL(engine_, GetDetailedStatus())
+      .WillByDefault(ReturnRef(kEmptySyncStatus));
+
   base::test::ScopedFeatureList override_features;
   override_features.InitAndEnableFeature(kSyncTrustedVaultPassphraseRecovery);
 
@@ -1215,6 +1222,12 @@ TEST_F(SyncServiceCryptoTest,
 
 TEST_F(SyncServiceCryptoTest,
        ShouldReportDegradedRecoverabilityUponInitialization) {
+  // Use a very recent migration time to verify all histograms.
+  SyncStatus sync_status;
+  sync_status.trusted_vault_debug_info.set_migration_time(
+      TimeToProtoTime(base::Time::Now() - base::Hours(1)));
+  ON_CALL(engine_, GetDetailedStatus()).WillByDefault(ReturnRef(sync_status));
+
   base::test::ScopedFeatureList override_features;
   override_features.InitAndEnableFeature(kSyncTrustedVaultPassphraseRecovery);
 
@@ -1232,9 +1245,25 @@ TEST_F(SyncServiceCryptoTest,
   histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultRecoverabilityDegradedOnStartup",
       /*sample=*/true, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultRecoverabilityDegradedOnStartup.MigratedLast28Days",
+      /*sample=*/true, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultRecoverabilityDegradedOnStartup.MigratedLast7Days",
+      /*sample=*/true, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultRecoverabilityDegradedOnStartup.MigratedLast3Days",
+      /*sample=*/true, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultRecoverabilityDegradedOnStartup.MigratedLastDay",
+      /*sample=*/true, /*expected_bucket_count=*/1);
 }
 
 TEST_F(SyncServiceCryptoTest, ShouldReportDegradedRecoverabilityUponChange) {
+  const SyncStatus kEmptySyncStatus;
+  ON_CALL(engine_, GetDetailedStatus())
+      .WillByDefault(ReturnRef(kEmptySyncStatus));
+
   base::test::ScopedFeatureList override_features;
   override_features.InitAndEnableFeature(kSyncTrustedVaultPassphraseRecovery);
 
@@ -1263,6 +1292,10 @@ TEST_F(SyncServiceCryptoTest, ShouldReportDegradedRecoverabilityUponChange) {
 
 TEST_F(SyncServiceCryptoTest,
        ShouldStopReportingDegradedRecoverabilityUponChange) {
+  const SyncStatus kEmptySyncStatus;
+  ON_CALL(engine_, GetDetailedStatus())
+      .WillByDefault(ReturnRef(kEmptySyncStatus));
+
   base::test::ScopedFeatureList override_features;
   override_features.InitAndEnableFeature(kSyncTrustedVaultPassphraseRecovery);
 
@@ -1290,6 +1323,10 @@ TEST_F(SyncServiceCryptoTest,
 }
 
 TEST_F(SyncServiceCryptoTest, ShouldReportDegradedRecoverabilityUponRetrieval) {
+  const SyncStatus kEmptySyncStatus;
+  ON_CALL(engine_, GetDetailedStatus())
+      .WillByDefault(ReturnRef(kEmptySyncStatus));
+
   base::test::ScopedFeatureList override_features;
   override_features.InitAndEnableFeature(kSyncTrustedVaultPassphraseRecovery);
 
@@ -1331,6 +1368,10 @@ TEST_F(SyncServiceCryptoTest, ShouldReportDegradedRecoverabilityUponRetrieval) {
 
 TEST_F(SyncServiceCryptoTest,
        ShouldClearDegradedRecoverabilityIfCustomPassphraseIsSet) {
+  const SyncStatus kEmptySyncStatus;
+  ON_CALL(engine_, GetDetailedStatus())
+      .WillByDefault(ReturnRef(kEmptySyncStatus));
+
   const std::string kTestPassphrase = "somepassphrase";
 
   base::test::ScopedFeatureList override_features;
