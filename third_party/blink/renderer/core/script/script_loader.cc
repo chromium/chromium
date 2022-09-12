@@ -313,6 +313,13 @@ bool IsEligibleForDelay(const Resource& resource,
   if (resource.IsLinkPreload())
     return false;
 
+  static const base::TimeDelta feature_limit =
+      features::kDelayAsyncScriptExecutionFeatureLimitParam.Get();
+  if (!feature_limit.is_zero() &&
+      element_document.GetStartTime().Elapsed() > feature_limit) {
+    return false;
+  }
+
   return true;
 }
 

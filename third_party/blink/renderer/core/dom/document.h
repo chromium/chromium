@@ -1291,6 +1291,7 @@ class CORE_EXPORT Document : public ContainerNode,
   ExecutionContext* GetExecutionContext() const final;
 
   ScriptRunner* GetScriptRunner() { return script_runner_.Get(); }
+  const base::ElapsedTimer& GetStartTime() const { return start_time_; }
 
   V8HTMLOrSVGScriptElement* currentScriptForBinding() const;
   void PushCurrentScript(ScriptElementBase*);

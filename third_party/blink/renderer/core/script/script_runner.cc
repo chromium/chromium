@@ -158,7 +158,9 @@ void ScriptRunner::RemoveDelayReasonFromScript(PendingScript* pending_script,
   if (it->value &= ~static_cast<DelayReasons>(delay_reason)) {
     // The delay must be less than a few seconds because some scripts times out
     // otherwise. This is only applied to milestone based delay.
-    if (delay_reason == DelayReason::kLoad &&
+    static const base::TimeDelta delay_limit =
+        features::kDelayAsyncScriptExecutionDelayLimitParam.Get();
+    if (!delay_limit.is_zero() && delay_reason == DelayReason::kLoad &&
         (it->value & static_cast<DelayReasons>(DelayReason::kMilestone))) {
       // PostDelayedTask to limit the delay amount of DelayAsyncScriptExecution
       // (see crbug/1340837). DelayReason::kMilestone is sent on
@@ -175,7 +177,7 @@ void ScriptRunner::RemoveDelayReasonFromScript(PendingScript* pending_script,
                     WrapWeakPersistent(this),
                     WrapWeakPersistent(pending_script),
                     DelayReason::kMilestone),
-          features::kDelayAsyncScriptExecutionLimitParam.Get());
+          delay_limit);
     }
     // Still to be delayed.
     return;

@@ -1535,8 +1535,20 @@ const base::FeatureParam<DelayAsyncScriptDelayType>
 const base::FeatureParam<bool> kDelayAsyncScriptExecutionCrossSiteOnlyParam{
     &kDelayAsyncScriptExecution, "cross_site_only", false};
 
-const base::FeatureParam<base::TimeDelta> kDelayAsyncScriptExecutionLimitParam{
-    &kDelayAsyncScriptExecution, "limit", base::Seconds(1)};
+// kDelayAsyncScriptExecution will delay executing async script at max
+// |delay_limit|.
+const base::FeatureParam<base::TimeDelta>
+    kDelayAsyncScriptExecutionDelayLimitParam{&kDelayAsyncScriptExecution,
+                                              "delay_limit", base::Seconds(0)};
+
+// kDelayAsyncScriptExecution will be disabled after document elapsed more than
+// |feature_limit|. Zero value means no limit.
+// This is to avoid unnecessary async script delay after LCP (for
+// kEachLcpCandidate or kEachPaint). Because we can't determine the LCP timing
+// while loading, we use timeout instead.
+const base::FeatureParam<base::TimeDelta>
+    kDelayAsyncScriptExecutionFeatureLimitParam{
+        &kDelayAsyncScriptExecution, "feature_limit", base::Seconds(0)};
 
 const base::Feature kLowPriorityAsyncScriptExecution{
     "LowPriorityAsyncScriptExecution", base::FEATURE_DISABLED_BY_DEFAULT};

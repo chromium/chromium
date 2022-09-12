@@ -945,25 +945,25 @@
     "prefix": "async-script-scheduling-apply-to-cross-site-only",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/async-script-scheduling"],
-    "args": ["--enable-features=DelayAsyncScriptExecution:cross_site_only/true/limit/1m"]
+    "args": ["--enable-features=DelayAsyncScriptExecution:cross_site_only/true"]
   },
   {
     "prefix": "async-script-scheduling-finished-parsing",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/async-script-scheduling"],
-    "args": ["--enable-features=DelayAsyncScriptExecution:delay_type/finished_parsing/limit/1m"]
+    "args": ["--enable-features=DelayAsyncScriptExecution:delay_type/finished_parsing"]
   },
   {
     "prefix": "async-script-scheduling-finished-parsing-with-dom-content-loaded-wait-for-async-script",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/async-script-scheduling"],
-    "args": ["--enable-features=DelayAsyncScriptExecution:delay_type/finished_parsing/limit/1m,DOMContentLoadedWaitForAsyncScript"]
+    "args": ["--enable-features=DelayAsyncScriptExecution:delay_type/finished_parsing,DOMContentLoadedWaitForAsyncScript"]
   },
   {
     "prefix": "async-script-scheduling-first-paint-or-finished-parsing",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/async-script-scheduling"],
-    "args": ["--enable-features=DelayAsyncScriptExecution:delay_type/first_paint_or_finished_parsing/limit/1m"]
+    "args": ["--enable-features=DelayAsyncScriptExecution:delay_type/first_paint_or_finished_parsing"]
   },
   {
     "prefix": "initially-invisible-images-lcp",
