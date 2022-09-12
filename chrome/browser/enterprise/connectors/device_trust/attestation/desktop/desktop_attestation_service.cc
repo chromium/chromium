@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/crypto_utility.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/desktop_attestation_switches.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
@@ -25,8 +27,6 @@
 namespace enterprise_connectors {
 
 namespace {
-
-constexpr VAType kVAType = VAType::DEFAULT_VA;
 
 // Size of nonce for challenge response.
 const size_t kChallengeResponseNonceBytesSize = 32;
@@ -39,6 +39,14 @@ bool ChallengeComesFromVerifiedAccess(
   return CryptoUtility::VerifySignatureUsingHexKey(
       va_public_key_modulus_hex, signed_challenge_data.data(),
       signed_challenge_data.signature());
+}
+
+VAType GetVAType() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseVaDevKeys)) {
+    return VAType::TEST_VA;
+  }
+  return VAType::DEFAULT_VA;
 }
 
 // The KeyInfo message encrypted using a public encryption key, with
@@ -150,7 +158,7 @@ void DesktopAttestationService::OnPublicKeyExported(
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ChallengeComesFromVerifiedAccess, signed_data,
-                     google_keys_.va_signing_key(kVAType).modulus_in_hex()),
+                     google_keys_.va_signing_key(GetVAType()).modulus_in_hex()),
       base::BindOnce(&DesktopAttestationService::OnChallengeValidated,
                      weak_factory_.GetWeakPtr(), signed_data,
                      exported_key.value(), std::move(signals),
@@ -197,7 +205,7 @@ void DesktopAttestationService::OnChallengeValidated(
     return;
   }
 
-  auto va_encryption_key = google_keys_.va_encryption_key(kVAType);
+  auto va_encryption_key = google_keys_.va_encryption_key(GetVAType());
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&CreateChallengeResponseString, serialized_key_info,
