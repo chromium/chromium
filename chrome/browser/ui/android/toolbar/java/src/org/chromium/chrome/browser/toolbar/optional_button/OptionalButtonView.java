@@ -156,7 +156,8 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         // If we receive the same button with the same visibility then there's no need to update.
         if (buttonData != null
                 && mCurrentButtonVariant == buttonData.getButtonSpec().getButtonVariant()
-                && mCanCurrentButtonShow == buttonData.canShow()) {
+                && mCanCurrentButtonShow == buttonData.canShow()
+                && mIconDrawable == buttonData.getButtonSpec().getDrawable()) {
             return;
         }
 

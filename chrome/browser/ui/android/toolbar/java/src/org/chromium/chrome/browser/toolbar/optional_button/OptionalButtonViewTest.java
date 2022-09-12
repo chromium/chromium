@@ -580,7 +580,6 @@ public class OptionalButtonViewTest {
     @Test
     public void testUpdateButton_earlyReturnIfSameVariant() {
         ButtonData priceTrackingButtonData = getDataForPriceTrackingIconButton();
-        ButtonData priceTrackingActionChipData = getDataForPriceTrackingActionChip();
 
         ViewGroup transitionRoot = mock(ViewGroup.class);
         mOptionalButtonView.setTransitionRoot(transitionRoot);
@@ -589,11 +588,43 @@ public class OptionalButtonViewTest {
         mOptionalButtonView.onTransitionStart(null);
         mOptionalButtonView.onTransitionEnd(null);
 
-        mOptionalButtonView.updateButtonWithAnimation(priceTrackingActionChipData);
+        mOptionalButtonView.updateButtonWithAnimation(priceTrackingButtonData);
 
         // Calling updateButtonWithAnimation with the same button variant many times shouldn't begin
         // repeated animations.
         verify(mMockBeginDelayedTransition).onResult(any());
+    }
+
+    @Test
+    public void testUpdateButton_sameButtonWithDifferentDrawableTriggersTransition() {
+        ButtonDataImpl priceTrackingButtonData = getDataForPriceTrackingIconButton();
+
+        ViewGroup transitionRoot = mock(ViewGroup.class);
+        mOptionalButtonView.setTransitionRoot(transitionRoot);
+
+        mOptionalButtonView.updateButtonWithAnimation(priceTrackingButtonData);
+        mOptionalButtonView.onTransitionStart(null);
+        mOptionalButtonView.onTransitionEnd(null);
+
+        Drawable newIconDrawable =
+                AppCompatResources.getDrawable(mActivity, R.drawable.new_tab_icon);
+        ButtonSpec originalButtonSpec = priceTrackingButtonData.getButtonSpec();
+        // Create a copy of the original ButtonSpec with a different variant.
+        priceTrackingButtonData.setButtonSpec(new ButtonSpec(newIconDrawable,
+                originalButtonSpec.getOnClickListener(),
+                originalButtonSpec.getOnLongClickListener(),
+                originalButtonSpec.getContentDescriptionResId(),
+                originalButtonSpec.getSupportsTinting(), originalButtonSpec.getIPHCommandBuilder(),
+                originalButtonSpec.getButtonVariant(),
+                originalButtonSpec.getActionChipLabelResId()));
+
+        mOptionalButtonView.updateButtonWithAnimation(priceTrackingButtonData);
+        mOptionalButtonView.onTransitionStart(null);
+        mOptionalButtonView.onTransitionEnd(null);
+
+        // Calling updateButtonWithAnimation with the same button variant but with a different
+        // drawable should begin an animation.
+        verify(mMockBeginDelayedTransition, times(2)).onResult(any());
     }
 
     @Test
