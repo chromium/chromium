@@ -1064,7 +1064,10 @@ void NGInlineCursor::MoveToFirstNonPseudoLeaf() {
         // We ignore line break character, e.g. newline with white-space:pre,
         // like |MoveToLastNonPseudoLeaf()| as consistency.
         // See |ParameterizedVisibleUnitsLineTest.EndOfLineWithWhiteSpacePre|
-        continue;
+        auto next = cursor;
+        next.MoveToNext();
+        if (next)
+          continue;
       }
       *this = cursor;
       return;

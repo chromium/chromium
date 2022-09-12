@@ -1078,6 +1078,26 @@ TEST_P(ParameterizedVisibleUnitsLineTest, InSameLineWithZeroWidthSpace) {
   EXPECT_TRUE(InSameLine(before_zws_up, before_zws_down));
 }
 
+// http://crbug.com/1358235
+TEST_P(ParameterizedVisibleUnitsLineTest, StartOfLineBeforeEmptyLine) {
+  LoadAhem();
+  InsertStyleElement("p { font: 30px/3 Ahem; }");
+
+  EXPECT_EQ("<p dir=\"ltr\">abc<br>|<br>xyz<br></p>",
+            TestStartOfLine("<p dir=\"ltr\">abc<br>|<br>xyz<br></p>"));
+  EXPECT_EQ("<p dir=\"ltr\">abc<br><br>|<br>xyz<br></p>",
+            TestStartOfLine("<p dir=\"ltr\">abc<br><br>|<br>xyz<br></p>"));
+  EXPECT_EQ("<p dir=\"ltr\">abc<br>|<br><br>xyz<br></p>",
+            TestStartOfLine("<p dir=\"ltr\">abc<br>|<br><br>xyz<br></p>"));
+
+  EXPECT_EQ("<p dir=\"rtl\">abc<br>|<br>xyz<br></p>",
+            TestStartOfLine("<p dir=\"rtl\">abc<br>|<br>xyz<br></p>"));
+  EXPECT_EQ("<p dir=\"rtl\">abc<br>|<br><br>xyz<br></p>",
+            TestStartOfLine("<p dir=\"rtl\">abc<br>|<br><br>xyz<br></p>"));
+  EXPECT_EQ("<p dir=\"rtl\">abc<br><br>|<br>xyz<br></p>",
+            TestStartOfLine("<p dir=\"rtl\">abc<br><br>|<br>xyz<br></p>"));
+}
+
 TEST_P(ParameterizedVisibleUnitsLineTest, StartOfLineWithBidi) {
   LoadAhem();
   InsertStyleElement("p { font: 30px/3 Ahem; }");
