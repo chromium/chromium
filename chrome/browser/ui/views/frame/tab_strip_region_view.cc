@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
+#include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_scroll_container.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/views/user_education/tip_marquee_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -209,37 +211,33 @@ void TabStripRegionView::FrameColorsChanged() {
 }
 
 bool TabStripRegionView::CanDrop(const OSExchangeData& data) {
-  return tab_strip_->CanDrop(data);
+  return TabDragController::IsSystemDragAndDropSessionRunning() &&
+         data.HasCustomFormat(
+             ui::ClipboardFormatType::GetType(ui::kMimeTypeWindowDrag));
 }
 
 bool TabStripRegionView::GetDropFormats(
     int* formats,
     std::set<ui::ClipboardFormatType>* format_types) {
-  if (!tab_strip_->WantsToReceiveAllDragEvents())
-    return false;
-
-  return tab_strip_->GetDropFormats(formats, format_types);
+  format_types->insert(
+      ui::ClipboardFormatType::GetType(ui::kMimeTypeWindowDrag));
+  return true;
 }
 
 void TabStripRegionView::OnDragEntered(const ui::DropTargetEvent& event) {
-  DCHECK(tab_strip_->WantsToReceiveAllDragEvents());
-  tab_strip_->OnDragEntered(event);
+  DCHECK(TabDragController::IsSystemDragAndDropSessionRunning());
+  TabDragController::OnSystemDragAndDropUpdated(event);
 }
 
 int TabStripRegionView::OnDragUpdated(const ui::DropTargetEvent& event) {
-  DCHECK(tab_strip_->WantsToReceiveAllDragEvents());
-  return tab_strip_->OnDragUpdated(event);
+  DCHECK(TabDragController::IsSystemDragAndDropSessionRunning());
+  TabDragController::OnSystemDragAndDropUpdated(event);
+  return ui::DragDropTypes::DRAG_MOVE;
 }
 
 void TabStripRegionView::OnDragExited() {
-  DCHECK(tab_strip_->WantsToReceiveAllDragEvents());
-  tab_strip_->OnDragExited();
-}
-
-views::View::DropCallback TabStripRegionView::GetDropCallback(
-    const ui::DropTargetEvent& event) {
-  DCHECK(tab_strip_->WantsToReceiveAllDragEvents());
-  return tab_strip_->GetDropCallback(event);
+  DCHECK(TabDragController::IsSystemDragAndDropSessionRunning());
+  TabDragController::OnSystemDragAndDropExited();
 }
 
 void TabStripRegionView::ChildPreferredSizeChanged(views::View* child) {

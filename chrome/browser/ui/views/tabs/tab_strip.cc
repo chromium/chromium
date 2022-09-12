@@ -1358,10 +1358,6 @@ views::View* TabStrip::GetDefaultFocusableChild() {
   return active != TabStripModel::kNoTab ? tab_at(active) : nullptr;
 }
 
-bool TabStrip::WantsToReceiveAllDragEvents() const {
-  return TabDragController::IsSystemDragAndDropSessionRunning();
-}
-
 bool TabStrip::IsValidModelIndex(int index) const {
   return controller_->IsValidIndex(index);
 }
@@ -1837,35 +1833,6 @@ void TabStrip::Layout() {
 
 void TabStrip::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
-}
-
-bool TabStrip::CanDrop(const OSExchangeData& data) {
-  return WantsToReceiveAllDragEvents();
-}
-
-bool TabStrip::GetDropFormats(int* formats,
-                              std::set<ui::ClipboardFormatType>* format_types) {
-  if (!WantsToReceiveAllDragEvents())
-    return false;
-
-  format_types->insert(
-      ui::ClipboardFormatType::GetType(ui::kMimeTypeWindowDrag));
-  return true;
-}
-
-void TabStrip::OnDragEntered(const ui::DropTargetEvent& event) {
-  DCHECK(WantsToReceiveAllDragEvents());
-  TabDragController::OnSystemDragAndDropUpdated(event);
-}
-
-int TabStrip::OnDragUpdated(const ui::DropTargetEvent& event) {
-  DCHECK(WantsToReceiveAllDragEvents());
-  TabDragController::OnSystemDragAndDropUpdated(event);
-  return ui::DragDropTypes::DRAG_MOVE;
-}
-void TabStrip::OnDragExited() {
-  DCHECK(WantsToReceiveAllDragEvents());
-  TabDragController::OnSystemDragAndDropExited();
 }
 
 BrowserRootView::DropIndex TabStrip::GetDropIndex(

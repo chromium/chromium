@@ -38,6 +38,7 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -155,11 +156,16 @@ bool BrowserRootView::CanDrop(const ui::OSExchangeData& data) {
   if (!tabstrip()->GetVisible() && !toolbar()->GetVisible())
     return false;
 
-  // Return false and let TabStripRegionView forward drag events to TabStrip.
-  // This is necessary because we don't want to return true if
-  // tabstrip()->WantsToReceiveAllDragEvents() is true but the mouse is not over
-  // the tab strip region, and we don't know the current mouse location.
-  if (tabstrip()->WantsToReceiveAllDragEvents())
+  // If this is for a fallback window dragging session, return false and let
+  // TabStripRegionView forward drag events to TabDragController. This is
+  // necessary because we don't want to return true if the custom MIME type is
+  // there but the mouse is not over the tab strip region, and we don't know the
+  // current mouse location.
+  // TODO(crbug.com/1307594): This is a smoking gun code smell;
+  // TabStripRegionView and Toolbar have different affordances, so they should
+  // separately override the drag&drop methods.
+  if (data.HasCustomFormat(
+          ui::ClipboardFormatType::GetType(ui::kMimeTypeWindowDrag)))
     return false;
 
   // If there is a URL, we'll allow the drop.

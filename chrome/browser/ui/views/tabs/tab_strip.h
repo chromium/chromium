@@ -232,15 +232,6 @@ class TabStrip : public views::View,
   // Gets the default focusable child view in the TabStrip.
   views::View* GetDefaultFocusableChild();
 
-  // The usual drag and drop handling done by BrowserRootView interferes with
-  // TabDragController's fallback window dragging, and therefore must be
-  // disabled during such a fallback window dragging session. If this method
-  // returns true, BrowserRootView ignores all drag-related events, and lets
-  // TabStripRegionView forward all drag-related event to TabStrip. String data
-  // with the DRAG_MOVE action is accepted, but no action is actually performed
-  // on drop.
-  bool WantsToReceiveAllDragEvents() const;
-
   // TabContainerController:
   bool IsValidModelIndex(int index) const override;
   int GetActiveIndex() const override;
@@ -326,23 +317,10 @@ class TabStrip : public views::View,
   views::SizeBounds GetAvailableSize(const View* child) const override;
   void Layout() override;
   void ChildPreferredSizeChanged(views::View* child) override;
-  // These system drag & drop methods are forwarded to TabDragController to
-  // support its fallback tab dragging mode in the case where the platform
-  // can't support the usual run loop based mode.
-  bool CanDrop(const OSExchangeData& data) override;
-  bool GetDropFormats(int* formats,
-                      std::set<ui::ClipboardFormatType>* format_types) override;
-  void OnDragEntered(const ui::DropTargetEvent& event) override;
-  int OnDragUpdated(const ui::DropTargetEvent& event) override;
-  void OnDragExited() override;
-  // We don't override GetDropCallback() because we don't actually want to
-  // transfer any data.
 
   // BrowserRootView::DropTarget:
-  // These methods handle link drag & drop. They are independent from the above
-  // fallback tab dragging mode methods, except that these will not be called
-  // while the aforementioned mode is active (see WantsToReceiveAllDragEvents).
-  // TODO(1307594): Use the standard drag and drop methods above instead.
+  // These methods handle link drag & drop.
+  // TODO(1307594): Use the standard views::View drag and drop methods instead.
   BrowserRootView::DropIndex GetDropIndex(
       const ui::DropTargetEvent& event) override;
   BrowserRootView::DropTarget* GetDropTarget(
