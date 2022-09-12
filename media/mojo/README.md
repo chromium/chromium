@@ -97,6 +97,18 @@ Note that `media::mojom::InterfaceFactory` interface is reused in the
 communication between `MediaInterfaceProxy` and `MediaService` (see
 [below](#Site-Isolation)).
 
+### Frameless Media Interface Factory
+
+In addition to the main `MediaInterfaceProxy`, which handles requests from
+ordinary media playback, `FramelessMediaInterfaceProxy` handles requests for
+media cases that do not need or have a frame.
+
+A frame is required for protected media playback because media decoding and
+the CDM are associated within a frame.
+
+The `FramelessMediaInterfaceProxy` is used by WebCodecs (which may be operating
+in a worker context), by WebRTC, and for early querying of supported codecs.
+
 ### MediaService
 
 The MediaService is a mojo `service_manager::Service` that provides media player

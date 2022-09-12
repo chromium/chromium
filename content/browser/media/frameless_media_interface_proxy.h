@@ -30,9 +30,10 @@ class RenderProcessHost;
 // This implements the media::mojom::InterfaceFactory interface for a
 // RenderProcessHostImpl. It does not support creating services that require a
 // frame context (ie. CDMs and renderers).
-// It is used in cases without a frame context, e.g. WebRTC's
-// RTCVideoDecoderFactory to create hardware video decoders using
-// MojoVideoDecoder, and WebCodecs audio/video decoding in workers.
+//
+// It is used in cases without a frame context, namely by WebRTC, WebCodecs
+// (which may be operating in a worker context), and for early querying of
+// supported codecs.
 class FramelessMediaInterfaceProxy final
     : public media::mojom::InterfaceFactory {
  public:
