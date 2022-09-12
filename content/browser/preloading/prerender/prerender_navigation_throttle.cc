@@ -29,6 +29,19 @@ PrerenderNavigationThrottle::MaybeCreateThrottleFor(
   if (frame_tree_node->IsMainFrame() &&
       frame_tree_node->frame_tree()->is_prerendering()) {
     DCHECK(blink::features::IsPrerender2Enabled());
+
+    PrerenderHostRegistry* prerender_host_registry =
+        frame_tree_node->current_frame_host()
+            ->delegate()
+            ->GetPrerenderHostRegistry();
+    PrerenderHost* prerender_host =
+        prerender_host_registry->FindNonReservedHostById(
+            frame_tree_node->frame_tree_node_id());
+    if (!prerender_host) {
+      // The prerender may be cancelled.
+      return nullptr;
+    }
+
     return base::WrapUnique(new PrerenderNavigationThrottle(navigation_handle));
   }
   return nullptr;
@@ -91,7 +104,10 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   PrerenderHost* prerender_host =
       prerender_host_registry->FindNonReservedHostById(
           frame_tree_node->frame_tree_node_id());
-  DCHECK(prerender_host);
+  if (!prerender_host) {
+    // prerender may be cancelled.
+    return CANCEL;
+  }
 
   // Navigations after the initial prerendering navigation are disallowed.
   if (*prerender_host->GetInitialNavigationId() !=
