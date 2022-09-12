@@ -4118,13 +4118,12 @@
     },
     {
       "id": 401,
-      "description": "Disable DrDc on PowerVR Rouge* gpus.",
-      "cr_bugs": [1354201],
+      "description": "Disable DrDc on multiple gpus.",
+      "cr_bugs": [1354201, 1356906, 1362720],
       "os": {
         "type": "android"
       },
-      "gl_vendor": ".*Imagination.*",
-      "gl_renderer": ".*PowerVR Rogue.*",
+      "gl_renderer": ".*PowerVR Rogue.*|Adreno \\(TM\\) 730|Mali-G57 MC2|Mali-G68 MC4|Mali-G77 MC9",
       "features": [
         "disable_drdc"
       ]
