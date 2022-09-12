@@ -72,12 +72,6 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // duplicated field types in the form.
   CreditCard ExtractCreditCardFromForm(const FormStructure& form);
 
-  // Checks suitability of |profile| for adding to the user's set of profiles.
-  static bool IsValidLearnableProfile(const AutofillProfile& profile,
-                                      const std::string& predicted_country_code,
-                                      const std::string& app_locale,
-                                      LogBuffer* import_log_buffer);
-
   // Cache the last four of the fetched virtual card so we don't offer saving
   // them.
   void CacheFetchedVirtualCard(const std::u16string& last_four);

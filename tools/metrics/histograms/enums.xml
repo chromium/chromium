@@ -5926,6 +5926,8 @@ others/histograms.xml -->
   <int value="23" label="Line1 requirement: Violated"/>
   <int value="24" label="ZIP or state requirement: Fulfilled"/>
   <int value="25" label="ZIP or state requirement: Violated"/>
+  <int value="26" label="Line1 or house number requirement: Fulfilled"/>
+  <int value="27" label="Line1 or house number requirement: Violated"/>
 </enum>
 
 <enum name="AutofillAddressProfileImportStatus">

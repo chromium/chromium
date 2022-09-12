@@ -2739,9 +2739,6 @@ AutofillMetrics::UkmTimestampPin::~UkmTimestampPin() {
 // static
 void AutofillMetrics::LogAddressFormImportRequirementMetric(
     AutofillMetrics::AddressProfileImportRequirementMetric metric) {
-  // Shift the requirement type index by one bit to the right.
-  // The freed least significant bit is used to indicate the fulfillment status
-  // of the specific requirement.
   base::UmaHistogramEnumeration("Autofill.AddressProfileImportRequirements",
                                 metric);
 }

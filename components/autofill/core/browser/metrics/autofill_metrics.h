@@ -727,8 +727,12 @@ class AutofillMetrics {
     // state entry.
     ZIP_OR_STATE_REQUIREMENT_FULFILLED = 24,
     ZIP_OR_STATE_REQUIREMENT_VIOLATED = 25,
+    // If required by |CountryData|, the form must contain a either an address
+    // line 1 or a house number.
+    LINE1_OR_HOUSE_NUMBER_REQUIREMENT_FULFILLED = 26,
+    LINE1_OR_HOUSE_NUMBER_REQUIREMENT_VIOLATED = 27,
     // Must be set to the last entry.
-    kMaxValue = ZIP_OR_STATE_REQUIREMENT_VIOLATED,
+    kMaxValue = LINE1_OR_HOUSE_NUMBER_REQUIREMENT_VIOLATED,
   };
 
   // Represents the status of the field type requirements that are specific to

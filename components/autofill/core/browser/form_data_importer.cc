@@ -212,61 +212,6 @@ CreditCard FormDataImporter::ExtractCreditCardFromForm(
   return ExtractCreditCardFromForm(form, &has_duplicate_field_type);
 }
 
-// static
-bool FormDataImporter::IsValidLearnableProfile(
-    const AutofillProfile& profile,
-    const std::string& predicted_country_code,
-    const std::string& app_locale,
-    LogBuffer* import_log_buffer) {
-  // Check that the email address is valid if it is supplied.
-  bool is_email_invalid = false;
-  std::u16string email = profile.GetRawInfo(EMAIL_ADDRESS);
-  if (!email.empty() && !IsValidEmailAddress(email)) {
-    LOG_AF(import_log_buffer) << LogMessage::kImportAddressProfileFromFormFailed
-                              << "Invalid email address." << CTag{};
-    is_email_invalid = true;
-  }
-
-  // Reject profiles with an invalid |HOME_ADDRESS_STATE| entry.
-  bool is_state_invalid = false;
-  if (profile.IsPresentButInvalid(ADDRESS_HOME_STATE)) {
-    LOG_AF(import_log_buffer)
-        << LogMessage::kImportAddressProfileFromFormFailed
-        << "Invalid state as of AutofillProfile::IsPresentButInvalid()."
-        << CTag{};
-    is_state_invalid = true;
-  }
-
-  // Reject profiles with an invalid |HOME_ADDRESS_ZIP| entry.
-  bool is_zip_invalid = false;
-  if (profile.IsPresentButInvalid(ADDRESS_HOME_ZIP)) {
-    LOG_AF(import_log_buffer)
-        << LogMessage::kImportAddressProfileFromFormFailed
-        << "Invalid ZIP as of AutofillProfile::IsPresentButInvalid()."
-        << CTag{};
-    is_zip_invalid = true;
-  }
-
-  // Collect metrics.
-  AutofillMetrics::LogAddressFormImportRequirementMetric(
-      is_email_invalid
-          ? AddressImportRequirement::EMAIL_VALID_REQUIREMENT_VIOLATED
-          : AddressImportRequirement::EMAIL_VALID_REQUIREMENT_FULFILLED);
-
-  AutofillMetrics::LogAddressFormImportRequirementMetric(
-      is_state_invalid
-          ? AddressImportRequirement::STATE_VALID_REQUIREMENT_VIOLATED
-          : AddressImportRequirement::STATE_VALID_REQUIREMENT_FULFILLED);
-
-  AutofillMetrics::LogAddressFormImportRequirementMetric(
-      is_zip_invalid
-          ? AddressImportRequirement::ZIP_VALID_REQUIREMENT_VIOLATED
-          : AddressImportRequirement::ZIP_VALID_REQUIREMENT_FULFILLED);
-
-  // Return true if none of the requirements is violated.
-  return !(is_email_invalid || is_state_invalid || is_zip_invalid);
-}
-
 bool FormDataImporter::ComplementCountry(
     AutofillProfile& profile,
     const std::string& predicted_country_code) {
@@ -655,10 +600,9 @@ bool FormDataImporter::ImportAddressProfileForSection(
   bool finalized_import = candidate_profile.FinalizeAfterImport();
 
   // Reject the profile if the validation requirements are not met.
-  // |IsValidLearnableProfile()| goes first to collect metrics.
+  // `IsValidLearnableProfile()` goes first to collect metrics.
   bool has_invalid_information =
-      !IsValidLearnableProfile(candidate_profile, predicted_country_code,
-                               app_locale_, import_log_buffer) ||
+      !IsValidLearnableProfile(candidate_profile, import_log_buffer) ||
       has_multiple_distinct_email_addresses || has_invalid_field_types ||
       has_invalid_country || has_invalid_phone_number;
 
