@@ -440,8 +440,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         if (isFullHeight()) {
             // Resizing by user dragging is not supported in landscape mode; no need to set
             // the status here.
-            height = mDisplayHeight - maxExpandedY;
             if (!mWindowAboveNavbar) {
+                height = mDisplayHeight - maxExpandedY;
                 mActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
             }
         } else {
@@ -474,9 +474,15 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
     private void positionAtHeight(int height) {
         WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
-        attrs.height = height - mNavbarHeight;
-        attrs.y = mNavbarHeight;
-        attrs.gravity = Gravity.BOTTOM;
+        if (isFullHeight()) {
+            attrs.height = MATCH_PARENT;
+            attrs.y = 0;
+            attrs.gravity = Gravity.NO_GRAVITY;
+        } else {
+            attrs.height = height - mNavbarHeight;
+            attrs.y = mNavbarHeight;
+            attrs.gravity = Gravity.BOTTOM;
+        }
         mActivity.getWindow().setAttributes(attrs);
     }
 
@@ -516,8 +522,11 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     }
 
     private boolean isFullHeight() {
-        return mOrientation == Configuration.ORIENTATION_LANDSCAPE
-                || MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
+        return isLandscape() || MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
+    }
+
+    private boolean isLandscape() {
+        return mOrientation == Configuration.ORIENTATION_LANDSCAPE;
     }
 
     private boolean isFixedHeight() {
@@ -533,16 +542,15 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         WindowManager.LayoutParams attrs = window.getAttributes();
         if (attrs.y == y) return;
 
+        attrs.y = y;
+        window.setAttributes(attrs);
+        if (mFinishRunnable != null) return;
+
         int initialY = initialY();
 
         // If the tab is not resizable then dragging it higher than the initial height will not be
         // allowed. The tab can still be dragged down in order to be closed.
         if (isFixedHeight() && y < initialY) return;
-
-        attrs.y = y;
-        window.setAttributes(attrs);
-
-        if (mFinishRunnable != null) return;
 
         // Starting dragging from INITIAL_HEIGHT state, we can hide the spinner if the tab:
         // 1) reaches full height
@@ -880,13 +888,18 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mFinishRunnable = finishRunnable;
         WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
         if (attrs.gravity == Gravity.BOTTOM) {
+            // Animate height for the tab at rest.
             mTabAnimator = this::updateWindowHeight;
             mAnimator.setIntValues(attrs.height, 0);
         } else {
-            mAnimator.setIntValues(attrs.y, mDisplayHeight - mNavbarHeight);
-        }
-        if (!mWindowAboveNavbar && isFullHeight()) {
-            mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+            if (isFullHeight()) {
+                attrs.gravity = Gravity.BOTTOM;
+                mActivity.getWindow().setAttributes(attrs);
+                mTabAnimator = this::updateWindowHeight;
+                mAnimator.setIntValues(mDisplayHeight - mNavbarHeight, 0);
+            } else {
+                mAnimator.setIntValues(attrs.y, mDisplayHeight - mNavbarHeight);
+            }
         }
         mAnimator.setDuration(
                 mActivity.getResources().getInteger(android.R.integer.config_mediumAnimTime));

@@ -30,6 +30,7 @@ import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
@@ -220,6 +221,7 @@ public class PartialCustomTabHeightStrategyTest {
         })
                 .when(mDisplay)
                 .getRealMetrics(any(DisplayMetrics.class));
+
         mContext = ApplicationProvider.getApplicationContext();
         ContextUtils.initApplicationContextForTests(mContext);
         CommandLine.setInstanceForTesting(mCommandLine);
@@ -274,10 +276,7 @@ public class PartialCustomTabHeightStrategyTest {
 
     @Test
     public void create_landscapeOrientation() {
-        mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
-        mRealMetrics.widthPixels = DEVICE_HEIGHT;
-        mRealMetrics.heightPixels = DEVICE_WIDTH;
-        when(mContentFrame.getHeight()).thenReturn(DEVICE_WIDTH);
+        configLandscapeMode();
         createPcctAtHeight(800);
         verifyWindowFlagsSet();
 
@@ -359,6 +358,35 @@ public class PartialCustomTabHeightStrategyTest {
                 .setListener(any(AnimatorListener.class));
     }
 
+    private WindowManager.LayoutParams getWindowAttributes() {
+        return mAttributeResults.get(mAttributeResults.size() - 1);
+    }
+
+    private void configPortraitMode() {
+        mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
+        mRealMetrics.widthPixels = DEVICE_WIDTH;
+        mRealMetrics.heightPixels = DEVICE_HEIGHT;
+        when(mContentFrame.getHeight()).thenReturn(DEVICE_HEIGHT);
+        when(mDisplay.getRotation()).thenReturn(Surface.ROTATION_90);
+    }
+
+    private void configLandscapeMode() {
+        configLandscapeMode(Surface.ROTATION_90);
+    }
+
+    private void configLandscapeMode(int direction) {
+        mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
+        mRealMetrics.widthPixels = DEVICE_HEIGHT;
+        mRealMetrics.heightPixels = DEVICE_WIDTH;
+        when(mContentFrame.getHeight()).thenReturn(DEVICE_WIDTH);
+        when(mDisplay.getRotation()).thenReturn(direction);
+    }
+
+    private void verifyWindowFlagsSet() {
+        verify(mWindow).addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+        verify(mWindow).clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+    }
+
     @Test
     public void moveFromTop() {
         // Drag to the top
@@ -416,9 +444,7 @@ public class PartialCustomTabHeightStrategyTest {
 
     @Test
     public void moveUp_landscapeOrientationUnresizable() {
-        mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
-        mRealMetrics.widthPixels = DEVICE_HEIGHT;
-        mRealMetrics.heightPixels = DEVICE_WIDTH;
+        configLandscapeMode();
         PartialCustomTabHeightStrategy strategy = createPcctAtHeight(800);
         PartialCustomTabHandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
         assertMotionEventIgnored(handleStrategy);
@@ -449,11 +475,7 @@ public class PartialCustomTabHeightStrategyTest {
 
         PartialCustomTabHeightStrategy strategy = createPcctAtHeight(800);
 
-        mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
-        mRealMetrics.widthPixels = DEVICE_HEIGHT;
-        mRealMetrics.heightPixels = DEVICE_WIDTH;
-        when(mContentFrame.getHeight()).thenReturn(DEVICE_WIDTH);
-
+        configLandscapeMode();
         strategy.onConfigurationChanged(mConfiguration);
 
         assertEquals(0, strategy.getNavbarHeightForTesting());
@@ -803,8 +825,23 @@ public class PartialCustomTabHeightStrategyTest {
         assertEquals(0, strategy.getNavbarHeightForTesting());
     }
 
-    private void verifyWindowFlagsSet() {
-        verify(mWindow).addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
-        verify(mWindow).clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+    @Test
+    public void adjustWidthInLandscapeMode() {
+        Assume.assumeTrue("Adjusting width is in effect only in 'window-above-navbar' version",
+                mWindowAboveNavbar);
+        configLandscapeMode(Surface.ROTATION_90);
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(800);
+        WindowManager.LayoutParams attrs = getWindowAttributes();
+        assertEquals(WindowManager.LayoutParams.MATCH_PARENT, attrs.width);
+
+        configPortraitMode();
+        strategy.onConfigurationChanged(mConfiguration);
+        attrs = getWindowAttributes();
+        assertEquals(WindowManager.LayoutParams.MATCH_PARENT, attrs.width);
+
+        configLandscapeMode(Surface.ROTATION_270);
+        strategy.onConfigurationChanged(mConfiguration);
+        attrs = getWindowAttributes();
+        assertEquals(WindowManager.LayoutParams.MATCH_PARENT, attrs.width);
     }
 }
