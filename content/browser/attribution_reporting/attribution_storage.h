@@ -30,7 +30,6 @@ class AttributionStorage {
   struct CONTENT_EXPORT StoreSourceResult {
     explicit StoreSourceResult(
         StorableSource::Result status,
-        std::vector<StoredSource> deactivated_sources = {},
         absl::optional<base::Time> min_fake_report_time = absl::nullopt);
 
     ~StoreSourceResult();
@@ -42,7 +41,7 @@ class AttributionStorage {
     StoreSourceResult& operator=(StoreSourceResult&&);
 
     StorableSource::Result status;
-    std::vector<StoredSource> deactivated_sources;
+
     // The earliest report time for any fake reports stored alongside the
     // source, if any.
     absl::optional<base::Time> min_fake_report_time;
@@ -58,11 +57,7 @@ class AttributionStorage {
   // pair. When a source is stored, all matching sources that have already
   // converted are marked as inactive, and are no longer eligible for reporting.
   // Unconverted matching sources are not modified.
-  // Returns at most `deactivated_source_return_limit` deactivated sources, to
-  // put an upper bound on memory usage; use a negative number for no limit.
-  virtual StoreSourceResult StoreSource(
-      const StorableSource& source,
-      int deactivated_source_return_limit = -1) = 0;
+  virtual StoreSourceResult StoreSource(const StorableSource& source) = 0;
 
   // Finds all stored sources matching a given `trigger`, and stores the
   // new associated report. Only active sources will receive new attributions.

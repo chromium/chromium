@@ -337,7 +337,6 @@ class MockAttributionManager : public AttributionManager {
 
   void NotifySourcesChanged();
   void NotifyReportsChanged(AttributionReport::ReportType report_type);
-  void NotifySourceDeactivated(const StoredSource& source);
   void NotifySourceHandled(const StorableSource& source,
                            StorableSource::Result result);
   void NotifyReportSent(const AttributionReport& report,
@@ -374,11 +373,6 @@ class MockAttributionObserver : public AttributionObserver {
   MOCK_METHOD(void,
               OnSourceHandled,
               (const StorableSource& source, StorableSource::Result result),
-              (override));
-
-  MOCK_METHOD(void,
-              OnSourceDeactivated,
-              (const StoredSource& source),
               (override));
 
   MOCK_METHOD(void,

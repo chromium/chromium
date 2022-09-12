@@ -101,9 +101,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   };
 
   // AttributionStorage:
-  StoreSourceResult StoreSource(
-      const StorableSource& source,
-      int deactivated_source_return_limit = -1) override;
+  StoreSourceResult StoreSource(const StorableSource& source) override;
   CreateReportResult MaybeCreateAndStoreReport(
       const AttributionTrigger& trigger) override;
   std::vector<AttributionReport> GetAttributionReports(
@@ -128,12 +126,10 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   void ClearAllDataAllTime(bool delete_rate_limit_data)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Deactivates active, converted sources with the given conversion destination
-  // and reporting origin. Returns at most `limit` of those, or null on error.
-  [[nodiscard]] absl::optional<std::vector<StoredSource>> DeactivateSources(
-      const std::string& serialized_conversion_destination,
-      const std::string& serialized_reporting_origin,
-      int return_limit) VALID_CONTEXT_REQUIRED(sequence_checker_);
+  // Deactivates the given sources. Returns false on error.
+  [[nodiscard]] bool DeactivateSources(
+      const std::vector<StoredSource::Id>& sources)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Returns false on failure.
   [[nodiscard]] bool DeleteSources(
@@ -245,7 +241,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   bool FindMatchingSourceForTrigger(
       const AttributionTrigger& trigger,
       absl::optional<StoredSource::Id>& source_id_to_attribute,
-      std::vector<StoredSource::Id>& source_ids_to_delete)
+      std::vector<StoredSource::Id>& source_ids_to_delete,
+      std::vector<StoredSource::Id>& source_ids_to_deactivate)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   AttributionTrigger::EventLevelResult MaybeCreateEventLevelReport(

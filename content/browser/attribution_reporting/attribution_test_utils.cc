@@ -393,12 +393,6 @@ void MockAttributionManager::NotifyReportsChanged(
     observer.OnReportsChanged(report_type);
 }
 
-void MockAttributionManager::NotifySourceDeactivated(
-    const StoredSource& source) {
-  for (auto& observer : observers_)
-    observer.OnSourceDeactivated(source);
-}
-
 void MockAttributionManager::NotifySourceHandled(
     const StorableSource& source,
     StorableSource::Result result) {

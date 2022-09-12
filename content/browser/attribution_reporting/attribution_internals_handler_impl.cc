@@ -267,17 +267,6 @@ void AttributionInternalsHandlerImpl::OnReportsChanged(
     observer->OnReportsChanged(report_type);
 }
 
-void AttributionInternalsHandlerImpl::OnSourceDeactivated(
-    const StoredSource& deactivated_source) {
-  auto source = WebUISource(deactivated_source.common_info(),
-                            Attributability::kReplacedByNewerSource,
-                            deactivated_source.dedup_keys());
-
-  for (auto& observer : observers_) {
-    observer->OnSourceRejectedOrDeactivated(source.Clone());
-  }
-}
-
 void AttributionInternalsHandlerImpl::OnSourceHandled(
     const StorableSource& source,
     StorableSource::Result result) {
@@ -306,7 +295,7 @@ void AttributionInternalsHandlerImpl::OnSourceHandled(
       WebUISource(source.common_info(), attributability, /*dedup_keys=*/{});
 
   for (auto& observer : observers_) {
-    observer->OnSourceRejectedOrDeactivated(web_ui_source.Clone());
+    observer->OnSourceRejected(web_ui_source.Clone());
   }
 }
 

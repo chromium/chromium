@@ -1065,20 +1065,16 @@ TEST_F(AttributionManagerImplTest, HandleSource_NotifiesObservers) {
 
     EXPECT_CALL(observer, OnSourcesChanged);
     EXPECT_CALL(observer, OnReportsChanged).Times(0);
-    EXPECT_CALL(observer, OnSourceDeactivated).Times(0);
 
     EXPECT_CALL(checkpoint, Call(1));
 
     EXPECT_CALL(observer, OnSourcesChanged);
     EXPECT_CALL(observer, OnReportsChanged);
-    EXPECT_CALL(observer, OnSourceDeactivated).Times(0);
 
     EXPECT_CALL(checkpoint, Call(2));
 
     EXPECT_CALL(observer, OnSourcesChanged);
     EXPECT_CALL(observer, OnReportsChanged).Times(0);
-    EXPECT_CALL(observer, OnSourceDeactivated(
-                              builder.SetDefaultFilterData().BuildStored()));
   }
 
   attribution_manager_->HandleSource(source);
@@ -1091,7 +1087,7 @@ TEST_F(AttributionManagerImplTest, HandleSource_NotifiesObservers) {
 
   attribution_manager_->HandleSource(
       SourceBuilder().SetExpiry(kImpressionExpiry).SetSourceEventId(9).Build());
-  EXPECT_THAT(StoredSources(), SizeIs(1));
+  EXPECT_THAT(StoredSources(), SizeIs(2));
 }
 
 TEST_F(AttributionManagerImplTest, HandleTrigger_NotifiesObservers) {
@@ -1110,7 +1106,6 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_NotifiesObservers) {
 
     EXPECT_CALL(observer, OnSourcesChanged);
     EXPECT_CALL(observer, OnReportsChanged).Times(0);
-    EXPECT_CALL(observer, OnSourceDeactivated).Times(0);
 
     EXPECT_CALL(checkpoint, Call(1));
 
@@ -1123,7 +1118,6 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_NotifiesObservers) {
                   OnReportsChanged(
                       AttributionReport::ReportType::kAggregatableAttribution));
     }
-    EXPECT_CALL(observer, OnSourceDeactivated).Times(0);
 
     EXPECT_CALL(checkpoint, Call(2));
 

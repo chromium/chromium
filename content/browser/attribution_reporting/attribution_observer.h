@@ -13,7 +13,6 @@ namespace content {
 
 class AttributionTrigger;
 class CreateReportResult;
-class StoredSource;
 
 struct SendResult;
 
@@ -32,10 +31,6 @@ class AttributionObserver : public base::CheckedObserver {
   // Called when a source is registered, regardless of success.
   virtual void OnSourceHandled(const StorableSource& source,
                                StorableSource::Result result) {}
-
-  // Called when a source is deactivated. Note that this isn't called when a
-  // source reaches the attribution limit.
-  virtual void OnSourceDeactivated(const StoredSource& source) {}
 
   // Called when a report is sent, regardless of success, but not for attempts
   // that will be retried.

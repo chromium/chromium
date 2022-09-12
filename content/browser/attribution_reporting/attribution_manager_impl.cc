@@ -403,12 +403,8 @@ void AttributionManagerImpl::HandleSource(StorableSource source) {
 }
 
 void AttributionManagerImpl::StoreSource(StorableSource source) {
-  // Only retrieve deactivated sources if an observer is there to hear it.
-  // Technically, an observer could be registered between the time the async
-  // call is made and the time the response is received, but this is unlikely.
-  int deactivated_source_return_limit = observers_.empty() ? 0 : 50;
   attribution_storage_.AsyncCall(&AttributionStorage::StoreSource)
-      .WithArgs(source, deactivated_source_return_limit)
+      .WithArgs(source)
       .Then(base::BindOnce(&AttributionManagerImpl::OnSourceStored,
                            weak_factory_.GetWeakPtr(), std::move(source)));
 }
@@ -425,10 +421,6 @@ void AttributionManagerImpl::OnSourceStored(
   scheduler_timer_.MaybeSet(result.min_fake_report_time);
 
   NotifySourcesChanged();
-
-  for (const auto& deactivated_source : result.deactivated_sources) {
-    NotifySourceDeactivated(deactivated_source);
-  }
 }
 
 void AttributionManagerImpl::HandleTrigger(AttributionTrigger trigger) {
@@ -900,12 +892,6 @@ void AttributionManagerImpl::NotifyReportsChanged(
     AttributionReport::ReportType report_type) {
   for (auto& observer : observers_)
     observer.OnReportsChanged(report_type);
-}
-
-void AttributionManagerImpl::NotifySourceDeactivated(
-    const StoredSource& source) {
-  for (auto& observer : observers_)
-    observer.OnSourceDeactivated(source);
 }
 
 }  // namespace content

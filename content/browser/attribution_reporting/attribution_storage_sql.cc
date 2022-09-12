@@ -447,79 +447,31 @@ AttributionStorageSql::~AttributionStorageSql() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-absl::optional<std::vector<StoredSource>>
-AttributionStorageSql::DeactivateSources(
-    const std::string& serialized_conversion_destination,
-    const std::string& serialized_reporting_origin,
-    int return_limit) {
-  std::vector<StoredSource> deactivated_sources;
-
-  if (return_limit != 0) {
-    // Get at most `return_limit` sources that will be deactivated. We do this
-    // first, instead of using a RETURNING clause in the UPDATE, because we
-    // cannot limit the number of returned results there, and we want to avoid
-    // bringing all results into memory.
-    static constexpr char kGetSourcesToReturnSql[] =
-        // clang-format off
-        "SELECT " ATTRIBUTION_SOURCE_COLUMNS_SQL("")
-        " FROM sources "
-        DCHECK_SQL_INDEXED_BY("sources_by_active_destination_site_reporting_origin")
-        "WHERE destination_site=? AND reporting_origin=? AND"
-        "((event_level_active=1 AND num_attributions>0)OR"
-        "(aggregatable_active=1 AND aggregatable_budget_consumed>0)) "
-        "LIMIT ?"; // clang-format on
-    sql::Statement get_statement(
-        db_->GetCachedStatement(SQL_FROM_HERE, kGetSourcesToReturnSql));
-    get_statement.BindString(0, serialized_conversion_destination);
-    get_statement.BindString(1, serialized_reporting_origin);
-    get_statement.BindInt(2, return_limit);
-
-    while (get_statement.Step()) {
-      absl::optional<StoredSourceData> source_data =
-          ReadSourceFromStatement(get_statement);
-      if (!source_data.has_value())
-        return absl::nullopt;
-
-      deactivated_sources.push_back(std::move(source_data->source));
-    }
-    if (!get_statement.Succeeded())
-      return absl::nullopt;
-
-    // If nothing was returned, we know the UPDATE below will do nothing, so
-    // just return early.
-    if (deactivated_sources.empty())
-      return deactivated_sources;
-  }
+bool AttributionStorageSql::DeactivateSources(
+    const std::vector<StoredSource::Id>& sources) {
+  sql::Transaction transaction(db_.get());
+  if (!transaction.Begin())
+    return false;
 
   static constexpr char kDeactivateSourcesSql[] =
       "UPDATE sources "
-      DCHECK_SQL_INDEXED_BY("sources_by_active_destination_site_reporting_origin")
       "SET event_level_active=0,aggregatable_active=0 "
-      "WHERE destination_site=? AND reporting_origin=? AND"
-      "((event_level_active=1 AND num_attributions>0)OR"
-      "(aggregatable_active=1 AND aggregatable_budget_consumed>0))";
-  sql::Statement deactivate_statement(
+      "WHERE source_id=?";
+  sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeactivateSourcesSql));
-  deactivate_statement.BindString(0, serialized_conversion_destination);
-  deactivate_statement.BindString(1, serialized_reporting_origin);
 
-  if (!deactivate_statement.Run())
-    return absl::nullopt;
-
-  for (auto& deactivated_source : deactivated_sources) {
-    absl::optional<std::vector<uint64_t>> dedup_keys =
-        ReadDedupKeys(deactivated_source.source_id());
-    if (!dedup_keys.has_value())
-      return absl::nullopt;
-    deactivated_source.SetDedupKeys(std::move(*dedup_keys));
+  for (StoredSource::Id id : sources) {
+    statement.Reset(/*clear_bound_vars=*/true);
+    statement.BindInt64(0, *id);
+    if (!statement.Run())
+      return false;
   }
 
-  return deactivated_sources;
+  return transaction.Commit();
 }
 
 AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
-    const StorableSource& source,
-    int deactivated_source_return_limit) {
+    const StorableSource& source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Force the creation of the database if it doesn't exist, as we need to
   // persist the source.
@@ -580,26 +532,8 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
       return StoreSourceResult(StorableSource::Result::kInternalError);
   }
 
-  // Wrap the deactivation and insertion in the same transaction. If the
-  // deactivation fails, we do not want to store the new source as we may
-  // return the wrong set of sources for a trigger.
   sql::Transaction transaction(db_.get());
   if (!transaction.Begin())
-    return StoreSourceResult(StorableSource::Result::kInternalError);
-
-  const std::string serialized_conversion_destination =
-      common_info.DestinationSite().Serialize();
-  const std::string serialized_reporting_origin =
-      SerializePotentiallyTrustworthyOrigin(common_info.reporting_origin());
-
-  // In the case where we get a new source for a given <reporting_origin,
-  // conversion_destination> we should mark all active, converted impressions
-  // with the matching <reporting_origin, conversion_destination> as not active.
-  absl::optional<std::vector<StoredSource>> deactivated_sources =
-      DeactivateSources(serialized_conversion_destination,
-                        serialized_reporting_origin,
-                        deactivated_source_return_limit);
-  if (!deactivated_sources.has_value())
     return StoreSourceResult(StorableSource::Result::kInternalError);
 
   AttributionStorageDelegate::RandomizedResponse randomized_response =
@@ -634,8 +568,9 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
   statement.BindString(1, serialized_source_origin);
   statement.BindString(2, SerializePotentiallyTrustworthyOrigin(
                               common_info.destination_origin()));
-  statement.BindString(3, serialized_conversion_destination);
-  statement.BindString(4, serialized_reporting_origin);
+  statement.BindString(3, common_info.DestinationSite().Serialize());
+  statement.BindString(
+      4, SerializePotentiallyTrustworthyOrigin(common_info.reporting_origin()));
   statement.BindTime(5, common_info.source_time());
   statement.BindTime(6, common_info.expiry_time());
   statement.BindInt(7, SerializeSourceType(common_info.source_type()));
@@ -693,7 +628,6 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
     return StoreSourceResult(StorableSource::Result::kInternalError);
 
   return StoreSourceResult(StorableSource::Result::kSuccess,
-                           std::move(*deactivated_sources),
                            min_fake_report_time);
 }
 
@@ -853,8 +787,10 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
 
   absl::optional<StoredSource::Id> source_id_to_attribute;
   std::vector<StoredSource::Id> source_ids_to_delete;
+  std::vector<StoredSource::Id> source_ids_to_deactivate;
   if (!FindMatchingSourceForTrigger(trigger, source_id_to_attribute,
-                                    source_ids_to_delete)) {
+                                    source_ids_to_delete,
+                                    source_ids_to_deactivate)) {
     return assemble_report_result(EventLevelResult::kInternalError,
                                   AggregatableResult::kInternalError);
   }
@@ -981,8 +917,14 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
                                   AggregatableResult::kInternalError);
   }
 
+  // Deactivate all attributed sources.
+  if (!DeactivateSources(source_ids_to_deactivate)) {
+    return assemble_report_result(EventLevelResult::kInternalError,
+                                  AggregatableResult::kInternalError);
+  }
+
   // Based on the deletion logic here and the fact that we delete sources
-  // with |num_conversions > 0| or |aggregatable_budget_consumed > 0| when
+  // with |num_attributions > 0| or |aggregatable_budget_consumed > 0| when
   // there is a new matching source in |StoreSource()|, we should be
   // guaranteed that these sources all have |num_conversions == 0| and
   // |aggregatable_budget_consumed == 0|, and that they never contributed to a
@@ -1019,16 +961,19 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
 bool AttributionStorageSql::FindMatchingSourceForTrigger(
     const AttributionTrigger& trigger,
     absl::optional<StoredSource::Id>& source_id_to_attribute,
-    std::vector<StoredSource::Id>& source_ids_to_delete) {
+    std::vector<StoredSource::Id>& source_ids_to_delete,
+    std::vector<StoredSource::Id>& source_ids_to_deactivate) {
   const url::Origin& destination_origin = trigger.destination_origin();
   const url::Origin& reporting_origin = trigger.reporting_origin();
 
   // Get all sources that match this <reporting_origin,
   // conversion_destination> pair. Only get sources that are active and not
   // past their expiry time. The sources are fetched in order so that the
-  // first one is the one that will be attributed; the others will be deleted.
+  // first one is the one that will be attributed; the others will be deleted or
+  // deactivated, depending on whether they have ever been attributed.
   static constexpr char kGetMatchingSourcesSql[] =
-      "SELECT source_id FROM sources "
+      "SELECT source_id,num_attributions,aggregatable_budget_consumed "
+      "FROM sources "
       DCHECK_SQL_INDEXED_BY("sources_by_active_destination_site_reporting_origin")
       "WHERE destination_site=? AND reporting_origin=? "
       "AND(event_level_active=1 OR aggregatable_active=1)"
@@ -1049,10 +994,17 @@ bool AttributionStorageSql::FindMatchingSourceForTrigger(
   // The first one returned will be attributed; it has the highest priority.
   source_id_to_attribute = StoredSource::Id(statement.ColumnInt64(0));
 
-  // Any others will be deleted.
+  // Any others will be deleted or deactivated.
   while (statement.Step()) {
     StoredSource::Id source_id(statement.ColumnInt64(0));
-    source_ids_to_delete.push_back(source_id);
+    int num_attributions = statement.ColumnInt(1);
+    int64_t aggregatable_budget_consumed = statement.ColumnInt64(2);
+
+    if (num_attributions > 0 || aggregatable_budget_consumed > 0) {
+      source_ids_to_deactivate.push_back(source_id);
+    } else {
+      source_ids_to_delete.push_back(source_id);
+    }
   }
   return statement.Succeeded();
 }

@@ -1043,4 +1043,32 @@ TEST_F(AttributionStorageSqlTest,
   }
 }
 
+TEST_F(AttributionStorageSqlTest, CreateReport_DeletesUnattributedSources) {
+  OpenDatabase();
+  storage()->StoreSource(SourceBuilder().Build());
+  storage()->StoreSource(SourceBuilder().Build());
+  CloseDatabase();
+
+  ExpectImpressionRows(2);
+
+  OpenDatabase();
+  MaybeCreateAndStoreEventLevelReport(DefaultTrigger());
+  CloseDatabase();
+
+  ExpectImpressionRows(1);
+}
+
+TEST_F(AttributionStorageSqlTest, CreateReport_DeactivatesAttributedSources) {
+  OpenDatabase();
+  storage()->StoreSource(
+      SourceBuilder().SetSourceEventId(1).SetPriority(1).Build());
+  MaybeCreateAndStoreEventLevelReport(DefaultTrigger());
+  storage()->StoreSource(
+      SourceBuilder().SetSourceEventId(2).SetPriority(2).Build());
+  MaybeCreateAndStoreEventLevelReport(DefaultTrigger());
+  CloseDatabase();
+
+  ExpectImpressionRows(2);
+}
+
 }  // namespace content

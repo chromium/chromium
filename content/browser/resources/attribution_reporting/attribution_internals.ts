@@ -691,8 +691,6 @@ function attributabilityToText(attributability: WebUISource_Attributability):
       return 'Attributable';
     case WebUISource_Attributability.kNoised:
       return 'Unattributable: noised';
-    case WebUISource_Attributability.kReplacedByNewerSource:
-      return 'Unattributable: replaced by newer source';
     case WebUISource_Attributability.kReachedEventLevelAttributionLimit:
       return 'Attributable: reached event-level attribution limit';
     case WebUISource_Attributability.kInternalError:
@@ -851,7 +849,7 @@ class Observer implements ObserverInterface {
     updateReports(reportType);
   }
 
-  onSourceRejectedOrDeactivated(mojo: WebUISource) {
+  onSourceRejected(mojo: WebUISource) {
     assert(sourceTableModel);
     sourceTableModel.addUnstoredSource(new Source(mojo));
   }

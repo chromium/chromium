@@ -102,13 +102,11 @@ struct WebUISource {
   // The value is a hex-encoded unsigned 128-bit integer.
   map<string, string> aggregation_keys;
 
-  // Union of `StorableSource::Result` and `StoredSource::AttributionLogic`,
-  // and `AttributionStorage::DeactivatedSource::Reason`.
+  // Union of `StorableSource::Result` and `StoredSource::AttributionLogic`.
   enum Attributability {
     kAttributable,
     // The source was dropped due to `CommonSourceInfo::AttributionLogic::kNever`.
     kNoised,
-    kReplacedByNewerSource,
     kReachedEventLevelAttributionLimit,
     kInternalError,
     kInsufficientSourceCapacity,
@@ -193,9 +191,8 @@ interface Observer {
   // should call `Handler::GetReports()`.
   OnReportsChanged(ReportType report_type);
 
-  // Called when a source-registration attempt fails or a stored source is
-  // deactivated.
-  OnSourceRejectedOrDeactivated(WebUISource source);
+  // Called when a source-registration attempt fails.
+  OnSourceRejected(WebUISource source);
 
   // Called when a report is sent, regardless of success.
   OnReportSent(WebUIReport report);

@@ -518,18 +518,20 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_LimitsStorage) {
   delegate()->set_max_attributions_per_source(1);
 
   ASSERT_EQ(storage()
-                ->StoreSource(SourceBuilder().SetSourceEventId(3).Build())
+                ->StoreSource(
+                    SourceBuilder().SetSourceEventId(3).SetPriority(1).Build())
                 .status,
             StorableSource::Result::kSuccess);
-
-  // Force the source to be deactivated.
-  ASSERT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
-            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
   ASSERT_EQ(storage()
-                ->StoreSource(SourceBuilder().SetSourceEventId(5).Build())
+                ->StoreSource(
+                    SourceBuilder().SetSourceEventId(5).SetPriority(2).Build())
                 .status,
             StorableSource::Result::kSuccess);
+
+  // Force the lower-priority source to be deactivated.
+  ASSERT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
   ASSERT_THAT(storage()->GetActiveSources(), ElementsAre(SourceEventIdIs(5u)));
 
@@ -946,30 +948,6 @@ TEST_F(AttributionStorageTest,
                       DefaultAggregatableHistogramContributions()))));
 }
 
-TEST_F(AttributionStorageTest, NeverAttributeImpression_Deactivates) {
-  delegate()->set_max_attributions_per_source(1);
-
-  delegate()->set_randomized_response(
-      std::vector<AttributionStorageDelegate::FakeReport>{});
-  storage()->StoreSource(SourceBuilder().SetSourceEventId(3).Build());
-  delegate()->set_randomized_response(absl::nullopt);
-
-  EXPECT_EQ(AttributionTrigger::EventLevelResult::kDroppedForNoise,
-            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
-
-  storage()->StoreSource(SourceBuilder().SetSourceEventId(5).Build());
-
-  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
-            MaybeCreateAndStoreEventLevelReport(
-                TriggerBuilder().SetTriggerData(7).Build()));
-
-  task_environment_.FastForwardBy(kReportDelay);
-
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()),
-              ElementsAre(AllOf(ReportSourceIs(SourceEventIdIs(5u)),
-                                EventLevelDataIs(TriggerDataIs(7u)))));
-}
-
 TEST_F(AttributionStorageTest, NeverAttributeImpression_RateLimitsNotChanged) {
   delegate()->set_rate_limits({
       .time_window = base::TimeDelta::Max(),
@@ -990,6 +968,7 @@ TEST_F(AttributionStorageTest, NeverAttributeImpression_RateLimitsNotChanged) {
 
   SourceBuilder builder;
   builder.SetSourceEventId(7);
+  builder.SetPriority(100);
   storage()->StoreSource(builder.Build());
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(conversion));
@@ -999,10 +978,7 @@ TEST_F(AttributionStorageTest, NeverAttributeImpression_RateLimitsNotChanged) {
             MaybeCreateAndStoreEventLevelReport(conversion));
 
   const AttributionReport expected_report = GetExpectedEventLevelReport(
-      builder.SetDefaultFilterData()
-          .SetActiveState(StoredSource::ActiveState::kInactive)
-          .BuildStored(),
-      conversion);
+      builder.SetDefaultFilterData().BuildStored(), conversion);
 
   task_environment_.FastForwardBy(kReportDelay);
 
@@ -1031,7 +1007,7 @@ TEST_F(AttributionStorageTest,
   EXPECT_EQ(AttributionTrigger::AggregatableResult::kSuccess,
             MaybeCreateAndStoreAggregatableReport(trigger));
 
-  storage()->StoreSource(builder.SetSourceEventId(7).Build());
+  storage()->StoreSource(builder.SetSourceEventId(7).SetPriority(100).Build());
   EXPECT_EQ(AttributionTrigger::AggregatableResult::kExcessiveAttributions,
             MaybeCreateAndStoreAggregatableReport(trigger));
 
@@ -1039,7 +1015,7 @@ TEST_F(AttributionStorageTest,
       builder.SetDefaultFilterData()
           .SetSourceEventId(5)
           .SetAttributionLogic(StoredSource::AttributionLogic::kNever)
-          .SetActiveState(StoredSource::ActiveState::kInactive)
+          .SetPriority(0)
           .BuildStored(),
       DefaultAggregatableHistogramContributions());
 
@@ -1750,72 +1726,11 @@ TEST_F(AttributionStorageTest, UpdateReportForSendFailure) {
           AllOf(FailedSendAttemptsIs(1), ReportTimeIs(new_report_time))));
 }
 
-TEST_F(AttributionStorageTest, StoreSource_ReturnsDeactivatedSources) {
-  SourceBuilder builder1;
-  builder1.SetSourceEventId(7);
-
-  EXPECT_THAT(storage()->StoreSource(builder1.Build()).deactivated_sources,
-              IsEmpty());
-  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
-
-  task_environment_.FastForwardBy(kReportDelay);
-
-  // Set a dedup key to ensure that the return deactivated source contains it.
-  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
-            MaybeCreateAndStoreEventLevelReport(
-                TriggerBuilder().SetDedupKey(13).Build()));
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), SizeIs(1));
-
-  SourceBuilder builder2;
-  builder2.SetSourceEventId(9);
-
-  builder1.SetDedupKeys({13});
-  EXPECT_THAT(storage()->StoreSource(builder2.Build()).deactivated_sources,
-              ElementsAre(builder1.SetDefaultFilterData().BuildStored()));
-
-  EXPECT_THAT(storage()->GetActiveSources(),
-              ElementsAre(builder2.SetDefaultFilterData().BuildStored()));
-}
-
-TEST_F(AttributionStorageTest, StoreSource_ReturnsDeactivatedSources_Limited) {
-  SourceBuilder builder1;
-  builder1.SetSourceEventId(1);
-  EXPECT_THAT(storage()->StoreSource(builder1.Build()).deactivated_sources,
-              IsEmpty());
-
-  SourceBuilder builder2;
-  builder2.SetSourceEventId(2);
-  EXPECT_THAT(storage()->StoreSource(builder2.Build()).deactivated_sources,
-              IsEmpty());
-
-  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(2));
-
-  task_environment_.FastForwardBy(kReportDelay);
-
-  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
-            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
-  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
-            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), SizeIs(2));
-
-  // 2 sources are deactivated, but only 1 should be returned.
-  SourceBuilder builder3;
-  builder3.SetSourceEventId(3);
-  EXPECT_THAT(storage()
-                  ->StoreSource(builder3.Build(),
-                                /*deactivated_source_return_limit=*/1)
-                  .deactivated_sources,
-              ElementsAre(builder1.SetDefaultFilterData().BuildStored()));
-  EXPECT_THAT(storage()->GetActiveSources(),
-              ElementsAre(builder3.SetDefaultFilterData().BuildStored()));
-}
-
 TEST_F(AttributionStorageTest,
        MaybeCreateAndStoreEventLevelReport_ReturnsDeactivatedSources) {
   SourceBuilder builder;
   builder.SetSourceEventId(7);
-  EXPECT_THAT(storage()->StoreSource(builder.Build()).deactivated_sources,
-              IsEmpty());
+  storage()->StoreSource(builder.Build());
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
   // Store the maximum number of reports for the source.
@@ -2211,9 +2126,8 @@ TEST_F(AttributionStorageTest, MaxAggregatableBudgetPerSource) {
                                                 .Build()),
       AttributionTrigger::AggregatableResult::kInsufficientBudget);
 
-  // The first source will be deactivated and the second source should have
-  // capacity.
-  storage()->StoreSource(provider.GetBuilder().Build());
+  // The second source has higher priority and should have capacity.
+  storage()->StoreSource(provider.GetBuilder().SetPriority(10).Build());
 
   EXPECT_EQ(
       MaybeCreateAndStoreAggregatableReport(DefaultAggregatableTriggerBuilder(
@@ -2610,8 +2524,7 @@ TEST_F(
     MaybeCreateAndStoreAggregatableReport_reachedEventLevelAttributionLimit) {
   SourceBuilder builder = TestAggregatableSourceProvider().GetBuilder();
   builder.SetSourceEventId(7);
-  EXPECT_THAT(storage()->StoreSource(builder.Build()).deactivated_sources,
-              IsEmpty());
+  storage()->StoreSource(builder.Build());
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
   // Store the maximum number of reports for the source.
@@ -2676,6 +2589,48 @@ TEST_F(AttributionStorageTest, AggregatableReportFiltering) {
                             /*not_filters=*/AttributionFilterData())})
                     .Build()),
             AttributionTrigger::AggregatableResult::kNoHistograms);
+}
+
+TEST_F(AttributionStorageTest,
+       PrioritizationConsidersAttributedAndUnattributedSources) {
+  storage()->StoreSource(
+      SourceBuilder().SetSourceEventId(3).SetPriority(10).Build());
+
+  ASSERT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
+
+  storage()->StoreSource(
+      SourceBuilder().SetSourceEventId(0).SetPriority(2).Build());
+
+  ASSERT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
+
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
+              ElementsAre(ReportSourceIs(SourceEventIdIs(3)),
+                          ReportSourceIs(SourceEventIdIs(3))));
+}
+
+TEST_F(AttributionStorageTest,
+       MaybeCreateAndStoreEventLevelReport_DeactivatesUnattributedSources) {
+  storage()->StoreSource(
+      SourceBuilder().SetSourceEventId(3).SetPriority(1).Build());
+
+  ASSERT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
+
+  storage()->StoreSource(
+      SourceBuilder().SetSourceEventId(7).SetPriority(2).Build());
+
+  ASSERT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
+
+  ASSERT_THAT(storage()->GetActiveSources(), ElementsAre(SourceEventIdIs(7)));
+
+  // If the first source were deleted instead of deactivated, this would return
+  // only a single report, as the join against the sources table would fail.
+  ASSERT_THAT(storage()->GetAttributionReports(base::Time::Max()),
+              ElementsAre(ReportSourceIs(SourceEventIdIs(3)),
+                          ReportSourceIs(SourceEventIdIs(7))));
 }
 
 }  // namespace content

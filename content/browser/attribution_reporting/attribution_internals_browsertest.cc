@@ -271,9 +271,6 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                                    kReachedEventLevelAttributionLimit)
                .BuildStored()}));
 
-  manager()->NotifySourceDeactivated(
-      SourceBuilder(now + base::Hours(3)).BuildStored());
-
   // This shouldn't result in a row, as registration succeeded.
   manager()->NotifySourceHandled(SourceBuilder(now).Build(),
                                  StorableSource::Result::kSuccess);
@@ -297,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     let table = document.querySelector('#sourceTable')
         .shadowRoot.querySelector('tbody');
     let obs = new MutationObserver((_, obs) => {
-      if (table.children.length === 8 &&
+      if (table.children.length === 7 &&
           table.children[0].children[0].innerText === $1 &&
           table.children[0].children[7].innerText === "Navigation" &&
           table.children[1].children[7].innerText === "Event" &&
@@ -314,11 +311,10 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[0].children[1].innerText === "Unattributable: noised" &&
           table.children[1].children[1].innerText === "Attributable" &&
           table.children[2].children[1].innerText === "Attributable: reached event-level attribution limit" &&
-          table.children[3].children[1].innerText === "Unattributable: replaced by newer source" &&
-          table.children[4].children[1].innerText === "Rejected: internal error" &&
-          table.children[5].children[1].innerText === "Rejected: insufficient source capacity" &&
-          table.children[6].children[1].innerText === "Rejected: insufficient unique destination capacity" &&
-          table.children[7].children[1].innerText === "Rejected: excessive reporting origins") {
+          table.children[3].children[1].innerText === "Rejected: internal error" &&
+          table.children[4].children[1].innerText === "Rejected: insufficient source capacity" &&
+          table.children[5].children[1].innerText === "Rejected: insufficient unique destination capacity" &&
+          table.children[6].children[1].innerText === "Rejected: excessive reporting origins") {
         obs.disconnect();
         document.title = $3;
       }
@@ -632,8 +628,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       .WillByDefault(InvokeCallback(
           {SourceBuilder(now).SetSourceEventId(5).BuildStored()}));
 
-  manager()->NotifySourceDeactivated(
-      SourceBuilder(now + base::Hours(2)).SetSourceEventId(6).BuildStored());
+  manager()->NotifySourceHandled(
+      SourceBuilder(now + base::Hours(2)).SetSourceEventId(6).Build(),
+      StorableSource::Result::kInternalError);
 
   EXPECT_CALL(*manager(),
               ClearData(base::Time::Min(), base::Time::Max(), _, true, _))

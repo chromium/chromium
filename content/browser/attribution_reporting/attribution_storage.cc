@@ -4,8 +4,6 @@
 
 #include "content/browser/attribution_reporting/attribution_storage.h"
 
-#include <utility>
-
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 
 namespace content {
@@ -16,11 +14,8 @@ using StoreSourceResult = ::content::AttributionStorage::StoreSourceResult;
 
 StoreSourceResult::StoreSourceResult(
     StorableSource::Result status,
-    std::vector<StoredSource> deactivated_sources,
     absl::optional<base::Time> min_fake_report_time)
-    : status(status),
-      deactivated_sources(std::move(deactivated_sources)),
-      min_fake_report_time(min_fake_report_time) {}
+    : status(status), min_fake_report_time(min_fake_report_time) {}
 
 StoreSourceResult::~StoreSourceResult() = default;
 
