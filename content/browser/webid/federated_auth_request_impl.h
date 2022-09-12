@@ -248,6 +248,17 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   base::queue<blink::mojom::LogoutRpsRequestPtr> logout_requests_;
   LogoutRpsCallback logout_callback_;
 
+  // TODO(crbug.com/1361649): Refactor these member variables introduced through
+  // the multi IDP prototype implementation to make them less confusing.
+
+  // Set of config URLs of IDPs that have yet to be processed.
+  std::set<GURL> pending_idps_;
+  // List of config URLs of IDPs in the same order as the providers specified in
+  // the navigator.credentials.get call.
+  std::vector<GURL> idp_order_;
+  // Map of processed IDPs' data keyed by IDP config URL to display on the UI.
+  base::flat_map<GURL, IdentityProviderData> idp_data_;
+
   base::WeakPtrFactory<FederatedAuthRequestImpl> weak_ptr_factory_{this};
 };
 

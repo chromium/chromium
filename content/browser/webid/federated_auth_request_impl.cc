@@ -401,8 +401,6 @@ void FederatedAuthRequestImpl::RequestToken(
     bool prefer_auto_sign_in,
     bool show_iframe_requester,
     RequestTokenCallback callback) {
-  // TODO(crbug.com/1348262): Temporarily support only the first IDP, extend to
-  // support multiple IDPs.
   if (idp_ptrs.empty()) {
     std::move(callback).Run(RequestTokenStatus::kError, "");
     return;
@@ -416,15 +414,6 @@ void FederatedAuthRequestImpl::RequestToken(
     return;
   }
 
-  for (const auto& idp : idp_ptrs) {
-    if (!idp) {
-      std::move(callback).Run(RequestTokenStatus::kError, "");
-      return;
-    }
-  }
-
-  blink::mojom::IdentityProviderPtr idp_ptr = std::move(idp_ptrs[0]);
-
   if (HasPendingRequest()) {
     fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kTooManyRequests);
     std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests, "");
@@ -432,77 +421,86 @@ void FederatedAuthRequestImpl::RequestToken(
   }
 
   auth_request_callback_ = std::move(callback);
-  // Generate a random int for the FedCM call, to be used by the UKM events.
-  std::random_device dev;
-  std::mt19937 rng(dev());
-  std::uniform_int_distribution<std::mt19937::result_type> uniform_dist(
-      1, 1 << 30);
-  // TODO(crbug.com/1307709): Handle FedCmMetrics for multiple IDPs.
-  fedcm_metrics_ = std::make_unique<FedCmMetrics>(
-      idp_ptr->config_url, render_frame_host().GetPageUkmSourceId(),
-      uniform_dist(rng),
-      /*is_disabled=*/idp_ptrs.size() > 1);
-  prefer_auto_sign_in_ = prefer_auto_sign_in && IsFedCmAutoSigninEnabled();
-  start_time_ = base::TimeTicks::Now();
-
-  if (!network::IsOriginPotentiallyTrustworthy(
-          url::Origin::Create(idp_ptr->config_url))) {
-    CompleteRequestWithError(FederatedAuthRequestResult::kError,
-                             TokenStatus::kIdpNotPotentiallyTrustworthy,
-                             /*should_delay_callback=*/false);
-    return;
-  }
-
   network_manager_ = CreateNetworkManager();
-
-  FederatedApiPermissionStatus permission_status =
-      api_permission_delegate_->GetApiPermissionStatus(GetEmbeddingOrigin());
-
-  absl::optional<TokenStatus> error_token_status;
-  FederatedAuthRequestResult request_result =
-      FederatedAuthRequestResult::kError;
-
-  switch (permission_status) {
-    case FederatedApiPermissionStatus::BLOCKED_VARIATIONS:
-      error_token_status = TokenStatus::kDisabledInFlags;
-      break;
-    case FederatedApiPermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED:
-      error_token_status = TokenStatus::kThirdPartyCookiesBlocked;
-      break;
-    case FederatedApiPermissionStatus::BLOCKED_SETTINGS:
-      error_token_status = TokenStatus::kDisabledInSettings;
-      request_result = FederatedAuthRequestResult::kErrorDisabledInSettings;
-      break;
-    case FederatedApiPermissionStatus::BLOCKED_EMBARGO:
-      error_token_status = TokenStatus::kDisabledEmbargo;
-      request_result = FederatedAuthRequestResult::kErrorDisabledInSettings;
-      break;
-    case FederatedApiPermissionStatus::GRANTED:
-      // Intentional fall-through.
-      break;
-    default:
-      NOTREACHED();
-      break;
-  }
-
-  if (error_token_status) {
-    CompleteRequestWithError(request_result, *error_token_status,
-                             /*should_delay_callback=*/true);
-    return;
-  }
-
-  if (ShouldFailIfNotSignedInWithIdp(idp_ptr->config_url,
-                                     sharing_permission_delegate_)) {
-    CompleteRequestWithError(FederatedAuthRequestResult::kError,
-                             TokenStatus::kNotSignedInWithIdp,
-                             /*should_delay_callback=*/true);
-    return;
-  }
-
   request_dialog_controller_ = CreateDialogController();
 
-  idp_info_[idp_ptr->config_url].provider = *idp_ptr;
-  FetchManifest(*idp_ptr);
+  // TODO(crbug.com/1361642): Handle cases where not all IDPs' requests are
+  // successful. Currently when multiple IDPs are specified, an accounts
+  // dialog is shown only when the last IDP's request is successful.
+  for (auto& idp_ptr : idp_ptrs) {
+    pending_idps_.insert(idp_ptr->config_url);
+
+    if (!fedcm_metrics_) {
+      // Generate a random int for the FedCM call, to be used by the UKM events.
+      std::random_device dev;
+      std::mt19937 rng(dev());
+      std::uniform_int_distribution<std::mt19937::result_type> uniform_dist(
+          1, 1 << 30);
+      // TODO(crbug.com/1307709): Handle FedCmMetrics for multiple IDPs.
+      fedcm_metrics_ = std::make_unique<FedCmMetrics>(
+          idp_ptr->config_url, render_frame_host().GetPageUkmSourceId(),
+          uniform_dist(rng),
+          /*is_disabled=*/idp_ptrs.size() > 1);
+    }
+    prefer_auto_sign_in_ = prefer_auto_sign_in && IsFedCmAutoSigninEnabled();
+    start_time_ = base::TimeTicks::Now();
+
+    if (!network::IsOriginPotentiallyTrustworthy(
+            url::Origin::Create(idp_ptr->config_url))) {
+      CompleteRequestWithError(FederatedAuthRequestResult::kError,
+                               TokenStatus::kIdpNotPotentiallyTrustworthy,
+                               /*should_delay_callback=*/false);
+      return;
+    }
+
+    FederatedApiPermissionStatus permission_status =
+        api_permission_delegate_->GetApiPermissionStatus(GetEmbeddingOrigin());
+
+    absl::optional<TokenStatus> error_token_status;
+    FederatedAuthRequestResult request_result =
+        FederatedAuthRequestResult::kError;
+
+    switch (permission_status) {
+      case FederatedApiPermissionStatus::BLOCKED_VARIATIONS:
+        error_token_status = TokenStatus::kDisabledInFlags;
+        break;
+      case FederatedApiPermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED:
+        error_token_status = TokenStatus::kThirdPartyCookiesBlocked;
+        break;
+      case FederatedApiPermissionStatus::BLOCKED_SETTINGS:
+        error_token_status = TokenStatus::kDisabledInSettings;
+        request_result = FederatedAuthRequestResult::kErrorDisabledInSettings;
+        break;
+      case FederatedApiPermissionStatus::BLOCKED_EMBARGO:
+        error_token_status = TokenStatus::kDisabledEmbargo;
+        request_result = FederatedAuthRequestResult::kErrorDisabledInSettings;
+        break;
+      case FederatedApiPermissionStatus::GRANTED:
+        // Intentional fall-through.
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+
+    if (error_token_status) {
+      CompleteRequestWithError(request_result, *error_token_status,
+                               /*should_delay_callback=*/true);
+      return;
+    }
+
+    if (ShouldFailIfNotSignedInWithIdp(idp_ptr->config_url,
+                                       sharing_permission_delegate_)) {
+      CompleteRequestWithError(FederatedAuthRequestResult::kError,
+                               TokenStatus::kNotSignedInWithIdp,
+                               /*should_delay_callback=*/true);
+      return;
+    }
+
+    idp_info_[idp_ptr->config_url].provider = *idp_ptr;
+    idp_order_.push_back(idp_ptr->config_url);
+    FetchManifest(*idp_ptr);
+  }
 }
 
 void FederatedAuthRequestImpl::CancelTokenRequest() {
@@ -910,18 +908,27 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       fedcm_metrics_->RecordShowAccountsDialogTime(show_accounts_dialog_time_ -
                                                    start_time_);
 
-      std::vector<IdentityProviderData> identity_providers_data;
-
       std::string idp_for_display =
           FormatUrlForDisplay(idp_info.provider.config_url);
-      IdentityProviderData identity_provider_data(
-          idp_for_display, accounts, *idp_info.metadata, client_id_data);
-      identity_providers_data.push_back(identity_provider_data);
+      IdentityProviderData idp_data(idp_for_display, accounts,
+                                    *idp_info.metadata, client_id_data);
+      idp_data_.insert({idp_info.provider.config_url, idp_data});
+
+      pending_idps_.erase(idp_info.provider.config_url);
+      if (!pending_idps_.empty())
+        return;
 
       std::string rp_url_for_display =
           FormatUrlForDisplay(rp_web_contents->GetLastCommittedURL());
+
+      std::vector<IdentityProviderData> idp_data_for_display;
+      for (const auto& idp : idp_order_) {
+        if (idp_data_.count(idp))
+          idp_data_for_display.push_back(idp_data_.at(idp));
+      }
+
       request_dialog_controller_->ShowAccountsDialog(
-          rp_web_contents, rp_url_for_display, identity_providers_data,
+          rp_web_contents, rp_url_for_display, idp_data_for_display,
           is_auto_sign_in ? SignInMode::kAuto : SignInMode::kExplicit,
           base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
                          weak_ptr_factory_.GetWeakPtr()),
@@ -1258,6 +1265,9 @@ void FederatedAuthRequestImpl::CleanUp() {
   select_account_time_ = base::TimeTicks();
   token_response_time_ = base::TimeTicks();
   idp_info_.clear();
+  pending_idps_.clear();
+  idp_order_.clear();
+  idp_data_.clear();
 }
 
 void FederatedAuthRequestImpl::AddInspectorIssue(
