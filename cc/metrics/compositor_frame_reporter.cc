@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
@@ -82,12 +83,21 @@ constexpr base::TimeDelta kCompositorLatencyHistogramMax =
     base::Milliseconds(350);
 constexpr int kCompositorLatencyHistogramBucketCount = 50;
 
+constexpr const char kEventLatencyBaseHistogramName[] = "EventLatency";
 constexpr int kEventLatencyEventTypeCount =
     static_cast<int>(EventMetrics::EventType::kMaxValue) + 1;
+
+// Scroll and pinch events report a separate metrics for each input type. Scroll
+// events also report an aggregate metric over all input types. Other event
+// types just report one aggregate metric. So, maximum possible metrics for an
+// event type is `max(scroll-types-count, pinch-types-count) + 1`.
+constexpr int kEventLatencyScrollTypeCount =
+    static_cast<int>(ScrollEventMetrics::ScrollType::kMaxValue) + 1;
+constexpr int kEventLatencyPinchTypeCount =
+    static_cast<int>(PinchEventMetrics::PinchType::kMaxValue) + 1;
 constexpr int kEventLatencyGestureTypeCount =
-    std::max(static_cast<int>(ScrollEventMetrics::ScrollType::kMaxValue),
-             static_cast<int>(PinchEventMetrics::PinchType::kMaxValue)) +
-    1;
+    std::max(kEventLatencyScrollTypeCount, kEventLatencyPinchTypeCount) + 1;
+
 constexpr int kMaxEventLatencyHistogramIndex =
     kEventLatencyEventTypeCount * kEventLatencyGestureTypeCount;
 constexpr base::TimeDelta kEventLatencyHistogramMin = base::Microseconds(1);
@@ -133,15 +143,19 @@ std::string GetCompositorLatencyHistogramName(
            stage_type, viz_breakdown, blink_breakdown, impl_only_frame)});
 }
 
-std::string GetEventLatencyHistogramBaseName(
-    const EventMetrics& event_metrics) {
-  auto* scroll_metrics = event_metrics.AsScroll();
-  auto* pinch_metrics = event_metrics.AsPinch();
-  return base::StrCat({"EventLatency.", event_metrics.GetTypeName(),
-                       scroll_metrics || pinch_metrics ? "." : "",
-                       scroll_metrics  ? scroll_metrics->GetScrollTypeName()
-                       : pinch_metrics ? pinch_metrics->GetPinchTypeName()
-                                       : ""});
+// Helper function to record UMA histogram for an EventLatency metric. There
+// should be a 1:1 mapping between `name` and `index` to allow the use of
+// `STATIC_HISTOGRAM_POINTER_GROUP()` to cache histogram objects.
+void ReportEventLatencyMetric(const std::string& name,
+                              int index,
+                              base::TimeDelta latency) {
+  STATIC_HISTOGRAM_POINTER_GROUP(
+      name, index, kMaxEventLatencyHistogramIndex,
+      AddTimeMicrosecondsGranularity(latency),
+      base::Histogram::FactoryMicrosecondsTimeGet(
+          name, kEventLatencyHistogramMin, kEventLatencyHistogramMax,
+          kEventLatencyHistogramBucketCount,
+          base::HistogramBase::kUmaTargetedHistogramFlag));
 }
 
 constexpr char kTraceCategory[] =
@@ -1038,36 +1052,50 @@ void CompositorFrameReporter::ReportEventLatencyMetrics() const {
         total_latency_stage.end_time - generated_timestamp;
 
     if (should_report_histograms_) {
-      const std::string histogram_base_name =
-          GetEventLatencyHistogramBaseName(*event_metrics);
-      const int event_type_index = static_cast<int>(event_metrics->type());
-      const int gesture_type_index =
-          scroll_metrics  ? static_cast<int>(scroll_metrics->scroll_type())
-          : pinch_metrics ? static_cast<int>(pinch_metrics->pinch_type())
-                          : 0;
-      const int event_histogram_index =
-          event_type_index * kEventLatencyGestureTypeCount + gesture_type_index;
-
+      const std::string histogram_base_name = base::JoinString(
+          {kEventLatencyBaseHistogramName, event_metrics->GetTypeName()}, ".");
+      const int event_histogram_index = static_cast<int>(event_metrics->type());
       const std::string total_latency_stage_name =
           GetStageName(StageType::kTotalLatency);
-      const std::string event_total_latency_histogram_name =
-          base::StrCat({histogram_base_name, ".", total_latency_stage_name});
-      // Note: There's a 1:1 mapping between `event_histogram_index` and
-      // `event_total_latency_histogram_name` which allows the use of
-      // `STATIC_HISTOGRAM_POINTER_GROUP()` to cache histogram objects.
-      STATIC_HISTOGRAM_POINTER_GROUP(
-          event_total_latency_histogram_name, event_histogram_index,
-          kMaxEventLatencyHistogramIndex,
-          AddTimeMicrosecondsGranularity(total_latency),
-          base::Histogram::FactoryMicrosecondsTimeGet(
-              event_total_latency_histogram_name, kEventLatencyHistogramMin,
-              kEventLatencyHistogramMax, kEventLatencyHistogramBucketCount,
-              base::HistogramBase::kUmaTargetedHistogramFlag));
 
-      // Also, report total latency up to presentation for all event types in an
-      // aggregate histogram.
+      // For pinch events, we only report metrics for each device type and not
+      // the aggregate metric over all device types.
+      if (!pinch_metrics) {
+        const std::string event_total_latency_histogram_name = base::JoinString(
+            {histogram_base_name, total_latency_stage_name}, ".");
+        ReportEventLatencyMetric(event_total_latency_histogram_name,
+                                 event_histogram_index, total_latency);
+      }
+
+      // For scroll and pinch events, report metrics for each device type
+      // separately.
+      if (scroll_metrics || pinch_metrics) {
+        const int gesture_type_index =
+            1 + (scroll_metrics
+                     ? static_cast<int>(scroll_metrics->scroll_type())
+                     : static_cast<int>(pinch_metrics->pinch_type()));
+        const int gesture_histogram_index =
+            event_histogram_index * kEventLatencyGestureTypeCount +
+            gesture_type_index;
+        const std::string gesture_type_name =
+            scroll_metrics ? scroll_metrics->GetScrollTypeName()
+                           : pinch_metrics->GetPinchTypeName();
+
+        const std::string gesture_total_latency_histogram_name =
+            base::JoinString({histogram_base_name, gesture_type_name,
+                              total_latency_stage_name},
+                             ".");
+        ReportEventLatencyMetric(gesture_total_latency_histogram_name,
+                                 gesture_histogram_index, total_latency);
+      }
+
+      // Finally, report total latency up to presentation for all event types in
+      // a single aggregate histogram.
+      const std::string aggregate_total_latency_histogram_name =
+          base::JoinString(
+              {kEventLatencyBaseHistogramName, total_latency_stage_name}, ".");
       UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-          "EventLatency." + total_latency_stage_name, total_latency,
+          aggregate_total_latency_histogram_name, total_latency,
           kEventLatencyHistogramMin, kEventLatencyHistogramMax,
           kEventLatencyHistogramBucketCount);
     }
