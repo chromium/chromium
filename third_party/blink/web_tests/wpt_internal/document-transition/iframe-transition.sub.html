@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html class=reftest-wait>
 <title>Shared transitions: iframe</title>
+<meta name="timeout" content="long">
 <link rel="help" href="https://github.com/WICG/shared-element-transitions">
 <link rel="author" href="mailto:vmpstr@chromium.org">
 <link rel="match" href="iframe-transition-ref.html">
@@ -16,11 +17,3 @@ addEventListener("message", takeScreenshot);
 </script>
 
 <iframe id=frame src="http://{{domains[www]}}:{{ports[http][0]}}/wpt_internal/document-transition/frame-helper.html"></iframe>
-
-<script>
-setTimeout(() => {
-  console.log("didn't get a message");
-  takeScreenshot();
-}, 2000);
-</script>
-
