@@ -478,6 +478,8 @@ class WTF_EXPORT String {
   double ToDouble(bool* ok = nullptr) const;
   float ToFloat(bool* ok = nullptr) const;
 
+  // Deprecated: It is no longer required to create isolated copies for
+  // thread-safety purposes.
   [[nodiscard]] String IsolatedCopy() const;
 
 #ifdef __OBJC__

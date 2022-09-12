@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
-#include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -22,9 +21,6 @@ class StringResourceBase {
 
  public:
   explicit StringResourceBase(const String& string) : plain_string_(string) {
-#if DCHECK_IS_ON()
-    thread_id_ = WTF::CurrentThread();
-#endif
     DCHECK(!string.IsNull());
     v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
         string.CharactersSizeInBytes());
@@ -32,9 +28,6 @@ class StringResourceBase {
 
   explicit StringResourceBase(const AtomicString& string)
       : atomic_string_(string) {
-#if DCHECK_IS_ON()
-    thread_id_ = WTF::CurrentThread();
-#endif
     DCHECK(!string.IsNull());
     v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
         string.CharactersSizeInBytes());
@@ -42,9 +35,6 @@ class StringResourceBase {
 
   explicit StringResourceBase(const ParkableString& string)
       : parkable_string_(string) {
-#if DCHECK_IS_ON()
-    thread_id_ = WTF::CurrentThread();
-#endif
     // TODO(lizeb): This is only true without compression.
     DCHECK(!string.IsNull());
     v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
@@ -55,9 +45,6 @@ class StringResourceBase {
   StringResourceBase& operator=(const StringResourceBase&) = delete;
 
   virtual ~StringResourceBase() {
-#if DCHECK_IS_ON()
-    DCHECK(thread_id_ == WTF::CurrentThread());
-#endif
     int64_t reduced_external_memory = plain_string_.CharactersSizeInBytes();
     if (plain_string_.Impl() != atomic_string_.Impl() &&
         !atomic_string_.IsNull())
@@ -76,9 +63,6 @@ class StringResourceBase {
   }
 
   AtomicString GetAtomicString() {
-#if DCHECK_IS_ON()
-    DCHECK(thread_id_ == WTF::CurrentThread());
-#endif
     if (!parkable_string_.IsNull()) {
       DCHECK(plain_string_.IsNull());
       DCHECK(atomic_string_.IsNull());
@@ -119,10 +103,6 @@ class StringResourceBase {
   // If this string is parkable, its value is held here, and the other
   // members above are null.
   ParkableString parkable_string_;
-
-#if DCHECK_IS_ON()
-  base::PlatformThreadId thread_id_;
-#endif
 };
 
 // Even though StringResource{8,16}Base are effectively empty in release mode,
