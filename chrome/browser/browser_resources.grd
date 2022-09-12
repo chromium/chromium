@@ -81,8 +81,9 @@
         <include name="IDR_PAGE_NOT_AVAILABLE_FOR_GUEST_APP_HTML" file="resources\page_not_available_for_guest\app.html" type="BINDATA" />
         <!-- In-session login flow -->
         <include name="IDR_INLINE_LOGIN_HTML" file="resources\inline_login\inline_login.html" type="BINDATA" />
-        <include name="IDR_INLINE_LOGIN_APP_JS" file="${root_gen_dir}\chrome\browser\resources\inline_login\inline_login_app.js" use_base_dir="false" type ="BINDATA" preprocess="true" />
-        <include name="IDR_INLINE_LOGIN_BROWSER_PROXY_JS" file="resources\inline_login\inline_login_browser_proxy.js" type ="BINDATA" preprocess="true"/>
+        <include name="IDR_INLINE_LOGIN_APP_JS" file="${root_gen_dir}\chrome\browser\resources\inline_login\preprocessed\inline_login_app.js" use_base_dir="false" type ="BINDATA" />
+        <include name="IDR_INLINE_LOGIN_APP_HTML_JS" file="${root_gen_dir}\chrome\browser\resources\inline_login\preprocessed\inline_login_app.html.js" use_base_dir="false" type ="BINDATA" />
+        <include name="IDR_INLINE_LOGIN_BROWSER_PROXY_JS" file="${root_gen_dir}\chrome\browser\resources\inline_login\preprocessed\inline_login_browser_proxy.js" use_base_dir="false" type ="BINDATA"/>
         <include name="IDR_GAIA_AUTH_WEBVIEW_SAML_INJECTED_JS" file="resources\gaia_auth_host\webview_saml_injected.js" flattenhtml="true" type="BINDATA" />
         <include name="IDR_GAIA_AUTH_OKTA_DETECT_SUCCESS_INJECTED_JS" file="resources\gaia_auth_host\okta_detect_success_injected.js" type="BINDATA" />
       </if>
@@ -93,9 +94,12 @@
 
       <if expr="chromeos_ash">
         <!-- In-session login flow -->
-        <include name="IDR_INLINE_LOGIN_WELCOME_PAGE_APP_JS" file="${root_gen_dir}\chrome\browser\resources\inline_login\welcome_page_app.js" use_base_dir="false" type ="BINDATA" preprocess="true" />
-        <include name="IDR_INLINE_LOGIN_SIGNIN_BLOCKED_BY_POLICY_PAGE_JS" file="${root_gen_dir}\chrome\browser\resources\inline_login\signin_blocked_by_policy_page.js" use_base_dir="false" type ="BINDATA" preprocess="true" />
-        <include name="IDR_INLINE_LOGIN_SIGNIN_ERROR_PAGE_JS" file="${root_gen_dir}\chrome\browser\resources\inline_login\signin_error_page.js" use_base_dir="false" type ="BINDATA" preprocess="true" />
+        <include name="IDR_INLINE_LOGIN_WELCOME_PAGE_APP_JS" file="${root_gen_dir}\chrome\browser\resources\inline_login\preprocessed\welcome_page_app.js" use_base_dir="false" type ="BINDATA" />
+        <include name="IDR_INLINE_LOGIN_WELCOME_PAGE_APP_HTML_JS" file="${root_gen_dir}\chrome\browser\resources\inline_login\preprocessed\welcome_page_app.html.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_INLINE_LOGIN_SIGNIN_BLOCKED_BY_POLICY_PAGE_JS" file="${root_gen_dir}\chrome\browser\resources\inline_login\preprocessed\signin_blocked_by_policy_page.js" use_base_dir="false" type ="BINDATA" />
+        <include name="IDR_INLINE_LOGIN_SIGNIN_BLOCKED_BY_POLICY_PAGE_HTML_JS" file="${root_gen_dir}\chrome\browser\resources\inline_login\preprocessed\signin_blocked_by_policy_page.html.js" use_base_dir="false" type ="BINDATA" />
+        <include name="IDR_INLINE_LOGIN_SIGNIN_ERROR_PAGE_JS" file="${root_gen_dir}\chrome\browser\resources\inline_login\preprocessed\signin_error_page.js" use_base_dir="false" type ="BINDATA" />
+        <include name="IDR_INLINE_LOGIN_SIGNIN_ERROR_PAGE_HTML_JS" file="${root_gen_dir}\chrome\browser\resources\inline_login\preprocessed\signin_error_page.html.js" use_base_dir="false" type ="BINDATA" />
       </if>
 
       <include name="IDR_IDENTITY_API_SCOPE_APPROVAL_MANIFEST" file="resources\identity_scope_approval_dialog\manifest.json" type="BINDATA" />

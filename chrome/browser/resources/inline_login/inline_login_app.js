@@ -13,7 +13,7 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 // <if expr="chromeos_ash">
 import './arc_account_picker/arc_account_picker_app.js';
@@ -27,6 +27,7 @@ import {getAccountAdditionOptionsFromJSON} from './arc_account_picker/arc_util.j
 
 import {AuthCompletedCredentials, Authenticator, AuthParams} from './gaia_auth_host/authenticator.m.js';
 import {InlineLoginBrowserProxy, InlineLoginBrowserProxyImpl} from './inline_login_browser_proxy.js';
+import {getTemplate} from './inline_login_app.html.js';
 
 /**
  * @fileoverview Inline login WebUI in various signin flows for ChromeOS and
@@ -45,7 +46,7 @@ const View = {
 Polymer({
   is: 'inline-login-app',
 
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
 
   behaviors: [WebUIListenerBehavior, I18nBehavior],
 

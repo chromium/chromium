@@ -11,7 +11,9 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './account_manager_shared_css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './signin_blocked_by_policy_page.html.js';
 
 /** @polymer */
 export class SigninBlockedByPolicyPageElement extends PolymerElement {
@@ -20,7 +22,7 @@ export class SigninBlockedByPolicyPageElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   /**

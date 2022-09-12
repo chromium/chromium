@@ -9,15 +9,16 @@ import './account_manager_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getAccountAdditionOptionsFromJSON} from './arc_account_picker/arc_util.js';
 import {InlineLoginBrowserProxyImpl} from './inline_login_browser_proxy.js';
+import {getTemplate} from './welcome_page_app.html.js';
 
 Polymer({
   is: 'welcome-page-app',
 
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
 
   properties: {
     /* The value of the 'available in ARC' toggle.*/
