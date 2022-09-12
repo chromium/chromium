@@ -92,6 +92,8 @@ public class StartSurfaceUserData implements UserData {
     }
 
     private static StartSurfaceUserData get(Tab tab) {
+        if (tab.isDestroyed()) return null;
+
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 
