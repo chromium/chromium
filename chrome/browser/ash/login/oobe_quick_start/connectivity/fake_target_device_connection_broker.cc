@@ -18,6 +18,8 @@ std::unique_ptr<TargetDeviceConnectionBroker>
 FakeTargetDeviceConnectionBroker::Factory::CreateInstance(
     RandomSessionId session_id) {
   auto connection_broker = std::make_unique<FakeTargetDeviceConnectionBroker>();
+  connection_broker->set_feature_support_status(
+      initial_feature_support_status_);
   instances_.push_back(connection_broker.get());
   return std::move(connection_broker);
 }

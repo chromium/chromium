@@ -177,6 +177,7 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
       'showEditRequisitionDialog',
       'showRemoraRequisitionDialog',
       'maybeGiveChromeVoxHint',
+      'setQuickStartEnabled',
     ];
   }
 
@@ -706,6 +707,10 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
           /** @type {!chrome.tts.TtsOptions} */ ({lang: locale, voiceName});
       this.giveChromeVoxHint_(locale, ttsOptions, false);
     });
+  }
+
+  setQuickStartEnabled() {
+    this.$.welcomeScreen.isQuickStartEnabled = true;
   }
 
   /**
