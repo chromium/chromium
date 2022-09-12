@@ -1121,7 +1121,7 @@ void VolumeManager::OnDeviceEvent(
 
 void VolumeManager::OnMountEvent(
     ash::disks::DiskMountManager::MountEvent event,
-    ash::MountError error_code,
+    ash::MountError error,
     const ash::disks::DiskMountManager::MountPoint& mount_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -1136,12 +1136,12 @@ void VolumeManager::OnMountEvent(
 
   switch (event) {
     case ash::disks::DiskMountManager::MOUNTING: {
-      DoMountEvent(std::move(volume), error_code);
+      DoMountEvent(std::move(volume), error);
       return;
     }
 
     case ash::disks::DiskMountManager::UNMOUNTING:
-      DoUnmountEvent(*volume, error_code);
+      DoUnmountEvent(*volume, error);
       return;
   }
 
@@ -1150,18 +1150,18 @@ void VolumeManager::OnMountEvent(
 
 void VolumeManager::OnFormatEvent(
     ash::disks::DiskMountManager::FormatEvent event,
-    ash::FormatError error_code,
+    ash::FormatError error,
     const std::string& device_path,
     const std::string& device_label) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DVLOG(1) << "OnFormatEvent: " << event << ", error = " << error_code
+  DVLOG(1) << "OnFormatEvent: " << event << ", error = " << error
            << ", device_path = " << device_path;
 
   switch (event) {
     case ash::disks::DiskMountManager::FORMAT_STARTED:
       for (auto& observer : observers_) {
         observer.OnFormatStarted(device_path, device_label,
-                                 error_code == ash::FormatError::kNone);
+                                 error == ash::FormatError::kNone);
       }
       return;
 
@@ -1177,7 +1177,7 @@ void VolumeManager::OnFormatEvent(
 
       for (auto& observer : observers_) {
         observer.OnFormatCompleted(device_path, device_label,
-                                   error_code == ash::FormatError::kNone);
+                                   error == ash::FormatError::kNone);
       }
 
       return;
@@ -1188,18 +1188,18 @@ void VolumeManager::OnFormatEvent(
 
 void VolumeManager::OnPartitionEvent(
     ash::disks::DiskMountManager::PartitionEvent event,
-    ash::PartitionError error_code,
+    ash::PartitionError error,
     const std::string& device_path,
     const std::string& device_label) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DVLOG(1) << "OnPartitionEvent: " << event << ", error = " << error_code
+  DVLOG(1) << "OnPartitionEvent: " << event << ", error = " << error
            << ", device_path = " << device_path;
 
   switch (event) {
     case ash::disks::DiskMountManager::PARTITION_STARTED:
       for (auto& observer : observers_) {
         observer.OnPartitionStarted(device_path, device_label,
-                                    error_code == ash::PartitionError::kNone);
+                                    error == ash::PartitionError::kNone);
       }
       return;
 
@@ -1208,7 +1208,7 @@ void VolumeManager::OnPartitionEvent(
       // MountPath auto-detects filesystem format if second argument is
       // empty. The third argument (mount label) is not used in a disk mount
       // operation.
-      if (error_code != ash::PartitionError::kNone) {
+      if (error != ash::PartitionError::kNone) {
         disk_mount_manager_->MountPath(
             device_path, {}, {}, {}, ash::MountType::kDevice,
             GetExternalStorageAccessMode(profile_), base::DoNothing());
@@ -1216,7 +1216,7 @@ void VolumeManager::OnPartitionEvent(
 
       for (auto& observer : observers_) {
         observer.OnPartitionCompleted(device_path, device_label,
-                                      error_code == ash::PartitionError::kNone);
+                                      error == ash::PartitionError::kNone);
       }
       return;
   }
@@ -1226,18 +1226,18 @@ void VolumeManager::OnPartitionEvent(
 
 void VolumeManager::OnRenameEvent(
     ash::disks::DiskMountManager::RenameEvent event,
-    ash::RenameError error_code,
+    ash::RenameError error,
     const std::string& device_path,
     const std::string& device_label) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DVLOG(1) << "OnRenameEvent: " << event << ", error = " << error_code
+  DVLOG(1) << "OnRenameEvent: " << event << ", error = " << error
            << ", device_path = " << device_path;
 
   switch (event) {
     case ash::disks::DiskMountManager::RENAME_STARTED:
       for (auto& observer : observers_) {
         observer.OnRenameStarted(device_path, device_label,
-                                 error_code == ash::RenameError::kNone);
+                                 error == ash::RenameError::kNone);
       }
       return;
 
@@ -1260,7 +1260,7 @@ void VolumeManager::OnRenameEvent(
           device_path, {}, mount_label, {}, ash::MountType::kDevice,
           GetExternalStorageAccessMode(profile_), base::DoNothing());
 
-      bool successfully_renamed = error_code == ash::RenameError::kNone;
+      bool successfully_renamed = error == ash::RenameError::kNone;
       for (auto& observer : observers_)
         observer.OnRenameCompleted(device_path, device_label,
                                    successfully_renamed);
@@ -1424,10 +1424,9 @@ void VolumeManager::OnProvidedFileSystemUnmount(
 
 void VolumeManager::OnExternalStorageDisabledChangedUnmountCallback(
     std::vector<std::string> remaining_mount_paths,
-    ash::MountError error_code) {
-  LOG_IF(ERROR, error_code != ash::MountError::kNone)
-      << "Unmount on ExternalStorageDisabled policy change failed: "
-      << error_code;
+    ash::MountError error) {
+  LOG_IF(ERROR, error != ash::MountError::kNone)
+      << "Unmount on ExternalStorageDisabled policy change failed: " << error;
 
   while (!remaining_mount_paths.empty()) {
     std::string mount_path = remaining_mount_paths.back();
@@ -1857,7 +1856,7 @@ void VolumeManager::OnStorageMonitorInitialized() {
 }
 
 bool VolumeManager::DoMountEvent(std::unique_ptr<Volume> volume_ptr,
-                                 ash::MountError error_code) {
+                                 ash::MountError error) {
   DCHECK(volume_ptr);
   const Volume& volume = *volume_ptr;
 
@@ -1889,7 +1888,7 @@ bool VolumeManager::DoMountEvent(std::unique_ptr<Volume> volume_ptr,
 
   bool inserted = false;
 
-  if (error_code == ash::MountError::kNone ||
+  if (error == ash::MountError::kNone ||
       volume.mount_condition() != ash::disks::MountCondition::kNone) {
     const auto [it, ok] = mounted_volumes_.insert(std::move(volume_ptr));
     if (ok) {
@@ -1911,26 +1910,26 @@ bool VolumeManager::DoMountEvent(std::unique_ptr<Volume> volume_ptr,
   }
 
   for (auto& observer : observers_)
-    observer.OnVolumeMounted(error_code, volume);
+    observer.OnVolumeMounted(error, volume);
 
   return inserted;
 }
 
 void VolumeManager::DoUnmountEvent(Volumes::const_iterator it,
-                                   const ash::MountError error_code) {
+                                   const ash::MountError error) {
   DCHECK(it != mounted_volumes_.end());
 
   // Hold a reference to the removed Volume from |mounted_volumes_|, because
   // OnVolumeMounted() will access it.
   const Volume& volume = **it;
   Volumes::node_type node_to_delete;
-  if (error_code == ash::MountError::kNone)
+  if (error == ash::MountError::kNone)
     node_to_delete = mounted_volumes_.extract(std::move(it));
 
   VLOG_IF(1, node_to_delete) << "Removed volume '" << volume.volume_id() << "'";
 
   for (auto& observer : observers_)
-    observer.OnVolumeUnmounted(error_code, volume);
+    observer.OnVolumeUnmounted(error, volume);
 }
 
 base::FilePath VolumeManager::GetDriveMountPointPath() const {
@@ -1938,22 +1937,22 @@ base::FilePath VolumeManager::GetDriveMountPointPath() const {
 }
 
 void VolumeManager::DoUnmountEvent(base::StringPiece volume_id,
-                                   ash::MountError error_code) {
+                                   ash::MountError error) {
   Volumes::const_iterator it = mounted_volumes_.find(volume_id);
   if (it == mounted_volumes_.end()) {
     LOG(WARNING) << "Cannot find volume '" << volume_id << "' to unmount it";
     return;
   }
 
-  DoUnmountEvent(std::move(it), error_code);
+  DoUnmountEvent(std::move(it), error);
 }
 
 void VolumeManager::OnSshfsCrostiniUnmountCallback(
     const base::FilePath& sshfs_mount_path,
     RemoveSshfsCrostiniVolumeCallback callback,
-    ash::MountError error_code) {
-  if ((error_code == ash::MountError::kNone) ||
-      (error_code == ash::MountError::kPathNotMounted)) {
+    ash::MountError error) {
+  if ((error == ash::MountError::kNone) ||
+      (error == ash::MountError::kPathNotMounted)) {
     // Remove metadata associated with the mount. It will be a no-op if it
     // wasn't mounted or unmounted out of band.
     DoUnmountEvent(
@@ -1972,9 +1971,9 @@ void VolumeManager::OnSftpGuestOsUnmountCallback(
     const base::FilePath& sftp_mount_path,
     const guest_os::VmType vm_type,
     RemoveSftpGuestOsVolumeCallback callback,
-    ash::MountError error_code) {
-  if ((error_code == ash::MountError::kNone) ||
-      (error_code == ash::MountError::kPathNotMounted)) {
+    ash::MountError error) {
+  if ((error == ash::MountError::kNone) ||
+      (error == ash::MountError::kPathNotMounted)) {
     // Remove metadata associated with the mount. It will be a no-op if it
     // wasn't mounted or unmounted out of band. We need the VolumeId to be
     // consistent, which means the mount path needs to be the same.
@@ -1987,7 +1986,7 @@ void VolumeManager::OnSftpGuestOsUnmountCallback(
     return;
   }
 
-  LOG(ERROR) << "Unmounting SFTP path failed with error: " << error_code;
+  LOG(ERROR) << "Unmounting SFTP path failed with error: " << error;
   if (callback)
     std::move(callback).Run(false);
 }

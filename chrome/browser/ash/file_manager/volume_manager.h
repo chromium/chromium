@@ -482,18 +482,18 @@ class VolumeManager : public KeyedService,
                      const std::string& device_path) override;
   void OnMountEvent(
       ash::disks::DiskMountManager::MountEvent event,
-      ash::MountError error_code,
+      ash::MountError error,
       const ash::disks::DiskMountManager::MountPoint& mount_info) override;
   void OnFormatEvent(ash::disks::DiskMountManager::FormatEvent event,
-                     ash::FormatError error_code,
+                     ash::FormatError error,
                      const std::string& device_path,
                      const std::string& device_label) override;
   void OnPartitionEvent(ash::disks::DiskMountManager::PartitionEvent event,
-                        ash::PartitionError error_code,
+                        ash::PartitionError error,
                         const std::string& device_path,
                         const std::string& device_label) override;
   void OnRenameEvent(ash::disks::DiskMountManager::RenameEvent event,
-                     ash::RenameError error_code,
+                     ash::RenameError error,
                      const std::string& device_path,
                      const std::string& device_label) override;
 
@@ -596,30 +596,30 @@ class VolumeManager : public KeyedService,
   void DoAttachMtpStorage(const storage_monitor::StorageInfo& info,
                           device::mojom::MtpStorageInfoPtr mtp_storage_info);
 
-  // Adds |volume| to the set |mounted_volumes_| if |error_code| is |kNone|.
-  // Returns true if the volume was actually added, ie if |error_code| is
+  // Adds |volume| to the set |mounted_volumes_| if |error| is |kNone|.
+  // Returns true if the volume was actually added, ie if |error| is
   // |kNone| and there was no previous volume with the same ID.
   bool DoMountEvent(std::unique_ptr<Volume> volume,
-                    ash::MountError error_code = ash::MountError::kNone);
+                    ash::MountError error = ash::MountError::kNone);
 
-  // Removes the Volume at position |it| if |error_code| is |kNone|.
+  // Removes the Volume at position |it| if |error| is |kNone|.
   // Precondition: it != mounted_volumes_.end()
   void DoUnmountEvent(Volumes::const_iterator it,
-                      ash::MountError error_code = ash::MountError::kNone);
+                      ash::MountError error = ash::MountError::kNone);
 
-  // Removes the Volume with the given ID if |error_code| is |kNone|.
+  // Removes the Volume with the given ID if |error| is |kNone|.
   void DoUnmountEvent(base::StringPiece volume_id,
-                      ash::MountError error_code = ash::MountError::kNone);
+                      ash::MountError error = ash::MountError::kNone);
 
-  // Removes the Volume with the same ID as |volume| if |error_code| is |kNone|.
+  // Removes the Volume with the same ID as |volume| if |error| is |kNone|.
   void DoUnmountEvent(const Volume& volume,
-                      ash::MountError error_code = ash::MountError::kNone) {
-    DoUnmountEvent(volume.volume_id(), error_code);
+                      ash::MountError error = ash::MountError::kNone) {
+    DoUnmountEvent(volume.volume_id(), error);
   }
 
   void OnExternalStorageDisabledChangedUnmountCallback(
       std::vector<std::string> remaining_mount_paths,
-      ash::MountError error_code);
+      ash::MountError error);
 
   // Returns the path of the mount point for drive.
   base::FilePath GetDriveMountPointPath() const;
@@ -627,12 +627,12 @@ class VolumeManager : public KeyedService,
   void OnSshfsCrostiniUnmountCallback(
       const base::FilePath& sshfs_mount_path,
       RemoveSshfsCrostiniVolumeCallback callback,
-      ash::MountError error_code);
+      ash::MountError error);
 
   void OnSftpGuestOsUnmountCallback(const base::FilePath& sftp_mount_path,
                                     const guest_os::VmType vm_type,
                                     RemoveSftpGuestOsVolumeCallback callback,
-                                    ash::MountError error_code);
+                                    ash::MountError error);
 
   Profile* const profile_;
   drive::DriveIntegrationService* const drive_integration_service_;
