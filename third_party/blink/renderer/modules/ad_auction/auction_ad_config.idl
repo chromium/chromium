@@ -20,4 +20,5 @@ dictionary AuctionAdConfig {
   record<USVString, unsigned short> perBuyerExperimentGroupIds;
   record<USVString, record<USVString, double>> perBuyerPrioritySignals;
   sequence<AuctionAdConfig> componentAuctions;
+  AbortSignal? signal;
 };

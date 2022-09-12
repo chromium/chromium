@@ -57,8 +57,10 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
                           LeaveInterestGroupCallback callback) override;
   void LeaveInterestGroupForDocument() override;
   void UpdateAdInterestGroups() override;
-  void RunAdAuction(const blink::AuctionConfig& config,
-                    RunAdAuctionCallback callback) override;
+  void RunAdAuction(
+      const blink::AuctionConfig& config,
+      mojo::PendingReceiver<blink::mojom::AbortableAdAuction> abort_receiver,
+      RunAdAuctionCallback callback) override;
   void DeprecatedGetURLFromURN(
       const GURL& urn_url,
       DeprecatedGetURLFromURNCallback callback) override;
@@ -121,6 +123,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       RunAdAuctionCallback callback,
       GURL urn_uuid,
       AuctionRunner* auction,
+      bool manually_aborted,
       absl::optional<blink::InterestGroupKey> winning_group_id,
       absl::optional<GURL> render_url,
       std::vector<GURL> ad_component_urls,

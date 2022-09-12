@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_interest_group.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_adproperties_adpropertiessequence.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -995,6 +996,30 @@ void RecordCommonFledgeUseCounters(Document* document) {
 
 }  // namespace
 
+// Helper to manage runtime of abort pipe and to connect it to AbortController.
+class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
+ public:
+  AuctionHandle(ExecutionContext* context,
+                mojo::PendingRemote<mojom::blink::AbortableAdAuction> remote)
+      : abortable_ad_auction_(context) {
+    abortable_ad_auction_.Bind(
+        std::move(remote), context->GetTaskRunner(TaskType::kMiscPlatformAPI));
+  }
+
+  ~AuctionHandle() override = default;
+
+  // AbortSignal::Algorithm implementation:
+  void Run() override { abortable_ad_auction_->Abort(); }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(abortable_ad_auction_);
+    AbortSignal::Algorithm::Trace(visitor);
+  }
+
+ private:
+  HeapMojoRemote<mojom::blink::AbortableAdAuction> abortable_ad_auction_;
+};
+
 NavigatorAuction::NavigatorAuction(Navigator& navigator)
     : Supplement(navigator),
       queued_cross_site_joins_(kMaxActiveCrossSiteJoins,
@@ -1274,18 +1299,30 @@ void NavigatorAuction::updateAdInterestGroups(ScriptState* script_state,
 ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
                                              const AuctionAdConfig* config,
                                              ExceptionState& exception_state) {
-  const ExecutionContext* context = ExecutionContext::From(script_state);
+  ExecutionContext* context = ExecutionContext::From(script_state);
   auto mojo_config = IdlAuctionConfigToMojo(
       /*is_top_level=*/true, *script_state, *context, exception_state, *config);
   if (!mojo_config)
     return ScriptPromise();
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  mojo::PendingReceiver<mojom::blink::AbortableAdAuction> abort_receiver;
   ScriptPromise promise = resolver->Promise();
+  if (config->hasSignal()) {
+    if (config->signal()->aborted()) {
+      resolver->Reject(config->signal()->reason(script_state));
+      return promise;
+    }
+    auto* auction_handle = MakeGarbageCollected<AuctionHandle>(
+        context, abort_receiver.InitWithNewPipeAndPassRemote());
+    config->signal()->AddAlgorithm(auction_handle);
+  }
   ad_auction_service_->RunAdAuction(
-      std::move(mojo_config),
-      WTF::Bind(&NavigatorAuction::AuctionComplete, WrapPersistent(this),
-                WrapPersistent(resolver)));
+      std::move(mojo_config), std::move(abort_receiver),
+      WTF::Bind(
+          &NavigatorAuction::AuctionComplete, WrapPersistent(this),
+          WrapPersistent(resolver),
+          WrapPersistent(config->hasSignal() ? config->signal() : nullptr)));
   return promise;
 }
 
@@ -1577,14 +1614,21 @@ void NavigatorAuction::LeaveComplete(bool is_cross_origin,
 }
 
 void NavigatorAuction::AuctionComplete(ScriptPromiseResolver* resolver,
+                                       AbortSignal* abort_signal,
+                                       bool manually_aborted,
                                        const absl::optional<KURL>& result_url) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed())
     return;
-  if (result_url) {
+  ScriptState* script_state = resolver->GetScriptState();
+  ScriptState::Scope script_state_scope(script_state);
+  if (manually_aborted) {
+    DCHECK(abort_signal && abort_signal->aborted());
+    resolver->Reject(abort_signal->reason(script_state));
+  } else if (result_url) {
     resolver->Resolve(result_url);
   } else {
-    resolver->Resolve(v8::Null(resolver->GetScriptState()->GetIsolate()));
+    resolver->Resolve(v8::Null(script_state->GetIsolate()));
   }
 }
 

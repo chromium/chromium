@@ -1526,6 +1526,7 @@ class AuctionRunnerTest : public testing::Test,
     Result(const Result&) = delete;
     Result& operator=(const Result&) = delete;
 
+    bool manually_aborted = false;
     absl::optional<InterestGroupKey> winning_group_id;
     absl::optional<GURL> ad_url;
     std::vector<GURL> ad_component_urls;
@@ -1699,10 +1700,12 @@ class AuctionRunnerTest : public testing::Test,
     }
 
     auction_run_loop_ = std::make_unique<base::RunLoop>();
+    abortable_ad_auction_.reset();
     auction_runner_ = AuctionRunner::CreateAndStart(
         auction_worklet_manager_.get(), interest_group_manager_.get(),
         std::move(auction_config), /*client_security_state=*/nullptr,
         IsInterestGroupApiAllowedCallback(),
+        abortable_ad_auction_.BindNewPipeAndPassReceiver(),
         base::BindOnce(&AuctionRunnerTest::OnAuctionComplete,
                        base::Unretained(this)));
   }
@@ -1715,6 +1718,7 @@ class AuctionRunnerTest : public testing::Test,
   }
 
   void OnAuctionComplete(AuctionRunner* auction_runner,
+                         bool manually_aborted,
                          absl::optional<InterestGroupKey> winning_group_id,
                          absl::optional<GURL> ad_url,
                          std::vector<GURL> ad_component_urls,
@@ -1730,9 +1734,11 @@ class AuctionRunnerTest : public testing::Test,
     DCHECK_EQ(auction_runner, auction_runner_.get());
 
     // Delete the auction runner, which is needed to update histograms.
-    auction_runner_.reset();
+    if (!dont_reset_auction_runner_)
+      auction_runner_.reset();
 
     auction_complete_ = true;
+    result_.manually_aborted = manually_aborted;
     result_.winning_group_id = std::move(winning_group_id);
     result_.ad_url = std::move(ad_url);
     result_.ad_component_urls = std::move(ad_component_urls);
@@ -2162,6 +2168,7 @@ class AuctionRunnerTest : public testing::Test,
   std::unique_ptr<InterestGroupManagerImpl> interest_group_manager_;
 
   std::unique_ptr<AuctionRunner> auction_runner_;
+  bool dont_reset_auction_runner_ = false;
   // This should be inspected using TakeBadMessage(), which also clears it.
   std::string bad_message_;
 
@@ -2169,6 +2176,9 @@ class AuctionRunnerTest : public testing::Test,
 
   std::vector<std::string> observer_log_;
   std::vector<std::string> title_log_;
+
+  // Can be used to interrupt currently running auction.
+  mojo::Remote<blink::mojom::AbortableAdAuction> abortable_ad_auction_;
 
   // Which worklet to pause, if any.
   GURL pause_worklet_url_;
@@ -2547,6 +2557,7 @@ TEST_F(AuctionRunnerTest, Basic) {
       kBidder2SignalsJson);
 
   const Result& res = RunStandardAuction();
+  EXPECT_FALSE(res.manually_aborted);
   EXPECT_EQ(InterestGroupKey(kBidder2, kBidder2Name), result_.winning_group_id);
   EXPECT_EQ(GURL("https://ad2.com/"), res.ad_url);
   EXPECT_EQ(std::vector<GURL>{GURL("https://ad2.com-component1.com")},
@@ -8673,6 +8684,57 @@ TEST_F(AuctionRunnerTest,
                   /*expected_interest_groups=*/2,
                   /*expected_owners=*/1,
                   /*expected_sellers=*/1);
+}
+
+TEST_F(AuctionRunnerTest, Abort) {
+  // Not adding kBidder1Url to block things in predictable spot.
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      MakeAuctionScript(/*report_post_auction_signals=*/true));
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+      /*ad_component_urls=*/absl::nullopt));
+
+  StartAuction(kSellerUrl, std::move(bidders));
+  abortable_ad_auction_->Abort();
+  auction_run_loop_->Run();
+  EXPECT_TRUE(result_.manually_aborted);
+  EXPECT_FALSE(result_.winning_group_id.has_value());
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  EXPECT_EQ(5, result_.bidder1_bid_count);  // 5 is unchanged.
+}
+
+// Testing what happens when Abort() is called after auction is done.
+TEST_F(AuctionRunnerTest, AbortLate) {
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      MakeAuctionScript(/*report_post_auction_signals=*/true));
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+      /*ad_component_urls=*/absl::nullopt));
+
+  // Want AuctionRunner still around to make sure that it handles Abort() OK
+  // in that timing.
+  dont_reset_auction_runner_ = true;
+  const Result& result = RunAuctionAndWait(kSellerUrl, std::move(bidders));
+  EXPECT_EQ(kBidder1Name, result.winning_group_id->name);
+  EXPECT_FALSE(result.manually_aborted);
+  EXPECT_THAT(result.errors, testing::ElementsAre());
+  abortable_ad_auction_->Abort();
+  task_environment_.RunUntilIdle();
+  auction_runner_.reset();
 }
 
 // Enable and test forDebuggingOnly.reportAdAuctionLoss() and

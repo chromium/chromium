@@ -675,9 +675,11 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     base::RunLoop run_loop;
     absl::optional<GURL> maybe_url;
     interest_service->RunAdAuction(
-        auction_config,
+        auction_config, mojo::NullReceiver(),
         base::BindLambdaForTesting(
-            [&run_loop, &maybe_url](const absl::optional<GURL>& result) {
+            [&run_loop, &maybe_url](bool manually_aborted,
+                                    const absl::optional<GURL>& result) {
+              EXPECT_FALSE(manually_aborted);
               maybe_url = result;
               run_loop.Quit();
             }));
@@ -5377,9 +5379,10 @@ function reportResult() {}
 
   for (int i = 0; i < kNumAuctions; i++) {
     interest_service->RunAdAuction(
-        succeed_auction_config,
+        succeed_auction_config, mojo::NullReceiver(),
         base::BindLambdaForTesting(
             [&one_auction_complete](
+                bool manually_aborted,
                 const absl::optional<GURL>& ignored_result) {
               one_auction_complete.Run();
             }));

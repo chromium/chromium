@@ -32,19 +32,29 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     const blink::AuctionConfig& auction_config,
     network::mojom::ClientSecurityStatePtr client_security_state,
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
+    mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
     RunAuctionCallback callback) {
   std::unique_ptr<AuctionRunner> instance(new AuctionRunner(
       auction_worklet_manager, interest_group_manager,
       std::move(auction_config), std::move(client_security_state),
-      std::move(is_interest_group_api_allowed_callback), std::move(callback)));
+      std::move(is_interest_group_api_allowed_callback),
+      std::move(abort_receiver), std::move(callback)));
   instance->StartAuction();
   return instance;
 }
 
 AuctionRunner::~AuctionRunner() = default;
 
-void AuctionRunner::FailAuction() {
+void AuctionRunner::Abort() {
+  // Don't abort if the auction already finished (either as success or failure).
+  if (state_ != State::kFailed && state_ != State::kSucceeded) {
+    FailAuction(/*manually_aborted=*/true);
+  }
+}
+
+void AuctionRunner::FailAuction(bool manually_aborted) {
   DCHECK(callback_);
+  state_ = State::kFailed;
 
   // Can have loss report URLs if the auction failed because the seller rejected
   // all bids.
@@ -57,7 +67,7 @@ void AuctionRunner::FailAuction() {
   UpdateInterestGroupsPostAuction();
 
   std::move(callback_).Run(
-      this, /*winning_group_key=*/absl::nullopt,
+      this, manually_aborted, /*winning_group_key=*/absl::nullopt,
       /*render_url=*/absl::nullopt,
       /*ad_component_urls=*/{},
       /*report_urls=*/{}, std::move(debug_loss_report_urls),
@@ -72,11 +82,13 @@ AuctionRunner::AuctionRunner(
     const blink::AuctionConfig& auction_config,
     network::mojom::ClientSecurityStatePtr client_security_state,
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
+    mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
     RunAuctionCallback callback)
     : interest_group_manager_(interest_group_manager),
       client_security_state_(std::move(client_security_state)),
       is_interest_group_api_allowed_callback_(
           is_interest_group_api_allowed_callback),
+      abort_receiver_(this, std::move(abort_receiver)),
       owned_auction_config_(auction_config),
       callback_(std::move(callback)),
       auction_(&owned_auction_config_,
@@ -94,10 +106,11 @@ void AuctionRunner::StartAuction() {
 
 void AuctionRunner::OnLoadInterestGroupsComplete(bool success) {
   if (!success) {
-    FailAuction();
+    FailAuction(/*manually_aborted=*/false);
     return;
   }
 
+  state_ = State::kBiddingAndScoringPhase;
   auction_.StartBiddingAndScoringPhase(
       /*on_seller_receiver_callback=*/base::OnceClosure(),
       base::BindOnce(&AuctionRunner::OnBidsGeneratedAndScored,
@@ -107,21 +120,28 @@ void AuctionRunner::OnLoadInterestGroupsComplete(bool success) {
 void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
   blink::InterestGroupSet interest_groups_that_bid;
   auction_.GetInterestGroupsThatBid(interest_groups_that_bid);
-  interest_group_manager_->RecordInterestGroupBids(interest_groups_that_bid);
   if (!success) {
-    FailAuction();
+    interest_group_manager_->RecordInterestGroupBids(interest_groups_that_bid);
+    FailAuction(/*manually_aborted=*/false);
     return;
   }
+  // If the auction is ongoing, RecordInterestGroupBids is deferred until
+  // completion, so that bids don't get recorded if it gets aborted.
 
+  state_ = State::kReportingPhase;
   auction_.StartReportingPhase(
       /*top_seller_signals=*/absl::nullopt,
       base::BindOnce(&AuctionRunner::OnReportingPhaseComplete,
-                     base::Unretained(this)));
+                     base::Unretained(this),
+                     std::move(interest_groups_that_bid)));
 }
 
-void AuctionRunner::OnReportingPhaseComplete(bool success) {
+void AuctionRunner::OnReportingPhaseComplete(
+    const blink::InterestGroupSet& interest_groups_that_bid,
+    bool success) {
+  interest_group_manager_->RecordInterestGroupBids(interest_groups_that_bid);
   if (!success) {
-    FailAuction();
+    FailAuction(/*manually_aborted=*/false);
     return;
   }
 
@@ -155,8 +175,10 @@ void AuctionRunner::OnReportingPhaseComplete(bool success) {
 
   UpdateInterestGroupsPostAuction();
 
+  state_ = State::kSucceeded;
   std::move(callback_).Run(
-      this, std::move(winning_group_key), auction_.top_bid()->bid->render_url,
+      this, /*manually_aborted=*/false, std::move(winning_group_key),
+      auction_.top_bid()->bid->render_url,
       auction_.top_bid()->bid->ad_components, auction_.TakeReportUrls(),
       std::move(debug_loss_report_urls), std::move(debug_win_report_urls),
       auction_.TakeAdBeaconMap(), auction_.TakePrivateAggregationRequests(),

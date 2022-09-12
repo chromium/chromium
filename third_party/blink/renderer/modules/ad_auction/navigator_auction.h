@@ -23,6 +23,7 @@
 
 namespace blink {
 
+class AbortSignal;
 class AdRequestConfig;
 class Ads;
 class AuctionAdInterestGroup;
@@ -137,6 +138,8 @@ class MODULES_EXPORT NavigatorAuction final
   }
 
  private:
+  class AuctionHandle;
+
   // Pending cross-site interest group joins and leaves. These may be added to a
   // queue before being passed to the browser process.
 
@@ -176,7 +179,10 @@ class MODULES_EXPORT NavigatorAuction final
   void FinalizeAdComplete(ScriptPromiseResolver* resolver,
                           const absl::optional<KURL>& creative_url);
   // Completion callback for Mojo call made by runAdAuction().
-  void AuctionComplete(ScriptPromiseResolver*, const absl::optional<KURL>&);
+  void AuctionComplete(ScriptPromiseResolver*,
+                       AbortSignal*,
+                       bool manually_aborted,
+                       const absl::optional<KURL>&);
   // Completion callback for Mojo call made by deprecatedURNToURL().
   void GetURLFromURNComplete(ScriptPromiseResolver*,
                              const absl::optional<KURL>&);

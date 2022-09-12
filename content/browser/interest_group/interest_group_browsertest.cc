@@ -3380,6 +3380,169 @@ IN_PROC_BROWSER_TEST_F(
        {InterestGroupTestObserver::kWin, test_origin.Serialize(), "cars"}});
 }
 
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionCancel) {
+  // Test cancelling an auction while it's still pending.
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+
+  // This uses /hung as the script URL to avoid race with cancellation.
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(blink::InterestGroup(
+          /*expiry=*/base::Time(),
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0, /*enable_bidding_signals_prioritization=*/false,
+          /*priority_vector=*/absl::nullopt,
+          /*priority_signals_overrides=*/absl::nullopt, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/hung"),
+          /*bidding_wasm_helper_url=*/absl::nullopt,
+          /*daily_update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/absl::nullopt,
+          /*trusted_bidding_signals_keys=*/{},
+          /*user_bidding_signals=*/R"({"some":"json","stuff":{"here":[1,2]}})",
+          /*ads=*/{{{ad_url, R"({"ad":"metadata","here":[1,2]})"}}},
+          /*ad_components=*/absl::nullopt)));
+
+  std::string auction_script = JsReplace(
+      R"(
+      let controller = new AbortController();
+      const config = {
+        seller: $1,
+        decisionLogicUrl: $2,
+        interestGroupBuyers: [$1],
+        signal: controller.signal
+      };
+
+      (async function() {
+        try {
+          let result = navigator.runAdAuction(config);
+          controller.abort('a reason');
+          return await result;
+        } catch (e) {
+          return e.toString();
+        }
+      })())",
+      test_origin,
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js"));
+  EXPECT_EQ("a reason", EvalJs(shell(), auction_script));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionCancelLate) {
+  // Test cancelling an auction after it finished (which is a no-op).
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(blink::InterestGroup(
+          /*expiry=*/base::Time(),
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0, /*enable_bidding_signals_prioritization=*/false,
+          /*priority_vector=*/absl::nullopt,
+          /*priority_signals_overrides=*/absl::nullopt, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*bidding_wasm_helper_url=*/absl::nullopt,
+          /*daily_update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/absl::nullopt,
+          /*trusted_bidding_signals_keys=*/{},
+          /*user_bidding_signals=*/R"({"some":"json","stuff":{"here":[1,2]}})",
+          /*ads=*/{{{ad_url, R"({"ad":"metadata","here":[1,2]})"}}},
+          /*ad_components=*/absl::nullopt)));
+
+  std::string auction_script = JsReplace(
+      R"(
+      let controller = new AbortController();
+      const config = {
+        seller: $1,
+        decisionLogicUrl: $2,
+        interestGroupBuyers: [$1],
+        signal: controller.signal
+      };
+
+      (async function() {
+        try {
+          let result = await navigator.runAdAuction(config);
+          controller.abort();
+          return result;
+        } catch (e) {
+          return e.toString();
+        }
+      })())",
+      test_origin,
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js"));
+
+  auto result = EvalJs(shell(), auction_script);
+  GURL urn_url = GURL(result.ExtractString());
+  EXPECT_TRUE(urn_url.is_valid());
+  EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+
+  TestFencedFrameURLMappingResultObserver observer;
+  ConvertFencedFrameURNToURL(urn_url, &observer);
+  EXPECT_EQ(ad_url, observer.mapped_url()->spec());
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionCancelBefore) {
+  // Test cancelling an auction before runAdAuction is even called.
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(blink::InterestGroup(
+          /*expiry=*/base::Time(),
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0, /*enable_bidding_signals_prioritization=*/false,
+          /*priority_vector=*/absl::nullopt,
+          /*priority_signals_overrides=*/absl::nullopt, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*bidding_wasm_helper_url=*/absl::nullopt,
+          /*daily_update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/absl::nullopt,
+          /*trusted_bidding_signals_keys=*/{},
+          /*user_bidding_signals=*/R"({"some":"json","stuff":{"here":[1,2]}})",
+          /*ads=*/{{{ad_url, R"({"ad":"metadata","here":[1,2]})"}}},
+          /*ad_components=*/absl::nullopt)));
+
+  std::string auction_script = JsReplace(
+      R"(
+      let controller = new AbortController();
+      const config = {
+        seller: $1,
+        decisionLogicUrl: $2,
+        interestGroupBuyers: [$1],
+        signal: controller.signal
+      };
+
+      (async function() {
+        try {
+          controller.abort();
+          return await navigator.runAdAuction(config);
+        } catch (e) {
+          return e.toString();
+        }
+      })())",
+      test_origin,
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js"));
+
+  EXPECT_EQ("AbortError: signal is aborted without reason",
+            EvalJs(shell(), auction_script));
+}
+
 // Runs an auction where the bidding function uses a WASM helper.
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithBidderWasm) {
   GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");

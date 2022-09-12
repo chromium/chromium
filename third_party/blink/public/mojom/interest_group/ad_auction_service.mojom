@@ -14,6 +14,15 @@ struct Replacement {
   string replacement;
 };
 
+// Used to provide a way of aborting a call to AdAuctionService.RunAdAuction
+interface AbortableAdAuction {
+  // Aborts the auction for which the receiver for this pipe was passed to
+  // RunAdAuction(), unless the auction has already finished (with at most
+  // reporting pending).  Either way, the normal callback for RunAdAuction()
+  // will be invoked.
+  Abort();
+};
+
 // Per-frame API to initiate on-device ad auction and add interest groups.
 // https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 interface AdAuctionService {
@@ -41,7 +50,11 @@ interface AdAuctionService {
   // config `decision_logic_url`. The result of the auction is a URL for the
   // winning ad creative, which the publisher page loads into a page or iframe
   // in the owner's domain. If no ad wins the auction, null is returned.
-  RunAdAuction(AuctionAdConfig config) => (url.mojom.Url? ad_display_url);
+  // `manually_aborted` is set to true only if the auction was manually
+  // cancelled successfully via a call to `abort_receiver->Abort()`.
+  RunAdAuction(AuctionAdConfig config,
+               pending_receiver<AbortableAdAuction>? abort_receiver)
+      => (bool manually_aborted, url.mojom.Url? ad_display_url);
 
   // Requests that the browser process create or overwrite persisted interest
   // group keyed by `group.owner` and `group.name` with information from
