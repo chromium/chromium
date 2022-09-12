@@ -22,6 +22,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -80,19 +82,12 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile) {
             chrome::GetSettingsUrl(chrome::kManageProfileSubPage));
 }
 
-// TODO(crbug.com/1358380): Re-enable this test.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_EditProfile_NoBrowser DISABLED_EditProfile_NoBrowser
-#else
-#define MAYBE_EditProfile_NoBrowser EditProfile_NoBrowser
-#endif
 // Click on "Edit" will open a new browser if none exists for a profile.
-IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, MAYBE_EditProfile_NoBrowser) {
+IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile_NoBrowser) {
+  // Keep the browser process running while browsers are closed.
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+                             KeepAliveRestartOption::DISABLED);
   Profile* profile = browser()->profile();
-  // Open the profile picker before closing all browser windows to keep the
-  // browser process alive.
-  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
-      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
   BrowserList::CloseAllBrowsersWithProfile(profile);
   ui_test_utils::WaitForBrowserToClose(browser());
   EXPECT_EQ(chrome::GetBrowserCount(profile), 0U);
@@ -125,10 +120,9 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile_SigninRequired) {
           .GetProfileAttributesWithPath(profile->GetPath());
   ASSERT_NE(entry, nullptr);
   entry->LockForceSigninProfile(true);
-  // Open the profile picker before closing all browser windows to keep the
-  // browser process alive.
-  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
-      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
+  // Keep the browser process running while browsers are closed.
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+                             KeepAliveRestartOption::DISABLED);
   BrowserList::CloseAllBrowsersWithProfile(profile);
   ui_test_utils::WaitForBrowserToClose(browser());
   EXPECT_EQ(chrome::GetBrowserCount(profile), 0U);
@@ -142,6 +136,12 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, EditProfile_SigninRequired) {
 
   // Browser shouldn't be opened since `profile` is locked.
   EXPECT_EQ(chrome::GetBrowserCount(profile), 0U);
+
+  // The browser test doesn't shut down correctly if `keep_alive` is released
+  // while there are no browser windows. Create browser to work around this
+  // problem.
+  entry->LockForceSigninProfile(false);
+  CreateBrowser(profile);
 }
 
 // Sets up multiple profiles so that the profile picker is shown on next
