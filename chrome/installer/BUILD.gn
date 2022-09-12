@@ -6,7 +6,6 @@ import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/sysroot.gni")
-import("//chrome/browser/chrome_for_testing/buildflags.gni")
 
 declare_args() {
   enable_linux_installer =
