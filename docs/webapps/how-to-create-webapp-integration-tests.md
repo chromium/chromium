@@ -7,10 +7,10 @@ Please see the the [Integration Testing Framework document][integration-testing-
 - Run `chrome/test/webapps/generate_framework_tests_and_coverage.py` and verify nothing is outputted to the console.
 - Build the tests by building the targets `browser_tests` and `sync_integration_tests`
   - (e.g. `autoninja -C out/Release browser_tests sync_integration_tests`)
-- Run the generated tests, using the filter `--gtest_filter=*WebAppIntegration_*`:
+- Run the generated tests, using the filter `--gtest_filter=WebAppIntegration*`:
   - Note: These will take a long time! No need to run them all, this is just so you know how to run them if you need to.
-  - `testing/run_with_dummy_home.py testing/xvfb.py out/Release/browser_tests --gtest_filter=*WebAppIntegration_*`
-  - `testing/run_with_dummy_home.py testing/xvfb.py out/Release/sync_integration_tests --gtest_filter=*WebAppIntegration_*`
+  - `testing/run_with_dummy_home.py testing/xvfb.py out/Release/browser_tests --gtest_filter=WebAppIntegration*`
+  - `testing/run_with_dummy_home.py testing/xvfb.py out/Release/sync_integration_tests --gtest_filter=WebAppIntegration*`
 
 ## 2. Determine what actions are needed for new critical user journeys
 
