@@ -435,18 +435,13 @@ void FakeShillManagerClient::ConfigureService(
         ipconfig_path, true /* visible */);
   }
 
-  // Merge the new properties with existing properties.
-  base::Value merged_properties =
-      service_client->GetServiceProperties(service_path)->Clone();
-  merged_properties.MergeDictionary(&properties);
-
-  // Now set all the properties.
-  for (auto iter : merged_properties.DictItems())
+  // Set all the properties.
+  for (auto iter : properties.DictItems())
     service_client->SetServiceProperty(service_path, iter.first, iter.second);
 
   // If the Profile property is set, add it to ProfileClient.
   const std::string* profile_path =
-      merged_properties.FindStringKey(shill::kProfileProperty);
+      properties.FindStringKey(shill::kProfileProperty);
   if (profile_path) {
     auto* profile_client = ShillProfileClient::Get()->GetTestInterface();
     if (!profile_client->UpdateService(*profile_path, service_path))

@@ -528,7 +528,6 @@ bool FakeShillServiceClient::SetServiceProperty(const std::string& service_path,
   VLOG(1) << "Service.SetProperty: " << property << " = " << value
           << " For: " << service_path;
 
-  base::Value new_properties(base::Value::Type::DICTIONARY);
   std::string changed_property;
   base::CompareCase case_sensitive = base::CompareCase::SENSITIVE;
   if (base::StartsWith(property, "Provider.", case_sensitive) ||
@@ -541,28 +540,29 @@ bool FakeShillServiceClient::SetServiceProperty(const std::string& service_path,
     std::string key = property;
     if (base::StartsWith(property, "Provider.", case_sensitive))
       key = property.substr(strlen("Provider."));
-    base::Value* provider = new_properties.SetKey(
-        shill::kProviderProperty, base::Value(base::Value::Type::DICTIONARY));
-    provider->SetKey(key, value.Clone());
+    base::Value::Dict* provider =
+        dict->GetDict().EnsureDict(shill::kProviderProperty);
+    provider->Set(key, value.Clone());
     changed_property = shill::kProviderProperty;
   } else {
-    new_properties.SetKey(property, value.Clone());
+    dict->SetKey(property, value.Clone());
     changed_property = property;
   }
 
   // Make PSK networks connectable if 'Passphrase' is set.
-  if (changed_property == shill::kPassphraseProperty && value.is_string() &&
-      !value.GetString().empty()) {
-    new_properties.SetKey(shill::kPassphraseRequiredProperty,
-                          base::Value(false));
-    base::Value* security = dict->FindKey(shill::kSecurityClassProperty);
-    if (security && security->is_string() &&
-        security->GetString() == shill::kSecurityClassPsk) {
-      new_properties.SetKey(shill::kConnectableProperty, base::Value(true));
+  if (changed_property == shill::kPassphraseProperty ||
+      changed_property == shill::kSecurityClassProperty) {
+    const std::string* passphrase =
+        dict->GetDict().FindString(shill::kPassphraseProperty);
+    if (passphrase && !passphrase->empty()) {
+      dict->SetKey(shill::kPassphraseRequiredProperty, base::Value(false));
+      const std::string* security =
+          dict->GetDict().FindString(shill::kSecurityClassProperty);
+      if (security && *security == shill::kSecurityClassPsk) {
+        dict->SetKey(shill::kConnectableProperty, base::Value(true));
+      }
     }
   }
-
-  dict->MergeDictionary(&new_properties);
 
   // Add or update the profile entry.
   ShillProfileClient::TestInterface* profile_test =
