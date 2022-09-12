@@ -752,9 +752,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.DnsTask.AdditionalHttps.Requested"
-    enum="UnsolicitedHttpsRecordStatus" expires_after="2022-08-14">
-  <owner>ericorth@chromium.org</owner>
-  <owner>dmcardle@chromium.org</owner>
+    enum="UnsolicitedHttpsRecordStatus" expires_after="2023-01-14">
+  <owner>awillia@chromium.org</owner>
+  <owner>doh-core@google.com</owner>
   <summary>
     Status of HTTPS DNS records received as additional records in a DnsTask
     querying for HTTPS. This would represent a recurssive resolver that is
@@ -764,9 +764,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.DnsTask.AdditionalHttps.Unsolicited"
-    enum="UnsolicitedHttpsRecordStatus" expires_after="2022-08-14">
-  <owner>ericorth@chromium.org</owner>
-  <owner>dmcardle@chromium.org</owner>
+    enum="UnsolicitedHttpsRecordStatus" expires_after="2023-01-14">
+  <owner>awillia@chromium.org</owner>
+  <owner>doh-core@google.com</owner>
   <summary>
     Status of HTTPS DNS records received as additional records in a DnsTask
     querying for a type other than HTTPS. Recorded as DNS responses are parsed.
@@ -1313,8 +1313,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.SecureDnsTask.DnsModeAutomatic.FailureTime" units="ms"
-    expires_after="2022-08-14">
-  <owner>ericorth@chromium.org</owner>
+    expires_after="2023-01-14">
+  <owner>awillia@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>
     Duration of time taken by a secure DnsTask in resolutions that failed that
@@ -1347,8 +1347,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.UI.ProbeAttemptSuccess" enum="Boolean"
-    expires_after="2022-10-16">
-  <owner>ericorth@chromium.org</owner>
+    expires_after="2023-01-14">
+  <owner>awillia@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>
     Records the outcome of a DoH probe attempt on the first valid entry in the
@@ -1398,8 +1398,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.UpgradeConfig.Ineligible.UnhandledOptions"
-    enum="Boolean" expires_after="2022-08-14">
-  <owner>ericorth@chromium.org</owner>
+    enum="Boolean" expires_after="2023-01-14">
+  <owner>awillia@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>
     True if upgrade to DoH was not attempted because of unhandled options in the
