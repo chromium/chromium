@@ -171,8 +171,6 @@ bool AtDomainWithPathPrefix(GURL url,
 template <size_t N>
 bool IsMatchedUrlWithPathPrefix(const char* (&allowedDomainAndPaths)[N][2],
                                 GURL url) {
-  if (IsTestUrl(url) || IsInternalWebsite(url))
-    return true;
   for (size_t i = 0; i < N; i++) {
     auto domain = allowedDomainAndPaths[i][0];
     auto path_prefix = allowedDomainAndPaths[i][1];
@@ -215,18 +213,21 @@ void ReturnEnabledSuggestions(
 
   // Allow-list (will only allow if matched)
   bool emoji_suggestions_allowed =
+      IsTestUrl(*current_url) || IsInternalWebsite(*current_url) ||
       IsMatchedUrlWithPathPrefix(kAllowedDomainAndPathsForEmojiSuggester,
                                  *current_url) ||
       IsMatchedApp(kAllowedAppsForEmojiSuggester, window_properties);
 
   // Allow-list (will only allow if matched)
   bool multi_word_suggestions_allowed =
+      IsTestUrl(*current_url) || IsInternalWebsite(*current_url) ||
       IsMatchedUrlWithPathPrefix(kAllowedDomainAndPathsForMultiWordSuggester,
                                  *current_url) ||
       IsMatchedApp(kAllowedAppsForMultiWordSuggester, window_properties);
 
   // Allow-list (will only allow if matched)
   bool personal_info_suggestions_allowed =
+      IsTestUrl(*current_url) || IsInternalWebsite(*current_url) ||
       IsMatchedUrlWithPathPrefix(kAllowedDomainAndPathsForPersonalInfoSuggester,
                                  *current_url) ||
       IsMatchedApp(kAllowedAppsForPersonalInfoSuggester, window_properties);
