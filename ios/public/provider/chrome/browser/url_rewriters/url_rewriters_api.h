@@ -12,7 +12,7 @@ class BrowserURLRewriter;
 namespace ios {
 namespace provider {
 
-// Registers the URL rewriters to |rewriter|.
+// Registers the URL rewriters to `rewriter`.
 void AddURLRewriters(web::BrowserURLRewriter* rewriter);
 
 }  // namespace provider

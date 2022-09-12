@@ -26,7 +26,7 @@ void AppendSwitchesFromExperimentalSettings(
     NSUserDefaults* experimental_settings,
     base::CommandLine* command_line);
 
-// Attaches any embedder-specific browser agents to the given |browser|.
+// Attaches any embedder-specific browser agents to the given `browser`.
 void AttachBrowserAgents(Browser* browser);
 
 }  // namespace provider

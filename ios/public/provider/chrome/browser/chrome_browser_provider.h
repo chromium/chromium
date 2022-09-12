@@ -64,7 +64,7 @@ class ChromeBrowserProvider {
   void RemoveObserver(Observer* observer);
 
  protected:
-  // Fires |OnChromeIdentityServiceDidChange| on all observers.
+  // Fires `OnChromeIdentityServiceDidChange` on all observers.
   void FireChromeIdentityServiceDidChange(ChromeIdentityService* new_service);
 
   // Creates a ChromeIdentityService. This methods has to be be implemented

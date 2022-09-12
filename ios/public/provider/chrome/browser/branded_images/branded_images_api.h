@@ -44,7 +44,7 @@ enum class BrandedImage {
   kPasswordSuggestionKey,
 };
 
-// Return the branded image corresponding to |branded_image|.
+// Return the branded image corresponding to `branded_image`.
 UIImage* GetBrandedImage(BrandedImage branded_image);
 
 }  // namespace provider

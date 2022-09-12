@@ -10,10 +10,10 @@
 namespace ios {
 namespace provider {
 
-// Dismisses any modals presented from a |collection_view| item.
+// Dismisses any modals presented from a `collection_view` item.
 void DismissModalsForCollectionView(UICollectionView* collection_view);
 
-// Dismisses any modals presented from a |table_view| cell.
+// Dismisses any modals presented from a `table_view` cell.
 void DismissModalsForTableView(UITableView* table_view);
 
 }  // namespace provider

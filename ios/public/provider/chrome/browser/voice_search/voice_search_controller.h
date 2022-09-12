@@ -21,7 +21,7 @@ class WebState;
 
 // Starts recognizing and recording process. Will call the delegate method
 // upon completion if the recognition succeeds. The Voice Search input UI
-// must be presented on |viewController|.
+// must be presented on `viewController`.
 - (void)startRecognitionOnViewController:(UIViewController*)viewController
                                 webState:(web::WebState*)webState;
 

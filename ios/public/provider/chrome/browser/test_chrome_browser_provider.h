@@ -20,7 +20,7 @@ class TestChromeBrowserProvider : public ChromeBrowserProvider {
   TestChromeBrowserProvider& operator=(const TestChromeBrowserProvider&) =
       delete;
 
-  // Returns the current provider as a |TestChromeBrowserProvider|.
+  // Returns the current provider as a `TestChromeBrowserProvider`.
   static TestChromeBrowserProvider& GetTestProvider();
 
  private:
