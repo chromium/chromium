@@ -426,6 +426,12 @@
   <message name="IDS_WEBSITE_SETTINGS_DOMAIN_DESKTOP_SITE_EXCEPTION_CHECKBOX_DESCRIPTION" desc="Description text of a checkbox in the dialog to add a website to a list.">
    Recommended for best experience
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_DESKTOP_SITE_ALLOW" desc="Summary text explaining that Chrome will request desktop view for a website.">
+    Desktop site
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_DESKTOP_SITE_BLOCK" desc="Summary text explaining that Chrome will request mobile view for a website.">
+    Mobile site
+  </message>
 
   <!-- Federated Identity -->
   <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_FEDERATED_IDENTITY_ALLOW" desc="The description for the allow third-party sign-in for website dialog.">

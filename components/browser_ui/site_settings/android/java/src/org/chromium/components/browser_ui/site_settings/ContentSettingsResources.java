@@ -434,13 +434,19 @@ public class ContentSettingsResources {
      * Returns the string resource id for a given ContentSetting to show
      * with a particular website.
      * @param value The ContentSetting for which we want the resource.
+     * @param contentSettingsType The ContentSettingsType for this string resource id.
      */
-    public static int getSiteSummary(@ContentSettingValues @Nullable Integer value) {
+    public static int getSiteSummary(@ContentSettingValues @Nullable Integer value,
+            @ContentSettingsType int contentSettingsType) {
         switch (value) {
             case ContentSettingValues.ALLOW:
-                return R.string.website_settings_permissions_allow;
+                return contentSettingsType == ContentSettingsType.REQUEST_DESKTOP_SITE
+                        ? R.string.website_settings_desktop_site_allow
+                        : R.string.website_settings_permissions_allow;
             case ContentSettingValues.BLOCK:
-                return R.string.website_settings_permissions_block;
+                return contentSettingsType == ContentSettingsType.REQUEST_DESKTOP_SITE
+                        ? R.string.website_settings_desktop_site_block
+                        : R.string.website_settings_permissions_block;
             default:
                 return 0; // We never show Ask as an option on individual permissions.
         }

@@ -1196,10 +1196,10 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         Integer value = site.getContentSetting(browserContextHandle, contentSettingsType);
 
         CharSequence[] descriptions = new String[2];
-        descriptions[0] =
-                getString(ContentSettingsResources.getSiteSummary(ContentSettingValues.ALLOW));
-        descriptions[1] =
-                getString(ContentSettingsResources.getSiteSummary(ContentSettingValues.BLOCK));
+        descriptions[0] = getString(ContentSettingsResources.getSiteSummary(
+                ContentSettingValues.ALLOW, contentSettingsType));
+        descriptions[1] = getString(ContentSettingsResources.getSiteSummary(
+                ContentSettingValues.BLOCK, contentSettingsType));
 
         return new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
                 .setPositiveButton(R.string.cancel, null)
