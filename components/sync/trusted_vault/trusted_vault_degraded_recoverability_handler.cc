@@ -70,6 +70,11 @@ TrustedVaultDegradedRecoverabilityHandler::
 TrustedVaultDegradedRecoverabilityHandler::
     ~TrustedVaultDegradedRecoverabilityHandler() = default;
 
+void TrustedVaultDegradedRecoverabilityHandler::
+    HintDegradedRecoverabilityChanged() {
+  RefreshImmediately();
+}
+
 void TrustedVaultDegradedRecoverabilityHandler::StartLongIntervalRefreshing() {
   current_refresh_period_ = kLongDegradedRecoverabilityRefreshPeriod;
   Start();

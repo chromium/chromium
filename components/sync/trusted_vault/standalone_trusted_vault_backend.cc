@@ -33,6 +33,7 @@
 #include "components/sync/trusted_vault/securebox.h"
 #include "components/sync/trusted_vault/trusted_vault_server_constants.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 
 namespace syncer {
 
@@ -619,6 +620,16 @@ void StandaloneTrustedVaultBackend::SetClockForTesting(base::Clock* clock) {
   clock_ = clock;
 }
 
+void StandaloneTrustedVaultBackend::OnAuthErrorResolvedForAccount(
+    const CoreAccountInfo& account_info) {
+  if (!base::FeatureList::IsEnabled(
+          kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling) ||
+      account_info != primary_account_) {
+    return;
+  }
+  degraded_recoverability_handler_->HintDegradedRecoverabilityChanged();
+}
+
 absl::optional<TrustedVaultDeviceRegistrationStateForUMA>
 StandaloneTrustedVaultBackend::MaybeRegisterDevice(
     bool has_persistent_auth_error_for_uma) {
@@ -878,7 +889,12 @@ void StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded(
   ongoing_add_recovery_method_request_ = nullptr;
 
   std::move(cb).Run();
-  delegate_->NotifyRecoverabilityDegradedChanged();
+  if (base::FeatureList::IsEnabled(
+          kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling)) {
+    degraded_recoverability_handler_->HintDegradedRecoverabilityChanged();
+  } else {
+    delegate_->NotifyRecoverabilityDegradedChanged();
+  }
 }
 
 void StandaloneTrustedVaultBackend::AbandonConnectionRequest() {

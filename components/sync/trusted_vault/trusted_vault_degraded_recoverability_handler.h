@@ -55,6 +55,7 @@ class TrustedVaultDegradedRecoverabilityHandler {
       const TrustedVaultDegradedRecoverabilityHandler&) = delete;
   ~TrustedVaultDegradedRecoverabilityHandler();
 
+  void HintDegradedRecoverabilityChanged();
   void StartLongIntervalRefreshing();
   void StartShortIntervalRefreshing();
   void RefreshImmediately();

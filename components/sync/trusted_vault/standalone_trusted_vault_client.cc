@@ -24,6 +24,7 @@
 #include "components/sync/trusted_vault/standalone_trusted_vault_backend.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher_impl.h"
 #include "components/sync/trusted_vault/trusted_vault_connection_impl.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace syncer {
@@ -66,6 +67,9 @@ class IdentityManagerObserver : public signin::IdentityManager::Observer {
   void OnAccountsCookieDeletedByUserAction() override;
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+      const GoogleServiceAuthError& error) override;
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
       const GoogleServiceAuthError& error) override;
   void OnRefreshTokensLoaded() override;
 
@@ -124,6 +128,20 @@ void IdentityManagerObserver::OnAccountsInCookieUpdated(
     const GoogleServiceAuthError& error) {
   UpdateAccountsInCookieJarInfoIfNeeded(accounts_in_cookie_jar_info);
   notify_keys_changed_callback_.Run();
+}
+
+void IdentityManagerObserver::OnErrorStateOfRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info,
+    const GoogleServiceAuthError& error) {
+  // TODO(crbug.com/1247990): Add Integration test.
+  if (identity_manager_->AreRefreshTokensLoaded() &&
+      error.state() == GoogleServiceAuthError::NONE) {
+    backend_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &StandaloneTrustedVaultBackend::OnAuthErrorResolvedForAccount,
+            backend_, account_info));
+  }
 }
 
 void IdentityManagerObserver::OnRefreshTokensLoaded() {

@@ -20,6 +20,7 @@
 #include "components/sync/protocol/local_trusted_vault.pb.h"
 #include "components/sync/trusted_vault/trusted_vault_connection.h"
 #include "components/sync/trusted_vault/trusted_vault_degraded_recoverability_handler.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -130,6 +131,8 @@ class StandaloneTrustedVaultBackend
                                             int version);
 
   void SetClockForTesting(base::Clock* clock);
+
+  void OnAuthErrorResolvedForAccount(const CoreAccountInfo& account_info);
 
  private:
   friend class base::RefCountedThreadSafe<StandaloneTrustedVaultBackend>;
