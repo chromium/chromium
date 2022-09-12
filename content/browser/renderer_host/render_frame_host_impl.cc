@@ -10970,8 +10970,8 @@ void RenderFrameHostImpl::CreateIDBFactory(
 
 void RenderFrameHostImpl::CreateBucketManagerHost(
     mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) {
-  GetProcess()->BindBucketManagerHostForRenderFrame(GetGlobalId(),
-                                                    std::move(receiver));
+  GetProcess()->BindBucketManagerHost(weak_ptr_factory_.GetWeakPtr(),
+                                      std::move(receiver));
 }
 
 void RenderFrameHostImpl::CreatePermissionService(
@@ -14303,6 +14303,25 @@ void RenderFrameHostImpl::AssertNonSpeculativeFrame() const {
 
   NOTREACHED();
   base::debug::DumpWithoutCrashing();
+}
+
+blink::StorageKey RenderFrameHostImpl::GetBucketStorageKey() {
+  return storage_key_;
+}
+
+blink::mojom::PermissionStatus RenderFrameHostImpl::GetPermissionStatus(
+    blink::PermissionType permission_type) {
+  return GetBrowserContext()
+      ->GetPermissionController()
+      ->GetPermissionStatusForCurrentDocument(permission_type, this);
+}
+
+void RenderFrameHostImpl::BindCacheStorageForBucket(
+    const storage::BucketInfo& bucket,
+    mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
+  // TODO(estade): pass the bucket rather than the storage key to support
+  // non-default buckets.
+  BindCacheStorage(std::move(receiver));
 }
 
 RenderFrameHostImpl::DocumentAssociatedData::DocumentAssociatedData(

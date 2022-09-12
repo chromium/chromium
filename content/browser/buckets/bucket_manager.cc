@@ -16,33 +16,14 @@ BucketManager::BucketManager(StoragePartitionImpl* storage_partition)
 
 BucketManager::~BucketManager() = default;
 
-void BucketManager::BindReceiverForRenderFrame(
-    const GlobalRenderFrameHostId& render_frame_host_id,
-    const blink::StorageKey& storage_key,
-    mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver,
-    mojo::ReportBadMessageCallback bad_message_callback) {
-  RenderFrameHost* rfh = RenderFrameHost::FromID(render_frame_host_id);
-  DCHECK(rfh);
-  DoBindReceiver(storage_key, BucketContext(render_frame_host_id),
-                 std::move(receiver), std::move(bad_message_callback));
-}
-
-void BucketManager::BindReceiverForWorker(
-    int render_process_id,
-    const blink::StorageKey& storage_key,
-    mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver,
-    mojo::ReportBadMessageCallback bad_message_callback) {
-  DoBindReceiver(storage_key, BucketContext(render_process_id),
-                 std::move(receiver), std::move(bad_message_callback));
-}
-
-void BucketManager::DoBindReceiver(
-    const blink::StorageKey& storage_key,
-    const BucketContext& context,
+void BucketManager::BindReceiver(
+    base::WeakPtr<BucketContext> context,
     mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver,
     mojo::ReportBadMessageCallback bad_message_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(context);
 
+  blink::StorageKey storage_key = context->GetBucketStorageKey();
   auto it = hosts_.find(storage_key);
   if (it != hosts_.end()) {
     it->second->BindReceiver(std::move(receiver), context);

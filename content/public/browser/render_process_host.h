@@ -84,6 +84,7 @@ class Origin;
 namespace content {
 class BrowserContext;
 class BrowserMessageFilter;
+class BucketContext;
 class IsolationContext;
 class ProcessLock;
 class RenderFrameHost;
@@ -566,11 +567,8 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void BindIndexedDB(
       const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) = 0;
-  virtual void BindBucketManagerHostForRenderFrame(
-      const GlobalRenderFrameHostId& render_frame_host_id,
-      mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) = 0;
-  virtual void BindBucketManagerHostForWorker(
-      const blink::StorageKey& storage_key,
+  virtual void BindBucketManagerHost(
+      base::WeakPtr<BucketContext> bucket_context,
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) = 0;
   virtual void BindRestrictedCookieManagerForServiceWorker(
       const blink::StorageKey& storage_key,

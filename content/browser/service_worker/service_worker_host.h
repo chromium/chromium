@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/browser_interface_broker_impl.h"
+#include "content/browser/buckets/bucket_context.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/common/content_export.h"
@@ -53,7 +54,7 @@ struct ServiceWorkerVersionBaseInfo;
 // execution context instance.
 //
 // Lives on the UI thread.
-class CONTENT_EXPORT ServiceWorkerHost {
+class CONTENT_EXPORT ServiceWorkerHost : public BucketContext {
  public:
   ServiceWorkerHost(mojo::PendingAssociatedReceiver<
                         blink::mojom::ServiceWorkerContainerHost> host_receiver,
@@ -63,7 +64,7 @@ class CONTENT_EXPORT ServiceWorkerHost {
   ServiceWorkerHost(const ServiceWorkerHost&) = delete;
   ServiceWorkerHost& operator=(const ServiceWorkerHost&) = delete;
 
-  ~ServiceWorkerHost();
+  ~ServiceWorkerHost() override;
 
   int worker_process_id() const { return worker_process_id_; }
   ServiceWorkerVersion* version() const { return version_; }
@@ -107,9 +108,20 @@ class CONTENT_EXPORT ServiceWorkerHost {
   void CreateBroadcastChannelProvider(
       mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver);
 
+  void CreateBucketManagerHost(
+      mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver);
+
   base::WeakPtr<ServiceWorkerHost> GetWeakPtr();
 
   void ReportNoBinderForInterface(const std::string& error);
+
+  // BucketContext:
+  blink::StorageKey GetBucketStorageKey() override;
+  blink::mojom::PermissionStatus GetPermissionStatus(
+      blink::PermissionType permission_type) override;
+  void BindCacheStorageForBucket(
+      const storage::BucketInfo& bucket,
+      mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override;
 
  private:
   int worker_process_id_ = ChildProcessHost::kInvalidUniqueID;

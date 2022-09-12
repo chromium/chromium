@@ -158,7 +158,7 @@ CacheStorage* StorageBucket::caches(ExceptionState& exception_state) {
   if (!caches_ && GlobalCacheStorage::CanCreateCacheStorage(
                       GetExecutionContext(), exception_state)) {
     mojo::PendingRemote<mojom::blink::CacheStorage> cache_storage;
-    // TODO(estade): bind using `remote_`.
+    remote_->GetCaches(cache_storage.InitWithNewPipeAndPassReceiver());
     caches_ = MakeGarbageCollected<CacheStorage>(
         GetExecutionContext(),
         GlobalFetch::ScopedFetcher::From(*navigator_base_),

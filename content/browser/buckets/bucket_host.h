@@ -42,7 +42,7 @@ class BucketHost : public blink::mojom::BucketHost {
   // Create mojo data pipe and return remote to pass to the renderer
   // for the StorageBucket object.
   mojo::PendingRemote<blink::mojom::BucketHost> CreateStorageBucketBinding(
-      const BucketContext& context);
+      base::WeakPtr<BucketContext> context);
 
   // blink::mojom::BucketHost
   void Persist(PersistCallback callback) override;
@@ -55,6 +55,8 @@ class BucketHost : public blink::mojom::BucketHost {
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
   void GetLockManager(
       mojo::PendingReceiver<blink::mojom::LockManager> receiver) override;
+  void GetCaches(
+      mojo::PendingReceiver<blink::mojom::CacheStorage> caches) override;
 
  private:
   void OnReceiverDisconnected();
@@ -78,7 +80,8 @@ class BucketHost : public blink::mojom::BucketHost {
   // Holds the latest snapshot from the database.
   storage::BucketInfo bucket_info_;
 
-  mojo::ReceiverSet<blink::mojom::BucketHost, BucketContext> receivers_;
+  mojo::ReceiverSet<blink::mojom::BucketHost, base::WeakPtr<BucketContext>>
+      receivers_;
 
   base::WeakPtrFactory<BucketHost> weak_factory_{this};
 };

@@ -31,6 +31,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/worker_type.h"
 #include "content/public/common/content_client.h"
@@ -432,6 +433,27 @@ SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
   return factory_params;
 }
 
+blink::StorageKey SharedWorkerHost::GetBucketStorageKey() {
+  return GetStorageKey();
+}
+
+blink::mojom::PermissionStatus SharedWorkerHost::GetPermissionStatus(
+    blink::PermissionType permission_type) {
+  return GetProcessHost()
+      ->GetBrowserContext()
+      ->GetPermissionController()
+      ->GetPermissionStatusForWorker(permission_type, GetProcessHost(),
+                                     GetStorageKey().origin());
+}
+
+void SharedWorkerHost::BindCacheStorageForBucket(
+    const storage::BucketInfo& bucket,
+    mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
+  // TODO(estade): pass the bucket rather than the storage key to support
+  // non-default buckets.
+  BindCacheStorage(std::move(receiver));
+}
+
 void SharedWorkerHost::AllowFileSystem(
     const GURL& url,
     base::OnceCallback<void(bool)> callback) {
@@ -501,6 +523,11 @@ void SharedWorkerHost::CreateBroadcastChannelProvider(
       std::make_unique<BroadcastChannelProvider>(broadcast_channel_service,
                                                  GetStorageKey()),
       std::move(receiver));
+}
+
+void SharedWorkerHost::CreateBucketManagerHost(
+    mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) {
+  GetProcessHost()->BindBucketManagerHost(AsWeakPtr(), std::move(receiver));
 }
 
 void SharedWorkerHost::CreateCodeCacheHost(

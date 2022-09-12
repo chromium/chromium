@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "content/browser/browser_interface_broker_impl.h"
+#include "content/browser/buckets/bucket_context.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host.h"
@@ -70,7 +71,8 @@ class CrossOriginEmbedderPolicyReporter;
 class DedicatedWorkerHost final
     : public blink::mojom::DedicatedWorkerHost,
       public blink::mojom::BackForwardCacheControllerHost,
-      public RenderProcessHostObserver {
+      public RenderProcessHostObserver,
+      public BucketContext {
  public:
   // Creates a new browser-side host for a single dedicated worker.
   //
@@ -136,6 +138,8 @@ class DedicatedWorkerHost final
       mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver);
   void CreateBroadcastChannelProvider(
       mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver);
+  void CreateBucketManagerHost(
+      mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver);
 
 #if !BUILDFLAG(IS_ANDROID)
   void BindSerialService(
@@ -194,6 +198,14 @@ class DedicatedWorkerHost final
       blink::mojom::RendererEvictionReason reason) override;
   void DidChangeBackForwardCacheDisablingFeatures(
       uint64_t features_mask) override;
+
+  // BucketContext:
+  blink::StorageKey GetBucketStorageKey() override;
+  blink::mojom::PermissionStatus GetPermissionStatus(
+      blink::PermissionType permission_type) override;
+  void BindCacheStorageForBucket(
+      const storage::BucketInfo& bucket,
+      mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override;
 
   // Returns the features set that disable back-forward cache.
   blink::scheduler::WebSchedulerTrackedFeatures

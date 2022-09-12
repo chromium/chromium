@@ -35,6 +35,7 @@
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
 #include "content/browser/worker_host/worker_script_fetcher.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/network_service_util.h"
@@ -754,6 +755,11 @@ void DedicatedWorkerHost::BindSerialService(
 }
 #endif
 
+void DedicatedWorkerHost::CreateBucketManagerHost(
+    mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) {
+  GetProcessHost()->BindBucketManagerHost(GetWeakPtr(), std::move(receiver));
+}
+
 void DedicatedWorkerHost::ObserveNetworkServiceCrash(
     StoragePartitionImpl* storage_partition_impl) {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
@@ -947,6 +953,27 @@ void DedicatedWorkerHost::DidChangeBackForwardCacheDisablingFeatures(
       blink::scheduler::WebSchedulerTrackedFeatures::FromEnumBitmask(
           features_mask);
   ancestor_render_frame_host->MaybeEvictFromBackForwardCache();
+}
+
+blink::StorageKey DedicatedWorkerHost::GetBucketStorageKey() {
+  return GetStorageKey();
+}
+
+blink::mojom::PermissionStatus DedicatedWorkerHost::GetPermissionStatus(
+    blink::PermissionType permission_type) {
+  return GetProcessHost()
+      ->GetBrowserContext()
+      ->GetPermissionController()
+      ->GetPermissionStatusForWorker(permission_type, GetProcessHost(),
+                                     GetStorageKey().origin());
+}
+
+void DedicatedWorkerHost::BindCacheStorageForBucket(
+    const storage::BucketInfo& bucket,
+    mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
+  // TODO(estade): pass the bucket rather than the storage key to support
+  // non-default buckets.
+  BindCacheStorage(std::move(receiver));
 }
 
 blink::scheduler::WebSchedulerTrackedFeatures

@@ -49,7 +49,7 @@ class BucketManagerHost : public blink::mojom::BucketManagerHost {
   // determine permissions for the receiver.
   void BindReceiver(
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver,
-      const BucketContext& context);
+      base::WeakPtr<BucketContext> context);
 
   // The `StorageKey` served by this host.
   const blink::StorageKey& storage_key() const { return storage_key_; }
@@ -77,7 +77,7 @@ class BucketManagerHost : public blink::mojom::BucketManagerHost {
   // Called when a receiver in the receiver set is disconnected.
   void OnReceiverDisconnect();
 
-  void DidGetBucket(const BucketContext& bucket_context,
+  void DidGetBucket(base::WeakPtr<BucketContext> bucket_context,
                     OpenBucketCallback callback,
                     storage::QuotaErrorOr<storage::BucketInfo> result);
 
@@ -104,7 +104,9 @@ class BucketManagerHost : public blink::mojom::BucketManagerHost {
 
   // Add receivers for frames & workers for `storage_key_` associated with
   // the StoragePartition that owns `manager_`.
-  mojo::ReceiverSet<blink::mojom::BucketManagerHost, BucketContext> receivers_;
+  mojo::ReceiverSet<blink::mojom::BucketManagerHost,
+                    base::WeakPtr<BucketContext>>
+      receivers_;
 
   base::WeakPtrFactory<BucketManagerHost> weak_factory_{this};
 };

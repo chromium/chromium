@@ -1154,6 +1154,8 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
   map->Add<blink::mojom::SerialService>(base::BindRepeating(
       &DedicatedWorkerHost::BindSerialService, base::Unretained(host)));
 #endif  // !BUILDFLAG(IS_ANDROID)
+  map->Add<blink::mojom::BucketManagerHost>(base::BindRepeating(
+      &DedicatedWorkerHost::CreateBucketManagerHost, base::Unretained(host)));
 
   // RenderProcessHost binders
   map->Add<media::mojom::VideoDecodePerfHistory>(BindWorkerReceiver(
@@ -1175,8 +1177,6 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
       &RenderProcessHostImpl::CreateLockManager, host));
   map->Add<blink::mojom::QuotaManagerHost>(BindWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::BindQuotaManagerHost, host));
-  map->Add<blink::mojom::BucketManagerHost>(BindWorkerReceiverForStorageKey(
-      &RenderProcessHostImpl::BindBucketManagerHostForWorker, host));
 }
 
 void PopulateBinderMapWithContext(
@@ -1244,6 +1244,8 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
                           base::Unretained(host)));
   map->Add<blink::mojom::ReportingServiceProxy>(base::BindRepeating(
       &CreateReportingServiceProxyForSharedWorker, base::Unretained(host)));
+  map->Add<blink::mojom::BucketManagerHost>(base::BindRepeating(
+      &SharedWorkerHost::CreateBucketManagerHost, base::Unretained(host)));
 
   // RenderProcessHost binders
   map->Add<media::mojom::VideoDecodePerfHistory>(BindWorkerReceiver(
@@ -1267,8 +1269,6 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
       &RenderProcessHostImpl::CreateLockManager, host));
   map->Add<blink::mojom::QuotaManagerHost>(BindWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::BindQuotaManagerHost, host));
-  map->Add<blink::mojom::BucketManagerHost>(BindWorkerReceiverForStorageKey(
-      &RenderProcessHostImpl::BindBucketManagerHostForWorker, host));
 }
 
 void PopulateBinderMapWithContext(
@@ -1338,6 +1338,8 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
   map->Add<blink::mojom::HidService>(base::BindRepeating(
       &ServiceWorkerHost::BindHidService, base::Unretained(host)));
 #endif
+  map->Add<blink::mojom::BucketManagerHost>(base::BindRepeating(
+      &ServiceWorkerHost::CreateBucketManagerHost, base::Unretained(host)));
 
   // RenderProcessHost binders
   map->Add<media::mojom::VideoDecodePerfHistory>(BindServiceWorkerReceiver(
@@ -1396,9 +1398,6 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::QuotaManagerHost>(
       BindServiceWorkerReceiverForStorageKey(
           &RenderProcessHostImpl::BindQuotaManagerHost, host));
-  map->Add<blink::mojom::BucketManagerHost>(
-      BindServiceWorkerReceiverForStorageKey(
-          &RenderProcessHostImpl::BindBucketManagerHostForWorker, host));
 
   // RenderProcessHost binders taking a frame id and an origin
   map->Add<blink::mojom::NotificationService>(

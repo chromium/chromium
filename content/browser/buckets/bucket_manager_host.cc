@@ -11,6 +11,7 @@
 #include "content/browser/buckets/bucket_manager.h"
 #include "content/browser/storage_partition_impl.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
@@ -58,9 +59,9 @@ BucketManagerHost::~BucketManagerHost() = default;
 
 void BucketManagerHost::BindReceiver(
     mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver,
-    const BucketContext& context) {
+    base::WeakPtr<BucketContext> context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  receivers_.Add(this, std::move(receiver), context);
+  receivers_.Add(this, std::move(receiver), std::move(context));
 }
 
 void BucketManagerHost::OpenBucket(const std::string& name,
@@ -84,9 +85,10 @@ void BucketManagerHost::OpenBucket(const std::string& name,
 
     if (policies->has_persisted) {
       // Only grant persistence if permitted.
-      if (receivers_.current_context().GetPermissionStatus(
-              blink::PermissionType::DURABLE_STORAGE, storage_key_.origin()) ==
-          blink::mojom::PermissionStatus::GRANTED) {
+      if (receivers_.current_context() &&
+          receivers_.current_context()->GetPermissionStatus(
+              blink::PermissionType::DURABLE_STORAGE) ==
+              blink::mojom::PermissionStatus::GRANTED) {
         params.persistent = policies->persisted;
       }
     }
@@ -139,12 +141,12 @@ void BucketManagerHost::OnReceiverDisconnect() {
 }
 
 void BucketManagerHost::DidGetBucket(
-    const BucketContext& bucket_context,
+    base::WeakPtr<BucketContext> bucket_context,
     OpenBucketCallback callback,
     storage::QuotaErrorOr<storage::BucketInfo> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!result.ok()) {
+  if (!result.ok() || !bucket_context) {
     // Getting a bucket can fail if there is a database error.
     std::move(callback).Run(mojo::NullRemote());
     return;

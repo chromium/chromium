@@ -26,7 +26,7 @@ class BucketContext;
 class StoragePartitionImpl;
 
 // One instance of BucketManager exists per StoragePartition, and is created and
-// owned by the `RenderProcessHostImpl`. This class creates and destroys
+// owned by the `StoragePartitionImpl`. This class creates and destroys
 // BucketManagerHost instances per origin as a centeralized host for an origin's
 // I/O operations so all frames & workers can be notified when a bucket is
 // deleted, and have them mark their Bucket instance as closed.
@@ -38,20 +38,8 @@ class CONTENT_EXPORT BucketManager {
   BucketManager(const BucketManager&) = delete;
   BucketManager& operator=(const BucketManager&) = delete;
 
-  void BindReceiverForRenderFrame(
-      const GlobalRenderFrameHostId& render_frame_host_id,
-      const blink::StorageKey& storage_key,
-      mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver,
-      mojo::ReportBadMessageCallback bad_message_callback);
-
-  void BindReceiverForWorker(
-      int render_process_id,
-      const blink::StorageKey& storage_key,
-      mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver,
-      mojo::ReportBadMessageCallback bad_message_callback);
-
   void BindReceiver(
-      const blink::StorageKey& storage_key,
+      base::WeakPtr<BucketContext> context,
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver,
       mojo::ReportBadMessageCallback bad_message_callback);
 

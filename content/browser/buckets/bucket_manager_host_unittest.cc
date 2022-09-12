@@ -60,15 +60,46 @@ class BucketManagerHostTest : public testing::Test {
     partition->OverrideQuotaManagerForTesting(quota_manager_.get());
 
     bucket_manager_ = std::make_unique<BucketManager>(partition);
-    bucket_manager_->DoBindReceiver(
-        blink::StorageKey::CreateFromStringForTesting(kTestUrl),
-        BucketContext(0),
+    bucket_manager_->BindReceiver(
+        test_bucket_context_.GetWeakPtr(),
         bucket_manager_host_remote_.BindNewPipeAndPassReceiver(),
         base::DoNothing());
     EXPECT_TRUE(bucket_manager_host_remote_.is_bound());
   }
 
  protected:
+  class TestBucketContext : public BucketContext {
+   public:
+    TestBucketContext() = default;
+    ~TestBucketContext() override = default;
+
+    // BucketContext:
+    blink::StorageKey GetBucketStorageKey() override {
+      return blink::StorageKey::CreateFromStringForTesting(kTestUrl);
+    }
+    blink::mojom::PermissionStatus GetPermissionStatus(
+        blink::PermissionType permission_type) override {
+      return permission_status_;
+    }
+    void BindCacheStorageForBucket(
+        const storage::BucketInfo& bucket,
+        mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override {}
+
+    void set_permission_status(
+        blink::mojom::PermissionStatus permission_status) {
+      permission_status_ = permission_status;
+    }
+
+    base::WeakPtr<TestBucketContext> GetWeakPtr() {
+      return weak_ptr_factory_.GetWeakPtr();
+    }
+
+   private:
+    blink::mojom::PermissionStatus permission_status_ =
+        blink::mojom::PermissionStatus::DENIED;
+    base::WeakPtrFactory<TestBucketContext> weak_ptr_factory_{this};
+  };
+
   scoped_refptr<storage::MockSpecialStoragePolicy> special_storage_policy_;
 
   base::ScopedTempDir data_dir_;
@@ -82,6 +113,7 @@ class BucketManagerHostTest : public testing::Test {
   std::unique_ptr<BucketManager> bucket_manager_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
+  TestBucketContext test_bucket_context_;
 };
 
 TEST_F(BucketManagerHostTest, OpenBucket) {
@@ -125,10 +157,9 @@ TEST_F(BucketManagerHostTest, OpenBucketValidateName) {
 
   for (auto it = names.begin(); it < names.end(); ++it) {
     mojo::Remote<blink::mojom::BucketManagerHost> remote;
-    bucket_manager_->DoBindReceiver(
-        blink::StorageKey::CreateFromStringForTesting(kTestUrl),
-        BucketContext(0), remote.BindNewPipeAndPassReceiver(),
-        base::DoNothing());
+    bucket_manager_->BindReceiver(test_bucket_context_.GetWeakPtr(),
+                                  remote.BindNewPipeAndPassReceiver(),
+                                  base::DoNothing());
     EXPECT_TRUE(remote.is_bound());
 
     if (it->first) {
@@ -194,21 +225,14 @@ TEST_F(BucketManagerHostTest, PermissionCheck) {
                     {blink::mojom::PermissionStatus::DENIED, false}};
 
   for (auto test_case : test_cases) {
-    auto context = BucketContext(0);
-    context.set_permission_status_for_test(test_case.first);
+    test_bucket_context_.set_permission_status(test_case.first);
     bool persisted_respected = test_case.second;
-    mojo::Remote<blink::mojom::BucketManagerHost> manager_remote;
-    bucket_manager_->DoBindReceiver(
-        blink::StorageKey::CreateFromStringForTesting(kTestUrl), context,
-        manager_remote.BindNewPipeAndPassReceiver(), base::DoNothing());
-    EXPECT_TRUE(manager_remote.is_bound());
-
     {
       // Not initially persisted.
       mojo::Remote<blink::mojom::BucketHost> bucket_remote;
       {
         base::RunLoop run_loop;
-        manager_remote->OpenBucket(
+        bucket_manager_host_remote_->OpenBucket(
             "foo", blink::mojom::BucketPolicies::New(),
             base::BindLambdaForTesting(
                 [&](mojo::PendingRemote<blink::mojom::BucketHost> remote) {
@@ -255,7 +279,7 @@ TEST_F(BucketManagerHostTest, PermissionCheck) {
         auto policies = blink::mojom::BucketPolicies::New();
         policies->has_persisted = true;
         policies->persisted = true;
-        manager_remote->OpenBucket(
+        bucket_manager_host_remote_->OpenBucket(
             "foo", std::move(policies),
             base::BindLambdaForTesting(
                 [&](mojo::PendingRemote<blink::mojom::BucketHost> remote) {

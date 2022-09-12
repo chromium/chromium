@@ -119,6 +119,7 @@ class GpuClient;
 
 namespace content {
 class AgentSchedulingGroupHost;
+class BucketContext;
 class EmbeddedFrameSinkProviderImpl;
 class FileSystemManagerImpl;
 class FramelessMediaInterfaceProxy;
@@ -295,11 +296,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void BindIndexedDB(
       const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
-  void BindBucketManagerHostForRenderFrame(
-      const GlobalRenderFrameHostId& render_frame_host_id,
-      mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) override;
-  void BindBucketManagerHostForWorker(
-      const blink::StorageKey& storage_key,
+  void BindBucketManagerHost(
+      base::WeakPtr<BucketContext> bucket_context,
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) override;
   void ForceCrash() override;
   std::string GetInfoForBrowserContextDestructionCrashReporting() override;

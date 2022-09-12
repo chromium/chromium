@@ -40,6 +40,7 @@
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/browser_interface_broker_impl.h"
+#include "content/browser/buckets/bucket_context.h"
 #include "content/browser/can_commit_status.h"
 #include "content/browser/net/cross_origin_opener_policy_reporter.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
@@ -282,7 +283,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       public mojom::PepperHost,
       public mojom::PepperHungDetectorHost,
 #endif  //  BUILDFLAG(ENABLE_PPAPI)
-      public network::mojom::CookieAccessObserver {
+      public network::mojom::CookieAccessObserver,
+      public BucketContext {
  public:
   using JavaScriptDialogCallback =
       content::JavaScriptDialogManager::DialogClosedCallback;
@@ -2539,6 +2541,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
       int32_t reset_token) {
     HandleAXEvents(tree_id, std::move(updates_and_events), reset_token);
   }
+
+  // BucketContext:
+  blink::StorageKey GetBucketStorageKey() override;
+  blink::mojom::PermissionStatus GetPermissionStatus(
+      blink::PermissionType permission_type) override;
+  void BindCacheStorageForBucket(
+      const storage::BucketInfo& bucket,
+      mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override;
 
  protected:
   friend class RenderFrameHostFactory;

@@ -1921,22 +1921,13 @@ void RenderProcessHostImpl::BindIndexedDB(
       storage_key, std::move(receiver));
 }
 
-void RenderProcessHostImpl::BindBucketManagerHostForRenderFrame(
-    const GlobalRenderFrameHostId& render_frame_host_id,
+void RenderProcessHostImpl::BindBucketManagerHost(
+    base::WeakPtr<BucketContext> bucket_context,
     mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(render_frame_host_id);
-  storage_partition_impl_->GetBucketManager()->BindReceiverForRenderFrame(
-      render_frame_host_id, rfh->storage_key(), std::move(receiver),
+  storage_partition_impl_->GetBucketManager()->BindReceiver(
+      std::move(bucket_context), std::move(receiver),
       mojo::GetBadMessageCallback());
-}
-
-void RenderProcessHostImpl::BindBucketManagerHostForWorker(
-    const blink::StorageKey& storage_key,
-    mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  storage_partition_impl_->GetBucketManager()->BindReceiverForWorker(
-      GetID(), storage_key, std::move(receiver), mojo::GetBadMessageCallback());
 }
 
 void RenderProcessHostImpl::ForceCrash() {

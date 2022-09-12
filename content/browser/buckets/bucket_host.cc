@@ -13,6 +13,7 @@
 #include "content/browser/locks/lock_manager.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace content {
 
@@ -26,7 +27,9 @@ BucketHost::BucketHost(BucketManagerHost* bucket_manager_host,
 BucketHost::~BucketHost() = default;
 
 mojo::PendingRemote<blink::mojom::BucketHost>
-BucketHost::CreateStorageBucketBinding(const BucketContext& bucket_context) {
+BucketHost::CreateStorageBucketBinding(
+    base::WeakPtr<BucketContext> bucket_context) {
+  DCHECK(bucket_context);
   mojo::PendingRemote<blink::mojom::BucketHost> remote;
   receivers_.Add(this, remote.InitWithNewPipeAndPassReceiver(), bucket_context);
   return remote;
@@ -38,10 +41,10 @@ void BucketHost::Persist(PersistCallback callback) {
     return;
   }
 
-  if (receivers_.current_context().GetPermissionStatus(
-          blink::PermissionType::DURABLE_STORAGE,
-          bucket_info_.storage_key.origin()) ==
-      blink::mojom::PermissionStatus::GRANTED) {
+  if (receivers_.current_context() &&
+      receivers_.current_context()->GetPermissionStatus(
+          blink::PermissionType::DURABLE_STORAGE) ==
+          blink::mojom::PermissionStatus::GRANTED) {
     GetQuotaManagerProxy()->UpdateBucketPersistence(
         bucket_info_.id, /*persistent=*/true,
         base::SequencedTaskRunnerHandle::Get(),
@@ -88,6 +91,15 @@ void BucketHost::GetIdbFactory(
       ->GetIndexedDBControl()
       .BindIndexedDBForBucket(bucket_info_.ToBucketLocator(),
                               std::move(receiver));
+}
+
+void BucketHost::GetCaches(
+    mojo::PendingReceiver<blink::mojom::CacheStorage> caches) {
+  auto bucket_context = receivers_.current_context();
+  if (!bucket_context)
+    return;
+
+  bucket_context->BindCacheStorageForBucket(bucket_info_, std::move(caches));
 }
 
 void BucketHost::GetLockManager(

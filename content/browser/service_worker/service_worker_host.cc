@@ -10,13 +10,17 @@
 #include "base/memory/ptr_util.h"
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "content/browser/broadcast_channel/broadcast_channel_service.h"
+#include "content/browser/buckets/bucket_manager.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
+#include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/webtransport/web_transport_connector_impl.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/child_process_host.h"
@@ -169,6 +173,14 @@ void ServiceWorkerHost::CreateBroadcastChannelProvider(
       std::move(receiver));
 }
 
+void ServiceWorkerHost::CreateBucketManagerHost(
+    mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) {
+  static_cast<StoragePartitionImpl*>(GetStoragePartition())
+      ->GetBucketManager()
+      ->BindReceiver(GetWeakPtr(), std::move(receiver),
+                     mojo::GetBadMessageCallback());
+}
+
 base::WeakPtr<ServiceWorkerHost> ServiceWorkerHost::GetWeakPtr() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return weak_factory_.GetWeakPtr();
@@ -176,6 +188,30 @@ base::WeakPtr<ServiceWorkerHost> ServiceWorkerHost::GetWeakPtr() {
 
 void ServiceWorkerHost::ReportNoBinderForInterface(const std::string& error) {
   broker_receiver_.ReportBadMessage(error + " for the service worker scope");
+}
+
+blink::StorageKey ServiceWorkerHost::GetBucketStorageKey() {
+  return version_->key();
+}
+
+blink::mojom::PermissionStatus ServiceWorkerHost::GetPermissionStatus(
+    blink::PermissionType permission_type) {
+  auto* process =
+      RenderProcessHost::FromID(version_->embedded_worker()->process_id());
+  if (!process)
+    return blink::mojom::PermissionStatus::DENIED;
+
+  return process->GetBrowserContext()
+      ->GetPermissionController()
+      ->GetPermissionStatusForWorker(permission_type, process,
+                                     GetBucketStorageKey().origin());
+}
+
+void ServiceWorkerHost::BindCacheStorageForBucket(
+    const storage::BucketInfo& bucket,
+    mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
+  // TODO(estade): pass the bucket in order to support non-default buckets.
+  version_->embedded_worker()->BindCacheStorage(std::move(receiver));
 }
 
 }  // namespace content
