@@ -18,6 +18,7 @@ class MainThreadTaskRunnerRestricted {
   friend class CachedStorageArea;
   friend class RendererResourceCoordinatorImpl;
   friend class ThreadedIconLoader;
+  friend class V8WorkerMemoryReporter;
 
   MainThreadTaskRunnerRestricted() = default;
 };

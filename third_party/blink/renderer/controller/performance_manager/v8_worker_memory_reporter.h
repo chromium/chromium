@@ -15,6 +15,10 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8.h"
 
+namespace base {
+class SingleThreadTaskRunner;
+}
+
 namespace blink {
 
 class WorkerThread;
@@ -63,10 +67,13 @@ class CONTROLLER_EXPORT V8WorkerMemoryReporter {
   // These functions are called by WorkerMeasurementDelegate on a worker thread.
   static void NotifyMeasurementSuccess(
       WorkerThread*,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       base::WeakPtr<V8WorkerMemoryReporter>,
       std::unique_ptr<WorkerMemoryUsage> memory_usage);
-  static void NotifyMeasurementFailure(WorkerThread*,
-                                       base::WeakPtr<V8WorkerMemoryReporter>);
+  static void NotifyMeasurementFailure(
+      WorkerThread*,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      base::WeakPtr<V8WorkerMemoryReporter>);
 
  private:
   // The initial state is kWaiting.
@@ -84,9 +91,11 @@ class CONTROLLER_EXPORT V8WorkerMemoryReporter {
       : callback_(std::move(callback)) {}
 
   // This function runs on a worker thread.
-  static void StartMeasurement(WorkerThread*,
-                               base::WeakPtr<V8WorkerMemoryReporter>,
-                               v8::MeasureMemoryExecution);
+  static void StartMeasurement(
+      WorkerThread*,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      base::WeakPtr<V8WorkerMemoryReporter>,
+      v8::MeasureMemoryExecution);
 
   // Functions that run on the main thread.
   void OnTimeout();

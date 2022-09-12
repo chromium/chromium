@@ -54,9 +54,11 @@ class WorkerMeasurementDelegate : public v8::MeasureMemoryDelegate {
  public:
   WorkerMeasurementDelegate(
       base::WeakPtr<V8WorkerMemoryReporter> worker_memory_reporter,
-      WorkerThread* worker_thread)
+      WorkerThread* worker_thread,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : worker_memory_reporter_(std::move(worker_memory_reporter)),
-        worker_thread_(worker_thread) {
+        worker_thread_(worker_thread),
+        task_runner_(task_runner) {
     DCHECK(worker_thread_->IsCurrentThread());
   }
 
@@ -75,6 +77,7 @@ class WorkerMeasurementDelegate : public v8::MeasureMemoryDelegate {
   void NotifyMeasurementFailure();
   base::WeakPtr<V8WorkerMemoryReporter> worker_memory_reporter_;
   WorkerThread* worker_thread_;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   bool did_notify_ = false;
 };
 
@@ -113,7 +116,7 @@ void WorkerMeasurementDelegate::MeasurementComplete(
 void WorkerMeasurementDelegate::NotifyMeasurementFailure() {
   DCHECK(worker_thread_->IsCurrentThread());
   DCHECK(!did_notify_);
-  V8WorkerMemoryReporter::NotifyMeasurementFailure(worker_thread_,
+  V8WorkerMemoryReporter::NotifyMeasurementFailure(worker_thread_, task_runner_,
                                                    worker_memory_reporter_);
   did_notify_ = true;
 }
@@ -122,8 +125,9 @@ void WorkerMeasurementDelegate::NotifyMeasurementSuccess(
     std::unique_ptr<V8WorkerMemoryReporter::WorkerMemoryUsage> memory_usage) {
   DCHECK(worker_thread_->IsCurrentThread());
   DCHECK(!did_notify_);
-  V8WorkerMemoryReporter::NotifyMeasurementSuccess(
-      worker_thread_, worker_memory_reporter_, std::move(memory_usage));
+  V8WorkerMemoryReporter::NotifyMeasurementSuccess(worker_thread_, task_runner_,
+                                                   worker_memory_reporter_,
+                                                   std::move(memory_usage));
   did_notify_ = true;
 }
 
@@ -136,21 +140,23 @@ void V8WorkerMemoryReporter::GetMemoryUsage(ResultCallback callback,
   // The private constructor prevents us from using std::make_unique here.
   std::unique_ptr<V8WorkerMemoryReporter> worker_memory_reporter(
       new V8WorkerMemoryReporter(std::move(callback)));
+  auto main_thread_task_runner =
+      Thread::MainThread()->GetTaskRunner(MainThreadTaskRunnerRestricted());
   // Worker tasks get a weak pointer to the instance for passing it back
   // to the main thread in OnMeasurementSuccess and OnMeasurementFailure.
   // Worker tasks never dereference the weak pointer.
   unsigned worker_count = WorkerThread::CallOnAllWorkerThreads(
       &V8WorkerMemoryReporter::StartMeasurement, TaskType::kInternalDefault,
-      worker_memory_reporter->GetWeakPtr(), mode);
+      main_thread_task_runner, worker_memory_reporter->GetWeakPtr(), mode);
   if (worker_count == 0) {
-    Thread::Current()->GetDeprecatedTaskRunner()->PostTask(
+    main_thread_task_runner->PostTask(
         FROM_HERE, WTF::Bind(&V8WorkerMemoryReporter::InvokeCallback,
                              std::move(worker_memory_reporter)));
     return;
   }
   worker_memory_reporter->SetWorkerCount(worker_count);
   // Transfer the ownership of the instance to the timeout task.
-  Thread::Current()->GetDeprecatedTaskRunner()->PostDelayedTask(
+  main_thread_task_runner->PostDelayedTask(
       FROM_HERE,
       WTF::Bind(&V8WorkerMemoryReporter::OnTimeout,
                 std::move(worker_memory_reporter)),
@@ -160,6 +166,7 @@ void V8WorkerMemoryReporter::GetMemoryUsage(ResultCallback callback,
 // static
 void V8WorkerMemoryReporter::StartMeasurement(
     WorkerThread* worker_thread,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     base::WeakPtr<V8WorkerMemoryReporter> worker_memory_reporter,
     v8::MeasureMemoryExecution measurement_mode) {
   DCHECK(worker_thread->IsCurrentThread());
@@ -168,7 +175,8 @@ void V8WorkerMemoryReporter::StartMeasurement(
   v8::Isolate* isolate = worker_thread->GetIsolate();
   if (global_scope->IsWorkerGlobalScope()) {
     auto delegate = std::make_unique<WorkerMeasurementDelegate>(
-        std::move(worker_memory_reporter), worker_thread);
+        std::move(worker_memory_reporter), worker_thread,
+        std::move(task_runner));
     isolate->MeasureMemory(std::move(delegate), measurement_mode);
   } else {
     // TODO(ulan): Add support for worklets once we get tokens for them. We
@@ -176,18 +184,20 @@ void V8WorkerMemoryReporter::StartMeasurement(
     // are soft real-time and are written to avoid GC.
     // For now we simply notify a failure so that the main thread doesn't wait
     // for a response from the worklet.
-    NotifyMeasurementFailure(worker_thread, worker_memory_reporter);
+    NotifyMeasurementFailure(worker_thread, std::move(task_runner),
+                             worker_memory_reporter);
   }
 }
 
 // static
 void V8WorkerMemoryReporter::NotifyMeasurementSuccess(
     WorkerThread* worker_thread,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     base::WeakPtr<V8WorkerMemoryReporter> worker_memory_reporter,
     std::unique_ptr<WorkerMemoryUsage> memory_usage) {
   DCHECK(worker_thread->IsCurrentThread());
   PostCrossThreadTask(
-      *Thread::MainThread()->GetDeprecatedTaskRunner(), FROM_HERE,
+      *task_runner, FROM_HERE,
       CrossThreadBindOnce(&V8WorkerMemoryReporter::OnMeasurementSuccess,
                           worker_memory_reporter, std::move(memory_usage)));
 }
@@ -195,10 +205,11 @@ void V8WorkerMemoryReporter::NotifyMeasurementSuccess(
 // static
 void V8WorkerMemoryReporter::NotifyMeasurementFailure(
     WorkerThread* worker_thread,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     base::WeakPtr<V8WorkerMemoryReporter> worker_memory_reporter) {
   DCHECK(worker_thread->IsCurrentThread());
   PostCrossThreadTask(
-      *Thread::MainThread()->GetDeprecatedTaskRunner(), FROM_HERE,
+      *task_runner, FROM_HERE,
       CrossThreadBindOnce(&V8WorkerMemoryReporter::OnMeasurementFailure,
                           worker_memory_reporter));
 }
