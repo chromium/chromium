@@ -61,7 +61,7 @@ const char kMetricPrecision[] = "Omnibox.HistoryFuzzy.Precision";
 // the total capacity may be filled at startup from loaded significant URLs.
 // The enforced limit may be further constrained by
 // `MaxNumHQPUrlsIndexedAtStartup`.
-constexpr int kMaxTerminalCount = 1000;
+constexpr int kMaxTerminalCount = 256;
 
 // This utility function reduces a URL to the most meaningful and likely part
 // of the hostname to be matched against, i.e. the domain, the URL's TLD+1.
@@ -83,7 +83,7 @@ std::u16string UrlDomainReduction(const GURL& url) {
 // processing for input text that may not even be a URL seems like overkill,
 // so this simple direct method is used instead.
 std::u16string ReduceInputTextForMatching(const std::u16string& input) {
-  constexpr size_t kMaximumFuzzyMatchInputLength = 32;
+  constexpr size_t kMaximumFuzzyMatchInputLength = 24;
   constexpr size_t kPathCharacterCountToStopSearch = 6;
   constexpr size_t kPostDotCharacterCountHintingSubdomain = 4;
 
@@ -583,7 +583,7 @@ HistoryFuzzyProvider::~HistoryFuzzyProvider() = default;
 
 void HistoryFuzzyProvider::DoAutocomplete() {
   constexpr fuzzy::ToleranceSchedule kToleranceSchedule = {
-      .start_index = 1,
+      .start_index = 2,
       .step_length = 4,
       .limit = 3,
   };
