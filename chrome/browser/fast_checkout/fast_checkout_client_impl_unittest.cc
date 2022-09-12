@@ -4,6 +4,11 @@
 
 #include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
 
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "base/containers/flat_map.h"
 #include "base/guid.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -296,7 +301,9 @@ TEST_F(FastCheckoutClientImplTest, Start_FeatureEnabled_RunsSuccessfully) {
       autofill_assistant::HeadlessScriptController::ScriptResult)>
       external_script_controller_callback;
   base::OnceCallback<void()> onboarding_successful_callback;
-  EXPECT_CALL(*external_script_controller(), StartScript(_, _, _, _))
+  EXPECT_CALL(*external_script_controller(),
+              StartScript(_, _, /*use_autofill_assistant_onboarding=*/true, _,
+                          /*suppress_browsing_features=*/false))
       .Times(1)
       .WillOnce(
           [&](const base::flat_map<std::string, std::string>& script_parameters,
@@ -305,7 +312,8 @@ TEST_F(FastCheckoutClientImplTest, Start_FeatureEnabled_RunsSuccessfully) {
                   script_ended_callback,
               bool use_autofill_assistant_onboarding,
               base::OnceCallback<void()>
-                  onboarding_successful_callback_parameter) {
+                  onboarding_successful_callback_parameter,
+              bool suppress_browsing_features) {
             external_script_controller_callback =
                 std::move(script_ended_callback);
             onboarding_successful_callback =
@@ -345,7 +353,10 @@ TEST_F(FastCheckoutClientImplTest, Start_FailsIfNoProfilesOnFile) {
   // Remove all profiles.
   personal_data_manager()->ClearProfiles();
 
-  EXPECT_CALL(*external_script_controller(), StartScript(_, _, _, _)).Times(0);
+  EXPECT_CALL(*external_script_controller(),
+              StartScript(_, _, /*use_autofill_assistant_onboarding=*/true, _,
+                          /*suppress_browsing_features=*/false))
+      .Times(0);
 
   // Starting the run unsuccessfully.
   EXPECT_FALSE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
@@ -367,7 +378,10 @@ TEST_F(FastCheckoutClientImplTest, Start_FailsIfNoCompleteProfile) {
   personal_data_manager()->AddProfile(autofill::test::GetIncompleteProfile1());
   personal_data_manager()->AddProfile(autofill::test::GetIncompleteProfile2());
 
-  EXPECT_CALL(*external_script_controller(), StartScript(_, _, _, _)).Times(0);
+  EXPECT_CALL(*external_script_controller(),
+              StartScript(_, _, /*use_autofill_assistant_onboarding=*/true, _,
+                          /*suppress_browsing_features=*/false))
+      .Times(0);
 
   // Starting the run unsuccessfully.
   EXPECT_FALSE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
@@ -387,7 +401,10 @@ TEST_F(FastCheckoutClientImplTest, Start_FailsIfNoCreditCardsOnFile) {
   // Remove all credit cards.
   personal_data_manager()->ClearCreditCards();
 
-  EXPECT_CALL(*external_script_controller(), StartScript(_, _, _, _)).Times(0);
+  EXPECT_CALL(*external_script_controller(),
+              StartScript(_, _, /*use_autofill_assistant_onboarding=*/true, _,
+                          /*suppress_browsing_features=*/false))
+      .Times(0);
 
   // Starting the run unsuccessfully.
   EXPECT_FALSE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
@@ -411,7 +428,10 @@ TEST_F(FastCheckoutClientImplTest, Start_FailsIfNoCompleteorValidCreditCard) {
   personal_data_manager()->AddCreditCard(
       autofill::test::GetIncompleteCreditCard());
 
-  EXPECT_CALL(*external_script_controller(), StartScript(_, _, _, _)).Times(0);
+  EXPECT_CALL(*external_script_controller(),
+              StartScript(_, _, /*use_autofill_assistant_onboarding=*/true, _,
+                          /*suppress_browsing_features=*/false))
+      .Times(0);
 
   // Starting the run unsuccessfully.
   EXPECT_FALSE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
@@ -430,7 +450,10 @@ TEST_F(FastCheckoutClientImplTest,
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
 
   // Expect bottomsheet to show up.
-  EXPECT_CALL(*external_script_controller(), StartScript(_, _, _, _)).Times(1);
+  EXPECT_CALL(*external_script_controller(),
+              StartScript(_, _, /*use_autofill_assistant_onboarding=*/true, _,
+                          /*suppress_browsing_features=*/false))
+      .Times(1);
 
   // Starting the run successfully.
   EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
@@ -456,7 +479,10 @@ TEST_F(FastCheckoutClientImplTest,
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
 
   // Expect bottomsheet to show up.
-  EXPECT_CALL(*external_script_controller(), StartScript(_, _, _, _)).Times(1);
+  EXPECT_CALL(*external_script_controller(),
+              StartScript(_, _, /*use_autofill_assistant_onboarding=*/true, _,
+                          /*suppress_browsing_features=*/false))
+      .Times(1);
 
   // Starting the run successfully.
   EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
@@ -483,7 +509,9 @@ TEST_F(FastCheckoutClientImplTest,
 
   base::OnceCallback<void()> onboarding_successful_callback;
   // Expect bottomsheet to show up.
-  EXPECT_CALL(*external_script_controller(), StartScript(_, _, _, _))
+  EXPECT_CALL(*external_script_controller(),
+              StartScript(_, _, /*use_autofill_assistant_onboarding=*/true, _,
+                          /*suppress_browsing_features=*/false))
       .Times(1)
       .WillOnce(
           [&](const base::flat_map<std::string, std::string>& script_parameters,
@@ -492,7 +520,8 @@ TEST_F(FastCheckoutClientImplTest,
                   script_ended_callback,
               bool use_autofill_assistant_onboarding,
               base::OnceCallback<void()>
-                  onboarding_successful_callback_parameter) {
+                  onboarding_successful_callback_parameter,
+              bool suppress_browsing_features) {
             onboarding_successful_callback =
                 std::move(onboarding_successful_callback_parameter);
           });
@@ -539,7 +568,9 @@ TEST_F(FastCheckoutClientImplTest,
       autofill_assistant::HeadlessScriptController::ScriptResult)>
       external_script_controller_callback;
   base::OnceCallback<void()> onboarding_successful_callback;
-  EXPECT_CALL(*external_script_controller(), StartScript(_, _, _, _))
+  EXPECT_CALL(*external_script_controller(),
+              StartScript(_, _, /*use_autofill_assistant_onboarding=*/true, _,
+                          /*suppress_browsing_features=*/false))
       .Times(1)
       .WillOnce(MoveArg<1>(&external_script_controller_callback));
 

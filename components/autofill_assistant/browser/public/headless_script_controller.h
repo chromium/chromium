@@ -21,22 +21,25 @@ class HeadlessScriptController {
     bool success = false;
   };
 
-  // Fetches and executes the script specified by |script_parameters|.
+  // Fetches and executes the script specified by `script_parameters`.
   // At most one script can be executed at the same time, if a script is already
   // being executed at the time of this call it will return an error.
-  // If this instance of |HeadlessScriptController| is destroyed the script
+  // If this instance of `HeadlessScriptController` is destroyed, the script
   // execution will be interrupted.
   virtual void StartScript(
       const base::flat_map<std::string, std::string>& script_parameters,
       base::OnceCallback<void(ScriptResult)> script_ended_callback) = 0;
 
-  // Adds parameters for using autofill assistant's onboarding before a script
-  // would run.
+  // Fetches and executes the script as specified above. In addition, it
+  // it contains parameters to control whether to show Autofill assistant's
+  // onboarding before a script is run and whether to suppress browsing features
+  // (e.g. the keyboard and Autofill) while running.
   virtual void StartScript(
       const base::flat_map<std::string, std::string>& script_parameters,
       base::OnceCallback<void(ScriptResult)> script_ended_callback,
       bool use_autofill_assistant_onboarding,
-      base::OnceCallback<void()> onboarding_successful_callback) = 0;
+      base::OnceCallback<void()> onboarding_successful_callback,
+      bool suppress_browsing_features) = 0;
 
   virtual ~HeadlessScriptController() = default;
 };

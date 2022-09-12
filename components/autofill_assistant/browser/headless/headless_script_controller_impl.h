@@ -31,7 +31,7 @@ class HeadlessScriptControllerImplTest;
 
 class HeadlessScriptControllerImpl : public HeadlessScriptController {
  public:
-  // |starter| must outlive this instance.
+  // `starter` must outlive this instance.
   HeadlessScriptControllerImpl(content::WebContents* web_contents,
                                Starter* starter,
                                std::unique_ptr<ClientHeadless> client);
@@ -50,7 +50,8 @@ class HeadlessScriptControllerImpl : public HeadlessScriptController {
       const base::flat_map<std::string, std::string>& script_parameters,
       base::OnceCallback<void(ScriptResult)> script_ended_callback,
       bool use_autofill_assistant_onboarding,
-      base::OnceCallback<void()> onboarding_successful_callback) override;
+      base::OnceCallback<void()> onboarding_successful_callback,
+      bool suppress_browsing_features) override;
 
  private:
   friend HeadlessScriptControllerImplTest;
@@ -60,6 +61,7 @@ class HeadlessScriptControllerImpl : public HeadlessScriptController {
       base::OnceCallback<void(ScriptResult)> script_ended_callback,
       bool use_autofill_assistant_onboarding,
       base::OnceCallback<void()> onboarding_successful_callback,
+      bool suppress_browsing_features,
       std::unique_ptr<Service> service,
       std::unique_ptr<WebController> web_controller);
 

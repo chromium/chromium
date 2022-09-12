@@ -28,24 +28,28 @@ void HeadlessScriptControllerImpl::StartScript(
     const base::flat_map<std::string, std::string>& script_parameters,
     base::OnceCallback<void(ScriptResult)> script_ended_callback) {
   StartScript(script_parameters, std::move(script_ended_callback),
-              /*use_autofill_assistant_onboarding=*/false, base::DoNothing());
+              /*use_autofill_assistant_onboarding = */ false, base::DoNothing(),
+              /*suppress_browsing_features = */ true);
 }
 
 void HeadlessScriptControllerImpl::StartScript(
     const base::flat_map<std::string, std::string>& script_parameters,
     base::OnceCallback<void(ScriptResult)> script_ended_callback,
     bool use_autofill_assistant_onboarding,
-    base::OnceCallback<void()> onboarding_successful_callback) {
+    base::OnceCallback<void()> onboarding_successful_callback,
+    bool suppress_browsing_features) {
   StartScript(script_parameters, std::move(script_ended_callback),
               use_autofill_assistant_onboarding,
               std::move(onboarding_successful_callback),
-              /* service= */ nullptr, /* web_controller= */ nullptr);
+              suppress_browsing_features,
+              /*service = */ nullptr, /*web_controller = */ nullptr);
 }
 void HeadlessScriptControllerImpl::StartScript(
     const base::flat_map<std::string, std::string>& script_parameters,
     base::OnceCallback<void(ScriptResult)> script_ended_callback,
     bool use_autofill_assistant_onboarding,
     base::OnceCallback<void()> onboarding_successful_callback,
+    bool suppress_browsing_features,
     std::unique_ptr<Service> service,
     std::unique_ptr<WebController> web_controller) {
   // This HeadlessScriptController is currently executing a script, so we return
@@ -60,16 +64,15 @@ void HeadlessScriptControllerImpl::StartScript(
   auto trigger_context = std::make_unique<TriggerContext>(
       std::make_unique<ScriptParameters>(script_parameters),
       TriggerContext::Options{
-          /* experiment_ids = */ "",
+          /*experiment_ids = */ "",
           starter_->GetPlatformDependencies()->IsCustomTab(*web_contents_),
           /*onboarding_shown = */ false,
           /*is_direct_action = */ false,
-          /* initial_url = */ "",
-          /* is_in_chrome_triggered = */ true,
-          /* is_externally_triggered = */ true,
-          /* skip_autofill_assistant_onboarding = */
-          !use_autofill_assistant_onboarding,
-          /* suppress_browsing_features = */ true});
+          /*initial_url = */ "",
+          /*is_in_chrome_triggered = */ true,
+          /*is_externally_triggered = */ true,
+          /*skip_autofill_assistant_onboarding = */
+          !use_autofill_assistant_onboarding, suppress_browsing_features});
   starter_->CanStart(
       std::move(trigger_context),
       base::BindOnce(&HeadlessScriptControllerImpl::OnReadyToStart,

@@ -118,7 +118,8 @@ bool FastCheckoutClientImpl::Start(
                      base::Unretained(this)),
       /*use_autofill_assistant_onboarding=*/true,
       base::BindOnce(&FastCheckoutClientImpl::OnOnboardingCompletedSuccessfully,
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      /*suppress_browsing_features=*/false);
 
   return true;
 }

@@ -152,6 +152,7 @@ class HeadlessScriptControllerImplTest : public testing::Test {
     headless_script_controller_->StartScript(
         params, mock_script_ended_callback_.Get(),
         /* use_autofill_assistant_onboarding = */ false, base::DoNothing(),
+        /* suppress_browsing_features = */ true,
         std::move(mock_service_to_inject_),
         std::move(mock_web_controller_to_inject_));
     run_loop.Run();
