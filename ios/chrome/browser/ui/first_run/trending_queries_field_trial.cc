@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "base/metrics/field_trial.h"
 #import "base/metrics/field_trial_params.h"
+#import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/first_run/first_run.h"
@@ -15,9 +16,17 @@
 #import "ios/chrome/common/channel_info.h"
 
 // Name of the Trending Queries Field Trial.
-const char kTrendingQueriesFieldTrialName[] = "TrendingQueries";
+const char kTrendingQueriesFieldTrialName[] = "TrendingQueriesNewUsers";
 
 namespace {
+// Store local state preference with whether the client has participated in
+// kTrendingQueriesFieldTrialName experiment or not.
+const char kTrialPrefName[] = "trending_queries.trial_version";
+// The placeholder trial version that is stored for a client who has not been
+// enrolled in the experiment.
+const int kPlaceholderTrialVersion = -1;
+// The current trial version; should be updated when the experiment is modified.
+const int kCurrentTrialVersion = 1;
 
 // Group names for the Trending Queries feature.
 const char kTrendingQueriesEnabledAllUsersGroup[] = "EnabledAllUsers-V1";
@@ -167,6 +176,10 @@ void CreateTrendingQueriesTrial(
   }
 }
 
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(kTrialPrefName, kPlaceholderTrialVersion);
+}
+
 void Create(const base::FieldTrial::EntropyProvider& low_entropy_provider,
             base::FeatureList* feature_list,
             PrefService* local_state) {
@@ -180,8 +193,18 @@ void Create(const base::FieldTrial::EntropyProvider& low_entropy_provider,
     return;
   }
 
+  // If the client is already an existing client by the time this experiment
+  // began running, don't register (e.g. the client is not in a First Run
+  // experience and was never grouped client-side into this study when it went 
+  // through First Run).
+  if (!FirstRun::IsChromeFirstRun() &&
+      local_state->GetInteger(kTrialPrefName) != kCurrentTrialVersion) {
+    return;
+  }
+
   CreateTrendingQueriesTrial(GetGroupWeights(), low_entropy_provider,
                              feature_list);
+  local_state->SetInteger(kTrialPrefName, kCurrentTrialVersion);
 }
 
 void CreateTrendingQueriesTrialForTesting(
