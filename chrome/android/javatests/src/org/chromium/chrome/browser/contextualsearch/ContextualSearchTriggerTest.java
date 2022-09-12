@@ -262,9 +262,11 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "crbug.com/1071080")
-    public void testLongPressGestureFollowedByScrollMaintainsSelection(
-            @EnabledFeature int enabledFeature) throws Exception {
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.M,
+            message = "crbug.com/1071080, crbug.com/1362185")
+    public void
+    testLongPressGestureFollowedByScrollMaintainsSelection(@EnabledFeature int enabledFeature)
+            throws Exception {
         longPressNode("intelligence");
         waitForPanelToPeek();
         scrollBasePage();
