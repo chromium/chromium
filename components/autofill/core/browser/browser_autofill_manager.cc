@@ -13,6 +13,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <tuple>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -2705,42 +2706,34 @@ void BrowserAutofillManager::TriggerRefill(const FormData& form) {
 
   filling_context->attempted_refill = true;
 
-  // Try to find the field from which the original field originated.
-  // Precedence is given to look up by |filled_field_id|.
-  // If that is unsuccessful, look up is done by |filled_field_signature|.
-  // TODO(crbug/896689): Clean up after feature launch.
-  AutofillField* autofill_field = nullptr;
-  for (const std::unique_ptr<AutofillField>& field : *form_structure) {
-    if (field->global_id() == filling_context->filled_field_id &&
-        field->origin == filling_context->filled_origin) {
-      autofill_field = field.get();
-      break;
-    }
-  }
-
-  // If the field was deleted, look for one with a matching signature. Prefer
-  // focusable and newer fields over invisible or older ones.
-  if (autofill_field == nullptr) {
-    auto is_better = [](const AutofillField& f, const AutofillField& g) {
-      return std::forward_as_tuple(f.IsFocusable(),
-                                   f.unique_renderer_id.value()) >
-             std::forward_as_tuple(g.IsFocusable(),
-                                   g.unique_renderer_id.value());
-    };
-
-    for (const std::unique_ptr<AutofillField>& field : *form_structure) {
-      if (field->GetFieldSignature() ==
-              filling_context->filled_field_signature &&
-          field->origin == filling_context->filled_origin) {
-        if (autofill_field == nullptr || is_better(*field, *autofill_field)) {
-          autofill_field = field.get();
-        }
-      }
-    }
-  }
-
-  // If it was not found cancel the refill.
-  if (!autofill_field)
+  // Try to find the field from which the original fill originated.
+  // The precedence for the look up is the following:
+  //  - focusable `filled_field_id`
+  //  - focusable `filled_field_signature`
+  //  - non-focusable `filled_field_id`
+  //  - non-focusable `filled_field_signature`
+  // and prefer newer renderer ids.
+  auto comparison_attributes =
+      [&](const std::unique_ptr<AutofillField>& field) {
+        return std::make_tuple(
+            field->origin == filling_context->filled_origin,
+            field->IsFocusable(),
+            field->global_id() == filling_context->filled_field_id,
+            field->GetFieldSignature() ==
+                filling_context->filled_field_signature,
+            field->unique_renderer_id);
+      };
+  auto it =
+      base::ranges::max_element(*form_structure, {}, comparison_attributes);
+  AutofillField* autofill_field =
+      it != form_structure->end() ? it->get() : nullptr;
+  bool found_matching_element =
+      autofill_field &&
+      autofill_field->origin == filling_context->filled_origin &&
+      (autofill_field->global_id() == filling_context->filled_field_id ||
+       autofill_field->GetFieldSignature() ==
+           filling_context->filled_field_signature);
+  if (!found_matching_element)
     return;
 
   FormFieldData field = *autofill_field;
