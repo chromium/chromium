@@ -322,6 +322,9 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
 }
 
 - (void)highlightNextSuggestion {
+  if ([self.tableView numberOfRowsInSection:0] == 0) {
+    return;
+  }
   if (!self.highlightedIndexPath) {
     // Initialize the highlighted row to -1, so that pressing down when nothing
     // is highlighted highlights the first row (at index 0).
