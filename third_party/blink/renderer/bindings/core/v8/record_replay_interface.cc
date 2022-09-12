@@ -26,7 +26,6 @@ namespace v8 {
 
 extern void FunctionCallbackRecordReplaySetCommandCallback(const FunctionCallbackInfo<Value>& args);
 extern void FunctionCallbackRecordReplaySetClearPauseDataCallback(const FunctionCallbackInfo<Value>& callArgs);
-extern void FunctionCallbackRecordReplayIgnoreScript(const FunctionCallbackInfo<Value>& args);
 
 } // namespace v8
 
@@ -45,7 +44,6 @@ const {
   setClearPauseDataCallback,
   getCurrentError,
   notifyDriverOnConsoleAPICall,
-  ignoreScript,
   dump,
   getRecordingId,
   sha256DigestHex,
@@ -245,24 +243,17 @@ function Target_getStepOffsets() {
 }
 
 function Target_topFrameLocation() {
-  const frames = getStackFrames();
-  if (!frames.length) {
+  const { location } = sendMessage("Debugger.getTopFrameLocation");
+  if (!location) {
     return {};
   }
-  return { location: createProtocolLocation(frames[0].location)[0] };
+  return { location: createProtocolLocation(location)[0] };
 }
 
 // Get the raw call frames on the stack, eliding ones in scripts we are ignoring.
 function getStackFrames() {
   const { callFrames } = sendMessage("Debugger.getCallFrames");
-
-  const frames = [];
-  for (const frame of callFrames) {
-    if (!ignoreScript(frame.location.scriptId)) {
-      frames.push(frame);
-    }
-  }
-  return frames;
+  return callFrames;
 }
 
 // Build a protocol Result object from a result/exceptionDetails CDP rval.
@@ -1256,8 +1247,6 @@ void SetupRecordReplayCommands(v8::Isolate* isolate) {
                       v8::FunctionCallbackRecordReplaySetCommandCallback);
   SetFunctionProperty(isolate, args, "setClearPauseDataCallback",
                       v8::FunctionCallbackRecordReplaySetClearPauseDataCallback);
-  SetFunctionProperty(isolate, args, "ignoreScript",
-                      v8::FunctionCallbackRecordReplayIgnoreScript);
   SetFunctionProperty(isolate, args, "getCurrentError",
                       GetCurrentError);
   SetFunctionProperty(isolate, args, "notifyDriverOnConsoleAPICall",
