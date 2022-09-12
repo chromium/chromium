@@ -57,6 +57,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC)
   const cryptohome::AuthFactor* FindOnlinePasswordFactor() const;
   const cryptohome::AuthFactor* FindKioskFactor() const;
   const cryptohome::AuthFactor* FindPinFactor() const;
+  const cryptohome::AuthFactor* FindRecoveryFactor() const;
 
  private:
   const cryptohome::AuthFactor* FindFactorByType(

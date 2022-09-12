@@ -14,6 +14,10 @@ namespace ash {
 
 namespace {
 
+using ::cryptohome::AuthFactor;
+using ::cryptohome::AuthFactorCommonMetadata;
+using ::cryptohome::AuthFactorRef;
+using ::cryptohome::AuthFactorType;
 using ::cryptohome::KeyDefinition;
 using ::cryptohome::KeyLabel;
 
@@ -34,6 +38,13 @@ KeyDefinition MakeLegacyKeyDef(int legacy_key_index) {
       "legacy-secret",
       KeyLabel(base::StringPrintf("legacy-%d", legacy_key_index)),
       /*privileges=*/0);
+}
+
+AuthFactor MakeRecoveryFactor() {
+  AuthFactorRef ref(AuthFactorType::kRecovery,
+                    KeyLabel(kCryptohomeRecoveryKeyLabel));
+  AuthFactor factor(std::move(ref), AuthFactorCommonMetadata());
+  return factor;
 }
 
 }  // namespace
@@ -121,6 +132,19 @@ TEST(AuthFactorsDataTest, FindOnlinePasswordWithLegacy210) {
   const KeyDefinition* found = data.FindOnlinePasswordKey();
   ASSERT_TRUE(found);
   EXPECT_EQ(*found, MakeLegacyKeyDef(0));
+}
+
+TEST(AuthFactorsDataTest, FindRecoveryFactorWithNothing) {
+  AuthFactorsData data;
+  EXPECT_FALSE(data.FindRecoveryFactor());
+}
+
+TEST(AuthFactorsDataTest, FindRecoveryFactorWithSomething) {
+  AuthFactorsData data({MakeRecoveryFactor()});
+  const AuthFactor* factor = data.FindRecoveryFactor();
+  EXPECT_TRUE(factor);
+  EXPECT_EQ(factor->ref().type(), AuthFactorType::kRecovery);
+  EXPECT_EQ(factor->ref().label(), KeyLabel(kCryptohomeRecoveryKeyLabel));
 }
 
 }  // namespace ash

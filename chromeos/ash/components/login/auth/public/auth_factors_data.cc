@@ -127,4 +127,8 @@ const cryptohome::AuthFactor* AuthFactorsData::FindPinFactor() const {
   return FindFactorByType(cryptohome::AuthFactorType::kPin);
 }
 
+const cryptohome::AuthFactor* AuthFactorsData::FindRecoveryFactor() const {
+  return FindFactorByType(cryptohome::AuthFactorType::kRecovery);
+}
+
 }  // namespace ash
