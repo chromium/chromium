@@ -7026,6 +7026,9 @@ crbug.com/1348118 [ Linux ] wpt_internal/webxr/ar/ar_light_estimation.https.html
 # Sheriff 2022-07-29 - Flaky failure.
 crbug.com/1347675 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/fragment-navigation.https.html [ Pass Timeout ]
 
+# Offscreen GPU canvas test flaky
+crbug.com/1286883 [ Linux ] virtual/gpu/fast/canvas/OffscreenCanvas-Bitmaprenderer-toBlob.html [ Failure Pass ]
+
 # Sheriff 2022-08-01
 # TODO(crbug.com/1225773): Re-enable this test
 crbug.com/1225773 [ Linux ] external/wpt/html/webappapis/scripting/processing-model-2/unhandled-promise-rejections/promise-rejection-event-during-parse.html [ Skip ]
