@@ -7,8 +7,10 @@
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/audio/audio_input_impl.h"
+#include "chromeos/ash/services/libassistant/audio/audio_input_stream.h"
 #include "chromeos/ash/services/libassistant/public/mojom/audio_input_controller.mojom.h"
 #include "chromeos/ash/services/libassistant/test_support/fake_platform_delegate.h"
 #include "media/audio/audio_device_description.h"
@@ -194,10 +196,13 @@ class AssistantAudioInputControllerTest : public testing::TestWithParam<bool> {
     controller().OnInteractionFinished(resolution);
   }
 
+ protected:
+  base::test::TaskEnvironment environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
  private:
   const bool enable_dsp_;
   bool pre_condition_checked_ = false;
-  base::test::TaskEnvironment environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   mojo::Remote<mojom::AudioInputController> client_;
   AudioInputController controller_;
@@ -456,6 +461,81 @@ TEST_P(AssistantAudioInputControllerTest,
 
   OnConversationTurnFinished();
   EXPECT_EQ(false, IsRecordingAudio());
+}
+
+TEST_P(AssistantAudioInputControllerTest, DSPTrigger) {
+  if (!IsEnableDspFlagOn()) {
+    GTEST_SKIP() << kSkipForNonDspMessage;
+  }
+
+  InitializeForTestOfType(kHotwordDeviceIdTest);
+  SetHotwordDeviceId(kHotwordDeviceId);
+  SetHotwordEnabled(true);
+  AssertHotwordAvailableState();
+  ASSERT_EQ(true, IsRecordingHotword());
+  ASSERT_NE(nullptr, audio_input().GetOpenAudioStreamForTesting());
+
+  ash::libassistant::AudioInputStream* open_audio_stream =
+      audio_input().GetOpenAudioStreamForTesting();
+
+  // Simulate DSP hotword activation. When DSP detects a hotword, it starts
+  // sending audio data until the channel gets closed.
+  audio_input().OnCaptureDataArrivedForTesting();
+  EXPECT_EQ(GetOpenDeviceId(), kHotwordDeviceId);
+
+  // |OnConversationTurnStarted| gets called once libassistant also detects a
+  // hotword in the stream.
+  OnConversationTurnStarted();
+
+  // Forward 3 seconds to make sure that software rejection timer is already
+  // cancelled.
+  environment_.FastForwardBy(base::Seconds(3));
+  environment_.RunUntilIdle();
+
+  // During the conversation, an audio stream used for detecting the hotword
+  // should be used.
+  EXPECT_EQ(open_audio_stream, audio_input().GetOpenAudioStreamForTesting());
+  EXPECT_TRUE(IsRecordingHotword());
+
+  OnConversationTurnFinished();
+
+  // Once the converstation ends, the old audio stream will get closed and a new
+  // one should be created.
+  EXPECT_NE(open_audio_stream, audio_input().GetOpenAudioStreamForTesting());
+  EXPECT_TRUE(IsRecordingHotword());
+  EXPECT_EQ(GetOpenDeviceId(), kHotwordDeviceId);
+}
+
+TEST_P(AssistantAudioInputControllerTest, DSPTriggerredButSoftwareRejection) {
+  if (!IsEnableDspFlagOn()) {
+    GTEST_SKIP() << kSkipForNonDspMessage;
+  }
+
+  InitializeForTestOfType(kHotwordDeviceIdTest);
+  SetHotwordDeviceId(kHotwordDeviceId);
+  SetHotwordEnabled(true);
+  AssertHotwordAvailableState();
+  ASSERT_EQ(true, IsRecordingHotword());
+  ASSERT_NE(nullptr, audio_input().GetOpenAudioStreamForTesting());
+
+  ash::libassistant::AudioInputStream* open_audio_stream =
+      audio_input().GetOpenAudioStreamForTesting();
+
+  // Simulate DSP hotword activation. When DSP detects a hotword, it starts
+  // sending audio data until the channel gets closed.
+  audio_input().OnCaptureDataArrivedForTesting();
+  EXPECT_EQ(GetOpenDeviceId(), kHotwordDeviceId);
+
+  // If libassistant does not detect a hotword in the audio stream, it will not
+  // call |OnConversationTurnStarted|. |DspHotwordStateManager| considers that
+  // the hotword gets rejected if it doesn't get the callback in 1 second.
+  environment_.FastForwardBy(base::Seconds(1));
+  environment_.RunUntilIdle();
+
+  // If it's rejected by libassistant, DSP audio stream should be re-created.
+  EXPECT_NE(open_audio_stream, audio_input().GetOpenAudioStreamForTesting());
+  EXPECT_TRUE(IsRecordingHotword());
+  EXPECT_EQ(GetOpenDeviceId(), kHotwordDeviceId);
 }
 
 }  // namespace libassistant

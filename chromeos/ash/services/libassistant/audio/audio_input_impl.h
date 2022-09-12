@@ -93,6 +93,12 @@ class AudioInputImpl : public assistant_client::AudioInput {
   // Returns if dead stream detection is being used for the current audio
   // recording. Returns nullopt if no audio is being recorded.
   absl::optional<bool> IsUsingDeadStreamDetectionForTesting() const;
+  // Calls |OnCaptureDataArrived| to simulate audio input.
+  void OnCaptureDataArrivedForTesting();
+  // Returns a pointer of current open stream. Note that this can get destroyed
+  // in |AudioInputImpl| at any time, i.e. do not access it unless you are sure
+  // the object is alive.
+  AudioInputStream* GetOpenAudioStreamForTesting();
 
  private:
   void RecreateStateManager();
