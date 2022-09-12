@@ -215,9 +215,9 @@ void FillSegmentationParams(struct v4l2_av1_segmentation* v4l2_seg,
                           V4L2_AV1_SEGMENTATION_FLAG_ENABLED);
   conditionally_set_flags(&v4l2_seg->flags, seg.update_map,
                           V4L2_AV1_SEGMENTATION_FLAG_UPDATE_MAP);
-  conditionally_set_flags(&v4l2_seg->flags, seg.update_data,
-                          V4L2_AV1_SEGMENTATION_FLAG_TEMPORAL_UPDATE);
   conditionally_set_flags(&v4l2_seg->flags, seg.temporal_update,
+                          V4L2_AV1_SEGMENTATION_FLAG_TEMPORAL_UPDATE);
+  conditionally_set_flags(&v4l2_seg->flags, seg.update_data,
                           V4L2_AV1_SEGMENTATION_FLAG_UPDATE_DATA);
   conditionally_set_flags(&v4l2_seg->flags, seg.segment_id_pre_skip,
                           V4L2_AV1_SEGMENTATION_FLAG_SEG_ID_PRE_SKIP);
