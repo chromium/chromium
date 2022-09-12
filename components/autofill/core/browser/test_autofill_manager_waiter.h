@@ -80,7 +80,9 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
   // Equivalent to re-initialization.
   void Reset();
 
-  // The timeout of the RunLoop.
+  // The timeout of the RunLoop. Since asynchronous-parsing thread in
+  // AutofillManager runs at relatively low priority, a high timeout may be
+  // necessary on slow bots.
   base::TimeDelta timeout() const { return timeout_; }
   void set_timeout(base::TimeDelta timeout) { timeout_ = timeout; }
 
@@ -153,7 +155,7 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
 
   std::vector<AfterEvent> relevant_events_;
   std::unique_ptr<State> state_ = std::make_unique<State>();
-  base::TimeDelta timeout_ = base::Seconds(5);
+  base::TimeDelta timeout_ = base::Seconds(30);
   base::ScopedObservation<AutofillManager, AutofillManager::Observer>
       observation_{this};
 };
