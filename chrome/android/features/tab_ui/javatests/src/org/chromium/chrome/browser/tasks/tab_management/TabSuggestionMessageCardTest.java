@@ -65,7 +65,10 @@ import java.util.concurrent.TimeoutException;
         ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID+"<Study"})
 // Disable TAB_TO_GTS_ANIMATION to make it less flaky. When animation is enabled, the suggestion
 // cards will be removed temporarily, then append again.
-@Features.DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
+// TODO(https://crbug.com/1362059): The message cards aren't shown the first time when entering GTS
+// with Start surface enabled.
+@Features.DisableFeatures({
+    ChromeFeatureList.TAB_TO_GTS_ANIMATION, ChromeFeatureList.START_SURFACE_ANDROID})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "force-fieldtrials=Study/Group"})
 public class TabSuggestionMessageCardTest {
