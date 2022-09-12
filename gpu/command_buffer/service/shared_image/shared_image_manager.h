@@ -16,7 +16,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gpu {
-class DXGISharedHandleManager;
+class DXGIKeyedMutexManager;
 class SharedImageRepresentationFactoryRef;
 class VaapiDependenciesFactory;
 
@@ -118,9 +118,8 @@ class GPU_GLES2_EXPORT SharedImageManager {
   scoped_refptr<gfx::NativePixmap> GetNativePixmap(const gpu::Mailbox& mailbox);
 
 #if BUILDFLAG(IS_WIN)
-  const scoped_refptr<DXGISharedHandleManager>& dxgi_shared_handle_manager()
-      const {
-    return dxgi_shared_handle_manager_;
+  const scoped_refptr<DXGIKeyedMutexManager>& dxgi_keyed_mutex_manager() const {
+    return dxgi_keyed_mutex_manager_;
   }
 #endif
 
@@ -134,7 +133,7 @@ class GPU_GLES2_EXPORT SharedImageManager {
   const bool display_context_on_another_thread_;
 
 #if BUILDFLAG(IS_WIN)
-  scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager_;
+  scoped_refptr<DXGIKeyedMutexManager> dxgi_keyed_mutex_manager_;
 #endif
 
   THREAD_CHECKER(thread_checker_);

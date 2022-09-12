@@ -72,8 +72,8 @@ gpu::SharedImageStub* FakeCommandBufferHelper::GetSharedImageStub() {
 }
 
 #if BUILDFLAG(IS_WIN)
-gpu::DXGISharedHandleManager*
-FakeCommandBufferHelper::GetDXGISharedHandleManager() {
+gpu::DXGIKeyedMutexManager*
+FakeCommandBufferHelper::GetDXGIKeyedMutexManager() {
   return nullptr;
 }
 #endif

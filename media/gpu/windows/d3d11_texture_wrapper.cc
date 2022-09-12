@@ -12,7 +12,7 @@
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
+#include "gpu/command_buffer/service/dxgi_keyed_mutex_manager.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
 #include "media/base/bind_to_current_loop.h"
@@ -218,7 +218,7 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
       gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY |
       gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
-  scoped_refptr<gpu::DXGISharedHandleState> dxgi_shared_handle_state;
+  scoped_refptr<gpu::DXGIKeyedMutexState> dxgi_keyed_mutex_state;
   if (texture) {
     D3D11_TEXTURE2D_DESC desc = {};
     texture->GetDesc(&desc);
@@ -246,16 +246,15 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
         return;
       }
 
-      dxgi_shared_handle_state =
-          helper_->GetDXGISharedHandleManager()
-              ->CreateAnonymousSharedHandleState(
-                  base::win::ScopedHandle(shared_handle), texture);
+      dxgi_keyed_mutex_state =
+          helper_->GetDXGIKeyedMutexManager()->CreateAnonymousKeyedMutexState(
+              base::win::ScopedHandle(shared_handle), texture);
     }
   }
 
   auto shared_image_backings = gpu::D3DImageBacking::CreateFromVideoTexture(
       mailboxes, dxgi_format, size, usage, texture, array_slice,
-      std::move(dxgi_shared_handle_state));
+      std::move(dxgi_keyed_mutex_state));
   if (shared_image_backings.empty()) {
     std::move(on_error_cb)
         .Run(std::move(D3D11Status::Codes::kCreateSharedImageFailed));
