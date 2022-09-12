@@ -41,10 +41,6 @@ const char kClearBrowsingDataHistoryNoticeShownTimes[] =
 // "true" - opt-in (enabled)
 const char kContextualSearchEnabled[] = "search.contextual_search_enabled";
 
-// Boolean that is true when Data Saver is enabled.
-// TODO(crbug.com/1356134): Remove this pref
-const char kDataSaverEnabled[] = "spdy_proxy.enabled";
-
 // The default character encoding to assume for a web page in the
 // absence of MIME charset specification
 const char kDefaultCharset[] = "intl.charset_default";

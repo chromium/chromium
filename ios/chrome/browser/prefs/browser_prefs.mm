@@ -110,7 +110,10 @@ const char kOptimizationGuideRemoteFetchingEnabled[] =
 const char kTrialGroupV3PrefName[] = "fre_refactoringV3.trial_group";
 
 // Deprecated 05/2022.
-extern const char kAccountIdMigrationState[] = "account_id_migration_state";
+const char kAccountIdMigrationState[] = "account_id_migration_state";
+
+// Deprecated 09/2022.
+const char kDataSaverEnabled[] = "spdy_proxy.enabled";
 
 }  // namespace
 
@@ -230,7 +233,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   [SigninCoordinator registerBrowserStatePrefs:registry];
   [SigninPromoViewMediator registerBrowserStatePrefs:registry];
 
-  registry->RegisterBooleanPref(prefs::kDataSaverEnabled, false);
+  registry->RegisterBooleanPref(kDataSaverEnabled, false);
   registry->RegisterBooleanPref(
       prefs::kEnableDoNotTrack, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -340,4 +343,7 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
 
   // Added 06/2022.
   syncer::MigrateSyncRequestedPrefPostMice(prefs);
+
+  // Added 09/2022
+  prefs->ClearPref(kDataSaverEnabled);
 }
