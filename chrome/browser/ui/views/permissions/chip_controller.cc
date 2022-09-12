@@ -19,6 +19,7 @@
 #include "components/permissions/features.h"
 
 #include "components/permissions/permission_prompt.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/button_controller.h"
@@ -78,6 +79,7 @@ void ChipController::RestartTimersOnMouseHover() {
 
 void ChipController::OnWidgetDestroying(views::Widget* widget) {
   DCHECK_EQ(GetPromptBubbleWidget(), widget);
+  ResetTimers();
   if (widget->closed_reason() == views::Widget::ClosedReason::kEscKeyPressed ||
       widget->closed_reason() ==
           views::Widget::ClosedReason::kCloseButtonClicked) {
@@ -94,6 +96,7 @@ void ChipController::OnWidgetDestroying(views::Widget* widget) {
 void ChipController::ShowPermissionPrompt(
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(delegate);
+  ResetTimers();
   permission_prompt_model_ =
       std::make_unique<PermissionPromptChipModel>(delegate);
 
@@ -139,6 +142,7 @@ void ChipController::FinalizePermissionPromptChip() {
     bubble_widget->Close();
   }
 
+  ResetTimers();
   permission_prompt_model_.reset();
 
   LocationBarView* lbv = GetLocationBarView();
@@ -182,7 +186,9 @@ void ChipController::CollapseChip(bool allow_restart) {
     StartCollapseTimer();
   } else {
     AnimateCollapse();
-    chip_->SetChipIcon(permission_prompt_model_->GetBlockedIcon());
+    chip_->SetChipIcon(permission_prompt_model_
+                           ? permission_prompt_model_->GetBlockedIcon()
+                           : gfx::kNoneIcon);
     chip_->SetTheme(OmniboxChipTheme::kLowVisibility);
     StartDismissTimer();
   }
@@ -261,9 +267,12 @@ void ChipController::ObservePromptBubble() {
 }
 
 void ChipController::OnPromptBubbleDismissed() {
+  DCHECK(permission_prompt_model_);
+  if (!permission_prompt_model_)
+    return;
+
   permission_prompt_model_->SetShouldDismiss(true);
-  if (permission_prompt_model_ &&
-      permission_prompt_model_->GetDelegate().has_value()) {
+  if (permission_prompt_model_->GetDelegate().has_value()) {
     permission_prompt_model_->GetDelegate().value()->SetDismissOnTabClose();
     // If the permission prompt bubble is closed, we count it as "Dismissed",
     // hence it should record the time when the bubble is closed and not when
@@ -286,7 +295,9 @@ void ChipController::OnPromptExpired() {
 }
 
 void ChipController::OnChipButtonPressed() {
-  if (!IsBubbleShowing() || permission_prompt_model_->ShouldBubbleStartOpen()) {
+  if (permission_prompt_model_ &&
+      (!IsBubbleShowing() ||
+       permission_prompt_model_->ShouldBubbleStartOpen())) {
     // Only record if its the first interaction.
     if (permission_prompt_model_->GetPromptStyle() ==
         PermissionPromptStyle::kChip) {
@@ -337,6 +348,9 @@ void ChipController::StartCollapseTimer() {
 }
 
 void ChipController::StartDismissTimer() {
+  if (!permission_prompt_model_)
+    return;
+
   if (permission_prompt_model_->ShouldExpand()) {
     if (base::FeatureList::IsEnabled(
             permissions::features::kPermissionChipAutoDismiss)) {
