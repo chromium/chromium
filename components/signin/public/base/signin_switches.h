@@ -25,6 +25,7 @@ extern const base::Feature kAccountIdMigration;
 
 #if BUILDFLAG(IS_ANDROID)
 extern const base::Feature kAllowSyncOffForChildAccounts;
+extern const base::Feature kCreateSigninCheckerBeforeSyncConsentFragment;
 #endif
 
 extern const base::Feature kNewSigninRequestHeaderCheckOrder;

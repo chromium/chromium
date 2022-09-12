@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/signin/public/base/signin_switches.h"
+#include "base/feature_list.h"
 
 namespace switches {
 
@@ -18,6 +19,15 @@ const base::Feature kAccountIdMigration{"AccountIdMigration",
 // Sync feature forced on.
 const base::Feature kAllowSyncOffForChildAccounts{
     "AllowSyncOffForChildAccounts", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// If enabled, SigninChecker is created before displaying the sync consent
+// fragment during FRE.
+//
+// This should have no user-visible impact, the flag is present as a
+// kill-switch.
+const base::Feature kCreateSigninCheckerBeforeSyncConsentFragment{
+    "CreateSigninCheckerBeforeSyncConsentFragment",
+    base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 // If enabled, performs the URL-based check first when proving that the

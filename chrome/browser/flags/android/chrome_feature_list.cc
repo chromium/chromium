@@ -401,6 +401,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &share::kScreenshotsForAndroidV2,
     &share::kUpcomingSharingFeatures,
     &switches::kAllowSyncOffForChildAccounts,
+    &switches::kCreateSigninCheckerBeforeSyncConsentFragment,
     &switches::kEnableCbdSignOut,
     &switches::kForceStartupSigninPromo,
     &switches::kForceDisableExtendedSyncPromos,
