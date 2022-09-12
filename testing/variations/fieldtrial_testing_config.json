@@ -10909,6 +10909,21 @@
             ]
         }
     ],
+    "VirtualKeyboardNewHeader": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "VirtualKeyboardNewHeader"
+                    ]
+                }
+            ]
+        }
+    ],
     "VisualFeaturesInCsppPings": [
         {
             "platforms": [
