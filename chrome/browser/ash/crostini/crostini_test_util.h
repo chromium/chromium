@@ -13,8 +13,6 @@ void SetUpViewsEnvironmentForTesting();
 // Tears down environment that allowed dialog creation in tests.
 void TearDownViewsEnvironmentForTesting();
 
-void CloseCrostiniAnsibleSoftwareConfigViewForTesting();
-
 }  // namespace crostini
 
 #endif  // CHROME_BROWSER_ASH_CROSTINI_CROSTINI_TEST_UTIL_H_

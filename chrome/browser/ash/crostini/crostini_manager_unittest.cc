@@ -31,6 +31,7 @@
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
+#include "chrome/browser/ui/views/crostini/crostini_ansible_software_config_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -2340,8 +2341,6 @@ class CrostiniManagerAnsibleInfraTest : public CrostiniManagerRestartTest {
   }
 
   void TearDown() override {
-    crostini::CloseCrostiniAnsibleSoftwareConfigViewForTesting();
-    // Wait for view triggered to be closed.
     base::RunLoop().RunUntilIdle();
 
     TearDownViewsEnvironmentForTesting();

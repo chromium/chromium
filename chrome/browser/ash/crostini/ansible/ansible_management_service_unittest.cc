@@ -8,6 +8,7 @@
 #include "chrome/browser/ash/crostini/ansible/ansible_management_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_test_util.h"
+#include "chrome/browser/ui/views/crostini/crostini_ansible_software_config_view.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
@@ -54,9 +55,8 @@ class AnsibleManagementServiceTest : public testing::Test,
       delete;
 
   ~AnsibleManagementServiceTest() override {
-    crostini::CloseCrostiniAnsibleSoftwareConfigViewForTesting();
-    // Wait for view triggered to be closed.
     base::RunLoop().RunUntilIdle();
+
     TearDownViewsEnvironmentForTesting();
 
     test_helper_.reset();
@@ -92,12 +92,31 @@ class AnsibleManagementServiceTest : public testing::Test,
     run_loop()->Quit();
   }
 
+  CrostiniAnsibleSoftwareConfigView* ActiveView(
+      const guest_os::GuestId& container_id) {
+    if (ansible_management_service_->GetDialogWidgetForTesting(container_id)) {
+      return (CrostiniAnsibleSoftwareConfigView*)ansible_management_service_
+          ->GetDialogWidgetForTesting(container_id)
+          ->widget_delegate();
+    } else {
+      return nullptr;
+    }
+  }
+
   // AnsibleManagementService::Observer
   void OnAnsibleSoftwareConfigurationStarted(
       const guest_os::GuestId& container_id) override {}
   void OnAnsibleSoftwareConfigurationFinished(
       const guest_os::GuestId& container_id,
       bool success) override {}
+  void OnAnsibleSoftwareConfigurationUiPrompt(
+      const guest_os::GuestId& container_id,
+      bool interactive) override {
+    if (interactive) {
+      // Press retry/ok on dialog if it's waiting for input.
+      ActiveView(container_id)->Accept();
+    }
+  }
   void OnAnsibleSoftwareInstall(
       const guest_os::GuestId& container_id) override {
     if (is_install_ansible_success_) {
@@ -262,8 +281,6 @@ TEST_F(AnsibleManagementServiceTest,
                            weak_ptr_factory_.GetWeakPtr()));
       }),
                      false));
-  CloseCrostiniAnsibleSoftwareConfigViewForTesting();
-
   run_loop()->Run();
 }
 

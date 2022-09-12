@@ -8,6 +8,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_test_helper.h"
@@ -34,7 +35,6 @@ class CrostiniAnsibleSoftwareConfigViewBrowserTest
  public:
   CrostiniAnsibleSoftwareConfigViewBrowserTest()
       : CrostiniDialogBrowserTest(true /*register_termina*/),
-        container_id_(crostini::DefaultContainerId()),
         network_connection_tracker_(
             network::TestNetworkConnectionTracker::CreateInstance()) {
     scoped_feature_list_.InitAndEnableFeature(
@@ -43,11 +43,24 @@ class CrostiniAnsibleSoftwareConfigViewBrowserTest
 
   // CrostiniDialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    crostini::ShowCrostiniAnsibleSoftwareConfigView(browser()->profile());
+    views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
+        std::make_unique<CrostiniAnsibleSoftwareConfigView>(
+            browser()->profile(), crostini::DefaultContainerId()),
+        nullptr, nullptr);
+    ansible_management_service()->AddConfigurationTaskForTesting(
+        crostini::DefaultContainerId(), widget);
+    widget->Show();
   }
 
-  CrostiniAnsibleSoftwareConfigView* ActiveView() {
-    return CrostiniAnsibleSoftwareConfigView::GetActiveViewForTesting();
+  CrostiniAnsibleSoftwareConfigView* ActiveView(
+      const guest_os::GuestId& container_id) {
+    if (ansible_management_service()->GetDialogWidgetForTesting(container_id)) {
+      return (CrostiniAnsibleSoftwareConfigView*)ansible_management_service()
+          ->GetDialogWidgetForTesting(container_id)
+          ->widget_delegate();
+    } else {
+      return nullptr;
+    }
   }
 
   // crostini::AnsibleManagementService::Observer
@@ -62,34 +75,45 @@ class CrostiniAnsibleSoftwareConfigViewBrowserTest
       const guest_os::GuestId& container_id,
       bool success) override {}
 
+  void OnAnsibleSoftwareConfigurationUiPrompt(
+      const guest_os::GuestId& container_id,
+      bool interactive) override {
+    if (interactive && accept_) {
+      ActiveView(container_id)->Accept();
+    } else if (!accept_) {
+      run_loop()->Quit();
+    }
+  }
+
   void OnApplyAnsiblePlaybook(const guest_os::GuestId& container_id) override {
     if (send_ansible_progress_) {
-      EXPECT_NE(nullptr, ActiveView());
+      EXPECT_NE(nullptr, ActiveView(container_id));
       vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal signal;
       signal.set_status(
           vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal::IN_PROGRESS);
-      signal.set_vm_name(crostini::DefaultContainerId().vm_name);
-      signal.set_container_name(crostini::DefaultContainerId().container_name);
+      signal.set_vm_name(container_id.vm_name);
+      signal.set_container_name(container_id.container_name);
       signal.add_status_string(kProgressString);
       ansible_management_service()->OnApplyAnsiblePlaybookProgress(signal);
-      status_string_ = ActiveView()->GetProgressLabelStringForTesting();
+      status_string_ =
+          ActiveView(container_id)->GetProgressLabelStringForTesting();
     }
     if (is_apply_ansible_success_) {
-      EXPECT_NE(nullptr, ActiveView());
+      EXPECT_NE(nullptr, ActiveView(container_id));
       vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal signal;
       signal.set_status(
           vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal::SUCCEEDED);
-      signal.set_vm_name(crostini::DefaultContainerId().vm_name);
-      signal.set_container_name(crostini::DefaultContainerId().container_name);
+      signal.set_vm_name(container_id.vm_name);
+      signal.set_container_name(container_id.container_name);
       ansible_management_service()->OnApplyAnsiblePlaybookProgress(signal);
     } else {
-      EXPECT_NE(nullptr, ActiveView());
+      EXPECT_NE(nullptr, ActiveView(container_id));
 
       vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal signal;
       signal.set_status(
           vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal::FAILED);
-      signal.set_vm_name(crostini::DefaultContainerId().vm_name);
-      signal.set_container_name(crostini::DefaultContainerId().container_name);
+      signal.set_vm_name(container_id.vm_name);
+      signal.set_container_name(container_id.container_name);
       signal.set_failure_details("apple");
       ansible_management_service()->OnApplyAnsiblePlaybookProgress(signal);
     }
@@ -97,18 +121,18 @@ class CrostiniAnsibleSoftwareConfigViewBrowserTest
   void OnAnsibleSoftwareInstall(
       const guest_os::GuestId& container_id) override {
     if (is_install_ansible_success_) {
-      EXPECT_NE(nullptr, ActiveView());
-      EXPECT_TRUE(IsDefaultDialog());
+      EXPECT_NE(nullptr, ActiveView(container_id));
+      EXPECT_TRUE(IsDefaultDialog(container_id));
       ansible_management_service()->OnInstallLinuxPackageProgress(
-          container_id_, crostini::InstallLinuxPackageProgressStatus::SUCCEEDED,
+          container_id, crostini::InstallLinuxPackageProgressStatus::SUCCEEDED,
           100,
           /*error_message=*/{});
     } else {
-      EXPECT_NE(nullptr, ActiveView());
-      EXPECT_TRUE(IsDefaultDialog());
+      EXPECT_NE(nullptr, ActiveView(container_id));
+      EXPECT_TRUE(IsDefaultDialog(container_id));
 
       ansible_management_service()->OnInstallLinuxPackageProgress(
-          container_id_, crostini::InstallLinuxPackageProgressStatus::FAILED, 0,
+          container_id, crostini::InstallLinuxPackageProgressStatus::FAILED, 0,
           /*error_message=*/{});
     }
   }
@@ -127,6 +151,7 @@ class CrostiniAnsibleSoftwareConfigViewBrowserTest
     ansible_management_service()->AddObserver(this);
 
     // Set sensible defaults.
+    accept_ = true;
     is_install_ansible_success_ = true;
     is_apply_ansible_success_ = true;
     send_ansible_progress_ = false;
@@ -141,24 +166,29 @@ class CrostiniAnsibleSoftwareConfigViewBrowserTest
   }
 
   // A new Widget was created in ShowUi() or since the last VerifyUi().
-  bool HasView() { return VerifyUi() && ActiveView(); }
+  bool HasView(const guest_os::GuestId& container_id) {
+    return VerifyUi() && ActiveView(container_id);
+  }
 
   // No new Widget was created in ShowUi() or since last VerifyUi().
-  bool HasNoView() {
+  bool HasNoView(const guest_os::GuestId& container_id) {
     base::RunLoop().RunUntilIdle();
-    return !VerifyUi() && ActiveView() == nullptr;
+    return !VerifyUi() && ActiveView(container_id) == nullptr;
   }
 
-  bool IsDefaultDialog() {
-    return !HasAcceptButton() && !HasCancelButton() && HasDefaultStrings();
+  bool IsDefaultDialog(const guest_os::GuestId& container_id) {
+    return !HasAcceptButton(container_id) && !HasCancelButton(container_id) &&
+           HasDefaultStrings(container_id);
   }
 
-  bool IsErrorDialog() {
-    return HasAcceptButton() && !HasCancelButton() && HasErrorStrings();
+  bool IsErrorDialog(const guest_os::GuestId& container_id) {
+    return HasAcceptButton(container_id) && !HasCancelButton(container_id) &&
+           HasErrorStrings(container_id);
   }
 
-  bool IsErrorOfflineDialog() {
-    return HasAcceptButton() && HasCancelButton() && HasErrorOfflineStrings();
+  bool IsErrorOfflineDialog(const guest_os::GuestId& container_id) {
+    return HasAcceptButton(container_id) && HasCancelButton(container_id) &&
+           HasErrorOfflineStrings(container_id);
   }
 
   base::RunLoop* run_loop() { return run_loop_.get(); }
@@ -180,41 +210,50 @@ class CrostiniAnsibleSoftwareConfigViewBrowserTest
     send_ansible_progress_ = show_progress;
   }
 
-  guest_os::GuestId container_id_;
+  void SetAccept(bool accept) { accept_ = accept; }
+
   std::u16string status_string_;
 
  private:
-  bool HasAcceptButton() { return ActiveView()->GetOkButton() != nullptr; }
-  bool HasCancelButton() { return ActiveView()->GetCancelButton() != nullptr; }
+  bool HasAcceptButton(const guest_os::GuestId& container_id) {
+    return ActiveView(container_id)->GetOkButton() != nullptr;
+  }
+  bool HasCancelButton(const guest_os::GuestId& container_id) {
+    return ActiveView(container_id)->GetCancelButton() != nullptr;
+  }
 
-  bool HasDefaultStrings() {
-    return ActiveView()->GetWindowTitle() ==
+  bool HasDefaultStrings(const guest_os::GuestId& container_id) {
+    return ActiveView(container_id)->GetWindowTitle() ==
                l10n_util::GetStringUTF16(
-                   IDS_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_LABEL) &&
-           ActiveView()->GetSubtextLabelStringForTesting() ==
+                   IDS_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_LABEL) +
+                   u": " + base::UTF8ToUTF16(container_id.container_name) &&
+           ActiveView(container_id)->GetSubtextLabelStringForTesting() ==
                l10n_util::GetStringUTF16(
                    IDS_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_SUBTEXT);
   }
 
-  bool HasErrorStrings() {
-    return ActiveView()->GetWindowTitle() ==
+  bool HasErrorStrings(const guest_os::GuestId& container_id) {
+    return ActiveView(container_id)->GetWindowTitle() ==
                l10n_util::GetStringUTF16(
-                   IDS_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_ERROR_LABEL) &&
-           ActiveView()->GetSubtextLabelStringForTesting() ==
+                   IDS_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_ERROR_LABEL) +
+                   u": " + base::UTF8ToUTF16(container_id.container_name) &&
+           ActiveView(container_id)->GetSubtextLabelStringForTesting() ==
                l10n_util::GetStringUTF16(
                    IDS_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_ERROR_SUBTEXT);
   }
 
-  bool HasErrorOfflineStrings() {
-    return ActiveView()->GetWindowTitle() ==
+  bool HasErrorOfflineStrings(const guest_os::GuestId& container_id) {
+    return ActiveView(container_id)->GetWindowTitle() ==
                l10n_util::GetStringFUTF16(
                    IDS_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_ERROR_OFFLINE_LABEL,
-                   ui::GetChromeOSDeviceName()) &&
-           ActiveView()->GetSubtextLabelStringForTesting() ==
+                   ui::GetChromeOSDeviceName()) +
+                   u": " + base::UTF8ToUTF16(container_id.container_name) &&
+           ActiveView(container_id)->GetSubtextLabelStringForTesting() ==
                l10n_util::GetStringUTF16(
                    IDS_CROSTINI_ANSIBLE_SOFTWARE_CONFIG_ERROR_OFFLINE_SUBTEXT);
   }
 
+  bool accept_;
   bool is_install_ansible_success_;
   bool is_apply_ansible_success_;
   bool send_ansible_progress_;
@@ -234,25 +273,29 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
                        SuccessfulFlow) {
   ShowUi("default");
 
-  EXPECT_TRUE(HasView());
-  EXPECT_TRUE(IsDefaultDialog());
+  EXPECT_TRUE(HasView(crostini::DefaultContainerId()));
+  EXPECT_TRUE(IsDefaultDialog(crostini::DefaultContainerId()));
 
-  ActiveView()->OnAnsibleSoftwareConfigurationFinished(container_id_, true);
+  ActiveView(crostini::DefaultContainerId())
+      ->OnAnsibleSoftwareConfigurationFinished(crostini::DefaultContainerId(),
+                                               true);
 
-  EXPECT_TRUE(HasNoView());
+  EXPECT_TRUE(HasNoView(crostini::DefaultContainerId()));
 }
 
 IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
                        UnsuccessfulFlow) {
   ShowUi("default");
 
-  EXPECT_TRUE(HasView());
-  EXPECT_TRUE(IsDefaultDialog());
+  EXPECT_TRUE(HasView(crostini::DefaultContainerId()));
+  EXPECT_TRUE(IsDefaultDialog(crostini::DefaultContainerId()));
 
-  ActiveView()->OnAnsibleSoftwareConfigurationFinished(container_id_, false);
+  ActiveView(crostini::DefaultContainerId())
+      ->OnAnsibleSoftwareConfigurationFinished(crostini::DefaultContainerId(),
+                                               false);
 
-  EXPECT_NE(nullptr, ActiveView());
-  EXPECT_TRUE(IsErrorDialog());
+  EXPECT_NE(nullptr, ActiveView(crostini::DefaultContainerId()));
+  EXPECT_TRUE(IsErrorDialog(crostini::DefaultContainerId()));
 }
 
 IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
@@ -261,13 +304,15 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
 
   ShowUi("default");
 
-  EXPECT_TRUE(HasView());
-  EXPECT_TRUE(IsDefaultDialog());
+  EXPECT_TRUE(HasView(crostini::DefaultContainerId()));
+  EXPECT_TRUE(IsDefaultDialog(crostini::DefaultContainerId()));
 
-  ActiveView()->OnAnsibleSoftwareConfigurationFinished(container_id_, false);
+  ActiveView(crostini::DefaultContainerId())
+      ->OnAnsibleSoftwareConfigurationFinished(crostini::DefaultContainerId(),
+                                               false);
 
-  EXPECT_NE(nullptr, ActiveView());
-  EXPECT_TRUE(IsErrorOfflineDialog());
+  EXPECT_NE(nullptr, ActiveView(crostini::DefaultContainerId()));
+  EXPECT_TRUE(IsErrorOfflineDialog(crostini::DefaultContainerId()));
 }
 
 IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
@@ -276,19 +321,21 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
 
   ShowUi("default");
 
-  EXPECT_TRUE(HasView());
-  EXPECT_TRUE(IsDefaultDialog());
+  EXPECT_TRUE(HasView(crostini::DefaultContainerId()));
+  EXPECT_TRUE(IsDefaultDialog(crostini::DefaultContainerId()));
 
-  ActiveView()->OnAnsibleSoftwareConfigurationFinished(container_id_, false);
+  ActiveView(crostini::DefaultContainerId())
+      ->OnAnsibleSoftwareConfigurationFinished(crostini::DefaultContainerId(),
+                                               false);
 
-  EXPECT_NE(nullptr, ActiveView());
-  EXPECT_TRUE(IsErrorOfflineDialog());
+  EXPECT_NE(nullptr, ActiveView(crostini::DefaultContainerId()));
+  EXPECT_TRUE(IsErrorOfflineDialog(crostini::DefaultContainerId()));
 
   // Retry button clicked.
-  ActiveView()->AcceptDialog();
+  ActiveView(crostini::DefaultContainerId())->AcceptDialog();
 
-  EXPECT_NE(nullptr, ActiveView());
-  EXPECT_TRUE(IsDefaultDialog());
+  EXPECT_NE(nullptr, ActiveView(crostini::DefaultContainerId()));
+  EXPECT_TRUE(IsDefaultDialog(crostini::DefaultContainerId()));
 }
 
 IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
@@ -297,18 +344,20 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
 
   ShowUi("default");
 
-  EXPECT_TRUE(HasView());
-  EXPECT_TRUE(IsDefaultDialog());
+  EXPECT_TRUE(HasView(crostini::DefaultContainerId()));
+  EXPECT_TRUE(IsDefaultDialog(crostini::DefaultContainerId()));
 
-  ActiveView()->OnAnsibleSoftwareConfigurationFinished(container_id_, false);
+  ActiveView(crostini::DefaultContainerId())
+      ->OnAnsibleSoftwareConfigurationFinished(crostini::DefaultContainerId(),
+                                               false);
 
-  EXPECT_NE(nullptr, ActiveView());
-  EXPECT_TRUE(IsErrorOfflineDialog());
+  EXPECT_NE(nullptr, ActiveView(crostini::DefaultContainerId()));
+  EXPECT_TRUE(IsErrorOfflineDialog(crostini::DefaultContainerId()));
 
   // Cancel button clicked.
-  ActiveView()->CancelDialog();
+  ActiveView(crostini::DefaultContainerId())->CancelDialog();
 
-  EXPECT_TRUE(HasNoView());
+  EXPECT_TRUE(HasNoView(crostini::DefaultContainerId()));
 }
 
 IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
@@ -321,7 +370,40 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
 
   run_loop()->Run();
 
-  EXPECT_TRUE(HasNoView());
+  EXPECT_TRUE(HasNoView(crostini::DefaultContainerId()));
+}
+
+IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
+                       AnsibleConfigFlow_Multiple_Successful) {
+  guest_os::GuestId container1(vm_tools::apps::VmType::TERMINA, "intersetingvm",
+                               "ihaveseenbeyond");
+  guest_os::GuestId container2(vm_tools::apps::VmType::TERMINA, "supersecretvm",
+                               "nothingtoseehereofficer");
+  bool done_once = false;
+  ansible_management_service()->ConfigureContainer(
+      container1,
+      browser()->profile()->GetPrefs()->GetFilePath(
+          crostini::prefs::kCrostiniAnsiblePlaybookFilePath),
+      base::BindLambdaForTesting([&](bool success) {
+        if (done_once)
+          run_loop()->Quit();
+        else
+          done_once = true;
+      }));
+
+  ansible_management_service()->ConfigureContainer(
+      container2,
+      browser()->profile()->GetPrefs()->GetFilePath(
+          crostini::prefs::kCrostiniAnsiblePlaybookFilePath),
+      base::BindLambdaForTesting([&](bool success) {
+        if (done_once)
+          run_loop()->Quit();
+        else
+          done_once = true;
+      }));
+  run_loop()->Run();
+  EXPECT_TRUE(HasNoView(container1));
+  EXPECT_TRUE(HasNoView(container2));
 }
 
 IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
@@ -340,13 +422,14 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
                                 &expected));
   EXPECT_EQ(status_string_, expected);
 
-  EXPECT_TRUE(HasNoView());
+  EXPECT_TRUE(HasNoView(crostini::DefaultContainerId()));
 }
 
 IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
                        AnsibleConfigFlow_InstallationFailed) {
   // Set install failure. No need to set apply because it should never reach
   // there.
+  SetAccept(false);
   SetInstallAnsibleStatus(false);
   ansible_management_service()->ConfigureContainer(
       crostini::DefaultContainerId(),
@@ -356,13 +439,14 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
 
   run_loop()->Run();
 
-  EXPECT_NE(nullptr, ActiveView());
-  EXPECT_TRUE(IsErrorDialog());
+  EXPECT_NE(nullptr, ActiveView(crostini::DefaultContainerId()));
+  EXPECT_TRUE(IsErrorDialog(crostini::DefaultContainerId()));
 }
 
 IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
                        AnsibleConfigFlow_ApplicationFailed) {
   // Set apply failure
+  SetAccept(false);
   SetApplyAnsibleStatus(false);
   ansible_management_service()->ConfigureContainer(
       crostini::DefaultContainerId(),
@@ -373,6 +457,6 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
 
   run_loop()->Run();
 
-  EXPECT_NE(nullptr, ActiveView());
-  EXPECT_TRUE(IsErrorDialog());
+  EXPECT_NE(nullptr, ActiveView(crostini::DefaultContainerId()));
+  EXPECT_TRUE(IsErrorDialog(crostini::DefaultContainerId()));
 }

@@ -53,6 +53,11 @@ class AnsibleManagementService : public KeyedService,
         const guest_os::GuestId& container_id) {}
     virtual void OnApplyAnsiblePlaybook(const guest_os::GuestId& container_id) {
     }
+    // Mainly for testing purposes only. Signals observers that the UI element
+    // is ready for interaction for a particular configuration task.
+    virtual void OnAnsibleSoftwareConfigurationUiPrompt(
+        const guest_os::GuestId& container_id,
+        bool interactive) {}
   };
 
   static AnsibleManagementService* GetForProfile(Profile* profile);
@@ -82,14 +87,29 @@ class AnsibleManagementService : public KeyedService,
   virtual void OnApplyAnsiblePlaybookProgress(
       const vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal& signal);
 
+  // Gets the input from the user-facing dialog to determine whether or not a
+  // configuration task should be retried.
+  void RetryConfiguration(const guest_os::GuestId& container_id);
+
+  void CompleteConfiguration(const guest_os::GuestId& container_id,
+                             bool success);
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
   // Sets up and returns a mock instance of AnsibleManagementService.
   static AnsibleManagementService* SetUpMockAnsibleManagementServiceForTesting(
       Profile* profile);
+  views::Widget* GetDialogWidgetForTesting(
+      const guest_os::GuestId& container_id);
+  void AddConfigurationTaskForTesting(const guest_os::GuestId& container_id,
+                                      views::Widget* widget);
 
  private:
+  // Helper function to create the UI elements needed. We won't need to keep
+  // track of this because it'll be self-destructing.
+  void CreateUiElement(const guest_os::GuestId& container_id);
+
   void OnInstallAnsibleInContainer(const guest_os::GuestId& container_id,
                                    CrostiniResult result);
   void GetAnsiblePlaybookToApply(const guest_os::GuestId& container_id);
@@ -109,6 +129,10 @@ class AnsibleManagementService : public KeyedService,
   base::ObserverList<Observer> observers_;
   std::map<guest_os::GuestId, std::unique_ptr<AnsibleConfiguration>>
       configuration_tasks_;
+
+  // We don't really need to know about these, but keeping them so we can access
+  // for testing purposes.
+  std::map<guest_os::GuestId, views::Widget*> ui_elements_;
 
   base::WeakPtrFactory<AnsibleManagementService> weak_ptr_factory_;
 };
