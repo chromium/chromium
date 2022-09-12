@@ -9,7 +9,9 @@ import android.view.View;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -38,8 +40,11 @@ public class DownloadInterstitialCoordinatorImpl implements DownloadInterstitial
         PropertyModel model =
                 new PropertyModel.Builder(DownloadInterstitialProperties.ALL_KEYS).build();
         model.set(DownloadInterstitialProperties.RELOAD_TAB, reloadCallback);
+        ModalDialogManager modalDialogManager =
+                new ModalDialogManager(new AppModalPresenter(contextSupplier.get()),
+                        ModalDialogManager.ModalDialogType.APP);
         mMediator = new DownloadInterstitialMediator(
-                contextSupplier, model, downloadUrl, provider, snackbarManager);
+                contextSupplier, model, downloadUrl, provider, snackbarManager, modalDialogManager);
         mModelChangeProcessor = PropertyModelChangeProcessor.create(
                 model, mView, DownloadInterstitialViewBinder::bind);
     }
@@ -47,6 +52,13 @@ public class DownloadInterstitialCoordinatorImpl implements DownloadInterstitial
     @Override
     public View getView() {
         return mView.getView();
+    }
+
+    @Override
+    public void onTabReparented(Context context) {
+        // Update the ModalDialogManager as the context has changed.
+        mMediator.setModalDialogManager(new ModalDialogManager(
+                new AppModalPresenter(context), ModalDialogManager.ModalDialogType.APP));
     }
 
     @Override

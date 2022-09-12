@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.download.interstitial;
 
+import android.content.Context;
 import android.view.View;
 
 import org.chromium.base.lifetime.Destroyable;
@@ -15,4 +16,10 @@ import org.chromium.base.lifetime.Destroyable;
 public interface DownloadInterstitialCoordinator extends Destroyable {
     /** @return The view containing the download interstitial. */
     View getView();
+
+    /**
+     * Called when the download interstitial's tab is reparented.
+     * @param context The context of the new parent activity.
+     */
+    void onTabReparented(Context context);
 }

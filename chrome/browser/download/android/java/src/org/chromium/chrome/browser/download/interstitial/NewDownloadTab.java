@@ -103,9 +103,10 @@ public class NewDownloadTab
     public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
         if (window == null) {
             removeIfPresent();
-        } else {
-            attachView();
+            return;
         }
+        attachView();
+        mCoordinator.onTabReparented(tab.getContext());
     }
 
     // UserData implementation.

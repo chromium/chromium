@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.chrome.browser.download.interstitial.DownloadInterstitialProperties.State;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LaunchLocation;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
@@ -41,7 +40,10 @@ import org.chromium.components.offline_items_collection.OfflineItemShareInfo;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.OpenParams;
 import org.chromium.components.offline_items_collection.UpdateDelta;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -62,6 +64,8 @@ class DownloadInterstitialMediator {
     private final SnackbarManager mSnackbarManager;
     private final OfflineContentProvider.Observer mObserver;
 
+    private ModalDialogManager mModalDialogManager;
+
     /**
      * Creates a new DownloadInterstitialMediator instance.
      * @param contextSupplier Supplier which provides the context of the parent tab.
@@ -71,14 +75,18 @@ class DownloadInterstitialMediator {
      *         download.
      * @param snackbarManager A {@link SnackbarManager} used to display snackbars within the
      *         download interstitial view.
+     * @param modalDialogManager A {@link ModalDialogManager} used to display dialogs within the
+     *         download interstitial.
      */
     DownloadInterstitialMediator(Supplier<Context> contextSupplier, PropertyModel model,
-            String downloadUrl, OfflineContentProvider provider, SnackbarManager snackbarManager) {
+            String downloadUrl, OfflineContentProvider provider, SnackbarManager snackbarManager,
+            ModalDialogManager modalDialogManager) {
         mContextSupplier = contextSupplier;
         mModel = model;
         mDownloadUrl = downloadUrl;
         mProvider = provider;
         mSnackbarManager = snackbarManager;
+        mModalDialogManager = modalDialogManager;
 
         mModel.set(ListProperties.ENABLE_ITEM_ANIMATIONS, true);
         mModel.set(ListProperties.CALLBACK_OPEN, this::onOpenItem);
@@ -92,6 +100,10 @@ class DownloadInterstitialMediator {
 
         mObserver = getOfflineContentProviderObserver();
         mProvider.addObserver(mObserver);
+    }
+
+    void setModalDialogManager(ModalDialogManager modalDialogManager) {
+        mModalDialogManager = modalDialogManager;
     }
 
     /**
@@ -175,9 +187,28 @@ class DownloadInterstitialMediator {
     }
 
     private void onDeleteItem(OfflineItem item) {
-        showDeletedSnackbar();
-        setState(State.CANCELLED);
-        mProvider.removeItem(mModel.get(DOWNLOAD_ITEM).id);
+        SimpleModalDialogController modalDialogController =
+                new SimpleModalDialogController(mModalDialogManager, (result) -> {
+                    if (result == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
+                        showDeletedSnackbar();
+                        setState(State.CANCELLED);
+                        mProvider.removeItem(mModel.get(DOWNLOAD_ITEM).id);
+                    }
+                });
+        PropertyModel properties =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, modalDialogController)
+                        .with(ModalDialogProperties.TITLE,
+                                mContextSupplier.get().getResources().getString(R.string.delete))
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                                mContextSupplier.get().getString(R.string.confirm_delete_message,
+                                        mModel.get(DOWNLOAD_ITEM).title))
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                mContextSupplier.get().getString(R.string.delete))
+                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                mContextSupplier.get().getString(R.string.cancel))
+                        .build();
+        mModalDialogManager.showDialog(properties, ModalDialogManager.ModalDialogType.APP);
     }
 
     private void onShareItem(OfflineItem item) {
@@ -225,11 +256,8 @@ class DownloadInterstitialMediator {
     }
 
     private void startRename(String name, RenameDialogManager.RenameCallback callback) {
-        ModalDialogManager modalDialogManager =
-                new ModalDialogManager(new AppModalPresenter(mContextSupplier.get()),
-                        ModalDialogManager.ModalDialogType.APP);
         RenameDialogManager mRenameDialogManager =
-                new RenameDialogManager(mContextSupplier.get(), modalDialogManager);
+                new RenameDialogManager(mContextSupplier.get(), mModalDialogManager);
         mRenameDialogManager.startRename(name, callback);
     }
 
