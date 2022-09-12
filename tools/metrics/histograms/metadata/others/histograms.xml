@@ -9898,6 +9898,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PrefetchedSignedExchangeCache.BodySize" units="bytes"
     expires_after="2022-09-29">
+  <obsolete>
+    Removed 2022-09.
+  </obsolete>
   <owner>ksakamoto@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
@@ -9909,6 +9912,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PrefetchedSignedExchangeCache.BodySizeTotal" units="bytes"
     expires_after="2022-09-29">
+  <obsolete>
+    Removed 2022-09.
+  </obsolete>
   <owner>ksakamoto@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
@@ -9933,7 +9939,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PrefetchedSignedExchangeCache.HeadersSizeTotal" units="bytes"
     expires_after="2022-09-29">
-  <owner>hoksakamotoro@chromium.org</owner>
+  <obsolete>
+    Removed 2022-09.
+  </obsolete>
+  <owner>ksakamotoro@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
     The total headers size of prefetched signed exchanges including outer

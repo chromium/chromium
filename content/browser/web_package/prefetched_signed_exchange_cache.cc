@@ -816,25 +816,6 @@ void PrefetchedSignedExchangeCache::RecordHistograms() {
     return;
   UMA_HISTOGRAM_COUNTS_100("PrefetchedSignedExchangeCache.Count",
                            exchanges_.size());
-  int64_t body_size_total = 0u;
-  int64_t headers_size_total = 0u;
-  for (const auto& exchanges_it : exchanges_) {
-    const std::unique_ptr<const PrefetchedSignedExchangeCacheEntry>& exchange =
-        exchanges_it.second;
-    const uint64_t body_size = exchange->blob_data_handle()->size();
-    body_size_total += body_size;
-    UMA_HISTOGRAM_COUNTS_10M("PrefetchedSignedExchangeCache.BodySize",
-                             body_size);
-    DCHECK(exchange->outer_response()->headers);
-    DCHECK(exchange->inner_response()->headers);
-    headers_size_total +=
-        exchange->outer_response()->headers->raw_headers().size() +
-        exchange->inner_response()->headers->raw_headers().size();
-  }
-  UMA_HISTOGRAM_COUNTS_10M("PrefetchedSignedExchangeCache.BodySizeTotal",
-                           body_size_total);
-  UMA_HISTOGRAM_COUNTS_10M("PrefetchedSignedExchangeCache.HeadersSizeTotal",
-                           headers_size_total);
 }
 
 std::vector<blink::mojom::PrefetchedSignedExchangeInfoPtr>

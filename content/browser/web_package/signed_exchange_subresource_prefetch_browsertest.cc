@@ -284,9 +284,6 @@ class SignedExchangePrefetchBrowserTest : public PrefetchBrowserTestBase {
     EXPECT_EQ(sxg_url, exchange->outer_url());
     EXPECT_EQ(inner_url, exchange->inner_url());
     EXPECT_EQ(header_integrity, *exchange->header_integrity());
-    const int64_t headers_size_total =
-        exchange->outer_response()->headers->raw_headers().size() +
-        exchange->inner_response()->headers->raw_headers().size();
 
     // Shutdown the server.
     EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
@@ -302,13 +299,6 @@ class SignedExchangePrefetchBrowserTest : public PrefetchBrowserTestBase {
 
     EXPECT_EQ(1, sxg_request_counter->GetRequestCount());
     histograms.ExpectBucketCount("PrefetchedSignedExchangeCache.Count", 1, 1);
-    histograms.ExpectBucketCount("PrefetchedSignedExchangeCache.BodySize",
-                                 content.size(), 1);
-    histograms.ExpectBucketCount("PrefetchedSignedExchangeCache.BodySizeTotal",
-                                 content.size(), 1);
-    histograms.ExpectBucketCount(
-        "PrefetchedSignedExchangeCache.HeadersSizeTotal", headers_size_total,
-        1);
   }
 
   void LoadPrefetchMainResourceSXGTestPage(
