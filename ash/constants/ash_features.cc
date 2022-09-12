@@ -1355,6 +1355,12 @@ const base::Feature kProjectorBleedingEdgeExperience(
 const base::Feature kProjectorWebReportCrash("ProjectorWebReportCrash",
                                              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether to use API key instead of OAuth token for translation
+// requests.
+const base::Feature kProjectorUseApiKeyForTranslation(
+    "ProjectorUseApiKeyForTranslation",
+    base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enable or disable quick settings revamped view.
 const base::Feature kQsRevamp{"QsRevamp", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -2449,6 +2455,10 @@ bool IsProjectorLocalPlaybackEnabled() {
 
 bool IsProjectorWebReportCrashEnabled() {
   return base::FeatureList::IsEnabled(kProjectorWebReportCrash);
+}
+
+bool IsProjectorUseApiKeyForTranslationEnabled() {
+  return base::FeatureList::IsEnabled(kProjectorUseApiKeyForTranslation);
 }
 
 bool IsQsRevampEnabled() {

@@ -551,6 +551,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kProjectorBleedingEdgeExperience;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kProjectorWebReportCrash;
+extern const base::Feature kProjectorUseApiKeyForTranslation;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQsRevamp;
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -886,6 +887,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorUpdateIndexableTextEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsProjectorUseOAuthForGetVideoInfoEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorWebReportCrashEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsProjectorUseApiKeyForTranslationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQsRevampEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickDimEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
