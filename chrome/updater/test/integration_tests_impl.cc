@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
@@ -432,12 +433,18 @@ bool Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
                                         exit_code);
 }
 
-bool WaitFor(base::RepeatingCallback<bool()> predicate) {
-  base::TimeTicks deadline =
-      base::TimeTicks::Now() + TestTimeouts::action_timeout();
+bool WaitFor(base::RepeatingCallback<bool()> predicate,
+             base::RepeatingClosure still_waiting) {
+  constexpr base::TimeDelta kOutputInterval = base::Seconds(10);
+  auto notify_next = base::TimeTicks::Now() + kOutputInterval;
+  const auto deadline = base::TimeTicks::Now() + TestTimeouts::action_timeout();
   while (base::TimeTicks::Now() < deadline) {
     if (predicate.Run())
       return true;
+    if (notify_next < base::TimeTicks::Now()) {
+      still_waiting.Run();
+      notify_next += kOutputInterval;
+    }
     base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
   }
   return false;
@@ -685,16 +692,17 @@ std::vector<base::FilePath::StringType> GetTestProcessNames() {
 
 void CleanProcesses() {
   for (const base::FilePath::StringType& process_name : GetTestProcessNames()) {
-    EXPECT_TRUE(KillProcesses(process_name, -1));
+    EXPECT_TRUE(KillProcesses(process_name, -1)) << process_name;
     EXPECT_TRUE(
-        WaitForProcessesToExit(process_name, TestTimeouts::action_timeout()));
-    EXPECT_FALSE(IsProcessRunning(process_name));
+        WaitForProcessesToExit(process_name, TestTimeouts::action_timeout()))
+        << process_name;
+    EXPECT_FALSE(IsProcessRunning(process_name)) << process_name;
   }
 }
 
 void ExpectCleanProcesses() {
   for (const base::FilePath::StringType& process_name : GetTestProcessNames()) {
-    EXPECT_FALSE(IsProcessRunning(process_name));
+    EXPECT_FALSE(IsProcessRunning(process_name)) << process_name;
   }
 }
 

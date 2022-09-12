@@ -321,8 +321,13 @@ void CheckInstallation(UpdaterScope scope,
       continue;
 
     EXPECT_TRUE(path);
-    EXPECT_TRUE(WaitFor(base::BindLambdaForTesting(
-        [&]() { return is_installed == base::PathExists(*path); })));
+    EXPECT_TRUE(WaitFor(base::BindLambdaForTesting([&]() {
+                          return is_installed == base::PathExists(*path);
+                        }),
+                        base::BindLambdaForTesting([&]() {
+                          VLOG(0) << "Still waiting for " << *path
+                                  << " where is_installed=" << is_installed;
+                        })));
   }
 }
 
@@ -634,7 +639,10 @@ void ExpectNotActive(UpdaterScope /*scope*/, const std::string& id) {
 // Waits for all updater processes to end, including the server process holding
 // the prefs lock.
 bool WaitForUpdaterExit(UpdaterScope /*scope*/) {
-  return WaitFor(base::BindRepeating([]() { return !IsUpdaterRunning(); }));
+  return WaitFor(base::BindRepeating([]() { return !IsUpdaterRunning(); }),
+                 base::BindLambdaForTesting([]() {
+                   VLOG(0) << "Still waiting for updater to exit...";
+                 }));
 }
 
 // Verify registry entries for all interfaces.
@@ -1499,35 +1507,39 @@ void RunOfflineInstall(UpdaterScope scope, bool is_silent_install) {
   } else {
     // Dismiss the installation completion dialog, then wait for the process
     // exit.
-    EXPECT_TRUE(WaitFor(base::BindRepeating([]() {
-      // Enumerate the top-level dialogs to find the setup dialog.
-      WindowEnumerator(
-          ::GetDesktopWindow(), base::BindRepeating([](HWND hwnd) {
-            return WindowEnumerator::IsSystemDialog(hwnd) &&
-                   base::Contains(
-                       WindowEnumerator::GetWindowText(hwnd),
-                       GetLocalizedStringF(
-                           IDS_INSTALLER_DISPLAY_NAME_BASE,
-                           GetLocalizedString(IDS_FRIENDLY_COMPANY_NAME_BASE)));
-          }),
-          base::BindRepeating([](HWND hwnd) {
-            // Enumerates the dialog items to search for installation complete
-            // message. Once found, close the dialog.
-            WindowEnumerator(hwnd, base::BindRepeating([](HWND hwnd) {
-                               return base::Contains(
-                                   WindowEnumerator::GetWindowText(hwnd),
-                                   GetLocalizedString(
-                                       IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE));
-                             }),
-                             base::BindRepeating([](HWND hwnd) {
-                               ::PostMessage(::GetParent(hwnd), WM_CLOSE, 0, 0);
-                             }))
-                .Run();
-          }))
-          .Run();
+    EXPECT_TRUE(WaitFor(
+        base::BindRepeating([]() {
+          // Enumerate the top-level dialogs to find the setup dialog.
+          WindowEnumerator(
+              ::GetDesktopWindow(), base::BindRepeating([](HWND hwnd) {
+                return WindowEnumerator::IsSystemDialog(hwnd) &&
+                       base::Contains(WindowEnumerator::GetWindowText(hwnd),
+                                      GetLocalizedStringF(
+                                          IDS_INSTALLER_DISPLAY_NAME_BASE,
+                                          GetLocalizedString(
+                                              IDS_FRIENDLY_COMPANY_NAME_BASE)));
+              }),
+              base::BindRepeating([](HWND hwnd) {
+                // Enumerates the dialog items to search for installation
+                // complete message. Once found, close the dialog.
+                WindowEnumerator(
+                    hwnd, base::BindRepeating([](HWND hwnd) {
+                      return base::Contains(
+                          WindowEnumerator::GetWindowText(hwnd),
+                          GetLocalizedString(
+                              IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE));
+                    }),
+                    base::BindRepeating([](HWND hwnd) {
+                      ::PostMessage(::GetParent(hwnd), WM_CLOSE, 0, 0);
+                    }))
+                    .Run();
+              }))
+              .Run();
 
-      return !IsUpdaterRunning();
-    })));
+          return !IsUpdaterRunning();
+        }),
+        base::BindLambdaForTesting(
+            []() { VLOG(0) << "Still waiting for the process exit."; })));
   }
 
   // App installer should have created the expected reg value.
