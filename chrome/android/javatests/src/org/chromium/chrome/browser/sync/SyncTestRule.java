@@ -40,7 +40,7 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.sync.protocol.AutofillWalletSpecifics;
 import org.chromium.components.sync.protocol.EntitySpecifics;
 import org.chromium.components.sync.protocol.SyncEntity;
@@ -62,11 +62,10 @@ import java.util.concurrent.Callable;
 public class SyncTestRule extends ChromeTabbedActivityTestRule {
     private static final String TAG = "SyncTestBase";
 
-    private static final Set<Integer> USER_SELECTABLE_TYPES =
-            new HashSet<Integer>(Arrays.asList(new Integer[] {
-                    ModelType.AUTOFILL, ModelType.BOOKMARKS, ModelType.PASSWORDS,
-                    ModelType.PREFERENCES, ModelType.PROXY_TABS, ModelType.TYPED_URLS,
-            }));
+    private static final Set<Integer> USER_SELECTABLE_TYPES = new HashSet<Integer>(
+            Arrays.asList(new Integer[] {UserSelectableType.AUTOFILL, UserSelectableType.BOOKMARKS,
+                    UserSelectableType.PASSWORDS, UserSelectableType.PREFERENCES,
+                    UserSelectableType.TABS, UserSelectableType.HISTORY}));
 
     /**
      * Simple activity that mimics a trusted vault key retrieval flow that succeeds immediately.
@@ -322,22 +321,22 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     }
 
     /*
-     * Enables the |modelType| Sync data type, which must be in USER_SELECTABLE_TYPES.
+     * Enables the Sync data type in USER_SELECTABLE_TYPES.
      */
-    public void enableDataType(final int modelType) {
+    public void enableDataType(final int userSelectableType) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Set<Integer> chosenTypes = mSyncService.getChosenDataTypes();
-            chosenTypes.add(modelType);
-            mSyncService.setChosenDataTypes(false, chosenTypes);
+            Set<Integer> chosenTypes = mSyncService.getSelectedTypes();
+            chosenTypes.add(userSelectableType);
+            mSyncService.setSelectedTypes(false, chosenTypes);
         });
     }
 
     /*
-     * Enables the |chosenDataTypes|, which must be in USER_SELECTABLE_TYPES.
+     * Enables the |selectedTypes| in USER_SELECTABLE_TYPES.
      */
-    public void setChosenDataTypes(boolean syncEverything, Set<Integer> chosenDataTypes) {
+    public void setSelectedTypes(boolean syncEverything, Set<Integer> selectedTypes) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mSyncService.setChosenDataTypes(syncEverything, chosenDataTypes); });
+                () -> { mSyncService.setSelectedTypes(syncEverything, selectedTypes); });
     }
 
     /*
@@ -349,13 +348,13 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     }
 
     /*
-     * Disables the |modelType| Sync data type, which must be in USER_SELECTABLE_TYPES.
+     * Disables the Sync data type in USER_SELECTABLE_TYPES.
      */
-    public void disableDataType(final int modelType) {
+    public void disableDataType(final int userSelectableType) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Set<Integer> chosenTypes = mSyncService.getChosenDataTypes();
-            chosenTypes.remove(modelType);
-            mSyncService.setChosenDataTypes(false, chosenTypes);
+            Set<Integer> chosenTypes = mSyncService.getSelectedTypes();
+            chosenTypes.remove(userSelectableType);
+            mSyncService.setSelectedTypes(false, chosenTypes);
         });
     }
 

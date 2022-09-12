@@ -399,7 +399,7 @@ public class MainSettingsFragmentTest {
         final SyncService syncService =
                 TestThreadUtils.runOnUiThreadBlockingNoException(SyncService::get);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { syncService.setChosenDataTypes(false, new HashSet<>()); });
+                () -> { syncService.setSelectedTypes(false, new HashSet<>()); });
         CoreAccountInfo account = mSyncTestRule.addTestAccount();
         SigninTestUtil.signinAndEnableSync(account, syncService);
 

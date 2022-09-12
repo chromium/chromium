@@ -140,36 +140,31 @@ public abstract class SyncService {
      *
      * This is affected by whether sync is on.
      *
-     * @return Set of active data types.
+     * @return ModelType set of active data types.
      */
     public abstract Set<Integer> getActiveDataTypes();
 
     /**
-     * Gets the set of data types that the user has chosen to enable. This
-     * corresponds to the native GetSelectedTypes() / UserSelectableTypeSet, but
-     * every UserSelectableType is mapped to the corresponding canonical
-     * ModelType.
-     * TODO(crbug.com/985290): Expose UserSelectableType to Java and return that
-     * instead.
+     * Gets the set of types that the user has selected.
      *
      * NOTE: This returns "all types" by default, even if the user has never
      *       enabled Sync, or if only Sync-the-transport is running.
      *
-     * @return Set of chosen types.
+     * @return UserSelectableType set of selected types.
      */
-    public abstract Set<Integer> getChosenDataTypes();
+    public abstract Set<Integer> getSelectedTypes();
 
     public abstract boolean hasKeepEverythingSynced();
 
     /**
-     * Enables syncing for the passed data types.
+     * Enables syncing for the passed types.
      *
      * @param syncEverything Set to true if the user wants to sync all data types
      *                       (including new data types we add in the future).
      * @param enabledTypes   The set of types to enable. Ignored (can be null) if
      *                       syncEverything is true.
      */
-    public abstract void setChosenDataTypes(boolean syncEverything, Set<Integer> enabledTypes);
+    public abstract void setSelectedTypes(boolean syncEverything, Set<Integer> enabledTypes);
 
     public abstract void setFirstSetupComplete(int syncFirstSetupCompleteSource);
 

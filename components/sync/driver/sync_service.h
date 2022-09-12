@@ -69,7 +69,7 @@ class SyncSetupInProgressHandle {
 //      user, then AUTOFILL_PROFILE will also be considered preferred. See
 //      SyncPrefs::ResolvePrefGroups.
 //
-//      This state is controlled by SyncUserSettings::SetChosenDataTypes. They
+//      This state is controlled by SyncUserSettings::SetSelectedTypes. They
 //      are stored in the preferences system and persist; though if a datatype
 //      is not registered, it cannot be a preferred datatype.
 //
@@ -89,7 +89,7 @@ class SyncSetupInProgressHandle {
 // Sync Configuration:
 //
 //   Sync configuration is accomplished via SyncUserSettings, in particular:
-//    * SetChosenDataTypes(): Set the data types the user wants to sync.
+//    * SetSelectedTypes(): Set the data types the user wants to sync.
 //    * SetDecryptionPassphrase(): Attempt to decrypt the user's encrypted data
 //        using the passed passphrase.
 //    * SetEncryptionPassphrase(): Re-encrypt the user's data using the passed

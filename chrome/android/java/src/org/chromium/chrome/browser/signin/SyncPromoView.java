@@ -93,7 +93,7 @@ public class SyncPromoView extends LinearLayout implements SyncService.SyncState
     private void update() {
         ViewState viewState;
         if (!SyncService.get().isSyncRequested()
-                || SyncService.get().getChosenDataTypes().isEmpty()) {
+                || SyncService.get().getSelectedTypes().isEmpty()) {
             viewState = getStateForEnableChromeSync();
         } else {
             viewState = getStateForStartUsing();

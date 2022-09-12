@@ -17,6 +17,10 @@ namespace syncer {
 // TODO(crbug.com/1286405): once it's impossible to launch Ash-browser only
 // UserSelectableOsType will be relevant for Ash, guard UserSelectableType with
 // #if !BUILDFLAG(IS_CHROMEOS_ASH) and remove lower level Ash-specific code.
+//
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync
+//
 enum class UserSelectableType {
   kBookmarks,
   kFirstType = kBookmarks,

@@ -60,7 +60,7 @@ import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SignoutReason;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.widget.ButtonCompat;
@@ -337,8 +337,9 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         // A change to Preference state hasn't been applied yet. Defer
-        // updateSyncStateFromSelectedModelTypes so it gets the updated state from isChecked().
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, this::updateSyncStateFromSelectedModelTypes);
+        // updateSyncStateFromSelectedTypes so it gets the updated state from
+        // isChecked().
+        PostTask.postTask(UiThreadTaskTraits.DEFAULT, this::updateSyncStateFromSelectedTypes);
         return true;
     }
 
@@ -350,8 +351,8 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
      */
     @Override
     public void syncStateChanged() {
-        // This is invoked synchronously from SyncService.setChosenDataTypes, postpone the
-        // update to let updateSyncStateFromSelectedModelTypes finish saving the state.
+        // This is invoked synchronously from SyncService.setSelectedTypes, postpone the
+        // update to let updateSyncStateFromSelectedTypes finish saving the state.
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, this::updateSyncPreferences);
     }
 
@@ -381,15 +382,15 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
      * Gets the state from data type checkboxes and saves this state into {@link SyncService}
      * and {@link PersonalDataManager}.
      */
-    private void updateSyncStateFromSelectedModelTypes() {
-        mSyncService.setChosenDataTypes(mSyncEverything.isChecked(), getSelectedModelTypes());
+    private void updateSyncStateFromSelectedTypes() {
+        mSyncService.setSelectedTypes(mSyncEverything.isChecked(), getUserSelectedTypes());
         // Note: mSyncPaymentsIntegration should be checked if mSyncEverything is checked, but if
         // mSyncEverything was just enabled, then that state may not have propagated to
         // mSyncPaymentsIntegration yet. See crbug.com/972863.
         PersonalDataManager.setPaymentsIntegrationEnabled(mSyncEverything.isChecked()
                 || (mSyncPaymentsIntegration.isChecked() && mSyncAutofill.isChecked()));
 
-        // Some calls to setChosenDataTypes don't trigger syncStateChanged, so schedule update here.
+        // Some calls to setSelectedTypes don't trigger syncStateChanged, so schedule update here.
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, this::updateSyncPreferences);
     }
 
@@ -440,15 +441,15 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         mSyncEncryption.setSummary(summary);
     }
 
-    private Set<Integer> getSelectedModelTypes() {
+    private Set<Integer> getUserSelectedTypes() {
         Set<Integer> types = new HashSet<>();
-        if (mSyncAutofill.isChecked()) types.add(ModelType.AUTOFILL);
-        if (mSyncBookmarks.isChecked()) types.add(ModelType.BOOKMARKS);
-        if (mSyncHistory.isChecked()) types.add(ModelType.TYPED_URLS);
-        if (mSyncPasswords.isChecked()) types.add(ModelType.PASSWORDS);
-        if (mSyncReadingList.isChecked()) types.add(ModelType.READING_LIST);
-        if (mSyncRecentTabs.isChecked()) types.add(ModelType.PROXY_TABS);
-        if (mSyncSettings.isChecked()) types.add(ModelType.PREFERENCES);
+        if (mSyncAutofill.isChecked()) types.add(UserSelectableType.AUTOFILL);
+        if (mSyncBookmarks.isChecked()) types.add(UserSelectableType.BOOKMARKS);
+        if (mSyncHistory.isChecked()) types.add(UserSelectableType.HISTORY);
+        if (mSyncPasswords.isChecked()) types.add(UserSelectableType.PASSWORDS);
+        if (mSyncReadingList.isChecked()) types.add(UserSelectableType.READING_LIST);
+        if (mSyncRecentTabs.isChecked()) types.add(UserSelectableType.TABS);
+        if (mSyncSettings.isChecked()) types.add(UserSelectableType.PREFERENCES);
         return types;
     }
 
@@ -524,7 +525,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         mSyncService.setEncryptionPassphrase(passphrase);
         // Save the current state of data types - this tells the sync engine to
         // apply our encryption configuration changes.
-        updateSyncStateFromSelectedModelTypes();
+        updateSyncStateFromSelectedTypes();
     }
 
     /** Callback for PassphraseTypeDialogFragment.Listener */
@@ -605,24 +606,24 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
             return;
         }
 
-        Set<Integer> syncTypes = mSyncService.getChosenDataTypes();
-        mSyncAutofill.setChecked(syncTypes.contains(ModelType.AUTOFILL));
+        Set<Integer> syncTypes = mSyncService.getSelectedTypes();
+        mSyncAutofill.setChecked(syncTypes.contains(UserSelectableType.AUTOFILL));
         mSyncAutofill.setEnabled(true);
-        mSyncBookmarks.setChecked(syncTypes.contains(ModelType.BOOKMARKS));
+        mSyncBookmarks.setChecked(syncTypes.contains(UserSelectableType.BOOKMARKS));
         mSyncBookmarks.setEnabled(true);
-        mSyncHistory.setChecked(syncTypes.contains(ModelType.TYPED_URLS));
+        mSyncHistory.setChecked(syncTypes.contains(UserSelectableType.HISTORY));
         mSyncHistory.setEnabled(true);
-        mSyncPasswords.setChecked(syncTypes.contains(ModelType.PASSWORDS));
+        mSyncPasswords.setChecked(syncTypes.contains(UserSelectableType.PASSWORDS));
         mSyncPasswords.setEnabled(true);
-        mSyncReadingList.setChecked(syncTypes.contains(ModelType.READING_LIST));
+        mSyncReadingList.setChecked(syncTypes.contains(UserSelectableType.READING_LIST));
         mSyncReadingList.setEnabled(true);
-        mSyncRecentTabs.setChecked(syncTypes.contains(ModelType.PROXY_TABS));
+        mSyncRecentTabs.setChecked(syncTypes.contains(UserSelectableType.TABS));
         mSyncRecentTabs.setEnabled(true);
-        mSyncSettings.setChecked(syncTypes.contains(ModelType.PREFERENCES));
+        mSyncSettings.setChecked(syncTypes.contains(UserSelectableType.PREFERENCES));
         mSyncSettings.setEnabled(true);
 
-        // Payments integration requires AUTOFILL model type
-        boolean syncAutofill = syncTypes.contains(ModelType.AUTOFILL);
+        // Payments integration requires AUTOFILL user selectable type
+        boolean syncAutofill = syncTypes.contains(UserSelectableType.AUTOFILL);
         mSyncPaymentsIntegration.setChecked(
                 syncAutofill && PersonalDataManager.isPaymentsIntegrationEnabled());
         mSyncPaymentsIntegration.setEnabled(syncAutofill);

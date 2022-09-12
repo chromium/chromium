@@ -26,7 +26,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_utils.h"
@@ -68,6 +67,16 @@ ScopedJavaLocalRef<jintArray> ModelTypeSetToJavaIntArray(
   std::vector<int> type_vector;
   for (syncer::ModelType type : types) {
     type_vector.push_back(type);
+  }
+  return base::android::ToJavaIntArray(env, type_vector);
+}
+
+ScopedJavaLocalRef<jintArray> UserSelectableTypeSetToJavaIntArray(
+    JNIEnv* env,
+    syncer::UserSelectableTypeSet types) {
+  std::vector<int> type_vector;
+  for (syncer::UserSelectableType type : types) {
+    type_vector.push_back(static_cast<int>(type));
   }
   return base::android::ToJavaIntArray(env, type_vector);
 }
@@ -171,41 +180,31 @@ ScopedJavaLocalRef<jintArray> SyncServiceAndroidBridge::GetActiveDataTypes(
                                     native_sync_service_->GetActiveDataTypes());
 }
 
-ScopedJavaLocalRef<jintArray> SyncServiceAndroidBridge::GetChosenDataTypes(
+ScopedJavaLocalRef<jintArray> SyncServiceAndroidBridge::GetSelectedTypes(
     JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // TODO(crbug/950874): introduce UserSelectableType in java code, then remove
-  // workaround here and in SetChosenDataTypes().
-  syncer::ModelTypeSet model_types;
-  for (syncer::UserSelectableType type :
-       native_sync_service_->GetUserSettings()->GetSelectedTypes()) {
-    model_types.Put(syncer::UserSelectableTypeToCanonicalModelType(type));
-  }
-  return ModelTypeSetToJavaIntArray(env, model_types);
+  syncer::UserSelectableTypeSet user_selectable_types;
+  user_selectable_types =
+      native_sync_service_->GetUserSettings()->GetSelectedTypes();
+  return UserSelectableTypeSetToJavaIntArray(env, user_selectable_types);
 }
 
-void SyncServiceAndroidBridge::SetChosenDataTypes(
+void SyncServiceAndroidBridge::SetSelectedTypes(
     JNIEnv* env,
     jboolean sync_everything,
-    const JavaParamRef<jintArray>& model_type_array) {
+    const JavaParamRef<jintArray>& user_selectable_type_array) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::vector<int> types_vector;
-  base::android::JavaIntArrayToIntVector(env, model_type_array, &types_vector);
+  base::android::JavaIntArrayToIntVector(env, user_selectable_type_array,
+                                         &types_vector);
 
-  syncer::ModelTypeSet model_types;
+  syncer::UserSelectableTypeSet user_selectable_types;
   for (int type : types_vector) {
-    model_types.Put(static_cast<syncer::ModelType>(type));
+    user_selectable_types.Put(static_cast<syncer::UserSelectableType>(type));
   }
 
-  syncer::UserSelectableTypeSet selected_types;
-  for (syncer::UserSelectableType type : syncer::UserSelectableTypeSet::All()) {
-    if (model_types.Has(syncer::UserSelectableTypeToCanonicalModelType(type))) {
-      selected_types.Put(type);
-    }
-  }
-
-  native_sync_service_->GetUserSettings()->SetSelectedTypes(sync_everything,
-                                                            selected_types);
+  native_sync_service_->GetUserSettings()->SetSelectedTypes(
+      sync_everything, user_selectable_types);
 }
 
 jboolean SyncServiceAndroidBridge::IsCustomPassphraseAllowed(JNIEnv* env) {

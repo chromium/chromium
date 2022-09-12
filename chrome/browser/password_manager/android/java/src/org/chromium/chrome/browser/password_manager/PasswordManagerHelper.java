@@ -37,6 +37,7 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -290,7 +291,7 @@ public class PasswordManagerHelper {
      */
     public static boolean hasChosenToSyncPasswords(SyncService syncService) {
         return syncService != null && syncService.isSyncFeatureEnabled()
-                && syncService.getChosenDataTypes().contains(ModelType.PASSWORDS);
+                && syncService.getSelectedTypes().contains(UserSelectableType.PASSWORDS);
     }
 
     /**

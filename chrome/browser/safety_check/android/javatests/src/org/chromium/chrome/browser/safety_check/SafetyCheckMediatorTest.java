@@ -67,7 +67,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -259,8 +259,8 @@ public class SafetyCheckMediatorTest {
         when(mockSyncService.isSyncFeatureEnabled()).thenReturn(true);
         when(mockSyncService.isEngineInitialized()).thenReturn(true);
         when(mockSyncService.hasSyncConsent()).thenReturn(true);
-        when(mockSyncService.getChosenDataTypes())
-                .thenReturn(CollectionUtil.newHashSet(ModelType.PASSWORDS));
+        when(mockSyncService.getSelectedTypes())
+                .thenReturn(CollectionUtil.newHashSet(UserSelectableType.PASSWORDS));
         when(mockSyncService.getAccountInfo())
                 .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
     }

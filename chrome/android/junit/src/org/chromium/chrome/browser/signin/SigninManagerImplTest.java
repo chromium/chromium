@@ -52,7 +52,7 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutDelete;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.UserSelectableType;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -129,7 +129,7 @@ public class SigninManagerImplTest {
     @Test
     public void signinAndTurnSyncOn() {
         when(mIdentityMutator.setPrimaryAccount(any(), anyInt())).thenReturn(true);
-        when(mSyncService.getChosenDataTypes()).thenReturn(Set.of(ModelType.BOOKMARKS));
+        when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.BOOKMARKS));
 
         // There is no signed in account.  Sign in is allowed.
         assertTrue(mSigninManager.isSigninAllowed());
