@@ -227,7 +227,9 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, EmptyDBPath) {
   // prevent `on_sets_ready` from being invoked.
   FirstPartySetsHandlerImpl::GetInstance()->Init(
       /*user_data_dir=*/{},
-      LocalSetDeclaration("https://example.test,https://associatedsite1.test"));
+      LocalSetDeclaration(
+          R"({"primary": "https://example.test",)"
+          R"("associatedSites": ["https://associatedsite1.test"]})"));
 
   EXPECT_THAT(GetSetsAndWait(),
               PublicSetsAre(UnorderedElementsAre(
@@ -253,7 +255,9 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, Successful_NoPrePersistedSets) {
 
   FirstPartySetsHandlerImpl::GetInstance()->Init(
       scoped_dir_.GetPath(),
-      LocalSetDeclaration("https://example.test,https://associatedsite1.test"));
+      LocalSetDeclaration(
+          R"({"primary": "https://example.test",)"
+          R"("associatedSites": ["https://associatedsite1.test"]})"));
   EXPECT_THAT(GetSetsAndWait(),
               PublicSetsAre(UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),

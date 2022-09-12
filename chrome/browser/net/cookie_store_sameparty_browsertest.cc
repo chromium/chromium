@@ -54,8 +54,10 @@ class CookieStoreSamePartyTest : public InProcessBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpCommandLine(command_line);
     if (enable_fps_) {
-      command_line->AppendSwitchASCII(network::switches::kUseFirstPartySet,
-                                      "https://a.test,https://b.test");
+      command_line->AppendSwitchASCII(
+          network::switches::kUseFirstPartySet,
+          R"({"primary": "https://a.test",)"
+          R"("associatedSites": ["https://b.test"]})");
     }
   }
 

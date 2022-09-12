@@ -826,7 +826,9 @@ class StorageAccessAPIWithFirstPartySetsBrowserTest
     StorageAccessAPIBaseBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(
         network::switches::kUseFirstPartySet,
-        base::StrCat({"https://", kHostA, ",https://", kHostB}));
+        base::StrCat({R"({"primary": "https://)", kHostA,
+                      R"(", "associatedSites": ["https://)", kHostB,
+                      R"("]})"}));
   }
 
  protected:

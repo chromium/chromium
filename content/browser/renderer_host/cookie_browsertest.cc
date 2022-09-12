@@ -34,6 +34,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/alternative_service.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-test-utils.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -506,7 +507,9 @@ class SamePartyEnabledCookieBrowserTest : public CookieBrowserTest {
     // Set up First-Party Sets and also enables net::Feature::kFirstPartySets.
     // a.test, b.test and c.test are in the same FPS.
     command_line->AppendSwitchASCII(
-        "use-first-party-set", "https://a.test,https://b.test,https://c.test");
+        network::switches::kUseFirstPartySet,
+        R"({"primary": "https://a.test",)"
+        R"("associatedSites": ["https://b.test","https://c.test"]})");
   }
 };
 

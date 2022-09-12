@@ -218,14 +218,17 @@ TEST_F(FirstPartySetsLoaderTest, RepeatedMember) {
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_DeduplicatesOwnerOwner) {
-  const std::string input =
+  SetComponentSets(
+      loader(),
       R"({"primary": "https://example.test", "associatedSites": )"
-      R"(["https://associatedsite2.test", "https://associatedsite3.test"]}
-{"primary": "https://bar.test", "associatedSites": ["https://associatedsite4.test"]})";
-  SetComponentSets(loader(), input);
+      R"(["https://associatedsite2.test", "https://associatedsite3.test"]})"
+      "\n"
+      R"({"primary": "https://bar.test",)"
+      R"("associatedSites": ["https://associatedsite4.test"]})");
   loader().SetManuallySpecifiedSet(LocalSetDeclaration(
-      "https://example.test,https://associatedsite1.test,https://"
-      "associatedsite2.test"));
+      R"({"primary": "https://example.test",)"
+      R"("associatedSites":)"
+      R"(["https://associatedsite1.test", "https://associatedsite2.test"]})"));
 
   EXPECT_THAT(WaitAndGetResult(),
               PublicSetsAre(UnorderedElementsAre(
@@ -253,14 +256,17 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_DeduplicatesOwnerOwner) {
 
 TEST_F(FirstPartySetsLoaderTest,
        SetsManuallySpecified_DeduplicatesOwnerMember) {
-  const std::string input =
-      R"({"primary": "https://foo.test", "associatedSites": )"
-      R"(["https://associatedsite1.test", "https://example.test"]}
-{"primary": "https://bar.test", "associatedSites": ["https://associatedsite2.test"]})";
-  SetComponentSets(loader(), input);
+  SetComponentSets(
+      loader(), R"({"primary": "https://foo.test",)"
+                R"("associatedSites": )"
+                R"(["https://associatedsite1.test", "https://example.test"]})"
+                "\n"
+                R"({"primary": "https://bar.test",)"
+                R"("associatedSites": ["https://associatedsite2.test"]})");
   loader().SetManuallySpecifiedSet(LocalSetDeclaration(
-      "https://example.test,https://associatedsite1.test,https://"
-      "associatedsite3.test"));
+      R"({"primary": "https://example.test",)"
+      R"("associatedSites":)"
+      R"(["https://associatedsite1.test", "https://associatedsite3.test"]})"));
 
   EXPECT_THAT(WaitAndGetResult(),
               PublicSetsAre(UnorderedElementsAre(
@@ -288,13 +294,16 @@ TEST_F(FirstPartySetsLoaderTest,
 
 TEST_F(FirstPartySetsLoaderTest,
        SetsManuallySpecified_DeduplicatesMemberOwner) {
-  const std::string input =
+  SetComponentSets(
+      loader(),
       R"({"primary": "https://foo.test", "associatedSites": )"
-      R"(["https://associatedsite1.test", "https://associatedsite2.test"]}
-{"primary": "https://associatedsite3.test", "associatedSites": ["https://associatedsite4.test"]})";
-  SetComponentSets(loader(), input);
-  loader().SetManuallySpecifiedSet(
-      LocalSetDeclaration("https://example.test,https://associatedsite3.test"));
+      R"(["https://associatedsite1.test", "https://associatedsite2.test"]})"
+      "\n"
+      R"({"primary" : "https://associatedsite3.test",)"
+      R"("associatedSites" : ["https://associatedsite4.test"]})");
+  loader().SetManuallySpecifiedSet(LocalSetDeclaration(
+      R"({"primary": "https://example.test",)"
+      R"("associatedSites": ["https://associatedsite3.test"]})"));
 
   EXPECT_THAT(WaitAndGetResult(),
               PublicSetsAre(UnorderedElementsAre(
@@ -322,14 +331,17 @@ TEST_F(FirstPartySetsLoaderTest,
 
 TEST_F(FirstPartySetsLoaderTest,
        SetsManuallySpecified_DeduplicatesMemberMember) {
-  const std::string input =
+  SetComponentSets(
+      loader(),
       R"({"primary": "https://foo.test", "associatedSites": )"
-      R"(["https://associatedsite2.test", "https://associatedsite3.test"]}
-{"primary": "https://bar.test", "associatedSites": ["https://associatedsite4.test"]})";
-  SetComponentSets(loader(), input);
+      R"(["https://associatedsite2.test", "https://associatedsite3.test"]})"
+      "\n"
+      R"({"primary": "https://bar.test",)"
+      R"("associatedSites": ["https://associatedsite4.test"]})");
   loader().SetManuallySpecifiedSet(LocalSetDeclaration(
-      "https://example.test,https://associatedsite1.test,https://"
-      "associatedsite2.test"));
+      R"({"primary": "https://example.test",)"
+      R"("associatedSites":)"
+      R"(["https://associatedsite1.test", "https://associatedsite2.test"]})"));
 
   EXPECT_THAT(WaitAndGetResult(),
               PublicSetsAre(UnorderedElementsAre(
@@ -365,11 +377,12 @@ TEST_F(FirstPartySetsLoaderTest,
 
 TEST_F(FirstPartySetsLoaderTest,
        SetsManuallySpecified_PrunesInducedSingletons) {
-  const std::string input =
-      R"({"primary": "https://foo.test", "associatedSites": ["https://associatedsite1.test"]})";
-  SetComponentSets(loader(), input);
-  loader().SetManuallySpecifiedSet(
-      LocalSetDeclaration("https://example.test,https://associatedsite1.test"));
+  SetComponentSets(loader(),
+                   R"({"primary": "https://foo.test",)"
+                   R"("associatedSites": ["https://associatedsite1.test"]})");
+  loader().SetManuallySpecifiedSet(LocalSetDeclaration(
+      R"({"primary": "https://example.test",)"
+      R"("associatedSites": ["https://associatedsite1.test"]})"));
 
   // If we just erased entries that overlapped with the manually-supplied
   // set, https://foo.test would be left as a singleton set. But since we

@@ -4,13 +4,13 @@
 
 #include "content/browser/first_party_sets/local_set_declaration.h"
 
+#include <sstream>
+#include <string>
+#include <tuple>
 #include <utility>
 
-#include "base/containers/contains.h"
-#include "base/containers/flat_set.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
-#include "base/strings/string_split.h"
+#include "base/ranges/algorithm.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
@@ -20,51 +20,37 @@ namespace content {
 
 namespace {
 
-absl::optional<std::pair<net::SchemefulSite, FirstPartySetParser::SingleSet>>
-CanonicalizeSet(base::StringPiece use_first_party_set_flag_value) {
-  const std::vector<std::string> origins =
-      base::SplitString(use_first_party_set_flag_value, ",",
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (origins.empty())
-    return absl::nullopt;
+absl::optional<std::tuple<net::SchemefulSite,
+                          FirstPartySetParser::SingleSet,
+                          FirstPartySetParser::Aliases>>
+CanonicalizeSet(const std::string& use_first_party_set_flag_value) {
+  std::istringstream stream(use_first_party_set_flag_value);
 
-  const absl::optional<net::SchemefulSite> maybe_primary =
-      content::FirstPartySetParser::CanonicalizeRegisteredDomain(
-          origins[0], true /* emit_errors */);
-  if (!maybe_primary.has_value()) {
-    LOG(ERROR) << "First-Party Set primary is not valid; aborting.";
-    return absl::nullopt;
-  }
+  FirstPartySetParser::SetsAndAliases parsed =
+      FirstPartySetParser::ParseSetsFromStream(stream, /*emit_errors=*/true);
 
-  const net::SchemefulSite& primary = *maybe_primary;
-  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> sites(
-      {{primary, net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
-                                         absl::nullopt)}});
-  base::flat_set<net::SchemefulSite> associated_sites;
-  for (auto it = origins.begin() + 1; it != origins.end(); ++it) {
-    const absl::optional<net::SchemefulSite> maybe_associated_site =
-        content::FirstPartySetParser::CanonicalizeRegisteredDomain(
-            *it, true /* emit_errors */);
-    if (maybe_associated_site.has_value() && maybe_associated_site != primary &&
-        !base::Contains(associated_sites, *maybe_associated_site)) {
-      sites.emplace_back(
-          *maybe_associated_site,
-          net::FirstPartySetEntry(primary, net::SiteType::kAssociated,
-                                  associated_sites.size()));
-      associated_sites.insert(*maybe_associated_site);
-    }
-  }
+  FirstPartySetParser::SetsMap entries = std::move(parsed.first);
+  FirstPartySetParser::Aliases aliases = std::move(parsed.second);
 
-  if (sites.size() < 2) {
-    // We're guaranteed at least one site (the primary), but there needs to be
-    // at least one other site as well.
-    LOG(ERROR)
-        << "The First-Party Set must contain more than one site; aborting.";
+  if (entries.empty()) {
     return absl::nullopt;
   }
 
-  return absl::make_optional(
-      std::make_pair(std::move(primary), std::move(sites)));
+  const net::SchemefulSite primary = entries.begin()->second.primary();
+
+  if (base::ranges::any_of(
+          entries,
+          [&primary](const FirstPartySetParser::SetsMap::value_type& pair) {
+            return pair.second.primary() != primary;
+          })) {
+    // More than one set was provided. That is (currently) unsupported.
+    LOG(ERROR) << "Ignoring use-first-party-set switch due to multiple set "
+                  "declarations.";
+    return absl::nullopt;
+  }
+
+  return absl::make_optional(std::make_tuple(
+      std::move(primary), std::move(entries), std::move(aliases)));
 }
 
 }  // namespace
@@ -73,12 +59,13 @@ LocalSetDeclaration::LocalSetDeclaration()
     : LocalSetDeclaration(absl::nullopt) {}
 
 LocalSetDeclaration::LocalSetDeclaration(
-    base::StringPiece use_first_party_set_flag_value)
+    const std::string& use_first_party_set_flag_value)
     : LocalSetDeclaration(CanonicalizeSet(use_first_party_set_flag_value)) {}
 
 LocalSetDeclaration::LocalSetDeclaration(
-    absl::optional<std::pair<net::SchemefulSite,
-                             FirstPartySetParser::SingleSet>> parsed_set)
+    absl::optional<std::tuple<net::SchemefulSite,
+                              FirstPartySetParser::SingleSet,
+                              FirstPartySetParser::Aliases>> parsed_set)
     : parsed_set_(std::move(parsed_set)) {}
 
 LocalSetDeclaration::~LocalSetDeclaration() = default;
@@ -91,15 +78,21 @@ LocalSetDeclaration::LocalSetDeclaration(LocalSetDeclaration&&) = default;
 LocalSetDeclaration& LocalSetDeclaration::operator=(LocalSetDeclaration&&) =
     default;
 
-net::SchemefulSite LocalSetDeclaration::GetPrimary() const {
+const net::SchemefulSite& LocalSetDeclaration::GetPrimary() const {
   DCHECK(!empty());
-  return parsed_set_->first;
+  return std::get<0>(parsed_set_.value());
 }
 
-FirstPartySetParser::SingleSet LocalSetDeclaration::GetSet() const {
+const FirstPartySetParser::SingleSet& LocalSetDeclaration::GetSet() const {
   DCHECK(!empty());
-  DCHECK(!parsed_set_->second.empty());
-  return parsed_set_->second;
+  const FirstPartySetParser::SingleSet& set = std::get<1>(parsed_set_.value());
+  DCHECK(!set.empty());
+  return set;
+}
+
+const FirstPartySetParser::Aliases& LocalSetDeclaration::GetAliases() const {
+  DCHECK(!empty());
+  return std::get<2>(parsed_set_.value());
 }
 
 }  // namespace content

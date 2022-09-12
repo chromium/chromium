@@ -93,12 +93,13 @@ base::expected<net::SchemefulSite, ParseError> ParseSiteAndValidate(
     const base::Value& item,
     const std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>>&
         set_entries,
-    const base::flat_set<net::SchemefulSite>& other_sets_sites) {
+    const base::flat_set<net::SchemefulSite>& other_sets_sites,
+    bool emit_errors) {
   if (!item.is_string())
     return base::unexpected(ParseError::kInvalidType);
 
   const absl::optional<net::SchemefulSite> maybe_site =
-      Canonicalize(item.GetString(), false /* emit_errors */);
+      Canonicalize(item.GetString(), emit_errors);
   if (!maybe_site.has_value())
     return base::unexpected(ParseError::kInvalidOrigin);
 
@@ -139,7 +140,8 @@ base::expected<Aliases, ParseError> ParseCctlds(
     const base::Value::Dict& set_declaration,
     const std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>>&
         set_entries,
-    const base::flat_set<net::SchemefulSite>& elements) {
+    const base::flat_set<net::SchemefulSite>& elements,
+    bool emit_errors) {
   const base::Value::Dict* cctld_dict = set_declaration.FindDict(kCCTLDsField);
   if (!cctld_dict)
     return {};
@@ -157,7 +159,7 @@ base::expected<Aliases, ParseError> ParseCctlds(
       continue;
     for (const base::Value& item : *cctld_list) {
       const base::expected<net::SchemefulSite, ParseError> alias_or_error =
-          ParseSiteAndValidate(item, set_entries, elements);
+          ParseSiteAndValidate(item, set_entries, elements, emit_errors);
       if (!alias_or_error.has_value())
         return base::unexpected(alias_or_error.error());
 
@@ -186,6 +188,7 @@ absl::optional<ParseError> ParseSubset(
     bool exempt_from_limits,
     const SubsetDescriptor& descriptor,
     const base::flat_set<net::SchemefulSite>& other_sets_sites,
+    bool emit_errors,
     std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>>&
         set_entries) {
   const base::Value* field_value = set_declaration.Find(descriptor.field_name);
@@ -198,7 +201,7 @@ absl::optional<ParseError> ParseSubset(
   uint32_t index = 0;
   for (const auto& item : field_value->GetList()) {
     base::expected<net::SchemefulSite, ParseError> site_or_error =
-        ParseSiteAndValidate(item, set_entries, other_sets_sites);
+        ParseSiteAndValidate(item, set_entries, other_sets_sites, emit_errors);
     if (!site_or_error.has_value())
       return site_or_error.error();
     if (exempt_from_limits || !descriptor.size_limit.has_value() ||
@@ -236,6 +239,7 @@ absl::optional<ParseError> ParseSubset(
 base::expected<SetsAndAliases, ParseError> ParseSet(
     const base::Value& value,
     bool exempt_from_limits,
+    bool emit_errors,
     base::flat_set<net::SchemefulSite>& elements) {
   if (!value.is_dict())
     return base::unexpected(ParseError::kInvalidType);
@@ -249,7 +253,8 @@ base::expected<SetsAndAliases, ParseError> ParseSet(
     return base::unexpected(ParseError::kInvalidType);
 
   base::expected<net::SchemefulSite, ParseError> primary_or_error =
-      ParseSiteAndValidate(*primary_item, /*set_entries=*/{}, elements);
+      ParseSiteAndValidate(*primary_item, /*set_entries=*/{}, elements,
+                           emit_errors);
   if (!primary_or_error.has_value()) {
     return base::unexpected(primary_or_error.error());
   }
@@ -275,14 +280,14 @@ base::expected<SetsAndAliases, ParseError> ParseSet(
        }) {
     if (absl::optional<ParseError> error =
             ParseSubset(set_declaration, primary, exempt_from_limits,
-                        descriptor, elements, set_entries);
+                        descriptor, elements, emit_errors, set_entries);
         error.has_value()) {
       return base::unexpected(error.value());
     }
   }
 
   const base::expected<Aliases, ParseError> aliases_or_error =
-      ParseCctlds(set_declaration, set_entries, elements);
+      ParseCctlds(set_declaration, set_entries, elements, emit_errors);
   if (!aliases_or_error.has_value())
     return base::unexpected(aliases_or_error.error());
 
@@ -320,7 +325,8 @@ GetPolicySetsFromList(const base::Value::List* policy_sets,
   std::vector<FirstPartySetParser::SingleSet> parsed_sets;
   for (int i = 0; i < static_cast<int>(policy_sets->size()); i++) {
     base::expected<SetsAndAliases, ParseError> parsed =
-        ParseSet((*policy_sets)[i], /*exempt_from_limits=*/true, elements);
+        ParseSet((*policy_sets)[i], /*exempt_from_limits=*/true,
+                 /*emit_errors=*/false, elements);
     if (!parsed.has_value()) {
       return base::unexpected(
           FirstPartySetParser::PolicyParsingError{parsed.error(), set_type, i});
@@ -367,7 +373,8 @@ FirstPartySetParser::CanonicalizeRegisteredDomain(
   return Canonicalize(origin_string, emit_errors);
 }
 
-SetsAndAliases FirstPartySetParser::ParseSetsFromStream(std::istream& input) {
+SetsAndAliases FirstPartySetParser::ParseSetsFromStream(std::istream& input,
+                                                        bool emit_errors) {
   std::vector<SetsMap::value_type> sets;
   std::vector<Aliases::value_type> aliases;
   base::flat_set<SetsMap::key_type> elements;
@@ -379,8 +386,8 @@ SetsAndAliases FirstPartySetParser::ParseSetsFromStream(std::istream& input) {
         trimmed, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
     if (!maybe_value.has_value())
       return {};
-    base::expected<SetsAndAliases, ParseError> parsed =
-        ParseSet(*maybe_value, /*exempt_from_limits=*/false, elements);
+    base::expected<SetsAndAliases, ParseError> parsed = ParseSet(
+        *maybe_value, /*exempt_from_limits=*/false, emit_errors, elements);
     if (!parsed.has_value()) {
       if (parsed.error() == ParseError::kInvalidOrigin) {
         // Ignore sets that include an invalid domain (which might have been

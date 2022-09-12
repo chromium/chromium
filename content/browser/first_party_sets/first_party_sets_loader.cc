@@ -85,7 +85,7 @@ void FirstPartySetsLoader::OnReadSetsFile(const std::string& raw_sets) {
 
   std::istringstream stream(raw_sets);
   FirstPartySetParser::SetsAndAliases public_sets =
-      FirstPartySetParser::ParseSetsFromStream(stream);
+      FirstPartySetParser::ParseSetsFromStream(stream, /*emit_errors=*/false);
   sets_ = std::move(public_sets.first);
   aliases_ = std::move(public_sets.second);
 
@@ -150,6 +150,8 @@ void FirstPartySetsLoader::ApplyManuallySpecifiedSet() {
     return p.first == p.second.primary() &&
            !base::Contains(owners_with_members, p.first);
   });
+
+  // TODO(https://crbug.com/1349781): merge aliases.
 }
 
 void FirstPartySetsLoader::MaybeFinishLoading() {

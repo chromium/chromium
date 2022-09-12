@@ -829,7 +829,7 @@
     "prefix": "first-party-sets",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/inspector-protocol/network"],
-    "args": ["--use-first-party-set=https://firstparty.test,https://cookie.test"]
+    "args": ["--use-first-party-set={\"primary\":\"https://firstparty.test\",\"associatedSites\":[\"https://cookie.test\"]}"]
   },
   {
     "prefix": "partitioned-cookies",
@@ -845,7 +845,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/inspector-protocol/network/"],
     "args": ["--enable-features=PartitionedCookies,PartitionedCookiesBypassOriginTrial",
-             "--use-first-party-set=https://devtools.test,https://example.test"]
+             "--use-first-party-set={\"primary\":\"https://devtools.test\",\"associatedSites\":[\"https://example.test\"]}"]
   },
   {
     "prefix": "prerender",

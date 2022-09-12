@@ -6,8 +6,8 @@
 #define CONTENT_BROWSER_FIRST_PARTY_SETS_LOCAL_SET_DECLARATION_H_
 
 #include <string>
+#include <tuple>
 
-#include "base/strings/string_piece_forward.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/common/content_export.h"
 #include "net/base/schemeful_site.h"
@@ -20,7 +20,7 @@ class CONTENT_EXPORT LocalSetDeclaration {
   LocalSetDeclaration();
 
   explicit LocalSetDeclaration(
-      base::StringPiece use_first_party_set_flag_value);
+      const std::string& use_first_party_set_flag_value);
 
   ~LocalSetDeclaration();
 
@@ -34,20 +34,26 @@ class CONTENT_EXPORT LocalSetDeclaration {
   size_t size() const { return empty() ? 0 : GetSet().size(); }
 
   // Gets the primary site. Must not be called if `empty()` returns true.
-  net::SchemefulSite GetPrimary() const;
+  const net::SchemefulSite& GetPrimary() const;
 
   // Gets the set entries. Must not be called if `empty()` returns true.
-  FirstPartySetParser::SingleSet GetSet() const;
+  const FirstPartySetParser::SingleSet& GetSet() const;
+
+  // Gets the set entries. Must not be called if `empty()` returns true.
+  const FirstPartySetParser::Aliases& GetAliases() const;
 
  private:
   explicit LocalSetDeclaration(
-      absl::optional<std::pair<net::SchemefulSite,
-                               FirstPartySetParser::SingleSet>> parsed_set);
+      absl::optional<std::tuple<net::SchemefulSite,
+                                FirstPartySetParser::SingleSet,
+                                FirstPartySetParser::Aliases>> parsed_set);
 
   // Stores the result of parsing the inputs. Specifically, this may be empty if
-  // no set was locally defined; otherwise, it holds the primary site, and the
-  // collection of FirstPartySetEntries.
-  absl::optional<std::pair<net::SchemefulSite, FirstPartySetParser::SingleSet>>
+  // no set was locally defined; otherwise, it holds the primary site, the
+  // collection of FirstPartySetEntries, and any ccTLD aliases.
+  absl::optional<std::tuple<net::SchemefulSite,
+                            FirstPartySetParser::SingleSet,
+                            FirstPartySetParser::Aliases>>
       parsed_set_;
 };
 

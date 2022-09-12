@@ -757,8 +757,9 @@ class SamePartyIsFirstPartyCookiePolicyBrowserTest
     CookiePolicyBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(
         network::switches::kUseFirstPartySet,
-        base::StringPrintf("https://%s,https://%s,https://%s", kHostA, kHostB,
-                           kHostC));
+        base::StringPrintf(R"({"primary": "https://%s",)"
+                           R"("associatedSites": ["https://%s","https://%s"]})",
+                           kHostA, kHostB, kHostC));
   }
 
   std::string AllCookies() const { return "thirdparty=1; firstparty=1"; }

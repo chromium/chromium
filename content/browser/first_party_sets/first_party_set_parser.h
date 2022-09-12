@@ -62,7 +62,8 @@ class CONTENT_EXPORT FirstPartySetParser {
   // received by Component Updater.
   //
   // Returns an empty map if parsing or validation of any set failed.
-  static SetsAndAliases ParseSetsFromStream(std::istream& input);
+  static SetsAndAliases ParseSetsFromStream(std::istream& input,
+                                            bool emit_errors);
 
   // Canonicalizes the passed in origin to a registered domain. In particular,
   // this ensures that the origin is non-opaque, is HTTPS, and has a registered

@@ -988,9 +988,13 @@ class ExtensionSamePartyCookiesTest : public ExtensionCookiesTest {
     ExtensionCookiesTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(network::switches::kUseFirstPartySet,
                                     base::StrCat({
-                                        "https://", kPermittedOwner,       //
-                                        ",https://", kPermittedMember,     //
-                                        ",https://", kNotPermittedMember,  //
+                                        R"({"primary": "https://)",
+                                        kPermittedOwner,  //
+                                        R"(", "associatedSites": ["https://)",
+                                        kPermittedMember,  //
+                                        R"(", "https://)",
+                                        kNotPermittedMember,  //
+                                        R"("]})",
                                     }));
   }
 

@@ -1106,7 +1106,8 @@ class NetworkServiceRestartWithFirstPartySetBrowserTest
     if (IsFirstPartySetsEnabled()) {
       command_line->AppendSwitchASCII(
           network::switches::kUseFirstPartySet,
-          "https://a.test,https://b.test,https://c.test");
+          R"({"primary": "https://a.test",)"
+          R"("associatedSites": ["https://b.test","https://c.test"]})");
     }
   }
 

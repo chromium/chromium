@@ -31,7 +31,7 @@ MATCHER_P(SerializesTo, want, "") {
 
 FirstPartySetParser::SetsAndAliases ParseSets(const std::string& sets) {
   std::istringstream stream(sets);
-  return FirstPartySetParser::ParseSetsFromStream(stream);
+  return FirstPartySetParser::ParseSetsFromStream(stream, false);
 }
 
 TEST(FirstPartySetParser, RejectsNonemptyMalformed) {
