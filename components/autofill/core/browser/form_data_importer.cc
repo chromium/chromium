@@ -393,7 +393,11 @@ bool FormDataImporter::ImportFormData(
       form_associator_.TrackFormAssociations(
           origin, form_signature, FormAssociator::FormType::kAddressForm);
     }
-    if (cc_import) {
+    // Checking for `cc_import` doesn't suffice. The variable won't be true when
+    // the form contains a known server card, but this server card does not have
+    // a corresponding local card.
+    if (credit_card_autofill_enabled && imported_credit_card &&
+        *imported_credit_card) {
       form_associator_.TrackFormAssociations(
           origin, form_signature, FormAssociator::FormType::kCreditCardForm);
     }
