@@ -1000,12 +1000,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableFaviconForPasswordsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          password_manager::features::kEnableFaviconForPasswords)},
-    {"enable-password-grouping",
-     flag_descriptions::kEnableGroupingForPasswordManagerName,
-     flag_descriptions::kEnableGroupingForPasswordManagerDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kEnableGroupingForPasswordManager)},
+    {"enable-password-grouping", flag_descriptions::kPasswordsGroupingName,
+     flag_descriptions::kPasswordsGroupingDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(password_manager::features::kPasswordsGrouping)},
     {"autofill-enable-sending-bcn-in-get-upload-details",
      flag_descriptions::kAutofillEnableSendingBcnInGetUploadDetailsName,
      flag_descriptions::kAutofillEnableSendingBcnInGetUploadDetailsDescription,

@@ -277,8 +277,8 @@ extern const char kEnableFullscreenAPIDescription[];
 
 // Title and description for the flag to enable password grouping for the
 // Password Manager.
-extern const char kEnableGroupingForPasswordManagerName[];
-extern const char kEnableGroupingForPasswordManagerDescription[];
+extern const char kPasswordsGroupingName[];
+extern const char kPasswordsGroupingDescription[];
 
 // Title and description for the flag to enable open in download
 extern const char kEnableOpenInDownloadName[];

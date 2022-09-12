@@ -2687,7 +2687,7 @@
   },
   {
     "name": "enable-password-grouping",
-    "owners": [ "veronguyen", "tmartino" ],
+    "owners": [ "veronguyen", "vsemeniuk", "tmartino" ],
     "expiry_milestone": 112
   },
   {
