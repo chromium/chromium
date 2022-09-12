@@ -18,6 +18,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/gpu_gles2_export.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
@@ -285,7 +286,10 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
     SkPromiseImageTexture* promise_image_texture() const {
       return promise_image_texture_.get();
     }
-    sk_sp<SkImage> CreateSkImage(GrDirectContext* context) const;
+    sk_sp<SkImage> CreateSkImage(
+        GrDirectContext* context,
+        SkImage::TextureReleaseProc texture_release_proc = nullptr,
+        SkImage::ReleaseContext release_context = nullptr) const;
     [[nodiscard]] std::unique_ptr<GrBackendSurfaceMutableState> TakeEndState();
 
    private:

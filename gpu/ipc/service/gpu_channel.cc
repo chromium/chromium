@@ -141,10 +141,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
     receiver_.Bind(std::move(receiver));
   }
 
-  ImageDecodeAcceleratorStub* image_decode_accelerator_stub() const {
-    return image_decode_accelerator_stub_.get();
-  }
-
  private:
   friend class base::RefCountedThreadSafe<GpuChannelMessageFilter>;
   ~GpuChannelMessageFilter() override;
@@ -755,12 +751,6 @@ void GpuChannel::WaitForGetOffsetInRange(
 
 mojom::GpuChannel& GpuChannel::GetGpuChannelForTesting() {
   return *filter_;
-}
-
-ImageDecodeAcceleratorStub*
-GpuChannel::GetImageDecodeAcceleratorStubForTesting() const {
-  DCHECK(filter_);
-  return filter_->image_decode_accelerator_stub();
 }
 
 bool GpuChannel::CreateSharedImageStub() {

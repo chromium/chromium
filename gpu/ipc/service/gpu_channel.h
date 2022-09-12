@@ -46,7 +46,6 @@ namespace gpu {
 class DCOMPTexture;
 class GpuChannelManager;
 class GpuChannelMessageFilter;
-class ImageDecodeAcceleratorStub;
 class ImageDecodeAcceleratorWorker;
 class Scheduler;
 class SharedImageStub;
@@ -174,8 +173,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
       mojom::GpuChannel::WaitForGetOffsetInRangeCallback callback);
 
   mojom::GpuChannel& GetGpuChannelForTesting();
-
-  ImageDecodeAcceleratorStub* GetImageDecodeAcceleratorStubForTesting() const;
 
 #if BUILDFLAG(IS_ANDROID)
   const CommandBufferStub* GetOneStub() const;

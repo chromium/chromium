@@ -27,7 +27,6 @@ class SingleThreadTaskRunner;
 
 namespace gpu {
 class GpuChannel;
-class ImageFactory;
 class SyncPointClientState;
 
 // Processes incoming image decode requests from renderers: it schedules the
@@ -66,8 +65,6 @@ class GPU_IPC_SERVICE_EXPORT ImageDecodeAcceleratorStub
   // used.
   void Shutdown();
 
-  void SetImageFactoryForTesting(ImageFactory* image_factory);
-
  private:
   friend class base::RefCountedThreadSafe<ImageDecodeAcceleratorStub>;
   ~ImageDecodeAcceleratorStub();
@@ -99,8 +96,6 @@ class GPU_IPC_SERVICE_EXPORT ImageDecodeAcceleratorStub
       GUARDED_BY(lock_);
   base::queue<std::unique_ptr<ImageDecodeAcceleratorWorker::DecodeResult>>
       pending_completed_decodes_ GUARDED_BY(lock_);
-
-  raw_ptr<ImageFactory> external_image_factory_for_testing_ = nullptr;
 
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;

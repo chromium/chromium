@@ -84,9 +84,8 @@ class TestSkiaImageRepresentation : public SkiaImageRepresentation {
     if (!static_cast<TestImageBacking*>(backing())->can_access()) {
       return nullptr;
     }
-    GrBackendTexture backend_tex(size().width(), size().height(),
-                                 GrMipMapped::kNo, GrMockTextureInfo());
-    return SkPromiseImageTexture::Make(backend_tex);
+
+    return SkPromiseImageTexture::Make(backend_tex());
   }
   void EndWriteAccess(sk_sp<SkSurface> surface) override {}
   sk_sp<SkPromiseImageTexture> BeginReadAccess(
@@ -96,11 +95,20 @@ class TestSkiaImageRepresentation : public SkiaImageRepresentation {
     if (!static_cast<TestImageBacking*>(backing())->can_access()) {
       return nullptr;
     }
-    GrBackendTexture backend_tex(size().width(), size().height(),
-                                 GrMipMapped::kNo, GrMockTextureInfo());
-    return SkPromiseImageTexture::Make(backend_tex);
+
+    return SkPromiseImageTexture::Make(backend_tex());
   }
   void EndReadAccess() override {}
+
+ private:
+  GrBackendTexture backend_tex() {
+    return GrBackendTexture(
+        size().width(), size().height(), GrMipMapped::kNo,
+        GrGLTextureInfo{GL_TEXTURE_EXTERNAL_OES,
+                        static_cast<TestImageBacking*>(backing())->service_id(),
+                        static_cast<GrGLenum>(viz::TextureStorageFormat(
+                            format(), /*use_angle_rgbx_format=*/false))});
+  }
 };
 
 class TestDawnImageRepresentation : public DawnImageRepresentation {

@@ -32,6 +32,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/transfer_cache_entry.h"
+#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/buffer.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/constants.h"
@@ -42,12 +43,14 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/decoder_context.h"
-#include "gpu/command_buffer/service/image_factory.h"
 #include "gpu/command_buffer/service/mocks.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/command_buffer/service/service_transfer_cache.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
+#include "gpu/command_buffer/service/shared_image/test_image_backing.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/command_buffer/service/transfer_buffer_manager.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
@@ -136,35 +139,65 @@ base::CheckedNumeric<uint64_t> GetExpectedTotalMippedSizeForPlanarImage(
   return safe_total_image_size;
 }
 
-// This ImageFactory is defined so that we don't have to generate a real
-// GpuMemoryBuffer with decoded data in these tests.
-class TestImageFactory : public ImageFactory {
+class TestSharedImageBackingFactory : public SharedImageBackingFactory {
  public:
-  TestImageFactory() = default;
-  ~TestImageFactory() override = default;
-
-  // ImageFactory implementation.
-  scoped_refptr<gl::GLImage> CreateImageForGpuMemoryBuffer(
-      gfx::GpuMemoryBufferHandle handle,
+  // SharedImageBackingFactory implementation.
+  std::unique_ptr<SharedImageBacking> CreateSharedImage(
+      const Mailbox& mailbox,
+      viz::ResourceFormat format,
+      SurfaceHandle surface_handle,
       const gfx::Size& size,
-      gfx::BufferFormat format,
       const gfx::ColorSpace& color_space,
-      gfx::BufferPlane plane,
-      int client_id,
-      SurfaceHandle surface_handle) override {
-    return base::MakeRefCounted<gl::GLImageStub>();
-  }
-  bool SupportsCreateAnonymousImage() const override { return false; }
-  scoped_refptr<gl::GLImage> CreateAnonymousImage(const gfx::Size& size,
-                                                  gfx::BufferFormat format,
-                                                  gfx::BufferUsage usage,
-                                                  SurfaceHandle surface_handle,
-                                                  bool* is_cleared) override {
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      bool is_thread_safe) override {
     NOTREACHED();
     return nullptr;
   }
-  unsigned RequiredTextureType() override { return GL_TEXTURE_EXTERNAL_OES; }
-  bool SupportsFormatRGB() override { return false; }
+  std::unique_ptr<SharedImageBacking> CreateSharedImage(
+      const Mailbox& mailbox,
+      viz::ResourceFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      base::span<const uint8_t> pixel_data) override {
+    NOTREACHED();
+    return nullptr;
+  }
+  std::unique_ptr<SharedImageBacking> CreateSharedImage(
+      const Mailbox& mailbox,
+      int client_id,
+      gfx::GpuMemoryBufferHandle handle,
+      gfx::BufferFormat format,
+      gfx::BufferPlane plane,
+      SurfaceHandle surface_handle,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage) override {
+    auto test_image_backing = std::make_unique<TestImageBacking>(
+        mailbox, viz::GetResourceFormat(format), size, color_space,
+        surface_origin, alpha_type, usage, 0);
+
+    // If the backing is not cleared, SkiaImageRepresentation errors out
+    // when trying to create the scoped read access.
+    test_image_backing->SetCleared();
+
+    return std::move(test_image_backing);
+  }
+  bool IsSupported(uint32_t usage,
+                   viz::ResourceFormat format,
+                   const gfx::Size& size,
+                   bool thread_safe,
+                   gfx::GpuMemoryBufferType gmb_type,
+                   GrContextType gr_context_type,
+                   base::span<const uint8_t> pixel_data) override {
+    return true;
+  }
 };
 
 }  // namespace
@@ -304,9 +337,9 @@ class ImageDecodeAcceleratorStubTest
 
     GpuChannel* channel = CreateChannel(kChannelId, false /* is_gpu_host */);
     ASSERT_TRUE(channel);
-    ASSERT_TRUE(channel->GetImageDecodeAcceleratorStubForTesting());
-    channel->GetImageDecodeAcceleratorStubForTesting()
-        ->SetImageFactoryForTesting(&image_factory_);
+    channel->shared_image_stub()
+        ->factory()
+        ->RegisterSharedImageBackingFactoryForTesting(&test_factory_);
 
     // Create a raster command buffer so that the ImageDecodeAcceleratorStub can
     // have access to a TransferBufferManager. Note that we mock the
@@ -659,7 +692,7 @@ class ImageDecodeAcceleratorStubTest
   StrictMock<MockImageDecodeAcceleratorWorker> image_decode_accelerator_worker_;
 
  private:
-  TestImageFactory image_factory_;
+  TestSharedImageBackingFactory test_factory_;
   base::test::ScopedFeatureList feature_list_;
   base::WeakPtrFactory<ImageDecodeAcceleratorStubTest> weak_ptr_factory_{this};
 };

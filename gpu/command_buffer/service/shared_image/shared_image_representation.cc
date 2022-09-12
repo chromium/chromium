@@ -219,7 +219,9 @@ SkiaImageRepresentation::ScopedReadAccess::~ScopedReadAccess() {
 }
 
 sk_sp<SkImage> SkiaImageRepresentation::ScopedReadAccess::CreateSkImage(
-    GrDirectContext* context) const {
+    GrDirectContext* context,
+    SkImage::TextureReleaseProc texture_release_proc,
+    SkImage::ReleaseContext release_context) const {
   auto surface_origin = representation()->surface_origin();
   auto color_type =
       viz::ResourceFormatToClosestSkColorType(true, representation()->format());
@@ -228,7 +230,8 @@ sk_sp<SkImage> SkiaImageRepresentation::ScopedReadAccess::CreateSkImage(
       representation()->color_space().GetAsFullRangeRGB().ToSkColorSpace();
   return SkImage::MakeFromTexture(
       context, promise_image_texture_->backendTexture(), surface_origin,
-      color_type, alpha_type, sk_color_space);
+      color_type, alpha_type, sk_color_space, texture_release_proc,
+      release_context);
 }
 
 std::unique_ptr<GrBackendSurfaceMutableState>
