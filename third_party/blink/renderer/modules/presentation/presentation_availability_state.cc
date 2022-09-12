@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_state.h"
 
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_observer.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/bindings/microtask.h"
 
 namespace blink {
 
@@ -21,11 +21,9 @@ void PresentationAvailabilityState::RequestAvailability(
   auto screen_availability = GetScreenAvailability(urls);
   // Reject Promise if screen availability is unsupported for all URLs.
   if (screen_availability == mojom::blink::ScreenAvailability::DISABLED) {
-    Thread::Current()->GetDeprecatedTaskRunner()->PostTask(
-        FROM_HERE,
-        WTF::Bind(
-            &PresentationAvailabilityCallbacks::RejectAvailabilityNotSupported,
-            WrapPersistent(callback)));
+    Microtask::EnqueueMicrotask(WTF::Bind(
+        &PresentationAvailabilityCallbacks::RejectAvailabilityNotSupported,
+        WrapPersistent(callback)));
     // Do not listen to urls if we reject the promise.
     return;
   }
@@ -37,11 +35,9 @@ void PresentationAvailabilityState::RequestAvailability(
   }
 
   if (screen_availability != mojom::blink::ScreenAvailability::UNKNOWN) {
-    Thread::Current()->GetDeprecatedTaskRunner()->PostTask(
-        FROM_HERE, WTF::Bind(&PresentationAvailabilityCallbacks::Resolve,
-                             WrapPersistent(callback),
-                             screen_availability ==
-                                 mojom::blink::ScreenAvailability::AVAILABLE));
+    Microtask::EnqueueMicrotask(WTF::Bind(
+        &PresentationAvailabilityCallbacks::Resolve, WrapPersistent(callback),
+        screen_availability == mojom::blink::ScreenAvailability::AVAILABLE));
   } else {
     listener->availability_callbacks.push_back(callback);
   }
