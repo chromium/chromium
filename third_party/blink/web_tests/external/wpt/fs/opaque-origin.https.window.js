@@ -17,7 +17,7 @@ function add_iframe(test, src, sandbox) {
 // Creates a data URI iframe that uses postMessage() to provide its parent
 // with the test result. The iframe checks for the existence of
 // |property_name| on the window.
-async function verify_does_not_exist_in_data_uri_iframe(
+async function verify_does_exist_in_data_uri_iframe(
   test, property_name) {
   const iframe_content =
     '<script>' +
@@ -32,8 +32,8 @@ async function verify_does_not_exist_in_data_uri_iframe(
   const event_watcher = new EventWatcher(test, self, 'message');
   const message_event = await event_watcher.wait_for('message')
 
-  assert_false(message_event.data.is_property_name_defined,
-    `Data URI iframes must not define '${property_name}'.`);
+  assert_true(message_event.data.is_property_name_defined,
+    `Data URI iframes must define '${property_name}'.`);
 }
 
 // |kSandboxWindowUrl| sends the result of navigator.storage.getDirectory() to
@@ -48,9 +48,9 @@ async function verify_results_from_sandboxed_child_window(test) {
 }
 
 promise_test(async test => {
-  await verify_does_not_exist_in_data_uri_iframe(
+  await verify_does_exist_in_data_uri_iframe(
     test, 'FileSystemDirectoryHandle');
-}, 'FileSystemDirectoryHandle must be undefined for data URI iframes.');
+}, 'FileSystemDirectoryHandle must be defined for data URI iframes.');
 
 promise_test(
     async test => {
