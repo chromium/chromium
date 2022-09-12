@@ -321,7 +321,7 @@ void OmniboxPopupContentsView::UpdatePopupAppearance() {
     popup_->SetPopupContentsView(this);
     popup_->AddObserver(this);
 
-    if (base::FeatureList::IsEnabled(views::features::kWidgetLayering)) {
+    if (!base::FeatureList::IsEnabled(views::features::kWidgetLayering)) {
       popup_->StackAbove(omnibox_view_->GetRelativeWindowForPopup());
       // For some IMEs GetRelativeWindowForPopup triggers the omnibox to lose
       // focus, thereby closing (and destroying) the popup. TODO(sky): this
