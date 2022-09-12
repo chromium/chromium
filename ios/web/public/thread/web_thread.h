@@ -36,8 +36,8 @@ class WebThreadDelegate;
    << ::web::WebThread::GetDCheckCurrentlyOnErrorMessage(thread_identifier))
 
 // The main entry point to post tasks to the UI thread. Tasks posted with the
-// same |traits| will run in posting order (i.e. according to the
-// SequencedTaskRunner contract). Tasks posted with different |traits| can be
+// same `traits` will run in posting order (i.e. according to the
+// SequencedTaskRunner contract). Tasks posted with different `traits` can be
 // re-ordered. You may keep a reference to this task runner, it's always
 // thread-safe to post to it though it may start returning false at some point
 // during shutdown when it definitely is no longer accepting tasks.

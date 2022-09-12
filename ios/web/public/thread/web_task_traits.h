@@ -116,7 +116,7 @@ class WebTaskTraits : public base::TaskTraits {
   };
 
   // TODO(crbug.com/1026641): Get rid of WebTaskTraitsExtension and store its
-  // members (|nestable_|) directly in WebTaskTraits.
+  // members (`nestable_`) directly in WebTaskTraits.
   template <
       class... ArgTypes,
       class CheckArgumentsAreValid = std::enable_if_t<
