@@ -208,7 +208,7 @@
 <translation id="2416512023405990736">Кутуча белгиленген эмес</translation>
 <translation id="2417569100218200841">Мазмун боюнча маалымат</translation>
 <translation id="2417948780551741035">Түшүндүрмөлөр</translation>
-<translation id="2419852971200420169">Сүрөттөмө тизмеси</translation>
+<translation id="2419852971200420169">Учкай маалымат тизмеси</translation>
 <translation id="2422937916923936891">Менюдагы нерсенин белги кутучасы</translation>
 <translation id="2428534162001909979">Буйрук менюлары</translation>
 <translation id="242998846562331953">Коштомо жазуу</translation>
@@ -925,7 +925,7 @@
 <translation id="7322442671176251901">Аудиокөмөк</translation>
 <translation id="7344012264516629579">Кошумча секирүү буйруктары менен шилтеме, баскыч, белгилөө кутучасы жана башка нерселерге өтө аласыз. Секирүү буйруктарынын толук тизмеси ChromeVox менюсунда жеткиликтүү. Аны ачуу үчүн Издөө + . (чекит) баскычтарын басыңыз.</translation>
 <translation id="7356165926712028380">8 чекиттүү брайлга которулуу</translation>
-<translation id="7356610683936413584">Сүрөттөмө тизмесинин чоо-жайы</translation>
+<translation id="7356610683936413584">Учкай маалымат тизмесинин чоо-жайы</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{амперсанд}other{# амперсанд}}</translation>
 <translation id="737396357417333429">clk</translation>
 <translation id="738899727977260036">Көгүш боз</translation>
