@@ -619,10 +619,14 @@ void LayerTreeHost::OnDeferCommitsChanged(bool defer_status) {
 
 DISABLE_CFI_PERF
 void LayerTreeHost::SetNeedsAnimate() {
+  // https://linear.app/replay/issue/RUN-569
   recordreplay::Assert("LayerTreeHost::SetNeedsAnimate Start");
+
   proxy_->SetNeedsAnimate();
   swap_promise_manager_.NotifySwapPromiseMonitorsOfSetNeedsCommit();
   events_metrics_manager_.SaveActiveEventMetrics();
+
+  // https://linear.app/replay/issue/RUN-569
   recordreplay::Assert("LayerTreeHost::SetNeedsAnimate Done");
 }
 

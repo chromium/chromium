@@ -232,9 +232,11 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
       wait_delta.is_max() ? TimeTicks::Max()
                           : subtle::TimeTicksNowIgnoringOverride() + wait_delta;
 
+  // https://linear.app/replay/issue/RUN-513
   recordreplay::Assert("WaitableEvent::TimedWait #1 %ld", end_time.ToInternalValue());
 
   for (TimeDelta remaining = wait_delta; remaining > TimeDelta() && !sw.fired();) {
+    // https://linear.app/replay/issue/RUN-513
     recordreplay::Assert("WaitableEvent::TimedWait #2 %d", end_time.is_max());
     if (end_time.is_max())
       sw.cv()->Wait();
@@ -243,10 +245,12 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
     remaining = end_time.is_max()
                     ? TimeDelta::Max()
                     : end_time - subtle::TimeTicksNowIgnoringOverride();
+    // https://linear.app/replay/issue/RUN-513
     recordreplay::Assert("WaitableEvent::TimedWait #2.1 %ld %d %d",
                          remaining.ToInternalValue(), remaining > TimeDelta(), sw.fired());
   }
 
+  // https://linear.app/replay/issue/RUN-513
   recordreplay::Assert("WaitableEvent::TimedWait #3");
 
   // Get the SyncWaiter signaled state before releasing the lock.

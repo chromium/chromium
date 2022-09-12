@@ -110,6 +110,7 @@ AtomicFlagSet::AtomicFlag AtomicFlagSet::AddFlag(RepeatingClosure callback) {
 void AtomicFlagSet::RunActiveCallbacks() const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
 
+  // https://linear.app/replay/issue/RUN-568
   recordreplay::Assert("AtomicFlagSet::RunActiveCallbacks Start");
 
   for (Group* iter = alloc_list_head_.get(); iter; iter = iter->next.get()) {
@@ -123,6 +124,7 @@ void AtomicFlagSet::RunActiveCallbacks() const {
         &iter->flags, size_t{0}, std::memory_order_acquire);
     }
 
+    // https://linear.app/replay/issue/RUN-568
     recordreplay::Assert("AtomicFlagSet::RunActiveCallbacks #1 %lu", active_flags);
 
     // This is O(number of bits set).
@@ -133,6 +135,7 @@ void AtomicFlagSet::RunActiveCallbacks() const {
       iter->flag_callbacks[index].Run();
     }
 
+    // https://linear.app/replay/issue/RUN-568
     recordreplay::Assert("AtomicFlagSet::RunActiveCallbacks #2");
   }
 }

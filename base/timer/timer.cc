@@ -172,6 +172,7 @@ void TimerBase::PostNewScheduledTask(TimeDelta delay) {
   is_running_ = true;
   scheduled_task_ = new BaseTimerTaskInternal(this);
   if (delay > TimeDelta::FromMicroseconds(0)) {
+    // https://linear.app/replay/issue/RUN-571
     recordreplay::Assert("TimerBase::PostNewScheduledTask #1");
     // TODO(gab): Posting BaseTimerTaskInternal::Run to another sequence makes
     // this code racy. https://crbug.com/587199
@@ -180,6 +181,7 @@ void TimerBase::PostNewScheduledTask(TimeDelta delay) {
         BindOnce(&BaseTimerTaskInternal::Run, Owned(scheduled_task_)), delay);
     scheduled_run_time_ = desired_run_time_ = Now() + delay;
   } else {
+    // https://linear.app/replay/issue/RUN-571
     recordreplay::Assert("TimerBase::PostNewScheduledTask #2");
     GetTaskRunner()->PostTask(
         posted_from_,
