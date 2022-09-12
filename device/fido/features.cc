@@ -48,4 +48,8 @@ extern const base::Feature kWebAuthnNoEmptyDisplayNameCBOR{
     "WebAuthenticationNoEmptyDisplayNameCBOR",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+extern const base::Feature kWebAuthnNonDiscoverableMakeCredentialQRFlag{
+    "WebAuthenticationNonDiscoverableMakeCredentialQRFlag",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace device

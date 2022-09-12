@@ -55,6 +55,10 @@ extern const base::Feature kWebAuthnNewDiscoverableCredentialsUi;
 // credentials.
 extern const base::Feature kWebAuthnNoEmptyDisplayNameCBOR;
 
+// Include an indication for non-discoverable makeCredential calls in caBLE QR
+// codes.
+extern const base::Feature kWebAuthnNonDiscoverableMakeCredentialQRFlag;
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

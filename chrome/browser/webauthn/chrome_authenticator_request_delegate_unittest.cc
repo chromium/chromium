@@ -150,7 +150,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
   class DiscoveryFactory : public device::FidoDiscoveryFactory {
    public:
     void set_cable_data(
-        device::FidoRequestType request_type,
+        device::CableRequestType request_type,
         std::vector<device::CableDiscoveryData> data,
         const absl::optional<std::array<uint8_t, device::cablev2::kQRKeySize>>&
             qr_generator_key,
@@ -201,27 +201,27 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
   const struct {
     const char* origin;
     std::vector<device::CableDiscoveryData> extensions;
-    device::FidoRequestType request_type;
+    device::CableRequestType request_type;
     Result expected_result;
   } kTests[] = {
       {
           "https://example.com",
           {},
-          device::FidoRequestType::kGetAssertion,
+          device::CableRequestType::kGetAssertion,
           Result::k3rdParty,
       },
       {
           // Extensions should be ignored on a 3rd-party site.
           "https://example.com",
           {v1_extension},
-          device::FidoRequestType::kGetAssertion,
+          device::CableRequestType::kGetAssertion,
           Result::k3rdParty,
       },
       {
           // Extensions should be ignored on a 3rd-party site.
           "https://example.com",
           {v2_extension},
-          device::FidoRequestType::kGetAssertion,
+          device::CableRequestType::kGetAssertion,
           Result::k3rdParty,
       },
       {
@@ -229,26 +229,26 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           // if it doesn't send an extension in an assertion request.
           "https://accounts.google.com",
           {},
-          device::FidoRequestType::kGetAssertion,
+          device::CableRequestType::kGetAssertion,
           Result::k3rdParty,
       },
       {
           // ... but not for registration.
           "https://accounts.google.com",
           {},
-          device::FidoRequestType::kMakeCredential,
+          device::CableRequestType::kMakeCredential,
           Result::kNone,
       },
       {
           "https://accounts.google.com",
           {v1_extension},
-          device::FidoRequestType::kGetAssertion,
+          device::CableRequestType::kGetAssertion,
           NONE_ON_LINUX(Result::kV1),
       },
       {
           "https://accounts.google.com",
           {v2_extension},
-          device::FidoRequestType::kGetAssertion,
+          device::CableRequestType::kGetAssertion,
           Result::kServerLink,
       },
   };

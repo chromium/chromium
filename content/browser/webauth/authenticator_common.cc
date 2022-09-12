@@ -411,8 +411,20 @@ void AuthenticatorCommon::StartMakeCredentialRequest(
   InitDiscoveryFactory(
       /*is_u2f_api_request=*/make_credential_options_->make_u2f_api_credential);
 
+  device::CableRequestType cable_request_type;
+  switch (make_credential_options_->resident_key) {
+    case device::ResidentKeyRequirement::kDiscouraged:
+    case device::ResidentKeyRequirement::kPreferred:
+      cable_request_type = device::CableRequestType::kMakeCredential;
+      break;
+    case device::ResidentKeyRequirement::kRequired:
+      cable_request_type =
+          device::CableRequestType::kDiscoverableMakeCredential;
+      break;
+  }
+
   request_delegate_->ConfigureCable(
-      caller_origin_, device::FidoRequestType::kMakeCredential,
+      caller_origin_, cable_request_type,
       base::span<const device::CableDiscoveryData>(), discovery_factory());
 
   make_credential_options_->allow_skipping_pin_touch = allow_skipping_pin_touch;
@@ -459,7 +471,7 @@ void AuthenticatorCommon::StartGetAssertionRequest(
     cable_pairings = *ctap_get_assertion_request_->cable_extension;
   }
   request_delegate_->ConfigureCable(caller_origin_,
-                                    device::FidoRequestType::kGetAssertion,
+                                    device::CableRequestType::kGetAssertion,
                                     cable_pairings, discovery_factory());
 #if BUILDFLAG(IS_CHROMEOS)
   discovery_factory()->set_get_assertion_request_for_legacy_credential_check(

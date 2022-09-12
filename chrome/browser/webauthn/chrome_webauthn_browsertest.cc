@@ -81,6 +81,33 @@ static constexpr char kGetAssertionCredID1234[] = R"((() => {
            e => window.domAutomationController.send('error ' + e));
 })())";
 
+static constexpr char kMakeCredential[] = R"((() => {
+  navigator.credentials.create({ publicKey: {
+    rp: { name: "" },
+    user: { id: new Uint8Array([0]), name: "foo", displayName: "" },
+    pubKeyCredParams: [{type: "public-key", alg: -7}],
+    challenge: new Uint8Array([0]),
+    timeout: 10000,
+    userVerification: 'discouraged',
+  }}).then(c => window.domAutomationController.send('webauthn: OK'),
+           e => window.domAutomationController.send('error ' + e));
+})())";
+
+static constexpr char kMakeDiscoverableCredential[] = R"((() => {
+  navigator.credentials.create({ publicKey: {
+    rp: { name: "" },
+    user: { id: new Uint8Array([0]), name: "foo", displayName: "" },
+    pubKeyCredParams: [{type: "public-key", alg: -7}],
+    challenge: new Uint8Array([0]),
+    timeout: 10000,
+    userVerification: 'discouraged',
+    authenticatorSelection: {
+      requireResidentKey: true,
+    },
+  }}).then(c => window.domAutomationController.send('webauthn: OK'),
+           e => window.domAutomationController.send('error ' + e));
+})())";
+
 IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ChromeExtensions) {
   // Test that WebAuthn works inside of Chrome extensions. WebAuthn is based on
   // Relying Party IDs, which are domain names. But Chrome extensions don't have
@@ -484,7 +511,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
     }
 
     void set_cable_data(
-        device::FidoRequestType request_type,
+        device::CableRequestType request_type,
         std::vector<device::CableDiscoveryData> cable_data,
         const absl::optional<std::array<uint8_t, device::cablev2::kQRKeySize>>&
             qr_generator_key,
@@ -587,8 +614,13 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
             new device::VirtualFidoDevice::State);
         static const uint8_t kCredentialID[] = {1, 2, 3, 4};
         state->InjectRegistration(kCredentialID, "www.example.com");
+        state->fingerprints_enrolled = true;
 
-        AddDevice(std::make_unique<device::VirtualU2fDevice>(state));
+        device::VirtualCtap2Device::Config config;
+        config.resident_key_support = true;
+        config.internal_uv_support = true;
+
+        AddDevice(std::make_unique<device::VirtualCtap2Device>(state, config));
       }
     };
 
@@ -673,6 +705,20 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
         AuthenticatorRequestDialogModel::ExperimentServerLinkSheet,
         AuthenticatorRequestDialogModel::ExperimentServerLinkTitle) override {}
 
+    void ConfiguringCable(device::CableRequestType request_type) override {
+      switch (request_type) {
+        case device::CableRequestType::kMakeCredential:
+          parent_->trace() << "TYPE: mc" << std::endl;
+          break;
+        case device::CableRequestType::kDiscoverableMakeCredential:
+          parent_->trace() << "TYPE: disco mc" << std::endl;
+          break;
+        case device::CableRequestType::kGetAssertion:
+          parent_->trace() << "TYPE: ga" << std::endl;
+          break;
+      }
+    }
+
    private:
     std::unique_ptr<device::cablev2::Pairing> TestPhone(const char* name,
                                                         uint8_t public_key,
@@ -719,6 +765,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnCableSecondFactor, MAYBE_Test) {
       kGetAssertionCredID1234, &result));
 
   constexpr char kExpectedTrace[] = R"(
+TYPE: ga
 PAIRING: aaa 03030303 040506
 PAIRING: name2 02020202 040506
 PAIRING: name2 01010101 040506
@@ -735,6 +782,51 @@ CONTACT: phone_instance=0 step=4
 )";
   EXPECT_EQ(kExpectedTrace, trace_.str());
   EXPECT_EQ("webauthn: OK", result);
+}
+
+// These two tests are separate, rather than a for loop, because the testing
+// infrastructure needs to be reset for each test and having a separate test
+// is the easiest way to do that.
+
+IN_PROC_BROWSER_TEST_F(WebAuthnCableSecondFactor, RequestTypesMakeCredential) {
+  // Check that the correct request types are plumbed through.
+  DelegateObserver observer(this);
+  ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(&observer);
+  content::AuthenticatorEnvironment::GetInstance()
+      ->ReplaceDefaultDiscoveryFactoryForTesting(
+          std::make_unique<DiscoveryFactory>(this));
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+
+  std::string result;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
+      browser()->tab_strip_model()->GetActiveWebContents(), kMakeCredential,
+      &result));
+  EXPECT_EQ("webauthn: OK", result);
+  EXPECT_TRUE(trace_.str().find("TYPE: mc\n") != std::string::npos)
+      << trace_.str();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthnCableSecondFactor,
+                       RequestTypesMakeDiscoverableCredential) {
+  // Check that the correct request types are plumbed through.
+  DelegateObserver observer(this);
+  ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(&observer);
+  content::AuthenticatorEnvironment::GetInstance()
+      ->ReplaceDefaultDiscoveryFactoryForTesting(
+          std::make_unique<DiscoveryFactory>(this));
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+
+  std::string result;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      kMakeDiscoverableCredential, &result));
+  EXPECT_EQ("webauthn: OK", result);
+  EXPECT_TRUE(trace_.str().find("TYPE: disco mc\n") != std::string::npos)
+      << trace_.str();
 }
 
 }  // namespace

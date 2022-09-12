@@ -117,6 +117,8 @@ class ChromeAuthenticatorRequestDelegate
         AuthenticatorRequestDialogModel::ExperimentServerLinkSheet,
         AuthenticatorRequestDialogModel::ExperimentServerLinkTitle) = 0;
 
+    virtual void ConfiguringCable(device::CableRequestType request_type) {}
+
     virtual void AccountSelectorShown(
         const std::vector<device::AuthenticatorGetAssertionResponse>&
             responses) {}
@@ -162,7 +164,7 @@ class ChromeAuthenticatorRequestDelegate
       base::OnceCallback<void(bool)> callback) override;
   void ConfigureCable(
       const url::Origin& origin,
-      device::FidoRequestType request_type,
+      device::CableRequestType request_type,
       base::span<const device::CableDiscoveryData> pairings_from_extension,
       device::FidoDiscoveryFactory* discovery_factory) override;
   void SelectAccount(
