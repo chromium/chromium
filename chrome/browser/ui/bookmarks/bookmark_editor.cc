@@ -8,6 +8,7 @@
 
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/strings/grit/components_strings.h"
 
 using bookmarks::BookmarkModel;
@@ -166,8 +167,9 @@ const BookmarkNode* BookmarkEditor::ApplyEditsWithNoFolderChange(
   DCHECK(node);
 
   if (node->is_url())
-    model->SetURL(node, new_url);
-  model->SetTitle(node, new_title);
+    model->SetURL(node, new_url, bookmarks::metrics::BookmarkEditSource::kUser);
+  model->SetTitle(node, new_title,
+                  bookmarks::metrics::BookmarkEditSource::kUser);
 
   return node;
 }
@@ -190,8 +192,9 @@ const BookmarkNode* BookmarkEditor::ApplyEditsWithPossibleFolderChange(
   if (new_parent != node->parent())
     model->Move(node, new_parent, new_parent->children().size());
   if (node->is_url())
-    model->SetURL(node, new_url);
-  model->SetTitle(node, new_title);
+    model->SetURL(node, new_url, bookmarks::metrics::BookmarkEditSource::kUser);
+  model->SetTitle(node, new_title,
+                  bookmarks::metrics::BookmarkEditSource::kUser);
 
   return node;
 }

@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -104,7 +105,8 @@ std::u16string ManagedBookmarksTracker::GetBookmarksFolderTitle() const {
 
 void ManagedBookmarksTracker::ReloadManagedBookmarks() {
   // In case the user just signed into or out of the account.
-  model_->SetTitle(managed_node_, GetBookmarksFolderTitle());
+  model_->SetTitle(managed_node_, GetBookmarksFolderTitle(),
+                   bookmarks::metrics::BookmarkEditSource::kOther);
 
   // Recursively update all the managed bookmarks and folders.
   const base::Value::List& list = prefs_->GetList(prefs::kManagedBookmarks);

@@ -411,7 +411,8 @@ const gfx::Image& BookmarkModel::GetFavicon(const BookmarkNode* node) {
 }
 
 void BookmarkModel::SetTitle(const BookmarkNode* node,
-                             const std::u16string& title) {
+                             const std::u16string& title,
+                             metrics::BookmarkEditSource source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(node);
 
@@ -438,11 +439,14 @@ void BookmarkModel::SetTitle(const BookmarkNode* node,
   if (store_)
     store_->ScheduleSave();
 
+  metrics::RecordTitleEdit(source);
   for (BookmarkModelObserver& observer : observers_)
     observer.BookmarkNodeChanged(this, node);
 }
 
-void BookmarkModel::SetURL(const BookmarkNode* node, const GURL& url) {
+void BookmarkModel::SetURL(const BookmarkNode* node,
+                           const GURL& url,
+                           metrics::BookmarkEditSource source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(node);
   DCHECK(!node->is_folder());
@@ -466,6 +470,7 @@ void BookmarkModel::SetURL(const BookmarkNode* node, const GURL& url) {
   if (store_)
     store_->ScheduleSave();
 
+  metrics::RecordURLEdit(source);
   for (BookmarkModelObserver& observer : observers_)
     observer.BookmarkNodeChanged(this, node);
 }

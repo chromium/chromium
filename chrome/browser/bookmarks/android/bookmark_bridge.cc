@@ -42,6 +42,7 @@
 #include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/bookmarks/common/android/bookmark_type.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -588,7 +589,8 @@ void BookmarkBridge::SetBookmarkTitle(JNIEnv* env,
   if (partner_bookmarks_shim_->IsPartnerBookmark(bookmark)) {
     partner_bookmarks_shim_->RenameBookmark(bookmark, title);
   } else {
-    bookmark_model_->SetTitle(bookmark, title);
+    bookmark_model_->SetTitle(bookmark, title,
+                              bookmarks::metrics::BookmarkEditSource::kUser);
   }
 }
 
@@ -600,7 +602,8 @@ void BookmarkBridge::SetBookmarkUrl(JNIEnv* env,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
   bookmark_model_->SetURL(GetNodeByID(id, type),
-                          *url::GURLAndroid::ToNativeGURL(env, url));
+                          *url::GURLAndroid::ToNativeGURL(env, url),
+                          bookmarks::metrics::BookmarkEditSource::kUser);
 }
 
 void BookmarkBridge::SetPowerBookmarkMeta(

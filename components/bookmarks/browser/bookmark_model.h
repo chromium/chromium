@@ -24,6 +24,7 @@
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_undo_provider.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
@@ -177,10 +178,14 @@ class BookmarkModel : public BookmarkUndoProvider,
   const gfx::Image& GetFavicon(const BookmarkNode* node);
 
   // Sets the title of |node|.
-  void SetTitle(const BookmarkNode* node, const std::u16string& title);
+  void SetTitle(const BookmarkNode* node,
+                const std::u16string& title,
+                metrics::BookmarkEditSource source);
 
   // Sets the URL of |node|.
-  void SetURL(const BookmarkNode* node, const GURL& url);
+  void SetURL(const BookmarkNode* node,
+              const GURL& url,
+              metrics::BookmarkEditSource source);
 
   // Sets the date added time of |node|.
   void SetDateAdded(const BookmarkNode* node, base::Time date_added);

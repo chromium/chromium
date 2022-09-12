@@ -18,6 +18,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/common/bookmark_metrics.h"
 #include "components/query_parser/query_parser.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/bookmarks/bookmarks_utils.h"
@@ -186,8 +187,10 @@ MDCSnackbarMessage* CreateOrUpdateBookmarkWithUndoToast(
     node = bookmark_model->AddURL(folder, folder->children().size(),
                                   titleString, url);
   } else {  // Update the information.
-    bookmark_model->SetTitle(node, titleString);
-    bookmark_model->SetURL(node, url);
+    bookmark_model->SetTitle(node, titleString,
+                             bookmarks::metrics::BookmarkEditSource::kUser);
+    bookmark_model->SetURL(node, url,
+                           bookmarks::metrics::BookmarkEditSource::kUser);
 
     DCHECK(folder);
     DCHECK(!folder->HasAncestor(node));

@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -373,33 +374,39 @@ TEST_F(BookmarkBarViewTest, ChangeTitle) {
   AddNodesToBookmarkBarFromModelString("a b c d e f ");
   EXPECT_EQ(0u, test_helper_->GetBookmarkButtonCount());
 
-  model()->SetTitle(bookmark_bar_node->children()[0].get(), u"a1");
+  model()->SetTitle(bookmark_bar_node->children()[0].get(), u"a1",
+                    bookmarks::metrics::BookmarkEditSource::kUser);
   EXPECT_EQ(0u, test_helper_->GetBookmarkButtonCount());
 
   // Make enough room for 1 node.
   SizeUntilButtonsVisible(1);
   EXPECT_EQ("a1", GetStringForVisibleButtons());
 
-  model()->SetTitle(bookmark_bar_node->children()[1].get(), u"b1");
+  model()->SetTitle(bookmark_bar_node->children()[1].get(), u"b1",
+                    bookmarks::metrics::BookmarkEditSource::kUser);
   EXPECT_EQ("a1", GetStringForVisibleButtons());
 
-  model()->SetTitle(bookmark_bar_node->children()[5].get(), u"f1");
+  model()->SetTitle(bookmark_bar_node->children()[5].get(), u"f1",
+                    bookmarks::metrics::BookmarkEditSource::kUser);
   EXPECT_EQ("a1", GetStringForVisibleButtons());
 
-  model()->SetTitle(bookmark_bar_node->children()[3].get(), u"d1");
+  model()->SetTitle(bookmark_bar_node->children()[3].get(), u"d1",
+                    bookmarks::metrics::BookmarkEditSource::kUser);
 
   // Make the second button visible, changes the title of the first to something
   // really long and make sure the second button hides.
   SizeUntilButtonsVisible(2);
   EXPECT_EQ("a1 b1", GetStringForVisibleButtons());
   model()->SetTitle(bookmark_bar_node->children()[0].get(),
-                    u"a_really_long_title");
+                    u"a_really_long_title",
+                    bookmarks::metrics::BookmarkEditSource::kUser);
   EXPECT_LE(1u, test_helper_->GetBookmarkButtonCount());
 
   // Change the title back and make sure the 2nd button is visible again. Don't
   // use GetStringForVisibleButtons() here as more buttons may have been
   // created.
-  model()->SetTitle(bookmark_bar_node->children()[0].get(), u"a1");
+  model()->SetTitle(bookmark_bar_node->children()[0].get(), u"a1",
+                    bookmarks::metrics::BookmarkEditSource::kUser);
   ASSERT_LE(2u, test_helper_->GetBookmarkButtonCount());
   EXPECT_TRUE(test_helper_->GetBookmarkButton(0)->GetVisible());
   EXPECT_TRUE(test_helper_->GetBookmarkButton(1)->GetVisible());

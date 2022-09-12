@@ -18,6 +18,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -367,7 +368,8 @@ TEST_F(BookmarkMenuBridgeTest, TestChangeTitle) {
   NSMenuItem* item = [menu_ itemWithTitle:@"Test Item"];
   EXPECT_TRUE([item image]);
 
-  model->SetTitle(node, u"New Title");
+  model->SetTitle(node, u"New Title",
+                  bookmarks::metrics::BookmarkEditSource::kOther);
 
   item = [menu_ itemWithTitle:@"Test Item"];
   EXPECT_FALSE(item);

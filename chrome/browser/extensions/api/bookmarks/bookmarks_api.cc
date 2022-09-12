@@ -41,6 +41,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/prefs/pref_service.h"
@@ -698,9 +699,11 @@ ExtensionFunction::ResponseValue BookmarksUpdateFunction::RunOnReady() {
     return Error(bookmark_api_constants::kCannotSetUrlOfFolderError);
 
   if (has_title)
-    model->SetTitle(node, title);
+    model->SetTitle(node, title,
+                    bookmarks::metrics::BookmarkEditSource::kExtension);
   if (!url.is_empty())
-    model->SetURL(node, url);
+    model->SetURL(node, url,
+                  bookmarks::metrics::BookmarkEditSource::kExtension);
 
   BookmarkTreeNode tree_node = bookmark_api_helpers::GetBookmarkTreeNode(
       GetManagedBookmarkService(), node, false, false);

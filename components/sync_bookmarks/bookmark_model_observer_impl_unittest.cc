@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/sync/base/time.h"
@@ -217,14 +218,16 @@ TEST_F(BookmarkModelObserverImplTest,
 
   // Now update the title of the 2nd node.
   EXPECT_CALL(*nudge_for_commit_closure(), Run());
-  bookmark_model()->SetTitle(bookmark_node2, base::UTF8ToUTF16(kNewTitle2));
+  bookmark_model()->SetTitle(bookmark_node2, base::UTF8ToUTF16(kNewTitle2),
+                             bookmarks::metrics::BookmarkEditSource::kOther);
   // Node 2 should be in the local changes list.
   EXPECT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges(),
               ElementsAre(HasBookmarkNode(bookmark_node2)));
 
   // Now update the url of the 1st node.
   EXPECT_CALL(*nudge_for_commit_closure(), Run());
-  bookmark_model()->SetURL(bookmark_node1, GURL(kNewUrl1));
+  bookmark_model()->SetURL(bookmark_node1, GURL(kNewUrl1),
+                           bookmarks::metrics::BookmarkEditSource::kOther);
 
   // Node 1 and 2 should be in the local changes list.
   EXPECT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges(),
@@ -673,7 +676,8 @@ TEST_F(BookmarkModelObserverImplTest, ShouldNotSyncUnsyncableBookmarks) {
   EXPECT_CALL(*nudge_for_commit_closure(), Run()).Times(0);
   // In the TestBookmarkClient, descendants of managed nodes shouldn't be
   // synced.
-  model->SetTitle(unsyncable_node, u"NewTitle");
+  model->SetTitle(unsyncable_node, u"NewTitle",
+                  bookmarks::metrics::BookmarkEditSource::kOther);
   // Only permanent folders should be tracked.
   EXPECT_THAT(bookmark_tracker->TrackedEntitiesCountForTest(), 3U);
 

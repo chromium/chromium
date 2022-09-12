@@ -23,6 +23,7 @@
 #include "chrome/grit/locale_settings.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -527,7 +528,8 @@ void BookmarkEditorView::ApplyNameChangesAndCreateNewFolders(
           });
       DCHECK(i != bb_node->children().cend());
       child_bb_node = i->get();
-      bb_model_->SetTitle(child_bb_node, child_b_node->GetTitle());
+      bb_model_->SetTitle(child_bb_node, child_b_node->GetTitle(),
+                          bookmarks::metrics::BookmarkEditSource::kUser);
     }
     ApplyNameChangesAndCreateNewFolders(child_bb_node, child_b_node.get(),
                                         parent_b_node, parent_bb_node);

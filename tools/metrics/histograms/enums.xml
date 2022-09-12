@@ -11649,6 +11649,12 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Bookmark bar shown"/>
 </enum>
 
+<enum name="BookmarkEditSource">
+  <int value="0" label="Edited by a user"/>
+  <int value="1" label="Edited by an extension"/>
+  <int value="2" label="Edited by another source"/>
+</enum>
+
 <enum name="BookmarkGUIDSource">
   <summary>
     Whether a GUID came from BookmarkSpecifics, or, in case it was missing,

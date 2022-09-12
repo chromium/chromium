@@ -40,6 +40,7 @@
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_util.h"
@@ -610,7 +611,8 @@ void SetTitle(int profile,
   ASSERT_EQ(bookmarks::GetBookmarkNodeByID(model, node->id()), node)
       << "Node " << node->GetTitle() << " does not belong to "
       << "Profile " << profile;
-  model->SetTitle(node, base::UTF8ToUTF16(new_title));
+  model->SetTitle(node, base::UTF8ToUTF16(new_title),
+                  bookmarks::metrics::BookmarkEditSource::kOther);
 }
 
 void SetFavicon(int profile,
@@ -701,7 +703,8 @@ const BookmarkNode* SetURL(int profile,
     return nullptr;
   }
   if (node->is_url()) {
-    model->SetURL(node, new_url);
+    model->SetURL(node, new_url,
+                  bookmarks::metrics::BookmarkEditSource::kOther);
   }
   return node;
 }

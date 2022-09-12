@@ -31,7 +31,8 @@ void RecordBookmarkOpened(base::Time now,
 }
 
 void RecordTimeSinceLastScheduledSave(base::TimeDelta delta) {
-  UmaHistogramLongTimes("Bookmarks.Storage.TimeSinceLastScheduledSave", delta);
+  base::UmaHistogramLongTimes("Bookmarks.Storage.TimeSinceLastScheduledSave",
+                              delta);
 }
 
 void RecordTimeToLoadAtStartup(base::TimeDelta delta) {
@@ -42,6 +43,14 @@ void RecordFileSizeAtStartup(int64_t total_bytes) {
   int total_size_kb = base::saturated_cast<int>(total_bytes / kBytesPerKB);
   base::UmaHistogramCounts1M("Bookmarks.Storage.FileSizeAtStartup2",
                              total_size_kb);
+}
+
+void RecordURLEdit(BookmarkEditSource source) {
+  base::UmaHistogramEnumeration("Bookmarks.EditURLSource", source);
+}
+
+void RecordTitleEdit(BookmarkEditSource source) {
+  base::UmaHistogramEnumeration("Bookmarks.EditTitleSource", source);
 }
 
 void RecordUrlLoadStatsOnProfileLoad(const UrlLoadStats& stats) {

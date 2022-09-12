@@ -326,6 +326,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.EditTitleSource" enum="BookmarkEditSource"
+    expires_after="2023-04-21">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>Records the edit action users take on their bookmarks.</summary>
+</histogram>
+
+<histogram name="Bookmarks.EditURLSource" enum="BookmarkEditSource"
+    expires_after="2023-04-21">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>Records the edit action users take on their bookmarks.</summary>
+</histogram>
+
 <histogram name="Bookmarks.EntryPoint" enum="BookmarksEntryPoint"
     expires_after="2023-02-12">
   <owner>ianwen@chromium.org</owner>

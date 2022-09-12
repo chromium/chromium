@@ -7,6 +7,7 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -60,5 +61,6 @@ const BookmarkNode* BookmarkIOSUnitTest::AddFolder(const BookmarkNode* parent,
 void BookmarkIOSUnitTest::ChangeTitle(NSString* title,
                                       const BookmarkNode* node) {
   std::u16string c_title = base::SysNSStringToUTF16(title);
-  bookmark_model_->SetTitle(node, c_title);
+  bookmark_model_->SetTitle(node, c_title,
+                            bookmarks::metrics::BookmarkEditSource::kUser);
 }

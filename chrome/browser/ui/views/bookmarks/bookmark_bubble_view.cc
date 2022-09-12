@@ -23,6 +23,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
@@ -133,7 +134,8 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
     const std::u16string new_title =
         dialog_model()->GetTextfieldByUniqueId(kBookmarkName)->text();
     if (new_title != node->GetTitle()) {
-      model->SetTitle(node, new_title);
+      model->SetTitle(node, new_title,
+                      bookmarks::metrics::BookmarkEditSource::kUser);
       base::RecordAction(
           UserMetricsAction("BookmarkBubble_ChangeTitleInBubble"));
     }

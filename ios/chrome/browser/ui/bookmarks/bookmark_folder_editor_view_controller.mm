@@ -15,6 +15,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#import "components/bookmarks/common/bookmark_metrics.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
@@ -256,7 +257,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self.delegate bookmarkFolderEditorWillCommitTitleChange:self];
     }
 
-    self.bookmarkModel->SetTitle(self.folder, folderTitle);
+    self.bookmarkModel->SetTitle(self.folder, folderTitle,
+                                 bookmarks::metrics::BookmarkEditSource::kUser);
     if (self.folder->parent() != self.parentFolder) {
       base::AutoReset<BOOL> autoReset(&_ignoresOwnMove, YES);
       std::set<const BookmarkNode*> editedNodes;

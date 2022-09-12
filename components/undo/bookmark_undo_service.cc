@@ -15,6 +15,7 @@
 #include "components/bookmarks/browser/bookmark_undo_provider.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/undo/undo_operation.h"
 
@@ -190,9 +191,11 @@ void BookmarkEditOperation::Undo() {
   const BookmarkNode* node = bookmarks::GetBookmarkNodeByID(model, node_id_);
   DCHECK(node);
 
-  model->SetTitle(node, original_bookmark_.elements[0].title);
+  model->SetTitle(node, original_bookmark_.elements[0].title,
+                  bookmarks::metrics::BookmarkEditSource::kOther);
   if (original_bookmark_.elements[0].is_url)
-    model->SetURL(node, original_bookmark_.elements[0].url);
+    model->SetURL(node, original_bookmark_.elements[0].url,
+                  bookmarks::metrics::BookmarkEditSource::kOther);
 }
 
 int BookmarkEditOperation::GetUndoLabelId() const {

@@ -931,7 +931,7 @@ TEST_F(BookmarkModelTest, SetTitle) {
   ClearCounts();
 
   title = u"goo";
-  model_->SetTitle(node, title);
+  model_->SetTitle(node, title, metrics::BookmarkEditSource::kOther);
   AssertObserverCount(0, 0, 0, 1, 0, 0, 1, 0, 0);
   observer_details_.ExpectEquals(node, nullptr, static_cast<size_t>(-1),
                                  static_cast<size_t>(-1), false);
@@ -945,6 +945,8 @@ TEST_F(BookmarkModelTest, SetTitle) {
       u"goo", /*max_count=*/1, query_parser::MatchingAlgorithm::DEFAULT);
   ASSERT_EQ(1u, matches.size());
   EXPECT_EQ(url, matches[0].node->GetTitledUrlNodeUrl());
+  histogram()->ExpectBucketCount("Bookmarks.EditTitleSource",
+                                 metrics::BookmarkEditSource::kOther, 1);
 }
 
 TEST_F(BookmarkModelTest, SetTitleWithWhitespace) {
@@ -955,7 +957,7 @@ TEST_F(BookmarkModelTest, SetTitleWithWhitespace) {
     const BookmarkNode* node = model_->AddURL(root, 0, title, url);
 
     title = ASCIIToUTF16(title_whitespace_test_cases[i].input_title);
-    model_->SetTitle(node, title);
+    model_->SetTitle(node, title, metrics::BookmarkEditSource::kOther);
     EXPECT_EQ(ASCIIToUTF16(title_whitespace_test_cases[i].expected_title),
               node->GetTitle());
   }
@@ -969,7 +971,7 @@ TEST_F(BookmarkModelTest, SetFolderTitle) {
   const BookmarkNode* node = model_->AddURL(folder, 0, title, url);
   ClearCounts();
 
-  model_->SetTitle(folder, u"golder");
+  model_->SetTitle(folder, u"golder", metrics::BookmarkEditSource::kOther);
 
   // Should not change the hierarchy.
   EXPECT_EQ(root->children().size(), 1u);
@@ -989,6 +991,8 @@ TEST_F(BookmarkModelTest, SetFolderTitle) {
   ASSERT_EQ(matches.size(), 1u);
   EXPECT_EQ(matches[0].node, node);
   EXPECT_EQ(matches[0].node->GetTitledUrlNodeUrl(), url);
+  histogram()->ExpectBucketCount("Bookmarks.EditTitleSource",
+                                 metrics::BookmarkEditSource::kOther, 1);
 }
 
 TEST_F(BookmarkModelTest, SetURL) {
@@ -1000,11 +1004,13 @@ TEST_F(BookmarkModelTest, SetURL) {
   ClearCounts();
 
   url = GURL("http://foo2.com");
-  model_->SetURL(node, url);
+  model_->SetURL(node, url, metrics::BookmarkEditSource::kOther);
   AssertObserverCount(0, 0, 0, 1, 0, 0, 1, 0, 0);
   observer_details_.ExpectEquals(node, nullptr, static_cast<size_t>(-1),
                                  static_cast<size_t>(-1), false);
   EXPECT_EQ(url, node->url());
+  histogram()->ExpectBucketCount("Bookmarks.EditURLSource",
+                                 metrics::BookmarkEditSource::kOther, 1);
 }
 
 TEST_F(BookmarkModelTest, SetDateAdded) {
@@ -1540,7 +1546,7 @@ TEST_F(BookmarkModelTest, RenamedFolderNodeExcludedFromIndex) {
       model_->AddFolder(model_->other_node(), 0, u"MyFavorites");
 
   // Change the folder title.
-  model_->SetTitle(folder, u"MyBookmarks");
+  model_->SetTitle(folder, u"MyBookmarks", metrics::BookmarkEditSource::kOther);
 
   // There should be no matching bookmarks.
   std::vector<TitledUrlMatch> matches = model_->GetBookmarksMatching(
@@ -1612,7 +1618,8 @@ TEST_F(BookmarkModelTest, TitledUrlIndexUpdatedOnChangeTitle) {
                     .size());
 
   // Change the title.
-  model_->SetTitle(root->children().front().get(), new_title);
+  model_->SetTitle(root->children().front().get(), new_title,
+                   metrics::BookmarkEditSource::kOther);
 
   // Verify that we only get results for the new title.
   EXPECT_EQ(0U,
@@ -1644,7 +1651,8 @@ TEST_F(BookmarkModelTest, TitledUrlIndexUpdatedOnChangeURL) {
                     .size());
 
   // Change the URL.
-  model_->SetURL(root->children().front().get(), new_url);
+  model_->SetURL(root->children().front().get(), new_url,
+                 metrics::BookmarkEditSource::kOther);
 
   // Verify that we only get results for the new URL.
   EXPECT_EQ(0U, model_

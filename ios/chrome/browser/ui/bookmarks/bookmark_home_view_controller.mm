@@ -10,6 +10,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/prefs/pref_service.h"
@@ -894,8 +895,9 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   DCHECK(self.sharedState.editingFolderNode);
   self.sharedState.addingNewFolder = NO;
   if (newName.length > 0) {
-    self.sharedState.bookmarkModel->SetTitle(self.sharedState.editingFolderNode,
-                                             base::SysNSStringToUTF16(newName));
+    self.sharedState.bookmarkModel->SetTitle(
+        self.sharedState.editingFolderNode, base::SysNSStringToUTF16(newName),
+        bookmarks::metrics::BookmarkEditSource::kUser);
   }
   self.sharedState.editingFolderNode = nullptr;
   self.sharedState.editingFolderCell = nil;
