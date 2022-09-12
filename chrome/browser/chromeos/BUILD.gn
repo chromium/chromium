@@ -860,6 +860,8 @@ source_set("chromeos") {
     "../ash/login/screens/lacros_data_backward_migration_screen.h",
     "../ash/login/screens/lacros_data_migration_screen.cc",
     "../ash/login/screens/lacros_data_migration_screen.h",
+    "../ash/login/screens/local_state_error_screen.cc",
+    "../ash/login/screens/local_state_error_screen.h",
     "../ash/login/screens/locale_switch_screen.cc",
     "../ash/login/screens/locale_switch_screen.h",
     "../ash/login/screens/management_transition_screen.cc",

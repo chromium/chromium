@@ -63,6 +63,7 @@ js_type_check("closure_compile_local") {
     ":gesture_navigation",
     ":guest_tos.m",
     ":hw_data_collection.m",
+    ":local_state_error",
     ":managed_terms_of_service",
     ":marketing_opt_in",
     ":offline_ad_login.m",
@@ -321,6 +322,19 @@ js_library("hw_data_collection.m") {
     "../../components/buttons:oobe_text_button.m",
   ]
   extra_deps = [ ":hw_data_collection_module" ]
+}
+
+js_library("local_state_error") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/local_state_error.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("managed_terms_of_service") {
@@ -824,6 +838,7 @@ html_to_js("web_components") {
     "enable_kiosk.js",
     "fingerprint_setup.js",
     "gesture_navigation.js",
+    "local_state_error.js",
     "managed_terms_of_service.js",
     "marketing_opt_in.js",
     "oobe_reset.js",

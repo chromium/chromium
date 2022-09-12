@@ -2750,6 +2750,8 @@ static_library("ui") {
       "webui/chromeos/login/lacros_data_backward_migration_screen_handler.h",
       "webui/chromeos/login/lacros_data_migration_screen_handler.cc",
       "webui/chromeos/login/lacros_data_migration_screen_handler.h",
+      "webui/chromeos/login/local_state_error_screen_handler.cc",
+      "webui/chromeos/login/local_state_error_screen_handler.h",
       "webui/chromeos/login/locale_switch_screen_handler.cc",
       "webui/chromeos/login/locale_switch_screen_handler.h",
       "webui/chromeos/login/management_transition_screen_handler.cc",

@@ -83,6 +83,7 @@
 #include "chrome/browser/ash/login/screens/kiosk_enable_screen.h"
 #include "chrome/browser/ash/login/screens/lacros_data_backward_migration_screen.h"
 #include "chrome/browser/ash/login/screens/lacros_data_migration_screen.h"
+#include "chrome/browser/ash/login/screens/local_state_error_screen.h"
 #include "chrome/browser/ash/login/screens/locale_switch_screen.h"
 #include "chrome/browser/ash/login/screens/management_transition_screen.h"
 #include "chrome/browser/ash/login/screens/marketing_opt_in_screen.h"
@@ -156,6 +157,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_enable_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/lacros_data_backward_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/lacros_data_migration_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/local_state_error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/locale_switch_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/management_transition_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/marketing_opt_in_screen_handler.h"
@@ -269,6 +271,7 @@ const StaticOobeScreenId kScreensWithHiddenStatusArea[] = {
     chromeos::ManagementTransitionScreenView::kScreenId,
     chromeos::TpmErrorView::kScreenId,
     chromeos::WrongHWIDScreenView::kScreenId,
+    chromeos::LocalStateErrorScreenView::kScreenId,
 };
 
 bool IsResumableOobeScreen(OobeScreenId screen_id) {
@@ -658,6 +661,8 @@ WizardController::CreateScreens() {
   append(std::make_unique<LacrosDataBackwardMigrationScreen>(
       oobe_ui->GetView<LacrosDataBackwardMigrationScreenHandler>()
           ->AsWeakPtr()));
+  append(std::make_unique<LocalStateErrorScreen>(
+      oobe_ui->GetView<LocalStateErrorScreenHandler>()->AsWeakPtr()));
 
   if (HIDDetectionScreen::CanShowScreen()) {
     append(std::make_unique<HIDDetectionScreen>(
@@ -2241,7 +2246,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
              screen_id == HWDataCollectionView::kScreenId ||
              screen_id == SmartPrivacyProtectionView::kScreenId ||
              screen_id == ThemeSelectionScreenView::kScreenId ||
-             screen_id == SamlConfirmPasswordView::kScreenId) {
+             screen_id == SamlConfirmPasswordView::kScreenId ||
+             screen_id == LocalStateErrorScreenView::kScreenId) {
     SetCurrentScreen(GetScreen(screen_id));
   } else {
     NOTREACHED();
@@ -2269,10 +2275,6 @@ void WizardController::SimulateDemoModeSetupForTesting(
     demo_setup_controller_ = std::make_unique<DemoSetupController>();
   if (demo_config.has_value())
     demo_setup_controller_->set_demo_config(*demo_config);
-}
-
-void WizardController::ShowErrorScreen() {
-  SetCurrentScreen(GetScreen(ErrorScreenView::kScreenId));
 }
 
 void WizardController::OnAccessibilityStatusChanged(
@@ -2330,9 +2332,7 @@ void WizardController::AutoLaunchKioskApp(KioskAppType app_type) {
   if (status == CrosSettingsProvider::PERMANENTLY_UNTRUSTED) {
     // If the `cros_settings_` are permanently untrusted, show an error message
     // and refuse to auto-launch the kiosk app.
-    GetErrorScreen()->SetUIState(NetworkError::UI_STATE_LOCAL_STATE_ERROR);
-    GetLoginDisplayHost()->SetStatusAreaVisible(false);
-    ShowErrorScreen();
+    AdvanceToScreen(LocalStateErrorScreenView::kScreenId);
     return;
   }
 
@@ -2405,9 +2405,7 @@ void WizardController::OnLocalStateInitialized(bool /* succeeded */) {
       PrefService::INITIALIZATION_STATUS_ERROR) {
     return;
   }
-  GetErrorScreen()->SetUIState(NetworkError::UI_STATE_LOCAL_STATE_ERROR);
-  GetLoginDisplayHost()->SetStatusAreaVisible(false);
-  ShowErrorScreen();
+  AdvanceToScreen(LocalStateErrorScreenView::kScreenId);
 }
 
 void WizardController::PrepareFirstRunPrefs() {

@@ -33,7 +33,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/grit/browser_resources.h"
-#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
@@ -73,8 +72,6 @@ constexpr const char kUserActionConfigureCertsButtonClicked[] =
 constexpr const char kUserActionDiagnoseButtonClicked[] = "diagnose";
 constexpr const char kUserActionLaunchOobeGuestSessionClicked[] =
     "launch-oobe-guest";
-constexpr const char kUserActionLocalStateErrorPowerwashButtonClicked[] =
-    "local-state-error-powerwash";
 constexpr const char kUserActionRebootButtonClicked[] = "reboot";
 constexpr const char kUserActionShowCaptivePortalClicked[] =
     "show-captive-portal";
@@ -282,8 +279,6 @@ void ErrorScreen::OnUserAction(const base::Value::List& args) {
     OnDiagnoseButtonClicked();
   } else if (action_id == kUserActionLaunchOobeGuestSessionClicked) {
     OnLaunchOobeGuestSession();
-  } else if (action_id == kUserActionLocalStateErrorPowerwashButtonClicked) {
-    OnLocalStateErrorPowerwashButtonClicked();
   } else if (action_id == kUserActionRebootButtonClicked) {
     OnRebootButtonClicked();
   } else if (action_id == kUserActionCancel) {
@@ -359,10 +354,6 @@ void ErrorScreen::OnLaunchOobeGuestSession() {
   DeviceSettingsService::Get()->GetOwnershipStatusAsync(
       base::BindOnce(&ErrorScreen::StartGuestSessionAfterOwnershipCheck,
                      weak_factory_.GetWeakPtr()));
-}
-
-void ErrorScreen::OnLocalStateErrorPowerwashButtonClicked() {
-  SessionManagerClient::Get()->StartDeviceWipe();
 }
 
 void ErrorScreen::OnRebootButtonClicked() {

@@ -9,7 +9,6 @@
 /* #js_imports_placeholder */
 
 const USER_ACTION_LAUNCH_OOBE_GUEST = 'launch-oobe-guest';
-const USER_ACTION_LOCAL_STATE_POWERWASH = 'local-state-error-powerwash';
 const USER_ACTION_SHOW_CAPTIVE_PORTAL = 'show-captive-portal';
 const USER_ACTION_OPEN_INTERNET_DIALOG = 'open-internet-dialog';
 const USER_ACTION_OFFLINE_LOGIN = 'offline-login';
@@ -23,7 +22,6 @@ const ERROR_SCREEN_UI_STATE = {
   UPDATE: 'ui-state-update',
   SIGNIN: 'ui-state-signin',
   KIOSK_MODE: 'ui-state-kiosk-mode',
-  LOCAL_STATE_ERROR: 'ui-state-local-state-error',
   AUTO_ENROLLMENT_ERROR: 'ui-state-auto-enrollment-error',
   ROLLBACK_ERROR: 'ui-state-rollback-error',
   SUPERVISED_USER_CREATION_FLOW: 'ui-state-supervised',
@@ -37,7 +35,6 @@ const ErrorMessageUIState = [
   ERROR_SCREEN_UI_STATE.SIGNIN,
   ERROR_SCREEN_UI_STATE.SUPERVISED_USER_CREATION_FLOW,
   ERROR_SCREEN_UI_STATE.KIOSK_MODE,
-  ERROR_SCREEN_UI_STATE.LOCAL_STATE_ERROR,
   ERROR_SCREEN_UI_STATE.AUTO_ENROLLMENT_ERROR,
   ERROR_SCREEN_UI_STATE.ROLLBACK_ERROR,
 ];
@@ -200,9 +197,7 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
     } else if (this.isOneOf_(this.uiState_, 'ui-state-auto-enrollment-error') &&
         this.isOneOf_(this.errorState_, 'offline', 'portal', 'proxy')) {
       return this.i18n('autoEnrollmentErrorMessageTitle');
-    } else if (
-        this.isOneOf_(this.uiState_, 'ui-state-local-state-error') ||
-        this.isOneOf_(this.errorState_, 'proxy', 'auth-ext-timeout')) {
+    } else if (this.isOneOf_(this.errorState_, 'proxy', 'auth-ext-timeout')) {
       return this.i18n('loginErrorTitle');
     } else if (this.isOneOf_(this.errorState_, 'kiosk-online')) {
       return this.i18n('kioskOnlineTitle');
@@ -267,10 +262,6 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
 
   okButtonClicked() {
     this.userActed('cancel-reset');
-  }
-
-  powerwashButtonClicked() {
-    this.userActed(USER_ACTION_LOCAL_STATE_POWERWASH);
   }
 
   onNetworkConnected_() {

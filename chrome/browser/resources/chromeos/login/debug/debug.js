@@ -1183,6 +1183,10 @@ cr.define('cr.ui.login.debug', function() {
       kind: ScreenKind.OTHER,
     },
     {
+      id: 'local-state-error',
+      kind: ScreenKind.ERROR,
+    },
+    {
       id: 'fingerprint-setup',
       kind: ScreenKind.NORMAL,
       defaultState: 'default',

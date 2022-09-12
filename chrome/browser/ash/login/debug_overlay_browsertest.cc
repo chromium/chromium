@@ -4,7 +4,6 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -21,8 +20,8 @@ constexpr char kDebugButton[] = "invokeDebuggerButton";
 constexpr char kDebugOverlay[] = "debuggerOverlay";
 constexpr char kScreensPanel[] = "DebuggerPanelScreens";
 
-constexpr int kOobeScreensCount = 44;
-constexpr int kLoginScreensCount = 41;
+constexpr int kOobeScreensCount = 45;
+constexpr int kLoginScreensCount = 42;
 constexpr int kOsInstallScreensCount = 2;
 
 std::string ElementsInPanel(const std::string& panel) {

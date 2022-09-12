@@ -401,7 +401,6 @@ class WizardController : public OobeUI::Observer {
   void PerformOOBECompletedActions();
 
   ErrorScreen* GetErrorScreen();
-  void ShowErrorScreen();
 
   void OnHIDScreenNecessityCheck(bool screen_needed);
 

@@ -78,6 +78,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/consolidated_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/local_state_error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
@@ -2203,24 +2204,20 @@ class WizardControllerBrokenLocalStateTest : public WizardControllerTest {
 
 IN_PROC_BROWSER_TEST_F(WizardControllerBrokenLocalStateTest,
                        LocalStateCorrupted) {
-  // Checks that after wizard controller initialization error screen
-  // in the proper state is displayed.
-  ASSERT_EQ(GetErrorScreen(),
+  // Checks that after wizard controller initialization local error screen
+  // is displayed.
+  ASSERT_EQ(WizardController::default_controller()->GetScreen(
+                LocalStateErrorScreenView::kScreenId),
             WizardController::default_controller()->current_screen());
-  ASSERT_EQ(NetworkError::UI_STATE_LOCAL_STATE_ERROR,
-            GetErrorScreen()->GetUIState());
 
-  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+  OobeScreenWaiter(LocalStateErrorScreenView::kScreenId).Wait();
 
-  // Checks visibility of the error message and powerwash button.
-  test::OobeJS().ExpectVisible("error-message");
-  test::OobeJS().ExpectVisiblePath({"error-message", "powerwashButton"});
-  test::OobeJS().ExpectVisiblePath({"error-message", "localStateErrorText"});
-  test::OobeJS().ExpectVisiblePath({"error-message", "guestSessionText"});
+  // Checks visibility of the powerwash button.
+  test::OobeJS().ExpectVisiblePath({"local-state-error", "powerwashButton"});
 
   // Emulates user click on the "Restart and Powerwash" button.
   ASSERT_EQ(0, FakeSessionManagerClient::Get()->start_device_wipe_call_count());
-  test::OobeJS().TapOnPath({"error-message", "powerwashButton"});
+  test::OobeJS().TapOnPath({"local-state-error", "powerwashButton"});
   ASSERT_EQ(1, FakeSessionManagerClient::Get()->start_device_wipe_call_count());
 }
 

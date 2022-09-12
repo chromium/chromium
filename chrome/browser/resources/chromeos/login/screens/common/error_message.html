@@ -115,11 +115,6 @@
         <span hidden="[[!isOneOf_(uiState_,'ui-state-auto-enrollment-error')]]">
           [[i18nDynamic(locale, 'autoEnrollmentOfflineMessageBody')]]
         </span>
-        <div id="localStateErrorText" hidden="[[!isOneOf_(uiState_,
-            'ui-state-local-state-error')]]">
-          [[i18nDynamic(locale, 'localStateErrorText0')]]
-          [[i18nDynamic(locale, 'localStateErrorText1')]]
-        </div>
         <div hidden="[[!isOneOf_(uiState_, 'ui-state-rollback-error')]]">
           [[i18nDynamic(locale, 'rollbackErrorMessageBody')]]
         </div>
@@ -127,8 +122,7 @@
             'ui-state-update',
             'ui-state-signin',
             'ui-state-supervised',
-            'ui-state-kiosk-mode',
-            'ui-state-local-state-error')]]">
+            'ui-state-kiosk-mode')]]">
           <span id="error-guest-signin" hidden="[[!guestSessionAllowed_]]">
           </span>
         </div>
@@ -189,11 +183,6 @@
             on-click="okButtonClicked"
             text-key="okButton"
             hidden="[[!isOneOf_(uiState_, 'ui-state-rollback-error')]]">
-        </oobe-text-button>
-        <oobe-text-button id="powerwashButton"
-            on-click="powerwashButtonClicked"
-            text-key="localStateErrorPowerwashButton"
-            hidden="[[!isOneOf_(uiState_, 'ui-state-local-state-error')]]">
         </oobe-text-button>
       </div>
     </oobe-adaptive-dialog>
