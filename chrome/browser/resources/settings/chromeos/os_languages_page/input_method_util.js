@@ -162,7 +162,7 @@ export const OPTION_DEFAULT = {
   },
   // Options for zhuyin input method.
   [OptionType.ZHUYIN_KEYBOARD_LAYOUT]: KeyboardLayout.STANDARD,
-  [OptionType.ZHUYIN_PAGE_SIZE]: 10,
+  [OptionType.ZHUYIN_PAGE_SIZE]: '10',
   [OptionType.ZHUYIN_SELECT_KEYS]: '1234567890',
 };
 
