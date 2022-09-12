@@ -28,7 +28,7 @@ NSTextCheckingResult* DecodeNSTextCheckingResultData(NSString* base64_data);
 base::Value::Dict ConvertMatchToAnnotation(NSString* source,
                                            NSRange range,
                                            NSString* data,
-                                           const char style[]);
+                                           NSString* type);
 
 }  // namespace annotations
 }  // namespace web

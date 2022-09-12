@@ -22,7 +22,6 @@ function log(value: any) {
 
 // Mark: Private properties
 
-// TODO(crbug.com/1350973): refactor style as keys in a local style dict.
 interface Annotation {
   /**  Character index to start of annotation. */
   start: number;
@@ -30,8 +29,8 @@ interface Annotation {
   end: number;
   /** The annotation text used to ensure the text in the page hasn't changed. */
   text: string;
-  /** Style to apply to the new elements enclosing the annotation. */
-  style: string;
+  /** Annotation type. */
+  type: string;
   /** A passed in string that will be sent back to obj in click handler. */
   data: string;
 }
@@ -39,18 +38,18 @@ interface Annotation {
 /**
  * `Replacement` represent a single child node replacement inside a childless
  * text Node. `index` is the source annotation index. `left` and `right` is the
- * range inside `text` for a child Node to which `style` would apply.
+ * range inside `text` for a child Node.
  * All new nodes (HTMLElement) have `data` added to their `dataset`.
  */
 class Replacement {
   constructor(
       public index: number, public left: number, public right: number,
-      public text: string, public style: string, public data: string) {}
+      public text: string, public type: string, public data: string) {}
 }
 
 /**
  * A `Decoration` is the `original` Node and the list of `Node`s that make up
- * a similar replacement, but with different styles for each.
+ * a similar replacement.
  */
 class Decoration {
   constructor(public original: Node, public replacements: Node[]) {}
@@ -69,12 +68,18 @@ class Section {
 }
 
 // Used by the `enumerateTextNodes` function below.
-const NON_TEXT_NODE_NAMES = new Set(
-    ['SCRIPT', 'NOSCRIPT', 'STYLE', 'EMBED', 'OBJECT', 'TEXTAREA', 'IFRAME']);
+const NON_TEXT_NODE_NAMES = new Set([
+  'SCRIPT', 'NOSCRIPT', 'STYLE', 'EMBED', 'OBJECT', 'TEXTAREA', 'IFRAME',
+  'INPUT'
+]);
 
 // TODO(crbug.com/1350973): dark mode
 const highlightTextColor = "#000";
 const highlightBackgroundColor = "rgba(20,111,225,0.25)";
+const decorationStyles = 'border-bottom-width: 1px; ' +
+    'border-bottom-style: dotted; ' +
+    'background-color: transparent';
+const decorationDefaultColor = 'blue';
 
 /**
  * Callback for processing a node during DOM traversal
@@ -168,7 +173,7 @@ function decorateAnnotations(annotations: Annotation[]): void {
           continue;
         }
         replacements.push(new Replacement(
-            annotationIndex, left, right, nodeText, annotation.style,
+            annotationIndex, left, right, nodeText, annotation.type,
             annotation.data));
         // If annotation is completed, move to next annotation and retry on
         // this node to fit more annotations if needed.
@@ -406,6 +411,11 @@ function replaceNode(
     return;
   }
 
+  let textColor: string = decorationDefaultColor;
+  if (parentNode instanceof Element) {
+    textColor = window.getComputedStyle(parentNode).color || textColor;
+  }
+
   let cursor = 0;
   const parts: Node[] = [];
   for (let replacement of replacements) {
@@ -417,7 +427,8 @@ function replaceNode(
     element.setAttribute('data-index', '' + replacement.index);
     element.setAttribute('data-data', replacement.data);
     element.innerText = replacement.text;
-    element.style.cssText = replacement.style;
+    element.style.cssText = decorationStyles;
+    element.style.borderBottomColor = textColor;
     element.addEventListener('click', handleClick.bind(element), true);
     parts.push(element);
     cursor = replacement.right;

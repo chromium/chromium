@@ -21,22 +21,19 @@
 #error "This file requires ARC support."
 #endif
 
-static const char kDecorationDateStyle[] =
-    "border-bottom: 1px dotted blue; background-color: transparent";
-static const char kDecorationAddressStyle[] =
-    "border-bottom: 1px dotted green; background-color: transparent";
-static const char kDecorationPhoneNumberStyle[] =
-    "border-bottom: 1px dotted orange; background-color: transparent";
+static NSString* kDecorationDate = @"DATE";
+static NSString* kDecorationAddress = @"ADDRESS";
+static NSString* kDecorationPhoneNumber = @"PHONE_NUMBER";
 
 namespace {
 
-const char* StyleForNSTextCheckingResultData(NSTextCheckingResult* match) {
+NSString* TypeForNSTextCheckingResultData(NSTextCheckingResult* match) {
   if (match.resultType == NSTextCheckingTypeDate) {
-    return kDecorationDateStyle;
+    return kDecorationDate;
   } else if (match.resultType == NSTextCheckingTypeAddress) {
-    return kDecorationAddressStyle;
+    return kDecorationAddress;
   } else if (match.resultType == NSTextCheckingTypePhoneNumber) {
-    return kDecorationPhoneNumberStyle;
+    return kDecorationPhoneNumber;
   }
   return nullptr;
 }
@@ -189,11 +186,11 @@ absl::optional<base::Value> AnnotationsTabHelper::ApplyDataExtractor(
   __block base::Value::List parsed;
   auto matchHandler = ^(NSTextCheckingResult* match, NSMatchingFlags flags,
                         BOOL* stop) {
-    const char* style = StyleForNSTextCheckingResultData(match);
+    NSString* type = TypeForNSTextCheckingResultData(match);
     NSString* data = web::annotations::EncodeNSTextCheckingResultData(match);
-    if (data && style) {
+    if (data && type) {
       parsed.Append(web::annotations::ConvertMatchToAnnotation(
-          source, match.range, data, style));
+          source, match.range, data, type));
     }
   };
 

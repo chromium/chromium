@@ -20,7 +20,7 @@ namespace annotations {
 static const char kAnnotationsTextKey[] = "text";
 static const char kAnnotationsStartKey[] = "start";
 static const char kAnnotationsEndKey[] = "end";
-static const char kAnnotationsStyleKey[] = "style";
+static const char kAnnotationsTypeKey[] = "type";
 static const char kAnnotationsDataKey[] = "data";
 
 NSString* EncodeNSTextCheckingResultData(NSTextCheckingResult* match) {
@@ -108,14 +108,14 @@ NSTextCheckingResult* DecodeNSTextCheckingResultData(NSString* base64_data) {
 base::Value::Dict ConvertMatchToAnnotation(NSString* source,
                                            NSRange range,
                                            NSString* data,
-                                           const char style[]) {
+                                           NSString* type) {
   base::Value::Dict dict;
   NSString* start = [source substringWithRange:range];
   dict.Set(kAnnotationsStartKey, base::Value(static_cast<int>(range.location)));
   dict.Set(kAnnotationsEndKey,
            base::Value(static_cast<int>(range.location + range.length)));
   dict.Set(kAnnotationsTextKey, base::Value(base::SysNSStringToUTF8(start)));
-  dict.Set(kAnnotationsStyleKey, base::Value(style));
+  dict.Set(kAnnotationsTypeKey, base::Value(base::SysNSStringToUTF8(type)));
   dict.Set(kAnnotationsDataKey, base::Value(base::SysNSStringToUTF8(data)));
   return dict;
 };
