@@ -715,6 +715,9 @@ void Resource::FinishPendingClients() {
   HeapVector<Member<ResourceClient>> clients_to_notify;
   CopyToVector(clients_awaiting_callback_, clients_to_notify);
 
+  std::sort(clients_to_notify.begin(), clients_to_notify.end(),
+            recordreplay::CompareMemberByPointerId<Member<ResourceClient>>());
+
   for (const auto& client : clients_to_notify) {
     // Handle case (2) to skip removed clients.
     if (!clients_awaiting_callback_.erase(client))
