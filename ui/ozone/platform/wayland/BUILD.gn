@@ -436,6 +436,8 @@ source_set("test_support") {
     "test/mock_zaura_shell.h",
     "test/mock_zcr_extended_text_input.cc",
     "test/mock_zcr_extended_text_input.h",
+    "test/mock_zcr_pointer_stylus.cc",
+    "test/mock_zcr_pointer_stylus.h",
     "test/mock_zcr_touch_stylus.cc",
     "test/mock_zcr_touch_stylus.h",
     "test/mock_zwp_linux_dmabuf.cc",

@@ -7,6 +7,7 @@
 
 #include <wayland-server-protocol.h>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 
@@ -15,6 +16,8 @@ struct wl_resource;
 namespace wl {
 
 extern const struct wl_pointer_interface kMockPointerImpl;
+
+class MockZcrPointerStylus;
 
 class MockPointer : public ServerObject {
  public:
@@ -29,6 +32,14 @@ class MockPointer : public ServerObject {
                void(wl_resource* surface_resource,
                     int32_t hotspot_x,
                     int32_t hotspot_y));
+
+  void set_pointer_stylus(MockZcrPointerStylus* pointer_stylus) {
+    pointer_stylus_ = pointer_stylus;
+  }
+  MockZcrPointerStylus* pointer_stylus() const { return pointer_stylus_; }
+
+ private:
+  raw_ptr<MockZcrPointerStylus> pointer_stylus_ = nullptr;
 };
 
 }  // namespace wl

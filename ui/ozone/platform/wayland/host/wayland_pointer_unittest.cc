@@ -22,6 +22,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
+#include "ui/ozone/platform/wayland/test/mock_zcr_pointer_stylus.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
@@ -61,6 +62,24 @@ class WaylandPointerTest : public WaylandTest {
   }
 
  protected:
+  void CheckEventType(
+      ui::EventType event_type,
+      ui::Event* event,
+      ui::EventPointerType pointer_type = ui::EventPointerType::kMouse,
+      float force = std::numeric_limits<float>::quiet_NaN(),
+      float tilt_x = 0.0,
+      float tilt_y = 0.0) {
+    ASSERT_TRUE(event);
+    ASSERT_TRUE(event->IsMouseEvent());
+
+    auto* mouse_event = event->AsMouseEvent();
+    EXPECT_EQ(event_type, mouse_event->type());
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    EXPECT_EQ(pointer_type, mouse_event->pointer_details().pointer_type);
+#endif
+  }
+
   raw_ptr<wl::MockPointer> pointer_;
 };
 
@@ -209,6 +228,48 @@ TEST_P(WaylandPointerTest, MotionDragged) {
   auto* mouse_event = event->AsMouseEvent();
   EXPECT_EQ(ET_MOUSE_DRAGGED, mouse_event->type());
   EXPECT_EQ(EF_MIDDLE_MOUSE_BUTTON, mouse_event->button_flags());
+  EXPECT_EQ(0, mouse_event->changed_button_flags());
+  EXPECT_EQ(gfx::PointF(400, 500), mouse_event->location_f());
+  EXPECT_EQ(gfx::PointF(400, 500), mouse_event->root_location_f());
+}
+
+TEST_P(WaylandPointerTest, MotionDraggedWithStylus) {
+  wl_pointer_send_enter(pointer_->resource(), 1, surface_->resource(), 0, 0);
+  wl_pointer_send_frame(pointer_->resource());
+
+  std::unique_ptr<Event> event;
+  EXPECT_CALL(delegate_, DispatchEvent(_)).WillRepeatedly(CloneEvent(&event));
+
+  uint32_t time = 0;
+  wl_pointer_send_button(pointer_->resource(), 2, ++time, BTN_LEFT,
+                         WL_POINTER_BUTTON_STATE_PRESSED);
+
+  // Stylus data.
+  zcr_pointer_stylus_v2_send_tool(pointer_->pointer_stylus()->resource(),
+                                  ZCR_POINTER_STYLUS_V2_TOOL_TYPE_PEN);
+  zcr_pointer_stylus_v2_send_force(pointer_->pointer_stylus()->resource(),
+                                   ++time, wl_fixed_from_double(1.0f));
+  zcr_pointer_stylus_v2_send_tilt(pointer_->pointer_stylus()->resource(),
+                                  ++time, wl_fixed_from_double(-45),
+                                  wl_fixed_from_double(45));
+  wl_pointer_send_frame(pointer_->resource());
+
+  Sync();
+
+  CheckEventType(ui::ET_MOUSE_PRESSED, event.get(), ui::EventPointerType::kPen,
+                 1.0f /* force */, -45.0f /* tilt_x */, 45.0f /* tilt_y */);
+
+  wl_pointer_send_motion(pointer_->resource(), ++time, wl_fixed_from_int(400),
+                         wl_fixed_from_int(500));
+  wl_pointer_send_frame(pointer_->resource());
+
+  Sync();
+
+  ASSERT_TRUE(event);
+  ASSERT_TRUE(event->IsMouseEvent());
+  auto* mouse_event = event->AsMouseEvent();
+  EXPECT_EQ(ET_MOUSE_DRAGGED, mouse_event->type());
+  EXPECT_EQ(EF_LEFT_MOUSE_BUTTON, mouse_event->button_flags());
   EXPECT_EQ(0, mouse_event->changed_button_flags());
   EXPECT_EQ(gfx::PointF(400, 500), mouse_event->location_f());
   EXPECT_EQ(gfx::PointF(400, 500), mouse_event->root_location_f());

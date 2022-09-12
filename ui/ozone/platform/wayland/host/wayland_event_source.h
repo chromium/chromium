@@ -200,13 +200,13 @@ class WaylandEventSource : public PlatformEventSource,
   gfx::Vector2dF ComputeFlingVelocity();
 
   // For pointer events.
-  PointerDetails PointerDetailsForDispatching() const;
+  absl::optional<PointerDetails> AmendStylusData() const;
 
   // For touch events.
   absl::optional<PointerDetails> AmendStylusData(PointerId pointer_id) const;
 
   // Wrap up method to support async pointer down/up event processing.
-  void OnPointerButtonEventInternal(WaylandWindow* window);
+  void OnPointerButtonEventInternal(WaylandWindow* window, EventType type);
 
   // Wrap up method to support async touch release processing.
   void OnTouchReleaseInternal(PointerId id);
@@ -252,15 +252,16 @@ class WaylandEventSource : public PlatformEventSource,
   // Time of the last pointer frame event.
   base::TimeTicks last_pointer_frame_time_;
 
-  // Last known pointer stylus type (eg mouse, pen, eraser or touch).
-  absl::optional<EventPointerType> last_pointer_stylus_tool_;
-
-  // Last known touch stylus type (eg touch, pen or eraser).
   struct StylusData {
     EventPointerType type = EventPointerType::kUnknown;
     gfx::Vector2dF tilt;
     float force = std::numeric_limits<float>::quiet_NaN();
   };
+
+  // Last known pointer stylus type (eg mouse, pen, eraser or touch).
+  absl::optional<StylusData> last_pointer_stylus_tool_;
+
+  // Last known touch stylus type (eg touch, pen or eraser).
   base::flat_map<PointerId, absl::optional<StylusData>> last_touch_stylus_data_;
 
   // Order set of touch events to be dispatching on the next

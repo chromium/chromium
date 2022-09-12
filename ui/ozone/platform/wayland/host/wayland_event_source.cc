@@ -298,7 +298,7 @@ void WaylandEventSource::OnPointerButtonEvent(
 
   auto closure = base::BindOnce(
       &WaylandEventSource::OnPointerButtonEventInternal, base::Unretained(this),
-      (window ? prev_focused_window : nullptr));
+      (window ? prev_focused_window : nullptr), type);
 
   pointer_flags_ = type == ET_MOUSE_PRESSED
                        ? (pointer_flags_ | changed_button)
@@ -311,8 +311,7 @@ void WaylandEventSource::OnPointerButtonEvent(
     // MouseEvent's flags should contain the button that was released too.
     int flags = pointer_flags_ | keyboard_modifiers_ | changed_button;
     MouseEvent event(type, pointer_location_, pointer_location_,
-                     EventTimeForNow(), flags, changed_button,
-                     PointerDetailsForDispatching());
+                     EventTimeForNow(), flags, changed_button);
     if (dispatch_policy == wl::EventDispatchPolicy::kImmediate) {
       SetTargetAndDispatchEvent(&event, target);
     } else {
@@ -326,9 +325,13 @@ void WaylandEventSource::OnPointerButtonEvent(
     std::move(closure).Run();
 }
 
-void WaylandEventSource::OnPointerButtonEventInternal(WaylandWindow* window) {
+void WaylandEventSource::OnPointerButtonEventInternal(WaylandWindow* window,
+                                                      EventType type) {
   if (window)
     window_manager_->SetPointerFocusedWindow(window);
+
+  if (type == ET_MOUSE_RELEASED)
+    last_pointer_stylus_tool_.reset();
 }
 
 void WaylandEventSource::OnPointerMotionEvent(
@@ -338,7 +341,7 @@ void WaylandEventSource::OnPointerMotionEvent(
 
   int flags = pointer_flags_ | keyboard_modifiers_;
   MouseEvent event(ET_MOUSE_MOVED, pointer_location_, pointer_location_,
-                   EventTimeForNow(), flags, 0, PointerDetailsForDispatching());
+                   EventTimeForNow(), flags, 0);
   auto* target = window_manager_->GetCurrentPointerFocusedWindow();
 
   // A window may be deleted when the event arrived from the server.
@@ -387,6 +390,20 @@ void WaylandEventSource::OnPointerFrameEvent() {
     // It is safe to pop the first queued event for processing.
     auto pointer_frame = std::move(pointer_frames_.front());
     pointer_frames_.pop_front();
+
+    // In case there are pointer stylus information, override the current
+    // 'event' instance, given that PointerDetails is 'const'.
+    auto pointer_details_with_stylus_data = AmendStylusData();
+    if (pointer_details_with_stylus_data &&
+        pointer_frame->event->IsMouseEvent() &&
+        pointer_frame->event->AsMouseEvent()->IsOnlyLeftMouseButton()) {
+      auto old_event = std::move(pointer_frame->event);
+      pointer_frame->event = std::make_unique<MouseEvent>(
+          old_event->type(), old_event->AsMouseEvent()->location(),
+          old_event->AsMouseEvent()->root_location(), old_event->time_stamp(),
+          old_event->flags(), old_event->AsMouseEvent()->changed_button_flags(),
+          pointer_details_with_stylus_data.value());
+    }
 
     SetTargetAndDispatchEvent(pointer_frame->event.get(), target);
     if (!pointer_frame->completion_cb.is_null())
@@ -660,7 +677,10 @@ bool WaylandEventSource::IsPointerButtonPressed(EventFlags button) const {
 
 void WaylandEventSource::OnPointerStylusToolChanged(
     EventPointerType pointer_type) {
-  last_pointer_stylus_tool_ = pointer_type;
+  last_pointer_stylus_tool_ = {
+      .type = pointer_type,
+      .tilt = gfx::Vector2dF(),
+      .force = std::numeric_limits<float>::quiet_NaN()};
 }
 
 const WaylandWindow* WaylandEventSource::GetPointerTarget() const {
@@ -734,12 +754,16 @@ gfx::Vector2dF WaylandEventSource::ComputeFlingVelocity() {
                       : gfx::Vector2dF(dx * dt_inv, dy * dt_inv);
 }
 
-PointerDetails WaylandEventSource::PointerDetailsForDispatching() const {
+absl::optional<PointerDetails> WaylandEventSource::AmendStylusData() const {
   if (!last_pointer_stylus_tool_)
-    return PointerDetails(EventPointerType::kMouse);
+    return absl::nullopt;
 
-  DCHECK_NE(*last_pointer_stylus_tool_, EventPointerType::kUnknown);
-  return PointerDetails(*last_pointer_stylus_tool_);
+  DCHECK_NE(last_pointer_stylus_tool_->type, EventPointerType::kUnknown);
+  return PointerDetails(last_pointer_stylus_tool_->type, /*pointer_id=*/0,
+                        /*radius_x=*/1.0f,
+                        /*radius_y=*/1.0f, last_pointer_stylus_tool_->force,
+                        /*twist=*/0.0f, last_pointer_stylus_tool_->tilt.x(),
+                        last_pointer_stylus_tool_->tilt.y());
 }
 
 absl::optional<PointerDetails> WaylandEventSource::AmendStylusData(
