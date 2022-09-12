@@ -7,6 +7,7 @@
 #include "base/auto_reset.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -587,8 +588,11 @@ void HistorySyncBridge::GetAllDataForDebugging(DataCallback callback) {
 std::string HistorySyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK(entity_data.specifics.has_history())
+      << "EntityData does not have history specifics.";
 
-  return GetStorageKey(entity_data);
+  const sync_pb::HistorySpecifics& history = entity_data.specifics.history();
+  return base::NumberToString(history.visit_time_windows_epoch_micros());
 }
 
 std::string HistorySyncBridge::GetStorageKey(
