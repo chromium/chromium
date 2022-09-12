@@ -72,10 +72,16 @@ bool HardwareVideoDecodingPreSandboxHook(
           BrokerFilePermission::ReadOnlyRecursive(path + "/"));
     }
   }
+#endif  // BUILDFLAG(USE_V4L2_CODEC)
 
-  // TODO(b/195769334): for now, this is only needed for two use cases: the
-  // legacy VaapiVideoDecodeAccelerator and AMD. However, we'll likely need this
-  // unconditionally so that we can allocate dma-bufs.
+  // TODO(b/195769334): consider using the type of client to decide if we should
+  // allow access to the render node:
+  //
+  // - If the client is ARC++/ARCVM, the render node is only needed for two
+  //   cases, the legacy VaapiVideoDecodeAccelerator and AMD.
+  //
+  // - If the client is a Chrome renderer process, the render node is needed on
+  //   ChromeOS to allocate output buffers.
   for (int i = 128; i <= 137; ++i) {
     const std::string path = base::StringPrintf("/dev/dri/renderD%d", i);
     struct stat st;
@@ -85,7 +91,6 @@ bool HardwareVideoDecodingPreSandboxHook(
                                 : BrokerFilePermission::ReadOnly(path));
     }
   }
-#endif  // BUILDFLAG(USE_V4L2_CODEC)
 
   sandbox::policy::SandboxLinux::GetInstance()->StartBrokerProcess(
       command_set, permissions, sandbox::policy::SandboxLinux::PreSandboxHook(),
