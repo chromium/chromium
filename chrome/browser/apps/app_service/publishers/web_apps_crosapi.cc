@@ -36,7 +36,8 @@ WebAppsCrosapi::WebAppsCrosapi(AppServiceProxy* proxy)
   // the publisher if the flag is on.
   if (web_app::IsWebAppsCrosapiEnabled()) {
     mojo::Remote<apps::mojom::AppService>& app_service = proxy->AppService();
-    if (!app_service.is_bound()) {
+    if (!base::FeatureList::IsEnabled(kStopMojomAppService) &&
+        !app_service.is_bound()) {
       return;
     }
     PublisherBase::Initialize(app_service, apps::mojom::AppType::kWeb);

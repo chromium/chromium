@@ -172,11 +172,14 @@ void SubscriberCrosapi::RegisterAppServiceSubscriber(
   subscriber_.set_disconnect_handler(base::BindOnce(
       &SubscriberCrosapi::OnSubscriberDisconnected, base::Unretained(this)));
 
-  mojo::Remote<apps::mojom::AppService>& app_service = proxy_->AppService();
-  DCHECK(app_service.is_bound());
-  mojo::PendingRemote<apps::mojom::Subscriber> app_service_subscriber;
-  receivers_.Add(this, app_service_subscriber.InitWithNewPipeAndPassReceiver());
-  app_service->RegisterSubscriber(std::move(app_service_subscriber), nullptr);
+  if (!base::FeatureList::IsEnabled(kStopMojomAppService)) {
+    mojo::Remote<apps::mojom::AppService>& app_service = proxy_->AppService();
+    DCHECK(app_service.is_bound());
+    mojo::PendingRemote<apps::mojom::Subscriber> app_service_subscriber;
+    receivers_.Add(this,
+                   app_service_subscriber.InitWithNewPipeAndPassReceiver());
+    app_service->RegisterSubscriber(std::move(app_service_subscriber), nullptr);
+  }
 
   proxy_->RegisterCrosApiSubScriber(this);
 }

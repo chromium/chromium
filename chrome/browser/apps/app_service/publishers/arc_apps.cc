@@ -633,7 +633,8 @@ void ArcApps::Initialize() {
   }
 
   mojo::Remote<apps::mojom::AppService>& app_service = proxy()->AppService();
-  if (!app_service.is_bound()) {
+  if (!base::FeatureList::IsEnabled(kStopMojomAppService) &&
+      !app_service.is_bound()) {
     return;
   }
 
@@ -1633,9 +1634,11 @@ void ArcApps::OnArcSupportedLinksChanged(
     const std::vector<arc::mojom::SupportedLinksPackagePtr>& added,
     const std::vector<arc::mojom::SupportedLinksPackagePtr>& removed,
     arc::mojom::SupportedLinkChangeSource source) {
-  mojo::Remote<apps::mojom::AppService>& app_service = proxy()->AppService();
-  if (!app_service.is_bound()) {
-    return;
+  if (!base::FeatureList::IsEnabled(kStopMojomAppService)) {
+    mojo::Remote<apps::mojom::AppService>& app_service = proxy()->AppService();
+    if (!app_service.is_bound()) {
+      return;
+    }
   }
 
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);

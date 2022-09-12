@@ -107,14 +107,12 @@ void PublisherHost::RegisterPublishersForTesting() {
 }
 
 void PublisherHost::Shutdown() {
-  if (proxy_->AppService().is_connected()) {
-    chrome_apps_->Shutdown();
-    if (extension_apps_) {
-      extension_apps_->Shutdown();
-    }
-    if (web_apps_) {
-      web_apps_->Shutdown();
-    }
+  chrome_apps_->Shutdown();
+  if (extension_apps_) {
+    extension_apps_->Shutdown();
+  }
+  if (web_apps_) {
+    web_apps_->Shutdown();
   }
   borealis_apps_.reset();
 }

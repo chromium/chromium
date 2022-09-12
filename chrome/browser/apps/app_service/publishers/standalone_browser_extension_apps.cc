@@ -26,6 +26,7 @@
 #include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
@@ -57,7 +58,8 @@ StandaloneBrowserExtensionApps::StandaloneBrowserExtensionApps(
     AppType app_type)
     : apps::AppPublisher(proxy), app_type_(app_type) {
   mojo::Remote<apps::mojom::AppService>& app_service = proxy->AppService();
-  if (!app_service.is_bound()) {
+  if (!base::FeatureList::IsEnabled(kStopMojomAppService) &&
+      !app_service.is_bound()) {
     return;
   }
   PublisherBase::Initialize(app_service,

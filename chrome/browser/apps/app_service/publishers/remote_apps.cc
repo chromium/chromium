@@ -10,6 +10,7 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace apps {
@@ -19,7 +20,8 @@ RemoteApps::RemoteApps(AppServiceProxy* proxy, Delegate* delegate)
   DCHECK(delegate);
 
   mojo::Remote<mojom::AppService>& app_service = proxy->AppService();
-  if (!app_service.is_bound()) {
+  if (!base::FeatureList::IsEnabled(kStopMojomAppService) &&
+      !app_service.is_bound()) {
     return;
   }
 
