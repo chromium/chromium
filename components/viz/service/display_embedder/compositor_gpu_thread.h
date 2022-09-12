@@ -65,6 +65,8 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread
   // This method is usually called only for low end devices on android.
   void OnBackgroundCleanup();
 
+  void LoseContext();
+
  private:
   CompositorGpuThread(
       gpu::GpuChannelManager* gpu_channel_manager,

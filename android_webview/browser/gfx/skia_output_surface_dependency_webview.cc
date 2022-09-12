@@ -125,16 +125,6 @@ base::ScopedClosureRunner SkiaOutputSurfaceDependencyWebView::CacheGLSurface(
   return base::ScopedClosureRunner();
 }
 
-void SkiaOutputSurfaceDependencyWebView::RegisterDisplayContext(
-    gpu::DisplayContext* display_context) {
-  // No GpuChannelManagerDelegate here, so leave it no-op for now.
-}
-
-void SkiaOutputSurfaceDependencyWebView::UnregisterDisplayContext(
-    gpu::DisplayContext* display_context) {
-  // No GpuChannelManagerDelegate here, so leave it no-op for now.
-}
-
 void SkiaOutputSurfaceDependencyWebView::DidLoseContext(
     gpu::error::ContextLostReason reason,
     const GURL& active_url) {

@@ -153,16 +153,6 @@ void SkiaOutputSurfaceDependencyImpl::DidCreateAcceleratedSurfaceChildWindow(
 }
 #endif
 
-void SkiaOutputSurfaceDependencyImpl::RegisterDisplayContext(
-    gpu::DisplayContext* display_context) {
-  gpu_service_impl_->RegisterDisplayContext(display_context);
-}
-
-void SkiaOutputSurfaceDependencyImpl::UnregisterDisplayContext(
-    gpu::DisplayContext* display_context) {
-  gpu_service_impl_->UnregisterDisplayContext(display_context);
-}
-
 void SkiaOutputSurfaceDependencyImpl::DidLoseContext(
     gpu::error::ContextLostReason reason,
     const GURL& active_url) {

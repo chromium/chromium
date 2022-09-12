@@ -43,8 +43,6 @@ class TestGpuChannelManagerDelegate : public GpuChannelManagerDelegate {
   ~TestGpuChannelManagerDelegate() override = default;
 
   // GpuChannelManagerDelegate implementation:
-  void RegisterDisplayContext(gpu::DisplayContext* context) override {}
-  void UnregisterDisplayContext(gpu::DisplayContext* context) override {}
   void LoseAllContexts() override {}
   void DidCreateContextSuccessfully() override {}
   void DidCreateOffscreenContext(const GURL& active_url) override {}

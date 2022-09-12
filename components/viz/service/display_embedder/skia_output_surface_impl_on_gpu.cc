@@ -239,28 +239,6 @@ SkiaOutputSurfaceImplOnGpu::ReleaseCurrent::~ReleaseCurrent() {
     context_state_->ReleaseCurrent(gl_surface_.get());
 }
 
-class SkiaOutputSurfaceImplOnGpu::DisplayContext : public gpu::DisplayContext {
- public:
-  DisplayContext(SkiaOutputSurfaceDependency* deps,
-                 SkiaOutputSurfaceImplOnGpu* owner)
-      : dependency_(deps), owner_(owner) {
-    dependency_->RegisterDisplayContext(this);
-  }
-  ~DisplayContext() override { dependency_->UnregisterDisplayContext(this); }
-
-  DisplayContext(const DisplayContext&) = delete;
-  DisplayContext& operator=(const DisplayContext&) = delete;
-
-  // gpu::DisplayContext implementation
-  void MarkContextLost() override {
-    owner_->MarkContextLost(CONTEXT_LOST_UNKNOWN);
-  }
-
- private:
-  const raw_ptr<SkiaOutputSurfaceDependency> dependency_;
-  const raw_ptr<SkiaOutputSurfaceImplOnGpu> owner_;
-};
-
 // static
 std::unique_ptr<SkiaOutputSurfaceImplOnGpu> SkiaOutputSurfaceImplOnGpu::Create(
     SkiaOutputSurfaceDependency* deps,
@@ -335,7 +313,6 @@ SkiaOutputSurfaceImplOnGpu::SkiaOutputSurfaceImplOnGpu(
       schedule_gpu_task_(std::move(schedule_gpu_task)),
       gpu_vsync_callback_(std::move(gpu_vsync_callback)),
       gpu_preferences_(dependency_->GetGpuPreferences()),
-      display_context_(std::make_unique<DisplayContext>(deps, this)),
       async_read_result_lock_(base::MakeRefCounted<AsyncReadResultLock>()) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 

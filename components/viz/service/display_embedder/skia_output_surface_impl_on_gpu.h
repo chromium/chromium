@@ -36,7 +36,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/ipc/service/context_url.h"
-#include "gpu/ipc/service/display_context.h"
 #include "gpu/ipc/service/image_transport_surface_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -255,8 +254,6 @@ class SkiaOutputSurfaceImplOnGpu
   void RemoveAsyncReadResultHelperWithLock(AsyncReadResultHelper* helper);
 
  private:
-  class DisplayContext;
-
   struct PlaneAccessData {
     PlaneAccessData();
     PlaneAccessData(PlaneAccessData&& other);
@@ -462,7 +459,6 @@ class SkiaOutputSurfaceImplOnGpu
   scoped_refptr<gpu::SharedContextState> context_state_;
   size_t max_resource_cache_bytes_ = 0u;
 
-  std::unique_ptr<DisplayContext> display_context_;
   bool context_is_lost_ = false;
 
   class PromiseImageAccessHelper {

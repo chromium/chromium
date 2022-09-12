@@ -62,8 +62,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependencyImpl
       gpu::SurfaceHandle child_window) override;
 #endif
 
-  void RegisterDisplayContext(gpu::DisplayContext* display_context) override;
-  void UnregisterDisplayContext(gpu::DisplayContext* display_context) override;
   void DidLoseContext(gpu::error::ContextLostReason reason,
                       const GURL& active_url) override;
 
