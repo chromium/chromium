@@ -47,6 +47,42 @@ void LogAssistiveAutocorrectDelay(base::TimeDelta delay) {
   }
 }
 
+void LogAssistiveAutocorrectActionLatency(AutocorrectActions action,
+                                          base::TimeDelta time_delta,
+                                          bool virtual_keyboard_visible) {
+  switch (action) {
+    case AutocorrectActions::kUnderlined:
+    case AutocorrectActions::kWindowShown:
+      // Skip non-terminal actions.
+      return;
+    case AutocorrectActions::kUserAcceptedAutocorrect:
+      base::UmaHistogramMediumTimes(
+          "InputMethod.Assistive.AutocorrectV2.Latency.Accept", time_delta);
+      break;
+    case AutocorrectActions::kReverted:
+    case AutocorrectActions::kUserActionClearedUnderline:
+      base::UmaHistogramMediumTimes(
+          "InputMethod.Assistive.AutocorrectV2.Latency.Reject", time_delta);
+      break;
+    case AutocorrectActions::kUserExitedTextFieldWithUnderline:
+      base::UmaHistogramMediumTimes(
+          "InputMethod.Assistive.AutocorrectV2.Latency.ExitField", time_delta);
+      break;
+    default:
+      LOG(ERROR) << "Invalid AutocorrectActions: action=" << (int)action;
+      return;
+  }
+
+  // Record the duration of the pending autocorrect for VK and PK.
+  if (virtual_keyboard_visible) {
+    base::UmaHistogramMediumTimes(
+        "InputMethod.Assistive.AutocorrectV2.Latency.VkPending", time_delta);
+  } else {
+    base::UmaHistogramMediumTimes(
+        "InputMethod.Assistive.AutocorrectV2.Latency.PkPending", time_delta);
+  }
+}
+
 void RecordAssistiveCoverage(AssistiveType type) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Coverage", type);
 }
@@ -143,6 +179,12 @@ void AutocorrectManager::LogAssistiveAutocorrectAction(
     AutocorrectActions action) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Autocorrect.Actions",
                                 action);
+
+  if (pending_autocorrect_.has_value()) {
+    LogAssistiveAutocorrectActionLatency(
+        action, base::TimeTicks::Now() - pending_autocorrect_->start_time,
+        pending_autocorrect_->virtual_keyboard_visible);
+  }
 
   if (pending_autocorrect_.has_value() &&
       pending_autocorrect_->virtual_keyboard_visible) {

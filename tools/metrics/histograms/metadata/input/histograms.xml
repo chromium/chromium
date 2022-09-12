@@ -100,6 +100,65 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.Assistive.AutocorrectV2.Latency.Accept" units="ms"
+    expires_after="2022-12-15">
+  <owner>mehrab@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Tracks duration between providing an autocorrect suggestion to its
+    acceptance. It is recorded every time that an autocorrect suggestion is
+    implicitly accepted.
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.Assistive.AutocorrectV2.Latency.ExitField"
+    units="ms" expires_after="2022-12-15">
+  <owner>mehrab@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Tracks time between providing an autocorrect suggestion to exiting the text
+    field. It is recorded every time that a user leaves a text field while
+    having a pending autocorrect.
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.Assistive.AutocorrectV2.Latency.PkPending"
+    units="ms" expires_after="2022-12-15">
+  <owner>mehrab@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Tracks duration of pending autocorrect suggestions for physical keyboard
+    inputs. The duration is measured from the time of showing an autocorrect
+    underline to the time of clearing it. It is recorded every time that an
+    action such as reject, accept, exit field or an internal error resolves a
+    pending autocorrect suggestion for physical keyboard inputs.
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.Assistive.AutocorrectV2.Latency.Reject" units="ms"
+    expires_after="2022-12-15">
+  <owner>mehrab@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Tracks time between providing an autocorrect suggestion to its implicit
+    rejection or undone. It is recorded every time that an autocorrect
+    suggestion is implicitly rejected or undone.
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.Assistive.AutocorrectV2.Latency.VkPending"
+    units="ms" expires_after="2022-12-15">
+  <owner>mehrab@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Tracks duration of pending autocorrect suggestions for virtual keyboard
+    inputs. The duration is measured from the time of showing an autocorrect
+    underline to the time of clearing it. It is recorded every time that an
+    action such as reject, accept, exit field or an internal error resolves a
+    pending autocorrect suggestion for virtual keyboard inputs.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.Assistive.CandidateGenerationTime.MultiWord"
     units="ms" expires_after="2022-10-04">
   <owner>curtismcmullan@google.com</owner>

@@ -42,6 +42,16 @@ constexpr char kVKAutocorrectV2ActionHistogramName[] =
     "InputMethod.Assistive.AutocorrectV2.Actions.VK";
 constexpr char kPKAutocorrectV2ActionHistogramName[] =
     "InputMethod.Assistive.AutocorrectV2.Actions.PK";
+constexpr char kAutocorrectV2AcceptLatency[] =
+    "InputMethod.Assistive.AutocorrectV2.Latency.Accept";
+constexpr char kAutocorrectV2RejectLatency[] =
+    "InputMethod.Assistive.AutocorrectV2.Latency.Reject";
+constexpr char kAutocorrectV2ExitFieldLatency[] =
+    "InputMethod.Assistive.AutocorrectV2.Latency.ExitField";
+constexpr char kAutocorrectV2VkPendingLatency[] =
+    "InputMethod.Assistive.AutocorrectV2.Latency.VkPending";
+constexpr char kAutocorrectV2PkPendingLatency[] =
+    "InputMethod.Assistive.AutocorrectV2.Latency.PkPending";
 
 // A helper for testing autocorrect histograms. There are redundant metrics
 // for each autocorrect action and the helper ensures that all the relevant
@@ -101,7 +111,6 @@ void ExpectAutocorrectHistograms(const base::HistogramTester& histogram_tester,
       kSuccessHistogramName, AssistiveType::kAutocorrectReverted, reverted);
   histogram_tester.ExpectBucketCount(kAutocorrectActionHistogramName,
                                      AutocorrectActions::kReverted, reverted);
-  histogram_tester.ExpectTotalCount(kDelayHistogramName, reverted);
   if (visible_vk) {
     histogram_tester.ExpectBucketCount(kVKAutocorrectActionHistogramName,
                                        AutocorrectActions::kReverted, reverted);
@@ -172,6 +181,24 @@ void ExpectAutocorrectHistograms(const base::HistogramTester& histogram_tester,
                                     visible_vk ? total_actions : 0);
   histogram_tester.ExpectTotalCount(kPKAutocorrectV2ActionHistogramName,
                                     visible_vk ? 0 : total_actions);
+
+  // Latency metrics.
+  histogram_tester.ExpectTotalCount(kDelayHistogramName, reverted);
+  histogram_tester.ExpectTotalCount(kAutocorrectV2AcceptLatency, accepted);
+  histogram_tester.ExpectTotalCount(kAutocorrectV2ExitFieldLatency,
+                                    exited_text_field_with_underline);
+  histogram_tester.ExpectTotalCount(kAutocorrectV2RejectLatency,
+                                    reverted + cleared_underline);
+  histogram_tester.ExpectTotalCount(
+      kAutocorrectV2VkPendingLatency,
+      visible_vk ? cleared_underline + reverted + accepted +
+                       exited_text_field_with_underline
+                 : 0);
+  histogram_tester.ExpectTotalCount(
+      kAutocorrectV2PkPendingLatency,
+      visible_vk ? 0
+                 : cleared_underline + reverted + accepted +
+                       exited_text_field_with_underline);
 }
 
 // A helper to create properties for hidden undo window.
