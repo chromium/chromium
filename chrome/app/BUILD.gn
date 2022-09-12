@@ -18,6 +18,7 @@ import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 if (is_android) {
   import("//build/config/android/rules.gni")
 } else if (is_fuchsia) {
+  import("//build/config/fuchsia/packaged_content_embedder_excluded_dirs.gni")
   import("//third_party/fuchsia-sdk/sdk/build/component.gni")
   import("//third_party/fuchsia-sdk/sdk/build/package.gni")
 }
