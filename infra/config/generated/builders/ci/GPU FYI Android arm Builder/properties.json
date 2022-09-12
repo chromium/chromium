@@ -127,6 +127,66 @@
           {
             "builder_id": {
               "bucket": "ci",
+              "builder": "Android FYI Release (Samsung A13)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.gpu.fyi",
+              "execution_mode": "TEST",
+              "legacy_android_config": {
+                "config": "main_builder_rel_mb"
+              },
+              "legacy_chromium_config": {
+                "config": "android",
+                "target_platform": "android"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "android",
+                  "enable_reclient"
+                ],
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "GPU FYI Android arm Builder",
+                "project": "chromium"
+              }
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "Android FYI Release (Samsung A23)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.gpu.fyi",
+              "execution_mode": "TEST",
+              "legacy_android_config": {
+                "config": "main_builder_rel_mb"
+              },
+              "legacy_chromium_config": {
+                "config": "android",
+                "target_platform": "android"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "android",
+                  "enable_reclient"
+                ],
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "GPU FYI Android arm Builder",
+                "project": "chromium"
+              }
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
               "builder": "GPU FYI Android arm Builder",
               "project": "chromium"
             },
@@ -177,6 +237,16 @@
         {
           "bucket": "ci",
           "builder": "Android FYI Release (Pixel 4)",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
+          "builder": "Android FYI Release (Samsung A13)",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
+          "builder": "Android FYI Release (Samsung A23)",
           "project": "chromium"
         }
       ],

@@ -224,6 +224,58 @@ ci.thin_tester(
     triggered_by = ["GPU FYI Android arm64 Builder"],
 )
 
+ci.thin_tester(
+    name = "Android FYI Release (Samsung A13)",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "enable_reclient",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder_rel_mb",
+        ),
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Android|S32|ARM",
+        short_name = "A13",
+    ),
+    triggered_by = ["GPU FYI Android arm Builder"],
+)
+
+ci.thin_tester(
+    name = "Android FYI Release (Samsung A23)",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "enable_reclient",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder_rel_mb",
+        ),
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Android|S32|QCOM",
+        short_name = "A23",
+    ),
+    triggered_by = ["GPU FYI Android arm Builder"],
+)
+
 ci.gpu.linux_builder(
     name = "ChromeOS FYI Release (amd64-generic)",
     # Runs a lot of tests + VMs are slower than real hardware, so increase the

@@ -1142,6 +1142,27 @@
       },
     },
   },
+  's_generic': {
+    'swarming': {
+      'dimensions': {
+        'device_os': 'S',
+      },
+    },
+  },
+  'samsung_a13': {
+    'swarming': {
+      'dimensions': {
+        'device_type': 'a13',
+      },
+    },
+  },
+  'samsung_a23': {
+    'swarming': {
+      'dimensions': {
+        'device_type': 'a23',
+      },
+    },
+  },
   'skia_gold_test': {
     '$mixin_append': {
       'args': [
