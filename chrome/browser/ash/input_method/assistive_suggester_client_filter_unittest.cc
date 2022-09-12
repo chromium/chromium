@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -278,6 +278,22 @@ INSTANTIATE_TEST_SUITE_P(
         {"ChromeSSHApp",
          /* url=*/"chrome-extension://iodihamcpbpeioajjeobimgagajmlibd",
          /* app_id=*/"iodihamcpbpeioajjeobimgagajmlibd",
+         /* arc_package_name=*/"",
+         EnabledSuggestions{.emoji_suggestions = false,
+                            .multi_word_suggestions = false,
+                            .personal_info_suggestions = false,
+                            .diacritic_suggestions = false}},
+        {"CroshApp",
+         /* url=*/"chrome-extension://cgfnfgkafmcdkdgilmojlnaadileaach",
+         /* app_id=*/"cgfnfgkafmcdkdgilmojlnaadileaach",
+         /* arc_package_name=*/"",
+         EnabledSuggestions{.emoji_suggestions = false,
+                            .multi_word_suggestions = false,
+                            .personal_info_suggestions = false,
+                            .diacritic_suggestions = false}},
+        {"ChromeTerminalApp",
+         /* url=*/"chrome-extension://fhicihalidkgcimdmhpohldehjmcabcf",
+         /* app_id=*/"fhicihalidkgcimdmhpohldehjmcabcf",
          /* arc_package_name=*/"",
          EnabledSuggestions{.emoji_suggestions = false,
                             .multi_word_suggestions = false,

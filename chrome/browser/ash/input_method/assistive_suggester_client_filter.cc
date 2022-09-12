@@ -136,7 +136,9 @@ const char* kAllowedAppsForMultiWordSuggester[] = {
 };
 
 const char* kDeniedAppsForDiacritics[] = {
-    "iodihamcpbpeioajjeobimgagajmlibd"  // SSH app
+    "iodihamcpbpeioajjeobimgagajmlibd",  // SSH app
+    "cgfnfgkafmcdkdgilmojlnaadileaach",  // Crosh app
+    "fhicihalidkgcimdmhpohldehjmcabcf",  // Terminal app
 };
 
 bool IsTestUrl(GURL url) {
