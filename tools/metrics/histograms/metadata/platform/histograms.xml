@@ -418,6 +418,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.Emmc.LifeUsed" enum="EmmcLifeUsed"
     expires_after="2023-02-12">
   <owner>gwendal@google.com</owner>
+  <owner>chromeos-storage@google.com</owner>
   <summary>
     eMMC [5.0] Device lifetime estimation for flash. This field provides an
     estimated indication about the device lifetime that is reflected by the
@@ -429,6 +430,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.FileSystem.ErrorCount" units="errors"
     expires_after="2022-10-01">
   <owner>gwendal@google.com</owner>
+  <owner>chromeos-storage@google.com</owner>
   <summary>
     Number of file system errors, as reported by dumpe2fs &quot;FS Error
     count&quot; field. Reported once per boot.
@@ -438,6 +440,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.FileSystem.FsckNeeded" enum="Boolean"
     expires_after="2022-10-01">
   <owner>gwendal@google.com</owner>
+  <owner>chromeos-storage@google.com</owner>
   <summary>
     True when kernel reports that the file system needs deep recovery. File
     system has corruption the kernel can not fix by itself. Reported once per
@@ -448,6 +451,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.FileSystem.RecoveryNeeded" enum="Boolean"
     expires_after="2022-10-01">
   <owner>gwendal@google.com</owner>
+  <owner>chromeos-storage@google.com</owner>
   <summary>
     True when kernel reports that the file system needed recovery at boot. It
     indicates the filesytem was not properly unmounted, but was recovered.
@@ -1110,6 +1114,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.ReadSectorsLong" units="sectors per second"
     expires_after="2022-10-01">
   <owner>gwendal@google.com</owner>
+  <owner>chromeos-storage@google.com</owner>
   <summary>
     Number of disk sectors per second read by Chrome OS in a long interval
     (currently 30s)
@@ -1119,6 +1124,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.ReadSectorsShort" units="sectors per second"
     expires_after="2022-12-04">
   <owner>gwendal@google.com</owner>
+  <owner>chromeos-storage@google.com</owner>
   <summary>
     Number of disk sectors per second read by Chrome OS in a short interval
     (currently 1s, sampled every 30s)
@@ -1129,6 +1135,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-10-21">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
+  <owner>chromeos-storage@google.com</owner>
   <summary>
     The remaining reserved space (SMART 232). The value counts down typically
     from 100 to 0, sent at boot.
@@ -1139,6 +1146,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-10-21">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
+  <owner>chromeos-storage@google.com</owner>
   <summary>
     The total number of 512-byte sectors written during the lifetime of the
     device, sent at boot.
@@ -1149,6 +1157,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-10-21">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
+  <owner>chromeos-storage@google.com</owner>
   <summary>
     The total number of 512-byte sectors written during the lifetime of the
     device, sent at boot.
@@ -1159,6 +1168,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-02-26">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
+  <owner>chromeos-storage@google.com</owner>
   <summary>
     Percentage Used Endurance Indicator. A value of 0 indicates a new device, a
     value of 100 indicates the device is at the end of its lifespan as projected
@@ -1170,12 +1180,14 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.SmartTransferErrors" units="units"
     expires_after="2030-07-08">
   <owner>gwendal@google.com</owner>
+  <owner>chromeos-storage@google.com</owner>
   <summary>Disk communication errors (SMART 199), sent at boot.</summary>
 </histogram>
 
 <histogram name="Platform.SmartUncorrectableErrors" units="units"
     expires_after="2030-07-08">
   <owner>gwendal@google.com</owner>
+  <owner>chromeos-storage@google.com</owner>
   <summary>Uncorrectable disk errors (SMART 187), sent at boot.</summary>
 </histogram>
 
@@ -1199,6 +1211,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-02-26">
   <owner>sarthakkukreti@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
+  <owner>chromeos-storage@google.com</owner>
   <summary>Chrome OS stateful partition format. Sampled once per boot.</summary>
 </histogram>
 
@@ -1206,6 +1219,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-10-21">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
+  <owner>chromeos-storage@google.com</owner>
   <summary>
     Chrome OS stateful partition space free. Sampled once daily.
   </summary>
@@ -1215,6 +1229,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-02-26">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
+  <owner>chromeos-storage@google.com</owner>
   <summary>
     Chrome OS stateful partition lifetime writes. Sampled once daily.
   </summary>
@@ -1224,6 +1239,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-10-21">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
+  <owner>chromeos-storage@google.com</owner>
   <summary>
     The amount of time in hours since the last trim when chromeos-trim triggers
     a trim for the stateful partition. The chromeos-trim script is run daily,
@@ -1237,6 +1253,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-10-21">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
+  <owner>chromeos-storage@google.com</owner>
   <summary>
     The amount of data in the stateful partition that is erased when
     chromeos-trim triggers a trim. The chromeos-trim script is run daily, but a
@@ -1256,6 +1273,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2030-08-29">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
+  <owner>chromeos-storage@google.com</owner>
   <summary>
     Chrome OS stateful partition space used. Sampled once daily.
   </summary>
@@ -1265,6 +1283,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-02-26">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
+  <owner>chromeos-storage@google.com</owner>
   <summary>
     Chrome OS stateful partition KiB writes per day. Sampled once daily.
   </summary>
@@ -1285,6 +1304,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-02-26">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
+  <owner>chromeos-storage@google.com</owner>
   <summary>
     Vendor specific estimate of the percentage of NVM subsystem life used based
     on the actual usage and the manufacturer's prediction of NVM life. A value
@@ -1298,6 +1318,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-10-21">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
+  <owner>chromeos-storage@google.com</owner>
   <summary>
     UFS Device life time estimation. This field provides an indication of the
     device life time based on the amount of performed program/erase cycles. The
@@ -1644,6 +1665,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.WriteSectorsLong" units="sectors per second"
     expires_after="2022-10-01">
   <owner>gwendal@google.com</owner>
+  <owner>chromeos-storage@google.com</owner>
   <summary>
     Number of disk sectors per second written by Chrome OS in a long interval
     (currently 30s)
@@ -1653,6 +1675,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.WriteSectorsShort" units="sectors per second"
     expires_after="2022-12-04">
   <owner>gwendal@google.com</owner>
+  <owner>chromeos-storage@google.com</owner>
   <summary>
     Number of disk sectors per second written by Chrome OS in a short interval
     (currently 1s, sampled every 30s)
