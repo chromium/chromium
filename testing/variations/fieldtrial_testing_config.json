@@ -7848,9 +7848,14 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledPrerenderSpecRules_20221111",
+                    "name": "EnabledPrerenderSpecRulesAndDUI_20220804",
                     "enable_features": [
+                        "OmniboxTriggerForPrerender2",
                         "Prerender2"
+                    ],
+                    "disable_features": [
+                        "OmniboxTriggerForNoStatePrefetch",
+                        "SupportSearchSuggestionForPrerender2"
                     ]
                 }
             ]
