@@ -62,7 +62,8 @@ class FakeNetworkContext : public network::TestNetworkContext {
     auto it = pending_requests_.find(net::HostPortPair::FromURL(url));
     // Make sure a request has actually been made.
     EXPECT_TRUE(it != pending_requests_.end());
-    it->second->OnComplete(net::OK, resolved_addresses);
+    it->second->OnComplete(net::OK, resolved_addresses,
+                           /*endpoint_results_with_metadata=*/absl::nullopt);
     pending_requests_.erase(it);
   }
 
@@ -75,7 +76,8 @@ class FakeNetworkContext : public network::TestNetworkContext {
     // Make sure a request has actually been made.
     EXPECT_TRUE(it != pending_requests_.end());
 
-    it->second->OnComplete(err, absl::nullopt);
+    it->second->OnComplete(err, /*resolved_addresses=*/absl::nullopt,
+                           /*endpoint_results_with_metadata=*/absl::nullopt);
     pending_requests_.erase(it);
   }
 
@@ -103,9 +105,12 @@ class FakeNetworkContext : public network::TestNetworkContext {
     }
 
     void OnComplete(net::Error err,
-                    absl::optional<net::AddressList> resolved_addresses) {
+                    absl::optional<net::AddressList> resolved_addresses,
+                    absl::optional<net::HostResolverEndpointResults>
+                        endpoint_results_with_metadata) {
       response_client_->OnComplete(err, net::ResolveErrorInfo(),
-                                   resolved_addresses);
+                                   resolved_addresses,
+                                   endpoint_results_with_metadata);
     }
 
    private:

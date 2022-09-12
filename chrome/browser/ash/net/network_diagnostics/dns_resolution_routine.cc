@@ -84,7 +84,8 @@ void DnsResolutionRoutine::CreateHostResolver() {
 void DnsResolutionRoutine::OnMojoConnectionError() {
   CreateHostResolver();
   OnComplete(net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-             absl::nullopt);
+             /*resolved_addresses=*/absl::nullopt,
+             /*endpoint_results_with_metadata=*/absl::nullopt);
 }
 
 void DnsResolutionRoutine::AttemptResolution() {
@@ -117,7 +118,9 @@ void DnsResolutionRoutine::AttemptResolution() {
 void DnsResolutionRoutine::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const absl::optional<net::AddressList>& resolved_addresses) {
+    const absl::optional<net::AddressList>& resolved_addresses,
+    const absl::optional<net::HostResolverEndpointResults>&
+        endpoint_results_with_metadata) {
   receiver_.reset();
 
   bool success = result == net::OK && !resolved_addresses->empty() &&

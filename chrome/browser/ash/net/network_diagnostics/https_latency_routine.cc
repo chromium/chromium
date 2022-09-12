@@ -72,10 +72,11 @@ class HttpsLatencyRoutine::HostResolver
   ~HostResolver() override;
 
   // network::mojom::ResolveHostClient:
-  void OnComplete(
-      int result,
-      const net::ResolveErrorInfo& resolve_error_info,
-      const absl::optional<net::AddressList>& resolved_addresses) override;
+  void OnComplete(int result,
+                  const net::ResolveErrorInfo& resolve_error_info,
+                  const absl::optional<net::AddressList>& resolved_addresses,
+                  const absl::optional<net::HostResolverEndpointResults>&
+                      endpoint_results_with_metadata) override;
 
   // Performs the DNS resolution.
   void Run(const GURL& url);
@@ -107,12 +108,15 @@ HttpsLatencyRoutine::HostResolver::~HostResolver() = default;
 void HttpsLatencyRoutine::HostResolver::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const absl::optional<net::AddressList>& resolved_addresses) {
+    const absl::optional<net::AddressList>& resolved_addresses,
+    const absl::optional<net::HostResolverEndpointResults>&
+        endpoint_results_with_metadata) {
   receiver_.reset();
   host_resolver_.reset();
 
   https_latency_->OnHostResolutionComplete(result, resolve_error_info,
-                                           resolved_addresses);
+                                           resolved_addresses,
+                                           endpoint_results_with_metadata);
 }
 
 void HttpsLatencyRoutine::HostResolver::Run(const GURL& url) {
@@ -146,7 +150,8 @@ void HttpsLatencyRoutine::HostResolver::CreateHostResolver() {
 
 void HttpsLatencyRoutine::HostResolver::OnMojoConnectionError() {
   OnComplete(net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-             absl::nullopt);
+             /*resolved_addresses=*/absl::nullopt,
+             /*endpoint_results_with_metadata=*/absl::nullopt);
 }
 
 HttpsLatencyRoutine::HttpsLatencyRoutine()
@@ -221,7 +226,9 @@ void HttpsLatencyRoutine::AttemptNextResolution() {
 void HttpsLatencyRoutine::OnHostResolutionComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const absl::optional<net::AddressList>& resolved_addresses) {
+    const absl::optional<net::AddressList>& resolved_addresses,
+    const absl::optional<net::HostResolverEndpointResults>&
+        endpoint_results_with_metadata) {
   bool success = result == net::OK && !resolved_addresses->empty() &&
                  resolved_addresses.has_value();
   if (!success) {

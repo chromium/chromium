@@ -30,6 +30,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/address_list.h"
 #include "net/base/network_change_notifier.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "net/socket/tcp_client_socket.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
@@ -46,7 +47,7 @@ class BrowserContext;
 
 namespace net {
 class IOBuffer;
-}
+}  // namespace net
 
 namespace network {
 namespace mojom {
@@ -188,10 +189,11 @@ class SocketExtensionWithDnsLookupFunction
 
  private:
   // network::mojom::ResolveHostClient implementation:
-  void OnComplete(
-      int result,
-      const net::ResolveErrorInfo& resolve_error_info,
-      const absl::optional<net::AddressList>& resolved_addresses) override;
+  void OnComplete(int result,
+                  const net::ResolveErrorInfo& resolve_error_info,
+                  const absl::optional<net::AddressList>& resolved_addresses,
+                  const absl::optional<net::HostResolverEndpointResults>&
+                      endpoint_results_with_metadata) override;
 
   mojo::PendingRemote<network::mojom::HostResolver> pending_host_resolver_;
   mojo::Remote<network::mojom::HostResolver> host_resolver_;

@@ -43,6 +43,9 @@ struct NET_EXPORT_PRIVATE HostResolverEndpointResult {
   ConnectionEndpointMetadata metadata;
 };
 
+using HostResolverEndpointResults =
+    std::vector<net::HostResolverEndpointResult>;
+
 }  // namespace net
 
 #endif  // NET_DNS_PUBLIC_HOST_RESOLVER_RESULTS_H_

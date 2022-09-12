@@ -6,6 +6,7 @@ module network.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/address_list.mojom";
+import "services/network/public/mojom/host_resolver_endpoint_result.mojom";
 import "services/network/public/mojom/ip_address.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/network_isolation_key.mojom";
@@ -144,7 +145,8 @@ interface ResolveHostClient {
   // called.
   OnComplete(int32 result,
              ResolveErrorInfo resolve_error_info,
-             AddressList? resolved_addresses);
+             AddressList? resolved_addresses,
+             array<HostResolverEndpointResult>? endpoint_results_with_metadata);
 
   // One or more On...Results() methods may be called when non-address results
   // are available. Always called before OnComplete().

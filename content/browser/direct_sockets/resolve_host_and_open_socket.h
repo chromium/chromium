@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/address_list.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom.h"
@@ -36,10 +37,11 @@ class CONTENT_EXPORT ResolveHostAndOpenSocket
   static void SetHttpsPortForTesting(absl::optional<int> port);
 
  protected:
-  void OnComplete(
-      int result,
-      const net::ResolveErrorInfo& resolve_error_info,
-      const absl::optional<net::AddressList>& resolved_addresses) override;
+  void OnComplete(int result,
+                  const net::ResolveErrorInfo& resolve_error_info,
+                  const absl::optional<net::AddressList>& resolved_addresses,
+                  const absl::optional<net::HostResolverEndpointResults>&
+                      endpoint_results_with_metadata) override;
 
   void PerformCORSCheck(const std::string& address,
                         net::AddressList resolved_addresses);

@@ -264,10 +264,11 @@ class EmptyResolveHostClient : ResolveHostClientBase {
 
  private:
   // mojom::ResolveHostClient:
-  void OnComplete(
-      int result,
-      const net::ResolveErrorInfo& resolve_error_info,
-      const absl::optional<net::AddressList>& resolved_addresses) override {
+  void OnComplete(int result,
+                  const net::ResolveErrorInfo& resolve_error_info,
+                  const absl::optional<net::AddressList>& resolved_addresses,
+                  const absl::optional<net::HostResolverEndpointResults>&
+                      endpoint_results_with_metadata) override {
     delete this;
   }
 

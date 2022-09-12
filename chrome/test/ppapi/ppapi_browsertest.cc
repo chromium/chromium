@@ -777,8 +777,10 @@ class MockNetworkContext : public network::TestNetworkContext {
               network_isolation_key);
     mojo::Remote<network::mojom::ResolveHostClient> response_client(
         std::move(pending_response_client));
-    response_client->OnComplete(net::OK, net::ResolveErrorInfo(net::OK),
-                                net::AddressList(LocalAddress()));
+    response_client->OnComplete(
+        net::OK, net::ResolveErrorInfo(net::OK),
+        net::AddressList(LocalAddress()),
+        /*endpoint_results_with_metadata=*/absl::nullopt);
   }
 
  private:

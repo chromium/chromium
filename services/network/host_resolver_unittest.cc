@@ -31,6 +31,7 @@
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/dns_protocol.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/host_resolver_source.h"
 #include "net/dns/public/mdns_listener_update_type.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -40,6 +41,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/scheme_host_port.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/radio_utils.h"
@@ -85,13 +87,16 @@ class TestResolveHostClient : public mojom::ResolveHostClient {
 
   void OnComplete(int error,
                   const net::ResolveErrorInfo& resolve_error_info,
-                  const absl::optional<net::AddressList>& addresses) override {
+                  const absl::optional<net::AddressList>& addresses,
+                  const absl::optional<net::HostResolverEndpointResults>&
+                      endpoint_results_with_metadata) override {
     DCHECK(!complete_);
 
     complete_ = true;
     top_level_result_error_ = error;
     result_error_ = resolve_error_info.error;
     result_addresses_ = addresses;
+    endpoint_results_with_metadata_ = endpoint_results_with_metadata;
     if (run_loop_)
       run_loop_->Quit();
   }
@@ -133,6 +138,12 @@ class TestResolveHostClient : public mojom::ResolveHostClient {
     return result_hosts_;
   }
 
+  const absl::optional<net::HostResolverEndpointResults>&
+  endpoint_results_with_metadata() const {
+    DCHECK(complete_);
+    return endpoint_results_with_metadata_;
+  }
+
  private:
   mojo::Receiver<mojom::ResolveHostClient> receiver_{this};
 
@@ -142,6 +153,8 @@ class TestResolveHostClient : public mojom::ResolveHostClient {
   absl::optional<net::AddressList> result_addresses_;
   absl::optional<std::vector<std::string>> result_text_;
   absl::optional<std::vector<net::HostPortPair>> result_hosts_;
+  absl::optional<net::HostResolverEndpointResults>
+      endpoint_results_with_metadata_;
   const raw_ptr<base::RunLoop> run_loop_;
 };
 
@@ -433,6 +446,86 @@ TEST_F(HostResolverTest, Source) {
   EXPECT_THAT(mdns_client.result_addresses().value().endpoints(),
               testing::ElementsAre(CreateExpectedEndPoint(kMdnsResult, 80)));
 #endif  // BUILDFLAG(ENABLE_MDNS)
+}
+
+// Make host resolve requests specifying https scheme and
+// test that a resolver successfully gets https record information.
+TEST_F(HostResolverTest, GetEndpointResultsWithMetadata) {
+  using RuleResolver = net::MockHostResolverBase::RuleResolver;
+
+  constexpr char kWithoutHttpsDomain[] = "without_https_record.test";
+  constexpr char kWithHttpsDomain[] = "with_https_record.test";
+  constexpr char kWithoutHttpsResult[] = "192.168.0.2";
+  auto inner_resolver = std::make_unique<net::MockHostResolver>();
+
+  RuleResolver::RuleKey without_https_key;
+  without_https_key.hostname_pattern = kWithoutHttpsDomain;
+  without_https_key.query_source = net::HostResolverSource::ANY;
+  inner_resolver->rules()->AddRule(std::move(without_https_key),
+                                   kWithoutHttpsResult);
+
+  RuleResolver::RuleKey with_https_key;
+  with_https_key.hostname_pattern = kWithHttpsDomain;
+  with_https_key.query_source = net::HostResolverSource::ANY;
+
+  net::HostResolverEndpointResults endpoint_results(2);
+  const net::IPEndPoint with_https_ip_endpoint =
+      net::IPEndPoint(net::IPAddress(192, 168, 0, 3), 443);
+  net::ConnectionEndpointMetadata with_https_endpoint_metadata;
+  with_https_endpoint_metadata.supported_protocol_alpns = {"http/1.1", "h2",
+                                                           "h3"};
+  endpoint_results[0].ip_endpoints = {with_https_ip_endpoint};
+  endpoint_results[0].metadata = with_https_endpoint_metadata;
+  // The last element of endpoint_results is non-protocol addresses.
+  endpoint_results[1].ip_endpoints = {with_https_ip_endpoint};
+
+  inner_resolver->rules()->AddRule(
+      std::move(with_https_key),
+      RuleResolver::RuleResult(std::move(endpoint_results)));
+
+  HostResolver resolver(inner_resolver.get(), net::NetLog::Get());
+
+  base::RunLoop without_https_run_loop;
+  mojo::PendingRemote<mojom::ResolveHostClient> pending_without_https_client;
+  TestResolveHostClient without_https_client(&pending_without_https_client,
+                                             &without_https_run_loop);
+  auto without_https_scheme_host_port =
+      url::SchemeHostPort("https", kWithoutHttpsDomain, 443);
+  resolver.ResolveHost(network::mojom::HostResolverHost::NewSchemeHostPort(
+                           without_https_scheme_host_port),
+                       net::NetworkIsolationKey(), nullptr,
+                       std::move(pending_without_https_client));
+
+  base::RunLoop with_https_run_loop;
+  mojo::PendingRemote<mojom::ResolveHostClient> pending_with_https_client;
+  TestResolveHostClient with_https_client(&pending_with_https_client,
+                                          &with_https_run_loop);
+  auto with_https_scheme_host_port =
+      url::SchemeHostPort("https", kWithHttpsDomain, 443);
+  resolver.ResolveHost(network::mojom::HostResolverHost::NewSchemeHostPort(
+                           with_https_scheme_host_port),
+                       net::NetworkIsolationKey(), nullptr,
+                       std::move(pending_with_https_client));
+
+  without_https_run_loop.Run();
+  with_https_run_loop.Run();
+
+  net::HostResolverEndpointResults expected_endpoint_results(1);
+  const net::IPEndPoint expected_with_https_ip_endpoint =
+      net::IPEndPoint(net::IPAddress(192, 168, 0, 3), 443);
+  net::ConnectionEndpointMetadata expected_with_https_endpoint_metadata;
+  expected_with_https_endpoint_metadata.supported_protocol_alpns = {"http/1.1",
+                                                                    "h2", "h3"};
+  expected_endpoint_results[0].ip_endpoints = {expected_with_https_ip_endpoint};
+  expected_endpoint_results[0].metadata = expected_with_https_endpoint_metadata;
+
+  EXPECT_EQ(net::OK, without_https_client.result_error());
+  EXPECT_THAT(without_https_client.endpoint_results_with_metadata(),
+              absl::nullopt);
+
+  EXPECT_EQ(net::OK, with_https_client.result_error());
+  EXPECT_THAT(with_https_client.endpoint_results_with_metadata(),
+              expected_endpoint_results);
 }
 
 // Test that cached results are properly keyed by requested source.

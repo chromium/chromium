@@ -43,10 +43,11 @@ ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
                         std::move(host_port_pair)),
                     net::NetworkIsolationKey(origin, origin), nullptr,
                     receiver_.BindNewPipeAndPassRemote());
-  receiver_.set_disconnect_handler(
-      base::BindOnce(&DnsResolveFunction::OnComplete, base::Unretained(this),
-                     net::ERR_NAME_NOT_RESOLVED,
-                     net::ResolveErrorInfo(net::ERR_FAILED), absl::nullopt));
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &DnsResolveFunction::OnComplete, base::Unretained(this),
+      net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
+      /*resolved_addresses=*/absl::nullopt,
+      /*endpoint_results_with_metadata=*/absl::nullopt));
 
   // Balanced in OnComplete().
   AddRef();
@@ -56,7 +57,9 @@ ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
 void DnsResolveFunction::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const absl::optional<net::AddressList>& resolved_addresses) {
+    const absl::optional<net::AddressList>& resolved_addresses,
+    const absl::optional<net::HostResolverEndpointResults>&
+        endpoint_results_with_metadata) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   receiver_.reset();
 

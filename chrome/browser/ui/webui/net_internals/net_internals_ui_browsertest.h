@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "chrome/test/base/web_ui_browser_test.h"
+#include "services/network/test/test_network_context.h"
 
 class NetInternalsTest : public WebUIBrowserTest {
  public:

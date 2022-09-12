@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/address_list.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -27,12 +28,16 @@ class FakeHostResolver : public network::mojom::HostResolver {
    public:
     DnsResult(int32_t result,
               net::ResolveErrorInfo resolve_error_info,
-              absl::optional<net::AddressList> resolved_addresses);
+              absl::optional<net::AddressList> resolved_addresses,
+              absl::optional<net::HostResolverEndpointResults>
+                  endpoint_results_with_metadata);
     ~DnsResult();
 
     int result_;
     net::ResolveErrorInfo resolve_error_info_;
     absl::optional<net::AddressList> resolved_addresses_;
+    absl::optional<net::HostResolverEndpointResults>
+        endpoint_results_with_metadata_;
   };
 
   FakeHostResolver(

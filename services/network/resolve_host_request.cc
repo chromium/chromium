@@ -45,9 +45,10 @@ ResolveHostRequest::~ResolveHostRequest() {
   control_handle_receiver_.reset();
 
   if (response_client_.is_bound()) {
-    response_client_->OnComplete(net::ERR_NAME_NOT_RESOLVED,
-                                 net::ResolveErrorInfo(net::ERR_FAILED),
-                                 absl::nullopt);
+    response_client_->OnComplete(
+        net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
+        /*resolved_addresses=*/absl::nullopt,
+        /*endpoint_results_with_metadata=*/absl::nullopt);
     response_client_.reset();
   }
 }
@@ -65,11 +66,13 @@ int ResolveHostRequest::Start(
   // callback.
   int rv = internal_request_->Start(
       base::BindOnce(&ResolveHostRequest::OnComplete, base::Unretained(this)));
+
   mojo::Remote<mojom::ResolveHostClient> response_client(
       std::move(pending_response_client));
   if (rv != net::ERR_IO_PENDING) {
     response_client->OnComplete(rv, GetResolveErrorInfo(),
-                                base::OptionalFromPtr(GetAddressResults()));
+                                base::OptionalFromPtr(GetAddressResults()),
+                                GetEndpointResultsWithMetadata());
     return rv;
   }
 
@@ -106,9 +109,10 @@ void ResolveHostRequest::OnComplete(int error) {
   control_handle_receiver_.reset();
   SignalNonAddressResults();
   response_client_->OnComplete(error, GetResolveErrorInfo(),
-                               base::OptionalFromPtr(GetAddressResults()));
-  response_client_.reset();
+                               base::OptionalFromPtr(GetAddressResults()),
+                               GetEndpointResultsWithMetadata());
 
+  response_client_.reset();
   // Invoke completion callback last as it may delete |this|.
   std::move(callback_).Run(GetResolveErrorInfo().error);
 }
@@ -129,6 +133,35 @@ const net::AddressList* ResolveHostRequest::GetAddressResults() const {
 
   DCHECK(internal_request_);
   return internal_request_->GetAddressResults();
+}
+
+absl::optional<net::HostResolverEndpointResults>
+ResolveHostRequest::GetEndpointResultsWithMetadata() const {
+  if (cancelled_) {
+    return absl::nullopt;
+  }
+
+  DCHECK(internal_request_);
+  const net::HostResolverEndpointResults* endpoint_results =
+      internal_request_->GetEndpointResults();
+
+  if (!endpoint_results || endpoint_results->size() <= 1) {
+    return absl::nullopt;
+  }
+
+  net::HostResolverEndpointResults endpoint_results_with_metadata;
+
+  // The last element of endpoint_results has only resolved IP
+  // addresses(non-protocol endpoints), and this information is passed as
+  // another parameter at least in OnComplete method, so drop that here to avoid
+  // providing redundant information.
+  std::copy_if(endpoint_results->begin(), endpoint_results->end(),
+               std::back_inserter(endpoint_results_with_metadata),
+               [](const auto& result) {
+                 return !result.metadata.supported_protocol_alpns.empty();
+               });
+
+  return endpoint_results_with_metadata;
 }
 
 void ResolveHostRequest::SignalNonAddressResults() {

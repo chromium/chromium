@@ -12,6 +12,7 @@
 
 #include "content/public/common/process_type.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/host/resource_message_filter.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
@@ -22,7 +23,7 @@ struct PP_NetAddress_Private;
 
 namespace net {
 class AddressList;
-}
+}  // namespace net
 
 namespace ppapi {
 struct HostPortPair;
@@ -67,10 +68,11 @@ class PepperHostResolverMessageFilter
                        const PP_HostResolver_Private_Hint& hint);
 
   // network::mojom::ResolveHostClient overrides.
-  void OnComplete(
-      int result,
-      const net::ResolveErrorInfo& resolve_error_info,
-      const absl::optional<net::AddressList>& resolved_addresses) override;
+  void OnComplete(int result,
+                  const net::ResolveErrorInfo& resolve_error_info,
+                  const absl::optional<net::AddressList>& resolved_addresses,
+                  const absl::optional<net::HostResolverEndpointResults>&
+                      endpoint_results_with_metadata) override;
 
   void OnLookupFinished(int net_result,
                         const absl::optional<net::AddressList>& addresses,

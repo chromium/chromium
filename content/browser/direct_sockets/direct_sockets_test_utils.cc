@@ -57,7 +57,8 @@ void MockHostResolver::ResolveHost(
   if (rv != net::ERR_IO_PENDING) {
     response_client->OnComplete(
         rv, internal_request_->GetResolveErrorInfo(),
-        base::OptionalFromPtr(internal_request_->GetAddressResults()));
+        base::OptionalFromPtr(internal_request_->GetAddressResults()),
+        /*endpoint_results_with_metadata=*/absl::nullopt);
     return;
   }
 
@@ -78,7 +79,8 @@ void MockHostResolver::OnComplete(int error) {
 
   response_client_->OnComplete(
       error, internal_request_->GetResolveErrorInfo(),
-      base::OptionalFromPtr(internal_request_->GetAddressResults()));
+      base::OptionalFromPtr(internal_request_->GetAddressResults()),
+      /*endpoint_results_with_metadata=*/absl::nullopt);
   response_client_.reset();
 }
 

@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/address_list.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
 #include "services/network/public/mojom/host_resolver.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -17,7 +18,7 @@ class GURL;
 
 namespace net {
 class NetworkIsolationKey;
-}
+}  // namespace net
 
 namespace network {
 namespace mojom {
@@ -47,10 +48,11 @@ class ResolveHostClientImpl : public network::ResolveHostClientBase {
   ~ResolveHostClientImpl() override;
 
   // network::mojom::ResolveHostClient:
-  void OnComplete(
-      int result,
-      const net::ResolveErrorInfo& resolve_error_info,
-      const absl::optional<net::AddressList>& resolved_addresses) override;
+  void OnComplete(int result,
+                  const net::ResolveErrorInfo& resolve_error_info,
+                  const absl::optional<net::AddressList>& resolved_addresses,
+                  const absl::optional<net::HostResolverEndpointResults>&
+                      endpoint_results_with_metadata) override;
 
   void OnConnectionError();
 

@@ -32,20 +32,44 @@ export class DnsView extends DivView {
 
   onSubmitResolveHost_(event) {
     const hostname = this.dnsLookUpInput_.value;
+    if (hostname === '') {
+      return;
+    }
     this.dnsLookUpOutputDiv_.innerHTML = trustedTypes.emptyHTML;
-    const s = addNode(this.dnsLookUpOutputDiv_, 'span');
-    const found = addNode(s, 'b');
+    const span = addNode(this.dnsLookUpOutputDiv_, 'span');
 
     this.browserBridge_.sendResolveHost(this.dnsLookUpInput_.value)
         .then(result => {
-          const resolvedAddresses = JSON.stringify(result);
-          found.textContent =
+          const resolvedAddresses = JSON.stringify(result.resolved_addresses);
+          const div = addNode(span, 'div');
+          div.textContent =
               `Resolved IP addresses of "${hostname}": ${resolvedAddresses}.`;
+          div.style.fontWeight = 'bold';
+          if (result.endpoint_results_with_metadata.length > 0) {
+            result.endpoint_results_with_metadata.map(
+                (endpoint_result_with_metadata) => {
+                  const ipEndpoints = JSON.stringify(
+                      endpoint_result_with_metadata.ip_endpoints);
+                  const supportedProtocolAlpns =
+                      JSON.stringify(endpoint_result_with_metadata.metadata
+                                         .supported_protocol_alpns);
+                  const div = addNode(span, 'div');
+                  div.textContent = 'Supported protocol alpns of ' +
+                      `"${ipEndpoints}": ${supportedProtocolAlpns}.`;
+                  div.style.fontWeight = 'bold';
+                });
+          } else {
+            const div = addNode(span, 'div');
+            div.textContent = `No data on which protocols are supported.`;
+            div.style.fontWeight = 'bold';
+          }
         })
         .catch(error => {
-          found.style.color = 'red';
-          found.textContent =
+          const div = addNode(span, 'div');
+          div.textContent =
               `An error occurred while resolving "${hostname}" (${error}).`;
+          div.style.color = 'red';
+          div.style.fontWeight = 'bold';
         });
 
     this.dnsLookUpInput_.value = '';

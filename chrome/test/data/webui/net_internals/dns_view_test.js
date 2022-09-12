@@ -15,8 +15,11 @@ const dns_view_test = window.dns_view_test;
 dns_view_test.suiteName = 'NetInternalsDnsViewTests';
 /** @enum {string} */
 dns_view_test.TestNames = {
-  ResolveSingleHost: 'resolve single host',
-  ResolveMultipleHost: 'resolve multiple host',
+  ResolveSingleHostWithoutMetadata: 'resolve single host without metadata',
+  ResolveSingleHostWithHTTP2Alpn: 'resolve single host with http2 alpn',
+  ResolveSingleHostWithHTTP3Alpn: 'resolve single host with http3 alpn',
+  ResolveMultipleHostWithMultipleAlpns:
+      'resolve multiple host with multiple alpns',
   ErrorNameNotResolved: 'error name not resolved',
   ClearCache: 'clear cache',
 };
@@ -36,6 +39,8 @@ suite(dns_view_test.suiteName, function() {
     }
 
     start() {
+      // enable mock network context for testing here
+      chrome.send('setNetworkContextForTesting');
       const elementToObserve =
           document.getElementById('dns-view-dns-lookup-output');
       const options = {childList: true, subtree: true};
@@ -43,6 +48,8 @@ suite(dns_view_test.suiteName, function() {
         /* This condition is needed to avoid callbacking twice.*/
         if (elementToObserve.textContent !== '') {
           this.onTaskDone(elementToObserve.textContent);
+          // disable mock network context for testing here
+          chrome.send('resetNetworkContextForTesting');
         }
       };
 
@@ -87,33 +94,74 @@ suite(dns_view_test.suiteName, function() {
   }
 
   /**
-   * Checks a single host resolve.
+   * Checks a single host resolve without metadata.
    */
-  test(dns_view_test.TestNames.ResolveSingleHost, function() {
+  test(dns_view_test.TestNames.ResolveSingleHostWithoutMetadata, function() {
     switchToView('dns');
     const taskQueue = new TaskQueue(true);
 
-    // Make sure a successful lookup of single address.
+    // Make sure a successful lookup of single address without metadata.
     taskQueue.addTask(new ResolveHostTask('somewhere.com'));
     taskQueue.addFunctionTask(assertEquals.bind(
-        null, 'Resolved IP addresses of "somewhere.com": ["127.0.0.1"].'));
+        null,
+        'Resolved IP addresses of "somewhere.com": ["127.0.0.1"].' +
+            'No data on which protocols are supported.'));
     return taskQueue.run();
   });
 
-  // TODO(crbug.com/1351249): Enable this test after making
-  // RuleBasedHostResolverProc support multiple addresses.
-  /*
-  test(dns_view_test.TestNames.ResolveMultipleHost, function() {
+  /**
+   * Checks a single host resolve with supported protocol alpns {"http/1.1",
+   * "h2"}.
+   */
+  test(dns_view_test.TestNames.ResolveSingleHostWithHTTP2Alpn, function() {
     switchToView('dns');
     const taskQueue = new TaskQueue(true);
 
-    // Make sure a successful lookup of multiple addresses.
-    taskQueue.addTask(new ResolveHostTask('multihost.org'));
+    // Make sure a successful lookup of single address with supported protocol
+    // alpns {"http/1.1","h2"}.
+    taskQueue.addTask(new ResolveHostTask('http2.com'));
     taskQueue.addFunctionTask(assertEquals.bind(
-        null, 'Resolved IP addresses of "multihost.org":
-        ["127.0.0.2","127.0.0.3","127.0.0.4"].')); return taskQueue.run();
+        null,
+        'Resolved IP addresses of "http2.com": ["127.0.0.1"].' +
+            'Supported protocol alpns of "["127.0.0.1"]": ["http/1.1","h2"].'));
+    return taskQueue.run();
   });
-  */
+
+  /**
+   * Checks a single host resolve with supported protocol alpns {"http/1.1",
+   * "h2", "h3"}.
+   */
+  test(dns_view_test.TestNames.ResolveSingleHostWithHTTP3Alpn, function() {
+    switchToView('dns');
+    const taskQueue = new TaskQueue(true);
+
+    // Make sure a successful lookup of single address with supported protocol
+    // alpns {"http/1.1","h2","h3"}.
+    taskQueue.addTask(new ResolveHostTask('http3.com'));
+    taskQueue.addFunctionTask(assertEquals.bind(
+        null,
+        'Resolved IP addresses of "http3.com": ["127.0.0.1"].' +
+            'Supported protocol alpns of "["127.0.0.1"]": ["http/1.1","h2","h3"].'));
+    return taskQueue.run();
+  });
+
+  /**
+   * Checks a multiple host resolve with multiple supported protocol alpns.
+   */
+  test(dns_view_test.TestNames.ResolveMultipleHostWithMultipleAlpns, function() {
+    switchToView('dns');
+    const taskQueue = new TaskQueue(true);
+
+    // Make sure a successful lookup of multiple addresses with multiple
+    // supported protocol alpns.
+    taskQueue.addTask(new ResolveHostTask('multihost.com'));
+    taskQueue.addFunctionTask(assertEquals.bind(
+        null,
+        'Resolved IP addresses of "multihost.com": ["127.0.0.1","127.0.0.2"].' +
+            'Supported protocol alpns of "["127.0.0.1"]": ["http/1.1","h2"].' +
+            'Supported protocol alpns of "["127.0.0.2"]": ["http/1.1","h2","h3"].'));
+    return taskQueue.run();
+  });
 
   /**
    * Checks an error when a host cannot be resolved.

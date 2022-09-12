@@ -21,6 +21,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -136,7 +137,8 @@ void DnsLatencyRoutine::CreateHostResolver() {
 void DnsLatencyRoutine::OnMojoConnectionError() {
   CreateHostResolver();
   OnComplete(net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-             absl::nullopt);
+             /*resolved_addresses=*/absl::nullopt,
+             /*endpoint_results_with_metadata=*/absl::nullopt);
 }
 
 void DnsLatencyRoutine::AttemptNextResolution() {
@@ -170,7 +172,9 @@ void DnsLatencyRoutine::AttemptNextResolution() {
 void DnsLatencyRoutine::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const absl::optional<net::AddressList>& resolved_addresses) {
+    const absl::optional<net::AddressList>& resolved_addresses,
+    const absl::optional<net::HostResolverEndpointResults>&
+        endpoint_results_with_metadata) {
   receiver_.reset();
   resolution_complete_time_ = tick_clock_->NowTicks();
   const base::TimeDelta latency =

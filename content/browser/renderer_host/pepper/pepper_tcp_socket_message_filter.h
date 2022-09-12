@@ -26,6 +26,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/address_list.h"
 #include "net/base/ip_endpoint.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/ppb_tcp_socket.h"
 #include "ppapi/c/private/ppb_net_address_private.h"
@@ -122,10 +123,11 @@ class CONTENT_EXPORT PepperTCPSocketMessageFilter
   void OnHostDestroyed() override;
 
   // network::mojom::ResolveHostClient overrides.
-  void OnComplete(
-      int result,
-      const net::ResolveErrorInfo& resolve_error_info,
-      const absl::optional<net::AddressList>& resolved_addresses) override;
+  void OnComplete(int result,
+                  const net::ResolveErrorInfo& resolve_error_info,
+                  const absl::optional<net::AddressList>& resolved_addresses,
+                  const absl::optional<net::HostResolverEndpointResults>&
+                      endpoint_results_with_metadata) override;
 
   // network::mojom::SocketObserver overrides.
   void OnReadError(int net_error) override;

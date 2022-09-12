@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "net/base/address_list.h"
 #include "net/base/host_port_pair.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -29,10 +30,11 @@ class PrefetchDNSProber : public network::mojom::ResolveHostClient {
   // network::mojom::ResolveHostClient:
   void OnTextResults(const std::vector<std::string>&) override {}
   void OnHostnameResults(const std::vector<net::HostPortPair>&) override {}
-  void OnComplete(
-      int32_t error,
-      const net::ResolveErrorInfo& resolve_error_info,
-      const absl::optional<net::AddressList>& resolved_addresses) override;
+  void OnComplete(int32_t error,
+                  const net::ResolveErrorInfo& resolve_error_info,
+                  const absl::optional<net::AddressList>& resolved_addresses,
+                  const absl::optional<net::HostResolverEndpointResults>&
+                      endpoint_results_with_metadata) override;
 
  private:
   OnDNSResultsCallback callback_;

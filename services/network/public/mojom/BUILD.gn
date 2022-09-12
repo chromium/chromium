@@ -16,6 +16,8 @@ mojom("mojom_ip_address") {
   sources = [
     "address_family.mojom",
     "address_list.mojom",
+    "connection_endpoint_metadata.mojom",
+    "host_resolver_endpoint_result.mojom",
     "ip_address.mojom",
     "ip_endpoint.mojom",
   ]
@@ -109,6 +111,26 @@ mojom("mojom_ip_address") {
         "//net",
         "//services/network/public/cpp:ip_address_mojom_support",
       ]
+    },
+    {
+      types = [
+        {
+          mojom = "network.mojom.ConnectionEndpointMetadata"
+          cpp = "::net::ConnectionEndpointMetadata"
+        },
+      ]
+      traits_headers = [ "//services/network/public/cpp/connection_endpoint_metadata_mojom_traits.h" ]
+      traits_public_deps = [ "//net" ]
+    },
+    {
+      types = [
+        {
+          mojom = "network.mojom.HostResolverEndpointResult"
+          cpp = "::net::HostResolverEndpointResult"
+        },
+      ]
+      traits_headers = [ "//services/network/public/cpp/host_resolver_endpoint_result_mojom_traits.h" ]
+      traits_public_deps = [ "//net" ]
     },
   ]
   cpp_typemaps += shared_cpp_typemaps

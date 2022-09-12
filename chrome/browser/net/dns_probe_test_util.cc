@@ -76,7 +76,8 @@ void FakeHostResolver::ResolveHost(
   mojo::Remote<network::mojom::ResolveHostClient> response_client(
       std::move(pending_response_client));
   response_client->OnComplete(cur_result.result, cur_result.resolve_error_info,
-                              AddressListForResponse(cur_result.response));
+                              AddressListForResponse(cur_result.response),
+                              /*endpoint_results_with_metadata=*/absl::nullopt);
 }
 
 void FakeHostResolver::MdnsListen(

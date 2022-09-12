@@ -26,12 +26,15 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/address_list.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "services/network/expect_ct_reporter.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -39,6 +42,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/resources/grit/webui_generated_resources.h"
+#include "url/scheme_host_port.h"
 
 using content::BrowserThread;
 
@@ -62,15 +66,61 @@ content::WebUIDataSource* CreateNetInternalsHTMLSource() {
 
 void IgnoreBoolCallback(bool result) {}
 
-// This function converts net::AddressList to base::Value.
-base::Value AddressListToBaseValue(
+// This function converts std::vector<net::IPEndPoint> to base::Value::List.
+base::Value::List IPEndpointsToBaseList(
     const std::vector<net::IPEndPoint>& resolved_addresses) {
-  base::Value::List resolved_addresses_base_val_list;
+  base::Value::List resolved_addresses_list;
   for (const net::IPEndPoint& resolved_address : resolved_addresses) {
-    resolved_addresses_base_val_list.Append(
-        resolved_address.ToStringWithoutPort());
+    resolved_addresses_list.Append(resolved_address.ToStringWithoutPort());
   }
-  return base::Value(std::move(resolved_addresses_base_val_list));
+  return resolved_addresses_list;
+}
+
+// This function converts net::ConnectionEndpointMetadata to base::Value::Dict.
+base::Value::Dict ConnectionEndpointMetadataToBaseDict(
+    const net::ConnectionEndpointMetadata& metadata) {
+  base::Value::Dict connection_endpoint_metadata;
+
+  base::Value::List supported_protocol_alpns;
+  base::Value::List ech_config_list;
+  for (const std::string& supported_protocol_alpn :
+       metadata.supported_protocol_alpns) {
+    supported_protocol_alpns.Append(supported_protocol_alpn);
+  }
+
+  for (uint8_t ech_config : metadata.ech_config_list) {
+    ech_config_list.Append(ech_config);
+  }
+
+  connection_endpoint_metadata.Set("supported_protocol_alpns",
+                                   std::move(supported_protocol_alpns));
+  connection_endpoint_metadata.Set("ech_config_list",
+                                   std::move(ech_config_list));
+  connection_endpoint_metadata.Set("target_name", metadata.target_name);
+
+  return connection_endpoint_metadata;
+}
+
+// This function converts
+// absl::optional<net::HostResolverEndpointResults> to
+// base::Value::List.
+base::Value::List HostResolverEndpointResultsToBaseList(
+    const absl::optional<net::HostResolverEndpointResults>& endpoint_results) {
+  base::Value::List endpoint_results_list;
+
+  if (!endpoint_results) {
+    return endpoint_results_list;
+  }
+
+  for (const auto& endpoint_result : *endpoint_results) {
+    base::Value::Dict endpoint_results_dict;
+    endpoint_results_dict.Set(
+        "ip_endpoints", IPEndpointsToBaseList(endpoint_result.ip_endpoints));
+    endpoint_results_dict.Set("metadata", ConnectionEndpointMetadataToBaseDict(
+                                              endpoint_result.metadata));
+    endpoint_results_list.Append(std::move(endpoint_results_dict));
+  }
+  return endpoint_results_list;
 }
 
 using ResolveHostResult = base::expected<base::Value, std::string>;
@@ -78,19 +128,21 @@ using ResolveHostResult = base::expected<base::Value, std::string>;
 // This class implements network::mojom::ResolveHostClient.
 class NetInternalsResolveHostClient : public network::mojom::ResolveHostClient {
  public:
-  using Callback =
-      base::OnceCallback<void(const net::ResolveErrorInfo&,
-                              const absl::optional<net::AddressList>&,
-                              NetInternalsResolveHostClient*)>;
+  using Callback = base::OnceCallback<void(
+      const net::ResolveErrorInfo&,
+      const absl::optional<net::AddressList>&,
+      const absl::optional<net::HostResolverEndpointResults>&,
+      NetInternalsResolveHostClient*)>;
 
   NetInternalsResolveHostClient(
       mojo::PendingReceiver<network::mojom::ResolveHostClient> receiver,
       Callback callback)
       : receiver_(this, std::move(receiver)), callback_(std::move(callback)) {
-    receiver_.set_disconnect_handler(
-        base::BindOnce(&NetInternalsResolveHostClient::OnComplete,
-                       base::Unretained(this), net::ERR_FAILED,
-                       net::ResolveErrorInfo(net::ERR_FAILED), absl::nullopt));
+    receiver_.set_disconnect_handler(base::BindOnce(
+        &NetInternalsResolveHostClient::OnComplete, base::Unretained(this),
+        net::ERR_FAILED, net::ResolveErrorInfo(net::ERR_FAILED),
+        /*resolved_addresses=*/absl::nullopt,
+        /*endpoint_results_with_metadata=*/absl::nullopt));
   }
   ~NetInternalsResolveHostClient() override = default;
 
@@ -100,28 +152,19 @@ class NetInternalsResolveHostClient : public network::mojom::ResolveHostClient {
 
  private:
   // network::mojom::ResolveHostClient:
-  void OnComplete(
-      int32_t error,
-      const net::ResolveErrorInfo& resolve_error_info,
-      const absl::optional<net::AddressList>& resolved_addresses) override {
-    std::move(callback_).Run(resolve_error_info, resolved_addresses, this);
+  void OnComplete(int32_t error,
+                  const net::ResolveErrorInfo& resolve_error_info,
+                  const absl::optional<net::AddressList>& resolved_addresses,
+                  const absl::optional<net::HostResolverEndpointResults>&
+                      endpoint_results_with_metadata) override {
+    std::move(callback_).Run(resolve_error_info, resolved_addresses,
+                             endpoint_results_with_metadata, this);
   }
   void OnTextResults(const std::vector<std::string>& text_results) override {
     NOTREACHED();
   }
   void OnHostnameResults(const std::vector<net::HostPortPair>& hosts) override {
     NOTREACHED();
-  }
-
-  // This function converts net::AddressList to base::Value.
-  static base::Value AddressListToBaseValue(
-      const std::vector<net::IPEndPoint>& resolved_addresses) {
-    base::Value::List resolved_addresses_base_val_list;
-    for (const net::IPEndPoint& resolved_address : resolved_addresses) {
-      resolved_addresses_base_val_list.Append(
-          resolved_address.ToStringWithoutPort());
-    }
-    return base::Value(std::move(resolved_addresses_base_val_list));
   }
 
  private:
@@ -174,10 +217,12 @@ class NetInternalsMessageHandler : public content::WebUIMessageHandler {
   void OnExpectCTTestReport(const base::Value::List& list);
   void OnCloseIdleSockets(const base::Value::List& list);
   void OnFlushSocketPools(const base::Value::List& list);
-  void OnResolveHostDone(const std::string& callback_id,
-                         const net::ResolveErrorInfo&,
-                         const absl::optional<net::AddressList>&,
-                         NetInternalsResolveHostClient* dns_lookup_client);
+  void OnResolveHostDone(
+      const std::string& callback_id,
+      const net::ResolveErrorInfo&,
+      const absl::optional<net::AddressList>&,
+      const absl::optional<net::HostResolverEndpointResults>&,
+      NetInternalsResolveHostClient* dns_lookup_client);
 
   raw_ptr<content::WebUI> web_ui_;
   std::set<std::unique_ptr<NetInternalsResolveHostClient>,
@@ -261,18 +306,17 @@ void NetInternalsMessageHandler::OnResolveHost(const base::Value::List& list) {
   DCHECK(callback_id);
   DCHECK(hostname);
 
-  const net::HostPortPair host_port_pair(*hostname, 0);
+  // Intentionally using https scheme to trigger a HTTPS DNS resource record
+  // query.
+  auto scheme_host_port = url::SchemeHostPort("https", *hostname, 443);
   const url::Origin origin = url::Origin::Create(GURL("https://" + *hostname));
   AllowJavascript();
 
   // When ResolveHost() in network process completes, OnResolveHostDone() method
   // is called.
-  // TODO(crbug.com/1355169): Consider passing a SchemeHostPort to trigger HTTPS
-  // DNS resource record query.
   mojo::PendingReceiver<network::mojom::ResolveHostClient> receiver;
   GetNetworkContext()->ResolveHost(
-      network::mojom::HostResolverHost::NewHostPortPair(
-          std::move(host_port_pair)),
+      network::mojom::HostResolverHost::NewSchemeHostPort(scheme_host_port),
       net::NetworkIsolationKey(),
       /*optional_parameters=*/nullptr, receiver.InitWithNewPipeAndPassRemote());
 
@@ -419,25 +463,42 @@ void NetInternalsMessageHandler::OnResolveHostDone(
     const std::string& callback_id,
     const net::ResolveErrorInfo& resolve_error_info,
     const absl::optional<net::AddressList>& resolved_addresses,
+    const absl::optional<net::HostResolverEndpointResults>&
+        endpoint_results_with_metadata,
     NetInternalsResolveHostClient* dns_lookup_client) {
   DCHECK_EQ(dns_lookup_clients_.count(dns_lookup_client), 1u);
-
-  if (resolved_addresses) {
-    const base::Value result =
-        AddressListToBaseValue(resolved_addresses->endpoints());
-    ResolveJavascriptCallback(base::Value(callback_id), result);
-  } else {
-    const base::Value result =
-        base::Value(net::ErrorToString(resolve_error_info.error));
-    RejectJavascriptCallback(base::Value(callback_id), result);
-  }
-
   auto it = dns_lookup_clients_.find(dns_lookup_client);
   dns_lookup_clients_.erase(it);
+
+  if (!resolved_addresses) {
+    RejectJavascriptCallback(
+        base::Value(callback_id),
+        base::Value(net::ErrorToString(resolve_error_info.error)));
+    return;
+  }
+
+  base::Value::Dict result;
+
+  base::Value::List resolved_addresses_list =
+      IPEndpointsToBaseList(resolved_addresses->endpoints());
+  result.Set("resolved_addresses", std::move(resolved_addresses_list));
+
+  base::Value::List endpoint_result_with_metadata =
+      HostResolverEndpointResultsToBaseList(endpoint_results_with_metadata);
+  result.Set("endpoint_results_with_metadata",
+             std::move(endpoint_result_with_metadata));
+
+  ResolveJavascriptCallback(base::Value(callback_id), std::move(result));
 }
+
+// g_network_context_for_testing is used only for testing.
+network::mojom::NetworkContext* g_network_context_for_testing = nullptr;
 
 network::mojom::NetworkContext*
 NetInternalsMessageHandler::GetNetworkContext() {
+  if (g_network_context_for_testing) {
+    return g_network_context_for_testing;
+  }
   return web_ui_->GetWebContents()
       ->GetBrowserContext()
       ->GetDefaultStoragePartition()
@@ -461,4 +522,10 @@ NetInternalsUI::NetInternalsUI(content::WebUI* web_ui)
   // Set up the chrome://net-internals/ source.
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource::Add(profile, CreateNetInternalsHTMLSource());
+}
+
+// static
+void NetInternalsUI::SetNetworkContextForTesting(
+    network::mojom::NetworkContext* network_context_for_testing) {
+  g_network_context_for_testing = network_context_for_testing;
 }

@@ -228,10 +228,11 @@ void SocketExtensionWithDnsLookupFunction::StartDnsLookup(
       network::mojom::HostResolverHost::NewHostPortPair(host_port_pair),
       net::NetworkIsolationKey(origin, origin), std::move(params),
       receiver_.BindNewPipeAndPassRemote());
-  receiver_.set_disconnect_handler(
-      base::BindOnce(&SocketExtensionWithDnsLookupFunction::OnComplete,
-                     base::Unretained(this), net::ERR_NAME_NOT_RESOLVED,
-                     net::ResolveErrorInfo(net::ERR_FAILED), absl::nullopt));
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &SocketExtensionWithDnsLookupFunction::OnComplete, base::Unretained(this),
+      net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
+      /*resolved_addresses=*/absl::nullopt,
+      /*endpoint_results_with_metadata=*/absl::nullopt));
 
   // Balanced in OnComplete().
   AddRef();
@@ -240,7 +241,9 @@ void SocketExtensionWithDnsLookupFunction::StartDnsLookup(
 void SocketExtensionWithDnsLookupFunction::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const absl::optional<net::AddressList>& resolved_addresses) {
+    const absl::optional<net::AddressList>& resolved_addresses,
+    const absl::optional<net::HostResolverEndpointResults>&
+        endpoint_results_with_metadata) {
   host_resolver_.reset();
   receiver_.reset();
   if (result == net::OK) {

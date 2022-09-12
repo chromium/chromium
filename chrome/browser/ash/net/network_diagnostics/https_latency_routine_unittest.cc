@@ -47,14 +47,19 @@ class FakeHostResolver : public network::mojom::HostResolver {
   struct DnsResult {
     DnsResult(int32_t result,
               net::ResolveErrorInfo resolve_error_info,
-              absl::optional<net::AddressList> resolved_addresses)
+              absl::optional<net::AddressList> resolved_addresses,
+              absl::optional<net::HostResolverEndpointResults>
+                  endpoint_results_with_metadata)
         : result(result),
           resolve_error_info(resolve_error_info),
-          resolved_addresses(resolved_addresses) {}
+          resolved_addresses(resolved_addresses),
+          endpoint_results_with_metadata(endpoint_results_with_metadata) {}
 
     int result;
     net::ResolveErrorInfo resolve_error_info;
     absl::optional<net::AddressList> resolved_addresses;
+    absl::optional<net::HostResolverEndpointResults>
+        endpoint_results_with_metadata;
   };
 
   FakeHostResolver(mojo::PendingReceiver<network::mojom::HostResolver> receiver,
@@ -71,9 +76,10 @@ class FakeHostResolver : public network::mojom::HostResolver {
                        pending_response_client) override {
     mojo::Remote<network::mojom::ResolveHostClient> response_client(
         std::move(pending_response_client));
-    response_client->OnComplete(fake_dns_result_->result,
-                                fake_dns_result_->resolve_error_info,
-                                fake_dns_result_->resolved_addresses);
+    response_client->OnComplete(
+        fake_dns_result_->result, fake_dns_result_->resolve_error_info,
+        fake_dns_result_->resolved_addresses,
+        fake_dns_result_->endpoint_results_with_metadata);
   }
   void MdnsListen(
       const net::HostPortPair& host,
@@ -278,12 +284,13 @@ TEST_F(HttpsLatencyRoutineTest, TestFailedDnsResolution) {
     if (i == 2) {
       resolution = std::make_unique<FakeHostResolver::DnsResult>(
           net::ERR_NAME_NOT_RESOLVED,
-          net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED),
-          net::AddressList());
+          net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED), net::AddressList(),
+          /*endpoint_results_with_metadata=*/absl::nullopt);
     } else {
       resolution = std::make_unique<FakeHostResolver::DnsResult>(
           net::OK, net::ResolveErrorInfo(net::OK),
-          net::AddressList(FakeIPAddress()));
+          net::AddressList(FakeIPAddress()),
+          /*endpoint_results_with_metadata=*/absl::nullopt);
     }
     fake_dns_results.push_back(resolution.get());
     resolutions.emplace_back(std::move(resolution));
@@ -306,7 +313,8 @@ TEST_F(HttpsLatencyRoutineTest, TestLowLatency) {
   for (int i = 0; i < kTotalHosts; i++) {
     auto resolution = std::make_unique<FakeHostResolver::DnsResult>(
         net::OK, net::ResolveErrorInfo(net::OK),
-        net::AddressList(FakeIPAddress()));
+        net::AddressList(FakeIPAddress()),
+        /*endpoint_results_with_metadata=*/absl::nullopt);
     fake_dns_results.push_back(resolution.get());
     resolutions.emplace_back(std::move(resolution));
   }
@@ -327,7 +335,8 @@ TEST_F(HttpsLatencyRoutineTest, TestFailedHttpRequest) {
   for (int i = 0; i < kTotalHosts; i++) {
     auto resolution = std::make_unique<FakeHostResolver::DnsResult>(
         net::OK, net::ResolveErrorInfo(net::OK),
-        net::AddressList(FakeIPAddress()));
+        net::AddressList(FakeIPAddress()),
+        /*endpoint_results_with_metadata=*/absl::nullopt);
     fake_dns_results.push_back(resolution.get());
     resolutions.emplace_back(std::move(resolution));
   }
@@ -349,7 +358,8 @@ TEST_F(HttpsLatencyRoutineTest, TestHighLatency) {
   for (int i = 0; i < kTotalHosts; i++) {
     auto resolution = std::make_unique<FakeHostResolver::DnsResult>(
         net::OK, net::ResolveErrorInfo(net::OK),
-        net::AddressList(FakeIPAddress()));
+        net::AddressList(FakeIPAddress()),
+        /*endpoint_results_with_metadata=*/absl::nullopt);
     fake_dns_results.push_back(resolution.get());
     resolutions.emplace_back(std::move(resolution));
   }
@@ -371,7 +381,8 @@ TEST_F(HttpsLatencyRoutineTest, TestVeryHighLatency) {
   for (int i = 0; i < kTotalHosts; i++) {
     auto resolution = std::make_unique<FakeHostResolver::DnsResult>(
         net::OK, net::ResolveErrorInfo(net::OK),
-        net::AddressList(FakeIPAddress()));
+        net::AddressList(FakeIPAddress()),
+        /*endpoint_results_with_metadata=*/absl::nullopt);
     fake_dns_results.push_back(resolution.get());
     resolutions.emplace_back(std::move(resolution));
   }

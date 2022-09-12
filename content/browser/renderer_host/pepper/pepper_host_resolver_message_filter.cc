@@ -158,10 +158,11 @@ int32_t PepperHostResolverMessageFilter::OnMsgResolve(
           net::HostPortPair(host_port.host, host_port.port)),
       render_frame_host->GetNetworkIsolationKey(), std::move(parameters),
       receiver_.BindNewPipeAndPassRemote());
-  receiver_.set_disconnect_handler(
-      base::BindOnce(&PepperHostResolverMessageFilter::OnComplete,
-                     base::Unretained(this), net::ERR_NAME_NOT_RESOLVED,
-                     net::ResolveErrorInfo(net::ERR_FAILED), absl::nullopt));
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &PepperHostResolverMessageFilter::OnComplete, base::Unretained(this),
+      net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
+      /*resolved_addresses=*/absl::nullopt,
+      /*endpoint_results_with_metadata=*/absl::nullopt));
   host_resolve_context_ = context->MakeReplyMessageContext();
 
   return PP_OK_COMPLETIONPENDING;
@@ -170,7 +171,9 @@ int32_t PepperHostResolverMessageFilter::OnMsgResolve(
 void PepperHostResolverMessageFilter::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const absl::optional<net::AddressList>& resolved_addresses) {
+    const absl::optional<net::AddressList>& resolved_addresses,
+    const absl::optional<net::HostResolverEndpointResults>&
+        endpoint_results_with_metadata) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   receiver_.reset();
 

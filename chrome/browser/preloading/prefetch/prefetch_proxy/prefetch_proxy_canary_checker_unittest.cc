@@ -103,8 +103,9 @@ class FakeNetworkContext : public network::TestNetworkContext {
 
     void OnComplete(net::Error err,
                     absl::optional<net::AddressList> resolved_addresses) {
-      response_client_->OnComplete(err, net::ResolveErrorInfo(),
-                                   resolved_addresses);
+      response_client_->OnComplete(
+          err, net::ResolveErrorInfo(), resolved_addresses,
+          /*endpoint_results_with_metadata=*/absl::nullopt);
     }
 
    private:

@@ -83,6 +83,7 @@
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/dns_query_type.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/host_resolver_source.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/dns/resolve_context.h"
@@ -3426,7 +3427,9 @@ class TestResolveHostClient : public ResolveHostClientBase {
 
   void OnComplete(int error,
                   const net::ResolveErrorInfo& resolve_error_info,
-                  const absl::optional<net::AddressList>& addresses) override {
+                  const absl::optional<net::AddressList>& addresses,
+                  const absl::optional<net::HostResolverEndpointResults>&
+                      endpoint_results_with_metadata) override {
     DCHECK(!complete_);
 
     complete_ = true;

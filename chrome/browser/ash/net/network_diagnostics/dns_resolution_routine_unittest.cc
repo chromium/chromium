@@ -36,14 +36,19 @@ class FakeHostResolver : public network::mojom::HostResolver {
   struct DnsResult {
     DnsResult(int32_t result,
               net::ResolveErrorInfo resolve_error_info,
-              absl::optional<net::AddressList> resolved_addresses)
+              absl::optional<net::AddressList> resolved_addresses,
+              absl::optional<net::HostResolverEndpointResults>
+                  endpoint_results_with_metadata)
         : result(result),
           resolve_error_info(resolve_error_info),
-          resolved_addresses(resolved_addresses) {}
+          resolved_addresses(resolved_addresses),
+          endpoint_results_with_metadata(endpoint_results_with_metadata) {}
 
     int result;
     net::ResolveErrorInfo resolve_error_info;
     absl::optional<net::AddressList> resolved_addresses;
+    absl::optional<net::HostResolverEndpointResults>
+        endpoint_results_with_metadata;
   };
 
   FakeHostResolver(mojo::PendingReceiver<network::mojom::HostResolver> receiver,
@@ -64,7 +69,8 @@ class FakeHostResolver : public network::mojom::HostResolver {
     DCHECK(result);
     fake_dns_results_.pop_front();
     response_client->OnComplete(result->result, result->resolve_error_info,
-                                result->resolved_addresses);
+                                result->resolved_addresses,
+                                result->endpoint_results_with_metadata);
   }
   void MdnsListen(
       const net::HostPortPair& host,
@@ -187,7 +193,8 @@ TEST_F(DnsResolutionRoutineTest, TestSuccessfulResolution) {
   base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results;
   auto successful_resolution = std::make_unique<FakeHostResolver::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK),
-      net::AddressList(FakeIPAddress()));
+      net::AddressList(FakeIPAddress()),
+      /*endpoint_results_with_metadata=*/absl::nullopt);
   fake_dns_results.push_back(successful_resolution.get());
   SetUpAndRunRoutine(std::move(fake_dns_results),
                      mojom::RoutineVerdict::kNoProblem, {});
@@ -199,7 +206,8 @@ TEST_F(DnsResolutionRoutineTest, TestResolutionFailure) {
   base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results;
   auto failed_resolution = std::make_unique<FakeHostResolver::DnsResult>(
       net::ERR_NAME_NOT_RESOLVED,
-      net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED), net::AddressList());
+      net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED), net::AddressList(),
+      /*endpoint_results_with_metadata=*/absl::nullopt);
   fake_dns_results.push_back(failed_resolution.get());
   SetUpAndRunRoutine(std::move(fake_dns_results),
                      mojom::RoutineVerdict::kProblem,
@@ -213,11 +221,12 @@ TEST_F(DnsResolutionRoutineTest, TestSuccessOnRetry) {
   base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results;
   auto timed_out_resolution = std::make_unique<FakeHostResolver::DnsResult>(
       net::ERR_DNS_TIMED_OUT, net::ResolveErrorInfo(net::ERR_DNS_TIMED_OUT),
-      net::AddressList());
+      net::AddressList(), /*endpoint_results_with_metadata=*/absl::nullopt);
   fake_dns_results.push_back(timed_out_resolution.get());
   auto successful_resolution = std::make_unique<FakeHostResolver::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK),
-      net::AddressList(FakeIPAddress()));
+      net::AddressList(FakeIPAddress()),
+      /*endpoint_results_with_metadata=*/absl::nullopt);
   fake_dns_results.push_back(successful_resolution.get());
 
   fake_dns_results.push_back(successful_resolution.get());

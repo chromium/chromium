@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/net/network_diagnostics/http_request_manager.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_routine.h"
 #include "net/base/address_list.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
@@ -58,7 +59,9 @@ class HttpsLatencyRoutine : public NetworkDiagnosticsRoutine {
   void OnHostResolutionComplete(
       int result,
       const net::ResolveErrorInfo& resolve_error_info,
-      const absl::optional<net::AddressList>& resolved_addresses);
+      const absl::optional<net::AddressList>& resolved_addresses,
+      const absl::optional<net::HostResolverEndpointResults>&
+          endpoint_results_with_metadata);
 
   // Sets the NetworkContextGetter for testing.
   void set_network_context_getter(NetworkContextGetter network_context_getter) {

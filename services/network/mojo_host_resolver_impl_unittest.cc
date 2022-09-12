@@ -110,7 +110,7 @@ class MojoHostResolverImplTest : public testing::Test {
   const net::IPAddress kChromiumOrgAddress{8, 8, 8, 8};
 
   void SetUp() override {
-    std::vector<net::HostResolverEndpointResult> example_com_endpoints(1);
+    net::HostResolverEndpointResults example_com_endpoints(1);
     example_com_endpoints[0].ip_endpoints = {
         net::IPEndPoint(kExampleComAddress, 0),
         net::IPEndPoint(kExampleComAddressIpv6, 0)};

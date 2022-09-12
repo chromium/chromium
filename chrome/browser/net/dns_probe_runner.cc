@@ -121,7 +121,9 @@ bool DnsProbeRunner::IsRunning() const {
 void DnsProbeRunner::OnComplete(
     int32_t result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const absl::optional<net::AddressList>& resolved_addresses) {
+    const absl::optional<net::AddressList>& resolved_addresses,
+    const absl::optional<net::HostResolverEndpointResults>&
+        endpoint_results_with_metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback_.is_null());
 
@@ -144,7 +146,8 @@ void DnsProbeRunner::OnMojoConnectionError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CreateHostResolver();
   OnComplete(net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-             absl::nullopt);
+             /*resolved_addresses=*/absl::nullopt,
+             /*endpoint_results_with_metadata=*/absl::nullopt);
 }
 
 }  // namespace chrome_browser_net
