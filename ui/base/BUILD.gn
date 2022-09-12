@@ -504,6 +504,8 @@ component("base") {
 
   if (is_ios) {
     sources += [
+      "l10n/l10n_util_ios.h",
+      "l10n/l10n_util_ios.mm",
       "l10n/l10n_util_mac.h",
       "l10n/l10n_util_mac.mm",
       "l10n/l10n_util_mac_bridge.h",
@@ -1055,6 +1057,7 @@ test("ui_base_unittests") {
 
   if (is_ios) {
     sources += [
+      "l10n/l10n_util_ios_unittest.mm",
       "l10n/l10n_util_mac_unittest.mm",
       "test/ios/ui_image_test_utils_unittest.mm",
     ]
