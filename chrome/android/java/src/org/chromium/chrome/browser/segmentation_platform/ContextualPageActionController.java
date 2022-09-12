@@ -4,9 +4,14 @@
 
 package org.chromium.chrome.browser.segmentation_platform;
 
+import android.content.res.Configuration;
+import android.content.res.Resources;
+
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -23,11 +28,13 @@ import org.chromium.url.GURL;
  * segmentation platform for on-demand model execution on page load triggers. Provides updated
  * button data to the toolbar when asked for it.
  */
-public class ContextualPageActionController {
+public class ContextualPageActionController implements ConfigurationChangedObserver {
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final ObservableSupplier<Tab> mTabSupplier;
+    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final AdaptiveToolbarButtonController mAdaptiveToolbarButtonController;
     private CurrentTabObserver mCurrentTabObserver;
+    private int mScreenWidthDp;
 
     /**
      * Constructor.
@@ -38,9 +45,11 @@ public class ContextualPageActionController {
      */
     public ContextualPageActionController(ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<Tab> tabSupplier,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher, Resources resources,
             AdaptiveToolbarButtonController adaptiveToolbarButtonController) {
         mProfileSupplier = profileSupplier;
         mTabSupplier = tabSupplier;
+        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mAdaptiveToolbarButtonController = adaptiveToolbarButtonController;
         profileSupplier.addObserver(profile -> {
             if (profile.isOffTheRecord()) return;
@@ -61,11 +70,14 @@ public class ContextualPageActionController {
                 }
             }, this::activeTabChanged);
         });
+        mScreenWidthDp = resources.getConfiguration().screenWidthDp;
+        mActivityLifecycleDispatcher.register(this);
     }
 
     /** Called on destroy. */
     public void destroy() {
         if (mCurrentTabObserver != null) mCurrentTabObserver.destroy();
+        mActivityLifecycleDispatcher.unregister(this);
     }
 
     private void activeTabChanged(Tab tab) {
@@ -78,7 +90,8 @@ public class ContextualPageActionController {
 
     private void maybeShowContextualPageAction() {
         Tab tab = mTabSupplier.get();
-        if (tab == null || tab.isIncognito() || tab.isDestroyed()) {
+        if (tab == null || tab.isIncognito() || tab.isDestroyed()
+                || !isScreenWideEnoughForButton()) {
             // On incognito tabs revert back to static action.
             mAdaptiveToolbarButtonController.showDynamicAction(
                     AdaptiveToolbarButtonVariant.UNKNOWN);
@@ -99,6 +112,28 @@ public class ContextualPageActionController {
                                     .getAdaptiveToolbarButtonVariantFromSegmentId(
                                             result.selectedSegment));
                 });
+    }
+
+    private boolean isScreenWideEnoughForButton() {
+        return mScreenWidthDp >= AdaptiveToolbarFeatures.getDeviceMinimumWidthForShowingButton();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        if (!mActivityLifecycleDispatcher.isNativeInitializationFinished()
+                || !AdaptiveToolbarFeatures.isContextualPageActionsEnabled()) {
+            return;
+        }
+        if (mScreenWidthDp == newConfig.screenWidthDp) return;
+
+        boolean isOldScreenWideEnoughForButton = isScreenWideEnoughForButton();
+
+        mScreenWidthDp = newConfig.screenWidthDp;
+
+        // If the new width changes the button's visibility then update it.
+        if (isOldScreenWideEnoughForButton != isScreenWideEnoughForButton()) {
+            maybeShowContextualPageAction();
+        }
     }
 
     @NativeMethods
