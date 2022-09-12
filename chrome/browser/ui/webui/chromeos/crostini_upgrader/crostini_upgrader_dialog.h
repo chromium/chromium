@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_CROSTINI_UPGRADER_CROSTINI_UPGRADER_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CROSTINI_UPGRADER_CROSTINI_UPGRADER_DIALOG_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 
@@ -49,11 +50,9 @@ class CrostiniUpgraderDialog : public SystemWebDialogDelegate {
   void AdjustWidgetInitParams(views::Widget::InitParams* params) override;
   bool OnDialogCloseRequested() override;
   void OnDialogShown(content::WebUI* webui) override;
-  void OnCloseContents(content::WebContents* source,
-                       bool* out_close_dialog) override;
   void OnWebContentsFinishedLoad() override;
 
-  CrostiniUpgraderUI* upgrader_ui_ = nullptr;  // Not owned.
+  base::WeakPtr<CrostiniUpgraderUI> upgrader_ui_ = nullptr;  // Not owned.
   Profile* profile_;                           // Not owned
   const bool only_run_launch_closure_on_restart_;
   base::OnceClosure launch_closure_;

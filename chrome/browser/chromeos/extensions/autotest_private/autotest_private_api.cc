@@ -57,6 +57,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
 #include "base/lazy_instance.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
@@ -2557,9 +2558,11 @@ AutotestPrivateRunCrostiniInstallerFunction::Run() {
   // we call RestartCrostini and we will be put in the pending restarters
   // queue and be notified on success/otherwise of installation.
   chromeos::CrostiniInstallerDialog::Show(
-      profile, base::BindOnce([](chromeos::CrostiniInstallerUI* installer_ui) {
-        installer_ui->ClickInstallForTesting();
-      }));
+      profile,
+      base::BindOnce(
+          [](base::WeakPtr<chromeos::CrostiniInstallerUI> installer_ui) {
+            installer_ui->ClickInstallForTesting();
+          }));
   crostini::CrostiniManager::GetForProfile(profile)->RestartCrostini(
       crostini::DefaultContainerId(),
       base::BindOnce(

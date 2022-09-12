@@ -119,7 +119,7 @@ bool CrostiniUpgraderDialog::OnDialogCloseRequested() {
     // Running in a test.
     return true;
   }
-  return upgrader_ui_ == nullptr || upgrader_ui_->RequestClosePage();
+  return !upgrader_ui_ || upgrader_ui_->RequestClosePage();
 }
 
 namespace {
@@ -154,18 +154,13 @@ void RunLaunchClosure(base::WeakPtr<crostini::CrostiniManager> crostini_manager,
 }  // namespace
 
 void CrostiniUpgraderDialog::OnDialogShown(content::WebUI* webui) {
-  upgrader_ui_ = static_cast<CrostiniUpgraderUI*>(webui->GetController());
+  upgrader_ui_ =
+      static_cast<CrostiniUpgraderUI*>(webui->GetController())->GetWeakPtr();
   upgrader_ui_->set_launch_callback(base::BindOnce(
       &RunLaunchClosure,
       crostini::CrostiniManager::GetForProfile(profile_)->GetWeakPtr(),
       std::move(launch_closure_), only_run_launch_closure_on_restart_));
   return SystemWebDialogDelegate::OnDialogShown(webui);
-}
-
-void CrostiniUpgraderDialog::OnCloseContents(content::WebContents* source,
-                                             bool* out_close_dialog) {
-  upgrader_ui_ = nullptr;
-  return SystemWebDialogDelegate::OnCloseContents(source, out_close_dialog);
 }
 
 void CrostiniUpgraderDialog::EmitUpgradeDialogEventHistogram(

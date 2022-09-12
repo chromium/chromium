@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_CROSTINI_INSTALLER_CROSTINI_INSTALLER_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CROSTINI_INSTALLER_CROSTINI_INSTALLER_UI_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -39,6 +40,10 @@ class CrostiniInstallerUI
                      chromeos::crostini_installer::mojom::PageHandlerFactory>
                          pending_receiver);
 
+  base::WeakPtr<CrostiniInstallerUI> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   // chromeos::crostini_installer::mojom::PageHandlerFactory:
   void CreatePageHandler(
@@ -53,6 +58,8 @@ class CrostiniInstallerUI
   mojo::Receiver<chromeos::crostini_installer::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
   bool page_closed_ = false;
+
+  base::WeakPtrFactory<CrostiniInstallerUI> weak_ptr_factory_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
