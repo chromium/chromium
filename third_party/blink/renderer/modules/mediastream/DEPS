@@ -51,6 +51,8 @@ include_rules = [
     "+third_party/blink/renderer/modules/mediastream",
     "+third_party/blink/renderer/modules/modules_export.h",
     "+third_party/blink/renderer/modules/peerconnection",
+    "+third_party/blink/renderer/modules/screen_enumeration/screen_detailed.h",
+    "+third_party/blink/renderer/modules/screen_enumeration/screen_details.h",
     "+third_party/blink/renderer/modules/webrtc",
     "+ui/gfx/geometry/size.h",
 ]

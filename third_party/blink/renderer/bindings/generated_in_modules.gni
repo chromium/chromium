@@ -1581,6 +1581,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_can_make_payment_event.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_canvas_capture_media_stream_track.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_canvas_capture_media_stream_track.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_screen_capture_media_stream_track.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_screen_capture_media_stream_track.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_canvas_filter.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_canvas_filter.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_canvas_formatted_text.cc",

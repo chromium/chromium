@@ -5,9 +5,12 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <vector>
 
 #include "ash/shell.h"
+#include "base/containers/flat_set.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/ui/browser.h"
@@ -28,23 +31,31 @@
 namespace {
 
 bool RunGetDisplayMediaSet(content::WebContents* tab,
-                           const std::string& constraints) {
+                           const std::string& constraints,
+                           std::vector<std::string>& track_ids) {
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
       tab->GetPrimaryMainFrame(),
       base::StringPrintf("runGetDisplayMediaSet(%s);", constraints.c_str()),
       &result));
-
-  return result == "capture-success";
+  if (result == "capture-failure")
+    return false;
+  track_ids = base::SplitString(result, ",", base::KEEP_WHITESPACE,
+                                base::SPLIT_WANT_ALL);
+  return true;
 }
 
-size_t GetStreamCount(content::WebContents* tab) {
+bool CheckScreenDetailedExists(content::WebContents* tab,
+                               const std::string& track_id) {
   std::string result;
+  const char* video_track_contains_screen_details_call =
+      R"JS(videoTrackContainsScreenDetailed("%s"))JS";
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetPrimaryMainFrame(), "getStreamCount()", &result));
-  size_t stream_count = 0;
-  EXPECT_TRUE(base::StringToSizeT(result, &stream_count));
-  return stream_count;
+      tab->GetPrimaryMainFrame(),
+      base::StringPrintf(video_track_contains_screen_details_call,
+                         track_id.c_str()),
+      &result));
+  return result == "success-screen-detailed";
 }
 
 class ContentBrowserClientMock : public ChromeContentBrowserClient {
@@ -108,26 +119,59 @@ class GetDisplayMediaSetBrowserTest : public WebRtcTestBase {
 IN_PROC_BROWSER_TEST_F(GetDisplayMediaSetBrowserTest,
                        GetDisplayMediaSetSingleScreenSuccess) {
   SetScreens(/*screen_count=*/1u);
-  EXPECT_TRUE(RunGetDisplayMediaSet(contents_, "{autoSelectAllScreens: true}"));
-  EXPECT_EQ(1u, GetStreamCount(contents_));
+  std::vector<std::string> track_ids;
+  EXPECT_TRUE(RunGetDisplayMediaSet(contents_, "{autoSelectAllScreens: true}",
+                                    track_ids));
+  EXPECT_EQ(1u, track_ids.size());
 }
 
 IN_PROC_BROWSER_TEST_F(GetDisplayMediaSetBrowserTest,
                        GetDisplayMediaSetNoScreenSuccess) {
   SetScreens(/*screen_count=*/0u);
-  EXPECT_TRUE(RunGetDisplayMediaSet(contents_, "{autoSelectAllScreens: true}"));
+  std::vector<std::string> track_ids;
+  EXPECT_TRUE(RunGetDisplayMediaSet(contents_, "{autoSelectAllScreens: true}",
+                                    track_ids));
   // If no screen is attached to a device, the |DisplayManager| will add a
   // default device. This same behavior is used in other places in Chrome that
   // handle multiple screens (e.g. in the window placement API) and
   // getDisplayMediaSet will follow the same convention.
-  EXPECT_EQ(1u, GetStreamCount(contents_));
+  EXPECT_EQ(1u, track_ids.size());
+  EXPECT_EQ(track_ids.size(), base::flat_set<std::string>(track_ids).size());
 }
 
 IN_PROC_BROWSER_TEST_F(GetDisplayMediaSetBrowserTest,
                        GetDisplayMediaSetMultipleScreensSuccess) {
   SetScreens(/*screen_count=*/5u);
-  EXPECT_TRUE(RunGetDisplayMediaSet(contents_, "{autoSelectAllScreens: true}"));
-  EXPECT_EQ(5u, GetStreamCount(contents_));
+  std::vector<std::string> track_ids;
+  EXPECT_TRUE(RunGetDisplayMediaSet(contents_, "{autoSelectAllScreens: true}",
+                                    track_ids));
+  EXPECT_EQ(5u, track_ids.size());
+}
+
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaSetBrowserTest,
+                       TrackContainsScreenDetailed) {
+  SetScreens(/*screen_count=*/1u);
+  std::vector<std::string> track_ids;
+  EXPECT_TRUE(RunGetDisplayMediaSet(contents_, "{autoSelectAllScreens: true}",
+                                    track_ids));
+  ASSERT_EQ(1u, track_ids.size());
+
+  EXPECT_TRUE(CheckScreenDetailedExists(contents_, track_ids[0]));
+}
+
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaSetBrowserTest,
+                       MultipleTracksContainScreenDetailed) {
+  SetScreens(/*screen_count=*/5u);
+  std::vector<std::string> track_ids;
+  EXPECT_TRUE(RunGetDisplayMediaSet(contents_, "{autoSelectAllScreens: true}",
+                                    track_ids));
+  EXPECT_EQ(5u, track_ids.size());
+  EXPECT_EQ(track_ids.size(), base::flat_set<std::string>(track_ids).size());
+
+  for (const std::string& track_id : track_ids) {
+    std::string screen_detailed_attributes;
+    EXPECT_TRUE(CheckScreenDetailedExists(contents_, track_id));
+  }
 }
 
 #endif

@@ -8449,6 +8449,10 @@ interface Screen : EventTarget
     getter width
     method constructor
     setter onchange
+interface ScreenCaptureMediaStreamTrack : MediaStreamTrack
+    attribute @@toStringTag
+    method constructor
+    method screenDetailed
 interface ScreenDetailed : Screen
     attribute @@toStringTag
     getter bluePrimaryX

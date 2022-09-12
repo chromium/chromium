@@ -659,6 +659,7 @@ void UserMediaRequest::Succeed(
     return;
 
   MediaStreamSet::Create(GetExecutionContext(), streams_descriptors,
+                         media_type_,
                          WTF::Bind(&UserMediaRequest::OnMediaStreamsInitialized,
                                    WrapPersistent(this)));
 }
