@@ -47,7 +47,9 @@ PolicyFetcher::PolicyFetcher(scoped_refptr<PolicyService> policy_service)
 
 PolicyFetcher::~PolicyFetcher() = default;
 
-void PolicyFetcher::FetchPolicies(base::OnceCallback<void(int)> callback) {
+void PolicyFetcher::FetchPolicies(
+    base::OnceCallback<void(int, std::unique_ptr<PolicyManagerInterface>)>
+        callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
 
@@ -58,7 +60,8 @@ void PolicyFetcher::FetchPolicies(base::OnceCallback<void(int)> callback) {
           base::SequencedTaskRunnerHandle::Get(),
           base::BindOnce(
               [](scoped_refptr<PolicyFetcher> policy_fetcher,
-                 base::OnceCallback<void(int)> callback,
+                 base::OnceCallback<void(
+                     int, std::unique_ptr<PolicyManagerInterface>)> callback,
                  bool is_enrollment_mandatory, DMClient::RequestResult result) {
                 if (result == DMClient::RequestResult::kSuccess ||
                     result == DMClient::RequestResult::kAlreadyRegistered) {
@@ -71,7 +74,8 @@ void PolicyFetcher::FetchPolicies(base::OnceCallback<void(int)> callback) {
                 } else {
                   std::move(callback).Run(is_enrollment_mandatory
                                               ? kErrorDMRegistrationFailed
-                                              : kErrorOk);
+                                              : kErrorOk,
+                                          nullptr);
                 }
               },
               base::WrapRefCounted(this), std::move(callback))));
@@ -93,16 +97,15 @@ void PolicyFetcher::RegisterDevice(
 
 void PolicyFetcher::FetchPolicy(
     scoped_refptr<base::SequencedTaskRunner> main_task_runner,
-    base::OnceClosure callback) {
+    base::OnceCallback<void(std::unique_ptr<PolicyManagerInterface>)>
+        callback) {
   VLOG(1) << __func__;
 
   DMClient::FetchPolicy(
       DMClient::CreateDefaultConfigurator(policy_service_proxy_configuration_),
       GetDefaultDMStorage(),
       base::BindOnce(&PolicyFetcher::OnFetchPolicyRequestComplete, this)
-          .Then(base::BindPostTask(main_task_runner,
-                                   base::BindOnce(&PolicyFetcher::ResetManagers,
-                                                  this, std::move(callback)))));
+          .Then(base::BindPostTask(main_task_runner, std::move(callback))));
 }
 
 std::unique_ptr<PolicyManagerInterface>
@@ -131,18 +134,6 @@ PolicyFetcher::OnFetchPolicyRequestComplete(
   }
 
   return nullptr;
-}
-
-void PolicyFetcher::ResetManagers(
-    base::OnceClosure callback,
-    std::unique_ptr<PolicyManagerInterface> dm_policy_manager) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG(1) << __func__;
-
-  if (dm_policy_manager)
-    policy_service_->ResetManagers(std::move(dm_policy_manager));
-
-  std::move(callback).Run();
 }
 
 }  // namespace updater

@@ -82,11 +82,6 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   // `kErrorDMRegistrationFailed` if DM registration fails, or any other error.
   void FetchPolicies(base::OnceCallback<void(int)> callback);
 
-  // Resets the policy managers within the policy service, including the
-  // provided DM policy manager. The DM policy manager is preloaded separately
-  // in a blocking sequence since it needs to do I/O to load policies.
-  void ResetManagers(std::unique_ptr<PolicyManagerInterface> dm_policy_manager);
-
   std::string source() const;
 
   bool GetLastCheckPeriodMinutes(PolicyStatus<int>* policy_status,
@@ -133,6 +128,15 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   friend class base::RefCountedThreadSafe<PolicyService>;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Called when `FetchPolicies` has completed. If `dm_policy_manager` is valid,
+  // the policy managers within the policy service are reloaded/reset with the
+  // provided DM policy manager. The DM policy manager is preloaded separately
+  // in a blocking sequence since it needs to do I/O to load policies.
+  void FetchPoliciesDone(
+      base::OnceCallback<void(int)> callback,
+      int result,
+      std::unique_ptr<PolicyManagerInterface> dm_policy_manager);
 
   // List of policy providers in descending order of priority. All managed
   // providers should be ahead of non-managed providers.

@@ -91,13 +91,26 @@ PolicyService::PolicyService(
 
 PolicyService::~PolicyService() = default;
 
-void PolicyService::ResetManagers(
-    std::unique_ptr<PolicyManagerInterface> dm_policy_manager) {
+void PolicyService::FetchPolicies(base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  CHECK(dm_policy_manager);
-  policy_managers_ = SortManagers(CreatePolicyManagerVector(
-      external_constants_, std::move(dm_policy_manager)));
+  policy_fetcher_->FetchPolicies(base::BindOnce(
+      &PolicyService::FetchPoliciesDone, this, std::move(callback)));
+}
+
+void PolicyService::FetchPoliciesDone(
+    base::OnceCallback<void(int)> callback,
+    int result,
+    std::unique_ptr<PolicyManagerInterface> dm_policy_manager) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
+
+  if (dm_policy_manager) {
+    policy_managers_ = SortManagers(CreatePolicyManagerVector(
+        external_constants_, std::move(dm_policy_manager)));
+  }
+
+  std::move(callback).Run(result);
 }
 
 std::string PolicyService::source() const {
@@ -299,12 +312,6 @@ bool PolicyService::QueryAppPolicy(
   if (policy_status)
     *policy_status = status;
   return true;
-}
-
-void PolicyService::FetchPolicies(base::OnceCallback<void(int)> callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  policy_fetcher_->FetchPolicies(std::move(callback));
 }
 
 PolicyServiceProxyConfiguration::PolicyServiceProxyConfiguration() = default;

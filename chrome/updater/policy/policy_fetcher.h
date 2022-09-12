@@ -26,7 +26,9 @@ namespace updater {
 class PolicyFetcher : public base::RefCountedThreadSafe<PolicyFetcher> {
  public:
   explicit PolicyFetcher(scoped_refptr<PolicyService> policy_service);
-  void FetchPolicies(base::OnceCallback<void(int)> callback);
+  void FetchPolicies(
+      base::OnceCallback<void(int, std::unique_ptr<PolicyManagerInterface>)>
+          callback);
 
  private:
   friend class base::RefCountedThreadSafe<PolicyFetcher>;
@@ -36,14 +38,13 @@ class PolicyFetcher : public base::RefCountedThreadSafe<PolicyFetcher> {
       scoped_refptr<base::SequencedTaskRunner> main_task_runner,
       base::OnceCallback<void(bool, DMClient::RequestResult)> callback);
 
-  void FetchPolicy(scoped_refptr<base::SequencedTaskRunner> main_task_runner,
-                   base::OnceClosure callback);
+  void FetchPolicy(
+      scoped_refptr<base::SequencedTaskRunner> main_task_runner,
+      base::OnceCallback<void(std::unique_ptr<PolicyManagerInterface>)>
+          callback);
   std::unique_ptr<PolicyManagerInterface> OnFetchPolicyRequestComplete(
       DMClient::RequestResult result,
       const std::vector<PolicyValidationResult>& validation_results);
-
-  void ResetManagers(base::OnceClosure callback,
-                     std::unique_ptr<PolicyManagerInterface> dm_policy_manager);
 
   SEQUENCE_CHECKER(sequence_checker_);
   const scoped_refptr<PolicyService> policy_service_;
