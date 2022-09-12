@@ -1416,4 +1416,33 @@ TEST_P(LayoutBoxModelObjectTest, UpdateStackingContextForOption) {
   EXPECT_TRUE(option_layout->StyleRef().HasCurrentOpacityAnimation());
 }
 
+TEST_P(LayoutBoxModelObjectTest,
+       StickyParentContainStrictChangeOverflowProperty) {
+  SetBodyInnerHTML(R"HTML(
+    <style>html, body { contain: strict; }</style>
+    <div id="sticky" style="position: sticky; top: 1px"></div>
+  )HTML");
+
+  auto* sticky = GetLayoutBoxByElementId("sticky");
+  auto* constraints = sticky->StickyConstraints();
+  ASSERT_TRUE(constraints);
+  EXPECT_EQ(&GetLayoutView(),
+            &constraints->containing_scroll_container_layer->GetLayoutObject());
+
+  GetDocument().body()->setAttribute(html_names::kStyleAttr,
+                                     "overflow: hidden");
+  UpdateAllLifecyclePhasesForTest();
+  constraints = sticky->StickyConstraints();
+  ASSERT_TRUE(constraints);
+  EXPECT_EQ(GetDocument().body()->GetLayoutObject(),
+            &constraints->containing_scroll_container_layer->GetLayoutObject());
+
+  GetDocument().body()->setAttribute(html_names::kStyleAttr, "");
+  UpdateAllLifecyclePhasesForTest();
+  constraints = sticky->StickyConstraints();
+  ASSERT_TRUE(constraints);
+  EXPECT_EQ(&GetLayoutView(),
+            &constraints->containing_scroll_container_layer->GetLayoutObject());
+}
+
 }  // namespace blink
