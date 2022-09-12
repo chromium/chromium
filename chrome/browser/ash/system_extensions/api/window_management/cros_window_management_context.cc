@@ -123,13 +123,17 @@ void CrosWindowManagementContext::OnKeyEvent(ui::KeyEvent* event) {
 void CrosWindowManagementContext::OnInstanceUpdate(
     const apps::InstanceUpdate& update) {
   if (update.IsDestruction()) {
-    if (update.Window() != update.Window()->GetToplevelWindow()) {
-      return;
-    }
     GetCrosWindowManagementInstances(base::BindRepeating(
         [](base::UnguessableToken id,
            WindowManagementImpl& window_management_impl) {
           window_management_impl.DispatchWindowClosedEvent(id);
+        },
+        update.InstanceId()));
+  } else if (update.IsCreation()) {
+    GetCrosWindowManagementInstances(base::BindRepeating(
+        [](base::UnguessableToken id,
+           WindowManagementImpl& window_management_impl) {
+          window_management_impl.DispatchWindowOpenedEvent(id);
         },
         update.InstanceId()));
   }

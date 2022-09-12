@@ -18,7 +18,7 @@ CrosWindowEvent* CrosWindowEvent::Create(
 
 CrosWindowEvent::CrosWindowEvent(const AtomicString& type,
                                  const CrosWindowEventInit* event_init)
-    : Event(type, Bubbles::kYes, Cancelable::kNo),
+    : Event(type, Bubbles::kNo, Cancelable::kNo),
       window_(event_init->window()) {}
 
 CrosWindowEvent::~CrosWindowEvent() = default;

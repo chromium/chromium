@@ -60,6 +60,8 @@ class CrosWindowManagement : public EventTargetWithInlineData,
   void DispatchStartEvent() override;
   void DispatchAcceleratorEvent(
       mojom::blink::AcceleratorEventPtr event) override;
+  void DispatchWindowOpenedEvent(
+      mojom::blink::CrosWindowInfoPtr window) override;
   void DispatchWindowClosedEvent(
       mojom::blink::CrosWindowInfoPtr window) override;
 

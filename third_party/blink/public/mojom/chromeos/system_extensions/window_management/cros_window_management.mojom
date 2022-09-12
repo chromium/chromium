@@ -156,6 +156,9 @@ interface CrosWindowManagementObserver {
   // modifier.
   DispatchAcceleratorEvent(AcceleratorEvent event);
 
+  // Notify the renderer that a window has been opened.
+  DispatchWindowOpenedEvent(CrosWindowInfo window);
+
   // Notify the renderer that a window has been closed.
   DispatchWindowClosedEvent(CrosWindowInfo window);
 };

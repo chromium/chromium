@@ -12,7 +12,7 @@ promise_test(async () => {
   assert_equals(window_event.type, 'windowclosed', 'event type');
   assert_equals(window_event.window, windows[0], 'Window event has correct\
       window property');
-  assert_true(window_event.bubbles, 'Window event should bubble');
+  assert_false(window_event.bubbles, 'Window event should not bubble');
   assert_false(window_event.cancelable, 'Window event should not be\
       cancelable');
 });

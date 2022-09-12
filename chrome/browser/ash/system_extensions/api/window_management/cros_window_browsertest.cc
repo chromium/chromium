@@ -477,6 +477,10 @@ IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowClose) {
   RunTest("cros_window_close.js");
 }
 
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, WindowOpenedEvent) {
+  RunTest("window_opened_event.js");
+}
+
 IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowWebAppTab) {
   InstallAndLaunchBrowserWebApp();
 

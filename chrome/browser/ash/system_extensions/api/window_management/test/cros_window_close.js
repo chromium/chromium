@@ -5,8 +5,15 @@
 importScripts('test_support.js', 'cros_window_test_utils.js');
 
 promise_test(async (t) => {
+  // TODO(b/245442671): Remove waiting for event dispatch once events are
+  // synchronised.
+  const eventWatcher = new EventWatcher(
+      t, chromeos.windowManagement, ['windowopened', 'windowclosed']);
+
   // Open a browser window that takes focus.
   const {windowId} = await testHelper.openBrowserWindow();
+
+  await eventWatcher.wait_for(['windowopened']);
 
   let windows = await chromeos.windowManagement.getWindows();
   assert_equals(windows.length, 2);
@@ -14,9 +21,6 @@ promise_test(async (t) => {
   let windowToClose = windows.find(window => window.id === windowId);
   assert_not_equals(undefined, windowToClose,
       `Could not find window with id: ${windowId};`);
-
-  const eventWatcher =
-    new EventWatcher(t, chromeos.windowManagement, ['windowclosed']);
 
   windowToClose.close();
 

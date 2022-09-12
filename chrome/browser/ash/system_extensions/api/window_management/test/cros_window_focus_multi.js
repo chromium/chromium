@@ -4,9 +4,16 @@
 
 importScripts('test_support.js', 'cros_window_test_utils.js');
 
-promise_test(async () => {
+promise_test(async (t) => {
+  // TODO(b/245442671): Remove waiting for event dispatch once events are
+  // synchronised.
+  const eventWatcher =
+      new EventWatcher(t, chromeos.windowManagement, ['windowopened']);
+
   // Open a browser window that takes focus.
   await testHelper.openBrowserWindow();
+
+  await eventWatcher.wait_for(['windowopened']);
 
   // async window retriever with stable window ordering after first retrieval.
   // TODO(b/242264908): Remove once the order of windows is guaranteed.

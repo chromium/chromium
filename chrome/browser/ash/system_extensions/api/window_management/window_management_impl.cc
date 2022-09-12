@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/services/app_service/public/cpp/instance.h"
+#include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/browser_context.h"
@@ -117,6 +118,28 @@ WindowManagementImpl::~WindowManagementImpl() = default;
 
 void WindowManagementImpl::DispatchStartEvent() {
   observer_->DispatchStartEvent();
+}
+
+void WindowManagementImpl::DispatchWindowOpenedEvent(
+    const base::UnguessableToken& id) {
+  Profile* profile = GetProfile();
+  if (!profile) {
+    return;
+  }
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+  apps::InstanceRegistry& instance_registry = proxy->InstanceRegistry();
+
+  // CrosWindowManagementContext::GetCrosWindowManagementInstances() is async,
+  // the window could be gone by the time we call this function. Check the
+  // window remains in the instance registry and if not, don't dispatch the
+  // event.
+  auto info_ptr = CrosWindowInfo(id, instance_registry);
+  if (!info_ptr) {
+    return;
+  }
+
+  observer_->DispatchWindowOpenedEvent(std::move(info_ptr));
 }
 
 void WindowManagementImpl::DispatchWindowClosedEvent(
