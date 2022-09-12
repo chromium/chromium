@@ -34,12 +34,15 @@
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_model.h"
 #include "ash/system/toast/toast_manager_impl.h"
+#include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
+#include "ash/touch/touch_hud_debug.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_state.h"
@@ -96,6 +99,22 @@ void ShowToast(const std::string& id,
   ToastData toast(id, catalog_name, text, ToastData::kDefaultToastDuration,
                   /*visible_on_lock_screen=*/true);
   Shell::Get()->toast_manager()->Show(toast);
+}
+
+void HandleToggleSystemTrayBubbleInternal(bool focus_message_center) {
+  aura::Window* target_root = Shell::GetRootWindowForNewWindows();
+  UnifiedSystemTray* tray = RootWindowController::ForWindow(target_root)
+                                ->GetStatusAreaWidget()
+                                ->unified_system_tray();
+  if (tray->IsBubbleShown()) {
+    tray->CloseBubble();
+  } else {
+    tray->ShowBubble();
+    tray->ActivateBubble();
+
+    if (focus_message_center)
+      tray->FocusMessageCenter(false, true);
+  }
 }
 
 // Enters capture mode image type with |source|.
@@ -445,6 +464,21 @@ void ToggleClipboardHistory() {
   Shell::Get()->clipboard_history_controller()->ToggleMenuShownByAccelerator();
 }
 
+void ToggleDictation() {
+  Shell::Get()->accessibility_controller()->ToggleDictationFromSource(
+      DictationToggleSource::kKeyboard);
+}
+
+void ToggleFloating() {
+  DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
+  aura::Window* window = window_util::GetActiveWindow();
+  DCHECK(window);
+  // TODO(sammiequon|shidi): Add some UI like a bounce if a window cannot be
+  // floated.
+  Shell::Get()->float_controller()->ToggleFloat(window);
+  base::RecordAction(base::UserMetricsAction("Accel_Toggle_Floating"));
+}
+
 void ToggleFullscreen() {
   aura::Window* active_window = window_util::GetActiveWindow();
   if (!active_window)
@@ -511,6 +545,24 @@ void ToggleResizeLockMenu() {
   frame_view->GetToggleResizeLockMenuCallback().Run();
 }
 
+void ToggleMessageCenterBubble() {
+  HandleToggleSystemTrayBubbleInternal(true /*focus_message_center*/);
+}
+
+void ToggleMirrorMode() {
+  bool mirror = !Shell::Get()->display_manager()->IsInMirrorMode();
+  Shell::Get()->display_configuration_controller()->SetMirrorMode(
+      mirror, true /* throttle */);
+}
+
+void ToggleOverview() {
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  if (overview_controller->InOverviewSession())
+    overview_controller->EndOverview(OverviewEndAction::kAccelerator);
+  else
+    overview_controller->StartOverview(OverviewStartAction::kAccelerator);
+}
+
 void TogglePrivacyScreen() {
   PrivacyScreenController* controller =
       Shell::Get()->privacy_screen_controller();
@@ -526,9 +578,31 @@ void ToggleProjectorMarker() {
   }
 }
 
+void ToggleSystemTrayBubble() {
+  HandleToggleSystemTrayBubbleInternal(false /*focus_message_center*/);
+}
+
 void ToggleUnifiedDesktop() {
   Shell::Get()->display_manager()->SetUnifiedDesktopEnabled(
       !Shell::Get()->display_manager()->unified_desktop_enabled());
+}
+
+void ToggleWifi() {
+  Shell::Get()->system_tray_notifier()->NotifyRequestToggleWifi();
+}
+
+void TopWindowMinimizeOnBack() {
+  WindowState::Get(window_util::GetTopWindow())->Minimize();
+}
+
+void TouchHudClear() {
+  RootWindowController::ForTargetRootWindow()->touch_hud_debug()->Clear();
+}
+
+void TouchHudModeChange() {
+  RootWindowController* controller =
+      RootWindowController::ForTargetRootWindow();
+  controller->touch_hud_debug()->ChangeToNextMode();
 }
 
 void UnpinWindow() {
@@ -576,6 +650,10 @@ void VolumeUp() {
 
   if (play_sound)
     AcceleratorController::PlayVolumeAdjustmentSound();
+}
+
+void WindowMinimize() {
+  ToggleMinimized();
 }
 
 bool ZoomDisplay(bool up) {

@@ -147,15 +147,18 @@ ASH_EXPORT void ToggleCapsLock();
 // Toggles the clipboard history.
 ASH_EXPORT void ToggleClipboardHistory();
 
+// Turn the dictation on or off.
+ASH_EXPORT void ToggleDictation();
+
+// Toggles the floating window.
+ASH_EXPORT void ToggleFloating();
+
 // Toggles the fullscreen state. The behavior can be overridden
 // by WindowStateDelegate::ToggleFullscreen().
 ASH_EXPORT void ToggleFullscreen();
 
 // Toggles to show/close the Ime Menu.
 ASH_EXPORT void ToggleImeMenuBubble();
-
-// Toggles the Projector annotation tray UI and marker enabled state.
-ASH_EXPORT void ToggleProjectorMarker();
 
 // Toggle keyboard backlight.
 ASH_EXPORT void ToggleKeyboardBacklight();
@@ -164,21 +167,48 @@ ASH_EXPORT void ToggleKeyboardBacklight();
 // fullscreen mode.
 ASH_EXPORT void ToggleMaximized();
 
+// Turn the message center on or off.
+ASH_EXPORT void ToggleMessageCenterBubble();
+
 // Minimizes the active window, if present. If no windows are active, restores
 // the first unminimized window. Returns true if a window was minimized or
 // restored.
 ASH_EXPORT bool ToggleMinimized();
 
+// Turn the mirror mode on or off.
+ASH_EXPORT void ToggleMirrorMode();
+
+// Turn the overview mode on or off.
+ASH_EXPORT void ToggleOverview();
+
 // Toggles on/off the electronic privacy screen.
 ASH_EXPORT void TogglePrivacyScreen();
+
+// Toggles the Projector annotation tray UI and marker enabled state.
+ASH_EXPORT void ToggleProjectorMarker();
 
 // Toggles the resize lock mode menu for a focused ARC++ resize-locked app if
 // present.
 ASH_EXPORT void ToggleResizeLockMenu();
 
+// Turn the system tray on or off.
+ASH_EXPORT void ToggleSystemTrayBubble();
+
+// Turn the wifi on or off.
+ASH_EXPORT void ToggleWifi();
+
 // Toggles the unified desktop mode which allows a window to span multiple
 // displays.
 ASH_EXPORT void ToggleUnifiedDesktop();
+
+// Minimize the top window on the back.
+ASH_EXPORT void TopWindowMinimizeOnBack();
+
+// Clear the touch hud.
+ASH_EXPORT void TouchHudClear();
+
+// Change the touch hud mode.
+ASH_EXPORT void TouchHudModeChange();
 
 // If a window is pinned (aka forced fullscreen), exit from pinned mode.
 ASH_EXPORT void UnpinWindow();
@@ -191,6 +221,9 @@ ASH_EXPORT void VolumeMute();
 
 // Volume up.
 ASH_EXPORT void VolumeUp();
+
+// Minimize the window.
+ASH_EXPORT void WindowMinimize();
 
 // Change the display zooming up or down.
 ASH_EXPORT bool ZoomDisplay(bool up);

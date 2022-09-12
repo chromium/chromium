@@ -23,7 +23,6 @@
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
-#include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -338,13 +337,6 @@ bool CanHandleFocusCameraPreview() {
   return preview_widget && preview_widget->IsVisible();
 }
 
-void HandleToggleMirrorMode() {
-  base::RecordAction(UserMetricsAction("Accel_Toggle_Mirror_Mode"));
-  bool mirror = !Shell::Get()->display_manager()->IsInMirrorMode();
-  Shell::Get()->display_configuration_controller()->SetMirrorMode(
-      mirror, true /* throttle */);
-}
-
 bool CanHandleNewIncognitoWindow() {
   // Guest mode does not use incognito windows. The browser may have other
   // restrictions on incognito mode (e.g. enterprise policy) but those are rare.
@@ -572,32 +564,6 @@ void HandleTakeScreenshot(ui::KeyboardCode key_code) {
   capture_mode_controller->CaptureScreenshotsOfAllDisplays();
 }
 
-void HandleToggleSystemTrayBubbleInternal(bool focus_message_center) {
-  aura::Window* target_root = Shell::GetRootWindowForNewWindows();
-  UnifiedSystemTray* tray = RootWindowController::ForWindow(target_root)
-                                ->GetStatusAreaWidget()
-                                ->unified_system_tray();
-  if (tray->IsBubbleShown()) {
-    tray->CloseBubble();
-  } else {
-    tray->ShowBubble();
-    tray->ActivateBubble();
-
-    if (focus_message_center)
-      tray->FocusMessageCenter(false, true);
-  }
-}
-
-void HandleToggleSystemTrayBubble() {
-  base::RecordAction(UserMetricsAction("Accel_Toggle_System_Tray_Bubble"));
-  HandleToggleSystemTrayBubbleInternal(false /*focus_message_center*/);
-}
-
-void HandleToggleMessageCenterBubble() {
-  base::RecordAction(UserMetricsAction("Accel_Toggle_Message_Center_Bubble"));
-  HandleToggleSystemTrayBubbleInternal(true /*focus_message_center*/);
-}
-
 bool CanHandleSwitchIme(const ui::Accelerator& accelerator) {
   return Shell::Get()->ime_controller()->CanSwitchImeWithAccelerator(
       accelerator);
@@ -656,16 +622,6 @@ void HandleToggleAppList(const ui::Accelerator& accelerator,
       show_source, accelerator.time_stamp());
 }
 
-void HandleToggleFloating() {
-  DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
-  aura::Window* window = window_util::GetActiveWindow();
-  DCHECK(window);
-  // TODO(sammiequon|shidi): Add some UI like a bounce if a window cannot be
-  // floated.
-  Shell::Get()->float_controller()->ToggleFloat(window);
-  base::RecordAction(UserMetricsAction("Accel_Toggle_Floating"));
-}
-
 void HandleToggleFullscreen(const ui::Accelerator& accelerator) {
   if (accelerator.key_code() == ui::VKEY_ZOOM)
     base::RecordAction(UserMetricsAction("Accel_Fullscreen_F4"));
@@ -674,15 +630,6 @@ void HandleToggleFullscreen(const ui::Accelerator& accelerator) {
   // http://crbug.com/1094739
   if (!overview_controller->IsInStartAnimation())
     accelerators::ToggleFullscreen();
-}
-
-void HandleToggleOverview() {
-  base::RecordAction(base::UserMetricsAction("Accel_Overview_F5"));
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
-  if (overview_controller->InOverviewSession())
-    overview_controller->EndOverview(OverviewEndAction::kAccelerator);
-  else
-    overview_controller->StartOverview(OverviewStartAction::kAccelerator);
 }
 
 bool CanHandleWindowSnap() {
@@ -733,17 +680,6 @@ void HandleWindowSnap(AcceleratorAction action) {
   window_state->set_snap_action_source(
       WindowSnapActionSource::kKeyboardShortcutToSnap);
   window_state->OnWMEvent(&event);
-}
-
-void HandleWindowMinimize() {
-  base::RecordAction(base::UserMetricsAction("Accel_Toggle_Minimized_Minus"));
-  accelerators::ToggleMinimized();
-}
-
-void HandleTopWindowMinimizeOnBack() {
-  base::RecordAction(
-      base::UserMetricsAction("Accel_Minimize_Top_Window_On_Back"));
-  WindowState::Get(window_util::GetTopWindow())->Minimize();
 }
 
 bool CanHandleDisableCapsLock(const ui::Accelerator& previous_accelerator) {
@@ -926,12 +862,6 @@ bool CanHandleToggleCapsLock(
 
 bool CanHandleToggleDictation() {
   return Shell::Get()->accessibility_controller()->dictation().enabled();
-}
-
-void HandleToggleDictation() {
-  base::RecordAction(UserMetricsAction("Accel_Toggle_Dictation"));
-  Shell::Get()->accessibility_controller()->ToggleDictationFromSource(
-      DictationToggleSource::kKeyboard);
 }
 
 bool CanHandleToggleOverview() {
@@ -1188,16 +1118,6 @@ bool CanUnpinWindow() {
   WindowState* window_state = WindowState::ForActiveWindow();
   return window_state &&
          window_state->GetStateType() == WindowStateType::kPinned;
-}
-
-void HandleTouchHudClear() {
-  RootWindowController::ForTargetRootWindow()->touch_hud_debug()->Clear();
-}
-
-void HandleTouchHudModeChange() {
-  RootWindowController* controller =
-      RootWindowController::ForTargetRootWindow();
-  controller->touch_hud_debug()->ChangeToNextMode();
 }
 
 bool CanHandleToggleProjectorMarker() {
@@ -2143,7 +2063,8 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::ToggleClipboardHistory();
       break;
     case TOGGLE_DICTATION:
-      HandleToggleDictation();
+      base::RecordAction(UserMetricsAction("Accel_Toggle_Dictation"));
+      accelerators::ToggleDictation();
       break;
     case TOGGLE_DOCKED_MAGNIFIER:
       HandleToggleDockedMagnifier();
@@ -2153,7 +2074,8 @@ void AcceleratorControllerImpl::PerformAction(
       debug::PerformDebugActionIfEnabled(action);
       break;
     case TOGGLE_FLOATING:
-      HandleToggleFloating();
+      // UMA metrics are recorded in the function.
+      accelerators::ToggleFloating();
       break;
     case TOGGLE_FULLSCREEN:
       HandleToggleFullscreen(accelerator);
@@ -2168,13 +2090,17 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::ToggleMaximized();
       break;
     case TOGGLE_MESSAGE_CENTER_BUBBLE:
-      HandleToggleMessageCenterBubble();
+      base::RecordAction(
+          UserMetricsAction("Accel_Toggle_Message_Center_Bubble"));
+      accelerators::ToggleMessageCenterBubble();
       break;
     case TOGGLE_MIRROR_MODE:
-      HandleToggleMirrorMode();
+      base::RecordAction(UserMetricsAction("Accel_Toggle_Mirror_Mode"));
+      accelerators::ToggleMirrorMode();
       break;
     case TOGGLE_OVERVIEW:
-      HandleToggleOverview();
+      base::RecordAction(base::UserMetricsAction("Accel_Overview_F5"));
+      accelerators::ToggleOverview();
       break;
     case TOGGLE_RESIZE_LOCK_MENU:
       base::RecordAction(
@@ -2185,16 +2111,17 @@ void AcceleratorControllerImpl::PerformAction(
       HandleToggleSpokenFeedback();
       break;
     case TOGGLE_SYSTEM_TRAY_BUBBLE:
-      HandleToggleSystemTrayBubble();
+      base::RecordAction(UserMetricsAction("Accel_Toggle_System_Tray_Bubble"));
+      accelerators::ToggleSystemTrayBubble();
       break;
     case TOGGLE_WIFI:
-      Shell::Get()->system_tray_notifier()->NotifyRequestToggleWifi();
+      accelerators::ToggleWifi();
       break;
     case TOUCH_HUD_CLEAR:
-      HandleTouchHudClear();
+      accelerators::TouchHudClear();
       break;
     case TOUCH_HUD_MODE_CHANGE:
-      HandleTouchHudModeChange();
+      accelerators::TouchHudModeChange();
       break;
     case UNPIN:
       accelerators::UnpinWindow();
@@ -2217,10 +2144,14 @@ void AcceleratorControllerImpl::PerformAction(
       HandleWindowSnap(action);
       break;
     case WINDOW_MINIMIZE:
-      HandleWindowMinimize();
+      base::RecordAction(
+          base::UserMetricsAction("Accel_Toggle_Minimized_Minus"));
+      accelerators::WindowMinimize();
       break;
     case MINIMIZE_TOP_WINDOW_ON_BACK:
-      HandleTopWindowMinimizeOnBack();
+      base::RecordAction(
+          base::UserMetricsAction("Accel_Minimize_Top_Window_On_Back"));
+      accelerators::TopWindowMinimizeOnBack();
       break;
   }
 
