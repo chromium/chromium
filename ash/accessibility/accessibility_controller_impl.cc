@@ -18,12 +18,12 @@
 #include "ash/accessibility/switch_access/point_scan_controller.h"
 #include "ash/accessibility/ui/accessibility_highlight_controller.h"
 #include "ash/accessibility/ui/accessibility_panel_layout_manager.h"
+#include "ash/color_enhancement/color_enhancement_controller.h"
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/events/accessibility_event_rewriter.h"
 #include "ash/events/select_to_speak_event_handler.h"
-#include "ash/high_contrast/high_contrast_controller.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/login_status.h"
@@ -1003,6 +1003,22 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+
+  if (::features::
+          AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
+    registry->RegisterIntegerPref(
+        prefs::kAccessibilityGreyscaleAmount, 0,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+    registry->RegisterIntegerPref(
+        prefs::kAccessibilitySaturationAmount, 100,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+    registry->RegisterIntegerPref(
+        prefs::kAccessibilitySepiaAmount, 0,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+    registry->RegisterIntegerPref(
+        prefs::kAccessibilityHueRotationAmount, 0,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  }
 }
 
 void AccessibilityControllerImpl::Shutdown() {
@@ -1700,6 +1716,9 @@ void AccessibilityControllerImpl::ObservePrefs(PrefService* prefs) {
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(prefs);
 
+  const bool color_enhancement_feature_enabled =
+      ::features::AreExperimentalAccessibilityColorEnhancementSettingsEnabled();
+
   // It is safe to use base::Unreatined since we own pref_change_registrar.
   for (int feature_id = 0; feature_id < FeatureType::kFeatureCount;
        feature_id++) {
@@ -1803,6 +1822,28 @@ void AccessibilityControllerImpl::ObservePrefs(PrefService* prefs) {
       base::BindRepeating(
           &AccessibilityControllerImpl::UpdateCursorColorFromPrefs,
           base::Unretained(this)));
+  if (color_enhancement_feature_enabled) {
+    pref_change_registrar_->Add(
+        prefs::kAccessibilityGreyscaleAmount,
+        base::BindRepeating(
+            &AccessibilityControllerImpl::UpdateFilterGreyscaleFromPrefs,
+            base::Unretained(this)));
+    pref_change_registrar_->Add(
+        prefs::kAccessibilitySaturationAmount,
+        base::BindRepeating(
+            &AccessibilityControllerImpl::UpdateFilterSaturationFromPrefs,
+            base::Unretained(this)));
+    pref_change_registrar_->Add(
+        prefs::kAccessibilitySepiaAmount,
+        base::BindRepeating(
+            &AccessibilityControllerImpl::UpdateFilterSepiaFromPrefs,
+            base::Unretained(this)));
+    pref_change_registrar_->Add(
+        prefs::kAccessibilityHueRotationAmount,
+        base::BindRepeating(
+            &AccessibilityControllerImpl::UpdateFilterHueRotationFromPrefs,
+            base::Unretained(this)));
+  }
 
   // Load current state.
   for (int feature_id = 0; feature_id < FeatureType::kFeatureCount;
@@ -1821,6 +1862,12 @@ void AccessibilityControllerImpl::ObservePrefs(PrefService* prefs) {
   UpdateCursorColorFromPrefs();
   UpdateShortcutsEnabledFromPref();
   UpdateTabletModeShelfNavigationButtonsFromPref();
+  if (color_enhancement_feature_enabled) {
+    UpdateFilterGreyscaleFromPrefs();
+    UpdateFilterSaturationFromPrefs();
+    UpdateFilterSepiaFromPrefs();
+    UpdateFilterHueRotationFromPrefs();
+  }
 }
 
 void AccessibilityControllerImpl::UpdateAutoclickDelayFromPref() {
@@ -1990,6 +2037,44 @@ void AccessibilityControllerImpl::UpdateCursorColorFromPrefs() {
               : kDefaultCursorColor);
   NotifyAccessibilityStatusChanged();
   shell->UpdateCursorCompositingEnabled();
+}
+
+void AccessibilityControllerImpl::UpdateFilterGreyscaleFromPrefs() {
+  DCHECK(active_user_prefs_);
+
+  const float amount =
+      active_user_prefs_->GetInteger(prefs::kAccessibilityGreyscaleAmount) /
+      100.f;
+
+  Shell::Get()->color_enhancement_controller()->SetGreyscaleAmount(amount);
+}
+
+void AccessibilityControllerImpl::UpdateFilterSaturationFromPrefs() {
+  DCHECK(active_user_prefs_);
+
+  const float amount =
+      active_user_prefs_->GetInteger(prefs::kAccessibilitySaturationAmount) /
+      100.f;
+
+  Shell::Get()->color_enhancement_controller()->SetSaturationAmount(amount);
+}
+
+void AccessibilityControllerImpl::UpdateFilterSepiaFromPrefs() {
+  DCHECK(active_user_prefs_);
+
+  const float amount =
+      active_user_prefs_->GetInteger(prefs::kAccessibilitySepiaAmount) / 100.f;
+
+  Shell::Get()->color_enhancement_controller()->SetSepiaAmount(amount);
+}
+
+void AccessibilityControllerImpl::UpdateFilterHueRotationFromPrefs() {
+  DCHECK(active_user_prefs_);
+
+  const int amount =
+      active_user_prefs_->GetInteger(prefs::kAccessibilityHueRotationAmount);
+
+  Shell::Get()->color_enhancement_controller()->SetHueRotationAmount(amount);
 }
 
 void AccessibilityControllerImpl::UpdateAccessibilityHighlightingFromPrefs() {
@@ -2351,8 +2436,8 @@ void AccessibilityControllerImpl::UpdateFeatureFromPref(FeatureType feature) {
     case FeatureType::kDockedMagnifier:
       break;
     case FeatureType::kHighContrast:
-      Shell::Get()->high_contrast_controller()->SetEnabled(enabled);
-      Shell::Get()->UpdateCursorCompositingEnabled();
+      Shell::Get()->color_enhancement_controller()->SetHighContrastEnabled(
+          enabled);
       break;
     case FeatureType::kLargeCursor:
       if (!enabled)

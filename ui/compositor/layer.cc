@@ -200,6 +200,8 @@ Layer::Layer(LayerType type)
       layer_grayscale_(0.0f),
       layer_inverted_(false),
       layer_blur_sigma_(0.0f),
+      layer_sepia_(0.0f),
+      layer_hue_rotation_(0.0f),
       layer_mask_(nullptr),
       layer_mask_back_link_(nullptr),
       zoom_(1),
@@ -256,6 +258,11 @@ std::unique_ptr<Layer> Layer::Clone() const {
   clone->SetLayerSaturation(layer_saturation_);
   clone->SetLayerBrightness(GetTargetBrightness());
   clone->SetLayerGrayscale(GetTargetGrayscale());
+  clone->SetLayerSepia(layer_sepia_);
+  clone->SetLayerHueRotation(layer_hue_rotation_);
+  if (layer_custom_color_matrix_) {
+    clone->SetLayerCustomColorMatrix(*layer_custom_color_matrix_);
+  }
   clone->SetLayerInverted(layer_inverted_);
   clone->SetLayerBlur(layer_blur_sigma_);
   if (alpha_shape_)
@@ -593,6 +600,35 @@ float Layer::GetTargetGrayscale() const {
   return layer_grayscale();
 }
 
+void Layer::SetLayerSepia(float amount) {
+  layer_sepia_ = amount;
+  SetLayerFilters();
+}
+
+void Layer::SetLayerHueRotation(float amount) {
+  layer_hue_rotation_ = amount;
+  SetLayerFilters();
+}
+
+void Layer::SetLayerCustomColorMatrix(
+    const cc::FilterOperation::Matrix& matrix) {
+  layer_custom_color_matrix_ =
+      std::make_unique<cc::FilterOperation::Matrix>(matrix);
+  SetLayerFilters();
+}
+
+const cc::FilterOperation::Matrix* Layer::GetLayerCustomColorMatrix() const {
+  return layer_custom_color_matrix_.get();
+}
+
+bool Layer::LayerHasCustomColorMatrix() const {
+  return layer_custom_color_matrix_.get() != nullptr;
+}
+
+void Layer::ClearLayerCustomColorMatrix() {
+  layer_custom_color_matrix_.reset();
+}
+
 void Layer::SetLayerInverted(bool inverted) {
   layer_inverted_ = inverted;
   SetLayerFilters();
@@ -642,6 +678,14 @@ void Layer::SetAlphaShape(std::unique_ptr<ShapeRects> shape) {
 
 void Layer::SetLayerFilters() {
   cc::FilterOperations filters;
+  if (layer_custom_color_matrix_) {
+    filters.Append(cc::FilterOperation::CreateColorMatrixFilter(
+        *layer_custom_color_matrix_));
+  }
+  if (layer_hue_rotation_) {
+    filters.Append(
+        cc::FilterOperation::CreateHueRotateFilter(layer_hue_rotation_));
+  }
   if (layer_saturation_) {
     filters.Append(cc::FilterOperation::CreateSaturateFilter(
         layer_saturation_));
@@ -652,6 +696,8 @@ void Layer::SetLayerFilters() {
   }
   if (layer_inverted_)
     filters.Append(cc::FilterOperation::CreateInvertFilter(1.0));
+  if (layer_sepia_)
+    filters.Append(cc::FilterOperation::CreateSepiaFilter(layer_sepia_));
   if (layer_blur_sigma_) {
     filters.Append(cc::FilterOperation::CreateBlurFilter(layer_blur_sigma_,
                                                          SkTileMode::kClamp));

@@ -278,6 +278,15 @@ const char kAccessibilityAutoclickMovementThreshold[] =
 // The Autoclick menu position on the screen, an AutoclickMenuPosition.
 const char kAccessibilityAutoclickMenuPosition[] =
     "settings.a11y.autoclick_menu_position";
+// How much to greyscale the display.
+const char kAccessibilityGreyscaleAmount[] = "settings.a11y.greyscale_amount";
+// How much to saturate the display.
+const char kAccessibilitySaturationAmount[] = "settings.a11y.saturation_amount";
+// How much sepia the display.
+const char kAccessibilitySepiaAmount[] = "settings.a11y.sepia_amount";
+// How much to rotate the hue on the display.
+const char kAccessibilityHueRotationAmount[] =
+    "settings.a11y.hue_rotation_amount";
 // A boolean pref which determines whether caret highlighting is enabled.
 const char kAccessibilityCaretHighlightEnabled[] =
     "settings.a11y.caret_highlight";

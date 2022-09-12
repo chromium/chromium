@@ -33,6 +33,7 @@
 #include "ash/child_accounts/parent_access_controller_impl.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/control_v_histogram_recorder.h"
+#include "ash/color_enhancement/color_enhancement_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/controls/contextual_tooltip.h"
@@ -69,7 +70,6 @@
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/glanceables_delegate.h"
-#include "ash/high_contrast/high_contrast_controller.h"
 #include "ash/highlighter/highlighter_controller.h"
 #include "ash/host/ash_window_tree_host_init_params.h"
 #include "ash/hud_display/hud_display.h"
@@ -782,7 +782,7 @@ Shell::~Shell() {
   // VideoDetector::Observer interface.
   video_activity_notifier_.reset();
   video_detector_.reset();
-  high_contrast_controller_.reset();
+  color_enhancement_controller_.reset();
 
   shadow_controller_.reset();
   resize_shadow_controller_.reset();
@@ -1343,7 +1343,8 @@ void Shell::Init(
 
   autoclick_controller_ = std::make_unique<AutoclickController>();
 
-  high_contrast_controller_ = std::make_unique<HighContrastController>();
+  color_enhancement_controller_ =
+      std::make_unique<ColorEnhancementController>();
 
   docked_magnifier_controller_ = std::make_unique<DockedMagnifierController>();
 

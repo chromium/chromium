@@ -521,6 +521,10 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void UpdateLargeCursorFromPref();
   void UpdateLiveCaptionFromPref();
   void UpdateCursorColorFromPrefs();
+  void UpdateFilterGreyscaleFromPrefs();
+  void UpdateFilterSaturationFromPrefs();
+  void UpdateFilterSepiaFromPrefs();
+  void UpdateFilterHueRotationFromPrefs();
   void UpdateSwitchAccessKeyCodesFromPref(SwitchAccessCommand command);
   void UpdateSwitchAccessAutoScanEnabledFromPref();
   void UpdateSwitchAccessAutoScanSpeedFromPref();
