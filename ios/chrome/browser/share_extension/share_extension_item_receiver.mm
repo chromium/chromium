@@ -327,7 +327,7 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
     if (!weakSelf) {
       return;
     }
-    base::ScopedBlockingCall scoped_blocking_call(
+    base::ScopedBlockingCall inner_scoped_blocking_call(
         FROM_HERE, base::BlockingType::WILL_BLOCK);
     NSFileManager* manager = [NSFileManager defaultManager];
     NSData* data = [manager contentsAtPath:[newURL path]];
@@ -349,7 +349,7 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
   void (^deletingAccessor)(NSURL*) = ^(NSURL* newURL) {
-    base::ScopedBlockingCall scoped_blocking_call(
+    base::ScopedBlockingCall inner_scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
     NSFileManager* manager = [NSFileManager defaultManager];
     [manager removeItemAtURL:newURL error:nil];

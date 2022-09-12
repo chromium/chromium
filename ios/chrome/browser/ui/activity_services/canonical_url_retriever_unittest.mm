@@ -49,10 +49,11 @@ class CanonicalURLRetrieverTest : public PlatformTest {
   bool RetrieveCanonicalUrl(GURL* url) {
     __block GURL result;
     __block bool canonical_url_received = false;
-    activity_services::RetrieveCanonicalUrl(web_state(), ^(const GURL& url) {
-      result = url;
-      canonical_url_received = true;
-    });
+    activity_services::RetrieveCanonicalUrl(web_state(),
+                                            ^(const GURL& canonical_url) {
+                                              result = canonical_url;
+                                              canonical_url_received = true;
+                                            });
 
     bool success = base::test::ios::WaitUntilConditionOrTimeout(
         base::test::ios::kWaitForJSCompletionTimeout, ^{

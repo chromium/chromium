@@ -128,10 +128,11 @@ TEST_F(WindowLocationTest, Assign) {
   // button.
   GURL sample_url = test_server_->GetURL(kSampleFileBasedURL);
   SetWindowLocationUrl(sample_url);
-  ASSERT_TRUE(ExecuteBlockAndWaitForLoad(sample_url, ^{
+  auto block = ^{
     ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(),
                                                    kWindowLocationAssignID));
-  }));
+  };
+  ASSERT_TRUE(ExecuteBlockAndWaitForLoad(sample_url, block));
 
   // Verify that `sample_url` was loaded and that `about_blank_item` was pruned.
   EXPECT_EQ(sample_url, navigation_manager()->GetLastCommittedItem()->GetURL());
@@ -156,10 +157,11 @@ TEST_F(WindowLocationTest, Replace) {
   // button.
   GURL sample_url = test_server_->GetURL(kSampleFileBasedURL);
   SetWindowLocationUrl(sample_url);
-  ASSERT_TRUE(ExecuteBlockAndWaitForLoad(sample_url, ^{
+  auto block = ^{
     ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(),
                                                    kWindowLocationReplaceID));
-  }));
+  };
+  ASSERT_TRUE(ExecuteBlockAndWaitForLoad(sample_url, block));
 
   // Verify that `sample_url` was loaded and that `about_blank_item` was pruned.
   web::NavigationItem* current_item =
@@ -172,10 +174,11 @@ TEST_F(WindowLocationTest, Replace) {
 // Tests that calling window.location.reload() causes an onload event to occur.
 TEST_F(WindowLocationTest, WindowLocationReload) {
   // Tap the window.location.reload() button.
-  ASSERT_TRUE(ExecuteBlockAndWaitForLoad(window_location_url(), ^{
+  auto block = ^{
     ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(),
                                                    kWindowLocationReloadID));
-  }));
+  };
+  ASSERT_TRUE(ExecuteBlockAndWaitForLoad(window_location_url(), block));
 
   // Verify that `kOnLoadText` is displayed and that no additional
   // NavigationItems are added.
@@ -200,10 +203,11 @@ TEST_F(WindowLocationTest, WindowLocationSetToDOMString) {
   // button.
   GURL sample_url = test_server_->GetURL(kSampleFileBasedURL);
   SetWindowLocationUrl(sample_url);
-  ASSERT_TRUE(ExecuteBlockAndWaitForLoad(sample_url, ^{
+  auto block = ^{
     ASSERT_TRUE(web::test::TapWebViewElementWithId(
         web_state(), kWindowLocationSetToDOMStringID));
-  }));
+  };
+  ASSERT_TRUE(ExecuteBlockAndWaitForLoad(sample_url, block));
 
   // Verify that `sample_url` was loaded and that `about_blank_item` was pruned.
   EXPECT_EQ(sample_url, navigation_manager()->GetLastCommittedItem()->GetURL());

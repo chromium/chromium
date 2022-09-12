@@ -177,11 +177,13 @@ void AudioPlaybackSinkIos::ResetOutputQueue() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DisposeOutputQueue();
 
-  OSStatus err = AudioQueueNewOutput(&stream_format_, OnBufferDequeued, this,
-                                     CFRunLoopGetCurrent(),
-                                     kCFRunLoopCommonModes, 0, &output_queue_);
-  if (HandleError(err, "AudioQueueNewOutput")) {
-    return;
+  {
+    OSStatus err = AudioQueueNewOutput(
+        &stream_format_, OnBufferDequeued, this, CFRunLoopGetCurrent(),
+        kCFRunLoopCommonModes, 0, &output_queue_);
+    if (HandleError(err, "AudioQueueNewOutput")) {
+      return;
+    }
   }
 
   // Create buffers.

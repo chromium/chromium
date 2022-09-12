@@ -341,8 +341,8 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
   }
 
   __weak CRWWKNavigationHandler* weakSelf = self;
-  auto callback = base::BindOnce(
-      ^(web::WebStatePolicyDecider::PolicyDecision policyDecision) {
+  auto callback =
+      base::BindOnce(^(web::WebStatePolicyDecider::PolicyDecision decision) {
         __strong CRWWKNavigationHandler* strongSelf = weakSelf;
         // The WebState may have been closed in the ShouldAllowRequest callback.
         if (!strongSelf || strongSelf.beingDestroyed) {
@@ -351,12 +351,12 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
         }
 
         if (!webControllerCanShow) {
-          policyDecision = web::WebStatePolicyDecider::PolicyDecision::Cancel();
+          decision = web::WebStatePolicyDecider::PolicyDecision::Cancel();
         }
 
         [strongSelf answerDecisionHandler:decisionHandler
                       forNavigationAction:action
-                       withPolicyDecision:policyDecision
+                       withPolicyDecision:decision
                                   webView:webView
                  forceBlockUniversalLinks:forceBlockUniversalLinks];
       });
@@ -1968,12 +1968,12 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
         // storing the cert decision.
         leafCert = web::CreateCertFromChain(@[ chain.firstObject ]);
         if (leafCert) {
-          auto error = _certVerificationErrors->Get(
+          auto verificationError = _certVerificationErrors->Get(
               {leafCert, base::SysNSStringToUTF8(host)});
-          bool cacheHit = error != _certVerificationErrors->end();
+          bool cacheHit = verificationError != _certVerificationErrors->end();
           if (cacheHit) {
-            info.is_fatal_cert_error = error->second.is_recoverable;
-            info.cert_status = error->second.status;
+            info.is_fatal_cert_error = verificationError->second.is_recoverable;
+            info.cert_status = verificationError->second.status;
           }
           UMA_HISTOGRAM_BOOLEAN("WebController.CertVerificationErrorsCacheHit",
                                 cacheHit);
@@ -1999,16 +1999,16 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
               evaluateJavaScript:[errorPageHelper
                                      scriptForInjectingHTML:errorHTML
                                          addAutomaticReload:YES]
-               completionHandler:^(id result, NSError* error) {
-                 if (error) {
+               completionHandler:^(id result, NSError* nserror) {
+                 if (nserror) {
                    // WKErrorJavaScriptResultTypeIsUnsupported can be received
                    // if the WKWebView is released during this call.
-                   DCHECK(error.code == WKErrorWebViewInvalidated ||
-                          error.code == WKErrorWebContentProcessTerminated ||
-                          error.code ==
+                   DCHECK(nserror.code == WKErrorWebViewInvalidated ||
+                          nserror.code == WKErrorWebContentProcessTerminated ||
+                          nserror.code ==
                               WKErrorJavaScriptResultTypeIsUnsupported)
                        << "Error injecting error page HTML: "
-                       << base::SysNSStringToUTF8(error.description);
+                       << base::SysNSStringToUTF8(nserror.description);
                  }
                }];
         }
@@ -2018,24 +2018,25 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
         // `self.navigationManagerImpl->
         // CommitPendingItem(context->ReleaseItem()`.
         // Remove this once navigation refactor is done.
-        web::NavigationContextImpl* context =
+        web::NavigationContextImpl* navContext =
             [self.navigationStates contextForNavigation:navigation];
-        self.navigationManagerImpl->CommitPendingItem(context->ReleaseItem());
+        self.navigationManagerImpl->CommitPendingItem(
+            navContext->ReleaseItem());
         [self.delegate navigationHandler:self
                           setDocumentURL:itemURL
-                                 context:context];
+                                 context:navContext];
 
         // Rewrite the context URL to actual URL and trigger the deferred
         // `OnNavigationFinished` callback.
-        context->SetUrl(failingURL);
-        context->SetHasCommitted(true);
-        self.webStateImpl->OnNavigationFinished(context);
+        navContext->SetUrl(failingURL);
+        navContext->SetHasCommitted(true);
+        self.webStateImpl->OnNavigationFinished(navContext);
 
         // For SSL cert error pages, SSLStatus needs to be set manually because
         // the placeholder navigation for the error page is committed and
         // there is no server trust (since there's no network navigation), which
         // is required to create a cert in CRWSSLStatusUpdater.
-        if (web::IsWKWebViewSSLCertError(context->GetError()) && info.cert) {
+        if (web::IsWKWebViewSSLCertError(navContext->GetError()) && info.cert) {
           web::SSLStatus& SSLStatus =
               self.navigationManagerImpl->GetLastCommittedItem()->GetSSL();
           SSLStatus.cert_status = info.cert_status;
@@ -2046,7 +2047,7 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
 
         [self.delegate navigationHandler:self
               didCompleteLoadWithSuccess:NO
-                              forContext:context];
+                              forContext:navContext];
         self.webStateImpl->OnPageLoaded(failingURL, NO);
       }));
 }

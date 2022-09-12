@@ -155,7 +155,6 @@ TEST_F(WKNavigationUtilTest, CreateRestoreSessionUrl) {
 // In the past the math within CreateRestoreSessionUrl has had some edge case
 // crashes.  Ensure that nothing crashes.
 TEST_F(WKNavigationUtilTest, CreateRestoreSessionBruteForce) {
-  std::vector<std::unique_ptr<NavigationItem>> items;
   int first_index = 0;
   GURL restore_session_url;
   for (int num_items = 70; num_items < 80; num_items++) {

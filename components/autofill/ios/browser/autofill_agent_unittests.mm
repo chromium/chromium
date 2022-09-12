@@ -223,11 +223,11 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ShowAccountCards) {
   __block BOOL completion_handler_called = NO;
 
   // Make the suggestions available to AutofillAgent.
-  std::vector<autofill::Suggestion> suggestions;
-  suggestions.push_back(
+  std::vector<autofill::Suggestion> autofillSuggestions;
+  autofillSuggestions.push_back(
       autofill::Suggestion("", "", "", POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS));
   [autofill_agent_
-      showAutofillPopup:suggestions
+      showAutofillPopup:autofillSuggestions
           popupDelegate:base::WeakPtr<autofill::AutofillPopupDelegate>()];
 
   // Retrieves the suggestions.
@@ -269,13 +269,13 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearForm) {
   __block BOOL completion_handler_called = NO;
 
   // Make the suggestions available to AutofillAgent.
-  std::vector<autofill::Suggestion> suggestions;
-  suggestions.push_back(autofill::Suggestion("", "", "", 123));
-  suggestions.push_back(autofill::Suggestion("", "", "", 321));
-  suggestions.push_back(
+  std::vector<autofill::Suggestion> autofillSuggestions;
+  autofillSuggestions.push_back(autofill::Suggestion("", "", "", 123));
+  autofillSuggestions.push_back(autofill::Suggestion("", "", "", 321));
+  autofillSuggestions.push_back(
       autofill::Suggestion("", "", "", POPUP_ITEM_ID_CLEAR_FORM));
   [autofill_agent_
-      showAutofillPopup:suggestions
+      showAutofillPopup:autofillSuggestions
           popupDelegate:base::WeakPtr<autofill::AutofillPopupDelegate>()];
 
   // Retrieves the suggestions.
@@ -319,13 +319,13 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
   __block BOOL completion_handler_called = NO;
 
   // Make the suggestions available to AutofillAgent.
-  std::vector<autofill::Suggestion> suggestions;
-  suggestions.push_back(autofill::Suggestion("", "", "", 123));
-  suggestions.push_back(autofill::Suggestion("", "", "", 321));
-  suggestions.push_back(
+  std::vector<autofill::Suggestion> autofillSuggestions;
+  autofillSuggestions.push_back(autofill::Suggestion("", "", "", 123));
+  autofillSuggestions.push_back(autofill::Suggestion("", "", "", 321));
+  autofillSuggestions.push_back(
       autofill::Suggestion("", "", "", POPUP_ITEM_ID_CLEAR_FORM));
   [autofill_agent_
-      showAutofillPopup:suggestions
+      showAutofillPopup:autofillSuggestions
           popupDelegate:base::WeakPtr<autofill::AutofillPopupDelegate>()];
 
   // Retrieves the suggestions.

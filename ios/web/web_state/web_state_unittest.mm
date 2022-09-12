@@ -501,7 +501,7 @@ TEST_F(WebStateTest, RestoreLargeSession) {
   }
 
   // Verify that session was fully restored.
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+  auto block = ^{
     bool restored = navigation_manager->GetItemCount() == maxSessionSize &&
                     navigation_manager->CanGoForward();
     EXPECT_EQ(restored, !navigation_manager->IsRestoreSessionInProgress());
@@ -552,7 +552,8 @@ TEST_F(WebStateTest, RestoreLargeSession) {
     EXPECT_FALSE(IsWKInternalUrl(web_state_ptr->GetVisibleURL()));
 
     return restored;
-  }));
+  };
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, block));
   EXPECT_EQ(maxSessionSize, navigation_manager->GetItemCount());
   EXPECT_TRUE(navigation_manager->CanGoForward());
 
@@ -565,13 +566,14 @@ TEST_F(WebStateTest, RestoreLargeSession) {
   }
 
   // Now wait until the last committed item is fully loaded.
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+  auto block2 = ^{
     EXPECT_FALSE(IsWKInternalUrl(web_state_ptr->GetVisibleURL()));
 
     return !navigation_manager->GetPendingItem() &&
            !web_state_ptr->IsLoading() &&
            web_state_ptr->GetLoadingProgress() == 1.0;
-  }));
+  };
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, block2));
 
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
       navigation_manager->GetLastCommittedItem()->GetTransitionType(),

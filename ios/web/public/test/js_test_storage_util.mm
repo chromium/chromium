@@ -68,13 +68,13 @@ bool ExecuteJavaScriptInFrame(WebFrame* web_frame,
 bool SetStorage(WebFrame* web_frame,
                 const std::string& set_function,
                 NSString* key,
-                NSString* value,
+                NSString* key_value,
                 NSString** error_message) {
   __block NSString* block_error_message;
   __block bool set_success = false;
   std::vector<base::Value> params;
   params.push_back(base::Value(base::SysNSStringToUTF8(key)));
-  params.push_back(base::Value(base::SysNSStringToUTF8(value)));
+  params.push_back(base::Value(base::SysNSStringToUTF8(key_value)));
   bool success = ExecuteJavaScriptInFrame(
       web_frame, set_function, params,
       base::BindOnce(^(const base::Value* value) {
@@ -160,9 +160,10 @@ bool SetAsyncStorage(WebFrame* web_frame,
               return;
             }
             if (result->is_dict()) {
-              const std::string* message = result->FindStringKey("message");
-              if (message) {
-                block_error_message = base::SysUTF8ToNSString(*message);
+              const std::string* messageString =
+                  result->FindStringKey("message");
+              if (messageString) {
+                block_error_message = base::SysUTF8ToNSString(*messageString);
                 async_success = true;
                 return;
               }
@@ -207,19 +208,20 @@ bool GetAsyncStorage(WebFrame* web_frame,
           base::BindRepeating(^(const base::Value& message,
                                 const GURL& page_url, bool user_is_interacting,
                                 web::WebFrame* sender_frame) {
-            const base::Value* result = message.FindPath("result");
-            if (!result) {
+            const base::Value* resultValue = message.FindPath("result");
+            if (!resultValue) {
               return;
             }
-            if (result->is_string()) {
-              block_result = base::SysUTF8ToNSString(result->GetString());
+            if (resultValue->is_string()) {
+              block_result = base::SysUTF8ToNSString(resultValue->GetString());
               async_success = true;
               return;
             }
-            if (result->is_dict()) {
-              const std::string* message = result->FindStringKey("message");
-              if (message) {
-                block_error_message = base::SysUTF8ToNSString(*message);
+            if (resultValue->is_dict()) {
+              const std::string* messageStr =
+                  resultValue->FindStringKey("message");
+              if (messageStr) {
+                block_error_message = base::SysUTF8ToNSString(*messageStr);
                 async_success = true;
                 return;
               }

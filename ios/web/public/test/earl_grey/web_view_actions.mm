@@ -302,9 +302,9 @@ id<GREYAction> WebViewScrollElementToVisible(WebState* state,
             // Wait until the element is visible.
             bool check = base::test::ios::WaitUntilConditionOrTimeout(
                 base::test::ios::kWaitForUIElementTimeout, ^{
-                  CGRect rect =
+                  CGRect newRect =
                       web::test::GetBoundingRectOfElement(state, selector);
-                  return IsRectVisibleInView(rect, web_view);
+                  return IsRectVisibleInView(newRect, web_view);
                 });
 
             if (!check) {

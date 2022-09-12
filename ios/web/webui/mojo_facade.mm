@@ -205,11 +205,11 @@ base::Value MojoFacade::HandleMojoHandleWatch(base::Value args) {
   CHECK(callback_id.has_value());
 
   mojo::SimpleWatcher::ReadyCallback callback = base::BindRepeating(
-      ^(int callback_id, MojoResult result) {
+      ^(int inner_callback_id, MojoResult result) {
         NSString* script = [NSString
             stringWithFormat:
                 @"Mojo.internal.watchCallbacksHolder.callCallback(%d, %d)",
-                callback_id, result];
+                inner_callback_id, result];
         web::WebFrame* main_frame = web::GetMainFrame(web_state_);
         if (main_frame) {
           main_frame->ExecuteJavaScript(base::SysNSStringToUTF16(script));

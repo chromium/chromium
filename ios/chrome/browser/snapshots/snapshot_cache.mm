@@ -670,10 +670,12 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
           return;
         }
         [weakSelf retrieveImageForSnapshotID:snapshotID
-                                    callback:^(UIImage* image) {
-                                      if (image)
-                                        image = GreyImage(image);
-                                      callback(image);
+                                    callback:^(UIImage* snapshotImage) {
+                                      if (snapshotImage) {
+                                        snapshotImage =
+                                            GreyImage(snapshotImage);
+                                      }
+                                      callback(snapshotImage);
                                     }];
       }));
 }

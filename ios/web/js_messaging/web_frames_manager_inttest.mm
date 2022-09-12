@@ -132,10 +132,11 @@ TEST_F(WebFramesManagerTest, SingleWebFrameLinkNavigationBackForward) {
 
   // Navigate to a linked page.
   GURL pony_url = test_server_->GetURL(kPonyPageURL);
-  ASSERT_TRUE(ExecuteBlockAndWaitForLoad(pony_url, ^{
+  auto block = ^{
     ASSERT_TRUE(
         web::test::TapWebViewElementWithId(web_state(), kLinksPagePonyLinkID));
-  }));
+  };
+  ASSERT_TRUE(ExecuteBlockAndWaitForLoad(pony_url, block));
 
   ASSERT_EQ(1ul, frames_manager->GetAllWebFrames().size());
   WebFrame* pony_main_web_frame = frames_manager->GetMainWebFrame();

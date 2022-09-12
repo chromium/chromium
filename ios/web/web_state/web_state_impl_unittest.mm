@@ -1025,13 +1025,14 @@ TEST_F(WebStateImplTest, BuildStorageDuringRestore) {
 
   // Now wait until the last committed item is fully loaded, and
   // lastCommittedItemIndex goes back to 0.
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+  auto block = ^{
     EXPECT_FALSE(
         wk_navigation_util::IsWKInternalUrl(web_state_->GetVisibleURL()));
 
     return !web_state_->GetNavigationManager()->GetPendingItem() &&
            !web_state_->IsLoading() && web_state_->GetLoadingProgress() == 1.0;
-  }));
+  };
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, block));
   session_storage = web_state_->BuildSessionStorage();
   EXPECT_EQ(0, session_storage.lastCommittedItemIndex);
 

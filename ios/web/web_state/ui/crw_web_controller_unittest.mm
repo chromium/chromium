@@ -907,7 +907,7 @@ class CRWWebControllerPolicyDeciderTest : public CRWWebControllerTest {
         decidePolicyForNavigationAction:navigation_action
                             preferences:preferences
                         decisionHandler:^(WKNavigationActionPolicy policy,
-                                          WKWebpagePreferences* preferences) {
+                                          WKWebpagePreferences* ignored) {
                           policy_match = expected_policy == policy;
                           callback_called = true;
                         }];

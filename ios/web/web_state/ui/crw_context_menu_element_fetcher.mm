@@ -79,11 +79,12 @@
           self.webState->GetBrowserState());
   context_menu_feature->GetElementAtPoint(
       self.webState, requestID, point, self.webView.scrollView.contentSize,
-      base::BindOnce(^(const std::string& requestID,
+      base::BindOnce(^(const std::string& innerRequestID,
                        const web::ContextMenuParams& params) {
         web::ContextMenuParams context_menu_params(params);
-        [weakSelf elementDetailsReceived:context_menu_params
-                            forRequestID:base::SysUTF8ToNSString(requestID)];
+        [weakSelf
+            elementDetailsReceived:context_menu_params
+                      forRequestID:base::SysUTF8ToNSString(innerRequestID)];
       }));
 }
 

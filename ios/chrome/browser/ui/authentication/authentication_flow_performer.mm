@@ -302,9 +302,9 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
     // browser object at that moment, in which case the browser object may have
     // been deleted before the callback block is called. This is to avoid
     // potential bad memory accesses.
-    Browser* browser = weakAlert.browser;
-    if (browser) {
-      PrefService* prefService = browser->GetBrowserState()->GetPrefs();
+    Browser* alertedBrowser = weakAlert.browser;
+    if (alertedBrowser) {
+      PrefService* prefService = alertedBrowser->GetBrowserState()->GetPrefs();
       // TODO(crbug.com/1325115): Remove this line once we determined that the
       // notification isn't needed anymore.
       [strongSelf updateUserPolicyNotificationStatusIfNeeded:prefService];

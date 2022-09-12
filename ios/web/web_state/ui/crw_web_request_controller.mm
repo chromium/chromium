@@ -249,12 +249,12 @@ enum class BackForwardNavigationType {
       DCHECK(ui::PageTransitionIsRedirect(transition));
       transition = ui::PAGE_TRANSITION_RELOAD;
     } else if (navigationType == WKNavigationTypeBackForward) {
-      web::NavigationItem* currentItem = [[CRWNavigationItemHolder
+      web::NavigationItem* navigationItem = [[CRWNavigationItemHolder
           holderForBackForwardListItem:self.webView.backForwardList.currentItem]
           navigationItem];
-      if (currentItem) {
+      if (navigationItem) {
         transition = ui::PageTransitionFromInt(
-            transition | currentItem->GetTransitionType());
+            transition | navigationItem->GetTransitionType());
       }
     }
   }

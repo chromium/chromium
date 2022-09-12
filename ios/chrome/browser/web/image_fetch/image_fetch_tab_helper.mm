@@ -112,9 +112,9 @@ void ImageFetchTabHelper::JsCallbackOfGetImageData(
           url,
           base::BindOnce(^(const std::string& image_data,
                            const image_fetcher::RequestMetadata& metadata) {
-            NSData* data = [NSData dataWithBytes:image_data.data()
-                                          length:image_data.size()];
-            callback(data);
+            NSData* nsdata = [NSData dataWithBytes:image_data.data()
+                                            length:image_data.size()];
+            callback(nsdata);
           }),
           web::ReferrerHeaderValueForNavigation(url, referrer),
           web::PolicyForNavigation(url, referrer), NO_TRAFFIC_ANNOTATION_YET,

@@ -709,11 +709,11 @@ BOOL canProcessCrossOriginIframes() {
       !generationData ||
       generationData->new_password_renderer_id != fieldIdentifier;
   if (isManuallyTriggered && shouldUpdateGenerationData) {
-    PasswordFormGenerationData generationData = {
+    PasswordFormGenerationData newGenerationData = {
         .form_renderer_id = formIdentifier,
         .new_password_renderer_id = fieldIdentifier,
     };
-    [self formEligibleForGenerationFound:generationData];
+    [self formEligibleForGenerationFound:newGenerationData];
   }
 
   __weak SharedPasswordController* weakSelf = self;

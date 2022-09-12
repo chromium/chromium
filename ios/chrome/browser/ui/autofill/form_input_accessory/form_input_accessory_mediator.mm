@@ -498,9 +498,9 @@ const base::Feature kFormInputKeyboardReloadInputViews{
   DCHECK_EQ(webState, self.webState);
   DCHECK(_hasLastSeenParams);
 
-  __weak id<FormInputSuggestionsProvider> provider = self.provider;
+  __weak id<FormInputSuggestionsProvider> weakProvider = self.provider;
   __weak __typeof(self) weakSelf = self;
-  [provider
+  [weakProvider
       retrieveSuggestionsForForm:params
                         webState:self.webState
         accessoryViewUpdateBlock:^(NSArray<FormSuggestion*>* suggestions,

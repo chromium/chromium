@@ -282,10 +282,10 @@ bool RunActionOnWebViewElementWithScript(web::WebState* web_state,
   // so simulate a user gesture by calling TouchTracking method.
   [web_controller touched:YES];
   [web_controller executeJavaScript:script
-                  completionHandler:^(id result, NSError* error) {
+                  completionHandler:^(id result, NSError* innerError) {
                     did_complete = true;
                     element_found = [result boolValue];
-                    block_error = [error copy];
+                    block_error = [innerError copy];
                   }];
 
   bool js_finished = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{

@@ -301,7 +301,7 @@ using web::NavigationManager;
           [UIAction actionWithTitle:@"Cancel"
                               image:nil
                          identifier:nil
-                            handler:^(id _){
+                            handler:^(id ignored){
                             }]
         ];
         NSString* menuTitle = [NSString

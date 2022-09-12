@@ -248,8 +248,8 @@ TEST_F(WebViewJsUtilsTest, ExecuteJavaScriptPageContentWorldByDefault) {
   // Set |value| in the page content world.
   web::ExecuteJavaScript(web_view, WKContentWorld.pageWorld,
                          /*frame_info=*/nil, @"var value = 3;",
-                         ^(id result, NSError* error) {
-                           set_value_error = [error copy];
+                         ^(id innerResult, NSError* innerError) {
+                           set_value_error = [innerError copy];
                            set_value_complete = true;
                          });
 
@@ -290,8 +290,8 @@ TEST_F(WebViewJsUtilsTest, ExecuteJavaScriptInPageWorldWithoutFrameInfo) {
   // Set |value| in the page content world.
   web::ExecuteJavaScript(web_view, WKContentWorld.pageWorld,
                          /*frame_info=*/nil, @"var value = 3;",
-                         ^(id result, NSError* error) {
-                           set_value_error = [error copy];
+                         ^(id innerResult, NSError* innerError) {
+                           set_value_error = [innerError copy];
                            set_value_complete = true;
                          });
 
@@ -349,8 +349,9 @@ TEST_F(WebViewJsUtilsTest, ExecuteJavaScriptPageContentWorld) {
 
   // Set |value| in the page content world.
   web::ExecuteJavaScript(web_view, WKContentWorld.pageWorld, frame_info,
-                         @"var value = 3;", ^(id result, NSError* error) {
-                           set_value_error = [error copy];
+                         @"var value = 3;",
+                         ^(id innerResult, NSError* innerError) {
+                           set_value_error = [innerError copy];
                            set_value_complete = true;
                          });
 
