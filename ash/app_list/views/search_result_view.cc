@@ -29,6 +29,7 @@
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
@@ -901,22 +902,18 @@ void SearchResultView::StyleLabel(views::Label* label,
     }
   }
 
-  const auto* app_list_widget = GetWidget();
   switch (color_tag) {
     case SearchResult::Tag::NONE:
       ABSL_FALLTHROUGH_INTENDED;
     case SearchResult::Tag::DIM:
       ABSL_FALLTHROUGH_INTENDED;
     case SearchResult::Tag::MATCH:
-      label->SetEnabledColor(
-          is_title_label
-              ? AppListColorProvider::Get()->GetSearchBoxTextColor(
-                    kDeprecatedSearchBoxTextDefaultColor, app_list_widget)
-              : AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-                    kDeprecatedSearchBoxTextDefaultColor, app_list_widget));
+      label->SetEnabledColorId(is_title_label
+                                   ? cros_tokens::kTextColorPrimary
+                                   : cros_tokens::kTextColorSecondary);
       break;
     case SearchResult::Tag::URL:
-      label->SetEnabledColor(AppListColorProvider::Get()->GetTextColorURL());
+      label->SetEnabledColorId(kColorAshTextColorURL);
       break;
     case SearchResult::Tag::GREEN:
       label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
@@ -1140,7 +1137,7 @@ void SearchResultView::PaintButtonContents(gfx::Canvas* canvas) {
             AppListColorProvider::Get()->GetSearchResultViewHighlightColor(
                 app_list_widget));
         PaintFocusBar(canvas, GetContentsBounds().origin(),
-                      /*height=*/GetContentsBounds().height());
+                      /*height=*/GetContentsBounds().height(), app_list_widget);
       }
       break;
     case SearchResultViewType::kAnswerCard: {
@@ -1159,7 +1156,8 @@ void SearchResultView::PaintButtonContents(gfx::Canvas* canvas) {
                                  kAnswerCardFocusBarVerticalOffset),
                       PreferredHeight() -
                           kAnswerCardCardBackgroundCornerRadius * 2 -
-                          kAnswerCardFocusBarVerticalOffset);
+                          kAnswerCardFocusBarVerticalOffset,
+                      app_list_widget);
       }
     } break;
   }

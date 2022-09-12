@@ -98,6 +98,14 @@ class ASH_EXPORT StyleUtil {
   static AshColorProviderSource* GetColorProviderSourceForWindow(
       const aura::Window* window);
 
+  // Returns the background themed color that's calculated based on the color
+  // extracted from wallpaper. For dark mode, it will be dark muted wallpaper
+  // prominent color + SK_ColorBLACK 50%. For light mode, it will be light
+  // muted wallpaper prominent color + SK_ColorWHITE 75%. Extracts the color on
+  // dark mode if `use_dark_color` is true.
+  static SkColor GetBackgroundThemedColorImpl(SkColor default_color,
+                                              bool use_dark_color);
+
  private:
   StyleUtil() = default;
   StyleUtil(const StyleUtil&) = delete;

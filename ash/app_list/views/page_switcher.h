@@ -27,8 +27,7 @@ class PageSwitcher : public views::View,
 
   PageSwitcher(PaginationModel* model,
                bool is_root_app_grid_page_switcher,
-               bool is_tablet_mode,
-               SkColor background_color = gfx::kPlaceholderColor);
+               bool is_tablet_mode);
   PageSwitcher(const PageSwitcher&) = delete;
   PageSwitcher& operator=(const PageSwitcher&) = delete;
   ~PageSwitcher() override;

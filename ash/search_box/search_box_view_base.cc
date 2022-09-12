@@ -191,16 +191,17 @@ class SearchBoxImageButton : public views::ImageButton {
   bool is_showing_ = false;
 
   void UpdateInkDropColors() {
+    const views::Widget* app_list_widget = GetWidget();
     SkColor search_box_card_background_color =
         AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor(
-            GetWidget());
+            app_list_widget);
 
     views::InkDrop::Get(this)->SetBaseColor(
         AppListColorProvider::Get()->GetInkDropBaseColor(
-            search_box_card_background_color));
+            app_list_widget, search_box_card_background_color));
     views::InkDrop::Get(this)->SetVisibleOpacity(
         AppListColorProvider::Get()->GetInkDropOpacity(
-            search_box_card_background_color));
+            app_list_widget, search_box_card_background_color));
   }
 
   // views::View:
@@ -208,7 +209,8 @@ class SearchBoxImageButton : public views::ImageButton {
     if (HasFocus()) {
       cc::PaintFlags circle_flags;
       circle_flags.setAntiAlias(true);
-      circle_flags.setColor(AppListColorProvider::Get()->GetFocusRingColor());
+      circle_flags.setColor(
+          AppListColorProvider::Get()->GetFocusRingColor(GetWidget()));
       circle_flags.setStyle(cc::PaintFlags::kStroke_Style);
       circle_flags.setStrokeWidth(kFocusBorderThickness);
       canvas->DrawCircle(GetLocalBounds().CenterPoint(),
@@ -615,7 +617,7 @@ void SearchBoxViewBase::OnThemeChanged() {
     category_ghost_text_->SetEnabledColor(ghost_text_color);
     category_separator_label_->SetEnabledColor(ghost_text_color);
     search_box_->SetSelectionBackgroundColor(
-        AppListColorProvider::Get()->GetFolderNameSelectionColor());
+        AppListColorProvider::Get()->GetFolderNameSelectionColor(GetWidget()));
   }
 
   auto* background = GetBackground();

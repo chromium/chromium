@@ -179,7 +179,7 @@ SkColor KSVSearchBoxView::GetBorderColor() {
   constexpr SkColor kActiveBorderLightColor =
       SkColorSetARGB(0x7F, 0x1A, 0x73, 0xE8);
   const SkColor kActiveBorderDarkColor =
-      ash::AppListColorProvider::Get()->GetFocusRingColor();
+      ash::AppListColorProvider::Get()->GetFocusRingColor(GetWidget());
 
   return ShouldUseDarkThemeColors() ? kActiveBorderDarkColor
                                     : kActiveBorderLightColor;

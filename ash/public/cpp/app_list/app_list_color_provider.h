@@ -55,24 +55,38 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
       const views::Widget* app_list_widget) const = 0;
   virtual SkColor GetSearchBoxCardBackgroundColor(
       const views::Widget* app_list_widget) const = 0;
-  virtual SkColor GetFolderBackgroundColor() const = 0;
-  virtual SkColor GetFolderTitleTextColor() const = 0;
-  virtual SkColor GetFolderHintTextColor() const = 0;
-  virtual SkColor GetFolderNameBorderColor(bool active) const = 0;
-  virtual SkColor GetFolderNameSelectionColor() const = 0;
-  virtual SkColor GetFolderNotificationBadgeColor() const = 0;
-  virtual SkColor GetContentsBackgroundColor() const = 0;
-  virtual SkColor GetGridBackgroundCardActiveColor() const = 0;
-  virtual SkColor GetGridBackgroundCardInactiveColor() const = 0;
+  virtual SkColor GetFolderBackgroundColor(
+      const views::Widget* app_list_widget) const = 0;
+  virtual SkColor GetFolderTitleTextColor(
+      const views::Widget* app_list_widget) const = 0;
+  virtual SkColor GetFolderHintTextColor(
+      const views::Widget* app_list_widget) const = 0;
+  virtual SkColor GetFolderNameBorderColor(
+      bool active,
+      const views::Widget* app_list_widget) const = 0;
+  virtual SkColor GetFolderNameSelectionColor(
+      const views::Widget* app_list_widget) const = 0;
+  virtual SkColor GetFolderNotificationBadgeColor(
+      const views::Widget* app_list_widget) const = 0;
+  virtual SkColor GetContentsBackgroundColor(
+      const views::Widget* app_list_widget) const = 0;
+  virtual SkColor GetGridBackgroundCardActiveColor(
+      const views::Widget* app_list_widget) const = 0;
+  virtual SkColor GetGridBackgroundCardInactiveColor(
+      const views::Widget* app_list_widget) const = 0;
   virtual ui::ColorId GetSeparatorColorId() const = 0;
-  virtual SkColor GetFocusRingColor() const = 0;
+  virtual SkColor GetFocusRingColor(
+      const views::Widget* app_list_widget) const = 0;
   virtual SkColor GetInkDropBaseColor(
+      const views::Widget* app_list_widget,
       SkColor bg_color = gfx::kPlaceholderColor) const = 0;
   virtual float GetInkDropOpacity(
+      const views::Widget* app_list_widget,
       SkColor bg_color = gfx::kPlaceholderColor) const = 0;
   virtual SkColor GetSearchResultViewHighlightColor(
       const views::Widget* app_list_widget) const = 0;
-  virtual SkColor GetTextColorURL() const = 0;
+  virtual SkColor GetTextColorURL(
+      const views::Widget* app_list_widget) const = 0;
 
  protected:
   AppListColorProvider();

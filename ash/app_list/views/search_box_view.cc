@@ -163,7 +163,8 @@ void RecordAutocompleteMatchMetric(SearchBoxTextMatch match_type) {
 
 class SearchBoxView::FocusRingLayer : public ui::Layer, ui::LayerDelegate {
  public:
-  FocusRingLayer() : Layer(ui::LAYER_TEXTURED) {
+  explicit FocusRingLayer(SearchBoxView* search_box_view)
+      : Layer(ui::LAYER_TEXTURED), search_box_view_(search_box_view) {
     SetName("search_box/FocusRing");
     SetFillsBoundsOpaquely(false);
     set_delegate(this);
@@ -187,7 +188,8 @@ class SearchBoxView::FocusRingLayer : public ui::Layer, ui::LayerDelegate {
 
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(AppListColorProvider::Get()->GetFocusRingColor());
+    flags.setColor(AppListColorProvider::Get()->GetFocusRingColor(
+        search_box_view_->GetWidget()));
     flags.setStyle(cc::PaintFlags::Style::kStroke_Style);
     flags.setStrokeWidth(kSearchBoxFocusRingWidth);
     canvas->DrawRoundRect(draw_bounds, kSearchBoxFocusRingCornerRadius, flags);
@@ -196,6 +198,8 @@ class SearchBoxView::FocusRingLayer : public ui::Layer, ui::LayerDelegate {
                                   float new_device_scale_factor) override {
     SchedulePaint(gfx::Rect(size()));
   }
+
+  SearchBoxView* const search_box_view_;
 };
 
 SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
@@ -450,7 +454,7 @@ void SearchBoxView::OnPaintBackground(gfx::Canvas* canvas) {
       gfx::Point icon_origin;
       views::View::ConvertPointToTarget(search_icon(), this, &icon_origin);
       PaintFocusBar(canvas, gfx::Point(0, icon_origin.y()),
-                    /*height=*/GetSearchBoxIconSize());
+                    /*height=*/GetSearchBoxIconSize(), GetWidget());
     }
   }
 }
@@ -496,7 +500,7 @@ int SearchBoxView::GetFocusRingSpacing() {
 
 void SearchBoxView::MaybeCreateFocusRing() {
   if (!is_app_list_bubble_) {
-    focus_ring_layer_ = std::make_unique<FocusRingLayer>();
+    focus_ring_layer_ = std::make_unique<FocusRingLayer>(this);
     layer()->parent()->Add(focus_ring_layer_.get());
     layer()->parent()->StackAtBottom(focus_ring_layer_.get());
   }

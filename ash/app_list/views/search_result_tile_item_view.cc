@@ -248,7 +248,7 @@ void SearchResultTileItemView::PaintButtonContents(gfx::Canvas* canvas) {
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(kSelectionRingWidth);
-  flags.setColor(AppListColorProvider::Get()->GetFocusRingColor());
+  flags.setColor(AppListColorProvider::Get()->GetFocusRingColor(GetWidget()));
 
   gfx::RectF selection_ring = GetSelectionRingBounds();
   selection_ring.Inset(gfx::InsetsF::VH(kSelectionRingWidth / 2.0, 0));

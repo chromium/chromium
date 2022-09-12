@@ -6,21 +6,14 @@
 
 #include <math.h>
 
-#include "ash/constants/ash_constants.h"
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
-#include "ash/wallpaper/wallpaper_controller_impl.h"
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "ash/style/style_util.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
-#include "base/strings/string_number_conversions.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider_manager.h"
-#include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_utils.h"
 
 namespace ash {
@@ -38,11 +31,6 @@ constexpr float kDisabledColorOpacity = 0.38f;
 
 // Color of second tone is always 30% opacity of the color of first tone.
 constexpr float kSecondToneOpacity = 0.3f;
-
-// Alpha value that is used to calculate themed color. Please see function
-// GetBackgroundThemedColor() about how the themed color is calculated.
-constexpr int kDarkBackgroundBlendAlpha = 127;   // 50%
-constexpr int kLightBackgroundBlendAlpha = 127;  // 50%
 
 AshColorProvider* g_instance = nullptr;
 
@@ -274,36 +262,9 @@ std::pair<SkColor, float> AshColorProvider::GetInkDropBaseColorAndOpacity(
 }
 
 SkColor AshColorProvider::GetBackgroundColor() const {
-  return GetBackgroundThemedColorImpl(
+  return StyleUtil::GetBackgroundThemedColorImpl(
       GetColorProvider()->GetColor(kColorAshShieldAndBaseOpaque),
       IsDarkModeEnabled());
-}
-
-SkColor AshColorProvider::GetBackgroundThemedColorImpl(
-    SkColor default_color,
-    bool use_dark_color) const {
-  // May be null in unit tests.
-  if (!Shell::HasInstance())
-    return default_color;
-  WallpaperControllerImpl* wallpaper_controller =
-      Shell::Get()->wallpaper_controller();
-  if (!wallpaper_controller)
-    return default_color;
-
-  color_utils::LumaRange luma_range = use_dark_color
-                                          ? color_utils::LumaRange::DARK
-                                          : color_utils::LumaRange::LIGHT;
-  SkColor muted_color =
-      wallpaper_controller->GetProminentColor(color_utils::ColorProfile(
-          luma_range, color_utils::SaturationRange::MUTED));
-  if (muted_color == kInvalidWallpaperColor)
-    return default_color;
-
-  return color_utils::GetResultingPaintColor(
-      SkColorSetA(use_dark_color ? SK_ColorBLACK : SK_ColorWHITE,
-                  use_dark_color ? kDarkBackgroundBlendAlpha
-                                 : kLightBackgroundBlendAlpha),
-      muted_color);
 }
 
 ui::ColorProvider* AshColorProvider::GetColorProvider() const {

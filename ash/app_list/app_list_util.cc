@@ -138,7 +138,8 @@ gfx::ImageSkia CreateIconWithCircleBackground(const gfx::ImageSkia& icon) {
 
 void PaintFocusBar(gfx::Canvas* canvas,
                    const gfx::Point& content_origin,
-                   int height) {
+                   int height,
+                   const views::Widget* widget) {
   SkPath path;
   gfx::Rect focus_bar_bounds(content_origin.x() - kFocusBarThickness,
                              content_origin.y(), kFocusBarThickness * 2,
@@ -149,7 +150,7 @@ void PaintFocusBar(gfx::Canvas* canvas,
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(AppListColorProvider::Get()->GetFocusRingColor());
+  flags.setColor(AppListColorProvider::Get()->GetFocusRingColor(widget));
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(kFocusBarThickness);
   gfx::Point top_point = content_origin + gfx::Vector2d(kFocusBarThickness, 0);
@@ -160,10 +161,11 @@ void PaintFocusBar(gfx::Canvas* canvas,
 
 void PaintFocusRing(gfx::Canvas* canvas,
                     const gfx::Point& content_origin,
-                    int outer_radius) {
+                    int outer_radius,
+                    const views::Widget* widget) {
   cc::PaintFlags circle_flags;
   circle_flags.setAntiAlias(true);
-  circle_flags.setColor(AppListColorProvider::Get()->GetFocusRingColor());
+  circle_flags.setColor(AppListColorProvider::Get()->GetFocusRingColor(widget));
   circle_flags.setStyle(cc::PaintFlags::kStroke_Style);
   circle_flags.setStrokeWidth(kFocusBorderThickness);
   canvas->DrawCircle(content_origin, outer_radius - kFocusBorderThickness,

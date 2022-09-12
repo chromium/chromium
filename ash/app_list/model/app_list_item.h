@@ -18,6 +18,7 @@
 #include "base/observer_list.h"
 #include "components/sync/model/string_ordinal.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/view.h"
 
 namespace ash {
 enum class AppListConfigType;
@@ -57,7 +58,7 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   // and UI would be updated since it also observe ItemIconChanged.
   void SetIconVersion(int icon_version);
 
-  SkColor GetNotificationBadgeColor() const;
+  SkColor GetNotificationBadgeColor(views::View* view) const;
   void SetNotificationBadgeColor(const SkColor color);
 
   const std::string& GetDisplayName() const {

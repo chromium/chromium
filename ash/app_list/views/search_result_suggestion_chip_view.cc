@@ -90,13 +90,14 @@ SearchResultSuggestionChipView::SearchResultSuggestionChipView(
                                2 * ripple_radius);
         const AppListColorProvider* const color_provider =
             AppListColorProvider::Get();
+        const views::Widget* app_list_widget = host->GetWidget();
         const SkColor bg_color =
-            color_provider->GetSearchBoxBackgroundColor(host->GetWidget());
+            color_provider->GetSearchBoxBackgroundColor(app_list_widget);
         return std::make_unique<views::FloodFillInkDropRipple>(
             host->size(), host->GetLocalBounds().InsetsFrom(bounds),
             views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
-            color_provider->GetInkDropBaseColor(bg_color),
-            color_provider->GetInkDropOpacity(bg_color));
+            color_provider->GetInkDropBaseColor(app_list_widget, bg_color),
+            color_provider->GetInkDropOpacity(app_list_widget, bg_color));
       },
       this));
 

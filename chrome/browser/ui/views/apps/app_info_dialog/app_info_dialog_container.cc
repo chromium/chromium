@@ -64,8 +64,8 @@ class AppListOverlayBackground : public views::Background {
 
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(
-        ash::AppListColorProvider::Get()->GetContentsBackgroundColor());
+    flags.setColor(ash::AppListColorProvider::Get()->GetContentsBackgroundColor(
+        view->GetWidget()));
     canvas->DrawRoundRect(view->GetContentsBounds(),
                           kAppListOverlayBorderRadius, flags);
   }

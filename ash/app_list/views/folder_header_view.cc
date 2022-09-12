@@ -28,7 +28,9 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/painter.h"
+#include "ui/views/view.h"
 #include "ui/views/view_targeter_delegate.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -55,13 +57,15 @@ constexpr int kFolderNameBorderThickness = 2;
 // The inner padding for folder name.
 constexpr int kFolderNamePadding = 8;
 
-SkColor GetFolderBackgroundColor(bool is_active) {
+SkColor GetFolderBackgroundColor(bool is_active, const views::Widget* widget) {
+  DCHECK(widget);
   if (!is_active)
     return SK_ColorTRANSPARENT;
 
   const AppListColorProvider* color_provider = AppListColorProvider::Get();
-  return SkColorSetA(color_provider->GetInkDropBaseColor(),
-                     color_provider->GetInkDropOpacity() * 255);
+  return SkColorSetA(
+      color_provider->GetInkDropBaseColor(widget, gfx::kPlaceholderColor),
+      color_provider->GetInkDropOpacity(widget, gfx::kPlaceholderColor) * 255);
 }
 
 }  // namespace
@@ -75,9 +79,7 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
     // Make folder name font size 14px.
     SetFontList(
         ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(2));
-    set_placeholder_text_color(
-        AppListColorProvider::Get()->GetFolderHintTextColor());
-    SetTextColor(AppListColorProvider::Get()->GetFolderTitleTextColor());
+
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   }
 
@@ -94,16 +96,20 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
     Textfield::OnThemeChanged();
 
     const bool is_active = has_mouse_already_entered_ || HasFocus();
+    const views::Widget* app_list_widget = GetWidget();
     SetBackground(views::CreateRoundedRectBackground(
-        GetFolderBackgroundColor(is_active), kFolderNameBorderRadius,
-        kFolderNameBorderThickness));
+        GetFolderBackgroundColor(is_active, app_list_widget),
+        kFolderNameBorderRadius, kFolderNameBorderThickness));
 
     AppListColorProvider* color_provider = AppListColorProvider::Get();
-    set_placeholder_text_color(color_provider->GetFolderHintTextColor());
-    const SkColor text_color = color_provider->GetFolderTitleTextColor();
+    set_placeholder_text_color(
+        color_provider->GetFolderHintTextColor(app_list_widget));
+    const SkColor text_color =
+        color_provider->GetFolderTitleTextColor(app_list_widget);
     SetTextColor(text_color);
     SetSelectionTextColor(text_color);
-    SetSelectionBackgroundColor(color_provider->GetFolderNameSelectionColor());
+    SetSelectionBackgroundColor(
+        color_provider->GetFolderNameSelectionColor(app_list_widget));
     SetNameViewBorderAndBackground(is_active);
   }
 
@@ -115,7 +121,8 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
     SetBorder(views::CreatePaddedBorder(
         views::CreateRoundedRectBorder(
             kFolderNameBorderThickness, kFolderNameBorderRadius,
-            AppListColorProvider::Get()->GetFolderNameBorderColor(is_active)),
+            AppListColorProvider::Get()->GetFolderNameBorderColor(is_active,
+                                                                  GetWidget())),
         gfx::Insets::VH(0, kFolderNamePadding)));
     UpdateBackgroundColor(is_active);
   }
@@ -226,7 +233,8 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
 
  private:
   void UpdateBackgroundColor(bool is_active) {
-    background()->SetNativeControlColor(GetFolderBackgroundColor(is_active));
+    background()->SetNativeControlColor(
+        GetFolderBackgroundColor(is_active, GetWidget()));
     SchedulePaint();
   }
 

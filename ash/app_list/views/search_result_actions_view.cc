@@ -134,7 +134,8 @@ void SearchResultActionButton::UpdateOnStateChanged() {
 
 void SearchResultActionButton::OnPaintBackground(gfx::Canvas* canvas) {
   if (HasFocus() || parent_->GetSelectedAction() == tag()) {
-    PaintFocusRing(canvas, GetLocalBounds().CenterPoint(), GetButtonRadius());
+    PaintFocusRing(canvas, GetLocalBounds().CenterPoint(), GetButtonRadius(),
+                   GetWidget());
   }
 }
 

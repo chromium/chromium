@@ -50,6 +50,7 @@
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 namespace {
@@ -146,7 +147,8 @@ gfx::Rect ApplyTransformAtOrigin(gfx::Rect bounds, gfx::Transform transform) {
 class PagedAppsGridView::BackgroundCardLayer : public ui::Layer,
                                                public ui::LayerDelegate {
  public:
-  BackgroundCardLayer() : Layer(ui::LAYER_TEXTURED) {
+  explicit BackgroundCardLayer(PagedAppsGridView* paged_apps_grid_view)
+      : Layer(ui::LAYER_TEXTURED), paged_apps_grid_view_(paged_apps_grid_view) {
     SetFillsBoundsOpaquely(false);
     set_delegate(this);
   }
@@ -173,9 +175,12 @@ class PagedAppsGridView::BackgroundCardLayer : public ui::Layer,
     // Draw a solid rounded rect as the background.
     cc::PaintFlags flags;
     auto* color_provider = AppListColorProvider::Get();
+    const views::Widget* app_list_widget = paged_apps_grid_view_->GetWidget();
     SkColor fill_color =
-        is_active_page_ ? color_provider->GetGridBackgroundCardActiveColor()
-                        : color_provider->GetGridBackgroundCardInactiveColor();
+        is_active_page_
+            ? color_provider->GetGridBackgroundCardActiveColor(app_list_widget)
+            : color_provider->GetGridBackgroundCardInactiveColor(
+                  app_list_widget);
     flags.setColor(fill_color);
     flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setAntiAlias(true);
@@ -199,6 +204,8 @@ class PagedAppsGridView::BackgroundCardLayer : public ui::Layer,
                                   float new_device_scale_factor) override {}
 
   bool is_active_page_ = false;
+
+  PagedAppsGridView* const paged_apps_grid_view_;
 };
 
 PagedAppsGridView::PagedAppsGridView(
@@ -1401,7 +1408,7 @@ gfx::Rect PagedAppsGridView::BackgroundCardBounds(int new_page_index) {
 }
 
 void PagedAppsGridView::AppendBackgroundCard() {
-  background_cards_.push_back(std::make_unique<BackgroundCardLayer>());
+  background_cards_.push_back(std::make_unique<BackgroundCardLayer>(this));
   ui::Layer* current_layer = background_cards_.back().get();
   current_layer->SetBounds(BackgroundCardBounds(background_cards_.size() - 1));
   current_layer->SetVisible(true);

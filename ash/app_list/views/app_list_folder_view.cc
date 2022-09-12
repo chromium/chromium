@@ -160,9 +160,10 @@ class BackgroundAnimation : public AppListFolderView::Animation,
     gfx::Rect to_rect = show_ ? background_view_->bounds()
                               : folder_view_->folder_item_icon_bounds();
     to_rect -= background_view_->bounds().OffsetFromOrigin();
+    const views::Widget* app_list_widget = folder_view_->GetWidget();
     const SkColor background_color =
-        AppListColorProvider::Get()->GetFolderBackgroundColor();
-    const SkColor bubble_color = folder_view_->GetColorProvider()->GetColor(
+        AppListColorProvider::Get()->GetFolderBackgroundColor(app_list_widget);
+    const SkColor bubble_color = app_list_widget->GetColorProvider()->GetColor(
         kColorAshControlBackgroundColorInactive);
     const SkColor from_color = show_ ? bubble_color : background_color;
     const SkColor to_color = show_ ? background_color : bubble_color;
@@ -741,8 +742,7 @@ void AppListFolderView::CreatePagedAppsGrid(ContentsView* contents_view) {
   page_switcher_ =
       contents_container_->AddChildView(std::make_unique<PageSwitcher>(
           items_grid_view->pagination_model(), false /* vertical */,
-          view_delegate_->IsInTabletMode(),
-          AppListColorProvider::Get()->GetFolderBackgroundColor()));
+          view_delegate_->IsInTabletMode()));
 
   contents_container_->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)

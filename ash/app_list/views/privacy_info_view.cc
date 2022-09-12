@@ -32,6 +32,7 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -103,11 +104,12 @@ void PrivacyInfoView::OnPaintBackground(gfx::Canvas* canvas) {
     const AppListColorProvider* color_provider = AppListColorProvider::Get();
     const SkColor bg_color =
         color_provider->GetSearchBoxBackgroundColor(GetWidget());
+    const views::Widget* app_list_widget = GetWidget();
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(
-        SkColorSetA(color_provider->GetInkDropBaseColor(bg_color),
-                    color_provider->GetInkDropOpacity(bg_color) * 255));
+    flags.setColor(SkColorSetA(
+        color_provider->GetInkDropBaseColor(app_list_widget, bg_color),
+        color_provider->GetInkDropOpacity(app_list_widget, bg_color) * 255));
     flags.setStyle(cc::PaintFlags::kFill_Style);
     canvas->DrawCircle(close_button_->bounds().CenterPoint(),
                        close_button_->width() / 2, flags);

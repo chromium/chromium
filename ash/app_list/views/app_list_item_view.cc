@@ -305,7 +305,7 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
   }
 
   notification_indicator_ = AddChildView(
-      std::make_unique<DotIndicator>(item->GetNotificationBadgeColor()));
+      std::make_unique<DotIndicator>(item->GetNotificationBadgeColor(this)));
   notification_indicator_->SetVisible(item->has_notification_badge());
 
   title_ = AddChildView(std::move(title));
@@ -765,6 +765,7 @@ void AppListItemView::PaintButtonContents(gfx::Canvas* canvas) {
   if (drag_state_ != DragState::kNone)
     return;
 
+  const views::Widget* app_list_widget = GetWidget();
   if ((grid_delegate_->IsSelectedView(this) || HasFocus()) &&
       (view_delegate_->KeyboardTraversalEngaged() ||
        waiting_for_context_menu_options_ || IsShowingAppMenu())) {
@@ -779,18 +780,20 @@ void AppListItemView::PaintButtonContents(gfx::Canvas* canvas) {
             ? HasFocus()
             : view_delegate_->KeyboardTraversalEngaged();
     if (draw_focus_ring) {
-      flags.setColor(AppListColorProvider::Get()->GetFocusRingColor());
+      flags.setColor(
+          AppListColorProvider::Get()->GetFocusRingColor(app_list_widget));
       flags.setStyle(cc::PaintFlags::kStroke_Style);
       flags.setStrokeWidth(kFocusRingWidth);
     } else {
       // Draw a background highlight ("selected" in the UI spec).
       const AppListColorProvider* color_provider = AppListColorProvider::Get();
-      const SkColor bg_color = grid_delegate_->IsInFolder()
-                                   ? color_provider->GetFolderBackgroundColor()
-                                   : gfx::kPlaceholderColor;
-      flags.setColor(
-          SkColorSetA(color_provider->GetInkDropBaseColor(bg_color),
-                      color_provider->GetInkDropOpacity(bg_color) * 255));
+      const SkColor bg_color =
+          grid_delegate_->IsInFolder()
+              ? color_provider->GetFolderBackgroundColor(app_list_widget)
+              : gfx::kPlaceholderColor;
+      flags.setColor(SkColorSetA(
+          color_provider->GetInkDropBaseColor(app_list_widget, bg_color),
+          color_provider->GetInkDropOpacity(app_list_widget, bg_color) * 255));
       flags.setStyle(cc::PaintFlags::kFill_Style);
     }
     gfx::Rect selection_highlight_bounds = GetContentsBounds();
@@ -1007,7 +1010,8 @@ void AppListItemView::OnThemeChanged() {
   views::Button::OnThemeChanged();
   if (item_weak_) {
     item_weak_->RequestFolderIconUpdate();
-    notification_indicator_->SetColor(item_weak_->GetNotificationBadgeColor());
+    notification_indicator_->SetColor(
+        item_weak_->GetNotificationBadgeColor(this));
   }
   title_->SetEnabledColor(AppListColorProvider::Get()->GetAppListItemTextColor(
       grid_delegate_->IsInFolder(), GetWidget()));
@@ -1264,7 +1268,8 @@ void AppListItemView::ItemBadgeVisibilityChanged() {
 }
 
 void AppListItemView::ItemBadgeColorChanged() {
-  notification_indicator_->SetColor(item_weak_->GetNotificationBadgeColor());
+  notification_indicator_->SetColor(
+      item_weak_->GetNotificationBadgeColor(this));
 }
 
 void AppListItemView::ItemIsNewInstallChanged() {

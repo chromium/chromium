@@ -61,7 +61,8 @@ SkColor TestAppListColorProvider::GetAppListItemTextColor(
   return gfx::kGoogleGrey200;
 }
 
-SkColor TestAppListColorProvider::GetFolderBackgroundColor() const {
+SkColor TestAppListColorProvider::GetFolderBackgroundColor(
+    const views::Widget* app_list_widget) const {
   return gfx::kGoogleGrey900;
 }
 
@@ -77,38 +78,47 @@ SkColor TestAppListColorProvider::GetSearchBoxIconColor(
   return gfx::kGoogleGrey200;
 }
 
-SkColor TestAppListColorProvider::GetFolderTitleTextColor() const {
+SkColor TestAppListColorProvider::GetFolderTitleTextColor(
+    const views::Widget* app_list_widget) const {
   return gfx::kGoogleGrey200;
 }
 
-SkColor TestAppListColorProvider::GetFolderHintTextColor() const {
+SkColor TestAppListColorProvider::GetFolderHintTextColor(
+    const views::Widget* app_list_widget) const {
   return gfx::kGoogleGrey500;
 }
 
-SkColor TestAppListColorProvider::GetFolderNameBorderColor(bool active) const {
+SkColor TestAppListColorProvider::GetFolderNameBorderColor(
+    bool active,
+    const views::Widget* app_list_widget) const {
   if (!active)
     return SK_ColorTRANSPARENT;
 
   return SkColorSetA(SK_ColorBLACK, 0x0F);
 }
 
-SkColor TestAppListColorProvider::GetFolderNameSelectionColor() const {
+SkColor TestAppListColorProvider::GetFolderNameSelectionColor(
+    const views::Widget* app_list_widget) const {
   return SkColorSetA(SK_ColorBLACK, 0x0F);
 }
 
-SkColor TestAppListColorProvider::GetFolderNotificationBadgeColor() const {
+SkColor TestAppListColorProvider::GetFolderNotificationBadgeColor(
+    const views::Widget* app_list_widget) const {
   return SK_ColorWHITE;
 }
 
-SkColor TestAppListColorProvider::GetContentsBackgroundColor() const {
+SkColor TestAppListColorProvider::GetContentsBackgroundColor(
+    const views::Widget* app_list_widget) const {
   return gfx::kGoogleGrey200;
 }
 
-SkColor TestAppListColorProvider::GetGridBackgroundCardActiveColor() const {
+SkColor TestAppListColorProvider::GetGridBackgroundCardActiveColor(
+    const views::Widget* app_list_widget) const {
   return SkColorSetA(SK_ColorWHITE, 26 /* 10% */);
 }
 
-SkColor TestAppListColorProvider::GetGridBackgroundCardInactiveColor() const {
+SkColor TestAppListColorProvider::GetGridBackgroundCardInactiveColor(
+    const views::Widget* app_list_widget) const {
   return SkColorSetA(SK_ColorWHITE, 41 /* 16% */);
 }
 
@@ -116,15 +126,20 @@ ui::ColorId TestAppListColorProvider::GetSeparatorColorId() const {
   return ui::kColorAshSystemUIMenuSeparator;
 }
 
-SkColor TestAppListColorProvider::GetFocusRingColor() const {
+SkColor TestAppListColorProvider::GetFocusRingColor(
+    const views::Widget* app_list_widget) const {
   return gfx::kGoogleBlue600;
 }
 
-SkColor TestAppListColorProvider::GetInkDropBaseColor(SkColor bg_color) const {
+SkColor TestAppListColorProvider::GetInkDropBaseColor(
+    const views::Widget* app_list_widget,
+    SkColor bg_color) const {
   return SK_ColorWHITE;
 }
 
-float TestAppListColorProvider::GetInkDropOpacity(SkColor bg_color) const {
+float TestAppListColorProvider::GetInkDropOpacity(
+    const views::Widget* app_list_widget,
+    SkColor bg_color) const {
   return 0.08f;
 }
 
@@ -133,7 +148,8 @@ SkColor TestAppListColorProvider::GetSearchResultViewHighlightColor(
   return SkColorSetA(SK_ColorWHITE, 0x0D);
 }
 
-SkColor TestAppListColorProvider::GetTextColorURL() const {
+SkColor TestAppListColorProvider::GetTextColorURL(
+    const views::Widget* app_list_widget) const {
   return gfx::kGoogleBlue600;
 }
 

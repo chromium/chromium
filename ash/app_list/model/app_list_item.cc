@@ -8,6 +8,7 @@
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -92,9 +93,11 @@ void AppListItem::SetIconVersion(int icon_version) {
   }
 }
 
-SkColor AppListItem::GetNotificationBadgeColor() const {
-  if (is_folder())
-    return ash::AppListColorProvider::Get()->GetFolderNotificationBadgeColor();
+SkColor AppListItem::GetNotificationBadgeColor(views::View* view) const {
+  const views::Widget* app_list_widget = view->GetWidget();
+  if (is_folder() && app_list_widget)
+    return ash::AppListColorProvider::Get()->GetFolderNotificationBadgeColor(
+        app_list_widget);
   return metadata_->badge_color;
 }
 
