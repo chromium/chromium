@@ -124,10 +124,7 @@ try_.builder(
         "enable_weetbix_queries": 100,
         "weetbix.retry_weak_exonerations": 100,
     },
-    # TODO(crbug.com/1361952): Remove experiment.
-    tryjob = try_.job(
-        experiment_percentage = 100,
-    ),
+    tryjob = try_.job(),
     ssd = True,
 )
 
