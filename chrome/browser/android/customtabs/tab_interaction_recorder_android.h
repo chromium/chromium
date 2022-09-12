@@ -63,6 +63,7 @@ class TabInteractionRecorderAndroid
 
   // Return whether the |web_contents()| has seen any form interactions.
   bool has_form_interactions() const { return has_form_interactions_; }
+  bool did_get_user_interaction() const { return did_get_user_interaction_; }
 
   // content::WebContentsObserver:
 
@@ -81,6 +82,7 @@ class TabInteractionRecorderAndroid
   void DidGetUserInteraction(const blink::WebInputEvent& event) override;
 
   // JNI methods
+  jboolean DidGetUserInteraction(JNIEnv* env) const;
   jboolean HadInteraction(JNIEnv* env) const;
 
 #ifdef UNIT_TEST
@@ -97,6 +99,7 @@ class TabInteractionRecorderAndroid
   void StartObservingFrame(content::RenderFrameHost* render_frame_host);
   void SetHasFormInteractions();
 
+  bool did_get_user_interaction_ = false;
   bool has_form_interactions_ = false;
   std::unordered_map<content::GlobalRenderFrameHostId,
                      std::unique_ptr<AutofillObserverImpl>,

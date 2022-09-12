@@ -171,6 +171,8 @@ public class CustomTabsConnection {
             "onGreatestScrollPercentageIncreased";
     private static final String ON_GREATEST_SCROLL_PERCENTAGE_INCREASED_PERCENTAGE_EXTRA =
             "scrollPercentage";
+    private static final String DID_GET_USER_INTERACTION_CALLBACK = "didGetUserInteraction";
+    private static final String DID_GET_USER_INTERACTION_EXTRA = "didInteract";
 
     @IntDef({ParallelRequestStatus.NO_REQUEST, ParallelRequestStatus.SUCCESS,
             ParallelRequestStatus.FAILURE_NOT_INITIALIZED,
@@ -1178,6 +1180,22 @@ public class CustomTabsConnection {
         if (safeExtraCallback(session, ON_GREATEST_SCROLL_PERCENTAGE_INCREASED_CALLBACK, args)) {
             logCallback("extraCallback(" + ON_GREATEST_SCROLL_PERCENTAGE_INCREASED_CALLBACK + ")",
                     args);
+        }
+    }
+
+    /**
+     * Notify the application whether the user had interaction on the web contents. A user
+     * interaction includes touch event / mouse event / raw key down event / scroll event.
+     * @param session The Binder object identifying the session.
+     * @param didGetUserInteraction Whether user had any interaction in the current CCT session.
+     */
+    public void notifyDidGetUserInteraction(
+            CustomTabsSessionToken session, boolean didGetUserInteraction) {
+        Bundle args = new Bundle();
+        args.putBoolean(DID_GET_USER_INTERACTION_EXTRA, didGetUserInteraction);
+
+        if (safeExtraCallback(session, DID_GET_USER_INTERACTION_CALLBACK, args)) {
+            logCallback("extraCallback(" + DID_GET_USER_INTERACTION_CALLBACK + ")", args);
         }
     }
 

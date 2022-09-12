@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.FirstMeaningfulPaintObserver;
 import org.chromium.chrome.browser.customtabs.PageLoadMetricsObserver;
 import org.chromium.chrome.browser.customtabs.ReparentingTaskProvider;
+import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -52,6 +53,7 @@ import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParams;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
@@ -441,9 +443,19 @@ public class CustomTabActivityTabController implements InflationObserver {
                 }
 
                 @Override
+                public void onHidden(Tab tab, int reason) {
+                    if (reason == TabHidingType.ACTIVITY_HIDDEN
+                            && ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS)) {
+                        collectUserInteraction(tab);
+                    }
+                }
+
+                @Override
                 public void onDestroyed(Tab tab) {
                     if (ChromeFeatureList.isEnabled(
                                 ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS)) {
+                        collectUserInteraction(tab);
                         removeObserversFromWebContents(tab.getWebContents());
                     }
                 }
@@ -575,6 +587,18 @@ public class CustomTabActivityTabController implements InflationObserver {
             gestureListenerManager.addListener(mGestureStateListener);
         }
         tab.getWebContents().addObserver(mWebContentsObserver);
+    }
+
+    private void collectUserInteraction(Tab tab) {
+        assert tab.getWebContents() != null;
+        // Do not report engagement signals if user does not consent to report usage.
+        if (!PrivacyPreferencesManagerImpl.getInstance().isUsageAndCrashReportingPermitted()) {
+            return;
+        }
+        TabInteractionRecorder recorder = TabInteractionRecorder.getFromTab(tab);
+        if (recorder == null) return;
+
+        mConnection.notifyDidGetUserInteraction(mSession, recorder.didGetUserInteraction());
     }
 
     private class ScrollState {

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs.features;
 import android.os.SystemClock;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
@@ -31,7 +32,7 @@ import java.util.Locale;
 @JNINamespace("customtabs")
 public class TabInteractionRecorder {
     private static final String TAG = "CctInteraction";
-
+    private static TabInteractionRecorder sInstanceForTesting;
     private final long mNativeTabInteractionRecorder;
 
     // Do not instantiate in Java.
@@ -51,6 +52,9 @@ public class TabInteractionRecorder {
      * after this function is called.
      * */
     public static @Nullable TabInteractionRecorder getFromTab(Tab tab) {
+        if (sInstanceForTesting != null) {
+            return sInstanceForTesting;
+        }
         return TabInteractionRecorderJni.get().getFromTab(tab);
     }
 
@@ -88,6 +92,17 @@ public class TabInteractionRecorder {
     }
 
     /**
+     * Whether there has been direct user interaction with the WebContents in the tab.
+     * For more detail see content/public/browser/web_contents_observer.h
+     *
+     * @return Whether there has been direct user interaction.
+     */
+    public boolean didGetUserInteraction() {
+        // TODO(https://crbug.com/1359540): Expose WebContentsObserver#didGetUserInteraction
+        return TabInteractionRecorderJni.get().didGetUserInteraction(mNativeTabInteractionRecorder);
+    }
+
+    /**
      *  Remove all the shared preferences related to tab interactions.
      */
     public static void resetTabInteractionRecords() {
@@ -96,10 +111,16 @@ public class TabInteractionRecorder {
         pref.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION);
     }
 
+    @VisibleForTesting
+    public static void setInstanceForTesting(TabInteractionRecorder instance) {
+        sInstanceForTesting = instance;
+    }
+
     @NativeMethods
     interface Natives {
         TabInteractionRecorder getFromTab(Tab tab);
         TabInteractionRecorder createForTab(Tab tab);
+        boolean didGetUserInteraction(long nativeTabInteractionRecorderAndroid);
         boolean hadInteraction(long nativeTabInteractionRecorderAndroid);
     }
 }

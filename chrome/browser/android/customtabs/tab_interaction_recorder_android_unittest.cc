@@ -196,4 +196,13 @@ TEST_F(TabInteractionRecorderAndroidTest, HasNavigatedFromFirstPage) {
   EXPECT_TRUE(helper->HasNavigatedFromFirstPage());
 }
 
+TEST_F(TabInteractionRecorderAndroidTest, DidGetUserInteraction) {
+  std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
+  auto* helper = TabInteractionRecorderAndroid::FromWebContents(contents.get());
+
+  EXPECT_FALSE(helper->did_get_user_interaction());
+  helper->DidGetUserInteraction(blink::WebTouchEvent());
+  EXPECT_TRUE(helper->did_get_user_interaction());
+}
+
 }  // namespace customtabs
