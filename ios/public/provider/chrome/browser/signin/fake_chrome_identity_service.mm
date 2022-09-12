@@ -228,7 +228,7 @@ void FakeChromeIdentityService::GetAccessToken(
   NSError* error = nil;
   NSDictionary* user_info = nil;
   if (_fakeMDMError) {
-    // |GetAccessToken| is normally an asynchronous operation (that requires
+    // `GetAccessToken` is normally an asynchronous operation (that requires
     // some network calls), this is replicated here by dispatching it.
     error =
         [NSError errorWithDomain:@"com.google.HTTPStatus" code:-1 userInfo:nil];
@@ -236,7 +236,7 @@ void FakeChromeIdentityService::GetAccessToken(
     EXPECT_CALL(*this, HandleMDMNotification(identity, user_info, _))
         .WillRepeatedly(testing::Return(true));
   }
-  // |GetAccessToken| is normally an asynchronous operation (that requires some
+  // `GetAccessToken` is normally an asynchronous operation (that requires some
   // network calls), this is replicated here by dispatching it.
   ++_pendingCallback;
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -260,7 +260,7 @@ UIImage* FakeChromeIdentityService::GetCachedAvatarForIdentity(
 }
 
 void FakeChromeIdentityService::GetAvatarForIdentity(ChromeIdentity* identity) {
-  // |GetAvatarForIdentity| is normally an asynchronous operation, this is
+  // `GetAvatarForIdentity` is normally an asynchronous operation, this is
   // replicated here by dispatching it.
   ++_pendingCallback;
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -278,7 +278,7 @@ void FakeChromeIdentityService::GetHostedDomainForIdentity(
     ChromeIdentity* identity,
     GetHostedDomainCallback callback) {
   NSString* domain = FakeGetHostedDomainForIdentity(identity);
-  // |GetHostedDomainForIdentity| is normally an asynchronous operation , this
+  // `GetHostedDomainForIdentity` is normally an asynchronous operation , this
   // is replicated here by dispatching it.
   ++_pendingCallback;
   dispatch_async(dispatch_get_main_queue(), ^{

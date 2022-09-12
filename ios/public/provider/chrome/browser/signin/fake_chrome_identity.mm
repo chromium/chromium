@@ -119,7 +119,7 @@ NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
   return YES;
 }
 
-// Overrides |isEqual| and |hash| methods to compare objects by values. This is
+// Overrides `isEqual` and `hash` methods to compare objects by values. This is
 // useful when the object is passed by value between processes in EG2.
 - (BOOL)isEqual:(id)object {
   if (self == object) {

@@ -32,32 +32,32 @@ namespace ios {
 
 class ChromeIdentityService;
 
-// Callback passed to method |GetAccessTokenForScopes()| that returns the
+// Callback passed to method `GetAccessTokenForScopes()` that returns the
 // information of the obtained access token to the caller.
 typedef void (^AccessTokenCallback)(NSString* token,
                                     NSDate* expiration,
                                     NSError* error);
 
-// Callback passed to method |ForgetIdentity()|. |error| is nil if the operation
+// Callback passed to method `ForgetIdentity()`. `error` is nil if the operation
 // completed with success.
 typedef void (^ForgetIdentityCallback)(NSError* error);
 
-// Callback passed to method |GetHostedDomainForIdentity()|.
-// |hosted_domain|:
+// Callback passed to method `GetHostedDomainForIdentity()`.
+// `hosted_domain`:
 //   + nil, if error.
 //   + an empty string, if this is a consumer account (e.g. foo@gmail.com).
 //   + non-empty string, if the hosted domain was fetched and this account
 //     has a hosted domain.
-// |error|: Error if failed to fetch the identity profile.
+// `error`: Error if failed to fetch the identity profile.
 typedef void (^GetHostedDomainCallback)(NSString* hosted_domain,
                                         NSError* error);
 
-// Callback passed to method |HandleMDMNotification()|. |is_blocked| is true if
+// Callback passed to method `HandleMDMNotification()`. `is_blocked` is true if
 // the device is blocked.
 typedef void (^MDMStatusCallback)(bool is_blocked);
 
 // Callback to dismiss ASM view. No-op, if this block is more than once.
-// |animated| the view will be dismissed with animation if the value is YES.
+// `animated` the view will be dismissed with animation if the value is YES.
 typedef void (^DismissASMViewControllerBlock)(BOOL animated);
 
 // Defines account capability state based on GCRSSOCapabilityResult.
@@ -70,7 +70,7 @@ enum class ChromeIdentityCapabilityResult {
   kUnknown,
 };
 
-// Callback to retrieve account capabilities. Maps |capability_result| to the
+// Callback to retrieve account capabilities. Maps `capability_result` to the
 // corresponding state in ChromeIdentityCapabilityResult.
 typedef void (^CapabilitiesCallback)(
     ChromeIdentityCapabilityResult capability_result);
@@ -105,14 +105,14 @@ class ChromeIdentityService {
     virtual ~Observer() {}
 
     // Handles identity list changed events.
-    // |notify_user| is true if the identity list is updated by an external
+    // `notify_user` is true if the identity list is updated by an external
     // source than Chrome. This means that a first party Google app had added or
     // removed identities, or the identity token is invalid.
     virtual void OnIdentityListChanged(bool notify_user) {}
 
     // Handles access token refresh failed events.
-    // |identity| is the the identity for which the access token refresh failed.
-    // |user_info| is the user info dictionary in the original notification. It
+    // `identity` is the the identity for which the access token refresh failed.
+    // `user_info` is the user info dictionary in the original notification. It
     // should not be accessed directly but via helper methods (like
     // ChromeIdentityService::IsInvalidGrantError).
     virtual void OnAccessTokenRefreshFailed(ChromeIdentity* identity,
@@ -152,9 +152,9 @@ class ChromeIdentityService {
   virtual void DismissDialogs();
 
   // Presents a new Account Details view.
-  // |identity| the identity used to present the view.
-  // |view_controller| the view to present the details view.
-  // |animated| the view is presented with animation if YES.
+  // `identity` the identity used to present the view.
+  // `view_controller` the view to present the details view.
+  // `animated` the view is presented with animation if YES.
   // Returns a block to dismiss the presented view. This block can be ignored if
   // not needed.
   virtual ios::DismissASMViewControllerBlock PresentAccountDetailsController(
@@ -163,9 +163,9 @@ class ChromeIdentityService {
       BOOL animated);
 
   // Presents a new Web and App Setting Details view.
-  // |identity| the identity used to present the view.
-  // |view_controller| the view to present the setting details.
-  // |animated| the view is presented with animation if YES.
+  // `identity` the identity used to present the view.
+  // `view_controller` the view to present the setting details.
+  // `animated` the view is presented with animation if YES.
   // Returns a block to dismiss the presented view. This block can be ignored if
   // not needed.
   virtual DismissASMViewControllerBlock
@@ -173,7 +173,7 @@ class ChromeIdentityService {
                                            UIViewController* view_controller,
                                            BOOL animated);
 
-  // Returns a new ChromeIdentityInteractionManager with |delegate| as its
+  // Returns a new ChromeIdentityInteractionManager with `delegate` as its
   // delegate.
   virtual ChromeIdentityInteractionManager*
   CreateChromeIdentityInteractionManager() const;
@@ -227,7 +227,7 @@ class ChromeIdentityService {
   virtual NSString* GetCachedHostedDomainForIdentity(ChromeIdentity* identity);
 
   // Asynchronously returns the value of the account capability that determines
-  // whether Chrome should offer extended sync promos to |identity|. This value
+  // whether Chrome should offer extended sync promos to `identity`. This value
   // will have a refresh period of 24 hours, meaning that at retrieval it may be
   // stale. If the value is not populated, as in a fresh install, the callback
   // will evaluate to false.
@@ -235,25 +235,25 @@ class ChromeIdentityService {
                                   CapabilitiesCallback callback);
 
   // Asynchronously returns the value of the account capability that determines
-  // whether parental controls should be applied to |identity|.
+  // whether parental controls should be applied to `identity`.
   void IsSubjectToParentalControls(ChromeIdentity* identity,
                                    CapabilitiesCallback callback);
 
   // Returns true if the service can be used, and supports ChromeIdentity list.
   virtual bool IsServiceSupported();
 
-  // Returns the MDM device status associated with |user_info|.
+  // Returns the MDM device status associated with `user_info`.
   virtual MDMDeviceStatus GetMDMDeviceStatus(NSDictionary* user_info);
 
   // Handles a potential MDM (Mobile Device Management) notification. Returns
-  // true if the notification linked to |identity| and |user_info| was an MDM
-  // one. In this case, |callback| will be called later with the status of the
+  // true if the notification linked to `identity` and `user_info` was an MDM
+  // one. In this case, `callback` will be called later with the status of the
   // device.
   virtual bool HandleMDMNotification(ChromeIdentity* identity,
                                      NSDictionary* user_info,
                                      MDMStatusCallback callback);
 
-  // Returns whether the |error| associated with |identity| is due to MDM
+  // Returns whether the `error` associated with `identity` is due to MDM
   // (Mobile Device Management).
   virtual bool IsMDMError(ChromeIdentity* identity, NSError* error);
 
@@ -261,7 +261,7 @@ class ChromeIdentityService {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Returns whether the given |user_info|, from an access token refresh failed
+  // Returns whether the given `user_info`, from an access token refresh failed
   // event, corresponds to an invalid grant error.
   virtual bool IsInvalidGrantError(NSDictionary* user_info);
 
@@ -272,18 +272,18 @@ class ChromeIdentityService {
       NSArray* capabilities,
       ChromeIdentity* identity,
       ChromeIdentityCapabilitiesFetchCompletionBlock completion);
-  // Fires |OnIdentityListChanged| on all observers.
-  // |notify_user| is true if the identity list is updated by an external source
+  // Fires `OnIdentityListChanged` on all observers.
+  // `notify_user` is true if the identity list is updated by an external source
   // than Chrome. This means that a first party Google app had added or removed
   // identities, or the identity token is invalid.
   void FireIdentityListChanged(bool notify_user);
 
-  // Fires |OnAccessTokenRefreshFailed| on all observers, with the corresponding
+  // Fires `OnAccessTokenRefreshFailed` on all observers, with the corresponding
   // identity and user info.
   void FireAccessTokenRefreshFailed(ChromeIdentity* identity,
                                     NSDictionary* user_info);
 
-  // Fires |OnProfileUpdate| on all observers, with the corresponding identity.
+  // Fires `OnProfileUpdate` on all observers, with the corresponding identity.
   void FireProfileDidUpdate(ChromeIdentity* identity);
 
  private:

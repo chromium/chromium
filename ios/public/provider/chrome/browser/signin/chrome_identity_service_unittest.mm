@@ -40,7 +40,7 @@ class TestChromeIdentityService : public ChromeIdentityService {
   ~TestChromeIdentityService() override = default;
 
   // Defines available capabilities that can be set under test.
-  // Sets the capability |kCanOfferExtendedChromeSyncPromosCapabilityName| under
+  // Sets the capability `kCanOfferExtendedChromeSyncPromosCapabilityName` under
   // test.
   void SetCapabilityUnderTestCanOfferExtendedSyncPromos(
       ChromeIdentity* identity) {
@@ -54,7 +54,7 @@ class TestChromeIdentityService : public ChromeIdentityService {
         });
   }
 
-  // Sets the capability |kIsSubjectToParentalControlsCapabilityName| under
+  // Sets the capability `kIsSubjectToParentalControlsCapabilityName` under
   // test.
   void SetCapabilityUnderTestIsSubjectToParentalControls(
       ChromeIdentity* identity) {
