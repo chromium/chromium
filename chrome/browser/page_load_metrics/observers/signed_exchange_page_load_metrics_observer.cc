@@ -112,6 +112,16 @@ SignedExchangePageLoadMetricsObserver::OnFencedFramesStart(
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+SignedExchangePageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This observer focuses on evaluating the performance gain of the Signed
+  // Exchanges, and we'd exclude prerendered cases to measure the pure benefit
+  // coming from the Signed Exchanges adoption.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 SignedExchangePageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsSignedExchangeInnerResponse()) {
