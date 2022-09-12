@@ -293,6 +293,9 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   void AckPendingWindowRect();
 
   // Returns the location/bounds of the widget (in screen coordinates).
+  // TODO(bokan): In a nested widget, the size of this rect doesn't account for
+  // page scale. See comments in RenderWidgetHostViewChildFrame::GetViewBounds
+  // and https://crbug.com/928825.
   const gfx::Rect& WidgetScreenRect() const { return widget_screen_rect_; }
 
   // Returns the bounds of the screen the widget is contained in (in screen
@@ -515,9 +518,12 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // ImeEventGuard. We keep track of the outermost one, and update it as needed.
   ImeEventGuard* ime_event_guard_ = nullptr;
 
-  // The screen rects of the view and the window that contains it. These do not
-  // include any scaling by device scale factor, so are logical pixels not
-  // physical device pixels.
+  // The screen rects of the view and the window that contains it. These rects
+  // are in DIPs.
+  // TODO(bokan): In a nested widget, the size of widget_screen_rect_ doesn't
+  // account for page scale. See comments in
+  // RenderWidgetHostViewChildFrame::GetViewBounds and
+  // https://crbug.com/928825.
   gfx::Rect widget_screen_rect_;
   gfx::Rect window_screen_rect_;
 

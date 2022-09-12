@@ -454,6 +454,7 @@ void SitePerProcessBrowserTestBase::SetUpCommandLine(
   IsolateAllSitesForTesting(command_line);
 
   command_line->AppendSwitch(switches::kValidateInputEventStream);
+  command_line->AppendSwitch(switches::kExposeInternalsForTesting);
 }
 
 void SitePerProcessBrowserTestBase::SetUpOnMainThread() {

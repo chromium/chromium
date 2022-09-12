@@ -518,6 +518,8 @@ class Internals final : public ScriptWrappable {
   String selectedHTMLForClipboard();
   String selectedTextForClipboard();
 
+  // Sets the visual viewport offset within the layout viewport. Arguments are
+  // provided in CSS pixels.
   void setVisualViewportOffset(int x, int y);
 
   // Return true if the given use counter exists for the given document.

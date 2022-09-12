@@ -514,16 +514,32 @@ void ChromeClientImpl::ScheduleAnimation(const LocalFrameView* frame_view,
   }
 }
 
-gfx::Rect ChromeClientImpl::ViewportToScreen(
-    const gfx::Rect& rect_in_viewport,
+gfx::Rect ChromeClientImpl::LocalRootToScreen(
+    const gfx::Rect& rect_in_local_root,
     const LocalFrameView* frame_view) const {
   LocalFrame& frame = frame_view->GetFrame();
 
-  gfx::Rect screen_rect =
-      frame.GetWidgetForLocalRoot()->BlinkSpaceToEnclosedDIPs(rect_in_viewport);
-  gfx::Rect view_rect = frame.GetWidgetForLocalRoot()->ViewRect();
+  WebFrameWidgetImpl* widget =
+      WebLocalFrameImpl::FromFrame(frame)->LocalRootFrameWidget();
 
+  gfx::Rect blink_space_rect;
+  if (widget->ForTopMostMainFrame()) {
+    blink_space_rect = frame.GetPage()->GetVisualViewport().RootFrameToViewport(
+        rect_in_local_root);
+  } else {
+    // For a non-topmost local root, the visual viewport transform is already
+    // applied to the widget's ViewRect so the widget origin is correctly
+    // located. Thus all we need to do is scale the local rect to the visual
+    // viewport's page scale.
+    blink_space_rect = gfx::ScaleToEnclosingRect(
+        rect_in_local_root, widget->PageScaleInMainFrame());
+  }
+
+  gfx::Rect view_rect = widget->ViewRect();
+
+  gfx::Rect screen_rect = widget->BlinkSpaceToEnclosedDIPs(blink_space_rect);
   screen_rect.Offset(view_rect.x(), view_rect.y());
+
   return screen_rect;
 }
 

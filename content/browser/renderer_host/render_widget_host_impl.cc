@@ -3188,7 +3188,7 @@ bool RenderWidgetHostImpl::RemovePendingUserActivationIfAvailable() {
   return false;
 }
 
-const mojo::AssociatedRemote<blink::mojom::FrameWidget>&
+mojo::AssociatedRemote<blink::mojom::FrameWidget>&
 RenderWidgetHostImpl::GetAssociatedFrameWidget() {
   return blink_frame_widget_;
 }

@@ -842,8 +842,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Add/ClearPendingUserActivation() for details.
   bool RemovePendingUserActivationIfAvailable();
 
-  const mojo::AssociatedRemote<blink::mojom::FrameWidget>&
-  GetAssociatedFrameWidget();
+  mojo::AssociatedRemote<blink::mojom::FrameWidget>& GetAssociatedFrameWidget();
 
   blink::mojom::FrameWidgetInputHandler* GetFrameWidgetInputHandler();
 

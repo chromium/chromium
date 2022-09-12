@@ -5,6 +5,8 @@
 #include "content/browser/site_per_process_browsertest.h"
 
 #include "base/json/json_reader.h"
+#include "base/strings/strcat.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/math_util.h"
@@ -1474,10 +1476,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ViewBoundsInNestedFrameTest) {
       blink::WebInputEvent::GetStaticTimeStampForTests());
 
   scroll_event.SetPositionInWidget(
-      std::floor((bounds.x() - rwhv_root->GetViewBounds().x() - 5) *
-                 scale_factor),
-      std::floor((bounds.y() - rwhv_root->GetViewBounds().y() - 5) *
-                 scale_factor));
+      std::floor((bounds.x() - rwhv_root->GetViewBounds().x()) -
+                 (5 * scale_factor)),
+      std::floor((bounds.y() - rwhv_root->GetViewBounds().y()) -
+                 (5 * scale_factor)));
   scroll_event.delta_x = 0.0f;
   scroll_event.delta_y = -30.0f;
   scroll_event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
@@ -2454,4 +2456,311 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessHighDPIBrowserTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+
+class SitePerProcessPopupBrowserTest : public SitePerProcessBrowserTestBase {
+ public:
+  SitePerProcessPopupBrowserTest() = default;
+
+  // Navigates the a page with the provided site nesting hierarchy, e.g.
+  // "foo(bar(baz))" will load a root frame from "foo.com", a subframe from
+  // "bar.com" and a sub-subframe from "baz.com". The leaf node frame will load
+  // a page with a <select> element on it. Each subframe is half the size of
+  // the parent and centered within it.
+  void SetupForSelectElementWithNesting(const std::string& nesting) {
+    const std::string kPageWithIframe =
+        "/page_with_iframe_in_bottom_right.html";
+    const std::string kPageWithSelect = "/site_isolation/page-with-select.html";
+
+    std::string sites = nesting;
+
+    {
+      std::string main_site = PopSite(sites);
+      DCHECK(!main_site.empty());
+      GURL main_url(embedded_test_server()->GetURL(
+          base::StrCat({main_site, ".com"}), kPageWithIframe));
+      EXPECT_TRUE(NavigateToURL(shell(), main_url));
+    }
+
+    FrameTreeNode* cur_node = web_contents()->GetPrimaryFrameTree().root();
+
+    DCHECK(!sites.empty()) << "Test must have at least one child frame";
+    while (!sites.empty()) {
+      std::string child_site = PopSite(sites);
+      std::string child_page =
+          sites.empty() ? kPageWithSelect : kPageWithIframe;
+
+      GURL child_url(embedded_test_server()->GetURL(
+          base::StrCat({child_site, ".com"}), child_page));
+
+      FrameTreeNode* child_node = cur_node->child_at(0);
+      EXPECT_TRUE(NavigateToURLFromRenderer(child_node, child_url));
+
+      cur_node = child_node;
+    }
+  }
+
+  // Sets the pinch-zoom scale factor and visual viewport offset. This is the
+  // offset of the visual viewport within the main frame and is in CSS pixels.
+  void SetVisualViewportScaleAndOffset(float scale,
+                                       float offset_x,
+                                       float offset_y) {
+    FrameTreeNode* root_node = NodeAtDepth(0);
+    FrameTreeNode* child_node = InnerMostNode();
+
+    RenderFrameProxyHost* child_proxy =
+        child_node->render_manager()->GetProxyToParent();
+    auto interceptor =
+        std::make_unique<SynchronizeVisualPropertiesInterceptor>(child_proxy);
+
+    EXPECT_TRUE(ExecJs(root_node, JsReplace(R"JS(
+        window.internals.setPageScaleFactor($1);
+        window.internals.setVisualViewportOffset($2, $3);
+    )JS",
+                                            scale, offset_x, offset_y)));
+
+    // Frame rects are recomputed and propagated when Blink performs a
+    // lifecycle update. Force the root frame to produce a frame and wait until
+    // the child has its visual properties synchronized.
+    RunUntilInputProcessed(
+        root_node->current_frame_host()->GetRenderWidgetHost());
+
+    interceptor->WaitForRect();
+
+    // Ensure the rects are propagated to and processed in the renderer, since
+    // input isn't ordered with respect to viewport intersection.
+    child_node->current_frame_host()
+        ->GetRenderWidgetHost()
+        ->GetAssociatedFrameWidget()
+        .FlushForTesting();
+  }
+
+  // Opens the select dropdown in the leaf node frame, waits for the renderer
+  // to request showing a popup, and returns the requested screen rect.
+  gfx::Rect OpenSelectAndGetScreenRect() {
+    const gfx::Point select_location = SelectElementLocalBounds().origin();
+
+    FrameTreeNode* node = InnerMostNode();
+
+    // Click on the select element and wait for the request to show a popup
+    // widget.
+    gfx::Rect popup_initial_rect;
+
+    auto show_popup_waiter = std::make_unique<ShowPopupWidgetWaiter>(
+        web_contents(), node->current_frame_host());
+
+    SimulateMouseClick(node->current_frame_host()->GetRenderWidgetHost(),
+                       select_location.x() + 5, select_location.y() + 5);
+
+    show_popup_waiter->Wait();
+    popup_initial_rect = show_popup_waiter->last_initial_rect();
+
+    return popup_initial_rect;
+  }
+
+ protected:
+  // Allow a pixel error due to device scale rounding. 6.f since scale can
+  // amplify the error; the max page scale used is 2 and device scale factor
+  // varies up to about 3.
+  const float kEpsilon = 6.f;
+
+  gfx::Rect SelectElementLocalBounds() {
+    FrameTreeNode* node = InnerMostNode();
+    int height = EvalJs(node, "document.querySelector('select').offsetHeight;")
+                     .ExtractInt();
+    int width = EvalJs(node, "document.querySelector('select').offsetWidth;")
+                    .ExtractInt();
+    int left = EvalJs(node, "document.querySelector('select').offsetLeft;")
+                   .ExtractInt();
+    int top = EvalJs(node, "document.querySelector('select').offsetTop;")
+                  .ExtractInt();
+    return gfx::Rect(gfx::Point(left, top), gfx::Size(width, height));
+  }
+
+  gfx::Size WindowSize() {
+    FrameTreeNode* node = NodeAtDepth(0);
+    int width = EvalJs(node, "window.innerWidth;").ExtractInt();
+    int height = EvalJs(node, "window.innerHeight;").ExtractInt();
+    return gfx::Size(width, height);
+  }
+
+  // Returns the FrameTreeNode at the given depth, 0 being the root frame, 1
+  // the root's child, 2 the first child's child, and so on.
+  FrameTreeNode* NodeAtDepth(int depth) const {
+    FrameTreeNode* cur_node = web_contents()->GetPrimaryFrameTree().root();
+    for (; depth; --depth) {
+      cur_node = cur_node->child_at(0);
+    }
+    return cur_node;
+  }
+
+  FrameTreeNode* InnerMostNode() const {
+    FrameTreeNode* cur_node = web_contents()->GetPrimaryFrameTree().root();
+    while (cur_node->child_count()) {
+      cur_node = cur_node->child_at(0);
+    }
+    return cur_node;
+  }
+
+  gfx::Rect ScreenToRootRelative(const gfx::Rect& screen_rect) const {
+    gfx::Rect root_screen_rect =
+        static_cast<RenderWidgetHostViewBase*>(NodeAtDepth(0)
+                                                   ->current_frame_host()
+                                                   ->GetRenderWidgetHost()
+                                                   ->GetView())
+            ->GetViewBounds();
+
+    gfx::Rect root_relative_rect = screen_rect;
+    root_relative_rect -= root_screen_rect.OffsetFromOrigin();
+    return root_relative_rect;
+  }
+
+  // Returns the ViewBounds for the given node's RenderWidgetHostView, relative
+  // to the root view.
+  gfx::Rect ViewBoundsFor(const FrameTreeNode* node) const {
+    return static_cast<RenderWidgetHostViewBase*>(
+               node->current_frame_host()->GetRenderWidgetHost()->GetView())
+        ->GetViewBounds();
+  }
+
+  // Takes a string of nested sites in parentheses, for example:
+  //    nesting == "foo(bar(baz))"
+  // Removes the outermost token from the argument and returns its value.
+  //   returns "foo"
+  //   nesting == "bar(baz)"
+  // Assumes the argument is correctly formatted.
+  std::string PopSite(std::string& nesting) const {
+    std::string ret;
+
+    size_t paren_ix = nesting.find_first_of('(');
+    if (paren_ix == std::string::npos) {
+      ret = nesting;
+      nesting = "";
+      return ret;
+    }
+
+    ret = nesting.substr(0, paren_ix);
+    nesting = nesting.substr(paren_ix + 1);
+    nesting = nesting.substr(0, nesting.size() - 1);
+
+    return ret;
+  }
+};
+
+// Verify that screen rects are correctly computed for a simple nested renderer
+// so that a select element popup in an OOPIF is correctly positioned when the
+// page is pinch-zoomed.
+IN_PROC_BROWSER_TEST_F(SitePerProcessPopupBrowserTest,
+                       NestedSelectWithPinchZoom) {
+  SetupForSelectElementWithNesting("foo(bar)");
+
+  // Zoom and pan the visual viewport so that the iframe is at (20, 40) and
+  // wait until the child receives updated viewport intersection data.
+  gfx::Size window_size = WindowSize();
+  const float kPageScaleFactor = 2.f;
+  const gfx::Vector2d kIframeOffsetInViewport(10, 20);
+  SetVisualViewportScaleAndOffset(
+      kPageScaleFactor,
+      // Since the subframe is centered and half the window size, 0.25 *
+      // window_size takes us right up to the subframe edge.
+      window_size.width() * 0.25f - kIframeOffsetInViewport.x(),
+      window_size.height() * 0.25f - kIframeOffsetInViewport.y());
+
+  // Check that the screen bounds for the child widget account for the visual
+  // viewport scale and offset.
+  {
+    const gfx::Vector2dF kExpectedChildLocation =
+        gfx::ScaleVector2d(kIframeOffsetInViewport, kPageScaleFactor);
+
+    FrameTreeNode* child_node = NodeAtDepth(1);
+    gfx::Point child_location =
+        ScreenToRootRelative(ViewBoundsFor(child_node)).origin();
+
+    EXPECT_NEAR(child_location.x(), kExpectedChildLocation.x(), kEpsilon);
+    EXPECT_NEAR(child_location.y(), kExpectedChildLocation.y(), kEpsilon);
+  }
+
+  // This part verifies the popup request comes at the correct screen
+  // coordinates. On Mac/Android/Cast, popup coordinates are relative to the
+  // OOPIF so the screen position is computed later. Thus, this check isn't
+  // relevant on those platforms.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CASTOS)
+  gfx::Rect popup_initial_rect =
+      ScreenToRootRelative(OpenSelectAndGetScreenRect());
+
+  // Check that the popup was displayed in the correct screen location.
+  {
+    gfx::RectF select_bounds = gfx::ScaleRect(
+        gfx::RectF(SelectElementLocalBounds()), kPageScaleFactor);
+    gfx::Vector2dF iframe_offset =
+        gfx::ScaleVector2d(kIframeOffsetInViewport, kPageScaleFactor);
+
+    const auto kExpectedLocation = select_bounds.origin() + iframe_offset;
+
+    EXPECT_NEAR(popup_initial_rect.x(), kExpectedLocation.x(), kEpsilon);
+    EXPECT_NEAR(popup_initial_rect.y(),
+                kExpectedLocation.y() + select_bounds.height(), kEpsilon);
+  }
+#endif
+}
+
+// Verify that screen rects are correctly computed for a doubly nested renderer
+// so that a select element popup in an OOPIF is correctly positioned when the
+// page is pinch-zoomed.
+IN_PROC_BROWSER_TEST_F(SitePerProcessPopupBrowserTest,
+                       DoublyNestedSelectWithPinchZoom) {
+  SetupForSelectElementWithNesting("foo(bar(baz))");
+
+  // Zoom and pan the visual viewport so that the iframe is at (40, 80) and
+  // wait until the child receives updated viewport intersection data.
+  gfx::Size window_size = WindowSize();
+  const float kPageScaleFactor = 2.f;
+  const gfx::Vector2d kIframeOffsetInViewport(10, 20);
+  SetVisualViewportScaleAndOffset(
+      kPageScaleFactor,
+      // Since each nested subframe is half the size of its parent and centered
+      // within it, if we scroll to the sum of 25% of each frame's (including
+      // root) dimension we'll end up right at the subframe edge.
+      window_size.width() * (0.25f + 0.25f * 0.5f) -
+          kIframeOffsetInViewport.x(),
+      window_size.height() * (0.25f + 0.25f * 0.5f) -
+          kIframeOffsetInViewport.y());
+
+  // Check that the screen bounds for the child widget account for the visual
+  // viewport scale and offset.
+  {
+    const gfx::Vector2dF kExpectedChildLocation =
+        gfx::ScaleVector2d(kIframeOffsetInViewport, kPageScaleFactor);
+
+    FrameTreeNode* child_node = NodeAtDepth(2);
+    gfx::Point child_location =
+        ScreenToRootRelative(ViewBoundsFor(child_node)).origin();
+
+    EXPECT_NEAR(child_location.x(), kExpectedChildLocation.x(), kEpsilon);
+    EXPECT_NEAR(child_location.y(), kExpectedChildLocation.y(), kEpsilon);
+  }
+
+  // This part verifies the popup request comes at the correct screen
+  // coordinates. On Mac/Android/Cast, popup coordinates are relative to the
+  // OOPIF so the screen position is computed later. Thus, this check isn't
+  // relevant on those platforms.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CASTOS)
+  gfx::Rect popup_initial_rect =
+      ScreenToRootRelative(OpenSelectAndGetScreenRect());
+
+  // Check that the popup was displayed in the correct screen location.
+  {
+    gfx::RectF select_bounds = gfx::ScaleRect(
+        gfx::RectF(SelectElementLocalBounds()), kPageScaleFactor);
+    gfx::Vector2dF iframe_offset =
+        gfx::ScaleVector2d(kIframeOffsetInViewport, kPageScaleFactor);
+
+    const auto kExpectedLocation = select_bounds.origin() + iframe_offset;
+
+    EXPECT_NEAR(popup_initial_rect.x(), kExpectedLocation.x(), kEpsilon);
+    EXPECT_NEAR(popup_initial_rect.y(),
+                kExpectedLocation.y() + select_bounds.height(), kEpsilon);
+  }
+#endif
+}
+
 }  // namespace content

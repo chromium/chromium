@@ -278,9 +278,13 @@ void InternalPopupMenu::WriteDocument(SharedBuffer* data) {
   // element's items (see AddElementStyle). This requires a style-clean tree.
   // See Element::EnsureComputedStyle for further explanation.
   DCHECK(!owner_element.GetDocument().NeedsLayoutTreeUpdate());
-  gfx::Rect anchor_rect_in_screen = chrome_client_->ViewportToScreen(
-      owner_element.VisibleBoundsInVisualViewport(),
-      owner_element.GetDocument().View());
+  LocalFrameView* view = owner_element.GetDocument().View();
+  LocalFrameView* root_view = view->GetFrame().LocalFrameRoot().View();
+  // TODO(bokan): VisibleBoundsInVisualViewport will soon be
+  // VisibleBoundsInLocalRoot.
+  gfx::Rect anchor_rect_in_screen = chrome_client_->LocalRootToScreen(
+      root_view->ViewportToFrame(owner_element.VisibleBoundsInVisualViewport()),
+      view);
 
   float scale_factor = chrome_client_->WindowToViewportScalar(
       owner_element.GetDocument().GetFrame(), 1.f);
@@ -679,9 +683,14 @@ void InternalPopupMenu::Update(bool force_update) {
   }
   context.FinishGroupIfNecessary();
   PagePopupClient::AddString("],\n", data.get());
-  gfx::Rect anchor_rect_in_screen = chrome_client_->ViewportToScreen(
-      owner_element_->VisibleBoundsInVisualViewport(),
-      OwnerElement().GetDocument().View());
+  LocalFrameView* view = OwnerElement().GetDocument().View();
+  LocalFrameView* root_view = view->GetFrame().LocalFrameRoot().View();
+  // TODO(bokan): VisibleBoundsInVisualViewport will soon be
+  // VisibleBoundsInLocalRoot.
+  gfx::Rect anchor_rect_in_screen = chrome_client_->LocalRootToScreen(
+      root_view->ViewportToFrame(
+          OwnerElement().VisibleBoundsInVisualViewport()),
+      view);
   AddProperty("anchorRectInScreen", anchor_rect_in_screen, data.get());
   PagePopupClient::AddString("}\n", data.get());
   popup_->PostMessageToPopup(String::FromUTF8(data->Data(), data->size()));

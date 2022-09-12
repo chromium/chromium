@@ -1260,10 +1260,10 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
       render_frame_submission_observer.LastRenderFrameMetadata()
           .page_scale_factor;
   gfx::Point position_in_widget(
-      base::ClampCeil((bounds.x() - root_view->GetViewBounds().x() + 5) *
-                      scale_factor),
-      base::ClampCeil((bounds.y() - root_view->GetViewBounds().y() + 5) *
-                      scale_factor));
+      base::ClampCeil((bounds.x() - root_view->GetViewBounds().x()) +
+                      (5 * scale_factor)),
+      base::ClampCeil((bounds.y() - root_view->GetViewBounds().y()) +
+                      (5 * scale_factor)));
   SetWebEventPositions(&scroll_event, position_in_widget, root_view);
   scroll_event.delta_units = ui::ScrollGranularity::kScrollByPrecisePixel;
   scroll_event.delta_x = 0.0f;
@@ -2215,8 +2215,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
       render_frame_submission_observer.LastRenderFrameMetadata()
           .page_scale_factor;
   const gfx::PointF point_in_child(
-      (child_bounds.x() - root_bounds.x() + 25) * page_scale_factor,
-      (child_bounds.y() - root_bounds.y() + 25) * page_scale_factor);
+      (child_bounds.x() - root_bounds.x()) + (25 * page_scale_factor),
+      (child_bounds.y() - root_bounds.y()) + (25 * page_scale_factor));
 
   SyntheticSmoothScrollGestureParams params;
   params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
@@ -2318,8 +2318,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
         render_frame_submission_observer.LastRenderFrameMetadata()
             .page_scale_factor;
     const gfx::PointF point_in_root(
-        (child_bounds.x() - root_bounds.x() + 10) * page_scale_factor,
-        (child_bounds.y() - root_bounds.y() + 10) * page_scale_factor);
+        (child_bounds.x() - root_bounds.x()) + (10 * page_scale_factor),
+        (child_bounds.y() - root_bounds.y()) + (10 * page_scale_factor));
 
     blink::WebTouchEvent touch_event(
         blink::WebInputEvent::Type::kTouchStart,
@@ -3514,11 +3514,11 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 
   gfx::Point point_in_a_frame(2, 2);
   gfx::Point point_in_b_frame(
-      base::ClampCeil((b_bounds.x() - a_bounds.x() + 25) * scale_factor),
-      base::ClampCeil((b_bounds.y() - a_bounds.y() + 25) * scale_factor));
+      base::ClampCeil((b_bounds.x() - a_bounds.x()) + (25 * scale_factor)),
+      base::ClampCeil((b_bounds.y() - a_bounds.y()) + (25 * scale_factor)));
   gfx::Point point_in_d_frame(
-      base::ClampCeil((d_bounds.x() - a_bounds.x() + 25) * scale_factor),
-      base::ClampCeil((d_bounds.y() - a_bounds.y() + 25) * scale_factor));
+      base::ClampCeil((d_bounds.x() - a_bounds.x()) + (25 * scale_factor)),
+      base::ClampCeil((d_bounds.y() - a_bounds.y()) + (25 * scale_factor)));
 
   blink::WebMouseEvent mouse_event(
       blink::WebInputEvent::Type::kMouseMove,
@@ -4224,9 +4224,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
           .page_scale_factor;
   gfx::Rect bounds = child_view->GetViewBounds();
   int child_frame_target_x = base::ClampCeil(
-      (bounds.x() - root_view->GetViewBounds().x() + 5) * scale_factor);
+      (bounds.x() - root_view->GetViewBounds().x()) + (5 * scale_factor));
   int child_frame_target_y = base::ClampCeil(
-      (bounds.y() - root_view->GetViewBounds().y() + 5) * scale_factor);
+      (bounds.y() - root_view->GetViewBounds().y()) + (5 * scale_factor));
   mouse_event.SetType(blink::WebInputEvent::Type::kMouseMove);
   mouse_event.SetModifiers(blink::WebInputEvent::kLeftButtonDown);
 
@@ -5654,13 +5654,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   RenderWidgetHostViewBase* child_view = static_cast<RenderWidgetHostViewBase*>(
       child_frame_host->GetRenderWidgetHost()->GetView());
 
-  const float scale_factor =
-      render_frame_submission_observer.LastRenderFrameMetadata()
-          .page_scale_factor;
   gfx::PointF point_in_screen(child_view->GetViewBounds().CenterPoint());
-  point_in_screen.Scale(scale_factor);
-  // It might seem weird to not also scale the root_view's view bounds, but
-  // since the origin should be unaffected by page scale we don't need to.
   const gfx::PointF root_location(
       point_in_screen - root_view->GetViewBounds().OffsetFromOrigin());
 
@@ -5784,8 +5778,8 @@ void CreateContextMenuTestHelper(
   gfx::Rect bounds = rwhv_child->GetViewBounds();
 
   gfx::Point point(
-      base::ClampCeil((bounds.x() - root_bounds.x() + 5) * scale_factor),
-      base::ClampCeil((bounds.y() - root_bounds.y() + 5) * scale_factor));
+      base::ClampCeil((bounds.x() - root_bounds.x()) + (5 * scale_factor)),
+      base::ClampCeil((bounds.y() - root_bounds.y()) + (5 * scale_factor)));
 
   // Target right-click event to child frame.
   blink::WebMouseEvent click_event(
