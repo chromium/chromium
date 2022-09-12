@@ -247,7 +247,7 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
   }
 
   void ScheduleDataDeviceAction(uint32_t action) {
-    ScheduleTestTask(base::BindLambdaForTesting([&]() {
+    ScheduleTestTask(base::BindLambdaForTesting([this, action]() {
       SendDndAction(action);
       Sync();
     }));
