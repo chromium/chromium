@@ -109,6 +109,38 @@ constexpr char kEcheTrayCopyPasteNotImplementedToastId[] =
 constexpr char kEcheTrayTabletModeNotSupportedId[] =
     "eche_tray_toast_ids.tablet_mode_not_supported";
 
+// AcceleratorsActions which should be handled by the AcceleratorController, not
+// the eche tray.
+constexpr AcceleratorAction kLocallyProcessedAcceleratorActions[] = {
+    AcceleratorAction::OPEN_FEEDBACK_PAGE,            // Shift + Alt + I
+    AcceleratorAction::EXIT,                          // Shift + Ctrl + Q
+    AcceleratorAction::SHOW_SHORTCUT_VIEWER,          // Ctrl + Alt + /
+    AcceleratorAction::TOGGLE_CAPS_LOCK,              // Alt + Search
+    AcceleratorAction::NEW_WINDOW,                    // Ctrl + N
+    AcceleratorAction::NEW_INCOGNITO_WINDOW,          // Shift + Ctrl + N
+    AcceleratorAction::NEW_TAB,                       // Ctrl + T
+    AcceleratorAction::OPEN_FILE_MANAGER,             // Shift + Alt + M
+    AcceleratorAction::LAUNCH_APP_0,                  // Alt + 1
+    AcceleratorAction::LAUNCH_APP_1,                  // Alt + 2
+    AcceleratorAction::LAUNCH_APP_2,                  // Alt + 3
+    AcceleratorAction::LAUNCH_APP_3,                  // Alt + 4
+    AcceleratorAction::LAUNCH_APP_4,                  // Alt + 5
+    AcceleratorAction::LAUNCH_APP_5,                  // Alt + 6
+    AcceleratorAction::LAUNCH_APP_6,                  // Alt + 7
+    AcceleratorAction::LAUNCH_APP_7,                  // Alt + 8
+    AcceleratorAction::LAUNCH_LAST_APP,               // Alt + 9
+    AcceleratorAction::TOGGLE_MESSAGE_CENTER_BUBBLE,  // Shift + Alt + N
+    AcceleratorAction::SCALE_UI_UP,                   // Shift + Ctrl + "+"
+    AcceleratorAction::SCALE_UI_DOWN,                 // Shift + Ctrl + "-"
+    AcceleratorAction::SCALE_UI_RESET,                // Shift + Ctrl + 0
+    AcceleratorAction::ROTATE_SCREEN,                 // Shift + Ctrl + Refresh
+    AcceleratorAction::TOGGLE_SPOKEN_FEEDBACK,        // Ctrl + Alt + Z
+    AcceleratorAction::FOCUS_SHELF,                   // Shift + Alt + L
+    AcceleratorAction::FOCUS_NEXT_PANE,               // Ctrl + Back
+    AcceleratorAction::FOCUS_PREVIOUS_PANE,           // Ctrl + Forward
+    AcceleratorAction::TOGGLE_APP_LIST                // Launcher(Search)
+};
+
 // Creates a button with the given callback, icon, and tooltip text.
 // `message_id` is the resource id of the tooltip text of the icon.
 std::unique_ptr<views::Button> CreateButton(
@@ -705,14 +737,15 @@ bool EcheTray::ProcessAcceleratorKeys(ui::KeyEvent* event) {
     return true;
   }
 
-  if (accelerator_controller->DoesAcceleratorMatchAction(
-          accelerator, AcceleratorAction::OPEN_FEEDBACK_PAGE) ||
-      accelerator_controller->DoesAcceleratorMatchAction(
-          accelerator, AcceleratorAction::EXIT)) {
-    views::ViewsDelegate::GetInstance()->ProcessAcceleratorWhileMenuShowing(
-        accelerator);
-    event->StopPropagation();
-    return true;
+  for (AcceleratorAction accelerator_action :
+       kLocallyProcessedAcceleratorActions) {
+    if (accelerator_controller->DoesAcceleratorMatchAction(
+            accelerator, accelerator_action)) {
+      views::ViewsDelegate::GetInstance()->ProcessAcceleratorWhileMenuShowing(
+          accelerator);
+      event->StopPropagation();
+      return true;
+    }
   }
 
   const ui::KeyboardCode key_code = event->key_code();
@@ -746,6 +779,9 @@ bool EcheTray::ProcessAcceleratorKeys(ui::KeyEvent* event) {
       //
       // TODO(https://crbug/1338650): See if we can just leave this to be
       // handled upper in the chain.
+      StartGracefulClose();
+      return true;
+    case ui::VKEY_ESCAPE:
       StartGracefulClose();
       return true;
     case ui::VKEY_BROWSER_BACK:

@@ -454,4 +454,21 @@ TEST_F(EcheTrayTest, AcceleratorKeyHandled_BROWSER_BACK_KEY) {
   EXPECT_EQ(1u, num_web_content_go_back_calls_);
 }
 
+TEST_F(EcheTrayTest, AcceleratorKeyHandled_Esc) {
+  ResetUnloadWebContent();
+  eche_tray()->SetGracefulCloseCallback(base::BindOnce(&UnloadWebContent));
+  eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
+                          u"app 1");
+  eche_tray()->ShowBubble();
+
+  EXPECT_TRUE(
+      eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+
+  // Now press the Esc that closes the bubble.
+  GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_ESCAPE, ui::EF_NONE);
+
+  // Check to see if the bubble is closed and purged.
+  EXPECT_TRUE(is_web_content_unloaded_);
+}
+
 }  // namespace ash
