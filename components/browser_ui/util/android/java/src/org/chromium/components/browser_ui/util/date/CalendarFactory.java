@@ -4,9 +4,9 @@
 
 package org.chromium.components.browser_ui.util.date;
 
-import org.chromium.base.annotations.DoNotInline;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
+import org.chromium.build.annotations.DoNotInline;
 
 import java.util.Calendar;
 import java.util.concurrent.ExecutionException;

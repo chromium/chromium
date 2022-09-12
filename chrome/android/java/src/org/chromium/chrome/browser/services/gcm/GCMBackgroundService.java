@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.services.gcm;
 
-import org.chromium.base.annotations.IdentifierNameString;
+import org.chromium.build.annotations.IdentifierNameString;
 import org.chromium.chrome.browser.base.SplitCompatIntentService;
 
 /** See {@link GCMBackgroundServiceImpl}. */

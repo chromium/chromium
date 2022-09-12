@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.app.feed;
 
-import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.GoogleAPIKeys;
 import org.chromium.chrome.browser.feed.FeedProcessScopeDependencyProvider;
 import org.chromium.chrome.browser.feed.FeedServiceDependencyProviderFactory;

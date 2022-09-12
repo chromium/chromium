@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import org.chromium.base.annotations.IdentifierNameString;
+import org.chromium.build.annotations.IdentifierNameString;
 import org.chromium.chrome.browser.base.SplitCompatCustomTabsService;
 
 /** See {@link CustomTabsConnectionServiceImpl}. */

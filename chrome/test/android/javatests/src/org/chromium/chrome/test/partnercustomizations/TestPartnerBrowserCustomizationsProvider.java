@@ -16,7 +16,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 
-import org.chromium.base.annotations.MainDex;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * PartnerBrowserCustomizationsProvider example for testing.

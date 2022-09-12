@@ -11,8 +11,8 @@ import androidx.annotation.RequiresApi;
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * Origin isolated media drm scope id storage. Isolated origin is guranteed by native

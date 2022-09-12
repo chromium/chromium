@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.crash;
 
-import org.chromium.base.annotations.IdentifierNameString;
+import org.chromium.build.annotations.IdentifierNameString;
 import org.chromium.chrome.browser.base.SplitCompatMinidumpUploadJobService;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 

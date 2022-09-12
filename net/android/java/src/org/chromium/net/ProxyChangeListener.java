@@ -27,8 +27,8 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeClassQualifiedName;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.UsedByReflection;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

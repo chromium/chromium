@@ -27,7 +27,6 @@ import android.support.test.internal.runner.TestLoader;
 import android.support.test.internal.runner.TestRequest;
 import android.support.test.internal.runner.TestRequestBuilder;
 import android.support.test.runner.AndroidJUnitRunner;
-import android.support.test.runner.MonitoringInstrumentation.ActivityFinisher;
 import android.text.TextUtils;
 
 import androidx.core.content.ContextCompat;
@@ -40,7 +39,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.LifetimeAssert;
 import org.chromium.base.Log;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.multidex.ChromiumMultiDexInstaller;
@@ -49,6 +47,7 @@ import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.base.test.util.InMemorySharedPreferencesContext;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.MainDex;
 
 import java.io.File;
 import java.io.IOException;

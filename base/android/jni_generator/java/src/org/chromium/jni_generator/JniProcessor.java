@@ -21,9 +21,9 @@ import com.squareup.javapoet.TypeSpec;
 
 import org.chromium.base.JniStaticTestMocker;
 import org.chromium.base.NativeLibraryLoadedStatus;
-import org.chromium.base.annotations.CheckDiscard;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.build.annotations.CheckDiscard;
+import org.chromium.build.annotations.MainDex;
 
 import java.util.ArrayList;
 import java.util.List;

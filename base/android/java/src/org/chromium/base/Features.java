@@ -5,8 +5,8 @@
 package org.chromium.base;
 
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * A class that serves as a bridge to native code to check the status of feature switches.

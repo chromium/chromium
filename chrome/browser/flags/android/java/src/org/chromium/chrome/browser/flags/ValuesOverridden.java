@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.flags;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.CheckDiscard;
+import org.chromium.build.annotations.CheckDiscard;
 
 import java.util.HashMap;
 import java.util.Map;

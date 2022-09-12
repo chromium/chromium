@@ -8,8 +8,8 @@ import androidx.annotation.UiThread;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * This UncaughtExceptionHandler will create a breakpad minidump when there is an uncaught

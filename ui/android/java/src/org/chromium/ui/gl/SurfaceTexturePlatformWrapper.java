@@ -9,7 +9,7 @@ import android.util.Log;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.MainDex;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * Wrapper class for the underlying platform's SurfaceTexture in order to

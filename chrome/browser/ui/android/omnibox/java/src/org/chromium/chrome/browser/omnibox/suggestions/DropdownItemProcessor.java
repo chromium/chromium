@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
-import org.chromium.base.annotations.MockedInTests;
+import org.chromium.build.annotations.MockedInTests;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**

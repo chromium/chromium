@@ -6,7 +6,7 @@ package org.chromium.base;
 
 import android.os.SystemClock;
 
-import org.chromium.base.annotations.CheckDiscard;
+import org.chromium.build.annotations.CheckDiscard;
 
 /**
  * Utilities related to timestamps, including the ability to use fake time for tests via

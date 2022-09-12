@@ -9,7 +9,7 @@ import org.junit.Assert;
 import org.chromium.base.PathUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.MainDex;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * Collection of URL utilities.

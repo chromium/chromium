@@ -14,8 +14,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.util.ObjectsCompat;
 
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.MockedInTests;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.build.annotations.MockedInTests;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

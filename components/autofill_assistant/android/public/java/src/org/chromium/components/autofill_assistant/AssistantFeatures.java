@@ -6,8 +6,8 @@ package org.chromium.components.autofill_assistant;
 
 import org.chromium.base.Features;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * Provides an API for querying the status of Autofill Assistant features.

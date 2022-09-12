@@ -8,7 +8,7 @@ import android.text.format.DateUtils;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.MainDex;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * Java API for recording UMA histograms.

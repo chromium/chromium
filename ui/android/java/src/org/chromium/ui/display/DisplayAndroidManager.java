@@ -19,9 +19,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.compat.ApiHelperForR;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * DisplayAndroidManager is a class that informs its observers Display changes.

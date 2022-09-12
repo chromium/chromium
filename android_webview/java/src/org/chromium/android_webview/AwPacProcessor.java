@@ -17,7 +17,7 @@ import androidx.annotation.RequiresApi;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.build.annotations.UsedByReflection;
 
 import java.net.InetAddress;
 

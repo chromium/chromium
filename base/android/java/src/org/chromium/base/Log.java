@@ -4,7 +4,7 @@
 
 package org.chromium.base;
 
-import org.chromium.base.annotations.CheckDiscard;
+import org.chromium.build.annotations.CheckDiscard;
 
 import java.util.Locale;
 

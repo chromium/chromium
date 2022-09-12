@@ -7,7 +7,7 @@ package org.chromium.base;
 import android.text.TextUtils;
 import android.util.Patterns;
 
-import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.build.annotations.UsedByReflection;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

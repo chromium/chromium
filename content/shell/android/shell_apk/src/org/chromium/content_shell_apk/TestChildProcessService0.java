@@ -4,7 +4,7 @@
 
 package org.chromium.content_shell_apk;
 
-import org.chromium.base.annotations.MainDex;
+import org.chromium.build.annotations.MainDex;
 
 /** One of the TestChildProcessService defined in the AndroidManifest.xml. */
 @MainDex

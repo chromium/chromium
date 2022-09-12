@@ -11,8 +11,8 @@ import android.provider.Settings;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.annotations.MockedInTests;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.MockedInTests;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton.PopupMenuShownListener;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;

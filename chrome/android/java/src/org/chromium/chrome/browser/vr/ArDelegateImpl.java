@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.vr;
 
-import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.components.webxr.ArCoreJavaUtils;
 import org.chromium.components.webxr.ArDelegate;
 

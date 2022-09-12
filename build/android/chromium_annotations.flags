@@ -6,9 +6,6 @@
 # shared with Cronet, and thus would be appropriate for third-party apps to
 # include.
 
-# TODO(https://crbug.com/1038372): Update package names from base to build once
-#                                  the java files have been updated.
-
 # Keep all annotation related attributes that can affect runtime
 -keepattributes RuntimeVisible*Annotations
 -keepattributes AnnotationDefault
@@ -19,12 +16,17 @@
 -keep @interface org.chromium.base.annotations.AccessedByNative
 -keep @interface org.chromium.base.annotations.CalledByNative
 -keep @interface org.chromium.base.annotations.CalledByNativeUnchecked
+# TODO(https://crbug.com/1038372): Remove base after downstream migrates.
 -keep @interface org.chromium.base.annotations.DoNotInline
 -keep @interface org.chromium.base.annotations.UsedByReflection
 -keep @interface org.chromium.base.annotations.IdentifierNameString
+-keep @interface org.chromium.build.annotations.DoNotInline
+-keep @interface org.chromium.build.annotations.UsedByReflection
+-keep @interface org.chromium.build.annotations.IdentifierNameString
 
 # Keeps for class level annotations.
 -keep,allowaccessmodification @org.chromium.base.annotations.UsedByReflection class ** {}
+-keep,allowaccessmodification @org.chromium.build.annotations.UsedByReflection class ** {}
 
 # Keeps for method level annotations.
 -keepclasseswithmembers,allowaccessmodification class ** {
@@ -40,7 +42,13 @@
   @org.chromium.base.annotations.UsedByReflection <methods>;
 }
 -keepclasseswithmembers,allowaccessmodification class ** {
+  @org.chromium.build.annotations.UsedByReflection <methods>;
+}
+-keepclasseswithmembers,allowaccessmodification class ** {
   @org.chromium.base.annotations.UsedByReflection <fields>;
+}
+-keepclasseswithmembers,allowaccessmodification class ** {
+  @org.chromium.build.annotations.UsedByReflection <fields>;
 }
 
 # Never inline classes, methods, or fields with this annotation, but allow
@@ -53,18 +61,34 @@
 -keep,allowobfuscation,allowaccessmodification class <1> {
     *** <2>(...);
 }
+-if @org.chromium.build.annotations.DoNotInline class * {
+    *** *(...);
+}
+-keep,allowobfuscation,allowaccessmodification class <1> {
+    *** <2>(...);
+}
 -keepclassmembers,allowobfuscation,allowaccessmodification class * {
    @org.chromium.base.annotations.DoNotInline <methods>;
 }
 -keepclassmembers,allowobfuscation,allowaccessmodification class * {
+   @org.chromium.build.annotations.DoNotInline <methods>;
+}
+-keepclassmembers,allowobfuscation,allowaccessmodification class * {
    @org.chromium.base.annotations.DoNotInline <fields>;
+}
+-keepclassmembers,allowobfuscation,allowaccessmodification class * {
+   @org.chromium.build.annotations.DoNotInline <fields>;
 }
 
 # Never merge classes horizontally or vertically with this annotation.
 # Relevant to classes being used as a key in maps or sets.
 -keep,allowaccessmodification,allowobfuscation,allowshrinking @org.chromium.base.annotations.DoNotClassMerge class *
+-keep,allowaccessmodification,allowobfuscation,allowshrinking @org.chromium.build.annotations.DoNotClassMerge class *
 
 # Mark members annotated with IdentifierNameString as identifier name strings
 -identifiernamestring class * {
     @org.chromium.base.annotations.IdentifierNameString *;
+}
+-identifiernamestring class * {
+    @org.chromium.build.annotations.IdentifierNameString *;
 }

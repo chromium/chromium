@@ -9,7 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import org.chromium.base.annotations.MainDex;
+import org.chromium.build.annotations.MainDex;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.photo_picker;
 
-import org.chromium.base.annotations.IdentifierNameString;
+import org.chromium.build.annotations.IdentifierNameString;
 import org.chromium.chrome.browser.base.SplitCompatService;
 
 /** See {@link DecoderServiceImpl}. */

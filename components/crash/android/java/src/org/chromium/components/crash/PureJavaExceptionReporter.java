@@ -14,9 +14,9 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PiiElider;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.MainDex;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.version_info.VersionInfo;
 

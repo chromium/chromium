@@ -5,7 +5,7 @@
 package org.chromium.components.crash;
 
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.MainDex;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * This UncaughtExceptionHandler will upload the stacktrace when there is an uncaught exception.

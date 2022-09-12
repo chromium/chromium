@@ -7,7 +7,7 @@ package org.chromium.content.app;
 import android.os.Process;
 
 import org.chromium.base.BuildInfo;
-import org.chromium.base.annotations.MainDex;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * Handler that immediately kills the current process on an uncaught exception.

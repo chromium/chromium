@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.tab.state;
 
 import org.chromium.base.Callback;
-import org.chromium.base.annotations.DoNotClassMerge;
+import org.chromium.build.annotations.DoNotClassMerge;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.nio.ByteBuffer;

@@ -16,9 +16,9 @@ import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TimeUtils.ElapsedRealtimeNanosTimer;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * This class monitors memory pressure and reports it to the native side.

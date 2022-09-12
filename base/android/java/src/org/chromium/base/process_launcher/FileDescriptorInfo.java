@@ -8,8 +8,8 @@ import android.os.Parcel;
 import android.os.ParcelFileDescriptor;
 import android.os.Parcelable;
 
-import org.chromium.base.annotations.MainDex;
-import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.build.annotations.MainDex;
+import org.chromium.build.annotations.UsedByReflection;
 
 import javax.annotation.concurrent.Immutable;
 

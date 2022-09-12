@@ -8,7 +8,7 @@ import static org.chromium.components.browser_ui.share.ClipboardConstants.CLIPBO
 import static org.chromium.components.browser_ui.share.ClipboardConstants.CLIPBOARD_SHARED_URI_TIMESTAMP;
 import static org.chromium.components.browser_ui.site_settings.SingleCategorySettingsConstants.USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY;
 
-import org.chromium.base.annotations.CheckDiscard;
+import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.components.browser_ui.accessibility.AccessibilityConstants;
 
 import java.util.Arrays;

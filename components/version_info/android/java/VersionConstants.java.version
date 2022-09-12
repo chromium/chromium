@@ -4,7 +4,7 @@
 
 package org.chromium.components.version_info;
 
-import org.chromium.base.annotations.MainDex;
+import org.chromium.build.annotations.MainDex;
 
 // Constants shared by Android Chrome and WebView. Chrome specific constants are
 // in ChromeVersionConstants.

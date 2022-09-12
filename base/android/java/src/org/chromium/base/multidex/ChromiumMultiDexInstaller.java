@@ -11,7 +11,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.multidex.MultiDex;
 
 import org.chromium.base.Log;
-import org.chromium.base.annotations.MainDex;
+import org.chromium.build.annotations.MainDex;
 
 /**
  *  Performs multidex installation for non-isolated processes.

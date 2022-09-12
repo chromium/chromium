@@ -16,8 +16,8 @@ import android.os.SystemClock;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.JNIUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.annotations.IdentifierNameString;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.IdentifierNameString;
 
 /**
  * Application class to use for Chrome when //chrome code is in an isolated split. This class will

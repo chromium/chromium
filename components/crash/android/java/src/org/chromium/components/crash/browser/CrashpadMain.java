@@ -4,11 +4,11 @@
 
 package org.chromium.components.crash.browser;
 
-import org.chromium.base.annotations.DoNotInline;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.build.NativeLibraries;
+import org.chromium.build.annotations.DoNotInline;
+import org.chromium.build.annotations.UsedByReflection;
 
 @JNINamespace("crashpad")
 final class CrashpadMain {

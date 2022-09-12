@@ -6,8 +6,8 @@ package org.chromium.components.subresource_filter;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * Provides an API for querying the status of subresource_filter component Features.

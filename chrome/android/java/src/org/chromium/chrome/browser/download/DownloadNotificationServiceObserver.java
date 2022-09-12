@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.download;
 
-import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.build.annotations.UsedByReflection;
 
 /**
  * A DownloadForegroundServiceObservers.Observer implementation for DownloadNotificationService.

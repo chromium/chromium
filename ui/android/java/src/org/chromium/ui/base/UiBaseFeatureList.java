@@ -5,8 +5,8 @@
 package org.chromium.ui.base;
 
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * Java accessor for ui/base/ui_base_feature_list.cc state.

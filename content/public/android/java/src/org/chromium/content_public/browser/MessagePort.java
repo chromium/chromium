@@ -6,7 +6,7 @@ package org.chromium.content_public.browser;
 
 import android.os.Handler;
 
-import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.content.browser.AppWebMessagePort;
 
 /**

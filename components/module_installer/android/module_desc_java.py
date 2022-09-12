@@ -22,7 +22,7 @@ _TEMPLATE = """\
 
 package org.chromium.components.module_installer.builder;
 
-import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.build.annotations.UsedByReflection;
 
 @UsedByReflection("Module.java")
 public class ModuleDescriptor_{MODULE} implements ModuleDescriptor {{

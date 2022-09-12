@@ -17,11 +17,11 @@ import org.junit.runner.RunWith;
 import org.chromium.base.JniException;
 import org.chromium.base.NativeLibraryLoadedStatus;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.MainDex;
 
 import java.util.concurrent.TimeoutException;
 

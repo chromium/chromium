@@ -9,8 +9,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.CheckDiscard;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.content_public.browser.BrowserContextHandle;

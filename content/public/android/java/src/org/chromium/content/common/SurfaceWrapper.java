@@ -10,7 +10,7 @@ import android.view.Surface;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.MainDex;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * A wrapper for marshalling a Surface without self-destruction.

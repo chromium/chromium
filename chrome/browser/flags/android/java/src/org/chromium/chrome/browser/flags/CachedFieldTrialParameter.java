@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.flags;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.CheckDiscard;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 
 import java.lang.annotation.Retention;

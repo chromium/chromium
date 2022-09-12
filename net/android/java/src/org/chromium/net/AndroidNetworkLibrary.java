@@ -32,11 +32,11 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.CalledByNativeUnchecked;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.compat.ApiHelperForP;
 import org.chromium.base.compat.ApiHelperForQ;
+import org.chromium.build.annotations.MainDex;
 
 import java.io.FileDescriptor;
 import java.io.IOException;

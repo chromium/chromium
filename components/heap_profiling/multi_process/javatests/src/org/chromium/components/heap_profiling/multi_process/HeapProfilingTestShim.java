@@ -4,7 +4,7 @@
 
 package org.chromium.components.heap_profiling.multi_process;
 
-import org.chromium.base.annotations.MainDex;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * Provides direct access to heap_profiling_test_shim, which in turn forwards to

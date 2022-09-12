@@ -4,8 +4,8 @@
 
 package org.chromium.base;
 
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * Helper to get field trial information.

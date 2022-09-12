@@ -7,8 +7,8 @@ package org.chromium.ui.gl;
 import android.graphics.SurfaceTexture;
 
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * Listener to an android SurfaceTexture object for frame availability.

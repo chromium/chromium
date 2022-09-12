@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.tab;
 
-import org.chromium.base.annotations.MockedInTests;
+import org.chromium.build.annotations.MockedInTests;
 
 /**
  */

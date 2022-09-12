@@ -16,8 +16,8 @@ import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CheckDiscard;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.ui.display.DisplayAndroidManager;
 

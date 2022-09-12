@@ -8,8 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.chromium.base.Log;
-import org.chromium.base.annotations.DoNotClassMerge;
-import org.chromium.chrome.browser.page_annotations.PageAnnotation.PageAnnotationType;
+import org.chromium.build.annotations.DoNotClassMerge;
 
 import java.util.Locale;
 

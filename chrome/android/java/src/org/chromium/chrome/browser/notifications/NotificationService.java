@@ -9,7 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.chromium.base.BundleUtils;
-import org.chromium.base.annotations.IdentifierNameString;
+import org.chromium.build.annotations.IdentifierNameString;
 import org.chromium.chrome.browser.base.SplitCompatIntentService;
 
 /** See {@link NotificationServiceImpl}. */

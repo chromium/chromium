@@ -10,8 +10,7 @@ import android.content.Context;
 import com.google.ar.core.ArCoreApk;
 
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.annotations.UsedByReflection;
-import org.chromium.components.webxr.ArCoreShim.InstallStatus;
+import org.chromium.build.annotations.UsedByReflection;
 
 @UsedByReflection("ArCoreInstallUtils.java")
 class ArCoreShimImpl implements ArCoreShim {

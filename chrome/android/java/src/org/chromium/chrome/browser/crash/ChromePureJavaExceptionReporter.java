@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.crash;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.annotations.MainDex;
-import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.build.annotations.MainDex;
+import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.components.crash.PureJavaExceptionReporter;
 
 import java.io.File;

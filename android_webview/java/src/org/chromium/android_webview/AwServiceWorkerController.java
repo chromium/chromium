@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
-import org.chromium.base.annotations.DoNotInline;
+import org.chromium.build.annotations.DoNotInline;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 
 /**

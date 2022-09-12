@@ -8,9 +8,9 @@ import android.app.Activity;
 import android.content.ComponentCallbacks2;
 
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.memory.MemoryPressureCallback;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * This class is Java equivalent of base::MemoryPressureListener: it distributes pressure
