@@ -86,6 +86,7 @@ import glob
 import json
 import optparse
 import os
+import platform
 import re
 import shlex
 import shutil
@@ -638,6 +639,15 @@ def RunRevision(context, revision, zip_file, profile, num_runs, command, args):
   # Create a temp directory and unzip the revision into it.
   cwd = os.getcwd()
   tempdir = tempfile.mkdtemp(prefix='bisect_tmp')
+  # On Windows 10, file system needs to be readable from App Container.
+  if sys.platform == 'win32' and platform.release() == '10':
+    icacls_cmd = ['icacls', tempdir, '/grant', '*S-1-15-2-2:(OI)(CI)(RX)']
+    proc = subprocess.Popen(icacls_cmd,
+                            bufsize=0,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
+    proc.communicate()
+
   UnzipFilenameToDir(zip_file, tempdir)
 
   # Hack: Some Chrome OS archives are missing some files; try to copy them
