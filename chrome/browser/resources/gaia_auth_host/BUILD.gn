@@ -70,10 +70,7 @@ if (is_chromeos_ash && include_js_tests) {
     # These could be unit tests, except they need a browser context in order
     # to construct a DOMParser object - so they are webui tests.
     test_type = "webui"
-    sources = [
-      "saml_password_attributes_test.unitjs",
-      "saml_timestamps_test.unitjs",
-    ]
+    sources = [ "saml_password_attributes_test.unitjs" ]
     gen_include_files = [
       "saml_password_attributes.js",
       "saml_timestamps.js",

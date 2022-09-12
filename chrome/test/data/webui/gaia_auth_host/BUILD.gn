@@ -18,6 +18,7 @@ generate_grd("build_grdp") {
   input_files = [
     "password_change_authenticator_test.js",
     "saml_username_autofill_test.js",
+    "saml_timestamps_test.js",
   ]
 
   # Add the core files from c/b/r/gaia_auth_host as well.
