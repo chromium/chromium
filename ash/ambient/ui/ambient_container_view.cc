@@ -19,7 +19,6 @@
 #include "base/check.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
@@ -34,15 +33,9 @@ AmbientContainerView::AmbientContainerView(
     AmbientMultiScreenMetricsRecorder* multi_screen_metrics_recorder) {
   DCHECK(delegate);
   DCHECK(multi_screen_metrics_recorder);
-  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
-  // able to submit accessibility checks, but this focusable View needs to
-  // add a name so that the screen reader knows what to announce.
-  SetProperty(views::kSkipAccessibilityPaintChecks, true);
   SetID(AmbientViewID::kAmbientContainerView);
   // TODO(b/139954108): Choose a better dark mode theme color.
   SetBackground(views::CreateSolidBackground(SK_ColorBLACK));
-  // Updates focus behavior to receive key press events.
-  SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   SetLayoutManager(std::make_unique<views::FillLayout>());
   View* main_rendering_view = nullptr;
   AmbientAnimationTheme theme =
