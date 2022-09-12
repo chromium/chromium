@@ -6,6 +6,7 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/form_data.h"
@@ -18,6 +19,7 @@
 #include "components/password_manager/core/browser/password_manager_interface.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/ios_password_manager_driver.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/password_controller_driver_helper.h"
@@ -251,8 +253,8 @@ TEST_F(SharedPasswordControllerTest, FormsArePropagatedOnHTMLPageLoad) {
         completionHandler({form_data}, 1);
         return YES;
       }];
-  OCMExpect([form_helper_
-      findPasswordFormsWithCompletionHandler:mock_completion_handler]);
+  OCMExpect([form_helper_ findPasswordFormsInFrame:frame
+                                 completionHandler:mock_completion_handler]);
 
   web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
   web_state_.OnWebFrameDidBecomeAvailable(frame);
@@ -268,11 +270,12 @@ TEST_F(SharedPasswordControllerTest, NoFormsArePropagatedOnNonHTMLPageLoad) {
 
   auto web_frame =
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
-                                /*is_main_frame=*/true, GURL::EmptyGURL());
+                                /*is_main_frame=*/true, GURL(kTestURL));
   web::WebFrame* frame = web_frame.get();
   web_frames_manager_->AddWebFrame(std::move(web_frame));
 
-  [[form_helper_ reject] findPasswordFormsWithCompletionHandler:[OCMArg any]];
+  [[form_helper_ reject] findPasswordFormsInFrame:frame
+                                completionHandler:[OCMArg any]];
   OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
   OCMExpect([suggestion_helper_ processWithNoSavedCredentials]);
   EXPECT_CALL(password_manager_, OnPasswordFormsRendered);
@@ -289,7 +292,8 @@ TEST_F(SharedPasswordControllerTest, FormHelperSetsUpUniqueIDsForNewFrame) {
   [[[form_helper_ expect] ignoringNonObjectArgs]
       setUpForUniqueIDsWithInitialState:1
                                 inFrame:web_frame.get()];
-  OCMExpect([form_helper_ findPasswordFormsWithCompletionHandler:[OCMArg any]]);
+  OCMExpect([form_helper_ findPasswordFormsInFrame:web_frame.get()
+                                 completionHandler:[OCMArg any]]);
   web_state_.OnWebFrameDidBecomeAvailable(web_frame.get());
 }
 
@@ -526,8 +530,8 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
 
   auto web_frame =
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
-                                /*is_main_frame=*/false, GURL::EmptyGURL());
-  web::WebFrame* frame = web_frame.get();
+                                /*is_main_frame=*/false, GURL(kTestURL));
+  web::FakeWebFrame* frame = web_frame.get();
   web_frames_manager_->AddWebFrame(std::move(web_frame));
 
   id extract_completion_handler_arg = [OCMArg
@@ -537,6 +541,7 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
       }];
   [[form_helper_ expect]
       extractPasswordFormData:form_id
+                      inFrame:frame
             completionHandler:extract_completion_handler_arg];
 
   // Verify the parameters that |GeneratePassword| receives.
@@ -615,6 +620,7 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
       }];
   [[form_helper_ expect]
       extractPasswordFormData:form_id
+                      inFrame:frame
             completionHandler:extract_completion_handler_arg];
   OCMStub([driver_helper_ PasswordManagerDriver:frame]);
   EXPECT_CALL(password_generation_helper_, GeneratePassword);
@@ -669,6 +675,7 @@ TEST_F(SharedPasswordControllerTest, TriggerPasswordGeneration) {
       }];
   [[form_helper_ expect]
       extractPasswordFormData:params.unique_form_id
+                      inFrame:frame
             completionHandler:extract_completion_handler_arg];
   OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
   EXPECT_CALL(password_generation_helper_, GeneratePassword);
@@ -726,16 +733,16 @@ TEST_F(SharedPasswordControllerTest,
         return YES;
       }];
 
-  OCMExpect([form_helper_
-      findPasswordFormsWithCompletionHandler:mock_completion_handler]);
-
-  autofill::FormActivityParams params;
-  params.type = "form_changed";
-
   auto web_frame =
       web::FakeWebFrame::Create("frame-id", /*is_main_frame=*/true, GURL());
   web::FakeWebFrame* frame = web_frame.get();
   web_frames_manager_->AddWebFrame(std::move(web_frame));
+
+  OCMExpect([form_helper_ findPasswordFormsInFrame:frame
+                                 completionHandler:mock_completion_handler]);
+
+  autofill::FormActivityParams params;
+  params.type = "form_changed";
 
   OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
 
@@ -943,6 +950,297 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
   EXPECT_FALSE(completion_was_called1);
   EXPECT_TRUE(completion_was_called2);
 }
+
+class SharedPasswordControllerTestCrossOrigin
+    : public SharedPasswordControllerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  SharedPasswordControllerTestCrossOrigin() : SharedPasswordControllerTest() {
+    if (IsCrossOriginSupportEnabled()) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {features::kIOSPasswordManagerCrossOriginIframeSupport},
+          /*disabled_features=*/{});
+    } else {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{
+              features::kIOSPasswordManagerCrossOriginIframeSupport});
+    }
+  }
+  bool IsCrossOriginSupportEnabled() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests frameDidBecomeAvailable supports cross-origin iframes when the feature
+// is enabled and disabled.
+TEST_P(SharedPasswordControllerTestCrossOrigin,
+       FrameDidBecomeAvailableCrossOriginIframe) {
+  web_state_.SetCurrentURL(GURL());
+  web_state_.SetContentIsHTML(true);
+
+  auto web_frame =
+      web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
+                                /*is_main_frame=*/false, GURL(kTestURL));
+  web::WebFrame* frame = web_frame.get();
+  web_frames_manager_->AddWebFrame(std::move(web_frame));
+
+  ASSERT_TRUE(web_state_.GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
+              frame->GetSecurityOrigin());
+
+  [[[form_helper_ expect] ignoringNonObjectArgs]
+      setUpForUniqueIDsWithInitialState:1
+                                inFrame:frame];
+
+  if (IsCrossOriginSupportEnabled()) {
+    [[form_helper_ expect] findPasswordFormsInFrame:frame
+                                  completionHandler:[OCMArg any]];
+  } else {
+    [[form_helper_ reject] findPasswordFormsInFrame:frame
+                                  completionHandler:[OCMArg any]];
+  }
+  [controller_ webState:&web_state_ frameDidBecomeAvailable:frame];
+  [form_helper_ verify];
+}
+
+// Tests frameWillBecomeUnavailable supports cross-origin iframes when the
+// feature is enabled and disabled.
+TEST_P(SharedPasswordControllerTestCrossOrigin,
+       FrameWillBecomeUnavailableCrossOriginIframe) {
+  web_state_.SetCurrentURL(GURL());
+  web_state_.SetContentIsHTML(true);
+
+  auto web_frame =
+      web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
+                                /*is_main_frame=*/false, GURL(kTestURL));
+  web::WebFrame* frame = web_frame.get();
+  web_frames_manager_->AddWebFrame(std::move(web_frame));
+
+  ASSERT_TRUE(web_state_.GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
+              frame->GetSecurityOrigin());
+
+  if (IsCrossOriginSupportEnabled()) {
+    OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
+    EXPECT_CALL(password_manager_, OnIframeDetach).Times(1);
+  } else {
+    EXPECT_CALL(password_manager_, OnIframeDetach).Times(0);
+  }
+  [controller_ webState:&web_state_ frameWillBecomeUnavailable:frame];
+}
+
+// Tests checkIfSuggestionsAvailableForForm supports cross-origin iframes when
+// the feature is enabled and disabled.
+TEST_P(SharedPasswordControllerTestCrossOrigin,
+       CheckIfSuggestionsAvailableForFormCrossOriginIframe) {
+  web_state_.SetCurrentURL(GURL());
+  web_state_.SetContentIsHTML(true);
+
+  auto web_frame =
+      web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
+                                /*is_main_frame=*/false, GURL(kTestURL));
+  web::WebFrame* frame = web_frame.get();
+  web_frames_manager_->AddWebFrame(std::move(web_frame));
+
+  ASSERT_TRUE(web_state_.GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
+              frame->GetSecurityOrigin());
+
+  FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
+      initWithFormName:@"form"
+          uniqueFormID:autofill::FormRendererId(0)
+       fieldIdentifier:@"field"
+         uniqueFieldID:autofill::FieldRendererId(1)
+             fieldType:@"text"
+                  type:@"focus"
+            typedValue:@""
+               frameID:kTestFrameID];
+
+  id mock_completion_handler =
+      [OCMArg checkWithBlock:^BOOL(void (^completionHandler)(BOOL)) {
+        completionHandler(YES);
+        return YES;
+      }];
+
+  [[suggestion_helper_ expect]
+      checkIfSuggestionsAvailableForForm:form_query
+                             isMainFrame:NO
+                                webState:&web_state_
+                       completionHandler:mock_completion_handler];
+
+  [controller_ checkIfSuggestionsAvailableForForm:form_query
+                                      isMainFrame:NO
+                                   hasUserGesture:NO
+                                         webState:&web_state_
+                                completionHandler:^(BOOL suggestionsAvailable) {
+                                  if (IsCrossOriginSupportEnabled()) {
+                                    EXPECT_TRUE(suggestionsAvailable);
+                                  } else {
+                                    EXPECT_FALSE(suggestionsAvailable);
+                                  }
+                                }];
+}
+
+// Tests retrieveSuggestionsForForm supports cross-origin iframes when the
+// feature is enabled and disabled.
+TEST_P(SharedPasswordControllerTestCrossOrigin,
+       RetrieveSuggestionsForFormCrossOriginIframe) {
+  web_state_.SetCurrentURL(GURL());
+  web_state_.SetContentIsHTML(true);
+
+  auto web_frame =
+      web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
+                                /*is_main_frame=*/false, GURL(kTestURL));
+  web::WebFrame* frame = web_frame.get();
+  web_frames_manager_->AddWebFrame(std::move(web_frame));
+
+  ASSERT_TRUE(web_state_.GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
+              frame->GetSecurityOrigin());
+
+  FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
+      initWithFormName:@"form"
+          uniqueFormID:autofill::FormRendererId(0)
+       fieldIdentifier:@"field"
+         uniqueFieldID:autofill::FieldRendererId(1)
+             fieldType:@"text"
+                  type:@"focus"
+            typedValue:@""
+               frameID:kTestFrameID];
+
+  if (IsCrossOriginSupportEnabled()) {
+    [[[suggestion_helper_ expect] andReturn:@[]]
+        retrieveSuggestionsWithFormID:form_query.uniqueFormID
+                      fieldIdentifier:form_query.uniqueFieldID
+                              inFrame:frame
+                            fieldType:form_query.fieldType];
+
+    EXPECT_CALL(password_generation_helper_, IsGenerationEnabled(true))
+        .WillOnce(Return(false));
+  } else {
+    [[suggestion_helper_ reject]
+        retrieveSuggestionsWithFormID:form_query.uniqueFormID
+                      fieldIdentifier:form_query.uniqueFieldID
+                              inFrame:frame
+                            fieldType:form_query.fieldType];
+
+    EXPECT_CALL(password_manager_, OnIframeDetach).Times(0);
+  }
+
+  [controller_
+      retrieveSuggestionsForForm:form_query
+                        webState:&web_state_
+               completionHandler:^(NSArray<FormSuggestion*>* suggestions,
+                                   id<FormSuggestionProvider> delegate){
+               }];
+  [suggestion_helper_ verify];
+}
+
+// Tests formHelper didSubmitForm supports cross-origin iframes when the
+// feature is enabled and disabled.
+TEST_P(SharedPasswordControllerTestCrossOrigin,
+       FormHelperDidSubmitFormForFormCrossOriginIframe) {
+  web_state_.SetCurrentURL(GURL());
+  web_state_.SetContentIsHTML(true);
+
+  auto web_frame =
+      web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
+                                /*is_main_frame=*/false, GURL(kTestURL));
+  web::WebFrame* frame = web_frame.get();
+  web_frames_manager_->AddWebFrame(std::move(web_frame));
+
+  ASSERT_TRUE(web_state_.GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
+              frame->GetSecurityOrigin());
+
+  OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
+
+  if (IsCrossOriginSupportEnabled()) {
+    EXPECT_CALL(password_manager_, OnSubframeFormSubmission).Times(1);
+  } else {
+    EXPECT_CALL(password_manager_, OnSubframeFormSubmission).Times(0);
+  }
+
+  autofill::FormData form_data;
+  [controller_ formHelper:form_helper_
+            didSubmitForm:form_data
+              inMainFrame:NO
+                  inFrame:frame];
+}
+
+// Tests didRegisterFormActivity supports cross-origin iframes when the
+// feature is enabled and disabled.
+TEST_P(SharedPasswordControllerTestCrossOrigin,
+       DidRegisterFormActivityForFormCrossOriginIframe) {
+  web_state_.SetCurrentURL(GURL());
+  web_state_.SetContentIsHTML(true);
+
+  auto web_frame =
+      web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
+                                /*is_main_frame=*/false, GURL(kTestURL));
+  web::WebFrame* frame = web_frame.get();
+  web_frames_manager_->AddWebFrame(std::move(web_frame));
+
+  ASSERT_TRUE(web_state_.GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
+              frame->GetSecurityOrigin());
+
+  id mock_completion_handler =
+      [OCMArg checkWithBlock:^(void (^completionHandler)(
+          const std::vector<autofill::FormData>& forms, uint32_t maxID)) {
+        return YES;
+      }];
+
+  if (IsCrossOriginSupportEnabled()) {
+    OCMExpect([form_helper_ findPasswordFormsInFrame:frame
+                                   completionHandler:mock_completion_handler]);
+  } else {
+    [[form_helper_ reject] findPasswordFormsInFrame:frame
+                                  completionHandler:mock_completion_handler];
+  }
+
+  autofill::FormActivityParams params;
+  params.type = "form_changed";
+
+  [controller_ webState:&web_state_
+      didRegisterFormActivity:params
+                      inFrame:frame];
+
+  [form_helper_ verify];
+}
+
+// Tests didRegisterFormRemoval supports cross-origin iframes when the
+// feature is enabled and disabled.
+TEST_P(SharedPasswordControllerTestCrossOrigin,
+       DidRegisterFormRemovalForFormCrossOriginIframe) {
+  web_state_.SetCurrentURL(GURL());
+  web_state_.SetContentIsHTML(true);
+
+  auto web_frame =
+      web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
+                                /*is_main_frame=*/false, GURL(kTestURL));
+  web::WebFrame* frame = web_frame.get();
+  web_frames_manager_->AddWebFrame(std::move(web_frame));
+
+  ASSERT_TRUE(web_state_.GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
+              frame->GetSecurityOrigin());
+
+  if (IsCrossOriginSupportEnabled()) {
+    OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
+    EXPECT_CALL(password_manager_, OnPasswordFormRemoved).Times(1);
+  } else {
+    EXPECT_CALL(password_manager_, OnPasswordFormRemoved).Times(0);
+  }
+
+  autofill::FormRendererId unique_form_id;
+  autofill::FormRemovalParams params;
+  params.unique_form_id = unique_form_id;
+
+  [controller_ webState:&web_state_
+      didRegisterFormRemoval:params
+                     inFrame:frame];
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SharedPasswordControllerTestCrossOrigin,
+                         testing::Bool());
 
 // TODO(crbug.com/1097353): Finish unit testing the rest of the public API.
 

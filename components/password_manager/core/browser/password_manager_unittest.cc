@@ -888,11 +888,10 @@ TEST_P(PasswordManagerTest, ShowHideManualFallbackOnIOS) {
                                     password_element, std::u16string());
 }
 
-// TODO(crbug.com/1344776): Remove this test when JavaScript recursion
-// for parsing and filling password forms is removed.
 // Tests that there is no manual fallback for saving when there is a mismatch
 // between the driver and the form manager. More precisely: the driver is tied
-// to the correspondent iframe, but the form manager is tied to the main frame.
+// to the correspondent iframe, but the form manager is tied to a form in the
+// main frame.
 TEST_P(PasswordManagerTest,
        NoManualFallbackForSavingForDriverAndFormManagerMismatchOnIOS) {
   ON_CALL(client_, IsSavingAndFillingEnabled).WillByDefault(Return(true));

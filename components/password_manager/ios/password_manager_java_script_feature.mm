@@ -111,7 +111,7 @@ PasswordManagerJavaScriptFeature::PasswordManagerJavaScriptFeature()
           {FeatureScript::CreateWithFilename(
               kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,
-              FeatureScript::TargetFrames::kMainFrame,
+              FeatureScript::TargetFrames::kAllFrames,
               FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)},
           {web::java_script_features::GetCommonJavaScriptFeature(),
            web::java_script_features::GetMessageJavaScriptFeature(),
@@ -122,7 +122,6 @@ PasswordManagerJavaScriptFeature::~PasswordManagerJavaScriptFeature() = default;
 void PasswordManagerJavaScriptFeature::FindPasswordFormsInFrame(
     web::WebFrame* frame,
     base::OnceCallback<void(NSString*)> callback) {
-  DCHECK(frame->IsMainFrame());
   DCHECK(!callback.is_null());
   CallJavaScriptFunction(frame, "passwords.findPasswordForms", {},
                          CreateStringCallback(std::move(callback)),
@@ -133,7 +132,6 @@ void PasswordManagerJavaScriptFeature::ExtractForm(
     web::WebFrame* frame,
     autofill::FormRendererId form_identifier,
     base::OnceCallback<void(NSString*)> callback) {
-  DCHECK(frame->IsMainFrame());
   DCHECK(!callback.is_null());
   std::vector<base::Value> parameters;
   parameters.emplace_back(FormRendererIdToJsParameter(form_identifier));
@@ -149,7 +147,6 @@ void PasswordManagerJavaScriptFeature::FillPasswordForm(
     const std::string& username,
     const std::string& password,
     base::OnceCallback<void(BOOL)> callback) {
-  DCHECK(frame->IsMainFrame());
   std::unique_ptr<base::Value> form_value =
       SerializeFillData(fill_data, fill_username);
   FillPasswordForm(frame, std::move(form_value), username, password,
@@ -162,7 +159,6 @@ void PasswordManagerJavaScriptFeature::FillPasswordForm(
     const std::string& username,
     const std::string& password,
     base::OnceCallback<void(BOOL)> callback) {
-  DCHECK(frame->IsMainFrame());
   std::unique_ptr<base::Value> form_value =
       SerializePasswordFormFillData(fill_data);
   FillPasswordForm(frame, std::move(form_value), username, password,
@@ -175,7 +171,6 @@ void PasswordManagerJavaScriptFeature::FillPasswordForm(
     const std::string& username,
     const std::string& password,
     base::OnceCallback<void(BOOL)> callback) {
-  DCHECK(frame->IsMainFrame());
   DCHECK(!callback.is_null());
   std::vector<base::Value> parameters;
   parameters.push_back(std::move(*form_value));
@@ -193,7 +188,6 @@ void PasswordManagerJavaScriptFeature::FillPasswordForm(
     autofill::FieldRendererId confirm_password_identifier,
     NSString* generated_password,
     base::OnceCallback<void(BOOL)> callback) {
-  DCHECK(frame->IsMainFrame());
   DCHECK(!callback.is_null());
   std::vector<base::Value> parameters;
   parameters.emplace_back(FormRendererIdToJsParameter(form_identifier));

@@ -813,16 +813,6 @@ void PasswordManager::UpdateStateOnUserInput(
     FieldRendererId field_id,
     const std::u16string& field_value) {
   for (std::unique_ptr<PasswordFormManager>& manager : form_managers_) {
-    // TODO(crbug.com/1344776): Remove this check when JavaScript recursion
-    // for parsing and filling password forms is removed.
-    // The current method can be called with multiple drivers for the same
-    // form: for IOS, form managers are only created for the main frame for
-    // now, so form managers are tied only to the main frame (even if the form
-    // belongs to an iframe), while drivers are tied to their correspondent
-    // frame. Thus, a mismatch can occur between the driver and the form
-    // manager. When the JavaScript recurison for parsing and filling will be
-    // removed, form managers will be tied to their respective frames too, and
-    // this check will be removed.
     if (!manager->DoesManage(form_id, driver)) {
       continue;
     }

@@ -25,8 +25,8 @@ struct FillData;
 }  // namespace password_manager
 
 namespace web {
-class WebState;
 class WebFrame;
+class WebState;
 }  // namespace web
 
 // A protocol implemented by a delegate of PasswordSuggestionHelper.

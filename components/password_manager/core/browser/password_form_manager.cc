@@ -541,15 +541,9 @@ bool PasswordFormManager::UpdateStateOnUserInput(
     FormRendererId form_id,
     FieldRendererId field_id,
     const std::u16string& field_value) {
-  if (form_id) {
-    if (!observed_form()->is_form_tag ||
-        (observed_form()->is_form_tag &&
-         observed_form()->unique_renderer_id != form_id)) {
-      return false;
-    }
-  } else if (observed_form()->is_form_tag) {
-    return false;
-  }
+  DCHECK((form_id && observed_form()->is_form_tag &&
+          observed_form()->unique_renderer_id == form_id) ||
+         (!form_id && !observed_form()->is_form_tag));
 
   bool form_data_changed = false;
   for (FormFieldData& field : mutable_observed_form()->fields) {

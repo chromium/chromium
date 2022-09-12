@@ -202,8 +202,9 @@ ACTION_P(InvokeEmptyConsumerWithForms, store) {
 
 @interface PasswordFormHelper (Testing)
 
-- (void)findPasswordFormsWithCompletionHandler:
-    (void (^)(const std::vector<PasswordForm>&))completionHandler;
+- (void)findPasswordFormsInFrame:(web::WebFrame*)frame
+               completionHandler:(void (^)(const std::vector<PasswordForm>&))
+                                     completionHandler;
 
 @end
 
@@ -571,12 +572,13 @@ TEST_F(PasswordControllerTest, DISABLED_FindPasswordFormsInView) {
     __block BOOL block_was_called = NO;
     __block uint32_t maxExtractedID;
     [passwordController_.sharedPasswordController.formHelper
-        findPasswordFormsWithCompletionHandler:^(
-            const std::vector<FormData>& result, uint32_t maxID) {
-          block_was_called = YES;
-          forms = result;
-          maxExtractedID = maxID;
-        }];
+        findPasswordFormsInFrame:web::GetMainFrame(web_state())
+               completionHandler:^(const std::vector<FormData>& result,
+                                   uint32_t maxID) {
+                 block_was_called = YES;
+                 forms = result;
+                 maxExtractedID = maxID;
+               }];
     EXPECT_TRUE(
         WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool() {
           return block_was_called;
@@ -592,8 +594,8 @@ TEST_F(PasswordControllerTest, DISABLED_FindPasswordFormsInView) {
   }
 }
 
-// Test HTML page.  It contains several password forms.  Tests autofill
-// them and verify that the right ones are autofilled.
+// Test HTML page. It contains several password forms.
+// Tests autofill them and verify that the right ones are autofilled.
 static NSString* kHtmlWithMultiplePasswordForms =
     @""
      // Basic form.
@@ -639,15 +641,15 @@ static NSString* kHtmlWithMultiplePasswordForms =
      // Fields that are outside the <form> tag.
      "<input id='un8' type='text'>"      // unique_id 26
      "<input id='pw8' type='password'>"  // unique_id 27
-                                         // Test forms inside iframes.
+     // Test forms inside iframes.
      "<iframe id='pf' name='pf'></iframe>"
      "<script>"
      "  var doc = frames['pf'].document.open();"
      // Add a form inside iframe. It should also be matched and autofilled.
      "  doc.write('<form id=\\'f10\\'><input id=\\'un10\\' type=\\'text\\' "
-     "name=\\'u10\\'>');"  // unique_id 28
+     "name=\\'u10\\'>');"  // unique_id 1-2
      "  doc.write('<input id=\\'pw10\\' type=\\'password\\' name=\\'p10\\'>');"
-     "  doc.write('</form>');"  // unique_id 29-28
+     "  doc.write('</form>');"  // unique_id 3
      "  doc.close();"
      "</script>";
 
@@ -741,7 +743,7 @@ TEST_F(PasswordControllerTest, FillPasswordForm) {
       "test_password",
       YES,
       @"un1=test_user;pw1=test_password;",
-        YES
+      YES
     },
     // No match because of a different origin.
     {
@@ -756,7 +758,7 @@ TEST_F(PasswordControllerTest, FillPasswordForm) {
       "test_password",
       NO,
       @"",
-        YES
+      YES
     },
     // No match because some inputs are not in the form.
     {
@@ -771,7 +773,7 @@ TEST_F(PasswordControllerTest, FillPasswordForm) {
       "test_password",
       NO,
       @"",
-        YES
+      YES
     },
     // There are inputs with duplicate names in the form, the first of them is
     // filled.
@@ -787,7 +789,7 @@ TEST_F(PasswordControllerTest, FillPasswordForm) {
       "test_password",
       YES,
       @"un2=test_user;pw2=test_password;",
-        YES
+      YES
     },
     // Basic test, but with quotes in the names and IDs.
     {
@@ -802,7 +804,7 @@ TEST_F(PasswordControllerTest, FillPasswordForm) {
       "test_password",
       YES,
       @"un5'=test_user;pw5'=test_password;",
-        YES
+      YES
     },
     // Fields don't have name attributes so id attribute is used for fields
     // identification.
@@ -818,7 +820,7 @@ TEST_F(PasswordControllerTest, FillPasswordForm) {
       "test_password",
       YES,
       @"un6=test_user;pw6=test_password;",
-        YES
+      YES
     },
     // Fields in this form is attached by form's id.
     {
@@ -833,22 +835,22 @@ TEST_F(PasswordControllerTest, FillPasswordForm) {
       "test_password",
       YES,
       @"un7=test_user;pw7=test_password;",
-        YES
+      YES
     },
     // Filling forms inside iframes.
     {
       base_url,
       "f10",
-      28,
+      1,
       "un10",
-      29,
+      2,
       "test_user",
       "pw10",
-      30,
+      3,
       "test_password",
       YES,
       @"pf.un10=test_user;pf.pw10=test_password;",
-        NO
+      NO
     },
     // Fields outside the form tag.
     {
@@ -863,7 +865,7 @@ TEST_F(PasswordControllerTest, FillPasswordForm) {
       "test_password",
       YES,
       @"un8=test_user;pw8=test_password;",
-        YES
+      YES
     },
   };
   // clang-format on
@@ -908,7 +910,7 @@ BOOL PasswordControllerTest::BasicFormFill(NSString* html) {
   __block BOOL return_value = NO;
   [passwordController_.sharedPasswordController
        fillPasswordForm:form_data
-                inFrame:GetWebFrame(/*is_main_frame=*/YES)
+                inFrame:web::GetMainFrame(web_state())
       completionHandler:^(BOOL success) {
         block_was_called = YES;
         return_value = success;
@@ -1061,7 +1063,7 @@ TEST_F(PasswordControllerTest, SuggestionUpdateTests) {
   __block BOOL block_was_called = NO;
   [passwordController_.sharedPasswordController
        fillPasswordForm:form_data
-                inFrame:GetWebFrame(/*is_main_frame=*/YES)
+                inFrame:web::GetMainFrame(web_state())
       completionHandler:^(BOOL success) {
         block_was_called = YES;
         // Verify that the fill reports failed.
@@ -1193,7 +1195,7 @@ TEST_F(PasswordControllerTest, SelectingSuggestionShouldFillPasswordForm) {
     __block BOOL block_was_called = NO;
     [passwordController_.sharedPasswordController
          fillPasswordForm:form_data
-                  inFrame:GetWebFrame(/*is_main_frame=*/YES)
+                  inFrame:web::GetMainFrame(web_state())
         completionHandler:^(BOOL success) {
           block_was_called = YES;
           // Verify that the fill reports failed.
@@ -1672,7 +1674,7 @@ TEST_F(PasswordControllerTest, CheckPasswordGenerationSuggestion) {
   __block BOOL block_was_called = NO;
   [passwordController_.sharedPasswordController
        fillPasswordForm:form_data
-                inFrame:GetWebFrame(/*is_main_frame=*/YES)
+                inFrame:web::GetMainFrame(web_state())
       completionHandler:^(BOOL success) {
         block_was_called = YES;
         // Verify that the fill reports failed.
@@ -2097,10 +2099,8 @@ TEST_F(PasswordControllerTest,
                                      FieldRendererId(), std::string());
 }
 
-// TODO(crbug.com/1344776): Re-enable when the recursion in JavaScript will be
-// deleted.
 // Tests that submission is detected on removal of the form that had user input.
-TEST_F(PasswordControllerTest, DISABLED_DetectSubmissionOnIFrameDetach) {
+TEST_F(PasswordControllerTest, DetectSubmissionOnIFrameDetach) {
   ON_CALL(*store_, GetLogins)
       .WillByDefault(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
   EXPECT_TRUE(
@@ -2274,7 +2274,7 @@ TEST_F(PasswordControllerTest, PasswordMetricsAutomatic) {
   __block BOOL block_was_called = NO;
   [passwordController_.sharedPasswordController
        fillPasswordForm:form_data
-                inFrame:GetWebFrame(/*is_main_frame=*/YES)
+                inFrame:web::GetMainFrame(web_state())
       completionHandler:^(BOOL success) {
         block_was_called = YES;
       }];
@@ -2618,4 +2618,49 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnFormlessFieldsClearing) {
       static_cast<PasswordFormManager*>(form_manager_to_save.get());
   EXPECT_TRUE(form_manager->is_submitted());
   EXPECT_TRUE(form_manager->IsPasswordUpdate());
+}
+
+// Tests submission and saving of a password form located in a same origin
+// iframe. The submission happens after clicking on a password form located
+// in the main frame.
+TEST_F(PasswordControllerTest,
+       SubmittingAndSavingSameOriginIframeAfterClickingAnotherForm) {
+  ON_CALL(*store_, GetLogins)
+      .WillByDefault(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
+
+  std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
+  EXPECT_CALL(*weak_client_, PromptUserToSaveOrUpdatePasswordPtr)
+      .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
+
+  LoadHtml(@""
+            "<input id='un' type='text' name='u'>"
+            "<input id='pw' type='password' name='p'>"
+            "<iframe id='frame1' name='frame1'></iframe>");
+  web::test::ExecuteJavaScript(
+      @"document.getElementById('frame1').contentDocument.body.innerHTML = "
+       "'<form id=\"form1\">"
+       "<input type=\"text\" name=\"text\" value=\"user1\" id=\"id2\">"
+       "<input type=\"password\" name=\"password\" value=\"pw1\" id=\"id2\">"
+       "<input type=\"submit\" id=\"submit_input\"/>"
+       "</form>'",
+      web_state());
+  web::test::ExecuteJavaScript(
+      @"document.getElementById('un').click();"
+      @"document.getElementById('frame1').contentDocument.getElementById('"
+      @"submit_input').click();",
+      web_state());
+
+  LoadHtmlWithRendererInitiatedNavigation(
+      SysUTF8ToNSString("<html><body>Success</body></html>"));
+  EXPECT_EQ("https://chromium.test/",
+            form_manager_to_save->GetPendingCredentials().signon_realm);
+  EXPECT_EQ(u"user1",
+            form_manager_to_save->GetPendingCredentials().username_value);
+  EXPECT_EQ(u"pw1",
+            form_manager_to_save->GetPendingCredentials().password_value);
+
+  auto* form_manager =
+      static_cast<PasswordFormManager*>(form_manager_to_save.get());
+  EXPECT_TRUE(form_manager->is_submitted());
+  EXPECT_FALSE(form_manager->IsPasswordUpdate());
 }

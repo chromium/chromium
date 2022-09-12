@@ -107,20 +107,9 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
   // Otherwise, -suggestionHelperShouldTriggerFormExtraction: will be called
   // and |completion| will not be called until
   // -processWithPasswordFormFillData: is called.
-  // For unsupported form, |completion| will be called immediately and
-  // -suggestionHelperShouldTriggerFormExtraction: will be skipped.
   web::WebFrame* frame =
       web::GetWebFrameWithId(webState, SysNSStringToUTF8(formQuery.frameID));
-  // TODO(crbug.com/1344776): Process all frames.
-  if (!isMainFrame) {
-    if (!frame || webState->GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
-                      frame->GetSecurityOrigin()) {
-      // Passwords is only supported on main frame and iframes with the same
-      // origin.
-      completion(NO);
-      return;
-    }
-  }
+  DCHECK(frame);
 
   BOOL isPasswordField = [formQuery isOnPasswordField];
   if ([formQuery hasFocusType] &&

@@ -183,11 +183,12 @@ TEST_F(PasswordFormHelperTest, FindPasswordFormsInView) {
     LoadHtml(data.html_string);
     __block std::vector<FormData> forms;
     __block BOOL block_was_called = NO;
-    [helper_ findPasswordFormsWithCompletionHandler:^(
-                 const std::vector<FormData>& result, uint32_t maxID) {
-      block_was_called = YES;
-      forms = result;
-    }];
+    [helper_ findPasswordFormsInFrame:web::GetMainFrame(web_state())
+                    completionHandler:^(const std::vector<FormData>& result,
+                                        uint32_t maxID) {
+                      block_was_called = YES;
+                      forms = result;
+                    }];
     EXPECT_TRUE(
         WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool() {
           return block_was_called;
@@ -410,6 +411,7 @@ TEST_F(PasswordFormHelperTest, ExtractPasswordFormData) {
   __block int success_counter = 0;
   __block FormData result = FormData();
   [helper_ extractPasswordFormData:FormRendererId(1)
+                           inFrame:web::GetMainFrame(web_state())
                  completionHandler:^(BOOL complete, const FormData& form) {
                    ++call_counter;
                    if (complete) {
@@ -428,6 +430,7 @@ TEST_F(PasswordFormHelperTest, ExtractPasswordFormData) {
   result = FormData();
 
   [helper_ extractPasswordFormData:FormRendererId(404)
+                           inFrame:web::GetMainFrame(web_state())
                  completionHandler:^(BOOL complete, const FormData& form) {
                    ++call_counter;
                    if (complete) {
