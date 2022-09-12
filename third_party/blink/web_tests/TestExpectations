@@ -4567,9 +4567,6 @@ crbug.com/862643 http/tests/serviceworker/navigation_preload/use-counter.html [ 
 
 # Sheriff 2018-07-30
 
-crbug.com/873873 external/wpt/service-workers/service-worker/fetch-canvas-tainting-video.https.html [ Pass Timeout ]
-crbug.com/873873 external/wpt/service-workers/service-worker/fetch-canvas-tainting-video-cache.https.html [ Pass Timeout ]
-
 crbug.com/875884 [ Win ] lifecycle/background-change-lifecycle-count.html [ Failure Pass ]
 
 # Sheriff 2018-08-20
