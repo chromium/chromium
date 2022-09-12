@@ -388,7 +388,6 @@ void FloatController::FloatForTablet(aura::Window* window,
   if (!chromeos::IsSnappedWindowStateType(old_state_type))
     return;
 
-  // TODO(sammiequon): Verify that this works for all orientations.
   // Update magnetism so that the float window is roughly in the same location
   // as it was when it was snapped.
   const bool left_or_top =

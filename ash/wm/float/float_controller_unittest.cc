@@ -21,6 +21,7 @@
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/work_area_insets.h"
+#include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
@@ -31,7 +32,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
-#include "ui/display/test/display_manager_test_api.h"
+#include "ui/display/display_switches.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/wm/core/window_util.h"
 
@@ -255,7 +256,21 @@ TEST_F(WindowFloatTest, DragToOtherDisplayThenMaximize) {
   EXPECT_EQ(Shell::GetAllRootWindows()[1], window->GetRootWindow());
 }
 
-using TabletWindowFloatTest = WindowFloatTest;
+class TabletWindowFloatTest : public WindowFloatTest {
+ public:
+  TabletWindowFloatTest() = default;
+  TabletWindowFloatTest(const TabletWindowFloatTest&) = delete;
+  TabletWindowFloatTest& operator=(const TabletWindowFloatTest&) = delete;
+  ~TabletWindowFloatTest() override = default;
+
+  // WindowFloatTest:
+  void SetUp() override {
+    // This allows us to snap to the bottom in portrait mode.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ::switches::kUseFirstDisplayAsInternal);
+    WindowFloatTest::SetUp();
+  }
+};
 
 TEST_F(TabletWindowFloatTest, TabletClamshellTransition) {
   auto window1 = CreateFloatedWindow();
@@ -372,16 +387,10 @@ TEST_F(TabletWindowFloatTest, Rotation) {
   std::unique_ptr<aura::Window> window = CreateFloatedWindow();
   const gfx::Rect no_rotation_bounds = window->bounds();
 
-  // Set the primary display as the internal display so that the orientation
-  // controller can rotate it.
-  display::test::ScopedSetInternalDisplayId scoped_set_internal(
-      Shell::Get()->display_manager(),
-      display::Screen::GetScreen()->GetPrimaryDisplay().id());
-  ScreenOrientationControllerTestApi orientation_test_api(
-      Shell::Get()->screen_orientation_controller());
-
   // First rotate to landscape secondary orientation. The float bounds should
   // be the same.
+  ScreenOrientationControllerTestApi orientation_test_api(
+      Shell::Get()->screen_orientation_controller());
   orientation_test_api.SetDisplayRotation(
       display::Display::ROTATE_180, display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(window->bounds(), no_rotation_bounds);
@@ -402,6 +411,30 @@ TEST_F(TabletWindowFloatTest, Rotation) {
   EXPECT_NEAR(no_rotation_bounds.width(), window->bounds().width(), shelf_size);
   EXPECT_NEAR(no_rotation_bounds.height(), window->bounds().height(),
               shelf_size);
+}
+
+// Tests that dragged float window follows the mouse/touch. Regression test for
+// https://crbug.com/1362727.
+TEST_F(TabletWindowFloatTest, Dragging) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+  NonClientFrameViewAsh* frame = SetUpAndGetFrame(window.get());
+
+  // Start dragging in the center of the header. When moving the touch, the
+  // header should move with the touch such that the touch remains in the center
+  // of the header.
+  HeaderView* header_view = frame->GetHeaderView();
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressTouch(header_view->GetBoundsInScreen().CenterPoint());
+
+  // Drag to several points. Verify the header is aligned with the new touch
+  // point.
+  for (const gfx::Point& point :
+       {gfx::Point(10, 10), gfx::Point(100, 10), gfx::Point(400, 400)}) {
+    event_generator->MoveTouch(point);
+    EXPECT_EQ(point, header_view->GetBoundsInScreen().CenterPoint());
+  }
 }
 
 // Tests that on drag release, the window sticks to one of the four corners of
@@ -439,11 +472,12 @@ TEST_F(TabletWindowFloatTest, DraggingMagnetism) {
   EXPECT_EQ(gfx::Point(padding, padding), window->bounds().origin());
 
   // Switch to portrait orientation and move the mouse somewhere in the bottom
-  // left. Test that on release, it magentizes to the bottom left.
+  // left, but not too bottom that it falls into the snap region. Test that on
+  // release, it magentizes to the bottom left.
   UpdateDisplay("1000x1600");
   event_generator->set_current_screen_location(
       header_view->GetBoundsInScreen().CenterPoint());
-  event_generator->DragMouseTo(110, 1590);
+  event_generator->DragMouseTo(110, 1490);
   EXPECT_EQ(gfx::Point(padding, 1600 - shelf_size - padding),
             window->bounds().bottom_left());
 }

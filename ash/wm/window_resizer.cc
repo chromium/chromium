@@ -329,12 +329,14 @@ gfx::Point WindowResizer::GetOriginForDrag(int delta_x,
   if (pos_change_direction & kBoundsChangeDirection_Vertical)
     origin.Offset(0, delta_y);
 
-  // If the window gets respoitioned and changes to it's restored bounds,
+  // If the window gets repositioned and changes to it's restored bounds,
   // modify the origin so that the cursor remains within the dragged window.
   // The ratio of the new origin to the new location should match the ratio
-  // from the initial origin to the initial location.
+  // from the initial origin to the initial location. Floated windows do not
+  // change to their restore bounds while dragging, so we treat them as if they
+  // had no restore bounds.
   const gfx::Rect restore_bounds = details().restore_bounds_in_parent;
-  if (restore_bounds.IsEmpty())
+  if (restore_bounds.IsEmpty() || window_state_->IsFloated())
     return origin;
 
   // The ratios that should match is the (drag location x - bounds origin x) /
