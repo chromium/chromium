@@ -27,6 +27,8 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -72,6 +74,12 @@ class BrowserLauncherTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     browser_service_ = std::make_unique<BrowserServiceLacros>();
+  }
+  void TearDownOnMainThread() override {
+    if (!skip_uninstall_) {
+      UninstallWebApps();
+    }
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   void NewWindowSync(bool incognito, bool should_trigger_session_restore) {
@@ -145,8 +153,27 @@ class BrowserLauncherTest : public InProcessBrowserTest {
     return browser_service_.get();
   }
 
+  GURL GetWebAppStartUrl() const {
+    return GURL("https://lacros.example.com/example/index");
+  }
+
+  void SetSkipUninstall(bool value) { skip_uninstall_ = value; }
+
  private:
+  void UninstallWebApps() {
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    auto* profile = profile_manager->GetProfile(
+        profile_manager->GetPrimaryUserProfilePath());
+
+    web_app::WebAppRegistrar& registrar =
+        web_app::WebAppProvider::GetForTest(profile)->registrar();
+    for (auto& app_id : registrar.GetAppIds()) {
+      web_app::test::UninstallWebApp(profile, app_id);
+    }
+  }
+
   std::unique_ptr<BrowserServiceLacros> browser_service_;
+  bool skip_uninstall_ = false;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserLauncherTest, PRE_FullRestoreWithTwoProfiles) {
@@ -298,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest,
   profile->GetPrefs()->CommitPendingWrite();
 
   // Install and launch a PWA.
-  web_app::AppId app_id = InstallPWA(profile, GURL("http://www.example.com"));
+  web_app::AppId app_id = InstallPWA(profile, GetWebAppStartUrl());
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
   ASSERT_NE(app_browser, nullptr);
   ASSERT_EQ(app_browser->type(), Browser::Type::TYPE_APP);
@@ -322,6 +349,8 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest,
       g_browser_process->profile_manager()->GetLastOpenedProfiles();
   EXPECT_EQ(1u, last_opened_profiles.size());
   EXPECT_TRUE(base::Contains(last_opened_profiles, profile));
+
+  SetSkipUninstall(true);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserLauncherTest,
@@ -392,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(
       profile, ProfileKeepAliveOrigin::kBrowserWindow);
 
   // Install and launch a PWA.
-  web_app::AppId app_id = InstallPWA(profile, GURL("http://www.example.com"));
+  web_app::AppId app_id = InstallPWA(profile, GetWebAppStartUrl());
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
   ASSERT_NE(app_browser, nullptr);
   ASSERT_EQ(app_browser->type(), Browser::Type::TYPE_APP);
