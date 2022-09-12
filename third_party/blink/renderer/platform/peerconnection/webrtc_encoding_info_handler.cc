@@ -23,7 +23,7 @@
 namespace blink {
 
 WebrtcEncodingInfoHandler* WebrtcEncodingInfoHandler::Instance() {
-  DEFINE_STATIC_LOCAL(WebrtcEncodingInfoHandler, instance, ());
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(WebrtcEncodingInfoHandler, instance, ());
   return &instance;
 }
 
