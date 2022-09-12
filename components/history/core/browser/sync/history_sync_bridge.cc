@@ -419,7 +419,7 @@ HistorySyncBridge::~HistorySyncBridge() = default;
 
 std::unique_ptr<syncer::MetadataChangeList>
 HistorySyncBridge::CreateMetadataChangeList() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
       sync_metadata_database_, syncer::HISTORY);
 }
@@ -427,7 +427,7 @@ HistorySyncBridge::CreateMetadataChangeList() {
 absl::optional<syncer::ModelError> HistorySyncBridge::MergeSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Note: History is not synced retroactively - only visits created *after*
   // turning Sync on get synced. So there's nothing to upload here. Just apply
@@ -439,7 +439,7 @@ absl::optional<syncer::ModelError> HistorySyncBridge::MergeSyncData(
 absl::optional<syncer::ModelError> HistorySyncBridge::ApplySyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!processing_syncer_changes_);
   // Set flag to stop accepting history change notifications from backend.
   base::AutoReset<bool> processing_changes(&processing_syncer_changes_, true);
@@ -532,7 +532,7 @@ absl::optional<syncer::ModelError> HistorySyncBridge::ApplySyncChanges(
 
 void HistorySyncBridge::GetData(StorageKeyList storage_keys,
                                 DataCallback callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const std::string& key : storage_keys) {
@@ -569,7 +569,7 @@ void HistorySyncBridge::GetData(StorageKeyList storage_keys,
 }
 
 void HistorySyncBridge::GetAllDataForDebugging(DataCallback callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
   if (!sync_metadata_database_->GetAllSyncMetadata(metadata_batch.get())) {
@@ -587,7 +587,7 @@ void HistorySyncBridge::GetAllDataForDebugging(DataCallback callback) {
 
 std::string HistorySyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(entity_data.specifics.has_history())
       << "EntityData does not have history specifics.";
 
@@ -597,7 +597,7 @@ std::string HistorySyncBridge::GetClientTag(
 
 std::string HistorySyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(entity_data.specifics.has_history())
       << "EntityData does not have history specifics.";
 
@@ -635,7 +635,7 @@ syncer::ConflictResolution HistorySyncBridge::ResolveConflict(
 void HistorySyncBridge::OnURLVisited(HistoryBackend* history_backend,
                                      const URLRow& url_row,
                                      const VisitRow& visit_row) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (processing_syncer_changes_) {
     return;  // These are changes originating from us, ignore.
@@ -695,7 +695,7 @@ void HistorySyncBridge::OnURLsDeleted(HistoryBackend* history_backend,
                                       bool expired,
                                       const URLRows& deleted_rows,
                                       const std::set<GURL>& favicon_urls) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sync_metadata_database_);
 
   if (processing_syncer_changes_) {
@@ -733,7 +733,7 @@ void HistorySyncBridge::OnURLsDeleted(HistoryBackend* history_backend,
 }
 
 void HistorySyncBridge::OnVisitUpdated(const VisitRow& visit_row) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sync_metadata_database_);
 
   if (processing_syncer_changes_) {
@@ -777,7 +777,7 @@ void HistorySyncBridge::OnVisitUpdated(const VisitRow& visit_row) {
 }
 
 void HistorySyncBridge::OnVisitDeleted(const VisitRow& visit_row) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sync_metadata_database_);
 
   if (processing_syncer_changes_) {

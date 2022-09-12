@@ -249,7 +249,7 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
 
   // Since HistoryBackend use SequencedTaskRunner, so should use SequenceChecker
   // here.
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Tracks observed history backend, for receiving updates from history
   // backend.

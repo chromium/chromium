@@ -118,7 +118,7 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
 
   // HistoryBackend uses SequencedTaskRunner, so this makes sure
   // HistorySyncBridge is used on the correct sequence.
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Tracks observed history backend, for receiving updates from history
   // backend.

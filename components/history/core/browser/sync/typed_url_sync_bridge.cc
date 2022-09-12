@@ -98,14 +98,14 @@ TypedURLSyncBridge::TypedURLSyncBridge(
       history_backend_(history_backend),
       sync_metadata_database_(sync_metadata_database) {
   DCHECK(history_backend_);
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 TypedURLSyncBridge::~TypedURLSyncBridge() = default;
 
 std::unique_ptr<syncer::MetadataChangeList>
 TypedURLSyncBridge::CreateMetadataChangeList() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
       sync_metadata_database_, syncer::TYPED_URLS);
 }
@@ -113,7 +113,7 @@ TypedURLSyncBridge::CreateMetadataChangeList() {
 absl::optional<syncer::ModelError> TypedURLSyncBridge::MergeSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Create a mapping of all local data by URL. These will be narrowed down
   // by MergeURLWithSync() to include only the entries different from sync
@@ -204,7 +204,7 @@ absl::optional<syncer::ModelError> TypedURLSyncBridge::MergeSyncData(
 absl::optional<syncer::ModelError> TypedURLSyncBridge::ApplySyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<GURL> pending_deleted_urls;
   std::vector<URLWithVisits> new_synced_visits;
@@ -287,7 +287,7 @@ absl::optional<syncer::ModelError> TypedURLSyncBridge::ApplySyncChanges(
 
 void TypedURLSyncBridge::GetData(StorageKeyList storage_keys,
                                  DataCallback callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const std::string& key : storage_keys) {
@@ -319,7 +319,7 @@ void TypedURLSyncBridge::GetData(StorageKeyList storage_keys,
 }
 
 void TypedURLSyncBridge::GetAllDataForDebugging(DataCallback callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<URLRow> typed_urls;
   if (!history_backend_->GetAllTypedURLs(&typed_urls)) {
@@ -353,7 +353,7 @@ void TypedURLSyncBridge::GetAllDataForDebugging(DataCallback callback) {
 // state.
 std::string TypedURLSyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(entity_data.specifics.has_typed_url())
       << "EntityData does not have typed urls specifics.";
 
@@ -375,7 +375,7 @@ bool TypedURLSyncBridge::SupportsGetStorageKey() const {
 void TypedURLSyncBridge::OnURLVisited(HistoryBackend* history_backend,
                                       const URLRow& url_row,
                                       const VisitRow& visit_row) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sync_metadata_database_);
   DCHECK_GE(url_row.typed_count(), 0);
 
@@ -400,7 +400,7 @@ void TypedURLSyncBridge::OnURLVisited(HistoryBackend* history_backend,
 void TypedURLSyncBridge::OnURLsModified(HistoryBackend* history_backend,
                                         const std::vector<URLRow>& changed_urls,
                                         bool is_from_expiration) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sync_metadata_database_);
 
   if (processing_syncer_changes_) {
@@ -427,7 +427,7 @@ void TypedURLSyncBridge::OnURLsDeleted(HistoryBackend* history_backend,
                                        bool expired,
                                        const std::vector<URLRow>& deleted_rows,
                                        const std::set<GURL>& favicon_urls) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sync_metadata_database_);
 
   if (processing_syncer_changes_) {
@@ -483,7 +483,7 @@ void TypedURLSyncBridge::OnVisitUpdated(const VisitRow& visit) {}
 void TypedURLSyncBridge::OnVisitDeleted(const VisitRow& visit) {}
 
 void TypedURLSyncBridge::Init() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   history_backend_observation_.Observe(history_backend_.get());
   LoadMetadata();
