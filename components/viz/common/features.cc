@@ -50,8 +50,14 @@ const base::Feature kEnableOverlayPrioritization {
 #endif
 };
 
-const base::Feature kUseMultipleOverlays{"UseMultipleOverlays",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kUseMultipleOverlays {
+  "UseMultipleOverlays",
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 const char kMaxOverlaysParam[] = "max_overlays";
 
 const base::Feature kDelegatedCompositing {
@@ -344,7 +350,7 @@ int MaxOverlaysConsidered() {
   }
 
   return base::GetFieldTrialParamByFeatureAsInt(kUseMultipleOverlays,
-                                                kMaxOverlaysParam, 2);
+                                                kMaxOverlaysParam, 8);
 }
 
 bool ShouldVideoDetectorIgnoreNonVideoFrames() {

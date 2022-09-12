@@ -10410,24 +10410,6 @@
             ]
         }
     ],
-    "UseMultipleOverlaysStudySupportedBoards": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220502",
-                    "params": {
-                        "max_overlays": "8"
-                    },
-                    "enable_features": [
-                        "UseMultipleOverlays"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseSnappyForParkableStrings": [
         {
             "platforms": [
