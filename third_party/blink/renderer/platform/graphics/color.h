@@ -216,6 +216,28 @@ class PLATFORM_EXPORT Color {
   inline bool operator!=(const Color& other) const { return !(*this == other); }
 
   unsigned GetHash() const;
+  bool IsLegacyColor() const;
+
+  enum class ColorInterpolationSpace : uint8_t {
+    // Linear in light intensity
+    kXYZD65,
+    kXYZD50,
+    kSRGBLinear,
+    // Perceptually uniform
+    kLab,
+    kOKLab,
+    // Maximizing chroma
+    kLCH,
+    kOKLCH,
+    // Legacy fallback
+    kSRGB,
+    // Polar spaces
+    kHSL,
+    kHWB,
+    // Not specified
+    kNone,
+  };
+  ColorInterpolationSpace GetColorInterpolationSpace() const;
 
  private:
   constexpr explicit Color(RGBA32 color)

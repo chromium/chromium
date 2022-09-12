@@ -778,4 +778,22 @@ RGBA32 PremultipliedARGBFromColor(const Color& color) {
   return pixel_color;
 }
 
+// https://www.w3.org/TR/css-color-4/#legacy-color-syntax
+bool Color::IsLegacyColor() const {
+  return serialization_type_ == SerializationType::kRGB;
+}
+
+// From https://www.w3.org/TR/css-color-4/#interpolation
+// If the host syntax does not define what color space interpolation should
+// take place in, it defaults to OKLab.
+// However, user agents may handle interpolation between legacy sRGB color
+// formats (hex colors, named colors, rgb(), hsl() or hwb() and the equivalent
+// alpha-including forms) in gamma-encoded sRGB space.
+Color::ColorInterpolationSpace Color::GetColorInterpolationSpace() const {
+  if (IsLegacyColor())
+    return ColorInterpolationSpace::kSRGB;
+
+  return ColorInterpolationSpace::kOKLab;
+}
+
 }  // namespace blink
