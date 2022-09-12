@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -55,6 +56,8 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
       const std::string& locale);
 
  private:
+  void onPriceTrackResult(int64_t bookmark_id, bool success);
+
   mojo::Remote<shopping_list::mojom::Page> remote_page_;
   mojo::Receiver<shopping_list::mojom::ShoppingListHandler> receiver_;
   // The bookmark model and shopping service will outlive this implementation
@@ -68,6 +71,7 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
   base::ScopedObservation<bookmarks::BookmarkModel,
                           bookmarks::BookmarkModelObserver>
       scoped_observation_{this};
+  base::WeakPtrFactory<ShoppingListHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace commerce

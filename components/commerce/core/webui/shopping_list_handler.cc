@@ -60,14 +60,16 @@ void ShoppingListHandler::TrackPriceForBookmark(int64_t bookmark_id) {
   commerce::SetPriceTrackingStateForBookmark(
       shopping_service_, bookmark_model_,
       bookmarks::GetBookmarkNodeByID(bookmark_model_, bookmark_id), true,
-      base::DoNothing());
+      base::BindOnce(&ShoppingListHandler::onPriceTrackResult,
+                     weak_ptr_factory_.GetWeakPtr(), bookmark_id));
 }
 
 void ShoppingListHandler::UntrackPriceForBookmark(int64_t bookmark_id) {
   commerce::SetPriceTrackingStateForBookmark(
       shopping_service_, bookmark_model_,
       bookmarks::GetBookmarkNodeByID(bookmark_model_, bookmark_id), false,
-      base::DoNothing());
+      base::BindOnce(&ShoppingListHandler::onPriceTrackResult,
+                     weak_ptr_factory_.GetWeakPtr(), bookmark_id));
 }
 
 void ShoppingListHandler::BookmarkModelChanged() {}
@@ -137,5 +139,17 @@ std::vector<BookmarkProductInfoPtr> ShoppingListHandler::BookmarkListToMojoList(
   }
 
   return info_list;
+}
+
+void ShoppingListHandler::onPriceTrackResult(int64_t bookmark_id,
+                                             bool success) {
+  if (success)
+    return;
+  auto* node = bookmarks::GetBookmarkNodeByID(bookmark_model_, bookmark_id);
+  if (commerce::IsBookmarkPriceTracked(bookmark_model_, node)) {
+    remote_page_->PriceTrackedForBookmark(bookmark_id);
+  } else {
+    remote_page_->PriceUntrackedForBookmark(bookmark_id);
+  }
 }
 }  // namespace commerce
