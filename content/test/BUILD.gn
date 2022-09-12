@@ -1955,6 +1955,8 @@ test("content_browsertests") {
     # they can't properly launch a child content_shell in that environment.
     sources += [ "../browser/launch_as_mojo_client_browsertest.cc" ]
     deps += [
+      "//components/variations:variations",
+      "//components/variations/field_trial_config:field_trial_config",
       "//content/shell:shell_controller_mojom",
       "//mojo/public/cpp/platform",
       "//mojo/public/mojom/base",

@@ -14,6 +14,8 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/variations/field_trial_config/field_trial_util.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
@@ -90,6 +92,20 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
     command_line.AppendSwitchASCII(
         switches::kDisableFeatures,
         current_command_line.GetSwitchValueASCII(switches::kDisableFeatures));
+
+    std::string force_field_trials =
+        current_command_line.GetSwitchValueASCII(switches::kForceFieldTrials);
+    if (!force_field_trials.empty()) {
+      command_line.AppendSwitchASCII(switches::kForceFieldTrials,
+                                     force_field_trials);
+
+      std::string params = base::FieldTrialList::AllParamsToString(
+          false, variations::EscapeValue);
+      if (!params.empty()) {
+        command_line.AppendSwitchASCII(
+            variations::switches::kForceFieldTrialParams, params);
+      }
+    }
     return command_line;
   }
 
