@@ -1192,6 +1192,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.ErrorMessageDismissalReason"
+    enum="MessageDismissReason" expires_after="2023-02-01">
+  <owner>izuzic@chromium.org</owner>
+  <owner>ioanap@google.com</owner>
+  <summary>
+    Records the reason that caused Password Error Message on Android to be
+    dismissed. It's recorded when the user dismisses the message by clicking the
+    Sign in button or when the message is autodismissed because of the timeout.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.FieldNameCollisionInVotes" enum="Boolean"
     expires_after="2023-02-26">
   <owner>kolos@chromium.org</owner>

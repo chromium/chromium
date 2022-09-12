@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/android/password_manager_error_message_delegate.h"
 
 #include "base/android/jni_android.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/android/signin/signin_bridge.h"
@@ -84,6 +85,7 @@ void PasswordManagerErrorMessageDelegate::CreateMessage(
 
 void PasswordManagerErrorMessageDelegate::HandleMessageDismissed(
     messages::DismissReason dismiss_reason) {
+  RecordDismissalReasonMetrics(dismiss_reason);
   message_.reset();
 }
 
@@ -92,4 +94,10 @@ void PasswordManagerErrorMessageDelegate::HandleSignInButtonClicked(
   sign_in_bridge_->startUpdateAccountCredentialsFlow(
       base::android::AttachCurrentThread(), web_contents);
   DismissPasswordManagerErrorMessage(messages::DismissReason::PRIMARY_ACTION);
+}
+
+void PasswordManagerErrorMessageDelegate::RecordDismissalReasonMetrics(
+    messages::DismissReason dismiss_reason) {
+  base::UmaHistogramEnumeration("PasswordManager.ErrorMessageDismissalReason",
+                                dismiss_reason, messages::DismissReason::COUNT);
 }

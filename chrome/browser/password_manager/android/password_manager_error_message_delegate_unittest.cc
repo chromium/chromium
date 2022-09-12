@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/android/password_manager_error_message_delegate.h"
 
 #include "base/android/jni_android.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/password_manager/android/mock_password_manager_sign_in_helper_bridge.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -13,6 +14,11 @@
 #include "ui/base/l10n/l10n_util.h"
 
 using testing::_;
+
+namespace {
+constexpr char kErrorMessageDismissalReasonHistogramName[] =
+    "PasswordManager.ErrorMessageDismissalReason";
+}
 
 class PasswordManagerErrorMessageDelegateTest
     : public ChromeRenderViewHostTestHarness {
@@ -114,8 +120,11 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
   DismissMessageAndExpectDismissed(messages::DismissReason::UNKNOWN);
 }
 
-// Tests that the sign in flow starts when the user clicks the "Sign in" button.
+// Tests that the sign in flow starts when the user clicks the "Sign in" button
+// and that the metrics are recorded correctly.
 TEST_F(PasswordManagerErrorMessageDelegateTest, SignInOnActionClick) {
+  base::HistogramTester histogram_tester;
+
   DisplayMessageAndExpectEnqueued(/*save_password=*/true);
   EXPECT_NE(nullptr, GetMessageWrapper());
 
@@ -123,5 +132,23 @@ TEST_F(PasswordManagerErrorMessageDelegateTest, SignInOnActionClick) {
               startUpdateAccountCredentialsFlow(_, web_contents()));
   // Trigger the click action on the "Sign in" button and dismiss the message.
   GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
-  DismissMessageAndExpectDismissed(messages::DismissReason::UNKNOWN);
+  DismissMessageAndExpectDismissed(messages::DismissReason::PRIMARY_ACTION);
+
+  histogram_tester.ExpectUniqueSample(kErrorMessageDismissalReasonHistogramName,
+                                      messages::DismissReason::PRIMARY_ACTION,
+                                      1);
+}
+
+// Tests that the metrics are recorded correctly when the message is
+// autodismissed.
+TEST_F(PasswordManagerErrorMessageDelegateTest, MetricOnAutodismissTimer) {
+  base::HistogramTester histogram_tester;
+
+  DisplayMessageAndExpectEnqueued(/*save_password=*/true);
+  EXPECT_NE(nullptr, GetMessageWrapper());
+
+  DismissMessageAndExpectDismissed(messages::DismissReason::TIMER);
+
+  histogram_tester.ExpectUniqueSample(kErrorMessageDismissalReasonHistogramName,
+                                      messages::DismissReason::TIMER, 1);
 }

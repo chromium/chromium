@@ -39,6 +39,8 @@ class PasswordManagerErrorMessageDelegate {
   // Following methods handle events associated with user interaction with UI.
   void HandleSignInButtonClicked(content::WebContents* web_contents);
   void HandleMessageDismissed(messages::DismissReason dismiss_reason);
+
+  void RecordDismissalReasonMetrics(messages::DismissReason dismiss_reason);
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_ERROR_MESSAGE_DELEGATE_H_
