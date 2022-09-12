@@ -733,21 +733,6 @@ DrawingBuffer::CreateOrRecycleColorBuffer() {
   return CreateColorBuffer(size_);
 }
 
-DrawingBuffer::ScopedRGBEmulationForBlitFramebuffer::
-    ScopedRGBEmulationForBlitFramebuffer(DrawingBuffer* drawing_buffer,
-                                         bool is_user_draw_framebuffer_bound)
-    : drawing_buffer_(drawing_buffer) {
-  doing_work_ = drawing_buffer->SetupRGBEmulationForBlitFramebuffer(
-      is_user_draw_framebuffer_bound);
-}
-
-DrawingBuffer::ScopedRGBEmulationForBlitFramebuffer::
-    ~ScopedRGBEmulationForBlitFramebuffer() {
-  if (doing_work_) {
-    drawing_buffer_->CleanupRGBEmulationForBlitFramebuffer();
-  }
-}
-
 scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
     base::WeakPtr<CanvasResourceProvider> resource_provider) {
   // Swap chain must be presented before resource is exported.
@@ -942,10 +927,8 @@ bool DrawingBuffer::Initialize(const gfx::Size& size, bool use_multisampling) {
   // Initialize the alpha allocation settings based on the features and
   // workarounds in use.
   if (want_alpha_channel_) {
-    allocate_alpha_channel_ = true;
     have_alpha_channel_ = true;
   } else {
-    allocate_alpha_channel_ = false;
     have_alpha_channel_ = false;
     // The following workarounds are used in order of importance; the
     // first is a correctness issue, the second a major performance
@@ -956,7 +939,6 @@ bool DrawingBuffer::Initialize(const gfx::Size& size, bool use_multisampling) {
       //  - allow invalid CopyTexImage to RGBA targets
       //  - fail valid FramebufferBlit from RGB targets
       // https://crbug.com/776269
-      allocate_alpha_channel_ = true;
       have_alpha_channel_ = true;
     } else if (WantExplicitResolve() &&
                ContextProvider()->GetGpuFeatureInfo().IsWorkaroundEnabled(
@@ -964,15 +946,6 @@ bool DrawingBuffer::Initialize(const gfx::Size& size, bool use_multisampling) {
       // This configuration avoids the above issues because
       //  - CopyTexImage is invalid from multisample renderbuffers
       //  - FramebufferBlit is invalid to multisample renderbuffers
-      allocate_alpha_channel_ = true;
-      have_alpha_channel_ = true;
-    } else if (ShouldUseChromiumImage() && ContextProvider()
-                                               ->GetCapabilities()
-                                               .chromium_image_rgb_emulation) {
-      // This configuration avoids the above issues by
-      //  - extra command buffer validation for CopyTexImage
-      //  - explicity re-binding as RGB for FramebufferBlit
-      allocate_alpha_channel_ = false;
       have_alpha_channel_ = true;
     }
   }
@@ -1261,8 +1234,8 @@ bool DrawingBuffer::ReallocateDefaultFramebuffer(const gfx::Size& size,
   // the non-premultiplied rendering results. These will be copied into the GMB
   // via CopySubTextureCHROMIUM, performing the premultiplication step then.
   // This also applies to swap chains which are exported via AsCanvasResource().
-  if ((ShouldUseChromiumImage() || UsingSwapChain()) &&
-      allocate_alpha_channel_ && !premultiplied_alpha_) {
+  if ((ShouldUseChromiumImage() || UsingSwapChain()) && have_alpha_channel_ &&
+      !premultiplied_alpha_) {
     gpu::SharedImageInterface* sii = ContextProvider()->SharedImageInterface();
     state_restorer_->SetTextureBindingDirty();
     // TODO(kbr): unify with code in CreateColorBuffer.
@@ -1601,7 +1574,7 @@ bool DrawingBuffer::ReallocateMultisampleRenderbuffer(const gfx::Size& size) {
   gl_->BindFramebuffer(GL_FRAMEBUFFER, multisample_fbo_);
   gl_->BindRenderbuffer(GL_RENDERBUFFER, multisample_renderbuffer_);
   // Note that the multisample rendertarget will allocate an alpha channel
-  // based on |have_alpha_channel_|, not |allocate_alpha_channel_|, since it
+  // based on |have_alpha_channel_|, not |want_alpha_channel_|, since it
   // will resolve into the ColorBuffer.
   GLenum internal_format = have_alpha_channel_ ? GL_RGBA8_OES : GL_RGB8_OES;
   if (use_half_float_storage_) {
@@ -1835,7 +1808,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
                                : kBottomLeft_GrSurfaceOrigin;
 
   viz::ResourceFormat format;
-  if (allocate_alpha_channel_) {
+  if (have_alpha_channel_) {
     format = use_half_float_storage_ ? viz::RGBA_F16 : viz::RGBA_8888;
   } else {
     DCHECK(!use_half_float_storage_);
@@ -1851,7 +1824,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   } else {
     if (ShouldUseChromiumImage()) {
       gfx::BufferFormat buffer_format;
-      if (allocate_alpha_channel_) {
+      if (have_alpha_channel_) {
         buffer_format = use_half_float_storage_ ? gfx::BufferFormat::RGBA_F16
                                                 : gfx::BufferFormat::RGBA_8888;
       } else {
@@ -1981,79 +1954,6 @@ bool DrawingBuffer::WantExplicitResolve() {
 
 bool DrawingBuffer::WantDepthOrStencil() {
   return want_depth_ || want_stencil_;
-}
-
-bool DrawingBuffer::SetupRGBEmulationForBlitFramebuffer(
-    bool is_user_draw_framebuffer_bound) {
-  // We only need to do this work if:
-  //  - We are blitting to the default framebuffer
-  //  - The user has selected alpha:false and antialias:false
-  //  - We are using CHROMIUM_image with RGB emulation
-  // macOS is the only platform on which this is necessary.
-
-  if (is_user_draw_framebuffer_bound) {
-    return false;
-  }
-
-  if (anti_aliasing_mode_ != kAntialiasingModeNone)
-    return false;
-
-  bool has_emulated_rgb = !allocate_alpha_channel_ && have_alpha_channel_;
-  if (!has_emulated_rgb)
-    return false;
-
-  // If for some reason the back buffer doesn't exist or doesn't have a
-  // CHROMIUM_image, don't proceed with this workaround.
-  if (!back_color_buffer_ || !back_color_buffer_->gpu_memory_buffer)
-    return false;
-
-  // Before allowing the BlitFramebuffer call to go through, it's necessary
-  // to swap out the RGBA texture that's bound to the CHROMIUM_image
-  // instance with an RGB texture. BlitFramebuffer requires the internal
-  // formats of the source and destination to match when doing a
-  // multisample resolve, and the best way to achieve this without adding
-  // more full-screen blits is to hook up a true RGB texture to the
-  // underlying IOSurface. Unfortunately, on macOS, this rendering path
-  // destroys the alpha channel and requires a fixup afterward, which is
-  // why it isn't used all the time.
-
-  GLuint rgb_texture = back_color_buffer_->rgb_workaround_texture_id;
-  DCHECK_EQ(texture_target_, GC3D_TEXTURE_RECTANGLE_ARB);
-  if (!rgb_texture) {
-    rgb_texture =
-        gl_->CreateAndTexStorage2DSharedImageWithInternalFormatCHROMIUM(
-            back_color_buffer_->mailbox.name, GL_RGB);
-    back_color_buffer_->rgb_workaround_texture_id = rgb_texture;
-  }
-
-  gl_->EndSharedImageAccessDirectCHROMIUM(back_color_buffer_->texture_id);
-  gl_->BeginSharedImageAccessDirectCHROMIUM(
-      rgb_texture, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
-  gl_->FramebufferTexture2D(GL_DRAW_FRAMEBUFFER_ANGLE, GL_COLOR_ATTACHMENT0,
-                            texture_target_, rgb_texture, 0);
-  return true;
-}
-
-void DrawingBuffer::CleanupRGBEmulationForBlitFramebuffer() {
-  // This will only be called if SetupRGBEmulationForBlitFramebuffer was.
-  // Put the framebuffer back the way it was, and clear the alpha channel.
-  DCHECK(back_color_buffer_);
-  DCHECK(back_color_buffer_->gpu_memory_buffer);
-  gl_->EndSharedImageAccessDirectCHROMIUM(
-      back_color_buffer_->rgb_workaround_texture_id);
-  gl_->BeginSharedImageAccessDirectCHROMIUM(
-      back_color_buffer_->texture_id,
-      GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
-  gl_->FramebufferTexture2D(GL_DRAW_FRAMEBUFFER_ANGLE, GL_COLOR_ATTACHMENT0,
-                            texture_target_, back_color_buffer_->texture_id, 0);
-  // Clear the alpha channel.
-  gl_->ColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_TRUE);
-  gl_->Disable(GL_SCISSOR_TEST);
-  gl_->ClearColor(0, 0, 0, 1);
-  gl_->Clear(GL_COLOR_BUFFER_BIT);
-  DCHECK(client_);
-  client_->DrawingBufferClientRestoreScissorTest();
-  client_->DrawingBufferClientRestoreMaskAndClearValues();
 }
 
 DrawingBuffer::ScopedStateRestorer::ScopedStateRestorer(

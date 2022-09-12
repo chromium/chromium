@@ -597,12 +597,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   const bool discard_framebuffer_supported_;
   // Did the user request an alpha channel be allocated.
   const bool want_alpha_channel_;
-  // Do we explicitly allocate an alpha channel in our ColorBuffer allocations.
-  // Note that this does not apply to |multisample_renderbuffer_|.
-  bool allocate_alpha_channel_ = false;
-  // Does our allocation have an alpha channel (potentially implicitly created).
-  // Note that this determines if |multisample_renderbuffer_| allocates an alpha
-  // channel.
+  // Does our allocation have an alpha channel that was explicitly allocated
+  // (there is no concept of an implicitly created alpha channel). This
+  // determines if |multisample_renderbuffer_| allocates an alpha channel.
   bool have_alpha_channel_ = false;
   const bool premultiplied_alpha_;
   Platform::GraphicsInfo graphics_info_;
