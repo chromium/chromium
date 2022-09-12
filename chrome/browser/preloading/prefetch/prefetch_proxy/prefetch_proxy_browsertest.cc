@@ -2473,6 +2473,12 @@ class SSLReportingPrefetchProxyBrowserTest : public PrefetchProxyBrowserTest {
     // Certificate reports are only sent from official builds, unless this has
     // been called.
     CertReportHelper::SetFakeOfficialBuildForTesting();
+
+    // CertReportHelper::ShouldReportCertificateError checks the value of this
+    // variation. Ensure reporting is enabled.
+    variations::testing::VariationParamsManager::SetVariationParams(
+        "ReportCertificateErrors", "ShowAndPossiblySend",
+        {{"sendingThreshold", "1.0"}});
   }
 
   void SetFeatures() override {
@@ -2487,12 +2493,6 @@ class SSLReportingPrefetchProxyBrowserTest : public PrefetchProxyBrowserTest {
   void SetUpCommandLine(base::CommandLine* cmd) override {
     PrefetchProxyBrowserTest::SetUpCommandLine(cmd);
     cmd->RemoveSwitch("ignore-certificate-errors");
-
-    // CertReportHelper::ShouldReportCertificateError checks the value of this
-    // variation. Ensure reporting is enabled.
-    variations::testing::VariationParamsManager::AppendVariationParams(
-        "ReportCertificateErrors", "ShowAndPossiblySend",
-        {{"sendingThreshold", "1.0"}}, cmd);
   }
 
   security_interstitials::SecurityInterstitialPage* GetInterstitialPage(

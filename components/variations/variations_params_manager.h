@@ -11,7 +11,6 @@
 #include <string>
 
 namespace base {
-class CommandLine;
 class FieldTrialList;
 
 namespace test {
@@ -57,8 +56,18 @@ class VariationParamsManager {
   // parameter names to their values. The function creates a new trial group,
   // used only for testing. Between two calls of this function,
   // ClearAllVariationParams() has to be called.
-  void SetVariationParams(
+  static void SetVariationParams(
       const std::string& trial_name,
+      const std::map<std::string, std::string>& param_values);
+
+  // Associates |param_values| with the given |trial_name| whose trial group
+  // is |trial_group_name|. |param_values| maps parameter names to their values.
+  // The function is used only for testing. Between two calls of this function,
+  // ClearAllVariationParams() has to be called, or use base::ScopeFeatureList
+  // and move each call into its own scope.
+  static void SetVariationParams(
+      const std::string& trial_name,
+      const std::string& trial_group_name,
       const std::map<std::string, std::string>& param_values);
 
   // Like SetVariationParams(). |associated_features| lists names of features
@@ -75,19 +84,6 @@ class VariationParamsManager {
 
   // Clears all of the associated params.
   void ClearAllVariationParams();
-
-  // Appends command line switches to |command_line| in a way that mimics
-  // SetVariationParams.
-  //
-  // This static method is useful in situations where using
-  // VariationParamsManager directly would have resulted in initializing
-  // FieldTrialList twice (once from ChromeBrowserMainParts::SetUpFieldTrials
-  // and once from VariationParamsManager).
-  static void AppendVariationParams(
-      const std::string& trial_name,
-      const std::string& trial_group_name,
-      const std::map<std::string, std::string>& param_values,
-      base::CommandLine* command_line);
 
  private:
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;

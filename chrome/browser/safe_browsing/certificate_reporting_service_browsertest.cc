@@ -61,6 +61,11 @@ class CertificateReportingServiceBrowserTest : public InProcessBrowserTest {
   CertificateReportingServiceBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     CertReportHelper::SetFakeOfficialBuildForTesting();
+
+    // Setting the sending threshold to 1.0 ensures reporting is enabled.
+    variations::testing::VariationParamsManager::SetVariationParams(
+        "ReportCertificateErrors", "ShowAndPossiblySend",
+        {{"sendingThreshold", "1.0"}});
   }
 
   CertificateReportingServiceBrowserTest(
@@ -99,13 +104,6 @@ class CertificateReportingServiceBrowserTest : public InProcessBrowserTest {
     EXPECT_GE(num_expected_failed_report_, 0)
         << "Don't forget to set expected failed report count.";
     event_histogram_tester_.reset();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Setting the sending threshold to 1.0 ensures reporting is enabled.
-    variations::testing::VariationParamsManager::AppendVariationParams(
-        "ReportCertificateErrors", "ShowAndPossiblySend",
-        {{"sendingThreshold", "1.0"}}, command_line);
   }
 
   CertificateReportingServiceTestHelper* test_helper() {

@@ -1009,16 +1009,16 @@ class SSLUITestWithExtendedReporting : public SSLUITest {
     // Certificate reports are only sent from official builds, unless this has
     // been called.
     CertReportHelper::SetFakeOfficialBuildForTesting();
+
+    // CertReportHelper::ShouldReportCertificateError checks the value of this
+    // variation. Ensure reporting is enabled.
+    variations::testing::VariationParamsManager::SetVariationParams(
+        "ReportCertificateErrors", "ShowAndPossiblySend",
+        {{"sendingThreshold", "1.0"}});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SSLUITest::SetUpCommandLine(command_line);
-
-    // CertReportHelper::ShouldReportCertificateError checks the value of this
-    // variation. Ensure reporting is enabled.
-    variations::testing::VariationParamsManager::AppendVariationParams(
-        "ReportCertificateErrors", "ShowAndPossiblySend",
-        {{"sendingThreshold", "1.0"}}, command_line);
   }
 };
 

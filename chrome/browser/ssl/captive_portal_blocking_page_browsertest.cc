@@ -183,18 +183,16 @@ class CaptivePortalBlockingPageTest : public InProcessBrowserTest {
  public:
   CaptivePortalBlockingPageTest() {
     CertReportHelper::SetFakeOfficialBuildForTesting();
+
+    // Setting the sending threshold to 1.0 ensures reporting is enabled.
+    variations::testing::VariationParamsManager::SetVariationParams(
+        "ReportCertificateErrors", "ShowAndPossiblySend",
+        {{"sendingThreshold", "1.0"}});
   }
 
   CaptivePortalBlockingPageTest(const CaptivePortalBlockingPageTest&) = delete;
   CaptivePortalBlockingPageTest& operator=(
       const CaptivePortalBlockingPageTest&) = delete;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Setting the sending threshold to 1.0 ensures reporting is enabled.
-    variations::testing::VariationParamsManager::AppendVariationParams(
-        "ReportCertificateErrors", "ShowAndPossiblySend",
-        {{"sendingThreshold", "1.0"}}, command_line);
-  }
 
   void TestInterstitial(bool is_wifi_connection,
                         const std::string& wifi_ssid,
