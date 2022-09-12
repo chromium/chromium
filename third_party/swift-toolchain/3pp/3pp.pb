@@ -17,13 +17,13 @@ create {
   platform_re: "mac-.*"
   source {
     url {
-      download_url: "https://download.swift.org/swift-5.7-branch/xcode/swift-5.7-DEVELOPMENT-SNAPSHOT-2022-08-02-a/swift-5.7-DEVELOPMENT-SNAPSHOT-2022-08-02-a-osx.pkg"
-      version: "5.7-20220818"
+      download_url: "https://download.swift.org/swift-5.7-release/xcode/swift-5.7-RELEASE/swift-5.7-RELEASE-osx.pkg"
+      version: "5.7-release"
     }
   }
   build {
     install: "install-mac.sh"
-    install: "swift-5.7-DEVELOPMENT-SNAPSHOT-2022-08-02-a-osx"
+    install: "swift-5.7-RELEASE-osx"
   }
 }
 
