@@ -132,6 +132,8 @@ BLINK_COMMON_EXPORT MediaStreamDevices
 ToMediaStreamDevicesList(const mojom::StreamDevicesSet& stream_devices_set);
 
 BLINK_COMMON_EXPORT size_t CountDevices(const mojom::StreamDevices& devices);
+BLINK_COMMON_EXPORT bool IsMediaStreamDeviceTransferrable(
+    const MediaStreamDevice& device);
 
 }  // namespace blink
 

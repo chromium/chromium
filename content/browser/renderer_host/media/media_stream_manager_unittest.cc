@@ -1159,9 +1159,12 @@ TEST_F(MediaStreamManagerTest, MultiCaptureIntermediateErrorOnOpening) {
 
 class MediaStreamManagerTestForTransfers : public MediaStreamManagerTest {
  public:
-  void SetUp() override {
+  void CustomSetUp(const char* surface_type = "browser") {
     scoped_feature_list_.InitAndEnableFeature(
         features::kMediaStreamTrackTransfer);
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kUseFakeDeviceForMediaStream,
+        base::StringPrintf("display-media-type=%s", surface_type));
     media_stream_manager_->UseFakeUIFactoryForTests(base::BindRepeating([]() {
       return std::make_unique<FakeMediaStreamUIProxy>(
           /*tests_use_fake_render_frame_hosts=*/true);
@@ -1278,8 +1281,9 @@ class MediaStreamManagerTestForTransfers : public MediaStreamManagerTest {
 };
 
 TEST_F(MediaStreamManagerTestForTransfers,
-       GetOpenDeviceForDeviceCaptureTypeStreamFails) {
-  RequestDeviceCaptureTypeAudioDevice();
+       GetOpenDeviceForScreenCaptureTypeStreamFails) {
+  CustomSetUp(/*surface_type=*/"monitor");
+  RequestDisplayCaptureTypeDevice();
   GetOpenDevice();
   EXPECT_TRUE(KeepDeviceAlive());
   StopDevice();
@@ -1288,7 +1292,19 @@ TEST_F(MediaStreamManagerTestForTransfers,
 }
 
 TEST_F(MediaStreamManagerTestForTransfers,
-       GetDisplayMediaAudioAndVideoAndGetOpenDeviceAudioReturnsDevice) {
+       GetOpenDeviceForWindowCaptureTypeStreamFails) {
+  CustomSetUp(/*surface_type=*/"window");
+  RequestDisplayCaptureTypeDevice();
+  GetOpenDevice();
+  KeepDeviceAlive();
+  StopDevice();
+
+  EXPECT_EQ(result_, blink::mojom::MediaStreamRequestResult::INVALID_STATE);
+}
+
+TEST_F(MediaStreamManagerTestForTransfers,
+       GetOpenDeviceForBrowserCaptureTypeStreamReturnsDevice) {
+  CustomSetUp(/*surface_type=*/"browser");
   RequestDisplayCaptureTypeDevice();
   GetOpenDevice();
   EXPECT_TRUE(KeepDeviceAlive());
@@ -1300,7 +1316,19 @@ TEST_F(MediaStreamManagerTestForTransfers,
 }
 
 TEST_F(MediaStreamManagerTestForTransfers,
+       GetOpenDeviceForDeviceCaptureTypeStreamFails) {
+  CustomSetUp();
+  RequestDeviceCaptureTypeAudioDevice();
+  GetOpenDevice();
+  KeepDeviceAlive();
+  StopDevice();
+
+  EXPECT_EQ(result_, blink::mojom::MediaStreamRequestResult::INVALID_STATE);
+}
+
+TEST_F(MediaStreamManagerTestForTransfers,
        GetDisplayMediaAudioAndVideoAndGetOpenDeviceVideoReturnsDevice) {
+  CustomSetUp();
   RequestDisplayCaptureTypeDevice(/*request_audio=*/true,
                                   /*request_video=*/true,
                                   /*transfer_audio=*/false);
@@ -1315,6 +1343,7 @@ TEST_F(MediaStreamManagerTestForTransfers,
 
 TEST_F(MediaStreamManagerTestForTransfers,
        GetDisplayMediaVideoAndGetOpenDeviceVideoReturnsDevice) {
+  CustomSetUp();
   RequestDisplayCaptureTypeDevice(/*request_audio=*/false,
                                   /*request_video=*/true,
                                   /*transfer_audio=*/false);
@@ -1329,6 +1358,7 @@ TEST_F(MediaStreamManagerTestForTransfers,
 
 TEST_F(MediaStreamManagerTestForTransfers,
        GetOpenDeviceWhenKeepAliveAfterStopDoesNotReturnDevice) {
+  CustomSetUp();
   RequestDisplayCaptureTypeDevice();
   StopDevice();
   EXPECT_FALSE(KeepDeviceAlive());
@@ -1339,6 +1369,7 @@ TEST_F(MediaStreamManagerTestForTransfers,
 
 TEST_F(MediaStreamManagerTestForTransfers,
        GetOpenDeviceWhenKeepAliveBeforeStopReturnsDevice) {
+  CustomSetUp();
   RequestDisplayCaptureTypeDevice();
   EXPECT_TRUE(KeepDeviceAlive());
   StopDevice();
@@ -1351,6 +1382,7 @@ TEST_F(MediaStreamManagerTestForTransfers,
 
 TEST_F(MediaStreamManagerTestForTransfers,
        GetOpenDeviceWithoutKeepAliveReturnsDeviceButDoesNotStop) {
+  CustomSetUp();
   RequestDisplayCaptureTypeDevice();
   GetOpenDevice();
   StopDevice(/*should_stop=*/false);
@@ -1362,6 +1394,7 @@ TEST_F(MediaStreamManagerTestForTransfers,
 
 TEST_F(MediaStreamManagerTestForTransfers,
        GetOpenDeviceWithKeepAliveAfterStopReturnsDevice) {
+  CustomSetUp();
   RequestDisplayCaptureTypeDevice();
   GetOpenDevice();
   StopDevice();
@@ -1374,6 +1407,7 @@ TEST_F(MediaStreamManagerTestForTransfers,
 
 TEST_F(MediaStreamManagerTestForTransfers,
        GetOpenDeviceForNonExistentDeviceReturnsInvalidState) {
+  CustomSetUp();
   GetOpenDevice();
 
   EXPECT_EQ(result_, blink::mojom::MediaStreamRequestResult::INVALID_STATE);

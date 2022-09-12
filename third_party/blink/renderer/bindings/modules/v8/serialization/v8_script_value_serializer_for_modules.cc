@@ -621,7 +621,7 @@ bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack(
   }
   absl::optional<const MediaStreamDevice> device = track->device();
   if (!(device && device->serializable_session_id() &&
-        MediaStreamUtils::IsMediaStreamTypeTransferrable(device->type))) {
+        IsMediaStreamDeviceTransferrable(*device))) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataCloneError,
         "MediaStreamTrack could not be serialized.");

@@ -213,7 +213,11 @@ void WebTestBrowserMainRunner::Initialize() {
 
   // Always run with fake media devices.
   command_line.AppendSwitch(switches::kUseFakeUIForMediaStream);
-  command_line.AppendSwitch(switches::kUseFakeDeviceForMediaStream);
+
+  // The check here ensures that a test's custom value for the switch is not
+  // overwritten by the default one.
+  if (!command_line.HasSwitch(switches::kUseFakeDeviceForMediaStream))
+    command_line.AppendSwitch(switches::kUseFakeDeviceForMediaStream);
 
   // Always run with fake FedCM UI.
   command_line.AppendSwitch(switches::kUseFakeUIForFedCM);

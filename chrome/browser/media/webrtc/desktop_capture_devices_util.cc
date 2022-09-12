@@ -248,6 +248,10 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
                : media::AudioDeviceDescription::kLoopbackInputDeviceId),
           "System Audio");
     }
+    out_devices.audio_device->display_media_info =
+        DesktopMediaIDToDisplayMediaInformation(
+            web_contents, url::Origin::Create(request.security_origin),
+            media_id);
   }
 
   // If required, register to display the notification for stream capture.

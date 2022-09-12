@@ -8,23 +8,23 @@ promise_test(async () => {
   const stream = await navigator.mediaDevices.getDisplayMedia({video: true});
   const track = stream.getVideoTracks()[0];
   const cloned_track = track.clone();
-  const result = new Promise((resolve, reject) => {
-    window.onmessage = (e) => {
-      if (e.data.result === 'Failure') {
-        reject('Failed: ' + e.data.error);
-      } else {
-        resolve();
-      }
-    };
-  });
-  iframe.addEventListener("load", () => {
-    assert_not_equals(track.readyState, "ended");
-    iframe.contentWindow.postMessage(track);
-    assert_equals(track.readyState, "ended");
-    assert_equals(cloned_track.readyState, "live");
-  });
+  const iframeLoaded = new Promise((resolve) => {iframe.onload = resolve});
+
   iframe.src = "support/iframe-MediaStreamTrack-transfer.html";
   document.body.appendChild(iframe);
-  return result;
+
+  await iframeLoaded;
+
+  const nextMessage = new Promise((resolve) => {
+    window.onmessage = resolve
+  });
+
+  assert_not_equals(track.readyState, "ended");
+  iframe.contentWindow.postMessage(track);
+  assert_equals(track.readyState, "ended");
+  assert_equals(cloned_track.readyState, "live");
+
+  const message = await nextMessage;
+  assert_not_equals(message.data.result, 'Failure', 'Failed: ' + message.data.error);
 });
 </script>

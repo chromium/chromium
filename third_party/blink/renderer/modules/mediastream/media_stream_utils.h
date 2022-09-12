@@ -24,8 +24,6 @@ class MediaStreamUtils {
 
   static MediaStreamTrack* CreateLocalAudioTrack(ExecutionContext*,
                                                  MediaStreamSource*);
-  static bool IsMediaStreamTypeTransferrable(
-      mojom::blink::MediaStreamType type);
 };
 
 }  // namespace blink

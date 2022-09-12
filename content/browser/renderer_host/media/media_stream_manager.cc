@@ -442,14 +442,19 @@ MediaStreamDevices DisplayMediaDevicesFromFakeDeviceConfig(
   MediaStreamDevice device(media_type, media_id.ToString(),
                            media_id.ToString());
   device.display_media_info = media::mojom::DisplayMediaInformation::New(
-      display_surface, true, media::mojom::CursorCaptureType::NEVER, nullptr);
+      display_surface, /*logical_surface=*/true,
+      media::mojom::CursorCaptureType::NEVER, /*capture_handle=*/nullptr);
   devices.push_back(device);
   if (!request_audio)
     return devices;
 
-  devices.emplace_back(MediaStreamType::DISPLAY_AUDIO_CAPTURE,
-                       media::AudioDeviceDescription::kDefaultDeviceId,
-                       "Fake audio");
+  MediaStreamDevice audio_device(
+      MediaStreamType::DISPLAY_AUDIO_CAPTURE,
+      media::AudioDeviceDescription::kDefaultDeviceId, "Fake audio");
+  audio_device.display_media_info = media::mojom::DisplayMediaInformation::New(
+      display_surface, /*logical_surface=*/true,
+      media::mojom::CursorCaptureType::NEVER, /*capture_handle=*/nullptr);
+  devices.emplace_back(audio_device);
   return devices;
 }
 
@@ -1946,8 +1951,7 @@ absl::optional<MediaStreamDevice> MediaStreamManager::CloneExistingOpenDevice(
       }
 
       MediaStreamDevice new_device = *existing_device;
-      if (existing_device->type == MediaStreamType::DEVICE_AUDIO_CAPTURE ||
-          existing_device->type == MediaStreamType::DEVICE_VIDEO_CAPTURE) {
+      if (!blink::IsMediaStreamDeviceTransferrable(*existing_device)) {
         // TODO(https://crbug.com/1288839): Remove bad message after transfer
         // is supported for these stream types.
         // TODO(https://crbug.com/1288839): Hash device id and group_id for

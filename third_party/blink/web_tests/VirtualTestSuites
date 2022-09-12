@@ -1121,7 +1121,8 @@
     "bases": [ "external/wpt/mediacapture-streams/MediaStreamTrack-iframe-transfer.https.html" ],
     "args": [
       "--enable-blink-features=MediaStreamTrackTransfer",
-      "--enable-features=MediaStreamTrackTransfer"
+      "--enable-features=MediaStreamTrackTransfer",
+      "--use-fake-device-for-media-stream=display-media-type=browser"
     ]
   },
   {

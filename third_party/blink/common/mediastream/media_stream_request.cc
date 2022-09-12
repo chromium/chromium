@@ -60,6 +60,19 @@ bool IsDeviceMediaType(mojom::MediaStreamType type) {
           type == mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
 }
 
+bool IsMediaStreamDeviceTransferrable(const MediaStreamDevice& device) {
+  // Return |false| if |device.type| is not a valid MediaStreamType or is of
+  // device capture type.
+  if (device.type == mojom::MediaStreamType::NO_SERVICE ||
+      device.type == mojom::MediaStreamType::NUM_MEDIA_TYPES ||
+      IsDeviceMediaType(device.type)) {
+    return false;
+  }
+  const auto& info = device.display_media_info;
+  return info && info->display_surface ==
+                     media::mojom::DisplayCaptureSurfaceType::BROWSER;
+}
+
 MediaStreamDevice::MediaStreamDevice()
     : type(mojom::MediaStreamType::NO_SERVICE),
       video_facing(media::MEDIA_VIDEO_FACING_NONE) {}
