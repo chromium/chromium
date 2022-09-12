@@ -69,13 +69,6 @@ config("runtime_library") {
       "-isystem" + rebase_path("$libcxxabi_prefix/include", root_build_dir),
     ]
 
-    if (is_fuchsia) {
-      # TODO(crbug.com/1360319): Remove once the Fuchsia SDK stops including __tuple.
-      cflags_cc += [ "-isystem" +
-                     rebase_path("//buildtools/third_party/libc++/crbug1360319",
-                                 root_build_dir) ]
-    }
-
     cflags_objcc = cflags_cc
 
     # Make sure we don't link against the system libstdc++ or libc++.
