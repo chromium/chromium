@@ -6808,6 +6808,14 @@
     'mixins': ['chromium-tester-service-account'],
     'machines': {
       # Should be kept in sync with v8_linux_blink_rel in tryserver.v8
+      'linux-blink-optional-highdpi-rel': {
+        'mixins': [
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chromium_web_tests_high_dpi_isolated_scripts',
+        },
+      },
       'linux-blink-rel': {
         'mixins': [
           'linux-bionic',
@@ -6859,6 +6867,14 @@
           ],
           'hard_timeout': 900,
         },
+        'test_suites': {
+          'isolated_scripts': 'chromium_webkit_isolated_scripts',
+        },
+      },
+      'mac11.0-blink-rel': {
+        'mixins': [
+          'mac_11_x64',
+        ],
         'test_suites': {
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
         },

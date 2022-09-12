@@ -510,6 +510,12 @@
           'shards': 8,
         },
       },
+      'mac11.0-blink-rel': {
+        'swarming': {
+          'shards': 5,
+          'hard_timeout': 1800,
+        },
+      },
       'mac11.0-blink-rel-dummy': {
         'swarming': {
           'shards': 5,
@@ -815,6 +821,12 @@
       'mac10.15-blink-rel': {
         'swarming': {
           'shards': 12,
+        },
+      },
+      'mac11.0-blink-rel': {
+        'swarming': {
+          'shards': 7,
+          'hard_timeout': 1800,
         },
       },
       'mac11.0-blink-rel-dummy': {
