@@ -1811,6 +1811,60 @@ message ExtensionTelemetryReportRequest {
     }
 
     optional CookiesGetInfo cookies_get_info = 4;
+
+    // Potential Password Theft signal info.
+    message PotentialPasswordTheftInfo {
+      message RemoteHostInfo {
+        // This information represents a host that an extension contacted within
+        // a specific time window (currently 1 second) after a password-reuse
+        // event was detected on one of that extension's pages.
+        optional string remote_host_url = 1;
+        // Number of times the remote host was contacted.
+        optional uint32 count = 2;
+      }
+      message PasswordReuseInfo {
+        // Domains from the Chrome password manager DB that are associated with
+        // the same password as the one triggering this event.
+        repeated string domains_matching_password = 1;
+
+        // Whether the reused password is used for Chrome signin.
+        optional bool is_chrome_signin_password = 2;
+
+        message ReusedPasswordAccountType {
+          // Whether the current reused password account is syncing.
+          optional bool is_account_syncing = 1;
+
+          enum AccountType {
+            // User reused a password that is not a signed-in account, saved
+            // password, or a non-GAIA enterprise account.
+            UNKNOWN = 0;
+
+            // User signed in with a dasher account.
+            GSUITE = 1;
+
+            // User signed in with @gmail.com, or @googlemail.com account.
+            GMAIL = 2;
+
+            // Password used for Enterprise login on an Enterprise login page.
+            NON_GAIA_ENTERPRISE = 3;
+
+            // Password saved in Chrome's password manager.
+            SAVED_PASSWORD = 4;
+          }
+          optional AccountType account_type = 2;
+        }
+
+        optional ReusedPasswordAccountType reused_password_account_type = 3;
+
+        // Number of times the password was reused in one of this extension's
+        // pages.
+        optional uint32 count = 4;
+      }
+      repeated RemoteHostInfo remote_hosts = 1;
+      repeated PasswordReuseInfo reused_password_infos = 2;
+    }
+
+    optional PotentialPasswordTheftInfo potential_password_theft_info = 5;
   }
 
   // Single report structure consists of all the signals observed for a
