@@ -1622,28 +1622,4 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, RemoveAddResizerWithoutScrollbars) {
   EXPECT_TRUE(scrollable_area->Layer()->NeedsReorderOverlayOverflowControls());
 }
 
-TEST_P(MAYBE_PaintLayerScrollableAreaTest, RemoveStickyUnderContain) {
-  SetBodyInnerHTML(R"HTML(
-    <div id="contain" style="contain: strict; width: 100px; height: 2000px">
-      <div id="parent">
-        <div id="sticky" style="top: 100px; position: sticky">STICKY</div>
-      </div>
-    </div>
-  )HTML");
-
-  auto* scrollable_area = GetLayoutView().GetScrollableArea();
-  auto* sticky_layer = GetPaintLayerByElementId("sticky");
-  EXPECT_TRUE(scrollable_area->HasStickyLayer(sticky_layer));
-
-  GetDocument().getElementById("parent")->remove();
-  EXPECT_FALSE(scrollable_area->HasStickyLayer(sticky_layer));
-
-  UpdateAllLifecyclePhasesForTest();
-
-  // This should not crash.
-  scrollable_area->SetScrollOffset(ScrollOffset(0, 100),
-                                   mojom::blink::ScrollType::kProgrammatic);
-  UpdateAllLifecyclePhasesForTest();
-}
-
 }  // namespace blink
