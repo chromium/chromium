@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {ChangePageOrigin, PAINTED_ATTRIBUTE, PluginController, ViewerThumbnailBarElement, ViewerThumbnailElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {eventToPromise, waitAfterNextRender, whenAttributeIs} from 'chrome://webui-test/test_util.js';
@@ -180,53 +179,28 @@ const tests = [
     chrome.test.succeed();
   },
   async function testThumbnailUpDownFocus() {
-    const testDocLength = 3;
+    const testDocLength = 2;
     const thumbnailBar = createThumbnailBar();
     thumbnailBar.docLength = testDocLength;
 
     flush();
 
-    async function pressUpDownArrow(
-        fromThumbnail: ViewerThumbnailElement, up: boolean) {
-      const fromPageNumber = fromThumbnail.pageNumber;
-      const toPageNumber = up ? fromPageNumber - 1 : fromPageNumber + 1;
-      const toThumbnail = thumbnailBar.getThumbnailForPage(toPageNumber)!;
+    thumbnailBar.activePage = 1;
+    let whenChanged = eventToPromise('change-page', thumbnailBar);
+    keydown(thumbnailBar, 'ArrowDown');
+    let event = await whenChanged;
 
-      const whenToThumbnailFocused = eventToPromise('focus', toThumbnail);
-      keydown(fromThumbnail, up ? 'ArrowUp' : 'ArrowDown');
-      await whenToThumbnailFocused;
-    }
+    // The event contains the zero-based page index.
+    chrome.test.assertEq(1, event.detail.page);
 
-    const thumbnails =
-        thumbnailBar.shadowRoot!.querySelectorAll('viewer-thumbnail');
+    thumbnailBar.activePage = 2;
+    whenChanged = eventToPromise('change-page', thumbnailBar);
+    keydown(thumbnailBar, 'ArrowUp');
+    event = await whenChanged;
 
-    // Start focus on the second of three thumbnails.
-    // Simulate this focus by mouse so `ViewerThumbnailElement.onFocus_()`
-    // doesn't forward the focus.
-    FocusOutlineManager.forDocument(document).visible = false;
-    let focusedIndex = 1;
-    thumbnails[focusedIndex]!.focus();
+    // The event contains the zero-based page index.
+    chrome.test.assertEq(0, event.detail.page);
 
-    await pressUpDownArrow(thumbnails[focusedIndex]!, /*up=*/ true);
-    focusedIndex -= 1;
-
-    function getActiveThumbnail(): ViewerThumbnailElement {
-      return thumbnailBar.shadowRoot!.activeElement as ViewerThumbnailElement;
-    }
-
-    chrome.test.assertEq(thumbnails[focusedIndex], getActiveThumbnail());
-
-    await pressUpDownArrow(thumbnails[focusedIndex]!, /*up=*/ false);
-    focusedIndex += 1;
-    chrome.test.assertEq(thumbnails[focusedIndex], getActiveThumbnail());
-
-    await pressUpDownArrow(thumbnails[focusedIndex]!, /*up=*/ false);
-    focusedIndex += 1;
-    chrome.test.assertEq(thumbnails[focusedIndex], getActiveThumbnail());
-
-    await pressUpDownArrow(thumbnails[focusedIndex]!, /*up=*/ true);
-    focusedIndex -= 1;
-    chrome.test.assertEq(thumbnails[focusedIndex], getActiveThumbnail());
     chrome.test.succeed();
   },
   async function testThumbnailLeftRightSelect() {

@@ -190,28 +190,34 @@ export class ViewerThumbnailBarElement extends PolymerElement {
   }
 
   private onKeydown_(e: KeyboardEvent) {
-    if (e.key === 'Tab') {
-      // On shift+tab, first redirect focus from the thumbnails to:
-      // 1) Avoid focusing on the thumbnail bar.
-      // 2) Focus to the element before the thumbnail bar from any thumbnail.
-      if (e.shiftKey) {
-        this.focus();
-        return;
-      }
+    switch (e.key) {
+      case 'Tab':
+        // On shift+tab, first redirect focus from the thumbnails to:
+        // 1) Avoid focusing on the thumbnail bar.
+        // 2) Focus to the element before the thumbnail bar from any thumbnail.
+        if (e.shiftKey) {
+          this.focus();
+          return;
+        }
 
-      // On tab, first redirect focus to the last thumbnail to focus to the
-      // element after the thumbnail bar from any thumbnail.
-      this.shadowRoot!
-          .querySelector<ViewerThumbnailElement>(
-              'viewer-thumbnail:last-of-type')!.focus({preventScroll: true});
-    } else if (e.key === 'ArrowRight') {
-      // Prevent default arrow scroll behavior.
-      e.preventDefault();
-      this.clickThumbnailForPage(this.activePage + 1);
-    } else if (e.key === 'ArrowLeft') {
-      // Prevent default arrow scroll behavior.
-      e.preventDefault();
-      this.clickThumbnailForPage(this.activePage - 1);
+        // On tab, first redirect focus to the last thumbnail to focus to the
+        // element after the thumbnail bar from any thumbnail.
+        this.shadowRoot!
+            .querySelector<ViewerThumbnailElement>(
+                'viewer-thumbnail:last-of-type')!.focus({preventScroll: true});
+        break;
+      case 'ArrowRight':
+      case 'ArrowDown':
+        // Prevent default arrow scroll behavior.
+        e.preventDefault();
+        this.clickThumbnailForPage(this.activePage + 1);
+        break;
+      case 'ArrowLeft':
+      case 'ArrowUp':
+        // Prevent default arrow scroll behavior.
+        e.preventDefault();
+        this.clickThumbnailForPage(this.activePage - 1);
+        break;
     }
   }
 }

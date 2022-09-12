@@ -56,12 +56,6 @@ export class ViewerThumbnailElement extends PolymerElement {
   isActive: boolean;
   pageNumber: number;
 
-  constructor() {
-    super();
-
-    this.addEventListener('keydown', this.onKeydown_);
-  }
-
   set image(imageData: ImageData) {
     let canvas = this.getCanvas_();
     if (!canvas) {
@@ -160,47 +154,12 @@ export class ViewerThumbnailElement extends PolymerElement {
     }
   }
 
-  private focusThumbnailNext_() {
-    if (this.nextElementSibling &&
-        this.nextElementSibling.matches('viewer-thumbnail')) {
-      (this.nextElementSibling as ViewerThumbnailElement).focusAndScroll();
-    }
-  }
-
-  private focusThumbnailPrev_() {
-    if (this.previousElementSibling &&
-        this.previousElementSibling.matches('viewer-thumbnail')) {
-      (this.previousElementSibling as ViewerThumbnailElement).focusAndScroll();
-    }
-  }
-
   private onClick_() {
     this.dispatchEvent(new CustomEvent('change-page', {
       detail: {page: this.pageNumber - 1, origin: ChangePageOrigin.THUMBNAIL},
       bubbles: true,
       composed: true,
     }));
-  }
-
-  private onKeydown_(e: KeyboardEvent) {
-    switch (e.key) {
-      case 'ArrowDown':
-        // Prevent default arrow scroll behavior.
-        e.preventDefault();
-        this.focusThumbnailNext_();
-        break;
-      case 'ArrowUp':
-        // e default arrow scroll behavior.
-        e.preventDefault();
-        this.focusThumbnailPrev_();
-        break;
-      case 'Enter':
-      case ' ':
-        // Prevent default space scroll behavior.
-        e.preventDefault();
-        this.onClick_();
-        break;
-    }
   }
 
   /**
