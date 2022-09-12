@@ -68,11 +68,7 @@ if (is_chromeos_ash) {
     ]
   }
 
-  group("closure_compile") {
-    deps = [ ":ui_resources_modules" ]
-  }
-
-  js_type_check("ui_resources_modules") {
+  js_type_check("closure_compile_modules") {
     is_polymer3 = true
     deps = [
       ":focus_row_behavior",

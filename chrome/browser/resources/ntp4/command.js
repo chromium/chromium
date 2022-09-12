@@ -22,7 +22,7 @@
 
 // clang-format off
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
+import {define as crUiDefine} from 'chrome://resources/js/cr/ui.js';
 import {KeyboardShortcutList} from 'chrome://resources/js/cr/ui/keyboard_shortcut_list.js';
 import {dispatchPropertyChange, getPropertyDescriptor, PropertyKind} from 'chrome://resources/js/cr.m.js';
 

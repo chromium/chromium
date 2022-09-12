@@ -96,6 +96,8 @@ PasswordChangeUI::PasswordChangeUI(content::WebUI* web_ui)
 
   source->SetDefaultResource(IDR_PASSWORD_CHANGE_HTML);
 
+  source->AddResourcePath("event_target.js",
+                          IDR_PASSWORD_CHANGE_EVENT_TARGET_JS);
   source->AddResourcePath("password_change_authenticator.js",
                           IDR_PASSWORD_CHANGE_AUTHENTICATOR_JS);
   source->AddResourcePath("webview_saml_injected.js",

@@ -168,7 +168,7 @@ js_library("authenticator.m") {
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
   externs_list = [
     "$externs_path/chrome_extensions.js",
@@ -183,7 +183,7 @@ js_library("password_change_authenticator.m") {
     ":saml_handler.m",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
   externs_list = [
     "$externs_path/chrome_extensions.js",

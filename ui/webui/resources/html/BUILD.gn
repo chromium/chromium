@@ -20,8 +20,6 @@ generate_grd("build_grdp") {
     input_files += [
       "action_link.html",
       "cr.html",
-      "cr/event_target.html",
-      "cr/ui.html",
       "event_tracker.html",
       "promise_resolver.html",
       "util.html",

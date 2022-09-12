@@ -7,6 +7,7 @@
 // that have not yet been updated to new patterns. Use Web Components in any new
 // code.
 
+cr.define('cr.ui', function() {
   /**
    * Decorates elements as an instance of a class.
    * @param {string|!Element} source The way to find the element(s) to decorate.
@@ -16,7 +17,7 @@
    *     needs to have a {@code decorate} function.
    * @closurePrimitive {asserts.matchesReturn}
    */
-  export function decorate(source, constr) {
+  /* #export */ function decorate(source, constr) {
     let elements;
     if (typeof source === 'string') {
       elements = document.querySelectorAll(source);
@@ -67,7 +68,7 @@
    *     an optional property bag. The function also has a static
    *     {@code decorate} method added to it.
    */
-  export function define(tagNameOrFunction) {
+  /* #export */ function define(tagNameOrFunction) {
     let createFunction;
     let tagName;
     if (typeof tagNameOrFunction === 'function') {
@@ -119,7 +120,7 @@
    * @param {number} min The minimum width.
    * @param {number=} opt_scale Optional scale factor to apply to the width.
    */
-  export function limitInputWidth(el, parentEl, min, opt_scale) {
+  /* #export */ function limitInputWidth(el, parentEl, min, opt_scale) {
     // Needs a size larger than borders
     el.style.width = '10px';
     const doc = el.ownerDocument;
@@ -174,7 +175,7 @@
    * @param {number} pixels The number of pixels.
    * @return {string} e.g. '16px'.
    */
-  export function toCssPx(pixels) {
+  /* #export */ function toCssPx(pixels) {
     if (!window.isFinite(pixels)) {
       console.error('Pixel value is not a number: ' + pixels);
     }
@@ -187,7 +188,7 @@
    * the doubleclick time interval.
    * @param {MouseEvent} e Initial click event.
    */
-  export function swallowDoubleClick(e) {
+  /* #export */ function swallowDoubleClick(e) {
     const doc = e.target.ownerDocument;
     let counter = Math.min(1, e.detail);
     function swallow(e) {
@@ -214,3 +215,13 @@
     }, 0);
   }
 
+  // #cr_define_end
+  console.warn('crbug/1173575, non-JS module files deprecated.');
+  return {
+    decorate: decorate,
+    define: define,
+    limitInputWidth: limitInputWidth,
+    toCssPx: toCssPx,
+    swallowDoubleClick: swallowDoubleClick,
+  };
+});

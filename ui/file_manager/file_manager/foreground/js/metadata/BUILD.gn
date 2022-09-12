@@ -235,7 +235,7 @@ js_library("metadata_cache_set") {
     ":metadata_item",
     ":metadata_request",
     "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 

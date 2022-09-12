@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
-import {define as crUiDefine, decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {define as crUiDefine, decorate} from 'chrome://resources/js/cr/ui.js';
 import {getPropertyDescriptor, PropertyKind} from 'chrome://resources/js/cr.m.js';
 import {MenuItem} from './menu_item.js';
 

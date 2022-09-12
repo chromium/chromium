@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {dispatchPropertyChange} from 'chrome://resources/js/cr.m.js';
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
 /**
  * Creates a new selection model that is to be used with lists.

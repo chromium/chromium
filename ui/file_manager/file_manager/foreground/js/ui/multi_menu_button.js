@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.js';
 import {Menu} from './menu.js';
 import {HideType} from './menu_button.js';
 import {MenuItem} from './menu_item.js';

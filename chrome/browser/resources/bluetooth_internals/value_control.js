@@ -7,7 +7,7 @@
  */
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
+import {define as crUiDefine} from 'chrome://resources/js/cr/ui.js';
 
 import {GattResult, Property} from './device.mojom-webui.js';
 import {connectToDevice} from './device_broker.js';

@@ -8,7 +8,7 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {getPropertyDescriptor, PropertyKind} from 'chrome://resources/js/cr.m.js';
-import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.js';
 import {Command} from './command.js';
 
 /**

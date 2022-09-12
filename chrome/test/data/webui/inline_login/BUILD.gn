@@ -106,7 +106,7 @@ js_library("inline_login_test_util") {
     "..:test_browser_proxy",
     "//chrome/browser/resources/gaia_auth_host:authenticator.m",
     "//chrome/browser/resources/inline_login:inline_login_browser_proxy",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
   extra_deps = [ ":preprocess" ]
 }

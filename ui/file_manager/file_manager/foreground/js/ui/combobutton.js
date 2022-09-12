@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {getPropertyDescriptor, PropertyKind} from 'chrome://resources/js/cr.m.js';
-import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.js';
 import {MenuItem} from './menu_item.js';
 
 import {util} from '../../../common/js/util.js';

@@ -13,7 +13,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {Command} from './command.js';
 
-import {define as crUiDefine, decorate, swallowDoubleClick} from 'chrome://resources/js/cr/ui.m.js';
+import {define as crUiDefine, decorate, swallowDoubleClick} from 'chrome://resources/js/cr/ui.js';
 import {getPropertyDescriptor, PropertyKind} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 

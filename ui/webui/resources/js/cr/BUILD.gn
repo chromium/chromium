@@ -4,52 +4,20 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("../../tools/js_modulizer.gni")
-
-if (is_chromeos_ash) {
-  js_type_check("closure_compile") {
-    uses_legacy_modules = true
-    deps = [
-      ":event_target",
-      ":ui",
-    ]
-  }
-}
 
 js_type_check("closure_compile_modules") {
-  deps = [ ":event_target.m" ]
+  deps = [ ":event_target" ]
   if (is_chromeos_ash) {
-    deps += [ ":ui.m" ]
+    deps += [ ":ui" ]
   }
 }
 
-if (is_chromeos_ash) {
-  js_library("event_target") {
-    deps = [ "..:cr" ]
-  }
-
-  js_library("ui") {
-    deps = [ "..:cr" ]
-  }
-}
-
-js_library("event_target.m") {
-  sources = [ "$root_gen_dir/ui/webui/resources/js/cr/event_target.m.js" ]
-  extra_deps = [ ":modulize" ]
+js_library("event_target") {
 }
 
 if (is_chromeos_ash) {
   # Deprecated, and only used on Desktop by bluetooth-internals and ntp4, which
   # have opted to drop typechecking.
-  js_library("ui.m") {
-    sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui.m.js" ]
-    extra_deps = [ ":modulize" ]
+  js_library("ui") {
   }
-}
-
-js_modulizer("modulize") {
-  input_files = [
-    "event_target.js",
-    "ui.js",
-  ]
 }

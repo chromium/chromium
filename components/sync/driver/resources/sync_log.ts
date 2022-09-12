@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
 interface LogEntry {
   submodule: string;

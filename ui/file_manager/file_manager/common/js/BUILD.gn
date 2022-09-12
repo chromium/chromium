@@ -124,7 +124,7 @@ js_library("app_util") {
 js_library("array_data_model") {
   deps = [
     "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
@@ -219,7 +219,7 @@ js_library("filtered_volume_manager") {
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
@@ -346,7 +346,7 @@ js_library("util") {
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr:ui",
   ]
 
   externs_list = [

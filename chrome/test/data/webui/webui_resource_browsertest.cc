@@ -51,10 +51,6 @@ class WebUIResourceBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CrTest) {
   LoadTestUrl("cr_test.html");
 }
-
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CrReloadTest) {
-  LoadTestUrl("cr_reload_test.html");
-}
 #endif
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, I18nProcessCssTest) {

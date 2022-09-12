@@ -7,7 +7,7 @@
 
 // clang-format off
 // #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 // #import {$, appendParam} from 'chrome://resources/js/util.m.js';
 
 // #import {SamlHandler} from './saml_handler.m.js';

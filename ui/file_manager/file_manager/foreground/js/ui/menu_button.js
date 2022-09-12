@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isWindows} from 'chrome://resources/js/cr.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {define as crUiDefine, decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {define as crUiDefine, decorate} from 'chrome://resources/js/cr/ui.js';
 import {positionPopupAroundElement, AnchorType} from './position_util.js';
 import {Menu} from './menu.js';
 import {MenuItem} from './menu_item.js';

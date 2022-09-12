@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
 import {DialogType} from '../../common/js/dialog_type.js';
 import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';

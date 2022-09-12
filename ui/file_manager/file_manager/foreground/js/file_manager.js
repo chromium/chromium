@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {ArrayDataModel} from '../../common/js/array_data_model.js';

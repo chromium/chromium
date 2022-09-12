@@ -4,10 +4,10 @@
 
 // clang-format off
 import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {isWindows, isLinux, isMac, isLacros, dispatchPropertyChange} from 'chrome://resources/js/cr.m.js';
-import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.js';
 import {Menu} from './menu.js';
 import {MenuItem} from './menu_item.js';
 import {HideType} from './menu_button.js';

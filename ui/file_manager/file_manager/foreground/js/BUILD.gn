@@ -193,7 +193,7 @@ js_library("actions_model") {
     "//ui/file_manager/file_manager/externs/background:drive_sync_handler",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
@@ -220,7 +220,7 @@ js_library("banner_controller") {
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/background:crostini",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
@@ -256,14 +256,14 @@ js_unittest("banner_util_unittest") {
 js_library("mock_actions_model") {
   deps = [
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
 js_library("fake_file_selection_handler") {
   deps = [
     ":file_selection",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
@@ -285,14 +285,14 @@ js_unittest("actions_model_unittest") {
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/common/js:xfm",
     "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
 js_library("fake_android_app_list_model") {
   deps = [
     ":android_app_list_model",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
@@ -304,7 +304,7 @@ js_library("mock_directory_model") {
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_info",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
@@ -320,7 +320,7 @@ js_library("mock_navigation_list_model") {
   deps = [
     ":navigation_list_model",
     "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
@@ -329,7 +329,7 @@ js_library("mock_thumbnail_loader") {
 }
 
 js_library("android_app_list_model") {
-  deps = [ "//ui/webui/resources/js/cr:event_target.m" ]
+  deps = [ "//ui/webui/resources/js/cr:event_target" ]
 }
 
 js_library("app_state_controller") {
@@ -405,7 +405,7 @@ js_library("directory_contents") {
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
@@ -444,7 +444,7 @@ js_library("directory_model") {
     "//ui/file_manager/file_manager/externs/ts:store",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
@@ -640,7 +640,7 @@ js_library("file_manager") {
     "//ui/file_manager/file_manager/externs/background:progress_center",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
@@ -713,7 +713,7 @@ js_library("file_selection") {
     "//ui/file_manager/file_manager/externs/background:file_operation_manager",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
@@ -746,7 +746,7 @@ js_library("file_tasks") {
     "//ui/file_manager/file_manager/foreground/elements:files_password_dialog",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr:ui",
   ]
 }
 
@@ -832,7 +832,7 @@ js_unittest("file_transfer_controller_unittest") {
     "//ui/file_manager/file_manager/externs/background:file_operation_manager",
     "//ui/file_manager/file_manager/externs/background:progress_center",
     "//ui/file_manager/file_manager/foreground/elements:files_toast",
-    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr:ui",
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
@@ -862,7 +862,7 @@ js_unittest("file_type_filters_controller_unittest") {
     "//ui/file_manager/file_manager/externs:directory_change_event",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
@@ -872,7 +872,7 @@ js_library("file_watcher") {
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
@@ -884,7 +884,7 @@ js_library("folder_shortcuts_data_model") {
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/common/js:xfm",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
@@ -948,7 +948,7 @@ js_library("list_thumbnail_loader") {
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
@@ -967,7 +967,7 @@ js_unittest("list_thumbnail_loader_unittest") {
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
@@ -1058,7 +1058,7 @@ js_library("navigation_list_model") {
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
@@ -1159,7 +1159,7 @@ js_library("quick_view_controller") {
 js_library("quick_view_model") {
   deps = [
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 
@@ -1277,14 +1277,14 @@ js_unittest("task_controller_unittest") {
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/background:progress_center",
     "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js/cr:ui.m",
+    "//ui/webui/resources/js/cr:ui",
   ]
 }
 
 js_library("task_history") {
   deps = [
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:event_target",
   ]
 }
 

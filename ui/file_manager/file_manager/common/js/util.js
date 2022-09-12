@@ -9,7 +9,7 @@
  */
 
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
-import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {EntryLocation} from '../../externs/entry_location.js';

@@ -65,6 +65,8 @@ preprocess_if_expr("preprocess_src") {
     "assert.js",
     "color_utils.js",
     "cr.m.js",
+    "cr/event_target.js",
+    "cr/ui.js",
     "icon.js",
     "load_time_data.m.js",
     "plural_string_proxy.js",
@@ -92,8 +94,6 @@ preprocess_if_expr("preprocess_src") {
   # TODO(crbug.com/1184053): Fully remove once no longer used by CrOS.
   if (is_chromeos_ash) {
     in_files += [
-      "cr/event_target.js",
-      "cr/ui.js",
       "cr.js",
       "event_tracker.js",
       "i18n_behavior.js",
@@ -123,8 +123,6 @@ preprocess_if_expr("preprocess_generated") {
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
     "assert.m.js",
-    "cr/event_target.m.js",
-    "cr/ui.m.js",
     "event_tracker.m.js",
     "load_time_data.js",
     "parse_html_subset.m.js",
@@ -151,12 +149,6 @@ preprocess_if_expr("preprocess_generated") {
 
 group("closure_compile") {
   deps = [ ":js_resources" ]
-  if (is_chromeos_ash) {
-    deps += [
-      "cr:closure_compile",
-      "cr/ui:closure_compile",
-    ]
-  }
 }
 
 js_type_check("js_resources") {
@@ -252,14 +244,7 @@ js_library("webui_resource_test") {
 
 # Targets for auto-generating and type-checking JS Modules
 
-group("modulize") {
-  public_deps = [
-    ":modulize_local",
-    "cr:modulize",
-  ]
-}
-
-js_modulizer("modulize_local") {
+js_modulizer("modulize") {
   input_files = [
     "assert.js",
     "event_tracker.js",
@@ -292,6 +277,9 @@ group("closure_compile_modules") {
     ":js_resources_modules",
     "cr:closure_compile_modules",
   ]
+  if (is_chromeos_ash) {
+    deps += [ "cr/ui:closure_compile_modules" ]
+  }
 }
 
 js_type_check("js_resources_modules") {
@@ -323,7 +311,7 @@ js_type_check("js_resources_modules") {
 
 js_library("assert.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/js/assert.m.js" ]
-  extra_deps = [ ":modulize_local" ]
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("cr.m") {
@@ -336,7 +324,7 @@ js_library("cr.m") {
 
 js_library("event_tracker.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/js/event_tracker.m.js" ]
-  extra_deps = [ ":modulize_local" ]
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("icon") {
@@ -349,7 +337,7 @@ js_library("i18n_behavior.m") {
     ":load_time_data.m",
     ":parse_html_subset.m",
   ]
-  extra_deps = [ ":modulize_local" ]
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("list_property_update_behavior") {
@@ -363,7 +351,7 @@ js_library("load_time_data.m") {
 
 js_library("parse_html_subset.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/js/parse_html_subset.m.js" ]
-  extra_deps = [ ":modulize_local" ]
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("plural_string_proxy") {
@@ -375,33 +363,33 @@ if (is_chromeos_ash) {
     sources =
         [ "$root_gen_dir/ui/webui/resources/js/i18n_template_no_process.m.js" ]
     deps = [ ":load_time_data" ]
-    extra_deps = [ ":modulize_local" ]
+    extra_deps = [ ":modulize" ]
   }
 
   js_library("post_message_api_server.m") {
     sources =
         [ "$root_gen_dir/ui/webui/resources/js/post_message_api_server.m.js" ]
     deps = [ ":post_message_api_request_handler.m" ]
-    extra_deps = [ ":modulize_local" ]
+    extra_deps = [ ":modulize" ]
   }
 
   js_library("post_message_api_client.m") {
     sources =
         [ "$root_gen_dir/ui/webui/resources/js/post_message_api_client.m.js" ]
     deps = [ ":post_message_api_request_handler.m" ]
-    extra_deps = [ ":modulize_local" ]
+    extra_deps = [ ":modulize" ]
   }
 
   js_library("post_message_api_request_handler.m") {
     sources = [ "$root_gen_dir/ui/webui/resources/js/post_message_api_request_handler.m.js" ]
-    extra_deps = [ ":modulize_local" ]
+    extra_deps = [ ":modulize" ]
   }
 }
 
 js_library("promise_resolver.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/js/promise_resolver.m.js" ]
   deps = [ ":assert.m" ]
-  extra_deps = [ ":modulize_local" ]
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("static_types") {
@@ -415,12 +403,12 @@ js_library("util.m") {
     ":cr.m",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
-  extra_deps = [ ":modulize_local" ]
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("web_ui_listener_behavior.m") {
   sources =
       [ "$root_gen_dir/ui/webui/resources/js/web_ui_listener_behavior.m.js" ]
   deps = [ ":cr.m" ]
-  extra_deps = [ ":modulize_local" ]
+  extra_deps = [ ":modulize" ]
 }

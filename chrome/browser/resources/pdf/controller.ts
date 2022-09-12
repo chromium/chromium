@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
 import {NamedDestinationMessageData, SaveRequestType} from './constants.js';
