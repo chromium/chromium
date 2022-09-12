@@ -87,6 +87,7 @@ source_set("test_support") {
   public_deps = [
     ":browser",
     "//content/public/browser",
+    "//content/test:test_support",
   ]
 
   deps = [ "//base" ]

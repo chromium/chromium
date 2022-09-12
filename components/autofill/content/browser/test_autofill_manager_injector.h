@@ -11,13 +11,15 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/test/browser_test_utils.h"
 
 namespace autofill {
 
-// Upon construction, and in response to ReadyToCommitNavigation, installs an
-// AutofillManager of type `T`.
+// RAII type that installs new AutofillManagers of type `T`
+// - in the primary main frame of the given WebContents,
+// - in any frame of the WebContetns when a navigation is committed.
 //
-// Typical usage as a RAII type:
+// Usage:
 //
 //   class MockAutofillManager : BrowserAutofillManager {
 //    public:
@@ -30,7 +32,11 @@ namespace autofill {
 //   };
 //
 //   TestAutofillManagerInjector<MockAutofillManager> injector(web_contents());
-//   NavigateToURL(...);
+//   ui_test_utils::NavigateToURL(...);
+//   injector.GetForPrimaryMainFrame()->Foo();
+//
+// To inject into not-yet-created WebContents, see
+// TestAutofillManagerFutureInjectors.
 template <typename T>
 class TestAutofillManagerInjector : public content::WebContentsObserver {
  public:
@@ -39,6 +45,10 @@ class TestAutofillManagerInjector : public content::WebContentsObserver {
       : WebContentsObserver(web_contents) {
     Inject(web_contents->GetPrimaryMainFrame());
   }
+
+  TestAutofillManagerInjector(const TestAutofillManagerInjector&) = delete;
+  TestAutofillManagerInjector& operator=(const TestAutofillManagerInjector&) =
+      delete;
 
   ~TestAutofillManagerInjector() override = default;
 
@@ -64,8 +74,13 @@ class TestAutofillManagerInjector : public content::WebContentsObserver {
   }
 
   void Inject(content::RenderFrameHost* rfh) {
-    ContentAutofillDriverFactory* driver_factory =
+    auto* driver_factory =
         ContentAutofillDriverFactory::FromWebContents(web_contents());
+    // The ContentAutofillDriverFactory doesn't exist yet if the WebContents is
+    // currently being created. Not injecting a driver in this case is correct:
+    // it'll be injected on ReadyToCommitNavigation().
+    if (!driver_factory)
+      return;
     AutofillClient* client = driver_factory->client();
     ContentAutofillDriver* driver = driver_factory->DriverForFrame(rfh);
     driver->set_autofill_manager(CreateManager(driver, client));
@@ -75,6 +90,48 @@ class TestAutofillManagerInjector : public content::WebContentsObserver {
                                    AutofillClient* client) {
     return std::make_unique<T>(driver, client);
   }
+};
+
+// RAII type that sets up TestAutofillManagerInjectors for every newly created
+// WebContents.
+//
+// Usage:
+//
+//   TestAutofillManagerInjectors<MockAutofillManager> injectors;
+//   NavigateParams params(...);
+//   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+//   ui_test_utils::NavigateToURL(&params);
+//   injectors[0].GetForPrimaryMainFrame()->Foo();
+template <typename T>
+class TestAutofillManagerFutureInjectors {
+ public:
+  TestAutofillManagerFutureInjectors() = default;
+  TestAutofillManagerFutureInjectors(
+      const TestAutofillManagerFutureInjectors&) = delete;
+  TestAutofillManagerFutureInjectors& operator=(
+      const TestAutofillManagerFutureInjectors&) = delete;
+  ~TestAutofillManagerFutureInjectors() = default;
+
+  bool empty() const { return injectors_.empty(); }
+  size_t size() const { return injectors_.size(); }
+
+  TestAutofillManagerInjector<T>& operator[](size_t i) {
+    return *injectors_[i];
+  }
+
+ private:
+  // Holds the injectors created by the lambda below.
+  std::vector<std::unique_ptr<TestAutofillManagerInjector<T>>> injectors_;
+
+  // Registers the lambda for the lifetime of `subscription_`.
+  base::CallbackListSubscription subscription_ =
+      content::RegisterWebContentsCreationCallback(base::BindRepeating(
+          [](TestAutofillManagerFutureInjectors* self,
+             content::WebContents* web_contents) {
+            self->injectors_.push_back(
+                std::make_unique<TestAutofillManagerInjector<T>>(web_contents));
+          },
+          base::Unretained(this)));
 };
 
 }  // namespace autofill

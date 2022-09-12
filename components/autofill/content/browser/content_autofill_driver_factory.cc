@@ -60,7 +60,6 @@ void ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
     DriverInitCallback driver_init_hook) {
   if (FromWebContents(contents))
     return;
-
   contents->SetUserData(kContentAutofillDriverFactoryWebContentsUserDataKey,
                         base::WrapUnique(new ContentAutofillDriverFactory(
                             contents, client, std::move(driver_init_hook))));
