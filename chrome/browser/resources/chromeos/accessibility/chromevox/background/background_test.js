@@ -3747,7 +3747,8 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'Abbreviation', async function() {
   await mockFeedback.replay();
 });
 
-AX_TEST_F('ChromeVoxBackgroundTest', 'EndOfText', async function() {
+// TODO(crbug.com/1361544): Test is flaky.
+AX_TEST_F('ChromeVoxBackgroundTest', 'DISABLED_EndOfText', async function() {
   const mockFeedback = this.createMockFeedback();
   const site = `
     <p>start</p>
