@@ -20,7 +20,7 @@ import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 
 // clang-format on
 
-// Test that tapping "Export passwords..." notifies the browser.
+// Test that tapping "Export passwords" notifies the browser.
 export async function runStartExportTest(
     exportDialog: PasswordsExportDialogElement,
     passwordManager: TestPasswordManagerProxy) {
@@ -272,7 +272,7 @@ suite('PasswordsExportDialog', function() {
 
 
   if (!(isChromeOS || isLacros)) {
-    // Test that tapping "Export passwords..." notifies the browser.
+    // Test that tapping "Export passwords" notifies the browser.
     test('startExport', async function() {
       const exportDialog = elementFactory.createExportPasswordsDialog();
       await runStartExportTest(exportDialog, passwordManager);

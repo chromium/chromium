@@ -862,7 +862,7 @@
     You're already importing passwords in another tab
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_EXPORT_MENU_ITEM" desc="A menu item in the More Actions menu above the password list in Chrome's settings. Selecting this action will open a dialog, through which the user can export their passwords outside of Chrome.">
-    Export passwords...
+    Export passwords
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_EXPORT_TITLE" desc="The title of a dialog, which offers to the user the ability to export passwords they've saved with Chrome.">
     Export passwords
@@ -871,7 +871,7 @@
     Your passwords will be visible to anyone who can see the exported file.
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_EXPORT" desc="A button in the dialog for exporting passwords from Chrome. A password list will be written to a destination, which the user will be asked to choose after initiating this action.">
-    Export passwords...
+    Export passwords
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_EXPORT_TRY_AGAIN" desc="A button in the dialog for exporting passwords from Chrome. The action is to attempt to export the passwords again. A password list will be written to a destination, which the user will be asked to choose after initiating this action.">
     Try again

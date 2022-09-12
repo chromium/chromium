@@ -142,7 +142,7 @@ suite('PasswordsSection_Cros', function() {
     return requestPromise;
   });
 
-  // Test that tapping "Export passwords..." notifies the browser.
+  // Test that tapping "Export passwords" notifies the browser.
   test('startExport', function() {
     const exportDialog = elementFactory.createExportPasswordsDialog(false);
     runStartExportTest(exportDialog, passwordManager);
