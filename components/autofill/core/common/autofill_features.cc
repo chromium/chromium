@@ -561,6 +561,11 @@ const base::Feature kAutofillUseConsistentPopupSettingsIcons{
 const base::Feature kAutofillUseNewSectioningMethod{
     "AutofillUseNewSectioningMethod", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to use the newest, parameterized sectioning algorithm.
+// TODO(crbug.com/1153539): Remove the feature when the experiment is completed.
+const base::Feature kAutofillUseParameterizedSectioning{
+    "AutofillUseParameterizedSectioning", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Introduces various visual improvements of the Autofill suggestion UI that is
 // also used for the password manager.
 const base::Feature kAutofillVisualImprovementsForSuggestionUi{
