@@ -26,7 +26,7 @@ class PasswordGenerationPopupView {
   virtual void UpdateState() = 0;
 
   // The password was edited, the popup should show the new value.
-  virtual void UpdatePasswordValue() {}
+  virtual void UpdateGeneratedPasswordValue() {}
 
   // Updates layout information from the controller and performs the layout.
   // Returns |true| in case of success popup redraw, |false| otherwise.

@@ -59,7 +59,7 @@ class PasswordGenerationPopupViewViews::GeneratedPasswordBox
   // Fills the view with strings provided by |controller|.
   void Init(base::WeakPtr<PasswordGenerationPopupController> controller);
 
-  void UpdatePassword(const std::u16string& password) {
+  void UpdateGeneratedPassword(const std::u16string& password) {
     password_label_->SetText(password);
   }
 
@@ -205,8 +205,8 @@ void PasswordGenerationPopupViewViews::UpdateState() {
   CreateLayoutAndChildren();
 }
 
-void PasswordGenerationPopupViewViews::UpdatePasswordValue() {
-  password_view_->UpdatePassword(controller_->password());
+void PasswordGenerationPopupViewViews::UpdateGeneratedPasswordValue() {
+  password_view_->UpdateGeneratedPassword(controller_->password());
   Layout();
 }
 

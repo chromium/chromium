@@ -90,7 +90,7 @@ class PasswordGenerationPopupControllerImpl
   bool Show(GenerationUIState state);
 
   // Update the password to be displayed in the UI.
-  void UpdatePassword(std::u16string new_password);
+  void UpdateGeneratedPassword(std::u16string new_password);
 
   // Hides the popup, since its position is no longer valid.
   void FrameWasScrolled();
@@ -190,7 +190,7 @@ class PasswordGenerationPopupControllerImpl
   std::u16string help_text_;
 
   // The password value to be displayed in the UI.
-  std::u16string current_password_;
+  std::u16string current_generated_password_;
   // Whether the row with the password is currently selected/highlighted.
   bool password_selected_;
 

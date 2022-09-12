@@ -32,7 +32,7 @@ class PasswordGenerationPopupViewViews : public autofill::AutofillPopupBaseView,
   [[nodiscard]] bool Show() override;
   void Hide() override;
   void UpdateState() override;
-  void UpdatePasswordValue() override;
+  void UpdateGeneratedPasswordValue() override;
   [[nodiscard]] bool UpdateBoundsAndRedrawPopup() override;
   void PasswordSelectionUpdated() override;
 

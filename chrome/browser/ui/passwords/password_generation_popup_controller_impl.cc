@@ -214,7 +214,7 @@ void PasswordGenerationPopupControllerImpl::PasswordAccepted() {
     // See https://crbug.com/1133635 for when `driver_` might be null due to a
     // compromised renderer.
     driver_->GeneratedPasswordAccepted(form_data_, generation_element_id_,
-                                       current_password_);
+                                       current_generated_password_);
   }
   // |this| can be destroyed here because GeneratedPasswordAccepted pops up
   // another UI and generates some event to close the dropdown.
@@ -225,8 +225,8 @@ void PasswordGenerationPopupControllerImpl::PasswordAccepted() {
 bool PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
   // When switching from editing to generation state, regenerate the password.
   if (state == kOfferGeneration &&
-      (state_ != state || current_password_.empty())) {
-    current_password_ =
+      (state_ != state || current_generated_password_.empty())) {
+    current_generated_password_ =
         driver_->GetPasswordGenerationHelper()->GeneratePassword(
             web_contents()->GetLastCommittedURL().DeprecatedGetOriginAsURL(),
             form_signature_, field_signature_, max_length_);
@@ -265,11 +265,11 @@ bool PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
   return true;
 }
 
-void PasswordGenerationPopupControllerImpl::UpdatePassword(
+void PasswordGenerationPopupControllerImpl::UpdateGeneratedPassword(
     std::u16string new_password) {
-  current_password_ = std::move(new_password);
+  current_generated_password_ = std::move(new_password);
   if (view_)
-    view_->UpdatePasswordValue();
+    view_->UpdateGeneratedPasswordValue();
 }
 
 void PasswordGenerationPopupControllerImpl::FrameWasScrolled() {
@@ -384,7 +384,7 @@ bool PasswordGenerationPopupControllerImpl::password_selected() const {
 }
 
 const std::u16string& PasswordGenerationPopupControllerImpl::password() const {
-  return current_password_;
+  return current_generated_password_;
 }
 
 std::u16string PasswordGenerationPopupControllerImpl::SuggestedText() {

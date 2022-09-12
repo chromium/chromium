@@ -1181,7 +1181,7 @@ void ChromePasswordManagerClient::ShowPasswordEditingPopup(
       driver->AsWeakPtr(), observer_, web_contents(),
       password_generation_driver_receivers_.GetCurrentTargetFrame());
   DCHECK(!password_value.empty());
-  popup_controller_->UpdatePassword(password_value);
+  popup_controller_->UpdateGeneratedPassword(password_value);
   popup_controller_->Show(
       PasswordGenerationPopupController::kEditGeneratedPassword);
 }
@@ -1195,7 +1195,7 @@ void ChromePasswordManagerClient::PresaveGeneratedPassword(
     const autofill::FormData& form_data,
     const std::u16string& password_value) {
   if (popup_controller_)
-    popup_controller_->UpdatePassword(password_value);
+    popup_controller_->UpdateGeneratedPassword(password_value);
 
   content::RenderFrameHost* rfh =
       password_generation_driver_receivers_.GetCurrentTargetFrame();
