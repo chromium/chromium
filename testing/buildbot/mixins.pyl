@@ -885,7 +885,7 @@
       'dimensions': {
         'cpu': 'x86-64',
         'gpu': '8086:3e9b',
-        'os': 'Mac-11.5.2|Mac-12.4',
+        'os': 'Mac-12.4',
         'display_attached': '1',
       },
     },
@@ -1369,24 +1369,6 @@
       'dimensions': {
         'cpu': 'x86-64',
       },
-    },
-  },
-  # xcode 12.4 gm seed
-  'xcode_12d4e': {
-    '$mixin_append': {
-      'args': [
-        '--xcode-build-version',
-        '12d4e'
-      ],
-      'swarming': {
-        'named_caches': [
-          {
-            'name': 'xcode_ios_12d4e',
-            'path': 'Xcode.app',
-          },
-        ],
-      },
-
     },
   },
   # Default Xcode 14 beta.

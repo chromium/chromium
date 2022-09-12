@@ -2139,30 +2139,6 @@
 
     # BEGIN tests which run on the GPU bots
 
-    'gpu_angle_end2end_gtests': {
-      'angle_end2end_tests': {
-        'android_args': [
-          '--shard-timeout=180',
-          '-v',
-        ],
-        'android_swarming': {
-          'shards': 4,
-        },
-        'args': [
-          '--gtest_filter=-*Vulkan_SwiftShader*',
-        ],
-        'linux_args': [
-          # Linux has issues with creating too many windows at once.
-          '--max-processes=4',
-          '--no-xvfb',
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-        'use_isolated_scripts_api': True,
-      },
-    },
-
     'gpu_angle_fuchsia_unittests_isolated_scripts': {
       'angle_unittests': {
         'args': [
@@ -2172,18 +2148,29 @@
       },
     },
 
+    'gpu_angle_ios_end2end_gtests': {
+      'angle_end2end_tests': {
+        'args': [
+          '--release',
+        ],
+        'use_isolated_scripts_api': True,
+      },
+    },
+
+    'gpu_angle_ios_white_box_gtests': {
+      'angle_white_box_tests': {
+        'args': [
+          '--release',
+        ],
+        'use_isolated_scripts_api': True,
+      },
+    },
+
     'gpu_angle_unit_gtests': {
       'angle_unittests': {
         'android_args': [
           '-v',
         ],
-        'linux_args': ['--no-xvfb'],
-        'use_isolated_scripts_api': True,
-      },
-    },
-
-    'gpu_angle_white_box_gtests': {
-      'angle_white_box_tests': {
         'linux_args': ['--no-xvfb'],
         'use_isolated_scripts_api': True,
       },
@@ -6367,14 +6354,14 @@
     },
 
     'gpu_angle_ios_gtests': {
-      'gpu_angle_end2end_gtests': {
+      'gpu_angle_ios_end2end_gtests': {
         'variants': [
-          'SIM_IPHONE_X_14_4',
+          'SIM_IPHONE_X_16_0',
         ],
       },
-      'gpu_angle_white_box_gtests': {
+      'gpu_angle_ios_white_box_gtests': {
         'variants': [
-          'SIM_IPHONE_X_14_4',
+          'SIM_IPHONE_X_16_0',
         ],
       },
     },

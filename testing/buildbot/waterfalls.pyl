@@ -1389,7 +1389,7 @@
           'isolate_profile_data',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_12d4e',
+          'xcode_14_main',
           'xctest',
         ],
         'test_suites': {
