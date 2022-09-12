@@ -88,8 +88,8 @@ void BackgroundHTMLTokenProducer::AppendToEnd(const String& string) {
     base::AutoLock auto_lock(input_lock_);
     strings_to_append_.push_back(string);
     ++input_generation_;
+    data_available_.Signal();
   }
-  data_available_.Signal();
 }
 
 void BackgroundHTMLTokenProducer::MarkEndOfFile() {
@@ -98,8 +98,8 @@ void BackgroundHTMLTokenProducer::MarkEndOfFile() {
     base::AutoLock auto_lock(input_lock_);
     end_of_file_ = true;
     ++input_generation_;
+    data_available_.Signal();
   }
-  data_available_.Signal();
 }
 
 void BackgroundHTMLTokenProducer::ShutdownAndScheduleDeletion(
@@ -109,8 +109,8 @@ void BackgroundHTMLTokenProducer::ShutdownAndScheduleDeletion(
     base::AutoLock auto_lock(input_lock_);
     stop_and_delete_ = true;
     shutdown_reason_ = reason;
+    data_available_.Signal();
   }
-  data_available_.Signal();
 
   // Also signal `clear_results_before_next_append_` for the scenario of
   // background thread waiting for main thread to consume results.
@@ -152,12 +152,12 @@ BackgroundHTMLTokenProducer::NextParseResults() {
     main_thread_results_.swap(bg_thread_results_);
     clear_results_before_next_append_ = true;
     results = &main_thread_results_;
+    // The background thread blocks when it has processed `g_max_tokens`, signal
+    // to unblock it.
+    if (results->size() == g_max_tokens)
+      clear_results_was_set_.Signal();
     break;
   }
-  // The background thread blocks when it has processed `g_max_tokens`, signal
-  // to unblock it.
-  if (results->size() == g_max_tokens)
-    clear_results_was_set_.Signal();
   // The while loop above blocks until at least one result, and there
   // shouldn't be more than `g_max_tokens`.
   DCHECK(!results->IsEmpty() && results->size() <= g_max_tokens);
@@ -288,7 +288,6 @@ void BackgroundHTMLTokenProducer::AppendResultAndNotify(
     bool was_tokenizer_state_change_speculative,
     HTMLTokenizer::State state_before_speculative_state_change) {
   DCHECK(IsRunningOnBackgroundTaskRunner());
-  bool signal;
   {
     base::AutoLock auto_lock(results_lock_);
     if (clear_results_before_next_append_) {
@@ -334,7 +333,8 @@ void BackgroundHTMLTokenProducer::AppendResultAndNotify(
     }
 
     // The main thread may be blocked waiting for a token. Signal to wake it up.
-    signal = bg_thread_results_.size() == 1;
+    if (bg_thread_results_.size() == 1)
+      results_available_.Signal();
 
     // When adding the max token, wait for the main thread to swap the buffers.
     while (!clear_results_before_next_append_ &&
@@ -342,8 +342,6 @@ void BackgroundHTMLTokenProducer::AppendResultAndNotify(
       clear_results_was_set_.Wait();
     }
   }
-  if (signal)
-    results_available_.Signal();
 }
 
 void BackgroundHTMLTokenProducer::NotifyEndOfInput(uint8_t input_generation) {
