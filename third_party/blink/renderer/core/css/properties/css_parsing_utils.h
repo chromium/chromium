@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
+#include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"
@@ -424,6 +425,11 @@ CSSValue* ConsumeFontFeatureSettings(CSSParserTokenRange&,
 cssvalue::CSSFontFeatureValue* ConsumeFontFeatureTag(CSSParserTokenRange&,
                                                      const CSSParserContext&);
 CSSIdentifierValue* ConsumeFontVariantCSS21(CSSParserTokenRange&);
+CSSIdentifierValue* ConsumeFontTechIdent(CSSParserTokenRange&);
+CSSIdentifierValue* ConsumeFontFormatIdent(CSSParserTokenRange&);
+CSSValueID FontFormatToId(String);
+bool IsSupportedKeywordTech(CSSValueID keyword);
+bool IsSupportedKeywordFormat(CSSValueID keyword);
 
 CSSValue* ConsumeGridLine(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ConsumeGridTrackList(CSSParserTokenRange&,

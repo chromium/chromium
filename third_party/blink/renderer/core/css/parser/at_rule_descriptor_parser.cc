@@ -72,50 +72,12 @@ CSSValueList* ConsumeFontFaceUnicodeRange(CSSParserTokenRange& range) {
 }
 
 bool IsSupportedFontFormat(String font_format) {
-  return EqualIgnoringASCIICase(font_format, "woff") ||
-         EqualIgnoringASCIICase(font_format, "truetype") ||
-         EqualIgnoringASCIICase(font_format, "opentype") ||
-         EqualIgnoringASCIICase(font_format, "woff2") ||
-         EqualIgnoringASCIICase(font_format, "collection") ||
+  return css_parsing_utils::IsSupportedKeywordFormat(
+             css_parsing_utils::FontFormatToId(font_format)) ||
          EqualIgnoringASCIICase(font_format, "woff-variations") ||
          EqualIgnoringASCIICase(font_format, "truetype-variations") ||
          EqualIgnoringASCIICase(font_format, "opentype-variations") ||
          EqualIgnoringASCIICase(font_format, "woff2-variations");
-}
-
-bool IsValidKeywordFormat(CSSValueID keyword) {
-  switch (keyword) {
-    case CSSValueID::kCollection:
-    case CSSValueID::kEmbeddedOpentype:
-    case CSSValueID::kOpentype:
-    case CSSValueID::kTruetype:
-    case CSSValueID::kSVG:
-    case CSSValueID::kWoff:
-    case CSSValueID::kWoff2:
-      return true;
-    default:
-      return false;
-  }
-  NOTREACHED();
-  return false;
-}
-
-bool IsSupportedKeywordTech(CSSValueID keyword) {
-  switch (keyword) {
-    case CSSValueID::kFeaturesOpentype:
-    case CSSValueID::kFeaturesAat:
-    case CSSValueID::kColorCOLRv0:
-    case CSSValueID::kColorCOLRv1:
-    case CSSValueID::kColorSbix:
-    case CSSValueID::kColorCBDT:
-    case CSSValueID::kVariations:
-    case CSSValueID::kPalettes:
-      return true;
-    default:
-      return false;
-  }
-  NOTREACHED();
-  return false;
 }
 
 CSSFontFaceSrcValue::FontTechnology ValueIDToTechnology(CSSValueID valueID) {
@@ -172,25 +134,31 @@ CSSValue* ConsumeFontFaceSrcURI(CSSParserTokenRange& range,
 
   if (range.Peek().FunctionId() == CSSValueID::kFormat) {
     CSSParserTokenRange format_args = css_parsing_utils::ConsumeFunction(range);
-    const CSSParserToken& format_arg = format_args.ConsumeIncludingWhitespace();
-
-    // Now we expect either a string or a keyword for the format, such as woff |
-    // truetype | opentype | woff2 | embedded-opentype | collection | svg If
-    // it's an unsupported format.
-
-    if (format_arg.GetType() == kIdentToken &&
-        !IsValidKeywordFormat(format_arg.Id()))
-      return nullptr;
-
-    if (format_arg.GetType() == kStringToken ||
-        format_arg.GetType() == kIdentToken) {
-      String sanitized_format = format_arg.Value().ToString();
-      tech_format_unsupported |= !IsSupportedFontFormat(sanitized_format);
-      if (!tech_format_unsupported)
-        uri_value->SetFormat(sanitized_format);
-    } else {
+    CSSParserTokenType peek_type = format_args.Peek().GetType();
+    if (peek_type != kIdentToken && peek_type != kStringToken) {
+      tech_format_unsupported = true;
       return nullptr;
     }
+
+    String sanitized_format;
+
+    if (peek_type == kIdentToken) {
+      CSSIdentifierValue* font_format =
+          css_parsing_utils::ConsumeFontFormatIdent(format_args);
+      if (!font_format)
+        return nullptr;
+      sanitized_format = font_format->CssText();
+    }
+
+    if (peek_type == kStringToken) {
+      sanitized_format = css_parsing_utils::ConsumeString(format_args)->Value();
+    }
+
+    tech_format_unsupported |= !IsSupportedFontFormat(sanitized_format);
+    if (!tech_format_unsupported)
+      uri_value->SetFormat(sanitized_format);
+
+    format_args.ConsumeWhitespace();
 
     // After one argument to the format function, there shouldn't be anything
     // else, for example not a comma.
@@ -207,18 +175,13 @@ CSSValue* ConsumeFontFaceSrcURI(CSSParserTokenRange& range,
       return nullptr;
 
     do {
-      CSSIdentifierValue* technology_value = css_parsing_utils::ConsumeIdent<
-          CSSValueID::kFeaturesOpentype, CSSValueID::kFeaturesAat,
-          CSSValueID::kFeaturesGraphite, CSSValueID::kColorCOLRv0,
-          CSSValueID::kColorCOLRv1, CSSValueID::kColorSVG,
-          CSSValueID::kColorSbix, CSSValueID::kColorCBDT,
-          CSSValueID::kVariations, CSSValueID::kPalettes,
-          CSSValueID::kIncremental>(tech_args);
+      CSSIdentifierValue* technology_value =
+          css_parsing_utils::ConsumeFontTechIdent(tech_args);
       if (!technology_value) {
         return nullptr;
       }
-      tech_format_unsupported |=
-          !IsSupportedKeywordTech(technology_value->GetValueID());
+      tech_format_unsupported |= !css_parsing_utils::IsSupportedKeywordTech(
+          technology_value->GetValueID());
       if (!tech_args.AtEnd() &&
           tech_args.Peek().GetType() != CSSParserTokenType::kCommaToken)
         return nullptr;

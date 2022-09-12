@@ -4549,6 +4549,72 @@ CSSIdentifierValue* ConsumeFontVariantCSS21(CSSParserTokenRange& range) {
   return ConsumeIdent<CSSValueID::kNormal, CSSValueID::kSmallCaps>(range);
 }
 
+CSSIdentifierValue* ConsumeFontTechIdent(CSSParserTokenRange& range) {
+  return ConsumeIdent<CSSValueID::kFeaturesOpentype, CSSValueID::kFeaturesAat,
+                      CSSValueID::kFeaturesGraphite, CSSValueID::kColorCOLRv0,
+                      CSSValueID::kColorCOLRv1, CSSValueID::kColorSVG,
+                      CSSValueID::kColorSbix, CSSValueID::kColorCBDT,
+                      CSSValueID::kVariations, CSSValueID::kPalettes,
+                      CSSValueID::kIncremental>(range);
+}
+
+CSSIdentifierValue* ConsumeFontFormatIdent(CSSParserTokenRange& range) {
+  return ConsumeIdent<CSSValueID::kCollection, CSSValueID::kEmbeddedOpentype,
+                      CSSValueID::kOpentype, CSSValueID::kTruetype,
+                      CSSValueID::kSVG, CSSValueID::kWoff, CSSValueID::kWoff2>(
+      range);
+}
+
+CSSValueID FontFormatToId(String font_format) {
+  CSSValueID converted_id = CssValueKeywordID(font_format);
+  if (converted_id == CSSValueID::kCollection ||
+      converted_id == CSSValueID::kEmbeddedOpentype ||
+      converted_id == CSSValueID::kOpentype ||
+      converted_id == CSSValueID::kTruetype ||
+      converted_id == CSSValueID::kSVG || converted_id == CSSValueID::kWoff ||
+      converted_id == CSSValueID::kWoff2)
+    return converted_id;
+  return CSSValueID::kInvalid;
+}
+
+bool IsSupportedKeywordTech(CSSValueID keyword) {
+  switch (keyword) {
+    case CSSValueID::kFeaturesOpentype:
+    case CSSValueID::kFeaturesAat:
+    case CSSValueID::kColorCOLRv0:
+    case CSSValueID::kColorCOLRv1:
+    case CSSValueID::kColorSbix:
+    case CSSValueID::kColorCBDT:
+    case CSSValueID::kVariations:
+    case CSSValueID::kPalettes:
+      return true;
+    case CSSValueID::kFeaturesGraphite:
+    case CSSValueID::kColorSVG:
+    case CSSValueID::kIncremental:
+      return false;
+    default:
+      return false;
+  }
+  NOTREACHED();
+  return false;
+}
+
+bool IsSupportedKeywordFormat(CSSValueID keyword) {
+  switch (keyword) {
+    case CSSValueID::kCollection:
+    case CSSValueID::kOpentype:
+    case CSSValueID::kTruetype:
+    case CSSValueID::kWoff:
+    case CSSValueID::kWoff2:
+      return true;
+    case CSSValueID::kEmbeddedOpentype:
+    case CSSValueID::kSVG:
+      return false;
+    default:
+      return false;
+  }
+}
+
 Vector<String> ParseGridTemplateAreasColumnNames(const String& grid_row_names) {
   DCHECK(!grid_row_names.IsEmpty());
 
