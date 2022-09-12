@@ -81,7 +81,8 @@ public class BrandingController {
      */
     public BrandingController(Context context, String packageName) {
         mContext = context;
-        mBrandingDecision.onAvailable((decision) -> maybeMakeBrandingDecision());
+        mBrandingDecision.onAvailable(
+                mCallbackController.makeCancelable((decision) -> maybeMakeBrandingDecision()));
 
         // TODO(https://crbug.com/1350661): Start branding checker during CCT warm up.
         mBrandingChecker = new BrandingChecker(context, packageName,
@@ -102,8 +103,8 @@ public class BrandingController {
         // canceling the task does nothing. Does not interrupt if the task is running, since the
         // BrandingChecker#doInBackground will collect metrics at the end.
         PostTask.postDelayedTask(UiThreadTaskTraits.USER_VISIBLE,
-                ()
-                        -> mBrandingChecker.cancel(/*mayInterruptIfRunning*/ false),
+                mCallbackController.makeCancelable(
+                        () -> mBrandingChecker.cancel(/*mayInterruptIfRunning*/ false)),
                 MAX_BLANK_TOOLBAR_TIMEOUT_MS.getValue());
 
         // Set location bar to empty as controller is waiting for mBrandingDecision.
@@ -168,14 +169,10 @@ public class BrandingController {
     /** Destroy this instance an cancel all scheduled callbacks */
     public void destroy() {
         mCallbackController.destroy();
+        mBrandingChecker.cancel(true);
         if (mToast != null) {
             mToast.cancel();
         }
-    }
-
-    @VisibleForTesting
-    public boolean getIsBrandingShowing() {
-        return mIsBrandingShowing;
     }
 
     @BrandingDecision

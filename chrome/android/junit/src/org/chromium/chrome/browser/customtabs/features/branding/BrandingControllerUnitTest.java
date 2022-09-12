@@ -216,6 +216,21 @@ public class BrandingControllerUnitTest {
                 .assertBrandingDecisionMade(BrandingDecision.TOAST);
     }
 
+    @Test
+    public void testDestroy() {
+        // Inspired by https://crbug.com/1362437. Make sure callback are canceled once the branding
+        // controller is destroyed.
+        new BrandingCheckTester()
+                .newBrandingController()
+                .onToolbarInitialized()
+                .destroyController()
+                .idleMainLooper() // Finish Branding checker.
+                // No toolbar update / branding toast should be shown.
+                .assertShownBrandingLocationBar(false)
+                .assertShownRegularLocationBar(false)
+                .assertShownToastBranding(false);
+    }
+
     class BrandingCheckTester {
         public BrandingCheckTester newBrandingController() {
             Context context = ContextUtils.getApplicationContext();
@@ -269,6 +284,11 @@ public class BrandingControllerUnitTest {
         public BrandingCheckTester advanceMills(long duration) {
             ShadowSystemClock.advanceBy(duration, TimeUnit.MILLISECONDS);
             mFakeTimeTestRule.advanceMillis(duration);
+            return this;
+        }
+
+        public BrandingCheckTester destroyController() {
+            mBrandingController.destroy();
             return this;
         }
     }
