@@ -302,8 +302,7 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
   bool install_placeholder_ = false;
 };
 
-// TODO(crbug.com/1361035): Fix flaky test
-TEST_F(WebKioskAppServiceLauncherTest, DISABLED_NormalFlowNotInstalled) {
+TEST_F(WebKioskAppServiceLauncherTest, NormalFlowNotInstalled) {
   base::HistogramTester histogram;
 
   SetupAppData(/*installed=*/false);
@@ -320,15 +319,16 @@ TEST_F(WebKioskAppServiceLauncherTest, DISABLED_NormalFlowNotInstalled) {
   EXPECT_EQ(app_data()->status(), WebKioskAppData::Status::kInstalled);
   EXPECT_EQ(app_data()->launch_url(), kAppLaunchUrl);
 
-  histogram.ExpectUniqueSample(KioskAppServiceLauncher::kLaunchAppReadinessUMA,
-                               apps::Readiness::kReady, 1);
+  // App isn't always ready by the time it's being launched. Therefore we check
+  // the total count of kLaunchAppReadinessUMA instead of individual cases.
+  histogram.ExpectTotalCount(KioskAppServiceLauncher::kLaunchAppReadinessUMA,
+                             1);
   histogram.ExpectUniqueSample(
       WebKioskAppServiceLauncher::kWebAppInstallResultUMA,
       webapps::InstallResultCode::kSuccessNewInstall, 1);
 }
 
-// TODO(crbug.com/1360965): Fix flaky test
-TEST_F(WebKioskAppServiceLauncherTest, DISABLED_NormalFlowAlreadyInstalled) {
+TEST_F(WebKioskAppServiceLauncherTest, NormalFlowAlreadyInstalled) {
   base::HistogramTester histogram;
 
   SetupAppData(/*installed=*/true);
@@ -338,8 +338,10 @@ TEST_F(WebKioskAppServiceLauncherTest, DISABLED_NormalFlowAlreadyInstalled) {
 
   EXEC_AND_WAIT_FOR_CALL(launcher()->LaunchApp(), *delegate(), OnAppLaunched());
 
-  histogram.ExpectUniqueSample(KioskAppServiceLauncher::kLaunchAppReadinessUMA,
-                               apps::Readiness::kReady, 1);
+  // App isn't always ready by the time it's being launched. Therefore we check
+  // the total count of kLaunchAppReadinessUMA instead of individual cases.
+  histogram.ExpectTotalCount(KioskAppServiceLauncher::kLaunchAppReadinessUMA,
+                             1);
   histogram.ExpectTotalCount(
       WebKioskAppServiceLauncher::kWebAppInstallResultUMA, 0);
 }
@@ -390,8 +392,10 @@ TEST_F(WebKioskAppServiceLauncherTest, PlaceholderReplaced) {
   EXPECT_FALSE(web_app_provider()->registrar().LookupPlaceholderAppId(
       GURL(kAppInstallUrl), web_app::WebAppManagement::Type::kKiosk));
 
-  histogram.ExpectUniqueSample(KioskAppServiceLauncher::kLaunchAppReadinessUMA,
-                               apps::Readiness::kReady, 1);
+  // App isn't always ready by the time it's being launched. Therefore we check
+  // the total count of kLaunchAppReadinessUMA instead of individual cases.
+  histogram.ExpectTotalCount(KioskAppServiceLauncher::kLaunchAppReadinessUMA,
+                             1);
   histogram.ExpectUniqueSample(
       WebKioskAppServiceLauncher::kWebAppInstallResultUMA,
       webapps::InstallResultCode::kSuccessNewInstall, 1);
