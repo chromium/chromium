@@ -229,10 +229,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.VoiceSearch.AgsaVersion{Timing}" units="Version"
-    expires_after="2022-10-23">
-  <owner>wylieb@chromium.org</owner>
-  <owner>fgorski@chromium.org</owner>
-  <owner>jds@google.com</owner>
+    expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
+  <owner>chrome-language@google.com</owner>
   <summary>
     (Android only) Reports the current Agsa version on the device. The version
     is reported as described in GSAState#parseAgsaMajorMinorVersionAsInteger.
@@ -243,10 +242,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.VoiceSearch.ConsentOutcome"
-    enum="AssistantConsentOutcome" expires_after="2022-10-23">
-  <owner>wylieb@chromium.org</owner>
-  <owner>fgorski@chromium.org</owner>
-  <owner>jds@google.com</owner>
+    enum="AssistantConsentOutcome" expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
+  <owner>chrome-language@google.com</owner>
   <summary>
     (Android only) Reports the outcome of the consent dialog shown for the
     assistant.
@@ -254,10 +252,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.VoiceSearch.UserEligibility.FailureReason{Timing}"
-    enum="EligibilityFailureReason" expires_after="2022-10-23">
-  <owner>wylieb@chromium.org</owner>
-  <owner>fgorski@chromium.org</owner>
-  <owner>jds@google.com</owner>
+    enum="EligibilityFailureReason" expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
+  <owner>chrome-language@google.com</owner>
   <summary>
     (Android only) Reports why users failed the eligibility check for the
     feature.
@@ -275,10 +272,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.VoiceSearch.UserEligibility{Timing}"
-    enum="BooleanEligible" expires_after="2022-10-23">
-  <owner>wylieb@chromium.org</owner>
-  <owner>fgorski@chromium.org</owner>
-  <owner>jds@google.com</owner>
+    enum="BooleanEligible" expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
+  <owner>chrome-language@google.com</owner>
   <summary>
     (Android only) Reports user eligibility for Assistant voice search. This is
     reported even when the feature is disabled.

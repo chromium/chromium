@@ -14418,8 +14418,8 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.AssistantActionPerformed{Source}"
-    enum="AssistantActionPerformed" expires_after="2022-10-23">
-  <owner>jds@google.com</owner>
+    enum="AssistantActionPerformed" expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Android: The action performed by Assistant upon being invoked during a voice
@@ -14439,8 +14439,8 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.AssistantIntent.TranslateExtrasAttached"
-    enum="BooleanSuccess" expires_after="2022-10-23">
-  <owner>jds@google.com</owner>
+    enum="BooleanSuccess" expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Android: Whether Translate extras were successfully attached to an Assistant
@@ -14450,7 +14450,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.AudioPermissionEvent{Timing}"
-    enum="AudioPermissionState" expires_after="2022-10-23">
+    enum="AudioPermissionState" expires_after="2023-03-05">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -14467,8 +14467,8 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.DismissedEventSource"
-    enum="VoiceInteractionEventSource" expires_after="2023-02-26">
-  <owner>jds@google.com</owner>
+    enum="VoiceInteractionEventSource" expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Android: The source of a dismissed voice search, such as omnibox or NTP.
@@ -14477,8 +14477,8 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.DismissedEventTarget"
-    enum="VoiceIntentTarget" expires_after="2023-02-26">
-  <owner>jds@google.com</owner>
+    enum="VoiceIntentTarget" expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Android: The target of a dismissed voice search, such as the system
@@ -14488,8 +14488,8 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.FailureEventSource"
-    enum="VoiceInteractionEventSource" expires_after="2023-02-26">
-  <owner>jds@google.com</owner>
+    enum="VoiceInteractionEventSource" expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Android: The source of a failed voice search, such as omnibox or NTP. This
@@ -14500,8 +14500,8 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.FailureEventTarget" enum="VoiceIntentTarget"
-    expires_after="2023-02-26">
-  <owner>jds@google.com</owner>
+    expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Android: The target of a failed voice search, such as the system
@@ -14512,8 +14512,8 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.FinishEventSource"
-    enum="VoiceInteractionEventSource" expires_after="2023-02-26">
-  <owner>jds@google.com</owner>
+    enum="VoiceInteractionEventSource" expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Android: The source of a successful voice search, such as omnibox or NTP.
@@ -14522,8 +14522,8 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.FinishEventTarget" enum="VoiceIntentTarget"
-    expires_after="2023-02-26">
-  <owner>jds@google.com</owner>
+    expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Android: The target of a successful voice search, such as the system
@@ -14542,8 +14542,8 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.QueryDuration.Android" units="ms"
-    expires_after="2023-02-26">
-  <owner>jds@google.com</owner>
+    expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Records the time it takes between the user clicking the mic and chrome
@@ -14553,8 +14553,8 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.QueryDuration.Android.Target.{Target}"
-    units="ms" expires_after="2022-10-23">
-  <owner>jds@google.com</owner>
+    units="ms" expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Records the time it takes between the user clicking the mic and chrome
@@ -14567,8 +14567,8 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.QueryDuration.Android{Action}" units="ms"
-    expires_after="2022-10-23">
-  <owner>jds@google.com</owner>
+    expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Records the time it takes between the user clicking the mic and chrome
@@ -14589,8 +14589,8 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.StartEventSource"
-    enum="VoiceInteractionEventSource" expires_after="2023-02-26">
-  <owner>jds@google.com</owner>
+    enum="VoiceInteractionEventSource" expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Android: The source of a voice search start event, such as omnibox or NTP.
@@ -14599,8 +14599,8 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.StartEventTarget" enum="VoiceIntentTarget"
-    expires_after="2023-02-26">
-  <owner>jds@google.com</owner>
+    expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Android: The target of a voice search start event, such as the system
@@ -14610,8 +14610,8 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.UnexpectedResultSource"
-    enum="VoiceInteractionEventSource" expires_after="2022-10-23">
-  <owner>jds@google.com</owner>
+    enum="VoiceInteractionEventSource" expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Android: The source of an incoming result that doesn't align with an
@@ -14621,8 +14621,8 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.UnexpectedResultTarget"
-    enum="VoiceIntentTarget" expires_after="2022-10-23">
-  <owner>jds@google.com</owner>
+    enum="VoiceIntentTarget" expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Android: The target of an intent result that doesn't align with an outgoing
@@ -14641,7 +14641,7 @@ regressions. -->
 
 <histogram name="VoiceInteraction.VoiceResultConfidenceValue" units="%"
     expires_after="2023-03-05">
-  <owner>jds@google.com</owner>
+  <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Android: Records the confidence value of a successful voice search as a
@@ -14650,8 +14650,8 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.VoiceResultConfidenceValue.{Target}"
-    units="%" expires_after="2022-10-23">
-  <owner>jds@google.com</owner>
+    units="%" expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Android: Records the confidence value of a successful voice search as a
@@ -14662,8 +14662,8 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.VoiceSearchResult" enum="BooleanSuccess"
-    expires_after="2023-02-26">
-  <owner>jds@google.com</owner>
+    expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Android: Records whether the voice search produced results. This is recorded
@@ -14672,8 +14672,8 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.VoiceSearchResult.{Target}"
-    enum="BooleanSuccess" expires_after="2022-10-23">
-  <owner>jds@google.com</owner>
+    enum="BooleanSuccess" expires_after="2023-03-05">
+  <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Android: Records whether the voice search produced results, limited to
