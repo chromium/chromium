@@ -2081,8 +2081,8 @@
   },
   {
     "name": "enable-desktop-pwas-web-bundles",
-    "owners": [ "loyso@chromium.org", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 110
+    "owners": [ "desktop-pwas-team@google.com" ],
+    "expiry_milestone": 115
   },
   {
     "name": "enable-desktop-pwas-window-controls-overlay",

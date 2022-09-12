@@ -87939,7 +87939,6 @@ chromium-metrics-reviews@google.com.
     Removed 08/2020. Information no longer recorded.
   </obsolete>
   <owner>alancutter@chromium.org</owner>
-  <owner>loyso@chromium.org</owner>
   <summary>
     Records installation result code for sync initiated fallback installs in the
     new USS-based web applications system.

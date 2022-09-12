@@ -277,9 +277,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="WebApp.Engagement"
     enum="SiteEngagementServiceEngagementType" expires_after="2023-02-19">
-  <owner>calamity@chromium.org</owner>
   <owner>mgiuca@chromium.org</owner>
-  <owner>loyso@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
   <summary>
     The type of engagement (navigation, user input, etc.) which led to an
     accumulation in site engagement within a web app window or tab. Should be
@@ -414,7 +413,7 @@ chromium-metrics-reviews@google.com.
     enum="HttpResponseCode" expires_after="2024-01-01">
   <owner>alancutter@chromium.org</owner>
   <owner>mgiuca@chromium.org</owner>
-  <owner>loyso@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
   <summary>
     The HTTP status code returned for a list of icons when installing single
     WebApp. Recorded when WebAppInstallTask finishes downloading icons for
@@ -427,7 +426,7 @@ chromium-metrics-reviews@google.com.
     enum="HttpResponseCode" expires_after="2024-01-01">
   <owner>alancutter@chromium.org</owner>
   <owner>mgiuca@chromium.org</owner>
-  <owner>loyso@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
   <summary>
     The HTTP status code returned for a list of icons when installing single
     WebApp. Recorded when WebAppInstallTask finishes downloading icons for web
@@ -440,7 +439,7 @@ chromium-metrics-reviews@google.com.
     enum="HttpResponseCode" expires_after="2024-01-01">
   <owner>alancutter@chromium.org</owner>
   <owner>mgiuca@chromium.org</owner>
-  <owner>loyso@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
   <summary>
     The HTTP status code returned for a list of icons when updating single
     WebApp. Recorded when ManifestUpdateTask finishes downloading icons for
@@ -453,7 +452,7 @@ chromium-metrics-reviews@google.com.
     enum="WebAppIconsDownloadedResult" expires_after="2024-01-01">
   <owner>alancutter@chromium.org</owner>
   <owner>mgiuca@chromium.org</owner>
-  <owner>loyso@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
   <summary>
     The overall result returned by WebAppIconDownloader. Recorded when
     WebAppInstallTask finishes downloading icons for non-sync installs.
@@ -464,7 +463,7 @@ chromium-metrics-reviews@google.com.
     enum="WebAppIconsDownloadedResult" expires_after="2024-01-01">
   <owner>alancutter@chromium.org</owner>
   <owner>mgiuca@chromium.org</owner>
-  <owner>loyso@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
   <summary>
     The overall result returned by WebAppIconDownloader. Recorded when
     WebAppInstallTask finishes downloading icons for web aps from sync.
@@ -475,7 +474,7 @@ chromium-metrics-reviews@google.com.
     enum="WebAppIconsDownloadedResult" expires_after="2024-01-01">
   <owner>alancutter@chromium.org</owner>
   <owner>mgiuca@chromium.org</owner>
-  <owner>loyso@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
   <summary>
     The overall result returned by WebAppIconDownloader. Recorded when
     ManifestUpdateTask finishes downloading icons.
@@ -486,7 +485,7 @@ chromium-metrics-reviews@google.com.
     enum="HttpStatusCodeClass" expires_after="2024-01-01">
   <owner>alancutter@chromium.org</owner>
   <owner>mgiuca@chromium.org</owner>
-  <owner>loyso@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
   <summary>
     The HTTP status code class returned for each icon loaded during a WebApp's
     creation. Recorded when WebAppInstallTask finishes downloading icons.
@@ -497,7 +496,7 @@ chromium-metrics-reviews@google.com.
     enum="HttpStatusCodeClass" expires_after="2024-01-01">
   <owner>alancutter@chromium.org</owner>
   <owner>mgiuca@chromium.org</owner>
-  <owner>loyso@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
   <summary>
     The HTTP status code class returned for each icon loaded when syncing a
     WebApp. Recorded when WebAppInstallTask finishes downloading icons on sync.
@@ -507,7 +506,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="WebApp.Icon.HttpStatusCodeClassOnUpdate"
     enum="HttpStatusCodeClass" expires_after="2024-01-01">
   <owner>alancutter@chromium.org</owner>
-  <owner>loyso@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
   <summary>
     The HTTP status code class returned for each icon loaded when updating a
     WebApp. Recorded when ManifestUpdateTask finishes downloading icons.
@@ -539,9 +538,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Webapp.Install.InstallEvent" enum="WebappInstallSource"
     expires_after="2023-02-12">
+  <owner>alancutter@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
-  <owner>loyso@chromium.org</owner>
-  <owner>calamity@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
   <summary>
     Records the mechanism and source from which a web app installation was
     triggered, regardless of whether the installation was successful.
@@ -870,12 +869,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.SyncInitiatedUninstallResult" enum="BooleanSuccess"
-    expires_after="2022-04-24">
+    expires_after="2024-01-01">
   <owner>alancutter@chromium.org</owner>
-  <owner>loyso@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
   <summary>
     Records uninstallation result for sync initiated uninstalls in the new
     USS-based web applications system.
+
+    Warning: this histogram was expired from 2022-04-24 through M106, data may
+    be missing.
   </summary>
 </histogram>
 
@@ -966,12 +968,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.UninstallDialogAction"
-    enum="WebappUninstallDialogAction" expires_after="2022-05-22">
+    enum="WebappUninstallDialogAction" expires_after="2024-01-01">
   <owner>benwells@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
-  <owner>loyso@chromium.org</owner>
+  <owner>ericwilligers@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
   <summary>
     Records the user response to the dialog shown when uninstalling a web app.
+
+    Warning: this histogram was expired from 2022-05-22 through M106, data may
+    be missing.
   </summary>
 </histogram>
 
