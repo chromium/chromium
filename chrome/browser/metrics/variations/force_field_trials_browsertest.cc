@@ -42,7 +42,11 @@ const int kNumTestTrials = 20;
 class ForceFieldTrialsBrowserTest : public InProcessBrowserTest,
                                     public testing::WithParamInterface<bool> {
  public:
-  ForceFieldTrialsBrowserTest() : metrics_consent_(GetParam()) {}
+  ForceFieldTrialsBrowserTest() : metrics_consent_(GetParam()) {
+    // Force the first trial to "Enabled" and the second to "Disabled".
+    base::FieldTrialList::CreateFieldTrial(GetTestTrialName(1), "Enabled");
+    base::FieldTrialList::CreateFieldTrial(GetTestTrialName(2), "Disabled");
+  }
 
   ForceFieldTrialsBrowserTest(const ForceFieldTrialsBrowserTest&) = delete;
   ForceFieldTrialsBrowserTest& operator=(const ForceFieldTrialsBrowserTest&) =
@@ -69,14 +73,6 @@ class ForceFieldTrialsBrowserTest : public InProcessBrowserTest,
     std::string file_name =
         "ForceFieldTrialsBrowserTest" + GetTestTrialName(trial_number);
     return user_data_dir.AppendASCII(file_name);
-  }
-
-  // InProcessBrowserTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Force the first trial to "Enabled" and the second to "Disabled".
-    command_line->AppendSwitchASCII(
-        switches::kForceFieldTrials,
-        GetTestTrialName(1) + "/Enabled/" + GetTestTrialName(2) + "/Disabled");
   }
 
   void SetUp() override {
