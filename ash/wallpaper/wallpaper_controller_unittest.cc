@@ -91,6 +91,9 @@ constexpr char kGuestLargeWallpaperName[] = "guest_large.jpg";
 constexpr char kChildSmallWallpaperName[] = "child_small.jpg";
 constexpr char kChildLargeWallpaperName[] = "child_large.jpg";
 
+constexpr char kCustomizationSmallWallpaperName[] = "small_customization.jpeg";
+constexpr char kCustomizationLargeWallpaperName[] = "large_customization.jpeg";
+
 // Colors used to distinguish between wallpapers with large and small
 // resolution.
 constexpr SkColor kLargeCustomWallpaperColor = SK_ColorDKGRAY;
@@ -574,6 +577,26 @@ class WallpaperControllerTest : public AshTestBase {
                               kWallpaperColor));
   }
 
+  // Returns the paths of a small and large jpeg for use with customized default
+  // wallpapers.
+  [[nodiscard]] std::pair<const base::FilePath, const base::FilePath>
+  CreateCustomizationWallpapers() {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    CHECK(customization_wallpaper_dir_.CreateUniqueTempDir());
+
+    base::FilePath root = customization_wallpaper_dir_.GetPath();
+
+    const base::FilePath small_file =
+        root.Append(kCustomizationSmallWallpaperName);
+    const base::FilePath large_file =
+        root.Append(kCustomizationLargeWallpaperName);
+
+    CHECK(WriteJPEGFile(small_file, 800, 800, SK_ColorGREEN));
+    CHECK(WriteJPEGFile(large_file, 2000, 2000, SK_ColorBLUE));
+
+    return {small_file, large_file};
+  }
+
   // A helper to test the behavior of setting online wallpaper after the image
   // is decoded. This is needed because image decoding is not supported in unit
   // tests.
@@ -618,6 +641,17 @@ class WallpaperControllerTest : public AshTestBase {
 
   const std::vector<base::FilePath>& GetDecodeFilePaths() {
     return controller_->decode_requests_for_testing_;
+  }
+
+  // Returns the `WallpaperInfo` associated with the current
+  // `WallpaperResizer`. Usually, this is the same as
+  // `GetActiveUserWallpaperInfo()` except when the user is not logged in.
+  const WallpaperInfo GetCurrentWallpaperInfo() {
+    WallpaperResizer* wallpaper = controller_->current_wallpaper_.get();
+    if (!wallpaper)
+      return WallpaperInfo();
+
+    return wallpaper->wallpaper_info();
   }
 
   void SetBypassDecode() { controller_->set_bypass_decode_for_testing(); }
@@ -672,6 +706,7 @@ class WallpaperControllerTest : public AshTestBase {
   base::ScopedTempDir online_wallpaper_dir_;
   base::ScopedTempDir custom_wallpaper_dir_;
   base::ScopedTempDir default_wallpaper_dir_;
+  base::ScopedTempDir customization_wallpaper_dir_;
   base::HistogramTester histogram_tester_;
 
   TestWallpaperControllerClient client_;
@@ -4146,6 +4181,60 @@ TEST_F(WallpaperControllerTest,
   EXPECT_EQ(local_info, actual_info);
   // Verify the wallpaper is not set again.
   EXPECT_EQ(0, GetWallpaperCount());
+}
+
+TEST_F(WallpaperControllerTest, WallpaperCustomization_Used) {
+  // Reset to login screen.
+  GetSessionControllerClient()->RequestSignOut();
+
+  // Emulate login screen behavior.
+  controller_->ShowSigninWallpaper();
+  // Let the task queue run so that we run `ShowWallpaperImage()`.
+  task_environment()->RunUntilIdle();
+
+  std::pair<const base::FilePath, const base::FilePath> paths =
+      CreateCustomizationWallpapers();
+  ASSERT_FALSE(paths.first.empty());
+  ASSERT_FALSE(paths.second.empty());
+
+  SetBypassDecode();
+  controller_->SetCustomizedDefaultWallpaperPaths(paths.first, paths.second);
+  task_environment()->RunUntilIdle();
+
+  // Verify that the customized wallpaper is in use.
+  EXPECT_THAT(GetCurrentWallpaperInfo().location,
+              testing::EndsWith(kCustomizationSmallWallpaperName));
+}
+
+TEST_F(WallpaperControllerTest, WallpaperCustomization_UnusedForNonDefault) {
+  SetBypassDecode();
+  SimulateUserLogin(account_id_1);
+
+  // Set wallpaper to something a user may have chose.
+  controller_->SetOnlineWallpaperFromData(
+      OnlineWallpaperParams(account_id_1, kAssetId, GURL(kDummyUrl),
+                            /*collection_id=*/std::string(),
+                            WALLPAPER_LAYOUT_CENTER,
+                            /*preview_mode=*/false, /*from_user=*/false,
+                            /*daily_refresh_enabled=*/false, kUnitId,
+                            /*variants=*/std::vector<OnlineWallpaperVariant>()),
+      /*image_data=*/std::string(),
+      WallpaperController::SetWallpaperCallback());
+  // Let the task queue run so that we run `ShowWallpaperImage()`.
+  task_environment()->RunUntilIdle();
+
+  // Simulate wallpaper customization retrieval completing after login.
+  std::pair<const base::FilePath, const base::FilePath> paths =
+      CreateCustomizationWallpapers();
+  ASSERT_FALSE(paths.first.empty());
+  ASSERT_FALSE(paths.second.empty());
+
+  controller_->SetCustomizedDefaultWallpaperPaths(paths.first, paths.second);
+  task_environment()->RunUntilIdle();
+
+  // Verify that we still use the online wallpaper. i.e. did not switch to
+  // default.
+  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
 }
 
 class WallpaperControllerGooglePhotosWallpaperTest

@@ -1309,9 +1309,17 @@ void WallpaperControllerImpl::SetCustomizedDefaultWallpaperPaths(
   // default wallpapers, e.g. they should not be set during guest sessions.
   // This should ONLY be called from OOBE where there should not be an active
   // session.
-  DCHECK(!GetActiveUserSession());
-  SetDefaultWallpaperImpl(user_manager::USER_TYPE_REGULAR, show_wallpaper,
-                          base::DoNothing());
+  auto* active_user_session = GetActiveUserSession();
+  // Login does not have an active session and the expected behavior is that of
+  // a regular user.
+  user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR;
+  if (active_user_session) {
+    // We expect that this finishes before the user has logged in.
+    LOG(WARNING) << "Set customized default wallpaper after login";
+    user_type = active_user_session->user_info.type;
+  }
+
+  SetDefaultWallpaperImpl(user_type, show_wallpaper, base::DoNothing());
 }
 
 void WallpaperControllerImpl::SetPolicyWallpaper(
