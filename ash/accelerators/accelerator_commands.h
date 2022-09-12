@@ -44,6 +44,12 @@ ASH_EXPORT void LaunchLastApp();
 // Lock the screen.
 ASH_EXPORT void LockScreen();
 
+// Take partial screenshot/recording.
+ASH_EXPORT void MaybeTakePartialScreenshot();
+
+// Take window screenshot/recording.
+ASH_EXPORT void MaybeTakeWindowScreenshot();
+
 // Fast-forward playing media.
 ASH_EXPORT void MediaFastForward();
 
@@ -117,15 +123,39 @@ ASH_EXPORT void ShiftPrimaryDisplay();
 // Open Emoji Picker.
 ASH_EXPORT void ShowEmojiPicker();
 
+// See keyboard shortcut helper.
+ASH_EXPORT void ShowKeyboardShortcutViewer();
+
+// Show stylus tools.
+ASH_EXPORT void ShowStylusTools();
+
+// Bring up task manager.
+ASH_EXPORT void ShowTaskManager();
+
+// Put device in sleep mode(suspend).
+ASH_EXPORT void Suspend();
+
 // Assign active window to all desks.
 ASH_EXPORT void ToggleAssignToAllDesk();
 
 // Toogles to show and hide the calendar widget.
 ASH_EXPORT void ToggleCalendar();
 
+// Turn caps lock on and off.
+ASH_EXPORT void ToggleCapsLock();
+
+// Toggles the clipboard history.
+ASH_EXPORT void ToggleClipboardHistory();
+
 // Toggles the fullscreen state. The behavior can be overridden
 // by WindowStateDelegate::ToggleFullscreen().
 ASH_EXPORT void ToggleFullscreen();
+
+// Toggles to show/close the Ime Menu.
+ASH_EXPORT void ToggleImeMenuBubble();
+
+// Toggles the Projector annotation tray UI and marker enabled state.
+ASH_EXPORT void ToggleProjectorMarker();
 
 // Toggle keyboard backlight.
 ASH_EXPORT void ToggleKeyboardBacklight();

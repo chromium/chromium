@@ -7,6 +7,7 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/display_configuration_controller.h"
 #include "ash/display/privacy_screen_controller.h"
@@ -15,6 +16,7 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/media/media_controller_impl.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/root_window_controller.h"
 #include "ash/rotator/window_rotation.h"
@@ -24,8 +26,10 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/accessibility/floating_accessibility_controller.h"
+#include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/palette/palette_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_model.h"
@@ -80,12 +84,27 @@ views::Widget* FindPipWidget() {
       }));
 }
 
+PaletteTray* GetPaletteTray() {
+  return Shelf::ForWindow(Shell::GetRootWindowForNewWindows())
+      ->GetStatusAreaWidget()
+      ->palette_tray();
+}
+
 void ShowToast(const std::string& id,
                ToastCatalogName catalog_name,
                const std::u16string& text) {
   ToastData toast(id, catalog_name, text, ToastData::kDefaultToastDuration,
                   /*visible_on_lock_screen=*/true);
   Shell::Get()->toast_manager()->Show(toast);
+}
+
+// Enters capture mode image type with |source|.
+void EnterImageCaptureMode(CaptureModeSource source,
+                           CaptureModeEntryType entry_type) {
+  auto* capture_mode_controller = CaptureModeController::Get();
+  capture_mode_controller->SetSource(source);
+  capture_mode_controller->SetType(CaptureModeType::kImage);
+  capture_mode_controller->Start(entry_type);
 }
 
 }  // namespace
@@ -148,6 +167,26 @@ void LaunchLastApp() {
 
 void LockScreen() {
   Shell::Get()->session_controller()->LockScreen();
+}
+
+void MaybeTakePartialScreenshot() {
+  // If a capture mode session is already running, this shortcut will be treated
+  // as a no-op.
+  if (CaptureModeController::Get()->IsActive())
+    return;
+  base::RecordAction(base::UserMetricsAction("Accel_Take_Partial_Screenshot"));
+  EnterImageCaptureMode(CaptureModeSource::kRegion,
+                        CaptureModeEntryType::kAccelTakePartialScreenshot);
+}
+
+void MaybeTakeWindowScreenshot() {
+  // If a capture mode session is already running, this shortcut will be treated
+  // as a no-op.
+  if (CaptureModeController::Get()->IsActive())
+    return;
+  base::RecordAction(base::UserMetricsAction("Accel_Take_Window_Screenshot"));
+  EnterImageCaptureMode(CaptureModeSource::kWindow,
+                        CaptureModeEntryType::kAccelTakeWindowScreenshot);
 }
 
 void MediaFastForward() {
@@ -329,6 +368,22 @@ void ShowEmojiPicker() {
   ui::ShowEmojiPanel();
 }
 
+void ShowKeyboardShortcutViewer() {
+  NewWindowDelegate::GetInstance()->ShowKeyboardShortcutViewer();
+}
+
+void ShowStylusTools() {
+  GetPaletteTray()->ShowBubble();
+}
+
+void ShowTaskManager() {
+  NewWindowDelegate::GetInstance()->ShowTaskManager();
+}
+
+void Suspend() {
+  chromeos::PowerManagerClient::Get()->RequestSuspend();
+}
+
 void ToggleAssignToAllDesk() {
   auto* active_window = window_util::GetActiveWindow();
   if (!active_window)
@@ -380,12 +435,39 @@ void ToggleCalendar() {
       calendar_metrics::CalendarEventSource::kKeyboard);
 }
 
+void ToggleCapsLock() {
+  ImeControllerImpl* ime_controller = Shell::Get()->ime_controller();
+  ime_controller->SetCapsLockEnabled(!ime_controller->IsCapsLockEnabled());
+}
+
+void ToggleClipboardHistory() {
+  DCHECK(Shell::Get()->clipboard_history_controller());
+  Shell::Get()->clipboard_history_controller()->ToggleMenuShownByAccelerator();
+}
+
 void ToggleFullscreen() {
   aura::Window* active_window = window_util::GetActiveWindow();
   if (!active_window)
     return;
   const WMEvent event(WM_EVENT_TOGGLE_FULLSCREEN);
   WindowState::Get(active_window)->OnWMEvent(&event);
+}
+
+void ToggleImeMenuBubble() {
+  StatusAreaWidget* status_area_widget =
+      Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetStatusAreaWidget();
+  if (status_area_widget) {
+    ImeMenuTray* ime_menu_tray = status_area_widget->ime_menu_tray();
+    if (!ime_menu_tray || !ime_menu_tray->GetVisible()) {
+      // Do nothing when Ime tray is not being shown.
+      return;
+    }
+    if (ime_menu_tray->GetBubbleView()) {
+      ime_menu_tray->CloseBubble();
+    } else {
+      ime_menu_tray->ShowBubble();
+    }
+  }
 }
 
 void ToggleKeyboardBacklight() {
@@ -435,6 +517,13 @@ void TogglePrivacyScreen() {
   controller->SetEnabled(
       !controller->GetEnabled(),
       PrivacyScreenController::kToggleUISurfaceKeyboardShortcut);
+}
+
+void ToggleProjectorMarker() {
+  auto* projector_controller = ProjectorController::Get();
+  if (projector_controller) {
+    projector_controller->ToggleAnnotationTray();
+  }
 }
 
 void ToggleUnifiedDesktop() {

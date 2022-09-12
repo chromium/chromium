@@ -54,7 +54,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/brightness_control_delegate.h"
-#include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/palette/palette_utils.h"
@@ -535,10 +534,6 @@ void HandleRotateScreen() {
   }
 }
 
-void HandleShowKeyboardShortcutViewer() {
-  NewWindowDelegate::GetInstance()->ShowKeyboardShortcutViewer();
-}
-
 bool CanHandleScreenshot(AcceleratorAction action) {
   // |TAKE_SCREENSHOT| is allowed when user session is blocked.
   return action == TAKE_SCREENSHOT ||
@@ -558,35 +553,6 @@ bool CanHandleToggleFloatingWindow() {
     return false;
 
   return window_util::GetActiveWindow() != nullptr;
-}
-
-// Enters capture mode image type with |source|.
-void EnterImageCaptureMode(CaptureModeSource source,
-                           CaptureModeEntryType entry_type) {
-  auto* capture_mode_controller = CaptureModeController::Get();
-  capture_mode_controller->SetSource(source);
-  capture_mode_controller->SetType(CaptureModeType::kImage);
-  capture_mode_controller->Start(entry_type);
-}
-
-void MaybeHandleTakeWindowScreenshot() {
-  // If a capture mode session is already running, this shortcut will be treated
-  // as a no-op.
-  if (CaptureModeController::Get()->IsActive())
-    return;
-  base::RecordAction(UserMetricsAction("Accel_Take_Window_Screenshot"));
-  EnterImageCaptureMode(CaptureModeSource::kWindow,
-                        CaptureModeEntryType::kAccelTakeWindowScreenshot);
-}
-
-void MaybeHandleTakePartialScreenshot() {
-  // If a capture mode session is already running, this shortcut will be treated
-  // as a no-op.
-  if (CaptureModeController::Get()->IsActive())
-    return;
-  base::RecordAction(UserMetricsAction("Accel_Take_Partial_Screenshot"));
-  EnterImageCaptureMode(CaptureModeSource::kRegion,
-                        CaptureModeEntryType::kAccelTakePartialScreenshot);
 }
 
 void HandleTakeScreenshot(ui::KeyboardCode key_code) {
@@ -630,16 +596,6 @@ void HandleToggleSystemTrayBubble() {
 void HandleToggleMessageCenterBubble() {
   base::RecordAction(UserMetricsAction("Accel_Toggle_Message_Center_Bubble"));
   HandleToggleSystemTrayBubbleInternal(true /*focus_message_center*/);
-}
-
-void HandleShowTaskManager() {
-  base::RecordAction(UserMetricsAction("Accel_Show_Task_Manager"));
-  NewWindowDelegate::GetInstance()->ShowTaskManager();
-}
-
-void HandleSwapPrimaryDisplay() {
-  base::RecordAction(UserMetricsAction("Accel_Swap_Primary_Display"));
-  accelerators::ShiftPrimaryDisplay();
 }
 
 bool CanHandleSwitchIme(const ui::Accelerator& accelerator) {
@@ -790,25 +746,6 @@ void HandleTopWindowMinimizeOnBack() {
   WindowState::Get(window_util::GetTopWindow())->Minimize();
 }
 
-void HandleToggleImeMenuBubble() {
-  base::RecordAction(UserMetricsAction("Accel_Show_Ime_Menu_Bubble"));
-
-  StatusAreaWidget* status_area_widget =
-      Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetStatusAreaWidget();
-  if (status_area_widget) {
-    ImeMenuTray* ime_menu_tray = status_area_widget->ime_menu_tray();
-    if (!ime_menu_tray || !ime_menu_tray->GetVisible()) {
-      // Do nothing when Ime tray is not being shown.
-      return;
-    }
-    if (ime_menu_tray->GetBubbleView()) {
-      ime_menu_tray->CloseBubble();
-    } else {
-      ime_menu_tray->ShowBubble();
-    }
-  }
-}
-
 bool CanHandleDisableCapsLock(const ui::Accelerator& previous_accelerator) {
   ui::KeyboardCode previous_key_code = previous_accelerator.key_code();
   if (previous_accelerator.key_state() == ui::Accelerator::KeyState::RELEASED ||
@@ -830,11 +767,6 @@ PaletteTray* GetPaletteTray() {
   return Shelf::ForWindow(Shell::GetRootWindowForNewWindows())
       ->GetStatusAreaWidget()
       ->palette_tray();
-}
-
-void HandleShowStylusTools() {
-  base::RecordAction(UserMetricsAction("Accel_Show_Stylus_Tools"));
-  GetPaletteTray()->ShowBubble();
 }
 
 bool CanHandleShowStylusTools() {
@@ -930,11 +862,6 @@ void HandleToggleAssistant(const ui::Accelerator& accelerator) {
       /*exit_point=*/assistant::AssistantExitPoint::kHotkey);
 }
 
-void HandleSuspend() {
-  base::RecordAction(UserMetricsAction("Accel_Suspend"));
-  chromeos::PowerManagerClient::Get()->RequestSuspend();
-}
-
 bool CanHandleCycleUser() {
   return Shell::Get()->session_controller()->NumberOfLoggedInUsers() > 1;
 }
@@ -995,17 +922,6 @@ bool CanHandleToggleCapsLock(
   }
 
   return false;
-}
-
-void HandleToggleCapsLock() {
-  base::RecordAction(UserMetricsAction("Accel_Toggle_Caps_Lock"));
-  ImeControllerImpl* ime_controller = Shell::Get()->ime_controller();
-  ime_controller->SetCapsLockEnabled(!ime_controller->IsCapsLockEnabled());
-}
-
-void HandleToggleClipboardHistory() {
-  DCHECK(Shell::Get()->clipboard_history_controller());
-  Shell::Get()->clipboard_history_controller()->ToggleMenuShownByAccelerator();
 }
 
 bool CanHandleToggleDictation() {
@@ -1290,13 +1206,6 @@ bool CanHandleToggleProjectorMarker() {
     return projector_controller->GetAnnotatorAvailability();
   }
   return false;
-}
-
-void HandleToggleProjectorMarker() {
-  auto* projector_controller = ProjectorController::Get();
-  if (projector_controller) {
-    projector_controller->ToggleAnnotationTray();
-  }
 }
 
 }  // namespace
@@ -2158,19 +2067,22 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::ShowEmojiPicker();
       break;
     case TOGGLE_IME_MENU_BUBBLE:
-      HandleToggleImeMenuBubble();
+      base::RecordAction(UserMetricsAction("Accel_Show_Ime_Menu_Bubble"));
+      accelerators::ToggleImeMenuBubble();
       break;
     case TOGGLE_PROJECTOR_MARKER:
-      HandleToggleProjectorMarker();
+      accelerators::ToggleProjectorMarker();
       break;
     case SHOW_SHORTCUT_VIEWER:
-      HandleShowKeyboardShortcutViewer();
+      accelerators::ShowKeyboardShortcutViewer();
       break;
     case SHOW_STYLUS_TOOLS:
-      HandleShowStylusTools();
+      base::RecordAction(UserMetricsAction("Accel_Show_Stylus_Tools"));
+      accelerators::ShowStylusTools();
       break;
     case SHOW_TASK_MANAGER:
-      HandleShowTaskManager();
+      base::RecordAction(UserMetricsAction("Accel_Show_Task_Manager"));
+      accelerators::ShowTaskManager();
       break;
     case START_AMBIENT_MODE:
       HandleToggleAmbientMode(accelerator);
@@ -2179,10 +2091,12 @@ void AcceleratorControllerImpl::PerformAction(
       HandleToggleAssistant(accelerator);
       break;
     case SUSPEND:
-      HandleSuspend();
+      base::RecordAction(UserMetricsAction("Accel_Suspend"));
+      accelerators::Suspend();
       break;
     case SWAP_PRIMARY_DISPLAY:
-      HandleSwapPrimaryDisplay();
+      base::RecordAction(UserMetricsAction("Accel_Swap_Primary_Display"));
+      accelerators::ShiftPrimaryDisplay();
       break;
     case SWITCH_IME:
       HandleSwitchIme(accelerator);
@@ -2200,13 +2114,15 @@ void AcceleratorControllerImpl::PerformAction(
       HandleCycleUser(CycleUserDirection::PREVIOUS);
       break;
     case TAKE_PARTIAL_SCREENSHOT:
-      MaybeHandleTakePartialScreenshot();
+      // UMA metrics are recorded in the function.
+      accelerators::MaybeTakePartialScreenshot();
       break;
     case TAKE_SCREENSHOT:
       HandleTakeScreenshot(accelerator.key_code());
       break;
     case TAKE_WINDOW_SCREENSHOT:
-      MaybeHandleTakeWindowScreenshot();
+      // UMA metrics are recorded in the function.
+      accelerators::MaybeTakeWindowScreenshot();
       break;
     case TOGGLE_APP_LIST: {
       // TODO(crbug.com/1361531): Unify the two show source states.
@@ -2220,10 +2136,11 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::ToggleCalendar();
       break;
     case TOGGLE_CAPS_LOCK:
-      HandleToggleCapsLock();
+      base::RecordAction(UserMetricsAction("Accel_Toggle_Caps_Lock"));
+      accelerators::ToggleCapsLock();
       break;
     case TOGGLE_CLIPBOARD_HISTORY:
-      HandleToggleClipboardHistory();
+      accelerators::ToggleClipboardHistory();
       break;
     case TOGGLE_DICTATION:
       HandleToggleDictation();
