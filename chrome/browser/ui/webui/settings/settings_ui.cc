@@ -68,6 +68,7 @@
 #include "chrome/grit/settings_resources.h"
 #include "chrome/grit/settings_resources_map.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
@@ -302,6 +303,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableAutomaticPasswordChangeInSettings",
       base::FeatureList::IsEnabled(
           password_manager::features::kPasswordChangeInSettings));
+
+  html_source->AddBoolean(
+      "changePriceEmailNotificationsEnabled",
+      base::FeatureList::IsEnabled(commerce::kShoppingList));
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   html_source->AddResourcePath("images/google_assistant.svg",

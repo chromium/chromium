@@ -8,5 +8,7 @@ namespace commerce {
 
 const char kWebAndAppActivityEnabledForShopping[] =
     "web_and_app_activity_enabled_for_shopping";
+const char kPriceEmailNotificationsEnabled[] =
+    "price_tracking.email_notifications_enabled";
 
 }  // namespace commerce

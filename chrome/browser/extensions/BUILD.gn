@@ -798,6 +798,7 @@ static_library("extensions") {
     "//chrome/browser/web_applications",
     "//components/autofill_assistant/browser/public",
     "//components/cbor:cbor",
+    "//components/commerce/core:pref_names",
     "//components/device_reauth",
     "//components/safe_browsing/content/browser",
     "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",

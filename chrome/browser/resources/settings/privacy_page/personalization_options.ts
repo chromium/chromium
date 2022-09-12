@@ -156,6 +156,24 @@ export class SettingsPersonalizationOptionsElement extends
         !!this.syncStatus && !!this.syncStatus.signedIn;
   }
 
+  private showPriceEmailNotificationsToggle_(): boolean {
+    // <if expr="chromeos_ash">
+    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled') &&
+        loadTimeData.getBoolean('isOSSettings')) {
+      // Should be hidden in OS settings.
+      return false;
+    }
+    // </if>
+    // Only show the toggle when the user signed in.
+    return loadTimeData.getBoolean('changePriceEmailNotificationsEnabled') &&
+        !!this.syncStatus && !!this.syncStatus.signedIn;
+  }
+
+  private getPriceEmailNotificationsPrefDesc_(): string {
+    const username = this.syncStatus!.signedInUsername || '';
+    return loadTimeData.getStringF('priceEmailNotificationsPrefDesc', username);
+  }
+
   override ready() {
     super.ready();
 

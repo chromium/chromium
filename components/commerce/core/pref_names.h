@@ -8,6 +8,7 @@
 namespace commerce {
 
 extern const char kWebAndAppActivityEnabledForShopping[];
+extern const char kPriceEmailNotificationsEnabled[];
 
 }  // namespace commerce
 

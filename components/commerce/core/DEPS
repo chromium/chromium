@@ -9,6 +9,7 @@ include_rules = [
   "+components/optimization_guide",
   "+components/payments/core",
   "+components/power_bookmarks/core",
+  "+components/pref_registry",
   "+components/prefs",
   "+components/search",
   "+components/session_proto_db/session_proto_storage.h",

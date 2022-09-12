@@ -36,6 +36,8 @@
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/session_proto_db/session_proto_storage.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -120,6 +122,10 @@ void ShoppingService::RegisterPrefs(PrefRegistrySimple* registry) {
   // features can be correctly set up while waiting for the server response.
   registry->RegisterBooleanPref(commerce::kWebAndAppActivityEnabledForShopping,
                                 true);
+
+  registry->RegisterBooleanPref(
+      commerce::kPriceEmailNotificationsEnabled, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 void ShoppingService::WebWrapperCreated(WebWrapper* web) {}

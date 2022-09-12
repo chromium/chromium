@@ -205,6 +205,9 @@ void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
     {"driveSuggestPrefDesc", IDS_DRIVE_SUGGEST_PREF_DESC},
     {"autofillAssistantPref", IDS_SETTINGS_AUTOFILL_ASSISTANT_PREF},
     {"autofillAssistantPrefDesc", IDS_SETTINGS_AUTOFILL_ASSISTANT_PREF_DESC},
+    {"priceEmailNotificationsPref", IDS_PRICE_TRACKING_SETTINGS_TITLE},
+    {"priceEmailNotificationsPrefDesc",
+     IDS_PRICE_TRACKING_SETTINGS_EMAIL_DESCRIPTION},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

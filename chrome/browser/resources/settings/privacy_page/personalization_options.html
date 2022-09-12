@@ -120,6 +120,16 @@
       </settings-toggle-button>
     </template>
 
+    <template is="dom-if" if="[[showPriceEmailNotificationsToggle_(
+        syncStatus, syncStatus.signedIn)]]" restamp>
+      <settings-toggle-button id="priceEmailNotificationsToggle"
+          class="hr"
+          label="$i18n{priceEmailNotificationsPref}"
+          sub-label="[[getPriceEmailNotificationsPrefDesc_(syncStatus)]]"
+          pref="{{prefs.price_tracking.email_notifications_enabled}}">
+      </settings-toggle-button>
+    </template>
+
     <template is="dom-if" if="[[showSignoutDialog_]]" restamp>
       <settings-signout-dialog sync-status="[[syncStatus]]"
           on-close="onSignoutDialogClosed_">

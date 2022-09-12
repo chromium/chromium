@@ -33,6 +33,7 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
       driveSuggestAvailable: true,
       isAutomatedPasswordChangeEnabled: true,
       signinAvailable: true,
+      changePriceEmailNotificationsEnabled: true,
     });
   });
 
@@ -48,6 +49,7 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
       profile: {password_manager_leak_detection: {value: true}},
       safebrowsing:
           {enabled: {value: true}, scout_reporting_enabled: {value: true}},
+      price_tracking: {email_notifications_enabled: {value: false}},
     };
     testElement.pageVisibility = customPageVisibility;
     document.body.appendChild(testElement);
@@ -286,6 +288,36 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
     buildTestElement();  // Rebuild the element after modifying loadTimeData.
     assertFalse(isVisible(testElement.shadowRoot!.querySelector(
         '#enableAutofillAssistantToggle')));
+  });
+
+  test('priceEmailNotificationsToggleShown', function() {
+    assertFalse(!!testElement.shadowRoot!.querySelector(
+        '#priceEmailNotificationsToggle'));
+
+    testElement.syncStatus = {
+      signedIn: true,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    flush();
+    assertTrue(!!testElement.shadowRoot!.querySelector(
+        '#priceEmailNotificationsToggle'));
+  });
+
+  test('priceEmailNotificationsToggleHidden', function() {
+    loadTimeData.overrideValues(
+        {'changePriceEmailNotificationsEnabled': false});
+    buildTestElement();  // Rebuild the element after modifying loadTimeData.
+
+    assertFalse(!!testElement.shadowRoot!.querySelector(
+        '#priceEmailNotificationsToggle'));
+
+    testElement.syncStatus = {
+      signedIn: true,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    flush();
+    assertFalse(!!testElement.shadowRoot!.querySelector(
+        '#priceEmailNotificationsToggle'));
   });
 });
 
