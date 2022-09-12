@@ -72240,6 +72240,16 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Suggestions popup shown (once)"/>
 </enum>
 
+<enum name="OfficeDriveErrors">
+  <int value="0" label="Offline"/>
+  <int value="1" label="DriveFs interface not available"/>
+  <int value="2" label="Timed out waiting for metadata"/>
+  <int value="3" label="Metadata not available"/>
+  <int value="4" label="Empty or invalid alternate URL"/>
+  <int value="5" label="Alternate URL does not allow editing"/>
+  <int value="6" label="Unexpected alternate URL"/>
+</enum>
+
 <enum name="OfficeFileHandler">
   <int value="0" label="Other"/>
   <int value="1" label="Web Drive Office"/>
@@ -72255,6 +72265,15 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Move"/>
   <int value="3" label="Zip"/>
   <int value="4" label="Open from files app"/>
+</enum>
+
+<enum name="OfficeTaskResult">
+  <int value="0" label="Fallback (QuickOffice)"/>
+  <int value="1" label="Fallback (Other)"/>
+  <int value="2" label="Opened"/>
+  <int value="3" label="Moved"/>
+  <int value="4" label="Cancelled"/>
+  <int value="5" label="Failed"/>
 </enum>
 
 <enum name="OfflineCapableReason">
@@ -102225,18 +102244,6 @@ others/histograms.xml -->
   <int value="1" label="Prerendered WebContents"/>
   <int value="2" label="Spare WebContents"/>
   <int value="3" label="Transferred WebContents"/>
-</enum>
-
-<enum name="WebDriveOfficeTaskResult">
-  <int value="0" label="Available"/>
-  <int value="1" label="Flag disabled"/>
-  <int value="2" label="Offline"/>
-  <int value="3" label="Not on Drive"/>
-  <int value="4" label="DriveFs interface error"/>
-  <int value="5" label="File metadata error"/>
-  <int value="6" label="Not uploaded - Empty or invalid alternate URL"/>
-  <int value="7" label="Not available for Web Drive editing"/>
-  <int value="8" label="Unexpected alternate URL"/>
 </enum>
 
 <enum name="WebFeedPageInformationRequestReason">

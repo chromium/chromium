@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -61,16 +62,16 @@ bool IsViewableInBrowser(const base::FilePath& file_path) {
   return false;
 }
 
-void OpenNewTab(const GURL& url) {
+bool OpenNewTab(const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!ash::NewWindowDelegate::GetPrimary()) {
-    LOG(ERROR) << "Failed to get window delegate";
-    return;
+    return false;
   }
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+  return true;
 }
 
 // Reads the alternate URL from a GDoc file. When it fails, returns a file URL
@@ -88,7 +89,7 @@ void OpenGDocUrlFromFile(const base::FilePath& file_path) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&ReadUrlFromGDocAsync, file_path),
-      base::BindOnce(&OpenNewTab));
+      base::BindOnce(base::IgnoreResult(&OpenNewTab)));
 }
 
 // Open a hosted GDoc, from a path hosted in DriveFS.
@@ -167,38 +168,38 @@ bool OpenFileWithBrowser(Profile* profile,
     return true;
   }
 
-  if (action_id == ::file_manager::file_tasks::kActionIdWebDriveOfficeWord ||
-      action_id == ::file_manager::file_tasks::kActionIdWebDriveOfficeExcel ||
-      action_id ==
-          ::file_manager::file_tasks::kActionIdWebDriveOfficePowerPoint) {
-    drive::DriveIntegrationService* integration_service =
-        drive::DriveIntegrationServiceFactory::FindForProfile(profile);
-    base::FilePath path;
-    if (integration_service && integration_service->IsMounted() &&
-        integration_service->GetDriveFsInterface() &&
-        integration_service->GetRelativeDrivePath(file_path, &path)) {
-      integration_service->GetDriveFsInterface()->GetMetadata(
-          path, base::BindOnce(&OpenHostedOfficeFile, file_path));
-      return true;
-    }
-    return false;
-  }
-
   // Failed to open the file of unknown type.
   LOG(WARNING) << "Unknown file type: " << file_path.value();
   return false;
 }
 
-void OpenNewTabForHostedOfficeFile(const GURL& url) {
+bool OpenNewTabForHostedOfficeFile(const GURL& url) {
   GURL url_with_query_param =
       net::AppendOrReplaceQueryParameter(url, "cros_files", "true");
 
   if (!url_with_query_param.is_valid()) {
+    UMA_HISTOGRAM_ENUMERATION(
+        file_tasks::kDriveErrorMetricName,
+        file_tasks::OfficeDriveErrors::INVALID_ALTERNATE_URL);
     LOG(ERROR) << "Invalid URL";
-    return;
+    return false;
+  }
+  if (url_with_query_param.host() == "drive.google.com") {
+    UMA_HISTOGRAM_ENUMERATION(
+        file_tasks::kDriveErrorMetricName,
+        file_tasks::OfficeDriveErrors::DRIVE_ALTERNATE_URL);
+    LOG(ERROR) << "URL was from drive.google.com";
+    return false;
+  }
+  if (url_with_query_param.host() != "docs.google.com") {
+    UMA_HISTOGRAM_ENUMERATION(
+        file_tasks::kDriveErrorMetricName,
+        file_tasks::OfficeDriveErrors::UNEXPECTED_ALTERNATE_URL);
+    LOG(ERROR) << "URL was not from docs.google.com";
+    return false;
   }
 
-  OpenNewTab(url_with_query_param);
+  return OpenNewTab(url_with_query_param);
 }
 
 }  // namespace util

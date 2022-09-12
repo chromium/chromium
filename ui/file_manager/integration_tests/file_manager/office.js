@@ -9,54 +9,11 @@ import {remoteCall, setupAndWaitUntilReady} from './background.js';
 import {FILE_MANAGER_EXTENSIONS_ID, FILE_MANAGER_SWA_APP_ID, FILE_SWA_BASE_URL} from './test_data.js';
 
 /**
- * The name of the UMA to track the results of trying to enable Web Drive Office
- * for MS Office files.
- * @const {string}
- */
-const WebDriveOfficeTaskResultHistogramName =
-    'FileBrowser.OfficeFiles.WebDriveOffice';
-
-/**
- * The UMA's enumeration values (must be consistent with
- * WebDriveOfficeTaskResult in tools/metrics/histograms/enums.xml).
- * @enum {number}
- */
-const WebDriveOfficeTaskResultHistogramValues = {
-  AVAILABLE: 0,
-  FLAG_DISABLED: 1,
-  OFFLINE: 2,
-  NOT_ON_DRIVE: 3,
-  DRIVE_ERROR: 4,
-  DRIVE_METADATA_ERROR: 5,
-  INVALID_ALTERNATE_URL: 6,
-  DRIVE_ALTERNATE_URL: 7,
-  UNEXPECTED_ALTERNATE_URL: 8,
-};
-
-/**
- * The name of the UMA to track the handlers used to open MS Office files.
- * @const {string}
- */
-const OfficeFileHandlersHistogramBaseName =
-    'FileBrowser.OfficeFiles.FileHandler';
-
-/**
- * Office file handlers UMA values (must be consistent with OfficeFileHandler in
- * tools/metrics/histograms/enums.xml).
- * @const @enum {number}
- */
-const OfficeFileHandlersHistogramValues = {
-  OTHER: 0,
-  WEB_DRIVE_OFFICE: 1,
-  QUICK_OFFICE: 2,
-};
-
-/**
- * Returns Web Drive Office Word's task descriptor.
+ * Returns 'Open in Google Docs' task descriptor.
  *
  * @return {!chrome.fileManagerPrivate.FileTaskDescriptor}
  */
-function webDriveOfficeWordDescriptor() {
+function openDocWithDriveDescriptor() {
   const filesAppId = remoteCall.isSwaMode() ? FILE_MANAGER_SWA_APP_ID :
                                               FILE_MANAGER_EXTENSIONS_ID;
   const filesTaskType = remoteCall.isSwaMode() ? 'web' : 'app';
@@ -67,11 +24,11 @@ function webDriveOfficeWordDescriptor() {
 }
 
 /**
- * Returns Web Drive Office Excel's task descriptor.
+ * Returns 'Open with Excel' task descriptor.
  *
  * @return {!chrome.fileManagerPrivate.FileTaskDescriptor}
  */
-function webDriveOfficeExcelDescriptor() {
+function openExcelWithDriveDescriptor() {
   const filesAppId = remoteCall.isSwaMode() ? FILE_MANAGER_SWA_APP_ID :
                                               FILE_MANAGER_EXTENSIONS_ID;
   const filesTaskType = remoteCall.isSwaMode() ? 'web' : 'app';
@@ -82,31 +39,16 @@ function webDriveOfficeExcelDescriptor() {
 }
 
 /**
- * Returns Web Drive Office PowerPoint's task descriptor.
+ * Returns 'Open in PowerPoint' task descriptor.
  *
  * @return {!chrome.fileManagerPrivate.FileTaskDescriptor}
  */
-function webDriveOfficePowerPointDescriptor() {
+function openPowerPointWithDriveDescriptor() {
   const filesAppId = remoteCall.isSwaMode() ? FILE_MANAGER_SWA_APP_ID :
                                               FILE_MANAGER_EXTENSIONS_ID;
   const filesTaskType = remoteCall.isSwaMode() ? 'web' : 'app';
   const actionIdPrefix = remoteCall.isSwaMode() ? FILE_SWA_BASE_URL + '?' : '';
   const actionId = `${actionIdPrefix}open-web-drive-office-powerpoint`;
-
-  return {appId: filesAppId, taskType: filesTaskType, actionId: actionId};
-}
-
-/**
- * Returns Upload to Drive task descriptor.
- *
- * @return {!chrome.fileManagerPrivate.FileTaskDescriptor}
- */
-function uploadOfficeToDriveDescriptor() {
-  const filesAppId = remoteCall.isSwaMode() ? FILE_MANAGER_SWA_APP_ID :
-                                              FILE_MANAGER_EXTENSIONS_ID;
-  const filesTaskType = remoteCall.isSwaMode() ? 'web' : 'app';
-  const actionIdPrefix = remoteCall.isSwaMode() ? FILE_SWA_BASE_URL + '?' : '';
-  const actionId = `${actionIdPrefix}upload-office-to-drive`;
 
   return {appId: filesAppId, taskType: filesTaskType, actionId: actionId};
 }
@@ -150,13 +92,6 @@ testcase.openOfficeWordFile = async () => {
     openType: 'launch',
   });
 
-  let histogramCount = await getHistogramCount(
-      OfficeFileHandlersHistogramBaseName + '.Drive.Online',
-      OfficeFileHandlersHistogramValues.WEB_DRIVE_OFFICE);
-  chrome.test.assertEq(
-      0, histogramCount,
-      'Unexpected UMA metric value for Office file handlers');
-
   const appId = await setupAndWaitUntilReady(
       RootPath.DRIVE, [], [ENTRIES.smallDocxHosted]);
 
@@ -170,26 +105,11 @@ testcase.openOfficeWordFile = async () => {
   // (https://crrev.com/c/3867338).
   await remoteCall.waitForLastOpenedBrowserTabUrl(
       ENTRIES.smallDocxHosted.alternateUrl.concat('&cros_files=true'));
-
-  // Assert that a UMA sample has been reported for executing Web Drive Office
-  // from Drive and Online.
-  histogramCount = await getHistogramCount(
-      OfficeFileHandlersHistogramBaseName + '.Drive.Online',
-      OfficeFileHandlersHistogramValues.WEB_DRIVE_OFFICE);
-  chrome.test.assertEq(
-      1, histogramCount,
-      'Unexpected UMA metric value for Office file handlers');
 };
 
 testcase.openOfficeWordFromMyFiles = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.smallDocx]);
-
-  let histogramCount = await getHistogramCount(
-      WebDriveOfficeTaskResultHistogramName,
-      WebDriveOfficeTaskResultHistogramValues.NOT_ON_DRIVE);
-  chrome.test.assertEq(
-      0, histogramCount, 'Unexpected UMA metric value for Web Drive Office');
 
   // Fake chrome.fileManagerPrivate.executeTask to return
   // chrome.fileManagerPrivate.TaskResult.EMPTY.
@@ -204,16 +124,8 @@ testcase.openOfficeWordFromMyFiles = async () => {
 
   // The available Office task should be "Upload to Drive".
   const taskDescriptor = await getExecutedTask(appId);
-  chrome.test.assertTrue(
-      taskDescriptor.actionId == uploadOfficeToDriveDescriptor().actionId);
-
-  // Assert, for Web Drive Office, that a UMA sample has been reported for
-  // getting tasks for an Office file that is not on Drive.
-  histogramCount = await getHistogramCount(
-      WebDriveOfficeTaskResultHistogramName,
-      WebDriveOfficeTaskResultHistogramValues.NOT_ON_DRIVE);
   chrome.test.assertEq(
-      1, histogramCount, 'Unexpected UMA metric value for Web Drive Office');
+      taskDescriptor.actionId, openDocWithDriveDescriptor().actionId);
 
   // Remove fakes.
   const removedCount = await remoteCall.callRemoteTestUtil(
@@ -242,9 +154,9 @@ testcase.uploadToDriveRequiresWebDriveOfficeEnabled = async () => {
   // (QuickOffice or generic task).
   const taskDescriptor = await getExecutedTask(appId);
   chrome.test.assertFalse(
-      taskDescriptor.actionId == uploadOfficeToDriveDescriptor().actionId);
+      taskDescriptor.actionId == openDocWithDriveDescriptor().actionId);
   chrome.test.assertFalse(
-      taskDescriptor.actionId == webDriveOfficeWordDescriptor().actionId);
+      taskDescriptor.actionId == openDocWithDriveDescriptor().actionId);
 
   // Remove fakes.
   const removedCount = await remoteCall.callRemoteTestUtil(
@@ -255,12 +167,6 @@ testcase.uploadToDriveRequiresWebDriveOfficeEnabled = async () => {
 testcase.openOfficeWordFromDrive = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DRIVE, [], [ENTRIES.smallDocxHosted]);
-
-  let histogramCount = await getHistogramCount(
-      WebDriveOfficeTaskResultHistogramName,
-      WebDriveOfficeTaskResultHistogramValues.AVAILABLE);
-  chrome.test.assertEq(
-      0, histogramCount, 'Unexpected UMA metric value for Web Drive Office');
 
   // Fake chrome.fileManagerPrivate.executeTask to return
   // chrome.fileManagerPrivate.TaskResult.OPENED.
@@ -273,17 +179,9 @@ testcase.openOfficeWordFromDrive = async () => {
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'openFile', appId, [ENTRIES.smallDocxHosted.nameText]));
 
-  // The Web Drive Office Word task should be available and executed.
+  // The Drive/Docs task should be available and executed.
   const taskDescriptor = await getExecutedTask(appId);
-  chrome.test.assertEq(webDriveOfficeWordDescriptor(), taskDescriptor);
-
-  // Assert that a UMA sample has been reported for selecting an Office file on
-  // Drive.
-  histogramCount = await getHistogramCount(
-      WebDriveOfficeTaskResultHistogramName,
-      WebDriveOfficeTaskResultHistogramValues.AVAILABLE);
-  chrome.test.assertEq(
-      1, histogramCount, 'Unexpected UMA metric value for Web Drive Office');
+  chrome.test.assertEq(openDocWithDriveDescriptor(), taskDescriptor);
 
   // Remove fakes.
   const removedCount = await remoteCall.callRemoteTestUtil(
@@ -294,12 +192,6 @@ testcase.openOfficeWordFromDrive = async () => {
 testcase.openOfficeExcelFromDrive = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DRIVE, [], [ENTRIES.smallXlsxPinned]);
-
-  let histogramCount = await getHistogramCount(
-      WebDriveOfficeTaskResultHistogramName,
-      WebDriveOfficeTaskResultHistogramValues.AVAILABLE);
-  chrome.test.assertEq(
-      0, histogramCount, 'Unexpected UMA metric value for Web Drive Office');
 
   // Fake chrome.fileManagerPrivate.executeTask to return
   // chrome.fileManagerPrivate.TaskResult.OPENED.
@@ -314,15 +206,7 @@ testcase.openOfficeExcelFromDrive = async () => {
 
   // The Web Drive Office Excel task should be available and executed.
   const taskDescriptor = await getExecutedTask(appId);
-  chrome.test.assertEq(webDriveOfficeExcelDescriptor(), taskDescriptor);
-
-  // Assert that a UMA sample has been reported for selecting an Office file on
-  // Drive.
-  histogramCount = await getHistogramCount(
-      WebDriveOfficeTaskResultHistogramName,
-      WebDriveOfficeTaskResultHistogramValues.AVAILABLE);
-  chrome.test.assertEq(
-      1, histogramCount, 'Unexpected UMA metric value for Web Drive Office');
+  chrome.test.assertEq(openExcelWithDriveDescriptor(), taskDescriptor);
 
   // Remove fakes.
   const removedCount = await remoteCall.callRemoteTestUtil(
@@ -333,12 +217,6 @@ testcase.openOfficeExcelFromDrive = async () => {
 testcase.openOfficePowerPointFromDrive = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DRIVE, [], [ENTRIES.smallPptxPinned]);
-
-  let histogramCount = await getHistogramCount(
-      WebDriveOfficeTaskResultHistogramName,
-      WebDriveOfficeTaskResultHistogramValues.AVAILABLE);
-  chrome.test.assertEq(
-      0, histogramCount, 'Unexpected UMA metric value for Web Drive Office');
 
   // Fake chrome.fileManagerPrivate.executeTask to return
   // chrome.fileManagerPrivate.TaskResult.OPENED.
@@ -353,15 +231,7 @@ testcase.openOfficePowerPointFromDrive = async () => {
 
   // The Web Drive Office PowerPoint task should be available and executed.
   const taskDescriptor = await getExecutedTask(appId);
-  chrome.test.assertEq(webDriveOfficePowerPointDescriptor(), taskDescriptor);
-
-  // Assert that a UMA sample has been reported for selecting an Office file on
-  // Drive.
-  histogramCount = await getHistogramCount(
-      WebDriveOfficeTaskResultHistogramName,
-      WebDriveOfficeTaskResultHistogramValues.AVAILABLE);
-  chrome.test.assertEq(
-      1, histogramCount, 'Unexpected UMA metric value for Web Drive Office');
+  chrome.test.assertEq(openPowerPointWithDriveDescriptor(), taskDescriptor);
 
   // Remove fakes.
   const removedCount = await remoteCall.callRemoteTestUtil(
@@ -372,7 +242,7 @@ testcase.openOfficePowerPointFromDrive = async () => {
 testcase.openMultipleOfficeWordFromDrive = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DRIVE, [],
-      [ENTRIES.smallDocxHosted, ENTRIES.smallDocxPinned, ENTRIES.smallDocx]);
+      [ENTRIES.smallDocx, ENTRIES.smallDocxPinned, ENTRIES.smallDocxHosted]);
 
   const enterKey = ['#file-list', 'Enter', false, false, false];
 
@@ -405,47 +275,21 @@ testcase.openMultipleOfficeWordFromDrive = async () => {
   // Wait for the tasks calculation to complete, updating the "Open" button.
   await remoteCall.waitForElement(appId, '#tasks[get-tasks-completed]');
 
-  // Check whether the open button is available.
-  const openButton = await remoteCall.waitForElement(appId, '#tasks');
+  // Wait until the open button is available.
+  await remoteCall.waitForElement(appId, '#tasks');
 
-  // Check that the Web Drive Office Word task is not available: one of the
-  // selected entries doesn't have a "docs.google.com" alternate URL. The "Open"
-  // button will be hidden if there is no other task to execute the selected
-  // office files, this happens to non-branded bots because QuickOffice is only
-  // available for branded builds.
-  if (!openButton.hidden) {
-    // Press Enter to execute it.
-    remoteCall.fakeKeyDown(appId, ...enterKey);
+  // TODO(petermarshall): Check that the Docs task is available but that we fell
+  // back to Quick office: one of the selected entries doesn't have a
+  // "docs.google.com" alternate URL.
 
-    // check that it's not the Web Drive Office task.
-    expectedExecuteTaskCount++;
-    taskDescriptor = await getExecutedTask(appId, expectedExecuteTaskCount);
-    chrome.test.assertFalse(
-        taskDescriptor.actionId == webDriveOfficeWordDescriptor().actionId);
+  // Press Enter to execute the task.
+  remoteCall.fakeKeyDown(appId, ...enterKey);
 
-    // If Web Drive Office is not available, Quick Office is the default
-    // handler. Assert that a UMA sample has been reported for executing Quick
-    // Office from Drive and Online.
-    histogramCount = await getHistogramCount(
-        OfficeFileHandlersHistogramBaseName + '.Drive.Online',
-        OfficeFileHandlersHistogramValues.QUICK_OFFICE);
-    chrome.test.assertEq(
-        1, histogramCount,
-        'Unexpected UMA metric value for Office file handlers');
-  }
-
-  // Assert that a UMA sample has been reported for selecting an Office file on
-  // Drive that doesn't have a Web Drive editing alternate URL yet.
-  histogramCount = await getHistogramCount(
-      WebDriveOfficeTaskResultHistogramName,
-      WebDriveOfficeTaskResultHistogramValues.DRIVE_ALTERNATE_URL);
+  // Check that it's the Docs task.
+  expectedExecuteTaskCount++;
+  taskDescriptor = await getExecutedTask(appId, expectedExecuteTaskCount);
   chrome.test.assertEq(
-      1, histogramCount, 'Unexpected UMA metric value for Web Drive Office');
-  histogramCount = await getHistogramCount(
-      WebDriveOfficeTaskResultHistogramName,
-      WebDriveOfficeTaskResultHistogramValues.AVAILABLE);
-  chrome.test.assertEq(
-      0, histogramCount, 'Unexpected UMA metric value for Web Drive Office');
+      taskDescriptor.actionId, openDocWithDriveDescriptor().actionId);
 
   // Unselect the file that doesn't have an alternate URL.
   await remoteCall.waitAndClickElement(
@@ -459,27 +303,10 @@ testcase.openMultipleOfficeWordFromDrive = async () => {
   // Press Enter.
   remoteCall.fakeKeyDown(appId, ...enterKey);
 
-  // The Web Drive Office Word task should be available and executed.
+  // The Drive/Docs task should be available and executed.
   expectedExecuteTaskCount++;
   taskDescriptor = await getExecutedTask(appId, expectedExecuteTaskCount);
-  chrome.test.assertEq(webDriveOfficeWordDescriptor(), taskDescriptor);
-
-  // Assert that a UMA sample has been reported for selecting synchronized
-  // Office files on Drive.
-  histogramCount = await getHistogramCount(
-      WebDriveOfficeTaskResultHistogramName,
-      WebDriveOfficeTaskResultHistogramValues.AVAILABLE);
-  chrome.test.assertEq(
-      1, histogramCount, 'Unexpected UMA metric value for Web Drive Office');
-
-  // Assert that a UMA sample has been reported for executing Web Drive Office
-  // from Drive and Online.
-  histogramCount = await getHistogramCount(
-      OfficeFileHandlersHistogramBaseName + '.Drive.Online',
-      OfficeFileHandlersHistogramValues.WEB_DRIVE_OFFICE);
-  chrome.test.assertEq(
-      1, histogramCount,
-      'Unexpected UMA metric value for Office file handlers');
+  chrome.test.assertEq(openDocWithDriveDescriptor(), taskDescriptor);
 
   // Remove fakes.
   const removedCount = await remoteCall.callRemoteTestUtil(
@@ -490,12 +317,6 @@ testcase.openMultipleOfficeWordFromDrive = async () => {
 testcase.openOfficeWordFromDriveNotSynced = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.smallDocx]);
-
-  let histogramCount = await getHistogramCount(
-      WebDriveOfficeTaskResultHistogramName,
-      WebDriveOfficeTaskResultHistogramValues.DRIVE_ALTERNATE_URL);
-  chrome.test.assertEq(
-      0, histogramCount, 'Unexpected UMA metric value for Web Drive Office');
 
   // Fake chrome.fileManagerPrivate.executeTask to return
   // chrome.fileManagerPrivate.TaskResult.OPENED.
@@ -508,21 +329,10 @@ testcase.openOfficeWordFromDriveNotSynced = async () => {
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'openFile', appId, [ENTRIES.smallDocx.nameText]));
 
-  // When the office file doesn't have an expected alternate URL
-  // (docs.google.com host), the Web Drive Office task should not be available:
-  // another task should have been executed instead (QuickOffice or generic
-  // task).
+  // The Drive/Docs task should be available and executed.
   const taskDescriptor = await getExecutedTask(appId);
-  chrome.test.assertFalse(
-      taskDescriptor.actionId == webDriveOfficeWordDescriptor().actionId);
-
-  // Assert that a UMA sample has been reported for selecting an Office file on
-  // Drive that doesn't have a Web Drive editing alternate URL.
-  histogramCount = await getHistogramCount(
-      WebDriveOfficeTaskResultHistogramName,
-      WebDriveOfficeTaskResultHistogramValues.DRIVE_ALTERNATE_URL);
   chrome.test.assertEq(
-      1, histogramCount, 'Unexpected UMA metric value for Web Drive Office');
+      taskDescriptor.actionId, openDocWithDriveDescriptor().actionId);
 
   // Remove fakes.
   const removedCount = await remoteCall.callRemoteTestUtil(
@@ -545,13 +355,11 @@ testcase.openOfficeWordFromMyFilesOffline = async () => {
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'openFile', appId, [ENTRIES.smallDocx.nameText]));
 
-  // The Upload to Drive task should not be available: another
-  // task should have been executed instead (QuickOffice or generic task).
+  // The Drive/Docs task should be executed, but it will fall back to
+  // QuickOffice.
   const taskDescriptor = await getExecutedTask(appId);
-  chrome.test.assertFalse(
-      taskDescriptor.actionId == uploadOfficeToDriveDescriptor().actionId);
-  chrome.test.assertFalse(
-      taskDescriptor.actionId == webDriveOfficeWordDescriptor().actionId);
+  chrome.test.assertEq(
+      taskDescriptor.actionId, openDocWithDriveDescriptor().actionId);
 
   // Remove fakes.
   const removedCount = await remoteCall.callRemoteTestUtil(
@@ -562,12 +370,6 @@ testcase.openOfficeWordFromMyFilesOffline = async () => {
 testcase.openOfficeWordFromDriveOffline = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DRIVE, [], [ENTRIES.smallDocxPinned]);
-
-  let histogramCount = await getHistogramCount(
-      WebDriveOfficeTaskResultHistogramName,
-      WebDriveOfficeTaskResultHistogramValues.OFFLINE);
-  chrome.test.assertEq(
-      0, histogramCount, 'Unexpected UMA metric value for Web Drive Office');
 
   // Fake chrome.fileManagerPrivate.executeTask to return
   // chrome.fileManagerPrivate.TaskResult.OPENED.
@@ -580,32 +382,11 @@ testcase.openOfficeWordFromDriveOffline = async () => {
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'openFile', appId, [ENTRIES.smallDocxPinned.nameText]));
 
-  // When offline, the Web Drive Office Word task should not be available:
-  // another task should have been executed instead (QuickOffice or generic
-  // task).
+  // The Drive/Docs task should be executed, but it will fall back to
+  // QuickOffice.
   const taskDescriptor = await getExecutedTask(appId);
-  chrome.test.assertFalse(
-      taskDescriptor.actionId == webDriveOfficeWordDescriptor().actionId);
-
-  // Assert that a UMA sample has been reported for selecting an Office file on
-  // Drive while offline.
-  histogramCount = await getHistogramCount(
-      WebDriveOfficeTaskResultHistogramName,
-      WebDriveOfficeTaskResultHistogramValues.OFFLINE);
   chrome.test.assertEq(
-      1, histogramCount, 'Unexpected UMA metric value for Web Drive Office');
-
-  if (taskDescriptor.actionId == 'qo_documents') {
-    // On branded builds, if Web Drive Office is not available, Quick Office is
-    // the default handler. Assert that a UMA sample has been reported for
-    // executing Quick Office from Drive and Offline.
-    histogramCount = await getHistogramCount(
-        OfficeFileHandlersHistogramBaseName + '.Drive.Offline',
-        OfficeFileHandlersHistogramValues.QUICK_OFFICE);
-    chrome.test.assertEq(
-        1, histogramCount,
-        'Unexpected UMA metric value for Office file handlers');
-  }
+      taskDescriptor.actionId, openDocWithDriveDescriptor().actionId);
 
   // Remove fakes.
   const removedCount = await remoteCall.callRemoteTestUtil(

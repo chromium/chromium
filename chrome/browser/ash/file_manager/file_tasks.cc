@@ -31,6 +31,7 @@
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/app_service_file_tasks.h"
@@ -40,7 +41,6 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/guest_os_file_tasks.h"
-#include "chrome/browser/ash/file_manager/office_task_selection_helper.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
 #include "chrome/browser/ash/file_manager/url_util.h"
@@ -95,12 +95,10 @@ namespace file_tasks {
 const char kActionIdView[] = "view";
 const char kActionIdSend[] = "send";
 const char kActionIdSendMultiple[] = "send_multiple";
-const char kActionIdHandleOffice[] = "handle-office";
 const char kActionIdWebDriveOfficeWord[] = "open-web-drive-office-word";
 const char kActionIdWebDriveOfficeExcel[] = "open-web-drive-office-excel";
 const char kActionIdWebDriveOfficePowerPoint[] =
     "open-web-drive-office-powerpoint";
-const char kActionIdUploadOfficeToDrive[] = "upload-office-to-drive";
 
 namespace {
 
@@ -154,23 +152,13 @@ std::string ParseFilesAppActionId(const std::string& action_id) {
 }
 
 // Returns true if the `task` is a Web Drive Office task.
-bool IsWebDriveOfficeTask(const FullTaskDescriptor& task) {
-  const std::string action_id =
-      ParseFilesAppActionId(task.task_descriptor.action_id);
+bool IsWebDriveOfficeTask(const TaskDescriptor& task) {
+  const std::string action_id = ParseFilesAppActionId(task.action_id);
   bool is_web_drive_office_action_id =
       action_id == kActionIdWebDriveOfficeWord ||
       action_id == kActionIdWebDriveOfficeExcel ||
       action_id == kActionIdWebDriveOfficePowerPoint;
-  return IsFilesAppId(task.task_descriptor.app_id) &&
-         is_web_drive_office_action_id;
-}
-
-// Returns true if the `task` is the "upload to Drive" workflow.
-bool IsUploadOfficeToDriveTask(const FullTaskDescriptor& task) {
-  const std::string action_id =
-      ParseFilesAppActionId(task.task_descriptor.action_id);
-  return IsFilesAppId(task.task_descriptor.app_id) &&
-         action_id == kActionIdUploadOfficeToDrive;
+  return IsFilesAppId(task.app_id) && is_web_drive_office_action_id;
 }
 
 // Returns true if path_mime_set contains a Google document.
@@ -326,24 +314,6 @@ void ExecuteTaskAfterMimeTypesCollected(
   }
 }
 
-void EndPostProcessFoundTasks(
-    std::unique_ptr<OfficeTaskSelectionHelper> office_task_selection_helper,
-    FindTasksCallback callback) {
-  Profile* profile = office_task_selection_helper->profile;
-  const std::vector<extensions::EntryInfo>& entries =
-      office_task_selection_helper->entries;
-  std::unique_ptr<std::vector<FullTaskDescriptor>> result_list =
-      std::move(office_task_selection_helper->result_list);
-  std::set<std::string> disabled_actions =
-      std::move(office_task_selection_helper->disabled_actions);
-
-  if (!disabled_actions.empty())
-    RemoveFileManagerInternalActions(disabled_actions, result_list.get());
-
-  ChooseAndSetDefaultTask(profile, entries, result_list.get());
-  std::move(callback).Run(std::move(result_list));
-}
-
 void PostProcessFoundTasks(
     Profile* profile,
     const std::vector<extensions::EntryInfo>& entries,
@@ -361,14 +331,17 @@ void PostProcessFoundTasks(
   disabled_actions.emplace("view-pdf");
 #endif  // !BUILDFLAG(ENABLE_PDF)
 
-  std::unique_ptr<OfficeTaskSelectionHelper> office_task_selection_helper =
-      std::make_unique<OfficeTaskSelectionHelper>(profile, entries,
-                                                  std::move(result_list),
-                                                  std::move(disabled_actions));
+  if (!ash::features::IsFilesWebDriveOfficeEnabled()) {
+    disabled_actions.emplace(kActionIdWebDriveOfficeWord);
+    disabled_actions.emplace(kActionIdWebDriveOfficeExcel);
+    disabled_actions.emplace(kActionIdWebDriveOfficePowerPoint);
+  }
 
-  office_task_selection_helper->Run(base::BindOnce(
-      &EndPostProcessFoundTasks, std::move(office_task_selection_helper),
-      std::move(callback)));
+  if (!disabled_actions.empty())
+    RemoveFileManagerInternalActions(disabled_actions, result_list.get());
+
+  ChooseAndSetDefaultTask(profile, entries, result_list.get());
+  std::move(callback).Run(std::move(result_list));
 }
 
 // Returns true if |extension_id| and |action_id| indicate that the file
@@ -381,10 +354,7 @@ bool ShouldBeOpenedWithBrowser(const std::string& extension_id,
           action_id == "open-hosted-generic" ||
           action_id == "open-hosted-gdoc" ||
           action_id == "open-hosted-gsheet" ||
-          action_id == "open-hosted-gslides" ||
-          action_id == kActionIdWebDriveOfficeWord ||
-          action_id == kActionIdWebDriveOfficeExcel ||
-          action_id == kActionIdWebDriveOfficePowerPoint);
+          action_id == "open-hosted-gslides");
 }
 
 // Opens the files specified by |file_urls| with the browser for |profile|.
@@ -400,6 +370,74 @@ bool OpenFilesWithBrowser(Profile* profile,
     }
   }
   return num_opened > 0;
+}
+
+// Open a hosted MS Office file e.g. .docx, from a path hosted in DriveFS.
+void OpenHostedOfficeFile(const base::FilePath& file_path,
+                          drive::FileError error,
+                          drivefs::mojom::FileMetadataPtr metadata) {
+  if (error != drive::FILE_ERROR_OK) {
+    UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName,
+                              OfficeDriveErrors::NO_METADATA);
+    LOG(ERROR) << "Drive metadata error: " << error;
+    return;
+  }
+
+  GURL hosted_url(metadata->alternate_url);
+  bool opened = util::OpenNewTabForHostedOfficeFile(hosted_url);
+
+  if (opened) {
+    UMA_HISTOGRAM_ENUMERATION(kDriveTaskResultMetricName,
+                              OfficeTaskResult::OPENED);
+  } else {
+    // TODO(petermarshall): Fall back to Quick Office.
+  }
+}
+
+bool ExecuteWebDriveOfficeTask(Profile* profile,
+                               const TaskDescriptor& task,
+                               const std::vector<FileSystemURL>& file_urls) {
+  bool offline = drive::util::GetDriveConnectionStatus(profile) !=
+                 drive::util::DRIVE_CONNECTED;
+  if (offline) {
+    UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName,
+                              OfficeDriveErrors::OFFLINE);
+    // TODO(petermarshall): Quick Office vs. other default handler.
+    UMA_HISTOGRAM_ENUMERATION(kDriveTaskResultMetricName,
+                              OfficeTaskResult::FALLBACK_QUICKOFFICE);
+    // TODO(petermarshall): Launch QuickOffice or other fallback and return
+    // true.
+    return false;
+  }
+
+  drive::DriveIntegrationService* integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
+  if (integration_service && integration_service->IsMounted() &&
+      integration_service->GetDriveFsInterface()) {
+    base::FilePath relative_path;
+    base::FilePath first_file_path = file_urls.front().path();
+    if (integration_service->GetRelativeDrivePath(first_file_path,
+                                                  &relative_path)) {
+      // The file is on Drive already: Open the URL.
+      integration_service->GetDriveFsInterface()->GetMetadata(
+          relative_path,
+          base::BindOnce(&OpenHostedOfficeFile, first_file_path));
+      return true;
+    } else {
+      // We need to move the file to Drive first. This flow will eventually
+      // open the file in the browser, too.
+      return chromeos::cloud_upload::CloudUploadDialog::Show(profile,
+                                                             file_urls);
+    }
+  } else {
+    UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName,
+                              OfficeDriveErrors::DRIVEFS_INTERFACE);
+    UMA_HISTOGRAM_ENUMERATION(kDriveTaskResultMetricName,
+                              OfficeTaskResult::FALLBACK_QUICKOFFICE);
+    // TODO(petermarshall): Launch QuickOffice or other fallback and return
+    // true.
+    return false;
+  }
 }
 
 }  // namespace
@@ -487,13 +525,6 @@ FullTaskDescriptor::FullTaskDescriptor(const FullTaskDescriptor& other) =
 
 FullTaskDescriptor& FullTaskDescriptor::operator=(
     const FullTaskDescriptor& other) = default;
-
-bool IsHandleOfficeTask(const FullTaskDescriptor& task) {
-  const std::string action_id =
-      ParseFilesAppActionId(task.task_descriptor.action_id);
-  return IsFilesAppId(task.task_descriptor.app_id) &&
-         action_id == kActionIdHandleOffice;
-}
 
 void UpdateDefaultTask(Profile* profile,
                        const TaskDescriptor& task_descriptor,
@@ -648,12 +679,10 @@ bool ExecuteFileTask(Profile* profile,
 
   const std::string parsed_action_id(ParseFilesAppActionId(task.action_id));
 
-  if (IsFilesAppId(task.app_id) &&
-      (parsed_action_id == "upload-office-to-drive")) {
-    const bool opened =
-        chromeos::cloud_upload::CloudUploadDialog::Show(profile, file_urls);
+  if (IsWebDriveOfficeTask(task)) {
+    const bool started = ExecuteWebDriveOfficeTask(profile, task, file_urls);
     if (done) {
-      if (opened) {
+      if (started) {
         std::move(done).Run(
             extensions::api::file_manager_private::TASK_RESULT_OPENED, "");
       } else {
@@ -863,12 +892,10 @@ void ChooseAndSetDefaultTask(Profile* profile,
     }
   }
 
-  // No default task. If the "Upload to Drive" workflow or ShadowDocs is
-  // available for Office files, set as default. Since "Upload to Drive" is
-  // available outside Drive and and ShadowDocs is available on Drive, these two
-  // tasks shouldn't be available simultaneously.
+  // No default task. If the "Open in Docs/Sheets/Slides through Drive" workflow
+  // is available for Office files, set as default.
   for (FullTaskDescriptor& task : *tasks) {
-    if (IsUploadOfficeToDriveTask(task) || IsWebDriveOfficeTask(task)) {
+    if (IsWebDriveOfficeTask(task.task_descriptor)) {
       task.is_default = true;
       return;
     }

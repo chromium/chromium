@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "url/gurl.h"
 
+class GURL;
 class Profile;
 
 namespace storage {
@@ -33,8 +34,10 @@ bool OpenFileWithBrowser(Profile* profile,
                          const storage::FileSystemURL& file_system_url,
                          const std::string& action_id);
 
-// Opens the file specified by |url| in a new tab.
-void OpenNewTabForHostedOfficeFile(const GURL& url);
+// Opens the file specified by |url| in a new tab. |url| must be a
+// docs.google.com URL for an office file. Returns true if there were no errors
+// opening the URL, false otherwise.
+bool OpenNewTabForHostedOfficeFile(const GURL& url);
 
 }  // namespace util
 }  // namespace file_manager

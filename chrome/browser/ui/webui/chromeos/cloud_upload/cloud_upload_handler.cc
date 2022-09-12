@@ -8,8 +8,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
-#include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
-#include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/common/task_util.h"

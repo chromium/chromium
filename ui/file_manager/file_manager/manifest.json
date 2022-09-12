@@ -137,12 +137,20 @@
         "gslides"
       ]
     },
-    "handle-office": {
+    "open-web-drive-office-word": {
       "extensions": [
         "doc",
-        "docx",
+        "docx"
+      ]
+    },
+    "open-web-drive-office-excel": {
+      "extensions": [
         "xls",
-        "xlsx",
+        "xlsx"
+      ]
+    },
+    "open-web-drive-office-powerpoint": {
+      "extensions": [
         "ppt",
         "pptx"
       ]

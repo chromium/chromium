@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_dialog.h"
 
-#include "ash/public/cpp/new_window_delegate.h"
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_macros.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
 #include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_handler.h"
 #include "chrome/common/webui_url_constants.h"
@@ -16,13 +18,24 @@
 namespace chromeos::cloud_upload {
 namespace {
 
+using file_manager::file_tasks::kDriveTaskResultMetricName;
+using file_manager::file_tasks::OfficeTaskResult;
+
+void OnUploadCompleted(const GURL& url) {
+  UMA_HISTOGRAM_ENUMERATION(kDriveTaskResultMetricName,
+                            OfficeTaskResult::MOVED);
+  file_manager::util::OpenNewTabForHostedOfficeFile(url);
+}
+
 void OnUploadActionReceived(Profile* profile,
                             const storage::FileSystemURL& file_url,
                             const std::string& action) {
   if (action == kUserActionUpload) {
-    CloudUploadHandler::UploadToCloud(
-        profile, file_url,
-        base::BindOnce(&file_manager::util::OpenNewTabForHostedOfficeFile));
+    CloudUploadHandler::UploadToCloud(profile, file_url,
+                                      base::BindOnce(&OnUploadCompleted));
+  } else if (action == kUserActionCancel) {
+    UMA_HISTOGRAM_ENUMERATION(kDriveTaskResultMetricName,
+                              OfficeTaskResult::CANCELLED);
   }
 }
 
