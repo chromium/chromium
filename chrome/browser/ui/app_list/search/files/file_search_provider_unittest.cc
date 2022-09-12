@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/app_list/search/files/file_search_provider.h"
+#include <cctype>
 
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
@@ -12,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
 #include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
@@ -51,7 +51,7 @@ class FileSearchProviderTest : public testing::Test {
   }
 
   base::FilePath Path(const std::string& filename) {
-    return scoped_temp_dir_.GetPath().AppendASCII(filename);
+    return scoped_temp_dir_.GetPath().Append(filename);
   }
 
   void WriteFile(const std::string& filename) {
@@ -106,6 +106,46 @@ TEST_F(FileSearchProviderTest, SearchIsCaseInsensitive) {
 
   EXPECT_THAT(LastResults(),
               UnorderedElementsAre(Title("FILE_1.png"), Title("FiLe_2.Png")));
+}
+
+TEST_F(FileSearchProviderTest, SearchIsAccentAndCaseInsensitive) {
+  WriteFile("FĪLE_1.png");
+  WriteFile("FīLe_2.Png");
+
+  provider_->Start(u"fīle");
+  Wait();
+
+  EXPECT_THAT(LastResults(),
+              UnorderedElementsAre(Title("FĪLE_1.png"), Title("FīLe_2.Png")));
+}
+
+TEST_F(FileSearchProviderTest, SearchIsAccentInsensitive) {
+  WriteFile("FILE_1.png");
+  WriteFile("FiLe_2.Png");
+  WriteFile("FĪLE_3.png");
+  WriteFile("FīLe_4.Png");
+  WriteFile("FiLË_5.png");
+  WriteFile("FILê_6.Png");
+
+  provider_->Start(u"file");
+  Wait();
+
+  EXPECT_THAT(LastResults(),
+              UnorderedElementsAre(Title("FILE_1.png"), Title("FiLe_2.Png"),
+                                   Title("FĪLE_3.png"), Title("FīLe_4.Png"),
+                                   Title("FiLË_5.png"), Title("FILê_6.Png")));
+}
+
+TEST_F(FileSearchProviderTest, SearchIsAccentHonored) {
+  WriteFile("FĪLE_1.png");
+  WriteFile("FīLe_2.Png");
+  WriteFile("file_3.png");
+
+  provider_->Start(u"fīle");
+  Wait();
+
+  EXPECT_THAT(LastResults(),
+              UnorderedElementsAre(Title("FĪLE_1.png"), Title("FīLe_2.Png")));
 }
 
 TEST_F(FileSearchProviderTest, SearchDirectories) {

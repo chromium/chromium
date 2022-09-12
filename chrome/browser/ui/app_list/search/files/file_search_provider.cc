@@ -7,7 +7,9 @@
 #include <cctype>
 #include <cmath>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/files/file_enumerator.h"
+#include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -16,54 +18,77 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/input_method/diacritics_checker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
-#include "chrome/grit/generated_resources.h"
-#include "ui/base/l10n/l10n_util.h"
 
 namespace app_list {
 
 namespace {
 
+using ::ash::input_method::HasDiacritics;
 using ::ash::string_matching::TokenizedString;
 
 constexpr char kFileSearchSchema[] = "file_search://";
 constexpr int kMaxResults = 25;
 constexpr int kSearchTimeoutMs = 100;
 
-// Construct a case-insensitive fnmatch query from |query|. E.g. for abc123, the
-// result would be *[aA][bB][cC]123*.
-std::string CreateFnmatchQuery(const std::string& query) {
-  std::vector<std::string> query_pieces = {"*"};
+// Construct a case-insensitive and accent-insensitive fnmatch query from
+// |query|. E.g. for abc123, the result would be *[aAáàâäāåÁÀÂÄĀÅ][bB][cC]123*.
+// Accent-insensitivity covers Latin-script accented characters for our
+// initial implementation.
+// We still honor the accented characters in |query|, and only enable
+// case-insensitivity for them. E.g. ádd, the result would be *[áÁ]dd*.
+std::string CreateFnmatchQuery(const std::u16string& query_input) {
+  static constexpr auto conversion_map =
+      base::MakeFixedFlatMap<char16_t, std::u16string_view>({
+          {u'a', u"[aAáàâäāåÁÀÂÄĀÅ]"},
+          {u'c', u"[cçCÇ]"},
+          {u'e', u"[eEéèêëēÉÈÊËĒ]"},
+          {u'i', u"[iIíìîïīÍÌÎÏĪ]"},
+          {u'n', u"[nNñÑ]"},
+          {u'o', u"[oOóòôöōøÓÒÔÖŌØ]"},
+          {u'u', u"[uUúùûüūÚÙÛÜŪ]"},
+          {u'y', u"[yYýỳŷÿȳÝỲŶŸȲ]"},
+      });
+
+  std::vector<std::u16string> query_pieces = {u"*"};
   size_t sequence_start = 0;
+  const std::u16string query = base::i18n::ToLower(query_input);
   for (size_t i = 0; i < query.size(); ++i) {
-    if (isalpha(query[i])) {
+    if (isalpha(query[i]) || HasDiacritics(query.substr(i, 1))) {
       if (sequence_start != i) {
         query_pieces.push_back(
             query.substr(sequence_start, i - sequence_start));
       }
-      std::string piece("[");
-      piece.resize(4);
-      piece[1] = tolower(query[i]);
-      piece[2] = toupper(query[i]);
-      piece[3] = ']';
-      query_pieces.push_back(std::move(piece));
+
+      auto* it = conversion_map.find(query[i]);
+      if (it != conversion_map.end()) {
+        std::u16string piece(it->second);
+        query_pieces.push_back(std::move(piece));
+      } else {
+        query_pieces.push_back(u"[");
+        query_pieces.push_back(query.substr(i, 1));
+        query_pieces.push_back(base::i18n::ToUpper(query.substr(i, 1)));
+        query_pieces.push_back(u"]");
+      }
+
       sequence_start = i + 1;
     }
   }
   if (sequence_start != query.size()) {
     query_pieces.push_back(query.substr(sequence_start));
   }
-  query_pieces.push_back("*");
+  query_pieces.push_back(u"*");
 
-  return base::StrCat(query_pieces);
+  return base::UTF16ToUTF8(base::StrCat(query_pieces));
 }
 
 // Returns a vector of matched filepaths and a bool indicating whether or not
 // the path is a directory.
 std::vector<FileSearchProvider::FileInfo> SearchFilesByPattern(
     const base::FilePath& root_path,
-    const std::string& query,
+    const std::u16string& query,
     const base::TimeTicks& query_start_time) {
   base::FileEnumerator enumerator(
       root_path,
@@ -121,7 +146,7 @@ void FileSearchProvider::Start(const std::u16string& query) {
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(SearchFilesByPattern, root_path_, base::UTF16ToUTF8(query),
+      base::BindOnce(SearchFilesByPattern, root_path_, query,
                      query_start_time_),
       base::BindOnce(&FileSearchProvider::OnSearchComplete,
                      weak_factory_.GetWeakPtr()));
