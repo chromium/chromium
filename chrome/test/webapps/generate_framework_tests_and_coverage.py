@@ -48,12 +48,14 @@ def check_partition_prefixes(partition_a: TestPartitionDescription,
 
 def generate_framework_tests_and_coverage(
         supported_framework_action_file: TextIOWrapper,
-        enums_file: TextIOWrapper, actions_file: TextIOWrapper,
+        enums_file: TextIOWrapper,
+        actions_file: TextIOWrapper,
         coverage_required_file: TextIOWrapper,
         custom_partitions: List[TestPartitionDescription],
-        default_partition: TestPartitionDescription, coverage_output_dir: str,
-        graph_output_dir: Optional[str]):
-
+        default_partition: TestPartitionDescription,
+        coverage_output_dir: str,
+        graph_output_dir: Optional[str],
+        delete_in_place: bool = False):
     for partition_a in custom_partitions:
         check_partition_prefixes(partition_a, default_partition)
         for partition_b in custom_partitions:
@@ -130,8 +132,10 @@ def generate_framework_tests_and_coverage(
     # Find all existing tests.
     all_partitions = [default_partition]
     all_partitions.extend(custom_partitions)
-    (existing_tests_ids_by_platform_set, disabled_test_ids_by_platform
-     ) = find_existing_and_disabled_tests(all_partitions)
+
+    (existing_tests_ids_by_platform_set,
+     disabled_test_ids_by_platform) = find_existing_and_disabled_tests(
+         all_partitions, required_coverage_by_platform_set, delete_in_place)
 
     # Print all diffs that are required.
     compare_and_print_tests_to_remove_and_add(
@@ -178,6 +182,13 @@ def main():
                         action='store_true',
                         help='Output dot graphs from all steps.',
                         required=False)
+
+    parser.add_argument('--delete-in-place',
+                        dest='delete_in_place',
+                        action='store_true',
+                        help='Delete test cases no longer needed in place',
+                        required=False)
+
     options = parser.parse_args()
     logging.basicConfig(level=logging.INFO if options.v else logging.WARN,
                         format='[%(asctime)s %(levelname)s] %(message)s',
@@ -222,12 +233,10 @@ def main():
                 as enums_file, \
             open(coverage_required_filename, 'r', encoding="utf-8") \
                 as coverage_file:
-        generate_framework_tests_and_coverage(supported_actions, enums_file,
-                                              actions_file, coverage_file,
-                                              custom_partitions,
-                                              default_partition,
-                                              coverage_output_dir,
-                                              graph_output_dir)
+        generate_framework_tests_and_coverage(
+            supported_actions, enums_file, actions_file, coverage_file,
+            custom_partitions, default_partition, coverage_output_dir,
+            graph_output_dir, options.delete_in_place)
 
 
 if __name__ == '__main__':

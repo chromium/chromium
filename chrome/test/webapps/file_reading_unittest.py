@@ -5,14 +5,16 @@
 
 import os
 import csv
+import tempfile
 from typing import List
+import shutil
 import unittest
 
 from file_reading import enumerate_all_argument_combinations
 from file_reading import expand_tests_from_action_parameter_wildcards
 from file_reading import enumerate_markdown_file_lines_to_table_rows
 from file_reading import human_friendly_name_to_canonical_action_name
-from file_reading import get_tests_in_browsertest
+from file_reading import get_and_maybe_delete_tests_in_browsertest
 from file_reading import read_actions_file
 from file_reading import read_enums_file
 from file_reading import read_platform_supported_actions
@@ -181,16 +183,36 @@ class TestAnalysisTest(unittest.TestCase):
 
     def test_browsertest_detection(self):
         browsertest_filename = os.path.join(TEST_DATA_DIR, "tests_default.cc")
-        with open(browsertest_filename) as browsertest_file:
-            tests_and_platforms = get_tests_in_browsertest(
-                browsertest_file.read())
-            self.assertListEqual(list(tests_and_platforms.keys()),
-                                 ["3Chicken_1Chicken_2ChickenGreen"])
+        tests_and_platforms = get_and_maybe_delete_tests_in_browsertest(
+            browsertest_filename)
+        self.assertListEqual(list(tests_and_platforms.keys()),
+                             ["3Chicken_1Chicken_2ChickenGreen"])
+        tests_and_platforms = tests_and_platforms[
+            "3Chicken_1Chicken_2ChickenGreen"]
+        self.assertEqual(
+            {TestPlatform.LINUX, TestPlatform.CHROME_OS, TestPlatform.MAC},
+            tests_and_platforms)
+
+    def test_browertest_in_place_deletion(self):
+        input_file = os.path.join(TEST_DATA_DIR, "tests_for_deletion.cc")
+        after_deletion_file = os.path.join(TEST_DATA_DIR, "tests_default.cc")
+        with tempfile.TemporaryDirectory(dir=TEST_DATA_DIR) as tmpdirname:
+            output_file = os.path.join(tmpdirname, "output.cc")
+            shutil.copyfile(input_file, output_file)
+            tests_and_platforms = get_and_maybe_delete_tests_in_browsertest(
+                output_file, {"3Chicken_1Chicken_2ChickenGreen"},
+                delete_in_place=True)
+
+            with open(output_file, 'r') as f, open(after_deletion_file,
+                                                   'r') as f2:
+                self.assertTrue(f.read(), f2.read())
+
             tests_and_platforms = tests_and_platforms[
                 "3Chicken_1Chicken_2ChickenGreen"]
             self.assertEqual(
                 {TestPlatform.LINUX, TestPlatform.CHROME_OS, TestPlatform.MAC},
                 tests_and_platforms)
+
 
     def test_action_param_expansion(self):
         enum_map: Dict[str, ArgEnum] = {

@@ -14,11 +14,12 @@ from typing import Dict, List, Set, Tuple, Optional
 
 from numpy import append
 
-from models import Action
+from models import Action, TestId
 from models import ArgEnum
 from models import ActionType
 from models import ActionsByName
 from models import CoverageTest
+from models import CoverageTestsByPlatformSet
 from models import EnumsByType
 from models import PartialAndFullCoverageByBaseName
 from models import TestIdsByPlatform
@@ -495,10 +496,16 @@ def read_unprocessed_coverage_tests_file(
     return required_coverage_tests
 
 
-def get_tests_in_browsertest(file: str) -> Dict[str, Set[TestPlatform]]:
+def get_and_maybe_delete_tests_in_browsertest(
+        filename: str,
+        required_tests: Set[TestId] = {},
+        delete_in_place: bool = False) -> Dict[str, Set[TestPlatform]]:
     """
     Returns a dictionary of all test ids found to the set of detected platforms
     the test is enabled on.
+
+    When delete_in_place is set to True, overwrite the file to remove tests not
+    in required_tests.
 
     For reference, this is what a disabled test by a sheriff typically looks
     like:
@@ -525,33 +532,52 @@ def get_tests_in_browsertest(file: str) -> Dict[str, Set[TestPlatform]]:
     `TestPlatform.CHROME_OS`, and `TestPlatform.LINUX`}.
     """
     tests: Dict[str, Set[TestPlatform]] = {}
-    # Attempts to only match test test name in a test declaration, where the
-    # name contains the test id prefix. Purposefully allows any prefixes on
-    # the test name (like MAYBE_ or DISABLED_).
-    for match in re.finditer(fr'{CoverageTest.TEST_ID_PREFIX}(\w+)\)', file):
-        test_id = match.group(1)
-        tests[test_id] = set(TestPlatform)
-        test_name = f"{CoverageTest.TEST_ID_PREFIX}{test_id}"
-        if f"DISABLED_{test_name}" not in file:
-            continue
-        enabled_platforms: Set[TestPlatform] = tests[test_id]
-        for platform in TestPlatform:
-            # Search for macro that specifies the given platform before
-            # the string "DISABLED_<test_name>".
-            macro_for_regex = re.escape(platform.macro)
-            # This pattern ensures that there aren't any '{' or '}' characters
-            # between the macro and the disabled test name, which ensures that
-            # the macro is applying to the correct test.
-            if re.search(fr"{macro_for_regex}[^{{}}]+DISABLED_{test_name}",
-                         file):
-                enabled_platforms.remove(platform)
-        if len(enabled_platforms) == len(TestPlatform):
-            enabled_platforms.clear()
+
+    with open(filename, 'r') as fp:
+        file = fp.read()
+        result_file = file
+        # Attempts to match a full test case, where the name contains the test
+        # id prefix. Purposefully allows any prefixes on the test name (like
+        # MAYBE_ or DISABLED_).
+        for match in re.finditer(
+                fr'IN_PROC_BROWSER_TEST_F.+((?:\n.+)*)'
+                fr'{CoverageTest.TEST_ID_PREFIX}(\w+)\).+((?:\n.+)+)\n}}\n*',
+                file):
+            test_id = match.group(2)
+            tests[test_id] = set(TestPlatform)
+            test_name = f"{CoverageTest.TEST_ID_PREFIX}{test_id}"
+            if f"DISABLED_{test_name}" not in file:
+                if delete_in_place and test_id not in required_tests:
+                    del tests[test_id]
+                    # Remove the matching test code block when the test is not
+                    # in required_tests
+                    regex_to_remove = re.escape(match.group(0))
+                    result_file = re.sub(regex_to_remove, '', result_file)
+                continue
+            enabled_platforms: Set[TestPlatform] = tests[test_id]
+            for platform in TestPlatform:
+                # Search for macro that specifies the given platform before
+                # the string "DISABLED_<test_name>".
+                macro_for_regex = re.escape(platform.macro)
+                # This pattern ensures that there aren't any '{' or '}'
+                # characters between the macro and the disabled test name, which
+                #  ensures that the macro is applying to the correct test.
+                if re.search(fr"{macro_for_regex}[^{{}}]+DISABLED_{test_name}",
+                             file):
+                    enabled_platforms.remove(platform)
+            if len(enabled_platforms) == len(TestPlatform):
+                enabled_platforms.clear()
+    if delete_in_place:
+        with open(filename, 'w') as fp:
+            fp.write(result_file)
+
     return tests
 
 
 def find_existing_and_disabled_tests(
-        test_partitions: List[TestPartitionDescription]
+        test_partitions: List[TestPartitionDescription],
+        required_coverage_by_platform_set: CoverageTestsByPlatformSet,
+        delete_in_place: bool = False
 ) -> Tuple[TestIdsByPlatformSet, TestIdsByPlatform]:
     """
     Returns a dictionary of platform set to test id, and a dictionary of
@@ -566,17 +592,19 @@ def find_existing_and_disabled_tests(
             platforms = frozenset(
                 TestPlatform.get_platforms_from_browsertest_filename(file))
             filename = os.path.join(partition.browsertest_dir, file)
-            with open(filename) as f:
-                file = f.read()
-                tests = get_tests_in_browsertest(file)
-                for test_id in tests.keys():
-                    if test_id in existing_tests[platforms]:
-                        raise ValueError(f"Already found test {test_id}. "
-                                         f"Duplicate test in {filename}")
-                    existing_tests[platforms].add(test_id)
-                for platform in platforms:
-                    for test_id, enabled_platforms in tests.items():
-                        if platform not in enabled_platforms:
-                            disabled_tests[platform].add(test_id)
-                logging.info(f"Found tests in {filename}:\n{tests.keys()}")
+            required_tests = set(
+                i.id
+                for i in required_coverage_by_platform_set.get(platforms, []))
+            tests = get_and_maybe_delete_tests_in_browsertest(
+                filename, required_tests, delete_in_place)
+            for test_id in tests.keys():
+                if test_id in existing_tests[platforms]:
+                    raise ValueError(f"Already found test {test_id}. "
+                                     f"Duplicate test in {filename}")
+                existing_tests[platforms].add(test_id)
+            for platform in platforms:
+                for test_id, enabled_platforms in tests.items():
+                    if platform not in enabled_platforms:
+                        disabled_tests[platform].add(test_id)
+            logging.info(f"Found tests in {filename}:\n{tests.keys()}")
     return (existing_tests, disabled_tests)
