@@ -6,6 +6,8 @@
 
 #include "base/process/process_handle.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace policy {
 
@@ -68,9 +70,15 @@ void DlpScopedFileAccessDelegate::RequestFilesAccessForSystem(
 void DlpScopedFileAccessDelegate::PostRequestFileAccessToDaemon(
     const ::dlp::RequestFileAccessRequest request,
     base::OnceCallback<void(file_access::ScopedFileAccess)> callback) {
-  client_->RequestFileAccess(
-      request, base::BindOnce(&DlpScopedFileAccessDelegate::OnResponse,
-                              base::Unretained(this), std::move(callback)));
+  // base::Unretained is safe as |client_| (global dbus singleton) outlives the
+  // usage of |callback|.
+  auto dbus_cb = base::BindOnce(
+      &chromeos::DlpClient::RequestFileAccess, base::Unretained(client_),
+      request,
+      base::BindOnce(&DlpScopedFileAccessDelegate::OnResponse,
+                     base::Unretained(this), std::move(callback)));
+
+  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(dbus_cb));
 }
 
 void DlpScopedFileAccessDelegate::OnResponse(
@@ -81,6 +89,7 @@ void DlpScopedFileAccessDelegate::OnResponse(
     std::move(callback).Run(file_access::ScopedFileAccess::Allowed());
     return;
   }
+
   std::move(callback).Run(
       file_access::ScopedFileAccess(response.allowed(), std::move(fd)));
 }

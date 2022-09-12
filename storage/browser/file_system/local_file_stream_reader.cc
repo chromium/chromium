@@ -13,9 +13,12 @@
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_runner_util.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/types/pass_key.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "net/base/file_stream.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -93,16 +96,40 @@ void LocalFileStreamReader::Open(net::CompletionOnceCallback callback) {
   DCHECK(!stream_impl_.get());
   has_pending_open_ = true;
 
-  // Call GetLength first to make it perform last-modified-time verification,
-  // and then call DidVerifyForOpen to do the rest.
-  int64_t verify_result = GetLength(
-      base::BindOnce(&LocalFileStreamReader::DidVerifyForOpen,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+  if (!file_access::ScopedFileAccessDelegate::Get()) {
+    OnScopedFileAccessRequested(std::move(callback),
+                                file_access::ScopedFileAccess::Allowed());
+    return;
+  }
+
+  base::OnceCallback<void(file_access::ScopedFileAccess)> open_cb =
+      base::BindOnce(&LocalFileStreamReader::OnScopedFileAccessRequested,
+                     weak_factory_.GetWeakPtr(), std::move(callback));
+  auto current_task_runner = base::SequencedTaskRunnerHandle::Get();
+  auto task = base::BindPostTask(current_task_runner, std::move(open_cb));
+
+  // TODO(crbug.com/1354502): Replace this with actual destination URLs.
+  file_access::ScopedFileAccessDelegate::Get()->RequestFilesAccessForSystem(
+      {file_path_}, std::move(task));
+}
+
+void LocalFileStreamReader::OnScopedFileAccessRequested(
+    net::CompletionOnceCallback callback,
+    file_access::ScopedFileAccess scoped_file_access) {
+  if (!scoped_file_access.is_allowed()) {
+    std::move(callback).Run(net::ERR_ACCESS_DENIED);
+    return;
+  }
+
+  int64_t verify_result = GetLength(base::BindOnce(
+      &LocalFileStreamReader::DidVerifyForOpen, weak_factory_.GetWeakPtr(),
+      std::move(callback), std::move(scoped_file_access)));
   DCHECK_EQ(verify_result, net::ERR_IO_PENDING);
 }
 
 void LocalFileStreamReader::DidVerifyForOpen(
     net::CompletionOnceCallback callback,
+    file_access::ScopedFileAccess scoped_file_access,
     int64_t get_length_result) {
   if (get_length_result < 0) {
     std::move(callback).Run(static_cast<int>(get_length_result));
@@ -114,12 +141,15 @@ void LocalFileStreamReader::DidVerifyForOpen(
   const int result = stream_impl_->Open(
       file_path_, kOpenFlagsForRead,
       base::BindOnce(&LocalFileStreamReader::DidOpenFileStream,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(),
+                     std::move(scoped_file_access)));
   if (result != net::ERR_IO_PENDING)
     std::move(callback_).Run(result);
 }
 
-void LocalFileStreamReader::DidOpenFileStream(int result) {
+void LocalFileStreamReader::DidOpenFileStream(
+    file_access::ScopedFileAccess /*scoped_file_access*/,
+    int result) {
   if (result != net::OK) {
     std::move(callback_).Run(result);
     return;

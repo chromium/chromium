@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
+#include "components/file_access/scoped_file_access.h"
 #include "net/base/completion_once_callback.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 
@@ -50,9 +51,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileStreamReader
   void Open(net::CompletionOnceCallback callback);
 
   // Callbacks that are chained from Open for Read.
+  void OnScopedFileAccessRequested(
+      net::CompletionOnceCallback callback,
+      file_access::ScopedFileAccess scoped_file_access);
   void DidVerifyForOpen(net::CompletionOnceCallback callback,
+                        file_access::ScopedFileAccess scoped_file_access,
                         int64_t get_length_result);
-  void DidOpenFileStream(int result);
+  void DidOpenFileStream(file_access::ScopedFileAccess /*scoped_file_access*/,
+                         int result);
   void DidSeekFileStream(int64_t seek_result);
   void DidOpenForRead(net::IOBuffer* buf,
                       int buf_len,

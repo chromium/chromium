@@ -61,6 +61,9 @@ class DlpScopedFileAccessDelegate
       const ::dlp::RequestFileAccessResponse response,
       base::ScopedFD fd);
 
+  // This is a pointer to a global dbus client singleton that is owned by the
+  // browser instance. It is initialized and destructed at the same time as
+  // dbus.
   raw_ptr<chromeos::DlpClient> client_;
 };
 
