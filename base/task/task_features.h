@@ -6,12 +6,11 @@
 #define BASE_TASK_TASK_FEATURES_H_
 
 #include "base/base_export.h"
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
 namespace base {
-
-struct Feature;
 
 // Under this feature, workers blocked with MayBlock are replaced immediately
 // instead of waiting for a threshold in the foreground thread group.

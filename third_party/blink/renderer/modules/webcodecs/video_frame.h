@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/feature_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
@@ -24,10 +25,6 @@
 
 // Note: Don't include "media/base/video_frame.h" here without good reason,
 // since it includes a lot of non-blink types which can pollute the namespace.
-
-namespace base {
-struct Feature;
-}
 
 namespace media {
 class VideoFrame;

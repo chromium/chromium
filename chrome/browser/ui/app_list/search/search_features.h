@@ -5,9 +5,7 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_SEARCH_FEATURES_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_SEARCH_FEATURES_H_
 
-namespace base {
-struct Feature;
-}
+#include "base/feature_list.h"
 
 namespace search_features {
 

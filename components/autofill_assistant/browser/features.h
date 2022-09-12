@@ -5,9 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_FEATURES_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_FEATURES_H_
 
-namespace base {
-struct Feature;
-}
+#include "base/feature_list.h"
 
 namespace autofill_assistant {
 namespace features {

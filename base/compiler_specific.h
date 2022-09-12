@@ -406,4 +406,13 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 #define GSL_POINTER
 #endif
 
+// Adds the "logically_const" tag to a symbol's mangled name, which can be
+// recognized by the "Mutable Constants" check
+// (https://chromium.googlesource.com/chromium/src/+/main/docs/speed/binary_size/android_binary_size_trybot.md#Mutable-Constants).
+#if defined(COMPILER_GCC) || defined(__clang__)
+#define LOGICALLY_CONST [[gnu::abi_tag("logically_const")]]
+#else
+#define LOGICALLY_CONST
+#endif
+
 #endif  // BASE_COMPILER_SPECIFIC_H_

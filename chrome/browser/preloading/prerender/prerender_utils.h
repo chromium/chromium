@@ -5,15 +5,12 @@
 #ifndef CHROME_BROWSER_PRELOADING_PRERENDER_PRERENDER_UTILS_H_
 #define CHROME_BROWSER_PRELOADING_PRERENDER_PRERENDER_UTILS_H_
 
+#include "base/feature_list.h"
+
 // This file is used to manage some static functions and constants for
 // prerender2. Some typical cases can be:
 // * Indicates whether a prerender2-related feature is enabled.
 // * Stores the constants to avoid hardcoded strings.
-
-namespace base {
-struct Feature;
-}  // namespace base
-
 namespace prerender_utils {
 
 // This is a temporal flag added for supporting a workaround that allows

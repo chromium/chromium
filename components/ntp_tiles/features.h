@@ -5,9 +5,7 @@
 #ifndef COMPONENTS_NTP_TILES_FEATURES_H_
 #define COMPONENTS_NTP_TILES_FEATURES_H_
 
-namespace base {
-struct Feature;
-}  // namespace base
+#include "base/feature_list.h"
 
 namespace ntp_tiles {
 

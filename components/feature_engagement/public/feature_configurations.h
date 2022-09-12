@@ -5,11 +5,8 @@
 #ifndef COMPONENTS_FEATURE_ENGAGEMENT_PUBLIC_FEATURE_CONFIGURATIONS_H_
 #define COMPONENTS_FEATURE_ENGAGEMENT_PUBLIC_FEATURE_CONFIGURATIONS_H_
 
+#include "base/feature_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base {
-struct Feature;
-}  // namespace base
 
 namespace feature_engagement {
 struct FeatureConfig;

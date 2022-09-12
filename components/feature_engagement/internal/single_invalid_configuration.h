@@ -8,11 +8,8 @@
 #include <string>
 #include <unordered_set>
 
+#include "base/feature_list.h"
 #include "components/feature_engagement/public/configuration.h"
-
-namespace base {
-struct Feature;
-}  // namespace base
 
 namespace feature_engagement {
 

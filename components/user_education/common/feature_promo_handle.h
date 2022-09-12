@@ -5,12 +5,9 @@
 #ifndef COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_HANDLE_H_
 #define COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_HANDLE_H_
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-
-namespace base {
-struct Feature;
-}
 
 namespace user_education {
 

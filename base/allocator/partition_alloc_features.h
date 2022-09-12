@@ -9,12 +9,10 @@
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
 namespace base {
-
-struct Feature;
-
 namespace features {
 
 // See /docs/dangling_ptr.md

@@ -6,12 +6,9 @@
 #define COMPONENTS_PAGE_INFO_CORE_FEATURES_H_
 
 #include "base/component_export.h"
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
-
-namespace base {
-struct Feature;
-}  // namespace base
 
 namespace page_info {
 

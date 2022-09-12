@@ -8,11 +8,8 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/feature_list.h"
 #include "base/time/time.h"
-
-namespace base {
-struct Feature;
-}
 
 namespace app_list_features {
 

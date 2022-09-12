@@ -5,12 +5,9 @@
 #ifndef COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_SNOOZE_SERVICE_H_
 #define COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_SNOOZE_SERVICE_H_
 
+#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base {
-struct Feature;
-}  // namespace base
 
 // Declare in the global namespace for test purposes.
 class FeaturePromoSnoozeInteractiveTest;

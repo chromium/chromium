@@ -5,11 +5,8 @@
 #ifndef COMPONENTS_SHARED_HIGHLIGHTING_CORE_COMMON_SHARED_HIGHLIGHTING_FEATURES_H_
 #define COMPONENTS_SHARED_HIGHLIGHTING_CORE_COMMON_SHARED_HIGHLIGHTING_FEATURES_H_
 
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-
-namespace base {
-struct Feature;
-}
 
 namespace shared_highlighting {
 

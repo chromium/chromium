@@ -11,11 +11,8 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base {
-struct Feature;
-}
 
 namespace feature_engagement {
 

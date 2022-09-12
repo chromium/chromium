@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list_buildflags.h"
@@ -43,7 +44,21 @@ enum FeatureState {
 // file static. It should never be used as a constexpr as it breaks
 // pointer-based identity lookup.
 // Note: New code should use CONSTINIT on the base::Feature declaration.
-struct BASE_EXPORT Feature {
+//
+// Making Feature constants mutable allows them to contain a mutable member to
+// cache their override state, while still remaining declared as const. This
+// cache member allows for significantly faster IsEnabled() checks.
+// The "Mutable Constants" check
+// (https://chromium.googlesource.com/chromium/src/+/main/docs/speed/binary_size/android_binary_size_trybot.md#Mutable-Constants)
+// detects this, because this generally means that a readonly symbol is put in
+// writable memory when readonly memory would be more efficient in terms of
+// space. Declaring as LOGICALLY_CONST adds a recognizable pattern to all
+// Feature constant mangled names, which the "Mutable Constants" can use to
+// ignore the symbols declared as such. The performance gains of the cache are
+// large enough that it is worth the tradeoff to have the symbols in
+// non-readonly memory, therefore requiring a bypass of the "Mutable Constants"
+// check.
+struct BASE_EXPORT LOGICALLY_CONST Feature {
   constexpr Feature(const char* name, FeatureState default_state)
       : name(name), default_state(default_state) {
 #if BUILDFLAG(ENABLE_BANNED_BASE_FEATURE_PREFIX)

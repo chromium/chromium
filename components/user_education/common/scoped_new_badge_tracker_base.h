@@ -7,11 +7,8 @@
 
 #include <set>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
-
-namespace base {
-struct Feature;
-}
 
 namespace feature_engagement {
 class Tracker;
