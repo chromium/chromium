@@ -32,6 +32,7 @@
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/media/unified_autoplay_config.h"
+#include "chrome/browser/permissions/notification_permission_review_service_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
@@ -42,7 +43,6 @@
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/settings/recent_site_settings_helper.h"
-#include "chrome/browser/ui/webui/settings/review_notification_permissions_helper.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
@@ -1316,8 +1316,10 @@ void SiteSettingsHandler::HandleGetReviewNotificationPermissions(
 
   const base::Value& callback_id = args[0];
 
+  auto* service =
+      NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
   auto review_notification_permissions =
-      site_settings::GetReviewNotificationPermissions(profile_);
+      service->GetNotificationSiteListForReview();
 
   base::Value::List result;
   for (const auto& notification_permission : review_notification_permissions) {

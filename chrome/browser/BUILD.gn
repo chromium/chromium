@@ -1119,6 +1119,8 @@ static_library("browser") {
     "permissions/last_tab_standing_tracker_observer.h",
     "permissions/last_tab_standing_tracker_tab_helper.cc",
     "permissions/last_tab_standing_tracker_tab_helper.h",
+    "permissions/notification_permission_review_service_factory.cc",
+    "permissions/notification_permission_review_service_factory.h",
     "permissions/notifications_engagement_service_factory.cc",
     "permissions/notifications_engagement_service_factory.h",
     "permissions/notifications_permission_revocation_config.cc",

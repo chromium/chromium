@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/review_notification_permissions_helper.h"
+#include "chrome/browser/permissions/notification_permission_review_service_factory.h"
 
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -21,8 +21,10 @@ class ReviewNotificationPermissionsHelperTest : public testing::Test {
 
 TEST_F(ReviewNotificationPermissionsHelperTest,
        CheckReviewNotificationPermissions) {
-  auto notification_permissions = GetReviewNotificationPermissions(profile());
-  { EXPECT_EQ(3UL, notification_permissions.size()); }
+  auto* service =
+      NotificationPermissionsReviewServiceFactory::GetForProfile(profile());
+  auto notification_permissions = service->GetNotificationSiteListForReview();
+  { EXPECT_EQ(0UL, notification_permissions.size()); }
 }
 
 }  // namespace site_settings
