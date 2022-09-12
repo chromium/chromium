@@ -21,6 +21,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/display/manager/display_manager.h"
@@ -508,6 +509,31 @@ TEST_P(AshMessagePopupCollectionTest, PopupDestroyedDuringClick) {
   event_generator->ClickLeftButton();
 
   EXPECT_FALSE(GetLastPopUpAdded());
+}
+
+// Tests that notification bubble baseline is correct when entering and exiting
+// tablet mode in a full screen window.
+TEST_P(AshMessagePopupCollectionTest, BaselineInTabletMode) {
+  UpdateDisplay("800x600");
+  ASSERT_TRUE(GetPrimaryShelf()->IsHorizontalAlignment());
+
+  // Baseline is higher than the top of the shelf in clamshell mode.
+  EXPECT_GT(GetPrimaryShelf()->GetShelfBoundsInScreen().y(),
+            popup_collection()->GetBaseline());
+
+  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
+
+  // Baseline is higher than the top of the shelf after entering tablet mode.
+  tablet_mode_controller->SetEnabledForTest(true);
+  EXPECT_TRUE(tablet_mode_controller->InTabletMode());
+  EXPECT_GT(GetPrimaryShelf()->GetShelfBoundsInScreen().y(),
+            popup_collection()->GetBaseline());
+
+  // Baseline is higher than the top of the shelf after exiting tablet mode.
+  tablet_mode_controller->SetEnabledForTest(false);
+  EXPECT_FALSE(tablet_mode_controller->InTabletMode());
+  EXPECT_GT(GetPrimaryShelf()->GetShelfBoundsInScreen().y(),
+            popup_collection()->GetBaseline());
 }
 
 }  // namespace ash

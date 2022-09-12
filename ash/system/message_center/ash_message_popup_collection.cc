@@ -54,9 +54,11 @@ AshMessagePopupCollection::AshMessagePopupCollection(Shelf* shelf)
   if (!features::IsNotificationsRefreshEnabled())
     set_inverse();
   shelf_->AddObserver(this);
+  Shell::Get()->tablet_mode_controller()->AddObserver(this);
 }
 
 AshMessagePopupCollection::~AshMessagePopupCollection() {
+  Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   shelf_->RemoveObserver(this);
   for (views::Widget* widget : tracked_widgets_)
     widget->RemoveObserver(this);
@@ -216,6 +218,16 @@ message_center::MessagePopupView* AshMessagePopupCollection::CreatePopup(
       MessageViewFactory::Create(notification, /*shown_in_popup=*/true)
           .release(),
       this, a11_feedback_on_init);
+}
+
+void AshMessagePopupCollection::OnTabletModeStarted() {
+  // Reset bounds so pop-up baseline is updated.
+  ResetBounds();
+}
+
+void AshMessagePopupCollection::OnTabletModeEnded() {
+  // Reset bounds so pop-up baseline is updated.
+  ResetBounds();
 }
 
 void AshMessagePopupCollection::OnSlideOut(const std::string& notification_id) {
