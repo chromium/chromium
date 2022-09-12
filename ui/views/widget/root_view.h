@@ -100,6 +100,7 @@ class VIEWS_EXPORT RootView : public View,
 
   // Make an announcement through the screen reader, if present.
   void AnnounceText(const std::u16string& text);
+  View* GetAnnounceViewForTesting();
 
   // FocusTraversable:
   FocusSearch* GetFocusSearch() override;
@@ -163,6 +164,10 @@ class VIEWS_EXPORT RootView : public View,
   // in the current coordinate system (i.e. any necessary transformation should
   // be applied to the point prior to calling this).
   void SetMouseLocationAndFlags(const ui::MouseEvent& event);
+
+  // Returns announce_view_, a hidden view used to make announcements to the
+  // screen reader via an alert or live region update.
+  raw_ptr<AnnounceTextView> GetOrCreateAnnounceView();
 
   // |view| is the view receiving |event|. This function sends the event to all
   // the Views up the hierarchy that has |notify_enter_exit_on_child_| flag

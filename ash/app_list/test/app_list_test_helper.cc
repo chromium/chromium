@@ -34,6 +34,7 @@
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/tween.h"
+#include "ui/views/widget/root_view.h"
 
 namespace ash {
 
@@ -231,6 +232,15 @@ bool AppListTestHelper::IsInFolderView() {
 
 void AppListTestHelper::DisableAppListNudge(bool disable) {
   AppListNudgeController::SetReorderNudgeDisabledForTest(disable);
+}
+
+views::View* AppListTestHelper::GetAccessibilityAnnounceView() {
+  views::Widget* widget = ShouldUseBubbleAppList()
+                              ? GetBubbleView()->GetWidget()
+                              : GetAppListView()->GetWidget();
+  DCHECK(widget);
+  return static_cast<views::internal::RootView*>(widget->GetRootView())
+      ->GetAnnounceViewForTesting();
 }
 
 AppListView* AppListTestHelper::GetAppListView() {

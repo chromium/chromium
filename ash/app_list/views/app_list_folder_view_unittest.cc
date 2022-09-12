@@ -79,9 +79,7 @@ TEST_F(AppListFolderViewProductivityLauncherTest,
   ASSERT_TRUE(helper->IsInFolderView());
 
   // Get the accessibility announcement view.
-  auto* folder_view = helper->GetBubbleFolderView();
-  views::View* announcement_view =
-      folder_view->a11y_announcer_for_test()->announcement_view_for_test();
+  views::View* announcement_view = helper->GetAccessibilityAnnounceView();
   ASSERT_TRUE(announcement_view);
 
   // Add a callback to wait for an accessibility event.

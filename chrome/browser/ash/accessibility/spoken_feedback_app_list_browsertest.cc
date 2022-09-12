@@ -202,6 +202,41 @@ class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
     ::test::PopulateDummyAppListItems(num);
   }
 
+  // Moves to the first test app in a populated list of apps.
+  // Returns the index of that item.
+  const int MoveToFirstTestApp() {
+    // Focus the shelf. This selects the launcher button.
+    sm_.Call([this]() {
+      EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+    });
+    sm_.ExpectSpeechPattern("Launcher");
+    sm_.ExpectSpeech("Button");
+    sm_.ExpectSpeech("Shelf");
+    sm_.ExpectSpeech("Tool bar");
+
+    // Activate the launcher button. This opens bubble launcher.
+    sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
+    sm_.ExpectSpeechPattern("Search your *");
+    sm_.ExpectSpeech("Edit text");
+
+    sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+    sm_.ExpectSpeech("Button");
+
+    int test_item_index = 0;
+    ash::AppListItem* test_item = FindItemByName("app 0", &test_item_index);
+    EXPECT_TRUE(test_item);
+
+    // Skip over apps that were installed before the test item.
+    // This selects the first app installed by the test.
+    for (int i = 0; i < test_item_index; ++i) {
+      sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+    }
+    sm_.ExpectSpeech("app 0");
+    sm_.ExpectSpeech("Button");
+
+    return test_item_index;
+  }
+
   std::vector<std::string> GetPublishedSuggestionChips() {
     std::vector<std::string> chips;
     std::vector<ChromeSearchResult*> published_results =
@@ -559,36 +594,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, ClamshellLauncher) {
 // accessible name describe its position. (See crbug.com/1098495)
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, AppListReordering) {
   PopulateApps(22);
-  int test_item_index = 0;
-  ash::AppListItem* test_item = FindItemByName("app 0", &test_item_index);
-  ASSERT_TRUE(test_item);
-
   EnableChromeVox();
-
-  // Focus the shelf. This selects the launcher button.
-  sm_.Call([this]() {
-    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
-  });
-  sm_.ExpectSpeechPattern("Launcher");
-  sm_.ExpectSpeech("Button");
-  sm_.ExpectSpeech("Shelf");
-  sm_.ExpectSpeech("Tool bar");
-
-  // Activate the launcher button. This opens bubble launcher.
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
-  sm_.ExpectSpeechPattern("Search your *");
-  sm_.ExpectSpeech("Edit text");
-
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Button");
-
-  // Skip over apps that were installed before the test item.
-  // This selects the first app installed by the test.
-  for (int i = 0; i < test_item_index; ++i) {
-    sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  }
-  sm_.ExpectSpeech("app 0");
-  sm_.ExpectSpeech("Button");
+  const int test_item_index = MoveToFirstTestApp();
 
   // The default column of app 0.
   const int original_column = test_item_index + 1;
@@ -642,39 +649,10 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, AppListReordering) {
 }
 
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, AppListFoldering) {
-  // Add 3 apps.
+  // Add 3 apps and move to the first one.
   PopulateApps(3);
-
-  int test_item_index = 0;
-  ash::AppListItem* test_item = FindItemByName("app 0", &test_item_index);
-  ASSERT_TRUE(test_item);
-
   EnableChromeVox();
-
-  // Focus the shelf. This selects the launcher button.
-  sm_.Call([this]() {
-    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
-  });
-  sm_.ExpectSpeechPattern("Launcher");
-  sm_.ExpectSpeech("Button");
-  sm_.ExpectSpeech("Shelf");
-  sm_.ExpectSpeech("Tool bar");
-
-  // Activate the launcher button. This opens bubble launcher.
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
-  sm_.ExpectSpeechPattern("Search your *");
-  sm_.ExpectSpeech("Edit text");
-
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Button");
-
-  // Skip over apps that were installed before the test item.
-  // This selects the first app installed by the test.
-  for (int i = 0; i < test_item_index; ++i) {
-    sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
-  }
-  sm_.ExpectSpeech("app 0");
-  sm_.ExpectSpeech("Button");
+  const int test_item_index = MoveToFirstTestApp();
 
   // Combine items and create a new folder.
   sm_.Call([]() { SendKeyPressWithShiftAndControl(ui::VKEY_RIGHT); });
@@ -698,6 +676,89 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, AppListFoldering) {
   std::string expected_text;
   sm_.ExpectSpeech(base::SStringPrintf(
       &expected_text, "Moved to row 1, column %d.", test_item_index + 1));
+
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
+                       CloseFolderMakesA11yAnnouncement) {
+  // Add 3 apps and move to the first one.
+  PopulateApps(3);
+  EnableChromeVox();
+  MoveToFirstTestApp();
+
+  // Combine items and create a new folder.
+  sm_.Call([]() { SendKeyPressWithShiftAndControl(ui::VKEY_RIGHT); });
+  sm_.ExpectNextSpeechIsNot("Alert");
+  sm_.ExpectSpeech("Folder Unnamed");
+  sm_.ExpectSpeech("Expanded");
+  sm_.ExpectSpeech("app 0 combined with app 1 to create new folder.");
+
+  // Move focus to the first item in folder.
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("app 1");
+  sm_.ExpectSpeech("Button");
+
+  // Press Escape to close the folder. ChromeVox should announce that the
+  // folder has been closed.
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_ESCAPE); });
+  sm_.ExpectSpeech("Close folder");
+
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
+                       SortAppsMakesA11yAnnouncement) {
+  // Add 3 apps and move to the first one.
+  PopulateApps(3);
+  EnableChromeVox();
+  MoveToFirstTestApp();
+
+  // The AppListTestApi's ReorderByMouseClickAtToplevelAppsGridMenu times out
+  // when called with ReorderAnimationEndState::kCompleted due to the run loop
+  // in WaitForReorderAnimationAndVerifyItemVisibility. So we do some of that
+  // work here manually.
+
+  // Show the context menu for the AppsGridView.
+  sm_.Call([]() {
+    AppsGridView* grid_view = ash::AppListTestApi().GetTopLevelAppsGridView();
+    EXPECT_TRUE(grid_view);
+    grid_view->ShowContextMenu(grid_view->GetBoundsInScreen().CenterPoint(),
+                               ui::MENU_SOURCE_KEYBOARD);
+  });
+  sm_.ExpectSpeech("menu opened");
+
+  // Press N to activate sort by name. This will result in focus being moved
+  // to a button to undo the sort just completed.
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_N); });
+  sm_.ExpectSpeech("Apps are sorted by name");
+  sm_.ExpectSpeech("Undo sort order by name");
+  sm_.ExpectSpeech("Button");
+
+  // Press the undo button.
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_SPACE); });
+  sm_.ExpectSpeech("Sort undo successful");
+
+  // Show the context menu for the AppsGridView.
+  sm_.Call([]() {
+    AppsGridView* grid_view = ash::AppListTestApi().GetTopLevelAppsGridView();
+    EXPECT_TRUE(grid_view);
+    grid_view->ShowContextMenu(grid_view->GetBoundsInScreen().CenterPoint(),
+                               ui::MENU_SOURCE_KEYBOARD);
+  });
+  sm_.ExpectSpeech("menu opened");
+
+  // Press C to activate sort by color. This will result in focus being moved
+  // to a button to undo the sort just completed.
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_C); });
+  sm_.ExpectSpeech("Apps are sorted by color");
+  sm_.ExpectSpeech("Undo sort order by color");
+  sm_.ExpectSpeech("Button");
+
+  // Press the undo button.
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_SPACE); });
+  sm_.ExpectSpeech("Sort undo successful");
+
   sm_.Replay();
 }
 

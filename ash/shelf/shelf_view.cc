@@ -477,11 +477,9 @@ ShelfAppButton* ShelfView::GetShelfItemViewWithContextMenu() {
 }
 
 void ShelfView::AnnounceShelfItemNotificationBadge(views::View* button) {
-  announcement_view_->GetViewAccessibility().OverrideName(
+  announcement_view_->GetViewAccessibility().AnnounceText(
       l10n_util::GetStringFUTF16(IDS_SHELF_ITEM_HAS_NOTIFICATION_BADGE,
                                  GetTitleForView(button)));
-  announcement_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                                               /*send_native_event=*/true);
 }
 
 bool ShelfView::LocationInsideVisibleShelfItemBounds(
@@ -1930,9 +1928,7 @@ void ShelfView::AnnounceShelfAlignment() {
       announcement = l10n_util::GetStringUTF16(IDS_SHELF_ALIGNMENT_RIGHT);
       break;
   }
-  announcement_view_->GetViewAccessibility().OverrideName(announcement);
-  announcement_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                                               /*send_native_event=*/true);
+  announcement_view_->GetViewAccessibility().AnnounceText(announcement);
 }
 
 bool ShelfView::IsAnimating() const {
@@ -1958,9 +1954,7 @@ void ShelfView::AnnounceShelfAutohideBehavior() {
       announcement = l10n_util::GetStringUTF16(IDS_SHELF_STATE_ALWAYS_HIDDEN);
       break;
   }
-  announcement_view_->GetViewAccessibility().OverrideName(announcement);
-  announcement_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                                               /*send_native_event=*/true);
+  announcement_view_->GetViewAccessibility().AnnounceText(announcement);
 }
 
 void ShelfView::AnnouncePinUnpinEvent(const ShelfItem& item, bool pinned) {
@@ -1971,9 +1965,7 @@ void ShelfView::AnnouncePinUnpinEvent(const ShelfItem& item, bool pinned) {
   std::u16string announcement = l10n_util::GetStringFUTF16(
       pinned ? IDS_SHELF_ITEM_WAS_PINNED : IDS_SHELF_ITEM_WAS_UNPINNED,
       item_title);
-  announcement_view_->GetViewAccessibility().OverrideName(announcement);
-  announcement_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                                               /*send_native_event=*/true);
+  announcement_view_->GetViewAccessibility().AnnounceText(announcement);
 }
 
 void ShelfView::AnnounceSwapEvent(const ShelfItem& first_item,
@@ -1988,9 +1980,7 @@ void ShelfView::AnnounceSwapEvent(const ShelfItem& first_item,
           : second_item.title;
   std::u16string announcement = l10n_util::GetStringFUTF16(
       IDS_SHELF_ITEMS_WERE_SWAPPED, first_item_title, second_item_title);
-  announcement_view_->GetViewAccessibility().OverrideName(announcement);
-  announcement_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                                               /*send_native_event=*/true);
+  announcement_view_->GetViewAccessibility().AnnounceText(announcement);
 }
 
 gfx::Rect ShelfView::GetBoundsForDragInsertInScreen() {

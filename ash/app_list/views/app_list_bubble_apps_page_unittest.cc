@@ -525,9 +525,7 @@ TEST_F(AppListBubbleAppsPageTest, SortAppsMakesA11yAnnouncement) {
   helper->ShowAppList();
 
   auto* apps_page = helper->GetBubbleAppsPage();
-  views::View* announcement_view = apps_page->toast_container_for_test()
-                                       ->a11y_announcer_for_test()
-                                       ->announcement_view_for_test();
+  views::View* announcement_view = helper->GetAccessibilityAnnounceView();
   ASSERT_TRUE(announcement_view);
 
   // Add a callback to wait for an accessibility event.

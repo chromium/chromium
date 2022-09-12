@@ -540,10 +540,7 @@ TEST_F(PagedAppsGridViewTest, SortAppsMakesA11yAnnouncement) {
   helper->AddAppItems(5);
   helper->GetAppsContainerView()->ResetForShowApps();
 
-  AppsContainerView* container_view = helper->GetAppsContainerView();
-  views::View* announcement_view = container_view->toast_container()
-                                       ->a11y_announcer_for_test()
-                                       ->announcement_view_for_test();
+  views::View* announcement_view = helper->GetAccessibilityAnnounceView();
   ASSERT_TRUE(announcement_view);
 
   // Add a callback to wait for an accessibility event.

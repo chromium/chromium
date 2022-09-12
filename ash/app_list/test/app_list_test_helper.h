@@ -141,6 +141,9 @@ class AppListTestHelper {
   // Enables/Disables the app list nudge for testing.
   void DisableAppListNudge(bool disable);
 
+  // Accessibility helpers.
+  views::View* GetAccessibilityAnnounceView();
+
   // Fullscreen/peeking launcher helpers.
   AppListView* GetAppListView();
   SearchBoxView* GetSearchBoxView();
