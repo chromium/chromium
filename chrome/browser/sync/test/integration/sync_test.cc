@@ -883,6 +883,7 @@ void SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
         ASSERT_TRUE(client->AwaitSyncSetupCompletion());
         break;
       case WAIT_FOR_COMMITS_TO_COMPLETE:
+        ASSERT_TRUE(client->AwaitSyncSetupCompletion());
         ASSERT_TRUE(WaitForAsyncChangesToBeCommitted(client_index));
         break;
     }
