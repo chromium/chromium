@@ -305,16 +305,13 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Verifies that the exportation of prerendering functions in the document is
-// handled properly when Prerender2 is set to be the default value. For android,
-// on which Prerender2 is enabled,  those functions are expected to be exported,
-// while the functions are not supposed to be exported on other platforms.
+// handled properly when Prerender2 is set to be the default value.
 IN_PROC_BROWSER_TEST_F(OmniboxPrerenderDefaultPrerender2BrowserTest,
                        PrerenderFunctionsCheckWithDefaultFlag) {
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(GetActiveWebContents());
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
 
-#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(true,
             EvalJs(GetActiveWebContents(), "document.prerendering === false"));
   EXPECT_EQ(0, EvalJs(GetActiveWebContents(),
@@ -322,15 +319,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderDefaultPrerender2BrowserTest,
                       "activationStart"));
   EXPECT_EQ(true, EvalJs(GetActiveWebContents(),
                          "'onprerenderingchange' in document"));
-#else
-  EXPECT_EQ(true, EvalJs(GetActiveWebContents(),
-                         "document.prerendering === undefined"));
-  EXPECT_EQ(true, EvalJs(GetActiveWebContents(),
-                         "performance.getEntriesByType('navigation')[0]."
-                         "activationStart === undefined"));
-  EXPECT_EQ(true, EvalJs(GetActiveWebContents(),
-                         "document.onprerenderingchange === undefined"));
-#endif
 }
 
 class PrerenderOmniboxSearchSuggestionBrowserTest
