@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/system/diagnostics/networking_log.h"
+#include "ash/webui/diagnostics_ui/backend/histogram_util.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
@@ -128,9 +129,29 @@ mojom::IPConfigPropertiesPtr CreateIPConfigProperties(
     const network_mojom::IPConfigPropertiesPtr& ip_config_props) {
   mojom::IPConfigPropertiesPtr ip_config = mojom::IPConfigProperties::New();
   ip_config->ip_address = ip_config_props->ip_address;
-  ip_config->routing_prefix = ip_config_props->routing_prefix;
   ip_config->gateway = ip_config_props->gateway;
   ip_config->name_servers = ip_config_props->name_servers;
+  // Default to 0 means an unset value.
+  ip_config->routing_prefix = 0;
+  auto routing_prefix = ip_config_props->routing_prefix;
+  bool isIPv4 = ip_config_props->type == network_mojom::IPConfigType::kIPv4;
+  if (isnan(routing_prefix)) {
+    LOG(ERROR) << "routing_prefix is not a number.";
+    EmitNetworkDataError(metrics::DataError::kNotANumber);
+  } else if (isIPv4 && (routing_prefix < 0 || routing_prefix > 32)) {
+    LOG(ERROR) << "IPv4 routing_prefix should be larger/equal to zero and "
+                  "smaller/equal to 32. It is now: "
+               << routing_prefix;
+    EmitNetworkDataError(metrics::DataError::kExpectationNotMet);
+  } else if (!isIPv4 && (routing_prefix < 0 || routing_prefix > 128)) {
+    // TODO(wenyu): Add unit test to cover this scenario.
+    LOG(ERROR) << "IPv6 routing_prefix should be larger/equal to zero and "
+                  "smaller/equal to 128. It is now: "
+               << routing_prefix;
+    EmitNetworkDataError(metrics::DataError::kExpectationNotMet);
+  } else {
+    ip_config->routing_prefix = routing_prefix;
+  }
   return ip_config;
 }
 

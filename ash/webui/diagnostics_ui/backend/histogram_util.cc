@@ -72,6 +72,10 @@ void EmitBatteryDataError(DataError error) {
   base::UmaHistogramEnumeration("ChromeOS.DiagnosticsUi.Error.Battery", error);
 }
 
+void EmitNetworkDataError(DataError error) {
+  base::UmaHistogramEnumeration("ChromeOS.DiagnosticsUi.Error.Network", error);
+}
+
 void EmitCrosHealthdProbeError(const base::StringPiece source_type,
                                cros_healthd::mojom::ErrorType error_type) {
   const std::string& metric_name = GetMetricNameForSourceType(source_type);

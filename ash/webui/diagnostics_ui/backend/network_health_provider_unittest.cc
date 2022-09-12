@@ -6,9 +6,11 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/system/diagnostics/networking_log.h"
+#include "ash/webui/diagnostics_ui/backend/histogram_util.h"
 #include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -52,6 +54,11 @@ constexpr char kCellular0Name[] = "cellular0_name";
 constexpr char kCellular0NetworkGuid[] = "cellular0_network_guid";
 constexpr char kFormattedMacAddress[] = "01:23:45:67:89:AB";
 constexpr char kTestIPConfigPath[] = "test_ip_config_path";
+constexpr char kNetworkDataError[] = "ChromeOS.DiagnosticsUi.Error.Network";
+
+// Due to how CrosNetworkConfig notifies observers of changes, the
+// expectation_not_met_error will be triggered 4 times for every change.
+constexpr int kExpectationNotMetErrorCount = 4;
 
 // TODO(https://crbug.com/1164001): remove when network_config is moved to ash.
 namespace network_config = ::chromeos::network_config;
@@ -126,6 +133,20 @@ void ExpectStateObserverFired(const FakeNetworkStateObserver& observer,
   const size_t current_call_count = observer.GetCallCount();
   EXPECT_GT(current_call_count, *prior_call_count);
   *prior_call_count = current_call_count;
+}
+
+void VerifyNetworkDataErrorBucketCounts(
+    const base::HistogramTester& tester,
+    size_t expected_no_data_error,
+    size_t expected_not_a_number_error,
+    size_t expected_expectation_not_met_error) {
+  tester.ExpectBucketCount(kNetworkDataError, metrics::DataError::kNoData,
+                           expected_no_data_error);
+  tester.ExpectBucketCount(kNetworkDataError, metrics::DataError::kNotANumber,
+                           expected_not_a_number_error);
+  tester.ExpectBucketCount(kNetworkDataError,
+                           metrics::DataError::kExpectationNotMet,
+                           expected_expectation_not_met_error);
 }
 
 }  // namespace
@@ -472,6 +493,33 @@ class NetworkHealthProviderTest : public testing::Test {
     network_handler_test_helper_->ClearDevices();
     network_handler_test_helper_->ClearServices();
     task_environment_.RunUntilIdle();
+  }
+
+  mojom::IPConfigPropertiesPtr SetupRoutingPrefixToTestDataError(
+      int routing_prefix) {
+    // Observe the network list.
+    FakeNetworkListObserver list_observer;
+    SetupObserver(&list_observer);
+
+    // Create a wifi device.
+    CreateWifiDevice();
+    AssociateIPConfigWithWifiDevice();
+
+    const std::string guid = list_observer.observer_guids()[0];
+
+    // Observe the network.
+    FakeNetworkStateObserver observer;
+    SetupObserver(&observer, guid);
+
+    // Set IP Config properties.
+    SetRoutingPrefixForIPConfig(routing_prefix);
+
+    AssociateWifiWithIPConfig();
+    SetWifiOnline();
+
+    auto ip_config = observer.GetLatestState()->ip_config.Clone();
+
+    return ip_config;
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -1227,6 +1275,41 @@ TEST_F(NetworkHealthProviderTest, IPConfig) {
   EXPECT_EQ(name_servers.size(), 2U);
   EXPECT_EQ(name_servers[0], dns_server_1);
   EXPECT_EQ(name_servers[1], dns_server_2);
+}
+
+TEST_F(NetworkHealthProviderTest, IPConfigRoutingPrefixExpectationNotMet) {
+  base::HistogramTester histogram_tester;
+  VerifyNetworkDataErrorBucketCounts(histogram_tester,
+                                     /*expected_no_data_error=*/0,
+                                     /*expected_not_a_number_error=*/0,
+                                     /*expected_expectation_not_met_error=*/0);
+
+  auto ip_config = SetupRoutingPrefixToTestDataError(33);
+
+  // routing_prefix should be default to 0.
+  EXPECT_EQ(ip_config->routing_prefix, 0);
+  VerifyNetworkDataErrorBucketCounts(histogram_tester,
+                                     /*expected_no_data_error=*/0,
+                                     /*expected_not_a_number_error=*/0,
+                                     kExpectationNotMetErrorCount);
+}
+
+TEST_F(NetworkHealthProviderTest,
+       IPConfigRoutingPrefixExpectationNotMetAsNegative) {
+  base::HistogramTester histogram_tester;
+  VerifyNetworkDataErrorBucketCounts(histogram_tester,
+                                     /*expected_no_data_error=*/0,
+                                     /*expected_not_a_number_error=*/0,
+                                     /*expected_expectation_not_met_error=*/0);
+
+  auto ip_config = SetupRoutingPrefixToTestDataError(-1);
+
+  // routing_prefix should be default to 0.
+  EXPECT_EQ(ip_config->routing_prefix, 0);
+  VerifyNetworkDataErrorBucketCounts(histogram_tester,
+                                     /*expected_no_data_error=*/0,
+                                     /*expected_not_a_number_error=*/0,
+                                     kExpectationNotMetErrorCount);
 }
 
 TEST_F(NetworkHealthProviderTest, SetupWifiNetworkWithSecurity) {

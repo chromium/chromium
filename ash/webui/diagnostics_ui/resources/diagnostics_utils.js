@@ -199,6 +199,8 @@ export function getRoutineGroups(type, isArcEnabled) {
  * @return {string}
  */
 export function getSubnetMaskFromRoutingPrefix(prefix) {
+  // TODO(wenyu): Handle IPv6 type with prefix range of [1, 128].
+
   assert(prefix >= 0 && prefix <= 32);
 
   // A routing prefix can not be 0. Zero indicates an unset value.
