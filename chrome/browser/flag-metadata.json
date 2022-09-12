@@ -696,7 +696,7 @@
   {
     "name": "bluetooth-revamp",
     "owners": [ "khorimoto", "cros-connectivity@google.com" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 108
   },
   {
     "name": "bluetooth-sessionized-metrics",
