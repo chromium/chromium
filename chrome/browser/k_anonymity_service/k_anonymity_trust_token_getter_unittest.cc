@@ -1,0 +1,635 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/k_anonymity_service/k_anonymity_trust_token_getter.h"
+
+#include <inttypes.h>
+
+#include "base/callback.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/values_test_util.h"
+#include "chrome/browser/k_anonymity_service/k_anonymity_service_urls.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_constants.h"
+#include "net/dns/mock_host_resolver.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/trust_tokens.mojom.h"
+#include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
+
+using KeyAndNonUniqueUserId = KAnonymityTrustTokenGetter::KeyAndNonUniqueUserId;
+
+class TestTrustTokenQueryAnswerer
+    : public network::mojom::TrustTokenQueryAnswerer {
+ public:
+  TestTrustTokenQueryAnswerer() = default;
+  TestTrustTokenQueryAnswerer(const TestTrustTokenQueryAnswerer&) = delete;
+  TestTrustTokenQueryAnswerer& operator=(const TestTrustTokenQueryAnswerer&) =
+      delete;
+
+  void SetHasTokens(bool has_tokens) { has_tokens_ = has_tokens; }
+
+  void HasTrustTokens(const ::url::Origin& issuer,
+                      HasTrustTokensCallback callback) override {
+    std::move(callback).Run(network::mojom::HasTrustTokensResult::New(
+        network::mojom::TrustTokenOperationStatus::kOk, has_tokens_));
+  }
+  void HasRedemptionRecord(const ::url::Origin& issuer,
+                           HasRedemptionRecordCallback callback) override {
+    NOTIMPLEMENTED();
+  }
+
+ private:
+  bool has_tokens_ = false;
+};
+
+}  // namespace
+
+class KAnonymityTrustTokenGetterTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(network::features::kTrustTokens);
+    TestingProfile::Builder builder;
+    builder.SetSharedURLLoaderFactory(
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_));
+    profile_ = IdentityTestEnvironmentProfileAdaptor::
+        CreateProfileForIdentityTestEnvironment(
+            builder, signin::AccountConsistencyMethod::kMirror);
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
+    getter_ = std::make_unique<KAnonymityTrustTokenGetter>(
+        IdentityManagerFactory::GetForProfile(profile_.get()),
+        profile_->GetURLLoaderFactory(), &trust_token_answerer_);
+    url::Origin auth_origin = url::Origin::Create(GURL(kKAnonymityAuthServer));
+    isolation_info_ = net::IsolationInfo::Create(
+        net::IsolationInfo::RequestType::kOther, auth_origin, auth_origin,
+        net::SiteForCookies());
+  }
+
+  void InitializeIdentity(bool signed_on) {
+    auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
+    auto* identity_manager = identity_test_env->identity_manager();
+    if (signed_on) {
+      identity_test_env->MakePrimaryAccountAvailable(
+          "user@gmail.com", signin::ConsentLevel::kSignin);
+      ASSERT_TRUE(
+          identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+      EXPECT_EQ(1U, identity_manager->GetAccountsWithRefreshTokens().size());
+    }
+  }
+
+  void SimulateResponseForPendingRequest(std::string url, std::string content) {
+    EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+        url, content, net::HTTP_OK,
+        network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix));
+  }
+
+  void SimulateFailedResponseForPendingRequest(std::string url) {
+    EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+        url, "", net::HTTP_NOT_FOUND,
+        network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix));
+  }
+
+  void SimulateFailedResponseForAuthToken() {
+    identity_test_env_adaptor_->identity_test_env()
+        ->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+            GoogleServiceAuthError::FromServiceUnavailable("foo"));
+  }
+
+  void RespondWithOAuthToken(base::Time expiration) {
+    identity_test_env_adaptor_->identity_test_env()
+        ->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken("token",
+                                                                  expiration);
+  }
+
+  void RespondWithTrustTokenNonUniqueUserId(int id) {
+    std::string request_url =
+        "https://chromekanonymityauth-pa.googleapis.com/v1/"
+        "generateShortIdentifier";
+
+    const auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+    ASSERT_TRUE(pending_request);
+    const auto& request = pending_request->request;
+    EXPECT_EQ(request_url, request.url);
+    EXPECT_TRUE(
+        request.headers.HasHeader(net::HttpRequestHeaders::kAuthorization));
+    EXPECT_EQ(net::HttpRequestHeaders::kGetMethod, request.method);
+    EXPECT_EQ(network::mojom::CredentialsMode::kOmit, request.credentials_mode);
+    ASSERT_TRUE(request.trusted_params);
+    EXPECT_TRUE(isolation_info_.IsEqualForTesting(
+        request.trusted_params->isolation_info));
+
+    SimulateResponseForPendingRequest(
+        request_url, base::StringPrintf("{\"shortClientIdentifier\": %d}", id));
+  }
+
+  void RespondWithTrustTokenKeys(int id, base::Time expiration) {
+    std::string request_url = base::StringPrintf(
+        "https://chromekanonymityauth-pa.googleapis.com/v1/%d/fetchKeys?key=",
+        id);
+
+    const auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+    ASSERT_TRUE(pending_request);
+    const auto& request = pending_request->request;
+    EXPECT_EQ(0u, request.url.spec().find(request_url));
+    EXPECT_FALSE(
+        request.headers.HasHeader(net::HttpRequestHeaders::kAuthorization));
+    EXPECT_EQ(net::HttpRequestHeaders::kGetMethod, request.method);
+    EXPECT_EQ(network::mojom::CredentialsMode::kOmit, request.credentials_mode);
+    ASSERT_TRUE(request.trusted_params);
+    EXPECT_TRUE(isolation_info_.IsEqualForTesting(
+        request.trusted_params->isolation_info));
+    SimulateResponseForPendingRequest(
+        request_url,
+        base::StringPrintf(
+            R"({
+          "protocolVersion":"TrustTokenV3VOPRF",
+          "id": 1,
+          "batchSize": 1,
+          "keys": [
+            {
+              "keyIdentifier": 0,
+              "keyMaterial": "InsertKeyHere",
+              "expirationTimestampUsec": "%)" PRIu64 R"("
+            }
+          ]
+          })",
+            (expiration - base::Time::UnixEpoch()).InMicroseconds()));
+  }
+
+  void RespondWithTrustTokenIssued(int id) {
+    std::string request_url = base::StringPrintf(
+        "https://chromekanonymityauth-pa.googleapis.com/v1/%d/issueTrustToken",
+        id);
+
+    const auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+    ASSERT_TRUE(pending_request);
+    const auto& request = pending_request->request;
+    EXPECT_EQ(request_url, request.url);
+    EXPECT_TRUE(
+        request.headers.HasHeader(net::HttpRequestHeaders::kAuthorization));
+    EXPECT_EQ(net::HttpRequestHeaders::kPostMethod, request.method);
+    EXPECT_EQ(network::mojom::CredentialsMode::kOmit, request.credentials_mode);
+    ASSERT_TRUE(request.trusted_params);
+    EXPECT_TRUE(isolation_info_.IsEqualForTesting(
+        request.trusted_params->isolation_info));
+    SimulateResponseForPendingRequest(request_url, "");
+  }
+
+  KAnonymityTrustTokenGetter* getter() { return getter_.get(); }
+
+  void SetHasTokens(bool has_tokens) {
+    trust_token_answerer_.SetHasTokens(has_tokens);
+  }
+
+  content::BrowserTaskEnvironment* task_environment() {
+    return &task_environment_;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  net::IsolationInfo isolation_info_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
+  std::unique_ptr<KAnonymityTrustTokenGetter> getter_;
+  TestTrustTokenQueryAnswerer trust_token_answerer_;
+  data_decoder::test::InProcessDataDecoder decoder_;
+};
+
+TEST_F(KAnonymityTrustTokenGetterTest, TryGetNotSignedIn) {
+  InitializeIdentity(/*signed_on=*/false);
+  base::RunLoop run_loop;
+  getter()->TryGetTrustTokenAndKey(
+      base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+          base::BindLambdaForTesting(
+              [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+                EXPECT_FALSE(result);
+                run_loop.Quit();
+              })));
+  run_loop.Run();
+}
+
+TEST_F(KAnonymityTrustTokenGetterTest, TryGetAuthTokenFailed) {
+  InitializeIdentity(/*signed_on=*/true);
+  base::RunLoop run_loop;
+  getter()->TryGetTrustTokenAndKey(
+      base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+          base::BindLambdaForTesting(
+              [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+                EXPECT_FALSE(result);
+                run_loop.Quit();
+              })));
+  SimulateFailedResponseForAuthToken();
+  run_loop.Run();
+}
+
+TEST_F(KAnonymityTrustTokenGetterTest, TryGetNonUniqueUserIdFetchFailed) {
+  InitializeIdentity(/*signed_on=*/true);
+  base::RunLoop run_loop;
+  getter()->TryGetTrustTokenAndKey(
+      base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+          base::BindLambdaForTesting(
+              [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+                EXPECT_FALSE(result);
+                run_loop.Quit();
+              })));
+  RespondWithOAuthToken(base::Time::Max());
+  SimulateFailedResponseForPendingRequest(
+      "https://chromekanonymityauth-pa.googleapis.com/v1/"
+      "generateShortIdentifier");
+  run_loop.Run();
+}
+
+TEST_F(KAnonymityTrustTokenGetterTest,
+       TryJoinSetMalformedNonUniqueUserIdResponse) {
+  InitializeIdentity(/*signed_on=*/true);
+  std::vector<std::string> bad_responses = {
+      "",                              // empty
+      "1df3fd33sasdf",                 // base64 nonsense
+      "\x00\x11\x22\x33\x44\x55\x66",  // binary nonsense
+      "[]",                            // not a dict
+      "{}",                            // empty dict
+      R"({
+        shortClientIdentifier: "not an int",
+      })",  // shortClientIdentifier is not an integer
+      R"({
+        short_client_identifier: 2,
+        shortclientidentifier: 2,
+        ShortClientIdentifier: 2,
+      })",  // wrong keys
+  };
+  for (const auto& response : bad_responses) {
+    base::RunLoop run_loop;
+    getter()->TryGetTrustTokenAndKey(
+        base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+            base::BindLambdaForTesting(
+                [&run_loop,
+                 &response](absl::optional<KeyAndNonUniqueUserId> result) {
+                  EXPECT_FALSE(result) << response;
+                  run_loop.Quit();
+                })));
+    RespondWithOAuthToken(base::Time::Now() + base::Seconds(1));
+    SimulateResponseForPendingRequest(
+        "https://chromekanonymityauth-pa.googleapis.com/v1/"
+        "generateShortIdentifier",
+        response);
+    run_loop.Run();
+    task_environment()->FastForwardBy(base::Minutes(1));
+  }
+}
+
+TEST_F(KAnonymityTrustTokenGetterTest, TryGetKeyFetchFails) {
+  InitializeIdentity(/*signed_on=*/true);
+  base::RunLoop run_loop;
+  getter()->TryGetTrustTokenAndKey(
+      base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+          base::BindLambdaForTesting(
+              [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+                EXPECT_FALSE(result);
+                run_loop.Quit();
+              })));
+  RespondWithOAuthToken(base::Time::Max());
+  RespondWithTrustTokenNonUniqueUserId(2);
+  SimulateFailedResponseForPendingRequest(
+      "https://chromekanonymityauth-pa.googleapis.com/v1/2/fetchKeys");
+  run_loop.Run();
+}
+
+TEST_F(KAnonymityTrustTokenGetterTest,
+       TryJoinSetMalformedKeyCommitmentResponse) {
+  InitializeIdentity(/*signed_on=*/true);
+  std::vector<std::string> bad_responses = {
+      "",                              // empty
+      "1df3fd33sasdf",                 // base64 nonsense
+      "\x00\x11\x22\x33\x44\x55\x66",  // binary nonsense
+      "[]",                            // not a dict
+      "{}",                            // empty dict
+      R"({
+      "protocolVersion":"TrustTokenV3VOPRF",
+      "id": 1,
+      "batchSize": 1,
+      "keys": "key"
+      })",                             // keys not a list
+      R"({
+      "protocolVersion":"TrustTokenV3VOPRF",
+      "id": 1,
+      "batchSize": 1,
+      "keys": []
+      })",                             // keys empty
+      R"({
+      "protocolVersion":"TrustTokenV3VOPRF",
+      "id": 1,
+      "batchSize": 1,
+      "keys": ["bad key"]
+      })",                             // key not a dict
+      R"({
+      "protocolVersion":"TrustTokenV3VOPRF",
+      "id": 1,
+      "batchSize": 1,
+      "keys": [{}]
+      })",                             // key is empty
+      R"({
+      "protocolVersion":"TrustTokenV3VOPRF",
+      "id": 1,
+      "batchSize": 1,
+      "keys": [{
+        "keyIdentifier": "not an integer",
+        "keyMaterial": "InsertKeyHere",
+        "expirationTimestampUsec": "253402300799000000"
+      }]})",                           // key identifier is not an integer
+      R"({
+      "protocolVersion":"TrustTokenV3VOPRF",
+      "id": 1,
+      "batchSize": 1,
+      "keys": [{
+        "keyIdentifier": 0.1,
+        "keyMaterial": "InsertKeyHere",
+        "expirationTimestampUsec": "253402300799000000"
+      }]})",                           // key identifier is not an integer
+      R"({
+      "protocolVersion":"TrustTokenV3VOPRF",
+      "id": 1,
+      "batchSize": 1,
+      "keys": [{
+        "keyIdentifier": 0,
+        "keyMaterial": "InsertKeyHere",
+        "expirationTimestampUsec": "future"
+      }]})",                           // key expiration is not a number
+      R"({
+      "protocolVersion":"TrustTokenV3VOPRF",
+      "id": "one",
+      "batchSize": 1,
+      "keys": [{
+        "keyIdentifier": 0,
+        "keyMaterial": "InsertKeyHere",
+        "expirationTimestampUsec": "253402300799000000"
+      }]})",                           // id is not an integer
+      R"({
+      "protocolVersion":"TrustTokenV3VOPRF",
+      "id": 1,
+      "batchSize": "one",
+      "keys": [{
+        "keyIdentifier": 0,
+        "keyMaterial": "InsertKeyHere",
+        "expirationTimestampUsec": "253402300799000000"
+      }]})",                           // batchSize is not an integer
+  };
+
+  for (const auto& response : bad_responses) {
+    base::RunLoop run_loop;
+    getter()->TryGetTrustTokenAndKey(
+        base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+            base::BindLambdaForTesting(
+                [&run_loop,
+                 &response](absl::optional<KeyAndNonUniqueUserId> result) {
+                  EXPECT_FALSE(result) << response;
+                  run_loop.Quit();
+                })));
+    RespondWithOAuthToken(base::Time::Now() + base::Seconds(1));
+    RespondWithTrustTokenNonUniqueUserId(2);
+    SimulateResponseForPendingRequest(
+        "https://chromekanonymityauth-pa.googleapis.com/v1/2/fetchKeys",
+        response);
+    run_loop.Run();
+    task_environment()->FastForwardBy(base::Minutes(1));
+  }
+}
+
+TEST_F(KAnonymityTrustTokenGetterTest, TryGetNoToken) {
+  InitializeIdentity(/*signed_on=*/true);
+  base::RunLoop run_loop;
+  getter()->TryGetTrustTokenAndKey(
+      base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+          base::BindLambdaForTesting(
+              [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+                EXPECT_FALSE(result);
+                run_loop.Quit();
+              })));
+  RespondWithOAuthToken(base::Time::Max());
+  RespondWithTrustTokenNonUniqueUserId(2);
+  RespondWithTrustTokenKeys(2, base::Time::Now() + base::Days(1));
+  SimulateFailedResponseForPendingRequest(
+      "https://chromekanonymityauth-pa.googleapis.com/v1/2/issueTrustToken");
+
+  run_loop.Run();
+}
+
+TEST_F(KAnonymityTrustTokenGetterTest, TryGetSignedIn) {
+  InitializeIdentity(/*signed_on=*/true);
+  base::RunLoop run_loop;
+  base::Time key_expiration = base::Time::Now() + base::Days(1);
+  getter()->TryGetTrustTokenAndKey(
+      base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+          base::BindLambdaForTesting(
+              [&run_loop,
+               key_expiration](absl::optional<KeyAndNonUniqueUserId> result) {
+                ASSERT_TRUE(result);
+                EXPECT_EQ(2, result->non_unique_user_id);
+                EXPECT_THAT(base::test::ParseJson(result->key_commitment),
+                            base::test::IsJson(base::StringPrintf(
+                                R"({
+                   "TrustTokenV3VOPRF": {
+                     "protocol_version":"TrustTokenV3VOPRF",
+                     "batchsize":1,
+                     "id":1,
+                     "keys": {
+                       "0":{
+                         "Y":"InsertKeyHere",
+                         "expiry":"%)" PRIu64 R"("
+                         }}}})",
+                                (key_expiration - base::Time::UnixEpoch())
+                                    .InMicroseconds())));
+                run_loop.Quit();
+              })));
+  RespondWithOAuthToken(base::Time::Max());
+  RespondWithTrustTokenNonUniqueUserId(2);
+  RespondWithTrustTokenKeys(2, key_expiration);
+  RespondWithTrustTokenIssued(2);
+  run_loop.Run();
+}
+
+TEST_F(KAnonymityTrustTokenGetterTest, TryGetRepeatedly) {
+  InitializeIdentity(/*signed_on=*/true);
+  base::RunLoop run_loop;
+  int callback_count = 0;
+  for (int i = 0; i < 10; i++) {
+    getter()->TryGetTrustTokenAndKey(
+        base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+            base::BindLambdaForTesting(
+                [&callback_count, &run_loop,
+                 i](absl::optional<KeyAndNonUniqueUserId> result) {
+                  EXPECT_TRUE(result) << "iteration " << i;
+                  callback_count++;
+                  if (callback_count == 10)
+                    run_loop.Quit();
+                })));
+  }
+  RespondWithOAuthToken(base::Time::Max());
+  RespondWithTrustTokenNonUniqueUserId(2);
+  RespondWithTrustTokenKeys(2, base::Time::Now() + base::Days(1));
+  RespondWithTrustTokenIssued(2);
+  run_loop.RunUntilIdle();
+  // First one got a token. Now the next is waiting to get a token.
+  EXPECT_EQ(1, callback_count);
+  SetHasTokens(true);  // Let the rest try the 'already have a token' path.
+  RespondWithTrustTokenIssued(
+      2);  // Give a token to the second request to unblock it.
+  run_loop.Run();
+  EXPECT_EQ(10, callback_count);
+}
+
+TEST_F(KAnonymityTrustTokenGetterTest, TryGetFailureDropsAllRequests) {
+  InitializeIdentity(/*signed_on=*/true);
+  base::RunLoop run_loop;
+  int callback_count = 0;
+  for (int i = 0; i < 10; i++) {
+    getter()->TryGetTrustTokenAndKey(
+        base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+            base::BindLambdaForTesting(
+                [&callback_count, &run_loop,
+                 i](absl::optional<KeyAndNonUniqueUserId> result) {
+                  EXPECT_FALSE(result) << "iteration " << i;
+                  callback_count++;
+                  if (callback_count == 10)
+                    run_loop.Quit();
+                })));
+  }
+  RespondWithOAuthToken(base::Time::Max());
+  RespondWithTrustTokenNonUniqueUserId(2);
+  RespondWithTrustTokenKeys(2, base::Time::Now() + base::Days(1));
+  SimulateFailedResponseForPendingRequest(
+      "https://chromekanonymityauth-pa.googleapis.com/v1/2/issueTrustToken");
+  run_loop.Run();
+  EXPECT_EQ(10, callback_count);
+}
+
+TEST_F(KAnonymityTrustTokenGetterTest, TokenKeysDontExpire) {
+  InitializeIdentity(/*signed_on=*/true);
+  base::Time expiration = base::Time::Now() + base::Days(1);
+  {
+    base::RunLoop run_loop;
+    getter()->TryGetTrustTokenAndKey(
+        base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+            base::BindLambdaForTesting(
+                [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+                  ASSERT_TRUE(result);
+                  EXPECT_EQ(10, result->non_unique_user_id);
+                  run_loop.Quit();
+                })));
+    RespondWithOAuthToken(expiration);
+    RespondWithTrustTokenNonUniqueUserId(10);
+    RespondWithTrustTokenKeys(10, expiration);
+    RespondWithTrustTokenIssued(10);
+    run_loop.Run();
+  }
+  // The auth token should not be requested since it didn't expire.
+  // The key should not be fetched since it didn't expire.
+  task_environment()->FastForwardBy(base::Days(1) - base::Minutes(6));
+  {
+    base::RunLoop run_loop;
+    getter()->TryGetTrustTokenAndKey(
+        base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+            base::BindLambdaForTesting(
+                [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+                  ASSERT_TRUE(result);
+                  EXPECT_EQ(10, result->non_unique_user_id);
+                  run_loop.Quit();
+                })));
+    RespondWithTrustTokenIssued(10);
+    run_loop.Run();
+  }
+}
+
+TEST_F(KAnonymityTrustTokenGetterTest, AuthTokenExpire) {
+  InitializeIdentity(/*signed_on=*/true);
+  base::Time expiration = base::Time::Now() + base::Days(1);
+  {
+    base::RunLoop run_loop;
+    getter()->TryGetTrustTokenAndKey(
+        base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+            base::BindLambdaForTesting(
+                [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+                  ASSERT_TRUE(result);
+                  EXPECT_EQ(2, result->non_unique_user_id);
+                  run_loop.Quit();
+                })));
+    RespondWithOAuthToken(expiration);
+    RespondWithTrustTokenNonUniqueUserId(2);
+    RespondWithTrustTokenKeys(2, base::Time::Max());
+    RespondWithTrustTokenIssued(2);
+    run_loop.Run();
+  }
+  // The auth token should be requested since it expired.
+  task_environment()->FastForwardBy(base::Days(1));
+  base::Time new_expiration = base::Time::Now() + base::Days(1);
+  {
+    base::RunLoop run_loop;
+    getter()->TryGetTrustTokenAndKey(
+        base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+            base::BindLambdaForTesting(
+                [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+                  ASSERT_TRUE(result);
+                  EXPECT_EQ(2, result->non_unique_user_id);
+                  run_loop.Quit();
+                })));
+    RespondWithOAuthToken(new_expiration);
+    RespondWithTrustTokenIssued(2);
+    run_loop.Run();
+  }
+}
+
+TEST_F(KAnonymityTrustTokenGetterTest, TokenKeysExpire) {
+  InitializeIdentity(/*signed_on=*/true);
+  base::Time expiration = base::Time::Now() + base::Days(1);
+  {
+    base::RunLoop run_loop;
+    getter()->TryGetTrustTokenAndKey(
+        base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+            base::BindLambdaForTesting(
+                [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+                  ASSERT_TRUE(result);
+                  EXPECT_EQ(2, result->non_unique_user_id);
+                  run_loop.Quit();
+                })));
+    RespondWithOAuthToken(base::Time::Max());
+    RespondWithTrustTokenNonUniqueUserId(2);
+    RespondWithTrustTokenKeys(2, expiration);
+    RespondWithTrustTokenIssued(2);
+    run_loop.Run();
+  }
+  // The key should be re-fetched after it expires.
+  task_environment()->FastForwardBy(base::Days(1));
+  base::Time new_expiration = base::Time::Now() + base::Days(1);
+  {
+    base::RunLoop run_loop;
+    getter()->TryGetTrustTokenAndKey(
+        base::OnceCallback<void(absl::optional<KeyAndNonUniqueUserId>)>(
+            base::BindLambdaForTesting(
+                [&run_loop](absl::optional<KeyAndNonUniqueUserId> result) {
+                  ASSERT_TRUE(result);
+                  EXPECT_EQ(3, result->non_unique_user_id);
+                  run_loop.Quit();
+                })));
+    RespondWithTrustTokenNonUniqueUserId(3);
+    RespondWithTrustTokenKeys(3, new_expiration);
+    RespondWithTrustTokenIssued(3);
+    run_loop.Run();
+  }
+}

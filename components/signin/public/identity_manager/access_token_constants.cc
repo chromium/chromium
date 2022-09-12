@@ -69,6 +69,9 @@ const std::set<std::string> GetUnconsentedOAuth2Scopes() {
       // improve suggestions.
       GaiaConstants::kFeedOAuth2Scope,
 
+      // Required by k-Anonymity Server (FLEDGE)
+      GaiaConstants::kKAnonymityServiceOAuth2Scope,
+
     // Required by ChromeOS only.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       GaiaConstants::kAccountsReauthOAuth2Scope,

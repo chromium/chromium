@@ -364,6 +364,11 @@ after discussions on the right group.
       <annotation id="payments_sync_cards"/>
     </sender>
   </group>
+  <group name="K-Anonymity Service" hidden="true">
+    <sender name="K-Anonymity Service">
+      <annotation id="k_anonymity_service_get_token"/>
+    </sender>
+  </group>
   <group name="Location" hidden="true">
     <sender name="Location">
       <annotation id="geo_language_provider"/>
