@@ -19,7 +19,7 @@ system_image_name: "system-images;android-32;google_apis;x86_64"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-32/google_apis/x86_64"
-  version: "QU2q8r9n-RhOScnt67NUnP46uLs-XuM7Ib3PBKwG7mQC"
+  version: "m2cKpiBfbWwenESoCjZwFuryEQ6ivPb16Z4ZTg-EWcQC"
   dest_path: "generic_android32_foldable"
 }
 avd_name: "android_32_foldable_google_apis_x86_64"
