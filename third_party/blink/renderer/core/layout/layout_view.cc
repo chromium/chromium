@@ -349,7 +349,8 @@ void LayoutView::UpdateLayout() {
   }
 
   if (PageLogicalHeight() && ShouldUsePrintingLayout()) {
-    named_pages_mapper_ = std::make_unique<NamedPagesMapper>();
+    if (!RuntimeEnabledFeatures::LayoutNGPrintingEnabled())
+      named_pages_mapper_ = std::make_unique<NamedPagesMapper>();
     intrinsic_logical_widths_ = LogicalWidth();
     if (!fragmentation_context_) {
       fragmentation_context_ =
@@ -722,6 +723,12 @@ void LayoutView::CalculateScrollbarModes(
     v_mode = mojom::blink::ScrollbarMode::kAlwaysOn;
 
 #undef RETURN_SCROLLBAR_MODE
+}
+
+AtomicString LayoutView::NamedPageAtIndex(wtf_size_t page_index) const {
+  if (named_pages_mapper_)
+    return named_pages_mapper_->NamedPageAtIndex(page_index);
+  return AtomicString();
 }
 
 PhysicalRect LayoutView::DocumentRect() const {

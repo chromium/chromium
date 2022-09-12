@@ -104,20 +104,27 @@ TEST_F(LayoutViewTest, NamedPages) {
 
   ScopedPrintContext print_context(&GetDocument().View()->GetFrame());
   print_context->BeginPrintMode(500, 500);
-  const NamedPagesMapper* mapper = view->GetNamedPagesMapper();
-  ASSERT_TRUE(mapper);
 
-  EXPECT_EQ(mapper->NamedPageAtIndex(0), AtomicString());
-  EXPECT_EQ(mapper->NamedPageAtIndex(1), AtomicString());
-  EXPECT_EQ(mapper->NamedPageAtIndex(2), "yksi");
-  EXPECT_EQ(mapper->NamedPageAtIndex(3), "yksi");
-  EXPECT_EQ(mapper->NamedPageAtIndex(4), "yksi");
-  EXPECT_EQ(mapper->NamedPageAtIndex(5), "kaksi");
-  EXPECT_EQ(mapper->NamedPageAtIndex(6), "maksitaksi");
-  EXPECT_EQ(mapper->NamedPageAtIndex(7), AtomicString());
-  EXPECT_EQ(mapper->NamedPageAtIndex(8), "yksi");
-  EXPECT_EQ(mapper->NamedPageAtIndex(9), "yksi");
-  EXPECT_EQ(mapper->NamedPageAtIndex(100), "yksi");
+  EXPECT_EQ(view->NamedPageAtIndex(0), AtomicString());
+  EXPECT_EQ(view->NamedPageAtIndex(1), AtomicString());
+  EXPECT_EQ(view->NamedPageAtIndex(2), "yksi");
+  EXPECT_EQ(view->NamedPageAtIndex(3), "yksi");
+  EXPECT_EQ(view->NamedPageAtIndex(4), "yksi");
+  EXPECT_EQ(view->NamedPageAtIndex(5), "kaksi");
+  EXPECT_EQ(view->NamedPageAtIndex(6), "maksitaksi");
+  EXPECT_EQ(view->NamedPageAtIndex(7), AtomicString());
+  EXPECT_EQ(view->NamedPageAtIndex(8), "yksi");
+
+  if (RuntimeEnabledFeatures::LayoutNGPrintingEnabled()) {
+    // LayoutNGPrinting doesn't provide a name for pages that don't exist.
+    EXPECT_EQ(view->NamedPageAtIndex(9), AtomicString());
+    EXPECT_EQ(view->NamedPageAtIndex(100), AtomicString());
+  } else {
+    // The legacy API, on the other hand, has no clue about how many pages we
+    // have, so it will just return the last page name, for good measure.
+    EXPECT_EQ(view->NamedPageAtIndex(9), "yksi");
+    EXPECT_EQ(view->NamedPageAtIndex(100), "yksi");
+  }
 }
 
 struct HitTestConfig {

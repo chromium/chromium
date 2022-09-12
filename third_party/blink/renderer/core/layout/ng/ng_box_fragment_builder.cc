@@ -512,6 +512,7 @@ void NGBoxFragmentBuilder::PropagateChildBreakValues(
         previous_page_name = ConstraintSpace().PageName();
     }
     SetPreviousPageName(previous_page_name);
+    SetPageName(To<NGPhysicalBoxFragment>(fragment).PageName());
   }
 }
 

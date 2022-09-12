@@ -193,14 +193,14 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
       has_fragment_items = true;
   }
 
-  bool has_rare_data = builder->frame_set_layout_data_ ||
-                       builder->mathml_paint_info_ ||
-                       builder->table_grid_rect_ ||
-                       !builder->table_column_geometries_.IsEmpty() ||
-                       builder->table_collapsed_borders_ ||
-                       builder->table_collapsed_borders_geometry_ ||
-                       builder->table_cell_column_index_ ||
-                       !builder->table_section_row_offsets_.IsEmpty();
+  bool has_rare_data =
+      builder->frame_set_layout_data_ || builder->mathml_paint_info_ ||
+      builder->table_grid_rect_ ||
+      !builder->table_column_geometries_.IsEmpty() ||
+      builder->table_collapsed_borders_ ||
+      builder->table_collapsed_borders_geometry_ ||
+      builder->table_cell_column_index_ ||
+      !builder->table_section_row_offsets_.IsEmpty() || builder->page_name_;
 
   wtf_size_t num_fragment_items =
       builder->ItemsBuilder() ? builder->ItemsBuilder()->Size() : 0;
@@ -602,6 +602,7 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder)
     table_section_start_row_index = builder->table_section_start_row_index_;
     table_section_row_offsets = std::move(builder->table_section_row_offsets_);
   }
+  page_name = builder->page_name_;
 }
 
 NGPhysicalBoxFragment::RareData::RareData(const RareData& other)
@@ -622,7 +623,8 @@ NGPhysicalBoxFragment::RareData::RareData(const RareData& other)
               : nullptr),
       table_cell_column_index(other.table_cell_column_index),
       table_section_start_row_index(other.table_section_start_row_index),
-      table_section_row_offsets(other.table_section_row_offsets) {}
+      table_section_row_offsets(other.table_section_row_offsets),
+      page_name(other.page_name) {}
 
 const LayoutBox* NGPhysicalBoxFragment::OwnerLayoutBox() const {
   // TODO(layout-dev): We should probably get rid of this method, now that it

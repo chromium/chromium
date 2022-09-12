@@ -211,8 +211,14 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
     page_logical_height_ = height;
   }
 
+  virtual AtomicString NamedPageAtIndex(wtf_size_t page_index) const;
+
   NamedPagesMapper* GetNamedPagesMapper() const {
     NOT_DESTROYED();
+
+    // NamedPagesMapper is deprecated.
+    DCHECK(!RuntimeEnabledFeatures::LayoutNGPrintingEnabled());
+
     return named_pages_mapper_.get();
   }
 

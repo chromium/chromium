@@ -412,6 +412,12 @@ NGBreakStatus FinishFragmentation(NGBlockNode node,
 
   LayoutUnit final_block_size = desired_block_size;
 
+  if (space.IsPaginated() && !builder->PageName()) {
+    // Descendants take precedence, but if none of them propagated a page name,
+    // use the one specified on this element, if any.
+    builder->SetPageName(node.PageName());
+  }
+
   if (builder->FoundColumnSpanner())
     builder->SetDidBreakSelf();
 

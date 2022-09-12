@@ -2631,10 +2631,8 @@ void Document::ClearFocusedElementTimerFired(TimerBase*) {
 
 scoped_refptr<const ComputedStyle> Document::StyleForPage(uint32_t page_index) {
   AtomicString page_name;
-  if (const LayoutView* layout_view = GetLayoutView()) {
-    if (const NamedPagesMapper* mapper = layout_view->GetNamedPagesMapper())
-      page_name = mapper->NamedPageAtIndex(page_index);
-  }
+  if (const LayoutView* layout_view = GetLayoutView())
+    page_name = layout_view->NamedPageAtIndex(page_index);
   GetStyleEngine().UpdateActiveStyle();
   return GetStyleEngine().GetStyleResolver().StyleForPage(page_index,
                                                           page_name);

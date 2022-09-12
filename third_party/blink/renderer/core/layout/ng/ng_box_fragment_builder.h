@@ -423,6 +423,17 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   void SetPreviousPageName(AtomicString name) { previous_page_name_ = name; }
   AtomicString PreviousPageName() const { return previous_page_name_; }
 
+  void SetPageName(const AtomicString name) {
+    if (!name)
+      return;
+    if (page_name_) {
+      DCHECK_EQ(page_name_, name);
+      return;
+    }
+    page_name_ = name;
+  }
+  AtomicString PageName() const { return page_name_; }
+
   // Join/"collapse" the previous (stored) break-after value with the next
   // break-before value, to determine how to deal with breaking between two
   // in-flow siblings.
@@ -773,6 +784,8 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   AtomicString start_page_name_ = g_null_atom;
   AtomicString previous_page_name_;
+
+  AtomicString page_name_;
 
   // The appeal of breaking inside this container.
   NGBreakAppeal break_appeal_ = kBreakAppealPerfect;

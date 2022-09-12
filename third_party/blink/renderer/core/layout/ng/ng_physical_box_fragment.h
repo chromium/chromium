@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -187,6 +188,15 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return const_has_rare_data_
                ? &ComputeRareDataAddress()->table_section_row_offsets
                : nullptr;
+  }
+
+  // The name of the page (if any) to which this fragment belongs. The page name
+  // is propagated all the way up to the page fragment, which is needed in order
+  // to support e.g. page orientation. See https://drafts.csswg.org/css-page-3
+  AtomicString PageName() const {
+    if (!const_has_rare_data_)
+      return AtomicString();
+    return ComputeRareDataAddress()->page_name;
   }
 
   // Returns the layout-overflow for this fragment.
@@ -504,6 +514,9 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     // Table-section rare-data.
     wtf_size_t table_section_start_row_index;
     Vector<LayoutUnit> table_section_row_offsets;
+
+    // Pagination data.
+    AtomicString page_name;
   };
 
   const NGFragmentItems* ComputeItemsAddress() const {
