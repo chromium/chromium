@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
 import static org.chromium.components.embedder_support.util.UrlUtilities.stripScheme;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
@@ -55,8 +56,8 @@ class PasswordAccessorySheetModernViewBinder {
 
         @Override
         protected void bind(KeyboardAccessoryData.UserInfo info, PasswordAccessoryInfoView view) {
-            bindChipView(view.getUsername(), info.getFields().get(0));
-            bindChipView(view.getPassword(), info.getFields().get(1));
+            bindChipView(view.getUsername(), info.getFields().get(0), view.getContext());
+            bindChipView(view.getPassword(), info.getFields().get(1), view.getContext());
 
             view.getTitle().setVisibility(info.isExactMatch() ? View.GONE : View.VISIBLE);
             // Strip the trailing slash (for aesthetic reasons):
@@ -76,14 +77,20 @@ class PasswordAccessorySheetModernViewBinder {
             if (requestOrigin.equals(mFaviconRequestOrigin)) view.setIconForBitmap(drawable);
         }
 
-        void bindChipView(ChipView chip, UserInfoField field) {
+        void bindChipView(ChipView chip, UserInfoField field, Context context) {
             chip.getPrimaryTextView().setTransformationMethod(
                     field.isObfuscated() ? new PasswordTransformationMethod() : null);
             chip.getPrimaryTextView().setText(field.getDisplayText());
             chip.getPrimaryTextView().setContentDescription(field.getA11yDescription());
-            chip.setOnClickListener(!field.isSelectable() ? null : src -> field.triggerSelection());
-            chip.setClickable(field.isSelectable());
-            chip.setEnabled(field.isSelectable());
+            View.OnClickListener listener = null;
+            if (field.isSelectable()) {
+                listener = src -> field.triggerSelection();
+            } else if (field.isObfuscated()) {
+                listener = src -> PasswordAccessoryInfoView.showWarningDialog(context);
+            }
+            chip.setOnClickListener(listener);
+            chip.setClickable(listener != null);
+            chip.setEnabled(listener != null);
         }
     }
 
