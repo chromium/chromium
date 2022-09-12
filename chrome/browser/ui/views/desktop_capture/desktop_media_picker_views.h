@@ -103,6 +103,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
   DesktopMediaList::Type GetSelectedSourceListType() const;
 
+  const bool is_get_display_media_call_;
   const bool audio_requested_;
   const bool suppress_local_audio_playback_;  // Effective only if audio shared.
   const content::GlobalRenderFrameHostId capturer_global_id_;
@@ -155,6 +156,8 @@ class DesktopMediaPickerViews : public DesktopMediaPicker {
   friend class DesktopMediaPickerViewsTestApi;
 
   DoneCallback callback_;
+
+  bool is_get_display_media_call_ = false;
 
   // The |dialog_| is owned by the corresponding views::Widget instance.
   // When DesktopMediaPickerViews is destroyed the |dialog_| is destroyed

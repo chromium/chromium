@@ -46532,25 +46532,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Exclude"/>
 </enum>
 
-<enum name="GetDisplayMediaPreferCurrentTabExplicitSelectionUserInteraction">
-  <int value="0" label="kDialogDismissed"/>
-  <int value="1" label="kUserCancelled"/>
-  <int value="2" label="kUserSelectedScreen"/>
-  <int value="3" label="kUserSelectedWindow"/>
-  <int value="4" label="kUserSelectedOtherTab"/>
-  <int value="5" label="kUserSelectedThisTabAsGenericTab"/>
-  <int value="6" label="kUserSelectedThisTab"/>
-</enum>
-
-<enum name="GetDisplayMediaUserInteraction">
-  <int value="0" label="kDialogDismissed"/>
-  <int value="1" label="kUserCancelled"/>
-  <int value="2" label="kUserSelectedScreen"/>
-  <int value="3" label="kUserSelectedWindow"/>
-  <int value="4" label="kUserSelectedOtherTab"/>
-  <int value="5" label="kUserSelectedThisTab"/>
-</enum>
-
 <enum name="GetEncryptionKeyAction">
   <int value="0" label="Key is successfully found - not first time"/>
   <int value="1" label="Key is successfully found for the first time"/>
@@ -66118,6 +66099,25 @@ Called by update_use_counter_css.py.-->
   <int value="1" label="All incorrect"/>
   <int value="2" label="Path-based was better"/>
   <int value="3" label="URL-based was better"/>
+</enum>
+
+<enum name="MediaUiGetDisplayMediaBasicFlowUserInteraction">
+  <int value="0" label="kDialogDismissed"/>
+  <int value="1" label="kUserCancelled"/>
+  <int value="2" label="kUserSelectedScreen"/>
+  <int value="3" label="kUserSelectedWindow"/>
+  <int value="4" label="kUserSelectedOtherTab"/>
+  <int value="5" label="kUserSelectedThisTab"/>
+</enum>
+
+<enum name="MediaUiGetDisplayMediaPreferCurrentTabFlowUserInteraction">
+  <int value="0" label="kDialogDismissed"/>
+  <int value="1" label="kUserCancelled"/>
+  <int value="2" label="kUserSelectedScreen"/>
+  <int value="3" label="kUserSelectedWindow"/>
+  <int value="4" label="kUserSelectedOtherTab"/>
+  <int value="5" label="kUserSelectedThisTabAsGenericTab"/>
+  <int value="6" label="kUserSelectedThisTab"/>
 </enum>
 
 <enum name="MediaUrlType">

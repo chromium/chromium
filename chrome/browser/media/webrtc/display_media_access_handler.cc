@@ -366,6 +366,7 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
       (capture_level != AllowedScreenCaptureLevel::kUnrestricted);
   picker_params.preferred_display_surface =
       pending_request.request.preferred_display_surface;
+  picker_params.is_get_display_media_call = true;
   pending_request.picker->Show(picker_params, std::move(source_lists),
                                std::move(done_callback));
 }

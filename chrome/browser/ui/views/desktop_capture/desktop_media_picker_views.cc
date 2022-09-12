@@ -74,7 +74,9 @@ const base::Feature kWarnUserOfSystemWideLocalAudioSuppression CONSTINIT{
     "WarnUserOfSystemWideLocalAudioSuppression",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-enum class GCBCMResult {
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class GDMPreferCurrentTabResult {
   kDialogDismissed = 0,                  // Tab/window closed, navigation, etc.
   kUserCancelled = 1,                    // User explicitly cancelled.
   kUserSelectedScreen = 2,               // Screen selected.
@@ -85,6 +87,8 @@ enum class GCBCMResult {
   kMaxValue = kUserSelectedThisTab
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class GDMResult {
   kDialogDismissed = 0,       // Tab/window closed, navigation, etc.
   kUserCancelled = 1,         // User explicitly cancelled.
@@ -95,21 +99,19 @@ enum class GDMResult {
   kMaxValue = kUserSelectedThisTab
 };
 
-void RecordUma(GCBCMResult result) {
+void RecordUma(GDMPreferCurrentTabResult result) {
   base::UmaHistogramEnumeration(
-      "Media.Ui.GetDisplayMediaPreferCurrentTab.ExplicitSelection."
-      "UserInteraction",
-      result);
+      "Media.Ui.GetDisplayMedia.PreferCurrentTabFlow.UserInteraction", result);
 }
 
 void RecordUma(GDMResult result) {
-  base::UmaHistogramEnumeration("Media.Ui.GetDisplayMedia.UserInteraction",
-                                result);
+  base::UmaHistogramEnumeration(
+      "Media.Ui.GetDisplayMedia.BasicFlow.UserInteraction", result);
 }
 
 void RecordUmaDismissal(DialogType dialog_type) {
   if (dialog_type == DialogType::kPreferCurrentTab) {
-    RecordUma(GCBCMResult::kDialogDismissed);
+    RecordUma(GDMPreferCurrentTabResult::kDialogDismissed);
   } else {
     RecordUma(GDMResult::kDialogDismissed);
   }
@@ -117,7 +119,7 @@ void RecordUmaDismissal(DialogType dialog_type) {
 
 void RecordUmaCancellation(DialogType dialog_type) {
   if (dialog_type == DialogType::kPreferCurrentTab) {
-    RecordUma(GCBCMResult::kUserCancelled);
+    RecordUma(GDMPreferCurrentTabResult::kUserCancelled);
   } else {
     RecordUma(GDMResult::kUserCancelled);
   }
@@ -140,7 +142,7 @@ void RecordUmaSelection(DialogType dialog_type,
 
     case DesktopMediaList::Type::kScreen: {
       if (dialog_type == DialogType::kPreferCurrentTab) {
-        RecordUma(GCBCMResult::kUserSelectedScreen);
+        RecordUma(GDMPreferCurrentTabResult::kUserSelectedScreen);
       } else {
         RecordUma(GDMResult::kUserSelectedScreen);
       }
@@ -149,7 +151,7 @@ void RecordUmaSelection(DialogType dialog_type,
 
     case DesktopMediaList::Type::kWindow: {
       if (dialog_type == DialogType::kPreferCurrentTab) {
-        RecordUma(GCBCMResult::kUserSelectedWindow);
+        RecordUma(GDMPreferCurrentTabResult::kUserSelectedWindow);
       } else {
         RecordUma(GDMResult::kUserSelectedWindow);
       }
@@ -167,9 +169,10 @@ void RecordUmaSelection(DialogType dialog_type,
               selected_media.web_contents_id.main_render_frame_id;
 
       if (dialog_type == DialogType::kPreferCurrentTab) {
-        RecordUma(current_tab_selected
-                      ? GCBCMResult::kUserSelectedThisTabAsGenericTab
-                      : GCBCMResult::kUserSelectedOtherTab);
+        RecordUma(
+            current_tab_selected
+                ? GDMPreferCurrentTabResult::kUserSelectedThisTabAsGenericTab
+                : GDMPreferCurrentTabResult::kUserSelectedOtherTab);
       } else {
         RecordUma(current_tab_selected ? GDMResult::kUserSelectedThisTab
                                        : GDMResult::kUserSelectedOtherTab);
@@ -178,7 +181,7 @@ void RecordUmaSelection(DialogType dialog_type,
     }
 
     case DesktopMediaList::Type::kCurrentTab: {
-      RecordUma(GCBCMResult::kUserSelectedThisTab);
+      RecordUma(GDMPreferCurrentTabResult::kUserSelectedThisTab);
       break;
     }
   }
@@ -305,7 +308,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
     const DesktopMediaPicker::Params& params,
     DesktopMediaPickerViews* parent,
     std::vector<std::unique_ptr<DesktopMediaList>> source_lists)
-    : audio_requested_(params.request_audio),
+    : is_get_display_media_call_(params.is_get_display_media_call),
+      audio_requested_(params.request_audio),
       suppress_local_audio_playback_(params.suppress_local_audio_playback),
       capturer_global_id_(
           params.web_contents
@@ -728,8 +732,10 @@ bool DesktopMediaPickerDialogView::Accept() {
     source.web_contents_id.disable_local_echo = true;
   }
 
-  RecordUmaSelection(dialog_type_, capturer_global_id_, source,
-                     GetSelectedSourceListType());
+  if (is_get_display_media_call_) {
+    RecordUmaSelection(dialog_type_, capturer_global_id_, source,
+                       GetSelectedSourceListType());
+  }
 
   if (parent_)
     parent_->NotifyDialogResult(source);
@@ -739,7 +745,9 @@ bool DesktopMediaPickerDialogView::Accept() {
 }
 
 bool DesktopMediaPickerDialogView::Cancel() {
-  RecordUmaCancellation(dialog_type_);
+  if (is_get_display_media_call_) {
+    RecordUmaCancellation(dialog_type_);
+  }
   return views::DialogDelegateView::Cancel();
 }
 
@@ -824,7 +832,9 @@ DesktopMediaPickerViews::DesktopMediaPickerViews() : dialog_(nullptr) {}
 
 DesktopMediaPickerViews::~DesktopMediaPickerViews() {
   if (dialog_) {
-    RecordUmaDismissal(dialog_->GetDialogType());
+    if (is_get_display_media_call_) {
+      RecordUmaDismissal(dialog_->GetDialogType());
+    }
     dialog_->DetachParent();
     dialog_->GetWidget()->Close();
   }
@@ -836,6 +846,7 @@ void DesktopMediaPickerViews::Show(
     DoneCallback done_callback) {
   DesktopMediaPickerManager::Get()->OnShowDialog();
 
+  is_get_display_media_call_ = params.is_get_display_media_call;
   callback_ = std::move(done_callback);
   dialog_ =
       new DesktopMediaPickerDialogView(params, this, std::move(source_lists));
