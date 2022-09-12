@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">Се пакуваат <ph name="NUMBER_OF_ITEMS" /> ставки…</translation>
 <translation id="1722687688096767818">Се додава профил…</translation>
 <translation id="1726100011689679555">DNS-сервери</translation>
+<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> ставки се преместени во „Корпа“</translation>
 <translation id="1729953886957086472">германски (Германија)</translation>
 <translation id="1730235522912993863">кинески цанцзе</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ставки се копирани.</translation>
@@ -214,6 +215,7 @@
 <translation id="2888807692577297075">Нема ставки што се совпаѓаат со &lt;b&gt;„<ph name="SEARCH_STRING" />“&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Информации</translation>
 <translation id="2902734494705624966">САД продолжена</translation>
+<translation id="2906052776158021882">Се преместуваат <ph name="NUMBER_OF_ITEMS" /> ставки во „Корпа“</translation>
 <translation id="290843123675549676">марати</translation>
 <translation id="2923240520113693977">естонски</translation>
 <translation id="2938685643439809023">монголски</translation>
@@ -476,6 +478,7 @@
 <translation id="5068919226082848014">Пица</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> датотеки ќе се избришат</translation>
 <translation id="508423945471810158">Се преместуваат <ph name="NUMBER_OF_ITEMS" /> ставки во <ph name="FOLDER_NAME" /></translation>
+<translation id="5092200349368278146">Датотеката <ph name="FILE_NAME" /> е преместена во „Корпа“</translation>
 <translation id="509429900233858213">Настана грешка.</translation>
 <translation id="5098629044894065541">хебрејски</translation>
 <translation id="5102922915594634436">Управувајте со синхронизирани папки</translation>
@@ -580,6 +583,7 @@
 <translation id="5845721951356578987">Медицинска сестра</translation>
 <translation id="5861477046012235702">Гејмер</translation>
 <translation id="5864471791310927901">Барањето за DHCP не успеа.</translation>
+<translation id="5887342613489958822">Се преместува <ph name="FILE_NAME" /> во „Корпа“</translation>
 <translation id="5896749729057314184">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Деактивирана, Јачина на сигналот <ph name="SIGNAL_STRENGTH" /> %, Детали</translation>
 <translation id="5911887972742538906">Дојде до грешка при инсталирањето на вашата апликација за Linux.</translation>
 <translation id="5912396950572065471">Формат</translation>

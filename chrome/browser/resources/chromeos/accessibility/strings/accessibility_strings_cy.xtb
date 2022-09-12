@@ -140,6 +140,7 @@
 <translation id="1834891354138622109">Colofn</translation>
 <translation id="1846771122725914429">Sgrîn Braille Bluetooth</translation>
 <translation id="1852018405765032699">Bydd tapio'r sgrîn gyda phedwar bys yn agor ac yn cau dewislenni ChromeVox. Mae'r dewislenni hyn yn cynnwys gwybodaeth ddefnyddiol am orchmynion a llwybrau byr. Unwaith y bydd y dewislenni ar agor, gallwch sweipio gydag un bys i lywio drwy eitemau, a thapio ddwywaith i weithredu eitemau. I barhau, tapiwch y sgrîn gyda phedwar bys.</translation>
+<translation id="1864430479908918647">Pwyswch Search+Space</translation>
 <translation id="1865601187525349519">Diwedd y testun</translation>
 <translation id="1876229593313240038">dogfen</translation>
 <translation id="1902396333223336119">Cell</translation>
@@ -778,6 +779,7 @@
 <translation id="6236061028292614533">Pennawd nesaf</translation>
 <translation id="6254901459154107917">Maes testun nesaf y gellir ei golygu</translation>
 <translation id="6259464875943891919">Wedi gadael <ph name="TYPE" />.</translation>
+<translation id="6280088282605782512">Tapio ddwywaith</translation>
 <translation id="6282062888058716985">llyw</translation>
 <translation id="6295699829709583154">Bysellau Hanfodol: Search</translation>
 <translation id="6305702903308659374">Chwarae ar lefel sain arferol hyd yn oed os yw ChromeVox yn siarad</translation>
@@ -981,6 +983,7 @@
 <translation id="7731785449856576010">Dim teclyn cyfryngau nesaf</translation>
 <translation id="7735498529470878067">Gall archwilio drwy gyffwrdd eich helpu i gael ymdeimlad o'r hyn sydd ar y sgrîn yn gyflym.</translation>
 <translation id="773906353055481349">Pwyswch Search+Ctrl+Alt gyda saethau i lywio wrth y gell</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> i <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">Wedi dechrau lawrlwytho <ph name="FILE_NAME" /></translation>
 <translation id="7768784765476638775">Dewis i siarad</translation>
 <translation id="7776293189010177726">Agor dewislenni ChromeVox</translation>

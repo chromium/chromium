@@ -308,6 +308,7 @@
       如果未設定 <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> 政策，系統會使用搜尋網址所指定的主機名稱。</translation>
 <translation id="1312799700549720683">控管顯示設定。</translation>
 <translation id="131353325527891113">在登入畫面中顯示使用者名稱</translation>
+<translation id="1317658068839330898">不允許在網站上使用 <ph name="ASSISTANT_PRODUCT_NAME" /></translation>
 <translation id="1327466551276625742">離線時啟用網路設定提示</translation>
 <translation id="1330145147221172764">啟用螢幕小鍵盤</translation>
 <translation id="13356285923490863">政策名稱</translation>
@@ -345,6 +346,7 @@
 <translation id="1361661842732478894">在工具列上顯示首頁按鈕</translation>
 <translation id="1363275621236827384">允許在 Quirks Server 中查詢硬體設定檔</translation>
 <translation id="1371626834351873151">系統將為所有來源啟用使用者代理程式縮減功能。</translation>
+<translation id="1371851989348083665">允許在網站上使用 <ph name="ASSISTANT_PRODUCT_NAME" /></translation>
 <translation id="1372618949173323717">停用 JavaScript</translation>
 <translation id="1376119291123231789">啟用進階充電模式</translation>
 <translation id="1384459581748403878">參考頁面：<ph name="REFERENCE_URL" /></translation>
@@ -3969,6 +3971,7 @@
       * 關閉或未設定值：Chrome 不會強制執行 YouTube 上的嚴格篩選模式，但外部政策 (例如 YouTube 政策) 可能仍會強制執行嚴格篩選模式。</translation>
 <translation id="5191476996923842491">setTimeout() 函式的預設行為出現延遲。</translation>
 <translation id="519247340330463721">設定安全瀏覽相關政策。</translation>
+<translation id="5194683382395300627">允許在網站上使用 <ph name="ASSISTANT_PRODUCT_NAME" /> 執行操作，例如自動變更密碼</translation>
 <translation id="5196520640744454600">在登入畫面上啟用相黏鍵功能</translation>
 <translation id="5196630732055960309">允許這些網頁應用程式上的 File Handling API</translation>
 <translation id="5206454085187851382">如果在 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_ALLOWLIST" />，系統會根據 <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> 的設定指定使用者可操作的印表機。只有 ID 與這項政策值相符的印表機，才會提供給使用者。印表機 ID 必須與 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。</translation>
@@ -7242,6 +7245,18 @@
 <translation id="8656110680728938054">啟用隨選朗讀功能</translation>
 <translation id="8659843732895043951">允許這些網站使用剪貼簿</translation>
 <translation id="8661297125441579970">不允許資料遷移功能和 ARC。</translation>
+<translation id="8664285601317301180">這項政策可控管列印工作中的 <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> <ph name="IPP_PROTOCOL" /> (<ph name="INTERNET_PRINTING_PROTOCOL" />) <ph name="IPP_ATTRIBUTE" />值。
+
+      如果將這項政策設為字串，每個列印工作中就會新增額外的 <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> 項目。替換變數後，系統會將新增的 <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> 項目 <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> 成員設為政策值。支援的變數包括 <ph name="DIRECTORY_ID_PLACEHOLDER" />、<ph name="SERIAL_NUMBER_PLACEHOLDER" />、<ph name="ASSET_ID_PLACEHOLDER" />、<ph name="ANNOTATED_LOCATION_PLACEHOLDER" />。系統不會替換不支援的預留位置變數。
+
+      如果變數僅包含 <ph name="ASCII" /> 可列印字元，且長度不超過 255 個半形字元，替換變數後產生的值就會視為有效。
+
+      請注意，基於隱私考量，這項政策只會套用在透過 <ph name="IPPS_PROTOCOL" />、<ph name="HTTPS_PROTOCOL" />、<ph name="USB_PROTOCOL" /> 或 <ph name="IPP_USB_PROTOCOL" /> 通訊協定與印表機的通訊。此外，這項政策只會套用至支援 <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> 的印表機。
+
+      這項政策只會套用至關聯的使用者。
+
+      如果未設定這項政策、設為空白或無效值，系統就不會在列印工作要求中新增額外的 <ph name="CLIENT_INFO_PLACEHOLDER" />。
+      </translation>
 <translation id="8665314828727504286">安全瀏覽功能防護等級</translation>
 <translation id="8666123502812856425">你可以透過這項政策設定網址清單，指定哪些網站會自動取得權限，能夠存取包含具備指定 HID 使用權頂層集合的 HID 裝置。清單中的每個項目都必須包含 <ph name="USAGES_FIELD_NAME" /> 和 <ph name="URLS_FIELD_NAME" /> 欄位，這項政策才會生效。<ph name="USAGES_FIELD_NAME" /> 欄位中的每個項目必須包含 <ph name="USAGE_PAGE_FIELD_NAME" /> 且可能包含 <ph name="USAGE_FIELD_NAME" /> 欄位。如果省略 <ph name="USAGE_FIELD_NAME" /> 欄位，建立的政策將適用於所有包含使用來自指定使用頁面的頂層集合裝置。要是政策包含 <ph name="USAGE_FIELD_NAME" /> 欄位，但缺少 <ph name="USAGE_PAGE_FIELD_NAME" /> 欄位，該項目將為無效且遭到忽略。
 
@@ -7334,6 +7349,11 @@
 <translation id="8763716376920670835">自 M101 起，WebSQL 預設為啟用，但你仍然可以透過 Chrome 旗標將其停用。
           如果將這項政策設為 False 或未設定，系統就可停用 WebSQL。
           如果將這項政策設為 True，系統將無法停用 WebSQL。</translation>
+<translation id="8766308369516978190">如果將這項政策設為啟用，使用者將可在網站上使用 <ph name="ASSISTANT_PRODUCT_NAME" /> 執行多項操作，例如加快結帳和密碼變更的速度。使用 <ph name="ASSISTANT_PRODUCT_NAME" /> 時需另外徵求使用者同意。即使這項政策設已設為啟用，<ph name="ASSISTANT_PRODUCT_NAME" /> 仍須經使用者同意才能執行。
+
+      如果將這項政策設為停用，使用者就無法在網站上使用 <ph name="ASSISTANT_PRODUCT_NAME" />。
+
+      如果不設定這項政策，使用者可以關閉 <ph name="ASSISTANT_PRODUCT_NAME" />。</translation>
 <translation id="8766910236040529804">啟用轉譯器應用程式容器</translation>
 <translation id="8767743923206070405">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 的工具列上會顯示「首頁」按鈕。如果將這項政策設為停用，則不會顯示「首頁」按鈕。
 

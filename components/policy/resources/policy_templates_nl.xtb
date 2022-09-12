@@ -7300,6 +7300,20 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="8656110680728938054">'Selecteer om uitgesproken te worden' aanzetten</translation>
 <translation id="8659843732895043951">Klembord toestaan op deze sites</translation>
 <translation id="8661297125441579970">Gegevensmigratie en ARC niet toestaan.</translation>
+<translation id="8664285601317301180">Met dit beleid bepaal je de waarde van <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> <ph name="IPP_PROTOCOL" /> (<ph name="INTERNET_PRINTING_PROTOCOL" />) <ph name="IPP_ATTRIBUTE" /> in afdruktaken.
+
+      Als je dit beleid instelt op een tekenreeks, wordt aan elke afdruktaak een extra <ph name="CLIENT_INFO_IPP_ATTRIBUTE" />-item toegevoegd. Het <ph name="CLIENT_NAME_IPP_ATTRIBUTE" />-element van het toegevoegde <ph name="CLIENT_INFO_IPP_ATTRIBUTE" />-item wordt ingesteld op de waarde van het beleid na vervanging van variabelen.
+
+      Ondersteunde variabelen zijn <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />. Niet-ondersteunde tijdelijke variabelen worden niet vervangen.
+
+      De resulterende waarde na vervanging van variabelen wordt als geldig beschouwd als deze alleen bestaat uit <ph name="ASCII" /> afdrukbare tekens en de lengte niet langer is dan 255.
+
+      Vanwege privacyredenen is dit beleid alleen van toepassing als er wordt gecommuniceerd met een printer via de protocollen <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" /> of <ph name="IPP_USB_PROTOCOL" />. Houd er ook rekening mee dat dit beleid alleen geldt voor printers die <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> ondersteunen.
+
+      Het beleid geldt alleen voor aangesloten gebruikers.
+
+      Als je het beleid niet instelt of dit instelt op een lege of ongeldige waarde, worden er geen extra <ph name="CLIENT_INFO_PLACEHOLDER" /> toegevoegd aan verzoeken voor afdruktaken.
+      </translation>
 <translation id="8665314828727504286">Safe Browsing-beveiligingsniveau</translation>
 <translation id="8666123502812856425">Als je het beleid instelt, kun je een lijst met URL's maken die aangeven welke sites automatisch toegangsrechten krijgen voor een HID-apparaat dat een toplevelcollectie bevat met het opgegeven HID-gebruik. Het beleid is alleen geldig als elk item in de lijst de velden <ph name="USAGES_FIELD_NAME" /> en <ph name="URLS_FIELD_NAME" /> bevat. Elk item in het veld <ph name="USAGES_FIELD_NAME" /> moet een veld <ph name="USAGE_PAGE_FIELD_NAME" /> hebben en kan het een veld <ph name="USAGE_FIELD_NAME" /> hebben. Als je het veld <ph name="USAGE_FIELD_NAME" /> weglaat, wordt een beleid gemaakt dat geschikt is voor elk apparaat dat een toplevelcollectie bevat met een gebruik van de opgegeven gebruikspagina. Een item dat het veld <ph name="USAGE_FIELD_NAME" /> heeft zonder het veld <ph name="USAGE_PAGE_FIELD_NAME" /> is ongeldig en wordt genegeerd.
 

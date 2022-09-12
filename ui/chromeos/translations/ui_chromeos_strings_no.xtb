@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">Zipper <ph name="NUMBER_OF_ITEMS" /> elementer …</translation>
 <translation id="1722687688096767818">Legger til profil …</translation>
 <translation id="1726100011689679555">Navnetjenere</translation>
+<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> elementer er lagt i papirkurven</translation>
 <translation id="1729953886957086472">Tysk (Tyskland)</translation>
 <translation id="1730235522912993863">Kinesisk cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elementer er kopiert.</translation>
@@ -214,6 +215,7 @@
 <translation id="2888807692577297075">Ingen elementer samsvarer med &lt;b&gt;«<ph name="SEARCH_STRING" />»&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Informasjon</translation>
 <translation id="2902734494705624966">Amerikansk utvidet</translation>
+<translation id="2906052776158021882">Legger <ph name="NUMBER_OF_ITEMS" /> elementer i papirkurven</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estisk</translation>
 <translation id="2938685643439809023">Mongolsk</translation>
@@ -476,6 +478,7 @@
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> med filer blir slettet</translation>
 <translation id="508423945471810158">Flytter <ph name="NUMBER_OF_ITEMS" /> elementer til <ph name="FOLDER_NAME" /></translation>
+<translation id="5092200349368278146"><ph name="FILE_NAME" /> er lagt i papirkurven</translation>
 <translation id="509429900233858213">Det oppsto en feil.</translation>
 <translation id="5098629044894065541">Hebraisk</translation>
 <translation id="5102922915594634436">Administrer synkroniserte mapper</translation>
@@ -581,6 +584,7 @@
 <translation id="5845721951356578987">Sykepleier</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">DHCP-oppslag mislyktes</translation>
+<translation id="5887342613489958822">Legger <ph name="FILE_NAME" /> i papirkurven</translation>
 <translation id="5896749729057314184">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ikke aktivert, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, detaljer</translation>
 <translation id="5911887972742538906">Det oppsto en feil under installasjon av Linux-appen.</translation>
 <translation id="5912396950572065471">Format</translation>

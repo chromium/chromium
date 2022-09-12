@@ -1798,6 +1798,7 @@
 <translation id="2637400434494156704">ပင်နံပါတ် မမှန်ပါ။ ကြိုးစားခွင့် တစ်ကြိမ် ကျန်ပါသည်။</translation>
 <translation id="2638286699381354126">အပ်ဒိတ်လုပ်ရန်...</translation>
 <translation id="2638662041295312666">လက်မှတ်ထိုးဝင်ရန်ပုံ</translation>
+<translation id="2640299212685523844">GTK သုံးရန်</translation>
 <translation id="264083724974021997">သင့်ဖုန်းသို့ ချိတ်ဆက်ရန် - ဒိုင်ယာလော့ဂ်</translation>
 <translation id="2642111877055905627">ဘောလုံး</translation>
 <translation id="2643698698624765890">Window မီနူးထဲမှာ တိုးချဲ့မှုများကို ကလစ်ခြင်းဖြင့် သင်၏ တိုးချဲ့မှုများကို စီမံကွပ်ကဲပါ။</translation>
@@ -1959,6 +1960,7 @@
 <translation id="2783829359200813069">အသွင်ဝှက်ခြင်း အမျိုးအစားများကို ရွေးပါ</translation>
 <translation id="2783952358106015700">သင်၏ လုံခြုံရေးကီးကို <ph name="APP_NAME" /> ဖြင့် သုံးပါ</translation>
 <translation id="2785873697295365461">ဖိုင် ဖေါ်ပြချက်များ</translation>
+<translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">စက်တွင်း ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာများ ထားရန် (လိပ်စာ၊ စကားဝှက်၊ မှတ်တမ်း စသည်။)</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
@@ -2097,6 +2099,7 @@
 <translation id="2902312830803030883">နောက်ထပ် လုပ်ဆောင်ချက်များ</translation>
 <translation id="2903457445916429186">ရွေးချယ်ထားသည့် အရာများကိုဖွင့်ရန်</translation>
 <translation id="2903882649406874750">အာရုံခံကိရိယာကို အသုံးပြုခွင့်အား <ph name="HOST" /> အတွက် အမြဲပိတ်ရန်</translation>
+<translation id="2904845070985032877">လှုပ်ရှားသက်ဝင်ပုံများ ခဏရပ်ရန်</translation>
 <translation id="2907619724991574506">အစပြု URLs</translation>
 <translation id="2907798539022650680">'<ph name="NAME" />' သို့ ချိတ်ဆက်ခြင်း မအောင်မြင်ပါ− <ph name="DETAILS" />
     ဆာဗာမက်ဆေ့ဂျ်− <ph name="SERVER_MSG" /></translation>
@@ -2922,6 +2925,7 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">သင်နှင့် Google</translation>
 <translation id="3722108462506185496">ပကတိအသွင်စက် ဝန်ဆောင်မှု စတင်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
+<translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">ရနိုင်သော WiFi ကွန်ရက်များ</translation>
 <translation id="3727187387656390258">ပေါ့အာပ်ကို စစ်ဆေးရန်</translation>
 <translation id="372722114124766626">တစ်ကြိမ်သာ</translation>
@@ -3001,6 +3005,7 @@
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome သည် သင့်ကွန်ပျူတာတွင် အန္တရာယ်ဆော့ဖ်ဝဲကို ရှာမတွေ့ပါ • ပြီးခဲ့သော 1 ရက်က စစ်ထားသည်}other{Chrome သည် သင့်ကွန်ပျူတာတွင် အန္တရာယ်ဆော့ဖ်ဝဲကို ရှာမတွေ့ပါ • ပြီးခဲ့သော {NUM_DAYS} ရက်က စစ်ထားသည်}}</translation>
 <translation id="379500251094592809">'အနီးတစ်ဝိုက် မျှဝေခြင်း' အသုံးပြုရန် စက်နှစ်ခုလုံးပွင့်နေပြီး အတူကပ်ထားကာ ဘလူးတုသ်ဖွင့်ထားကြောင်း သေချာပါစေ။ သင်၏အဆက်အသွယ်များတွင် မပါဝင်သော Chromebook အား မျှဝေနေပါက ၎င်းတွင် 'အနီးတစ်ဝိုက် မြင်နိုင်မှု' ဖွင့်ထားကြောင်း သေချာပါစေ (အချိန်ရွေးချယ်ပြီး အခြေအနေပြနေရာကို ဖွင့်ပါ၊ ထို့နောက် 'အနီးတစ်ဝိုက် မြင်နိုင်မှု' ကိုဖွင့်ပါ) <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">ပိတ်ထားသည်</translation>
+<translation id="3795766489237825963">လှုပ်ရှားသက်ဝင်ပုံများ ဖွင့်ရန်</translation>
 <translation id="3796648294839530037">စိတ်ကြိုက်ကွန်ယက်များ</translation>
 <translation id="3797739167230984533">သင့်အဖွဲ့အစည်းက သင်၏ <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> ကို စီမံခန့်ခွဲထားပါသည်<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">“<ph name="SEARCH_TERMS" />”အတွက် <ph name="SEARCH_ENGINE" /> ကို ရှာဖွေပါ</translation>
@@ -3417,6 +3422,7 @@
 <translation id="4181602000363099176">၂၀ ဆ</translation>
 <translation id="4181841719683918333">ဘာသာစကားများ</translation>
 <translation id="4184803915913850597">HID စက်ပစ္စည်း (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
+<translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Search</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> ကို စနစ်ထည့်သွင်းနေသည်...</translation>
 <translation id="4190828427319282529">လက်ကွက် အာရုံစိုက်ရန်နေရာ အထူးဖော်ပြရန်</translation>
 <translation id="4193836101014293726">ဤပရိုဖိုင်ကို ဖျက်၍မရနိုင်ပါ</translation>
@@ -4431,6 +4437,7 @@
 <translation id="5190926251776387065">ပို့တ်စဖွင့်ရန်</translation>
 <translation id="5191094172448199359">သင်ထည့်ထားသော ပင်နံပါတ်များ မတူညီပါ</translation>
 <translation id="5191251636205085390">ပြင်ပကုမ္ပဏီကွတ်ကီးများကို အစားထိုးမည့် နည်းပညာသစ်များအကြောင်း လေ့လာပြီး စီမံပါ</translation>
+<translation id="519185197579575131">QT သုံးရန်</translation>
 <translation id="5192062846343383368">သင်၏ကြီးကြပ်မှုဆက်တင်များ ကြည့်ရန် Family Link အက်ပ် ဖွင့်ပါ</translation>
 <translation id="5193988420012215838">သင့်ကလစ်ဘုတ်သို့ မိတ္တူကူးထားသည်</translation>
 <translation id="5194256020863090856">၎င်းသည် ရုပ်ဖျက် ဝင်ဒိုးများကိုသာ သက်ရောက်မှုရှိသည်</translation>

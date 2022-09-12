@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">Se arhivează <ph name="NUMBER_OF_ITEMS" /> elemente...</translation>
 <translation id="1722687688096767818">Se adaugă profilul...</translation>
 <translation id="1726100011689679555">Servere de nume</translation>
+<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> elemente au fost mutate în coșul de gunoi</translation>
 <translation id="1729953886957086472">Germană (Germania)</translation>
 <translation id="1730235522912993863">Chineză Cangjie</translation>
 <translation id="1731889557567069540">Elemente copiate: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -214,6 +215,7 @@
 <translation id="2888807692577297075">Nu există elemente care să corespundă cu &lt;b&gt;„<ph name="SEARCH_STRING" />”&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Informații</translation>
 <translation id="2902734494705624966">S.U.A. extinsă</translation>
+<translation id="2906052776158021882">Se mută <ph name="NUMBER_OF_ITEMS" /> elemente în coșul de gunoi</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estonă</translation>
 <translation id="2938685643439809023">Mongolă</translation>
@@ -476,6 +478,7 @@
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> fișiere vor fi șterse</translation>
 <translation id="508423945471810158">Se mută <ph name="NUMBER_OF_ITEMS" /> elemente în <ph name="FOLDER_NAME" /></translation>
+<translation id="5092200349368278146"><ph name="FILE_NAME" /> mutate în coșul de gunoi</translation>
 <translation id="509429900233858213">A apărut o eroare.</translation>
 <translation id="5098629044894065541">Ebraică</translation>
 <translation id="5102922915594634436">Gestionează dosarele sincronizate</translation>
@@ -581,6 +584,7 @@
 <translation id="5845721951356578987">Asistentă medicală</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">Căutarea DHCP nu a reușit</translation>
+<translation id="5887342613489958822">Se mută <ph name="FILE_NAME" /> în coșul de gunoi</translation>
 <translation id="5896749729057314184">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, inactivă, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, detalii</translation>
 <translation id="5911887972742538906">A apărut o eroare în timpul instalării aplicației Linux.</translation>
 <translation id="5912396950572065471">Format</translation>

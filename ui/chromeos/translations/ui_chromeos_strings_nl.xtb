@@ -84,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> items inpakken...</translation>
 <translation id="1722687688096767818">Profiel toevoegen...</translation>
 <translation id="1726100011689679555">Naamservers</translation>
+<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> items naar de prullenbak verplaatst</translation>
 <translation id="1729953886957086472">Duits (Duitsland)</translation>
 <translation id="1730235522912993863">Chinees (Cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> items gekopieerd.</translation>
@@ -214,6 +215,7 @@
 <translation id="2888807692577297075">Er komen geen items overeen met &lt;b&gt;'<ph name="SEARCH_STRING" />'&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Informatie</translation>
 <translation id="2902734494705624966">Uitgebreid Amerikaans</translation>
+<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" /> items naar de prullenbak verplaatsen</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estlands</translation>
 <translation id="2938685643439809023">Mongools</translation>
@@ -279,6 +281,7 @@
 <translation id="3414856743105198592">Als je het verwisselbare medium formatteert, worden alle gegevens gewist. Wil je doorgaan?</translation>
 <translation id="3437801641691368414">Gemaakt op</translation>
 <translation id="343907260260897561">Instantcamera</translation>
+<translation id="3452106565701029351">Losmaken van Snelle bestanden</translation>
 <translation id="3455931012307786678">Estlands</translation>
 <translation id="3466147780910026086">Je media-apparaat scannen...</translation>
 <translation id="3468522857997926824">Er is een back-up van <ph name="FILE_COUNT" /> foto's gemaakt in <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
@@ -475,6 +478,7 @@
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> van alle bestanden wordt verwijderd</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> items verplaatsen naar <ph name="FOLDER_NAME" /></translation>
+<translation id="5092200349368278146"><ph name="FILE_NAME" /> naar de prullenbak verplaatst</translation>
 <translation id="509429900233858213">Er is een fout opgetreden.</translation>
 <translation id="5098629044894065541">Hebreeuws</translation>
 <translation id="5102922915594634436">Gesynchroniseerde mappen beheren</translation>
@@ -581,6 +585,7 @@
 <translation id="5845721951356578987">Verpleegkundige</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">Opzoeken van DHCP mislukt</translation>
+<translation id="5887342613489958822"><ph name="FILE_NAME" /> naar de prullenbak verplaatsen</translation>
 <translation id="5896749729057314184">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, niet geactiveerd, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="5911887972742538906">Er is een fout opgetreden tijdens de installatie van je Linux-app.</translation>
 <translation id="5912396950572065471">Indeling</translation>
@@ -691,6 +696,7 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">Amerikaans Workman</translation>
 <translation id="6930242544192836755">Duur</translation>
+<translation id="6931302001003657424">Vastzetten in Snelle bestanden</translation>
 <translation id="6934241953272494177">Je media-apparaat scannen...
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> gevonden</translation>

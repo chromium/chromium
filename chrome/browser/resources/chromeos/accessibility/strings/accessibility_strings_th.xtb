@@ -140,6 +140,7 @@
 <translation id="1834891354138622109">คอลัมน์</translation>
 <translation id="1846771122725914429">อุปกรณ์แสดงผลอักษรเบรลล์ผ่านบลูทูธ</translation>
 <translation id="1852018405765032699">การใช้ 4 นิ้วแตะหน้าจอจะเปิดและปิดเมนู ChromeVox เมนูเหล่านี้มีข้อมูลที่เป็นประโยชน์เกี่ยวกับคำสั่งและแป้นพิมพ์ลัด เมื่อเมนูเปิดขึ้นมา คุณสามารถใช้ 1 นิ้วปัดเพื่อไปยังรายการต่างๆ และแตะสองครั้งเพื่อเปิดใช้งานรายการได้ หากต้องการไปต่อ ให้ใช้ 4 นิ้วแตะหน้าจอ</translation>
+<translation id="1864430479908918647">กดแป้นค้นหา+เว้นวรรค</translation>
 <translation id="1865601187525349519">สิ้นสุดข้อความ</translation>
 <translation id="1876229593313240038">เอกสาร</translation>
 <translation id="1902396333223336119">เซลล์</translation>
@@ -778,6 +779,7 @@
 <translation id="6236061028292614533">ส่วนหัวถัดไป</translation>
 <translation id="6254901459154107917">พื้นที่ข้อความที่สามารถแก้ไขได้ถัดไป</translation>
 <translation id="6259464875943891919">ออกจาก <ph name="TYPE" /> แล้ว</translation>
+<translation id="6280088282605782512">แตะสองครั้ง</translation>
 <translation id="6282062888058716985">นำทาง</translation>
 <translation id="6295699829709583154">แป้นหลัก: Search</translation>
 <translation id="6305702903308659374">เล่นที่ระดับเสียงปกติแม้ว่า ChromeVox กำลังพูด</translation>
@@ -980,6 +982,7 @@
 <translation id="7731785449856576010">ไม่มีวิดเจ็ตสื่อถัดไป</translation>
 <translation id="7735498529470878067">การแตะเพื่อสำรวจจะช่วยให้คุณทราบสิ่งที่อยู่ในหน้าจอได้อย่างรวดเร็ว</translation>
 <translation id="773906353055481349">กด Search+Ctrl+Alt และลูกศรเพื่อไปยังเซลล์ต่างๆ</translation>
+<translation id="7746976083433980639"><ph name="ACTION" />เพื่อ<ph name="LABEL" /></translation>
 <translation id="7763537600611320912">เริ่มดาวน์โหลด <ph name="FILE_NAME" /> แล้ว</translation>
 <translation id="7768784765476638775">เลือกเพื่อให้อ่าน</translation>
 <translation id="7776293189010177726">เปิดเมนู ChromeVox</translation>

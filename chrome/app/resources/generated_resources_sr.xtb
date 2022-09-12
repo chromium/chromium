@@ -1502,6 +1502,7 @@
 <translation id="2356070529366658676">Питај</translation>
 <translation id="2357330829548294574">Уклоните корисника <ph name="USER_NAME" /></translation>
 <translation id="2358561147588818967">Сајтови могу да користе JavaScript</translation>
+<translation id="2358777858338503863">Кликните да бисте дозволили на <ph name="ORIGIN" />:</translation>
 <translation id="2359071692152028734">Linux апликације могу да престану да реагују.</translation>
 <translation id="2359345697448000899">Управљајте додацима кликом на ставку Додаци у менију Алатке.</translation>
 <translation id="2359556993567737338">Повежите Bluetooth уређај</translation>
@@ -3791,6 +3792,7 @@
 <translation id="4554591392113183336">Верзија спољног додатка је иста или старија од постојећег.</translation>
 <translation id="4555769855065597957">Нови профил</translation>
 <translation id="4555863373929230635">Да бисте сачували лозинке на Google налогу, пријавите се и укључите синхронизацију.</translation>
+<translation id="4556194354084985730">Лако се пријављујте на сајтове и у апликације помоћу сачуваних лозинки. Када је ово искључено, приказиваће вам се упит пре пријављивања.</translation>
 <translation id="4558426062282641716">Тражи се дозвола за аутоматско покретање</translation>
 <translation id="4559617833001311418">Овај сајт приступа сензорима за покрет или светло.</translation>
 <translation id="4561893854334016293">Нема недавно промењених дозвола</translation>
@@ -5346,6 +5348,7 @@
 <translation id="6077476112742402730">Унос говором</translation>
 <translation id="6078121669093215958">{0,plural, =1{Гост}one{# отворен прозор у режиму госта}few{# отворена прозора у режиму госта}other{# отворених прозора у режиму госта}}</translation>
 <translation id="6078323886959318429">Додај пречицу</translation>
+<translation id="6078742430369906859">Повезивање са мрежом <ph name="NETWORK_ID" /> може да буде ограничено</translation>
 <translation id="6078752646384677957">Проверите нивое микрофона и звука.</translation>
 <translation id="6078769373519310690">„<ph name="CHROME_EXTENSION_NAME" />“ жели да се повеже са HID уређајем</translation>
 <translation id="608029822688206592">Није пронађена ниједна мрежа. Убаците SIM картицу и пробајте поново.</translation>
@@ -6060,6 +6063,7 @@
 <translation id="6779447100905857289">корпе</translation>
 <translation id="677965093459947883">Јако мали</translation>
 <translation id="6781005693196527806">&amp;Управљај претраживачима...</translation>
+<translation id="6781012982807899368">Сачуване лозинке ће се појавити овде. <ph name="BEGIN_LINK" /> Увези лозинке<ph name="END_LINK" /></translation>
 <translation id="6781284683813954823">Линк дудл логотипа</translation>
 <translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />Подаци апликација могу да буду било који подаци које је апликација сачувала (на основу подешавања програмера), укључујући податке као што су контакти, поруке и слике. Резервне копије података се не рачунају у односу на квоту меморијског простора детета на Диску.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Можете да искључите ову услугу у Подешавањима.<ph name="END_PARAGRAPH2" /></translation>
@@ -7212,6 +7216,7 @@
 <translation id="7870790288828963061">Није пронађена ниједна киоск апликација са новијом верзијом. Нема шта да се ажурира. Уклоните USB меморију.</translation>
 <translation id="7871049986386271121">Увек на овом сајту</translation>
 <translation id="7871109039747854576">Користите тастере <ph name="COMMA" /> и <ph name="PERIOD" /> да бисте поставили листу кандидата</translation>
+<translation id="7872494313446521576">Кликните да бисте дозволили додатак <ph name="EXTENSIONS_REQUESTING_ACCESS" /> на <ph name="ORIGIN" />:</translation>
 <translation id="787268756490971083">Искључено</translation>
 <translation id="7872758299142009420">Превише угнеждених група: <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">Chrome позадине</translation>
@@ -7888,6 +7893,7 @@
 <translation id="8523493869875972733">Задржи промене</translation>
 <translation id="8523849605371521713">Додале су смернице</translation>
 <translation id="8524783101666974011">Сачувајте картице на Google налогу</translation>
+<translation id="8525157245469383124">ИД продавца-продавнице је у формату ABC-1234</translation>
 <translation id="8525306231823319788">Цео екран</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Додај језике</translation>

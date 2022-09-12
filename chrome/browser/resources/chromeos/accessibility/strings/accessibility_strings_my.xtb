@@ -140,6 +140,7 @@
 <translation id="1834891354138622109">ကော်လံ</translation>
 <translation id="1846771122725914429">ဘလူးတုသ် မျက်မမြင်စာဖတ်ကိရိယာ</translation>
 <translation id="1852018405765032699">ဖန်သားပြင်ကို လက်လေးချောင်းဖြင့် တို့၍ ChromeVox မီနူးများကို ဖွင့်ခြင်း၊ ပိတ်ခြင်းတို့ ပြုလုပ်နိုင်မည်။ ဤမီနူးများတွင် ကွန်မန်းများ၊ ဖြတ်လမ်းလင့်ခ်များနှင့် ပတ်သက်သော အသုံးဝင်သည့် အချက်အလက်များ ပါဝင်သည်။ မီနူးများပွင့်သွားလျှင် အကြောင်းအရာများသို့ သွားရန် လက်တစ်ချောင်းဖြင့် ပွတ်ဆွဲနိုင်သည်၊ ၎င်းတို့ကို ဖွင့်ရန် နှစ်ချက်တို့နိုင်သည်။ ရှေ့ဆက်ရန် ဖန်သားပြင်ကို လက်လေးချောင်းဖြင့် တို့ပါ။</translation>
+<translation id="1864430479908918647">Search+Space နှိပ်ရန်</translation>
 <translation id="1865601187525349519">စာတိုအဆုံး</translation>
 <translation id="1876229593313240038">doc</translation>
 <translation id="1902396333223336119">ဆဲလ်</translation>
@@ -778,6 +779,7 @@
 <translation id="6236061028292614533">နောက် ခေါင်းစီး</translation>
 <translation id="6254901459154107917">တည်းဖြတ်ရနိုင်သည့် စာသား နေရာ နောက်တစ်ခု</translation>
 <translation id="6259464875943891919"><ph name="TYPE" />မှ ထွက်သွားပြီ</translation>
+<translation id="6280088282605782512">နှစ်ချက်တို့ရန်</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">အဓိက ကီးများ- ရှာဖွေရေး</translation>
 <translation id="6305702903308659374">ChromeVox စကားပြောနေသည့်အချိန်တွင်ပင် အသံပုံမှန်ဖြင့်ဖွင့်ရန်</translation>
@@ -981,6 +983,7 @@
 <translation id="7731785449856576010">နောက်ထပ် မီဒီယာဝိဂျက် မရှိပါ</translation>
 <translation id="7735498529470878067">ဖန်သားပြင်တွင်ပြနေသည့်အရာကို အမြန်သိရှိနိုင်ရန် ထိပြီး ရှာဖွေစူးစမ်းခြင်းက ကူညီနိုင်သည်။</translation>
 <translation id="773906353055481349">ဆဲလ်တစ်ကွက်စီရွှေ့ရန် Search+Ctrl+Alt ကို မြားနှင့်တွဲ၍ နှိပ်ပါ</translation>
+<translation id="7746976083433980639"><ph name="LABEL" /> အတွက် <ph name="ACTION" /></translation>
 <translation id="7763537600611320912"><ph name="FILE_NAME" /> ဒေါင်းလုဒ် စတင်ပါပြီ</translation>
 <translation id="7768784765476638775">စကားပြော-ရွေးရန်</translation>
 <translation id="7776293189010177726">ChromeVox မီနူးများအား ဖွင့်ပါ</translation>

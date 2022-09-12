@@ -7360,6 +7360,20 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
 <translation id="8656110680728938054">Seç ve Dinle'yi etkinleştir</translation>
 <translation id="8659843732895043951">Bu sitelerde panoya izin ver</translation>
 <translation id="8661297125441579970">Veri taşıma ve ARC'ye izin verme.</translation>
+<translation id="8664285601317301180">Bu politika, yazdırma işlerindeki <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> <ph name="IPP_PROTOCOL" /> (<ph name="INTERNET_PRINTING_PROTOCOL" />) <ph name="IPP_ATTRIBUTE" /> değerini kontrol eder.
+
+      Politikanın bir dizeye ayarlanması, her yazdırma işine ilave bir <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> öğesi eklenmesiyle sonuçlanır. Eklenen <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> öğesinin <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> üyesi, değişkenlerin değiştirilmesinden sonraki politika değerine ayarlanır.
+
+      Desteklenen değişkenler: <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />. Desteklenmeyen yer tutucu değişkenleri genişletilmez.
+
+      Değişkenlerin değiştirilmesinden sonra ortaya çıkan değer, <ph name="ASCII" /> yazdırılabilir karakterlerini içerdiği ve uzunluğu 255'i geçmediği takdirde geçerli olarak kabul edilir.
+
+      Gizlilikle ilgili nedenlerden dolayı, bu politikanın yalnızca <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" /> veya <ph name="IPP_USB_PROTOCOL" /> protokollerini kullanan bir yazıcıyla iletişim kurarken geçerli olduğunu unutmayın. Ayrıca, bu politika yalnızca <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> destekleyen yazıcılarda geçerlidir.
+
+      Politika yalnızca ilişkili kullanıcılar için geçerlidir.
+
+      Politika ayarlanmazsa ya da boş veya geçersiz bir değere ayarlanırsa yazdırma işi isteklerine ilave bir <ph name="CLIENT_INFO_PLACEHOLDER" /> eklenmez.
+      </translation>
 <translation id="8665314828727504286">Güvenli Tarama Koruma Seviyesi</translation>
 <translation id="8666123502812856425">Politikayı ayarlamak, belirli HID kullanımına sahip üst düzey bir koleksiyon içeren HID cihazına otomatik olarak erişme izni verilen siteleri belirten URL'lerin listesini yapmanıza olanak tanır. Politikanın geçerli olabilmesi için listedeki her öğe hem <ph name="USAGES_FIELD_NAME" /> hem de <ph name="URLS_FIELD_NAME" /> alanlarını gerektirir. <ph name="USAGES_FIELD_NAME" /> alanındaki her öğe, <ph name="USAGE_PAGE_FIELD_NAME" /> alanını içermelidir ve <ph name="USAGE_FIELD_NAME" /> alanını da içerebilir. <ph name="USAGE_FIELD_NAME" /> alanının atlanması, belirtilen kullanım sayfasındaki kullanımlardan birine sahip üst düzey bir koleksiyon içeren her cihazla eşleşen bir politika oluşturur. <ph name="USAGE_FIELD_NAME" /> alanı olup <ph name="USAGE_PAGE_FIELD_NAME" /> alanı olmayan öğe geçersizdir ve yoksayılır.
 

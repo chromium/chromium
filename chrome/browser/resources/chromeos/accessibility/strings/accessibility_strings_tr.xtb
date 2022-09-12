@@ -140,6 +140,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="1834891354138622109">Sütun</translation>
 <translation id="1846771122725914429">Bluetooth Braille Ekran</translation>
 <translation id="1852018405765032699">Dört parmağınızla ekrana dokunduğunuzda ChromeVox menüleri açılır ve kapanır. Bu menülerde, komutlar ve kısayollar hakkında faydalı bilgiler yer alır. Menüler açılınca bir parmağınızla kaydırarak öğeler arasında gezinebilir, iki kez dokunarak öğeleri etkinleştirebilirsiniz. Devam etmek için dört parmağınızla ekrana dokunun.</translation>
+<translation id="1864430479908918647">Arama + Boşluk tuşlarına basın</translation>
 <translation id="1865601187525349519">Metnin sonu</translation>
 <translation id="1876229593313240038">doc</translation>
 <translation id="1902396333223336119">Hücre</translation>
@@ -778,6 +779,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="6236061028292614533">Sonraki başlık</translation>
 <translation id="6254901459154107917">Düzenlenebilir sonraki metin alanı</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> kapsayıcısından çıkıldı.</translation>
+<translation id="6280088282605782512">İki kez dokunun</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">Temel Tuşlar: Arama</translation>
 <translation id="6305702903308659374">ChromeVox konuşurken bile normal ses seviyesinde çal</translation>
@@ -980,6 +982,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="7731785449856576010">Sonraki medya widget'ı yok</translation>
 <translation id="7735498529470878067">Dokunarak keşfetmek, ekranda neler olduğunu kısa sürede algılamanıza yardımcı olabilir.</translation>
 <translation id="773906353055481349">Hücreden hücreye gitmek için Arama+Ctrl+Alt ve ok tuşlarına basın</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> - <ph name="LABEL" /></translation>
 <translation id="7763537600611320912"><ph name="FILE_NAME" /> dosyası indirilmeye başlandı</translation>
 <translation id="7768784765476638775">Seç ve Dinle</translation>
 <translation id="7776293189010177726">ChromeVox menülerini aç</translation>

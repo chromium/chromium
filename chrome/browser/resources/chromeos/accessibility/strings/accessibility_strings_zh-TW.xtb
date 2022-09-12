@@ -140,6 +140,7 @@
 <translation id="1834891354138622109">欄</translation>
 <translation id="1846771122725914429">藍牙點字顯示器</translation>
 <translation id="1852018405765032699">用四指輕觸螢幕可以開啟及關閉 ChromeVox 選單。這些選單含有關於指令和快速鍵的實用資訊。開啟選單後，你可以滑動單指來瀏覽各個項目，而且輕觸兩下即可啟用項目。如要繼續，請用四指輕觸螢幕。</translation>
+<translation id="1864430479908918647">按下搜尋鍵 + 空格鍵</translation>
 <translation id="1865601187525349519">文字結束</translation>
 <translation id="1876229593313240038">文件</translation>
 <translation id="1902396333223336119">儲存格</translation>
@@ -778,6 +779,7 @@
 <translation id="6236061028292614533">下一個標題</translation>
 <translation id="6254901459154107917">下一個可編輯的文字區域</translation>
 <translation id="6259464875943891919">已離開<ph name="TYPE" />。</translation>
+<translation id="6280088282605782512">輕觸兩下</translation>
 <translation id="6282062888058716985">導覽</translation>
 <translation id="6295699829709583154">重要按鍵：搜尋鍵</translation>
 <translation id="6305702903308659374">ChromeVox 朗讀時仍維持音訊的標準音量</translation>
@@ -981,6 +983,7 @@
 <translation id="7731785449856576010">沒有下一個媒體小工具</translation>
 <translation id="7735498529470878067">透過輕觸探索，你可以快速掌握螢幕畫面上有哪些內容。</translation>
 <translation id="773906353055481349">按下搜尋鍵 + Ctrl 鍵 + Alt 鍵和方向鍵，即可依儲存格進行瀏覽</translation>
+<translation id="7746976083433980639"><ph name="ACTION" />即可<ph name="LABEL" /></translation>
 <translation id="7763537600611320912">已開始下載「<ph name="FILE_NAME" />」</translation>
 <translation id="7768784765476638775">隨選朗讀</translation>
 <translation id="7776293189010177726">開啟 ChromeVox 選單</translation>

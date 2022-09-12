@@ -140,6 +140,7 @@
 <translation id="1834891354138622109">Columna</translation>
 <translation id="1846771122725914429">Pantalla braille amb connexió Bluetooth</translation>
 <translation id="1852018405765032699">Toca la pantalla amb quatre dits per obrir i tancar els menús de ChromeVox. Aquests menús contenen informació útil sobre ordres i dreceres. Quan els menús estiguin oberts, pots fer lliscar un dit per navegar pels elements i fer-hi doble toc per activar-los. Per continuar, toca la pantalla amb quatre dits.</translation>
+<translation id="1864430479908918647">Prem Cerca+barra espaiadora</translation>
 <translation id="1865601187525349519">Fi del text</translation>
 <translation id="1876229593313240038">document</translation>
 <translation id="1902396333223336119">Cel·la</translation>
@@ -778,6 +779,7 @@
 <translation id="6236061028292614533">Capçalera següent</translation>
 <translation id="6254901459154107917">Àrea de text editable següent</translation>
 <translation id="6259464875943891919">S'ha sortit de <ph name="TYPE" />.</translation>
+<translation id="6280088282605782512">Doble toc</translation>
 <translation id="6282062888058716985">navegació</translation>
 <translation id="6295699829709583154">Tecles essencials: cerca</translation>
 <translation id="6305702903308659374">Reprodueix a un volum normal encara que ChromeVox parli</translation>
@@ -981,6 +983,7 @@
 <translation id="7731785449856576010">No hi ha cap widget multimèdia més</translation>
 <translation id="7735498529470878067">L'exploració tàctil et pot ajudar a fer-te una idea ràpida del que hi ha a la pantalla.</translation>
 <translation id="773906353055481349">Prem Cerca+Ctrl+Alt i les fletxes per navegar de cel·la en cel·la</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> per <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">S'ha començat a baixar <ph name="FILE_NAME" /></translation>
 <translation id="7768784765476638775">Escolta la selecció</translation>
 <translation id="7776293189010177726">Obre els menús de ChromeVox</translation>

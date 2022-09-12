@@ -140,6 +140,7 @@
 <translation id="1834891354138622109">Kolom</translation>
 <translation id="1846771122725914429">Bluetooth-brailleleesregel</translation>
 <translation id="1852018405765032699">Je opent of sluit de ChromeVox-menu's door met 4 vingers op het scherm te tikken. In deze menu's vind je nuttige informatie over opdrachten en sneltoetsen. Als de menu's eenmaal open zijn, kun je met 1 vinger swipen om door items te navigeren. Een item activeer je door erop te dubbeltikken. Tik met 4 vingers op het scherm om verder te gaan.</translation>
+<translation id="1864430479908918647">Druk op Zoeken en de spatiebalk</translation>
 <translation id="1865601187525349519">Einde van tekst</translation>
 <translation id="1876229593313240038">document</translation>
 <translation id="1902396333223336119">Cel</translation>
@@ -778,6 +779,7 @@
 <translation id="6236061028292614533">Volgende kop</translation>
 <translation id="6254901459154107917">Volgend bewerkbaar tekstgebied</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> afgesloten.</translation>
+<translation id="6280088282605782512">Dubbeltikken</translation>
 <translation id="6282062888058716985">navigatie</translation>
 <translation id="6295699829709583154">Essentiële toetsen: Zoeken</translation>
 <translation id="6305702903308659374">Afspelen met normaal volume, ook als ChromeVox spreekt</translation>
@@ -980,6 +982,7 @@
 <translation id="7731785449856576010">Geen volgende mediawidget</translation>
 <translation id="7735498529470878067">Verkennen via aanraking kan handig zijn om snel een beeld te krijgen van wat er op het scherm staat.</translation>
 <translation id="773906353055481349">Druk op Zoeken+Ctrl+Alt in combinatie met de pijltoetsen om van cel naar cel te navigeren</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> voor <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">Download van <ph name="FILE_NAME" /> is gestart</translation>
 <translation id="7768784765476638775">Selecteer om uitgesproken te worden</translation>
 <translation id="7776293189010177726">ChromeVox-menu's openen</translation>

@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">正在压缩 <ph name="NUMBER_OF_ITEMS" /> 项内容…</translation>
 <translation id="1722687688096767818">正在添加配置文件…</translation>
 <translation id="1726100011689679555">域名服务器</translation>
+<translation id="1726600877401297672">已将 <ph name="NUMBER_OF_ITEMS" /> 项内容移至回收站</translation>
 <translation id="1729953886957086472">德语（德国）</translation>
 <translation id="1730235522912993863">中文仓颉</translation>
 <translation id="1731889557567069540">已复制 <ph name="NUMBER_OF_ITEMS" /> 项。</translation>
@@ -214,6 +215,7 @@
 <translation id="2888807692577297075">找不到与&lt;b&gt;“<ph name="SEARCH_STRING" />”&lt;/b&gt;匹配的项</translation>
 <translation id="2894654529758326923">信息</translation>
 <translation id="2902734494705624966">美国英语（扩展）</translation>
+<translation id="2906052776158021882">正在将 <ph name="NUMBER_OF_ITEMS" /> 项内容移至回收站</translation>
 <translation id="290843123675549676">马拉地语</translation>
 <translation id="2923240520113693977">爱沙尼亚语</translation>
 <translation id="2938685643439809023">蒙古语</translation>
@@ -279,6 +281,7 @@
 <translation id="3414856743105198592">格式化可移动设备会删除其中的所有数据。您要继续吗？</translation>
 <translation id="3437801641691368414">创建时间</translation>
 <translation id="343907260260897561">拍立得相机</translation>
+<translation id="3452106565701029351">取消固定到“快捷文件”空间</translation>
 <translation id="3455931012307786678">爱沙尼亚语</translation>
 <translation id="3466147780910026086">正在扫描您的媒体设备…</translation>
 <translation id="3468522857997926824">已将 <ph name="FILE_COUNT" /> 张照片备份到 <ph name="BEGIN_LINK" />Google 云端硬盘<ph name="END_LINK" /></translation>
@@ -475,6 +478,7 @@
 <translation id="5068919226082848014">披萨</translation>
 <translation id="5081517858322016911">其中的所有文件（共计 <ph name="TOTAL_FILE_SIZE" />）都将被删除</translation>
 <translation id="508423945471810158">正在将 <ph name="NUMBER_OF_ITEMS" /> 项内容移动到“<ph name="FOLDER_NAME" />”</translation>
+<translation id="5092200349368278146">已将 <ph name="FILE_NAME" /> 移至回收站</translation>
 <translation id="509429900233858213">出现错误。</translation>
 <translation id="5098629044894065541">希伯来语</translation>
 <translation id="5102922915594634436">管理已同步的文件夹</translation>
@@ -575,6 +579,7 @@
 <translation id="5845721951356578987">护士</translation>
 <translation id="5861477046012235702">玩家</translation>
 <translation id="5864471791310927901">DHCP 查找失败</translation>
+<translation id="5887342613489958822">正在将 <ph name="FILE_NAME" /> 移至回收站</translation>
 <translation id="5896749729057314184">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，未激活，信号强度 <ph name="SIGNAL_STRENGTH" />%，详细信息</translation>
 <translation id="5911887972742538906">安装 Linux 应用时出错。</translation>
 <translation id="5912396950572065471">格式</translation>
@@ -685,6 +690,7 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">美式 Workman</translation>
 <translation id="6930242544192836755">持续时间</translation>
+<translation id="6931302001003657424">固定到“快捷文件”空间</translation>
 <translation id="6934241953272494177">正在扫描您的媒体设备…
     <ph name="LINE_BREAK1" />
     找到了 <ph name="FILE_COUNT" /></translation>

@@ -84,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> зүйлийг zip хийж байна...</translation>
 <translation id="1722687688096767818">Профайл нэмж байна...</translation>
 <translation id="1726100011689679555">Нэрийн сервер</translation>
+<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> зүйлийг Хогийн сав руу зөөсөн</translation>
 <translation id="1729953886957086472">Герман (Герман)</translation>
 <translation id="1730235522912993863">Хятад Цанцзе</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> зүйлийг хуулсан.</translation>
@@ -214,6 +215,7 @@
 <translation id="2888807692577297075">&lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;-тай таарах хайлт олдсонгүй</translation>
 <translation id="2894654529758326923">Мэдээлэл</translation>
 <translation id="2902734494705624966">АНУ өргөтгөсөн</translation>
+<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" /> зүйлийг Хогийн сав руу зөөж байна</translation>
 <translation id="290843123675549676">Марати</translation>
 <translation id="2923240520113693977">Эстон</translation>
 <translation id="2938685643439809023">Монгол</translation>
@@ -279,6 +281,7 @@
 <translation id="3414856743105198592">Зөөврийн хэрэгслийг форматлах нь бүх өгөгдлийг арилгана. Та үйлдлийг үргэжлүүлэх үү?</translation>
 <translation id="3437801641691368414">Үүсгэсэн цаг</translation>
 <translation id="343907260260897561">Шууд Камер</translation>
+<translation id="3452106565701029351">Шуурхай файлаас бэхэлснийг болиулах</translation>
 <translation id="3455931012307786678">Эстон</translation>
 <translation id="3466147780910026086">Таны төхөөрөмжийг уншиж байна...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> зургийг <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> дээр хадгалсан байна</translation>
@@ -475,6 +478,7 @@
 <translation id="5068919226082848014">Пицца</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> файл устгагдах болно</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> зүйлийг <ph name="FOLDER_NAME" /> руу зөөж байна</translation>
+<translation id="5092200349368278146"><ph name="FILE_NAME" />-г Хогийн сав руу зөөсөн</translation>
 <translation id="509429900233858213">Алдаа гарлаа.</translation>
 <translation id="5098629044894065541">Кипр</translation>
 <translation id="5102922915594634436">Синк хийсэн фолдерийг удирдах</translation>
@@ -577,6 +581,7 @@
 <translation id="5845721951356578987">Сувилагч</translation>
 <translation id="5861477046012235702">Тоглогч</translation>
 <translation id="5864471791310927901">DHCP лавлаж харах ажиллагаа амжилтгүй боллоо</translation>
+<translation id="5887342613489958822"><ph name="FILE_NAME" />-г Хогийн сав руу зөөж байна</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />-с <ph name="NETWORK_INDEX" />-р сүлжээ, <ph name="NETWORK_NAME" />, Идэвхжүүлээгүй, Дохионы хүч <ph name="SIGNAL_STRENGTH" />%, Дэлгэрэнгүй</translation>
 <translation id="5911887972742538906">Таны Linux аппыг суулгах явцад алдаа гарлаа.</translation>
 <translation id="5912396950572065471">Формат</translation>
@@ -687,6 +692,7 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">US Workman</translation>
 <translation id="6930242544192836755">Үргэлжлэх хугацаа</translation>
+<translation id="6931302001003657424">Шуурхай файлд бэхлэх</translation>
 <translation id="6934241953272494177">Таны медиа төхөөрөмжийг скан хийж байна...
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> олдсон</translation>

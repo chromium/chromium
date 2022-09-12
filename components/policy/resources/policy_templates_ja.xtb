@@ -301,6 +301,7 @@
       <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> を未設定のままにした場合、検索 URL で指定されたホスト名が使用されます。</translation>
 <translation id="1312799700549720683">ディスプレイの設定を制御します。</translation>
 <translation id="131353325527891113">ログイン画面でユーザー名を表示する</translation>
+<translation id="1317658068839330898">ウェブでの <ph name="ASSISTANT_PRODUCT_NAME" /> の使用を許可しない</translation>
 <translation id="1327466551276625742">オフライン時のネットワーク設定メッセージの表示を有効にする</translation>
 <translation id="1330145147221172764">画面キーボードを有効にする</translation>
 <translation id="13356285923490863">ポリシー名</translation>
@@ -338,6 +339,7 @@
 <translation id="1361661842732478894">ツールバーにホームボタンを表示する</translation>
 <translation id="1363275621236827384">ハードウェア プロファイルを Quirks サーバーに問い合わせられるようにする</translation>
 <translation id="1371626834351873151">ユーザー エージェントの削減をすべてのオリジンで有効にする。</translation>
+<translation id="1371851989348083665">ウェブでの <ph name="ASSISTANT_PRODUCT_NAME" /> の使用を許可する</translation>
 <translation id="1372618949173323717">JavaScript を無効にする</translation>
 <translation id="1376119291123231789">詳細なバッテリー充電モードを有効にする</translation>
 <translation id="1384459581748403878">参考: <ph name="REFERENCE_URL" /></translation>
@@ -1942,6 +1944,7 @@
           このポリシーを設定した場合、ユーザーによる変更やオーバーライドはできません。
 
           このポリシーを未設定のままにした場合、大きいカーソルは初期設定ではログイン画面で無効ですが、ユーザーはいつでも有効にできます。</translation>
+<translation id="3027837632741099453">デバイスがバッテリー駆動の場合、バッテリー セーバー モードを有効にする。</translation>
 <translation id="3028296787914825213">このポリシーでは、プリンタの一括設定に適用するアクセス ポリシーを指定して、ユーザーが <ph name="NATIVE_PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> のどのプリンタを使用できるかを制御できます。
 
       * <ph name="PRINTERS_BLACKLIST" />（値 0）を選択した場合、<ph name="BULK_PRINTERS_BLACKLIST" /> で指定プリンタへのアクセスを制限します
@@ -1985,6 +1988,7 @@
 <translation id="3063302084011279315">スクリーンキャストを無効にする</translation>
 <translation id="3064530882228745118">Kerberos 認証時に CNAME 検索を使用する</translation>
 <translation id="3066446511111537292">このデバイスの関連ユーザーに ADB サイドローディングの使用を許可します</translation>
+<translation id="3067462824622454143">デバイスが一時停止されるかディスプレイが閉じられたとき、デバイスをロックするかどうかをユーザーが指定できるようにする</translation>
 <translation id="3070119171976169951">サードパーティの画像による認証プロンプトの表示を許可しない</translation>
 <translation id="3072045631333522102">小売りモードでのログイン画面に使用するスクリーンセーバー</translation>
 <translation id="3072788420987305247">このポリシーを有効に設定するか未設定のままにした場合、メディアの再生中にユーザーがデバイスをロックすると、ロック画面にメディア コントロールが表示されます。
@@ -2857,6 +2861,7 @@
 
       このポリシーを False に設定した場合、クレジット カード情報が候補として表示されたり、自動入力されたりすることはありません。また、ユーザーがウェブの利用中にクレジット カード情報を送信した場合もその情報が追加で保存されることはありません。</translation>
 <translation id="3989829840000169163">ブラウザの従来の拡張機能ポイントをブロックする</translation>
+<translation id="3990391739475801018">バッテリー セーバー モードを無効にする。</translation>
 <translation id="3994043824457743421">中央スロットのお知らせを新しいタブページに表示する</translation>
 <translation id="3996325823532867220">このポリシーのサポートは終了しましたが、関連するポリシー <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> は一部のプラットフォームでサポートされている可能性があります。
 
@@ -3167,6 +3172,7 @@
 <translation id="4347908978527632940">true に設定した場合、監視対象ユーザーについて、他の Android アプリからコンテンツ プロバイダを介してウェブ制限を問い合わせることができます。
 
           false に設定した場合、または未設定の場合、コンテンツ プロバイダから情報は返されません。</translation>
+<translation id="435395045087992163">デバイスが一時停止されるかディスプレイが閉じられたとき、デバイスをロックしない</translation>
 <translation id="4357587374229381015">SAML IdP ログインページでユーザー名の欄に自動入力する際に使用する URL パラメータ名を指定します。
 
       URL パラメータの値には、<ph name="PRODUCT_OS_NAME" /> プロファイルに関連付けられているユーザーのメールアドレスが使用されます。そのため、SAML IdP で別のメールアドレスを使用する場合は、この設定を無効にする必要があります。
@@ -3465,6 +3471,13 @@
 
       このポリシーを設定しないか有効に設定した場合は、DNS 傍受チェックが実行されます。明示的に無効に設定した場合、DNS 傍受チェックは実行されません。</translation>
 <translation id="4700190441681139987">どのサイトにもセンサーへのアクセスを許可しない</translation>
+<translation id="4701899474784891858">このポリシーでは、バッテリー セーバー モードの設定を有効または無効にできます。この設定により、フレームレートを抑制して消費電力を低減できます。
+      このポリシーを未設定のままにした場合、エンドユーザーは chrome://settings/performance でこの設定を管理できます。
+      この設定には次のレベルがあります。
+      <ph name="BATTERY_SAVER_MODE_DISABLED" />（0）: バッテリー セーバー モードは無効になります。
+      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" />（1）: デバイスがバッテリー駆動中でバッテリー残量が残り少ない場合、バッテリー セーバー モードが有効になります。
+      <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" />（2）: デバイスがバッテリー駆動の場合、バッテリー セーバー モードが有効になります。
+      </translation>
 <translation id="4703402283970867140">スマート消灯モデルを有効にして、画面が暗くなるまでの時間を延長する</translation>
 <translation id="4704958130749494760">USB シリアル デバイスへの接続を自動的にサイトに許可します。</translation>
 <translation id="471360812659157054">window.webkitStorageInfo は使用できなくなります。</translation>
@@ -3821,6 +3834,7 @@
       * オフまたは未設定: Chrome によって YouTube の制限付きモードは適用されません。ただし、YouTube ポリシーなどの外部ポリシーによって制限付きモードが適用される可能性があります。</translation>
 <translation id="5191476996923842491">setTimeout() 関数のタイムアウト処理にデフォルトの動作を使用する。</translation>
 <translation id="519247340330463721">セーフ ブラウジングに関するポリシーを設定します。</translation>
+<translation id="5194683382395300627">ウェブでの <ph name="ASSISTANT_PRODUCT_NAME" /> の使用を許可する（パスワードの自動変更を有効にするためなど）</translation>
 <translation id="5196520640744454600">ログイン画面で固定キーを有効にする</translation>
 <translation id="5196630732055960309">File Handling API の使用を許可するウェブアプリを指定する</translation>
 <translation id="5206454085187851382"><ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> の値に <ph name="PRINTERS_ALLOWLIST" /> が選択されている場合、<ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> でユーザーが使用できるプリンタを指定できます。ユーザーは、このポリシーで指定されている値に ID が一致するプリンタのみを使用できます。この ID は、<ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> で指定されたファイル内の「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドに対応している必要があります。</translation>
@@ -5071,6 +5085,7 @@
 <translation id="6575944031719151455">このポリシーでは、ログイン画面に表示するデバイスのローカル アカウントのリストを指定できます。識別子を指定して、デバイスのローカル アカウントを区別します。
 
       このポリシーを未設定のままにするか、空のリストを指定した場合、デバイスのローカル アカウントは表示されません。</translation>
+<translation id="6580851705156412587">デバイスが一時停止されるかディスプレイが閉じられたとき、デバイスをロックする</translation>
 <translation id="6581048059229620221">このポリシーを無効にした場合、リモート サポート ホストを起動することも、外部からの接続を受け入れるように設定することもできなくなります。このポリシーは、リモート アクセスのシナリオには影響しません。このポリシーは、企業の管理者が管理対象の <ph name="PRODUCT_OS_NAME" /> デバイスに接続する妨げにはなりません。このポリシーを有効にするか、空白または未設定のままにした場合、ポリシーは無視されます。</translation>
 <translation id="6583249367505445969">ブックマーク バーを無効にする</translation>
 <translation id="6584541828182430328">全画面表示の警告を無効にする</translation>
@@ -5847,6 +5862,7 @@
 
       このポリシーを設定した場合、ユーザーは設定を変更できません。設定しない場合、ネットワーク予測は有効になりますが、ユーザーはこの設定を変更できます。</translation>
 <translation id="7408815947231046196"><ph name="PRODUCT_NAME" /> データのバックアップを許可する</translation>
+<translation id="740885188496462583">バッテリー セーバー モードを有効にする</translation>
 <translation id="7410074797376205571"><ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> にリモートホストからプロキシ送信される　WebAuthn API リクエストの実行を許可します。</translation>
 <translation id="7412456346709338637">Thunderbolt/USB4 周辺機器のデータアクセスを有効にします</translation>
 <translation id="7417438464912687020">このパソコンへのリモート アクセス接続を許可する</translation>
@@ -6301,6 +6317,7 @@
 <translation id="7937766917976512374">動画キャプチャを許可または拒否する</translation>
 <translation id="7941528208359969119">オンラインの <ph name="OCSP_CRL_LABEL" /> チェックを許可する</translation>
 <translation id="7941975817681987555">ネットワーク接続でネットワーク動作を予測しない</translation>
+<translation id="7945445169067895719">デバイスが一時停止されるかディスプレイが閉じられたときのロックを有効にする</translation>
 <translation id="7946350455013548764">このポリシーを 3 に設定した場合、ウェブサイトは、HID デバイスへのアクセスを要求できます。このポリシーを 2 に設定した場合、HID デバイスへのアクセスは許可されません。
 
       このポリシーを未設定のままにした場合、ウェブサイトによるアクセス要求は許可されますが、ユーザーはこの設定を変更できます。
@@ -6605,6 +6622,7 @@
 
           有効な URL パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="8288199156259560552">Android Google 位置情報サービスを有効にする</translation>
+<translation id="8289824033213234651">デバイスがバッテリー駆動中でバッテリー残量が残り少ない場合、バッテリー セーバー モードを有効にする。</translation>
 <translation id="8290875622178450531">「音声入力」のユーザー補助機能を有効にします。
 
           このポリシーを有効に設定した場合、音声入力が常に有効になります。
@@ -7057,6 +7075,11 @@
 <translation id="8763716376920670835">WebSQL は、M101 ではデフォルトで有効になっていますが、Chrome フラグで無効にできます。
           このポリシーを False に設定するか未設定のままにした場合、WebSQL を無効にできます。
           このポリシーを True に設定した場合、WebSQL を無効にすることはできません。</translation>
+<translation id="8766308369516978190">このポリシーを有効に設定した場合、ユーザーはウェブで <ph name="ASSISTANT_PRODUCT_NAME" /> を使用できます（購入手続きやパスワード変更を迅速に行うためなど）。<ph name="ASSISTANT_PRODUCT_NAME" /> を使用するには、加えてユーザーによる同意が必要です。このポリシーが有効に設定されている場合でも、<ph name="ASSISTANT_PRODUCT_NAME" /> が実行されるのはユーザーが同意した場合のみです。
+
+      このポリシーを無効に設定した場合、ユーザーはウェブで <ph name="ASSISTANT_PRODUCT_NAME" /> を使用できません。
+
+      このポリシーが未設定の場合、ユーザーは <ph name="ASSISTANT_PRODUCT_NAME" /> をオフにできます。</translation>
 <translation id="8766910236040529804">レンダラアプリ コンテナを有効にする</translation>
 <translation id="8767743923206070405">このポリシーを有効にすると、<ph name="PRODUCT_NAME" /> のツールバーにホームボタンが表示されます。無効にすると、ホームボタンは表示されません。
 

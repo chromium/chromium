@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">Đang nén <ph name="NUMBER_OF_ITEMS" /> mục...</translation>
 <translation id="1722687688096767818">Đang thêm hồ sơ...</translation>
 <translation id="1726100011689679555">Máy chủ định danh</translation>
+<translation id="1726600877401297672">Đã chuyển <ph name="NUMBER_OF_ITEMS" /> mục vào Thùng rác</translation>
 <translation id="1729953886957086472">Tiếng Đức (Đức)</translation>
 <translation id="1730235522912993863">Tiếng Trung (Thương Hiệt)</translation>
 <translation id="1731889557567069540">Đã sao chép <ph name="NUMBER_OF_ITEMS" /> mục.</translation>
@@ -214,6 +215,7 @@
 <translation id="2888807692577297075">Không có mục nào khớp với <ph name="SEARCH_STRING" /></translation>
 <translation id="2894654529758326923">Thông tin</translation>
 <translation id="2902734494705624966">Mở rộng của Hoa Kỳ</translation>
+<translation id="2906052776158021882">Đang chuyển <ph name="NUMBER_OF_ITEMS" /> mục vào Thùng rác</translation>
 <translation id="290843123675549676">Tiếng Maratha</translation>
 <translation id="2923240520113693977">Tiếng Estonia</translation>
 <translation id="2938685643439809023">Tiếng Mông Cổ</translation>
@@ -476,6 +478,7 @@
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> dung lượng tệp sẽ bị xóa</translation>
 <translation id="508423945471810158">Đang di chuyển <ph name="NUMBER_OF_ITEMS" /> mục vào <ph name="FOLDER_NAME" /></translation>
+<translation id="5092200349368278146">Đã chuyển <ph name="FILE_NAME" /> vào Thùng rác</translation>
 <translation id="509429900233858213">Đã xảy ra lỗi.</translation>
 <translation id="5098629044894065541">Tiếng Do Thái</translation>
 <translation id="5102922915594634436">Quản lý các thư mục được đồng bộ hoá</translation>
@@ -581,6 +584,7 @@
 <translation id="5845721951356578987">Y tá</translation>
 <translation id="5861477046012235702">Người chơi trò chơi điện tử</translation>
 <translation id="5864471791310927901">Không thể tra cứu DHCP</translation>
+<translation id="5887342613489958822">Đang chuyển <ph name="FILE_NAME" /> vào Thùng rác</translation>
 <translation id="5896749729057314184">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Chưa kích hoạt, Cường độ tín hiệu: <ph name="SIGNAL_STRENGTH" />%, Thông tin chi tiết</translation>
 <translation id="5911887972742538906">Đã xảy ra lỗi trong quá trình cài đặt ứng dụng Linux.</translation>
 <translation id="5912396950572065471">Định dạng</translation>

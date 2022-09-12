@@ -7298,6 +7298,20 @@
 <translation id="8656110680728938054">เปิดใช้การเลือกเพื่อให้อ่าน</translation>
 <translation id="8659843732895043951">อนุญาตคลิปบอร์ดในเว็บไซต์เหล่านี้</translation>
 <translation id="8661297125441579970">ไม่อนุญาตให้ย้ายข้อมูลและใช้ ARC</translation>
+<translation id="8664285601317301180">นโยบายนี้ควบคุมค่าของ<ph name="IPP_ATTRIBUTE" /> <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> <ph name="IPP_PROTOCOL" /> (<ph name="INTERNET_PRINTING_PROTOCOL" />) ในงานพิมพ์
+
+      การตั้งค่านโยบายเป็นสตริงจะได้รับผลกระทบจากการเพิ่มรายการ <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> ในงานพิมพ์ทั้งหมด สมาชิก <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> ของรายการ <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> ที่เพิ่มจะตั้งเป็นค่าของนโยบายหลังจากการแทนที่ตัวแปร
+
+      ตัวแปรที่รองรับคือ <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="ANNOTATED_LOCATION_PLACEHOLDER" /> ระบบจะไม่แทนที่ตัวแปรของตัวยึดตำแหน่งที่ไม่รองรับ
+
+      ค่าที่เกิดหลังจากการแทนที่ตัวแปรจะถือว่าถูกต้องหากประกอบด้วยอักขระที่พิมพ์ได้ของ <ph name="ASCII" /> เท่านั้นและความยาวไม่เกิน 255 ตัว
+
+      โปรดทราบว่านโยบายนี้จะมีผลเฉพาะเมื่อสื่อสารกับเครื่องพิมพ์โดยใช้โปรโตคอล <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" /> หรือ <ph name="IPP_USB_PROTOCOL" /> เท่านั้นด้วยเหตุผลด้านความเป็นส่วนตัว นอกจากนี้ โปรดทราบว่านโยบายมีผลเฉพาะกับเครื่องพิมพ์ที่รองรับ <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> เท่านั้น
+
+      นโยบายนี้มีผลเฉพาะกับผู้ใช้ที่เชื่อมโยง
+
+      หากไม่ได้ตั้งค่านโยบาย ตั้งเป็นค่าว่างหรือค่าที่ไม่ถูกต้อง ระบบจะไม่เพิ่ม <ph name="CLIENT_INFO_PLACEHOLDER" /> ในคำของานพิมพ์
+      </translation>
 <translation id="8665314828727504286">ระดับการปกป้องของ Google Safe Browsing</translation>
 <translation id="8666123502812856425">การตั้งค่านโยบายนี้ให้คุณระบุ URL ซึ่งเจาะจงเว็บไซต์ที่ได้รับสิทธิ์โดยอัตโนมัติในการเข้าถึงอุปกรณ์ HID ที่มีการรวบรวมระดับบนสุดเกี่ยวกับการใช้งาน HID ที่กำหนด แต่ละรายการในลิสต์ต้องระบุทั้งช่อง <ph name="USAGES_FIELD_NAME" /> และ <ph name="URLS_FIELD_NAME" /> นโยบายจึงจะมีผล แต่ละรายการในช่อง <ph name="USAGES_FIELD_NAME" /> ต้องมี <ph name="USAGE_PAGE_FIELD_NAME" /> และอาจมีช่อง <ph name="USAGE_FIELD_NAME" /> การไม่ระบุช่อง <ph name="USAGE_FIELD_NAME" /> จะสร้างนโยบายที่ตรงกับอุปกรณ์ทุกเครื่องที่มีการรวบรวมระดับบนสุดเกี่ยวกับการใช้งานจากหน้าการใช้งานที่ระบุ รายการที่ระบุช่อง <ph name="USAGE_FIELD_NAME" /> แต่ไม่ระบุช่อง <ph name="USAGE_PAGE_FIELD_NAME" /> จะไม่มีผล
 

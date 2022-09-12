@@ -140,6 +140,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="1834891354138622109">Zutabea</translation>
 <translation id="1846771122725914429">Bluetooth bidezko braille-pantaila</translation>
 <translation id="1852018405765032699">Pantaila lau hatzekin sakatuz gero, ChromeVox-eko menuak ireki eta itxiko dira. Menu horietan, agindu eta lasterbideei buruzko informazio lagungarria duzu. Menuak irekita daudenean, pasatu hatza elementuen artean nabigatzeko. Elementuak aktibatzeko, berriz, saka itzazu birritan. Aurrera egiteko, sakatu pantaila lau hatzekin.</translation>
+<translation id="1864430479908918647">Sakatu Bilatu + zuriune-barra</translation>
 <translation id="1865601187525349519">Testuaren amaiera</translation>
 <translation id="1876229593313240038">dokumentua</translation>
 <translation id="1902396333223336119">Gelaxka</translation>
@@ -778,6 +779,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="6236061028292614533">Hurrengo goiburua</translation>
 <translation id="6254901459154107917">Testu editagarria duen hurrengo eremua</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> edukitzailetik irten zara.</translation>
+<translation id="6280088282605782512">Sakatu birritan</translation>
 <translation id="6282062888058716985">nabigazioa</translation>
 <translation id="6295699829709583154">Ezinbesteko teklak: bilaketa-tekla</translation>
 <translation id="6305702903308659374">Erreproduzitu bolumen normalean ChromeVox hitz egiten ari bada ere</translation>
@@ -980,6 +982,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="7731785449856576010">Ez dago beste multimedia-widgetik honen ondoren</translation>
 <translation id="7735498529470878067">Arakatu sakatuta eginbidearekin, pantailan erakusten denaren ideia orokor bat lor dezakezu bizkor.</translation>
 <translation id="773906353055481349">Gelaxka batetik bestera nabigatzeko, sakatu Bilaketa + Ktrl + Alt eta gezi-teklak</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> - <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">Hasi da <ph name="FILE_NAME" /> deskargatzen</translation>
 <translation id="7768784765476638775">Hautatu ozen irakurtzeko</translation>
 <translation id="7776293189010177726">Ireki ChromeVox menuak</translation>

@@ -1517,6 +1517,7 @@
 <translation id="2356070529366658676">అడుగు</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" />ను తీసివేయండి</translation>
 <translation id="2358561147588818967">సైట్‌లు JavaScriptను ఉపయోగించగలవు</translation>
+<translation id="2358777858338503863"><ph name="ORIGIN" />‌లో అనుమతించడానికి క్లిక్ చేయండి:</translation>
 <translation id="2359071692152028734">Linux యాప్‌లు ప్రతిస్పందించకపోవచ్చు.</translation>
 <translation id="2359345697448000899">'సాధనాలు' మెనూలోని ఎక్స్‌టెన్షన్‌లను క్లిక్ చేయడం ద్వారా మీ ఎక్స్‌టెన్షన్‌లను నిర్వహించండి.</translation>
 <translation id="2359556993567737338">బ్లూటూత్ పరికరాన్ని కనెక్ట్ చేయండి</translation>
@@ -2258,6 +2259,7 @@
 <translation id="3046178388369461825">Linux డిస్క్ స్పేస్ చాలా తక్కువగా ఉంది</translation>
 <translation id="3046910703532196514">వెబ్‌పేజీ, సంపూర్ణం</translation>
 <translation id="304747341537320566">ప్రసంగ ఇంజిన్‌లు</translation>
+<translation id="3048051495640130973">బ్యాటరీ సేవర్ ఎప్పుడు ఆన్ అవ్వాలి అనే దానిని మీరు సెట్టింగ్‌ల్లో కంట్రోల్ చేయవచ్చు</translation>
 <translation id="3048336643003835855">విక్రేత <ph name="VENDOR_ID" />కు చెందిన HID పరికరాలు</translation>
 <translation id="3048917188684939573">ప్రసార, పరికర లాగ్‌లు</translation>
 <translation id="3051250416341590778">డిస్‌ప్లే పరిమాణం</translation>
@@ -2848,6 +2850,7 @@
 <translation id="3641456520301071208">సైట్‌లు మీ లొకేషన్‌ను అడగవచ్చు</translation>
 <translation id="3642070413432681490">గుండ్రటి కర్సర్</translation>
 <translation id="3642699533549879077">వేరొకరు మీ స్క్రీన్‌ను చూసినప్పుడు, మీకు అలర్ట్ వస్తుంది అలాగే నోటిఫికేషన్ కంటెంట్ దాచబడుతుంది.</translation>
+<translation id="3643962751030964445">ఈ పరికరాన్ని <ph name="DEVICE_MANAGER" /> మేనేజ్ చేస్తోంది. <ph name="USER_EMAIL_ADDRESS" /> ఖాతా కోసం <ph name="DEVICE_MANAGER" />‌కు ఒక కొత్త ప్రొఫైల్ అవసరం</translation>
 <translation id="3645372836428131288">వేలిముద్రలోని వేరే భాగాన్ని క్యాప్చర్ చేయడం కోసం కొద్దిగా కదిలించండి.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> నుండి <ph name="ATTACHMENTS" /> అందుకున్నారు}other{<ph name="DEVICE_NAME" /> నుండి <ph name="ATTACHMENTS" /> అందుకున్నారు}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> గుర్తించబడింది</translation>
@@ -3420,6 +3423,7 @@
 <translation id="4175137578744761569">లేత వంగ రంగు మరియు తెలుపు</translation>
 <translation id="4175737294868205930">నిరంతర నిల్వ</translation>
 <translation id="4176463684765177261">ఆపివేయబడింది</translation>
+<translation id="4176864026061939326">ఈ పరికరం మేనేజ్ చేయబడుతోంది. <ph name="USER_EMAIL_ADDRESS" /> ఖాతా కోసం మీ పరికర అడ్మినిస్ట్రేటర్‌కు ఒక కొత్త ప్రొఫైల్ అవసరం</translation>
 <translation id="4180788401304023883">CA ప్రమాణపత్రం "<ph name="CERTIFICATE_NAME" />"ను తొలగించాలా?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">భాషలు</translation>
@@ -3807,6 +3811,7 @@
 <translation id="4554591392113183336">ప్రస్తుతం ఉన్న వెర్షన్‌తో పోలిస్తే, బాహ్య ఎక్స్‌టెన్షన్ అదే వెర్షన్‌కు చెందినది లేదా తక్కువ వెర్షన్‌కు చెందినది.</translation>
 <translation id="4555769855065597957">నీడ</translation>
 <translation id="4555863373929230635">పాస్‌వర్డ్‌లను మీ Google ఖాతాలో సేవ్ చేయడానికి, సైన్ ఇన్ చేసి, సింక్ ఆన్ చేయండి.</translation>
+<translation id="4556194354084985730">సేవ్ చేసిన మీ పాస్‌వర్డ్‌లతో సైట్‌లు, యాప్‌లకు సులభంగా సైన్ ఇన్ అవ్వండి. ఆఫ్ చేసినప్పుడు, సైన్ ఇన్ చేయడానికి ముందు మిమ్మల్ని అడగడం జరుగుతుంది.</translation>
 <translation id="4558426062282641716">స్వీయ-ప్రారంభ అనుమతి రిక్వెస్ట్ చేయబడింది</translation>
 <translation id="4559617833001311418">ఈ సైట్ మీ మోషన్ లేదా లైట్ సెన్సార్‌లను యాక్సెస్ చేస్తోంది.</translation>
 <translation id="4561893854334016293">ఇటీవల మార్చిన అనుమతులు లేవు</translation>
@@ -5362,6 +5367,7 @@
 <translation id="6077476112742402730">స్పీక్-టు-టైప్</translation>
 <translation id="6078121669093215958">{0,plural, =1{గెస్ట్}other{# తెరవబడిన గెస్ట్ విండోలు}}</translation>
 <translation id="6078323886959318429">షార్ట్‌కట్‌ను జోడించు</translation>
+<translation id="6078742430369906859">"<ph name="NETWORK_ID" />"లో కనెక్టివిటీ పరిమితం చేయబడి ఉండవచ్చు</translation>
 <translation id="6078752646384677957">దయచేసి మీ మైక్రోఫోన్ మరియు ఆడియో స్థాయిలను చెక్ చేయండి.</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" ఒక HID పరికరానికి కనెక్ట్ కావాలని కోరుకుంటుంది</translation>
 <translation id="608029822688206592">నెట్‌వర్క్ ఏదీ కనుగొనబడలేదు. దయచేసి మీ SIMను ఇన్‌సర్ట్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
@@ -6072,6 +6078,7 @@
 <translation id="6779447100905857289">మీ కార్ట్‌లు</translation>
 <translation id="677965093459947883">చాలా చిన్నవిగా</translation>
 <translation id="6781005693196527806">సెర్చ్ ఇంజిన్‌లను &amp;మేనేజ్ చేయండి...</translation>
+<translation id="6781012982807899368">సేవ్ చేయబడిన పాస్‌వర్డ్‌లు ఇక్కడ కనిపిస్తాయి. <ph name="BEGIN_LINK" /> పాస్‌వర్డ్‌లను దిగుమతి చేయండి<ph name="END_LINK" /></translation>
 <translation id="6781284683813954823">డూడుల్ లింక్</translation>
 <translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />యాప్ డేటా అనేది, (డెవలపర్ సెట్టింగ్‌ల ఆధారంగా) కాంటాక్ట్‌లు, మెసేజ్‌లు, ఫోటోల వంటి డేటాతో సహా, యాప్ సేవ్ చేసిన ఎలాంటి డేటా అయినా కావచ్చు. బ్యాకప్ డేటా మీ చిన్నారి Drive స్టోరేజ్ కోటాలో లెక్కించబడదు.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />మీరు ఈ సర్వీస్‌ను సెట్టింగ్‌లలో ఆఫ్ చేయవచ్చు.<ph name="END_PARAGRAPH2" /></translation>
@@ -6585,6 +6592,7 @@
 <translation id="7267875682732693301">మీ వేలిముద్ర కోసం వివిధ భాగాలను జోడించడానికి మీ వేలిని పైకి ఎత్తుతూ ఉండండి</translation>
 <translation id="7267898843336437186">ఈ సైట్‌కు చూసే అనుమతి ఉండేలా ఫోల్డర్‌ను ఎంచుకోండి</translation>
 <translation id="7268127947535186412">ఈ సెట్టింగ్‌ను పరికరం యజమాని నిర్వహిస్తున్నారు.</translation>
+<translation id="7269229526547981029">ఈ ప్రొఫైల్ <ph name="PROFILE_MANAGER" /> ద్వారా మేనేజ్ చేయబడుతోంది. <ph name="USER_EMAIL_ADDRESS" /> ఖాతా కోసం <ph name="ACCOUNT_MANAGER" />‌కు ఒక కొత్త ప్రొఫైల్ అవసరం</translation>
 <translation id="7269736181983384521">సమీప షేరింగ్ డేటా వినియోగం</translation>
 <translation id="7272674038937250585">వివరణ ఏదీ అందించబడలేదు</translation>
 <translation id="7273110280511444812"><ph name="DATE" />న చివరిగా జోడించబడింది</translation>
@@ -7223,6 +7231,7 @@
 <translation id="7870790288828963061">సరికొత్త వెర్షన్ అందుబాటులో ఉన్న కియోస్క్ యాప్‌లేవీ కనుగొనబడలేదు. అప్‌డేట్ చేయడానికి ఏదీ లేదు. దయచేసి USB స్టిక్‌ను తీసివేయండి.</translation>
 <translation id="7871049986386271121">ఎల్లప్పుడూ ఈ సైట్‌లో</translation>
 <translation id="7871109039747854576">అభ్యర్థి లిస్ట్‌ను పేజీ చేయడానికి <ph name="COMMA" />, <ph name="PERIOD" /> కీలను ఉపయోగించండి</translation>
+<translation id="7872494313446521576"><ph name="ORIGIN" />‌లో "<ph name="EXTENSIONS_REQUESTING_ACCESS" />""ను అనుమతించడానికి క్లిక్ చేయండి:</translation>
 <translation id="787268756490971083">ఆఫ్ చేయబడి ఉంది</translation>
 <translation id="7872758299142009420">చాలా ఎక్కువ Nest చేయబడిన గ్రూప్‌లు: <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">Chrome నేపథ్యాలు</translation>
@@ -7591,6 +7600,7 @@
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{కొత్త నోటిఫికేషన్}other{# కొత్త నోటిఫికేషన్‌లు}}</translation>
 <translation id="821119981794423735"><ph name="USER_EMAIL" /> కోసం Google Password Managerకు పాస్‌వర్డ్‌లను దిగుమతి చేయడానికి, CSV ఫైల్‌ను ఎంచుకోండి</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{డౌన్‌లోడ్ ప్రోగ్రెస్‌లో ఉంది}other{డౌన్‌లోడ్‌లు ప్రోగ్రెస్‌లో ఉన్నాయి}}</translation>
+<translation id="8212601853154459483">ఈ ప్రొఫైల్ <ph name="PROFILE_MANAGER" /> ద్వారా మేనేజ్ చేయబడుతోంది, అలాగే <ph name="USER_EMAIL_ADDRESS" /> ఖాతా కోసం మీరు వేరే ప్రొఫైల్‌ను క్రియేట్ చేయాల్సి ఉంటుంది</translation>
 <translation id="8213449224684199188">ఫోటో మోడ్‌లోకి ప్రవేశించింది</translation>
 <translation id="8214489666383623925">ఫైల్‌ను తెరువు...</translation>
 <translation id="8215129063232901118">మీ ఫోన్ సామర్థ్యాలను <ph name="DEVICE_TYPE" /> నుండి యాక్సెస్ చేయండి</translation>
@@ -7897,6 +7907,7 @@
 <translation id="8523493869875972733">మార్పులను అలాగే ఉంచు</translation>
 <translation id="8523849605371521713">విధానం ద్వారా జోడించబడింది</translation>
 <translation id="8524783101666974011">కార్డ్‌లను మీ Google ఖాతాలో సేవ్ చేయండి</translation>
+<translation id="8525157245469383124">రిటైలర్-స్టోర్ ID ABC-1234 ఫార్మాట్‌లో ఉండాలి</translation>
 <translation id="8525306231823319788">ఫుల్-స్క్రీన్‌</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">భాషలను జోడించు</translation>

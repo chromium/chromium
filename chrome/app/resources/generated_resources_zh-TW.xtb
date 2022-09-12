@@ -1785,6 +1785,7 @@
 <translation id="2637400434494156704">PIN 碼不正確。你還可以再試 1 次。</translation>
 <translation id="2638286699381354126">更新...</translation>
 <translation id="2638662041295312666">登入圖片</translation>
+<translation id="2640299212685523844">使用 GTK</translation>
 <translation id="264083724974021997">連線至你的手機 - 對話方塊</translation>
 <translation id="2642111877055905627">足球</translation>
 <translation id="2643698698624765890">如要管理擴充功能，只要按一下 [視窗] 選單裡的 [擴充功能] 即可。</translation>
@@ -1946,6 +1947,7 @@
 <translation id="2783829359200813069">選取加密類型</translation>
 <translation id="2783952358106015700">透過「<ph name="APP_NAME" />」使用安全金鑰</translation>
 <translation id="2785873697295365461">檔案描述元</translation>
+<translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">保留本機瀏覽資料，例如書籤、密碼、歷史記錄等</translation>
 <translation id="2787354132612937472">-</translation>
 <translation id="2788135150614412178">+</translation>
@@ -2084,6 +2086,7 @@
 <translation id="2902312830803030883">更多動作</translation>
 <translation id="2903457445916429186">開啟所選項目</translation>
 <translation id="2903882649406874750">一律禁止 <ph name="HOST" /> 存取感應器</translation>
+<translation id="2904845070985032877">暫停動畫</translation>
 <translation id="2907619724991574506">起始網址</translation>
 <translation id="2907798539022650680">無法連上「<ph name="NAME" />」：<ph name="DETAILS" />
     伺服器訊息：<ph name="SERVER_MSG" /></translation>
@@ -2909,6 +2912,7 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">你與 Google</translation>
 <translation id="3722108462506185496">啟用虛擬機器服務時發生錯誤，請再試一次。</translation>
+<translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">可用的 WiFi 網路</translation>
 <translation id="3727187387656390258">檢查彈出式視窗</translation>
 <translation id="372722114124766626">限用一次</translation>
@@ -2988,6 +2992,7 @@
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome 並未在電腦上發現任何有害軟體 • 上次檢查時間：1 天前}other{Chrome 並未在電腦上發現任何有害軟體 • 上次檢查時間：{NUM_DAYS} 天前}}</translation>
 <translation id="379500251094592809">如要使用鄰近分享功能，請確認兩部裝置都已解鎖且彼此相鄰，並已開啟藍牙功能。如果要與未設為聯絡人的 Chromebook 分享內容，請確認該裝置已啟用鄰近分享瀏覽權限 (按一下電腦右下角的時間欄位即可開啟狀態區，再從中啟用鄰近分享瀏覽權限)。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">關閉</translation>
+<translation id="3795766489237825963">播放動畫</translation>
 <translation id="3796648294839530037">慣用的網路：</translation>
 <translation id="3797739167230984533">你的 <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> 受到貴機構管理<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">透過 <ph name="SEARCH_ENGINE" /> 搜尋「<ph name="SEARCH_TERMS" />」(&amp;S)</translation>
@@ -3404,6 +3409,7 @@
 <translation id="4181602000363099176">20 倍</translation>
 <translation id="4181841719683918333">語言</translation>
 <translation id="4184803915913850597">HID 裝置 (<ph name="VENDOR_ID" />：<ph name="PRODUCT_ID" />)</translation>
+<translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> 搜尋</translation>
 <translation id="4187424053537113647">正在設定「<ph name="APP_NAME" />」...</translation>
 <translation id="4190828427319282529">醒目顯示鍵盤焦點</translation>
 <translation id="4193836101014293726">無法刪除這個設定檔</translation>
@@ -4417,6 +4423,7 @@
 <translation id="5190926251776387065">啟用連接埠</translation>
 <translation id="5191094172448199359">你輸入的 PIN 碼不相符</translation>
 <translation id="5191251636205085390">進一步瞭解用於取代第三方 Cookie 的全新技術並進行控管</translation>
+<translation id="519185197579575131">使用 QT</translation>
 <translation id="5192062846343383368">開啟 Family Link 應用程式以查看監督功能設定</translation>
 <translation id="5193988420012215838">已複製到剪貼簿</translation>
 <translation id="5194256020863090856">這項操作只會影響無痕式視窗</translation>
