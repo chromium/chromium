@@ -132,6 +132,12 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
   // This is virtual only for testing.
   virtual void ExecuteScriptBlock();
 
+  // Check if this script is eligible for kLowPriorityAsyncScriptExecution
+  // feature (see crbug/1348467).
+  virtual bool IsEligibleForLowPriorityAsyncScriptExecution() const {
+    return false;
+  }
+
   bool IsWatchingForLoad() const { return client_; }
 
  protected:

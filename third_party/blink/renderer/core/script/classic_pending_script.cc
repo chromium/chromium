@@ -217,6 +217,28 @@ void ClassicPendingScript::DisposeInternal() {
   ClearResource();
 }
 
+bool ClassicPendingScript::IsEligibleForLowPriorityAsyncScriptExecution()
+    const {
+  DCHECK_EQ(GetSchedulingType(), ScriptSchedulingType::kAsync);
+
+  static const bool feature_enabled =
+      base::FeatureList::IsEnabled(features::kLowPriorityAsyncScriptExecution);
+  if (!feature_enabled)
+    return false;
+
+  if (GetElement() && GetElement()->IsPotentiallyRenderBlocking())
+    return false;
+
+  // We don't delay async scripts that have matched a resource in the preload
+  // cache, because we're using <link rel=preload> as a signal that the script
+  // is higher-than-usual priority, and therefore should be executed earlier
+  // rather than later.
+  if (GetResource() && GetResource()->IsLinkPreload())
+    return false;
+
+  return true;
+}
+
 void ClassicPendingScript::NotifyFinished(Resource* resource) {
   // The following SRI checks need to be here because, unfortunately, fetches
   // are not done purely according to the Fetch spec. In particular,

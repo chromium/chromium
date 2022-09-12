@@ -186,8 +186,7 @@ void ScriptRunner::RemoveDelayReasonFromScript(PendingScript* pending_script,
   base::OnceClosure task =
       WTF::Bind(&ScriptRunner::ExecuteAsyncPendingScript,
                 WrapWeakPersistent(this), WrapPersistent(pending_script));
-  if (base::FeatureList::IsEnabled(
-          features::kLowPriorityAsyncScriptExecution)) {
+  if (pending_script->IsEligibleForLowPriorityAsyncScriptExecution()) {
     PostTaskWithLowPriorityUntilTimeout(
         FROM_HERE, std::move(task),
         features::kTimeoutForLowPriorityAsyncScriptExecution.Get(),

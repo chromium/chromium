@@ -77,6 +77,10 @@ class CORE_EXPORT ClassicPendingScript final
   // ScriptCacheConsumerClient:
   void NotifyCacheConsumeFinished() override;
 
+  // Check if this script is eligible for kLowPriorityAsyncScriptExecution
+  // feature (see crbug/1348467).
+  bool IsEligibleForLowPriorityAsyncScriptExecution() const override;
+
  private:
   // See AdvanceReadyState implementation for valid state transitions.
   enum ReadyState {
