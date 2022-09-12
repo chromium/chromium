@@ -298,6 +298,7 @@ builder.
 
   Path regular expressions:
   * [`//ios/.+`](https://cs.chromium.org/chromium/src/ios/)
+  * [`//testing/variations/fieldtrial_testing_config.json`](https://cs.chromium.org/search?q=+file:testing/variations/fieldtrial_testing_config.json)
 
 * [ios-simulator-noncq](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-noncq) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator-noncq"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""ios-simulator-noncq""))
 

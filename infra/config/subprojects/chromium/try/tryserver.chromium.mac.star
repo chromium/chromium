@@ -359,6 +359,7 @@ ios_builder(
     tryjob = try_.job(
         location_regexp = [
             ".+/[+]/ios/.+",
+            ".+/[+]/testing/variations/fieldtrial_testing_config.json",
         ],
     ),
 )
