@@ -22,6 +22,7 @@
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_proxy_configurator.h"
 #include "content/browser/preloading/prefetch/prefetched_mainframe_response_container.h"
+#include "content/browser/preloading/prefetch/proxy_lookup_client_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/frame_accept_header.h"
@@ -66,6 +67,9 @@ bool (*g_host_non_unique_filter)(base::StringPiece) = nullptr;
 static network::mojom::URLLoaderFactory* g_url_loader_factory_for_testing =
     nullptr;
 
+static network::mojom::NetworkContext*
+    g_network_context_for_proxy_lookup_for_testing = nullptr;
+
 bool ShouldConsiderDecoyRequestForStatus(PrefetchStatus status) {
   switch (status) {
     case PrefetchStatus::kPrefetchNotEligibleUserHasCookies:
@@ -81,6 +85,7 @@ bool ShouldConsiderDecoyRequestForStatus(PrefetchStatus status) {
     case PrefetchStatus::kPrefetchProxyNotAvailable:
     case PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique:
     case PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled:
+    case PrefetchStatus::kPrefetchNotEligibleExistingProxy:
       // These statuses don't relate to any user state, so don't send a decoy
       // request.
       return false;
@@ -418,6 +423,56 @@ void PrefetchService::OnGotCookiesForEligibilityCheck(
     return;
   }
 
+  StartProxyLookupCheck(prefetch_container, std::move(result_callback));
+}
+
+void PrefetchService::StartProxyLookupCheck(
+    base::WeakPtr<PrefetchContainer> prefetch_container,
+    OnEligibilityResultCallback result_callback) const {
+  // Same origin prefetches (which use the default network context and cannot
+  // use the prefetch proxy) can use the existing proxy settings.
+  // TODO(https://crbug.com/1343903): Copy proxy settings over to the isolated
+  // network context for the prefetch in order to allow non-private cross origin
+  // prefetches to be made using the existing proxy settings.
+  if (!prefetch_container->GetPrefetchType()
+           .IsIsolatedNetworkContextRequired()) {
+    std::move(result_callback).Run(prefetch_container, true, absl::nullopt);
+    return;
+  }
+
+  // Start proxy check for this prefetch, and give ownership of the
+  // |ProxyLookupClientImpl| to |prefetch_container|.
+  net::NetworkIsolationKey network_isolation_key(
+      net::SchemefulSite(prefetch_container->GetURL()),
+      net::SchemefulSite(prefetch_container->GetURL()));
+  prefetch_container->TakeProxyLookupClient(
+      std::make_unique<ProxyLookupClientImpl>(
+          prefetch_container->GetURL(), network_isolation_key,
+          base::BindOnce(&PrefetchService::OnGotProxyLookupResult,
+                         weak_method_factory_.GetWeakPtr(), prefetch_container,
+                         std::move(result_callback)),
+          g_network_context_for_proxy_lookup_for_testing
+              ? g_network_context_for_proxy_lookup_for_testing
+              : browser_context_->GetDefaultStoragePartition()
+                    ->GetNetworkContext()));
+}
+
+void PrefetchService::OnGotProxyLookupResult(
+    base::WeakPtr<PrefetchContainer> prefetch_container,
+    OnEligibilityResultCallback result_callback,
+    bool has_proxy) const {
+  if (!prefetch_container) {
+    std::move(result_callback).Run(prefetch_container, false, absl::nullopt);
+    return;
+  }
+
+  prefetch_container->ReleaseProxyLookupClient();
+  if (has_proxy) {
+    std::move(result_callback)
+        .Run(prefetch_container, false,
+             PrefetchStatus::kPrefetchNotEligibleExistingProxy);
+    return;
+  }
   std::move(result_callback).Run(prefetch_container, true, absl::nullopt);
 }
 
@@ -1023,6 +1078,12 @@ void PrefetchService::SetHostNonUniqueFilterForTesting(
 void PrefetchService::SetURLLoaderFactoryForTesting(
     network::mojom::URLLoaderFactory* url_loader_factory) {
   g_url_loader_factory_for_testing = url_loader_factory;
+}
+
+// static
+void PrefetchService::SetNetworkContextForProxyLookupForTesting(
+    network::mojom::NetworkContext* network_context) {
+  g_network_context_for_proxy_lookup_for_testing = network_context;
 }
 
 void PrefetchService::RecordExistingPrefetchWithMatchingURL(

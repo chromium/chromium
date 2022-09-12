@@ -79549,6 +79549,10 @@ Called by update_net_trust_anchors.py.-->
     The url was not eligible to be prefected because the user requested that the
     browser use less data.
   </int>
+  <int value="38" label="Prefetch Not Eligible: Existing Proxy">
+    The URL is not eligible to be prefetched, because in the default network
+    context it is configured to use a proxy server.
+  </int>
 </enum>
 
 <enum name="PrefetchRedirect">

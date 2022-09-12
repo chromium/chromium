@@ -24,6 +24,7 @@ class OneShotTimer;
 }  // namespace base
 
 namespace network::mojom {
+class NetworkContext;
 class URLLoaderFactory;
 }  // namespace network::mojom
 
@@ -99,6 +100,12 @@ class CONTENT_EXPORT PrefetchService {
   static void SetURLLoaderFactoryForTesting(
       network::mojom::URLLoaderFactory* url_loader_factory);
 
+  // Sets the NetworkContext to use just for the proxy lookup. Note that this
+  // does not take ownership of |network_context|, and the caller must keep
+  // ownership over the course of the test.
+  static void SetNetworkContextForProxyLookupForTesting(
+      network::mojom::NetworkContext* network_context);
+
  private:
   // Checks whether the given |prefetch_container| is eligible for prefetch.
   // Once the eligibility is determined then |result_callback| will be called
@@ -120,6 +127,21 @@ class CONTENT_EXPORT PrefetchService {
       OnEligibilityResultCallback result_callback,
       const net::CookieAccessResultList& cookie_list,
       const net::CookieAccessResultList& excluded_cookies) const;
+
+  // Starts the check for whether or not there is a proxy configured for the URL
+  // of |prefetch_container|. If there is an existing proxy, then the prefetch
+  // is not eligible.
+  void StartProxyLookupCheck(
+      base::WeakPtr<PrefetchContainer> prefetch_container,
+      OnEligibilityResultCallback result_callback) const;
+
+  // Called after looking up the proxy configuration for the URL of
+  // |prefetch_container|. If there is an existing proxy, then the prefetch is
+  // not eligible.
+  void OnGotProxyLookupResult(
+      base::WeakPtr<PrefetchContainer> prefetch_container,
+      OnEligibilityResultCallback result_callback,
+      bool has_proxy) const;
 
   // Called once the eligibility of |prefetch_container| is determined. If the
   // prefetch is eligible it is added to the queue to be prefetched. If it is

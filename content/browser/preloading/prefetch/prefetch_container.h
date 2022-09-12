@@ -34,6 +34,7 @@ class PrefetchDocumentManager;
 class PrefetchNetworkContext;
 class PrefetchService;
 class PrefetchedMainframeResponseContainer;
+class ProxyLookupClientImpl;
 
 // This class contains the state for a request to prefetch a specific URL.
 class CONTENT_EXPORT PrefetchContainer {
@@ -76,6 +77,12 @@ class CONTENT_EXPORT PrefetchContainer {
   }
   bool HasPrefetchStatus() const { return prefetch_status_.has_value(); }
   PrefetchStatus GetPrefetchStatus() const;
+
+  // Controls ownership of the |ProxyLookupClientImpl| used during the
+  // eligibility check.
+  void TakeProxyLookupClient(
+      std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client);
+  std::unique_ptr<ProxyLookupClientImpl> ReleaseProxyLookupClient();
 
   // Whether or not the prefetch was determined to be eligibile
   void OnEligibilityCheckComplete(bool is_eligible);
@@ -200,6 +207,10 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The current status, if any, of the prefetch.
   absl::optional<PrefetchStatus> prefetch_status_;
+
+  // Looks up the proxy settings in the default network context for |url_|. If
+  // there is an existing proxy for |url_| then it is not eligible.
+  std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client_;
 
   // Whether this prefetch is a decoy or not. If the prefetch is a decoy then
   // any prefetched resources will not be served.

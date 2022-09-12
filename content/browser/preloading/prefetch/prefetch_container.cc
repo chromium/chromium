@@ -17,6 +17,7 @@
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/prefetch/prefetched_mainframe_response_container.h"
+#include "content/browser/preloading/prefetch/proxy_lookup_client_impl.h"
 #include "content/public/browser/global_routing_id.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -93,6 +94,18 @@ PrefetchContainer::~PrefetchContainer() {
 PrefetchStatus PrefetchContainer::GetPrefetchStatus() const {
   DCHECK(prefetch_status_);
   return prefetch_status_.value();
+}
+
+void PrefetchContainer::TakeProxyLookupClient(
+    std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client) {
+  DCHECK(!proxy_lookup_client_);
+  proxy_lookup_client_ = std::move(proxy_lookup_client);
+}
+
+std::unique_ptr<ProxyLookupClientImpl>
+PrefetchContainer::ReleaseProxyLookupClient() {
+  DCHECK(proxy_lookup_client_);
+  return std::move(proxy_lookup_client_);
 }
 
 PrefetchNetworkContext* PrefetchContainer::GetOrCreateNetworkContext(
