@@ -48,6 +48,7 @@ namespace {
 // greater than 5.
 constexpr int kMaxTimerNestingLevel = 5;
 constexpr base::TimeDelta kMinimumInterval = base::Milliseconds(4);
+constexpr base::TimeDelta kMaxHighResolutionInterval = base::Milliseconds(32);
 
 }  // namespace
 
@@ -102,7 +103,8 @@ DOMTimer::DOMTimer(ExecutionContext* context,
   // MaxUnthrottledTimeoutNestingLevel and SetTimeoutZeroWithoutClamping.
   // TODO(1153139) Remove this logic one experiments have shipped.
   bool precise = (timeout < kMinimumInterval) ||
-                 scheduler::IsAlignWakeUpsDisabledForProcess();
+                 (scheduler::IsAlignWakeUpsDisabledForProcess() &&
+                  timeout < kMaxHighResolutionInterval);
 
   if (nesting_level_ >= max_nesting_level && timeout < kMinimumInterval)
     timeout = kMinimumInterval;
