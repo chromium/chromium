@@ -6,13 +6,11 @@
 
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/string_split.h"
 #include "base/task/current_thread.h"
 #include "chromecast/base/chromecast_switches.h"
@@ -230,7 +228,7 @@ float AlsaVolumeControl::GetRoundtripVolume(float volume) {
   }
 
   long level = 0;  // NOLINT(runtime/int)
-  level = std::round((base::ClampToRange(volume, 0.0f, 1.0f) *
+  level = std::round((base::clamp(volume, 0.0f, 1.0f) *
                       (volume_range_max_ - volume_range_min_)) +
                      volume_range_min_);
   return static_cast<float>(level - volume_range_min_) /
