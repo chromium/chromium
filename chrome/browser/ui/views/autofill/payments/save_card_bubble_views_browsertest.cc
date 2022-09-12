@@ -337,13 +337,14 @@ class SaveCardBubbleViewsFullFormBrowserTest
     ASSERT_TRUE(SetupSync());
   }
 
-  void NavigateTo(const std::string& file_path) {
+  void NavigateToAndWaitForForm(const std::string& file_path) {
     if (file_path.find("data:") == 0U) {
       ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(0), GURL(file_path)));
     } else {
       ASSERT_TRUE(ui_test_utils::NavigateToURL(
           GetBrowser(0), embedded_test_server()->GetURL(file_path)));
     }
+    ASSERT_TRUE(GetAutofillManager()->WaitForFormsSeen(1));
   }
 
   void SetAccountFullName(const std::string& full_name) {
@@ -398,7 +399,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
   // Should be called for credit_card_upload_form_address_and_cc.html.
   void FillForm() {
-    NavigateTo(kCreditCardAndAddressUploadForm);
+    NavigateToAndWaitForForm(kCreditCardAndAddressUploadForm);
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_button_js =
         "(function() { document.getElementById('fill_form').click(); })();";
@@ -407,7 +408,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
   // Should be called for credit_card_upload_form_cc.html.
   void FillAndChangeForm() {
-    NavigateTo(kCreditCardUploadForm);
+    NavigateToAndWaitForForm(kCreditCardUploadForm);
     const std::string click_fill_button_js =
         "(function() { document.getElementById('fill_form').click(); })();";
     const std::string click_add_fields_button_js =
@@ -419,7 +420,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
   }
 
   void FillFormWithCardDetailsOnly() {
-    NavigateTo(kCreditCardAndAddressUploadForm);
+    NavigateToAndWaitForForm(kCreditCardAndAddressUploadForm);
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_card_button_js =
         "(function() { document.getElementById('fill_card_only').click(); "
@@ -430,7 +431,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
   // Should be called for credit_card_upload_form_address_and_cc.html.
   void FillFormWithoutCvc() {
-    NavigateTo(kCreditCardAndAddressUploadForm);
+    NavigateToAndWaitForForm(kCreditCardAndAddressUploadForm);
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_button_js =
         "(function() { document.getElementById('fill_form').click(); })();";
@@ -444,7 +445,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
   // Should be called for credit_card_upload_form_address_and_cc.html.
   void FillFormWithInvalidCvc() {
-    NavigateTo(kCreditCardAndAddressUploadForm);
+    NavigateToAndWaitForForm(kCreditCardAndAddressUploadForm);
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_button_js =
         "(function() { document.getElementById('fill_form').click(); })();";
@@ -459,7 +460,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
   // Should be called for credit_card_upload_form_address_and_cc.html.
   void FillFormWithoutName() {
-    NavigateTo(kCreditCardAndAddressUploadForm);
+    NavigateToAndWaitForForm(kCreditCardAndAddressUploadForm);
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_button_js =
         "(function() { document.getElementById('fill_form').click(); })();";
@@ -473,7 +474,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
   // Should be called for credit_card_upload_form_shipping_address.html.
   void FillFormWithConflictingName() {
-    NavigateTo(kCreditCardAndShippingUploadForm);
+    NavigateToAndWaitForForm(kCreditCardAndShippingUploadForm);
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_button_js =
         "(function() { document.getElementById('fill_form').click(); })();";
@@ -488,7 +489,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
   // Should be called for credit_card_upload_form_address_and_cc.html.
   void FillFormWithoutExpirationDate() {
-    NavigateTo(kCreditCardAndAddressUploadForm);
+    NavigateToAndWaitForForm(kCreditCardAndAddressUploadForm);
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_button_js =
         "(function() { document.getElementById('fill_form').click(); })();";
@@ -504,7 +505,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
   // Should be called for credit_card_upload_form_address_and_cc.html.
   void FillFormWithExpirationMonthOnly(const std::string& month) {
-    NavigateTo(kCreditCardAndAddressUploadForm);
+    NavigateToAndWaitForForm(kCreditCardAndAddressUploadForm);
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_button_js =
         "(function() { document.getElementById('fill_form').click(); })();";
@@ -525,7 +526,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
   // Should be called for credit_card_upload_form_address_and_cc.html.
   void FillFormWithExpirationYearOnly(const std::string& year) {
-    NavigateTo(kCreditCardAndAddressUploadForm);
+    NavigateToAndWaitForForm(kCreditCardAndAddressUploadForm);
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_button_js =
         "(function() { document.getElementById('fill_form').click(); })();";
@@ -547,7 +548,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
   // Should be called for credit_card_upload_form_address_and_cc.html.
   void FillFormWithSpecificExpirationDate(const std::string& month,
                                           const std::string& year) {
-    NavigateTo(kCreditCardAndAddressUploadForm);
+    NavigateToAndWaitForForm(kCreditCardAndAddressUploadForm);
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_button_js =
         "(function() { document.getElementById('fill_form').click(); })();";
@@ -566,7 +567,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
   // Should be called for credit_card_upload_form_address_and_cc.html.
   void FillFormWithoutAddress() {
-    NavigateTo(kCreditCardAndAddressUploadForm);
+    NavigateToAndWaitForForm(kCreditCardAndAddressUploadForm);
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_button_js =
         "(function() { document.getElementById('fill_form').click(); })();";
@@ -580,7 +581,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
   // Should be called for credit_card_upload_form_shipping_address.html.
   void FillFormWithConflictingPostalCode() {
-    NavigateTo(kCreditCardAndShippingUploadForm);
+    NavigateToAndWaitForForm(kCreditCardAndShippingUploadForm);
     content::WebContents* web_contents = GetActiveWebContents();
     const std::string click_fill_button_js =
         "(function() { document.getElementById('fill_form').click(); })();";
@@ -1374,7 +1375,7 @@ IN_PROC_BROWSER_TEST_F(
       {DialogEvent::REQUESTED_UPLOAD_SAVE,
        DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE,
        DialogEvent::OFFERED_LOCAL_SAVE, DialogEvent::BUBBLE_SHOWN});
-  NavigateTo(kCreditCardAndAddressUploadForm);
+  NavigateToAndWaitForForm(kCreditCardAndAddressUploadForm);
   FillForm();
   SubmitForm();
   WaitForObservedEvent();
@@ -1400,7 +1401,7 @@ IN_PROC_BROWSER_TEST_F(
       {DialogEvent::REQUESTED_UPLOAD_SAVE,
        DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE,
        DialogEvent::OFFERED_LOCAL_SAVE, DialogEvent::BUBBLE_SHOWN});
-  NavigateTo(kCreditCardAndAddressUploadForm);
+  NavigateToAndWaitForForm(kCreditCardAndAddressUploadForm);
   FillForm();
   SubmitForm();
   WaitForObservedEvent();
@@ -1438,7 +1439,6 @@ IN_PROC_BROWSER_TEST_F(
   // Submitting the the dynamic change form, offer to save bubble should be
   // shown.
   FillAndChangeForm();
-  ASSERT_TRUE(GetAutofillManager()->WaitForFormsSeen(1));
   ResetEventWaiterForSequence(
       {DialogEvent::REQUESTED_UPLOAD_SAVE,
        DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE,
@@ -1946,7 +1946,7 @@ IN_PROC_BROWSER_TEST_F(
       {DialogEvent::REQUESTED_UPLOAD_SAVE,
        DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE,
        DialogEvent::OFFERED_UPLOAD_SAVE, DialogEvent::ICON_SHOWN});
-  NavigateTo(kCreditCardAndAddressUploadForm);
+  NavigateToAndWaitForForm(kCreditCardAndAddressUploadForm);
   FillForm();
   SubmitForm();
   WaitForObservedEvent();
