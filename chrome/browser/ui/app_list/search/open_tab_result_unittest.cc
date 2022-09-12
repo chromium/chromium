@@ -6,30 +6,42 @@
 
 #include "ash/strings/grit/ash_strings.h"
 #include "base/strings/strcat.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/ui/app_list/search/common/search_result_util.h"
+#include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/favicon_cache.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-namespace app_list {
+namespace app_list::test {
+
+namespace {
+
+using testing::_;
 
 using ::ash::string_matching::TokenizedString;
 
+}  // namespace
+
 class OpenTabResultTest : public testing::Test {
  public:
-  OpenTabResultTest() {}
+  OpenTabResultTest() = default;
 
   OpenTabResultTest(const OpenTabResultTest&) = delete;
   OpenTabResultTest& operator=(const OpenTabResultTest&) = delete;
 
-  ~OpenTabResultTest() override {}
+  ~OpenTabResultTest() override = default;
+
+  void SetUp() override {
+    app_list_controller_delegate_ =
+        std::make_unique<::test::TestAppListControllerDelegate>();
+  }
 
   std::unique_ptr<OpenTabResult> MakeResult(const std::u16string& query,
                                             const std::u16string& description,
@@ -40,12 +52,20 @@ class OpenTabResultTest : public testing::Test {
     match.relevance = 1000;
     TokenizedString tokenized_query(query, TokenizedString::Mode::kCamelCase);
     return std::make_unique<OpenTabResult>(
-        /*profile=*/nullptr, /*list_controller=*/nullptr,
+        /*profile=*/nullptr, app_list_controller_delegate_.get(),
         crosapi::CreateResult(match, /*controller=*/nullptr,
                               /*favicon_cache=*/nullptr,
                               /*bookmark_model=*/nullptr, AutocompleteInput()),
         tokenized_query);
   }
+
+  const GURL& GetLastOpenedUrl() const {
+    return app_list_controller_delegate_->last_opened_url();
+  }
+
+ private:
+  std::unique_ptr<::test::TestAppListControllerDelegate>
+      app_list_controller_delegate_;
 };
 
 TEST_F(OpenTabResultTest, Basic) {
@@ -61,6 +81,9 @@ TEST_F(OpenTabResultTest, Basic) {
             base::StrCat({u"queryabc, http://www.website.com/",
                           l10n_util::GetStringFUTF16(IDS_APP_LIST_OPEN_TAB_HINT,
                                                      u", ")}));
+  result->Open(0);
+  EXPECT_EQ("http://www.website.com/", GetLastOpenedUrl().spec());
+  EXPECT_EQ(result->DriveId(), absl::nullopt);
 }
 
 TEST_F(OpenTabResultTest, ManuallyCalculateRelevance) {
@@ -73,5 +96,4 @@ TEST_F(OpenTabResultTest, ManuallyCalculateRelevance) {
   // should have higher score.
   EXPECT_GT(result2->relevance(), result1->relevance());
 }
-
-}  // namespace app_list
+}  // namespace app_list::test
