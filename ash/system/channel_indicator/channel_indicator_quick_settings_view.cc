@@ -32,10 +32,10 @@ namespace ash {
 
 namespace {
 
-constexpr int kVersionButtonHeight = 32;
+constexpr int kVersionButtonHeight = 24;
 constexpr int kVersionButtonImageLabelSpacing = 8;
 
-constexpr int kVersionButtonMarginVertical = 6;
+constexpr int kVersionButtonMarginVertical = 3;
 constexpr int kVersionButtonMarginHorizontal = 16;
 
 constexpr int kVersionButtonLargeCornerRadius = 16;
@@ -78,11 +78,16 @@ constexpr gfx::RoundedCornersF kStandaloneVersionButtonInkDropCorners(
     kVersionButtonLargeCornerRadius,
     kVersionButtonLargeCornerRadius);
 
-constexpr int kSubmitFeedbackButtonMarginVertical = 6;
-constexpr int kSubmitFeedbackButtonMarginHorizontal = 16;
+constexpr int kSubmitFeedbackButtonMarginVertical = 4;
+constexpr int kSubmitFeedbackButtonMarginLeft = 6;
+constexpr int kSubmitFeedbackButtonMarginRight = 8;
 
 constexpr int kSubmitFeedbackButtonLargeCornerRadius = 16;
 constexpr int kSubmitFeedbackButtonSmallCornerRadius = 4;
+
+constexpr int kSubmitFeedbackButtonHeight = 24;
+constexpr int kSubmitFeedbackButtonWidth = 30;
+constexpr int kSubmitFeedbackButtonIconSize = 16;
 
 // Corners for the `SubmitFeedbackButton` contents.
 constexpr SkScalar kSubmitFeedbackButtonCorners[] = {
@@ -233,10 +238,14 @@ class SubmitFeedbackButton : public IconButton {
         channel_(channel) {
     std::copy(content_corners, content_corners + kNumVersionButtonCornerRadii,
               content_corners_);
-    SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::VH(kSubmitFeedbackButtonMarginVertical,
-                        kSubmitFeedbackButtonMarginHorizontal)));
+    SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+        kSubmitFeedbackButtonMarginVertical, kSubmitFeedbackButtonMarginLeft,
+        kSubmitFeedbackButtonMarginVertical,
+        kSubmitFeedbackButtonMarginRight)));
     SetIconColor(channel_indicator_utils::GetFgColor(channel_));
+    SetIconSize(kSubmitFeedbackButtonIconSize);
+    SetPreferredSize(
+        gfx::Size(kSubmitFeedbackButtonWidth, kSubmitFeedbackButtonHeight));
 
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     views::InkDrop::Get(this)->SetBaseColor(
@@ -257,6 +266,11 @@ class SubmitFeedbackButton : public IconButton {
                               content_corners_, SkPathDirection::kCW),
         flags);
     IconButton::PaintButtonContents(canvas);
+  }
+
+  void OnThemeChanged() override {
+    SetIconColor(channel_indicator_utils::GetFgColor(channel_));
+    IconButton::OnThemeChanged();
   }
 
  private:
