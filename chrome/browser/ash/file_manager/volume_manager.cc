@@ -303,8 +303,7 @@ std::unique_ptr<Volume> Volume::CreateForDrive(base::FilePath drive_path) {
   volume->source_ = SOURCE_NETWORK;
   volume->mount_path_ = std::move(drive_path);
   volume->volume_id_ = GenerateVolumeId(*volume);
-  volume->volume_label_ =
-      l10n_util::GetStringUTF8(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
+  volume->volume_label_ = GetStringUTF8(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
   volume->watchable_ = true;
   return volume;
 }
@@ -318,8 +317,7 @@ std::unique_ptr<Volume> Volume::CreateForDownloads(
   volume->source_ = SOURCE_SYSTEM;
   volume->mount_path_ = std::move(downloads_path);
   volume->volume_id_ = GenerateVolumeId(*volume);
-  volume->volume_label_ =
-      l10n_util::GetStringUTF8(IDS_FILE_BROWSER_MY_FILES_ROOT_LABEL);
+  volume->volume_label_ = GetStringUTF8(IDS_FILE_BROWSER_MY_FILES_ROOT_LABEL);
   volume->watchable_ = true;
   return volume;
 }
@@ -516,7 +514,7 @@ std::unique_ptr<Volume> Volume::CreateForSshfsCrostini(
   volume->remote_mount_path_ = std::move(remote_mount_path);
   volume->volume_id_ = GenerateVolumeId(*volume);
   volume->volume_label_ =
-      l10n_util::GetStringUTF8(IDS_FILE_BROWSER_LINUX_FILES_ROOT_LABEL);
+      GetStringUTF8(IDS_FILE_BROWSER_LINUX_FILES_ROOT_LABEL);
   volume->watchable_ = true;
   return volume;
 }
@@ -847,6 +845,7 @@ std::vector<base::WeakPtr<Volume>> VolumeManager::GetVolumeList() {
   std::vector<base::WeakPtr<Volume>> result;
   result.reserve(mounted_volumes_.size());
   for (const auto& volume : mounted_volumes_) {
+    DCHECK(volume);
     result.push_back(volume->AsWeakPtr());
   }
   return result;
@@ -856,21 +855,26 @@ base::WeakPtr<Volume> VolumeManager::FindVolumeById(
     const std::string& volume_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  const auto it = mounted_volumes_.find(volume_id);
-  if (it != mounted_volumes_.end())
-    return it->get()->AsWeakPtr();
-  return base::WeakPtr<Volume>();
+  if (const Volumes::const_iterator it = mounted_volumes_.find(volume_id);
+      it != mounted_volumes_.end()) {
+    DCHECK(*it);
+    return (*it)->AsWeakPtr();
+  }
+
+  return nullptr;
 }
 
 base::WeakPtr<Volume> VolumeManager::FindVolumeFromPath(
     const base::FilePath& path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   for (const auto& volume : mounted_volumes_) {
-    base::FilePath volume_mount_path = volume->mount_path();
-    if (path == volume_mount_path || volume_mount_path.IsParent(path)) {
+    DCHECK(volume);
+    const base::FilePath& volume_mount_path = volume->mount_path();
+    if (path == volume_mount_path || volume_mount_path.IsParent(path))
       return volume->AsWeakPtr();
-    }
   }
+
   return nullptr;
 }
 
@@ -1035,7 +1039,6 @@ void VolumeManager::OnFileSystemMounted() {
 
 void VolumeManager::OnFileSystemBeingUnmounted() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   DoUnmountEvent(*Volume::CreateForDrive(GetDriveMountPointPath()));
 }
 
@@ -1081,14 +1084,13 @@ void VolumeManager::OnAutoMountableDiskEvent(
     case ash::disks::DiskMountManager::DISK_REMOVED:
       // If the disk is already mounted, unmount it.
       if (!disk.mount_path().empty()) {
-        disk_mount_manager_->UnmountPath(
-            disk.mount_path(),
-            ash::disks::DiskMountManager::UnmountPathCallback());
+        disk_mount_manager_->UnmountPath(disk.mount_path(), base::DoNothing());
       }
 
       // Notify to observers.
       for (auto& observer : observers_)
         observer.OnDiskRemoved(disk);
+
       return;
   }
   NOTREACHED();
@@ -1169,10 +1171,9 @@ void VolumeManager::OnFormatEvent(
       // MountPath auto-detects filesystem format if second argument is
       // empty. The third argument (mount label) is not used in a disk mount
       // operation.
-      disk_mount_manager_->MountPath(device_path, std::string(), std::string(),
-                                     {}, ash::MountType::kDevice,
-                                     GetExternalStorageAccessMode(profile_),
-                                     base::DoNothing());
+      disk_mount_manager_->MountPath(
+          device_path, {}, {}, {}, ash::MountType::kDevice,
+          GetExternalStorageAccessMode(profile_), base::DoNothing());
 
       for (auto& observer : observers_) {
         observer.OnFormatCompleted(device_path, device_label,
@@ -1209,9 +1210,8 @@ void VolumeManager::OnPartitionEvent(
       // operation.
       if (error_code != ash::PartitionError::kNone) {
         disk_mount_manager_->MountPath(
-            device_path, std::string(), std::string(), {},
-            ash::MountType::kDevice, GetExternalStorageAccessMode(profile_),
-            base::DoNothing());
+            device_path, {}, {}, {}, ash::MountType::kDevice,
+            GetExternalStorageAccessMode(profile_), base::DoNothing());
       }
 
       for (auto& observer : observers_) {
@@ -1257,7 +1257,7 @@ void VolumeManager::OnRenameEvent(
       // disk when it was first time mounted (to preserve mount point regardless
       // of the volume name).
       disk_mount_manager_->MountPath(
-          device_path, std::string(), mount_label, {}, ash::MountType::kDevice,
+          device_path, {}, mount_label, {}, ash::MountType::kDevice,
           GetExternalStorageAccessMode(profile_), base::DoNothing());
 
       bool successfully_renamed = error_code == ash::RenameError::kNone;
@@ -1301,8 +1301,6 @@ void VolumeManager::OnProvidedFileSystemMount(
   std::unique_ptr<Volume> volume =
       Volume::CreateForProvidedFileSystem(file_system_info, volume_context);
 
-  // TODO(mtomasz): Introduce own type, and avoid using MountError internally,
-  // since it is related to cros disks only.
   ash::MountError mount_error;
   switch (error) {
     case base::File::FILE_OK:
