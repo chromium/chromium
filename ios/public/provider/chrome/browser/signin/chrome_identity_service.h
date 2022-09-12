@@ -5,7 +5,7 @@
 #ifndef IOS_PUBLIC_PROVIDER_CHROME_BROWSER_SIGNIN_CHROME_IDENTITY_SERVICE_H_
 #define IOS_PUBLIC_PROVIDER_CHROME_BROWSER_SIGNIN_CHROME_IDENTITY_SERVICE_H_
 
-#include <CoreFoundation/CoreFoundation.h>
+#import <UIKit/UIKit.h>
 
 #include <set>
 #include <string>
@@ -16,17 +16,7 @@
 
 @class ChromeIdentity;
 @class ChromeIdentityInteractionManager;
-@class NSArray;
-@class NSDate;
-@class NSDictionary;
-@class NSError;
-@class NSString;
-@class NSURL;
-@class UIApplication;
-@class UIImage;
-@class UINavigationController;
-@class UIScene;
-@class UIViewController;
+@protocol SystemIdentity;
 
 namespace ios {
 
@@ -116,10 +106,13 @@ class ChromeIdentityService {
     // should not be accessed directly but via helper methods (like
     // ChromeIdentityService::IsInvalidGrantError).
     virtual void OnAccessTokenRefreshFailed(ChromeIdentity* identity,
+                                            NSDictionary* user_info);
+    virtual void OnAccessTokenRefreshFailed(id<SystemIdentity> identity,
                                             NSDictionary* user_info) {}
 
     // Called when profile information or the profile image is updated.
-    virtual void OnProfileUpdate(ChromeIdentity* identity) {}
+    virtual void OnProfileUpdate(ChromeIdentity* identity);
+    virtual void OnProfileUpdate(id<SystemIdentity> identity) {}
 
     // Called when the ChromeIdentityService will be destroyed.
     virtual void OnChromeIdentityServiceWillBeDestroyed() {}
@@ -129,6 +122,12 @@ class ChromeIdentityService {
   // `IterateOverIdentities()`.
   using IdentityIteratorCallback =
       base::RepeatingCallback<IdentityIteratorCallbackResult(ChromeIdentity*)>;
+
+  // Callback invoked for each SystemIdentity when iterating over them with
+  // `IterateOverIdentities()`
+  using SystemIdentityIteratorCallback =
+      base::RepeatingCallback<IdentityIteratorCallbackResult(
+          id<SystemIdentity>)>;
 
   ChromeIdentityService();
 
@@ -161,6 +160,10 @@ class ChromeIdentityService {
       ChromeIdentity* identity,
       UIViewController* view_controller,
       BOOL animated);
+  virtual ios::DismissASMViewControllerBlock PresentAccountDetailsController(
+      id<SystemIdentity> identity,
+      UIViewController* view_controller,
+      BOOL animated);
 
   // Presents a new Web and App Setting Details view.
   // `identity` the identity used to present the view.
@@ -170,6 +173,10 @@ class ChromeIdentityService {
   // not needed.
   virtual DismissASMViewControllerBlock
   PresentWebAndAppSettingDetailsController(ChromeIdentity* identity,
+                                           UIViewController* view_controller,
+                                           BOOL animated);
+  virtual DismissASMViewControllerBlock
+  PresentWebAndAppSettingDetailsController(id<SystemIdentity> identity,
                                            UIViewController* view_controller,
                                            BOOL animated);
 
@@ -182,6 +189,7 @@ class ChromeIdentityService {
   // in account manager, which is typically based on the keychain ordering
   // of accounts.
   virtual void IterateOverIdentities(IdentityIteratorCallback callback);
+  virtual void IterateOverIdentities(SystemIdentityIteratorCallback callback);
 
   // Forgets the given identity on the device. This method logs the user out.
   // It is asynchronous because it needs to contact the server to revoke the
@@ -190,15 +198,24 @@ class ChromeIdentityService {
   // the main thread.
   virtual void ForgetIdentity(ChromeIdentity* identity,
                               ForgetIdentityCallback callback);
+  virtual void ForgetIdentity(id<SystemIdentity> identity,
+                              ForgetIdentityCallback callback);
 
   // Asynchronously retrieves access tokens for the given identity and scopes.
   // Uses the default client id and client secret.
   virtual void GetAccessToken(ChromeIdentity* identity,
                               const std::set<std::string>& scopes,
                               AccessTokenCallback callback);
+  virtual void GetAccessToken(id<SystemIdentity> identity,
+                              const std::set<std::string>& scopes,
+                              AccessTokenCallback callback);
 
   // Asynchronously retrieves access tokens for the given identity and scopes.
   virtual void GetAccessToken(ChromeIdentity* identity,
+                              const std::string& client_id,
+                              const std::set<std::string>& scopes,
+                              AccessTokenCallback callback);
+  virtual void GetAccessToken(id<SystemIdentity> identity,
                               const std::string& client_id,
                               const std::set<std::string>& scopes,
                               AccessTokenCallback callback);
@@ -208,14 +225,18 @@ class ChromeIdentityService {
   // pixelization.
   // Observer::OnProfileUpdate() will be called when the avatar is available.
   virtual void GetAvatarForIdentity(ChromeIdentity* identity);
+  virtual void GetAvatarForIdentity(id<SystemIdentity> identity);
 
   // Synchronously returns any cached avatar, or nil.
   // GetAvatarForIdentity() should be generally used instead of this method.
   virtual UIImage* GetCachedAvatarForIdentity(ChromeIdentity* identity);
+  virtual UIImage* GetCachedAvatarForIdentity(id<SystemIdentity> identity);
 
   // Fetches the identity hosted domain, from the cache or the network. Calls
   // back on the main thread.
   virtual void GetHostedDomainForIdentity(ChromeIdentity* identity,
+                                          GetHostedDomainCallback callback);
+  virtual void GetHostedDomainForIdentity(id<SystemIdentity> identity,
                                           GetHostedDomainCallback callback);
 
   // Returns the identity hosted domain, for the cache only. This method
@@ -225,6 +246,8 @@ class ChromeIdentityService {
   //   + non-empty string, if the hosted domain was fetched and this account
   //     has a hosted domain.
   virtual NSString* GetCachedHostedDomainForIdentity(ChromeIdentity* identity);
+  virtual NSString* GetCachedHostedDomainForIdentity(
+      id<SystemIdentity> identity);
 
   // Asynchronously returns the value of the account capability that determines
   // whether Chrome should offer extended sync promos to `identity`. This value
@@ -233,10 +256,14 @@ class ChromeIdentityService {
   // will evaluate to false.
   void CanOfferExtendedSyncPromos(ChromeIdentity* identity,
                                   CapabilitiesCallback callback);
+  void CanOfferExtendedSyncPromos(id<SystemIdentity> identity,
+                                  CapabilitiesCallback callback);
 
   // Asynchronously returns the value of the account capability that determines
   // whether parental controls should be applied to `identity`.
   void IsSubjectToParentalControls(ChromeIdentity* identity,
+                                   CapabilitiesCallback callback);
+  void IsSubjectToParentalControls(id<SystemIdentity> identity,
                                    CapabilitiesCallback callback);
 
   // Returns true if the service can be used, and supports ChromeIdentity list.
@@ -252,10 +279,14 @@ class ChromeIdentityService {
   virtual bool HandleMDMNotification(ChromeIdentity* identity,
                                      NSDictionary* user_info,
                                      MDMStatusCallback callback);
+  virtual bool HandleMDMNotification(id<SystemIdentity> identity,
+                                     NSDictionary* user_info,
+                                     MDMStatusCallback callback);
 
   // Returns whether the `error` associated with `identity` is due to MDM
   // (Mobile Device Management).
   virtual bool IsMDMError(ChromeIdentity* identity, NSError* error);
+  virtual bool IsMDMError(id<SystemIdentity> identity, NSError* error);
 
   // Adds and removes observers.
   void AddObserver(Observer* observer);
@@ -272,6 +303,11 @@ class ChromeIdentityService {
       NSArray* capabilities,
       ChromeIdentity* identity,
       ChromeIdentityCapabilitiesFetchCompletionBlock completion);
+  virtual void FetchCapabilities(
+      id<SystemIdentity> identity,
+      NSArray<NSString*>* capabilities,
+      ChromeIdentityCapabilitiesFetchCompletionBlock completion);
+
   // Fires `OnIdentityListChanged` on all observers.
   // `notify_user` is true if the identity list is updated by an external source
   // than Chrome. This means that a first party Google app had added or removed
@@ -282,13 +318,19 @@ class ChromeIdentityService {
   // identity and user info.
   void FireAccessTokenRefreshFailed(ChromeIdentity* identity,
                                     NSDictionary* user_info);
+  void FireAccessTokenRefreshFailed(id<SystemIdentity> identity,
+                                    NSDictionary* user_info);
 
   // Fires `OnProfileUpdate` on all observers, with the corresponding identity.
   void FireProfileDidUpdate(ChromeIdentity* identity);
+  void FireProfileDidUpdate(id<SystemIdentity> identity);
 
  private:
   // Asynchronously retrieves the specified capability for the Chrome identity.
   void FetchCapability(ChromeIdentity* identity,
+                       NSString* capability_name,
+                       CapabilitiesCallback completion);
+  void FetchCapability(id<SystemIdentity> identity,
                        NSString* capability_name,
                        CapabilitiesCallback completion);
 
