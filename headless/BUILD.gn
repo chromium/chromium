@@ -1008,6 +1008,9 @@ static_library("headless_shell_lib") {
 }
 
 executable("headless_shell") {
+  configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
+  configs += [ "//build/config/compiler:thinlto_optimize_max" ]
+
   sources = [ "app/headless_shell_main.cc" ]
   defines = []
 
