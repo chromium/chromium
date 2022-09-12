@@ -62,6 +62,9 @@ class WebRuntimeFeatures {
       const std::string& name,
       bool enable);
 
+  // Update runtime features status from blink::features features status.
+  BLINK_PLATFORM_EXPORT static void UpdateStatusFromBaseFeatures();
+
   BLINK_PLATFORM_EXPORT static void EnableForcedColors(bool);
 
   BLINK_PLATFORM_EXPORT static void EnableFractionalScrollOffsets(bool);
@@ -86,8 +89,6 @@ class WebRuntimeFeatures {
       bool);
   BLINK_PLATFORM_EXPORT static void EnableBrowserVerifiedUserActivationMouse(
       bool);
-  BLINK_PLATFORM_EXPORT static void EnableBlockingFocusWithoutUserActivation(
-      bool);
   BLINK_PLATFORM_EXPORT static void EnableCompositeBGColorAnimation(
       bool enable);
   BLINK_PLATFORM_EXPORT static void EnableCanvas2dImageChromium(bool);
@@ -103,7 +104,6 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableDocumentPictureInPictureAPI(bool);
   BLINK_PLATFORM_EXPORT static void EnableRemoveMobileViewportDoubleTap(
       bool enable);
-  BLINK_PLATFORM_EXPORT static void EnableZeroCopyTabCapture(bool enable);
   BLINK_PLATFORM_EXPORT static void EnableDigitalGoodsAPI(bool);
   BLINK_PLATFORM_EXPORT static void EnableDisplayCutoutAPI(bool);
   BLINK_PLATFORM_EXPORT static void EnableDocumentPolicy(bool);
@@ -148,7 +148,6 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static bool IsPortalsEnabled();
   BLINK_PLATFORM_EXPORT static void EnablePreciseMemoryInfo(bool);
   BLINK_PLATFORM_EXPORT static void EnablePrefixedStorageInfo(bool);
-  BLINK_PLATFORM_EXPORT static void EnablePrerender2(bool);
   BLINK_PLATFORM_EXPORT static void EnablePrerender2RelatedFeatures(bool);
   BLINK_PLATFORM_EXPORT static void EnablePresentationAPI(bool);
   BLINK_PLATFORM_EXPORT static void EnablePushMessaging(bool);
@@ -168,16 +167,13 @@ class WebRuntimeFeatures {
       bool);
   BLINK_PLATFORM_EXPORT static bool IsStorageAccessAPIForSiteExtensionEnabled();
   BLINK_PLATFORM_EXPORT static void EnableTextFragmentAnchor(bool);
-  BLINK_PLATFORM_EXPORT static void EnableCSSSelectorFragmentAnchor(bool);
   BLINK_PLATFORM_EXPORT static void EnableTopicsAPI(bool);
   BLINK_PLATFORM_EXPORT static bool IsTopicsAPIEnabled();
   BLINK_PLATFORM_EXPORT static void EnableTouchDragAndContextMenu(bool enable);
   BLINK_PLATFORM_EXPORT static void EnableTouchEventFeatureDetection(bool);
-  BLINK_PLATFORM_EXPORT static void EnableSpeculationRulesPrefetchProxy(bool);
   BLINK_PLATFORM_EXPORT static void EnableUserActivationSameOriginVisibility(
       bool);
   BLINK_PLATFORM_EXPORT static void EnableV8IdleTasks(bool);
-  BLINK_PLATFORM_EXPORT static void EnableWebAppManifestId(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebAuth(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebBluetooth(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebBluetoothGetDevices(bool);
@@ -229,7 +225,6 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableIdentityInCanMakePaymentEventFeature(
       bool);
   BLINK_PLATFORM_EXPORT static void EnableIdleDetection(bool);
-  BLINK_PLATFORM_EXPORT static void EnableSkipTouchEventFilter(bool);
   BLINK_PLATFORM_EXPORT static void EnableWebOTP(bool);
   BLINK_PLATFORM_EXPORT static void EnableConsolidatedMovementXY(bool);
   BLINK_PLATFORM_EXPORT static void EnableMouseSubframeNoImplicitCapture(bool);
@@ -239,14 +234,12 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableTrustTokensAlwaysAllowIssuance(bool);
 
   BLINK_PLATFORM_EXPORT static void EnableInstalledApp(bool);
-  BLINK_PLATFORM_EXPORT static void EnableBackfaceVisibilityInterop(bool);
   BLINK_PLATFORM_EXPORT static void EnableVideoWakeLockOptimisationHiddenMuted(
       bool);
   BLINK_PLATFORM_EXPORT static void EnableContentIndex(bool);
   BLINK_PLATFORM_EXPORT static void EnableRestrictGamepadAccess(bool);
 
   BLINK_PLATFORM_EXPORT static void EnableDocumentTransition(bool);
-  BLINK_PLATFORM_EXPORT static void EnableCLSScrollAnchoring(bool);
   BLINK_PLATFORM_EXPORT static void EnableAndroidDownloadableFontsMatching(
       bool);
   BLINK_PLATFORM_EXPORT static void EnableWebAuthenticationRemoteDesktopSupport(

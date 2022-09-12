@@ -107,6 +107,44 @@
     // Feature policy IDL extended attribute (see crrev.com/2247923004).
     feature_policy: {
     },
+
+    // base::Feature variable name without "blink::features::k".
+    // If the flag should be associated with a feature not in blink::features,
+    // we need to map them in content/child/runtime_features.cc.
+    base_feature : {
+      valid_type: "str",
+      default: "",
+    },
+
+    // Specify how the flag value is updated from the base::Feature value. This
+    // field is used only if base_feature is not empty.
+    //
+    // * "enabeldOrOverridden"
+    // - If the base::Feature default is overridden by field trial or command
+    //   line, set Blink feature to the state of the base::Feature;
+    // - Otherwise if the base::Feature is enabled, enable the Blink feature.
+    // - Otherwise no change.
+    //
+    // * "overridden"
+    //   Enables the Blink feature when the base::Feature is overridden by field
+    //   trial or command line. Otherwise no change. Its difference from
+    //   "enabledOrOverriden" is that the Blink feature isn't affected by the
+    //   default state of the base::Feature.
+    //
+    //   This is useful for Blink origin trial features especially those
+    //   implemented in both Chromium and Blink. As origin trial only controls
+    //   the Blink features, for now we require the base::Feature to be enabled
+    //   by default, but we don't want the default enabled status affect the
+    //   Blink feature. See also https://crbug.com/1048656#c10.
+    //   This can also be used for features that are enabled by default in
+    //   Chromium but not in Blink on all platforms and we want to use the Blink
+    //   status. However, we would prefer consistent Chromium and Blink status
+    //   to this.
+    copied_from_base_feature_if: {
+      valid_type: "str",
+      valid_values: ["enabledOrOverridden", "overridden"],
+      default: "enabledOrOverridden",
+    },
   },
 
   data: [
@@ -165,6 +203,7 @@
       name: "AdInterestGroupAPI",
       origin_trial_feature_name: "AdInterestGroupAPI",
       implied_by: ["Fledge", "Parakeet"],
+      base_feature: "AdInterestGroupAPI",
     },
     {
       name: "AdTagging",
@@ -220,12 +259,16 @@
       origin_trial_feature_name: "AutoDarkMode",
     },
     {
+      // TODO(crbug.com/1185950): Remove this flag when the feature is fully
+      // launched and released to stable with no issues.
       name: "AutoExpandDetailsElement",
       status: "stable",
+      base_feature: "AutoExpandDetailsElement",
     },
     {
       name: "AutofillShadowDOM",
       status: "experimental",
+      base_feature: "AutofillShadowDOM",
     },
     {
       name: "AutomationControlled",
@@ -245,6 +288,7 @@
     // See crbug.com/1008483.
     {
       name: "BackfaceVisibilityInterop",
+      base_feature: "BackfaceVisibilityInterop",
     },
     {
       name: "BackForwardCache",
@@ -273,6 +317,7 @@
     {
       name: "BatchFetchRequests",
       status: "test",
+      base_feature: "BatchFetchRequests",
     },
     {
       // https://github.com/WICG/display-locking/blob/master/explainer-beforematch.md
@@ -305,6 +350,7 @@
     {
       name: "BlockingFocusWithoutUserActivation",
       status: "experimental",
+      base_feature: "BlockingFocusWithoutUserActivation",
     },
     {
       name: "BrowserVerifiedUserActivationKeyboard",
@@ -364,18 +410,22 @@
     {
       name: "ClientHintsMetaEquivDelegateCH",
       status: "stable",
+      base_feature: "ClientHintsMetaEquivDelegateCH",
     },
     {
       name: "ClientHintsMetaHTTPEquivAcceptCH",
       status: "stable",
+      base_feature: "ClientHintsMetaHTTPEquivAcceptCH",
     },
     {
       name: "ClientHintThirdPartyDelegation",
       status: "stable",
+      base_feature: "ClientHintThirdPartyDelegation",
     },
     {
       name: "ClipboardCustomFormats",
       status: "stable",
+      base_feature: "ClipboardCustomFormats",
     },
     {
       name: "ClipboardSvg",
@@ -391,6 +441,7 @@
     {
       name: "CLSScrollAnchoring",
       status: "experimental",
+      base_feature: "CLSScrollAnchoring",
     },
     {
       name: "CoepReflection",
@@ -420,6 +471,8 @@
       name: "ComputePressure",
       origin_trial_feature_name: "ComputePressure",
       status: "experimental",
+      base_feature: "ComputePressure",
+      copied_from_base_feature_if: "overridden",
     },
     {
       name: "ConditionalFocus",
@@ -654,6 +707,8 @@
     {
       name: "CSSOverflowForReplacedElements",
       status: "test",
+      base_feature: "CSSOverflowForReplacedElements",
+      copied_from_base_feature_if: "overridden",
     },
     {
       name: "CSSPaintAPIArguments",
@@ -710,6 +765,7 @@
     {
       name: "CSSSelectorFragmentAnchor",
       status: "experimental",
+      base_feature: "CssSelectorFragmentAnchor",
     },
     {
       name: "CSSSnapSize",
@@ -791,7 +847,7 @@
       name: "DeferredShaping",
       depends_on: ["LayoutNG"],
       status: "test",
-      // The status is also managed by the corresponding base::Feature.
+      base_feature: "DeferredFontShaping",
     },
     {
       name: "DeflateRawCompressionFormat",
@@ -808,6 +864,7 @@
     {
       name: "DesktopPWAsSubApps",
       status: "test",
+      base_feature: "DesktopPWAsSubApps",
     },
     {
       name: "DeviceAttributes",
@@ -924,6 +981,7 @@
       // See https://github.com/WICG/shared-element-transitions
       name: "DocumentTransition",
       origin_trial_feature_name: "DocumentTransitionV2",
+      base_feature: "DocumentTransition",
     },
     {
       name: "DocumentWrite",
@@ -936,16 +994,19 @@
     {
       name: "EditContext",
       status: "experimental",
+      base_feature: "EditContext",
     },
     {
       name: "ElementSuperRareData",
       status: "experimental",
+      base_feature: "ElementSuperRareData",
     },
     {
       // Non-standard API Event.path. Should be replaced by Event.composedPath.
       // TODO(1277431): This flag should be eventually disabled.
       name: "EventPath",
       status: "stable",
+      base_feature: "EventPath",
     },
     {
       name: "ExperimentalContentSecurityPolicyFeatures",
@@ -1042,6 +1103,7 @@
       status: {"Android": "test", "default": "experimental"},
       origin_trial_feature_name: "FileHandling",
       origin_trial_os: ["win", "mac", "linux", "fuchsia", "chromeos"],
+      base_feature: "FileHandlingAPI",
     },
     {
       name: "FileHandlingIcons",
@@ -1071,6 +1133,7 @@
     {
       name: "FixedElementsDontOverscroll",
       status: "stable",
+      base_feature: "FixedElementsDontOverscroll",
     },
     {
       name: "Fledge",
@@ -1091,6 +1154,7 @@
       // No status because this blink runtime feature doesn't work by itself.
       // It's controlled by the corresponding Chromium feature which needs to
       // be enabled to make the whole feature work.
+      base_feature: "FontAccess",
     },
     {
       name: "FontPalette",
@@ -1207,12 +1271,14 @@
       // TODO(crbug.com/1315717): This flag is being used to deprecate support for <param> urls within <object> elements. This feature is controlled by blink::features::kHTMLParamElementUrlSupport.
       name: "HTMLParamElementUrlSupport",
       status: "stable",
+      base_feature: "HTMLParamElementUrlSupport",
     },
     {
       name: "HTMLPopupAttribute",
       status: "experimental",
       origin_trial_feature_name: "HTMLPopupAttribute",
       implied_by: ["HTMLSelectMenuElement"],
+      base_feature: "HTMLPopupAttribute",
     },
     {
       name: "HTMLSelectMenuElement",
@@ -1274,6 +1340,7 @@
       name: "LayoutNG",
       implied_by: ["BidiCaretAffinity"],
       status: "stable",
+      base_feature: "LayoutNG",
     },
     {
       name: "LayoutNGBlockFragmentation",
@@ -1377,6 +1444,7 @@
     {
       name: "ManagedConfiguration",
       status: "stable",
+      base_feature: "ManagedConfiguration",
     },
     {
       name: "MathMLCore",
@@ -1577,7 +1645,8 @@
       // TODO(crbug.com/920069): Remove OffsetParentNewSpecBehavior after the
       // feature is in stable with no issues.
       name: "OffsetParentNewSpecBehavior",
-      status: "experimental"
+      status: "experimental",
+      base_feature: "OffsetParentNewSpecBehavior",
     },
     {
       name: "OnDeviceChange",
@@ -1700,6 +1769,7 @@
     {
       name: "Parakeet",
       origin_trial_feature_name: "Parakeet",
+      base_feature: "Parakeet",
     },
     {
       name: "ParallelPrimaryFont",
@@ -1809,6 +1879,9 @@
       // enable portals without browser process support.
       origin_trial_feature_name: "Portals",
       origin_trial_os: ["android"],
+
+      base_feature: "Portals",
+      copied_from_base_feature_if: "overridden",
     },
     {
       name: "PreciseMemoryInfo",
@@ -1824,6 +1897,7 @@
     {
       name: "PrefersColorSchemeClientHintHeader",
       status: "stable",
+      base_feature: "PrefersColorSchemeClientHintHeader",
     },
     {
       name: "PrefersReducedData",
@@ -1834,6 +1908,7 @@
     {
       name: "PrefixedStorageInfo",
       status: "stable",
+      base_feature: "PrefixedStorageInfo",
     },
     // This feature is deprecated and we are evangelizing affected sites.
     // See https://crbug.com/346236 for current status.
@@ -1844,6 +1919,7 @@
     {
       name: "Prerender2",
       status: {"Android": "stable"},
+      base_feature: "Prerender2",
     },
     // This RTE feature is used to indicate the status of RTE feature Prerender2
     // and an embedder feature flag that enables the Prerender2. With this flag
@@ -1880,6 +1956,7 @@
     },
     {
       name: "PrivateNetworkAccessPermissionPrompt",
+      base_feature: "PrivateNetworkAccessPermissionPrompt",
     },
     {
       name: "PushMessaging",
@@ -1891,6 +1968,7 @@
     },
     {
       name: "QuickIntensiveWakeUpThrottlingAfterLoading",
+      base_feature: "QuickIntensiveWakeUpThrottlingAfterLoading",
     },
     {
       name: "QuotaChange",
@@ -1901,11 +1979,13 @@
     {
       name: "ReduceUserAgentMinorVersion",
       status: "stable",
+      base_feature: "ReduceUserAgentMinorVersion",
     },
     {
       name: "ReduceUserAgentPlatformOsCpu",
       depends_on: ["ReduceUserAgentMinorVersion"],
       status: "experimental",
+      base_feature: "ReduceUserAgentPlatformOsCpu",
     },
     {
       name: "RegionCapture",
@@ -1987,11 +2067,13 @@
     {
       name: "SanitizerAPI",
       status: "experimental",
+      base_feature: "SanitizerAPI",
     },
     {
       name: "SanitizerAPIv0",
       status: "stable",
       implied_by: ["SanitizerAPI"],
+      base_feature: "SanitizerAPIv0",
     },
     {
       // https://wicg.github.io/webcomponents/proposals/Scoped-Custom-Element-Registries
@@ -2038,6 +2120,7 @@
     },
     {
       name: "ScrollUpdateOptimizations",
+      base_feature: "ScrollUpdateOptimizations",
     },
     {
       name: "SecureContextFixForSharedWorkers",
@@ -2046,6 +2129,7 @@
     {
       name: "SecureContextFixForWorkers",
       status: "experimental",
+      base_feature: "SecureContextFixForWorkers",
     },
     // SecurePaymentConfirmation has shipped on some platforms, but its
     // availability is controlled by the browser process (via the
@@ -2145,6 +2229,7 @@
     {
       name: "SkipTouchEventFilter",
       settable_from_internals: true,
+      base_feature: "SkipTouchEventFilter",
     },
     {
       name: "SoftNavigationHeuristics",
@@ -2169,6 +2254,8 @@
       name: "SpeculationRulesPrefetchProxy",
       origin_trial_feature_name: "SpeculationRulesPrefetch",
       status: {"Android": "stable"},
+      base_feature: "SpeculationRulesPrefetchProxy",
+      copied_from_base_feature_if: "overridden",
     },
     {
       "name": "SpeculationRulesPrefetchWithSubresources",
@@ -2189,9 +2276,9 @@
       status: "test",
     },
     {
-      // Enabled when blink::features::kStorageAccessAPIForSiteExtension is enabled.
       name: "StorageAccessAPIForSiteExtension",
       status: "test",
+      base_feature: "StorageAccessAPIForSiteExtension",
     },
     {
       name: "StorageBuckets",
@@ -2275,6 +2362,7 @@
       name: "TextFragmentIdentifiers",
       origin_trial_feature_name: "TextFragmentIdentifiers",
       status: "stable",
+      base_feature: "TextFragmentAnchor",
     },
     {
       name: "TextFragmentTapOpensContextMenu",
@@ -2283,6 +2371,7 @@
     {
       name: "ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes",
       status: "experimental",
+      base_feature: "ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes",
     },
     {
       name: "TimerThrottlingForBackgroundTabs",
@@ -2386,6 +2475,7 @@
     {
       name: "UserAgentClientHint",
       status: "stable",
+      base_feature: "UserAgentClientHint",
     },
     {
       name: "UserAgentReduction",
@@ -2393,12 +2483,14 @@
       origin_trial_allows_third_party: true,
       // iOS not included as it should not send a reduced User-Agent string.
       origin_trial_os: ["android", "chromeos", "fuchsia", "linux", "mac", "win"],
+      base_feature: "ReduceUserAgent",
     },
     {
       name: "V8IdleTasks",
     },
     {
       name: "VariableCOLRV1",
+      base_feature: "VariableCOLRV1",
     },
     {
       // Whether a video element should automatically play fullscreen unless
@@ -2434,6 +2526,7 @@
     {
       name: "ViewportHeightClientHintHeader",
       status: "stable",
+      base_feature: "ViewportHeightClientHintHeader",
     },
     {
       name: "ViewportSegments",
@@ -2468,11 +2561,13 @@
       name: "WebAppDarkMode",
       origin_trial_feature_name: "WebAppDarkMode",
       status: "experimental",
+      base_feature: "WebAppEnableDarkMode",
     },
     {
       name: "WebAppLaunchHandler",
       origin_trial_feature_name: "Launch Handler",
       status: "experimental",
+      base_feature: "WebAppEnableLaunchHandler",
     },
     {
       name: "WebAppLaunchQueue",
@@ -2487,6 +2582,7 @@
       // overridden on the command line (or via chrome://flags).
       name: "WebAppManifestId",
       status: "experimental",
+      base_feature: "WebAppEnableManifestId",
     },
     {
       name:"WebAppsLockScreen",
@@ -2499,6 +2595,7 @@
     {
       name: "WebAppTranslations",
       status: "experimental",
+      base_feature: "WebAppEnableTranslations",
     },
     {
       // This flag enables the Manifest parser to handle URL Handlers.
@@ -2766,12 +2863,14 @@
     {
       name: "WindowOpenNewPopupBehavior",
       status: "stable",
+      base_feature: "WindowOpenNewPopupBehavior",
     },
     // Extends window placement functionality for multi-screen devices. Also
     // exposes requisite information about displays connected to the device.
     {
       name: "WindowPlacement",
       status: "stable",
+      base_feature: "WindowPlacement",
     },
     // Exposes user-friendly screen labels, determined by the platform, to sites
     // with window-placement permission.
@@ -2784,9 +2883,11 @@
       name: "WindowPlacementFullscreenOnScreensChange",
       depends_on: ["WindowPlacement"],
       status: "experimental",
+      base_feature: "WindowPlacementFullscreenOnScreensChange",
     },
     {
       name: "ZeroCopyTabCapture",
+      base_feature: "ZeroCopyTabCapture",
     },
   ],
 }

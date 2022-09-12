@@ -35,10 +35,6 @@
 
 namespace blink {
 
-void WebRuntimeFeatures::EnableBlockingFocusWithoutUserActivation(bool enable) {
-  RuntimeEnabledFeatures::SetBlockingFocusWithoutUserActivationEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnableBrowserVerifiedUserActivationKeyboard(
     bool enable) {
   RuntimeEnabledFeatures::SetBrowserVerifiedUserActivationKeyboardEnabled(
@@ -80,6 +76,10 @@ void WebRuntimeFeatures::EnableWebUsb(bool enable) {
 void WebRuntimeFeatures::EnableFeatureFromString(const std::string& name,
                                                  bool enable) {
   RuntimeEnabledFeatures::SetFeatureEnabledFromString(name, enable);
+}
+
+void WebRuntimeFeatures::UpdateStatusFromBaseFeatures() {
+  RuntimeEnabledFeatures::UpdateStatusFromBaseFeatures();
 }
 
 void WebRuntimeFeatures::EnableForcedColors(bool enable) {
@@ -190,10 +190,6 @@ void WebRuntimeFeatures::EnableDocumentPictureInPictureAPI(bool enable) {
 
 void WebRuntimeFeatures::EnableRemoveMobileViewportDoubleTap(bool enable) {
   RuntimeEnabledFeatures::SetRemoveMobileViewportDoubleTapEnabled(enable);
-}
-
-void WebRuntimeFeatures::EnableZeroCopyTabCapture(bool enable) {
-  RuntimeEnabledFeatures::SetZeroCopyTabCaptureEnabled(enable);
 }
 
 void WebRuntimeFeatures::EnableFencedFrames(bool enable) {
@@ -385,16 +381,8 @@ void WebRuntimeFeatures::EnableTextFragmentAnchor(bool enable) {
   RuntimeEnabledFeatures::SetTextFragmentIdentifiersEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableCSSSelectorFragmentAnchor(bool enable) {
-  RuntimeEnabledFeatures::SetCSSSelectorFragmentAnchorEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnablePreciseMemoryInfo(bool enable) {
   RuntimeEnabledFeatures::SetPreciseMemoryInfoEnabled(enable);
-}
-
-void WebRuntimeFeatures::EnablePrerender2(bool enable) {
-  RuntimeEnabledFeatures::SetPrerender2Enabled(enable);
 }
 
 void WebRuntimeFeatures::EnablePrerender2RelatedFeatures(bool enable) {
@@ -593,10 +581,6 @@ void WebRuntimeFeatures::EnableIdleDetection(bool enable) {
   RuntimeEnabledFeatures::SetIdleDetectionEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableSkipTouchEventFilter(bool enable) {
-  RuntimeEnabledFeatures::SetSkipTouchEventFilterEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnableWebOTP(bool enable) {
   RuntimeEnabledFeatures::SetWebOTPEnabled(enable);
 }
@@ -629,10 +613,6 @@ void WebRuntimeFeatures::EnableInstalledApp(bool enable) {
   RuntimeEnabledFeatures::SetInstalledAppEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableBackfaceVisibilityInterop(bool enable) {
-  RuntimeEnabledFeatures::SetBackfaceVisibilityInteropEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnableVideoWakeLockOptimisationHiddenMuted(
     bool enable) {
   RuntimeEnabledFeatures::SetVideoWakeLockOptimisationHiddenMutedEnabled(
@@ -645,10 +625,6 @@ void WebRuntimeFeatures::EnableContentIndex(bool enable) {
 
 void WebRuntimeFeatures::EnableRestrictGamepadAccess(bool enable) {
   RuntimeEnabledFeatures::SetRestrictGamepadAccessEnabled(enable);
-}
-
-void WebRuntimeFeatures::EnableWebAppManifestId(bool enable) {
-  RuntimeEnabledFeatures::SetWebAppManifestIdEnabled(enable);
 }
 
 void WebRuntimeFeatures::EnableFedCm(bool enable) {
@@ -675,10 +651,6 @@ void WebRuntimeFeatures::EnableDocumentTransition(bool enable) {
   RuntimeEnabledFeatures::SetDocumentTransitionEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableCLSScrollAnchoring(bool enable) {
-  RuntimeEnabledFeatures::SetCLSScrollAnchoringEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnableAndroidDownloadableFontsMatching(bool enable) {
   RuntimeEnabledFeatures::SetAndroidDownloadableFontsMatchingEnabled(enable);
 }
@@ -687,10 +659,6 @@ void WebRuntimeFeatures::EnableWebAuthenticationRemoteDesktopSupport(
     bool enable) {
   RuntimeEnabledFeatures::SetWebAuthenticationRemoteDesktopSupportEnabled(
       enable);
-}
-
-void WebRuntimeFeatures::EnableSpeculationRulesPrefetchProxy(bool enable) {
-  RuntimeEnabledFeatures::SetSpeculationRulesPrefetchProxyEnabled(enable);
 }
 
 void WebRuntimeFeatures::EnableEventPath(bool enable) {

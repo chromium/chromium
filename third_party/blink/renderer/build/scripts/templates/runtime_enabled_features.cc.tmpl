@@ -8,6 +8,7 @@
 
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -80,6 +81,35 @@ void RuntimeEnabledFeaturesBase::SetFeatureEnabledFromString(
     *feature->setting = enable;
   else
     DLOG(ERROR) << "RuntimeEnabledFeature not recognized: " << name;
+}
+
+// static
+void RuntimeEnabledFeaturesBase::UpdateStatusFromBaseFeatures() {
+  struct BaseFeatureToRuntimeFeatureMap {
+    const base::Feature& feature;
+    void (*enabler)(bool enable);
+    bool if_overridden;
+  };
+  const BaseFeatureToRuntimeFeatureMap mappings[] = {
+  {% for feature in features|sort(attribute='name') %}
+    {% if feature.base_feature %}
+    {blink::features::k{{feature.base_feature}}, Set{{feature.name}}Enabled,
+     {{'true' if feature.copied_from_base_feature_if == "overridden" else 'false'}}},
+    {% endif %}
+  {% endfor %}
+  };
+  for (const auto& map : mappings) {
+    const bool feature_enabled = base::FeatureList::IsEnabled(map.feature);
+    const bool is_overridden =
+        base::FeatureList::GetInstance()->IsFeatureOverridden(map.feature.name);
+    if (map.if_overridden) {
+      if (is_overridden)
+        map.enabler(feature_enabled);
+    } else {
+      if (feature_enabled || is_overridden)
+        map.enabler(feature_enabled);
+    }
+  }
 }
 
 {% for feature in origin_trial_controlled_features %}
