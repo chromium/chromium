@@ -124,7 +124,7 @@ class ASH_EXPORT WindowTreeHostManager
   // returns the primary root window only.
   aura::Window::Windows GetAllRootWindows();
 
-  // Returns all oot window controllers. In non extended desktop
+  // Returns all root window controllers. In non extended desktop
   // mode, this return a RootWindowController for the primary root window only.
   std::vector<RootWindowController*> GetAllRootWindowControllers();
 
