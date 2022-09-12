@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/wtf/bit_field.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -377,6 +378,18 @@ class CORE_EXPORT NGLayoutResult final
     return static_cast<EBreakBetween>(bitfields_.final_break_after);
   }
 
+  // Return the start page value.
+  // See https://www.w3.org/TR/css-page-3/#using-named-pages
+  AtomicString StartPageName() const {
+    return HasRareData() ? rare_data_->start_page_name : AtomicString();
+  }
+
+  // Return the end page value.
+  // See https://www.w3.org/TR/css-page-3/#using-named-pages
+  AtomicString EndPageName() const {
+    return HasRareData() ? rare_data_->end_page_name : AtomicString();
+  }
+
   // Return true if the fragment broke because a forced break before a child.
   bool HasForcedBreak() const { return bitfields_.has_forced_break; }
 
@@ -681,6 +694,8 @@ class CORE_EXPORT NGLayoutResult final
     }
     RareData(const RareData& rare_data)
         : bfc_line_offset(rare_data.bfc_line_offset),
+          start_page_name(rare_data.start_page_name),
+          end_page_name(rare_data.end_page_name),
           early_break(rare_data.early_break),
           oof_positioned_offset(rare_data.oof_positioned_offset),
           end_margin_strut(rare_data.end_margin_strut),
@@ -775,6 +790,9 @@ class CORE_EXPORT NGLayoutResult final
     void Trace(Visitor* visitor) const;
 
     LayoutUnit bfc_line_offset;
+
+    AtomicString start_page_name;
+    AtomicString end_page_name;
 
     Member<const NGEarlyBreak> early_break;
     LogicalOffset oof_positioned_offset;

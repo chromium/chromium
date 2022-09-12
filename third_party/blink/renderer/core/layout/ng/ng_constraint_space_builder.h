@@ -118,6 +118,12 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
     orthogonal_fallback_inline_size_ = size;
   }
 
+  void SetPageName(const AtomicString& name) {
+    if (!name && !space_.rare_data_)
+      return;
+    space_.EnsureRareData()->page_name = name;
+  }
+
   void SetFragmentainerBlockSize(LayoutUnit size) {
 #if DCHECK_IS_ON()
     DCHECK(!is_fragmentainer_block_size_set_);

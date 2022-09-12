@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -346,6 +347,11 @@ class CORE_EXPORT NGConstraintSpace final {
     return HasRareData() ? rare_data_->TableSectionIndex() : kNotFound;
   }
 
+  // Return any current page name, specified on an ancestor, or here.
+  const AtomicString PageName() const {
+    return HasRareData() ? rare_data_->page_name : AtomicString();
+  }
+
   // If we're block-fragmented AND the fragmentainer block-size is known, return
   // the total block-size of the fragmentainer that is to be created. This value
   // is inherited by descendant constraint spaces, as long as we don't enter
@@ -534,6 +540,13 @@ class CORE_EXPORT NGConstraintSpace final {
   // context.
   bool HasBlockFragmentation() const {
     return BlockFragmentationType() != kFragmentNone;
+  }
+
+  // Return true if the document is paginated (for printing).
+  bool IsPaginated() const {
+    // TODO(layout-dev): This will not work correctly if establishing a nested
+    // fragmentation context (e.g. multicol) when paginated.
+    return BlockFragmentationType() == kFragmentPage;
   }
 
   // Return true if we're not allowed to break until we have placed some
@@ -877,6 +890,7 @@ class CORE_EXPORT NGConstraintSpace final {
           block_start_annotation_space(other.block_start_annotation_space),
           bfc_offset(other.bfc_offset),
           override_min_max_block_sizes(other.override_min_max_block_sizes),
+          page_name(other.page_name),
           fragmentainer_block_size(other.fragmentainer_block_size),
           fragmentainer_offset_at_bfc(other.fragmentainer_offset_at_bfc),
           data_union_type(other.data_union_type),
@@ -1002,7 +1016,7 @@ class CORE_EXPORT NGConstraintSpace final {
 
     // Must be kept in sync with members checked within |MaySkipLayout|.
     bool IsInitialForMaySkipLayout() const {
-      if (fragmentainer_block_size != kIndefiniteSize ||
+      if (page_name || fragmentainer_block_size != kIndefiniteSize ||
           fragmentainer_offset_at_bfc || is_line_clamp_context ||
           is_restricted_block_size_table_cell || hide_table_cell_if_empty ||
           block_direction_fragmentation_type != kFragmentNone ||
@@ -1280,6 +1294,7 @@ class CORE_EXPORT NGConstraintSpace final {
     NGBfcOffset bfc_offset;
     MinMaxSizes override_min_max_block_sizes;
 
+    AtomicString page_name;
     LayoutUnit fragmentainer_block_size = kIndefiniteSize;
     LayoutUnit fragmentainer_offset_at_bfc;
 

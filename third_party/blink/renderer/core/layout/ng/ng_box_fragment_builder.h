@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_fragment_data.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -415,6 +416,13 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     previous_break_after_ = break_after;
   }
 
+  void SetStartPageNameIfNeeded(AtomicString name) {
+    if (start_page_name_ == g_null_atom)
+      start_page_name_ = name;
+  }
+  void SetPreviousPageName(AtomicString name) { previous_page_name_ = name; }
+  AtomicString PreviousPageName() const { return previous_page_name_; }
+
   // Join/"collapse" the previous (stored) break-after value with the next
   // break-before value, to determine how to deal with breaking between two
   // in-flow siblings.
@@ -762,6 +770,9 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   // The break-after value of the previous in-flow sibling.
   EBreakBetween previous_break_after_ = EBreakBetween::kAuto;
+
+  AtomicString start_page_name_ = g_null_atom;
+  AtomicString previous_page_name_;
 
   // The appeal of breaking inside this container.
   NGBreakAppeal break_appeal_ = kBreakAppealPerfect;

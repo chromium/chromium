@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_outside_list_marker.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -183,6 +184,10 @@ class CORE_EXPORT NGLayoutInputNode {
     if (IsInline())
       return true;
     return box_->GetNGPaginationBreakability() == LayoutBox::kForbidBreaks;
+  }
+
+  AtomicString PageName() const {
+    return IsBlock() ? Style().Page() : AtomicString();
   }
 
   bool IsScrollContainer() const {

@@ -115,7 +115,19 @@ EBreakBetween CalculateBreakBetweenValue(NGLayoutInputNode child,
     return EBreakBetween::kAuto;
   EBreakBetween break_before = JoinFragmentainerBreakValues(
       child.Style().BreakBefore(), layout_result.InitialBreakBefore());
-  return builder.JoinedBreakBetweenValue(break_before);
+  break_before = builder.JoinedBreakBetweenValue(break_before);
+  const NGConstraintSpace& space = builder.ConstraintSpace();
+  if (space.IsPaginated() &&
+      !IsForcedBreakValue(builder.ConstraintSpace(), break_before)) {
+    AtomicString start_page_name = layout_result.StartPageName();
+    if (!start_page_name)
+      start_page_name = child.PageName();
+    // If the page name propagated from the child differs from what we already
+    // have, we need to break before the child.
+    if (start_page_name != builder.PreviousPageName())
+      return EBreakBetween::kPage;
+  }
+  return break_before;
 }
 
 bool IsBreakableAtStartOfResumedContainer(
@@ -289,6 +301,13 @@ void SetupSpaceBuilderForFragmentation(const NGConstraintSpace& parent_space,
   if (parent_space.IsInColumnBfc() && !is_new_fc)
     builder->SetIsInColumnBfc();
   builder->SetMinBreakAppeal(parent_space.MinBreakAppeal());
+
+  if (parent_space.IsPaginated()) {
+    if (AtomicString page_name = child.PageName())
+      builder->SetPageName(page_name);
+    else
+      builder->SetPageName(parent_space.PageName());
+  }
 }
 
 void SetupFragmentBuilderForFragmentation(
@@ -359,6 +378,11 @@ void SetupFragmentBuilderForFragmentation(
     const NGBoxStrut& unbreakable = builder->BorderScrollbarPadding();
     builder->PropagateTallestUnbreakableBlockSize(unbreakable.block_start);
     builder->PropagateTallestUnbreakableBlockSize(unbreakable.block_end);
+  }
+
+  if (space.IsPaginated()) {
+    if (const AtomicString page_name = node.PageName())
+      builder->SetStartPageNameIfNeeded(page_name);
   }
 }
 
