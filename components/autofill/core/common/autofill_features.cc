@@ -562,9 +562,17 @@ const base::Feature kAutofillUseNewSectioningMethod{
     "AutofillUseNewSectioningMethod", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether to use the newest, parameterized sectioning algorithm.
+// Use together with `kAutofillRefillByFormRendererId`.
 // TODO(crbug.com/1153539): Remove the feature when the experiment is completed.
 const base::Feature kAutofillUseParameterizedSectioning{
     "AutofillUseParameterizedSectioning", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls whether to use form renderer IDs to find the form which contains the
+// field that was last interacted with in
+// `AutofillAgent::TriggerRefillIfNeeded()`.
+// TODO(crbug.com/1360988): Remove the feature when the experiment is completed.
+const base::Feature kAutofillRefillByFormRendererId{
+    "AutofillRefillByFormRendererId", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Introduces various visual improvements of the Autofill suggestion UI that is
 // also used for the password manager.

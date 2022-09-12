@@ -517,21 +517,39 @@ void AutofillAgent::UserGestureObserved() {
 }
 
 void AutofillAgent::TriggerRefillIfNeeded(const FormData& form) {
-  ReplaceElementIfNowInvalid(form);
+  // In some cases when the `element_` is non-focusable and the form dynamically
+  // changes, `ReplaceElementIfNowInvalid()` fails to find the proper matching
+  // element. As a result, we can't communicate to the browser process the
+  // potential change of the last interacted form.
+  // A form can be found based on its renderer id. Therefore, if the form has
+  // changed, we communicate this to the browser process and reparse the forms
+  // and potentially trigger a refill.
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillRefillByFormRendererId)) {
+    ReplaceElementIfNowInvalid(form);
 
-  FormFieldData field;
-  FormData updated_form;
-  if (FindFormAndFieldForFormControlElement(element_, field_data_manager_.get(),
-                                            &updated_form, &field) &&
-      (!element_.IsAutofilled() || !form.DynamicallySameFormAs(updated_form))) {
-    WebLocalFrame* frame = render_frame()->GetWebFrame();
-    std::vector<FormData> forms;
-    forms.push_back(updated_form);
-    // Always communicate to browser process for the outermost main frame.
-    if (!forms.empty() || frame->IsOutermostMainFrame()) {
-      GetAutofillDriver().FormsSeen(forms, {});
+    FormFieldData field;
+    FormData updated_form;
+    if (FindFormAndFieldForFormControlElement(
+            element_, field_data_manager_.get(), &updated_form, &field) &&
+        (!element_.IsAutofilled() ||
+         !form.DynamicallySameFormAs(updated_form))) {
+      GetAutofillDriver().FormsSeen({updated_form}, {});
     }
+    return;
   }
+  WebFormElement updated_form_element = form_util::FindFormByUniqueRendererId(
+      render_frame()->GetWebFrame()->GetDocument(), form.unique_renderer_id);
+  FormData updated_form_data;
+  if (updated_form_element.IsNull()) {
+    CollectFormlessElements(&updated_form_data);
+  } else {
+    form_util::ExtractFormData(updated_form_element, *field_data_manager_.get(),
+                               &updated_form_data);
+  }
+  // Deep-compare forms, but don't take into account the fields' values.
+  if (!FormData::DeepEqual(form, updated_form_data))
+    GetAutofillDriver().FormsSeen({updated_form_data}, {});
 }
 
 // mojom::AutofillAgent:

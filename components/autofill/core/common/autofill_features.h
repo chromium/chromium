@@ -204,6 +204,8 @@ extern const base::Feature kAutofillUseNewSectioningMethod;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillUseParameterizedSectioning;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillRefillByFormRendererId;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillUseConsistentPopupSettingsIcons;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillVisualImprovementsForSuggestionUi;
