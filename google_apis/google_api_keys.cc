@@ -302,12 +302,12 @@ class APIKeyCache {
     }
 
     if (key_value == DUMMY_API_TOKEN) {
+// TODO(crbug.com/1294915): Rewrite this condition using
+// BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY).
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_FUCHSIA)
       // No key should be unset in an official build except the
       // GOOGLE_DEFAULT_* keys.  The default keys don't trigger this
       // check as their "unset" value is not DUMMY_API_TOKEN.
-      // Exclude Fuchsia to match BUILD.gn.
-      // TODO(crbug.com/1171510): Update Fuchsia exclusion when bug is fixed.
       CHECK(false);
 #endif
       if (default_if_unset.size() > 0) {
