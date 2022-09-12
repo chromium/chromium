@@ -28,7 +28,7 @@ const char kLongPage2[] =
 const CGFloat kOffset1 = 20.0f;
 const CGFloat kOffset2 = 40.0f;
 
-// Waits for the web view scroll view is scrolled to |y_offset|.
+// Waits for the web view scroll view is scrolled to `y_offset`.
 void WaitForOffset(CGFloat y_offset) {
   CGPoint offset = CGPointMake(0.0, y_offset);
   NSString* content_offset_string = NSStringFromCGPoint(offset);
@@ -51,7 +51,7 @@ void WaitForOffset(CGFloat y_offset) {
   GREYAssert([condition waitWithTimeout:10], error_text);
 }
 
-// Loads the long page at |url|, scrolls to the top, and waits for the offset to
+// Loads the long page at `url`, scrolls to the top, and waits for the offset to
 // be {0, 0} before returning.
 void ScrollLongPageToTop(const GURL& url) {
   // Load the page and swipe down.

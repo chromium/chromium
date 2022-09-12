@@ -10,7 +10,7 @@
 namespace web {
 namespace shell_test_util {
 
-// Attempts to tap the element with |element_id| in the current WebState
+// Attempts to tap the element with `element_id` in the current WebState
 // using a JavaScript click() event.
 void TapWebViewElementWithId(const std::string& element_id);
 

@@ -30,12 +30,12 @@
 // Category method names must be unique.
 @interface ShellEarlGreyImpl : BaseEGTestHelperImpl
 
-// Loads |URL| in the current WebState with transition of type
+// Loads `URL` in the current WebState with transition of type
 // ui::PAGE_TRANSITION_TYPED and waits for the loading to complete. Raises
 // EarlGrey exception if load does not complete within a timeout.
 - (void)loadURL:(const GURL&)URL;
 
-// Waits for the current web view to contain |text|. Raises EarlGrey exception
+// Waits for the current web view to contain `text`. Raises EarlGrey exception
 // if the content does not show up within a timeout.
 - (void)waitForWebStateContainingText:(NSString*)text;
 

@@ -10,7 +10,7 @@
 namespace web {
 namespace shell_test_util {
 
-// Loads |url| in the current WebState with transition of type
+// Loads `url` in the current WebState with transition of type
 // ui::PAGE_TRANSITION_TYPED.
 void LoadUrl(const GURL& url);
 

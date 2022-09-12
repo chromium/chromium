@@ -26,7 +26,7 @@ extern NSString* const kWebShellAddressFieldAccessibilityLabel;
 @property(nonatomic, strong) IBOutlet UIToolbar* toolbarView;
 @property(nonatomic, assign, readonly) web::WebState* webState;
 
-// Initializes a new ViewController using the given |browserState|.
+// Initializes a new ViewController using the given `browserState`.
 - (instancetype)initWithBrowserState:(web::BrowserState*)browserState;
 
 @end
