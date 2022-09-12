@@ -154,10 +154,12 @@ TEST_F(DrawerLayoutHandlerTest, CreateAndSerializeWithoutText) {
   ASSERT_EQ(2, create_result.value().first);
 
   ui::AXNodeData data;
+  // A valid role must be set prior to calling SetName.
+  data.role = ax::mojom::Role::kMenu;
   data.SetName("node description");
   create_result.value().second->PostSerializeNode(&data);
 
-  // Modifier doesn't override the name by an empty string.
+  // Modifier doesn't override the name by an empty string, or change the role.
   ASSERT_EQ(ax::mojom::Role::kMenu, data.role);
   ASSERT_EQ("node description",
             data.GetStringAttribute(ax::mojom::StringAttribute::kName));

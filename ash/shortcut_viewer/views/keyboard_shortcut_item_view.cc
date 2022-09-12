@@ -233,8 +233,8 @@ KeyboardShortcutItemView::KeyboardShortcutItemView(
       gfx::Insets::TLBR(kVerticalPadding, 0, kVerticalPadding, 0)));
 
   // Use leaf list item role so that name is spoken by screen reader, but
-  // redundant child label text is not also spoken.
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kListItem);
+  // redundant child label text is not also spoken. (The role is set in
+  // GetAccessibleNodeData.)
   GetViewAccessibility().OverrideIsLeaf(true);
   accessible_name_ =
       description_label_view_->GetText() + u", " + accessible_string;
@@ -242,6 +242,8 @@ KeyboardShortcutItemView::KeyboardShortcutItemView(
 
 void KeyboardShortcutItemView::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
+  // A valid role must be set prior to setting the name.
+  node_data->role = ax::mojom::Role::kListItem;
   node_data->SetName(accessible_name_);
 }
 

@@ -8,6 +8,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_utils.h"
@@ -117,6 +118,8 @@ void MediaControlsHeaderView::SetForceShowCloseButton(bool force_visible) {
 }
 
 void MediaControlsHeaderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  // A valid role must be set prior to setting the name.
+  node_data->role = ax::mojom::Role::kPane;
   node_data->SetName(app_name_view_->GetText());
 }
 

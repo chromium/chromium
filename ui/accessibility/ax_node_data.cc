@@ -620,10 +620,12 @@ AXTextAttributes AXNodeData::GetTextAttributes() const {
 
 void AXNodeData::SetName(const std::string& name) {
   // Elements with role='presentation' have Role::kNone. They should not be
-  // named. This check is only relevant if the name is not empty.
+  // named. Objects with Role::kUnknown were never given a role. This check
+  // is only relevant if the name is not empty.
   // TODO(accessibility): It would be nice to have a means to set the name
   // and role at the same time to avoid this ordering requirement.
-  DCHECK(role != ax::mojom::Role::kNone || name.empty())
+  DCHECK(name.empty() ||
+         (role != ax::mojom::Role::kNone && role != ax::mojom::Role::kUnknown))
       << "Cannot set name to '" << name << "' on class: '"
       << GetStringAttribute(ax::mojom::StringAttribute::kClassName)
       << "' because a valid role is needed to set the default NameFrom "

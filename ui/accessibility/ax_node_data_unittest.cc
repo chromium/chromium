@@ -366,6 +366,11 @@ TEST(AXNodeDataTest, SupportsExpandCollapse) {
 
 TEST(AXNodeDataTest, SetName) {
   AXNodeData data;
+  // SetName should not be called on a role of kUnknown. That role means the
+  // role has not yet been set, and we need a role to identify the NameFrom on
+  // objects where it has not been set. This is enforced by a DCHECK.
+  EXPECT_DCHECK_DEATH(data.SetName("no role yet"));
+
   // SetName should not be called on a role of kNone. That role is used for
   // presentational objects which should not be included in the accessibility
   // tree. This is enforced by a DCHECK.

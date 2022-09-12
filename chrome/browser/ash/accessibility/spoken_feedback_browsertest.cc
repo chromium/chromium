@@ -1026,8 +1026,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   widget->Init(std::move(params));
 
   views::View* view = new views::View();
-  view->GetViewAccessibility().OverrideName("hello");
+  // A valid role must be set prior to setting the name.
   view->GetViewAccessibility().OverrideRole(ax::mojom::Role::kButton);
+  view->GetViewAccessibility().OverrideName("hello");
   view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   widget->GetRootView()->AddChildView(view);
 
@@ -1103,8 +1104,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TouchExploreSecondaryDisplay) {
   widget->Init(std::move(params));
 
   views::View* view = new views::View();
-  view->GetViewAccessibility().OverrideName("hello");
+  // A valid role must be set prior to setting the name.
   view->GetViewAccessibility().OverrideRole(ax::mojom::Role::kButton);
+  view->GetViewAccessibility().OverrideName("hello");
   view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   widget->GetRootView()->AddChildView(view);
 

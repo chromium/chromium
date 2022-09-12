@@ -44,6 +44,8 @@ class Throbber : public views::View {
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    // A valid role must be set prior to setting the name.
+    node_data->role = ax::mojom::Role::kProgressIndicator;
     node_data->SetName(
         l10n_util::GetStringUTF16(IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_THROBBER));
   }

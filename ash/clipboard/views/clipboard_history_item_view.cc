@@ -160,8 +160,6 @@ void ClipboardHistoryItemView::HandleMainButtonPressEvent(
 
 void ClipboardHistoryItemView::Init() {
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenuItem);
-
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   // Ensures that MainButton is below any other child views.
@@ -269,6 +267,9 @@ gfx::Size ClipboardHistoryItemView::CalculatePreferredSize() const {
 }
 
 void ClipboardHistoryItemView::GetAccessibleNodeData(ui::AXNodeData* data) {
+  // A valid role must be set in the AXNodeData prior to setting the name
+  // via AXNodeData::SetName.
+  data->role = ax::mojom::Role::kMenuItem;
   data->SetName(GetAccessibleName());
 }
 

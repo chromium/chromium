@@ -196,6 +196,9 @@ void AssistantPageView::RequestFocus() {
 
 void AssistantPageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   View::GetAccessibleNodeData(node_data);
+
+  // A valid role must be set prior to setting the name.
+  node_data->role = ax::mojom::Role::kPane;
   node_data->SetName(l10n_util::GetStringUTF16(IDS_ASH_ASSISTANT_WINDOW));
 }
 

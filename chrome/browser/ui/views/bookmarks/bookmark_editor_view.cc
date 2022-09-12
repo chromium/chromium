@@ -134,6 +134,14 @@ bool BookmarkEditorView::HandleKeyEvent(views::Textfield* sender,
 
 void BookmarkEditorView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   views::DialogDelegateView::GetAccessibleNodeData(node_data);
+
+  // TODO(crbug.com/1361263): Currently DialogDelegateView does not override
+  // GetAccessibleNodeData, thus the call above accomplishes nothing. We need
+  // this View to have a role before setting its name, but if we set it to
+  // dialog, we'll wind up with a dialog (this view) inside of a dialog
+  // (RootView). Note that both views also share the same accessible name.
+  // In the meantime, give it a generic role.
+  node_data->role = ax::mojom::Role::kPane;
   node_data->SetName(l10n_util::GetStringUTF8(IDS_BOOKMARK_EDITOR_TITLE));
 }
 

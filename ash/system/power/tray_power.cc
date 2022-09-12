@@ -22,6 +22,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram.h"
 #include "base/time/time.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -60,6 +61,8 @@ gfx::Size PowerTrayView::CalculatePreferredSize() const {
 }
 
 void PowerTrayView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  // A valid role must be set prior to setting the name.
+  node_data->role = ax::mojom::Role::kImage;
   node_data->SetName(accessible_name_);
 }
 
