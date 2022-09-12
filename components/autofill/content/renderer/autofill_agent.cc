@@ -538,12 +538,19 @@ void AutofillAgent::TriggerRefillIfNeeded(const FormData& form) {
 void AutofillAgent::FillOrPreviewForm(int32_t query_id,
                                       const FormData& form,
                                       mojom::RendererFormDataAction action) {
-  // If |element_| is null or not focused, a Autofill was triggered from another
-  // frame. In this case, set |element_| to some form field as if Autofill had
+  // If `element_` is null or not focused, Autofill was triggered from another
+  // frame. In this case, set `element_` to some form field as if Autofill had
   // been triggered from that field. This is necessary because currently
-  // AutofillAgent's relies on |elemet_| in many places.
-  if (query_id == kCrossFrameFill && !form.fields.empty() &&
-      (element_.IsNull() || !element_.Focused())) {
+  // AutofillAgent relies on the `elemet_` in many places.
+  // Note: The `element_` needs to be updated for the new, parameterized
+  // sectioning algorithm regardless of the `query_id`. Otherwise, in some cases
+  // `ReplaceElementIfNowInvalid()` choses the incorrect element as the
+  // corresponding element to the `element_`.
+  // TODO(crbug.com/1361395): Delete deprecated query ids.
+  if ((base::FeatureList::IsEnabled(
+           features::kAutofillUseParameterizedSectioning) ||
+       query_id == kCrossFrameFill) &&
+      !form.fields.empty() && (element_.IsNull() || !element_.Focused())) {
     WebDocument document = render_frame()->GetWebFrame()->GetDocument();
     element_ = form_util::FindFormControlElementByUniqueRendererId(
         document, form.fields.front().unique_renderer_id);
