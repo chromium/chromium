@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_APPS_APP_PRELOAD_SERVICE_APP_PRELOAD_SERVICE_H_
 #define CHROME_BROWSER_APPS_APP_PRELOAD_SERVICE_APP_PRELOAD_SERVICE_H_
 
-#include "components/keyed_service/core/keyed_service.h"
+#include <memory>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/apps/app_preload_service/app_preload_server_connector.h"
+#include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
 
@@ -44,6 +46,7 @@ class AppPreloadService : public KeyedService {
   const base::Value::Dict& GetStateManager() const;
 
   raw_ptr<Profile> profile_;
+  std::unique_ptr<AppPreloadServerConnector> server_connector_;
 };
 
 }  // namespace apps

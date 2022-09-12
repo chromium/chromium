@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/app_preload_service/app_preload_service.h"
 
+#include <memory>
+
 #include "base/logging.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,7 +36,9 @@ static constexpr char kApsStateManager[] =
     "apps.app_preload_service.state_manager";
 }  // namespace prefs
 
-AppPreloadService::AppPreloadService(Profile* profile) : profile_(profile) {
+AppPreloadService::AppPreloadService(Profile* profile)
+    : profile_(profile),
+      server_connector_(std::make_unique<AppPreloadServerConnector>()) {
   // Check to see if the service has been run before.
   auto is_first_run = GetStateManager().FindBool(kFirstLoginFlowCompletedKey);
   if (is_first_run == absl::nullopt) {
