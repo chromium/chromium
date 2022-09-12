@@ -279,6 +279,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kRelatedSearchesSimplifiedUx,
     &kRelatedSearchesUi,
     &kRequestDesktopSiteDefaults,
+    &kRequestDesktopSiteDefaultsDowngrade,
     &kSafeModeForCachedFlags,
     &kSearchEnginePromoExistingDevice,
     &kSearchEnginePromoExistingDeviceV2,
@@ -808,6 +809,9 @@ const base::Feature kRelatedSearchesUi{"RelatedSearchesUi",
 
 const base::Feature kRequestDesktopSiteDefaults{
     "RequestDesktopSiteDefaults", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kRequestDesktopSiteDefaultsDowngrade{
+    "RequestDesktopSiteDefaultsDowngrade", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kSafeModeForCachedFlags{"SafeModeForCachedFlags",
                                             base::FEATURE_DISABLED_BY_DEFAULT};

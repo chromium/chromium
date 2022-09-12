@@ -56798,6 +56798,7 @@ from previous Chrome versions.
   <int value="-1763899404" label="LayoutNGTable:enabled"/>
   <int value="-1761695937"
       label="NtpPhotosModuleCustomizedOptInArtWork:enabled"/>
+  <int value="-1761623485" label="RequestDesktopSiteDefaultsDowngrade:enabled"/>
   <int value="-1760624380"
       label="ImprovedCookieControlsForThirdPartyCookieBlocking:enabled"/>
   <int value="-1760146324" label="CellularAllowPerNetworkRoaming:disabled"/>
@@ -59996,6 +59997,7 @@ from previous Chrome versions.
   <int value="191891628" label="AutocompleteExtendedSuggestions:enabled"/>
   <int value="192167036" label="LogJsConsoleMessages:disabled"/>
   <int value="192320180" label="ignore-gpu-blocklist"/>
+  <int value="192624345" label="RequestDesktopSiteDefaultsDowngrade:disabled"/>
   <int value="192693676"
       label="QueryTilesRemoveTrendingAfterInactivity:disabled"/>
   <int value="193865288" label="EnableSuggestedLocalFiles:enabled"/>

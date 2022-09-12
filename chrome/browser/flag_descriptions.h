@@ -2212,6 +2212,9 @@ extern const char kRequestDesktopSiteAdditionsDescription[];
 extern const char kRequestDesktopSiteDefaultsName[];
 extern const char kRequestDesktopSiteDefaultsDescription[];
 
+extern const char kRequestDesktopSiteDefaultsDowngradeName[];
+extern const char kRequestDesktopSiteDefaultsDowngradeDescription[];
+
 extern const char kRequestDesktopSiteExceptionsName[];
 extern const char kRequestDesktopSiteExceptionsDescription[];
 

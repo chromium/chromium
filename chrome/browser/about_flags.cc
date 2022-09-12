@@ -9157,6 +9157,14 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
+    {"request-desktop-site-defaults-downgrade",
+     flag_descriptions::kRequestDesktopSiteDefaultsDowngradeName,
+     flag_descriptions::kRequestDesktopSiteDefaultsDowngradeDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kRequestDesktopSiteDefaultsDowngrade)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
     {"request-desktop-site-exceptions-downgrade",
      flag_descriptions::kRequestDesktopSiteExceptionsDowngradeName,
      flag_descriptions::kRequestDesktopSiteExceptionsDowngradeDescription,

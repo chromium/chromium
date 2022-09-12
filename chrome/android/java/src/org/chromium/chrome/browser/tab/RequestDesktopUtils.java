@@ -366,6 +366,44 @@ public class RequestDesktopUtils {
     }
 
     /**
+     * Disables the desktop site global setting when REQUEST_DESKTOP_SITE_DEFAULTS is disabled based
+     * on the following conditions:
+     * 1. The setting was previously default-enabled.
+     * 2. The setting has not been previously updated by the user.
+     * These changes are guarded behind the REQUEST_DESKTOP_SITE_DEFAULTS_DOWNGRADE flag.
+     * @param profile The current {@link Profile}.
+     * @return Whether the desktop site global setting was disabled.
+     */
+    public static boolean maybeDisableGlobalSetting(Profile profile) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS)
+                || !ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_DOWNGRADE)) {
+            return false;
+        }
+
+        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
+        // Do not downgrade if the global setting was not default-enabled.
+        if (!sharedPreferencesManager.readBoolean(
+                    ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING, false)) {
+            return false;
+        }
+        sharedPreferencesManager.removeKey(
+                ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING);
+        sharedPreferencesManager.removeKey(
+                ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_SHOW_MESSAGE);
+
+        // Do not disable the global setting if it was previously updated by the user.
+        if (sharedPreferencesManager.contains(
+                    SingleCategorySettingsConstants
+                            .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY)) {
+            return false;
+        }
+        WebsitePreferenceBridge.setCategoryEnabled(
+                profile, ContentSettingsType.REQUEST_DESKTOP_SITE, false);
+        return true;
+    }
+
+    /**
      * Creates and shows a message to notify the user of a default update to the desktop site global
      * setting.
      * @param profile The current {@link Profile}.

@@ -29,7 +29,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
@@ -357,7 +356,7 @@ public class RequestDesktopUtilsUnitTest {
         enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, null, true);
         boolean didDefaultEnable = RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
                 RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
-                Mockito.mock(Profile.class));
+                mProfile);
         Assert.assertTrue(
                 "Desktop site global setting should be default-enabled on big screen devices.",
                 didDefaultEnable);
@@ -397,7 +396,7 @@ public class RequestDesktopUtilsUnitTest {
 
         boolean didDefaultEnable = RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
                 RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
-                Mockito.mock(Profile.class));
+                mProfile);
         Assert.assertFalse(
                 "Desktop site global setting should not be default-enabled when opt-in is enabled.",
                 didDefaultEnable);
@@ -456,6 +455,77 @@ public class RequestDesktopUtilsUnitTest {
                 mProfile, mMessageDispatcher, mActivity);
         Assert.assertFalse(
                 "Message should not be shown if the content setting is disabled.", shown);
+        Assert.assertFalse(
+                "SharedPreference DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_SHOW_MESSAGE should be removed.",
+                mSharedPreferencesManager.contains(
+                        ChromePreferenceKeys
+                                .DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_SHOW_MESSAGE));
+    }
+
+    @Test
+    public void testMaybeDisableGlobalSetting() {
+        // Default-enable the global setting.
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, null, true);
+        RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
+                RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
+                mProfile);
+
+        // Disable REQUEST_DESKTOP_SITE_DEFAULTS and initiate downgrade.
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, null, false);
+        enableFeatureWithParams(
+                ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_DOWNGRADE, null, true);
+        boolean didDisable = RequestDesktopUtils.maybeDisableGlobalSetting(mProfile);
+
+        Assert.assertTrue(
+                "Desktop site global setting should be disabled on downgrade.", didDisable);
+        Assert.assertEquals("Desktop site content setting should be set correctly.",
+                ContentSettingValues.BLOCK, mRdsDefaultValue);
+        Assert.assertFalse(
+                "SharedPreference DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING should be removed.",
+                mSharedPreferencesManager.contains(
+                        ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING));
+        Assert.assertFalse(
+                "SharedPreference DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_SHOW_MESSAGE should be removed.",
+                mSharedPreferencesManager.contains(
+                        ChromePreferenceKeys
+                                .DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_SHOW_MESSAGE));
+    }
+
+    @Test
+    public void testMaybeDisableGlobalSetting_UserUpdatedSetting() {
+        // Default-enable the global setting.
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, null, true);
+        RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
+                RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
+                mProfile);
+
+        // This SharedPreference key will ideally be updated when the user explicitly requests for
+        // an update to the desktop site global setting. Simulate a scenario where the user turns
+        // the setting off after it is default-enabled and turns it on again.
+        mSharedPreferencesManager.writeBoolean(
+                SingleCategorySettingsConstants
+                        .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY,
+                false);
+        mSharedPreferencesManager.writeBoolean(
+                SingleCategorySettingsConstants
+                        .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY,
+                true);
+
+        // Disable REQUEST_DESKTOP_SITE_DEFAULTS and initiate downgrade.
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, null, false);
+        enableFeatureWithParams(
+                ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_DOWNGRADE, null, true);
+        boolean didDisable = RequestDesktopUtils.maybeDisableGlobalSetting(mProfile);
+
+        Assert.assertFalse(
+                "Desktop site global setting should not be disabled on downgrade if the user updated the setting.",
+                didDisable);
+        Assert.assertEquals("Desktop site content setting should be set correctly.",
+                ContentSettingValues.ALLOW, mRdsDefaultValue);
+        Assert.assertFalse(
+                "SharedPreference DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING should be removed.",
+                mSharedPreferencesManager.contains(
+                        ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING));
         Assert.assertFalse(
                 "SharedPreference DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_SHOW_MESSAGE should be removed.",
                 mSharedPreferencesManager.contains(
