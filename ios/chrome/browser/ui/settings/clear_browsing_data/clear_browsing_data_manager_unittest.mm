@@ -182,9 +182,19 @@ TEST_F(ClearBrowsingDataManagerTest, TestModel) {
   [manager_ loadModel:model_];
 
   EXPECT_EQ(3, [model_ numberOfSections]);
-  EXPECT_EQ(1, [model_ numberOfItemsInSection:0]);
-  EXPECT_EQ(5, [model_ numberOfItemsInSection:1]);
-  EXPECT_EQ(0, [model_ numberOfItemsInSection:2]);
+  EXPECT_EQ(
+      1,
+      [model_ numberOfItemsInSection:[model_ sectionForSectionIdentifier:
+                                                 SectionIdentifierTimeRange]]);
+  EXPECT_EQ(
+      5,
+      [model_ numberOfItemsInSection:[model_ sectionForSectionIdentifier:
+                                                 SectionIdentifierDataTypes]]);
+  EXPECT_EQ(
+      0,
+      [model_
+          numberOfItemsInSection:[model_ sectionForSectionIdentifier:
+                                             SectionIdentifierSavedSiteData]]);
 }
 
 // Tests model is set up with correct number of items and sections if signed in
@@ -200,9 +210,24 @@ TEST_F(ClearBrowsingDataManagerTest, TestModelSignedInSyncOff) {
   [manager_ loadModel:model_];
 
   EXPECT_EQ(4, [model_ numberOfSections]);
-  EXPECT_EQ(1, [model_ numberOfItemsInSection:0]);
-  EXPECT_EQ(5, [model_ numberOfItemsInSection:1]);
-  EXPECT_EQ(0, [model_ numberOfItemsInSection:2]);
+  EXPECT_EQ(
+      1,
+      [model_ numberOfItemsInSection:[model_ sectionForSectionIdentifier:
+                                                 SectionIdentifierTimeRange]]);
+  EXPECT_EQ(
+      5,
+      [model_ numberOfItemsInSection:[model_ sectionForSectionIdentifier:
+                                                 SectionIdentifierDataTypes]]);
+  EXPECT_EQ(
+      0,
+      [model_
+          numberOfItemsInSection:[model_ sectionForSectionIdentifier:
+                                             SectionIdentifierSavedSiteData]]);
+  EXPECT_EQ(
+      0,
+      [model_
+          numberOfItemsInSection:[model_ sectionForSectionIdentifier:
+                                             SectionIdentifierGoogleAccount]]);
 }
 
 TEST_F(ClearBrowsingDataManagerTest, TestCacheCounterFormattingForAllTime) {
