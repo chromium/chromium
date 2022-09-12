@@ -1009,6 +1009,10 @@ namespace {
   return [self isFollowingFeedAvailable] && [self isFeedHeaderVisible];
 }
 
+- (void)feedTopSectionHasChangedVisibility:(BOOL)visible {
+  [self.feedTopSectionCoordinator feedTopSectionHasChangedVisibility:visible];
+}
+
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {

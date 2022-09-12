@@ -26,6 +26,10 @@
 // Delegate for NTP related actions.
 @property(nonatomic, weak) id<NewTabPageDelegate> ntpDelegate;
 
+// Returns |YES| if the promo is currently in the feed, whether or not it is
+// visible.
+@property(nonatomic, assign) BOOL shouldShowSigninPromo;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_FEED_TOP_SECTION_FEED_TOP_SECTION_VIEW_CONTROLLER_H_

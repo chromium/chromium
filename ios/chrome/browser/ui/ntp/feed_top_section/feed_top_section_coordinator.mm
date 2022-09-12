@@ -26,46 +26,69 @@
 @interface FeedTopSectionCoordinator () <SigninPresenter>
 
 @property(nonatomic, strong) FeedTopSectionMediator* feedTopSectionMediator;
+@property(nonatomic, strong)
+    FeedTopSectionViewController* feedTopSectionViewController;
+@property(nonatomic, strong) SigninPromoViewMediator* signinPromoViewMediator;
+
+// Returns |YES| if the promo is visible in the NTP at the current scroll point.
+@property(nonatomic, assign) BOOL isPromoVisible;
 
 @end
 
 @implementation FeedTopSectionCoordinator
 
+// Synthesized from ChromeCoordinator.
 @synthesize viewController = _viewController;
 
 - (void)start {
   DCHECK(self.ntpDelegate);
-  FeedTopSectionViewController* feedTopSectionViewController =
+  self.feedTopSectionViewController =
       [[FeedTopSectionViewController alloc] init];
-  _viewController = feedTopSectionViewController;
+  _viewController = self.feedTopSectionViewController;
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  FeedTopSectionMediator* feedTopSectionMediator =
-      [[FeedTopSectionMediator alloc]
-          initWithConsumer:feedTopSectionViewController
-              browserState:browserState];
-  SigninPromoViewMediator* signinPromoViewMediator =
-      [[SigninPromoViewMediator alloc]
-          initWithAccountManagerService:ChromeAccountManagerServiceFactory::
-                                            GetForBrowserState(browserState)
-                            authService:AuthenticationServiceFactory::
-                                            GetForBrowserState(browserState)
-                            prefService:browserState->GetPrefs()
-                            accessPoint:signin_metrics::AccessPoint::
-                                            ACCESS_POINT_NTP_FEED_TOP_PROMO
-                              presenter:self];
-  signinPromoViewMediator.consumer = feedTopSectionMediator;
-  feedTopSectionMediator.signinPromoMediator = signinPromoViewMediator;
-  feedTopSectionMediator.ntpDelegate = self.ntpDelegate;
-  feedTopSectionViewController.signinPromoDelegate = signinPromoViewMediator;
-  feedTopSectionViewController.delegate = feedTopSectionMediator;
-  feedTopSectionViewController.ntpDelegate = self.ntpDelegate;
-  self.feedTopSectionMediator = feedTopSectionMediator;
-  [feedTopSectionMediator setUp];
+  self.feedTopSectionMediator = [[FeedTopSectionMediator alloc]
+      initWithConsumer:self.feedTopSectionViewController
+          browserState:browserState];
+  self.signinPromoViewMediator = [[SigninPromoViewMediator alloc]
+      initWithAccountManagerService:ChromeAccountManagerServiceFactory::
+                                        GetForBrowserState(browserState)
+                        authService:AuthenticationServiceFactory::
+                                        GetForBrowserState(browserState)
+                        prefService:browserState->GetPrefs()
+                        accessPoint:signin_metrics::AccessPoint::
+                                        ACCESS_POINT_NTP_FEED_TOP_PROMO
+                          presenter:self];
+  self.signinPromoViewMediator.consumer = self.feedTopSectionMediator;
+  self.feedTopSectionMediator.signinPromoMediator =
+      self.signinPromoViewMediator;
+  self.feedTopSectionMediator.ntpDelegate = self.ntpDelegate;
+  self.feedTopSectionViewController.signinPromoDelegate =
+      self.signinPromoViewMediator;
+  self.feedTopSectionViewController.delegate = self.feedTopSectionMediator;
+  self.feedTopSectionViewController.ntpDelegate = self.ntpDelegate;
+  [self.feedTopSectionMediator setUp];
 }
 
 - (void)stop {
   _viewController = nil;
   self.feedTopSectionMediator = nil;
+  self.feedTopSectionViewController = nil;
+}
+
+#pragma mark - Public
+
+- (void)feedTopSectionHasChangedVisibility:(BOOL)visible {
+  if (self.isPromoVisible == visible ||
+      !self.feedTopSectionViewController.shouldShowSigninPromo) {
+    return;
+  }
+  if (visible) {
+    [self.signinPromoViewMediator signinPromoViewIsVisible];
+    self.isPromoVisible = visible;
+  } else {
+    [self.signinPromoViewMediator signinPromoViewIsHidden];
+    self.isPromoVisible = visible;
+  }
 }
 
 #pragma mark - SigninPresenter
