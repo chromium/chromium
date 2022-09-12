@@ -40,7 +40,7 @@ class StorageServiceRestartBrowserTest : public ContentBrowserTest {
   void WaitForAnyLocalStorageDataAsync(base::OnceClosure callback) {
     dom_storage()->GetLocalStorageControl()->GetUsage(base::BindOnce(
         [](StorageServiceRestartBrowserTest* test, base::OnceClosure callback,
-           std::vector<storage::mojom::StorageUsageInfoPtr> usage) {
+           std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage) {
           if (!usage.empty()) {
             std::move(callback).Run();
             return;

@@ -146,10 +146,10 @@ IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, DeleteSingleOrigin) {
   delete_run_loop.Run();
 
   // Ensure the origin has been deleted, but other origins are intact.
-  std::vector<storage::mojom::StorageUsageInfoPtr> usage_infos;
+  std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage_infos;
   base::RunLoop get_usage_run_loop;
   GetLocalStorageControl()->GetUsage(base::BindLambdaForTesting(
-      [&](std::vector<storage::mojom::StorageUsageInfoPtr> usage_infos_in) {
+      [&](std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage_infos_in) {
         usage_infos.swap(usage_infos_in);
         get_usage_run_loop.Quit();
       }));
@@ -160,11 +160,11 @@ IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, DeleteSingleOrigin) {
   ASSERT_EQ(2u, usage_infos.size());
   bool origin2_found = false, origin3_found = false;
   for (const auto& info : usage_infos) {
-    if (info->origin.Serialize() == kOrigin2) {
+    if (info->storage_key.origin().Serialize() == kOrigin2) {
       EXPECT_FALSE(origin2_found);
       origin2_found = true;
     } else {
-      ASSERT_EQ(info->origin.Serialize(), kOrigin3);
+      ASSERT_EQ(info->storage_key.origin().Serialize(), kOrigin3);
       EXPECT_FALSE(origin3_found);
       origin3_found = true;
     }

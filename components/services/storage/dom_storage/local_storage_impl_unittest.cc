@@ -44,8 +44,8 @@ std::string Uint8VectorToStdString(const std::vector<uint8_t>& v) {
 
 void GetStorageUsageCallback(
     const base::RepeatingClosure& callback,
-    std::vector<mojom::StorageUsageInfoPtr>* out_result,
-    std::vector<mojom::StorageUsageInfoPtr> result) {
+    std::vector<mojom::StorageUsageInfoV2Ptr>* out_result,
+    std::vector<mojom::StorageUsageInfoV2Ptr> result) {
   *out_result = std::move(result);
   callback.Run();
 }
@@ -202,9 +202,9 @@ class LocalStorageImplTest : public testing::Test {
     return contents;
   }
 
-  std::vector<mojom::StorageUsageInfoPtr> GetStorageUsageSync() {
+  std::vector<mojom::StorageUsageInfoV2Ptr> GetStorageUsageSync() {
     base::RunLoop run_loop;
-    std::vector<mojom::StorageUsageInfoPtr> result;
+    std::vector<mojom::StorageUsageInfoV2Ptr> result;
     context()->GetUsage(base::BindOnce(&GetStorageUsageCallback,
                                        run_loop.QuitClosure(), &result));
     run_loop.Run();
@@ -433,7 +433,7 @@ TEST_F(LocalStorageImplTest, VersionOnlyWrittenOnCommit) {
 }
 
 TEST_F(LocalStorageImplTest, GetStorageUsage_NoData) {
-  std::vector<mojom::StorageUsageInfoPtr> info = GetStorageUsageSync();
+  std::vector<mojom::StorageUsageInfoV2Ptr> info = GetStorageUsageSync();
   EXPECT_EQ(0u, info.size());
 }
 
@@ -464,12 +464,12 @@ TEST_F(LocalStorageImplTest, GetStorageUsage_Data) {
 
   base::Time after_write = base::Time::Now();
 
-  std::vector<mojom::StorageUsageInfoPtr> info = GetStorageUsageSync();
+  std::vector<mojom::StorageUsageInfoV2Ptr> info = GetStorageUsageSync();
   ASSERT_EQ(2u, info.size());
-  if (info[0]->origin == storage_key2.origin())
+  if (info[0]->storage_key == storage_key2)
     std::swap(info[0], info[1]);
-  EXPECT_EQ(storage_key1.origin(), info[0]->origin);
-  EXPECT_EQ(storage_key2.origin(), info[1]->origin);
+  EXPECT_EQ(storage_key1, info[0]->storage_key);
+  EXPECT_EQ(storage_key2, info[1]->storage_key);
   EXPECT_LE(before_write, info[0]->last_modified);
   EXPECT_LE(before_write, info[1]->last_modified);
   EXPECT_GE(after_write, info[0]->last_modified);

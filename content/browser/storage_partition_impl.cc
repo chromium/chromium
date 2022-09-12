@@ -335,7 +335,7 @@ void OnLocalStorageUsageInfo(
       base::BarrierClosure(infos.size(), std::move(done_callback));
   for (const StorageUsageInfo& info : infos) {
     if (storage_key_matcher &&
-        !storage_key_matcher.Run(blink::StorageKey(info.origin),
+        !storage_key_matcher.Run(info.storage_key,
                                  special_storage_policy.get())) {
       barrier.Run();
       continue;
@@ -343,10 +343,7 @@ void OnLocalStorageUsageInfo(
 
     if (info.last_modified >= delete_begin &&
         info.last_modified <= delete_end) {
-      dom_storage_context->DeleteLocalStorage(
-          // TODO(https://crbug.com/1199077): Pass the real StorageKey
-          // when StoragePartitionImpl is converted.
-          blink::StorageKey(info.origin), barrier);
+      dom_storage_context->DeleteLocalStorage(info.storage_key, barrier);
     } else {
       barrier.Run();
     }

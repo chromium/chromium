@@ -59,13 +59,11 @@ void AdaptSessionStorageUsageInfo(
 
 void AdaptStorageUsageInfo(
     DOMStorageContext::GetLocalStorageUsageCallback callback,
-    std::vector<storage::mojom::StorageUsageInfoPtr> usage) {
+    std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage) {
   std::vector<StorageUsageInfo> result;
   result.reserve(usage.size());
   for (const auto& info : usage) {
-    // TODO(https://crbug.com/1199077): Pass the real StorageKey when
-    // StorageUsageInfo is converted.
-    result.emplace_back(info->origin, info->total_size_bytes,
+    result.emplace_back(info->storage_key, info->total_size_bytes,
                         info->last_modified);
   }
   std::move(callback).Run(result);
@@ -397,15 +395,13 @@ void DOMStorageContextWrapper::PurgeMemory(PurgeOption purge_option) {
 }
 
 void DOMStorageContextWrapper::OnStartupUsageRetrieved(
-    std::vector<storage::mojom::StorageUsageInfoPtr> usage) {
+    std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage) {
   if (!storage_policy_observer_)
     return;
 
   std::vector<url::Origin> origins;
   for (const auto& info : usage) {
-    // TODO(https://crbug.com/1199077): Pass the real StorageKey when
-    // StorageUsageInfo is converted.
-    origins.emplace_back(std::move(info->origin));
+    origins.emplace_back(std::move(info->storage_key.origin()));
   }
   // TODO(https://crbug.com/1199077): Pass the real StorageKey when
   // StoragePolicyObserver is converted.
