@@ -149,6 +149,8 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   void GetExternalDisplayALSBrightness(
       DBusMethodCallback<bool> callback) override;
   void ChargeNowForAdaptiveCharging() override;
+  void GetChargeHistoryForAdaptiveCharging(
+      DBusMethodCallback<power_manager::ChargeHistoryState> callback) override;
 
   // Pops the first report from |video_activity_reports_|, returning whether the
   // activity was fullscreen or not. There must be at least one report.
@@ -196,6 +198,10 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   // Returns whether the screen brightness change was applied - this will
   // return false if there are no pending brightness changes.
   bool ApplyPendingScreenBrightnessChange();
+
+  // Set |charge_history_|
+  void SetChargeHistoryForAdaptiveCharging(
+      const power_manager::ChargeHistoryState& charge_history);
 
   // Returns time ticks from boot including time ticks spent during sleeping.
   base::TimeTicks GetCurrentBootTime();
@@ -335,6 +341,9 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   base::flat_map<std::string, int> peripheral_battery_refresh_levels_;
 
   bool external_display_als_brightness_enabled_ = false;
+
+  // Charge history returned by GetChargeHistoryForAdaptiveCharging()
+  power_manager::ChargeHistoryState charge_history_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

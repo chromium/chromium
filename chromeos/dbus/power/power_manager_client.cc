@@ -668,6 +668,16 @@ class PowerManagerClientImpl : public PowerManagerClient {
                                      base::DoNothing());
   }
 
+  void GetChargeHistoryForAdaptiveCharging(
+      DBusMethodCallback<power_manager::ChargeHistoryState> callback) override {
+    dbus::MethodCall method_call(power_manager::kPowerManagerInterface,
+                                 power_manager::kGetChargeHistoryMethod);
+    power_manager_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&PowerManagerClientImpl::OnGetChargeHistory,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
  private:
   // Returns true if the current thread is the origin thread.
   bool OnOriginThread() {
@@ -987,6 +997,38 @@ class PowerManagerClientImpl : public PowerManagerClient {
     std::move(callback).Run(
         SwitchStates{GetLidStateFromProtoEnum(proto.lid_state()),
                      GetTabletModeFromProtoEnum(proto.tablet_mode())});
+  }
+
+  void OnGetChargeHistory(
+      DBusMethodCallback<power_manager::ChargeHistoryState> callback,
+      dbus::Response* response) {
+    if (!response) {
+      POWER_LOG(ERROR) << "Error calling "
+                       << power_manager::kGetChargeHistoryMethod;
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+
+    // powerd returns an error response if the charge history is not
+    // initialized yet.
+    if (response->GetMessageType() ==
+        dbus::ErrorResponse::MessageType::MESSAGE_ERROR) {
+      POWER_LOG(ERROR) << "Cannot get charge history from "
+                       << power_manager::kGetChargeHistoryMethod
+                       << " because it's not initialized yet.";
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+
+    dbus::MessageReader reader(response);
+    power_manager::ChargeHistoryState proto;
+    if (!reader.PopArrayOfBytesAsProto(&proto)) {
+      POWER_LOG(ERROR) << "Error parsing response from "
+                       << power_manager::kGetChargeHistoryMethod;
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+    std::move(callback).Run(proto);
   }
 
   void OnGetInactivityDelays(

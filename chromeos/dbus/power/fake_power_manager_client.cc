@@ -423,6 +423,12 @@ void FakePowerManagerClient::GetExternalDisplayALSBrightness(
 // Dbus call without any callback, so there is not much to test for now.
 void FakePowerManagerClient::ChargeNowForAdaptiveCharging() {}
 
+void FakePowerManagerClient::GetChargeHistoryForAdaptiveCharging(
+    DBusMethodCallback<power_manager::ChargeHistoryState> callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), charge_history_));
+}
+
 bool FakePowerManagerClient::PopVideoActivityReport() {
   CHECK(!video_activity_reports_.empty());
   bool fullscreen = video_activity_reports_.front();
@@ -540,6 +546,11 @@ bool FakePowerManagerClient::ApplyPendingScreenBrightnessChange() {
   screen_brightness_percent_ = change.percent();
   SendScreenBrightnessChanged(change);
   return true;
+}
+
+void FakePowerManagerClient::SetChargeHistoryForAdaptiveCharging(
+    const power_manager::ChargeHistoryState& charge_history) {
+  charge_history_ = charge_history;
 }
 
 // Returns time ticks from boot including time ticks spent during sleeping.

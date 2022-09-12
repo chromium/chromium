@@ -17,6 +17,7 @@
 #include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/power_manager/charge_history_state.pb.h"
 #include "chromeos/dbus/power_manager/peripheral_battery_status.pb.h"
 #include "chromeos/dbus/power_manager/policy.pb.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
@@ -387,6 +388,10 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
   // when AdaptiveCharging is inactive will not cause any issue except extra
   // execution which does nothing).
   virtual void ChargeNowForAdaptiveCharging() = 0;
+
+  // Get charge history for Adaptive Charging.
+  virtual void GetChargeHistoryForAdaptiveCharging(
+      DBusMethodCallback<power_manager::ChargeHistoryState> callback) = 0;
 
   PowerManagerClient();
 
