@@ -314,7 +314,8 @@ TEST_F(FastPairSavedDevicesHandlerTest, GetSavedDevices) {
                                       1);
 }
 
-TEST_F(FastPairSavedDevicesHandlerTest, ReloadBeforePageLoadsIgnored) {
+// TODO(crbug.com/1362118): Fix flaky test.
+TEST_F(FastPairSavedDevicesHandlerTest, DISABLED_ReloadBeforePageLoadsIgnored) {
   histogram_tester().ExpectTotalCount(kSavedDevicesTotalUxLoadTimeMetricName,
                                       0);
   InitializeSavedDevicesList(
