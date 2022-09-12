@@ -31,14 +31,13 @@ class AttributionInternalsHandlerImpl
   AttributionInternalsHandlerImpl(
       WebUI* web_ui,
       mojo::PendingReceiver<attribution_internals::mojom::Handler> receiver);
-  AttributionInternalsHandlerImpl(
-      const AttributionInternalsHandlerImpl& other) = delete;
-  AttributionInternalsHandlerImpl& operator=(
-      const AttributionInternalsHandlerImpl& other) = delete;
-  AttributionInternalsHandlerImpl(AttributionInternalsHandlerImpl&& other) =
+  AttributionInternalsHandlerImpl(const AttributionInternalsHandlerImpl&) =
       delete;
   AttributionInternalsHandlerImpl& operator=(
-      AttributionInternalsHandlerImpl&& other) = delete;
+      const AttributionInternalsHandlerImpl&) = delete;
+  AttributionInternalsHandlerImpl(AttributionInternalsHandlerImpl&&) = delete;
+  AttributionInternalsHandlerImpl& operator=(
+      AttributionInternalsHandlerImpl&&) = delete;
   ~AttributionInternalsHandlerImpl() override;
 
   // mojom::AttributionInternalsHandler:

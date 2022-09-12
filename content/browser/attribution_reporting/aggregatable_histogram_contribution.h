@@ -15,14 +15,14 @@ namespace content {
 class CONTENT_EXPORT AggregatableHistogramContribution {
  public:
   AggregatableHistogramContribution(absl::uint128 key, uint32_t value);
-  AggregatableHistogramContribution(
-      const AggregatableHistogramContribution& other) = default;
-  AggregatableHistogramContribution& operator=(
-      const AggregatableHistogramContribution& other) = default;
-  AggregatableHistogramContribution(AggregatableHistogramContribution&& other) =
+  AggregatableHistogramContribution(const AggregatableHistogramContribution&) =
       default;
   AggregatableHistogramContribution& operator=(
-      AggregatableHistogramContribution&& other) = default;
+      const AggregatableHistogramContribution&) = default;
+  AggregatableHistogramContribution(AggregatableHistogramContribution&&) =
+      default;
+  AggregatableHistogramContribution& operator=(
+      AggregatableHistogramContribution&&) = default;
   ~AggregatableHistogramContribution() = default;
 
   absl::uint128 key() const { return key_; }

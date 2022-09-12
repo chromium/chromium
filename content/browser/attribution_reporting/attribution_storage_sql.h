@@ -59,10 +59,10 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
 
   AttributionStorageSql(const base::FilePath& path_to_database,
                         std::unique_ptr<AttributionStorageDelegate> delegate);
-  AttributionStorageSql(const AttributionStorageSql& other) = delete;
-  AttributionStorageSql& operator=(const AttributionStorageSql& other) = delete;
-  AttributionStorageSql(AttributionStorageSql&& other) = delete;
-  AttributionStorageSql& operator=(AttributionStorageSql&& other) = delete;
+  AttributionStorageSql(const AttributionStorageSql&) = delete;
+  AttributionStorageSql& operator=(const AttributionStorageSql&) = delete;
+  AttributionStorageSql(AttributionStorageSql&&) = delete;
+  AttributionStorageSql& operator=(AttributionStorageSql&&) = delete;
   ~AttributionStorageSql() override;
 
   void set_ignore_errors_for_testing(bool ignore_for_testing) {

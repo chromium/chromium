@@ -48,10 +48,10 @@ class CONTENT_EXPORT AttributionReport {
                    int64_t priority,
                    double randomized_trigger_rate,
                    Id id);
-    EventLevelData(const EventLevelData& other);
-    EventLevelData& operator=(const EventLevelData& other);
-    EventLevelData(EventLevelData&& other);
-    EventLevelData& operator=(EventLevelData&& other);
+    EventLevelData(const EventLevelData&);
+    EventLevelData& operator=(const EventLevelData&);
+    EventLevelData(EventLevelData&&);
+    EventLevelData& operator=(EventLevelData&&);
     ~EventLevelData();
 
     // Data provided at trigger time by the attribution destination. Depending
@@ -130,10 +130,10 @@ class CONTENT_EXPORT AttributionReport {
       base::Time report_time,
       base::GUID external_report_id,
       absl::variant<EventLevelData, AggregatableAttributionData> data);
-  AttributionReport(const AttributionReport& other);
-  AttributionReport& operator=(const AttributionReport& other);
-  AttributionReport(AttributionReport&& other);
-  AttributionReport& operator=(AttributionReport&& other);
+  AttributionReport(const AttributionReport&);
+  AttributionReport& operator=(const AttributionReport&);
+  AttributionReport(AttributionReport&&);
+  AttributionReport& operator=(AttributionReport&&);
   ~AttributionReport();
 
   // Returns the URL to which the report will be sent.

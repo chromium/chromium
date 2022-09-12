@@ -37,17 +37,16 @@ AttributionReport::EventLevelData::EventLevelData(
   DCHECK_LE(randomized_trigger_rate, 1);
 }
 
-AttributionReport::EventLevelData::EventLevelData(const EventLevelData& other) =
+AttributionReport::EventLevelData::EventLevelData(const EventLevelData&) =
     default;
 
 AttributionReport::EventLevelData& AttributionReport::EventLevelData::operator=(
-    const EventLevelData& other) = default;
+    const EventLevelData&) = default;
 
-AttributionReport::EventLevelData::EventLevelData(EventLevelData&& other) =
-    default;
+AttributionReport::EventLevelData::EventLevelData(EventLevelData&&) = default;
 
 AttributionReport::EventLevelData& AttributionReport::EventLevelData::operator=(
-    EventLevelData&& other) = default;
+    EventLevelData&&) = default;
 
 AttributionReport::EventLevelData::~EventLevelData() = default;
 
@@ -97,15 +96,14 @@ AttributionReport::AttributionReport(
   DCHECK(external_report_id_.is_valid());
 }
 
-AttributionReport::AttributionReport(const AttributionReport& other) = default;
+AttributionReport::AttributionReport(const AttributionReport&) = default;
 
-AttributionReport& AttributionReport::operator=(
-    const AttributionReport& other) = default;
-
-AttributionReport::AttributionReport(AttributionReport&& other) = default;
-
-AttributionReport& AttributionReport::operator=(AttributionReport&& other) =
+AttributionReport& AttributionReport::operator=(const AttributionReport&) =
     default;
+
+AttributionReport::AttributionReport(AttributionReport&&) = default;
+
+AttributionReport& AttributionReport::operator=(AttributionReport&&) = default;
 
 AttributionReport::~AttributionReport() = default;
 

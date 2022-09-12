@@ -17,11 +17,10 @@ AttributionInfo::~AttributionInfo() = default;
 
 AttributionInfo::AttributionInfo(const AttributionInfo&) = default;
 
-AttributionInfo::AttributionInfo(AttributionInfo&& other) = default;
+AttributionInfo::AttributionInfo(AttributionInfo&&) = default;
 
-AttributionInfo& AttributionInfo::operator=(const AttributionInfo& other) =
-    default;
+AttributionInfo& AttributionInfo::operator=(const AttributionInfo&) = default;
 
-AttributionInfo& AttributionInfo::operator=(AttributionInfo&& other) = default;
+AttributionInfo& AttributionInfo::operator=(AttributionInfo&&) = default;
 
 }  // namespace content

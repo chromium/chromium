@@ -39,14 +39,12 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
  public:
   explicit AttributionDataHostManagerImpl(
       AttributionManager* attribution_manager);
-  AttributionDataHostManagerImpl(const AttributionDataHostManager& other) =
-      delete;
+  AttributionDataHostManagerImpl(const AttributionDataHostManager&) = delete;
   AttributionDataHostManagerImpl& operator=(
-      const AttributionDataHostManagerImpl& other) = delete;
-  AttributionDataHostManagerImpl(AttributionDataHostManagerImpl&& other) =
+      const AttributionDataHostManagerImpl&) = delete;
+  AttributionDataHostManagerImpl(AttributionDataHostManagerImpl&&) = delete;
+  AttributionDataHostManagerImpl& operator=(AttributionDataHostManagerImpl&&) =
       delete;
-  AttributionDataHostManagerImpl& operator=(
-      AttributionDataHostManagerImpl&& other) = delete;
   ~AttributionDataHostManagerImpl() override;
 
   // AttributionDataHostManager:
