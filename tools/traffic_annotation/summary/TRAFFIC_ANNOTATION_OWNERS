@@ -7,7 +7,6 @@ nicolaso@chromium.org
 # cat tools/traffic_annotation/summary/TRAFFIC_ANNOTATION_OWNERS \
 #   | tail -n+10 | shuf | head -n 1
 #
-andzaytsev@google.com
 bsep@chromium.org
 dullweber@chromium.org
 eokoyomon@chromium.org
