@@ -123,6 +123,7 @@ extern const char kActionIdSendMultiple[];
 extern const char kActionIdWebDriveOfficeWord[];
 extern const char kActionIdWebDriveOfficeExcel[];
 extern const char kActionIdWebDriveOfficePowerPoint[];
+extern const char kActionIdOpenInOffice[];
 
 // Task types as explained in the comment above. Search for <task-type>.
 enum TaskType {

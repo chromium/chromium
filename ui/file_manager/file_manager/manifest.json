@@ -155,6 +155,16 @@
         "pptx"
       ]
     },
+    "open-in-office": {
+      "extensions": [
+        "doc",
+        "docx",
+        "xls",
+        "xlsx",
+        "ppt",
+        "pptx"
+      ]
+    },
     "install-linux-package": {
       "extensions": [
         "deb"

@@ -44,6 +44,8 @@
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
 #include "chrome/browser/ash/file_manager/url_util.h"
+#include "chrome/browser/ash/file_system_provider/mount_path_util.h"
+#include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/launch_util.h"
@@ -99,6 +101,7 @@ const char kActionIdWebDriveOfficeWord[] = "open-web-drive-office-word";
 const char kActionIdWebDriveOfficeExcel[] = "open-web-drive-office-excel";
 const char kActionIdWebDriveOfficePowerPoint[] =
     "open-web-drive-office-powerpoint";
+const char kActionIdOpenInOffice[] = "open-in-office";
 
 namespace {
 
@@ -159,6 +162,11 @@ bool IsWebDriveOfficeTask(const TaskDescriptor& task) {
       action_id == kActionIdWebDriveOfficeExcel ||
       action_id == kActionIdWebDriveOfficePowerPoint;
   return IsFilesAppId(task.app_id) && is_web_drive_office_action_id;
+}
+
+bool IsOpenInOfficeTask(const TaskDescriptor& task) {
+  const std::string action_id = ParseFilesAppActionId(task.action_id);
+  return IsFilesAppId(task.app_id) && action_id == kActionIdOpenInOffice;
 }
 
 // Returns true if path_mime_set contains a Google document.
@@ -336,6 +344,29 @@ void PostProcessFoundTasks(
     disabled_actions.emplace(kActionIdWebDriveOfficeExcel);
     disabled_actions.emplace(kActionIdWebDriveOfficePowerPoint);
   }
+  // Hack around the fact that App Service will only return one task for each
+  // app. We want both tasks to be available, so add the office task if the
+  // WebDrive task is available.
+  // TODO(petermarshall): Find a better way to enable both tasks.
+  if (ash::features::IsUploadOfficeToCloudEnabled()) {
+    auto it = std::find_if(
+        result_list->begin(), result_list->end(),
+        [](const FullTaskDescriptor& task) {
+          if (!IsFilesAppId(task.task_descriptor.app_id)) {
+            return false;
+          }
+          std::string action_id =
+              ParseFilesAppActionId(task.task_descriptor.action_id);
+          return action_id == kActionIdWebDriveOfficeWord ||
+                 action_id == kActionIdWebDriveOfficeExcel ||
+                 action_id == kActionIdWebDriveOfficePowerPoint;
+        });
+    if (it != result_list->end()) {
+      FullTaskDescriptor office_task(*it);
+      office_task.task_descriptor.action_id = kActionIdOpenInOffice;
+      result_list->push_back(office_task);
+    }
+  }
 
   if (!disabled_actions.empty())
     RemoveFileManagerInternalActions(disabled_actions, result_list.get());
@@ -434,6 +465,44 @@ bool ExecuteWebDriveOfficeTask(Profile* profile,
                               OfficeDriveErrors::DRIVEFS_INTERFACE);
     UMA_HISTOGRAM_ENUMERATION(kDriveTaskResultMetricName,
                               OfficeTaskResult::FALLBACK_QUICKOFFICE);
+    // TODO(petermarshall): Launch QuickOffice or other fallback and return
+    // true.
+    return false;
+  }
+}
+
+bool ODFSInstalled() {
+  return false;
+}
+
+bool FileIsOnODFS(const FileSystemURL& url, Profile* profile) {
+  return false;
+}
+
+bool ExecuteOpenInOfficeTask(Profile* profile,
+                             const TaskDescriptor& task,
+                             const std::vector<FileSystemURL>& file_urls) {
+  bool offline = drive::util::GetDriveConnectionStatus(profile) !=
+                 drive::util::DRIVE_CONNECTED;
+  if (offline) {
+    // TODO(petermarshall): Launch QuickOffice or other fallback and return
+    // true.
+    // TODO(petermarshall): UMAs.
+    return false;
+  }
+
+  if (ODFSInstalled()) {
+    if (FileIsOnODFS(file_urls.front(), profile)) {
+      // The file is already on ODFS: Open the URL.
+      // TODO(petermarshall): Open URL.
+      return true;
+    } else {
+      // We need to move the file to ODFS first. This flow will eventually open
+      // the file in the browser, too.
+      // TODO(petermarshall): Move to ODFS.
+      return true;
+    }
+  } else {
     // TODO(petermarshall): Launch QuickOffice or other fallback and return
     // true.
     return false;
@@ -681,6 +750,19 @@ bool ExecuteFileTask(Profile* profile,
 
   if (IsWebDriveOfficeTask(task)) {
     const bool started = ExecuteWebDriveOfficeTask(profile, task, file_urls);
+    if (done) {
+      if (started) {
+        std::move(done).Run(
+            extensions::api::file_manager_private::TASK_RESULT_OPENED, "");
+      } else {
+        std::move(done).Run(
+            extensions::api::file_manager_private::TASK_RESULT_FAILED, "");
+      }
+    }
+    return true;
+  }
+  if (IsOpenInOfficeTask(task)) {
+    const bool started = ExecuteOpenInOfficeTask(profile, task, file_urls);
     if (done) {
       if (started) {
         std::move(done).Run(
