@@ -83,12 +83,6 @@ tast_disabled_tests_from_chrome_all = [
 
   # https://crbug.com/1308288
   "policy.BasicAuthOverHTTPEnabled",
-  "policy.AllowCrossOriginAuthPrompt.lacros",
-  "policy.BlockThirdPartyCookies.lacros",
-  "policy.BookmarkBarEnabled.lacros",
-
-  # https://crbug.com/1310619
-  "policy.AutoOpenAllowedForURLs.lacros",
 
   # https://crbug.com/1307671
   "policy.SafeBrowsingProtectionLevel",
@@ -98,9 +92,6 @@ tast_disabled_tests_from_chrome_all = [
 
   # https://crbug.com/1307940
   "policy.URLCheck.blocklist",
-
-  # https://crbug.com/1309114
-  "policy.BlockThirdPartyCookies.lacros",
 
   # https://crbug.com/1309288
   "policy.AudioCaptureAllowed",
@@ -122,9 +113,6 @@ tast_disabled_tests_from_chrome_all = [
 
   # https://crbug.com/1309492
   "arc.DragDrop.chrome_to_android",
-
-  # https://crbug.com/1311081
-  "policy.AutoOpenAllowedForURLs.lacros",
 
   # https://crbug.com/1312121
   "policy.DefaultJavaScriptSetting",
