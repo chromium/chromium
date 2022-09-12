@@ -815,7 +815,7 @@ class WaylandDesktop(Desktop):
     Return a candidate wayland socket that is not already taken by another
     compositor.
     """
-    socket_num = 1
+    socket_num = starting_socket_num = 0
     full_sock_path = os.path.join(self.runtime_dir, "wayland-%s" % socket_num)
     while ((os.path.exists(full_sock_path)) and
             socket_num <= self.MAX_WAYLAND_SOCKET_NUM):
@@ -823,7 +823,8 @@ class WaylandDesktop(Desktop):
       full_sock_path = os.path.join(self.runtime_dir, "wayland-%s" % socket_num)
     if socket_num > self.MAX_WAYLAND_SOCKET_NUM:
       logging.error("Unable to find an unused wayland socket (searched between "
-                    "'wayland-1' to 'wayland-%s' under runtime directory",
+                    "'wayland-%s' to 'wayland-%s' under runtime directory",
+                    starting_socket_num,
                     self.MAX_WAYLAND_SOCKET_NUM, self.runtime_dir)
       return None
     return "wayland-%s" % socket_num
