@@ -15,6 +15,7 @@
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/wm/core/window_util.h"
 
@@ -100,6 +101,15 @@ aura::Window* GetDefaultParentForWindow(aura::Window* window,
   // restore data.
   if (window->GetProperty(app_restore::kParentToHiddenContainerKey))
     return target_root->GetChildById(kShellWindowId_UnparentedContainer);
+
+  // Use kShellWindowId_DragImageAndTooltipContainer to host security surfaces
+  // so that they are on top of other normal widgets (top-level windows, menus,
+  // bubbles etc). See http://crbug.com/1317904.
+  if (window->GetProperty(aura::client::kZOrderingKey) ==
+      ui::ZOrderLevel::kSecuritySurface) {
+    return target_root->GetChildById(
+        kShellWindowId_DragImageAndTooltipContainer);
+  }
 
   switch (window->GetType()) {
     case aura::client::WINDOW_TYPE_NORMAL:
