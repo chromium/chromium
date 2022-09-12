@@ -86,7 +86,13 @@ class EulaLoader {
         js: EULA_CLEAR_ANCHORS_CONTENT_SCRIPT,
       }]);
       webview.addEventListener('contentload', () => {
-        webview.executeScript(EULA_CLEAR_ANCHORS_CONTENT_SCRIPT);
+        webview.executeScript(EULA_CLEAR_ANCHORS_CONTENT_SCRIPT, () => {
+          if (chrome.runtime.lastError) {
+            console.error(
+                'Clear anchors script failed: ' +
+                chrome.runtime.lastError.message);
+          }
+        });
       });
     }
     webview.addEventListener('contentload', () => {

@@ -97,7 +97,13 @@ const OobeWebViewLoadResult = {
         js: CLEAR_ANCHORS_CONTENT_SCRIPT,
       }]);
       webview.addEventListener('contentload', () => {
-        webview.executeScript(CLEAR_ANCHORS_CONTENT_SCRIPT);
+        webview.executeScript(CLEAR_ANCHORS_CONTENT_SCRIPT, () => {
+          if (chrome.runtime.lastError) {
+            console.error(
+                'Clear anchors script failed: ' +
+                chrome.runtime.lastError.message);
+          }
+        });
       });
     }
     if (inject_css) {

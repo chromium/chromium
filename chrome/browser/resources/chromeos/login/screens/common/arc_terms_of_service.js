@@ -675,7 +675,12 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
       this.tosContent_ = termsView.src;
       var setParameters =
           `document.body.classList.add('large-view', 'offline-terms');`;
-      termsView.executeScript({code: setParameters});
+      termsView.executeScript({code: setParameters}, () => {
+        if (chrome.runtime.lastError) {
+          console.error(
+              'Set parameteters failed: ' + chrome.runtime.lastError.message);
+        }
+      });
       termsView.insertCSS({file: 'playstore.css'});
       this.setTermsViewContentLoadedState_();
     } else {
@@ -875,7 +880,13 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
       js: CLEAR_ANCHORS_CONTENT_SCRIPT,
     }]);
     webview.addEventListener('contentload', () => {
-      webview.executeScript(CLEAR_ANCHORS_CONTENT_SCRIPT);
+      webview.executeScript(CLEAR_ANCHORS_CONTENT_SCRIPT, () => {
+        if (chrome.runtime.lastError) {
+          console.error(
+              'Clear anchors script failed: ' +
+              chrome.runtime.lastError.message);
+        }
+      });
     });
   }
 }
