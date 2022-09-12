@@ -111,10 +111,10 @@
                 "optional": true,
                 "description": "Evaluate the expression in the context of the content script of the calling extension, provided that the content script is already injected into the inspected page. If not, the expression is not evaluated and the callback is invoked with the exception parameter set to an object that has the <code>isError</code> field set to true and the <code>code</code> field set to <code>E_NOTFOUND</code>."
               },
-              "contextSecurityOrigin": {
+              "scriptExecutionContext": {
                 "type": "string",
                 "optional": true,
-                "description": "Evaluate the expression in the context of a content script of an extension that matches the specified origin. If given, contextSecurityOrigin overrides the 'true' setting on userContentScriptContext."
+                "description": "Evaluate the expression in the context of a content script of an extension that matches the specified origin. If given, scriptExecutionContext overrides the 'true' setting on useContentScriptContext."
               }
             }
           },
