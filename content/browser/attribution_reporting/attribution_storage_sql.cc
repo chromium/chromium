@@ -2082,8 +2082,8 @@ bool AttributionStorageSql::CreateSchema() {
   // |source_id| uses AUTOINCREMENT to ensure that IDs aren't reused over
   // the lifetime of the DB.
   static constexpr char kImpressionTableSql[] =
-      "CREATE TABLE IF NOT EXISTS sources"
-      "(source_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+      "CREATE TABLE sources("
+      "source_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
       "source_event_id INTEGER NOT NULL,"
       "source_origin TEXT NOT NULL,"
       "destination_origin TEXT NOT NULL,"
@@ -2112,8 +2112,7 @@ bool AttributionStorageSql::CreateSchema() {
   // need to distinguish between active and inactive reports, so include
   // |event_level_active| and |aggregatable_active| in the index.
   static constexpr char kConversionDestinationIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS "
-      "sources_by_active_destination_site_reporting_origin "
+      "CREATE INDEX sources_by_active_destination_site_reporting_origin "
       "ON sources(event_level_active,aggregatable_active,"
       "destination_site,reporting_origin)";
   if (!db_->Execute(kConversionDestinationIndexSql))
@@ -2124,14 +2123,14 @@ bool AttributionStorageSql::CreateSchema() {
   // time. Both calls require only returning sources that expire after a
   // given time.
   static constexpr char kImpressionExpiryIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS sources_by_expiry_time "
+      "CREATE INDEX sources_by_expiry_time "
       "ON sources(expiry_time)";
   if (!db_->Execute(kImpressionExpiryIndexSql))
     return false;
 
   // Optimizes counting active sources by source origin.
   static constexpr char kImpressionOriginIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS active_sources_by_source_origin "
+      "CREATE INDEX active_sources_by_source_origin "
       "ON sources(source_origin)"
       "WHERE event_level_active=1 OR aggregatable_active=1";
   if (!db_->Execute(kImpressionOriginIndexSql))
@@ -2140,8 +2139,7 @@ bool AttributionStorageSql::CreateSchema() {
   // Optimizes `HasCapacityForUniqueDestinationLimitForPendingSource()`, which
   // only needs to examine active, unconverted sources.
   static constexpr char kImpressionSiteReportingOriginIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS "
-      "active_unattributed_sources_by_site_reporting_origin "
+      "CREATE INDEX active_unattributed_sources_by_site_reporting_origin "
       "ON sources(source_site,reporting_origin)"
       "WHERE event_level_active=1 AND num_attributions=0 AND "
       "aggregatable_active=1 AND aggregatable_budget_consumed=0";
@@ -2160,8 +2158,8 @@ bool AttributionStorageSql::CreateSchema() {
   // |id| uses AUTOINCREMENT to ensure that IDs aren't reused over
   // the lifetime of the DB.
   static constexpr char kConversionTableSql[] =
-      "CREATE TABLE IF NOT EXISTS event_level_reports"
-      "(report_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+      "CREATE TABLE event_level_reports("
+      "report_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
       "source_id INTEGER NOT NULL,"
       "trigger_data INTEGER NOT NULL,"
       "trigger_time INTEGER NOT NULL,"
@@ -2177,7 +2175,7 @@ bool AttributionStorageSql::CreateSchema() {
   // `GetAttributionReports()`. The reports with the earliest report times are
   // periodically fetched from storage to be sent.
   static constexpr char kConversionReportTimeIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS event_level_reports_by_report_time "
+      "CREATE INDEX event_level_reports_by_report_time "
       "ON event_level_reports(report_time)";
   if (!db_->Execute(kConversionReportTimeIndexSql))
     return false;
@@ -2187,7 +2185,7 @@ bool AttributionStorageSql::CreateSchema() {
   // corresponding pending reports during calls to
   // `DeleteExpiredSources()`.
   static constexpr char kConversionImpressionIdIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS event_level_reports_by_source_id "
+      "CREATE INDEX event_level_reports_by_source_id "
       "ON event_level_reports(source_id)";
   if (!db_->Execute(kConversionImpressionIdIndexSql))
     return false;
@@ -2196,8 +2194,8 @@ bool AttributionStorageSql::CreateSchema() {
     return false;
 
   static constexpr char kDedupKeyTableSql[] =
-      "CREATE TABLE IF NOT EXISTS dedup_keys"
-      "(source_id INTEGER NOT NULL,"
+      "CREATE TABLE dedup_keys("
+      "source_id INTEGER NOT NULL,"
       "dedup_key INTEGER NOT NULL,"
       "PRIMARY KEY(source_id,dedup_key))WITHOUT ROWID";
   if (!db_->Execute(kDedupKeyTableSql))
@@ -2224,7 +2222,7 @@ bool AttributionStorageSql::CreateSchema() {
   // `initial_report_time` is the report time initially scheduled by the
   // browser.
   static constexpr char kAggregatableReportMetadataTableSql[] =
-      "CREATE TABLE IF NOT EXISTS aggregatable_report_metadata("
+      "CREATE TABLE aggregatable_report_metadata("
       "aggregation_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
       "source_id INTEGER NOT NULL,"
       "trigger_time INTEGER NOT NULL,"
@@ -2239,7 +2237,7 @@ bool AttributionStorageSql::CreateSchema() {
   // Optimizes aggregatable report look up by source id during calls to
   // `DeleteExpiredSources()`, `ClearAggregatableAttributionsForSourceIds()`.
   static constexpr char kAggregateSourceIdIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS aggregate_source_id_idx "
+      "CREATE INDEX aggregate_source_id_idx "
       "ON aggregatable_report_metadata(source_id)";
   if (!db_->Execute(kAggregateSourceIdIndexSql))
     return false;
@@ -2248,7 +2246,7 @@ bool AttributionStorageSql::CreateSchema() {
   // data during calls to
   // `ClearAggregatableAttributionsForOriginsInRange()`.
   static constexpr char kAggregateTriggerTimeIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS aggregate_trigger_time_idx "
+      "CREATE INDEX aggregate_trigger_time_idx "
       "ON aggregatable_report_metadata(trigger_time)";
   if (!db_->Execute(kAggregateTriggerTimeIndexSql))
     return false;
@@ -2257,7 +2255,7 @@ bool AttributionStorageSql::CreateSchema() {
   // time range during calls to
   // `GetAggregatableAttributionReportsInternal()`.
   static constexpr char kAggregateReportTimeIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS aggregate_report_time_idx "
+      "CREATE INDEX aggregate_report_time_idx "
       "ON aggregatable_report_metadata(report_time)";
   if (!db_->Execute(kAggregateReportTimeIndexSql))
     return false;
@@ -2269,7 +2267,7 @@ bool AttributionStorageSql::CreateSchema() {
   // is a 128-bit unsigned integer.
   // `value` is the histogram value.
   static constexpr char kAggregatableContributionsTableSql[] =
-      "CREATE TABLE IF NOT EXISTS aggregatable_contributions("
+      "CREATE TABLE aggregatable_contributions("
       "contribution_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
       "aggregation_id INTEGER NOT NULL,"
       "key_high_bits INTEGER NOT NULL,"
@@ -2281,7 +2279,7 @@ bool AttributionStorageSql::CreateSchema() {
   // Optimizes contribution look up by aggregation id during calls to
   // `DeleteAggregatableContributions()`.
   static constexpr char kContributionAggregationIdIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS contribution_aggregation_id_idx "
+      "CREATE INDEX contribution_aggregation_id_idx "
       "ON aggregatable_contributions(aggregation_id)";
   if (!db_->Execute(kContributionAggregationIdIndexSql))
     return false;

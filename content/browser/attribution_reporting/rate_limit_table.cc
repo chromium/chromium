@@ -53,8 +53,8 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
   // `RateLimitTable::Scope::kSource` and contains the source's expiry time,
   // otherwise it is set to `base::Time()`.
   static constexpr char kRateLimitTableSql[] =
-      "CREATE TABLE IF NOT EXISTS rate_limits"
-      "(id INTEGER PRIMARY KEY NOT NULL,"
+      "CREATE TABLE rate_limits("
+      "id INTEGER PRIMARY KEY NOT NULL,"
       "scope INTEGER NOT NULL,"
       "source_id INTEGER NOT NULL,"
       "source_site TEXT NOT NULL,"
@@ -72,7 +72,7 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
 
   // Optimizes calls to `SourceAllowedForDestinationLimit()`.
   static constexpr char kRateLimitSourceSiteReportingOriginIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS rate_limit_source_site_reporting_origin_idx "
+      "CREATE INDEX rate_limit_source_site_reporting_origin_idx "
       "ON rate_limits(scope,source_site,reporting_origin)";
   if (!db->Execute(kRateLimitSourceSiteReportingOriginIndexSql))
     return false;
@@ -80,7 +80,7 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
   // Optimizes calls to `AllowedForReportingOriginLimit()` and
   // `AttributionAllowedForAttributionLimit()`.
   static constexpr char kRateLimitReportingOriginIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS rate_limit_reporting_origin_idx "
+      "CREATE INDEX rate_limit_reporting_origin_idx "
       "ON rate_limits(scope,destination_site,source_site)";
   if (!db->Execute(kRateLimitReportingOriginIndexSql))
     return false;
@@ -88,13 +88,13 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
   // Optimizes calls to |DeleteExpiredRateLimits()|, |ClearAllDataInRange()|,
   // |ClearDataForOriginsInRange()|.
   static constexpr char kRateLimitTimeIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS rate_limit_time_idx ON rate_limits(time)";
+      "CREATE INDEX rate_limit_time_idx ON rate_limits(time)";
   if (!db->Execute(kRateLimitTimeIndexSql))
     return false;
 
   // Optimizes calls to |ClearDataForSourceIds()|.
   static constexpr char kRateLimitImpressionIdIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS rate_limit_source_id_idx "
+      "CREATE INDEX rate_limit_source_id_idx "
       "ON rate_limits(source_id)";
   return db->Execute(kRateLimitImpressionIdIndexSql);
 }
