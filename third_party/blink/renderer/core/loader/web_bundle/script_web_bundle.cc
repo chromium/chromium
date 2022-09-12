@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/web_bundle/script_web_bundle.h"
 
+#include "base/unguessable_token.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -152,15 +153,18 @@ void ScriptWebBundle::OnWebBundleError(const String& message) const {
 // |bundle_loader_| can be null here, if the script element
 // is removed from the document and the microtask already
 // cleaned up the pointer to the loader.
-// TODO(crbug/1263783): Add a test for the divergent behaviour
-// between <link> and <script> API when the element is removed.
 void ScriptWebBundle::NotifyLoadingFinished() {
   if (!element_ || !bundle_loader_)
     return;
   if (bundle_loader_->HasLoaded()) {
     element_->DispatchLoadEvent();
   } else if (bundle_loader_->HasFailed()) {
+    // Save token because DispatchErrorEvent() may remove the script element.
+    base::UnguessableToken web_bundle_token = WebBundleToken();
     element_->DispatchErrorEvent();
+    if (ResourceFetcher* resource_fetcher = element_document_->Fetcher()) {
+      resource_fetcher->CancelWebBundleSubresourceLoadersFor(web_bundle_token);
+    }
   } else {
     NOTREACHED();
   }
