@@ -22,7 +22,7 @@
   std::map<int, std::unique_ptr<ScopedBlockSwizzler>> _map;
 }
 
-// Inserts and removes from |map|.
+// Inserts and removes from `map`.
 - (int)insertScopedBlockSwizzler:(std::unique_ptr<ScopedBlockSwizzler>)swizzler;
 - (void)removeScopedBlockSwizzler:(int)uniqueID;
 @end

@@ -17,8 +17,8 @@ namespace {
 
 std::atomic_int g_instance_count;
 
-// Uses |swizzler| to replace the implementation of |originalMethodName| in
-// |originalClassName| with that of |swizzledMethodName| of |swizzledClassName|.
+// Uses `swizzler` to replace the implementation of `originalMethodName` in
+// `originalClassName` with that of `swizzledMethodName` of `swizzledClassName`.
 // Asserts that the replacement was successful.
 void SwizzleMethod(GREYSwizzler* swizzler,
                    NSString* originalClassName,

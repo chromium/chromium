@@ -31,7 +31,7 @@ class TestMain {
   TestMain() {
     NSArray* arguments = NSProcessInfo.processInfo.arguments;
 
-    // Convert NSArray to the required input type of |base::CommandLine::Init|.
+    // Convert NSArray to the required input type of `base::CommandLine::Init`.
     int argc = arguments.count;
     const char* argv[argc];
     std::vector<std::string> argv_store;

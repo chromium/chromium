@@ -86,7 +86,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 
-// Returns a JSON-encoded string representing the given |pref|. If |pref| is
+// Returns a JSON-encoded string representing the given `pref`. If `pref` is
 // nullptr, returns a string representing a base::Value of type NONE.
 NSString* SerializedPref(const PrefService::Preference* pref) {
   base::Value none_value(base::Value::Type::NONE);
@@ -99,7 +99,7 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
   serializer.Serialize(*value);
   return base::SysUTF8ToNSString(serialized_value);
 }
-// Returns a JSON-encoded string representing the given |value|. If |value| is
+// Returns a JSON-encoded string representing the given `value`. If `value` is
 // nullptr, returns a string representing a base::Value of type NONE.
 NSString* SerializedValue(const base::Value* value) {
   base::Value none_value(base::Value::Type::NONE);
@@ -380,7 +380,7 @@ NSString* SerializedValue(const base::Value* value) {
   return nil;
 }
 
-// Returns screen position of the given |windowNumber|
+// Returns screen position of the given `windowNumber`
 + (CGRect)screenPositionOfScreenWithNumber:(int)windowNumber {
   NSArray<SceneState*>* connectedScenes =
       chrome_test_util::GetMainController().appState.connectedScenes;
@@ -1302,8 +1302,8 @@ int watchRunNumber = 0;
       });
 }
 
-// Looks for a button (based on traits) with the given |label|,
-// recursively in the given |views|.
+// Looks for a button (based on traits) with the given `label`,
+// recursively in the given `views`.
 + (void)findButtonsWithLabelsInViews:(NSArray<UIView*>*)views {
   if (!watchingButtons.count)
     return;
@@ -1314,7 +1314,7 @@ int watchRunNumber = 0;
   }
 }
 
-// Checks if the given |view| is a button (based on traits) with the
+// Checks if the given `view` is a button (based on traits) with the
 // given accessibility label.
 + (void)buttonsWithLabelsMatchView:(UIView*)view {
   if (![view respondsToSelector:@selector(accessibilityLabel)])

@@ -47,7 +47,7 @@ class EmbeddedTestServer;
 // Turns mock authentication back on.
 - (void)enableMockAuthentication;
 
-// Returns YES if the test method name extracted from |selector| matches the
+// Returns YES if the test method name extracted from `selector` matches the
 // name of the currently running test method.
 - (BOOL)isRunningTest:(SEL)selector;
 

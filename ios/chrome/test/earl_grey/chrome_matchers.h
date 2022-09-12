@@ -32,53 +32,53 @@ id<GREYMatcher> MatchInBlockerWindowWithNumber(int window_number,
                                                id<GREYMatcher> matcher);
 
 // Returns a matcher for element with accessibility label corresponding to
-// |message_id| and accessibility trait UIAccessibilityTraitButton.
+// `message_id` and accessibility trait UIAccessibilityTraitButton.
 id<GREYMatcher> ButtonWithAccessibilityLabelId(int message_id);
 
 // Returns a matcher for element with accessibility label corresponding to
-// |label| and accessibility trait UIAccessibilityTraitButton.
+// `label` and accessibility trait UIAccessibilityTraitButton.
 id<GREYMatcher> ButtonWithAccessibilityLabel(NSString* label);
 
-// Returns a matcher for element with an image corresponding to |image_id|.
+// Returns a matcher for element with an image corresponding to `image_id`.
 id<GREYMatcher> ImageViewWithImage(int image_id);
 
 // Returns a matcher for element with an image defined by its name in the main
 // bundle.
 id<GREYMatcher> ImageViewWithImageNamed(NSString* imageName);
 
-// Returns a matcher for element with an image corresponding to |image_id| and
+// Returns a matcher for element with an image corresponding to `image_id` and
 // accessibility trait UIAccessibilityTraitButton.
 id<GREYMatcher> ButtonWithImage(int image_id);
 
 // Returns a matcher for element with accessibility label corresponding to
-// |message_id| and accessibility trait UIAccessibilityTraitStaticText.
+// `message_id` and accessibility trait UIAccessibilityTraitStaticText.
 id<GREYMatcher> StaticTextWithAccessibilityLabelId(int message_id);
 
 // Returns a matcher for element with accessibility label corresponding to
-// |label| and accessibility trait UIAccessibilityTraitStaticText.
+// `label` and accessibility trait UIAccessibilityTraitStaticText.
 id<GREYMatcher> StaticTextWithAccessibilityLabel(NSString* label);
 
 // Returns a matcher for a text element (label, field, etc) whose text contains
-// |text| as a substring. (contrast with grey_text() which tests for a complete
+// `text` as a substring. (contrast with grey_text() which tests for a complete
 // string match).
 id<GREYMatcher> ContainsPartialText(NSString* text);
 
 // Returns a matcher for element with accessibility label corresponding to
-// |message_id| and accessibility trait UIAccessibilityTraitHeader.
+// `message_id` and accessibility trait UIAccessibilityTraitHeader.
 id<GREYMatcher> HeaderWithAccessibilityLabelId(int message_id);
 
 // Returns a matcher for element with accessibility label corresponding to
-// |label| and accessibility trait UIAccessibilityTraitHeader.
+// `label` and accessibility trait UIAccessibilityTraitHeader.
 id<GREYMatcher> HeaderWithAccessibilityLabel(NSString* label);
 
 // Returns a matcher for navigation bar title element with accessibility label
-// corresponding to |label_id|.
+// corresponding to `label_id`.
 id<GREYMatcher> NavigationBarTitleWithAccessibilityLabelId(int label_id);
 
-// Returns a matcher for text field of a cell with |message_id|.
+// Returns a matcher for text field of a cell with `message_id`.
 id<GREYMatcher> TextFieldForCellWithLabelId(int message_id);
 
-// Returns a matcher for icon view of a cell with |message_id|.
+// Returns a matcher for icon view of a cell with `message_id`.
 id<GREYMatcher> IconViewForCellWithLabelId(int message_id, NSString* icon_type);
 
 // Returns a matcher for the primary toolbar.
@@ -125,14 +125,14 @@ id<GREYMatcher> PageSecurityInfoButton();
 // Returns a matcher for the page security info indicator.
 id<GREYMatcher> PageSecurityInfoIndicator();
 
-// Returns a matcher for omnibox containing |text|. Performs an exact match of
+// Returns a matcher for omnibox containing `text`. Performs an exact match of
 // the omnibox contents.
 id<GREYMatcher> OmniboxText(const std::string& text);
 
-// Returns a matcher for |text| being a substring of the text in the omnibox.
+// Returns a matcher for `text` being a substring of the text in the omnibox.
 id<GREYMatcher> OmniboxContainingText(const std::string& text);
 
-// Returns a matcher for |text| being a substring of the text in the location
+// Returns a matcher for `text` being a substring of the text in the location
 // view.
 id<GREYMatcher> LocationViewContainingText(const std::string& text);
 
@@ -439,7 +439,7 @@ id<GREYMatcher> WebViewMatcher();
 id<GREYMatcher> WebStateScrollViewMatcher();
 
 // Returns a matcher for the current WebState's scroll view in the given
-// |window_number|.
+// `window_number`.
 id<GREYMatcher> WebStateScrollViewMatcherInWindowWithNumber(int window_number);
 
 // Returns a matcher for the Clear Browsing Data button in the History UI.
@@ -448,7 +448,7 @@ id<GREYMatcher> HistoryClearBrowsingDataButton();
 // Returns a matcher for "Open In..." button.
 id<GREYMatcher> OpenInButton();
 
-// Returns a matcher for the cell at |index| in the tab grid.
+// Returns a matcher for the cell at `index` in the tab grid.
 id<GREYMatcher> TabGridCellAtIndex(unsigned int index);
 
 // Returns a matcher for the button that closes the tab grid.
@@ -502,7 +502,7 @@ id<GREYMatcher> RegularTabGrid();
 // Returns a matcher for the incognito tab grid.
 id<GREYMatcher> IncognitoTabGrid();
 
-// Returns a matcher for the button to close the cell at |index| in the
+// Returns a matcher for the button to close the cell at `index` in the
 // tab grid.
 id<GREYMatcher> TabGridCloseButtonForCellAtIndex(unsigned int index);
 
@@ -532,7 +532,7 @@ id<GREYMatcher> AutofillSuggestionViewMatcher();
 // smaller than the scroll view bounds.
 id<GREYMatcher> ContentViewSmallerThanScrollView();
 
-// Returns a matcher for a history entry with |url| and |title|.
+// Returns a matcher for a history entry with `url` and `title`.
 id<GREYMatcher> HistoryEntry(const std::string& url, const std::string& title);
 
 // Returns a matcher to the add button in the toolbar in the settings view.

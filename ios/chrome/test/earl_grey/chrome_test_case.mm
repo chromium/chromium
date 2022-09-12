@@ -104,8 +104,8 @@ bool IsAppInAllowedCrashState() {
 }
 
 bool IsMockAuthenticationSetUp() {
-  // |SetUpMockAuthentication| enables the fake sync server so checking
-  // |isFakeSyncServerSetUp| here is sufficient to determine mock authentication
+  // `SetUpMockAuthentication` enables the fake sync server so checking
+  // `isFakeSyncServerSetUp` here is sufficient to determine mock authentication
   // state.
   return [ChromeEarlGreyAppInterface isFakeSyncServerSetUp];
 }
@@ -267,7 +267,7 @@ void ResetAuthentication() {
 #pragma mark - Public methods
 
 - (void)setTearDownHandler:(ProceduralBlock)tearDownHandler {
-  // Enforce that only one |_tearDownHandler| is set per test.
+  // Enforce that only one `_tearDownHandler` is set per test.
   DCHECK(!_tearDownHandler);
   _tearDownHandler = [tearDownHandler copy];
 }
@@ -411,8 +411,8 @@ void ResetAuthentication() {
   // Enforce the assumption that the tests are runing in portrait.
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
 
-  // Clear multiwindow root and any extra windows. Once in |setUpForTestCase|
-  // (in case of crashes) and on every |tearDown|.
+  // Clear multiwindow root and any extra windows. Once in `setUpForTestCase`
+  // (in case of crashes) and on every `tearDown`.
   [ChromeEarlGrey closeAllExtraWindows];
   [EarlGrey setRootMatcherForSubsequentInteractions:nil];
 }

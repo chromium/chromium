@@ -27,48 +27,48 @@
 // UI is shown in another window.
 + (id<GREYMatcher>)blockerWindowWithNumber:(int)windowNumber;
 
-// Matcher for element with accessibility label corresponding to |label| and
+// Matcher for element with accessibility label corresponding to `label` and
 // accessibility trait UIAccessibilityTraitButton.
 + (id<GREYMatcher>)buttonWithAccessibilityLabel:(NSString*)label;
 
-// Matcher for element with accessibility label corresponding to |messageID|
+// Matcher for element with accessibility label corresponding to `messageID`
 // and accessibility trait UIAccessibilityTraitButton.
 + (id<GREYMatcher>)buttonWithAccessibilityLabelID:(int)messageID;
 
-// Matcher for element with an image corresponding to |imageID|.
+// Matcher for element with an image corresponding to `imageID`.
 + (id<GREYMatcher>)imageViewWithImage:(int)imageID;
 
 // Matcher for element with an image defined by its name in the main bundle.
 + (id<GREYMatcher>)imageViewWithImageNamed:(NSString*)imageName;
 
-// Matcher for element with an image corresponding to |imageID| and
+// Matcher for element with an image corresponding to `imageID` and
 // accessibility trait UIAccessibilityTraitButton.
 + (id<GREYMatcher>)buttonWithImage:(int)imageID;
 
-// Matcher for element with accessibility label corresponding to |messageID|
+// Matcher for element with accessibility label corresponding to `messageID`
 // and accessibility trait UIAccessibilityTraitStaticText.
 + (id<GREYMatcher>)staticTextWithAccessibilityLabelID:(int)messageID;
 
-// Matcher for element with accessibility label corresponding to |label| and
+// Matcher for element with accessibility label corresponding to `label` and
 // accessibility trait UIAccessibilityTraitStaticText.
 + (id<GREYMatcher>)staticTextWithAccessibilityLabel:(NSString*)label;
 
-// Matcher for element with accessibility label corresponding to |messageID|
+// Matcher for element with accessibility label corresponding to `messageID`
 // and accessibility trait UIAccessibilityTraitHeader.
 + (id<GREYMatcher>)headerWithAccessibilityLabelID:(int)labelID;
 
 // Matcher for navigation bar title element with accessibility label
-// corresponding to |titleID|.
+// corresponding to `titleID`.
 + (id<GREYMatcher>)navigationBarTitleWithAccessibilityLabelID:(int)titleID;
 
-// Matcher for text field of a cell with |messageID|.
+// Matcher for text field of a cell with `messageID`.
 + (id<GREYMatcher>)textFieldForCellWithLabelID:(int)messageID;
 
-// Matcher for icon view of a cell with |messageID|.
+// Matcher for icon view of a cell with `messageID`.
 + (id<GREYMatcher>)iconViewForCellWithLabelID:(int)messageID
                                      iconType:(NSString*)iconType;
 
-// Matcher for element with accessibility label corresponding to |label| and
+// Matcher for element with accessibility label corresponding to `label` and
 // accessibility trait UIAccessibilityTraitHeader.
 + (id<GREYMatcher>)headerWithAccessibilityLabel:(NSString*)label;
 
@@ -111,14 +111,14 @@
 // Returns a matcher for the page security info indicator.
 + (id<GREYMatcher>)pageSecurityInfoIndicator;
 
-// Returns matcher for omnibox containing |text|. Performs an exact match of the
+// Returns matcher for omnibox containing `text`. Performs an exact match of the
 // omnibox contents.
 + (id<GREYMatcher>)omniboxText:(NSString*)text;
 
-// Returns matcher for |text| being a substring of the text in the omnibox.
+// Returns matcher for `text` being a substring of the text in the omnibox.
 + (id<GREYMatcher>)omniboxContainingText:(NSString*)text;
 
-// Returns matcher for |text| being a substring of the text in the location
+// Returns matcher for `text` being a substring of the text in the location
 // view.
 + (id<GREYMatcher>)locationViewContainingText:(NSString*)text;
 
@@ -423,7 +423,7 @@
 + (id<GREYMatcher>)webStateScrollViewMatcher;
 
 // Returns a matcher for the current WebState's scroll view in the given
-// |windowNumber|.
+// `windowNumber`.
 + (id<GREYMatcher>)webStateScrollViewMatcherInWindowWithNumber:
     (int)windowNumber;
 
@@ -433,7 +433,7 @@
 // Returns a matcher for "Open In..." button.
 + (id<GREYMatcher>)openInButton;
 
-// Returns the GREYMatcher for the cell at |index| in the tab grid.
+// Returns the GREYMatcher for the cell at `index` in the tab grid.
 + (id<GREYMatcher>)tabGridCellAtIndex:(unsigned int)index;
 
 // Returns the GREYMatcher for the button that closes the tab grid.
@@ -487,7 +487,7 @@
 // Returns the GREYMatcher for the incognito tab grid.
 + (id<GREYMatcher>)incognitoTabGrid;
 
-// Returns the GREYMatcher for the button to close the cell at |index| in the
+// Returns the GREYMatcher for the button to close the cell at `index` in the
 // tab grid.
 + (id<GREYMatcher>)tabGridCloseButtonForCellAtIndex:(unsigned int)index;
 
@@ -517,7 +517,7 @@
 // smaller than the scroll view bounds.
 + (id<GREYMatcher>)contentViewSmallerThanScrollView;
 
-// Returns a matcher for a history entry with |url| and |title|.
+// Returns a matcher for a history entry with `url` and `title`.
 + (id<GREYMatcher>)historyEntryForURL:(NSString*)URL title:(NSString*)title;
 
 // Returns a matcher to the add button in the toolbar of the settings view.

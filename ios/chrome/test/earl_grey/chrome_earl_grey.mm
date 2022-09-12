@@ -228,7 +228,7 @@ UIWindow* GetAnyKeyWindow() {
 
 - (void)selectTabAtIndex:(NSUInteger)index {
   [ChromeEarlGreyAppInterface selectTabAtIndex:index];
-  // Tab changes are initiated through |WebStateList|. Need to wait its
+  // Tab changes are initiated through `WebStateList`. Need to wait its
   // obeservers to complete UI changes at app.
   GREYWaitForAppToIdle(@"App failed to idle");
 }
@@ -239,7 +239,7 @@ UIWindow* GetAnyKeyWindow() {
 
 - (void)closeTabAtIndex:(NSUInteger)index {
   [ChromeEarlGreyAppInterface closeTabAtIndex:index];
-  // Tab changes are initiated through |WebStateList|. Need to wait its
+  // Tab changes are initiated through `WebStateList`. Need to wait its
   // obeservers to complete UI changes at app.
   GREYWaitForAppToIdle(@"App failed to idle");
 }
@@ -346,7 +346,7 @@ UIWindow* GetAnyKeyWindow() {
 
 - (void)closeAllTabs {
   [ChromeEarlGreyAppInterface closeAllTabs];
-  // Tab changes are initiated through |WebStateList|. Need to wait its
+  // Tab changes are initiated through `WebStateList`. Need to wait its
   // obeservers to complete UI changes at app.
   GREYWaitForAppToIdle(@"App failed to idle");
 }
@@ -937,7 +937,7 @@ UIWindow* GetAnyKeyWindow() {
   }
   [ChromeEarlGreyAppInterface closeAllExtraWindows];
 
-  // Tab changes are initiated through |WebStateList|. Need to wait its
+  // Tab changes are initiated through `WebStateList`. Need to wait its
   // observers to complete UI changes at app. Wait until window count is
   // officially 1 in the app, otherwise we may start a new test while the
   // removed window is still partly registered.

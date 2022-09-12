@@ -76,7 +76,7 @@
 
 namespace {
 
-// Identifer for cell at given |index| in the tab grid.
+// Identifer for cell at given `index` in the tab grid.
 NSString* IdentifierForCellAtIndex(unsigned int index) {
   return [NSString stringWithFormat:@"%@%u", kGridCellIdentifierPrefix, index];
 }
@@ -117,7 +117,7 @@ id<GREYMatcher> TableViewSwitchIsEnabled(BOOL is_enabled) {
                                               descriptionBlock:describe];
 }
 
-// Returns the subview of |parentView| corresponding to the
+// Returns the subview of `parentView` corresponding to the
 // ContentSuggestionsViewController. Returns nil if it is not in its subviews.
 UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
                                            UIView* parent_view) {
