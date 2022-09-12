@@ -252,10 +252,7 @@ class AutofillProfile : public AutofillDataModel {
 
   // Checks for non-empty setting-inaccessible fields and returns all that were
   // found.
-  // TODO(crbug.com/1297032): Remove |country_code| parameter and rely on the
-  // profile's country once every profile is complemented with a country.
-  ServerFieldTypeSet FindInaccessibleProfileValues(
-      const std::string& country_code) const;
+  ServerFieldTypeSet FindInaccessibleProfileValues() const;
 
   // Clears all specified |fields| from the profile.
   void ClearFields(const ServerFieldTypeSet& fields);

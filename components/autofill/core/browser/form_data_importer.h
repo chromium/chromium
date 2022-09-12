@@ -240,10 +240,9 @@ class FormDataImporter : public PersonalDataManagerObserver {
       const CreditCard* imported_credit_card,
       bool is_credit_card_upload_enabled);
 
-  // If `kAutofillComplementCountryCodeOnImport` is enabled and the `profile`'s
-  // country is not empty, complements it with `predicted_country_code`. To give
-  // users the opportunity to edit, this is only done with explicit save prompts
-  // enabled.
+  // If the `profile`'s country is not empty, complements it with
+  // `predicted_country_code`. To give users the opportunity to edit, this is
+  // only done with explicit save prompts enabled.
   // Returns true if the country was complemented.
   bool ComplementCountry(AutofillProfile& profile,
                          const std::string& predicted_country_code);
@@ -251,16 +250,13 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // Sets the `profile`'s PHONE_HOME_WHOLE_NUMBER to the `combined_phone`, if
   // possible. Deduces the region based on `predicted_country_code`.
   // Returns false if the provided `combined_phone` is invalid.
-  // TODO(crbug.com/1297032): Remove `predicted_country_code` when launched.
   bool SetPhoneNumber(AutofillProfile& profile,
                       PhoneNumber::PhoneCombineHelper& combined_phone,
                       const std::string& predicted_country_code);
 
-  // Clears all setting-inaccessible values from `profile`.
-  // TODO(crbug.com/1297032): Remove `predicted_country_code` when launched.
-  void RemoveInaccessibleProfileValues(
-      AutofillProfile& profile,
-      const std::string& predicted_country_code);
+  // Clears all setting-inaccessible values from `profile` if
+  // `kAutofillRemoveInaccessibleProfileValues` is enabled.
+  void RemoveInaccessibleProfileValues(AutofillProfile& profile);
 
   // Whether a dynamic change form is imported.
   bool from_dynamic_change_form_ = false;

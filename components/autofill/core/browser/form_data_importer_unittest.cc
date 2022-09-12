@@ -750,10 +750,6 @@ class FormDataImporterTest
 };
 
 TEST_P(FormDataImporterTest, ComplementCountry) {
-  base::test::ScopedFeatureList complement_country_feature;
-  complement_country_feature.InitAndEnableFeature(
-      features::kAutofillComplementCountryCodeOnImport);
-
   auto ImportWithCountry =
       [this](const std::string& form_country,
              const std::vector<AutofillProfile>& expected_profiles) {

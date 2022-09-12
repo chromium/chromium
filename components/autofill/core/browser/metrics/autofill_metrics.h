@@ -1603,7 +1603,6 @@ class AutofillMetrics {
 
   // Logs the user decision for importing a new profile with auto complemented
   // country.
-  // TODO(crbug.com/1297032): Cleanup when launched.
   static void LogNewProfileWithComplementedCountryImportDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision);
 
@@ -1617,7 +1616,6 @@ class AutofillMetrics {
   static void LogNewProfileEditedType(ServerFieldType edited_type);
 
   // Logs that the auto complemented country was edited in a save prompt.
-  // TODO(crbug.com/1297032): Cleanup when launched.
   static void LogNewProfileEditedComplementedCountry();
 
   // Logs the number of edited fields for an accepted profile save.
@@ -1629,7 +1627,6 @@ class AutofillMetrics {
 
   // Logs the user decision for updating an exiting profile with auto
   // complemented country.
-  // TODO(crbug.com/1297032): Cleanup when launched.
   static void LogProfileUpdateWithComplementedCountryImportDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision);
 
@@ -1650,7 +1647,6 @@ class AutofillMetrics {
   static void LogProfileUpdateEditedType(ServerFieldType edited_type);
 
   // Logs that the auto complemented country was edited in an update prompt.
-  // TODO(crbug.com/1297032): Cleanup when launched.
   static void LogProfileUpdateEditedComplementedCountry();
 
   // Logs the number of edited fields for an accepted profile update.

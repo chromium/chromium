@@ -215,14 +215,9 @@ CreditCard FormDataImporter::ExtractCreditCardFromForm(
 bool FormDataImporter::ComplementCountry(
     AutofillProfile& profile,
     const std::string& predicted_country_code) {
-  // TODO(crbug.com/1297032): Cleanup `kAutofillComplementCountryCodeOnImport`
-  // check when launched.
   bool should_complement_country =
       !profile.HasRawInfo(ADDRESS_HOME_COUNTRY) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillAddressProfileSavePrompt) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillComplementCountryCodeOnImport);
+      base::FeatureList::IsEnabled(features::kAutofillAddressProfileSavePrompt);
   return should_complement_country &&
          profile.SetInfoWithVerificationStatus(
              AutofillType(ADDRESS_HOME_COUNTRY),
@@ -275,10 +270,9 @@ bool FormDataImporter::SetPhoneNumber(
 }
 
 void FormDataImporter::RemoveInaccessibleProfileValues(
-    AutofillProfile& profile,
-    const std::string& predicted_country_code) {
+    AutofillProfile& profile) {
   const ServerFieldTypeSet inaccessible_fields =
-      profile.FindInaccessibleProfileValues(predicted_country_code);
+      profile.FindInaccessibleProfileValues();
   profile.ClearFields(inaccessible_fields);
   AutofillMetrics::LogRemovedSettingInaccessibleFields(
       !inaccessible_fields.empty());
@@ -627,7 +621,9 @@ bool FormDataImporter::ImportAddressProfileForSection(
       !has_invalid_country &&
       ComplementCountry(candidate_profile, predicted_country_code);
 
-  RemoveInaccessibleProfileValues(candidate_profile, predicted_country_code);
+  // This relies on the profile's country code and must be done strictly after
+  // `ComplementCountry()`.
+  RemoveInaccessibleProfileValues(candidate_profile);
 
   // Do not import a profile if any of the requirements is violated.
   // |IsMinimumAddress()| goes first to collect metrics.

@@ -1705,35 +1705,39 @@ TEST_P(AutofillProfileTest, HasStructuredData) {
 
 TEST_P(AutofillProfileTest, RemoveInaccessibleProfileValues) {
   // Returns true if at least one field was removed.
-  auto RemoveInaccessibleProfileValues = [](AutofillProfile& profile,
-                                            const std::string& country_code) {
+  auto RemoveInaccessibleProfileValues = [](AutofillProfile& profile) {
     const ServerFieldTypeSet inaccessible_fields =
-        profile.FindInaccessibleProfileValues(country_code);
+        profile.FindInaccessibleProfileValues();
     profile.ClearFields(inaccessible_fields);
     return !inaccessible_fields.empty();
   };
 
-  AutofillProfile profile1;
-  profile1.SetRawInfo(NAME_FIRST, u"Florian");
-  AutofillProfile profile2 = profile1;
+  AutofillProfile actual_profile;
+  actual_profile.SetRawInfo(NAME_FIRST, u"Florian");
 
   // State is uncommon in Germany and inaccessible in the settings. Expect it
   // to be removed.
-  profile1.SetRawInfo(ADDRESS_HOME_STATE, u"Bayern");
-  EXPECT_TRUE(RemoveInaccessibleProfileValues(profile1, "DE"));
-  EXPECT_EQ(profile1.Compare(profile2), 0);
+  actual_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
+  AutofillProfile expected_profile = actual_profile;
+  actual_profile.SetRawInfo(ADDRESS_HOME_STATE, u"Bayern");
+  EXPECT_TRUE(RemoveInaccessibleProfileValues(actual_profile));
+  EXPECT_EQ(actual_profile.Compare(expected_profile), 0);
 
   // There are no ZIP codes in Angola.
-  profile1.SetRawInfo(ADDRESS_HOME_ZIP, u"12345");
-  EXPECT_TRUE(RemoveInaccessibleProfileValues(profile1, "AO"));
-  EXPECT_EQ(profile1.Compare(profile2), 0);
+  actual_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"AO");
+  expected_profile = actual_profile;
+  actual_profile.SetRawInfo(ADDRESS_HOME_ZIP, u"12345");
+  EXPECT_TRUE(RemoveInaccessibleProfileValues(actual_profile));
+  EXPECT_EQ(actual_profile.Compare(expected_profile), 0);
 
+  // If no country is set, the US requirements are used.
   // The US uses both ZIP codes and states.
-  profile1.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
-  profile1.SetRawInfo(ADDRESS_HOME_ZIP, u"12345");
-  profile2 = profile1;
-  EXPECT_FALSE(RemoveInaccessibleProfileValues(profile1, "US"));
-  EXPECT_EQ(profile1.Compare(profile2), 0);
+  actual_profile.ClearFields({ADDRESS_HOME_COUNTRY});
+  actual_profile.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
+  actual_profile.SetRawInfo(ADDRESS_HOME_ZIP, u"12345");
+  expected_profile = actual_profile;
+  EXPECT_FALSE(RemoveInaccessibleProfileValues(actual_profile));
+  EXPECT_EQ(actual_profile.Compare(expected_profile), 0);
 }
 
 enum Expectation { GREATER, LESS, EQUAL };

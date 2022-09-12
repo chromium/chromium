@@ -62,7 +62,6 @@ enum class AutofillProfileImportType {
 // profile in FormDataImporter.
 struct ProfileImportMetadata {
   // Whether the profile's country was complemented automatically.
-  // TODO(crbug.com/1297032): Cleanup when launched.
   bool did_complement_country = false;
   // Whether the profile originally contained an invalid phone number, that was:
   // - removed due to |kAutofillRemoveInvalidPhoneNumberOnImport|

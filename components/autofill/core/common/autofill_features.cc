@@ -99,13 +99,6 @@ const base::FeatureParam<base::TimeDelta> kAutofillAssociateFormsTTL{
 const base::Feature kAutofillInferCountryCallingCode{
     "AutofillInferCountryCallingCode", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, whenever a form without a country field is parsed, the profile's
-// country code is complemented with the predicted country code, used to
-// determine the address requirements.
-// TODO(crbug.com/1297032): Cleanup when launched.
-const base::Feature kAutofillComplementCountryCodeOnImport{
-    "AutofillComplementCountryCodeOnImport", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // If enabled, label inference considers strings entirely made up of  '(', ')'
 // and '-' as valid labels.
 // TODO(crbug.com/1311937): Cleanup when launched.

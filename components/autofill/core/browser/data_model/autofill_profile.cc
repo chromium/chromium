@@ -1187,10 +1187,11 @@ bool AutofillProfile::HasStructuredData() {
   });
 }
 
-ServerFieldTypeSet AutofillProfile::FindInaccessibleProfileValues(
-    const std::string& country_code) const {
+ServerFieldTypeSet AutofillProfile::FindInaccessibleProfileValues() const {
   ServerFieldTypeSet inaccessible_fields;
-  AutofillCountry country(country_code);
+  const std::string stored_country =
+      base::UTF16ToUTF8(GetRawInfo(ADDRESS_HOME_COUNTRY));
+  AutofillCountry country(stored_country.empty() ? "US" : stored_country);
   // Consider only AddressFields which are invisible in the settings for some
   // countries.
   for (const AddressField& field_type :
