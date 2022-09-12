@@ -277,6 +277,7 @@ vs-chromium-project.txt
 /ppapi/native_client/ppapi_lib.xml
 /remoting/android/internal/
 /remoting/appengine/
+/remoting/host/installer/chrome-remote-desktop_*.buildinfo
 /remoting/host/installer/linux/internal/
 /remoting/ios/internal/
 /remoting/internal/
