@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -35,6 +36,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/text_elider.h"
 
 using base::UserMetricsAction;
@@ -154,6 +156,17 @@ ui::ImageModel BackForwardMenuModel::GetIconAt(size_t index) const {
     // this const_cast is the lesser evil.
     const_cast<BackForwardMenuModel*>(this)->FetchFavicon(entry);
   }
+
+  // Only apply theming to certain chrome:// favicons.
+  if (favicon::ShouldThemifyFaviconForEntry(entry)) {
+    const ui::ColorProvider* const cp = &GetWebContents()->GetColorProvider();
+    gfx::ImageSkia themed_favicon = favicon::ThemeFavicon(
+        fav_icon.image.AsImageSkia(), cp->GetColor(ui::kColorMenuIcon),
+        cp->GetColor(ui::kColorMenuItemBackgroundHighlighted),
+        cp->GetColor(ui::kColorMenuBackground));
+    return ui::ImageModel::FromImageSkia(themed_favicon);
+  }
+
   return ui::ImageModel::FromImage(fav_icon.image);
 }
 

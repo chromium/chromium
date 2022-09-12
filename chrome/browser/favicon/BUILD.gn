@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 source_set("favicon") {
   sources = [
     "chrome_favicon_client.cc",
@@ -32,4 +34,7 @@ source_set("favicon") {
     "//ui/native_theme",
     "//ui/resources",
   ]
+  if (is_chromeos_ash) {
+    deps += [ "//ash/constants:constants" ]
+  }
 }

@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/monogram_utils.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/platform_locale_settings.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/fallback_url_util.h"
@@ -28,6 +29,10 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/ui_resources.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace favicon {
 
@@ -162,22 +167,53 @@ void SaveFaviconEvenIfInIncognito(content::WebContents* contents) {
                                favicon_status.image);
 }
 
+bool ShouldThemifyFaviconForEntry(content::NavigationEntry* entry) {
+  const GURL& virtual_url = entry->GetVirtualURL();
+  const GURL& actual_url = entry->GetURL();
+
+  if (virtual_url.SchemeIs(content::kChromeUIScheme) &&
+      virtual_url.host_piece() != chrome::kChromeUIAppLauncherPageHost &&
+      virtual_url.host_piece() != chrome::kChromeUIHelpHost &&
+      virtual_url.host_piece() != chrome::kChromeUIVersionHost &&
+      virtual_url.host_piece() != chrome::kChromeUINetExportHost &&
+      virtual_url.host_piece() != chrome::kChromeUINewTabHost) {
+    return true;
+  }
+
+  // Themify favicon for the default NTP and incognito NTP.
+  if (actual_url.SchemeIs(content::kChromeUIScheme)) {
+    return actual_url.host_piece() == chrome::kChromeUINewTabPageHost ||
+           actual_url.host_piece() == chrome::kChromeUINewTabHost;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Themify menu favicon for CrOS Terminal home page.
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kTerminalMultiProfile) &&
+      actual_url.SchemeIs(content::kChromeUIUntrustedScheme)) {
+    return actual_url.host_piece() == chrome::kChromeUIUntrustedTerminalHost;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  return false;
+}
+
 gfx::ImageSkia ThemeFavicon(const gfx::ImageSkia& source,
                             SkColor alternate_color,
-                            SkColor active_tab_background,
-                            SkColor inactive_tab_background) {
+                            SkColor active_background,
+                            SkColor inactive_background) {
   // Choose between leaving the image as-is or masking with |alternate_color|.
   const SkColor original_color =
       color_utils::CalculateKMeanColorOfBitmap(*source.bitmap());
 
-  // Compute the minimum contrast of each color against foreground and
-  // background tabs (for active windows).
+  // Compute the minimum contrast of each color against active and inactive
+  // backgrounds.
   const float original_contrast = std::min(
-      color_utils::GetContrastRatio(original_color, active_tab_background),
-      color_utils::GetContrastRatio(original_color, inactive_tab_background));
+      color_utils::GetContrastRatio(original_color, active_background),
+      color_utils::GetContrastRatio(original_color, inactive_background));
   const float alternate_contrast = std::min(
-      color_utils::GetContrastRatio(alternate_color, active_tab_background),
-      color_utils::GetContrastRatio(alternate_color, inactive_tab_background));
+      color_utils::GetContrastRatio(alternate_color, active_background),
+      color_utils::GetContrastRatio(alternate_color, inactive_background));
 
   // Recolor the image if the original has low minimum contrast and recoloring
   // will improve it.

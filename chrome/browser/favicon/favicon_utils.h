@@ -42,13 +42,17 @@ gfx::Image GetDefaultFavicon();
 // database.
 void SaveFaviconEvenIfInIncognito(content::WebContents* contents);
 
+// Return true if the favicon for |entry| should be themified, based on both
+// its visible and actual URL.
+bool ShouldThemifyFaviconForEntry(content::NavigationEntry* entry);
+
 // Recolor favicon with |alternate_color| if contrast ratio is low between
-// source color and background |active_tab_background| or
-// |inactive_tab_background|.
+// source color and background |active_background| or
+// |inactive_background|.
 gfx::ImageSkia ThemeFavicon(const gfx::ImageSkia& source,
                             SkColor alternate_color,
-                            SkColor active_tab_background,
-                            SkColor inactive_tab_background);
+                            SkColor active_background,
+                            SkColor inactive_background);
 
 }  // namespace favicon
 
