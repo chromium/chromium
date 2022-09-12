@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/strings/stringize_macros.h"
 #include "build/branding_buildflags.h"
+#include "google_apis/buildflags.h"
 #include "google_apis/gaia/gaia_config.h"
 #include "google_apis/gaia/gaia_switches.h"
 
@@ -205,7 +206,7 @@ class APIKeyCache {
   }
 
   std::string api_key() const { return api_key_; }
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)
   void set_api_key(const std::string& api_key) { api_key_ = api_key; }
 #endif
   std::string api_key_non_stable() const { return api_key_non_stable_; }
@@ -369,7 +370,7 @@ std::string GetFresnelAPIKey() {
   return g_api_key_cache.Get().api_key_fresnel();
 }
 
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)
 void SetAPIKey(const std::string& api_key) {
   g_api_key_cache.Get().set_api_key(api_key);
 }

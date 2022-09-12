@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/features.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -57,6 +58,16 @@ if (use_official_google_api_keys == "") {
                                 root_build_dir) ],
                   "value")
   use_official_google_api_keys = check_internal_result == 1
+}
+
+declare_args() {
+  # Whether the SetAPIKey() method is defined.
+  support_external_google_api_key = is_ios || is_fuchsia
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "SUPPORT_EXTERNAL_GOOGLE_API_KEY=$support_external_google_api_key" ]
 }
 
 config("key_defines") {
@@ -131,6 +142,8 @@ template("google_apis_tmpl") {
     ]
 
     configs += [ ":key_defines" ]
+
+    public_deps = [ ":buildflags" ]
 
     deps = [
       ":oauth2_mint_token_consent_result_proto",

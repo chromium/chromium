@@ -10,6 +10,7 @@
 #include <string>
 
 #include "build/build_config.h"
+#include "google_apis/buildflags.h"
 
 // These functions enable you to retrieve keys to use for Google APIs
 // such as Translate and Safe Browsing.
@@ -89,7 +90,7 @@ std::string GetReadAloudAPIKey();
 // Retrieves the Fresnel API Key.
 std::string GetFresnelAPIKey();
 
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)
 // Sets the API key. This should be called as early as possible before this
 // API key is even accessed. It must be called before GetAPIKey.
 // TODO(https://crbug.com/1166007): Enforce this is called before GetAPIKey.

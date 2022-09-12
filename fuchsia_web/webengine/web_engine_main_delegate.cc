@@ -22,6 +22,7 @@
 #include "fuchsia_web/webengine/common/web_engine_content_client.h"
 #include "fuchsia_web/webengine/renderer/web_engine_content_renderer_client.h"
 #include "fuchsia_web/webengine/switches.h"
+#include "google_apis/buildflags.h"
 #include "google_apis/google_api_keys.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
@@ -80,8 +81,12 @@ absl::optional<int> WebEngineMainDelegate::BasicStartupComplete() {
   }
 
   if (command_line->HasSwitch(switches::kGoogleApiKey)) {
+#if BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)
     google_apis::SetAPIKey(
         command_line->GetSwitchValueASCII(switches::kGoogleApiKey));
+#else
+    LOG(WARNING) << "Ignored " << switches::kGoogleApiKey;
+#endif
   }
 
   SetCorsExemptHeaders(base::SplitString(
