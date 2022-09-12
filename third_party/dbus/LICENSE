@@ -1,0 +1,23 @@
+dbus is licensed to you under your choice of the Academic Free
+License version 2.1, or the GNU General Public License version 2
+(or, at your option any later version).
+The full text of these licenses can be found in LICENSES/AFL-2.1.txt
+and LICENSES/GPL-2-or-later.txt.
+
+Some source files are under more permissive BSD-/MIT-style licenses
+that are compatible with the AFL and GPL.
+
+When contributing new code, our preferred license for new code is the
+version of the MIT/X11 license used by the Expat library, referred to
+as "MIT" by SPDX, which can be found in LICENSES/MIT.txt.
+
+Some of the standalone binaries are under the GPL only; in particular,
+but not limited to, tools/dbus-cleanup-sockets.c and test/decode-gcov.c.
+
+Each source code file is marked with the proper copyright information -
+if you find a file that isn't marked please bring it to our attention.
+
+Some files contain a SPDX-License-Identifier marker. These markers
+indicate the license of that file, consistent with the SPDX and REUSE
+specifications: see <https://reuse.software/>. dbus is not yet fully
+REUSE-compliant, and not all files carry these markers.
