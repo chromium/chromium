@@ -166,6 +166,17 @@ class CONTENT_EXPORT BrowserAccessibilityManager
 
   static ui::AXTreeUpdate GetEmptyDocument();
 
+  enum RetargetEventType {
+    RetargetEventTypeGenerated = 0,
+    RetargetEventTypeBlinkGeneral,
+    RetargetEventTypeBlinkHover,
+  };
+
+  // Return |node| by default, but some platforms want to update the target node
+  // based on the event type.
+  virtual BrowserAccessibility* RetargetForEvents(BrowserAccessibility* node,
+                                                  RetargetEventType type) const;
+
   // Subclasses override these methods to send native event notifications.
   virtual void FireFocusEvent(BrowserAccessibility* node);
   virtual void FireBlinkEvent(ax::mojom::Event event_type,

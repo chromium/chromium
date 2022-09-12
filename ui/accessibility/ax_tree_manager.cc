@@ -69,11 +69,6 @@ AXTreeManager::AXTreeManager(const AXTreeID& tree_id,
     tree_observation_.Observe(ax_tree());
 }
 
-AXNode* AXTreeManager::RetargetForEvents(AXNode* node,
-                                         RetargetEventType type) const {
-  return node;
-}
-
 void AXTreeManager::Initialize(const ui::AXTreeUpdate& initial_tree) {
   if (!ax_tree()->Unserialize(initial_tree)) {
     LOG(FATAL) << "No recovery is possible if the initial tree is broken: "
