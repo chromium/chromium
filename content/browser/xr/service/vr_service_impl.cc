@@ -50,21 +50,30 @@ device::mojom::XRRuntimeSessionOptionsPtr GetRuntimeOptions(
 }
 
 // Helper, returns collection of permissions required for XR session creation
-// for session with mode set to |mode|, and with enabled features listed in
-// |required_features| and |optional_features|. The order in the result matters,
-// there will be no duplicates in the result.
-std::vector<blink::PermissionType> GetRequiredPermissions(
-    device::mojom::XRSessionMode mode,
-    const std::unordered_set<device::mojom::XRSessionFeature>&
-        required_features,
-    const std::unordered_set<device::mojom::XRSessionFeature>&
-        optional_features) {
+// for session with mode set to |mode|. The order in the result does not matter
+// as the permissions API does not honor it.
+std::vector<blink::PermissionType> GetRequiredPermissionsForMode(
+    device::mojom::XRSessionMode mode) {
   std::vector<blink::PermissionType> permissions;
 
   auto mode_permission = content::XrPermissionResults::GetPermissionFor(mode);
   if (mode_permission) {
     permissions.push_back(*mode_permission);
   }
+
+  return permissions;
+}
+
+// Helper, returns collection of permissions required for XR session creation
+// for session with enabled features listed in |required_features| and
+// |optional_features|. The order in the result does not matter as the
+// permissions API does not honor it.
+std::vector<blink::PermissionType> GetRequiredPermissionsForFeatures(
+    const std::unordered_set<device::mojom::XRSessionFeature>&
+        required_features,
+    const std::unordered_set<device::mojom::XRSessionFeature>&
+        optional_features) {
+  std::vector<blink::PermissionType> permissions;
 
   for (const auto& required_feature : required_features) {
     auto feature_permission =
@@ -83,19 +92,6 @@ std::vector<blink::PermissionType> GetRequiredPermissions(
       permissions.push_back(*feature_permission);
     }
   }
-
-// If both AR and VIDEO_CAPTURE are present, AR must be before VIDEO_CAPTURE.
-#if DCHECK_IS_ON()
-  {
-    auto ar_it = base::ranges::find(permissions, blink::PermissionType::AR);
-    auto camera_it =
-        base::ranges::find(permissions, blink::PermissionType::VIDEO_CAPTURE);
-
-    if (ar_it != permissions.end() && camera_it != permissions.end()) {
-      DCHECK_GT(std::distance(ar_it, camera_it), 0);
-    }
-  }
-#endif
 
   return permissions;
 }
@@ -526,19 +522,18 @@ void VRServiceImpl::GetPermissionStatus(SessionRequestData request,
   DCHECK(permission_controller);
 
   // Need to calculate the permissions before the call below, as otherwise
-  // std::move nulls options out before GetRequiredPermissions runs.
-  const std::vector<blink::PermissionType> permissions =
-      GetRequiredPermissions(request.options->mode, request.required_features,
-                             request.optional_features);
+  // std::move nulls options out before `GetRequiredPermissions()` runs.
+  const std::vector<blink::PermissionType> permissions_for_mode =
+      GetRequiredPermissionsForMode(request.options->mode);
 
   permission_controller->RequestPermissionsFromCurrentDocument(
-      permissions, render_frame_host_, true,
-      base::BindOnce(&VRServiceImpl::OnPermissionResults,
+      permissions_for_mode, render_frame_host_, true,
+      base::BindOnce(&VRServiceImpl::OnPermissionResultsForMode,
                      weak_ptr_factory_.GetWeakPtr(), std::move(request),
-                     permissions));
+                     permissions_for_mode));
 }
 
-void VRServiceImpl::OnPermissionResults(
+void VRServiceImpl::OnPermissionResultsForMode(
     SessionRequestData request,
     const std::vector<blink::PermissionType>& permissions,
     const std::vector<blink::mojom::PermissionStatus>& permission_statuses) {
@@ -561,41 +556,60 @@ void VRServiceImpl::OnPermissionResults(
       permission_results.HasPermissionsFor(request.options->mode);
   DVLOG(2) << __func__ << ": is_consent_granted=" << is_consent_granted;
 
-  if (is_consent_granted) {
-    for (auto& required_feature : request.required_features) {
-      if (!permission_results.HasPermissionsFor(required_feature)) {
-        DVLOG(1) << __func__ << ": required_feature=" << required_feature
-                 << " lacks neccessary permissions";
-        is_consent_granted = false;
-        break;
-      }
-    }
-  }
-
-  if (is_consent_granted) {
-    std::unordered_set<device::mojom::XRSessionFeature>
-        granted_optional_features;
-
-    for (auto& optional_feature : request.optional_features) {
-      if (permission_results.HasPermissionsFor(optional_feature)) {
-        granted_optional_features.insert(optional_feature);
-      } else {
-        DVLOG(2) << __func__ << ": optional_feature=" << optional_feature
-                 << " lacks neccessary permissions";
-      }
-    }
-
-    // Replace optional features on the request with the ones that have been
-    // granted by the user:
-    std::swap(request.optional_features, granted_optional_features);
-  }
-
   if (!is_consent_granted) {
     std::move(request.callback)
         .Run(device::mojom::RequestSessionResult::NewFailureReason(
             device::mojom::RequestSessionError::USER_DENIED_CONSENT));
     return;
   }
+
+  PermissionController* permission_controller =
+      GetWebContents()->GetBrowserContext()->GetPermissionController();
+  DCHECK(permission_controller);
+
+  const std::vector<blink::PermissionType> permissions_for_features =
+      GetRequiredPermissionsForFeatures(request.required_features,
+                                        request.optional_features);
+
+  permission_controller->RequestPermissionsFromCurrentDocument(
+      permissions_for_features, render_frame_host_, true,
+      base::BindOnce(&VRServiceImpl::OnPermissionResultsForFeatures,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(request),
+                     permissions_for_features));
+}
+
+void VRServiceImpl::OnPermissionResultsForFeatures(
+    SessionRequestData request,
+    const std::vector<blink::PermissionType>& permissions,
+    const std::vector<blink::mojom::PermissionStatus>& permission_statuses) {
+  const XrPermissionResults permission_results(permissions,
+                                               permission_statuses);
+
+  for (auto& required_feature : request.required_features) {
+    if (!permission_results.HasPermissionsFor(required_feature)) {
+      DVLOG(1) << __func__ << ": required_feature=" << required_feature
+               << " lacks neccessary permissions";
+      std::move(request.callback)
+          .Run(device::mojom::RequestSessionResult::NewFailureReason(
+              device::mojom::RequestSessionError::USER_DENIED_CONSENT));
+      return;
+    }
+  }
+
+  std::unordered_set<device::mojom::XRSessionFeature> granted_optional_features;
+
+  for (auto& optional_feature : request.optional_features) {
+    if (permission_results.HasPermissionsFor(optional_feature)) {
+      granted_optional_features.insert(optional_feature);
+    } else {
+      DVLOG(2) << __func__ << ": optional_feature=" << optional_feature
+               << " lacks neccessary permissions";
+    }
+  }
+
+  // Replace optional features on the request with the ones that have been
+  // granted by the user:
+  std::swap(request.optional_features, granted_optional_features);
 
   // Re-check for another client instance after a potential user consent.
   if (runtime_manager_->IsOtherClientPresenting(this)) {
