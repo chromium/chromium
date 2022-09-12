@@ -98167,6 +98167,7 @@ Full version information for the fingerprint enum values:
   <int value="2" label="Response Download Error"/>
   <int value="3" label="Response Parsing Error"/>
   <int value="4" label="Reboot Pending"/>
+  <int value="5" label="Update Deferred"/>
 </enum>
 
 <enum name="UpdateEngineChromeOsVersionPrefix">

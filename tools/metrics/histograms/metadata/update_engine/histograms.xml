@@ -288,9 +288,9 @@ chromium-metrics-reviews@google.com.
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
-    The response from Omaha. Possible values include &quot;No update
-    available&quot;, &quot;Update available&quot;, &quot;Download error&quot;,
-    &quot;Response parsing error&quot;, and &quot;Reboot pending&quot;.
+    The update check results from update_engine. Possible values are in sync
+    with the enum class CheckResult in the ChromeOS repo:
+    src/aosp/system/update_engine/common/metrics_constants.h
 
     This is reported on every update check.
 
