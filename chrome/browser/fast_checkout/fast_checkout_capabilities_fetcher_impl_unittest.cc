@@ -24,6 +24,8 @@
 namespace {
 
 using autofill_assistant::AutofillAssistant;
+using base::Bucket;
+using base::BucketsAre;
 using BundleCapabilitiesInformation =
     autofill_assistant::AutofillAssistant::BundleCapabilitiesInformation;
 using CapabilitiesInfo =
@@ -214,11 +216,9 @@ TEST_F(FastCheckoutCapabilitiesFetcherImplTest,
   EXPECT_TRUE(fetcher()->IsTriggerFormSupported(origin1, kFormSignature1));
 
   // All network metrics were recorded.
-  histogram_tester().ExpectTotalCount(kUmaKeyHttpCode, 2u);
-  histogram_tester().ExpectBucketCount(
-      kUmaKeyHttpCode, net::HttpStatusCode::HTTP_REQUEST_TIMEOUT, 1u);
-  histogram_tester().ExpectBucketCount(kUmaKeyHttpCode,
-                                       net::HttpStatusCode::HTTP_OK, 1u);
+  EXPECT_THAT(histogram_tester().GetAllSamples(kUmaKeyHttpCode),
+              BucketsAre(Bucket(net::HttpStatusCode::HTTP_REQUEST_TIMEOUT, 1u),
+                         Bucket(net::HttpStatusCode::HTTP_OK, 1u)));
   histogram_tester().ExpectTotalCount(kUmaKeyResponseTime, 2u);
 }
 
@@ -332,14 +332,11 @@ TEST_F(FastCheckoutCapabilitiesFetcherImplTest,
 
   // While the fetch is still ongoing, there is no availability yet.
   EXPECT_FALSE(fetcher()->IsTriggerFormSupported(origin1, kFormSignature1));
-  histogram_tester().ExpectTotalCount(kUmaKeyCacheStateIsTriggerFormSupported,
-                                      3u);
-  histogram_tester().ExpectBucketCount(
-      kUmaKeyCacheStateIsTriggerFormSupported,
-      CacheStateForIsTriggerFormSupported::kNeverFetched, 2u);
-  histogram_tester().ExpectBucketCount(
-      kUmaKeyCacheStateIsTriggerFormSupported,
-      CacheStateForIsTriggerFormSupported::kFetchOngoing, 1u);
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kUmaKeyCacheStateIsTriggerFormSupported),
+      BucketsAre(
+          Bucket(CacheStateForIsTriggerFormSupported::kNeverFetched, 2u),
+          Bucket(CacheStateForIsTriggerFormSupported::kFetchOngoing, 1u)));
 
   EXPECT_CALL(callback1, Run(true));
   BundleCapabilitiesInformation capabilities;
