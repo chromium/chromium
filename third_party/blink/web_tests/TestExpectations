@@ -121,6 +121,13 @@ crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/lo
 crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-set-src-not-in-document.html [ Failure Pass ]
 crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-set-src.html [ Failure Pass ]
 
+# Some issue with tampered nodes in a list
+crbug.com/1357443 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-1.html [ Skip Timeout ]
+crbug.com/1357443 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-2.html [ Skip Timeout ]
+crbug.com/1357443 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-3.html [ Skip Timeout ]
+crbug.com/1357443 [ Mac ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-3.html [ Failure Timeout ]
+crbug.com/1357443 [ Win ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-3.html [ Failure Timeout ]
+
 # ====== Synchronous, budgeted HTML parser tests to here ========================
 
 # ====== Timed HTML parser budget tests from here ========================
@@ -489,6 +496,9 @@ crbug.com/1295445 virtual/scalefactor200/external/wpt/css/filter-effects/filter-
 crbug.com/1295445 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-005.html [ Failure ]
 crbug.com/1295445 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-006.html [ Failure ]
 crbug.com/1295445 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-007.html [ Failure ]
+
+crbug.com/1362524 external/wpt/css/filter-effects/filter-invalid.html [ Failure ]
+crbug.com/1362524 virtual/scalefactor200/external/wpt/css/filter-effects/filter-invalid.html [ Failure ]
 
 # Could be addressed with fuzzy diff.
 crbug.com/910537 external/wpt/svg/painting/marker-006.svg [ Failure ]
@@ -1361,6 +1371,8 @@ crbug.com/240765 external/wpt/css/css-flexbox/intrinsic-size/col-wrap-007.html [
 crbug.com/240765 external/wpt/css/css-flexbox/intrinsic-size/col-wrap-008.html [ Failure ]
 crbug.com/240765 external/wpt/css/css-flexbox/intrinsic-size/col-wrap-009.html [ Failure ]
 crbug.com/240765 external/wpt/css/css-flexbox/intrinsic-size/row-wrap-001.html [ Failure ]
+crbug.com/240765 external/wpt/css/css-flexbox/flex-item-transferred-sizes-padding-border-sizing.html [ Failure ]
+crbug.com/240765 external/wpt/css/css-flexbox/flex-item-transferred-sizes-padding-content-sizing.html [ Failure ]
 
 # These require css-align-3 positional keywords that Blink doesn't yet support for flexbox.
 crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-safe-overflow-position-001.html [ Failure ]
@@ -1453,6 +1465,12 @@ crbug.com/1067242 [ Mac10.13 ] external/wpt/css/css-text-decor/text-decoration-t
 crbug.com/1140324 [ Win11 ] external/wpt/css/css-text-decor/text-underline-offset-variable.html [ Failure ]
 crbug.com/1140324 [ Win10.20h2 ] external/wpt/css/css-text-decor/text-underline-offset-variable.html [ Failure ]
 crbug.com/1143005 [ Win10.20h2 ] media/track/track-cue-rendering-vertical.html [ Failure ]
+
+# Skip spaces at the start and end of a line
+crbug.com/1360067 external/wpt/css/css-text-decor/text-decoration-skip-spaces-001.html [ Failure ]
+crbug.com/1360067 external/wpt/css/css-text-decor/text-decoration-skip-spaces-002.html [ Failure ]
+crbug.com/1360067 external/wpt/css/css-text-decor/text-decoration-skip-spaces-003.html [ Failure ]
+crbug.com/1360067 external/wpt/css/css-text-decor/text-decoration-skip-spaces-004.html [ Failure ]
 
 # Tentative mansonry tests
 crbug.com/1076027 external/wpt/css/css-grid/masonry/* [ Skip ]
@@ -1722,6 +1740,12 @@ crbug.com/6606 [ Win ] external/wpt/mathml/presentation-markup/fractions/frac-1.
 crbug.com/6606 [ Win ] external/wpt/mathml/presentation-markup/operators/mo-axis-height-1.html [ Failure ]
 crbug.com/6606 [ Mac ] external/wpt/mathml/relations/text-and-math/use-typo-metrics-1.html [ Failure ]
 
+# Additonal presentation-markup failures
+crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-lspace-rspace-2.html [ Failure ]
+crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-lspace-rspace.html [ Failure ]
+crbug.com/6606 external/wpt/mathml/presentation-markup/operators/op-dict-5.html [ Failure ]
+crbug.com/6606 external/wpt/mathml/presentation-markup/operators/op-dict-7.html [ Failure ]
+
 # These tests fail because we don't support the MathML href attribute, which is
 # not part of MathML Core Level 1.
 crbug.com/6606 external/wpt/mathml/relations/html5-tree/href-click-1.html [ Failure ]
@@ -1767,6 +1791,8 @@ crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-sans-ser
 crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-script.html [ Failure ]
 crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-stretched.html [ Failure ]
 crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-tailed.html [ Failure ]
+crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-basic-transforms-with-default-font.html [ Failure ]
+crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-double-struck-font-style-font-weight.html [ Failure ]
 
 # ====== Style team owned tests from here ======
 
@@ -3298,12 +3324,6 @@ crbug.com/1359555 virtual/prerender/external/wpt/speculation-rules/prerender/wor
 crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/restriction-presentation-request.https.html [ Failure ]
 crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/storage-foundation.https.html [ Failure ]
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
-crbug.com/626703 [ Linux ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-2.html [ Skip Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-3.html [ Skip Timeout ]
-crbug.com/626703 external/wpt/css/css-text-decor/text-decoration-skip-spaces-001.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-text-decor/text-decoration-skip-spaces-002.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-text-decor/text-decoration-skip-spaces-003.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-text-decor/text-decoration-skip-spaces-004.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/api/redirect/redirect-upload.h2.any.sharedworker.html [ Timeout ]
@@ -3341,37 +3361,11 @@ crbug.com/626703 [ Mac11-arm64 ] external/wpt/websockets/interfaces/WebSocket/se
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/websockets/stream/tentative/abort.any.html?wpt_flags=h2 [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/websockets/stream/tentative/abort.any.serviceworker.html?wpt_flags=h2 [ Failure ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/xhr/status.h2.window.html [ Timeout ]
-crbug.com/626703 external/wpt/mathml/presentation-markup/operators/mo-lspace-rspace-2.html [ Failure ]
-crbug.com/626703 external/wpt/mathml/presentation-markup/operators/mo-lspace-rspace.html [ Failure ]
-crbug.com/626703 [ Linux ] external/wpt/mathml/presentation-markup/operators/op-dict-5.html [ Failure ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/mathml/presentation-markup/operators/op-dict-5.html [ Failure ]
-crbug.com/626703 [ Mac11 ] external/wpt/mathml/presentation-markup/operators/op-dict-5.html [ Failure ]
-crbug.com/626703 [ Mac11-arm64 ] external/wpt/mathml/presentation-markup/operators/op-dict-5.html [ Failure ]
-crbug.com/626703 [ Mac12 ] external/wpt/mathml/presentation-markup/operators/op-dict-5.html [ Failure ]
-crbug.com/626703 [ Mac12-arm64 ] external/wpt/mathml/presentation-markup/operators/op-dict-5.html [ Failure ]
-crbug.com/626703 external/wpt/mathml/presentation-markup/operators/op-dict-7.html [ Failure ]
-crbug.com/626703 [ Mac11 ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-2.html [ Skip Timeout ]
-crbug.com/626703 external/wpt/mathml/relations/css-styling/mathvariant-basic-transforms-with-default-font.html [ Failure ]
-crbug.com/626703 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-iframe.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-flexbox/flex-item-transferred-sizes-padding-border-sizing.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-flexbox/flex-item-transferred-sizes-padding-content-sizing.html [ Failure ]
 crbug.com/626703 external/wpt/page-visibility/visibility-state-entry.tentative.html [ Skip Timeout ]
-crbug.com/626703 external/wpt/css/filter-effects/filter-invalid.html [ Failure ]
-crbug.com/626703 external/wpt/mathml/relations/css-styling/mathvariant-double-struck-font-style-font-weight.html [ Failure ]
-crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-invalid.html [ Failure ]
 crbug.com/626703 [ Mac12 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/background-sync.https.html [ Timeout ]
 crbug.com/626703 [ Win10.20h2 ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-persistent-permission.https.html [ Crash Failure ]
 # TODO(crbug.com/1358135, crbug.com/1358147): Re-enable this test: Re-enable this test
 crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Timeout ]
-crbug.com/626703 [ Mac12 ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-3.html [ Failure Timeout ]
-crbug.com/626703 [ Win10.20h2 ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-3.html [ Failure Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-1.html [ Skip Timeout ]
-crbug.com/626703 [ Mac12 ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-1.html [ Skip Timeout ]
-crbug.com/626703 [ Win ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-1.html [ Skip Timeout ]
-crbug.com/626703 [ Mac12 ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-2.html [ Skip Timeout ]
-crbug.com/626703 [ Win ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-2.html [ Skip Timeout ]
-crbug.com/626703 [ Mac12 ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-3.html [ Skip Timeout ]
-crbug.com/626703 [ Win ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-3.html [ Skip Timeout ]
 crbug.com/626703 [ Win10.20h2 ] wpt_internal/orientation-event/motion/page-visibility.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/document-transition/wpt_internal/document-transition/commit-timeout-crash.html [ Timeout ]
 crbug.com/626703 external/wpt/custom-elements/form-associated/ElementInternals-target-element-is-held-strongly.html [ Timeout ]
@@ -3638,8 +3632,6 @@ crbug.com/626703 external/wpt/focus/focus-already-focused-iframe-same-site.html 
 crbug.com/626703 external/wpt/focus/focus-already-focused-iframe-deep-different-site.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/content-security-policy/securitypolicyviolation/source-file-data-scheme.html [ Failure Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/content-security-policy/securitypolicyviolation/source-file-data-scheme.html [ Failure Timeout ]
-crbug.com/626703 [ Mac11 ] external/wpt/dom/xslt/transformToFragment.tentative.window.html [ Failure Timeout ]
-crbug.com/626703 [ Mac12 ] external/wpt/dom/xslt/transformToFragment.tentative.window.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/editing/other/editing-around-select-element.tentative.html?insertText [ Failure Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/editing/other/editing-around-select-element.tentative.html?insertText [ Failure Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/webvtt/api/VTTCue/constructor.html [ Failure Timeout ]
@@ -3719,8 +3711,6 @@ crbug.com/626703 [ Mac ] external/wpt/web-locks/query-ordering.tentative.https.h
 crbug.com/626703 external/wpt/fetch/connection-pool/network-partition-key.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-backspace.tentative.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-forwarddelete.tentative.html [ Failure Timeout ]
-crbug.com/626703 [ Mac ] external/wpt/dom/events/scrolling/scrollend-event-for-user-scroll.html [ Failure Timeout ]
-crbug.com/626703 [ Win ] external/wpt/dom/events/scrolling/scrollend-event-for-user-scroll.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/workers/postMessage_block.https.html [ Timeout ]
 crbug.com/626703 external/wpt/uievents/order-of-events/focus-events/focus-management-expectations.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/preload/onload-event.html [ Skip Timeout ]
@@ -3953,6 +3943,9 @@ crbug.com/626703 external/wpt/css/css-ui/text-overflow-011.html [ Crash Failure 
 
 # <input disabled> does not fire click events after dispatchEvent
 crbug.com/1115661 external/wpt/dom/events/Event-dispatch-click.html [ Timeout ]
+
+crbug.com/1088280 [ Mac ] external/wpt/dom/events/scrolling/scrollend-event-for-user-scroll.html [ Failure Timeout ]
+crbug.com/1088280 [ Win ] external/wpt/dom/events/scrolling/scrollend-event-for-user-scroll.html [ Failure Timeout ]
 
 # Implement text-decoration correctly for vertical text
 crbug.com/1133806 external/wpt/css/css-text-decor/text-decoration-thickness-vertical-002.html [ Failure ]
@@ -5186,6 +5179,7 @@ crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-tim
 crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default.html [ Failure ]
 crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-frame-size-changed.html [ Failure ]
 crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-inline-orientation.html [ Failure ]
+crbug.com/1279648 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-iframe.html [ Failure ]
 
 crbug.com/1071189 [ Debug ] editing/selection/programmatic-selection-on-mac-is-directionless.html [ Pass Timeout ]
 
