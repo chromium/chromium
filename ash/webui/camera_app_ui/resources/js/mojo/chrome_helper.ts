@@ -312,10 +312,10 @@ export class ChromeHelper {
   }
 
   /**
-   * Waits until the document mode is ready. Returns false if it fails to load.
+   * Checks the document mode readiness. Returns false if it fails to load.
    */
-  async waitUntilDocumentModeReady(): Promise<boolean> {
-    const {isLoaded} = await this.remote.registerDocumentScannerReadyCallback();
+  async checkDocumentModeReadiness(): Promise<boolean> {
+    const {isLoaded} = await this.remote.checkDocumentModeReadiness();
     return isLoaded;
   }
 

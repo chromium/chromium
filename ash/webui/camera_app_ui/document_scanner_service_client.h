@@ -39,7 +39,7 @@ class DocumentScannerServiceClient {
 
   ~DocumentScannerServiceClient();
 
-  void RegisterDocumentScannerReadyCallback(OnReadyCallback callback);
+  void CheckDocumentModeReadiness(OnReadyCallback callback);
 
   bool IsLoaded();
 
@@ -58,7 +58,9 @@ class DocumentScannerServiceClient {
   DocumentScannerServiceClient();
 
  private:
-  void LoadDocumentScanner(const std::string& lib_path);
+  void LoadDocumentScanner();
+
+  void LoadDocumentScannerInternal(const std::string& lib_path);
 
   void OnLoadedDocumentScanner(
       chromeos::machine_learning::mojom::LoadModelResult result);
@@ -66,6 +68,8 @@ class DocumentScannerServiceClient {
   // Guards |document_scanner_loaded_| and |on_ready_callbacks_| which are
   // related to the load status.
   base::Lock load_status_lock_;
+
+  bool is_loading_ GUARDED_BY(load_status_lock_) = false;
 
   bool document_scanner_loaded_ GUARDED_BY(load_status_lock_) = false;
 

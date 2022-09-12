@@ -193,8 +193,9 @@ interface CameraAppHelper {
 
   // Registers a callback which will be resolved once the document scanner is
   // ready or when it fails to load. If the document scanner is not supported on
-  // the device, it returns false immediately.
-  RegisterDocumentScannerReadyCallback() => (bool is_loaded);
+  // the device, it returns false immediately. If the document scanner fails to
+  // load in the previous round, it retries upon the call.
+  CheckDocumentModeReadiness() => (bool is_loaded);
 
   // Returns the detected document corners from given |jpeg_data|.
   // The amount of corners will be either 0, indicating there are no corners

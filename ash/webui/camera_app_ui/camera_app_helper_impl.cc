@@ -307,14 +307,13 @@ void CameraAppHelperImpl::GetDocumentScannerReadyState(
       camera_app::mojom::DocumentScannerReadyState::SUPPORTED_BUT_NOT_READY);
 }
 
-void CameraAppHelperImpl::RegisterDocumentScannerReadyCallback(
-    RegisterDocumentScannerReadyCallbackCallback callback) {
+void CameraAppHelperImpl::CheckDocumentModeReadiness(
+    CheckDocumentModeReadinessCallback callback) {
   if (document_scanner_service_ == nullptr) {
     std::move(callback).Run(false);
     return;
   }
-  document_scanner_service_->RegisterDocumentScannerReadyCallback(
-      std::move(callback));
+  document_scanner_service_->CheckDocumentModeReadiness(std::move(callback));
 }
 
 void CameraAppHelperImpl::ScanDocumentCorners(

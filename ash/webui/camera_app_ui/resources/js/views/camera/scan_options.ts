@@ -87,9 +87,9 @@ export class ScanOptions implements CameraUI {
     }
   }
 
-  async waitUntilDocumentModeReady(): Promise<boolean> {
+  async checkDocumentModeReadiness(): Promise<boolean> {
     const isLoaded =
-        await ChromeHelper.getInstance().waitUntilDocumentModeReady();
+        await ChromeHelper.getInstance().checkDocumentModeReadiness();
     if (isLoaded) {
       this.onDocumentModeReady();
     }
@@ -138,6 +138,7 @@ export class ScanOptions implements CameraUI {
       this.detachPreview();
     })();
     await this.updateOption(scanType);
+    this.checkDocumentModeReadiness();
   }
 
   /**

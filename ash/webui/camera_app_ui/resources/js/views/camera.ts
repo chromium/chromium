@@ -318,7 +318,7 @@ export class Camera extends View implements CameraViewUI {
   }
 
   private async initScanMode() {
-    const isLoaded = await this.scanOptions.waitUntilDocumentModeReady();
+    const isLoaded = await this.scanOptions.checkDocumentModeReadiness();
     if (!isLoaded) {
       return;
     }

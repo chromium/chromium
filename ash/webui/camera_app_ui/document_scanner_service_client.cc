@@ -78,14 +78,17 @@ DocumentScannerServiceClient::Create() {
 
 DocumentScannerServiceClient::~DocumentScannerServiceClient() = default;
 
-void DocumentScannerServiceClient::RegisterDocumentScannerReadyCallback(
+void DocumentScannerServiceClient::CheckDocumentModeReadiness(
     OnReadyCallback callback) {
-  base::AutoLock auto_lock(load_status_lock_);
-  if (document_scanner_loaded_) {
-    std::move(callback).Run(true);
-    return;
+  {
+    base::AutoLock auto_lock(load_status_lock_);
+    if (document_scanner_loaded_) {
+      std::move(callback).Run(true);
+      return;
+    }
+    on_ready_callbacks_.push_back(std::move(callback));
   }
-  on_ready_callbacks_.push_back(std::move(callback));
+  LoadDocumentScanner();
 }
 
 bool DocumentScannerServiceClient::IsLoaded() {
@@ -156,24 +159,35 @@ void DocumentScannerServiceClient::DoPostProcessing(
 DocumentScannerServiceClient::DocumentScannerServiceClient() {
   chromeos::machine_learning::ServiceConnection::GetInstance()
       ->BindMachineLearningService(ml_service_.BindNewPipeAndPassReceiver());
+  LoadDocumentScanner();
+}
+
+void DocumentScannerServiceClient::LoadDocumentScanner() {
   if (IsEnabledOnRootfs()) {
-    LoadDocumentScanner(kLibDocumentScannerDefaultDir);
+    LoadDocumentScannerInternal(kLibDocumentScannerDefaultDir);
   } else if (IsEnabledOnDlc()) {
     DocumentScannerInstaller::GetInstance()->RegisterLibraryPathCallback(
         base::BindPostTask(
             base::SequencedTaskRunnerHandle::Get(),
-            base::BindOnce(&DocumentScannerServiceClient::LoadDocumentScanner,
-                           weak_ptr_factory_.GetWeakPtr())));
+            base::BindOnce(
+                &DocumentScannerServiceClient::LoadDocumentScannerInternal,
+                weak_ptr_factory_.GetWeakPtr())));
   }
 }
 
-void DocumentScannerServiceClient::LoadDocumentScanner(
+void DocumentScannerServiceClient::LoadDocumentScannerInternal(
     const std::string& lib_path) {
   if (lib_path.empty()) {
     OnLoadedDocumentScanner(chromeos::machine_learning::mojom::LoadModelResult::
                                 FEATURE_NOT_SUPPORTED_ERROR);
     return;
   }
+
+  base::AutoLock auto_lock(load_status_lock_);
+  if (is_loading_) {
+    return;
+  }
+  is_loading_ = true;
 
   auto config = chromeos::machine_learning::mojom::DocumentScannerConfig::New();
   config->library_dlc_path = base::FilePath(lib_path);
@@ -188,6 +202,8 @@ void DocumentScannerServiceClient::OnLoadedDocumentScanner(
     chromeos::machine_learning::mojom::LoadModelResult result) {
   base::AutoLock auto_lock(load_status_lock_);
   document_scanner_loaded_ = result == LoadModelResult::OK;
+  is_loading_ = false;
+
   for (auto& callback : on_ready_callbacks_) {
     std::move(callback).Run(document_scanner_loaded_);
   }

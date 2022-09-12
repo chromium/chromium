@@ -418,6 +418,6 @@ export async function showDownloadingDocScanIndicator(): Promise<void> {
   const docModeButton = dom.get('#scan-document-option', HTMLDivElement);
   const {hide} =
       showIndicator(docModeButton, IndicatorType.DOWNLOAD_DOCUMENT_SCANNER);
-  await ChromeHelper.getInstance().waitUntilDocumentModeReady();
+  await ChromeHelper.getInstance().checkDocumentModeReadiness();
   hide();
 }
