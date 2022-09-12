@@ -183,7 +183,6 @@ AutofillSuggestionState::AutofillSuggestionState(
                            _suggestionState.get()->typed_value)
                frameID:base::SysUTF8ToNSString(params.frame_id)];
 
-  BOOL isMainFrame = params.is_main_frame;
   BOOL hasUserGesture = params.has_user_gesture;
 
   // Build a block for each provider that will invoke its completion with YES
@@ -201,7 +200,6 @@ AutofillSuggestionState::AutofillSuggestionState(
         return;
       id<FormSuggestionProvider> provider = strongSelf->_suggestionProviders[i];
       [provider checkIfSuggestionsAvailableForForm:formQuery
-                                       isMainFrame:isMainFrame
                                     hasUserGesture:hasUserGesture
                                           webState:webState
                                  completionHandler:completion];

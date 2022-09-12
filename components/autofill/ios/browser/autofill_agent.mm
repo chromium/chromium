@@ -340,7 +340,6 @@ void GetFormField(autofill::FormFieldData* field,
 
 - (void)checkIfSuggestionsAvailableForForm:
             (FormSuggestionProviderQuery*)formQuery
-                               isMainFrame:(BOOL)isMainFrame
                             hasUserGesture:(BOOL)hasUserGesture
                                   webState:(web::WebState*)webState
                          completionHandler:
@@ -842,7 +841,6 @@ void GetFormField(autofill::FormFieldData* field,
     didSubmitDocumentWithFormNamed:(const std::string&)formName
                           withData:(const std::string&)formData
                     hasUserGesture:(BOOL)hasUserGesture
-                   formInMainFrame:(BOOL)formInMainFrame
                            inFrame:(web::WebFrame*)frame {
   if (![self isAutofillEnabled])
     return;

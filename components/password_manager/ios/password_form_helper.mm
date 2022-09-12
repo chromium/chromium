@@ -159,7 +159,6 @@ constexpr char kCommandPrefix[] = "passwordForm";
     didSubmitDocumentWithFormNamed:(const std::string&)formName
                           withData:(const std::string&)formData
                     hasUserGesture:(BOOL)hasUserGesture
-                   formInMainFrame:(BOOL)formInMainFrame
                            inFrame:(web::WebFrame*)frame {
   DCHECK_EQ(_webState, webState);
   GURL pageURL = webState->GetLastCommittedURL();
@@ -182,10 +181,7 @@ constexpr char kCommandPrefix[] = "passwordForm";
   // Extract FieldDataManager data for observed fields.
   [self extractKnownFieldData:forms[0]];
 
-  [self.delegate formHelper:self
-              didSubmitForm:forms[0]
-                inMainFrame:formInMainFrame
-                    inFrame:frame];
+  [self.delegate formHelper:self didSubmitForm:forms[0] inFrame:frame];
 }
 
 #pragma mark - Private methods
@@ -212,10 +208,7 @@ constexpr char kCommandPrefix[] = "passwordForm";
   [self extractKnownFieldData:form];
 
   if (_webState && self.delegate) {
-    [self.delegate formHelper:self
-                didSubmitForm:form
-                  inMainFrame:frame->IsMainFrame()
-                      inFrame:frame];
+    [self.delegate formHelper:self didSubmitForm:form inFrame:frame];
     return YES;
   }
 

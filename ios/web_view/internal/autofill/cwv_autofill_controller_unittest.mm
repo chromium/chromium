@@ -171,7 +171,6 @@ TEST_F(CWVAutofillControllerTest, FetchProfileSuggestions) {
 
   OCMExpect([password_controller_
       checkIfSuggestionsAvailableForForm:[OCMArg any]
-                             isMainFrame:NO
                           hasUserGesture:YES
                                 webState:&web_state_
                        completionHandler:[OCMArg checkWithBlock:^(void (
@@ -213,7 +212,6 @@ TEST_F(CWVAutofillControllerTest, FetchPasswordSuggestions) {
                            requiresReauth:NO];
   OCMExpect([password_controller_
       checkIfSuggestionsAvailableForForm:[OCMArg any]
-                             isMainFrame:NO
                           hasUserGesture:YES
                                 webState:&web_state_
                        completionHandler:[OCMArg checkWithBlock:^(void (
@@ -401,8 +399,7 @@ TEST_F(CWVAutofillControllerTest, SubmitCallback) {
   form_activity_tab_helper_->DocumentSubmitted(
       /*sender_frame*/ frame.get(), base::SysNSStringToUTF8(kTestFormName),
       /*form_data=*/"",
-      /*user_initiated=*/true,
-      /*is_main_frame=*/true);
+      /*user_initiated=*/true);
 
   [[delegate expect] autofillController:autofill_controller_
                   didSubmitFormWithName:kTestFormName
@@ -412,8 +409,7 @@ TEST_F(CWVAutofillControllerTest, SubmitCallback) {
   form_activity_tab_helper_->DocumentSubmitted(
       /*sender_frame*/ frame.get(), base::SysNSStringToUTF8(kTestFormName),
       /*form_data=*/"",
-      /*user_initiated=*/false,
-      /*is_main_frame=*/true);
+      /*user_initiated=*/false);
 
   [delegate verify];
 }

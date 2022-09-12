@@ -334,7 +334,6 @@ BOOL canProcessCrossOriginIframes() {
 
 - (void)checkIfSuggestionsAvailableForForm:
             (FormSuggestionProviderQuery*)formQuery
-                               isMainFrame:(BOOL)isMainFrame
                             hasUserGesture:(BOOL)hasUserGesture
                                   webState:(web::WebState*)webState
                          completionHandler:
@@ -359,7 +358,6 @@ BOOL canProcessCrossOriginIframes() {
   }
   [self.suggestionHelper
       checkIfSuggestionsAvailableForForm:formQuery
-                             isMainFrame:isMainFrame
                                 webState:webState
                        completionHandler:^(BOOL suggestionsAvailable) {
                          // Always display "Show All..." for password fields.
@@ -578,11 +576,12 @@ BOOL canProcessCrossOriginIframes() {
 
 - (void)formHelper:(PasswordFormHelper*)formHelper
      didSubmitForm:(const FormData&)form
-       inMainFrame:(BOOL)inMainFrame
            inFrame:(web::WebFrame*)frame {
+  DCHECK(frame);
+
   IOSPasswordManagerDriver* driver =
       [_driverHelper PasswordManagerDriver:frame];
-  if (inMainFrame) {
+  if (frame->IsMainFrame()) {
     _passwordManager->OnPasswordFormSubmitted(driver, form);
   } else {
     if ([self isCrossOriginIframe:frame] && !canProcessCrossOriginIframes()) {

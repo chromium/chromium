@@ -395,7 +395,6 @@ class PasswordControllerTest : public PlatformTest {
                      frameID:SysUTF8ToNSString(main_frame_id)];
     [passwordController_.sharedPasswordController
         checkIfSuggestionsAvailableForForm:form_query
-                               isMainFrame:YES
                             hasUserGesture:YES
                                   webState:web_state()
                          completionHandler:^(BOOL success) {
@@ -1339,7 +1338,6 @@ TEST_F(PasswordControllerTestSimple, SaveOnNonHTMLLandingPage) {
 
   [sharedPasswordController formHelper:sharedPasswordController.formHelper
                          didSubmitForm:formData
-                           inMainFrame:YES
                                inFrame:web::GetMainFrame(&web_state_)];
 
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
@@ -1549,7 +1547,6 @@ TEST_F(PasswordControllerTest, CheckAsyncSuggestions) {
                      frameID:SysUTF8ToNSString(mainFrameID)];
     [passwordController_.sharedPasswordController
         checkIfSuggestionsAvailableForForm:form_query
-                               isMainFrame:YES
                             hasUserGesture:YES
                                   webState:web_state()
                          completionHandler:^(BOOL success) {
@@ -1596,7 +1593,6 @@ TEST_F(PasswordControllerTest, CheckNoAsyncSuggestionsOnNonUsernameField) {
                frameID:SysUTF8ToNSString(mainFrameID)];
   [passwordController_.sharedPasswordController
       checkIfSuggestionsAvailableForForm:form_query
-                             isMainFrame:YES
                           hasUserGesture:YES
                                 webState:web_state()
                        completionHandler:^(BOOL success) {
@@ -1632,7 +1628,6 @@ TEST_F(PasswordControllerTest, CheckNoAsyncSuggestionsOnNoPasswordForms) {
                frameID:SysUTF8ToNSString(mainFrameID)];
   [passwordController_.sharedPasswordController
       checkIfSuggestionsAvailableForForm:form_query
-                             isMainFrame:YES
                           hasUserGesture:YES
                                 webState:web_state()
                        completionHandler:^(BOOL success) {
@@ -2338,7 +2333,6 @@ TEST_F(PasswordControllerTest, PasswordGenerationFieldFocus) {
                    frameID:SysUTF8ToNSString(mainFrameID)];
   [passwordController_.sharedPasswordController
       checkIfSuggestionsAvailableForForm:focus_query
-                             isMainFrame:YES
                           hasUserGesture:YES
                                 webState:web_state()
                        completionHandler:^(BOOL success) {
@@ -2382,7 +2376,6 @@ TEST_F(PasswordControllerTest, PasswordGenerationFieldInput) {
                    frameID:SysUTF8ToNSString(mainFrameID)];
   [passwordController_.sharedPasswordController
       checkIfSuggestionsAvailableForForm:extend_query
-                             isMainFrame:YES
                           hasUserGesture:YES
                                 webState:web_state()
                        completionHandler:^(BOOL success) {
@@ -2426,7 +2419,6 @@ TEST_F(PasswordControllerTest, PasswordGenerationFieldClear) {
                    frameID:SysUTF8ToNSString(mainFrameID)];
   [passwordController_.sharedPasswordController
       checkIfSuggestionsAvailableForForm:clear_query
-                             isMainFrame:YES
                           hasUserGesture:YES
                                 webState:web_state()
                        completionHandler:^(BOOL success) {

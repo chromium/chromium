@@ -202,7 +202,6 @@ TEST_F(AutofillAgentTests,
                                                  typedValue:@""
                                                     frameID:@"frameID"];
   [autofill_agent_ checkIfSuggestionsAvailableForForm:form_query
-                                          isMainFrame:YES
                                        hasUserGesture:NO
                                              webState:&fake_web_state_
                                     completionHandler:^(BOOL success) {

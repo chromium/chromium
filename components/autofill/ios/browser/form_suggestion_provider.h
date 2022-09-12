@@ -41,7 +41,6 @@ typedef NS_ENUM(NSUInteger, SuggestionProviderType) {
 // are used in Autofill.
 - (void)checkIfSuggestionsAvailableForForm:
             (FormSuggestionProviderQuery*)formQuery
-                               isMainFrame:(BOOL)isMainFrame
                             hasUserGesture:(BOOL)hasUserGesture
                                   webState:(web::WebState*)webState
                          completionHandler:

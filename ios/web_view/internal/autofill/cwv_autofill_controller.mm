@@ -206,9 +206,6 @@ using UserDecision =
   // It is necessary to call |checkIfSuggestionsAvailableForForm| before
   // |retrieveSuggestionsForForm| because the former actually queries the db,
   // while the latter merely returns them.
-  NSString* mainFrameID =
-      base::SysUTF8ToNSString(web::GetMainWebFrameId(_webState));
-  BOOL isMainFrame = [frameID isEqualToString:mainFrameID];
 
   // Check both autofill and password suggestions.
   NSArray<id<FormSuggestionProvider>>* providers =
@@ -246,7 +243,6 @@ using UserDecision =
     };
 
     [suggestionProvider checkIfSuggestionsAvailableForForm:formQuery
-                                               isMainFrame:isMainFrame
                                             hasUserGesture:YES
                                                   webState:_webState
                                          completionHandler:availableHandler];
@@ -555,7 +551,6 @@ showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
     didSubmitDocumentWithFormNamed:(const std::string&)formName
                           withData:(const std::string&)formData
                     hasUserGesture:(BOOL)userInitiated
-                   formInMainFrame:(BOOL)isMainFrame
                            inFrame:(web::WebFrame*)frame {
   if ([_delegate respondsToSelector:@selector
                  (autofillController:

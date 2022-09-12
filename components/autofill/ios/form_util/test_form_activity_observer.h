@@ -21,7 +21,6 @@ struct TestSubmitDocumentInfo {
   std::string form_name;
   std::string form_data;
   bool has_user_gesture;
-  bool form_in_main_frame;
 };
 
 // Arguments passed to |FormActivityRegistered|.
@@ -60,8 +59,7 @@ class TestFormActivityObserver : public autofill::FormActivityObserver {
                          web::WebFrame* sender_frame,
                          const std::string& form_name,
                          const std::string& form_data,
-                         bool has_user_gesture,
-                         bool form_in_main_frame) override;
+                         bool has_user_gesture) override;
 
   void FormActivityRegistered(web::WebState* web_state,
                               web::WebFrame* sender_frame,

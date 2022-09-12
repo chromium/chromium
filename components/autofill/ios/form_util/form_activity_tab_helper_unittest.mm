@@ -93,7 +93,6 @@ TEST_F(FormActivityTabHelperTest, TestObserverDocumentSubmitted) {
   EXPECT_EQ(kTestFormData, observer_->submit_document_info()->form_data);
 
   EXPECT_FALSE(observer_->submit_document_info()->has_user_gesture);
-  EXPECT_TRUE(observer_->submit_document_info()->form_in_main_frame);
 }
 
 // Tests that observer is called on form submission using submit() method.
@@ -124,7 +123,6 @@ TEST_F(FormActivityTabHelperTest, TestFormSubmittedHook) {
   EXPECT_EQ(kTestFormName, observer_->submit_document_info()->form_name);
   EXPECT_EQ(kTestFormData, observer_->submit_document_info()->form_data);
   EXPECT_FALSE(observer_->submit_document_info()->has_user_gesture);
-  EXPECT_TRUE(observer_->submit_document_info()->form_in_main_frame);
 }
 
 // Tests that observer is called on form activity (input event).

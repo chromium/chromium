@@ -81,16 +81,15 @@
     didSubmitDocumentWithFormNamed:(const std::string&)formName
                           withData:(const std::string&)formData
                     hasUserGesture:(BOOL)hasUserGesture
-                   formInMainFrame:(BOOL)formInMainFrame
                            inFrame:(web::WebFrame*)frame {
   if ([self.delegate respondsToSelector:@selector
-                     (webState:didSubmitDocumentWithFormNamed:withData
-                                 :hasUserGesture:formInMainFrame:inFrame:)]) {
+                     (webState:
+                         didSubmitDocumentWithFormNamed:withData:hasUserGesture
+                                                       :inFrame:)]) {
     [self.delegate webState:webState
         didSubmitDocumentWithFormNamed:formName
                               withData:formData
                         hasUserGesture:hasUserGesture
-                       formInMainFrame:formInMainFrame
                                inFrame:frame];
   }
 }

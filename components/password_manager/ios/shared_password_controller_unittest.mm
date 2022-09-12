@@ -323,13 +323,11 @@ TEST_F(SharedPasswordControllerTest,
       }];
   [[suggestion_helper_ expect]
       checkIfSuggestionsAvailableForForm:form_query
-                             isMainFrame:YES
                                 webState:&web_state_
                        completionHandler:mock_completion_handler];
 
   __block BOOL completion_was_called = NO;
   [controller_ checkIfSuggestionsAvailableForForm:form_query
-                                      isMainFrame:YES
                                    hasUserGesture:NO
                                          webState:&web_state_
                                 completionHandler:^(BOOL suggestionsAvailable) {
@@ -833,7 +831,6 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
   __block BOOL completion_was_called = NO;
 
   [controller_ checkIfSuggestionsAvailableForForm:form_query
-                                      isMainFrame:YES
                                    hasUserGesture:NO
                                          webState:&web_state_
                                 completionHandler:^(BOOL suggestionsAvailable) {
@@ -896,7 +893,6 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
 
   __block BOOL completion_was_called1 = NO;
   [controller_ checkIfSuggestionsAvailableForForm:form_query1
-                                      isMainFrame:YES
                                    hasUserGesture:NO
                                          webState:&web_state_
                                 completionHandler:^(BOOL suggestionsAvailable) {
@@ -921,7 +917,6 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
 
   __block BOOL completion_was_called2 = NO;
   [controller_ checkIfSuggestionsAvailableForForm:form_query2
-                                      isMainFrame:YES
                                    hasUserGesture:NO
                                          webState:&web_state_
                                 completionHandler:^(BOOL suggestionsAvailable) {
@@ -1064,12 +1059,10 @@ TEST_P(SharedPasswordControllerTestCrossOrigin,
 
   [[suggestion_helper_ expect]
       checkIfSuggestionsAvailableForForm:form_query
-                             isMainFrame:NO
                                 webState:&web_state_
                        completionHandler:mock_completion_handler];
 
   [controller_ checkIfSuggestionsAvailableForForm:form_query
-                                      isMainFrame:NO
                                    hasUserGesture:NO
                                          webState:&web_state_
                                 completionHandler:^(BOOL suggestionsAvailable) {
@@ -1160,10 +1153,7 @@ TEST_P(SharedPasswordControllerTestCrossOrigin,
   }
 
   autofill::FormData form_data;
-  [controller_ formHelper:form_helper_
-            didSubmitForm:form_data
-              inMainFrame:NO
-                  inFrame:frame];
+  [controller_ formHelper:form_helper_ didSubmitForm:form_data inFrame:frame];
 }
 
 // Tests didRegisterFormActivity supports cross-origin iframes when the
