@@ -8,6 +8,7 @@
 #include <list>
 
 #include "base/containers/flat_map.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/privacy_budget/identifiability_study_group_settings.h"
 #include "chrome/common/privacy_budget/types.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
@@ -116,19 +117,24 @@ class PrivacyBudgetReidScoreEstimator {
     blink::IdentifiableSurface reid_surface_key_;
   };
 
-  void WriteReportedReidBlocksToPrefs() const;
+  void WriteReportedReidBlocksToPrefs() const
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Keeps track of the blocks for which we want to compute the Reid score.
-  std::list<ReidBlockStorage> surface_blocks_;
+  std::list<ReidBlockStorage> surface_blocks_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Keeps track of the Reid blocks which where already reported.
-  IdentifiableSurfaceList already_reported_reid_blocks_;
+  IdentifiableSurfaceList already_reported_reid_blocks_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // `settings_` pointee must outlive `this`.
   raw_ptr<const IdentifiabilityStudyGroupSettings> settings_;
 
   // `pref_service_` pointee must outlive `this`. Used for persistent state.
   raw_ptr<PrefService> pref_service_ = nullptr;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_BUDGET_PRIVACY_BUDGET_REID_SCORE_ESTIMATOR_H_

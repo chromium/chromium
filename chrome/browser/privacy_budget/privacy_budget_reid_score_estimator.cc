@@ -150,6 +150,7 @@ PrivacyBudgetReidScoreEstimator::PrivacyBudgetReidScoreEstimator(
     : settings_(state_settings), pref_service_(pref_service) {}
 
 void PrivacyBudgetReidScoreEstimator::Init() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!settings_->enabled() || !settings_->IsUsingReidScoreEstimator())
     return;
 
@@ -179,6 +180,7 @@ PrivacyBudgetReidScoreEstimator::~PrivacyBudgetReidScoreEstimator() = default;
 void PrivacyBudgetReidScoreEstimator::ProcessForReidScore(
     blink::IdentifiableSurface surface,
     blink::IdentifiableToken token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool at_least_one_reported_block = false;
   for (auto block_itr = surface_blocks_.begin();
        block_itr != surface_blocks_.end();) {
@@ -221,6 +223,7 @@ void PrivacyBudgetReidScoreEstimator::WriteReportedReidBlocksToPrefs() const {
 }
 
 void PrivacyBudgetReidScoreEstimator::ResetPersistedState() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->ClearPref(prefs::kPrivacyBudgetReportedReidBlocks);
   already_reported_reid_blocks_.clear();
   surface_blocks_.clear();
