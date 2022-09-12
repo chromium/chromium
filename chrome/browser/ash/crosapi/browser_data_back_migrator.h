@@ -67,9 +67,43 @@ class BrowserDataBackMigrator {
   void OnPreMigrationCleanUp(BackMigrationFinishedCallback finished_callback,
                              TaskResult result);
 
-  void InvokeCallback(TaskResult);
+  // Merges items that were split between Ash and Lacros and puts them into
+  // the temporary directory created in `PreMigrationCleanUp()`.
+  static TaskResult MergeSplitItems(const base::FilePath& ash_profile_dir);
 
-  // Path to the ash profile data directory.
+  // Called as a reply to `MergeSplitItems()`.
+  void OnMergeSplitItems(BackMigrationFinishedCallback finished_callback,
+                         TaskResult result);
+
+  // Moves Lacros-only items back into the Ash profile directory.
+  static TaskResult MoveLacrosItemsBackToAsh(
+      const base::FilePath& ash_profile_dir);
+
+  // Called as a reply to `MoveLacrosItemsBackToAsh()`.
+  void OnMoveLacrosItemsBackToAsh(
+      BackMigrationFinishedCallback finished_callback,
+      TaskResult result);
+
+  // Moves the temporary directory into the Ash profile directory.
+  static TaskResult MoveMergedItemsBackToAsh(
+      const base::FilePath& ash_profile_dir);
+
+  // Called as a reply to `MoveMergedItemsBackToAsh()`.
+  void OnMoveMergedItemsBackToAsh(
+      BackMigrationFinishedCallback finished_callback,
+      TaskResult result);
+
+  // Deletes the Lacros profile directory and completes the backward migration.
+  static TaskResult DeleteLacrosDir(const base::FilePath& ash_profile_dir);
+
+  // Called as a reply to `DeleteLacrosDir()`.
+  void OnDeleteLacrosDir(BackMigrationFinishedCallback finished_callback,
+                         TaskResult result);
+
+  // Transforms `TaskResult` to `Result`, which is then returned to the caller.
+  static Result ToResult(TaskResult result);
+
+  // Path to the ash profile directory.
   const base::FilePath ash_profile_dir_;
 
   base::WeakPtrFactory<BrowserDataBackMigrator> weak_factory_{this};

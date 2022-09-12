@@ -79,7 +79,7 @@ BrowserDataBackMigrator::PreMigrationCleanUp(
     }
   }
 
-  // Delete ash deletable items to free up space.
+  // Delete lacros deletable items to free up space.
   browser_data_migrator_util::TargetItems lacros_deletable_items =
       browser_data_migrator_util::GetTargetItems(
           lacros_profile_dir, browser_data_migrator_util::ItemType::kDeletable);
@@ -87,8 +87,8 @@ BrowserDataBackMigrator::PreMigrationCleanUp(
     bool result = item.is_directory ? base::DeletePathRecursively(item.path)
                                     : base::DeleteFile(item.path);
     if (!result) {
-      // This is not critical to the migration so log the error but do stop the
-      // migration.
+      // This is not critical to the migration so log the error, but do not stop
+      // the migration.
       PLOG(ERROR) << "Could not delete " << item.path.value();
     }
   }
@@ -99,8 +99,143 @@ BrowserDataBackMigrator::PreMigrationCleanUp(
 void BrowserDataBackMigrator::OnPreMigrationCleanUp(
     BackMigrationFinishedCallback finished_callback,
     BrowserDataBackMigrator::TaskResult result) {
+  if (result.status != TaskStatus::kSucceeded) {
+    LOG(ERROR) << "PreMigrationCleanup() failed.";
+    std::move(finished_callback).Run(ToResult(result));
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(&BrowserDataBackMigrator::MergeSplitItems,
+                     ash_profile_dir_),
+      base::BindOnce(&BrowserDataBackMigrator::OnMergeSplitItems,
+                     weak_factory_.GetWeakPtr(), std::move(finished_callback)));
+}
+
+// static
+BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::MergeSplitItems(
+    const base::FilePath& ash_profile_dir) {
+  LOG(WARNING) << "Running MergeSplitItems()";
+
+  // TODO(b/244573664): Not yet implemented.
+
+  return {TaskStatus::kSucceeded};
+}
+
+void BrowserDataBackMigrator::OnMergeSplitItems(
+    BackMigrationFinishedCallback finished_callback,
+    BrowserDataBackMigrator::TaskResult result) {
+  if (result.status != TaskStatus::kSucceeded) {
+    LOG(ERROR) << "MergeSplitItems() failed.";
+    std::move(finished_callback).Run(ToResult(result));
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(&BrowserDataBackMigrator::MoveLacrosItemsBackToAsh,
+                     ash_profile_dir_),
+      base::BindOnce(&BrowserDataBackMigrator::OnMoveLacrosItemsBackToAsh,
+                     weak_factory_.GetWeakPtr(), std::move(finished_callback)));
+}
+
+// static
+BrowserDataBackMigrator::TaskResult
+BrowserDataBackMigrator::MoveLacrosItemsBackToAsh(
+    const base::FilePath& ash_profile_dir) {
+  LOG(WARNING) << "Running MoveLacrosItemsBackToAsh()";
+
+  // TODO(b/244573664): Not yet implemented.
+
+  return {TaskStatus::kSucceeded};
+}
+
+void BrowserDataBackMigrator::OnMoveLacrosItemsBackToAsh(
+    BackMigrationFinishedCallback finished_callback,
+    BrowserDataBackMigrator::TaskResult result) {
+  if (result.status != TaskStatus::kSucceeded) {
+    LOG(ERROR) << "MoveLacrosItemsBackToAsh() failed.";
+    std::move(finished_callback).Run(ToResult(result));
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(&BrowserDataBackMigrator::MoveMergedItemsBackToAsh,
+                     ash_profile_dir_),
+      base::BindOnce(&BrowserDataBackMigrator::OnMoveMergedItemsBackToAsh,
+                     weak_factory_.GetWeakPtr(), std::move(finished_callback)));
+}
+
+// static
+BrowserDataBackMigrator::TaskResult
+BrowserDataBackMigrator::MoveMergedItemsBackToAsh(
+    const base::FilePath& ash_profile_dir) {
+  LOG(WARNING) << "Running MoveMergedItemsBackToAsh()";
+
+  // TODO(b/244573664): Not yet implemented.
+
+  return {TaskStatus::kSucceeded};
+}
+
+void BrowserDataBackMigrator::OnMoveMergedItemsBackToAsh(
+    BackMigrationFinishedCallback finished_callback,
+    BrowserDataBackMigrator::TaskResult result) {
+  if (result.status != TaskStatus::kSucceeded) {
+    LOG(ERROR) << "MoveMergedItemsBackToAsh() failed.";
+    std::move(finished_callback).Run(ToResult(result));
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(&BrowserDataBackMigrator::DeleteLacrosDir,
+                     ash_profile_dir_),
+      base::BindOnce(&BrowserDataBackMigrator::OnDeleteLacrosDir,
+                     weak_factory_.GetWeakPtr(), std::move(finished_callback)));
+}
+
+// static
+BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::DeleteLacrosDir(
+    const base::FilePath& ash_profile_dir) {
+  LOG(WARNING) << "Running DeleteLacrosDir()";
+
+  // TODO(b/244573664): Not yet implemented.
+
+  return {TaskStatus::kSucceeded};
+}
+
+void BrowserDataBackMigrator::OnDeleteLacrosDir(
+    BackMigrationFinishedCallback finished_callback,
+    BrowserDataBackMigrator::TaskResult result) {
+  if (result.status != TaskStatus::kSucceeded) {
+    LOG(ERROR) << "DeleteLacrosDir() failed.";
+    std::move(finished_callback).Run(ToResult(result));
+    return;
+  }
+
   LOG(WARNING) << "Backward migration completed successfully.";
-  // TODO(b/244573664): Continue the migration
+  std::move(finished_callback).Run(ToResult(result));
+}
+
+// static
+BrowserDataBackMigrator::Result BrowserDataBackMigrator::ToResult(
+    TaskResult result) {
+  switch (result.status) {
+    case TaskStatus::kSucceeded:
+      return Result::kSucceeded;
+    case TaskStatus::kPreMigrationCleanUpDeleteTmpDirFailed:
+      return Result::kFailed;
+  }
 }
 
 }  // namespace ash

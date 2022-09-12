@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ash/login/screens/lacros_data_backward_migration_screen.h"
 
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/common/chrome_paths.h"
 
 namespace ash {
@@ -28,14 +31,31 @@ void LacrosDataBackwardMigrationScreen::ShowImpl() {
     return;
 
   if (!migrator_) {
+    const std::string user_id_hash =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            switches::kBrowserDataBackwardMigrationForUser);
+
+    DCHECK(!user_id_hash.empty()) << "user_id_hash should not be empty.";
+    if (user_id_hash.empty()) {
+      LOG(ERROR) << "Could not retrieve user_id_hash from switch "
+                 << switches::kBrowserDataBackwardMigrationForUser
+                 << ". Aborting migration.";
+      // TODO(b/245053119): Attempt restart.
+      return;
+    }
+
     base::FilePath user_data_dir;
     if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
       LOG(ERROR) << "Could not get the original user data dir path. Aborting "
                     "migration.";
+      // TODO(b/245053119): Attempt restart.
       return;
     }
 
-    migrator_ = std::make_unique<BrowserDataBackMigrator>(user_data_dir);
+    const base::FilePath profile_data_dir =
+        user_data_dir.Append(ProfileHelper::GetUserProfileDir(user_id_hash));
+
+    migrator_ = std::make_unique<BrowserDataBackMigrator>(profile_data_dir);
   }
 
   migrator_->Migrate(
