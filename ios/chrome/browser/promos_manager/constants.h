@@ -25,6 +25,8 @@ enum class Promo {
   DefaultBrowser = 1,  // Fullscreen Default Browser Promo
   AppStoreRating = 2,  // App Store Rating Prompt
   CredentialProviderExtension = 3,  // Credential Provider Extension
+  PostRestoreSignInFullscreen =
+      4,  // Post Restore Sign-In (fullscreen, FRE-like promo)
 };
 
 typedef struct Impression {

@@ -31,6 +31,9 @@ absl::optional<Promo> PromoForName(std::string promo) {
   if (promo == "promos_manager::Promo::CredentialProviderExtension")
     return promos_manager::Promo::CredentialProviderExtension;
 
+  if (promo == "promos_manager::Promo::PostRestoreSignInFullscreen")
+    return promos_manager::Promo::PostRestoreSignInFullscreen;
+
   return absl::nullopt;
 }
 
@@ -44,6 +47,8 @@ std::string ShortNameForPromo(Promo promo) {
       return "AppStoreRating";
     case promos_manager::Promo::CredentialProviderExtension:
       return "CredentialProviderExtension";
+    case promos_manager::Promo::PostRestoreSignInFullscreen:
+      return "PostRestoreSignInFullscreen";
   }
 }
 
