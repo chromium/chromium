@@ -236,7 +236,9 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, CommandDuringShutdown) {
 }
 
 // Regression test for https://crbug.com/1236073
-IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, DeleteEphemeralProfile) {
+// TODO(crbug.com/1362125): Test is flaky.
+IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
+                       DISABLED_DeleteEphemeralProfile) {
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   Profile* profile = browser()->profile();
   // Activate the first profile.
