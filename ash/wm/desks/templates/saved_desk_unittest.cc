@@ -73,6 +73,7 @@
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
 #include "components/desks_storage/core/desk_test_util.h"
+#include "components/desks_storage/core/local_desk_data_manager.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -148,8 +149,7 @@ class SavedDeskTest : public OverviewTestBase {
       // We need to add each `app_id` to app registry cache since our desk
       // template serialization requires an updated app cache to get the app
       // info.
-      desks_storage::desk_test_util::AddAppIdToAppRegistryCache(
-          account_id_, cache_.get(), app_id.c_str());
+      saved_desk_test_helper()->AddAppIdToAppRegistryCache(app_id);
 
       for (int32_t window_id = 0; window_id < num_windows[i]; ++window_id) {
         restore_data->AddAppLaunchInfo(
@@ -436,6 +436,10 @@ class SavedDeskTest : public OverviewTestBase {
     // windows don't have app ids, `OverviewGrid` won't consider them supported
     // windows so we need to disable the app id check during tests.
     SetDisableAppIdCheckForDeskTemplates(true);
+
+    // Wait for the desk model to have completed its initialization. Not doing
+    // this would lead to flaky tests.
+    saved_desk_test_helper()->WaitForDeskModel();
   }
 
   void TearDown() override {

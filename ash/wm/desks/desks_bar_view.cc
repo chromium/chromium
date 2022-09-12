@@ -804,10 +804,10 @@ void DesksBarView::Layout() {
 
   // Clip the contents that are outside of the |scroll_view_|'s bounds.
   scroll_view_->layer()->SetMasksToBounds(true);
+  scroll_view_->Layout();
+
   UpdateScrollButtonsVisibility();
   UpdateGradientZone();
-
-  scroll_view_->Layout();
 }
 
 bool DesksBarView::OnMousePressed(const ui::MouseEvent& event) {

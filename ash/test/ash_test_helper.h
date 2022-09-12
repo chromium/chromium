@@ -48,6 +48,7 @@ namespace ash {
 class AppListTestHelper;
 class AmbientAshTestHelper;
 class AshTestUiStabilizer;
+class SavedDeskTestHelper;
 class TestKeyboardControllerObserver;
 class TestNewWindowDelegateProvider;
 class TestWallpaperControllerClient;
@@ -159,6 +160,10 @@ class AshTestHelper : public aura::test::AuraTestHelper {
     return &scoped_bluetooth_config_test_helper_;
   }
 
+  SavedDeskTestHelper* saved_desk_test_helper() {
+    return saved_desk_test_helper_.get();
+  }
+
  private:
   // Scoping objects to manage init/teardown of services.
   class BluezDBusManagerInitializer;
@@ -193,6 +198,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
       test_keyboard_controller_observer_;
   std::unique_ptr<AmbientAshTestHelper> ambient_ash_test_helper_;
   std::unique_ptr<TestWallpaperControllerClient> wallpaper_controller_client_;
+  std::unique_ptr<SavedDeskTestHelper> saved_desk_test_helper_;
 
   // Used only for pixel tests.
   std::unique_ptr<AshTestUiStabilizer> ui_stabilizer_;

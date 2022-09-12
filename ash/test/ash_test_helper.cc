@@ -33,6 +33,7 @@
 #include "ash/test_shell_delegate.h"
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "ash/wm/desks/templates/saved_desk_test_helper.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/run_loop.h"
@@ -150,6 +151,8 @@ void AshTestHelper::SetUp() {
 }
 
 void AshTestHelper::TearDown() {
+  saved_desk_test_helper_.reset();
+
   ambient_ash_test_helper_.reset();
 
   // The AppListTestHelper holds a pointer to the AppListController the Shell
@@ -381,6 +384,8 @@ void AshTestHelper::SetUp(InitParams init_params) {
     DCHECK(init_params.pixel_test_init_params);
     StabilizeUIForPixelTest();
   }
+
+  saved_desk_test_helper_ = std::make_unique<SavedDeskTestHelper>();
 }
 
 display::Display AshTestHelper::GetSecondaryDisplay() const {

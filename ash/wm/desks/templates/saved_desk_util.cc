@@ -6,6 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/session/session_controller.h"
+#include "ash/public/cpp/session/session_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -20,6 +22,14 @@ PrefService* GetPrimaryUserPrefService() {
   return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
 }
 
+bool IsGuestSession() {
+  // User 0 is the current user.
+  const UserIndex user_index = 0;
+  const UserSession* const user_session =
+      Shell::Get()->session_controller()->GetUserSession(user_index);
+  return user_session->user_info.type == user_manager::USER_TYPE_GUEST;
+}
+
 }  // namespace
 
 namespace saved_desk_util {
@@ -29,25 +39,28 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 bool AreDesksTemplatesEnabled() {
-  PrefService* pref_service = GetPrimaryUserPrefService();
-  DCHECK(pref_service);
+  if (IsGuestSession())
+    return false;
 
-  const PrefService::Preference* desk_templates_pref =
-      pref_service->FindPreference(prefs::kDeskTemplatesEnabled);
+  if (PrefService* pref_service = GetPrimaryUserPrefService()) {
+    const PrefService::Preference* desk_templates_pref =
+        pref_service->FindPreference(prefs::kDeskTemplatesEnabled);
+    DCHECK(desk_templates_pref);
 
-  DCHECK(desk_templates_pref);
-
-  if (desk_templates_pref->IsManaged()) {
-    // Let policy settings override flags configuration.
-    return pref_service->GetBoolean(prefs::kDeskTemplatesEnabled);
+    if (desk_templates_pref->IsManaged()) {
+      // Let policy settings override flags configuration.
+      return pref_service->GetBoolean(prefs::kDeskTemplatesEnabled);
+    }
   }
 
-  // Allow the feature to be enabled by user when there is not explicit
-  // policy.
+  // Allow the feature to be enabled by user when there is not explicit policy.
   return features::AreDesksTemplatesEnabled();
 }
 
 bool IsDeskSaveAndRecallEnabled() {
+  if (IsGuestSession())
+    return false;
+
   return features::IsSavedDesksEnabled();
 }
 
