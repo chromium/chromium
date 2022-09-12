@@ -21,13 +21,13 @@ AutofillTableEncryptorFactory* AutofillTableEncryptorFactory::GetInstance() {
 
 std::unique_ptr<AutofillTableEncryptor>
 AutofillTableEncryptorFactory::Create() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return delegate_ ? delegate_->Create() : std::make_unique<SystemEncryptor>();
 }
 
 void AutofillTableEncryptorFactory::SetDelegate(
     std::unique_ptr<Delegate> delegate) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   delegate_ = std::move(delegate);
 }
 

@@ -46,7 +46,7 @@ class AutofillTableEncryptorFactory {
   ~AutofillTableEncryptorFactory();
 
   std::unique_ptr<Delegate> delegate_;
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   friend struct base::DefaultSingletonTraits<AutofillTableEncryptorFactory>;
 };
