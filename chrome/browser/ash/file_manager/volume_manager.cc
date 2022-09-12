@@ -691,8 +691,7 @@ VolumeManager::VolumeManager(
           std::make_unique<DocumentsProviderRootManager>(
               profile_,
               arc::ArcFileSystemOperationRunner::GetForBrowserContext(
-                  profile_))),
-      io_task_controller_() {
+                  profile_))) {
   DCHECK(disk_mount_manager);
 }
 
