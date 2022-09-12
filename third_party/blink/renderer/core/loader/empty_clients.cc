@@ -29,6 +29,7 @@
 
 #include <memory>
 #include "cc/layers/layer.h"
+#include "cc/trees/layer_tree_host.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
