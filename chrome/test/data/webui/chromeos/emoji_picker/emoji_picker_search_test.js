@@ -67,7 +67,8 @@ suite('emoji-search', () => {
       async () => {
         emojiSearch.setSearchQuery('face');
         await waitForCondition(
-            () => findInEmojiPicker('emoji-search', 'emoji-group'));
+            () => findInEmojiPicker(
+                'emoji-search', 'emoji-group[category="emoji"]'));
         const emojiResults = findInEmojiPicker('emoji-search', 'emoji-group')
                                  .shadowRoot.querySelectorAll('.emoji-button');
         assertGT(emojiResults.length, 0);
