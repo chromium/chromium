@@ -61,8 +61,13 @@ id<GREYAction> PageSheetScrollDown() {
   // could be skipped while searching. A smaller value increses the area that is
   // searched, but slows down the scroll. It also causes the page sheet to not
   // expand.
-  CGFloat const kMenuScrollDisplacement = 500;
-  return grey_scrollInDirection(kGREYDirectionDown, kMenuScrollDisplacement);
+  CGFloat menu_scroll_displacement = 500;
+
+  // But for very small devices (like the SE), this is too big.
+  UIWindow* currentWindow = chrome_test_util::GetAnyKeyWindow();
+  if (currentWindow.rootViewController.view.frame.size.height < 600)
+    menu_scroll_displacement = 300;
+  return grey_scrollInDirection(kGREYDirectionDown, menu_scroll_displacement);
 }
 
 // Returns a GREYAction to scroll right (swipe left) for a reasonably small
