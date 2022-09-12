@@ -261,7 +261,7 @@ class CONTENT_EXPORT NotificationDatabase {
 
   State state_ = State::UNINITIALIZED;
 
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Callback to use for recording UKM metrics. Must be posted to the UI thread.
   UkmCallback record_notification_to_ukm_callback_;
