@@ -64,7 +64,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "14a5294gwp",
+          "14a309",
           "--xctest"
         ],
         "isolate_profile_data": true,
@@ -97,7 +97,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_14a5294gwp",
+              "name": "xcode_ios_14a309",
               "path": "Xcode.app"
             },
             {
@@ -122,7 +122,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "14a5294gwp",
+          "14a309",
           "--xctest"
         ],
         "isolate_profile_data": true,
@@ -155,7 +155,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_14a5294gwp",
+              "name": "xcode_ios_14a309",
               "path": "Xcode.app"
             },
             {
