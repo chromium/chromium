@@ -13,14 +13,15 @@
 
 #include "src/webp/encode.h"
 
-#if !defined(WEBP_REDUCE_SIZE)
-
 #include <assert.h>
 #include <stdlib.h>
 
 #include "src/enc/vp8i_enc.h"
+
+#if !defined(WEBP_REDUCE_SIZE)
 #include "src/utils/rescaler_utils.h"
 #include "src/utils/utils.h"
+#endif  // !defined(WEBP_REDUCE_SIZE)
 
 #define HALVE(x) (((x) + 1) >> 1)
 
@@ -56,6 +57,7 @@ static int AdjustAndCheckRectangle(const WebPPicture* const pic,
   return 1;
 }
 
+#if !defined(WEBP_REDUCE_SIZE)
 int WebPPictureCopy(const WebPPicture* src, WebPPicture* dst) {
   if (src == NULL || dst == NULL) return 0;
   if (src == dst) return 1;
@@ -81,6 +83,7 @@ int WebPPictureCopy(const WebPPicture* src, WebPPicture* dst) {
   }
   return 1;
 }
+#endif  // !defined(WEBP_REDUCE_SIZE)
 
 int WebPPictureIsView(const WebPPicture* picture) {
   if (picture == NULL) return 0;
@@ -120,6 +123,7 @@ int WebPPictureView(const WebPPicture* src,
   return 1;
 }
 
+#if !defined(WEBP_REDUCE_SIZE)
 //------------------------------------------------------------------------------
 // Picture cropping
 
@@ -276,23 +280,6 @@ int WebPPictureRescale(WebPPicture* pic, int width, int height) {
 
 int WebPPictureCopy(const WebPPicture* src, WebPPicture* dst) {
   (void)src;
-  (void)dst;
-  return 0;
-}
-
-int WebPPictureIsView(const WebPPicture* picture) {
-  (void)picture;
-  return 0;
-}
-
-int WebPPictureView(const WebPPicture* src,
-                    int left, int top, int width, int height,
-                    WebPPicture* dst) {
-  (void)src;
-  (void)left;
-  (void)top;
-  (void)width;
-  (void)height;
   (void)dst;
   return 0;
 }

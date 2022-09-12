@@ -20,3 +20,4 @@ distribute digital images more efficiently.
 Local changes:
  * Removed documentation and build related files
  * Merged COPYING/PATENTS to LICENSE
+ * Applied https://crrev.com/c/3778892
