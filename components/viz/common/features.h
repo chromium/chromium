@@ -61,6 +61,7 @@ VIZ_COMMON_EXPORT extern const base::Feature kCanSkipRenderPassOverlay;
 VIZ_COMMON_EXPORT extern const base::Feature kDrawPredictedInkPoint;
 VIZ_COMMON_EXPORT extern const base::Feature
     kAllowUndamagedNonrootRenderPassToSkip;
+VIZ_COMMON_EXPORT extern const base::Feature kAggressiveFrameCulling;
 
 VIZ_COMMON_EXPORT extern const char kDraw1Point12Ms[];
 VIZ_COMMON_EXPORT extern const char kDraw2Points6Ms[];
