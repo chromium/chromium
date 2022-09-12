@@ -1840,6 +1840,12 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
     }
   }
 #endif
+
+  // Disabling the StrictMimetypeCheckForWorkerScriptsEnabled enterprise policy
+  // overrides the corresponding RuntimeEnabledFeature (via its Pref).
+  if (!prefs.strict_mime_type_check_for_worker_scripts_enabled) {
+    RuntimeEnabledFeatures::SetStrictMimeTypesForWorkersEnabled(false);
+  }
 }
 
 void WebViewImpl::ThemeChanged() {

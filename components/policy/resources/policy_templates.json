@@ -33248,7 +33248,47 @@ This policy has no effect if the option to keep existing browsing data is not av
       This applies to memory pressure and high efficiency mode discarding.
       A discarded page is unloaded and its resources fully reclaimed. The tab its associated with remains in the tabstrip, but making it visible will trigger a full reload.
       ''',
-    }
+    },
+    {
+      'name': 'StrictMimetypeCheckForWorkerScriptsEnabled',
+      'owners': [
+        'vogelheim@chromium.org',
+        'chrome-security-owp-team@google.com'
+      ],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'example_value': False,
+      'default': True,
+      'items': [
+        {
+          'value': True,
+          'caption': 'Scripts for workers (Web Workers, Service Workers, etc.) require a JavaScript MIME type, like <ph name="MIMETYPE_TEXT_JAVASCRIPT">text/javascript</ph>. Worker scripts with legacy MIME types, like <ph name="MIMETYPE_TEXT_ASCII">text/ascii</ph>, will be rejected.'
+        },
+        {
+          'value': False,
+          'caption': 'Scripts for workers (Web Workers, Service Workers, etc.) use lax MIME type checking. Worker scripts with legacy MIME types, like <ph name="MIMETYPE_TEXT_ASCII">text/ascii</ph>, will work.'
+        }
+      ],
+      'features': {
+        'per_profile': True,
+        'dynamic_refresh': True,
+      },
+      'id': 1013,
+      'supported_on': ['chrome.*:107-', 'chrome_os:107-', 'android:107-'],
+      'future_on': ['fuchsia'],
+      'tags': [],
+      'caption': '''Enable strict MIME type checking for worker scripts''',
+      'desc': '''This policy enables strict MIME type checking for worker scripts.
+
+      When enabled or unset, then worker scripts will use strict MIME type checking for JavaScript, which is the new default behaviour. Worker scripts with legacy MIME types will be rejected.
+
+      When disabled, then worker scripts will use lax MIME type checking, so that worker scripts with legacy MIME types, e.g. <ph name="MIMETYPE_TEXT_ASCII">text/ascii</ph>, will continue to be loaded and executed.
+
+      Browsers traditionally used lax MIME type checking, so that resources with a number of legacy MIME types were supported. E.g. for JavaScript resources, <ph name="MIMETYPE_TEXT_ASCII">text/ascii</ph> is a legacy supported MIME type. This may cause security issues, by allowing to load resources as scripts that were never intended to be used as such. Chrome will transition to use strict MIME type checking in the near future. The enabled policy will track the default behaviour. Disabling this policy allows administrators to retain the legacy behaviour, if desired.
+
+      See https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage for details about JavaScript / ECMAScript media types.
+      '''
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -34257,6 +34297,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 438, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 1012,
+  'highest_id_currently_used': 1013,
   'highest_atomic_group_id_currently_used': 43
 }

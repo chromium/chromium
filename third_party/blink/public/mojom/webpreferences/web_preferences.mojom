@@ -440,4 +440,6 @@ struct WebPreferences {
   // window.open or via <a target=...>) should be renderer-wide (i.e. going
   // beyond the usual opener-relationship-based BrowsingInstance boundaries).
   bool renderer_wide_named_frame_lookup;
+
+  bool strict_mime_type_check_for_worker_scripts_enabled = true;
 };

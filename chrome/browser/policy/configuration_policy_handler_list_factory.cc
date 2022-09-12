@@ -1742,6 +1742,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     performance_manager::user_tuning::prefs::kManagedTabDiscardingExceptions,
     base::Value::Type::LIST },
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  { key::kStrictMimetypeCheckForWorkerScriptsEnabled,
+    prefs::kStrictMimetypeCheckForWorkerScriptsEnabled,
+    base::Value::Type::BOOLEAN},
 };
 // clang-format on
 

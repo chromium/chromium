@@ -1443,6 +1443,9 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
 
   // TODO(crbug.com/1277431): Disable it by default in M109.
   registry->RegisterBooleanPref(policy::policy_prefs::kEventPathEnabled, true);
+
+  registry->RegisterBooleanPref(
+      prefs::kStrictMimetypeCheckForWorkerScriptsEnabled, true);
 }
 
 // static

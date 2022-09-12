@@ -3584,4 +3584,7 @@ const char kHighEfficiencyChipExpandedCount[] =
     "high_efficiency.chip_expanded_count";
 #endif
 
+const char kStrictMimetypeCheckForWorkerScriptsEnabled[] =
+    "strict_mime_type_check_for_worker_scripts_enabled";
+
 }  // namespace prefs

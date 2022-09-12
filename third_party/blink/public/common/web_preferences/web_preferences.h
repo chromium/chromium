@@ -356,6 +356,10 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // beyond the usual opener-relationship-based BrowsingInstance boundaries).
   bool renderer_wide_named_frame_lookup = false;
 
+  // Whether MIME type checking for worker scripts is strict (true) or lax
+  // (false). Used by StrictMimetypeCheckForWorkerScriptsEnabled policy.
+  bool strict_mime_type_check_for_worker_scripts_enabled = true;
+
   // We try to keep the default values the same as the default values in
   // chrome, except for the cases where it would require lots of extra work for
   // the embedder to use the same default value.
