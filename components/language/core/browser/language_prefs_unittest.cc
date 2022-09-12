@@ -71,15 +71,9 @@ TEST_F(LanguagePrefsTest, UpdateLanguageList) {
   content_languages_tester.ExpectAcceptLanguagePrefs("en,ja,it");
 
   // Locale-specific codes.
-  // The list is exanded by adding the base languagese.
   languages = {"en-US", "ja", "en-CA", "fr-CA"};
   language_prefs_->SetUserSelectedLanguagesList(languages);
   content_languages_tester.ExpectAcceptLanguagePrefs("en-US,ja,en-CA,fr-CA");
-
-  // List already expanded.
-  languages = {"en-US", "en", "fr", "fr-CA"};
-  language_prefs_->SetUserSelectedLanguagesList(languages);
-  content_languages_tester.ExpectAcceptLanguagePrefs("en-US,en,fr,fr-CA");
 }
 
 TEST_F(LanguagePrefsTest, UpdateForcedLanguageList) {
