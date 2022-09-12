@@ -431,11 +431,10 @@ bool AssistiveSuggester::HandleLongpressEnabledKeyEvent(
     return true;  // Do not propagate this event.
   }
 
-  const char c = event.GetCharacter();
   // Process longpress keydown event.
-  if (current_longpress_char_ == absl::nullopt &&
+  if (current_longpress_keydown_ == absl::nullopt &&
       event.type() == ui::EventType::ET_KEY_PRESSED) {
-    current_longpress_char_ = c;
+    current_longpress_keydown_ = event;
     longpress_timer_.Start(
         FROM_HERE, kLongpressActivationDelay,
         base::BindOnce(&AssistiveSuggester::OnLongpressDetected,
@@ -445,24 +444,24 @@ bool AssistiveSuggester::HandleLongpressEnabledKeyEvent(
 
   // Process longpress interrupted event (key press up before timer callback
   // fired)
-  if (current_longpress_char_.has_value() &&
+  if (current_longpress_keydown_.has_value() &&
       event.type() == ui::EventType::ET_KEY_RELEASED &&
-      *current_longpress_char_ == c) {
-    current_longpress_char_ = absl::nullopt;
+      current_longpress_keydown_->code() == event.code()) {
+    current_longpress_keydown_ = absl::nullopt;
     longpress_timer_.Stop();
   }
   return false;
 }
 
 void AssistiveSuggester::OnLongpressDetected() {
-  if (!current_longpress_char_.has_value()) {
+  if (!current_longpress_keydown_.has_value()) {
     return;
   }
   if (longpress_diacritics_suggester_.TrySuggestOnLongpress(
-          *current_longpress_char_)) {
+          current_longpress_keydown_->GetCharacter())) {
     current_suggester_ = &longpress_diacritics_suggester_;
   }
-  current_longpress_char_ = absl::nullopt;
+  current_longpress_keydown_ = absl::nullopt;
 }
 
 void AssistiveSuggester::OnExternalSuggestionsUpdated(

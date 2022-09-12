@@ -196,8 +196,9 @@ class AssistiveSuggester : public SuggestionsSource {
   // ID of the focused text field, nullopt if none focused.
   absl::optional<int> focused_context_id_;
 
-  // Char of the currently held down key. nullopt if no longpress in progress.
-  absl::optional<char> current_longpress_char_;
+  // KeyEvent of the held down key at key down. nullopt if no longpress in
+  // progress.
+  absl::optional<ui::KeyEvent> current_longpress_keydown_;
 
   // Timer for longpress. Starts when key is held down. Fires when successfully
   // held down for a specified longpress duration.
