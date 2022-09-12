@@ -32,8 +32,8 @@ default_chrome_public_jinja_variables = [
 # The unwind file is ~2MB in apk, which is fine for Canary.
 _add_unwind_tables_in_chrome_32bit_apk =
     is_official_build && (target_cpu == "arm" || target_cpu == "arm64") &&
-    (android_channel == "default" || android_channel == "canary" ||
-     android_channel == "dev")
+    (android_channel == "default" || android_channel == "beta" ||
+     android_channel == "canary" || android_channel == "dev")
 
 # A template used to declare any target that will implement a full Chromium
 # or Chrome application, either as an APK, or an app bundle module.
