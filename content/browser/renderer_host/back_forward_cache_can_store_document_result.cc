@@ -450,57 +450,92 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
     // extension related reasons so that its presence would not be visible to
     // the API.
     case Reason::kNotPrimaryMainFrame:
-    case Reason::kBackForwardCacheDisabled:
+      return "Not main frame";
     case Reason::kRelatedActiveContentsExist:
+      return "Related active contents";
     case Reason::kHTTPStatusNotOK:
+      return "HTTP status not OK";
     case Reason::kSchemeNotHTTPOrHTTPS:
+      return "Not HTTP or HTTPS";
     case Reason::kLoading:
+      return "Loading";
     case Reason::kWasGrantedMediaAccess:
-    case Reason::kDisableForRenderFrameHostCalled:
-    case Reason::kDomainNotAllowed:
+      return "Granted media access";
+    case Reason::kBlocklistedFeatures:
+      // This should not be reported. Instead actual feature list will be
+      // reported.
+      return "Blocklisted feature";
     case Reason::kHTTPMethodNotGET:
+      return "HTTP method not GET";
     case Reason::kSubframeIsNavigating:
+      return "Subframe is navigating";
     case Reason::kTimeout:
+      return "Timeout";
     case Reason::kCacheLimit:
     case Reason::kForegroundCacheLimit:
+      return "Cache limit";
     case Reason::kJavaScriptExecution:
-    case Reason::kRendererProcessKilled:
-    case Reason::kRendererProcessCrashed:
-    case Reason::kSchedulerTrackedFeatureUsed:
-    case Reason::kConflictingBrowsingInstance:
+      return "JavaScript execution";
     case Reason::kCacheFlushed:
+      return "Cache flushed";
     case Reason::kServiceWorkerVersionActivation:
+      return "ServiceWorker version activation";
     case Reason::kSessionRestored:
-    case Reason::kUnknown:
+      return "Session restored";
     case Reason::kServiceWorkerPostMessage:
+      return "ServiceWorker postMessage";
     case Reason::kEnteredBackForwardCacheBeforeServiceWorkerHostAdded:
+      return "ServiceWorker was not added before cache";
     case Reason::kNotMostRecentNavigationEntry:
+      return "Not most recent navigation entry";
     case Reason::kServiceWorkerClaim:
-    case Reason::kIgnoreEventAndEvict:
+      return "ServiceWorker claim";
     case Reason::kHaveInnerContents:
-    case Reason::kTimeoutPuttingInCache:
+      return "Have inner contents";
     case Reason::kBackForwardCacheDisabledByLowMemory:
-    case Reason::kBackForwardCacheDisabledByCommandLine:
+      return "Low memory device";
     case Reason::kNavigationCancelledWhileRestoring:
+      return "Navigation cancelled";
+    case Reason::kUserAgentOverrideDiffers:
+      return "UserAgent override differs";
+    case Reason::kServiceWorkerUnregistration:
+      return "ServiceWorker unregistration";
+    case Reason::kNoResponseHead:
+      return "No response head";
+    case Reason::kErrorDocument:
+      return "Error document";
+    case Reason::kFencedFramesEmbedder:
+      return "Fenced frames embedder";
+    case Reason::kBackForwardCacheDisabled:
+    case Reason::kBackForwardCacheDisabledByCommandLine:
+      return "Back/forward cache disabled";
+    case Reason::kUnloadHandlerExistsInMainFrame:
+    case Reason::kUnloadHandlerExistsInSubFrame:
+      return "Unload handler";
     case Reason::kNetworkRequestRedirected:
     case Reason::kNetworkRequestTimeout:
     case Reason::kNetworkExceedsBufferLimit:
-    case Reason::kUserAgentOverrideDiffers:
     case Reason::kNetworkRequestDatapipeDrainedAsBytesConsumer:
-    case Reason::kBrowsingInstanceNotSwapped:
-    case Reason::kBackForwardCacheDisabledForDelegate:
-    case Reason::kUnloadHandlerExistsInMainFrame:
-    case Reason::kUnloadHandlerExistsInSubFrame:
-    case Reason::kServiceWorkerUnregistration:
+      return "Outstanding network request not handled";
     case Reason::kCacheControlNoStore:
     case Reason::kCacheControlNoStoreCookieModified:
     case Reason::kCacheControlNoStoreHTTPOnlyCookieModified:
-    case Reason::kNoResponseHead:
-    case Reason::kErrorDocument:
-    case Reason::kFencedFramesEmbedder:
-      return "Other";
-    case Reason::kBlocklistedFeatures:
-      return DescribeFeatures(blocklisted_features_);
+      return "Cache-control:no-store";
+    case Reason::kBackForwardCacheDisabledForDelegate:
+    case Reason::kBrowsingInstanceNotSwapped:
+    case Reason::kConflictingBrowsingInstance:
+    case Reason::kDisableForRenderFrameHostCalled:
+    // DisabledForRenderFrameHost contains reasons related to extensions. Mask
+    // all the reasons as "Internal error".
+    case Reason::kDomainNotAllowed:
+    case Reason::kIgnoreEventAndEvict:
+    case Reason::kRendererProcessKilled:
+    case Reason::kRendererProcessCrashed:
+    // This is being removed.
+    case Reason::kSchedulerTrackedFeatureUsed:
+    case Reason::kTimeoutPuttingInCache:
+    case Reason::kUnknown:
+      return "Internal error";
   }
 }
 
