@@ -1405,7 +1405,8 @@ bool SchedulerStateMachine::ShouldBlockDeadlineIndefinitely() const {
 }
 
 bool SchedulerStateMachine::IsDrawThrottled() const {
-  return pending_submit_frames_ >= kMaxPendingSubmitFrames;
+  return pending_submit_frames_ >= kMaxPendingSubmitFrames &&
+         !settings_.disable_frame_rate_limit;
 }
 
 void SchedulerStateMachine::SetVisible(bool visible) {

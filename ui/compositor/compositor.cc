@@ -281,6 +281,9 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
     slow_animations_ = std::make_unique<ScopedAnimationDurationScaleMode>(
         ScopedAnimationDurationScaleMode::SLOW_DURATION);
   }
+
+  settings.disable_frame_rate_limit =
+      command_line->HasSwitch(switches::kDisableFrameRateLimit);
 }
 
 Compositor::~Compositor() {

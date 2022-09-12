@@ -215,6 +215,9 @@ class CC_EXPORT LayerTreeSettings {
 
   // This corresponds to the ScrollUpdateOptimizations feature.
   bool enable_scroll_update_optimizations = false;
+
+  // Whether to disable the frame rate limit in the scheduler.
+  bool disable_frame_rate_limit = false;
 };
 
 class CC_EXPORT LayerListSettings : public LayerTreeSettings {

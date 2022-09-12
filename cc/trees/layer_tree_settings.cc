@@ -28,6 +28,7 @@ SchedulerSettings LayerTreeSettings::ToSchedulerSettings() const {
       using_synchronous_renderer_compositor;
   scheduler_settings.wait_for_all_pipeline_stages_before_draw =
       wait_for_all_pipeline_stages_before_draw;
+  scheduler_settings.disable_frame_rate_limit = disable_frame_rate_limit;
   return scheduler_settings;
 }
 

@@ -29,6 +29,7 @@ SchedulerSettings::AsValue() const {
                     using_synchronous_renderer_compositor);
   state->SetBoolean("wait_for_all_pipeline_stages_before_draw",
                     wait_for_all_pipeline_stages_before_draw);
+  state->SetBoolean("disable_frame_rate_limit", disable_frame_rate_limit);
   return std::move(state);
 }
 

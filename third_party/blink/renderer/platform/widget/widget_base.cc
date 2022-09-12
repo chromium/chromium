@@ -19,7 +19,6 @@
 #include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/ukm_manager.h"
 #include "components/viz/common/features.h"
-#include "components/viz/common/switches.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
@@ -603,8 +602,6 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
               .InitWithNewPipeAndPassReceiver(),
           std::move(render_frame_metadata_client_remote));
 
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
   auto params = std::make_unique<
       cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams>();
   params->io_thread_id = Platform::Current()->GetIOThreadId();
@@ -625,7 +622,7 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
   // back begin frame source, but using a synthetic begin frame source here
   // reduces latency when in this mode (at least for frames starting--it
   // potentially increases it for input on the other hand.)
-  if (command_line.HasSwitch(::switches::kDisableFrameRateLimit))
+  if (LayerTreeHost()->GetSettings().disable_frame_rate_limit)
     params->synthetic_begin_frame_source = CreateSyntheticBeginFrameSource();
 
   params->client_name = client_name;

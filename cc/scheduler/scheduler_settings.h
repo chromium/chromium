@@ -49,6 +49,11 @@ class CC_EXPORT SchedulerSettings {
 
   int maximum_number_of_failed_draws_before_draw_is_forced = 3;
 
+  // Whether to disable the limit by which frames are drawn. If this is set,
+  // draws are not throttled when pending frames exceed the allowed maximum, as
+  // they would be under the default settings.
+  bool disable_frame_rate_limit = false;
+
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat> AsValue() const;
 };
 
