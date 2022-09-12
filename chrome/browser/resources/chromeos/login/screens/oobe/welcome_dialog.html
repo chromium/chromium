@@ -189,11 +189,12 @@
           </oobe-icon-button>
         </div>
         <div id="bottomButtons">
+          <template is="dom-if" if="[[isQuickStartEnabled_]]">
             <oobe-text-button id="quickStart"
                on-click="onQuickStartClicked_"
-               hidden="[[!isQuickStartEnabled]]"
                text-key="welcomeScreenQuickStart">
             </oobe-text-button>
+          </template>
           <oobe-text-button id="getStarted"
               inverse on-click="onNextClicked_"
               text-key="welcomeScreenGetStarted">

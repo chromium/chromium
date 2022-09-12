@@ -5,10 +5,8 @@
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include <memory>
 
-#include "base/test/bind.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace {
@@ -137,28 +135,4 @@ TEST_F(TargetDeviceBootstrapControllerTest, AuthenticateConnection) {
   EXPECT_EQ(fake_observer_->last_status.step, Step::CONNECTED);
   EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
       fake_observer_->last_status.payload));
-}
-
-TEST_F(TargetDeviceBootstrapControllerTest, FeatureSupportStatus) {
-  absl::optional<TargetDeviceConnectionBroker::FeatureSupportStatus>
-      feature_status;
-
-  connection_broker()->set_feature_support_status(
-      ash::quick_start::FakeTargetDeviceConnectionBroker::FeatureSupportStatus::
-          kUndetermined);
-
-  bootstrap_controller_->GetFeatureSupportStatusAsync(
-      base::BindLambdaForTesting(
-          [&](TargetDeviceConnectionBroker::FeatureSupportStatus status) {
-            feature_status = status;
-          }));
-  EXPECT_FALSE(feature_status.has_value());
-
-  connection_broker()->set_feature_support_status(
-      ash::quick_start::FakeTargetDeviceConnectionBroker::FeatureSupportStatus::
-          kNotSupported);
-  ASSERT_TRUE(feature_status.has_value());
-  EXPECT_EQ(feature_status.value(),
-            ash::quick_start::FakeTargetDeviceConnectionBroker::
-                FeatureSupportStatus::kNotSupported);
 }

@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
+#include "components/qr_code_generator/qr_code_generator.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace ash::quick_start {
@@ -60,9 +61,6 @@ class TargetDeviceBootstrapController
 
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
-
-  void GetFeatureSupportStatusAsync(
-      TargetDeviceConnectionBroker::FeatureSupportStatusCallback callback);
 
   // This function would crash (if DCHECKs are on) in case there are existing
   // valid weakptrs.

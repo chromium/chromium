@@ -383,23 +383,12 @@ void WelcomeScreen::ShowImpl() {
       base::DefaultTickClock::GetInstance(), this);
   if (view_)
     view_->Show();
-  if (features::IsOobeQuickStartEnabled()) {
-    bootstrap_controller_ =
-        LoginDisplayHost::default_host()->GetQuickStartBootstrapController();
-    bootstrap_controller_->GetFeatureSupportStatusAsync(
-        base::BindOnce(&WelcomeScreen::OnFeatureSupportStatusDetermined,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
 }
 
 void WelcomeScreen::HideImpl() {
   if (view_)
     view_->Hide();
   CancelChromeVoxHintIdleDetection();
-
-  if (features::IsOobeQuickStartEnabled()) {
-    bootstrap_controller_.reset();
-  }
 }
 
 void WelcomeScreen::OnUserActionDeprecated(const std::string& action_id) {
@@ -538,18 +527,6 @@ void WelcomeScreen::InputMethodChanged(
     view_->SetInputMethodId(
         manager->GetActiveIMEState()->GetCurrentInputMethod().id());
   }
-}
-
-void WelcomeScreen::OnFeatureSupportStatusDetermined(
-    quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus status) {
-  if (status != quick_start::TargetDeviceConnectionBroker::
-                    FeatureSupportStatus::kSupported) {
-    return;
-  }
-  if (!view_) {
-    return;
-  }
-  view_->SetQuickStartEnabled();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -9,7 +9,6 @@
 #include "base/containers/contains.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/authenticated_connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/incoming_connection.h"
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
 #include "components/qr_code_generator/qr_code_generator.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -48,11 +47,6 @@ void TargetDeviceBootstrapController::AddObserver(Observer* obs) {
 
 void TargetDeviceBootstrapController::RemoveObserver(Observer* obs) {
   observers_.RemoveObserver(obs);
-}
-
-void TargetDeviceBootstrapController::GetFeatureSupportStatusAsync(
-    TargetDeviceConnectionBroker::FeatureSupportStatusCallback callback) {
-  connection_broker_->GetFeatureSupportStatusAsync(std::move(callback));
 }
 
 base::WeakPtr<TargetDeviceBootstrapController>

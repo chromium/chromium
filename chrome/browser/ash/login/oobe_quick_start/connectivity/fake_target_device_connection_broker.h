@@ -32,15 +32,7 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
       return instances_;
     }
 
-    void set_initial_feature_support_status(
-        FeatureSupportStatus initial_feature_support_status) {
-      initial_feature_support_status_ = initial_feature_support_status;
-    }
-
    private:
-    FeatureSupportStatus initial_feature_support_status_ =
-        FeatureSupportStatus::kSupported;
-
     std::unique_ptr<TargetDeviceConnectionBroker> CreateInstance(
         RandomSessionId session_id) override;
 
@@ -77,7 +69,6 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
 
   void set_feature_support_status(FeatureSupportStatus feature_support_status) {
     feature_support_status_ = feature_support_status;
-    MaybeNotifyFeatureStatus();
   }
 
   size_t num_start_advertising_calls() const {

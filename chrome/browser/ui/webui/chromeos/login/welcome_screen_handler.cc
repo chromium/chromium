@@ -230,7 +230,9 @@ void WelcomeScreenHandler::DeclareLocalizedValues(
   builder->Add("deviceRequisitionSharkPromptText",
                IDS_ENTERPRISE_DEVICE_REQUISITION_SHARK_PROMPT_TEXT);
 
-  builder->Add("welcomeScreenQuickStart", IDS_LOGIN_GET_STARTED);
+  if (ash::features::IsOobeQuickStartEnabled()) {
+    builder->Add("welcomeScreenQuickStart", IDS_LOGIN_GET_STARTED);
+  }
 }
 
 void WelcomeScreenHandler::DeclareJSCallbacks() {
@@ -292,6 +294,7 @@ void WelcomeScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {
                                     input_method_manager));
   dict->Set("timezoneList", GetTimezoneList());
   dict->Set("demoModeCountryList", DemoSession::GetCountryList());
+  dict->Set("isQuickStartEnabled", ash::features::IsOobeQuickStartEnabled());
 }
 
 void WelcomeScreenHandler::InitializeDeprecated() {
@@ -338,11 +341,6 @@ void WelcomeScreenHandler::GiveChromeVoxHint() {
 
 void WelcomeScreenHandler::CancelChromeVoxHintIdleDetection() {
   screen_->CancelChromeVoxHintIdleDetection();
-}
-
-void WelcomeScreenHandler::SetQuickStartEnabled() {
-  DCHECK(features::IsOobeQuickStartEnabled());
-  CallJS("login.WelcomeScreen.setQuickStartEnabled");
 }
 
 void WelcomeScreenHandler::HandleRecordChromeVoxHintSpokenSuccess() {

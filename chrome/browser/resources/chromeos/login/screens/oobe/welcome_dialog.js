@@ -65,7 +65,9 @@ OobeWelcomeDialogBase.$;
         readOnly: true,
       },
 
-      isQuickStartEnabled: Boolean,
+      isQuickStartEnabled_: {
+        type: Boolean,
+      },
     };
   }
 
@@ -85,7 +87,7 @@ OobeWelcomeDialogBase.$;
      */
     this.focusedElement_ = null;
 
-    this.isQuickStartEnabled = false;
+    this.isQuickStartEnabled_ = loadTimeData.getBoolean('isQuickStartEnabled');
   }
 
   onBeforeShow() {
@@ -114,7 +116,7 @@ OobeWelcomeDialogBase.$;
   }
 
   onQuickStartClicked_() {
-    assert(this.isQuickStartEnabled);
+    assert(this.isQuickStartEnabled_);
     this.dispatchEvent(new CustomEvent(
         'quick-start-clicked', {bubbles: true, composed: true}));
   }

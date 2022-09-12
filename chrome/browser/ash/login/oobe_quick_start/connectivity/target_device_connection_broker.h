@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_TARGET_DEVICE_CONNECTION_BROKER_H_
 #define CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_TARGET_DEVICE_CONNECTION_BROKER_H_
 
-#include <vector>
-
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 
@@ -86,17 +84,13 @@ class TargetDeviceConnectionBroker {
     virtual void OnConnectionClosed(const std::string& source_device_id) = 0;
   };
 
-  TargetDeviceConnectionBroker();
-  virtual ~TargetDeviceConnectionBroker();
+  TargetDeviceConnectionBroker() = default;
+  virtual ~TargetDeviceConnectionBroker() = default;
 
   // Checks to see whether the feature can be supported on the device's
   // hardware. The feature is supported if Bluetooth is supported and an adapter
   // is present.
   virtual FeatureSupportStatus GetFeatureSupportStatus() const = 0;
-
-  using FeatureSupportStatusCallback =
-      base::OnceCallback<void(FeatureSupportStatus status)>;
-  void GetFeatureSupportStatusAsync(FeatureSupportStatusCallback callback);
 
   // Will kick off Fast Pair and Nearby Connections advertising.
   // Clients can use the result of |on_start_advertising_callback| to
@@ -116,12 +110,6 @@ class TargetDeviceConnectionBroker {
   // desired connection, or in error/edge cases, e.g., the user exits the UI.
   virtual void StopAdvertising(
       base::OnceClosure on_stop_advertising_callback) = 0;
-
- protected:
-  void MaybeNotifyFeatureStatus();
-
- private:
-  std::vector<FeatureSupportStatusCallback> feature_status_callbacks_;
 };
 
 }  // namespace ash::quick_start
