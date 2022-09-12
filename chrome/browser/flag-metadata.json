@@ -791,7 +791,7 @@
   {
     "name": "bubble-rich-iph",
     "owners": ["christianxu", "lpromero", "bling-flags@google.com"],
-    "expiry_milestone": 106
+    "expiry_milestone": 110
   },
   {
     "name": "bulk-tab-restore-android",
