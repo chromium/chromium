@@ -770,6 +770,25 @@ void WebAppIntegrationTestDriver::AcceptAppIdUpdateDialog() {
   AfterStateChangeAction();
 }
 
+void WebAppIntegrationTestDriver::AwaitManifestUpdate(Site site) {
+  if (!BeforeStateChangeAction(__FUNCTION__))
+    return;
+  AppId app_id = GetAppIdBySiteMode(site);
+  ASSERT_TRUE(provider()->registrar().GetAppById(app_id));
+  if (!previous_manifest_updates_.contains(app_id)) {
+    waiting_for_update_id_ = app_id;
+    waiting_for_update_run_loop_ = std::make_unique<base::RunLoop>();
+    Browser* browser = GetBrowserForAppId(app_id);
+    while (browser != nullptr) {
+      delegate_->CloseBrowserSynchronously(browser);
+      browser = GetBrowserForAppId(app_id);
+    }
+    waiting_for_update_run_loop_->Run();
+    waiting_for_update_run_loop_.reset();
+  }
+  AfterStateChangeAction();
+}
+
 void WebAppIntegrationTestDriver::CloseCustomToolbar() {
   if (!BeforeStateChangeAction(__FUNCTION__))
     return;
@@ -2392,18 +2411,12 @@ void WebAppIntegrationTestDriver::CheckWindowDisplayStandalone() {
 void WebAppIntegrationTestDriver::OnWebAppManifestUpdated(
     const AppId& app_id,
     base::StringPiece old_name) {
+  LOG(INFO) << "Manifest update received for " << app_id << ".";
   DCHECK_EQ(1ul, delegate_->GetAllProfiles().size())
       << "Manifest update waiting only supported on single profile tests.";
-  bool is_waiting = app_ids_with_pending_manifest_updates_.erase(app_id);
-  // The "create shortcut" behavior can cause issues with manifest update
-  // occurring when the "create shortcut" document url matches the manifest
-  // start_url. So allow random updates, but log in case of other errors.
-  if (!is_waiting) {
-    LOG(INFO) << "Received possibly unexpected manifest update for app "
-              << old_name;
-    return;
-  }
-  if (waiting_for_update_id_ && app_id == waiting_for_update_id_.value()) {
+
+  previous_manifest_updates_.insert(app_id);
+  if (waiting_for_update_id_ == app_id) {
     DCHECK(waiting_for_update_run_loop_);
     waiting_for_update_run_loop_->Quit();
     waiting_for_update_id_ = absl::nullopt;
@@ -2457,7 +2470,6 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
   if (delegate_->IsSyncTest())
     delegate_->AwaitWebAppQuiescence();
   FlushShortcutTasks();
-  MaybeWaitForManifestUpdates();
   after_state_change_action_state_ = ConstructStateSnapshot();
 }
 
@@ -2735,56 +2747,18 @@ void WebAppIntegrationTestDriver::UninstallPolicyAppById(const AppId& id) {
     active_app_id_.clear();
 }
 
-bool WebAppIntegrationTestDriver::AreNoAppWindowsOpen(Profile* profile,
-                                                      const AppId& app_id) {
-  auto* browser_list = BrowserList::GetInstance();
-  for (Browser* browser : *browser_list) {
-    if (browser->IsAttemptingToCloseBrowser())
-      continue;
-    if (AppBrowserController::IsForWebApp(browser, app_id))
-      return false;
-  }
-  return true;
-}
-
 void WebAppIntegrationTestDriver::ForceUpdateManifestContents(
     Site site,
     const GURL& app_url_with_manifest_param) {
-  absl::optional<AppState> app_state = GetAppBySiteMode(
-      before_state_change_action_state_.get(), profile(), site);
-  ASSERT_TRUE(app_state.has_value()) << static_cast<int>(site);
-  auto app_id = app_state->id;
+  auto app_id = GetAppIdBySiteMode(site);
   active_app_id_ = app_id;
-  app_ids_with_pending_manifest_updates_.insert(app_id);
-
   // Manifest updates must occur as the first navigation after a webapp is
   // installed, otherwise the throttle is tripped.
   ASSERT_FALSE(provider()->manifest_update_manager().IsUpdateConsumed(app_id));
+  ASSERT_FALSE(
+      provider()->manifest_update_manager().IsUpdateTaskPending(app_id));
   NavigateTabbedBrowserToSite(app_url_with_manifest_param,
                               NavigationMode::kCurrentTab);
-}
-
-void WebAppIntegrationTestDriver::MaybeWaitForManifestUpdates() {
-  if (delegate_->GetAllProfiles().size() > 1) {
-    return;
-  }
-  bool continue_checking_for_updates = true;
-  while (continue_checking_for_updates) {
-    continue_checking_for_updates = false;
-    for (const AppId& app_id : app_ids_with_pending_manifest_updates_) {
-      if (AreNoAppWindowsOpen(profile(), app_id)) {
-        waiting_for_update_id_ = absl::make_optional(app_id);
-        waiting_for_update_run_loop_ = std::make_unique<base::RunLoop>();
-        waiting_for_update_run_loop_->Run();
-        waiting_for_update_run_loop_ = nullptr;
-        DCHECK(!waiting_for_update_id_);
-        // To prevent iteration-during-modification, break and restart
-        // the loop.
-        continue_checking_for_updates = true;
-        break;
-      }
-    }
-  }
 }
 
 void WebAppIntegrationTestDriver::MaybeNavigateTabbedBrowserInScope(Site site) {
@@ -3041,6 +3015,10 @@ void WebAppIntegrationTest::SetUpCommandLine(base::CommandLine* command_line) {
 
 Browser* WebAppIntegrationTest::CreateBrowser(Profile* profile) {
   return InProcessBrowserTest::CreateBrowser(profile);
+}
+
+void WebAppIntegrationTest::CloseBrowserSynchronously(Browser* browser) {
+  InProcessBrowserTest::CloseBrowserSynchronously(browser);
 }
 
 void WebAppIntegrationTest::AddBlankTabAndShow(Browser* browser) {

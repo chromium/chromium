@@ -115,6 +115,10 @@ bool ManifestUpdateManager::IsUpdateConsumed(const AppId& app_id) {
   return false;
 }
 
+bool ManifestUpdateManager::IsUpdateTaskPending(const AppId& app_id) {
+  return base::Contains(tasks_, app_id);
+}
+
 // WebAppInstallManager:
 void ManifestUpdateManager::OnWebAppWillBeUninstalled(const AppId& app_id) {
   DCHECK(started_);
@@ -191,6 +195,9 @@ void ManifestUpdateManager::ResetManifestThrottleForTesting(
   if (it != last_update_check_.end()) {
     last_update_check_.erase(app_id);
   }
+  // Manifest update scheduling can still fail if there is an existing tasks.
+  // Destroy this to ensure the next load will trigger update.
+  tasks_.erase(app_id);
 }
 
 }  // namespace web_app

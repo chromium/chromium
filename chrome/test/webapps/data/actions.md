@@ -52,9 +52,9 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | |
 | # Install |
 | install_locally | Site |  | 46 | Implemented | Find the app in the app list (chrome://apps) and install it by right-clicking on the app and selecting the 'install' option. Win/Mac/Linux only. |  |
-| install_omnibox_icon | PromotableSite |  | 31 | Implemented |  |  |
+| install_omnibox_icon | InstallableSite |  | 31 | Implemented |  |  |
 | install_policy_app | Site, ShortcutOptions, WindowOptions |  | 32 | Implemented | Add a force-installed enterprise policy site to the user profile (must be managed profile). |  |
-| install_menu_option | PromotableSite |  | 47 | Implemented |  |  |
+| install_menu_option | InstallableSite |  | 47 | Implemented |  |  |
 | install_no_shortcut | Site | install_policy_app($1, NoShortcut, WindowOptions::All) | 56 | Parameterized |  |  |
 | install_tabbed_no_shortcut | Site | install_policy_app($1, NoShortcut, Browser) | 129 | Parameterized | All installation methods that result in a tabbed webapp without shortcut. |  |
 | install_windowed_no_shortcut | Site | install_policy_app($1, NoShortcut, Windowed) | 131 | Parameterized | All installation methods that result in a windowed webapp without shortcut. |  |

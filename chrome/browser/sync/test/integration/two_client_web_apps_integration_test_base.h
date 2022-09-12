@@ -22,6 +22,7 @@ class TwoClientWebAppsIntegrationTestBase
 
   // WebAppIntegrationTestDriver::TestDelegate:
   Browser* CreateBrowser(Profile* profile) override;
+  void CloseBrowserSynchronously(Browser* browser) override;
   void AddBlankTabAndShow(Browser* browser) override;
   const net::EmbeddedTestServer* EmbeddedTestServer() const override;
   std::vector<Profile*> GetAllProfiles() override;

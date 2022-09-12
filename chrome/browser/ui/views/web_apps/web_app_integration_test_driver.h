@@ -182,6 +182,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
    public:
     // Exposing normal functionality of testing::InProcBrowserTest:
     virtual Browser* CreateBrowser(Profile* profile) = 0;
+    virtual void CloseBrowserSynchronously(Browser* browser) = 0;
     virtual void AddBlankTabAndShow(Browser* browser) = 0;
     virtual const net::EmbeddedTestServer* EmbeddedTestServer() const = 0;
     virtual std::vector<Profile*> GetAllProfiles() = 0;
@@ -210,6 +211,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
 
   // State change actions:
   void AcceptAppIdUpdateDialog();
+  void AwaitManifestUpdate(Site site_mode);
   void CloseCustomToolbar();
   void ClosePwa();
   void DisableRunOnOsLogin(Site site);
@@ -341,9 +343,6 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void ApplyRunOnOsLoginPolicy(Site site, const char* policy);
 
   void UninstallPolicyAppById(const AppId& id);
-  // This action only works if no navigations to the given app_url occur
-  // between app installation and calls to this action.
-  bool AreNoAppWindowsOpen(Profile* profile, const AppId& app_id);
   void ForceUpdateManifestContents(Site site,
                                    const GURL& app_url_with_manifest_param);
   void MaybeWaitForManifestUpdates();
@@ -389,10 +388,6 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
 
   base::flat_set<AppId> previous_manifest_updates_;
 
-  // Variables used to facilitate waiting for manifest updates, as there isn't
-  // a formal 'action' that a user can take to wait for this, as it happens
-  // behind the scenes.
-  base::flat_set<AppId> app_ids_with_pending_manifest_updates_;
   // |waiting_for_update_*| variables are either all populated or all not
   // populated. These signify that the test is currently waiting for the
   // given |waiting_for_update_id_| to receive an update before continuing.
@@ -454,6 +449,7 @@ class WebAppIntegrationTest : public InProcessBrowserTest,
 
   // WebAppIntegrationTestDriver::TestDelegate:
   Browser* CreateBrowser(Profile* profile) override;
+  void CloseBrowserSynchronously(Browser* browser) override;
   void AddBlankTabAndShow(Browser* browser) override;
   const net::EmbeddedTestServer* EmbeddedTestServer() const override;
 

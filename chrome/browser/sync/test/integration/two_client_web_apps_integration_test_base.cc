@@ -21,6 +21,11 @@ Browser* TwoClientWebAppsIntegrationTestBase::CreateBrowser(Profile* profile) {
   return InProcessBrowserTest::CreateBrowser(profile);
 }
 
+void TwoClientWebAppsIntegrationTestBase::CloseBrowserSynchronously(
+    Browser* browser) {
+  InProcessBrowserTest::CloseBrowserSynchronously(browser);
+}
+
 void TwoClientWebAppsIntegrationTestBase::AddBlankTabAndShow(Browser* browser) {
   InProcessBrowserTest::AddBlankTabAndShow(browser);
 }

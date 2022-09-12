@@ -63,4 +63,4 @@ check_run_on_os_login_disabled,                        🌕, 🌕,  🌕,   🌑
 open_app_settings_from_chrome_apps,                    🌕, 🌕,  🌕,   🌑,
 open_app_settings_from_app_menu,                       🌕, 🌕,  🌕,   🌑,
 check_browser_navigation_is_app_settings,              🌕, 🌕,  🌕,   🌑,
-await_manifest_update,                                 🌑, 🌑,  🌑,   🌑,
+await_manifest_update,                                 🌕, 🌕,  🌕,   🌕,
