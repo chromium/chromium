@@ -75,7 +75,7 @@ TEST(LocationReportBodyMatchIdTest, MatchIdGeneratedShouldNotBeZero) {
   }
 }
 
-// When URL is empty, LocationReportBody would call |SourceLocation::Capture()|
+// When URL is empty, LocationReportBody would call |CaptureSourceLocation()|
 // to determine the location, and ignore |line_number| and |column_number|
 // specified in constructor params.
 TEST(LocationReportBodyMatchIdTest,

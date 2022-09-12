@@ -37,6 +37,7 @@
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
@@ -45,7 +46,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/use_counter_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_context_snapshot.h"
@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/active_script_wrappable_manager.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -164,7 +165,7 @@ void V8Initializer::MessageHandlerInMainThread(v8::Local<v8::Message> message,
   base::UmaHistogramBoolean("V8.UnhandledExceptionCountInMainThread", true);
 
   std::unique_ptr<SourceLocation> location =
-      SourceLocation::FromMessage(isolate, message, context);
+      CaptureSourceLocation(isolate, message, context);
 
   if (message->ErrorLevel() != v8::Isolate::kMessageError) {
     context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -204,7 +205,7 @@ void V8Initializer::MessageHandlerInWorker(v8::Local<v8::Message> message,
   base::UmaHistogramBoolean("V8.UnhandledExceptionCountInWorker", true);
 
   std::unique_ptr<SourceLocation> location =
-      SourceLocation::FromMessage(isolate, message, context);
+      CaptureSourceLocation(isolate, message, context);
 
   if (message->ErrorLevel() != v8::Isolate::kMessageError) {
     context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -286,7 +287,7 @@ static void PromiseRejectHandler(v8::PromiseRejectMessage data,
   if (!message.IsEmpty()) {
     // message->Get() can be empty here. https://crbug.com/450330
     error_message = ToCoreStringWithNullCheck(message->Get());
-    location = SourceLocation::FromMessage(isolate, message, context);
+    location = CaptureSourceLocation(isolate, message, context);
     if (message->IsSharedCrossOrigin())
       sanitize_script_errors = SanitizeScriptErrors::kDoNotSanitize;
   } else {

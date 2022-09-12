@@ -19,6 +19,7 @@
 #include "third_party/blink/public/mojom/websockets/websocket_connector.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle.h"
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -296,8 +297,8 @@ class WebSocketChannelImplTest : public WebSocketChannelImplTestBase {
   void SetUp() override {
     WebSocketChannelImplTestBase::SetUp();
     channel_ = WebSocketChannelImpl::CreateForTesting(
-        GetFrame().DomWindow(), channel_client_.Get(),
-        SourceLocation::Capture(), std::move(handshake_throttle_));
+        GetFrame().DomWindow(), channel_client_.Get(), CaptureSourceLocation(),
+        std::move(handshake_throttle_));
   }
 
   MockWebSocketChannelClient* ChannelClient() { return channel_client_.Get(); }
@@ -1663,7 +1664,7 @@ TEST_F(WebSocketChannelImplMultipleTest, ConnectionLimit) {
     auto* channel_client = MockWebSocketChannelClient::Create();
 
     channel = WebSocketChannelImpl::CreateForTesting(
-        GetFrame().DomWindow(), channel_client, SourceLocation::Capture(),
+        GetFrame().DomWindow(), channel_client, CaptureSourceLocation(),
         std::move(handshake_throttle));
     channel->Connect(url, "");
   }
@@ -1672,7 +1673,7 @@ TEST_F(WebSocketChannelImplMultipleTest, ConnectionLimit) {
   test::RunPendingTasks();
 
   auto* failing_channel = WebSocketChannelImpl::CreateForTesting(
-      GetFrame().DomWindow(), failure_channel_client, SourceLocation::Capture(),
+      GetFrame().DomWindow(), failure_channel_client, CaptureSourceLocation(),
       std::move(failure_handshake_throttle));
   failing_channel->Connect(url, "");
 
@@ -1690,7 +1691,7 @@ TEST_F(WebSocketChannelImplMultipleTest, ConnectionLimit) {
 
   auto* successful_channel = WebSocketChannelImpl::CreateForTesting(
       GetFrame().DomWindow(), successful_channel_client,
-      SourceLocation::Capture(), std::move(successful_handshake_throttle));
+      CaptureSourceLocation(), std::move(successful_handshake_throttle));
   successful_channel->Connect(url, "");
 
   // Let the connect be passed through mojo.

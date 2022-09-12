@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/frame/location_report_body.h"
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 
 namespace blink {
@@ -12,7 +13,7 @@ LocationReportBody::ReportLocation LocationReportBody::CreateReportLocation(
     const String& file,
     absl::optional<uint32_t> line_number,
     absl::optional<uint32_t> column_number) {
-  return file.IsEmpty() ? CreateReportLocation(SourceLocation::Capture())
+  return file.IsEmpty() ? CreateReportLocation(CaptureSourceLocation())
                         : ReportLocation{file, line_number, column_number};
 }
 

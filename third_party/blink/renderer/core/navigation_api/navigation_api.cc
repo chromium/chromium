@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -928,7 +929,7 @@ void NavigationApi::RejectPromisesAndFireNavigateErrorEvent(
   v8::Local<v8::Message> message =
       v8::Exception::CreateMessage(isolate, value.V8Value());
   std::unique_ptr<SourceLocation> location =
-      SourceLocation::FromMessage(isolate, message, GetSupplementable());
+      blink::CaptureSourceLocation(isolate, message, GetSupplementable());
   ErrorEvent* event = ErrorEvent::Create(
       ToCoreStringWithNullCheck(message->Get()), std::move(location), value,
       &DOMWrapperWorld::MainWorld());

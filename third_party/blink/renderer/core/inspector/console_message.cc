@@ -24,10 +24,7 @@ ConsoleMessage::ConsoleMessage(mojom::blink::ConsoleMessageSource source,
                                const String& url,
                                DocumentLoader* loader,
                                uint64_t request_identifier)
-    : ConsoleMessage(source,
-                     level,
-                     message,
-                     SourceLocation::Capture(url, 0, 0)) {
+    : ConsoleMessage(source, level, message, CaptureSourceLocation(url, 0, 0)) {
   request_identifier_ =
       IdentifiersFactory::RequestId(loader, request_identifier);
 }

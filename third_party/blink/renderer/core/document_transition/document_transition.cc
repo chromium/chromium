@@ -10,6 +10,7 @@
 #include "cc/document_transition/document_transition_request.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/paint_holding_reason.h"
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -76,7 +77,7 @@ ScriptValue DocumentTransition::PostCaptureResolved::Call(
     auto* isolate = document_->GetExecutionContext()->GetIsolate();
     v8::Local<v8::Message> message =
         v8::Exception::CreateMessage(isolate, value.V8Value());
-    std::unique_ptr<SourceLocation> location = SourceLocation::FromMessage(
+    std::unique_ptr<SourceLocation> location = CaptureSourceLocation(
         isolate, message, document_->GetExecutionContext());
     ErrorEvent* error = ErrorEvent::Create(
         ToCoreStringWithNullCheck(message->Get()), std::move(location), value,

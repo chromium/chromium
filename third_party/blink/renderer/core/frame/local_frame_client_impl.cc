@@ -606,7 +606,7 @@ void LocalFrameClientImpl::BeginNavigation(
   if (!source_location) {
     DCHECK(!origin_window);
     source_location =
-        SourceLocation::Capture(web_frame_->GetFrame()->DomWindow());
+        CaptureSourceLocation(web_frame_->GetFrame()->DomWindow());
   }
   if (!source_location->IsUnknown()) {
     navigation_info->source_location.url = source_location->Url();

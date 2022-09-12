@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SOURCE_LOCATION_H_
-#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SOURCE_LOCATION_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SOURCE_LOCATION_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SOURCE_LOCATION_H_
 
 #include <v8-inspector-protocol.h>
 #include <memory>
-#include "third_party/blink/renderer/core/core_export.h"
+
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -18,28 +19,25 @@ namespace blink {
 class ExecutionContext;
 class TracedValue;
 
-class CORE_EXPORT SourceLocation {
+// A location in JS source code.
+// CaptureSourceLocation at the bottom of this file captures SourceLocation and
+// return it. CaptureSourceLocation that depends on
+// third_party/blink/renderer/core/ is in
+// third_party/blink/renderer/bindings/core/v8/capture_source_location.h. We can
+// capture SourceLocation using ExecutionContext.
+class PLATFORM_EXPORT SourceLocation {
   USING_FAST_MALLOC(SourceLocation);
 
  public:
-  // Zero lineNumber and columnNumber mean unknown. Captures current stack
-  // trace.
-  static std::unique_ptr<SourceLocation> Capture(const String& url,
-                                                 unsigned line_number,
-                                                 unsigned column_number);
-
-  // Shortcut when location is unknown. Tries to capture call stack or parsing
-  // location if available.
-  static std::unique_ptr<SourceLocation> Capture(ExecutionContext* = nullptr);
-
-  static std::unique_ptr<SourceLocation> FromMessage(v8::Isolate*,
-                                                     v8::Local<v8::Message>,
-                                                     ExecutionContext*);
-
-  static std::unique_ptr<SourceLocation> FromFunction(v8::Local<v8::Function>);
-
   // Forces full stack trace.
   static std::unique_ptr<SourceLocation> CaptureWithFullStackTrace();
+
+  // Used only by CaptureSourceLocation.
+  static std::unique_ptr<v8_inspector::V8StackTrace> CaptureStackTraceInternal(
+      bool full);
+
+  static std::unique_ptr<SourceLocation> CreateFromNonEmptyV8StackTraceInternal(
+      std::unique_ptr<v8_inspector::V8StackTrace>);
 
   SourceLocation(const String& url,
                  const String& function,
@@ -86,9 +84,6 @@ class CORE_EXPORT SourceLocation {
   BuildInspectorObject(int max_async_depth) const;
 
  private:
-  static std::unique_ptr<SourceLocation> CreateFromNonEmptyV8StackTrace(
-      std::unique_ptr<v8_inspector::V8StackTrace>);
-
   String url_;
   String function_;
   unsigned line_number_;
@@ -97,6 +92,23 @@ class CORE_EXPORT SourceLocation {
   int script_id_;
 };
 
+// Zero lineNumber and columnNumber mean unknown. Captures current stack
+// trace.
+PLATFORM_EXPORT std::unique_ptr<SourceLocation> CaptureSourceLocation(
+    const String& url,
+    unsigned line_number,
+    unsigned column_number);
+
+// Returns SourceLocation if non-empty stack trace exists.
+// If stack trace doesn't exists or it's empty, returns nullptr.
+// This is the same when CaptureSourceLocation(ExecutionContext* = nullptr) in
+// bindings/core/v8/capture_source_location.h
+PLATFORM_EXPORT std::unique_ptr<SourceLocation> CaptureSourceLocation();
+
+// Captures current stack trace from function.
+PLATFORM_EXPORT std::unique_ptr<SourceLocation> CaptureSourceLocation(
+    v8::Local<v8::Function>);
+
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SOURCE_LOCATION_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SOURCE_LOCATION_H_

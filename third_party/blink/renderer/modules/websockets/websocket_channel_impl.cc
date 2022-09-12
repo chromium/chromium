@@ -48,6 +48,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle.h"
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
@@ -478,7 +479,7 @@ void WebSocketChannelImpl::Fail(const String& reason,
   const String message =
       "WebSocket connection to '" + url_.ElidedString() + "' failed: " + reason;
 
-  std::unique_ptr<SourceLocation> captured_location = SourceLocation::Capture();
+  std::unique_ptr<SourceLocation> captured_location = CaptureSourceLocation();
   if (!captured_location->IsUnknown()) {
     // If we are in JavaScript context, use the current location instead
     // of passed one - it's more precise.

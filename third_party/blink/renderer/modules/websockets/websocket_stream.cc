@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -422,7 +423,7 @@ WebSocketStream* WebSocketStream::CreateInternal(
     stream->channel_ = channel;
   } else {
     stream->channel_ = WebSocketChannelImpl::Create(
-        execution_context, stream, SourceLocation::Capture(execution_context));
+        execution_context, stream, CaptureSourceLocation(execution_context));
   }
   stream->Connect(script_state, url, options, exception_state);
   if (exception_state.HadException())

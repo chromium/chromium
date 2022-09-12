@@ -35,6 +35,7 @@
 #include <cstdint>
 
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
@@ -208,7 +209,7 @@ class MODULES_EXPORT DOMWebSocket
   virtual WebSocketChannel* CreateChannel(ExecutionContext* context,
                                           WebSocketChannelClient* client) {
     return WebSocketChannelImpl::Create(context, client,
-                                        SourceLocation::Capture(context));
+                                        CaptureSourceLocation(context));
   }
 
   // Adds a console message with JSMessageSource and ErrorMessageLevel.

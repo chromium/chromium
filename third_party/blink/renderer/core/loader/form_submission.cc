@@ -33,7 +33,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
@@ -367,7 +368,7 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
       std::move(resource_request), target_frame, load_type,
       form->GetDocument().domWindow(),
       form->GetDocument().GetFrame()->GetLocalFrameToken(),
-      SourceLocation::Capture(form->GetDocument().domWindow()),
+      CaptureSourceLocation(form->GetDocument().domWindow()),
       form->GetDocument()
           .domWindow()
           ->GetPolicyContainer()

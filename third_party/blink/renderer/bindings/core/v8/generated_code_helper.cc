@@ -203,7 +203,7 @@ void ReportInvalidEnumSetToAttribute(v8::Isolate* isolate,
   execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kJavaScript,
       mojom::blink::ConsoleMessageLevel::kWarning, message,
-      SourceLocation::Capture(execution_context)));
+      CaptureSourceLocation(execution_context)));
 }
 
 bool IsEsIterableObject(v8::Isolate* isolate,

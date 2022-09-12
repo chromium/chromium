@@ -39,6 +39,7 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_array_buffer.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/websockets/web_pepper_socket_channel_client_proxy.h"
@@ -68,7 +69,7 @@ WebPepperSocketImpl::WebPepperSocketImpl(const WebDocument& document,
   Document* core_document = document;
   private_ = WebSocketChannelImpl::Create(core_document->GetExecutionContext(),
                                           channel_proxy_.Get(),
-                                          SourceLocation::Capture());
+                                          CaptureSourceLocation());
   DCHECK(private_);
 }
 

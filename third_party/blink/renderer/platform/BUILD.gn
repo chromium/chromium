@@ -421,6 +421,8 @@ component("platform") {
     "bindings/script_state.h",
     "bindings/script_wrappable.cc",
     "bindings/script_wrappable.h",
+    "bindings/source_location.cc",
+    "bindings/source_location.h",
     "bindings/string_resource.cc",
     "bindings/string_resource.h",
     "bindings/thread_debugger.cc",

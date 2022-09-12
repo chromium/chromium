@@ -5,13 +5,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/js_based_event_listener.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_parser.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 
 namespace blink {
@@ -166,7 +166,7 @@ std::unique_ptr<SourceLocation> JSBasedEventListener::GetSourceLocation(
   v8::HandleScope handle_scope(GetIsolate());
   v8::Local<v8::Value> effective_function = GetEffectiveFunction(target);
   if (effective_function->IsFunction())
-    return SourceLocation::FromFunction(effective_function.As<v8::Function>());
+    return CaptureSourceLocation(effective_function.As<v8::Function>());
   return nullptr;
 }
 

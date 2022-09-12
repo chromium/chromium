@@ -10,7 +10,6 @@
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/events/security_policy_violation_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -27,6 +26,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -122,7 +122,7 @@ void ExecutionContextCSPDelegate::AddInsecureRequestPolicy(
 
 std::unique_ptr<SourceLocation>
 ExecutionContextCSPDelegate::GetSourceLocation() {
-  return SourceLocation::Capture(execution_context_);
+  return CaptureSourceLocation(execution_context_);
 }
 
 absl::optional<uint16_t> ExecutionContextCSPDelegate::GetStatusCode() {
