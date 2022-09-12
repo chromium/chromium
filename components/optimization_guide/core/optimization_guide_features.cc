@@ -492,14 +492,33 @@ bool ShouldExecutePageVisibilityModelOnPageContent(const std::string& locale) {
                                      kPageVisibilityPageContentAnnotations);
 }
 
-bool RemotePageEntitiesEnabled() {
-  return GetFieldTrialParamByFeatureAsBool(kRemotePageMetadata,
-                                           "persist_page_entities", false);
-}
-
 bool RemotePageMetadataEnabled() {
   return GetFieldTrialParamByFeatureAsBool(kRemotePageMetadata,
                                            "persist_page_metadata", false);
+}
+
+base::flat_set<std::string> GetRemotePageCategoriesToPersist() {
+  const base::FeatureParam<std::string>
+      kRemotePageCategoriesPersistenceAllowlist{
+          &kRemotePageMetadata, "remote_page_categories_persistence_allowlist",
+          ""};
+  std::string allowlist_string =
+      kRemotePageCategoriesPersistenceAllowlist.Get();
+  if (allowlist_string.empty())
+    return {};
+
+  auto allowlist = base::SplitString(allowlist_string, ",",
+                                     base::WhitespaceHandling::TRIM_WHITESPACE,
+                                     base::SplitResult::SPLIT_WANT_NONEMPTY);
+
+  return allowlist.empty()
+             ? base::flat_set<std::string>()
+             : base::flat_set<std::string>(allowlist.begin(), allowlist.end());
+}
+
+int GetMinimumPageCategoryScoreToPersist() {
+  return GetFieldTrialParamByFeatureAsInt(kRemotePageMetadata,
+                                          "min_page_category_score", 85);
 }
 
 base::TimeDelta GetOnloadDelayForHintsFetching() {

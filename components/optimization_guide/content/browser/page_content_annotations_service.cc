@@ -118,7 +118,11 @@ PageContentAnnotationsService::PageContentAnnotationsService(
     const base::FilePath& database_dir,
     OptimizationGuideLogger* optimization_guide_logger,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
-    : last_annotated_history_visits_(
+    : page_categories_persistence_allowlist_(
+          features::GetRemotePageCategoriesToPersist()),
+      min_page_category_score_to_persist_(
+          features::GetMinimumPageCategoryScoreToPersist()),
+      last_annotated_history_visits_(
           features::MaxContentAnnotationRequestsCached()),
       annotated_text_cache_(features::MaxVisitAnnotationCacheSize()),
       optimization_guide_logger_(optimization_guide_logger) {
@@ -552,31 +556,57 @@ void PageContentAnnotationsService::GetMetadataForEntityId(
 #endif
 }
 
-void PageContentAnnotationsService::PersistRemotePageEntities(
-    const HistoryVisit& history_visit,
-    const std::vector<history::VisitContentModelAnnotations::Category>&
-        entities) {
-  history::VisitContentModelAnnotations annotations;
-  annotations.entities = entities;
-  QueryURL(history_visit,
-           base::BindOnce(
-               &history::HistoryService::AddContentModelAnnotationsForVisit,
-               history_service_->AsWeakPtr(), annotations),
-           // Even though we are persisting remote page entities, we store
-           // these as an override to the model annotations.
-           PageContentAnnotationsType::kModelAnnotations);
-}
-
 void PageContentAnnotationsService::PersistRemotePageMetadata(
     const HistoryVisit& visit,
-    const proto::PageEntitiesMetadata& page_metadata) {
-  if (!page_metadata.has_alternative_title())
-    return;
-  QueryURL(visit,
-           base::BindOnce(&history::HistoryService::AddPageMetadataForVisit,
-                          history_service_->AsWeakPtr(),
-                          page_metadata.alternative_title()),
-           PageContentAnnotationsType::kRemoteMetdata);
+    const proto::PageEntitiesMetadata& page_entities_metadata) {
+  // Persist entities and categories to VisitContentModelAnnotations if that
+  // feature is enabled.
+  history::VisitContentModelAnnotations model_annotations;
+  for (const auto& entity : page_entities_metadata.entities()) {
+    if (entity.entity_id().empty()) {
+      continue;
+    }
+    if (entity.score() < 0 || entity.score() > 100) {
+      continue;
+    }
+
+    model_annotations.entities.emplace_back(entity.entity_id(), entity.score());
+  }
+
+  std::vector<history::VisitContentModelAnnotations::Category> categories;
+  for (const auto& category : page_entities_metadata.categories()) {
+    if (page_categories_persistence_allowlist_.find(category.category_id()) ==
+        page_categories_persistence_allowlist_.end()) {
+      continue;
+    }
+    int category_score = static_cast<int>(100 * category.score());
+    if (category_score < min_page_category_score_to_persist_) {
+      continue;
+    }
+    model_annotations.categories.emplace_back(category.category_id(),
+                                              category_score);
+  }
+
+  if (!model_annotations.entities.empty() ||
+      !model_annotations.categories.empty()) {
+    // Only persist if we have something to persist.
+    QueryURL(visit,
+             base::BindOnce(
+                 &history::HistoryService::AddContentModelAnnotationsForVisit,
+                 history_service_->AsWeakPtr(), model_annotations),
+             // Even though we are persisting remote page entities, we store
+             // these as an override to the model annotations.
+             PageContentAnnotationsType::kModelAnnotations);
+  }
+
+  // Persist any other metadata to VisitContentAnnotations, if enabled.
+  if (!page_entities_metadata.alternative_title().empty()) {
+    QueryURL(visit,
+             base::BindOnce(&history::HistoryService::AddPageMetadataForVisit,
+                            history_service_->AsWeakPtr(),
+                            page_entities_metadata.alternative_title()),
+             PageContentAnnotationsType::kRemoteMetdata);
+  }
 }
 
 void PageContentAnnotationsService::OnEntityMetadataRetrieved(

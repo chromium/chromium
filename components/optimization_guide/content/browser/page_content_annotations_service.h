@@ -228,20 +228,12 @@ class PageContentAnnotationsService : public KeyedService,
       continuous_search::SearchResultExtractorClientStatus status,
       continuous_search::mojom::CategoryResultsPtr results);
 
-  // Persist |entities| for |visit| in |history_service_|.
-  //
-  // Virtualized for testing.
-  virtual void PersistRemotePageEntities(
-      const HistoryVisit& visit,
-      const std::vector<history::VisitContentModelAnnotations::Category>&
-          entities);
-
-  // Persist |page_metadata| for |visit| in |history_service_|.
+  // Persist |page_entities_metadata| for |visit| in |history_service_|.
   //
   // Virtualized for testing.
   virtual void PersistRemotePageMetadata(
       const HistoryVisit& visit,
-      const proto::PageEntitiesMetadata& page_metadata);
+      const proto::PageEntitiesMetadata& page_entities_metadata);
 
   // Called when entity metadata for |entity_id| that had weight |weight| on
   // page with |url| has been retrieved.
@@ -267,6 +259,13 @@ class PageContentAnnotationsService : public KeyedService,
                     PersistAnnotationsCallback callback,
                     PageContentAnnotationsType annotation_type,
                     history::QueryURLResult url_result);
+
+  // The allowlist of page categories that are allowed to be persisted.
+  const base::flat_set<std::string> page_categories_persistence_allowlist_;
+
+  // The minimum score that an allowlisted page category must have for it to be
+  // persisted.
+  const int min_page_category_score_to_persist_;
 
   // A metadata-only provider for page entities (as opposed to |model_manager_|
   // which does both entity model execution and metadata providing) that uses a

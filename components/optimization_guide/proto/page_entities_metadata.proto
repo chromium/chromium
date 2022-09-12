@@ -20,6 +20,17 @@ message Entity {
   optional int32 score = 2;
 }
 
+message Category {
+  // The ID of the category that the page is expected to be about.
+  optional string category_id = 1;
+
+  // The confidence that the category, as expressed by category_id, is relevant
+  // to the page.
+  //
+  // It is expected that this score be between 0 and 1, inclusive.
+  optional float score = 2;
+}
+
 // Optimization metadata associated with providing information about the
 // entities on the page.
 //
@@ -29,8 +40,12 @@ message Entity {
 message PageEntitiesMetadata {
   // A set of entities that are expected to be present on the page.
   repeated Entity entities = 1;
+
   // A string representing an alternative title for the page.
   optional string alternative_title = 2;
+
+  // A set of categories that are expected to be present on the page.
+  repeated Category categories = 3;
 }
 
 // The metadata associated with an |Entity|.

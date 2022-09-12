@@ -75,20 +75,6 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
     return last_related_searches_extraction_request_;
   }
 
-  void PersistRemotePageEntities(
-      const HistoryVisit& visit,
-      const std::vector<history::VisitContentModelAnnotations::Category>&
-          entities) override {
-    last_entities_persistence_request_.emplace(std::make_pair(visit, entities));
-  }
-
-  absl::optional<
-      std::pair<HistoryVisit,
-                std::vector<history::VisitContentModelAnnotations::Category>>>
-  last_entities_persistence_request() const {
-    return last_entities_persistence_request_;
-  }
-
   void PersistSearchMetadata(const HistoryVisit& visit,
                              const SearchMetadata& search_metadata) override {
     last_search_metadata_ = search_metadata;
@@ -113,10 +99,6 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
   absl::optional<HistoryVisit> last_annotation_request_;
   absl::optional<std::pair<HistoryVisit, content::WebContents*>>
       last_related_searches_extraction_request_;
-  absl::optional<
-      std::pair<HistoryVisit,
-                std::vector<history::VisitContentModelAnnotations::Category>>>
-      last_entities_persistence_request_;
   absl::optional<SearchMetadata> last_search_metadata_;
   absl::optional<proto::PageEntitiesMetadata> last_page_metadata_;
 };
@@ -139,38 +121,10 @@ class FakeOptimizationGuideDecider : public TestOptimizationGuideDecider {
     DCHECK(optimization_type == proto::PAGE_ENTITIES);
 
     std::string url_spec = navigation_handle->GetURL().spec();
-    if (navigation_handle->GetURL() == GURL("http://hasentities.com/")) {
-      proto::PageEntitiesMetadata page_entities_metadata;
-      proto::Entity* entity = page_entities_metadata.add_entities();
-      entity->set_entity_id("entity1");
-      entity->set_score(50);
-
-      // The following entities should be skipped.
-      proto::Entity* entity2 = page_entities_metadata.add_entities();
-      entity2->set_score(50);
-      proto::Entity* entity3 = page_entities_metadata.add_entities();
-      entity3->set_entity_id("scoretoohigh");
-      entity3->set_score(105);
-      proto::Entity* entity4 = page_entities_metadata.add_entities();
-      entity4->set_entity_id("scoretoolow");
-      entity4->set_score(-1);
-
-      OptimizationMetadata metadata;
-      metadata.SetAnyMetadataForTesting(page_entities_metadata);
-      std::move(callback).Run(OptimizationGuideDecision::kTrue, metadata);
-      return;
-    }
     if (navigation_handle->GetURL() == GURL("http://hasmetadata.com/")) {
       proto::PageEntitiesMetadata page_entities_metadata;
       page_entities_metadata.set_alternative_title("alternative title");
 
-      OptimizationMetadata metadata;
-      metadata.SetAnyMetadataForTesting(page_entities_metadata);
-      std::move(callback).Run(OptimizationGuideDecision::kTrue, metadata);
-      return;
-    }
-    if (navigation_handle->GetURL() == GURL("http://noentities.com/")) {
-      proto::PageEntitiesMetadata page_entities_metadata;
       OptimizationMetadata metadata;
       metadata.SetAnyMetadataForTesting(page_entities_metadata);
       std::move(callback).Run(OptimizationGuideDecision::kTrue, metadata);
@@ -517,20 +471,19 @@ TEST_F(
       false, 1);
 }
 
-class PageContentAnnotationsWebContentsObserverRemotePageEntitiesTest
+class PageContentAnnotationsWebContentsObserverRemotePageMetadataTest
     : public PageContentAnnotationsWebContentsObserverTest {
  public:
-  PageContentAnnotationsWebContentsObserverRemotePageEntitiesTest() {
+  PageContentAnnotationsWebContentsObserverRemotePageMetadataTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kRemotePageMetadata,
-        {{"persist_page_entities", "true"}, {"persist_page_metadata", "true"}});
+        features::kRemotePageMetadata, {{"persist_page_metadata", "true"}});
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(PageContentAnnotationsWebContentsObserverRemotePageEntitiesTest,
+TEST_F(PageContentAnnotationsWebContentsObserverRemotePageMetadataTest,
        RegistersTypeWhenFeatureEnabled) {
   std::vector<proto::OptimizationType> registered_optimization_types =
       optimization_guide_decider()->registered_optimization_types();
@@ -538,52 +491,25 @@ TEST_F(PageContentAnnotationsWebContentsObserverRemotePageEntitiesTest,
   EXPECT_EQ(registered_optimization_types[0], proto::PAGE_ENTITIES);
 }
 
-TEST_F(PageContentAnnotationsWebContentsObserverRemotePageEntitiesTest,
+TEST_F(PageContentAnnotationsWebContentsObserverRemotePageMetadataTest,
        DoesNotPersistIfServerHasNoData) {
   // Navigate.
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://www.nohints.com/"));
 
-  EXPECT_FALSE(service()->last_entities_persistence_request());
+  EXPECT_FALSE(service()->last_page_metadata_persisted());
 }
 
-TEST_F(PageContentAnnotationsWebContentsObserverRemotePageEntitiesTest,
-       DoesNotPersistIfNoEntities) {
-  // Navigate.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://noentities.com/"));
-
-  EXPECT_FALSE(service()->last_entities_persistence_request());
-}
-
-TEST_F(PageContentAnnotationsWebContentsObserverRemotePageEntitiesTest,
+TEST_F(PageContentAnnotationsWebContentsObserverRemotePageMetadataTest,
        DoesNotPersistIfServerReturnsWrongMetadata) {
   // Navigate.
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://wrongmetadata.com/"));
 
-  EXPECT_FALSE(service()->last_entities_persistence_request());
+  EXPECT_FALSE(service()->last_page_metadata_persisted());
 }
 
-TEST_F(PageContentAnnotationsWebContentsObserverRemotePageEntitiesTest,
-       RequestsToPersistIfHasEntities) {
-  // Navigate.
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("http://hasentities.com/"));
-
-  absl::optional<
-      std::pair<HistoryVisit,
-                std::vector<history::VisitContentModelAnnotations::Category>>>
-      request = service()->last_entities_persistence_request();
-  ASSERT_TRUE(request);
-  EXPECT_EQ(request->first.url, GURL("http://hasentities.com/"));
-  EXPECT_THAT(
-      request->second,
-      UnorderedElementsAre(
-          history::VisitContentModelAnnotations::Category("entity1", 50)));
-}
-
-TEST_F(PageContentAnnotationsWebContentsObserverRemotePageEntitiesTest,
+TEST_F(PageContentAnnotationsWebContentsObserverRemotePageMetadataTest,
        RequestsToPersistIfHasPageMetadata) {
   // Navigate.
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
