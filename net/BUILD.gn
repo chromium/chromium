@@ -1198,7 +1198,7 @@ component("net") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//third_party/xdg_shared_mime_info" ]
   }
 
