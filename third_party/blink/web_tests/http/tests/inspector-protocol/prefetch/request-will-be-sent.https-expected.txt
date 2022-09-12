@@ -165,8 +165,10 @@ Network.onRequestWillBeSent{
     redirectHasExtraInfo : false
     request : {
         headers : {
+            Accept : text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
             Purpose : prefetch
             Sec-Purpose : prefetch
+            Upgrade-Insecure-Requests : 1
         }
         initialPriority : VeryLow
         method : GET
@@ -185,6 +187,7 @@ Network.onRequestWillBeSentExtraInfo{
         requestTime : <number>
     }
     headers : {
+        Accept : text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
         Accept-Encoding : gzip, deflate, br
         Accept-Language : en-us,en
         Connection : keep-alive
@@ -194,6 +197,7 @@ Network.onRequestWillBeSentExtraInfo{
         Sec-Fetch-Mode : no-cors
         Sec-Fetch-Site : none
         Sec-Purpose : prefetch
+        Upgrade-Insecure-Requests : 1
         User-Agent : <string>
     }
     requestId : <string>

@@ -24,6 +24,7 @@
 #include "content/browser/preloading/prefetch/prefetched_mainframe_response_container.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/frame_accept_header.h"
 #include "content/public/browser/prefetch_service_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -637,6 +638,10 @@ void PrefetchService::StartSinglePrefetch(
       "Sec-Purpose", prefetch_container->GetPrefetchType().IsProxyRequired()
                          ? "prefetch;anonymous-client-ip"
                          : "prefetch");
+  request->headers.SetHeader(
+      net::HttpRequestHeaders::kAccept,
+      FrameAcceptHeaderValue(/*allow_sxg_responses=*/true, browser_context_));
+  request->headers.SetHeader("Upgrade-Insecure-Requests", "1");
 
   // Remove the user agent header if it was set so that the network context's
   // default is used.

@@ -13,6 +13,7 @@
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/frame_accept_header.h"
 #include "content/public/browser/prefetch_service_delegate.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
@@ -236,6 +237,16 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
         request->request.headers.GetHeader("Sec-Purpose", &sec_purpose_value));
     EXPECT_EQ(sec_purpose_value,
               use_prefetch_proxy ? "prefetch;anonymous-client-ip" : "prefetch");
+
+    std::string accept_value;
+    EXPECT_TRUE(request->request.headers.GetHeader("Accept", &accept_value));
+    EXPECT_EQ(accept_value, FrameAcceptHeaderValue(/*allow_sxg_responses=*/true,
+                                                   browser_context()));
+
+    std::string upgrade_insecure_request_value;
+    EXPECT_TRUE(request->request.headers.GetHeader(
+        "Upgrade-Insecure-Requests", &upgrade_insecure_request_value));
+    EXPECT_EQ(upgrade_insecure_request_value, "1");
 
     EXPECT_TRUE(request->request.trusted_params.has_value());
     VerifyIsolationInfo(request->request.trusted_params->isolation_info);
