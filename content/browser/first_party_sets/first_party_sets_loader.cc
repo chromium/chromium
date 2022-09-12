@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -108,50 +109,85 @@ void FirstPartySetsLoader::DisposeFile(base::File sets_file) {
   }
 }
 
+base::flat_set<net::SchemefulSite> FirstPartySetsLoader::FindIntersection()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(HasAllInputs());
+  std::vector<net::SchemefulSite> intersection;
+  for (const std::pair<net::SchemefulSite, net::FirstPartySetEntry>&
+           public_site_and_entry : sets_) {
+    const net::SchemefulSite& public_site = public_site_and_entry.first;
+    const net::SchemefulSite& public_primary =
+        public_site_and_entry.second.primary();
+    bool is_affected_by_local_set =
+        public_site == manually_specified_set_->GetPrimary() ||
+        public_primary == manually_specified_set_->GetPrimary() ||
+        base::ranges::any_of(
+            manually_specified_set_->GetSet(),
+            [&](const std::pair<net::SchemefulSite, net::FirstPartySetEntry>&
+                    manual_site_and_entry) {
+              const net::SchemefulSite& manual_site =
+                  manual_site_and_entry.first;
+              return manual_site == public_site ||
+                     manual_site == public_primary;
+            });
+    if (is_affected_by_local_set) {
+      intersection.push_back(public_site_and_entry.first);
+    }
+  };
+
+  return intersection;
+}
+
+base::flat_set<net::SchemefulSite> FirstPartySetsLoader::FindSingletons()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<net::SchemefulSite> primaries_with_members;
+  for (const auto& [site, entry] : sets_) {
+    if (site != entry.primary())
+      primaries_with_members.push_back(entry.primary());
+  }
+  std::vector<net::SchemefulSite> singletons;
+  for (const auto& [site, entry] : sets_) {
+    if (site == entry.primary() &&
+        !base::Contains(primaries_with_members, site)) {
+      singletons.push_back(site);
+    }
+  }
+
+  return singletons;
+}
+
 void FirstPartySetsLoader::ApplyManuallySpecifiedSet() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(HasAllInputs());
   if (manually_specified_set_->empty())
     return;
-  const net::SchemefulSite& manual_owner =
-      manually_specified_set_->GetPrimary();
-  FlattenedSets manual_sites = manually_specified_set_->GetSet();
 
-  // Erase the intersection between |sets_| and |manually_specified_set_| and
-  // any members whose owner was in the intersection.
-  base::EraseIf(
-      sets_, [&](const std::pair<net::SchemefulSite, net::FirstPartySetEntry>&
-                     public_site_and_entry) {
-        const net::SchemefulSite& public_site = public_site_and_entry.first;
-        const net::SchemefulSite& public_owner =
-            public_site_and_entry.second.primary();
-        return public_site == manual_owner || public_owner == manual_owner ||
-               base::ranges::any_of(
-                   manual_sites, [&](const std::pair<net::SchemefulSite,
-                                                     net::FirstPartySetEntry>&
-                                         manual_site_and_entry) {
-                     const net::SchemefulSite& manual_site =
-                         manual_site_and_entry.first;
-                     return manual_site == public_site ||
-                            manual_site == public_owner;
-                   });
-      });
-
-  // Next, we must add the manually specified set to |sets_|.
-  base::ranges::move(manual_sites, std::inserter(sets_, sets_.end()));
-  // Now remove singleton sets, which are sets that just contain sites that
-  // *are* owners, but no longer have any (other) members.
-  std::set<net::SchemefulSite> owners_with_members;
-  for (const auto& it : sets_) {
-    if (it.first != it.second.primary())
-      owners_with_members.insert(it.second.primary());
+  base::flat_set<net::SchemefulSite> intersection = FindIntersection();
+  for (const auto& site : intersection) {
+    sets_.erase(site);
   }
-  base::EraseIf(sets_, [&owners_with_members](const auto& p) {
-    return p.first == p.second.primary() &&
-           !base::Contains(owners_with_members, p.first);
-  });
 
-  // TODO(https://crbug.com/1349781): merge aliases.
+  base::flat_set<net::SchemefulSite> singletons = FindSingletons();
+  for (const auto& singleton : singletons) {
+    sets_.erase(singleton);
+  }
+
+  base::ranges::copy(manually_specified_set_->GetSet(),
+                     std::inserter(sets_, sets_.end()));
+
+  // Finally, remove any aliases for public sites that were affected (deleted),
+  // and add any aliases defined in the local set.
+  base::EraseIf(
+      aliases_,
+      [&](const std::pair<net::SchemefulSite, net::SchemefulSite>& alias) {
+        return intersection.contains(alias.second) ||
+               singletons.contains(alias.second);
+      });
+  base::flat_map<net::SchemefulSite, net::SchemefulSite> manual_aliases =
+      manually_specified_set_->GetAliases();
+  aliases_.insert(manual_aliases.begin(), manual_aliases.end());
 }
 
 void FirstPartySetsLoader::MaybeFinishLoading() {

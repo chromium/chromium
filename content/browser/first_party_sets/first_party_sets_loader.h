@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_LOADER_H_
 
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -70,6 +71,16 @@ class CONTENT_EXPORT FirstPartySetsLoader {
   // and Policy sets). The Policy sets are provided at construction time, so
   // this effectively checks that the other two sources are ready.
   bool HasAllInputs() const;
+
+  // Finds the intersection between `sets_` and `manually_specified_set_`.
+  //
+  // The returned collection also includes any sites in `sets_` whose primary
+  // was in the intersection.
+  base::flat_set<net::SchemefulSite> FindIntersection() const;
+
+  // Finds singleton sets in `sets_`, which are sets that consist of only a
+  // single site.
+  base::flat_set<net::SchemefulSite> FindSingletons() const;
 
   // Represents the mapping of site -> site, where keys are members of sets,
   // and values are owners of the sets (explicitly including an entry of owner

@@ -44,11 +44,14 @@ MATCHER_P(SerializesTo, want, "") {
   return testing::ExplainMatchResult(testing::Eq(want), got, result_listener);
 }
 
-MATCHER_P(PublicSetsAre, sets_matcher, "") {
+MATCHER_P2(PublicSetsAre, sets_matcher, aliases_matcher, "") {
   const net::PublicSets& public_sets = arg;
   const base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>& sets =
       public_sets.entries();
-  return testing::ExplainMatchResult(sets_matcher, sets, result_listener);
+  const base::flat_map<net::SchemefulSite, net::SchemefulSite>& aliases =
+      public_sets.aliases();
+  return testing::ExplainMatchResult(sets_matcher, sets, result_listener) &&
+         testing::ExplainMatchResult(aliases_matcher, aliases, result_listener);
 }
 
 void SetComponentSets(FirstPartySetsLoader& loader, base::StringPiece content) {
@@ -82,14 +85,14 @@ TEST_F(FirstPartySetsLoaderTest, IgnoresInvalidFile) {
   loader().SetManuallySpecifiedSet(LocalSetDeclaration());
   const std::string input = "certainly not valid JSON";
   SetComponentSets(loader(), input);
-  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
+  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty(), IsEmpty()));
 }
 
 TEST_F(FirstPartySetsLoaderTest, ParsesComponent) {
   SetComponentSets(loader(), "");
   // Set required input to make sure callback gets called.
   loader().SetManuallySpecifiedSet(LocalSetDeclaration());
-  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
+  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty(), IsEmpty()));
 }
 
 TEST_F(FirstPartySetsLoaderTest, AcceptsMinimal) {
@@ -101,15 +104,17 @@ TEST_F(FirstPartySetsLoaderTest, AcceptsMinimal) {
   loader().SetManuallySpecifiedSet(LocalSetDeclaration());
 
   EXPECT_THAT(WaitAndGetResult(),
-              PublicSetsAre(UnorderedElementsAre(
-                  Pair(SerializesTo("https://example.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://aaaa.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 0)))));
+              PublicSetsAre(
+                  UnorderedElementsAre(
+                      Pair(SerializesTo("https://example.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://example.test")),
+                               net::SiteType::kPrimary, absl::nullopt)),
+                      Pair(SerializesTo("https://aaaa.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://example.test")),
+                               net::SiteType::kAssociated, 0))),
+                  IsEmpty()));
 }
 
 TEST_F(FirstPartySetsLoaderTest, AcceptsMultipleSets) {
@@ -124,23 +129,25 @@ TEST_F(FirstPartySetsLoaderTest, AcceptsMultipleSets) {
   loader().SetManuallySpecifiedSet(LocalSetDeclaration());
 
   EXPECT_THAT(WaitAndGetResult(),
-              PublicSetsAre(UnorderedElementsAre(
-                  Pair(SerializesTo("https://example.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite1.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 0)),
-                  Pair(SerializesTo("https://foo.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite2.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kAssociated, 0)))));
+              PublicSetsAre(
+                  UnorderedElementsAre(
+                      Pair(SerializesTo("https://example.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://example.test")),
+                               net::SiteType::kPrimary, absl::nullopt)),
+                      Pair(SerializesTo("https://associatedsite1.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://example.test")),
+                               net::SiteType::kAssociated, 0)),
+                      Pair(SerializesTo("https://foo.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://foo.test")),
+                               net::SiteType::kPrimary, absl::nullopt)),
+                      Pair(SerializesTo("https://associatedsite2.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://foo.test")),
+                               net::SiteType::kAssociated, 0))),
+                  IsEmpty()));
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetComponentSets_Idempotent) {
@@ -160,23 +167,25 @@ TEST_F(FirstPartySetsLoaderTest, SetComponentSets_Idempotent) {
 
   EXPECT_THAT(WaitAndGetResult(),
               // The second call to SetComponentSets should have had no effect.
-              PublicSetsAre(UnorderedElementsAre(
-                  Pair(SerializesTo("https://example.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite1.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 0)),
-                  Pair(SerializesTo("https://foo.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite2.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kAssociated, 0)))));
+              PublicSetsAre(
+                  UnorderedElementsAre(
+                      Pair(SerializesTo("https://example.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://example.test")),
+                               net::SiteType::kPrimary, absl::nullopt)),
+                      Pair(SerializesTo("https://associatedsite1.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://example.test")),
+                               net::SiteType::kAssociated, 0)),
+                      Pair(SerializesTo("https://foo.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://foo.test")),
+                               net::SiteType::kPrimary, absl::nullopt)),
+                      Pair(SerializesTo("https://associatedsite2.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://foo.test")),
+                               net::SiteType::kAssociated, 0))),
+                  IsEmpty()));
 }
 
 TEST_F(FirstPartySetsLoaderTest, OwnerIsOnlyMember) {
@@ -188,7 +197,7 @@ TEST_F(FirstPartySetsLoaderTest, OwnerIsOnlyMember) {
   // Set required input to make sure callback gets called.
   loader().SetManuallySpecifiedSet(LocalSetDeclaration());
 
-  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
+  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty(), IsEmpty()));
 }
 
 TEST_F(FirstPartySetsLoaderTest, OwnerIsMember) {
@@ -200,7 +209,7 @@ TEST_F(FirstPartySetsLoaderTest, OwnerIsMember) {
   // Set required input to make sure callback gets called.
   loader().SetManuallySpecifiedSet(LocalSetDeclaration());
 
-  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
+  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty(), IsEmpty()));
 }
 
 TEST_F(FirstPartySetsLoaderTest, RepeatedMember) {
@@ -214,7 +223,7 @@ TEST_F(FirstPartySetsLoaderTest, RepeatedMember) {
   // Set required input to make sure callback gets called.
   loader().SetManuallySpecifiedSet(LocalSetDeclaration());
 
-  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
+  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty(), IsEmpty()));
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_DeduplicatesOwnerOwner) {
@@ -231,27 +240,29 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_DeduplicatesOwnerOwner) {
       R"(["https://associatedsite1.test", "https://associatedsite2.test"]})"));
 
   EXPECT_THAT(WaitAndGetResult(),
-              PublicSetsAre(UnorderedElementsAre(
-                  Pair(SerializesTo("https://example.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite1.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 0)),
-                  Pair(SerializesTo("https://associatedsite2.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 1)),
-                  Pair(SerializesTo("https://bar.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://bar.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite4.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://bar.test")),
-                           net::SiteType::kAssociated, 0)))));
+              PublicSetsAre(
+                  UnorderedElementsAre(
+                      Pair(SerializesTo("https://example.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://example.test")),
+                               net::SiteType::kPrimary, absl::nullopt)),
+                      Pair(SerializesTo("https://associatedsite1.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://example.test")),
+                               net::SiteType::kAssociated, 0)),
+                      Pair(SerializesTo("https://associatedsite2.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://example.test")),
+                               net::SiteType::kAssociated, 1)),
+                      Pair(SerializesTo("https://bar.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://bar.test")),
+                               net::SiteType::kPrimary, absl::nullopt)),
+                      Pair(SerializesTo("https://associatedsite4.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://bar.test")),
+                               net::SiteType::kAssociated, 0))),
+                  IsEmpty()));
 }
 
 TEST_F(FirstPartySetsLoaderTest,
@@ -269,27 +280,29 @@ TEST_F(FirstPartySetsLoaderTest,
       R"(["https://associatedsite1.test", "https://associatedsite3.test"]})"));
 
   EXPECT_THAT(WaitAndGetResult(),
-              PublicSetsAre(UnorderedElementsAre(
-                  Pair(SerializesTo("https://example.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite1.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 0)),
-                  Pair(SerializesTo("https://associatedsite3.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 1)),
-                  Pair(SerializesTo("https://bar.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://bar.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite2.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://bar.test")),
-                           net::SiteType::kAssociated, 0)))));
+              PublicSetsAre(
+                  UnorderedElementsAre(
+                      Pair(SerializesTo("https://example.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://example.test")),
+                               net::SiteType::kPrimary, absl::nullopt)),
+                      Pair(SerializesTo("https://associatedsite1.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://example.test")),
+                               net::SiteType::kAssociated, 0)),
+                      Pair(SerializesTo("https://associatedsite3.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://example.test")),
+                               net::SiteType::kAssociated, 1)),
+                      Pair(SerializesTo("https://bar.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://bar.test")),
+                               net::SiteType::kPrimary, absl::nullopt)),
+                      Pair(SerializesTo("https://associatedsite2.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://bar.test")),
+                               net::SiteType::kAssociated, 0))),
+                  IsEmpty()));
 }
 
 TEST_F(FirstPartySetsLoaderTest,
@@ -306,27 +319,29 @@ TEST_F(FirstPartySetsLoaderTest,
       R"("associatedSites": ["https://associatedsite3.test"]})"));
 
   EXPECT_THAT(WaitAndGetResult(),
-              PublicSetsAre(UnorderedElementsAre(
-                  Pair(SerializesTo("https://example.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite3.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 0)),
-                  Pair(SerializesTo("https://foo.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite1.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kAssociated, 0)),
-                  Pair(SerializesTo("https://associatedsite2.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kAssociated, 1)))));
+              PublicSetsAre(
+                  UnorderedElementsAre(
+                      Pair(SerializesTo("https://example.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://example.test")),
+                               net::SiteType::kPrimary, absl::nullopt)),
+                      Pair(SerializesTo("https://associatedsite3.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://example.test")),
+                               net::SiteType::kAssociated, 0)),
+                      Pair(SerializesTo("https://foo.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://foo.test")),
+                               net::SiteType::kPrimary, absl::nullopt)),
+                      Pair(SerializesTo("https://associatedsite1.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://foo.test")),
+                               net::SiteType::kAssociated, 0)),
+                      Pair(SerializesTo("https://associatedsite2.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://foo.test")),
+                               net::SiteType::kAssociated, 1))),
+                  IsEmpty()));
 }
 
 TEST_F(FirstPartySetsLoaderTest,
@@ -344,35 +359,37 @@ TEST_F(FirstPartySetsLoaderTest,
       R"(["https://associatedsite1.test", "https://associatedsite2.test"]})"));
 
   EXPECT_THAT(WaitAndGetResult(),
-              PublicSetsAre(UnorderedElementsAre(
-                  Pair(SerializesTo("https://example.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite1.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 0)),
-                  Pair(SerializesTo("https://associatedsite2.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 1)),
-                  Pair(SerializesTo("https://foo.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite3.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kAssociated, 1)),
-                  Pair(SerializesTo("https://bar.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://bar.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite4.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://bar.test")),
-                           net::SiteType::kAssociated, 0)))));
+              PublicSetsAre(
+                  UnorderedElementsAre(
+                      Pair(SerializesTo("https://example.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://example.test")),
+                               net::SiteType::kPrimary, absl::nullopt)),
+                      Pair(SerializesTo("https://associatedsite1.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://example.test")),
+                               net::SiteType::kAssociated, 0)),
+                      Pair(SerializesTo("https://associatedsite2.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://example.test")),
+                               net::SiteType::kAssociated, 1)),
+                      Pair(SerializesTo("https://foo.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://foo.test")),
+                               net::SiteType::kPrimary, absl::nullopt)),
+                      Pair(SerializesTo("https://associatedsite3.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://foo.test")),
+                               net::SiteType::kAssociated, 1)),
+                      Pair(SerializesTo("https://bar.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://bar.test")),
+                               net::SiteType::kPrimary, absl::nullopt)),
+                      Pair(SerializesTo("https://associatedsite4.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://bar.test")),
+                               net::SiteType::kAssociated, 0))),
+                  IsEmpty()));
 }
 
 TEST_F(FirstPartySetsLoaderTest,
@@ -389,15 +406,65 @@ TEST_F(FirstPartySetsLoaderTest,
   // disallow singleton sets, we ensure that such cases are caught and
   // removed.
   EXPECT_THAT(WaitAndGetResult(),
-              PublicSetsAre(UnorderedElementsAre(
-                  Pair(SerializesTo("https://example.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite1.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 0)))));
+              PublicSetsAre(
+                  UnorderedElementsAre(
+                      Pair(SerializesTo("https://example.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://example.test")),
+                               net::SiteType::kPrimary, absl::nullopt)),
+                      Pair(SerializesTo("https://associatedsite1.test"),
+                           net::FirstPartySetEntry(
+                               net::SchemefulSite(GURL("https://example.test")),
+                               net::SiteType::kAssociated, 0))),
+                  IsEmpty()));
+}
+
+TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_MergesAliases) {
+  net::SchemefulSite foo(GURL("https://foo.test"));
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite associated(GURL("https://associated.test"));
+  net::SchemefulSite associated_cctld1(GURL("https://associated.cctld1"));
+  net::SchemefulSite associated_cctld2(GURL("https://associated.cctld2"));
+  net::SchemefulSite foo_service(GURL("https://foo_service.test"));
+  net::SchemefulSite foo_service_cctld(GURL("https://foo_service.cctld"));
+
+  // Both the public sets and the locally-defined set define an alias for
+  // https://associated.test, but both define a different set for that site too.
+  // Only the locally-defined alias should be kept.
+  SetComponentSets(
+      loader(),
+      R"({"primary": "https://foo.test",)"
+      R"("associatedSites": ["https://associated.test"],)"
+      R"("serviceSites": ["https://foo_service.test"],)"
+      R"("ccTLDs": {)"
+      R"(  "https://associated.test": ["https://associated.cctld1"],)"
+      R"(  "https://foo_service.test": ["https://foo_service.cctld"],)"
+      R"(})"
+      R"(})");
+  loader().SetManuallySpecifiedSet(LocalSetDeclaration(
+      R"({"primary": "https://example.test",)"
+      R"("associatedSites": ["https://associated.test"],)"
+      R"("ccTLDs": {)"
+      R"(  "https://associated.test": ["https://associated.cctld2"],)"
+      R"(})"
+      R"(})"));
+
+  EXPECT_THAT(
+      WaitAndGetResult(),
+      PublicSetsAre(
+          UnorderedElementsAre(
+              Pair(example,
+                   net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+                                           absl::nullopt)),
+              Pair(associated, net::FirstPartySetEntry(
+                                   example, net::SiteType::kAssociated, 0)),
+              Pair(foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
+                                                absl::nullopt)),
+              Pair(foo_service,
+                   net::FirstPartySetEntry(foo, net::SiteType::kService,
+                                           absl::nullopt))),
+          UnorderedElementsAre(Pair(foo_service_cctld, foo_service),
+                               Pair(associated_cctld2, associated))));
 }
 
 }  // namespace content

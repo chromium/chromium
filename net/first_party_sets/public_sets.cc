@@ -75,7 +75,7 @@ absl::optional<FirstPartySetEntry> PublicSets::FindEntry(
 }
 
 std::ostream& operator<<(std::ostream& os, const PublicSets& ps) {
-  os << "entries = {";
+  os << "{entries = {";
   for (const auto& [site, entry] : ps.entries()) {
     os << "{" << site.Serialize() << ": " << entry << "}, ";
   }
@@ -83,7 +83,7 @@ std::ostream& operator<<(std::ostream& os, const PublicSets& ps) {
   for (const auto& [alias, canonical] : ps.aliases()) {
     os << "{" << alias.Serialize() << ": " << canonical.Serialize() << "}, ";
   }
-  os << "}";
+  os << "}}";
   return os;
 }
 
