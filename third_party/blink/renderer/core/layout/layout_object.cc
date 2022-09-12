@@ -4382,8 +4382,16 @@ void LayoutObject::
   NOT_DESTROYED();
   // Only full invalidation reasons are allowed.
   DCHECK(IsFullPaintInvalidationReason(reason));
-  if (ShouldDoFullPaintInvalidation())
+
+  // https://linear.app/replay/issue/RUN-569
+  recordreplay::Assert("LayoutObject::SetShouldDoFullPaintInvalidationWithoutGeometryChangeInternal Start %d",
+                       recordreplay::PointerId(this));
+
+  if (ShouldDoFullPaintInvalidation()) {
+    // https://linear.app/replay/issue/RUN-569
+    recordreplay::Assert("LayoutObject::SetShouldDoFullPaintInvalidationWithoutGeometryChangeInternal #1");
     return;
+  }
 
   SetShouldCheckForPaintInvalidationWithoutGeometryChange();
   if (reason == PaintInvalidationReason::kFull) {
@@ -4392,6 +4400,9 @@ void LayoutObject::
   }
   full_paint_invalidation_reason_ = reason;
   bitfields_.SetShouldDelayFullPaintInvalidation(false);
+
+  // https://linear.app/replay/issue/RUN-569
+  recordreplay::Assert("LayoutObject::SetShouldDoFullPaintInvalidationWithoutGeometryChangeInternal Done");
 }
 
 void LayoutObject::SetShouldCheckForPaintInvalidation() {

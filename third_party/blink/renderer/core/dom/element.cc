@@ -3018,6 +3018,9 @@ static const StyleRecalcChange ApplyComputedStyleDiff(
 StyleRecalcChange Element::RecalcOwnStyle(
     const StyleRecalcChange change,
     const StyleRecalcContext& style_recalc_context) {
+  // https://linear.app/replay/issue/RUN-569
+  recordreplay::Assert("Element::RecalcOwnStyle %d", recordreplay::PointerId(this));
+
   DCHECK(GetDocument().InStyleRecalc());
   if (change.RecalcChildren() && HasRareData() && NeedsStyleRecalc()) {
     // This element needs recalc because its parent changed inherited
