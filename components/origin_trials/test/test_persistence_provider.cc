@@ -24,7 +24,7 @@ TestPersistenceProvider::GetPersistentTrialTokens(
 
 void TestPersistenceProvider::SavePersistentTrialTokens(
     const url::Origin& origin,
-    const base::flat_set<origin_trials::PersistedTrialToken>& tokens) {
+    const base::flat_set<origin_trials::PersistedTrialToken> tokens) {
   if (tokens.empty()) {
     storage_.erase(origin);
   } else {

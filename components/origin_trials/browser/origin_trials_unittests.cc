@@ -308,19 +308,5 @@ TEST_F(OriginTrialsTest, GracePeriodIsRespected) {
       << "Do not expect the trial to be valid after the grace period ends";
 }
 
-TEST_F(OriginTrialsTest, GracefullyHandleOpaqueOrigins) {
-  std::vector<base::StringPiece> tokens = {kFrobulateManualCompletionToken};
-  url::Origin opaque_origin;
-  origin_trials_.PersistTrialsFromTokens(opaque_origin, tokens, kValidTime);
-  // No assert, this just shouldn't crash
-
-  base::flat_set<std::string> trials =
-      origin_trials_.GetPersistedTrialsForOrigin(opaque_origin, kValidTime);
-  EXPECT_TRUE(trials.empty());
-
-  EXPECT_FALSE(origin_trials_.IsTrialPersistedForOrigin(
-      opaque_origin, kPersistentTrialName, kValidTime));
-}
-
 }  // namespace
 }  // namespace origin_trials

@@ -43,9 +43,6 @@ void OriginTrials::PersistTrialsFromTokens(
     const url::Origin& origin,
     const base::span<const base::StringPiece> header_tokens,
     const base::Time current_time) {
-  if (origin.opaque())
-    return;
-
   base::flat_set<PersistedTrialToken> enabled_persistent_trial_tokens;
 
   for (const base::StringPiece token : header_tokens) {
@@ -69,9 +66,6 @@ base::flat_set<std::string> OriginTrials::GetPersistedTrialsForOriginWithMatch(
     const url::Origin& origin,
     const base::Time current_time,
     const absl::optional<const base::StringPiece> trial_name_match) const {
-  if (origin.opaque())
-    return {};
-
   base::flat_set<PersistedTrialToken> saved_tokens =
       persistence_provider_->GetPersistentTrialTokens(origin);
 

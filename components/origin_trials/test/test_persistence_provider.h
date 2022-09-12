@@ -31,8 +31,7 @@ class TestPersistenceProvider : public OriginTrialsPersistenceProvider {
       const url::Origin& origin) const override;
   void SavePersistentTrialTokens(
       const url::Origin& origin,
-      const base::flat_set<origin_trials::PersistedTrialToken>& tokens)
-      override;
+      const base::flat_set<origin_trials::PersistedTrialToken> tokens) override;
 
  private:
   std::map<url::Origin, base::flat_set<origin_trials::PersistedTrialToken>>

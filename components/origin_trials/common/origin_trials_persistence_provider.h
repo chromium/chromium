@@ -26,7 +26,7 @@ class OriginTrialsPersistenceProvider {
   // Save the list of enabled trial tokens for |origin|.
   virtual void SavePersistentTrialTokens(
       const url::Origin& origin,
-      const base::flat_set<PersistedTrialToken>& tokens) = 0;
+      const base::flat_set<PersistedTrialToken> tokens) = 0;
 };
 
 }  // namespace origin_trials
