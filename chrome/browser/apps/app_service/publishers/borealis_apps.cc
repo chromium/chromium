@@ -120,7 +120,10 @@ BorealisApps::BorealisApps(AppServiceProxy* proxy)
   }
 
   pref_registrar_.Add(borealis::prefs::kBorealisInstalledOnDevice,
-                      base::BindRepeating(&BorealisApps::OnInstallChanged,
+                      base::BindRepeating(&BorealisApps::RefreshSpecialApps,
+                                          weak_factory_.GetWeakPtr()));
+  pref_registrar_.Add(borealis::prefs::kBorealisVmTokenHash,
+                      base::BindRepeating(&BorealisApps::RefreshSpecialApps,
                                           weak_factory_.GetWeakPtr()));
 
   // TODO(b/170264723): When uninstalling borealis is completed, ensure that we
@@ -486,7 +489,7 @@ void BorealisApps::OnPermissionChanged() {
   AppPublisher::Publish(std::move(app));
 }
 
-void BorealisApps::OnInstallChanged() {
+void BorealisApps::RefreshSpecialApps() {
   CallWithBorealisAllowed(base::BindOnce(&BorealisApps::SetUpSpecialApps,
                                          weak_factory_.GetWeakPtr()));
   CallWithBorealisAllowed(base::BindOnce(&BorealisApps::SetUpSpecialAppsMojom,

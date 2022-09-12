@@ -264,12 +264,15 @@ void BorealisFeatures::SetVmToken(
 void BorealisFeatures::OnVmTokenDetermined(
     base::OnceCallback<void(AllowStatus)> callback,
     std::string hashed_token) {
+  // The user has given a new password, so we invalidate the old status first,
+  // that way things which monitor the below pref don't accidentally re-use the
+  // old status.
+  async_checker_->Invalidate();
   // This has the effect that you could overwrite the correct token and disable
   // borealis. Adding extra code to avoid that is not worth while because end
   // users aren't supposed to have the correct token anyway.
   profile_->GetPrefs()->SetString(prefs::kBorealisVmTokenHash, hashed_token);
-  // The user has given a new password, so we invalidate the old status.
-  async_checker_->Invalidate();
+  // Finally, re-issue an allowedness check.
   IsAllowed(std::move(callback));
 }
 

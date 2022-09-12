@@ -88,9 +88,9 @@ class BorealisApps
   // camera, etc) change.
   void OnPermissionChanged();
 
-  // Called by the pref registry when borealis' installation pref changes (i.e
-  // for install and uninstall.
-  void OnInstallChanged();
+  // Re-create borealis' "special apps", called when one of the preferences
+  // which control thse changes (i.e for insert_coin, install and uninstall).
+  void RefreshSpecialApps();
 
   // apps::AppPublisher overrides.
   void LoadIcon(const std::string& app_id,
