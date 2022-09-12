@@ -17,7 +17,7 @@
 namespace mojo {
 class Connector;
 class Message;
-};  // namespace mojo
+}  // namespace mojo
 
 namespace content::android {
 

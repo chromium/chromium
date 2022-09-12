@@ -24,8 +24,8 @@ class BlackHoleInterceptor : public safe_browsing::UrlCheckInterceptor {
  public:
   void Check(
       std::unique_ptr<SafeBrowsingApiHandlerBridge::ResponseCallback> callback,
-      const GURL& url) const override{};
-  ~BlackHoleInterceptor() override{};
+      const GURL& url) const override {}
+  ~BlackHoleInterceptor() override {}
 };
 
 }  // namespace

@@ -61,7 +61,7 @@ class SafeBrowsingApiHandlerBridge {
 // SafeBrowsingApiHandlerBridge. Intended for use only in tests.
 class UrlCheckInterceptor {
  public:
-  virtual ~UrlCheckInterceptor(){};
+  virtual ~UrlCheckInterceptor() {}
   virtual void Check(
       std::unique_ptr<SafeBrowsingApiHandlerBridge::ResponseCallback> callback,
       const GURL& url) const = 0;

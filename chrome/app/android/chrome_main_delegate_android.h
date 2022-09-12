@@ -32,7 +32,7 @@ class ChromeMainDelegateAndroid : public ChromeMainDelegate {
   absl::variant<int, content::MainFunctionParams> RunProcess(
       const std::string& process_type,
       content::MainFunctionParams main_function_params) override;
-  void ProcessExiting(const std::string& process_type) override{};
+  void ProcessExiting(const std::string& process_type) override {}
 
  private:
   std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler_;

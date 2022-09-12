@@ -9,7 +9,7 @@
 namespace device {
 
 HapticGamepadAndroid::HapticGamepadAndroid(int device_index)
-    : device_index_(device_index){};
+    : device_index_(device_index) {}
 
 HapticGamepadAndroid::~HapticGamepadAndroid() = default;
 

@@ -142,7 +142,7 @@ class TestUrlCheckInterceptor : public safe_browsing::UrlCheckInterceptor {
     RunCallbackOnIOThread(std::move(callback), Find(url),
                           safe_browsing::ThreatMetadata());
   }
-  ~TestUrlCheckInterceptor() override{};
+  ~TestUrlCheckInterceptor() override {}
 
  private:
   safe_browsing::SBThreatType Find(const GURL& url) const {
