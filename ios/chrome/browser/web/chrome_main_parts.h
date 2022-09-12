@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_IOS_CHROME_MAIN_PARTS_H_
-#define IOS_CHROME_BROWSER_IOS_CHROME_MAIN_PARTS_H_
+#ifndef IOS_CHROME_BROWSER_WEB_CHROME_MAIN_PARTS_H_
+#define IOS_CHROME_BROWSER_WEB_CHROME_MAIN_PARTS_H_
 
 #include <memory>
 
@@ -72,4 +72,4 @@ class IOSChromeMainParts : public web::WebMainParts {
 #endif
 };
 
-#endif  // IOS_CHROME_BROWSER_IOS_CHROME_MAIN_PARTS_H_
+#endif  // IOS_CHROME_BROWSER_WEB_CHROME_MAIN_PARTS_H_

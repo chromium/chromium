@@ -144,8 +144,6 @@ source_set("chrome_url_constants") {
 source_set("browser_impl") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "ios_chrome_main_parts.h",
-    "ios_chrome_main_parts.mm",
     "ios_thread_profiler.cc",
     "ios_thread_profiler.h",
   ]
