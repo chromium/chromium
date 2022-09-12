@@ -80,7 +80,7 @@ class SafeBrowsingServiceImpl : public SafeBrowsingService {
     // Enables or disables Safe Browsing database updates and lookups.
     void SetSafeBrowsingEnabled(bool enabled);
 
-    // Clears all cookies. Calls the given |callback| when deletion is complete.
+    // Clears all cookies. Calls the given `callback` when deletion is complete.
     void ClearAllCookies(base::OnceClosure callback);
 
    private:
@@ -105,7 +105,7 @@ class SafeBrowsingServiceImpl : public SafeBrowsingService {
     // This tracks whether ShutDown() has been called.
     bool shutting_down_ = false;
 
-    // This is wrapped by |network_context|.
+    // This is wrapped by `network_context`.
     std::unique_ptr<net::URLRequestContext> url_request_context_;
 
     // The network context used for Safe Browsing related network requests.
@@ -114,7 +114,7 @@ class SafeBrowsingServiceImpl : public SafeBrowsingService {
     // An IO thread remote for a URLLoaderFactory created on the UI thread.
     mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
 
-    // A SharedURLLoaderFactory that wraps |url_loader_factory_|.
+    // A SharedURLLoaderFactory that wraps `url_loader_factory_`.
     scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
         shared_url_loader_factory_;
 
@@ -140,7 +140,7 @@ class SafeBrowsingServiceImpl : public SafeBrowsingService {
   // The URLLoaderFactory used for Safe Browsing network requests.
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
 
-  // A SharedURLLoaderFactory that wraps |url_loader_factory_|.
+  // A SharedURLLoaderFactory that wraps `url_loader_factory_`.
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
       shared_url_loader_factory_;
 

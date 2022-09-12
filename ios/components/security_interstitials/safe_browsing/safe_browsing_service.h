@@ -61,7 +61,7 @@ class SafeBrowsingService
                    web::WebState* web_state,
                    SafeBrowsingClient* client) = 0;
 
-  // Returns true if |url| has a scheme that is handled by Safe Browsing.
+  // Returns true if `url` has a scheme that is handled by Safe Browsing.
   virtual bool CanCheckUrl(const GURL& url) const = 0;
 
   // Returns the SharedURLLoaderFactory used for Safe Browsing network requests.
@@ -73,7 +73,7 @@ class SafeBrowsingService
   GetDatabaseManager() = 0;
 
   // Clears cookies if the given deletion time range is for "all time". Calls
-  // the given |callback| once deletion is complete.
+  // the given `callback` once deletion is complete.
   virtual void ClearCookies(
       const net::CookieDeletionInfo::TimeRange& creation_range,
       base::OnceClosure callback) = 0;

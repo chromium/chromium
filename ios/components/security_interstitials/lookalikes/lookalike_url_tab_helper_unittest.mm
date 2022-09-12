@@ -29,7 +29,7 @@ class LookalikeUrlTabHelperTest : public PlatformTest {
   }
 
   // Helper function that calls into WebState::ShouldAllowResponse with the
-  // given |url| and |for_main_frame|, waits for the callback with the decision
+  // given `url` and `for_main_frame`, waits for the callback with the decision
   // to be called, and returns the decision.
   web::WebStatePolicyDecider::PolicyDecision ShouldAllowResponseUrl(
       const GURL& url,

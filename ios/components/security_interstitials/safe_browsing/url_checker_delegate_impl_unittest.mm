@@ -69,7 +69,7 @@ class UrlCheckerDelegateImplTest : public PlatformTest {
   }
   ~UrlCheckerDelegateImplTest() override = default;
 
-  // Creates an UnsafeResource whose callback populates |callback_state|.
+  // Creates an UnsafeResource whose callback populates `callback_state`.
   UnsafeResource CreateUnsafeResource(
       UnsafeResourceCallbackState* callback_state) {
     UnsafeResource resource;
@@ -81,7 +81,7 @@ class UrlCheckerDelegateImplTest : public PlatformTest {
     return resource;
   }
 
-  // Waits for |state.executed| to be reset to true.  Returns whether the state
+  // Waits for `state.executed` to be reset to true.  Returns whether the state
   // populated before a timeout.
   bool WaitForUnsafeResourceCallbackExecution(
       UnsafeResourceCallbackState* state) {

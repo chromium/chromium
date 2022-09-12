@@ -23,7 +23,7 @@ class PendingUnsafeResourceStorage {
       const PendingUnsafeResourceStorage& other);
   ~PendingUnsafeResourceStorage();
 
-  // Constructs a storage holding |resource|.
+  // Constructs a storage holding `resource`.
   explicit PendingUnsafeResourceStorage(
       const security_interstitials::UnsafeResource& resource);
 
@@ -63,16 +63,16 @@ class PendingUnsafeResourceStorage {
         scoped_observation_{this};
   };
 
-  // Updates |policy_observer_| for the current value of |resource_|.
+  // Updates `policy_observer_` for the current value of `resource_`.
   void UpdatePolicyObserver();
 
-  // Resets |resource_| and destroys |policy_observer_|.
+  // Resets `resource_` and destroys `policy_observer_`.
   void ResetResource();
 
   // The resource being stored.  Contains no value after the pending decision
   // has been either allowed or disallowed.
   absl::optional<security_interstitials::UnsafeResource> resource_;
-  // The observer for |resource_|'s pending decision.
+  // The observer for `resource_`'s pending decision.
   absl::optional<ResourcePolicyObserver> policy_observer_;
 };
 

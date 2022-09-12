@@ -44,7 +44,7 @@ const LookalikeUrlMatchType kTestMatchType =
 
 using UkmEntry = ukm::builders::LookalikeUrl_NavigationSuggestion;
 
-// Creates a LookalikeUrlBlockingPage with a given |safe_url|.
+// Creates a LookalikeUrlBlockingPage with a given `safe_url`.
 std::unique_ptr<LookalikeUrlBlockingPage> CreateBlockingPage(
     web::WebState* web_state,
     const GURL& safe_url,

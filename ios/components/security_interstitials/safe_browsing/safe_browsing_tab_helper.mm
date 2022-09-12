@@ -41,7 +41,7 @@ web::WebStatePolicyDecider::PolicyDecision CreateSafeBrowsingErrorDecision() {
                       userInfo:nil]);
 }
 
-// Returns a canonicalized version of |url| as used by the SafeBrowsingService.
+// Returns a canonicalized version of `url` as used by the SafeBrowsingService.
 GURL GetCanonicalizedUrl(const GURL& url) {
   std::string hostname;
   std::string path;
@@ -143,10 +143,10 @@ void SafeBrowsingTabHelper::PolicyDecider::UpdateForMainFrameDocumentChange() {
 }
 
 void SafeBrowsingTabHelper::PolicyDecider::UpdateForMainFrameServerRedirect() {
-  // The current |pending_main_frame_query_| is a server redirect from
-  // |previous_main_frame_query_|, so add the latter to the pending redirect
+  // The current `pending_main_frame_query_` is a server redirect from
+  // `previous_main_frame_query_`, so add the latter to the pending redirect
   // chain. However, when a URL redirects to itself, ShouldAllowRequest may not
-  // be called again, and in that case |previous_main_frame_query_| will not
+  // be called again, and in that case `previous_main_frame_query_` will not
   // have a new URL to add to the redirect chain.
   if (previous_main_frame_query_) {
     pending_main_frame_redirect_chain_.push_back(
@@ -182,7 +182,7 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
     pending_sub_frame_queries_.insert({request_url, SubFrameUrlQuery()});
   }
 
-  // If there is a pre-existing main frame unsafe resource for |request_url|
+  // If there is a pre-existing main frame unsafe resource for `request_url`
   // that haven't yet resulted in an error page, this resource can be used to
   // show the error page for the current load.  This can occur in back/forward
   // navigations to safe browsing error pages, where ShouldAllowRequest() is
@@ -302,10 +302,10 @@ void SafeBrowsingTabHelper::PolicyDecider::HandleSubFrameResponsePolicy(
     const GURL& url,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   // Sub frame response policy decisions are expected to always be requested
-  // after a request policy decision for |url|. However, in some cases, WebKit
+  // after a request policy decision for `url`. However, in some cases, WebKit
   // changes the URL in between the request and response policy callbacks,
   // without triggering a new request policy callback. One such case is when the
-  // URL's query string changes. If |url| isn't found in any pending query,
+  // URL's query string changes. If `url` isn't found in any pending query,
   // start a new query for it now.
   auto it = pending_sub_frame_queries_.find(url);
   if (it == pending_sub_frame_queries_.end()) {
@@ -382,7 +382,7 @@ void SafeBrowsingTabHelper::PolicyDecider::OnSubFrameUrlQueryDecided(
   DCHECK(pending_sub_frame_queries_.find(url) !=
          pending_sub_frame_queries_.end());
 
-  // Store the decision for |url| and run all the response callbacks that have
+  // Store the decision for `url` and run all the response callbacks that have
   // been received before the URL check completion.
   SubFrameUrlQuery& sub_frame_query = pending_sub_frame_queries_[url];
   sub_frame_query.decision = decision;

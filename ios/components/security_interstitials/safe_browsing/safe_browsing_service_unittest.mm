@@ -199,7 +199,7 @@ class SafeBrowsingServiceTest : public PlatformTest {
                        base::Unretained(this), bad_url));
   }
 
-  // Adds the given |safe_url| to the allowlist used by real-time checks.
+  // Adds the given `safe_url` to the allowlist used by real-time checks.
   void MarkUrlAsRealTimeSafe(const GURL& safe_url) {
     web::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
@@ -207,7 +207,7 @@ class SafeBrowsingServiceTest : public PlatformTest {
                        base::Unretained(this), safe_url));
   }
 
-  // Caches the given |bad_url| as unsafe in the VerdictCacheManager used by
+  // Caches the given `bad_url` as unsafe in the VerdictCacheManager used by
   // real-time checks.
   void MarkUrlAsRealTimeUnsafe(const GURL& bad_url) {
     safe_browsing::RTLookupResponse response;

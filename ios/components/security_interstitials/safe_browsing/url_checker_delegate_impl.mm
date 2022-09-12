@@ -19,10 +19,10 @@
 #endif
 
 namespace {
-// Helper function for managing a blocking page request for |resource|.  For the
+// Helper function for managing a blocking page request for `resource`.  For the
 // committed interstitial flow, this function does not actually display the
 // blocking page.  Instead, it updates the allow list and stores a copy of the
-// unsafe resource before calling |resource|'s callback.  The blocking page is
+// unsafe resource before calling `resource`'s callback.  The blocking page is
 // displayed later when the do-not-proceed signal triggers an error page.  Must
 // be called on the UI thread.
 void HandleBlockingPageRequestOnUIThread(
@@ -44,7 +44,7 @@ void HandleBlockingPageRequestOnUIThread(
     return;
   }
 
-  // Check if navigations to |resource|'s URL have already been allowed for the
+  // Check if navigations to `resource`'s URL have already been allowed for the
   // given threat type.
   std::set<safe_browsing::SBThreatType> allowed_threats;
   const GURL url = resource.url;

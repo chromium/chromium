@@ -32,7 +32,7 @@ class PendingUnsafeResourceStorageTest : public PlatformTest {
     SafeBrowsingUrlAllowList::CreateForWebState(&web_state_);
     allow_list()->AddPendingUnsafeNavigationDecision(url_, threat_type_);
 
-    // Create a storage for |resource|.
+    // Create a storage for `resource`.
     storage_ = PendingUnsafeResourceStorage(resource);
   }
 

@@ -18,7 +18,7 @@ namespace security_interstitials {
 
 class TestInterstitialPage : public IOSSecurityInterstitialPage {
  public:
-  // |*destroyed_tracker| is set to true in the destructor.
+  // `*destroyed_tracker` is set to true in the destructor.
   TestInterstitialPage(web::WebState* web_state,
                        const GURL& request_url,
                        bool* destroyed_tracker)
@@ -63,8 +63,8 @@ class IOSBlockingPageTabHelperTest : public PlatformTest {
     return IOSBlockingPageTabHelper::FromWebState(&web_state_);
   }
 
-  // Creates a blocking page and associates it with |context|'s navigation ID
-  // in the tab helper.  Returns the created blocking page.  |destroyed_tracker|
+  // Creates a blocking page and associates it with `context`'s navigation ID
+  // in the tab helper.  Returns the created blocking page.  `destroyed_tracker`
   // is an out-parameter that is reset to true when the blocking page is
   // destroyed.
   IOSSecurityInterstitialPage* CreateAssociatedBlockingPage(

@@ -28,7 +28,7 @@ class UnsafeSubresourceContainer : public base::SupportsUserData::Data {
  public:
   ~UnsafeSubresourceContainer() override = default;
 
-  // Lazily instantiates and returns the UnsafeSubresourceContainer for |item|.
+  // Lazily instantiates and returns the UnsafeSubresourceContainer for `item`.
   static UnsafeSubresourceContainer* FromNavigationItem(
       web::NavigationItem* item) {
     DCHECK(item);
@@ -57,7 +57,7 @@ class UnsafeSubresourceContainer : public base::SupportsUserData::Data {
     return nullptr;
   }
 
-  // Stores |resource| in the container.
+  // Stores `resource` in the container.
   void StoreUnsafeResource(const UnsafeResource& resource) {
     unsafe_resources_.push_back(PendingUnsafeResourceStorage(resource));
   }
@@ -94,7 +94,7 @@ void SafeBrowsingUnsafeResourceContainer::StoreMainFrameUnsafeResource(
             resource.request_destination);
 
   // For main frame navigations, the copy is stored in
-  // |main_frame_unsafe_resource_|.  It corresponds with the pending
+  // `main_frame_unsafe_resource_`.  It corresponds with the pending
   // NavigationItem, which may have not been created yet and will be discarded
   // after navigation failures.
   main_frame_unsafe_resource_ = PendingUnsafeResourceStorage(resource);

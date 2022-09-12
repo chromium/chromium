@@ -76,12 +76,12 @@ class SafeBrowsingQueryManager
   // Observer class for the query manager.
   class Observer : public base::CheckedObserver {
    public:
-    // Notifies observers that |query| has completed with |result|.
+    // Notifies observers that `query` has completed with `result`.
     virtual void SafeBrowsingQueryFinished(SafeBrowsingQueryManager* manager,
                                            const Query& query,
                                            const Result& result) {}
 
-    // Called when |manager| is about to be destroyed.
+    // Called when `manager` is about to be destroyed.
     virtual void SafeBrowsingQueryManagerDestroyed(
         SafeBrowsingQueryManager* manager) {}
   };
@@ -101,11 +101,11 @@ class SafeBrowsingQueryManager
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Starts the URL check for |query|.
+  // Starts the URL check for `query`.
   void StartQuery(const Query& query);
 
-  // Stores |resource| in the result for the query that triggered the URL check.
-  // No-ops if there is no active query for |resource|'s URL.
+  // Stores `resource` in the result for the query that triggered the URL check.
+  // No-ops if there is no active query for `resource`'s URL.
   void StoreUnsafeResource(
       const security_interstitials::UnsafeResource& resource);
 
@@ -123,9 +123,9 @@ class SafeBrowsingQueryManager
     UrlCheckerClient(const UrlCheckerClient&) = delete;
     UrlCheckerClient& operator=(const UrlCheckerClient&) = delete;
 
-    // Queries the database using the given |url_checker|, for a request with
-    // the given |url| and the given HTTP |method|. After receiving a result
-    // from the database, runs the given |callback| on the UI thread with the
+    // Queries the database using the given `url_checker`, for a request with
+    // the given `url` and the given HTTP `method`. After receiving a result
+    // from the database, runs the given `callback` on the UI thread with the
     // result.
     void CheckUrl(
         std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl> url_checker,
@@ -134,9 +134,9 @@ class SafeBrowsingQueryManager
         base::OnceCallback<void(bool proceed, bool show_error_page)> callback);
 
    private:
-    // Called by |url_checker| with the initial result of performing a url
-    // check. |url_checker| must be non-null. This is an implementation of
-    // SafeBrowsingUrlCheckerImpl::NativeUrlCheckCallBack. |slow_check_notifier|
+    // Called by `url_checker` with the initial result of performing a url
+    // check. `url_checker` must be non-null. This is an implementation of
+    // SafeBrowsingUrlCheckerImpl::NativeUrlCheckCallBack. `slow_check_notifier`
     // is an out-parameter; when a non-null value is passed in, it is set to a
     // callback that receives the final result of the url check.
     void OnCheckUrlResult(
@@ -146,8 +146,8 @@ class SafeBrowsingQueryManager
         bool proceed,
         bool showed_interstitial);
 
-    // Called by |url_checker| with the final result of performing a url check.
-    // |url_checker| must be non-null. This is an implementation of
+    // Called by `url_checker` with the final result of performing a url check.
+    // `url_checker` must be non-null. This is an implementation of
     // SafeBrowsingUrlCheckerImpl::NativeUrlCheckNotifier.
     void OnCheckComplete(safe_browsing::SafeBrowsingUrlCheckerImpl* url_checker,
                          bool proceed,
@@ -163,7 +163,7 @@ class SafeBrowsingQueryManager
   };
 
   // Used as the completion callback for URL queries executed by
-  // |url_checker_client_|.
+  // `url_checker_client_`.
   void UrlCheckFinished(const Query query, bool proceed, bool show_error_page);
 
   // The WebState whose URL queries are being managed.

@@ -96,7 +96,7 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
   }
 
   // TODO(crbug.com/1104384): After site engagement has been componentized,
-  // fetch and set |engaged_sites| here so that an interstitial won't be
+  // fetch and set `engaged_sites` here so that an interstitial won't be
   // shown on engaged sites, and so that the interstitial will be shown on
   // lookalikes of engaged sites.
   std::vector<DomainInfo> engaged_sites;

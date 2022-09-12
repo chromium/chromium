@@ -12,26 +12,26 @@
 
 class SafeBrowsingUrlAllowList;
 
-// Runs |resource|'s callback on the appropriate thread.
+// Runs `resource`'s callback on the appropriate thread.
 void RunUnsafeResourceCallback(
     const security_interstitials::UnsafeResource& resource,
     bool proceed,
     bool showed_interstitial);
 
-// Returns the interstitial reason for |resource|.
+// Returns the interstitial reason for `resource`.
 security_interstitials::BaseSafeBrowsingErrorUI::SBInterstitialReason
 GetUnsafeResourceInterstitialReason(
     const security_interstitials::UnsafeResource& resource);
 
-// Returns the metric prefix for error pages for |resource|.
+// Returns the metric prefix for error pages for `resource`.
 std::string GetUnsafeResourceMetricPrefix(
     const security_interstitials::UnsafeResource& resource);
 
-// Returns the SafeBrowsingUrlAllowList for |resource|.
+// Returns the SafeBrowsingUrlAllowList for `resource`.
 SafeBrowsingUrlAllowList* GetAllowListForResource(
     const security_interstitials::UnsafeResource& resource);
 
-// Retrieves the main frame URL for |resource| in |web_state|.
+// Retrieves the main frame URL for `resource` in `web_state`.
 const GURL GetMainFrameUrl(
     const security_interstitials::UnsafeResource& resource);
 

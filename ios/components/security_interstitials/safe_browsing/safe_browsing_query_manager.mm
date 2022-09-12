@@ -98,7 +98,7 @@ void SafeBrowsingQueryManager::StoreUnsafeResource(
   // that when there are repeated pending queries (e.g., when a page has
   // multiple iframes with the same URL), it is not possible to determine
   // which of these queries will receive a response first. As a result,
-  // |resource| must be stored with every corresponding query, not just the
+  // `resource` must be stored with every corresponding query, not just the
   // first.
   for (auto& pair : results_) {
     if (pair.first.url == resource.url &&
@@ -125,7 +125,7 @@ void SafeBrowsingQueryManager::UrlCheckFinished(const Query query,
   // execution of its completion block.
   DCHECK(!show_error_page || result.resource);
 
-  // Notify observers of the completed URL check. |this| might get destroyed
+  // Notify observers of the completed URL check. `this` might get destroyed
   // when an observer is notified.
   auto weak_this = weak_factory_.GetWeakPtr();
   for (auto& observer : observers_) {

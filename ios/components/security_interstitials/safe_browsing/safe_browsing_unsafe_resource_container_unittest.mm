@@ -66,7 +66,7 @@ TEST_F(SafeBrowsingUnsafeResourceContainerTest, MainFrameResource) {
   // The container should not have any unsafe main frame resources initially.
   EXPECT_FALSE(container()->GetMainFrameUnsafeResource());
 
-  // Store |resource| in the container.
+  // Store `resource` in the container.
   container()->StoreMainFrameUnsafeResource(resource);
   const UnsafeResource* resource_copy =
       container()->GetMainFrameUnsafeResource();
@@ -87,7 +87,7 @@ TEST_F(SafeBrowsingUnsafeResourceContainerTest, SubFrameResource) {
   // The container should not have any unsafe sub frame resources initially.
   EXPECT_FALSE(container()->GetSubFrameUnsafeResource(item_.get()));
 
-  // Store |resource| in the container.
+  // Store `resource` in the container.
   container()->StoreSubFrameUnsafeResource(resource, item_.get());
   const UnsafeResource* resource_copy =
       container()->GetSubFrameUnsafeResource(item_.get());

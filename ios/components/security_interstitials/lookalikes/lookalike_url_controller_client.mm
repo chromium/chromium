@@ -14,7 +14,7 @@
 #endif
 
 namespace {
-// Creates a metrics helper for |url|.
+// Creates a metrics helper for `url`.
 std::unique_ptr<security_interstitials::IOSBlockingPageMetricsHelper>
 CreateMetricsHelper(web::WebState* web_state, const GURL& url) {
   security_interstitials::MetricsHelper::ReportDetails reporting_info;

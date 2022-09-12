@@ -204,7 +204,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 namespace {
 // An observer that owns a WebState and destroys it when it gets a
-// |SafeBrowsingQueryFinished| callback.
+// `SafeBrowsingQueryFinished` callback.
 class WebStateDestroyingQueryManagerObserver
     : public SafeBrowsingQueryManager::Observer {
  public:

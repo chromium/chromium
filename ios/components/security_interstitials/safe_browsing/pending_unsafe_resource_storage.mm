@@ -16,7 +16,7 @@ using safe_browsing::SBThreatType;
 using security_interstitials::UnsafeResource;
 
 namespace {
-// Returns whether a pending decision exists for |resource|.
+// Returns whether a pending decision exists for `resource`.
 bool IsUnsafeResourcePending(const UnsafeResource& resource) {
   SafeBrowsingUrlAllowList* allow_list = GetAllowListForResource(resource);
   GURL decision_url = SafeBrowsingUrlAllowList::GetDecisionUrl(resource);
@@ -54,7 +54,7 @@ PendingUnsafeResourceStorage::PendingUnsafeResourceStorage(
   DCHECK(IsUnsafeResourcePending(resource));
   // Reset the resource's callback to prevent misuse.
   resource_.value().callback = base::DoNothing();
-  // Create the policy observer for |resource|.
+  // Create the policy observer for `resource`.
   UpdatePolicyObserver();
 }
 
@@ -111,7 +111,7 @@ void PendingUnsafeResourceStorage::ResourcePolicyObserver::ThreatPolicyUpdated(
   }
 
   storage_->ResetResource();
-  // ResetResource() destroys |this|, so no additional code should be added.
+  // ResetResource() destroys `this`, so no additional code should be added.
 }
 
 void PendingUnsafeResourceStorage::ResourcePolicyObserver::
@@ -128,11 +128,11 @@ void PendingUnsafeResourceStorage::ResourcePolicyObserver::
   }
 
   storage_->ResetResource();
-  // ResetResource() destroys |this|, so no additional code should be added.
+  // ResetResource() destroys `this`, so no additional code should be added.
 }
 
 void PendingUnsafeResourceStorage::ResourcePolicyObserver::
     SafeBrowsingAllowListDestroyed(SafeBrowsingUrlAllowList* allow_list) {
   storage_->ResetResource();
-  // ResetResource() destroys |this|, so no additional code should be added.
+  // ResetResource() destroys `this`, so no additional code should be added.
 }

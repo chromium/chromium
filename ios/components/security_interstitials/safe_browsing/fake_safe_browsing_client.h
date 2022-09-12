@@ -19,23 +19,23 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
   // SafeBrowsingClient implementation.
   base::WeakPtr<SafeBrowsingClient> AsWeakPtr() override;
 
-  // Controls the return value of |ShouldBlockUnsafeResource|.
+  // Controls the return value of `ShouldBlockUnsafeResource`.
   void set_should_block_unsafe_resource(bool should_block_unsafe_resource) {
     should_block_unsafe_resource_ = should_block_unsafe_resource;
   }
 
-  // Controls the return value of |GetRealTimeUrlLookupService|.
+  // Controls the return value of `GetRealTimeUrlLookupService`.
   void set_real_time_url_lookup_service(
       safe_browsing::RealTimeUrlLookupService* lookup_service) {
     lookup_service_ = lookup_service;
   }
 
-  // Whether |OnMainFrameUrlQueryCancellationDecided| was called.
+  // Whether `OnMainFrameUrlQueryCancellationDecided` was called.
   bool main_frame_cancellation_decided_called() {
     return main_frame_cancellation_decided_called_;
   }
 
-  // Whether |OnSubFrameUrlQueryCancellationDecided| was called.
+  // Whether `OnSubFrameUrlQueryCancellationDecided` was called.
   bool sub_frame_cancellation_decided_called() {
     return sub_frame_cancellation_decided_called_;
   }

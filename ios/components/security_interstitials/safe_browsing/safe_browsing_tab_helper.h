@@ -63,11 +63,11 @@ class SafeBrowsingTabHelper
     PolicyDecider(web::WebState* web_state, SafeBrowsingClient* client);
     ~PolicyDecider() override;
 
-    // Returns whether |query| is still relevant.  May return false if
+    // Returns whether `query` is still relevant.  May return false if
     // navigations occurred before the URL check has finished.
     bool IsQueryStale(const SafeBrowsingQueryManager::Query& query);
 
-    // Stores |policy_decision| for |query|.  |query| must not be stale.
+    // Stores `policy_decision` for `query`.  `query` must not be stale.
     void HandlePolicyDecision(
         const SafeBrowsingQueryManager::Query& query,
         const web::WebStatePolicyDecider::PolicyDecision& policy_decision);
@@ -100,7 +100,7 @@ class SafeBrowsingTabHelper
     // URL, so it's possible for multiple sub frames to load the same URL and
     // share the policy decision generated from a single ShouldAllowRequest()
     // call.  If multiple ShouldAllowResponse() calls are received before the
-    // url check has finished, they are added to |response_callbacks|.
+    // url check has finished, they are added to `response_callbacks`.
     struct SubFrameUrlQuery {
       SubFrameUrlQuery();
       SubFrameUrlQuery(SubFrameUrlQuery&& decision);
@@ -130,25 +130,25 @@ class SafeBrowsingTabHelper
         const GURL& url,
         web::WebStatePolicyDecider::PolicyDecisionCallback callback);
 
-    // Returns the oldest query for |url| that has not yet received a decision.
-    // If there are no queries for |url| or if all such queries have already
+    // Returns the oldest query for `url` that has not yet received a decision.
+    // If there are no queries for `url` or if all such queries have already
     // been decided, returns null.
     MainFrameUrlQuery* GetOldestPendingMainFrameQuery(const GURL& url);
 
-    // Callback invoked when a main frame query for |url| has finished with
-    // |decision|.
+    // Callback invoked when a main frame query for `url` has finished with
+    // `decision`.
     void OnMainFrameUrlQueryDecided(
         const GURL& url,
         web::WebStatePolicyDecider::PolicyDecision decision);
 
     // Callback invoked when a sub frame url query for the NavigationItem with
-    // |navigation_item_id| has finished with |decision|.
+    // `navigation_item_id` has finished with `decision`.
     void OnSubFrameUrlQueryDecided(
         const GURL& url,
         web::WebStatePolicyDecider::PolicyDecision decision);
 
     // Returns the policy decision determined by the results of queries for URLs
-    // in the main-frame redirect chain and the |pending_main_frame_query|. If
+    // in the main-frame redirect chain and the `pending_main_frame_query`. If
     // at least one such query has received a decision to cancel the navigation,
     // the overall decision is to cancel, even if some queries have not yet
     // received a response. If all queries have received a decision to allow the
@@ -166,11 +166,11 @@ class SafeBrowsingTabHelper
     absl::optional<MainFrameUrlQuery> pending_main_frame_query_;
     // The previous query for main frame, navigation, if any. This is tracked
     // as a potential redirect source for the current
-    // |pending_main_frame_query_|.
+    // `pending_main_frame_query_`.
     absl::optional<MainFrameUrlQuery> previous_main_frame_query_;
     // A list of queries corresponding to the redirect chain leading to the
-    // current |pending_main_frame_query_|. This does not include
-    // |pending_main_frame_query_| itself.
+    // current `pending_main_frame_query_`. This does not include
+    // `pending_main_frame_query_` itself.
     std::list<MainFrameUrlQuery> pending_main_frame_redirect_chain_;
     // A map associating the pending policy decisions for each URL loaded into a
     // sub frame.

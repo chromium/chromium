@@ -32,7 +32,7 @@ void AdjustFontSize(base::Value::Dict& load_time_data) {
   std::string* value = load_time_data.FindString("fontsize");
   DCHECK(value);
   std::string old_size = *value;
-  // |old_size| should be in form of "75%".
+  // `old_size` should be in form of "75%".
   DCHECK(old_size.size() > 1 && old_size.back() == '%');
   double new_size = 75.0;
   bool converted =
@@ -57,7 +57,7 @@ IOSSecurityInterstitialPage::~IOSSecurityInterstitialPage() {}
 std::string IOSSecurityInterstitialPage::GetHtmlContents() const {
   base::Value::Dict load_time_data;
   // Interstitial pages on iOS get reloaded to prevent loading from cache, since
-  // loading from cache breaks JavaScript commands. Set as |load_time_data|
+  // loading from cache breaks JavaScript commands. Set as `load_time_data`
   // for safety.
   load_time_data.Set("url_to_reload", request_url_.spec());
   PopulateInterstitialStrings(load_time_data);

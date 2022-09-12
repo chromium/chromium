@@ -65,7 +65,7 @@ class IOSSecurityInterstitialPage {
   web::WebState* web_state_;
   const GURL request_url_;
 
-  // Used to interact with the embedder. Unowned pointer; must outlive |this|
+  // Used to interact with the embedder. Unowned pointer; must outlive `this`
   // instance.
   IOSBlockingPageControllerClient* const client_ = nullptr;
 };

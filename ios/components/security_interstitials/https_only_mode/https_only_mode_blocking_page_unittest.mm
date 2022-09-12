@@ -39,7 +39,7 @@ const char kInterstitialDecisionMetric[] =
 const char kInterstitialInteractionMetric[] =
     "interstitial.https_only_mode.interaction";
 
-// Creates a HttpsOnlyModeBlockingPage with a given |request_url|.
+// Creates a HttpsOnlyModeBlockingPage with a given `request_url`.
 std::unique_ptr<HttpsOnlyModeBlockingPage> CreateBlockingPage(
     web::WebState* web_state,
     const GURL& request_url,

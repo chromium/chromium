@@ -57,7 +57,7 @@ class SafeBrowsingTabHelperTest
   }
 
   // Helper function that calls into WebState::ShouldAllowRequest with the
-  // given |url| and |for_main_frame|.
+  // given `url` and `for_main_frame`.
   web::WebStatePolicyDecider::PolicyDecision ShouldAllowRequestUrl(
       const GURL& url,
       bool for_main_frame = true,
@@ -82,7 +82,7 @@ class SafeBrowsingTabHelperTest
   }
 
   // Helper function that calls into WebState::ShouldAllowResponse with the
-  // given |url| and |for_main_frame|, waits for the callback with the decision
+  // given `url` and `for_main_frame`, waits for the callback with the decision
   // to be called, and returns the decision.
   web::WebStatePolicyDecider::PolicyDecision ShouldAllowResponseUrl(
       const GURL& url,
@@ -130,7 +130,7 @@ class SafeBrowsingTabHelperTest
     web_state_.OnNavigationRedirected(&context);
   }
 
-  // Stores an UnsafeResource for |url| in the query manager.  It is expected
+  // Stores an UnsafeResource for `url` in the query manager.  It is expected
   // that an UnsafeResource is stored before check completion for unsafe URLs
   // that show an error page.
   void StoreUnsafeResource(const GURL& url, bool is_main_frame = true) {
@@ -766,7 +766,7 @@ TEST_P(SafeBrowsingTabHelperTest, ConsecutiveRequestsWithoutRedirect) {
   if (SafeBrowsingDecisionArrivesBeforeResponse())
     base::RunLoop().RunUntilIdle();
 
-  // Since there was no redirect, |url3| should be treated as safe.
+  // Since there was no redirect, `url3` should be treated as safe.
   web::WebStatePolicyDecider::PolicyDecision response_decision =
       ShouldAllowResponseUrl(url3);
   EXPECT_TRUE(response_decision.ShouldAllowNavigation());
@@ -931,7 +931,7 @@ TEST_P(SafeBrowsingTabHelperTest, UnsafeMainFrameRequestNotifiesClient) {
   EXPECT_TRUE(ShouldAllowRequestUrl(unsafe_url).ShouldAllowNavigation());
   StoreUnsafeResource(unsafe_url);
 
-  // When |unsafe_url| is determined to be unsafe, the client should be
+  // When `unsafe_url` is determined to be unsafe, the client should be
   // notified.
   EXPECT_FALSE(client_.main_frame_cancellation_decided_called());
   if (SafeBrowsingDecisionArrivesBeforeResponse()) {
@@ -955,7 +955,7 @@ TEST_P(SafeBrowsingTabHelperTest, UnsafeSubframeRequestNotifiesClient) {
 
   StoreUnsafeResource(unsafe_url, /*is_main_frame*/ false);
 
-  // When |unsafe_url| is determined to be unsafe, the client should be
+  // When `unsafe_url` is determined to be unsafe, the client should be
   // notified.
   EXPECT_FALSE(client_.sub_frame_cancellation_decided_called());
   if (SafeBrowsingDecisionArrivesBeforeResponse()) {
