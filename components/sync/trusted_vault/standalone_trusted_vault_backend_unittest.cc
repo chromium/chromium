@@ -1166,6 +1166,114 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRedoDeviceRegistration) {
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldRedoDeviceRegistrationWithConstantKey) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kSyncTrustedVaultRedoDeviceRegistration);
+
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const int kInitialServerConstantKeyVersion = 100;
+
+  TrustedVaultConnection::RegisterDeviceWithoutKeysCallback
+      device_registration_callback;
+  EXPECT_CALL(*connection(), RegisterDeviceWithoutKeys(account_info, _, _))
+      .WillOnce([&](const CoreAccountInfo&, const SecureBoxPublicKey&,
+                    TrustedVaultConnection::RegisterDeviceWithoutKeysCallback
+                        callback) {
+        device_registration_callback = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  // Setting the primary account will trigger device registration.
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
+
+  // Pretend that the registration completed successfully.
+  ASSERT_FALSE(device_registration_callback.is_null());
+  std::move(device_registration_callback)
+      .Run(TrustedVaultRegistrationStatus::kSuccess,
+           TrustedVaultKeyAndVersion{GetConstantTrustedVaultKey(),
+                                     kInitialServerConstantKeyVersion});
+  // Mimic that device was registered before "redo registration" logic was
+  // introduced.
+  backend()->SetDeviceRegisteredVersionForTesting(account_info.gaia,
+                                                  /*version=*/0);
+
+  // Mimic restart to be able to test histogram recording.
+  ResetBackend();
+  backend()->ReadDataFromDisk();
+
+  // Another device registration request should be issued upon setting the
+  // primary account and it should ignore presence of
+  // kInitialServerConstantKeyVersion, e.g. RegisterDeviceWithoutKeys() again.
+  TrustedVaultConnection::RegisterDeviceWithoutKeysCallback
+      device_redo_registration_callback;
+  EXPECT_CALL(*connection(), RegisterDeviceWithoutKeys(account_info, _, _))
+      .WillOnce([&](const CoreAccountInfo&,
+                    const SecureBoxPublicKey& device_public_key,
+                    TrustedVaultConnection::RegisterDeviceWithoutKeysCallback
+                        callback) {
+        device_redo_registration_callback = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+  {
+    const int kNewServerConstantKeyVersion = 101;
+
+    base::HistogramTester histogram_tester;
+    backend()->SetPrimaryAccount(account_info,
+                                 /*has_persistent_auth_error=*/false);
+    histogram_tester.ExpectUniqueSample(
+        "Sync.TrustedVaultDeviceRegistrationState",
+        /*sample=*/
+        TrustedVaultDeviceRegistrationStateForUMA::
+            kAttemptingRegistrationWithExistingKeyPair,
+        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample("Sync.TrustedVaultDeviceRegistered",
+                                        /*sample=*/true,
+                                        /*expected_bucket_count=*/1);
+
+    // Pretend that the registration completed successfully and that constant
+    // key version has changed between device registration requests.
+    ASSERT_FALSE(device_redo_registration_callback.is_null());
+    std::move(device_redo_registration_callback)
+        .Run(TrustedVaultRegistrationStatus::kSuccess,
+             TrustedVaultKeyAndVersion{GetConstantTrustedVaultKey(),
+                                       kNewServerConstantKeyVersion});
+
+    // Now the device reregistration should be completed.
+    sync_pb::LocalDeviceRegistrationInfo registration_info =
+        backend()->GetDeviceRegistrationInfoForTesting(account_info.gaia);
+    EXPECT_TRUE(registration_info.device_registered());
+    EXPECT_THAT(registration_info.device_registered_version(), Eq(1));
+    EXPECT_TRUE(registration_info.has_private_key_material());
+
+    // Read the file from disk and verify that kNewServerConstantKeyVersion is
+    // stored.
+    sync_pb::LocalTrustedVault proto = ReadLocalTrustedVaultFile(file_path());
+    ASSERT_THAT(proto.user_size(), Eq(1));
+    EXPECT_THAT(proto.user(0).last_vault_key_version(),
+                Eq(kNewServerConstantKeyVersion));
+  }
+  {
+    // Mimic the restart and verify that kAlreadyRegisteredV1 is recorded.
+    ResetBackend();
+    backend()->ReadDataFromDisk();
+
+    base::HistogramTester histogram_tester;
+    backend()->SetPrimaryAccount(account_info,
+                                 /*has_persistent_auth_error=*/false);
+    histogram_tester.ExpectUniqueSample(
+        "Sync.TrustedVaultDeviceRegistrationState",
+        /*sample=*/
+        TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV1,
+        /*expected_bucket_count=*/1);
+    histogram_tester.ExpectUniqueSample("Sync.TrustedVaultDeviceRegistered",
+                                        /*sample=*/true,
+                                        /*expected_bucket_count=*/1);
+  }
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldNotRedoDeviceRegistrationIfFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
