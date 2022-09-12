@@ -23,7 +23,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
@@ -109,9 +108,8 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   gfx::ImageSkia image_skia;
-  app_service_test().FlushMojoCalls();
-  image_skia = app_service_test().LoadAppIconBlocking(
-      apps::mojom::AppType::kWeb, app_id, kWebAppIconSmall);
+  image_skia = app_service_test().LoadAppIconBlocking(apps::AppType::kWeb,
+                                                      app_id, kWebAppIconSmall);
 #endif
 
   WebAppBrowserController* controller;
