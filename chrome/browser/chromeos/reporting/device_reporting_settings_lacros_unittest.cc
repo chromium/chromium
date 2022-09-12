@@ -23,7 +23,8 @@ namespace {
 class TestDelegate : public DeviceReportingSettingsLacros::Delegate {
  public:
   TestDelegate()
-      : device_settings_(crosapi::mojom::DeviceSettings::New().get()) {}
+      : device_settings_owned_(crosapi::mojom::DeviceSettings::New()),
+        device_settings_(device_settings_owned_.get()) {}
   TestDelegate(const TestDelegate& other) = delete;
   TestDelegate& operator=(const TestDelegate& other) = delete;
   ~TestDelegate() override = default;
@@ -42,10 +43,12 @@ class TestDelegate : public DeviceReportingSettingsLacros::Delegate {
   void UpdateDeviceSettings(crosapi::mojom::DeviceSettings* device_settings) {
     device_settings_ = device_settings;
     device_reporting_settings_->OnDeviceSettingsUpdated();
+    device_settings_owned_.reset();
   }
 
  private:
   raw_ptr<DeviceReportingSettingsLacros> device_reporting_settings_;
+  crosapi::mojom::DeviceSettingsPtr device_settings_owned_;
   raw_ptr<crosapi::mojom::DeviceSettings> device_settings_;
 };
 
