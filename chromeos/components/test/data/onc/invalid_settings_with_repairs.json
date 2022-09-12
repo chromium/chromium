@@ -579,6 +579,76 @@
       "Certificates": [],
       "Type": "UnencryptedConfiguration",
     },
+    "toplevel-multiple-ethernet-configs": {
+        "Type": "UnencryptedConfiguration",
+        "NetworkConfigurations":
+        [ { "GUID": "guid-eth0",
+            "Type": "Ethernet",
+            "Name": "eth0",
+            "Ethernet": {
+              "Authentication": "None"
+            }
+          },
+          { "GUID": "guid-eth1",
+            "Type": "Ethernet",
+            "Name": "eth1",
+            "Ethernet": {
+              "Authentication": "None"
+            }
+          },
+          { "GUID": "guid-eap-eth0",
+            "Type": "Ethernet",
+            "Name": "eap-eth0",
+            "Ethernet": {
+              "Authentication": "8021X",
+              "EAP": {
+                "Identity": "user",
+                "Inner": "Automatic",
+                "Outer": "PEAP",
+                "Password": "test"
+              }
+            }
+          },
+          { "GUID": "guid-eap-eth1",
+            "Type": "Ethernet",
+            "Name": "eap-eth1",
+            "Ethernet": {
+              "Authentication": "8021X",
+              "EAP": {
+                "Identity": "user",
+                "Inner": "Automatic",
+                "Outer": "PEAP",
+                "Password": "test"
+              }
+            }
+          }
+        ]
+    },
+    "toplevel-multiple-ethernet-configs-repaired": {
+      "NetworkConfigurations":
+      [ { "GUID": "guid-eth1",
+          "Type": "Ethernet",
+          "Name": "eth1",
+          "Ethernet": {
+              "Authentication": "None"
+          }
+        },
+        { "GUID": "guid-eap-eth1",
+          "Type": "Ethernet",
+          "Name": "eap-eth1",
+          "Ethernet": {
+            "Authentication": "8021X",
+            "EAP": {
+              "Identity": "user",
+              "Inner": "Automatic",
+              "Outer": "PEAP",
+              "Password": "test"
+            }
+          }
+        }
+      ],
+      "Type": "UnencryptedConfiguration",
+    },
     "toplevel-with-repairable-networks": {
       "NetworkConfigurations":
       [ { "GUID": "{485d6076-dd44-6b6d-69787465725f5045}",
