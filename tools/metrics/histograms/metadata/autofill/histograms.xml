@@ -2778,8 +2778,7 @@ chromium-metrics-reviews@google.com.
     form submission, which had it's country complemented based on the predicted
     country on import. This metric is emitted at the end of an import process
     once the user-provided import decision is final. It is collected in addition
-    to Autofill.ProfileImport.NewProfileDecision and only if
-    kAutofillComplementCountryCodeOnImport is enabled.
+    to Autofill.ProfileImport.NewProfileDecision.
   </summary>
 </histogram>
 
@@ -2989,8 +2988,7 @@ chromium-metrics-reviews@google.com.
     country complemented based on the predicted country on import. This metric
     is emitted at the end of an import process once the user-provided import
     decision is final. It is collected in addition to
-    Autofill.ProfileImport.UpdateProfileDecision and only if
-    kAutofillComplementCountryCodeOnImport is enabled.
+    Autofill.ProfileImport.UpdateProfileDecision.
   </summary>
 </histogram>
 

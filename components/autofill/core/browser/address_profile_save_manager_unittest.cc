@@ -49,8 +49,7 @@ constexpr char kProfileUpdateNumberOfEditsHistogram[] =
 constexpr char kProfileUpdateNumberOfAffectedTypesHistogram[] =
     "Autofill.ProfileImport.UpdateProfileNumberOfAffectedFields";
 
-// Histograms related to |kAutofillComplementCountryCodeOnImport|
-// TODO(crbug.com/1297032): Cleanup when launched.
+// Histograms related to the country complement logic.
 constexpr char kNewProfileWithComplementedCountryDecisionHistogram[] =
     "Autofill.ProfileImport.NewProfileWithComplementedCountryDecision";
 constexpr char kProfileUpdateWithComplementedCountryDecisionHistogram[] =
