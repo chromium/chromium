@@ -99,9 +99,7 @@ static const char* const kAcceptLanguageList[] = {
 #endif        // defined(ENABLE_PSEUDOLOCALES)
     "en-ZA",  // English (South Africa)
     "eo",     // Esperanto
-    // TODO(jungshik) : Do we want to list all es-Foo for Latin-American
-    // Spanish speaking countries?
-    "es",      // Spanish
+    "es",     // Spanish
     "es-419",  // Spanish (Latin America)
     "es-AR",   // Spanish (Argentina)
     "es-CL",   // Spanish (Chile)
