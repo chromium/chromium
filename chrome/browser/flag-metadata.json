@@ -2844,7 +2844,7 @@
   },
   {
     "name": "enable-save-session-tabs-in-separate-files",
-    "owners": [ "olivierrobin", "sdefresne", "bling-flags@google.org" ],
+    "owners": [ "olivierrobin", "sdefresne", "bling-flags@google.com" ],
     "expiry_milestone": 108
   },
   {
@@ -5679,7 +5679,7 @@
   },
   {
     "name": "remove-extra-ntps",
-    "owners": [ "thegreenfrog@chromium.org", "bling-team@google.org" ],
+    "owners": [ "thegreenfrog@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 105
   },
   {
@@ -6418,7 +6418,7 @@
   },
   {
     "name": "trending-queries-module",
-    "owners": [ "thegreenfrog", "bling-team@google.com" ],
+    "owners": [ "thegreenfrog", "bling-flags@google.com" ],
     "expiry_milestone": 108
   },
   {
