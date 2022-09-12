@@ -375,8 +375,10 @@ class WebContentsVideoCaptureDeviceBrowserTestAura
  public:
   // WebContentsVideoCaptureDeviceBrowserTest:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kApplyNativeOcclusionToCompositor);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kApplyNativeOcclusionToCompositor,
+        {{features::kApplyNativeOcclusionToCompositorType,
+          features::kApplyNativeOcclusionToCompositorTypeRelease}});
 
     WebContentsVideoCaptureDeviceBrowserTest::SetUp();
   }

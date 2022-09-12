@@ -34,7 +34,16 @@ const base::Feature kApplyNativeOccludedRegionToWindowTracker{
 // Once enabled, the exact behavior is dictated by the field trial param
 // name `kApplyNativeOcclusionToCompositorType`.
 const base::Feature kApplyNativeOcclusionToCompositor{
-    "ApplyNativeOcclusionToCompositor", base::FEATURE_ENABLED_BY_DEFAULT};
+    "ApplyNativeOcclusionToCompositor", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Field trial param name for `kApplyNativeOcclusionToCompositor`.
+const char kApplyNativeOcclusionToCompositorType[] = "type";
+// When the WindowTreeHost is occluded or hidden, resources are released and
+// the compositor is hidden. See WindowTreeHost for specifics on what this
+// does.
+const char kApplyNativeOcclusionToCompositorTypeRelease[] = "release";
+// When the WindowTreeHost is occluded the frame rate is throttled.
+const char kApplyNativeOcclusionToCompositorTypeThrottle[] = "throttle";
 
 // If enabled, calculate native window occlusion - Windows-only.
 const base::Feature kCalculateNativeWinOcclusion{

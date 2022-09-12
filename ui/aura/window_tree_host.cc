@@ -790,7 +790,20 @@ bool WindowTreeHost::CalculateCompositorVisibilityFromOcclusionState() const {
 }
 
 bool WindowTreeHost::ShouldReleaseResourcesWhenHidden() const {
+#if BUILDFLAG(IS_WIN)
+  if (!base::FeatureList::IsEnabled(
+          features::kApplyNativeOcclusionToCompositor) ||
+      !IsNativeWindowOcclusionEnabled()) {
+    return false;
+  }
+
+  const std::string type = base::GetFieldTrialParamValueByFeature(
+      features::kApplyNativeOcclusionToCompositor,
+      features::kApplyNativeOcclusionToCompositorType);
+  return type == features::kApplyNativeOcclusionToCompositorTypeRelease;
+#else
   return false;
+#endif
 }
 
 bool WindowTreeHost::ShouldThrottleWhenOccluded() const {
@@ -801,7 +814,10 @@ bool WindowTreeHost::ShouldThrottleWhenOccluded() const {
     return false;
   }
 
-  return true;
+  const std::string type = base::GetFieldTrialParamValueByFeature(
+      features::kApplyNativeOcclusionToCompositor,
+      features::kApplyNativeOcclusionToCompositorType);
+  return type == features::kApplyNativeOcclusionToCompositorTypeThrottle;
 #else
   return false;
 #endif
