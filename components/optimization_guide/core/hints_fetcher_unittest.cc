@@ -354,8 +354,8 @@ TEST_P(HintsFetcherTest, HintsFetchSuccessfulHostsRecorded) {
   if (!ShouldPersistHintsToDisk())
     return;
 
-  const base::Value::Dict& hosts_fetched = pref_service()->GetValueDict(
-      prefs::kHintsFetcherHostsSuccessfullyFetched);
+  const base::Value::Dict& hosts_fetched =
+      pref_service()->GetDict(prefs::kHintsFetcherHostsSuccessfullyFetched);
   absl::optional<double> value;
   for (const std::string& host : hosts) {
     value = hosts_fetched.FindDouble(HashHostForDictionary(host));
@@ -382,8 +382,8 @@ TEST_P(HintsFetcherTest, HintsFetchFailsHostNotRecorded) {
   if (!ShouldPersistHintsToDisk())
     return;
 
-  const base::Value::Dict& hosts_fetched = pref_service()->GetValueDict(
-      prefs::kHintsFetcherHostsSuccessfullyFetched);
+  const base::Value::Dict& hosts_fetched =
+      pref_service()->GetDict(prefs::kHintsFetcherHostsSuccessfullyFetched);
   for (const std::string& host : hosts) {
     EXPECT_FALSE(hosts_fetched.FindDouble(HashHostForDictionary(host)));
   }
@@ -402,8 +402,8 @@ TEST_P(HintsFetcherTest, HintsFetchClearHostsSuccessfullyFetched) {
     return;
 
   {
-    const base::Value::Dict& hosts_fetched = pref_service()->GetValueDict(
-        prefs::kHintsFetcherHostsSuccessfullyFetched);
+    const base::Value::Dict& hosts_fetched =
+        pref_service()->GetDict(prefs::kHintsFetcherHostsSuccessfullyFetched);
     for (const std::string& host : hosts) {
       EXPECT_TRUE(hosts_fetched.FindDouble(HashHostForDictionary(host)));
     }
@@ -411,8 +411,8 @@ TEST_P(HintsFetcherTest, HintsFetchClearHostsSuccessfullyFetched) {
 
   HintsFetcher::ClearHostsSuccessfullyFetched(pref_service());
   {
-    const base::Value::Dict& hosts_fetched = pref_service()->GetValueDict(
-        prefs::kHintsFetcherHostsSuccessfullyFetched);
+    const base::Value::Dict& hosts_fetched =
+        pref_service()->GetDict(prefs::kHintsFetcherHostsSuccessfullyFetched);
     for (const std::string& host : hosts) {
       EXPECT_FALSE(hosts_fetched.FindDouble(HashHostForDictionary(host)));
     }
@@ -432,8 +432,8 @@ TEST_P(HintsFetcherTest, HintsFetchClearSingleFetchedHost) {
     return;
 
   {
-    const base::Value::Dict& hosts_fetched = pref_service()->GetValueDict(
-        prefs::kHintsFetcherHostsSuccessfullyFetched);
+    const base::Value::Dict& hosts_fetched =
+        pref_service()->GetDict(prefs::kHintsFetcherHostsSuccessfullyFetched);
     for (const std::string& host : hosts) {
       EXPECT_TRUE(hosts_fetched.FindDouble(HashHostForDictionary(host)));
     }
@@ -441,8 +441,8 @@ TEST_P(HintsFetcherTest, HintsFetchClearSingleFetchedHost) {
 
   HintsFetcher::ClearSingleFetchedHost(pref_service(), "host1.com");
   {
-    const base::Value::Dict& hosts_fetched = pref_service()->GetValueDict(
-        prefs::kHintsFetcherHostsSuccessfullyFetched);
+    const base::Value::Dict& hosts_fetched =
+        pref_service()->GetDict(prefs::kHintsFetcherHostsSuccessfullyFetched);
 
     EXPECT_FALSE(hosts_fetched.FindDouble(HashHostForDictionary("host1.com")));
     EXPECT_TRUE(hosts_fetched.FindDouble(HashHostForDictionary("host2.com")));

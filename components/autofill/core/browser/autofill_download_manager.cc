@@ -477,7 +477,7 @@ bool CanThrottleUpload(const FormStructure& form,
       "%03X",
       static_cast<int>(form.form_signature().value() % kNumUploadBuckets));
   const auto& upload_events =
-      pref_service->GetValueDict(prefs::kAutofillUploadEvents);
+      pref_service->GetDict(prefs::kAutofillUploadEvents);
   int value = upload_events.FindInt(key).value_or(0);
 
   // Calculate the mask we expect to be set for the form's upload bucket.

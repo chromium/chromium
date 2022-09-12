@@ -76,7 +76,7 @@ void PrefMetricsService::RecordLaunchPrefs() {
           SessionStartupPref::PrefValueToType(restore_on_startup))
           .ShouldOpenUrls()) {
     const base::Value::List& url_list =
-        prefs_->GetValueList(prefs::kURLsToRestoreOnStartup);
+        prefs_->GetList(prefs::kURLsToRestoreOnStartup);
     // Similarly, check startup pages for known search engine TLD+1s.
     for (const base::Value& i : url_list) {
       const std::string* url_text = i.GetIfString();

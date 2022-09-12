@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
                   .has_value());
   {
     const auto& dict =
-        pref_service->GetValueDict(prefs::kWebAppsAppAgnosticIphState);
+        pref_service->GetDict(prefs::kWebAppsAppAgnosticIphState);
     EXPECT_EQ(dict.FindInt(web_app::kIphIgnoreCount).value_or(0), 1);
     EXPECT_TRUE(dict.contains(web_app::kIphLastIgnoreTime));
   }
@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
       0);
   {
     const auto& dict =
-        pref_service->GetValueDict(prefs::kWebAppsAppAgnosticIphState);
+        pref_service->GetDict(prefs::kWebAppsAppAgnosticIphState);
     EXPECT_EQ(dict.FindInt(web_app::kIphIgnoreCount).value_or(0), 0);
   }
 }

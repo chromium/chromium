@@ -45,7 +45,7 @@ class NetworkConnectivityMetricsServiceTest : public testing::Test {
 
   absl::optional<int> GetNetworkDropsFromLocalState() {
     return local_state()
-        ->GetValueDict(prefs::kKioskMetrics)
+        ->GetDict(prefs::kKioskMetrics)
         .FindInt(kKioskNetworkDrops);
   }
 

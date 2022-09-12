@@ -76,7 +76,7 @@ ScreenTimeController::ScreenTimeController(content::BrowserContext* context)
       clock_(base::DefaultClock::GetInstance()),
       next_state_timer_(std::make_unique<base::OneShotTimer>()),
       usage_time_limit_warning_timer_(std::make_unique<base::OneShotTimer>()),
-      last_policy_(pref_service_->GetValueDict(prefs::kUsageTimeLimit).Clone()),
+      last_policy_(pref_service_->GetDict(prefs::kUsageTimeLimit).Clone()),
       time_limit_notifier_(context) {
   session_manager::SessionManager::Get()->AddObserver(this);
   UsageTimeStateNotifier::GetInstance()->AddObserver(this);
@@ -147,9 +147,9 @@ void ScreenTimeController::CheckTimeLimit(const std::string& source) {
       system::TimezoneSettings::GetInstance()->GetTimezone();
   absl::optional<usage_time_limit::State> last_state = GetLastStateFromPref();
   const base::Value::Dict& time_limit =
-      pref_service_->GetValueDict(prefs::kUsageTimeLimit);
+      pref_service_->GetDict(prefs::kUsageTimeLimit);
   const base::Value::Dict& local_override =
-      pref_service_->GetValueDict(prefs::kTimeLimitLocalOverride);
+      pref_service_->GetDict(prefs::kTimeLimitLocalOverride);
 
   // TODO(agawronska): Usage timestamp should be passed instead of second |now|.
   usage_time_limit::State state = usage_time_limit::GetState(
@@ -361,7 +361,7 @@ void ScreenTimeController::SaveCurrentStateToPref(
 absl::optional<usage_time_limit::State>
 ScreenTimeController::GetLastStateFromPref() {
   const base::Value::Dict& last_state =
-      pref_service_->GetValueDict(prefs::kScreenTimeLastState);
+      pref_service_->GetDict(prefs::kScreenTimeLastState);
   usage_time_limit::State result;
   if (last_state.empty())
     return absl::nullopt;
@@ -443,9 +443,9 @@ void ScreenTimeController::UsageTimeLimitWarning() {
   const icu::TimeZone& time_zone =
       system::TimezoneSettings::GetInstance()->GetTimezone();
   const base::Value::Dict& time_limit =
-      pref_service_->GetValueDict(prefs::kUsageTimeLimit);
+      pref_service_->GetDict(prefs::kUsageTimeLimit);
   const base::Value::Dict& local_override =
-      pref_service_->GetValueDict(prefs::kTimeLimitLocalOverride);
+      pref_service_->GetDict(prefs::kTimeLimitLocalOverride);
 
   absl::optional<base::TimeDelta> remaining_usage =
       usage_time_limit::GetRemainingTimeUsage(time_limit, &local_override, now,

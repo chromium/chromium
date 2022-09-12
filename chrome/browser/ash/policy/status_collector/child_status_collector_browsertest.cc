@@ -547,8 +547,7 @@ TEST_F(ChildStatusCollectorTest, ReportingActivityTimesIdleTransitions) {
 }
 
 TEST_F(ChildStatusCollectorTest, ActivityKeptInPref) {
-  EXPECT_THAT(pref_service()->GetValueDict(prefs::kUserActivityTimes),
-              IsEmpty());
+  EXPECT_THAT(pref_service()->GetDict(prefs::kUserActivityTimes), IsEmpty());
   task_environment_.AdvanceClock(kHour);
 
   DeviceStateTransitions test_states[] = {
@@ -564,7 +563,7 @@ TEST_F(ChildStatusCollectorTest, ActivityKeptInPref) {
       DeviceStateTransitions::kLeaveSessionActive};
   SimulateStateChanges(test_states,
                        sizeof(test_states) / sizeof(DeviceStateTransitions));
-  EXPECT_THAT(pref_service()->GetValueDict(prefs::kUserActivityTimes),
+  EXPECT_THAT(pref_service()->GetDict(prefs::kUserActivityTimes),
               Not(IsEmpty()));
 
   // Process the list a second time after restarting the collector. It should be
@@ -615,8 +614,7 @@ TEST_F(ChildStatusCollectorTest, BeforeDayStart) {
   Time initial_time =
       Time::Now().LocalMidnight() + base::Days(1) + base::Hours(4);
   FastForwardTo(initial_time);
-  EXPECT_THAT(pref_service()->GetValueDict(prefs::kUserActivityTimes),
-              IsEmpty());
+  EXPECT_THAT(pref_service()->GetDict(prefs::kUserActivityTimes), IsEmpty());
 
   DeviceStateTransitions test_states[] = {
       DeviceStateTransitions::kEnterSessionActive,

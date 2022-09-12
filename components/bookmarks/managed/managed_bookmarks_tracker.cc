@@ -43,8 +43,7 @@ ManagedBookmarksTracker::ManagedBookmarksTracker(
 ManagedBookmarksTracker::~ManagedBookmarksTracker() {}
 
 base::Value::List ManagedBookmarksTracker::GetInitialManagedBookmarks() {
-  const base::Value::List& list =
-      prefs_->GetValueList(prefs::kManagedBookmarks);
+  const base::Value::List& list = prefs_->GetList(prefs::kManagedBookmarks);
   return list.Clone();
 }
 
@@ -108,8 +107,7 @@ void ManagedBookmarksTracker::ReloadManagedBookmarks() {
   model_->SetTitle(managed_node_, GetBookmarksFolderTitle());
 
   // Recursively update all the managed bookmarks and folders.
-  const base::Value::List& list =
-      prefs_->GetValueList(prefs::kManagedBookmarks);
+  const base::Value::List& list = prefs_->GetList(prefs::kManagedBookmarks);
   UpdateBookmarks(managed_node_, list);
 }
 

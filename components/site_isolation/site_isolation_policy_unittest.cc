@@ -156,7 +156,7 @@ class WebTriggeredIsolatedOriginsPolicyTest : public SiteIsolationPolicyTest {
   std::vector<std::string> GetStoredOrigins() {
     std::vector<std::string> origins;
     const auto& dict = user_prefs::UserPrefs::Get(browser_context())
-                           ->GetValueDict(prefs::kWebTriggeredIsolatedOrigins);
+                           ->GetDict(prefs::kWebTriggeredIsolatedOrigins);
     for (auto pair : dict)
       origins.push_back(pair.first);
     return origins;

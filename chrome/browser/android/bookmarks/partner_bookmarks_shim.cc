@@ -255,7 +255,7 @@ void PartnerBookmarksShim::ReloadNodeMapping() {
     return;
 
   const base::Value::List& list =
-      prefs_->GetValueList(prefs::kPartnerBookmarkMappings);
+      prefs_->GetList(prefs::kPartnerBookmarkMappings);
 
   for (const auto& entry : list) {
     if (!entry.is_dict()) {

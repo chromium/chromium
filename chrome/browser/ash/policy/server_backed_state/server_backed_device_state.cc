@@ -42,7 +42,7 @@ const char kDeviceStateModeDisabled[] = "disabled";
 DeviceStateMode GetDeviceStateMode() {
   const std::string* device_state_mode =
       g_browser_process->local_state()
-          ->GetValueDict(prefs::kServerBackedDeviceState)
+          ->GetDict(prefs::kServerBackedDeviceState)
           .FindString(kDeviceStateMode);
   if (!device_state_mode || device_state_mode->empty())
     return RESTORE_MODE_NONE;

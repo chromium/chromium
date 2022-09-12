@@ -247,7 +247,7 @@ TEST_F(FlagsStateTest, AddTwoFlagsRemoveOne) {
 
   {
     const base::Value::List& entries_list =
-        prefs_.GetValueList(prefs::kAboutFlagsEntries);
+        prefs_.GetList(prefs::kAboutFlagsEntries);
     ASSERT_EQ(2u, entries_list.size());
 
     std::string s0 = entries_list[0].GetString();
@@ -262,7 +262,7 @@ TEST_F(FlagsStateTest, AddTwoFlagsRemoveOne) {
 
   {
     const base::Value::List& entries_list =
-        prefs_.GetValueList(prefs::kAboutFlagsEntries);
+        prefs_.GetList(prefs::kAboutFlagsEntries);
     ASSERT_EQ(1u, entries_list.size());
     std::string s0 = entries_list[0].GetString();
     EXPECT_TRUE(s0 == kFlags1);
@@ -275,7 +275,7 @@ TEST_F(FlagsStateTest, AddTwoFlagsRemoveBoth) {
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags2, true);
   {
     const base::Value::List& entries_list =
-        prefs_.GetValueList(prefs::kAboutFlagsEntries);
+        prefs_.GetList(prefs::kAboutFlagsEntries);
     ASSERT_EQ(2u, entries_list.size());
   }
 
@@ -284,7 +284,7 @@ TEST_F(FlagsStateTest, AddTwoFlagsRemoveBoth) {
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags2, false);
   {
     const base::Value::List& entries_list =
-        prefs_.GetValueList(prefs::kAboutFlagsEntries);
+        prefs_.GetList(prefs::kAboutFlagsEntries);
     EXPECT_TRUE(entries_list.empty());
   }
 }
@@ -586,7 +586,7 @@ TEST_F(FlagsStateTest, PersistAndPrune) {
 
   // FeatureEntry 3 should show still be persisted in preferences though.
   const base::Value::List& entries_list =
-      prefs_.GetValueList(prefs::kAboutFlagsEntries);
+      prefs_.GetList(prefs::kAboutFlagsEntries);
   EXPECT_EQ(2U, entries_list.size());
   std::string s0 = entries_list[0].GetString();
   EXPECT_EQ(kFlags1, s0);
@@ -638,7 +638,7 @@ TEST_F(FlagsStateTest, CheckValues) {
 
   // And it should persist.
   const base::Value::List& entries_list =
-      prefs_.GetValueList(prefs::kAboutFlagsEntries);
+      prefs_.GetList(prefs::kAboutFlagsEntries);
   EXPECT_EQ(2U, entries_list.size());
   std::string s0 = entries_list[0].GetString();
   EXPECT_EQ(kFlags1, s0);

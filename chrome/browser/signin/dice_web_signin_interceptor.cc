@@ -841,8 +841,8 @@ void DiceWebSigninInterceptor::RecordProfileCreationDeclined(
 
 bool DiceWebSigninInterceptor::HasUserDeclinedProfileCreation(
     const std::string& email) const {
-  const base::Value::Dict& pref_data = profile_->GetPrefs()->GetValueDict(
-      kProfileCreationInterceptionDeclinedPref);
+  const base::Value::Dict& pref_data =
+      profile_->GetPrefs()->GetDict(kProfileCreationInterceptionDeclinedPref);
   absl::optional<int> declined_count =
       pref_data.FindInt(GetPersistentEmailHash(email));
   // Check if the user declined 2 times.

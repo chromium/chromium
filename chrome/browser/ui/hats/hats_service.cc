@@ -681,7 +681,7 @@ bool HatsService::CanShowSurvey(const std::string& trigger) const {
   }
 
   const base::Value::Dict& pref_data =
-      profile_->GetPrefs()->GetValueDict(prefs::kHatsSurveyMetadata);
+      profile_->GetPrefs()->GetDict(prefs::kHatsSurveyMetadata);
   absl::optional<int> last_major_version =
       pref_data.FindIntByDottedPath(GetMajorVersionPath(trigger));
   if (last_major_version.has_value() &&
@@ -750,7 +750,7 @@ bool HatsService::CanShowAnySurvey(bool user_prompted) const {
   // a user is eligible is thus lower for these types of surveys.
   if (!user_prompted) {
     const base::Value::Dict& pref_data =
-        profile_->GetPrefs()->GetValueDict(prefs::kHatsSurveyMetadata);
+        profile_->GetPrefs()->GetDict(prefs::kHatsSurveyMetadata);
 
     // If the profile is too new, measured as the age of the profile directory,
     // the user is ineligible.
@@ -805,7 +805,7 @@ void HatsService::CheckSurveyStatusAndMaybeShow(
   // We record the survey's over capacity information in user profile to avoid
   // duplicated checks since the survey won't change once it is full.
   const base::Value::Dict& pref_data =
-      profile_->GetPrefs()->GetValueDict(prefs::kHatsSurveyMetadata);
+      profile_->GetPrefs()->GetDict(prefs::kHatsSurveyMetadata);
   absl::optional<int> is_full =
       pref_data.FindBoolByDottedPath(GetIsSurveyFull(trigger));
   if (is_full.has_value() && is_full) {

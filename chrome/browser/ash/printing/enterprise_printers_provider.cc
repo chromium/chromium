@@ -227,7 +227,7 @@ class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
 
   // Extracts the list of strings named |policy_name| from user policies.
   std::vector<std::string> FromPrefs(const std::string& policy_name) {
-    return ConvertToVector(profile_->GetPrefs()->GetValueList(policy_name));
+    return ConvertToVector(profile_->GetPrefs()->GetList(policy_name));
   }
 
   // Checks if given policy is set and if it is a dictionary

@@ -56,7 +56,7 @@ void BackgroundTracingStateManager::Initialize(PrefService* local_state) {
 
   DCHECK(local_state_);
   const base::Value::Dict& dict =
-      local_state_->GetValueDict(kBackgroundTracingSessionState);
+      local_state_->GetDict(kBackgroundTracingSessionState);
 
   absl::optional<int> state = dict.FindInt(kTracingStateKey);
 

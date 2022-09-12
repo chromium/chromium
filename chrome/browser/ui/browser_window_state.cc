@@ -111,10 +111,10 @@ const base::Value::Dict* GetWindowPlacementDictionaryReadOnly(
     PrefService* prefs) {
   DCHECK(!window_name.empty());
   if (prefs->FindPreference(window_name))
-    return &prefs->GetValueDict(window_name);
+    return &prefs->GetDict(window_name);
 
   const base::Value::Dict& app_windows =
-      prefs->GetValueDict(prefs::kAppWindowPlacement);
+      prefs->GetDict(prefs::kAppWindowPlacement);
   return app_windows.FindDict(window_name);
 }
 

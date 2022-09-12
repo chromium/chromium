@@ -276,7 +276,7 @@ const base::Value::Dict*
 SafeBrowsingMetricsCollector::GetSafeBrowsingEventDictionary(
     UserState user_state) {
   const base::Value::Dict& state_dict =
-      pref_service_->GetValueDict(prefs::kSafeBrowsingEventTimestamps);
+      pref_service_->GetDict(prefs::kSafeBrowsingEventTimestamps);
 
   return state_dict.FindDict(UserStateToPrefKey(user_state));
 }

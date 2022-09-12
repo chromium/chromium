@@ -124,7 +124,7 @@ SessionStartupPref SessionStartupPref::GetStartupPref(
   // Always load the urls, even if the pref type isn't URLS. This way the
   // preferences panels can show the user their last choice.
   const base::Value::List& url_list =
-      prefs->GetValueList(prefs::kURLsToRestoreOnStartup);
+      prefs->GetList(prefs::kURLsToRestoreOnStartup);
   URLListToPref(url_list, &pref);
 
   return pref;

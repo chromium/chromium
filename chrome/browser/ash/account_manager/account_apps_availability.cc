@@ -61,7 +61,7 @@ bool IsActiveDirectoryUser() {
 
 bool IsPrefInitialized(PrefService* prefs) {
   const base::Value::Dict& accounts =
-      prefs->GetValueDict(account_manager::prefs::kAccountAppsAvailability);
+      prefs->GetDict(account_manager::prefs::kAccountAppsAvailability);
   return accounts.size() > 0 || IsActiveDirectoryUser();
 }
 
@@ -107,7 +107,7 @@ void CompleteGetAccountsAvailableInArc(
 base::flat_set<std::string> GetGaiaIdsAvailableInArc(PrefService* prefs) {
   base::flat_set<std::string> result;
   const base::Value::Dict& accounts =
-      prefs->GetValueDict(account_manager::prefs::kAccountAppsAvailability);
+      prefs->GetDict(account_manager::prefs::kAccountAppsAvailability);
 
   // See structure of `accounts` at the top of the file.
   for (const auto dict : accounts) {
@@ -129,7 +129,7 @@ base::flat_set<std::string> GetGaiaIdsAvailableInArc(PrefService* prefs) {
 absl::optional<bool> IsAccountAvailableInArc(PrefService* prefs,
                                              const std::string& gaia_id) {
   const base::Value::Dict& accounts =
-      prefs->GetValueDict(account_manager::prefs::kAccountAppsAvailability);
+      prefs->GetDict(account_manager::prefs::kAccountAppsAvailability);
 
   // See structure of `accounts` at the top of the file.
   const base::Value::Dict* account_entry = accounts.FindDict(gaia_id);

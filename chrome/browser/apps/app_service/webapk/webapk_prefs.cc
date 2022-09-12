@@ -56,7 +56,7 @@ void AddWebApk(Profile* profile,
 absl::optional<std::string> GetWebApkPackageName(Profile* profile,
                                                  const std::string& app_id) {
   const base::Value::Dict* app_dict =
-      profile->GetPrefs()->GetValueDict(kGeneratedWebApksPref).FindDict(app_id);
+      profile->GetPrefs()->GetDict(kGeneratedWebApksPref).FindDict(app_id);
   if (!app_dict) {
     return absl::nullopt;
   }
@@ -72,7 +72,7 @@ absl::optional<std::string> GetWebApkPackageName(Profile* profile,
 base::flat_set<std::string> GetWebApkAppIds(Profile* profile) {
   base::flat_set<std::string> ids;
   const base::Value::Dict& generated_webapks =
-      profile->GetPrefs()->GetValueDict(kGeneratedWebApksPref);
+      profile->GetPrefs()->GetDict(kGeneratedWebApksPref);
 
   for (const auto kv : generated_webapks) {
     ids.insert(kv.first);
@@ -85,7 +85,7 @@ base::flat_set<std::string> GetInstalledWebApkPackageNames(Profile* profile) {
   base::flat_set<std::string> package_names;
 
   const base::Value::Dict& generated_webapks =
-      profile->GetPrefs()->GetValueDict(kGeneratedWebApksPref);
+      profile->GetPrefs()->GetDict(kGeneratedWebApksPref);
 
   for (const auto kv : generated_webapks) {
     const std::string* package_name = kv.second.FindStringKey(kPackageNameKey);
@@ -129,7 +129,7 @@ void SetUpdateNeededForApp(Profile* profile,
 base::flat_set<std::string> GetUpdateNeededAppIds(Profile* profile) {
   base::flat_set<std::string> ids;
   const base::Value::Dict& generated_webapks =
-      profile->GetPrefs()->GetValueDict(kGeneratedWebApksPref);
+      profile->GetPrefs()->GetDict(kGeneratedWebApksPref);
 
   for (auto kv : generated_webapks) {
     absl::optional<bool> update_needed =

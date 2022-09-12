@@ -35,7 +35,7 @@ std::vector<CustomLinksManager::Link> CustomLinksStore::RetrieveLinks() {
   std::vector<CustomLinksManager::Link> links;
 
   const base::Value::List& stored_links =
-      prefs_->GetValueList(prefs::kCustomLinksList);
+      prefs_->GetList(prefs::kCustomLinksList);
 
   for (const base::Value& link : stored_links) {
     const std::string* url_string =

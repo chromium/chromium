@@ -19,7 +19,7 @@ namespace {
 const base::Value::List* GetPolicyUrlPatterns(PrefService* prefs) {
   if (!prefs->IsManagedPreference(kContextAwareAccessSignalsAllowlistPref))
     return nullptr;
-  return &prefs->GetValueList(kContextAwareAccessSignalsAllowlistPref);
+  return &prefs->GetList(kContextAwareAccessSignalsAllowlistPref);
 }
 
 bool ConnectorPolicyHasValues(PrefService* profile_prefs) {

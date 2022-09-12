@@ -250,7 +250,7 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
 
   // The returned value could be nullptr if the pref has never been set.
   const base::Value::Dict& all_settings_dictionary =
-      prefs_->GetValueDict(pref_name_);
+      prefs_->GetDict(pref_name_);
 
   // Accumulates non-canonical pattern strings found in Prefs for which the
   // corresponding canonical pattern is also in Prefs. In these cases the

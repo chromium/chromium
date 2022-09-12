@@ -2176,7 +2176,7 @@ void DeviceStatusCollector::OnProbeDataFetched(
 
 void DeviceStatusCollector::ReportingUsersChanged() {
   std::vector<std::string> reporting_users;
-  for (auto& value : pref_service_->GetValueList(prefs::kReportingUsers)) {
+  for (auto& value : pref_service_->GetList(prefs::kReportingUsers)) {
     if (value.is_string())
       reporting_users.push_back(value.GetString());
   }

@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_P(RecommendAppsScreenTest, BasicSelection) {
   EXPECT_EQ(RecommendAppsScreen::Result::SELECTED, screen_result_.value());
 
   const base::Value::List& fast_reinstall_packages =
-      ProfileManager::GetActiveUserProfile()->GetPrefs()->GetValueList(
+      ProfileManager::GetActiveUserProfile()->GetPrefs()->GetList(
           arc::prefs::kArcFastAppReinstallPackages);
 
   base::Value expected_pref_value(base::Value::Type::LIST);
@@ -443,7 +443,7 @@ IN_PROC_BROWSER_TEST_P(RecommendAppsScreenTest, SelectionChange) {
   EXPECT_EQ(RecommendAppsScreen::Result::SELECTED, screen_result_.value());
 
   const base::Value::List& fast_reinstall_packages =
-      ProfileManager::GetActiveUserProfile()->GetPrefs()->GetValueList(
+      ProfileManager::GetActiveUserProfile()->GetPrefs()->GetList(
           arc::prefs::kArcFastAppReinstallPackages);
 
   base::Value expected_pref_value(base::Value::Type::LIST);
@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_P(RecommendAppsScreenTest, SkipWithSelectedApps) {
   EXPECT_EQ(RecommendAppsScreen::Result::SKIPPED, screen_result_.value());
 
   const base::Value::List& fast_reinstall_packages =
-      ProfileManager::GetActiveUserProfile()->GetPrefs()->GetValueList(
+      ProfileManager::GetActiveUserProfile()->GetPrefs()->GetList(
           arc::prefs::kArcFastAppReinstallPackages);
   EXPECT_EQ(base::Value(base::Value::Type::LIST), fast_reinstall_packages);
 }
@@ -551,7 +551,7 @@ IN_PROC_BROWSER_TEST_P(RecommendAppsScreenTest, SkipWithNoAppsSelected) {
   EXPECT_EQ(RecommendAppsScreen::Result::SKIPPED, screen_result_.value());
 
   const base::Value::List& fast_reinstall_packages =
-      ProfileManager::GetActiveUserProfile()->GetPrefs()->GetValueList(
+      ProfileManager::GetActiveUserProfile()->GetPrefs()->GetList(
           arc::prefs::kArcFastAppReinstallPackages);
   EXPECT_EQ(base::Value(base::Value::Type::LIST), fast_reinstall_packages);
 }
@@ -602,7 +602,7 @@ IN_PROC_BROWSER_TEST_P(RecommendAppsScreenTest, NoRecommendedApps) {
   EXPECT_EQ(RecommendAppsScreen::Result::SKIPPED, screen_result_.value());
 
   const base::Value::List& fast_reinstall_packages =
-      ProfileManager::GetActiveUserProfile()->GetPrefs()->GetValueList(
+      ProfileManager::GetActiveUserProfile()->GetPrefs()->GetList(
           arc::prefs::kArcFastAppReinstallPackages);
   EXPECT_EQ(base::Value(base::Value::Type::LIST), fast_reinstall_packages);
 }

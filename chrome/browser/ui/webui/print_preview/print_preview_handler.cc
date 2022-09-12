@@ -513,7 +513,7 @@ void PrintPreviewHandler::ReadPrinterTypeDenyListFromPrefs() {
     return;
 
   const base::Value::List& deny_list_from_prefs =
-      prefs->GetValueList(prefs::kPrinterTypeDenyList);
+      prefs->GetList(prefs::kPrinterTypeDenyList);
 
   std::vector<mojom::PrinterType> deny_list;
   deny_list.reserve(deny_list_from_prefs.size());

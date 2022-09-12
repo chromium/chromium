@@ -383,7 +383,7 @@ ExtensionFunction::ResponseAction InputMethodPrivateGetSettingsFunction::Run() {
   const base::Value::Dict& input_methods =
       Profile::FromBrowserContext(browser_context())
           ->GetPrefs()
-          ->GetValueDict(prefs::kLanguageInputMethodSpecificSettings);
+          ->GetDict(prefs::kLanguageInputMethodSpecificSettings);
   const base::Value* engine_result =
       input_methods.FindByDottedPath(params->engine_id);
   base::Value result;

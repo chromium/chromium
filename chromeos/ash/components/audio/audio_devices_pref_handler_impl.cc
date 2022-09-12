@@ -302,7 +302,7 @@ void AudioDevicesPrefHandlerImpl::InitializePrefObservers() {
 
 void AudioDevicesPrefHandlerImpl::LoadDevicesMutePref() {
   const base::Value::Dict& mute_prefs =
-      local_state_->GetValueDict(prefs::kAudioDevicesMute);
+      local_state_->GetDict(prefs::kAudioDevicesMute);
   device_mute_settings_ = mute_prefs.Clone();
 }
 
@@ -313,7 +313,7 @@ void AudioDevicesPrefHandlerImpl::SaveDevicesMutePref() {
 
 void AudioDevicesPrefHandlerImpl::LoadDevicesVolumePref() {
   const base::Value::Dict& volume_prefs =
-      local_state_->GetValueDict(prefs::kAudioDevicesVolumePercent);
+      local_state_->GetDict(prefs::kAudioDevicesVolumePercent);
   device_volume_settings_ = volume_prefs.Clone();
 }
 
@@ -325,7 +325,7 @@ void AudioDevicesPrefHandlerImpl::SaveDevicesVolumePref() {
 
 void AudioDevicesPrefHandlerImpl::LoadDevicesGainPref() {
   const base::Value::Dict& gain_prefs =
-      local_state_->GetValueDict(prefs::kAudioDevicesGainPercent);
+      local_state_->GetDict(prefs::kAudioDevicesGainPercent);
   device_gain_settings_ = gain_prefs.Clone();
 }
 
@@ -337,7 +337,7 @@ void AudioDevicesPrefHandlerImpl::SaveDevicesGainPref() {
 
 void AudioDevicesPrefHandlerImpl::LoadDevicesStatePref() {
   const base::Value::Dict& state_prefs =
-      local_state_->GetValueDict(prefs::kAudioDevicesState);
+      local_state_->GetDict(prefs::kAudioDevicesState);
   device_state_settings_ = state_prefs.Clone();
 }
 

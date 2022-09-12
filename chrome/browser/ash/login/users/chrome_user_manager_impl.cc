@@ -693,7 +693,7 @@ bool ChromeUserManagerImpl::IsEnterpriseManaged() const {
 void ChromeUserManagerImpl::LoadDeviceLocalAccounts(
     std::set<AccountId>* device_local_accounts_set) {
   const base::Value::List& prefs_device_local_accounts =
-      GetLocalState()->GetValueList(kDeviceLocalAccountsWithSavedData);
+      GetLocalState()->GetList(kDeviceLocalAccountsWithSavedData);
   std::vector<AccountId> device_local_accounts;
   ParseUserList(prefs_device_local_accounts, std::set<AccountId>(),
                 &device_local_accounts, device_local_accounts_set);
@@ -1270,7 +1270,7 @@ void ChromeUserManagerImpl::SetUserAffiliation(
 
 bool ChromeUserManagerImpl::ShouldReportUser(const std::string& user_id) const {
   const base::Value::List& reporting_users =
-      GetLocalState()->GetValueList(::prefs::kReportingUsers);
+      GetLocalState()->GetList(::prefs::kReportingUsers);
   base::Value user_id_value(FullyCanonicalize(user_id));
   return base::Contains(reporting_users, user_id_value);
 }

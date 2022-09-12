@@ -174,7 +174,7 @@ class DeviceTrustBrowserTestBase
     base::RunLoop().RunUntilIdle();
 
     EXPECT_EQ(prefs(active_browser)
-                  ->GetValueList(kContextAwareAccessSignalsAllowlistPref)
+                  ->GetList(kContextAwareAccessSignalsAllowlistPref)
                   .empty(),
               as_empty_list);
     EXPECT_TRUE(

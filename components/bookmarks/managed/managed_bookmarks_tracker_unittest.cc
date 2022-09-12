@@ -58,7 +58,7 @@ class ManagedBookmarksTrackerTest : public testing::Test {
     auto client = std::make_unique<TestBookmarkClient>();
     managed_node_ = client->EnableManagedNode();
     ManagedBookmarksTracker::LoadInitial(
-        managed_node_, prefs_.GetValueList(prefs::kManagedBookmarks), 101);
+        managed_node_, prefs_.GetList(prefs::kManagedBookmarks), 101);
     managed_node_->SetTitle(l10n_util::GetStringUTF16(
         IDS_BOOKMARK_BAR_MANAGED_FOLDER_DEFAULT_NAME));
 

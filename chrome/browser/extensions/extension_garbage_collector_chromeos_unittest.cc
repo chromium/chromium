@@ -185,7 +185,7 @@ TEST_F(ExtensionGarbageCollectorChromeOSUnitTest, SharedExtensions) {
   EXPECT_TRUE(base::PathExists(path_id2_1));
 
   const base::Value::Dict& shared_extensions =
-      testing_local_state_.Get()->GetValueDict(
+      testing_local_state_.Get()->GetDict(
           ExtensionAssetsManagerChromeOS::kSharedExtensions);
 
   EXPECT_FALSE(shared_extensions.Find(kExtensionId1));

@@ -79,7 +79,7 @@ SupportedLinksInfoBarPrefsService::~SupportedLinksInfoBarPrefsService() =
 bool SupportedLinksInfoBarPrefsService::ShouldHideInfoBarForApp(
     const std::string& app_id) {
   const base::Value::Dict& base_pref =
-      profile_->GetPrefs()->GetValueDict(kSupportedLinksAppPrefsKey);
+      profile_->GetPrefs()->GetDict(kSupportedLinksAppPrefsKey);
   const base::Value::Dict* app_value = base_pref.FindDict(app_id);
 
   if (app_value == nullptr) {

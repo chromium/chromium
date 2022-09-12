@@ -513,7 +513,7 @@ void MediaDrmOriginIdManager::OriginIdProvisioned(
 }
 
 void MediaDrmOriginIdManager::RecordCountOfPreprovisionedOriginIds() {
-  const auto& pref = pref_service_->GetValueDict(kMediaDrmOriginIds);
+  const auto& pref = pref_service_->GetDict(kMediaDrmOriginIds);
   int available_origin_ids = CountAvailableOriginIds(pref);
 
   if (media::MediaDrmBridge::IsPerApplicationProvisioningSupported()) {

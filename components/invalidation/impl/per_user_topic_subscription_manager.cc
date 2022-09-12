@@ -119,7 +119,7 @@ void MigratePrefs(PrefService* prefs, const std::string& project_id) {
   }
 
   const auto& old_subscriptions =
-      prefs->GetValueDict(kTypeSubscribedForInvalidationsDeprecated);
+      prefs->GetDict(kTypeSubscribedForInvalidationsDeprecated);
   {
     PerProjectDictionaryPrefUpdate update(prefs, project_id);
     *update = base::Value(old_subscriptions.Clone());

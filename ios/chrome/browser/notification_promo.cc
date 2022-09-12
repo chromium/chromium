@@ -156,7 +156,7 @@ void NotificationPromo::WritePrefs(int promo_id,
   ntp_promo.SetBoolKey(kPrefPromoClosed, closed);
 
   base::Value::Dict promo_dict =
-      local_state_->GetValueDict(kPrefPromoObject).Clone();
+      local_state_->GetDict(kPrefPromoObject).Clone();
   promo_dict.Set(base::NumberToString(promo_id), std::move(ntp_promo));
   DVLOG(1) << "WritePrefs " << promo_dict;
   local_state_->SetDict(kPrefPromoObject, std::move(promo_dict));
@@ -167,8 +167,7 @@ void NotificationPromo::InitFromPrefs() {
   if (promo_id_ == -1)
     return;
 
-  const base::Value::Dict& promo_dict =
-      local_state_->GetValueDict(kPrefPromoObject);
+  const base::Value::Dict& promo_dict = local_state_->GetDict(kPrefPromoObject);
 
   const base::Value::Dict* ntp_promo =
       promo_dict.FindDict(base::NumberToString(promo_id_));

@@ -130,7 +130,7 @@ bool DoesRecurrentInterstitialPrefMeetThreshold(PrefService* pref_service,
                                                 int threshold,
                                                 int error_reset_time) {
   const base::Value::Dict& pref =
-      pref_service->GetValueDict(prefs::kRecurrentSSLInterstitial);
+      pref_service->GetDict(prefs::kRecurrentSSLInterstitial);
   const base::Value::List* list_value =
       pref.FindList(net::ErrorToShortString(error));
   if (!list_value)

@@ -822,12 +822,12 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, PRE_DataIsRemoved) {
 IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, MAYBE_DataIsRemoved) {
   // The device local account should have been removed.
   EXPECT_FALSE(g_browser_process->local_state()
-                   ->GetValueDict("UserGivenName")
+                   ->GetDict("UserGivenName")
                    .Find(account_id_1_.GetUserEmail()));
 
   // The arbitrary data remains.
   const std::string* value = g_browser_process->local_state()
-                                 ->GetValueDict("UserGivenName")
+                                 ->GetDict("UserGivenName")
                                  .FindString("sanity.check@example.com");
   ASSERT_TRUE(value);
   EXPECT_EQ("Anne", *value);
@@ -893,7 +893,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, CachedDisplayName) {
 
   WaitForDisplayName(account_id_1_.GetUserEmail(), kDisplayName1);
   const auto& dict =
-      g_browser_process->local_state()->GetValueDict(key::kUserDisplayName);
+      g_browser_process->local_state()->GetDict(key::kUserDisplayName);
   ASSERT_TRUE(dict.Find(account_id_1_.GetUserEmail()) != nullptr);
   EXPECT_EQ(kDisplayName1, *dict.FindString(account_id_1_.GetUserEmail()));
 }
@@ -1415,7 +1415,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, UserAvatarImage) {
   EXPECT_EQ(user_manager::User::USER_IMAGE_EXTERNAL, user->image_index());
   EXPECT_TRUE(ash::test::AreImagesEqual(policy_image, user->GetImage()));
   const base::Value::Dict& images_pref =
-      g_browser_process->local_state()->GetValueDict("user_image_info");
+      g_browser_process->local_state()->GetDict("user_image_info");
   const base::Value::Dict* image_properties =
       images_pref.FindDict(account_id_1_.GetUserEmail());
   ASSERT_TRUE(image_properties);

@@ -707,7 +707,7 @@ bool GetDefaultTaskFromPrefs(const PrefService& pref_service,
           << " and suffix: " << suffix;
   if (!mime_type.empty()) {
     const base::Value::Dict& mime_task_prefs =
-        pref_service.GetValueDict(prefs::kDefaultTasksByMimeType);
+        pref_service.GetDict(prefs::kDefaultTasksByMimeType);
     const std::string* task_id = mime_task_prefs.FindString(mime_type);
     if (task_id) {
       VLOG(1) << "Found MIME default handler: " << *task_id;
@@ -716,7 +716,7 @@ bool GetDefaultTaskFromPrefs(const PrefService& pref_service,
   }
 
   const base::Value::Dict& suffix_task_prefs =
-      pref_service.GetValueDict(prefs::kDefaultTasksBySuffix);
+      pref_service.GetDict(prefs::kDefaultTasksBySuffix);
   std::string lower_suffix = base::ToLowerASCII(suffix);
 
   const std::string* task_id = suffix_task_prefs.FindString(lower_suffix);

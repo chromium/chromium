@@ -360,8 +360,7 @@ void DevToolsAndroidBridge::CreateDeviceProviders() {
   PrefService* service = profile_->GetPrefs();
   const base::Value::List* targets =
       service->GetBoolean(prefs::kDevToolsDiscoverTCPTargetsEnabled)
-          ? std::addressof(
-                service->GetValueList(prefs::kDevToolsTCPDiscoveryConfig))
+          ? std::addressof(service->GetList(prefs::kDevToolsTCPDiscoveryConfig))
           : nullptr;
   scoped_refptr<TCPDeviceProvider> provider = CreateTCPDeviceProvider(targets);
   if (tcp_provider_callback_)

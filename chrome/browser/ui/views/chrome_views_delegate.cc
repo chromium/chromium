@@ -117,7 +117,7 @@ bool ChromeViewsDelegate::GetSavedWindowPlacement(
     return false;
 
   DCHECK(prefs->FindPreference(window_name));
-  const base::Value::Dict& dictionary = prefs->GetValueDict(window_name);
+  const base::Value::Dict& dictionary = prefs->GetDict(window_name);
   absl::optional<int> left = dictionary.FindInt("left");
   absl::optional<int> top = dictionary.FindInt("top");
   absl::optional<int> right = dictionary.FindInt("right");

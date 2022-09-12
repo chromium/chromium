@@ -61,7 +61,7 @@ class SegmentationPlatformTest : public InProcessBrowserTest {
 
   bool HasResultPref(base::StringPiece segmentation_key) {
     const base::Value::Dict& dictionary =
-        browser()->profile()->GetPrefs()->GetValueDict(kSegmentationResultPref);
+        browser()->profile()->GetPrefs()->GetDict(kSegmentationResultPref);
     return !!dictionary.FindByDottedPath(segmentation_key);
   }
 

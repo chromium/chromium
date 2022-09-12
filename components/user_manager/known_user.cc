@@ -225,8 +225,7 @@ const base::Value* KnownUser::FindPrefs(const AccountId& account_id) const {
   if (!account_id.is_valid())
     return nullptr;
 
-  const base::Value::List& known_users =
-      local_state_->GetValueList(kKnownUsers);
+  const base::Value::List& known_users = local_state_->GetList(kKnownUsers);
   for (const base::Value& element_value : known_users) {
     if (element_value.is_dict()) {
       if (UserMatches(account_id, element_value)) {
@@ -438,8 +437,7 @@ AccountId KnownUser::GetAccountId(const std::string& user_email,
 std::vector<AccountId> KnownUser::GetKnownAccountIds() {
   std::vector<AccountId> result;
 
-  const base::Value::List& known_users =
-      local_state_->GetValueList(kKnownUsers);
+  const base::Value::List& known_users = local_state_->GetList(kKnownUsers);
   for (const base::Value& element_value : known_users) {
     if (element_value.is_dict()) {
       const std::string* email = element_value.FindStringKey(kCanonicalEmail);

@@ -32,7 +32,7 @@ class DisplayPrefsBrowserTest : public InProcessBrowserTest {
         ash::Shell::Get()->display_manager()->GetDisplayAt(index).id();
 
     const base::Value::Dict& display_properties =
-        local_state_->GetValueDict(ash::prefs::kDisplayProperties);
+        local_state_->GetDict(ash::prefs::kDisplayProperties);
     return display_properties.FindDict(base::NumberToString(display_id));
   }
 

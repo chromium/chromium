@@ -142,7 +142,7 @@ TEST_F(DeviceIdMapTest, PersistRecordsForDeviceValid) {
   // Validate that the ID records are persisted to prefs.
   PrefService* local_state = Shell::Get()->local_state();
   const base::Value::Dict& device_id_map_dict =
-      local_state->GetValueDict(DeviceIdMap::kDeviceIdMapPref);
+      local_state->GetDict(DeviceIdMap::kDeviceIdMapPref);
   const std::string* ble_model_id =
       device_id_map_dict.FindString(kTestBLEDeviceId);
   EXPECT_TRUE(ble_model_id);
@@ -203,7 +203,7 @@ TEST_F(DeviceIdMapTest, EvictDeviceIdRecordValid) {
   // Validate that the ID records are evicted from prefs.
   PrefService* local_state = Shell::Get()->local_state();
   const base::Value::Dict& device_id_map_dict =
-      local_state->GetValueDict(DeviceIdMap::kDeviceIdMapPref);
+      local_state->GetDict(DeviceIdMap::kDeviceIdMapPref);
   const std::string* model_id = device_id_map_dict.FindString(kTestBLEDeviceId);
   EXPECT_FALSE(model_id);
 }

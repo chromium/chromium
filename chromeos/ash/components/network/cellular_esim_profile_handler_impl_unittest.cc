@@ -200,7 +200,7 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
   }
 
   base::Value::List GetEuiccListFromPrefs() {
-    return device_prefs_.GetValueList(prefs::kESimRefreshedEuiccs).Clone();
+    return device_prefs_.GetList(prefs::kESimRefreshedEuiccs).Clone();
   }
 
   void SetPSimSlotInfo(const std::string& iccid) {

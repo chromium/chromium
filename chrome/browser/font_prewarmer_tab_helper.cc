@@ -49,7 +49,7 @@ const void* const kUserDataKey = &kUserDataKey;
 std::vector<std::string> GetFontNamesFromPrefsForKey(Profile* profile,
                                                      const char* pref_name) {
   const base::Value::List& font_name_list =
-      profile->GetPrefs()->GetValueList(pref_name);
+      profile->GetPrefs()->GetList(pref_name);
   if (font_name_list.empty())
     return {};
 

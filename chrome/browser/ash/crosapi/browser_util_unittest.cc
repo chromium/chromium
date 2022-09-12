@@ -643,7 +643,7 @@ TEST_F(BrowserUtilTest, RecordDataVer) {
   base::Value expected{base::Value::Type::DICTIONARY};
   expected.SetStringKey(user_id_hash, version.GetString());
   const base::Value::Dict& dict =
-      pref_service_.GetValueDict(browser_util::kDataVerPref);
+      pref_service_.GetDict(browser_util::kDataVerPref);
   EXPECT_EQ(dict, expected);
 }
 
@@ -659,7 +659,7 @@ TEST_F(BrowserUtilTest, RecordDataVerOverrides) {
   expected.SetStringKey(user_id_hash, version2.GetString());
 
   const base::Value::Dict& dict =
-      pref_service_.GetValueDict(browser_util::kDataVerPref);
+      pref_service_.GetDict(browser_util::kDataVerPref);
   EXPECT_EQ(dict, expected);
 }
 
@@ -682,7 +682,7 @@ TEST_F(BrowserUtilTest, RecordDataVerWithMultipleUsers) {
   expected.SetStringKey(user_id_hash_2, version2.GetString());
 
   const base::Value::Dict& dict =
-      pref_service_.GetValueDict(browser_util::kDataVerPref);
+      pref_service_.GetDict(browser_util::kDataVerPref);
   EXPECT_EQ(dict, expected);
 }
 

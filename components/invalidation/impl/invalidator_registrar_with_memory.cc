@@ -34,7 +34,7 @@ constexpr char kIsPublic[] = "is_public";
 
 // Added in M76.
 void MigratePrefs(PrefService* prefs, const std::string& sender_id) {
-  const auto& old_prefs = prefs->GetValueDict(kTopicsToHandlerDeprecated);
+  const auto& old_prefs = prefs->GetDict(kTopicsToHandlerDeprecated);
   if (old_prefs.empty()) {
     return;
   }
@@ -124,7 +124,7 @@ InvalidatorRegistrarWithMemory::InvalidatorRegistrarWithMemory(
     MigratePrefs(prefs_, sender_id_);
   }
   const base::Value::Dict* pref_data =
-      prefs_->GetValueDict(kTopicsToHandler).FindDict(sender_id_);
+      prefs_->GetDict(kTopicsToHandler).FindDict(sender_id_);
   if (!pref_data) {
     DictionaryPrefUpdate update(prefs_, kTopicsToHandler);
     update->SetKey(sender_id_, base::Value(base::Value::Type::DICTIONARY));

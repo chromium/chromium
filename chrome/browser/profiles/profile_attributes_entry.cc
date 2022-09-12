@@ -887,7 +887,7 @@ void ProfileAttributesEntry::RecordAccountNamesMetric() const {
 
 const base::Value::Dict* ProfileAttributesEntry::GetEntryData() const {
   const base::Value::Dict& attributes =
-      prefs_->GetValueDict(prefs::kProfileAttributes);
+      prefs_->GetDict(prefs::kProfileAttributes);
   return attributes.FindDict(storage_key_);
 }
 

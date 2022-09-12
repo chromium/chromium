@@ -72,7 +72,7 @@ jboolean RecentTabsPagePrefs::GetForeignSessionCollapsed(
     JNIEnv* env,
     const JavaParamRef<jstring>& session_tag) {
   const base::Value::Dict& dict =
-      profile_->GetPrefs()->GetValueDict(prefs::kNtpCollapsedForeignSessions);
+      profile_->GetPrefs()->GetDict(prefs::kNtpCollapsedForeignSessions);
   return dict.contains(ConvertJavaStringToUTF8(env, session_tag));
 }
 

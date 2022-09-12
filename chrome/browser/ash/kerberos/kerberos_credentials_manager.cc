@@ -822,7 +822,7 @@ void KerberosCredentialsManager::UpdateAccountsFromPref(bool is_retry) {
   }
 
   const base::Value::List& accounts =
-      local_state_->GetValueList(prefs::kKerberosAccounts);
+      local_state_->GetList(prefs::kKerberosAccounts);
   if (accounts.empty()) {
     VLOG(1) << "Empty KerberosAccounts policy";
     NotifyRequiresLoginPassword(false);

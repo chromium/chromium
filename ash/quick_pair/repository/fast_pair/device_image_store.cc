@@ -146,7 +146,7 @@ void DeviceImageStore::LoadPersistedImagesFromPrefs() {
     return;
   }
   const base::Value::Dict& device_image_store =
-      local_state->GetValueDict(kDeviceImageStorePref);
+      local_state->GetDict(kDeviceImageStorePref);
   for (std::pair<const std::string&, const base::Value&> record :
        device_image_store) {
     absl::optional<DeviceImageInfo> images =

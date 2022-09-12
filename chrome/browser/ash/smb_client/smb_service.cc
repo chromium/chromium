@@ -622,9 +622,8 @@ std::vector<SmbUrl> SmbService::GetPreconfiguredSharePaths(
     const std::string& policy_mode) const {
   std::vector<SmbUrl> preconfigured_urls;
 
-  const base::Value::List& preconfigured_shares =
-      profile_->GetPrefs()->GetValueList(
-          prefs::kNetworkFileSharesPreconfiguredShares);
+  const base::Value::List& preconfigured_shares = profile_->GetPrefs()->GetList(
+      prefs::kNetworkFileSharesPreconfiguredShares);
 
   for (const base::Value& info : preconfigured_shares) {
     // |info| is a dictionary with entries for |share_url| and |mode|.

@@ -1311,7 +1311,7 @@ bool ShouldBlockBySpoofCheckResult(const DomainInfo& navigated_domain) {
 bool IsAllowedByEnterprisePolicy(const PrefService* pref_service,
                                  const GURL& url) {
   const base::Value::List& list =
-      pref_service->GetValueList(prefs::kLookalikeWarningAllowlistDomains);
+      pref_service->GetList(prefs::kLookalikeWarningAllowlistDomains);
 
   for (const auto& domain_val : list) {
     const std::string& domain = domain_val.GetString();

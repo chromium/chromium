@@ -728,7 +728,7 @@ bool IsSSLErrorOverrideAllowedForOrigin(const GURL& request_url,
     return true;
 
   const base::Value::List& allow_list_urls =
-      prefs->GetValueList(prefs::kSSLErrorOverrideAllowedForOrigins);
+      prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins);
   if (allow_list_urls.empty())
     return false;
 
@@ -875,7 +875,7 @@ bool IsAutoplayAllowedByPolicy(content::WebContents* contents,
 
   // Check if the current URL matches a URL pattern on the allowlist.
   const base::Value::List& autoplay_allowlist =
-      prefs->GetValueList(prefs::kAutoplayAllowlist);
+      prefs->GetList(prefs::kAutoplayAllowlist);
   return prefs->IsManagedPreference(prefs::kAutoplayAllowlist) &&
          IsURLAllowlisted(contents->GetURL(), autoplay_allowlist);
 }
@@ -4768,8 +4768,8 @@ ChromeContentBrowserClient::GetDevToolsBackgroundServiceExpirations(
   auto* pref_service = profile->GetPrefs();
   DCHECK(pref_service);
 
-  const auto& expiration_dict = pref_service->GetValueDict(
-      prefs::kDevToolsBackgroundServicesExpirationDict);
+  const auto& expiration_dict =
+      pref_service->GetDict(prefs::kDevToolsBackgroundServicesExpirationDict);
 
   base::flat_map<int, base::Time> expiration_times;
   for (auto it : expiration_dict) {

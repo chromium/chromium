@@ -98,9 +98,9 @@ ExtensionRequestReportGenerator::GenerateForProfile(Profile* profile) {
       extension_urls::GetDefaultWebstoreUpdateUrl().spec();
 
   const base::Value::Dict& pending_requests =
-      profile->GetPrefs()->GetValueDict(prefs::kCloudExtensionRequestIds);
+      profile->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds);
   const base::Value::Dict& uploaded_requests =
-      profile->GetPrefs()->GetValueDict(kCloudExtensionRequestUploadedIds);
+      profile->GetPrefs()->GetDict(kCloudExtensionRequestUploadedIds);
 
   for (auto it : pending_requests) {
     const std::string& extension_id = it.first;

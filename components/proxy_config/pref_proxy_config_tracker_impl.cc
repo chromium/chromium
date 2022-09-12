@@ -264,7 +264,7 @@ ProxyPrefs::ConfigState PrefProxyConfigTrackerImpl::ReadPrefConfig(
   DCHECK(pref);
 
   const base::Value::Dict& dict =
-      pref_service->GetValueDict(proxy_config::prefs::kProxy);
+      pref_service->GetDict(proxy_config::prefs::kProxy);
   ProxyConfigDictionary proxy_dict(base::Value(dict.Clone()));
 
   if (PrefConfigToNetConfig(proxy_dict, config)) {

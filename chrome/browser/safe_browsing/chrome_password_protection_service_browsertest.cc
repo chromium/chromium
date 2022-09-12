@@ -561,10 +561,9 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   Profile* profile = browser()->profile();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(kLoginPageUrl)));
-  ASSERT_TRUE(
-      profile->GetPrefs()
-          ->GetValueDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
-          .empty());
+  ASSERT_TRUE(profile->GetPrefs()
+                  ->GetDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
+                  .empty());
 
   base::HistogramTester histograms;
   // Shows modal dialog on current web_contents.
@@ -579,10 +578,9 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
       request.get(), LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED,
       "unused_token", account_type);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u,
-            profile->GetPrefs()
-                ->GetValueDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
-                .size());
+  EXPECT_EQ(1u, profile->GetPrefs()
+                    ->GetDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
+                    .size());
 
   // Opens a new browser window.
   Browser* browser2 = CreateBrowser(profile);
@@ -598,19 +596,17 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
       LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED, "unused_token",
       account_type);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(2u,
-            profile->GetPrefs()
-                ->GetValueDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
-                .size());
+  EXPECT_EQ(2u, profile->GetPrefs()
+                    ->GetDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
+                    .size());
 
   // Simulates a Gaia password change.
   SimulateGaiaPasswordChanged(service, user_manager::kStubUserEmail,
                               /*is_other_password=*/true);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(0u,
-            profile->GetPrefs()
-                ->GetValueDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
-                .size());
+  EXPECT_EQ(0u, profile->GetPrefs()
+                    ->GetDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
+                    .size());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
@@ -642,26 +638,23 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
       request.get(), LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED,
       "unused_token", account_type);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u,
-            profile->GetPrefs()
-                ->GetValueDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
-                .size());
+  EXPECT_EQ(1u, profile->GetPrefs()
+                    ->GetDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
+                    .size());
 
   // Save the same password will not trigger OnGaiaPasswordChanged(), thus no
   // change to size of unhandled_password_reuses().
   SimulateGaiaPasswordChange("password_1");
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u,
-            profile->GetPrefs()
-                ->GetValueDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
-                .size());
+  EXPECT_EQ(1u, profile->GetPrefs()
+                    ->GetDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
+                    .size());
   // Save a different password will clear unhandled_password_reuses().
   SimulateGaiaPasswordChange("password_2");
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(0u,
-            profile->GetPrefs()
-                ->GetValueDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
-                .size());
+  EXPECT_EQ(0u, profile->GetPrefs()
+                    ->GetDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses)
+                    .size());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
@@ -830,10 +823,9 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
       /*is_gsuite=*/true, PasswordProtectionTrigger::PHISHING_REUSE);
   Profile* profile = browser()->profile();
   SimulateGaiaPasswordChange("password");
-  ASSERT_EQ(1u,
-            profile->GetPrefs()
-                ->GetValueList(password_manager::prefs::kPasswordHashDataList)
-                .size());
+  ASSERT_EQ(1u, profile->GetPrefs()
+                    ->GetList(password_manager::prefs::kPasswordHashDataList)
+                    .size());
   // Turn off trigger
   profile->GetPrefs()->SetInteger(
       prefs::kPasswordProtectionWarningTrigger,
@@ -843,10 +835,9 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   hash_password_manager.set_prefs(profile->GetPrefs());
   EXPECT_FALSE(hash_password_manager.HasPasswordHash(
       user_manager::kStubUserEmail, /*is_gaia_password=*/true));
-  EXPECT_EQ(0u,
-            profile->GetPrefs()
-                ->GetValueList(password_manager::prefs::kPasswordHashDataList)
-                .size());
+  EXPECT_EQ(0u, profile->GetPrefs()
+                    ->GetList(password_manager::prefs::kPasswordHashDataList)
+                    .size());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
@@ -856,10 +847,9 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
       /*is_gsuite=*/false, PasswordProtectionTrigger::PHISHING_REUSE);
   Profile* profile = browser()->profile();
 
-  ASSERT_EQ(0u,
-            profile->GetPrefs()
-                ->GetValueList(password_manager::prefs::kPasswordHashDataList)
-                .size());
+  ASSERT_EQ(0u, profile->GetPrefs()
+                    ->GetList(password_manager::prefs::kPasswordHashDataList)
+                    .size());
   // Configures initial password to "password_1";
   password_manager::PasswordReuseManager* reuse_manager =
       PasswordReuseManagerFactory::GetForProfile(browser()->profile());
@@ -870,10 +860,9 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
       /*is_primary_account=*/false,
       password_manager::metrics_util::GaiaPasswordHashChange::
           CHANGED_IN_CONTENT_AREA);
-  ASSERT_EQ(2u,
-            profile->GetPrefs()
-                ->GetValueList(password_manager::prefs::kPasswordHashDataList)
-                .size());
+  ASSERT_EQ(2u, profile->GetPrefs()
+                    ->GetList(password_manager::prefs::kPasswordHashDataList)
+                    .size());
 
   // Turn off trigger
   profile->GetPrefs()->SetInteger(
@@ -887,10 +876,9 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   EXPECT_FALSE(
       hash_password_manager.HasPasswordHash(user_manager::kStubUserEmail,
                                             /*is_gaia_password=*/true));
-  EXPECT_EQ(0u,
-            profile->GetPrefs()
-                ->GetValueList(password_manager::prefs::kPasswordHashDataList)
-                .size());
+  EXPECT_EQ(0u, profile->GetPrefs()
+                    ->GetList(password_manager::prefs::kPasswordHashDataList)
+                    .size());
 }
 
 // Test fixture for testing the navigation deferral mechanism while a modal

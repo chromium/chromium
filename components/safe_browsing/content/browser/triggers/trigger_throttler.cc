@@ -147,8 +147,8 @@ void TriggerThrottler::LoadTriggerEventsFromPref() {
   if (!local_state_prefs_)
     return;
 
-  const base::Value::Dict& event_dict = local_state_prefs_->GetValueDict(
-      prefs::kSafeBrowsingTriggerEventTimestamps);
+  const base::Value::Dict& event_dict =
+      local_state_prefs_->GetDict(prefs::kSafeBrowsingTriggerEventTimestamps);
   for (auto trigger_pair : event_dict) {
     // Check that the first item in the pair is convertible to a trigger type
     // and that the second item is a list.

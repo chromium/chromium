@@ -76,7 +76,7 @@ bool SavedDeviceRegistry::DeleteAccountKey(
   }
 
   const base::Value::Dict& saved_devices =
-      pref_service->GetValueDict(kFastPairSavedDevicesPref);
+      pref_service->GetDict(kFastPairSavedDevicesPref);
   std::string encoded_key = base::Base64Encode(account_key);
   for (const auto it : saved_devices) {
     const std::string* value = it.second.GetIfString();
@@ -134,7 +134,7 @@ bool SavedDeviceRegistry::IsAccountKeySavedToRegistry(
   }
 
   const base::Value::Dict& saved_devices =
-      pref_service->GetValueDict(kFastPairSavedDevicesPref);
+      pref_service->GetDict(kFastPairSavedDevicesPref);
   std::string encoded_key = base::Base64Encode(account_key);
   for (const auto it : saved_devices) {
     const std::string* value = it.second.GetIfString();
@@ -162,7 +162,7 @@ void SavedDeviceRegistry::RemoveDevicesIfRemovedFromDifferentUser(
   // the registry that are no longer paired to the adapter (determined by mac
   // address), remove them from the registry.
   const base::Value::Dict& saved_devices =
-      pref_service->GetValueDict(kFastPairSavedDevicesPref);
+      pref_service->GetDict(kFastPairSavedDevicesPref);
   for (const auto it : saved_devices) {
     const std::string& mac_address = it.first;
     if (!base::Contains(paired_devices, mac_address)) {

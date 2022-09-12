@@ -61,7 +61,7 @@ void PopulateIcon(WebAppInstallInfo* web_app_info,
 
 const std::string* GetLastIconUrlForAppId() {
   return g_browser_process->local_state()
-      ->GetValueDict(WebKioskAppManager::kWebKioskDictionaryName)
+      ->GetDict(WebKioskAppManager::kWebKioskDictionaryName)
       .FindDict(KioskAppDataBase::kKeyApps)
       ->FindDict(kAppId)
       ->FindString(kLastIconUrlKey);

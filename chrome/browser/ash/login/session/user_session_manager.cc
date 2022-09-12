@@ -913,7 +913,7 @@ bool UserSessionManager::RespectLocalePreference(
 
   const std::string* account_locale = nullptr;
   if (pref_locale.empty() && user->has_gaia_account() &&
-      prefs->GetValueList(::prefs::kAllowedLanguages).empty()) {
+      prefs->GetList(::prefs::kAllowedLanguages).empty()) {
     if (user->GetAccountLocale() == nullptr)
       return false;  // wait until Account profile is loaded.
     account_locale = user->GetAccountLocale();

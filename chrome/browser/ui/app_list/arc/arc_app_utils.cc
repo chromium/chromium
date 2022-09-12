@@ -483,7 +483,7 @@ std::vector<std::string> GetSelectedPackagesFromPrefs(
   const PrefService* prefs = profile->GetPrefs();
 
   const base::Value::List& selected_package_prefs =
-      prefs->GetValueList(arc::prefs::kArcFastAppReinstallPackages);
+      prefs->GetList(arc::prefs::kArcFastAppReinstallPackages);
   for (const base::Value& item : selected_package_prefs) {
     std::string item_str = item.is_string() ? item.GetString() : std::string();
     packages.push_back(std::move(item_str));

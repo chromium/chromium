@@ -56,7 +56,7 @@ std::string GetPerDisplayPref(PrefService* prefs,
   bool has_per_display_prefs = false;
   if (!pref_key.empty()) {
     const base::Value::Dict& shelf_prefs =
-        prefs->GetValueDict(prefs::kShelfPreferences);
+        prefs->GetDict(prefs::kShelfPreferences);
     const base::Value::Dict* display_pref = shelf_prefs.FindDict(pref_key);
     if (display_pref) {
       const std::string* per_display_value =
@@ -94,7 +94,7 @@ void SetPerDisplayPref(PrefService* prefs,
 
   // Avoid DictionaryPrefUpdate's notifications for read but unmodified prefs.
   const base::Value::Dict& current_shelf_prefs =
-      prefs->GetValueDict(prefs::kShelfPreferences);
+      prefs->GetDict(prefs::kShelfPreferences);
   std::string display_key = base::NumberToString(display_id);
   const base::Value::Dict* current_display_prefs =
       current_shelf_prefs.FindDict(display_key);

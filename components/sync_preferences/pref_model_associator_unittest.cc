@@ -180,7 +180,7 @@ TEST_F(ListPreferenceMergeTest, ServerNull) {
   base::Value merged_value(pref_sync_service_->MergePreference(
       pref->name(), *pref->GetValue(), *null_value));
   const base::Value::List& local_list_value =
-      pref_service_->GetValueList(kListPrefName);
+      pref_service_->GetList(kListPrefName);
   EXPECT_EQ(merged_value, local_list_value);
 }
 
@@ -197,7 +197,7 @@ TEST_F(ListPreferenceMergeTest, ServerEmpty) {
   base::Value merged_value(pref_sync_service_->MergePreference(
       pref->name(), *pref->GetValue(), *empty_value));
   const base::Value::List& local_list_value =
-      pref_service_->GetValueList(kListPrefName);
+      pref_service_->GetList(kListPrefName);
   EXPECT_EQ(merged_value, local_list_value);
 }
 
@@ -302,7 +302,7 @@ TEST_F(DictionaryPreferenceMergeTest, ServerNull) {
   base::Value merged_value(pref_sync_service_->MergePreference(
       pref->name(), *pref->GetValue(), *null_value));
   const base::Value::Dict& local_dict_value =
-      pref_service_->GetValueDict(kDictionaryPrefName);
+      pref_service_->GetDict(kDictionaryPrefName);
   EXPECT_EQ(merged_value, local_dict_value);
 }
 
@@ -319,7 +319,7 @@ TEST_F(DictionaryPreferenceMergeTest, ServerEmpty) {
   base::Value merged_value(pref_sync_service_->MergePreference(
       pref->name(), *pref->GetValue(), *empty_value));
   const base::Value::Dict& local_dict_value =
-      pref_service_->GetValueDict(kDictionaryPrefName);
+      pref_service_->GetDict(kDictionaryPrefName);
   EXPECT_EQ(merged_value, local_dict_value);
 }
 

@@ -303,7 +303,7 @@ void ChromeBrowsingDataLifetimeManager::Shutdown() {
 
 void ChromeBrowsingDataLifetimeManager::ClearBrowsingDataForOnExitPolicy(
     bool keep_browser_alive) {
-  const base::Value::List& data_types = profile_->GetPrefs()->GetValueList(
+  const base::Value::List& data_types = profile_->GetPrefs()->GetList(
       browsing_data::prefs::kClearBrowsingDataOnExitList);
   if (!data_types.empty() && !SyncServiceFactory::IsSyncAllowed(profile_)) {
     profile_->GetPrefs()->SetBoolean(
@@ -330,7 +330,7 @@ void ChromeBrowsingDataLifetimeManager::ClearBrowsingDataForOnExitPolicy(
 void ChromeBrowsingDataLifetimeManager::UpdateScheduledRemovalSettings() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   scheduled_removals_settings_ =
-      ConvertToScheduledRemovalSettings(profile_->GetPrefs()->GetValueList(
+      ConvertToScheduledRemovalSettings(profile_->GetPrefs()->GetList(
           browsing_data::prefs::kBrowsingDataLifetime));
 
   if (!scheduled_removals_settings_.empty())

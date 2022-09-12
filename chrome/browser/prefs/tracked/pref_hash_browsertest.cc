@@ -791,11 +791,9 @@ class PrefHashBrowserTestChangedAtomic : public PrefHashBrowserTestBase {
 // Preferences.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     // Explicitly verify the result of reported resets.
-    EXPECT_EQ(protection_level_ >= PROTECTION_ENABLED_BASIC ? 0U : 2U,
-              profile()
-                  ->GetPrefs()
-                  ->GetValueList(prefs::kURLsToRestoreOnStartup)
-                  .size());
+    EXPECT_EQ(
+        protection_level_ >= PROTECTION_ENABLED_BASIC ? 0U : 2U,
+        profile()->GetPrefs()->GetList(prefs::kURLsToRestoreOnStartup).size());
 #endif
 
     // Nothing else should have triggered.

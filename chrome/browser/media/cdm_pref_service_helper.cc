@@ -224,7 +224,7 @@ std::unique_ptr<CdmPrefData> CdmPrefServiceHelper::GetCdmPrefData(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   const base::Value::Dict& dict =
-      user_prefs->GetValueDict(prefs::kMediaCdmOriginData);
+      user_prefs->GetDict(prefs::kMediaCdmOriginData);
 
   DCHECK(!cdm_origin.opaque());
   if (cdm_origin.opaque()) {
@@ -296,7 +296,7 @@ std::map<std::string, url::Origin> CdmPrefServiceHelper::GetOriginIdMapping(
     PrefService* user_prefs) {
   std::map<std::string, url::Origin> mapping;
   const base::Value::Dict& dict =
-      user_prefs->GetValueDict(prefs::kMediaCdmOriginData);
+      user_prefs->GetDict(prefs::kMediaCdmOriginData);
 
   for (auto key_value : dict) {
     const base::Value* origin_id_value = key_value.second.FindKey(kOriginId);

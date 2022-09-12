@@ -59,7 +59,7 @@ std::string GetPrefPath(AppListNudgeController::NudgeType type) {
 // Returns true if the app list has been reordered before.
 bool WasAppListReorderedPreviously(PrefService* prefs) {
   const base::Value::Dict& dictionary =
-      prefs->GetValueDict(prefs::kAppListReorderNudge);
+      prefs->GetDict(prefs::kAppListReorderNudge);
   return dictionary.FindBool(kReorderNudgeConfirmed).value_or(false);
 }
 
@@ -82,7 +82,7 @@ void AppListNudgeController::ResetPrefsForNewUserSession(PrefService* prefs) {
 
 // static
 int AppListNudgeController::GetShownCount(PrefService* prefs, NudgeType type) {
-  const base::Value::Dict& dictionary = prefs->GetValueDict(GetPrefPath(type));
+  const base::Value::Dict& dictionary = prefs->GetDict(GetPrefPath(type));
 
   return dictionary.FindIntByDottedPath(kReorderNudgeShownCount).value_or(0);
 }
@@ -158,7 +158,7 @@ bool AppListNudgeController::IsPrivacyNoticeAccepted() const {
   if (!prefs)
     return false;
 
-  return prefs->GetValueDict(prefs::kLauncherFilesPrivacyNotice)
+  return prefs->GetDict(prefs::kLauncherFilesPrivacyNotice)
       .FindBool(kPrivacyNoticeAcceptedKey)
       .value_or(false);
 }
@@ -168,7 +168,7 @@ bool AppListNudgeController::WasPrivacyNoticeShown() const {
   if (!prefs)
     return false;
 
-  return prefs->GetValueDict(prefs::kLauncherFilesPrivacyNotice)
+  return prefs->GetDict(prefs::kLauncherFilesPrivacyNotice)
       .FindBool(kPrivacyNoticeShownKey)
       .value_or(false);
 }

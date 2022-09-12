@@ -176,7 +176,7 @@ TEST_F(DestinationUsageHistoryTest, HandlesNewDestinationClickAndAddToPrefs) {
 
   // Fetch saved destination usage history.
   const base::Value::Dict& history =
-      destination_usage_history.prefService->GetValueDict(
+      destination_usage_history.prefService->GetDict(
           prefs::kOverflowMenuDestinationUsageHistory);
 
   // Query saved usage history for Bookmarks entry for today.
@@ -203,7 +203,7 @@ TEST_F(DestinationUsageHistoryTest, InjectsDefaultNumClicksForAllDestinations) {
 
   // Fetch saved destination usage history.
   const base::Value::Dict& history =
-      destination_usage_history.prefService->GetValueDict(
+      destination_usage_history.prefService->GetDict(
           prefs::kOverflowMenuDestinationUsageHistory);
 
   EXPECT_TRUE(destination_usage_history.prefService->HasPrefPath(
@@ -265,7 +265,7 @@ TEST_F(DestinationUsageHistoryTest,
 
   // Fetch saved destination usage history.
   const base::Value::Dict& history =
-      destination_usage_history.prefService->GetValueDict(
+      destination_usage_history.prefService->GetDict(
           prefs::kOverflowMenuDestinationUsageHistory);
 
   // Query saved usage history for Bookmarks entry for `TodaysDay`.
@@ -425,7 +425,7 @@ TEST_F(DestinationUsageHistoryTest, DeletesExpiredUsageData) {
 
   // Fetch saved destination usage history.
   const base::Value::Dict& saved_history =
-      destination_usage_history.prefService->GetValueDict(
+      destination_usage_history.prefService->GetDict(
           prefs::kOverflowMenuDestinationUsageHistory);
 
   std::set<std::string> seen_keys;

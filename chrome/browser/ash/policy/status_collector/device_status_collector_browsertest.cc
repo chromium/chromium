@@ -1344,7 +1344,7 @@ TEST_F(DeviceStatusCollectorTest, ActivityNotWrittenToProfilePref) {
   DisableDefaultSettings();
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceActivityTimes, true);
-  EXPECT_THAT(profile_pref_service_.GetValueDict(prefs::kUserActivityTimes),
+  EXPECT_THAT(profile_pref_service_.GetDict(prefs::kUserActivityTimes),
               IsEmpty());
 
   ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
@@ -1358,7 +1358,7 @@ TEST_F(DeviceStatusCollectorTest, ActivityNotWrittenToProfilePref) {
 
   // Nothing should be written to profile pref service, because it is only used
   // for consumer reporting.
-  EXPECT_THAT(profile_pref_service_.GetValueDict(prefs::kUserActivityTimes),
+  EXPECT_THAT(profile_pref_service_.GetDict(prefs::kUserActivityTimes),
               IsEmpty());
 }
 

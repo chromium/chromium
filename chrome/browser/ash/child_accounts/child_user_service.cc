@@ -139,7 +139,7 @@ bool ChildUserService::AppTimeLimitAllowlistedApp(
 
 void ChildUserService ::ReportTimeLimitPolicy() const {
   const base::Value::Dict& time_limit_prefs =
-      profile_->GetPrefs()->GetValueDict(prefs::kUsageTimeLimit);
+      profile_->GetPrefs()->GetDict(prefs::kUsageTimeLimit);
 
   std::set<usage_time_limit::PolicyType> enabled_policies =
       usage_time_limit::GetEnabledTimeLimitPolicies(time_limit_prefs);

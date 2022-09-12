@@ -70,7 +70,7 @@ void PerformDelayedCryptohomeRemovals(bool service_is_available) {
 
   PrefService* local_state = g_browser_process->local_state();
   const base::Value::Dict& dict =
-      local_state->GetValueDict(prefs::kAllKioskUsersToRemove);
+      local_state->GetDict(prefs::kAllKioskUsersToRemove);
   for (const auto it : dict) {
     std::string app_id;
     if (it.second.is_string())

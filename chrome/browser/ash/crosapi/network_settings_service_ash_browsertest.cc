@@ -298,14 +298,13 @@ IN_PROC_BROWSER_TEST_F(NetworkSettingsServiceAshExtensionTest,
   provider_.UpdateChromePolicy(policy);
 
   const base::Value::Dict& proxy_pref =
-      browser()->profile()->GetPrefs()->GetValueDict(
-          proxy_config::prefs::kProxy);
+      browser()->profile()->GetPrefs()->GetDict(proxy_config::prefs::kProxy);
   EXPECT_EQ(proxy_pref, ProxyConfigDictionary::CreateAutoDetect());
 
   // The kLacrosProxyControllingExtension pref which is used to display the
   // extension controlling the proxy should also be reset.
   const base::Value::Dict& extension_proxy_pref =
-      browser()->profile()->GetPrefs()->GetValueDict(
+      browser()->profile()->GetPrefs()->GetDict(
           ash::prefs::kLacrosProxyControllingExtension);
   EXPECT_TRUE(extension_proxy_pref.empty());
 }
@@ -334,8 +333,7 @@ IN_PROC_BROWSER_TEST_F(NetworkSettingsServiceAshExtensionTest,
   network_service_ash_->SetExtensionProxy(std::move(proxy_config));
   base::RunLoop().RunUntilIdle();
   const base::Value::Dict& proxy_pref =
-      browser()->profile()->GetPrefs()->GetValueDict(
-          proxy_config::prefs::kProxy);
+      browser()->profile()->GetPrefs()->GetDict(proxy_config::prefs::kProxy);
   EXPECT_EQ(proxy_pref, ProxyConfigDictionary::CreateDirect());
 }
 

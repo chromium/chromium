@@ -134,7 +134,7 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
     return kBlockedByPolicy;
 
   if (profile->GetPrefs()
-          ->GetValueDict(prefs::kCloudExtensionRequestIds)
+          ->GetDict(prefs::kCloudExtensionRequestIds)
           .Find(extension_id)) {
     return kRequestPending;
   }

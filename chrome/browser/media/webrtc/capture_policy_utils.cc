@@ -89,8 +89,7 @@ AllowedScreenCaptureLevel GetAllowedCaptureLevel(const GURL& request_origin,
                                   AllowedScreenCaptureLevel::kDesktop}}};
 
   for (const auto& policy_list : kScreenCapturePolicyLists) {
-    if (IsOriginInList(request_origin,
-                       prefs.GetValueList(policy_list.pref_name))) {
+    if (IsOriginInList(request_origin, prefs.GetList(policy_list.pref_name))) {
       return policy_list.capture_level;
     }
   }

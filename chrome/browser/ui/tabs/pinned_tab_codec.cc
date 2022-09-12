@@ -102,7 +102,7 @@ StartupTabs PinnedTabCodec::ReadPinnedTabs(Profile* profile) {
 
   StartupTabs results;
 
-  for (const auto& serialized_tab : prefs->GetValueList(prefs::kPinnedTabs)) {
+  for (const auto& serialized_tab : prefs->GetList(prefs::kPinnedTabs)) {
     if (!serialized_tab.is_dict())
       continue;
     absl::optional<StartupTab> tab = DecodeTab(serialized_tab);

@@ -137,7 +137,7 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
                  &prefs->webrtc_udp_max_port);
 
   const base::Value::List& allowed_urls =
-      pref_service->GetValueList(prefs::kWebRtcLocalIpsAllowedUrls);
+      pref_service->GetList(prefs::kWebRtcLocalIpsAllowedUrls);
   prefs->webrtc_local_ips_allowed_urls = GetLocalIpsAllowedUrls(allowed_urls);
   prefs->webrtc_allow_legacy_tls_protocols =
       pref_service->GetBoolean(prefs::kWebRTCAllowLegacyTLSProtocols);

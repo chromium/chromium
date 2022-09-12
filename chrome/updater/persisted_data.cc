@@ -155,7 +155,7 @@ std::vector<std::string> PersistedData::GetAppIds() const {
   // corresponds to an app:
   // {"updateclientdata":{"apps":{"{44FC7FE2-65CE-487C-93F4-EDEE46EEAAAB}":{...
   const base::Value::Dict& dict =
-      pref_service_->GetValueDict(kPersistedDataPreference);
+      pref_service_->GetDict(kPersistedDataPreference);
   const base::Value::Dict* apps = dict.FindDict("apps");
   if (!apps)
     return {};
@@ -174,7 +174,7 @@ const base::Value::Dict* PersistedData::GetAppKey(const std::string& id) const {
   if (!pref_service_)
     return nullptr;
   const base::Value::Dict& dict =
-      pref_service_->GetValueDict(kPersistedDataPreference);
+      pref_service_->GetDict(kPersistedDataPreference);
   const base::Value::Dict* apps = dict.FindDict("apps");
   if (!apps)
     return nullptr;

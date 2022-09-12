@@ -130,7 +130,7 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
   DCHECK(pref_service);
 
   const base::Value::Dict& file_systems =
-      pref_service->GetValueDict(prefs::kFileSystemProviderMounted);
+      pref_service->GetDict(prefs::kFileSystemProviderMounted);
 
   const base::Value::Dict* file_systems_per_extension =
       file_systems.FindDict(provider_id.ToString());

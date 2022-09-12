@@ -225,7 +225,7 @@ void SearchPermissionsService::InitializeSettingsIfNeeded() {
 
 SearchPermissionsService::PrefValue SearchPermissionsService::GetDSEPref() {
   const base::Value::Dict& dict =
-      pref_service_->GetValueDict(prefs::kDSEPermissionsSettings);
+      pref_service_->GetDict(prefs::kDSEPermissionsSettings);
 
   PrefValue pref;
   const std::string* dse_name = dict.FindString(kDSENameKey);

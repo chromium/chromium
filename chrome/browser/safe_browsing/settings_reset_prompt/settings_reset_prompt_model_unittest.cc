@@ -147,7 +147,7 @@ class SettingsResetPromptModelTest
     // Also make sure that the |startup_url| is now in the list of URLs in the
     // preferences.
     ASSERT_TRUE(ListValueContainsUrl(
-        prefs_->GetValueList(prefs::kURLsToRestoreOnStartup), startup_gurl));
+        prefs_->GetList(prefs::kURLsToRestoreOnStartup), startup_gurl));
   }
 
   // Returns a model with a mock config that will return negative IDs for every

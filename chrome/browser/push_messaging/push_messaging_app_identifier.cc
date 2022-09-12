@@ -160,7 +160,7 @@ PushMessagingAppIdentifier PushMessagingAppIdentifier::FindByAppId(
             base::ToUpperASCII(app_id.substr(app_id.size() - kGuidLength)));
 
   const base::Value::Dict& map =
-      profile->GetPrefs()->GetValueDict(prefs::kPushMessagingAppIdentifierMap);
+      profile->GetPrefs()->GetDict(prefs::kPushMessagingAppIdentifierMap);
 
   const std::string* map_value = map.FindString(app_id);
 
@@ -194,7 +194,7 @@ PushMessagingAppIdentifier PushMessagingAppIdentifier::FindByServiceWorker(
       MakePrefValue(origin, service_worker_registration_id);
 
   const base::Value::Dict& map =
-      profile->GetPrefs()->GetValueDict(prefs::kPushMessagingAppIdentifierMap);
+      profile->GetPrefs()->GetDict(prefs::kPushMessagingAppIdentifierMap);
   for (auto entry : map) {
     if (entry.second.is_string() &&
         base::StartsWith(entry.second.GetString(), base_pref_value,
@@ -211,7 +211,7 @@ std::vector<PushMessagingAppIdentifier> PushMessagingAppIdentifier::GetAll(
   std::vector<PushMessagingAppIdentifier> result;
 
   const base::Value::Dict& map =
-      profile->GetPrefs()->GetValueDict(prefs::kPushMessagingAppIdentifierMap);
+      profile->GetPrefs()->GetDict(prefs::kPushMessagingAppIdentifierMap);
   for (auto entry : map) {
     result.push_back(FindByAppId(profile, entry.first));
   }
@@ -230,7 +230,7 @@ void PushMessagingAppIdentifier::DeleteAllFromPrefs(Profile* profile) {
 // static
 size_t PushMessagingAppIdentifier::GetCount(Profile* profile) {
   return profile->GetPrefs()
-      ->GetValueDict(prefs::kPushMessagingAppIdentifierMap)
+      ->GetDict(prefs::kPushMessagingAppIdentifierMap)
       .size();
 }
 

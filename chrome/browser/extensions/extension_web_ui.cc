@@ -358,7 +358,7 @@ std::vector<GURL> GetOverridesForChromeURL(
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
   const base::Value::Dict& overrides =
-      profile->GetPrefs()->GetValueDict(ExtensionWebUI::kExtensionURLOverrides);
+      profile->GetPrefs()->GetDict(ExtensionWebUI::kExtensionURLOverrides);
 
   const base::Value::List* url_list =
       overrides.FindListByDottedPath(url.host_piece());
@@ -453,7 +453,7 @@ bool ExtensionWebUI::HandleChromeURLOverrideReverse(
     GURL* url, content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   const base::Value::Dict& overrides =
-      profile->GetPrefs()->GetValueDict(kExtensionURLOverrides);
+      profile->GetPrefs()->GetDict(kExtensionURLOverrides);
 
   // Find the reverse mapping based on the given URL. For example this maps the
   // internal URL

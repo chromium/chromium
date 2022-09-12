@@ -86,7 +86,7 @@ const char kMoveToAccountStoreOfferedCountKey[] =
 // storage exists. Used for metrics.
 int GetNumberOfOptedInAccounts(const PrefService* pref_service) {
   const base::Value::Dict& global_pref =
-      pref_service->GetValueDict(prefs::kAccountStoragePerAccountSettings);
+      pref_service->GetDict(prefs::kAccountStoragePerAccountSettings);
   int count = 0;
   for (auto entry : global_pref) {
     if (entry.second.GetDict()
@@ -104,7 +104,7 @@ class AccountStorageSettingsReader {
   AccountStorageSettingsReader(const PrefService* prefs,
                                const GaiaIdHash& gaia_id_hash) {
     const base::Value::Dict& global_pref =
-        prefs->GetValueDict(prefs::kAccountStoragePerAccountSettings);
+        prefs->GetDict(prefs::kAccountStoragePerAccountSettings);
     account_settings_ = global_pref.FindDict(gaia_id_hash.ToBase64());
   }
 
@@ -235,7 +235,7 @@ bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
   // Show the opt-in if any known previous user opted into using the account
   // storage before and might want to access it again.
   return base::ranges::any_of(
-      pref_service->GetValueDict(prefs::kAccountStoragePerAccountSettings),
+      pref_service->GetDict(prefs::kAccountStoragePerAccountSettings),
       [](const std::pair<std::string, const base::Value&>& p) {
         return p.second.GetDict()
             .FindBool(kAccountStorageOptedInKey)

@@ -19,8 +19,7 @@ namespace {
 // was found.
 int GetSyncTransportOptInBitFieldForAccount(const PrefService* prefs,
                                             const std::string& account_hash) {
-  const auto& dictionary =
-      prefs->GetValueDict(prefs::kAutofillSyncTransportOptIn);
+  const auto& dictionary = prefs->GetDict(prefs::kAutofillSyncTransportOptIn);
 
   // If there is no entry in the dictionary, it means the account didn't opt-in.
   // Use 0 because it's the same as not having opted-in to anything.

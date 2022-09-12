@@ -35,7 +35,7 @@ std::vector<std::string> GetListPref(PrefService* prefs,
   std::vector<std::string> list;
   if (pref_name.empty())
     return list;
-  for (const auto& value : prefs->GetValueList(pref_name))
+  for (const auto& value : prefs->GetList(pref_name))
     list.push_back(value.GetString());
   return list;
 }
@@ -329,7 +329,7 @@ void BrowserSwitcherPrefs::AlternativeBrowserParametersChanged() {
   if (!prefs_->IsManagedPreference(prefs::kAlternativeBrowserParameters))
     return;
   const base::Value::List& params =
-      prefs_->GetValueList(prefs::kAlternativeBrowserParameters);
+      prefs_->GetList(prefs::kAlternativeBrowserParameters);
   for (const auto& param : params) {
     std::string param_string = param.GetString();
     alt_browser_params_.push_back(param_string);
@@ -362,10 +362,10 @@ void BrowserSwitcherPrefs::UrlListChanged() {
     return;
 
   UMA_HISTOGRAM_COUNTS_100000("BrowserSwitcher.UrlListSize",
-                              prefs_->GetValueList(prefs::kUrlList).size());
+                              prefs_->GetList(prefs::kUrlList).size());
 
   bool has_wildcard = false;
-  for (const auto& url : prefs_->GetValueList(prefs::kUrlList)) {
+  for (const auto& url : prefs_->GetList(prefs::kUrlList)) {
     std::unique_ptr<Rule> rule =
         CanonicalizeRule(url.GetString(), parsing_mode_);
     if (rule)
@@ -384,8 +384,7 @@ void BrowserSwitcherPrefs::GreylistChanged() {
   if (!prefs_->IsManagedPreference(prefs::kUrlGreylist))
     return;
 
-  const base::Value::List& url_gray_list =
-      prefs_->GetValueList(prefs::kUrlGreylist);
+  const base::Value::List& url_gray_list = prefs_->GetList(prefs::kUrlGreylist);
   UMA_HISTOGRAM_COUNTS_100000("BrowserSwitcher.GreylistSize",
                               url_gray_list.size());
 
@@ -420,8 +419,7 @@ void BrowserSwitcherPrefs::ChromeParametersChanged() {
   chrome_params_.clear();
   if (!prefs_->IsManagedPreference(prefs::kChromeParameters))
     return;
-  const base::Value::List& params =
-      prefs_->GetValueList(prefs::kChromeParameters);
+  const base::Value::List& params = prefs_->GetList(prefs::kChromeParameters);
   for (const auto& param : params) {
     std::string param_string = param.GetString();
     chrome_params_.push_back(param_string);

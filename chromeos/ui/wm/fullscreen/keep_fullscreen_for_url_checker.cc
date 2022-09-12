@@ -38,7 +38,7 @@ bool KeepFullscreenForUrlChecker::ShouldExitFullscreenForUrl(GURL window_url) {
 }
 
 void KeepFullscreenForUrlChecker::OnPrefChanged() {
-  const auto& url_allow_list = pref_service_->GetValueList(
+  const auto& url_allow_list = pref_service_->GetList(
       prefs::kKeepFullscreenWithoutNotificationUrlAllowList);
   if (url_allow_list.size() == 0) {
     url_matcher_ = nullptr;

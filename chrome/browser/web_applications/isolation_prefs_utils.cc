@@ -84,7 +84,7 @@ const std::string* GetStorageIsolationKey(PrefService* pref_service,
                                           const url::Origin& origin) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   const base::Value::Dict& isolation_prefs =
-      pref_service->GetValueDict(prefs::kWebAppsIsolationState);
+      pref_service->GetDict(prefs::kWebAppsIsolationState);
 
   const base::Value::Dict* origin_prefs =
       isolation_prefs.FindDict(RemovePort(origin).Serialize());

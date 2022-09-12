@@ -74,7 +74,7 @@ const int kMinWindowHeight = 17;
 
 - (void)restore {
   // Get the positioning information.
-  const base::Value::Dict& windowPrefs = _prefService->GetValueDict(_path);
+  const base::Value::Dict& windowPrefs = _prefService->GetDict(_path);
   if ([_window styleMask] & NSWindowStyleMaskResizable) {
     absl::optional<int> x1 = windowPrefs.FindInt("left");
     absl::optional<int> x2 = windowPrefs.FindInt("right");

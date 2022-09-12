@@ -47,9 +47,9 @@ void CastFeatureListCreator::CreatePrefServiceAndFeatureList(
       pref_registry.get(), process_type);
 
   const base::Value::Dict& features_dict =
-      pref_service_->GetValueDict(prefs::kLatestDCSFeatures);
+      pref_service_->GetDict(prefs::kLatestDCSFeatures);
   const base::Value::List& experiment_ids =
-      pref_service_->GetValueList(prefs::kActiveDCSExperiments);
+      pref_service_->GetList(prefs::kActiveDCSExperiments);
   auto* command_line = base::CommandLine::ForCurrentProcess();
   InitializeFeatureList(
       features_dict, experiment_ids,

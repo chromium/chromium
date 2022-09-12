@@ -616,7 +616,7 @@ void NearbyShareCertificateStorageImpl::ClearPublicCertificates(
 }
 
 bool NearbyShareCertificateStorageImpl::FetchPublicCertificateExpirations() {
-  const base::Value::Dict& dict = pref_service_->GetValueDict(
+  const base::Value::Dict& dict = pref_service_->GetDict(
       prefs::kNearbySharingPublicCertificateExpirationDictPrefName);
   public_certificate_expirations_.clear();
 

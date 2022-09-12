@@ -303,7 +303,7 @@ base::Value::List GetSafeBrowsingPreferencesList(PrefService* prefs) {
 base::Value::List GetSafeBrowsingPoliciesList(PrefService* prefs) {
   base::Value::List preferences_list;
   const base::Value::List& allowlist_domains =
-      prefs->GetValueList(prefs::kSafeBrowsingAllowlistDomains);
+      prefs->GetList(prefs::kSafeBrowsingAllowlistDomains);
   std::vector<std::string> domain_list;
   CanonicalizeDomainList(allowlist_domains, &domain_list);
   std::string domains;
@@ -334,7 +334,7 @@ void GetSafeBrowsingAllowlistDomainsPref(
     const PrefService& prefs,
     std::vector<std::string>* out_canonicalized_domain_list) {
   const base::Value::List& pref_value =
-      prefs.GetValueList(prefs::kSafeBrowsingAllowlistDomains);
+      prefs.GetList(prefs::kSafeBrowsingAllowlistDomains);
   CanonicalizeDomainList(pref_value, out_canonicalized_domain_list);
 }
 
@@ -356,7 +356,7 @@ bool IsURLAllowlistedByPolicy(const GURL& url, const PrefService& pref) {
   if (!pref.HasPrefPath(prefs::kSafeBrowsingAllowlistDomains))
     return false;
   const base::Value::List& allowlist =
-      pref.GetValueList(prefs::kSafeBrowsingAllowlistDomains);
+      pref.GetList(prefs::kSafeBrowsingAllowlistDomains);
   for (const base::Value& value : allowlist) {
     if (url.DomainIs(value.GetString()))
       return true;
@@ -367,7 +367,7 @@ bool IsURLAllowlistedByPolicy(const GURL& url, const PrefService& pref) {
 std::vector<std::string> GetURLAllowlistByPolicy(PrefService* pref_service) {
   std::vector<std::string> allowlist_domains;
   const base::Value::List& allowlist =
-      pref_service->GetValueList(prefs::kSafeBrowsingAllowlistDomains);
+      pref_service->GetList(prefs::kSafeBrowsingAllowlistDomains);
   for (const base::Value& value : allowlist) {
     allowlist_domains.push_back(value.GetString());
   }
@@ -386,7 +386,7 @@ bool MatchesEnterpriseAllowlist(const PrefService& pref,
 void GetPasswordProtectionLoginURLsPref(const PrefService& prefs,
                                         std::vector<GURL>* out_login_url_list) {
   const base::Value::List& pref_value =
-      prefs.GetValueList(prefs::kPasswordProtectionLoginURLs);
+      prefs.GetList(prefs::kPasswordProtectionLoginURLs);
   out_login_url_list->clear();
   for (const base::Value& value : pref_value) {
     GURL login_url(value.GetString());

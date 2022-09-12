@@ -291,7 +291,7 @@ bool CommandService::SetScope(const std::string& extension_id,
 Command CommandService::FindCommandByName(const std::string& extension_id,
                                           const std::string& command) const {
   const base::Value::Dict& bindings =
-      profile_->GetPrefs()->GetValueDict(prefs::kExtensionCommands);
+      profile_->GetPrefs()->GetDict(prefs::kExtensionCommands);
   for (const auto it : bindings) {
     const std::string* extension = it.second.FindStringKey(kExtension);
     if (!extension || *extension != extension_id)

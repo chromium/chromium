@@ -69,7 +69,7 @@ bool SpellingServiceClient::RequestTextCheck(
 
   std::string dictionary;
   const base::Value::List& dicts_list =
-      pref->GetValueList(spellcheck::prefs::kSpellCheckDictionaries);
+      pref->GetList(spellcheck::prefs::kSpellCheckDictionaries);
   if (0u < dicts_list.size() && dicts_list[0].is_string())
     dictionary = dicts_list[0].GetString();
 
@@ -176,7 +176,7 @@ bool SpellingServiceClient::IsAvailable(content::BrowserContext* context,
   // use spellcheck so we don't do anything remote (suggest or spelling).
   std::string locale;
   const auto& dicts_list =
-      pref->GetValueList(spellcheck::prefs::kSpellCheckDictionaries);
+      pref->GetList(spellcheck::prefs::kSpellCheckDictionaries);
   if (0u < dicts_list.size() && dicts_list[0].is_string())
     locale = dicts_list[0].GetString();
 

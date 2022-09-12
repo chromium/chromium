@@ -122,7 +122,7 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
   }
 
   const base::Value::List& policy_apps =
-      profile->GetPrefs()->GetValueList(prefs::kPolicyPinnedLauncherApps);
+      profile->GetPrefs()->GetList(prefs::kPolicyPinnedLauncherApps);
 
   for (const base::Value& policy_dict_entry : policy_apps) {
     if (!policy_dict_entry.is_dict())

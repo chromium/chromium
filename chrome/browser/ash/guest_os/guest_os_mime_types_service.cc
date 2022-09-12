@@ -31,7 +31,7 @@ std::string GuestOsMimeTypesService::GetMimeType(
     const std::string& vm_name,
     const std::string& container_name) const {
   const base::Value::Dict* vm =
-      prefs_->GetValueDict(prefs::kGuestOsMimeTypes).FindDict(vm_name);
+      prefs_->GetDict(prefs::kGuestOsMimeTypes).FindDict(vm_name);
   if (vm) {
     const base::Value::Dict* container = vm->FindDict(container_name);
     if (container) {
@@ -68,7 +68,7 @@ GuestOsMimeTypesService::GetExtensionTypesFromMimeTypes(
     const std::string& vm_name,
     const std::string& container_name) const {
   const base::Value::Dict* vm =
-      prefs_->GetValueDict(prefs::kGuestOsMimeTypes).FindDict(vm_name);
+      prefs_->GetDict(prefs::kGuestOsMimeTypes).FindDict(vm_name);
   if (!vm) {
     return {};
   }

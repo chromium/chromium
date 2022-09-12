@@ -133,7 +133,7 @@ bool IsExtensionAllowed(Profile* profile, const Extension* extension) {
     return true;
   }
   const base::Value::List& list =
-      profile->GetPrefs()->GetValueList(prefs::kAttestationExtensionAllowlist);
+      profile->GetPrefs()->GetList(prefs::kAttestationExtensionAllowlist);
   base::Value value(extension->id());
   return base::Contains(list, value);
 }

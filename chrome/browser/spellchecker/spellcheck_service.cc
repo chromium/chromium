@@ -191,7 +191,7 @@ void SpellcheckService::GetDictionaries(
   PrefService* prefs = user_prefs::UserPrefs::Get(browser_context);
   std::set<std::string> spellcheck_dictionaries;
   for (const auto& value :
-       prefs->GetValueList(spellcheck::prefs::kSpellCheckDictionaries)) {
+       prefs->GetList(spellcheck::prefs::kSpellCheckDictionaries)) {
     const std::string* dictionary = value.GetIfString();
     if (dictionary)
       spellcheck_dictionaries.insert(*dictionary);
@@ -330,7 +330,7 @@ void SpellcheckService::EnableFirstUserLanguageForSpellcheck(
   // Ensure that spellcheck is enabled for the first language in the
   // accept languages list.
   base::Value::List user_dictionaries =
-      prefs->GetValueList(spellcheck::prefs::kSpellCheckDictionaries).Clone();
+      prefs->GetList(spellcheck::prefs::kSpellCheckDictionaries).Clone();
   std::vector<std::string> user_languages =
       base::SplitString(prefs->GetString(language::prefs::kAcceptLanguages),
                         ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -424,13 +424,13 @@ void SpellcheckService::LoadDictionaries() {
   DCHECK(prefs);
 
   const base::Value::List& user_dictionaries =
-      prefs->GetValueList(spellcheck::prefs::kSpellCheckDictionaries);
+      prefs->GetList(spellcheck::prefs::kSpellCheckDictionaries);
   const base::Value::List& forced_dictionaries =
-      prefs->GetValueList(spellcheck::prefs::kSpellCheckForcedDictionaries);
+      prefs->GetList(spellcheck::prefs::kSpellCheckForcedDictionaries);
 
   // Build a lookup of blocked dictionaries to skip loading them.
-  const base::Value::List& blocked_dictionaries = prefs->GetValueList(
-      spellcheck::prefs::kSpellCheckBlocklistedDictionaries);
+  const base::Value::List& blocked_dictionaries =
+      prefs->GetList(spellcheck::prefs::kSpellCheckBlocklistedDictionaries);
   std::unordered_set<std::string> blocked_dictionaries_lookup;
   for (const auto& blocked_dict : blocked_dictionaries) {
     blocked_dictionaries_lookup.insert(blocked_dict.GetString());

@@ -236,7 +236,7 @@ class DisplayPrefsTest : public AshTestBase {
 
   const base::Value::Dict* ReadPropertiesForDisplay(int64_t display_id) {
     const base::Value::Dict& properties =
-        local_state()->GetValueDict(prefs::kDisplayProperties);
+        local_state()->GetDict(prefs::kDisplayProperties);
     const base::Value::Dict* property =
         properties.FindDict(base::NumberToString(display_id));
     EXPECT_TRUE(property);
@@ -256,7 +256,7 @@ class DisplayPrefsTest : public AshTestBase {
                  << source_id << " and mirroring_destination_ids="
                  << base::JoinString(expected_dest_id_strs, ","));
     const base::Value::Dict& prefs =
-        local_state()->GetValueDict(prefs::kDisplayMixedMirrorModeParams);
+        local_state()->GetDict(prefs::kDisplayMixedMirrorModeParams);
     EXPECT_THAT(prefs.FindString("mirroring_source_id"),
                 testing::Pointee(base::NumberToString(source_id)));
     const auto* mirror_ids = prefs.FindList("mirroring_destination_ids");
@@ -280,7 +280,7 @@ class DisplayPrefsTest : public AshTestBase {
         << "Expected to read kExternalDisplayMirrorInfo with list values="
         << base::JoinString(expected_display_id_strs, ","));
     const base::Value::List& prefs =
-        local_state()->GetValueList(prefs::kExternalDisplayMirrorInfo);
+        local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
     std::set<int64_t> read_ids;
     for (const auto& value : prefs) {
       int64_t id;
@@ -441,7 +441,7 @@ TEST_F(DisplayPrefsTest, BasicStores) {
                                              touch_size_1, touchdevice_3);
 
   const base::Value::Dict& displays =
-      local_state()->GetValueDict(prefs::kSecondaryDisplays);
+      local_state()->GetDict(prefs::kSecondaryDisplays);
   std::string key = base::NumberToString(id1) + "," + base::NumberToString(id2);
   std::string dummy_key =
       base::NumberToString(id1) + "," + base::NumberToString(dummy_id);
@@ -458,11 +458,11 @@ TEST_F(DisplayPrefsTest, BasicStores) {
             stored_layout.placement_list[0].offset);
 
   const base::Value::List* external_display_mirror_info =
-      &local_state()->GetValueList(prefs::kExternalDisplayMirrorInfo);
+      &local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
   EXPECT_EQ(0U, external_display_mirror_info->size());
 
   const base::Value::Dict& properties =
-      local_state()->GetValueDict(prefs::kDisplayProperties);
+      local_state()->GetDict(prefs::kDisplayProperties);
   const base::Value::Dict* property =
       properties.FindDict(base::NumberToString(id1));
   EXPECT_TRUE(property);
@@ -589,7 +589,7 @@ TEST_F(DisplayPrefsTest, BasicStores) {
   EXPECT_FALSE(property->FindInt("height"));
 
   external_display_mirror_info =
-      &local_state()->GetValueList(prefs::kExternalDisplayMirrorInfo);
+      &local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
   EXPECT_EQ(1U, external_display_mirror_info->size());
   // ExternalDisplayInfo stores ID without output index.
   EXPECT_EQ(base::NumberToString(display::GetDisplayIdWithoutOutputIndex(id2)),
@@ -677,7 +677,7 @@ TEST_F(DisplayPrefsTest, PreventStore) {
   UpdateDisplay("500x400#500x400|400x300|300x200");
 
   const base::Value::Dict& properties =
-      local_state()->GetValueDict(prefs::kDisplayProperties);
+      local_state()->GetDict(prefs::kDisplayProperties);
   const base::Value::Dict* property =
       properties.FindDict(base::NumberToString(id));
   EXPECT_TRUE(property);
@@ -712,7 +712,7 @@ TEST_F(DisplayPrefsTest, StoreForSwappedDisplay) {
 
   std::string key = base::NumberToString(id1) + "," + base::NumberToString(id2);
   const base::Value::Dict& displays =
-      local_state()->GetValueDict(prefs::kSecondaryDisplays);
+      local_state()->GetDict(prefs::kSecondaryDisplays);
   // Initial saved value is swapped.
   {
     const base::Value::Dict* new_value = displays.FindDict(key);
@@ -988,7 +988,7 @@ TEST_F(DisplayPrefsTest, DontSaveTabletModeControllerRotations) {
   EXPECT_EQ(display::Display::ROTATE_90, GetCurrentInternalDisplayRotation());
 
   const base::Value::Dict* properties =
-      &local_state()->GetValueDict(prefs::kDisplayProperties);
+      &local_state()->GetDict(prefs::kDisplayProperties);
   const base::Value::Dict* property = properties->FindDict(
       base::NumberToString(display::Display::InternalDisplayId()));
   EXPECT_TRUE(property);
@@ -997,7 +997,7 @@ TEST_F(DisplayPrefsTest, DontSaveTabletModeControllerRotations) {
   // Trigger a save, the acceleration rotation should not be saved as the user
   // rotation.
   display_prefs()->MaybeStoreDisplayPrefs();
-  properties = &local_state()->GetValueDict(prefs::kDisplayProperties);
+  properties = &local_state()->GetDict(prefs::kDisplayProperties);
   property = properties->FindDict(
       base::NumberToString(display::Display::InternalDisplayId()));
   EXPECT_TRUE(property);
@@ -1016,7 +1016,7 @@ TEST_F(DisplayPrefsTest, StoreRotationStateNoLogin) {
   EXPECT_TRUE(local_state()->HasPrefPath(prefs::kDisplayRotationLock));
 
   const base::Value::Dict& properties =
-      local_state()->GetValueDict(prefs::kDisplayRotationLock);
+      local_state()->GetDict(prefs::kDisplayRotationLock);
   absl::optional<bool> rotation_lock = properties.FindBool("lock");
   ASSERT_TRUE(rotation_lock.has_value());
   EXPECT_EQ(current_rotation_lock, rotation_lock.value());
@@ -1039,7 +1039,7 @@ TEST_F(DisplayPrefsTest, StoreRotationStateGuest) {
   EXPECT_TRUE(local_state()->HasPrefPath(prefs::kDisplayRotationLock));
 
   const base::Value::Dict& properties =
-      local_state()->GetValueDict(prefs::kDisplayRotationLock);
+      local_state()->GetDict(prefs::kDisplayRotationLock);
   absl::optional<bool> rotation_lock = properties.FindBool("lock");
   ASSERT_TRUE(rotation_lock.has_value());
   EXPECT_EQ(current_rotation_lock, rotation_lock.value());
@@ -1062,7 +1062,7 @@ TEST_F(DisplayPrefsTest, StoreRotationStateNormalUser) {
   EXPECT_TRUE(local_state()->HasPrefPath(prefs::kDisplayRotationLock));
 
   const base::Value::Dict& properties =
-      local_state()->GetValueDict(prefs::kDisplayRotationLock);
+      local_state()->GetDict(prefs::kDisplayRotationLock);
   absl::optional<bool> rotation_lock = properties.FindBool("lock");
   ASSERT_TRUE(rotation_lock.has_value());
   EXPECT_EQ(current_rotation_lock, rotation_lock.value());
@@ -1135,7 +1135,7 @@ TEST_F(DisplayPrefsTest, RotationLockTriggersStore) {
   EXPECT_TRUE(local_state()->HasPrefPath(prefs::kDisplayRotationLock));
 
   const base::Value::Dict& properties =
-      local_state()->GetValueDict(prefs::kDisplayRotationLock);
+      local_state()->GetDict(prefs::kDisplayRotationLock);
   absl::optional<bool> rotation_lock = properties.FindBool("lock");
   EXPECT_TRUE(rotation_lock.has_value());
 }
@@ -1150,7 +1150,7 @@ TEST_F(DisplayPrefsTest, SaveUnifiedMode) {
             display::Screen::GetScreen()->GetPrimaryDisplay().size());
 
   const base::Value::Dict& secondary_displays =
-      local_state()->GetValueDict(prefs::kSecondaryDisplays);
+      local_state()->GetDict(prefs::kSecondaryDisplays);
   const base::Value::Dict* new_value =
       secondary_displays.FindDict(display::DisplayIdListToString(list));
   EXPECT_TRUE(new_value);
@@ -1160,7 +1160,7 @@ TEST_F(DisplayPrefsTest, SaveUnifiedMode) {
   EXPECT_TRUE(stored_layout.default_unified);
 
   const base::Value::Dict& displays =
-      local_state()->GetValueDict(prefs::kDisplayProperties);
+      local_state()->GetDict(prefs::kDisplayProperties);
   int64_t unified_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
   new_value = displays.FindDict(base::NumberToString(unified_id));
   EXPECT_FALSE(new_value);
@@ -1277,7 +1277,7 @@ TEST_F(DisplayPrefsTest, SaveThreeDisplays) {
   display_manager()->SetLayoutForCurrentDisplays(builder.Build());
 
   const base::Value::Dict& secondary_displays =
-      local_state()->GetValueDict(prefs::kSecondaryDisplays);
+      local_state()->GetDict(prefs::kSecondaryDisplays);
   const base::Value::Dict* new_value =
       secondary_displays.FindDict(display::DisplayIdListToString(list));
   EXPECT_TRUE(new_value);
@@ -1410,7 +1410,7 @@ TEST_F(DisplayPrefsTest, ExternalDisplayMirrorInfo) {
   StoreExternalDisplayMirrorInfo(external_display_mirror_info);
   LoadDisplayPreferences();
   const base::Value::List* pref_external_display_mirror_info =
-      &local_state()->GetValueList(prefs::kExternalDisplayMirrorInfo);
+      &local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
   EXPECT_EQ(1U, pref_external_display_mirror_info->size());
   EXPECT_EQ(base::NumberToString(first_display_masked_id),
             (*pref_external_display_mirror_info)[0].GetString());
@@ -1421,7 +1421,7 @@ TEST_F(DisplayPrefsTest, ExternalDisplayMirrorInfo) {
   display_manager()->OnNativeDisplaysChanged(display_info_list);
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
   pref_external_display_mirror_info =
-      &local_state()->GetValueList(prefs::kExternalDisplayMirrorInfo);
+      &local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
   EXPECT_EQ(1U, pref_external_display_mirror_info->size());
   EXPECT_EQ(base::NumberToString(first_display_masked_id),
             (*pref_external_display_mirror_info)[0].GetString());
@@ -1432,7 +1432,7 @@ TEST_F(DisplayPrefsTest, ExternalDisplayMirrorInfo) {
   display_manager()->OnNativeDisplaysChanged(display_info_list);
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
   pref_external_display_mirror_info =
-      &local_state()->GetValueList(prefs::kExternalDisplayMirrorInfo);
+      &local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
   EXPECT_EQ(2U, pref_external_display_mirror_info->size());
   EXPECT_EQ(base::NumberToString(first_display_masked_id),
             (*pref_external_display_mirror_info)[0].GetString());
@@ -1450,7 +1450,7 @@ TEST_F(DisplayPrefsTest, ExternalDisplayMirrorInfo) {
   StoreExternalDisplayMirrorInfo(external_display_mirror_info);
   LoadDisplayPreferences();
   pref_external_display_mirror_info =
-      &local_state()->GetValueList(prefs::kExternalDisplayMirrorInfo);
+      &local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
   EXPECT_EQ(1U, pref_external_display_mirror_info->size());
   EXPECT_EQ(base::NumberToString(second_display_masked_id),
             (*pref_external_display_mirror_info)[0].GetString());
@@ -1461,7 +1461,7 @@ TEST_F(DisplayPrefsTest, ExternalDisplayMirrorInfo) {
   display_manager()->OnNativeDisplaysChanged(display_info_list);
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
   pref_external_display_mirror_info =
-      &local_state()->GetValueList(prefs::kExternalDisplayMirrorInfo);
+      &local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
   EXPECT_EQ(1U, pref_external_display_mirror_info->size());
   EXPECT_EQ(base::NumberToString(second_display_masked_id),
             (*pref_external_display_mirror_info)[0].GetString());
@@ -1472,7 +1472,7 @@ TEST_F(DisplayPrefsTest, ExternalDisplayMirrorInfo) {
   display_manager()->OnNativeDisplaysChanged(display_info_list);
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
   pref_external_display_mirror_info =
-      &local_state()->GetValueList(prefs::kExternalDisplayMirrorInfo);
+      &local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
   EXPECT_EQ(0U, pref_external_display_mirror_info->size());
 }
 
@@ -1558,7 +1558,7 @@ TEST_F(DisplayPrefsTest, DisplayMixedMirrorMode) {
 
   // Check the preferences.
   const base::Value::Dict* pref_data =
-      &local_state()->GetValueDict(prefs::kDisplayMixedMirrorModeParams);
+      &local_state()->GetDict(prefs::kDisplayMixedMirrorModeParams);
   EXPECT_EQ(base::NumberToString(internal_display_id),
             *pref_data->FindString("mirroring_source_id"));
   const base::Value::List* destination_ids_list =
@@ -1582,8 +1582,7 @@ TEST_F(DisplayPrefsTest, DisplayMixedMirrorMode) {
   EXPECT_EQ(second_display_id, destination_ids[0]);
 
   // Check the preferences.
-  pref_data =
-      &local_state()->GetValueDict(prefs::kDisplayMixedMirrorModeParams);
+  pref_data = &local_state()->GetDict(prefs::kDisplayMixedMirrorModeParams);
   EXPECT_EQ(base::NumberToString(first_display_id),
             *pref_data->FindString("mirroring_source_id"));
   destination_ids_list = pref_data->FindList("mirroring_destination_ids");
@@ -1596,8 +1595,7 @@ TEST_F(DisplayPrefsTest, DisplayMixedMirrorMode) {
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
 
   // Check the preferences.
-  pref_data =
-      &local_state()->GetValueDict(prefs::kDisplayMixedMirrorModeParams);
+  pref_data = &local_state()->GetDict(prefs::kDisplayMixedMirrorModeParams);
   EXPECT_TRUE(pref_data->empty());
 }
 

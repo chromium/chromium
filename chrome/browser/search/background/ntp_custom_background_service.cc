@@ -256,7 +256,7 @@ void NtpCustomBackgroundService::SelectLocalBackgroundImage(
 void NtpCustomBackgroundService::RefreshBackgroundIfNeeded() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   const base::Value::Dict& background_info =
-      profile_->GetPrefs()->GetValueDict(prefs::kNtpCustomBackgroundDict);
+      profile_->GetPrefs()->GetDict(prefs::kNtpCustomBackgroundDict);
   int64_t refresh_timestamp = 0;
   const base::Value* timestamp_value =
       background_info.Find(kNtpCustomBackgroundRefreshTimestamp);
@@ -296,7 +296,7 @@ NtpCustomBackgroundService::GetCustomBackground() {
   if (IsCustomBackgroundPrefValid()) {
     auto custom_background = absl::make_optional<CustomBackground>();
     const base::Value::Dict& background_info =
-        pref_service_->GetValueDict(prefs::kNtpCustomBackgroundDict);
+        pref_service_->GetDict(prefs::kNtpCustomBackgroundDict);
     GURL custom_background_url(
         background_info.Find(kNtpCustomBackgroundURL)->GetString());
 
@@ -362,8 +362,7 @@ bool NtpCustomBackgroundService::IsCustomBackgroundDisabledByPolicy() {
   bool managed =
       pref_service_->IsManagedPreference(prefs::kNtpCustomBackgroundDict);
   if (managed) {
-    DCHECK(
-        pref_service_->GetValueDict(prefs::kNtpCustomBackgroundDict).empty());
+    DCHECK(pref_service_->GetDict(prefs::kNtpCustomBackgroundDict).empty());
   }
   return managed;
 }
@@ -401,7 +400,7 @@ void NtpCustomBackgroundService::SetBackgroundToLocalResource() {
 bool NtpCustomBackgroundService::IsCustomBackgroundPrefValid() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   const base::Value::Dict& background_info =
-      profile_->GetPrefs()->GetValueDict(prefs::kNtpCustomBackgroundDict);
+      profile_->GetPrefs()->GetDict(prefs::kNtpCustomBackgroundDict);
 
   const base::Value* background_url =
       background_info.Find(kNtpCustomBackgroundURL);

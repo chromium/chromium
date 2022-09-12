@@ -103,9 +103,8 @@ bool HidPolicyAllowedDevices::HasDevicePermission(
 void HidPolicyAllowedDevices::LoadAllowAllDevicesForUrlsPolicy() {
   all_devices_policy_.clear();
 
-  const base::Value::List& pref_value =
-      pref_change_registrar_.prefs()->GetValueList(
-          prefs::kManagedWebHidAllowAllDevicesForUrls);
+  const base::Value::List& pref_value = pref_change_registrar_.prefs()->GetList(
+      prefs::kManagedWebHidAllowAllDevicesForUrls);
 
   // The pref value has already been validated by the policy handler, so it is
   // safe to assume that |pref_value| follows the policy template.
@@ -120,7 +119,7 @@ void HidPolicyAllowedDevices::LoadAllowDevicesForUrlsPolicy() {
   device_policy_.clear();
   vendor_policy_.clear();
 
-  const auto& pref_value = pref_change_registrar_.prefs()->GetValueList(
+  const auto& pref_value = pref_change_registrar_.prefs()->GetList(
       prefs::kManagedWebHidAllowDevicesForUrls);
 
   // The pref value has already been validated by the policy handler, so it is
@@ -163,9 +162,8 @@ void HidPolicyAllowedDevices::LoadAllowDevicesWithHidUsagesForUrlsPolicy() {
   usage_policy_.clear();
   usage_page_policy_.clear();
 
-  const base::Value::List& pref_value =
-      pref_change_registrar_.prefs()->GetValueList(
-          prefs::kManagedWebHidAllowDevicesWithHidUsagesForUrls);
+  const base::Value::List& pref_value = pref_change_registrar_.prefs()->GetList(
+      prefs::kManagedWebHidAllowDevicesWithHidUsagesForUrls);
 
   // The pref value has already been validated by the policy handler, so it is
   // safe to assume that |pref_value| follows the policy template.

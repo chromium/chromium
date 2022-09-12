@@ -129,7 +129,7 @@ bool ChromeOmniboxClient::IsPasteAndGoEnabled() const {
 }
 
 bool ChromeOmniboxClient::IsDefaultSearchProviderEnabled() const {
-  const base::Value::Dict& url_dict = profile_->GetPrefs()->GetValueDict(
+  const base::Value::Dict& url_dict = profile_->GetPrefs()->GetDict(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
   return !url_dict.FindBool(DefaultSearchManager::kDisabledByPolicy)
               .value_or(false);

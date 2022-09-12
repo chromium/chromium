@@ -113,7 +113,7 @@ void InputMethodEngine::Initialize(
     profile_observation_.Observe(profile);
     input_method_settings_snapshot_ =
         profile->GetPrefs()
-            ->GetValueDict(prefs::kLanguageInputMethodSpecificSettings)
+            ->GetDict(prefs::kLanguageInputMethodSpecificSettings)
             .Clone();
 
     pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
@@ -1100,7 +1100,7 @@ void InputMethodEngine::HideInputView() {
 }
 
 void InputMethodEngine::OnInputMethodOptionsChanged() {
-  const base::Value::Dict& new_settings = profile_->GetPrefs()->GetValueDict(
+  const base::Value::Dict& new_settings = profile_->GetPrefs()->GetDict(
       prefs::kLanguageInputMethodSpecificSettings);
   const base::Value::Dict& old_settings = input_method_settings_snapshot_;
   for (const auto&& [path, value] : new_settings) {

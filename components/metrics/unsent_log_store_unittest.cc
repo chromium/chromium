@@ -138,7 +138,7 @@ TEST_F(UnsentLogStoreTest, EmptyLogList) {
   TestUnsentLogStore unsent_log_store(&prefs_, kLogByteLimit);
 
   unsent_log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
-  EXPECT_EQ(0U, prefs_.GetValueList(kTestPrefName).size());
+  EXPECT_EQ(0U, prefs_.GetList(kTestPrefName).size());
 
   TestUnsentLogStore result_unsent_log_store(&prefs_, kLogByteLimit);
   result_unsent_log_store.LoadPersistedUnsentLogs();

@@ -490,7 +490,7 @@ TEST_F(FileManagerFileTaskPreferencesTest,
   const std::string* default_task_id =
       profile()
           ->GetTestingPrefService()
-          ->GetValueDict(prefs::kDefaultTasksByMimeType)
+          ->GetDict(prefs::kDefaultTasksByMimeType)
           .FindString(mime_type);
   ASSERT_EQ(*default_task_id, files_task_id);
 }

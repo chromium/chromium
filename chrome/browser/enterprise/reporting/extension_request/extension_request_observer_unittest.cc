@@ -131,10 +131,7 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
       const std::vector<std::string>& expected_removed_requests) {
     // Record the number of requests before closing any notification.
     size_t number_of_existing_requests =
-        profile()
-            ->GetPrefs()
-            ->GetValueDict(prefs::kCloudExtensionRequestIds)
-            .size();
+        profile()->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds).size();
 
     // Close the notification
     base::RunLoop close_run_loop;
@@ -147,7 +144,7 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
 
     // Verify that only |expected_removed_requests| are removed from the pref.
     const base::Value::Dict& actual_pending_requests =
-        profile()->GetPrefs()->GetValueDict(prefs::kCloudExtensionRequestIds);
+        profile()->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds);
     EXPECT_EQ(number_of_existing_requests - expected_removed_requests.size(),
               actual_pending_requests.size());
     for (auto it : actual_pending_requests) {
@@ -210,11 +207,9 @@ TEST_F(ExtensionRequestObserverTest, NotificationClosedWithoutUserConfirmed) {
   VerifyNotification(false);
 
   // No request removed when notification is not closed by user.
-  EXPECT_EQ(pending_list.size(),
-            profile()
-                ->GetPrefs()
-                ->GetValueDict(prefs::kCloudExtensionRequestIds)
-                .size());
+  EXPECT_EQ(
+      pending_list.size(),
+      profile()->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds).size());
   histogram_tester()->ExpectTotalCount(kPendingListUpdateMetricsName, 0);
 }
 
@@ -267,11 +262,9 @@ TEST_F(ExtensionRequestObserverTest, ExtensionRequestPolicyToggle) {
   VerifyNotification(false);
 
   // And no pending requests are removed.
-  EXPECT_EQ(pending_list.size(),
-            profile()
-                ->GetPrefs()
-                ->GetValueDict(prefs::kCloudExtensionRequestIds)
-                .size());
+  EXPECT_EQ(
+      pending_list.size(),
+      profile()->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds).size());
   histogram_tester()->ExpectTotalCount(kPendingListUpdateMetricsName, 0);
 }
 

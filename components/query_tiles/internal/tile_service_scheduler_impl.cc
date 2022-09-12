@@ -145,7 +145,7 @@ TileGroup* TileServiceSchedulerImpl::GetTileGroup() {
 }
 
 std::unique_ptr<net::BackoffEntry> TileServiceSchedulerImpl::GetBackoff() {
-  const base::Value::List& value = prefs_->GetValueList(kBackoffEntryKey);
+  const base::Value::List& value = prefs_->GetList(kBackoffEntryKey);
   std::unique_ptr<net::BackoffEntry> result =
       net::BackoffEntrySerializer::DeserializeFromList(
           value, backoff_policy_.get(), tick_clock_, clock_->Now());

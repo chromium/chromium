@@ -467,13 +467,13 @@ void ProfileNetworkContextService::UpdatePreconnect() {
 network::mojom::CTPolicyPtr ProfileNetworkContextService::GetCTPolicy() {
   auto* prefs = profile_->GetPrefs();
   const base::Value::List& ct_required =
-      prefs->GetValueList(certificate_transparency::prefs::kCTRequiredHosts);
+      prefs->GetList(certificate_transparency::prefs::kCTRequiredHosts);
   const base::Value::List& ct_excluded =
-      prefs->GetValueList(certificate_transparency::prefs::kCTExcludedHosts);
+      prefs->GetList(certificate_transparency::prefs::kCTExcludedHosts);
   const base::Value::List& ct_excluded_spkis =
-      prefs->GetValueList(certificate_transparency::prefs::kCTExcludedSPKIs);
-  const base::Value::List& ct_excluded_legacy_spkis = prefs->GetValueList(
-      certificate_transparency::prefs::kCTExcludedLegacySPKIs);
+      prefs->GetList(certificate_transparency::prefs::kCTExcludedSPKIs);
+  const base::Value::List& ct_excluded_legacy_spkis =
+      prefs->GetList(certificate_transparency::prefs::kCTExcludedLegacySPKIs);
 
   std::vector<std::string> required(TranslateStringArray(ct_required));
   std::vector<std::string> excluded(TranslateStringArray(ct_excluded));
@@ -852,7 +852,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
         base::FilePath(chrome::kSCTAuditingPendingReportsFileName);
   }
   const base::Value::List& hsts_policy_bypass_list =
-      profile_->GetPrefs()->GetValueList(prefs::kHSTSPolicyBypassList);
+      profile_->GetPrefs()->GetList(prefs::kHSTSPolicyBypassList);
   for (const auto& value : hsts_policy_bypass_list) {
     const std::string* string_value = value.GetIfString();
     if (!string_value)

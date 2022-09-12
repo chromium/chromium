@@ -203,7 +203,7 @@ UserDemographicsResult GetUserNoisedBirthYearAndGenderFromPrefs(
 
   // Get the pref that contains the user's birth year and gender.
   const base::Value::Dict& demographics =
-      pref_service->GetValueDict(kSyncDemographicsPrefName);
+      pref_service->GetDict(kSyncDemographicsPrefName);
 
   // Get the user's birth year.
   absl::optional<int> birth_year = GetUserBirthYear(demographics);

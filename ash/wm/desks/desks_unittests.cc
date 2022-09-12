@@ -2224,7 +2224,7 @@ PrefService* GetPrimaryUserPrefService() {
 void VerifyDesksRestoreData(PrefService* user_prefs,
                             const std::vector<std::string>& desks_names) {
   const base::Value::List& desks_restore_names =
-      user_prefs->GetValueList(prefs::kDesksNamesList);
+      user_prefs->GetList(prefs::kDesksNamesList);
   ASSERT_EQ(desks_names.size(), desks_restore_names.size());
 
   size_t index = 0;

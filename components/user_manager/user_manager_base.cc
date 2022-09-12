@@ -509,7 +509,7 @@ void UserManagerBase::SaveUserDisplayEmail(const AccountId& account_id,
 
 UserType UserManagerBase::GetUserType(const AccountId& account_id) {
   const base::Value::Dict& prefs_user_types =
-      GetLocalState()->GetValueDict(kUserType);
+      GetLocalState()->GetDict(kUserType);
   return GetStoredUserType(prefs_user_types, account_id);
 }
 
@@ -845,16 +845,15 @@ void UserManagerBase::EnsureUsersLoaded() {
 
   PrefService* local_state = GetLocalState();
   const base::Value::List& prefs_regular_users =
-      local_state->GetValueList(kRegularUsersPref);
+      local_state->GetList(kRegularUsersPref);
 
   const base::Value::Dict& prefs_display_names =
-      local_state->GetValueDict(kUserDisplayName);
+      local_state->GetDict(kUserDisplayName);
   const base::Value::Dict& prefs_given_names =
-      local_state->GetValueDict(kUserGivenName);
+      local_state->GetDict(kUserGivenName);
   const base::Value::Dict& prefs_display_emails =
-      local_state->GetValueDict(kUserDisplayEmail);
-  const base::Value::Dict& prefs_user_types =
-      local_state->GetValueDict(kUserType);
+      local_state->GetDict(kUserDisplayEmail);
+  const base::Value::Dict& prefs_user_types = local_state->GetDict(kUserType);
 
   // Load public sessions first.
   std::set<AccountId> device_local_accounts_set;
@@ -925,7 +924,7 @@ const User* UserManagerBase::FindUserInList(const AccountId& account_id) const {
 
 bool UserManagerBase::UserExistsInList(const AccountId& account_id) const {
   const base::Value::List& user_list =
-      GetLocalState()->GetValueList(kRegularUsersPref);
+      GetLocalState()->GetList(kRegularUsersPref);
   for (const base::Value& i : user_list) {
     const std::string* email = i.GetIfString();
     if (email && (account_id.GetUserEmail() == *email))
@@ -1021,7 +1020,7 @@ User::OAuthTokenStatus UserManagerBase::LoadUserOAuthStatus(
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
 
   const base::Value::Dict& prefs_oauth_status =
-      GetLocalState()->GetValueDict(kUserOAuthTokenStatus);
+      GetLocalState()->GetDict(kUserOAuthTokenStatus);
 
   absl::optional<int> oauth_token_status =
       prefs_oauth_status.FindInt(account_id.GetUserEmail());
@@ -1035,7 +1034,7 @@ bool UserManagerBase::LoadForceOnlineSignin(const AccountId& account_id) const {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
 
   const base::Value::Dict& prefs_force_online =
-      GetLocalState()->GetValueDict(kUserForceOnlineSignin);
+      GetLocalState()->GetDict(kUserForceOnlineSignin);
 
   return prefs_force_online.FindBool(account_id.GetUserEmail()).value_or(false);
 }

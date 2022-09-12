@@ -1276,7 +1276,7 @@ IN_PROC_BROWSER_TEST_F(DiceManageAccountBrowserTest,
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
   const base::Value::List& deleted_profiles =
-      local_state->GetValueList(prefs::kProfilesDeleted);
+      local_state->GetList(prefs::kProfilesDeleted);
   ASSERT_TRUE(deleted_profiles.empty());
 
   // Sign the profile in.
@@ -1294,7 +1294,7 @@ IN_PROC_BROWSER_TEST_F(DiceManageAccountBrowserTest,
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
   const base::Value::List& deleted_profiles =
-      local_state->GetValueList(prefs::kProfilesDeleted);
+      local_state->GetList(prefs::kProfilesDeleted);
   EXPECT_EQ(1U, deleted_profiles.size());
 
   content::RunAllTasksUntilIdle();

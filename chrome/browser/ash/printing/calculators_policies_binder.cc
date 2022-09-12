@@ -69,7 +69,7 @@ class PrefBinder : public CalculatorsPoliciesBinder {
   }
 
   std::vector<std::string> GetStringList(const char* name) const override {
-    return ConvertToVector(prefs_->GetValueList(name));
+    return ConvertToVector(prefs_->GetList(name));
   }
 
  private:

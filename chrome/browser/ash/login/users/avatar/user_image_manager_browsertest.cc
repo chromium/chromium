@@ -223,7 +223,7 @@ class UserImageManagerTestBase : public LoginManagerTest,
                            int image_index,
                            const base::FilePath& image_path) {
     const base::Value::Dict& images_pref =
-        local_state_->GetValueDict(UserImageManagerImpl::kUserImageProperties);
+        local_state_->GetDict(UserImageManagerImpl::kUserImageProperties);
     const base::Value::Dict* image_properties =
         images_pref.FindDict(account_id.GetUserEmail());
     ASSERT_TRUE(image_properties);

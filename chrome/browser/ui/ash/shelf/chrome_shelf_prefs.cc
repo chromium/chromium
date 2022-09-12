@@ -266,7 +266,7 @@ std::vector<std::string> ChromeShelfPrefs::GetAppsPinnedByPolicy(
   const PrefService* prefs = GetPrefs();
   std::vector<std::string> result;
   const base::Value::List& policy_apps =
-      prefs->GetValueList(prefs::kPolicyPinnedLauncherApps);
+      prefs->GetList(prefs::kPolicyPinnedLauncherApps);
   if (policy_apps.empty())
     return result;
 
@@ -650,7 +650,7 @@ void ChromeShelfPrefs::EnsureChromePinned(
 
 bool ChromeShelfPrefs::DidAddDefaultApps(PrefService* pref_service) {
   const auto& layouts_rolled =
-      pref_service->GetValueList(GetShelfDefaultPinLayoutPref());
+      pref_service->GetList(GetShelfDefaultPinLayoutPref());
   return !layouts_rolled.empty();
 }
 

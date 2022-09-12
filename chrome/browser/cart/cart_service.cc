@@ -1081,7 +1081,7 @@ void CartService::StartGettingDiscount() {
 
 bool CartService::IsDiscountUsed(const std::string& rule_id) {
   return profile_->GetPrefs()
-             ->GetValueDict(prefs::kCartUsedDiscounts)
+             ->GetDict(prefs::kCartUsedDiscounts)
              .FindBool(rule_id) != absl::nullopt;
 }
 
@@ -1143,7 +1143,7 @@ void CartService::OnCartFeaturesChanged(const std::string& pref_name) {
 
 bool CartService::IsCartAndDiscountEnabled() {
   const base::Value::List& list =
-      profile_->GetPrefs()->GetValueList(prefs::kNtpDisabledModules);
+      profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules);
   if (base::Contains(list, base::Value(kCartPrefsKey))) {
     return false;
   }

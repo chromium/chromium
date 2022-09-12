@@ -97,7 +97,7 @@ const base::Value::List* GetPrefList(PrefService* pref_service,
   DCHECK(!pref_path->empty());
 
   return pref_service->HasPrefPath(*pref_path)
-             ? &pref_service->GetValueList(*pref_path)
+             ? &pref_service->GetList(*pref_path)
              : nullptr;
 }
 

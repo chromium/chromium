@@ -669,7 +669,7 @@ void AppLauncherHandler::FillAppDictionary(base::Value::Dict* dictionary) {
                                          deprecated_app_ids_.size()));
 
   const base::Value::List& app_page_names =
-      prefs->GetValueList(prefs::kNtpAppPageNames);
+      prefs->GetList(prefs::kNtpAppPageNames);
   if (!app_page_names.size()) {
     ListPrefUpdate update(prefs, prefs::kNtpAppPageNames);
     base::Value* list = update.Get();

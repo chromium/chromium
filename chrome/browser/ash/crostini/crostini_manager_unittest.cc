@@ -716,21 +716,20 @@ TEST_F(CrostiniManagerTest, UninstallPackageOwningFileSignalOperationBlocked) {
 
 TEST_F(CrostiniManagerTest, RegisterContainerPrefWhenContainerCreated) {
   const base::Value::List* pref =
-      &profile_->GetPrefs()->GetValueList(guest_os::prefs::kGuestOsContainers);
+      &profile_->GetPrefs()->GetList(guest_os::prefs::kGuestOsContainers);
   EXPECT_EQ(pref->size(), 0);
   crostini_manager()->CreateLxdContainer(
       container_id(), absl::nullopt, absl::nullopt,
       base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
                      CrostiniResult::SUCCESS));
   run_loop()->Run();
-  pref =
-      &profile_->GetPrefs()->GetValueList(guest_os::prefs::kGuestOsContainers);
+  pref = &profile_->GetPrefs()->GetList(guest_os::prefs::kGuestOsContainers);
   EXPECT_EQ(pref->size(), 1);
 }
 
 TEST_F(CrostiniManagerTest, RegisterContainerPrefWhenContainerExists) {
   const base::Value::List* pref =
-      &profile_->GetPrefs()->GetValueList(guest_os::prefs::kGuestOsContainers);
+      &profile_->GetPrefs()->GetList(guest_os::prefs::kGuestOsContainers);
   EXPECT_EQ(pref->size(), 0);
   vm_tools::cicerone::CreateLxdContainerResponse response;
   response.set_status(vm_tools::cicerone::CreateLxdContainerResponse::EXISTS);
@@ -740,8 +739,7 @@ TEST_F(CrostiniManagerTest, RegisterContainerPrefWhenContainerExists) {
       base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
                      CrostiniResult::SUCCESS));
   run_loop()->Run();
-  pref =
-      &profile_->GetPrefs()->GetValueList(guest_os::prefs::kGuestOsContainers);
+  pref = &profile_->GetPrefs()->GetList(guest_os::prefs::kGuestOsContainers);
   EXPECT_EQ(pref->size(), 1);
 }
 

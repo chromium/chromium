@@ -35,7 +35,7 @@ class BackgroundTracingStateManagerTest : public testing::Test {
 
   std::string GetSessionStateJson() {
     const base::Value::Dict& state =
-        pref_service_->GetValueDict(tracing::kBackgroundTracingSessionState);
+        pref_service_->GetDict(tracing::kBackgroundTracingSessionState);
 
     std::string json;
     EXPECT_TRUE(base::JSONWriter::Write(state, &json));

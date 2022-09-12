@@ -500,7 +500,7 @@ class InitializationSerializer {
 
     // Check if the preference has an existing origin ID.
     const base::Value::Dict& storage_dict =
-        pref_service->GetValueDict(prefs::kMediaDrmStorage);
+        pref_service->GetDict(prefs::kMediaDrmStorage);
     base::UnguessableToken origin_id =
         GetOriginIdForOrigin(storage_dict, origin);
     if (origin_id) {
@@ -586,7 +586,7 @@ std::set<GURL> MediaDrmStorageImpl::GetAllOrigins(
   DCHECK(pref_service);
 
   const base::Value::Dict& storage_dict =
-      pref_service->GetValueDict(prefs::kMediaDrmStorage);
+      pref_service->GetDict(prefs::kMediaDrmStorage);
 
   std::set<GURL> origin_set;
   for (const auto key_value : storage_dict) {
@@ -606,7 +606,7 @@ std::vector<GURL> MediaDrmStorageImpl::GetOriginsModifiedBetween(
   DCHECK(pref_service);
 
   const base::Value::Dict& storage_dict =
-      pref_service->GetValueDict(prefs::kMediaDrmStorage);
+      pref_service->GetDict(prefs::kMediaDrmStorage);
 
   // Check each origin to see if it has been modified after |start| and
   // before |end|. If there are any errors in prefs::kMediaDrmStorage,
@@ -868,8 +868,7 @@ void MediaDrmStorageImpl::LoadPersistentSession(
   }
 
   const base::Value::Dict* sessions_dict = GetSessionsDictFromStorageDict(
-      pref_service_->GetValueDict(prefs::kMediaDrmStorage),
-      origin().Serialize());
+      pref_service_->GetDict(prefs::kMediaDrmStorage), origin().Serialize());
   if (!sessions_dict) {
     std::move(callback).Run(nullptr);
     return;

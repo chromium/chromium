@@ -55,7 +55,7 @@ std::vector<base::Time> GetDisabledTimesPref() {
 
   std::vector<base::Time> times;
   for (const base::Value& time_value :
-       service->GetValueList(prefs::kHardwareSecureDecryptionDisabledTimes)) {
+       service->GetList(prefs::kHardwareSecureDecryptionDisabledTimes)) {
     auto time = base::ValueToTime(time_value);
     if (time.has_value())
       times.push_back(time.value());

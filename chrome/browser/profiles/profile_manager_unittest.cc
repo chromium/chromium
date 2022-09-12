@@ -1545,7 +1545,7 @@ TEST_F(ProfileManagerTest, CleanUpEphemeralProfiles) {
   profile_manager->CleanUpEphemeralProfiles();
   content::RunAllTasksUntilIdle();
   const base::Value::List& final_last_active_profile_list =
-      local_state->GetValueList(prefs::kProfilesLastActive);
+      local_state->GetList(prefs::kProfilesLastActive);
 
   // The ephemeral profile should be deleted, and the last used profile set to
   // the other one. Also, the ephemeral profile should be removed from the
@@ -1616,7 +1616,7 @@ TEST_F(ProfileManagerGuestTest, CleanUpOnlyEphemeralProfiles) {
   profile_manager->CleanUpEphemeralProfiles();
   content::RunAllTasksUntilIdle();
   const base::Value::List& final_last_active_profile_list =
-      local_state->GetValueList(prefs::kProfilesLastActive);
+      local_state->GetList(prefs::kProfilesLastActive);
 
   // The guest and the non-ephemeral regular profile aren't impacted.
   EXPECT_TRUE(base::DirectoryExists(guest_path));

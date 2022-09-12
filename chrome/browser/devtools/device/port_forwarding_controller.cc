@@ -653,7 +653,7 @@ void PortForwardingController::OnPrefsChange() {
 
   if (pref_service_->GetBoolean(prefs::kDevToolsPortForwardingEnabled)) {
     const base::Value::Dict& value =
-        pref_service_->GetValueDict(prefs::kDevToolsPortForwardingConfig);
+        pref_service_->GetDict(prefs::kDevToolsPortForwardingConfig);
     for (auto dict_element : value) {
       int port_num;
       if (base::StringToInt(dict_element.first, &port_num) &&

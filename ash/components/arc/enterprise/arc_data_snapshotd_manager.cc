@@ -253,7 +253,7 @@ ArcDataSnapshotdManager::Snapshot::CreateForTesting(
 
 void ArcDataSnapshotdManager::Snapshot::Parse() {
   const base::Value::Dict& dict =
-      local_state_->GetValueDict(arc::prefs::kArcSnapshotInfo);
+      local_state_->GetDict(arc::prefs::kArcSnapshotInfo);
   {
     const auto* found = dict.FindDict(kPrevious);
     if (found)

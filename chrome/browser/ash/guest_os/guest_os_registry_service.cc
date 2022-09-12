@@ -537,7 +537,7 @@ base::WeakPtr<GuestOsRegistryService> GuestOsRegistryService::GetWeakPtr() {
 std::map<std::string, GuestOsRegistryService::Registration>
 GuestOsRegistryService::GetAllRegisteredApps() const {
   const base::Value::Dict& apps =
-      prefs_->GetValueDict(guest_os::prefs::kGuestOsRegistry);
+      prefs_->GetDict(guest_os::prefs::kGuestOsRegistry);
   std::map<std::string, GuestOsRegistryService::Registration> result;
   for (const auto item : apps) {
     result.emplace(item.first, Registration(item.first, item.second.Clone()));
@@ -600,7 +600,7 @@ GuestOsRegistryService::GetRegisteredApps(VmType vm_type) const {
 absl::optional<GuestOsRegistryService::Registration>
 GuestOsRegistryService::GetRegistration(const std::string& app_id) const {
   const base::Value::Dict& apps =
-      prefs_->GetValueDict(guest_os::prefs::kGuestOsRegistry);
+      prefs_->GetDict(guest_os::prefs::kGuestOsRegistry);
 
   const base::Value::Dict* pref_registration = apps.FindDict(app_id);
   if (!pref_registration) {
@@ -612,7 +612,7 @@ GuestOsRegistryService::GetRegistration(const std::string& app_id) const {
 
 void GuestOsRegistryService::RecordStartupMetrics() {
   const base::Value::Dict& apps =
-      prefs_->GetValueDict(guest_os::prefs::kGuestOsRegistry);
+      prefs_->GetDict(guest_os::prefs::kGuestOsRegistry);
 
   base::flat_map<int, int> num_apps;
 

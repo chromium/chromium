@@ -1226,7 +1226,7 @@ TEST_F(ExtensionPrefsSimpleTest, MigrateToNewExternalUninstallBits) {
 
   auto has_extension_pref_entry = [&prefs](const std::string& id) {
     const base::Value::Dict& extensions_dictionary =
-        prefs.pref_service()->GetValueDict(pref_names::kExtensions);
+        prefs.pref_service()->GetDict(pref_names::kExtensions);
     return extensions_dictionary.FindDict(id) != nullptr;
   };
 

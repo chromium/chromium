@@ -39,7 +39,7 @@ namespace {
 bool CanAccessDeviceAttributes(const PrefService* prefs,
                                const url::Origin& origin) {
   const base::Value::List& prefs_list =
-      prefs->GetValueList(prefs::kDeviceAttributesAllowedForOrigins);
+      prefs->GetList(prefs::kDeviceAttributesAllowedForOrigins);
 
   return base::Contains(prefs_list, origin, [](const auto& entry) {
     return url::Origin::Create(GURL(entry.GetString()));
@@ -69,7 +69,7 @@ bool IsEqualToKioskOrigin(const url::Origin& origin) {
 bool IsForceInstalledOrigin(const PrefService* prefs,
                             const url::Origin& origin) {
   const base::Value::List& prefs_list =
-      prefs->GetValueList(prefs::kWebAppInstallForceList);
+      prefs->GetList(prefs::kWebAppInstallForceList);
 
   return base::Contains(prefs_list, origin, [](const auto& entry) {
     std::string entry_url = entry.FindKey(web_app::kUrlKey)->GetString();

@@ -248,7 +248,7 @@ network::mojom::SSLConfigPtr SSLConfigServiceManager::GetSSLConfigFromPrefs()
 void SSLConfigServiceManager::OnDisabledCipherSuitesChange(
     PrefService* local_state) {
   const base::Value::List& list =
-      local_state->GetValueList(prefs::kCipherSuiteBlacklist);
+      local_state->GetList(prefs::kCipherSuiteBlacklist);
   disabled_cipher_suites_ = ParseCipherSuites(ValueListToStringVector(list));
 }
 

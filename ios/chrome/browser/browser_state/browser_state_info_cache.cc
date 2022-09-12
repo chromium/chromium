@@ -176,7 +176,7 @@ void BrowserStateInfoCache::RegisterPrefs(PrefRegistrySimple* registry) {
 const base::Value::Dict* BrowserStateInfoCache::GetInfoForBrowserStateAtIndex(
     size_t index) const {
   DCHECK_LT(index, GetNumberOfBrowserStates());
-  return prefs_->GetValueDict(prefs::kBrowserStateInfoCache)
+  return prefs_->GetDict(prefs::kBrowserStateInfoCache)
       .FindDict(sorted_keys_[index]);
 }
 

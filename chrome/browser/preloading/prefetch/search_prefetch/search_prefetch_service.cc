@@ -787,7 +787,7 @@ void SearchPrefetchService::AddCacheEntry(const GURL& navigation_url,
 bool SearchPrefetchService::LoadFromPrefs() {
   prefetch_cache_.clear();
   const base::Value::Dict& dictionary =
-      profile_->GetPrefs()->GetValueDict(prefetch::prefs::kCachePrefPath);
+      profile_->GetPrefs()->GetDict(prefetch::prefs::kCachePrefPath);
 
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);

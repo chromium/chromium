@@ -80,7 +80,7 @@ class TranslatePrefsTest : public testing::Test {
   void ExpectBlockedLanguageListContent(
       const std::vector<std::string>& list) const {
     const base::Value::List& never_prompt_list =
-        prefs_.GetValueList(prefs::kBlockedLanguages);
+        prefs_.GetList(prefs::kBlockedLanguages);
     ExpectEqualLanguageLists(never_prompt_list, list);
   }
 
@@ -938,9 +938,9 @@ TEST_F(TranslatePrefsTest, MigrateNeverPromptSites) {
       TranslatePrefs::kPrefNeverPromptSitesDeprecated, "unmigrated.com");
   translate_prefs_->AddValueToNeverPromptList(
       TranslatePrefs::kPrefNeverPromptSitesDeprecated, "migratedWrong.com");
-  EXPECT_EQ(prefs_.GetValueList(TranslatePrefs::kPrefNeverPromptSitesDeprecated)
-                .size(),
-            2u);
+  EXPECT_EQ(
+      prefs_.GetList(TranslatePrefs::kPrefNeverPromptSitesDeprecated).size(),
+      2u);
   // Also put one of those sites on the new pref but migrated incorrectly.
   DictionaryPrefUpdate never_prompt_list_update(
       &prefs_, prefs::kPrefNeverPromptSitesWithTime);
@@ -952,9 +952,9 @@ TEST_F(TranslatePrefsTest, MigrateNeverPromptSites) {
   EXPECT_THAT(translate_prefs_->GetNeverPromptSitesBetween(
                   base::Time::Now() - base::Days(1), base::Time::Max()),
               ElementsAre("migratedWrong.com", "unmigrated.com"));
-  EXPECT_EQ(prefs_.GetValueList(TranslatePrefs::kPrefNeverPromptSitesDeprecated)
-                .size(),
-            0u);
+  EXPECT_EQ(
+      prefs_.GetList(TranslatePrefs::kPrefNeverPromptSitesDeprecated).size(),
+      0u);
 }
 
 // Regression test for https://crbug.com/1295549
@@ -1230,10 +1230,9 @@ TEST_F(TranslatePrefsMigrationTest,
   // migration should occur during construction.
   TranslatePrefs translate_prefs(&prefs_);
 
-  EXPECT_EQ(
-      prefs_.GetValueDict(TranslatePrefs::kPrefAlwaysTranslateListDeprecated),
-      old_always_translate_map);
-  EXPECT_EQ(prefs_.GetValueDict(prefs::kPrefAlwaysTranslateList),
+  EXPECT_EQ(prefs_.GetDict(TranslatePrefs::kPrefAlwaysTranslateListDeprecated),
+            old_always_translate_map);
+  EXPECT_EQ(prefs_.GetDict(prefs::kPrefAlwaysTranslateList),
             new_always_translate_map);
 }
 
@@ -1279,7 +1278,7 @@ TEST_F(TranslatePrefsMigrationTest,
   expected_always_translate_map.Set("hi", "en");
   expected_always_translate_map.Set("fr", "en");
 
-  EXPECT_EQ(prefs_.GetValueDict(prefs::kPrefAlwaysTranslateList),
+  EXPECT_EQ(prefs_.GetDict(prefs::kPrefAlwaysTranslateList),
             expected_always_translate_map);
 }
 

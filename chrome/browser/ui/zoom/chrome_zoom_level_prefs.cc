@@ -99,7 +99,7 @@ void ChromeZoomLevelPrefs::SetDefaultZoomLevelPref(double level) {
 
 double ChromeZoomLevelPrefs::GetDefaultZoomLevelPref() const {
   const base::Value::Dict& default_zoom_level_dictionary =
-      pref_service_->GetValueDict(prefs::kPartitionDefaultZoomLevel);
+      pref_service_->GetDict(prefs::kPartitionDefaultZoomLevel);
   return default_zoom_level_dictionary.FindDouble(partition_key_).value_or(0.0);
 }
 
@@ -223,7 +223,7 @@ void ChromeZoomLevelPrefs::InitHostZoomMap(
   // Initialize the HostZoomMap with per-host zoom levels from the persisted
   // zoom-level preference values.
   const base::Value::Dict& host_zoom_dictionaries =
-      pref_service_->GetValueDict(prefs::kPartitionPerHostZoomLevels);
+      pref_service_->GetDict(prefs::kPartitionPerHostZoomLevels);
   const base::Value::Dict* host_zoom_dictionary =
       host_zoom_dictionaries.FindDict(partition_key_);
   if (host_zoom_dictionary != nullptr) {

@@ -1337,7 +1337,7 @@ TEST_F(IncidentReportingServiceTest, CleanLegacyPruneState) {
   mock_time_task_runner_->FastForwardUntilNoTasksRemain();
 
   const base::Value::Dict& new_state =
-      profile->GetPrefs()->GetValueDict(prefs::kSafeBrowsingIncidentsSent);
+      profile->GetPrefs()->GetDict(prefs::kSafeBrowsingIncidentsSent);
   // The legacy value must be gone.
   ASSERT_FALSE(new_state.Find(blocklist_load_type));
   // But other data must be untouched.

@@ -2095,8 +2095,8 @@ class SiteIsolationForPasswordSitesBrowserTest
 
   std::vector<std::string> GetSavedIsolatedSites(Profile* profile) {
     PrefService* prefs = profile->GetPrefs();
-    auto& list = prefs->GetValueList(
-        site_isolation::prefs::kUserTriggeredIsolatedOrigins);
+    auto& list =
+        prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins);
     std::vector<std::string> sites;
     for (const base::Value& value : list)
       sites.push_back(value.GetString());
@@ -2621,8 +2621,8 @@ class SiteIsolationForCOOPBrowserTest : public ChromeNavigationBrowserTest {
   // Returns the list of COOP sites currently stored in user prefs.
   std::vector<std::string> GetSavedIsolatedSites(Profile* profile) {
     PrefService* prefs = profile->GetPrefs();
-    auto& dict = prefs->GetValueDict(
-        site_isolation::prefs::kWebTriggeredIsolatedOrigins);
+    auto& dict =
+        prefs->GetDict(site_isolation::prefs::kWebTriggeredIsolatedOrigins);
     std::vector<std::string> sites;
     for (auto site_time_pair : dict)
       sites.push_back(site_time_pair.first);

@@ -96,8 +96,7 @@ void SodaInstaller::Init(PrefService* profile_prefs,
     global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time());
     SodaInstaller::GetInstance()->InstallSoda(global_prefs);
 
-    if (global_prefs->GetValueList(prefs::kSodaRegisteredLanguagePacks)
-            .empty()) {
+    if (global_prefs->GetList(prefs::kSodaRegisteredLanguagePacks).empty()) {
       // TODO(crbug.com/1200667): Register the default language used by
       // Dictation on ChromeOS.
 
@@ -110,7 +109,7 @@ void SodaInstaller::Init(PrefService* profile_prefs,
     }
 
     for (const auto& language :
-         global_prefs->GetValueList(prefs::kSodaRegisteredLanguagePacks)) {
+         global_prefs->GetList(prefs::kSodaRegisteredLanguagePacks)) {
       SodaInstaller::GetInstance()->InstallLanguage(language.GetString(),
                                                     global_prefs);
     }

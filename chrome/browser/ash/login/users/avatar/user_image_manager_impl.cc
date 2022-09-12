@@ -430,7 +430,7 @@ void UserImageManagerImpl::Job::SaveImageAndUpdateLocalState(
   // cannot use the dots notation (path expantion) hence is verbose.
   PrefService* local_state = g_browser_process->local_state();
   const base::Value::Dict& prefs_images =
-      local_state->GetValueDict(kUserImageProperties);
+      local_state->GetDict(kUserImageProperties);
 
   const base::Value::Dict* image_properties =
       prefs_images.FindDict(account_id().GetUserEmail());
@@ -468,7 +468,7 @@ void UserImageManagerImpl::Job::UpdateLocalState() {
     entry.Set(kImageURLNodeName, base::Value(image_url_.spec()));
 
   const base::Value::Dict* existing_value =
-      local_state->GetValueDict(kUserImageProperties)
+      local_state->GetDict(kUserImageProperties)
           .FindDict(account_id().GetUserEmail());
 
   if (existing_value && *existing_value == entry) {
@@ -504,7 +504,7 @@ UserImageManagerImpl::~UserImageManagerImpl() {}
 void UserImageManagerImpl::LoadUserImage() {
   PrefService* local_state = g_browser_process->local_state();
   const base::Value::Dict& prefs_images =
-      local_state->GetValueDict(kUserImageProperties);
+      local_state->GetDict(kUserImageProperties);
   user_manager::User* user = GetUserAndModify();
 
   const base::Value::Dict* image_properties =

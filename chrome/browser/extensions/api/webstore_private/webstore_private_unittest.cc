@@ -96,7 +96,7 @@ void VerifyPendingList(const std::map<ExtensionId, ExtensionRequestData>&
                            expected_pending_requests,
                        Profile* profile) {
   const base::Value::Dict& actual_pending_requests =
-      profile->GetPrefs()->GetValueDict(prefs::kCloudExtensionRequestIds);
+      profile->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds);
   ASSERT_EQ(expected_pending_requests.size(), actual_pending_requests.size());
   for (const auto& expected_request : expected_pending_requests) {
     auto* actual_pending_request =

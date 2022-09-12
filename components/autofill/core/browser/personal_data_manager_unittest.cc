@@ -5235,14 +5235,13 @@ TEST_F(PersonalDataManagerTest, OnAccountsCookieDeletedByUserAction) {
   // Set up some sync transport opt-ins in the prefs.
   ::autofill::prefs::SetUserOptedInWalletSyncTransport(
       prefs_.get(), CoreAccountId("account1"), true);
-  EXPECT_FALSE(
-      prefs_->GetValueDict(prefs::kAutofillSyncTransportOptIn).empty());
+  EXPECT_FALSE(prefs_->GetDict(prefs::kAutofillSyncTransportOptIn).empty());
 
   // Simulate that the cookies get cleared by the user.
   personal_data_->OnAccountsCookieDeletedByUserAction();
 
   // Make sure the pref is now empty.
-  EXPECT_TRUE(prefs_->GetValueDict(prefs::kAutofillSyncTransportOptIn).empty());
+  EXPECT_TRUE(prefs_->GetDict(prefs::kAutofillSyncTransportOptIn).empty());
 }
 
 TEST_F(PersonalDataManagerTest, SaveProfileUpdateStrikes) {

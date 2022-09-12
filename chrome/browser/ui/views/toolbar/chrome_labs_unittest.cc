@@ -613,10 +613,10 @@ TEST_F(ChromeLabsViewControllerTest, DISABLED_ShowFeedbackPage) {
 TEST_F(ChromeLabsViewControllerTest, CleanUpNewBadgePrefsTest) {
   const base::Value::Dict& new_badge_prefs =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      browser_view()->browser()->profile()->GetPrefs()->GetValueDict(
+      browser_view()->browser()->profile()->GetPrefs()->GetDict(
           chrome_labs_prefs::kChromeLabsNewBadgeDictAshChrome);
 #else
-      g_browser_process->local_state()->GetValueDict(
+      g_browser_process->local_state()->GetDict(
           chrome_labs_prefs::kChromeLabsNewBadgeDict);
 #endif
 

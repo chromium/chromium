@@ -799,7 +799,7 @@ extensions::ExternalLoader* ServicesCustomizationDocument::CreateExternalLoader(
     SetOemFolderName(profile, *root_);
   } else {
     const base::Value::Dict& root =
-        profile->GetPrefs()->GetValueDict(kServicesCustomizationKey);
+        profile->GetPrefs()->GetDict(kServicesCustomizationKey);
     if (root.FindString(kVersionAttr)) {
       // If version exists, profile has cached version of customization.
       loader->SetCurrentApps(GetDefaultAppsInProviderFormat(root));

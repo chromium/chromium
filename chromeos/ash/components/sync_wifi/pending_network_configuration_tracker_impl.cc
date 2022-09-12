@@ -65,8 +65,8 @@ void PendingNetworkConfigurationTrackerImpl::RegisterProfilePrefs(
 PendingNetworkConfigurationTrackerImpl::PendingNetworkConfigurationTrackerImpl(
     PrefService* pref_service)
     : pref_service_(pref_service),
-      dict_(pref_service_->GetValueDict(kPendingNetworkConfigurationsPref)
-                .Clone()) {}
+      dict_(pref_service_->GetDict(kPendingNetworkConfigurationsPref).Clone()) {
+}
 
 PendingNetworkConfigurationTrackerImpl::
     ~PendingNetworkConfigurationTrackerImpl() = default;

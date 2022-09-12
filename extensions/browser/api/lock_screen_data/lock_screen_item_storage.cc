@@ -597,7 +597,7 @@ std::set<std::string> LockScreenItemStorage::GetExtensionsWithDataItems(
   std::set<std::string> result;
 
   const base::Value::Dict& items =
-      local_state_->GetValueDict(kLockScreenDataPrefKey);
+      local_state_->GetDict(kLockScreenDataPrefKey);
   const base::Value::Dict* user_data = items.FindDictByDottedPath(user_id_);
   if (!user_data)
     return result;
@@ -620,7 +620,7 @@ std::set<ExtensionId> LockScreenItemStorage::GetExtensionsToMigrate() {
   std::set<ExtensionId> result;
 
   const base::Value::Dict& items =
-      local_state_->GetValueDict(kLockScreenDataPrefKey);
+      local_state_->GetDict(kLockScreenDataPrefKey);
 
   const base::Value::Dict* user_data = items.FindDictByDottedPath(user_id_);
   if (!user_data)

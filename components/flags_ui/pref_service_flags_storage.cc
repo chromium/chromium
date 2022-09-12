@@ -23,7 +23,7 @@ PrefServiceFlagsStorage::~PrefServiceFlagsStorage() {}
 
 std::set<std::string> PrefServiceFlagsStorage::GetFlags() const {
   const base::Value::List& enabled_experiments =
-      prefs_->GetValueList(prefs::kAboutFlagsEntries);
+      prefs_->GetList(prefs::kAboutFlagsEntries);
   std::set<std::string> flags;
   for (const auto& entry : enabled_experiments) {
     if (!entry.is_string()) {
@@ -50,7 +50,7 @@ bool PrefServiceFlagsStorage::SetFlags(const std::set<std::string>& flags) {
 std::string PrefServiceFlagsStorage::GetOriginListFlag(
     const std::string& internal_entry_name) const {
   const base::Value::Dict& origin_lists =
-      prefs_->GetValueDict(prefs::kAboutFlagsOriginLists);
+      prefs_->GetDict(prefs::kAboutFlagsOriginLists);
   if (const std::string* s = origin_lists.FindString(internal_entry_name))
     return *s;
   return std::string();

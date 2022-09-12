@@ -179,7 +179,7 @@ void TopSitesImpl::SyncWithHistory() {
 }
 
 bool TopSitesImpl::HasBlockedUrls() const {
-  return !pref_service_->GetValueDict(kBlockedUrlsPrefsKey).empty();
+  return !pref_service_->GetDict(kBlockedUrlsPrefsKey).empty();
 }
 
 void TopSitesImpl::AddBlockedUrl(const GURL& url) {
@@ -208,8 +208,7 @@ void TopSitesImpl::RemoveBlockedUrl(const GURL& url) {
 
 bool TopSitesImpl::IsBlocked(const GURL& url) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  return pref_service_->GetValueDict(kBlockedUrlsPrefsKey)
-      .contains(GetURLHash(url));
+  return pref_service_->GetDict(kBlockedUrlsPrefsKey).contains(GetURLHash(url));
 }
 
 void TopSitesImpl::ClearBlockedUrls() {
@@ -509,8 +508,7 @@ void TopSitesImpl::SetTopSites(MostVisitedURLList top_sites,
 int TopSitesImpl::num_results_to_request_from_history() const {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  return kTopSitesNumber +
-         pref_service_->GetValueDict(kBlockedUrlsPrefsKey).size();
+  return kTopSitesNumber + pref_service_->GetDict(kBlockedUrlsPrefsKey).size();
 }
 
 void TopSitesImpl::MoveStateToLoaded() {

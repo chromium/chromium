@@ -108,7 +108,7 @@ bool IsPhysicalKeyboardAutocorrectEnabled(PrefService* prefs,
   }
 
   const base::Value::Dict& input_method_settings =
-      prefs->GetValueDict(::prefs::kLanguageInputMethodSpecificSettings);
+      prefs->GetDict(::prefs::kLanguageInputMethodSpecificSettings);
   const base::Value* autocorrect_setting =
       input_method_settings.FindByDottedPath(
           engine_id + ".physicalKeyboardAutoCorrectionLevel");
@@ -512,7 +512,7 @@ void MigratePinyinAndZhuyinSettings(PrefService* prefs,
     return;
 
   const base::Value::Dict& all_input_method_pref =
-      prefs->GetValueDict(::prefs::kLanguageInputMethodSpecificSettings);
+      prefs->GetDict(::prefs::kLanguageInputMethodSpecificSettings);
 
   // Check if the settings are already migrated.
   if (all_input_method_pref.FindDict(engine_id))

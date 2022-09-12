@@ -76,7 +76,7 @@ void NetworkConnectivityMetricsService::LogNetworkDrops(int network_drops) {
 }
 
 void NetworkConnectivityMetricsService::ReportPreviousSessionNetworkDrops() {
-  const auto& metrics_dict = prefs_->GetValueDict(prefs::kKioskMetrics);
+  const auto& metrics_dict = prefs_->GetDict(prefs::kKioskMetrics);
   const auto* network_drops_value = metrics_dict.Find(kKioskNetworkDrops);
   if (!network_drops_value) {
     LogNetworkDrops(0);

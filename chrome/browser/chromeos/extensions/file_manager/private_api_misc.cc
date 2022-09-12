@@ -263,7 +263,7 @@ FileManagerPrivateGetPreferencesFunction::Run() {
       service->GetBoolean(arc::prefs::kArcHasAccessToRemovableMedia);
   std::vector<std::string> folder_shortcuts;
   const auto& value_list =
-      service->GetValueList(ash::prefs::kFilesAppFolderShortcuts);
+      service->GetList(ash::prefs::kFilesAppFolderShortcuts);
   for (const base::Value& value : value_list) {
     folder_shortcuts.push_back(value.is_string() ? value.GetString() : "");
   }

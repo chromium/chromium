@@ -67,9 +67,8 @@ TEST_F(DeviceInfoPrefsTest, ShouldCleanUpCorruptEntriesUponGarbageCollection) {
                      base::Value(base::Value::Type::DICTIONARY));
 
   // The end result is the list contains three entries among which one is valid.
-  ASSERT_EQ(
-      3u,
-      pref_service_.GetValueList(kDeviceInfoRecentGUIDsWithTimestamps).size());
+  ASSERT_EQ(3u,
+            pref_service_.GetList(kDeviceInfoRecentGUIDsWithTimestamps).size());
   ASSERT_TRUE(device_info_prefs_.IsRecentLocalCacheGuid("guid1"));
 
   // Garbage collection should clean up the corrupt entries.
@@ -77,9 +76,8 @@ TEST_F(DeviceInfoPrefsTest, ShouldCleanUpCorruptEntriesUponGarbageCollection) {
   ASSERT_TRUE(device_info_prefs_.IsRecentLocalCacheGuid("guid1"));
 
   // |guid1| should be the only entry in the list.
-  EXPECT_EQ(
-      1u,
-      pref_service_.GetValueList(kDeviceInfoRecentGUIDsWithTimestamps).size());
+  EXPECT_EQ(1u,
+            pref_service_.GetList(kDeviceInfoRecentGUIDsWithTimestamps).size());
 }
 
 TEST_F(DeviceInfoPrefsTest, ShouldTruncateAfterMaximumNumberOfGuids) {

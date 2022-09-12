@@ -143,8 +143,7 @@ void NotifierStateTracker::SetNotifierEnabled(
 void NotifierStateTracker::OnStringListPrefChanged(
     const char* pref_name, std::set<std::string>* ids_field) {
   ids_field->clear();
-  const base::Value::List& pref_list =
-      profile_->GetPrefs()->GetValueList(pref_name);
+  const base::Value::List& pref_list = profile_->GetPrefs()->GetList(pref_name);
   for (size_t i = 0; i < pref_list.size(); ++i) {
     const std::string* element = pref_list[i].GetIfString();
     if (element && !element->empty())

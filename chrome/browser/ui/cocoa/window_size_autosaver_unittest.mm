@@ -47,7 +47,7 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesPos) {
   ASSERT_TRUE(pref);
 
   // Check to make sure there is no existing pref for window placement.
-  const base::Value::Dict& placement = pref->GetValueDict(path_);
+  const base::Value::Dict& placement = pref->GetDict(path_);
   EXPECT_TRUE(placement.empty());
 
   // Replace the window with one that doesn't have resize controls.
@@ -94,7 +94,7 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesPos) {
   }
 
   // ...and it should be in the profile, too.
-  const base::Value::Dict& windowPref = pref->GetValueDict(path_);
+  const base::Value::Dict& windowPref = pref->GetDict(path_);
   EXPECT_FALSE(windowPref.FindInt("left").has_value());
   EXPECT_FALSE(windowPref.FindInt("right").has_value());
   EXPECT_FALSE(windowPref.FindInt("top").has_value());
@@ -112,7 +112,7 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesRect) {
   ASSERT_TRUE(pref);
 
   // Check to make sure there is no existing pref for window placement.
-  const base::Value::Dict& placement = pref->GetValueDict(path_);
+  const base::Value::Dict& placement = pref->GetDict(path_);
   EXPECT_TRUE(placement.empty());
 
   // Ask the window to save its position, then check that a preference
@@ -152,7 +152,7 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesRect) {
   }
 
   // ...and it should be in the profile, too.
-  const base::Value::Dict& windowPref = pref->GetValueDict(path_);
+  const base::Value::Dict& windowPref = pref->GetDict(path_);
   EXPECT_FALSE(windowPref.FindInt("x").has_value());
   EXPECT_FALSE(windowPref.FindInt("y").has_value());
   absl::optional<int> x1 = windowPref.FindInt("left");

@@ -18,8 +18,7 @@ int GetNumberOfUserSelectedApps() {
   const Profile* profile = ProfileManager::GetActiveUserProfile();
   const PrefService* pref_service = profile->GetPrefs();
   return static_cast<int>(
-      pref_service->GetValueList(arc::prefs::kArcFastAppReinstallPackages)
-          .size());
+      pref_service->GetList(arc::prefs::kArcFastAppReinstallPackages).size());
 }
 
 }  // namespace

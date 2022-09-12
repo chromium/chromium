@@ -144,7 +144,7 @@ std::string GetExpectedPeakShiftPolicyForPrefs(PrefService* prefs) {
 
   std::vector<power_manager::PowerManagementPolicy::PeakShiftDayConfig> configs;
   EXPECT_TRUE(chromeos::PowerPolicyController::GetPeakShiftDayConfigs(
-      prefs->GetValueDict(prefs::kPowerPeakShiftDayConfig), &configs));
+      prefs->GetDict(prefs::kPowerPeakShiftDayConfig), &configs));
 
   power_manager::PowerManagementPolicy expected_policy;
   expected_policy.set_peak_shift_battery_percent_threshold(
@@ -165,7 +165,7 @@ std::string GetExpectedAdvancedBatteryChargeModePolicyForPrefs(
       configs;
   EXPECT_TRUE(
       chromeos::PowerPolicyController::GetAdvancedBatteryChargeModeDayConfigs(
-          prefs->GetValueDict(prefs::kAdvancedBatteryChargeModeDayConfig),
+          prefs->GetDict(prefs::kAdvancedBatteryChargeModeDayConfig),
           &configs));
 
   power_manager::PowerManagementPolicy expected_policy;

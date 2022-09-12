@@ -173,7 +173,7 @@ ProximityAuthLocalStatePrefManager::GetActiveUserPrefsDictionary() const {
   }
 
   const base::Value::Dict& all_user_prefs_dict =
-      local_state_->GetValueDict(prefs::kEasyUnlockLocalStateUserPrefs);
+      local_state_->GetDict(prefs::kEasyUnlockLocalStateUserPrefs);
 
   const base::Value::Dict* current_user_prefs =
       all_user_prefs_dict.FindDict(active_user_.GetUserEmail());

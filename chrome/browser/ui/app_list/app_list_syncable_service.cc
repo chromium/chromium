@@ -446,7 +446,7 @@ void AppListSyncableService::InitFromLocalStorage() {
 
   // Restore initial state from local storage.
   const base::Value::Dict& local_items =
-      profile_->GetPrefs()->GetValueDict(prefs::kAppListLocalState);
+      profile_->GetPrefs()->GetDict(prefs::kAppListLocalState);
 
   for (const auto item : local_items) {
     if (!item.second.is_dict()) {

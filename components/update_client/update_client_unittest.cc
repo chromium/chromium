@@ -2812,7 +2812,7 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[5].id.c_str());
 
   const base::Value::Dict& dict =
-      config()->GetPrefService()->GetValueDict("updateclientdata");
+      config()->GetPrefService()->GetDict("updateclientdata");
   const std::string* pv =
       dict.FindStringByDottedPath("apps.jebgalgnebhfojomionfpkfelancnnkf.pv");
   ASSERT_TRUE(pv);

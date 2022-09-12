@@ -89,8 +89,7 @@ class BackgroundContentsServiceTest : public testing::Test {
   }
 
   const base::Value::Dict& GetPrefs(Profile* profile) {
-    return profile->GetPrefs()->GetValueDict(
-        prefs::kRegisteredBackgroundContents);
+    return profile->GetPrefs()->GetDict(prefs::kRegisteredBackgroundContents);
   }
 
   // Returns the stored pref URL for the passed app id.

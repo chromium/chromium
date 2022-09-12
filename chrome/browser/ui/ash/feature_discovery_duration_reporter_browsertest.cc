@@ -153,8 +153,7 @@ IN_PROC_BROWSER_TEST_F(FeatureDiscoveryDurationReporterBrowserTest,
           ->GetProfileByUser(user_manager::UserManager::Get()->GetPrimaryUser())
           ->GetPrefs();
   const base::Value* duration_value =
-      primary_user_pref
-          ->GetValueDict("FeatureDiscoveryReporterObservedFeatures")
+      primary_user_pref->GetDict("FeatureDiscoveryReporterObservedFeatures")
           .FindDict("kMockFeature")
           ->Find("cumulative_duration");
   absl::optional<base::TimeDelta> duration =

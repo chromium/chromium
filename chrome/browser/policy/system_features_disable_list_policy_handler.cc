@@ -63,8 +63,7 @@ bool SystemFeaturesDisableListPolicyHandler::IsSystemFeatureDisabled(
     return false;
 
   const base::Value::List& disabled_system_features =
-      pref_service->GetValueList(
-          policy::policy_prefs::kSystemFeaturesDisableList);
+      pref_service->GetList(policy::policy_prefs::kSystemFeaturesDisableList);
 
   return base::Contains(disabled_system_features,
                         base::Value(static_cast<int>(feature)));

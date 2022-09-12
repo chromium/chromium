@@ -34,8 +34,8 @@ namespace {
 // Get the multi-valued element for |type| and return it as a |vector|.
 // TODO(khorimoto): remove this function since multi-valued types are
 // deprecated.
-std::vector<std::string> GetValueList(const autofill::AutofillProfile& profile,
-                                      autofill::ServerFieldType type) {
+std::vector<std::string> GetList(const autofill::AutofillProfile& profile,
+                                 autofill::ServerFieldType type) {
   std::vector<std::string> list;
 
   std::vector<std::u16string> values;
@@ -71,7 +71,7 @@ autofill_private::AddressEntry ProfileToAddressEntry(
 
   // Add all address fields to the entry.
   address.guid = profile.guid();
-  address.full_names = GetValueList(profile, autofill::NAME_FULL);
+  address.full_names = GetList(profile, autofill::NAME_FULL);
   address.honorific =
       GetStringFromProfile(profile, autofill::NAME_HONORIFIC_PREFIX);
   address.company_name = GetStringFromProfile(profile, autofill::COMPANY_NAME);
@@ -89,9 +89,8 @@ autofill_private::AddressEntry ProfileToAddressEntry(
       GetStringFromProfile(profile, autofill::ADDRESS_HOME_SORTING_CODE);
   address.country_code =
       GetStringFromProfile(profile, autofill::ADDRESS_HOME_COUNTRY);
-  address.phone_numbers =
-      GetValueList(profile, autofill::PHONE_HOME_WHOLE_NUMBER);
-  address.email_addresses = GetValueList(profile, autofill::EMAIL_ADDRESS);
+  address.phone_numbers = GetList(profile, autofill::PHONE_HOME_WHOLE_NUMBER);
+  address.email_addresses = GetList(profile, autofill::EMAIL_ADDRESS);
   address.language_code = profile.language_code();
 
   // Parse |label| so that it can be used to create address metadata.

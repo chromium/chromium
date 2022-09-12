@@ -82,7 +82,7 @@ void LowDiskMetricsService::UpdateCurrentSessionLowDiskSeverity(
 }
 
 void LowDiskMetricsService::ReportPreviousSessionLowDiskSeverity() {
-  const auto& metrics_dict = prefs_->GetValueDict(prefs::kKioskMetrics);
+  const auto& metrics_dict = prefs_->GetDict(prefs::kKioskMetrics);
 
   const auto* severity_value = metrics_dict.Find(kKioskLowDiskSeverity);
   if (!severity_value) {

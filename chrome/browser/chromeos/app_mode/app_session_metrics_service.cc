@@ -317,8 +317,7 @@ void AppSessionMetricsService::RecordKioskSessionDuration(
 }
 
 void AppSessionMetricsService::RecordPreviousKioskSessionCrashIfAny() {
-  const base::Value::Dict& metrics_dict =
-      prefs_->GetValueDict(prefs::kKioskMetrics);
+  const base::Value::Dict& metrics_dict = prefs_->GetDict(prefs::kKioskMetrics);
   const auto* previous_start_time_value =
       metrics_dict.Find(kKioskSessionStartTime);
   if (!previous_start_time_value)
@@ -350,8 +349,7 @@ void AppSessionMetricsService::OnPreviousKioskSessionResult(
 
 size_t AppSessionMetricsService::RetrieveLastDaySessionCount(
     base::Time session_start_time) {
-  const base::Value::Dict& metrics_dict =
-      prefs_->GetValueDict(prefs::kKioskMetrics);
+  const base::Value::Dict& metrics_dict = prefs_->GetDict(prefs::kKioskMetrics);
   const base::Value::List* previous_times = nullptr;
 
   const auto* times_value = metrics_dict.Find(kKioskSessionLastDayList);
@@ -384,8 +382,7 @@ size_t AppSessionMetricsService::RetrieveLastDaySessionCount(
 
 void AppSessionMetricsService::ClearStartTime() {
   start_time_ = base::Time();
-  const base::Value::Dict& metrics_dict =
-      prefs_->GetValueDict(prefs::kKioskMetrics);
+  const base::Value::Dict& metrics_dict = prefs_->GetDict(prefs::kKioskMetrics);
 
   base::Value::Dict new_metrics_dict = metrics_dict.Clone();
   DCHECK(new_metrics_dict.Remove(kKioskSessionStartTime));

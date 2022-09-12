@@ -718,7 +718,7 @@ bool PresentationServiceDelegateImpl::ShouldCancelAutoJoinForOrigin(
     const url::Origin& origin) {
   const base::Value::List& origins =
       user_prefs::UserPrefs::Get(GetWebContents().GetBrowserContext())
-          ->GetValueList(prefs::kMediaRouterTabMirroringSources);
+          ->GetList(prefs::kMediaRouterTabMirroringSources);
   return base::Contains(origins, base::Value(origin.Serialize()));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

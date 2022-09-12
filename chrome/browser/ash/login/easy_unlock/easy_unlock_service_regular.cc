@@ -301,7 +301,7 @@ AccountId EasyUnlockServiceRegular::GetAccountId() const {
 
 const base::Value::List* EasyUnlockServiceRegular::GetRemoteDevices() const {
   const base::Value::Dict& pairing_dict =
-      profile()->GetPrefs()->GetValueDict(prefs::kEasyUnlockPairing);
+      profile()->GetPrefs()->GetDict(prefs::kEasyUnlockPairing);
 
   return pairing_dict.FindList(kKeyDevices);
 }

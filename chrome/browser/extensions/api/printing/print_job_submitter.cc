@@ -80,7 +80,7 @@ bool IsUserConfirmationRequired(content::BrowserContext* browser_context,
   const base::Value::List& list =
       Profile::FromBrowserContext(browser_context)
           ->GetPrefs()
-          ->GetValueList(prefs::kPrintingAPIExtensionsAllowlist);
+          ->GetList(prefs::kPrintingAPIExtensionsAllowlist);
   return !base::Contains(list, base::Value(extension_id));
 }
 

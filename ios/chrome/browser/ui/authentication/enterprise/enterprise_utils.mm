@@ -39,7 +39,7 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
 bool IsRestrictAccountsToPatternsEnabled() {
   return !GetApplicationContext()
               ->GetLocalState()
-              ->GetValueList(prefs::kRestrictAccountsToPatterns)
+              ->GetList(prefs::kRestrictAccountsToPatterns)
               .empty();
 }
 

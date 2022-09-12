@@ -118,7 +118,7 @@ void WebAppPolicyManager::Start() {
 
 void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(const GURL& url) {
   const base::Value::List& web_apps =
-      pref_service_->GetValueList(prefs::kWebAppInstallForceList);
+      pref_service_->GetList(prefs::kWebAppInstallForceList);
   const auto& web_apps_list = web_apps;
 
   const auto it =
@@ -238,7 +238,7 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps() {
   custom_manifest_values_by_url_.clear();
 
   const base::Value::List& web_apps =
-      pref_service_->GetValueList(prefs::kWebAppInstallForceList);
+      pref_service_->GetList(prefs::kWebAppInstallForceList);
   std::vector<ExternalInstallOptions> install_options_list;
   // No need to validate the types or values of the policy members because we
   // are using a SimpleSchemaValidatingPolicyHandler which should validate them
@@ -286,7 +286,7 @@ void WebAppPolicyManager::RefreshPolicySettings() {
   // No need to validate the types or values of the policy members because we
   // are using a WebAppSettingsPolicyHandler which should validate them for us.
   const base::Value::List& web_apps_list =
-      pref_service_->GetValueList(prefs::kWebAppSettings);
+      pref_service_->GetList(prefs::kWebAppSettings);
 
   settings_by_url_.clear();
   default_settings_ = std::make_unique<WebAppPolicyManager::WebAppSetting>();
@@ -649,8 +649,7 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
     return;
 
   const base::Value::List& disabled_system_features_pref =
-      local_state->GetValueList(
-          policy::policy_prefs::kSystemFeaturesDisableList);
+      local_state->GetList(policy::policy_prefs::kSystemFeaturesDisableList);
 
   for (const auto& entry : disabled_system_features_pref) {
     switch (static_cast<policy::SystemFeature>(entry.GetInt())) {

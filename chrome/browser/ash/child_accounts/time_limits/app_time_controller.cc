@@ -320,7 +320,7 @@ void AppTimeController::TimeLimitsPolicyUpdated(const std::string& pref_name) {
   DCHECK_EQ(pref_name, prefs::kPerAppTimeLimitsPolicy);
 
   const base::Value::Dict& policy =
-      pref_registrar_->prefs()->GetValueDict(prefs::kPerAppTimeLimitsPolicy);
+      pref_registrar_->prefs()->GetDict(prefs::kPerAppTimeLimitsPolicy);
 
   std::map<AppId, AppLimit> app_limits = policy::AppLimitsFromDict(policy);
 
@@ -358,7 +358,7 @@ void AppTimeController::TimeLimitsAllowlistPolicyUpdated(
     const std::string& pref_name) {
   DCHECK_EQ(pref_name, prefs::kPerAppTimeLimitsAllowlistPolicy);
 
-  const base::Value::Dict& policy = pref_registrar_->prefs()->GetValueDict(
+  const base::Value::Dict& policy = pref_registrar_->prefs()->GetDict(
       prefs::kPerAppTimeLimitsAllowlistPolicy);
 
   // Figure out a way to avoid cloning
@@ -403,15 +403,14 @@ void AppTimeController::OnAppInstalled(const AppId& app_id) {
   if (IsWebAppOrExtension(app_id))
     return;
 
-  const base::Value::Dict& allowlist_policy =
-      pref_registrar_->prefs()->GetValueDict(
-          prefs::kPerAppTimeLimitsAllowlistPolicy);
+  const base::Value::Dict& allowlist_policy = pref_registrar_->prefs()->GetDict(
+      prefs::kPerAppTimeLimitsAllowlistPolicy);
   AppTimeLimitsAllowlistPolicyWrapper wrapper(&allowlist_policy);
   if (base::Contains(wrapper.GetAllowlistAppList(), app_id))
     app_registry_->SetAppAllowlisted(app_id);
 
   const base::Value::Dict& policy =
-      pref_registrar_->prefs()->GetValueDict(prefs::kPerAppTimeLimitsPolicy);
+      pref_registrar_->prefs()->GetDict(prefs::kPerAppTimeLimitsPolicy);
 
   // Update the application's time limit.
   const std::map<AppId, AppLimit> limits = policy::AppLimitsFromDict(policy);

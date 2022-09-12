@@ -201,7 +201,7 @@ void OpenUrl(content::WebContents* current_web_contents,
 int64_t GetNavigationIDFromPrefsByOrigin(PrefService* prefs,
                                          const Origin& origin) {
   const base::Value::Dict& unhandled_sync_password_reuses =
-      prefs->GetValueDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses);
+      prefs->GetDict(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses);
 
   const base::Value* navigation_id_value =
       unhandled_sync_password_reuses.Find(origin.Serialize());
@@ -373,9 +373,8 @@ bool ChromePasswordProtectionService::ShouldShowPasswordReusePageInfoBubble(
          password_type == PasswordType::OTHER_GAIA_PASSWORD);
   // Otherwise, checks if there's any unhandled sync password reuses matches
   // this origin.
-  const auto& unhandled_sync_password_reuses =
-      profile->GetPrefs()->GetValueDict(
-          prefs::kSafeBrowsingUnhandledGaiaPasswordReuses);
+  const auto& unhandled_sync_password_reuses = profile->GetPrefs()->GetDict(
+      prefs::kSafeBrowsingUnhandledGaiaPasswordReuses);
   return unhandled_sync_password_reuses.Find(web_contents->GetPrimaryMainFrame()
                                                  ->GetLastCommittedOrigin()
                                                  .Serialize());

@@ -80,9 +80,8 @@ bool SerialPolicyAllowedPorts::HasPortPermission(
 void SerialPolicyAllowedPorts::LoadAllowAllPortsForUrlsPolicy() {
   all_ports_policy_.clear();
 
-  const base::Value::List& pref_list =
-      pref_change_registrar_.prefs()->GetValueList(
-          prefs::kManagedSerialAllowAllPortsForUrls);
+  const base::Value::List& pref_list = pref_change_registrar_.prefs()->GetList(
+      prefs::kManagedSerialAllowAllPortsForUrls);
 
   // The pref value has already been validated by the policy handler, so it is
   // safe to assume that |pref_value| follows the policy template.
@@ -103,9 +102,8 @@ void SerialPolicyAllowedPorts::LoadAllowUsbDevicesForUrlsPolicy() {
   usb_device_policy_.clear();
   usb_vendor_policy_.clear();
 
-  const base::Value::List& pref_list =
-      pref_change_registrar_.prefs()->GetValueList(
-          prefs::kManagedSerialAllowUsbDevicesForUrls);
+  const base::Value::List& pref_list = pref_change_registrar_.prefs()->GetList(
+      prefs::kManagedSerialAllowUsbDevicesForUrls);
 
   // The pref value has already been validated by the policy handler, so it is
   // safe to assume that |pref_value| follows the policy template.

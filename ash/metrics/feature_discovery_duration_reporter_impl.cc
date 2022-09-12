@@ -112,7 +112,7 @@ void FeatureDiscoveryDurationReporterImpl::MaybeActivateObservation(
     return;
 
   const base::Value::Dict& observed_features =
-      active_pref_service_->GetValueDict(kObservedFeatures);
+      active_pref_service_->GetDict(kObservedFeatures);
 
   // If `feature` is already under observation, return early.
   // TODO(https://crbug.com/1311344): implement the option that allows the
@@ -157,7 +157,7 @@ void FeatureDiscoveryDurationReporterImpl::MaybeFinishObservation(
     return;
 
   const base::Value::Dict& observed_features =
-      active_pref_service_->GetValueDict(kObservedFeatures);
+      active_pref_service_->GetDict(kObservedFeatures);
   const char* const feature_name = FindMappedName(feature);
   const base::Value::Dict* feature_pref_data =
       observed_features.Find(feature_name)->GetIfDict();
@@ -249,7 +249,7 @@ void FeatureDiscoveryDurationReporterImpl::Activate() {
 
   is_active_ = true;
   const base::Value::Dict& observed_features =
-      active_pref_service_->GetValueDict(kObservedFeatures);
+      active_pref_service_->GetDict(kObservedFeatures);
   const base::Value::Dict& immutable_observed_features_dict = observed_features;
 
   // Iterate trackable features and resume unfinished observations.

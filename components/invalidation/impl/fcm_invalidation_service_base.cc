@@ -251,7 +251,7 @@ void FCMInvalidationServiceBase::PopulateClientID() {
   // Retrieve any client ID (aka Instance ID) from a previous run, which was
   // cached in prefs.
   const std::string* client_id_pref =
-      pref_service_->GetValueDict(prefs::kInvalidationClientIDCache)
+      pref_service_->GetDict(prefs::kInvalidationClientIDCache)
           .FindString(sender_id_);
   client_id_ = client_id_pref ? *client_id_pref : "";
 

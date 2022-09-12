@@ -14,7 +14,7 @@ namespace input_method {
 bool IsPredictiveWritingPrefEnabled(PrefService* pref_service,
                                     const std::string& engine_id) {
   const base::Value::Dict& input_method_settings =
-      pref_service->GetValueDict(::prefs::kLanguageInputMethodSpecificSettings);
+      pref_service->GetDict(::prefs::kLanguageInputMethodSpecificSettings);
   absl::optional<bool> predictive_writing_setting =
       input_method_settings.FindBoolByDottedPath(
           engine_id + ".physicalKeyboardEnablePredictiveWriting");
@@ -26,7 +26,7 @@ bool IsPredictiveWritingPrefEnabled(PrefService* pref_service,
 bool IsDiacriticsOnLongpressPrefEnabled(PrefService* pref_service,
                                         const std::string& engine_id) {
   const base::Value::Dict& input_method_settings =
-      pref_service->GetValueDict(::prefs::kLanguageInputMethodSpecificSettings);
+      pref_service->GetDict(::prefs::kLanguageInputMethodSpecificSettings);
   absl::optional<bool> diacritics_on_longpress_setting =
       input_method_settings.FindBoolByDottedPath(
           engine_id + ".physicalKeyboardEnableDiacriticsOnLongpress");

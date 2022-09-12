@@ -707,7 +707,7 @@ void CryptAuthDeviceManagerImpl::OnGetMyDevicesSuccess(
 
   bool unlock_keys_changed =
       devices_as_list !=
-      pref_service_->GetValueList(prefs::kCryptAuthDeviceSyncUnlockKeys);
+      pref_service_->GetList(prefs::kCryptAuthDeviceSyncUnlockKeys);
   {
     ListPrefUpdate update(pref_service_, prefs::kCryptAuthDeviceSyncUnlockKeys);
     *update.Get() = std::move(devices_as_list);
@@ -750,7 +750,7 @@ void CryptAuthDeviceManagerImpl::OnResyncMessage(
 
 void CryptAuthDeviceManagerImpl::UpdateUnlockKeysFromPrefs() {
   const base::Value::List& unlock_key_list =
-      pref_service_->GetValueList(prefs::kCryptAuthDeviceSyncUnlockKeys);
+      pref_service_->GetList(prefs::kCryptAuthDeviceSyncUnlockKeys);
   synced_devices_.clear();
   for (const auto& it : unlock_key_list) {
     if (it.is_dict()) {

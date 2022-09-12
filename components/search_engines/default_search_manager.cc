@@ -293,7 +293,7 @@ void DefaultSearchManager::LoadDefaultSearchEngineFromPrefs() {
   default_search_recommended_by_policy_ = pref->IsRecommended();
 
   const base::Value::Dict& url_dict =
-      pref_service_->GetValueDict(kDefaultSearchProviderDataPrefName);
+      pref_service_->GetDict(kDefaultSearchProviderDataPrefName);
   if (url_dict.empty())
     return;
 

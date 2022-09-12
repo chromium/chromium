@@ -57,7 +57,7 @@ absl::optional<InstallMetrics> ParseInstallMetricsFromPrefs(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   const base::Value::Dict& ids_to_metrics =
-      pref_service->GetValueDict(prefs::kWebAppInstallMetrics);
+      pref_service->GetDict(prefs::kWebAppInstallMetrics);
 
   const base::Value::Dict* metrics = ids_to_metrics.FindDict(app_id);
   if (!metrics)

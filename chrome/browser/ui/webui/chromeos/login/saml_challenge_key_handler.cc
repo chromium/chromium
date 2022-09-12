@@ -57,7 +57,7 @@ bool AreContextAwareAccessSignalsEnabledForUrl(const GURL& url,
 
   return prefs->IsManagedPreference(kContextAwareAccessSignalsAllowlistPref) &&
          UrlMatchesPattern(
-             url, prefs->GetValueList(kContextAwareAccessSignalsAllowlistPref));
+             url, prefs->GetList(kContextAwareAccessSignalsAllowlistPref));
 }
 
 void LogVerifiedAccessForSAMLDeviceTrustMatchesEndpoints(bool is_matching) {

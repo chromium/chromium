@@ -50,7 +50,7 @@ PrefService* GetPrefs() {
 // Gets the timestamp when the nudge was last shown.
 base::Time GetLastShownTime(PrefService* prefs) {
   const base::Value::Dict& dictionary =
-      prefs->GetValueDict(prefs::kShelfLauncherNudge);
+      prefs->GetDict(prefs::kShelfLauncherNudge);
   absl::optional<base::Time> last_shown_time =
       base::ValueToTime(dictionary.Find(kLastShownTime));
   return last_shown_time.value_or(base::Time());
@@ -61,7 +61,7 @@ base::Time GetLastShownTime(PrefService* prefs) {
 // enabled.
 base::Time GetFirstLoginTime(PrefService* prefs) {
   const base::Value::Dict& dictionary =
-      prefs->GetValueDict(prefs::kShelfLauncherNudge);
+      prefs->GetDict(prefs::kShelfLauncherNudge);
   absl::optional<base::Time> first_login_time =
       base::ValueToTime(dictionary.Find(kFirstLoginTime));
   return first_login_time.value_or(base::Time());
@@ -70,7 +70,7 @@ base::Time GetFirstLoginTime(PrefService* prefs) {
 // Returns true if the launcher has been shown before.
 bool WasLauncherShownPreviously(PrefService* prefs) {
   const base::Value::Dict& dictionary =
-      prefs->GetValueDict(prefs::kShelfLauncherNudge);
+      prefs->GetDict(prefs::kShelfLauncherNudge);
   return dictionary.FindBool(kWasLauncherShown).value_or(false);
 }
 
@@ -111,7 +111,7 @@ HomeButton* LauncherNudgeController::GetHomeButtonForDisplay(
 // static
 int LauncherNudgeController::GetShownCount(PrefService* prefs) {
   const base::Value::Dict& dictionary =
-      prefs->GetValueDict(prefs::kShelfLauncherNudge);
+      prefs->GetDict(prefs::kShelfLauncherNudge);
   return dictionary.FindInt(kShownCount).value_or(0);
 }
 

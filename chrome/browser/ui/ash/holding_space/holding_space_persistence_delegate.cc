@@ -132,7 +132,7 @@ void HoldingSpacePersistenceDelegate::RestoreModelFromPersistence() {
   DCHECK(model()->items().empty());
 
   const auto& persisted_holding_space_items =
-      profile()->GetPrefs()->GetValueList(kPersistencePath);
+      profile()->GetPrefs()->GetList(kPersistencePath);
 
   // If persistent storage is empty we can immediately notify the callback of
   // persistence restoration completion and quit early.

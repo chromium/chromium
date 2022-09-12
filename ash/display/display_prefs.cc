@@ -195,7 +195,7 @@ void LoadDisplayLayouts(PrefService* local_state) {
   display::DisplayLayoutStore* layout_store =
       GetDisplayManager()->layout_store();
 
-  for (const auto it : local_state->GetValueDict(prefs::kSecondaryDisplays)) {
+  for (const auto it : local_state->GetDict(prefs::kSecondaryDisplays)) {
     std::unique_ptr<display::DisplayLayout> layout(new display::DisplayLayout);
     if (!display::JsonToDisplayLayout(it.second, layout.get())) {
       LOG(WARNING) << "Invalid preference value for " << it.first;
@@ -220,7 +220,7 @@ void LoadDisplayLayouts(PrefService* local_state) {
 }
 
 void LoadDisplayProperties(PrefService* local_state) {
-  for (const auto it : local_state->GetValueDict(prefs::kDisplayProperties)) {
+  for (const auto it : local_state->GetDict(prefs::kDisplayProperties)) {
     const base::Value::Dict* dict_value = it.second.GetIfDict();
     if (!dict_value)
       continue;
@@ -273,7 +273,7 @@ void LoadDisplayProperties(PrefService* local_state) {
 
 void LoadDisplayRotationState(PrefService* local_state) {
   const base::Value::Dict& properties =
-      local_state->GetValueDict(prefs::kDisplayRotationLock);
+      local_state->GetDict(prefs::kDisplayRotationLock);
   const absl::optional<bool> rotation_lock = properties.FindBool("lock");
   if (!rotation_lock)
     return;
@@ -289,7 +289,7 @@ void LoadDisplayRotationState(PrefService* local_state) {
 void LoadDisplayTouchAssociations(PrefService* local_state) {
   display::TouchDeviceManager::TouchAssociationMap touch_associations;
   for (const auto item :
-       local_state->GetValueDict(prefs::kDisplayTouchAssociations)) {
+       local_state->GetDict(prefs::kDisplayTouchAssociations)) {
     uint32_t identifier_raw;
     if (!base::StringToUint(item.first, &identifier_raw))
       continue;
@@ -324,7 +324,7 @@ void LoadDisplayTouchAssociations(PrefService* local_state) {
   // a couple of milestones when everything is stable.
   const display::TouchDeviceIdentifier& fallback_identifier =
       display::TouchDeviceIdentifier::GetFallbackTouchDeviceIdentifier();
-  for (const auto it : local_state->GetValueDict(prefs::kDisplayProperties)) {
+  for (const auto it : local_state->GetDict(prefs::kDisplayProperties)) {
     const base::Value::Dict* dict_value = it.second.GetIfDict();
     if (!dict_value)
       continue;
@@ -353,7 +353,7 @@ void LoadDisplayTouchAssociations(PrefService* local_state) {
   // Retrieve port association information.
   display::TouchDeviceManager::PortAssociationMap port_associations;
   for (const auto item :
-       local_state->GetValueDict(prefs::kDisplayTouchPortAssociations)) {
+       local_state->GetDict(prefs::kDisplayTouchPortAssociations)) {
     // Retrieve the secondary id that identifies the port.
     uint32_t secondary_id_raw;
     if (!base::StringToUint(item.first, &secondary_id_raw))
@@ -394,7 +394,7 @@ void LoadDisplayTouchAssociations(PrefService* local_state) {
 // restore mirror mode.
 void LoadExternalDisplayMirrorInfo(PrefService* local_state) {
   const base::Value::List& pref_data =
-      local_state->GetValueList(prefs::kExternalDisplayMirrorInfo);
+      local_state->GetList(prefs::kExternalDisplayMirrorInfo);
   std::set<int64_t> external_display_mirror_info;
   for (const auto& it : pref_data) {
     const std::string* display_id_str = it.GetIfString();
@@ -415,7 +415,7 @@ void LoadExternalDisplayMirrorInfo(PrefService* local_state) {
 // mirror mode. Return false if the parameters fail to be loaded.
 void LoadDisplayMixedMirrorModeParams(PrefService* local_state) {
   const base::Value::Dict& pref_data =
-      local_state->GetValueDict(prefs::kDisplayMixedMirrorModeParams);
+      local_state->GetDict(prefs::kDisplayMixedMirrorModeParams);
 
   // This function is called once for system (re)start, so the parameters should
   // be empty.

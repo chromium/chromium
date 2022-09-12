@@ -99,7 +99,7 @@ Visibility NearbyShareSettings::GetVisibility() const {
 const std::vector<std::string> NearbyShareSettings::GetAllowedContacts() const {
   std::vector<std::string> allowed_contacts;
   const base::Value::List& list =
-      pref_service_->GetValueList(prefs::kNearbySharingAllowedContactsPrefName);
+      pref_service_->GetList(prefs::kNearbySharingAllowedContactsPrefName);
   for (const auto& value : list) {
     allowed_contacts.push_back(value.GetString());
   }

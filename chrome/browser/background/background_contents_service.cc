@@ -484,7 +484,7 @@ void BackgroundContentsService::LoadBackgroundContentsFromPrefs() {
   if (!prefs_)
     return;
   const base::Value::Dict& contents =
-      prefs_->GetValueDict(prefs::kRegisteredBackgroundContents);
+      prefs_->GetDict(prefs::kRegisteredBackgroundContents);
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(profile_);
   DCHECK(extension_registry);
@@ -546,7 +546,7 @@ void BackgroundContentsService::LoadBackgroundContentsForExtension(
   if (!prefs_)
     return;
   const base::Value::Dict& contents =
-      prefs_->GetValueDict(prefs::kRegisteredBackgroundContents);
+      prefs_->GetDict(prefs::kRegisteredBackgroundContents);
   LoadBackgroundContentsFromDictionary(extension_id, contents);
 }
 
@@ -660,7 +660,7 @@ bool BackgroundContentsService::HasRegisteredBackgroundContents(
   if (!prefs_)
     return false;
   const base::Value::Dict& contents =
-      prefs_->GetValueDict(prefs::kRegisteredBackgroundContents);
+      prefs_->GetDict(prefs::kRegisteredBackgroundContents);
   return contents.Find(app_id);
 }
 

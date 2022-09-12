@@ -115,7 +115,7 @@ bool PrivacySandboxSettings::IsTopicsAllowedForContext(
 
 bool PrivacySandboxSettings::IsTopicAllowed(const CanonicalTopic& topic) {
   const auto& blocked_topics =
-      pref_service_->GetValueList(prefs::kPrivacySandboxBlockedTopics);
+      pref_service_->GetList(prefs::kPrivacySandboxBlockedTopics);
 
   for (const auto& item : blocked_topics) {
     auto blocked_topic =

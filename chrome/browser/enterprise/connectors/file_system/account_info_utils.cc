@@ -242,7 +242,7 @@ const base::Value::Dict& GetFileSystemAccountInfo(
     const std::string& service_provider) {
   const auto path = GetPrefPath(kAccountInfoPrefPathTemplate, service_provider);
 
-  return prefs->GetValueDict(path);
+  return prefs->GetDict(path);
 }
 
 AccountInfo::AccountInfo() = default;

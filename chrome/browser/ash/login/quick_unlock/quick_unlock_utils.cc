@@ -46,10 +46,10 @@ bool HasPolicyValue(const PrefService* pref_service,
   const base::Value::List* factors = nullptr;
   switch (purpose) {
     case Purpose::kUnlock:
-      factors = &pref_service->GetValueList(prefs::kQuickUnlockModeAllowlist);
+      factors = &pref_service->GetList(prefs::kQuickUnlockModeAllowlist);
       break;
     case Purpose::kWebAuthn:
-      factors = &pref_service->GetValueList(prefs::kWebAuthnFactors);
+      factors = &pref_service->GetList(prefs::kWebAuthnFactors);
       break;
     default:
       return false;

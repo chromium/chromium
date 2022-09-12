@@ -262,7 +262,7 @@ bool IsSchemeOriginPairAllowedByPolicy(const std::string& scheme,
     return false;
 
   const base::Value::List& exempted_protocols =
-      prefs->GetValueList(prefs::kAutoLaunchProtocolsFromOrigins);
+      prefs->GetList(prefs::kAutoLaunchProtocolsFromOrigins);
 
   const base::Value::List* origin_patterns = nullptr;
   for (const base::Value& entry : exempted_protocols) {
@@ -344,7 +344,7 @@ ExternalProtocolHandler::BlockState ExternalProtocolHandler::GetBlockState(
     if (MayRememberAllowDecisionsForThisOrigin(initiating_origin)) {
       // Check if there is a matching {Origin+Protocol} pair exemption:
       const base::Value::Dict& allowed_origin_protocol_pairs =
-          profile_prefs->GetValueDict(
+          profile_prefs->GetDict(
               prefs::kProtocolHandlerPerOriginAllowedProtocols);
       const base::Value::Dict* allowed_protocols_for_origin =
           allowed_origin_protocol_pairs.FindDict(

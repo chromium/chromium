@@ -196,7 +196,7 @@ DevToolsFileHelper::FileSystem CreateFileSystemStruct(
 using PathToType = std::map<std::string, std::string>;
 PathToType GetAddedFileSystemPaths(Profile* profile) {
   const base::Value::Dict& file_systems_paths_value =
-      profile->GetPrefs()->GetValueDict(prefs::kDevToolsFileSystemPaths);
+      profile->GetPrefs()->GetDict(prefs::kDevToolsFileSystemPaths);
   PathToType result;
   for (auto pair : file_systems_paths_value) {
     std::string type =
@@ -248,7 +248,7 @@ void DevToolsFileHelper::Save(const std::string& url,
   }
 
   const base::Value::Dict& file_map =
-      profile_->GetPrefs()->GetValueDict(prefs::kDevToolsEditedFiles);
+      profile_->GetPrefs()->GetDict(prefs::kDevToolsEditedFiles);
   base::FilePath initial_path;
 
   if (const base::Value* path_value = file_map.Find(base::MD5String(url))) {
@@ -447,7 +447,7 @@ bool DevToolsFileHelper::IsFileSystemAdded(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   const base::Value::Dict& file_systems_paths_value =
-      profile_->GetPrefs()->GetValueDict(prefs::kDevToolsFileSystemPaths);
+      profile_->GetPrefs()->GetDict(prefs::kDevToolsFileSystemPaths);
   return file_systems_paths_value.Find(file_system_path);
 }
 

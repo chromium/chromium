@@ -1107,7 +1107,7 @@ TEST_F(HostContentSettingsMapTest, CanonicalizeExceptionsUnicodeOnly) {
   HostContentSettingsMapFactory::GetForProfile(&profile);
 
   const base::Value::Dict& all_settings_dictionary =
-      prefs->GetValueDict(GetPrefName(ContentSettingsType::COOKIES));
+      prefs->GetDict(GetPrefName(ContentSettingsType::COOKIES));
   EXPECT_FALSE(all_settings_dictionary.FindDict("[*.]\xC4\x87ira.com,*"));
   EXPECT_TRUE(all_settings_dictionary.FindDict("[*.]xn--ira-ppa.com,*"));
 }
@@ -1378,8 +1378,7 @@ TEST_F(HostContentSettingsMapTest, GuestProfile) {
                 host, host, ContentSettingsType::COOKIES));
 
   const base::Value::Dict& all_settings_dictionary =
-      profile->GetPrefs()->GetValueDict(
-          GetPrefName(ContentSettingsType::COOKIES));
+      profile->GetPrefs()->GetDict(GetPrefName(ContentSettingsType::COOKIES));
   EXPECT_TRUE(all_settings_dictionary.empty());
 }
 

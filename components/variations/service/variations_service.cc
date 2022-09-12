@@ -986,7 +986,7 @@ std::string VariationsService::GetStoredPermanentCountry() {
     return variations_overridden_country;
 
   const auto& list_value =
-      local_state_->GetValueList(prefs::kVariationsPermanentConsistencyCountry);
+      local_state_->GetList(prefs::kVariationsPermanentConsistencyCountry);
   std::string stored_country;
 
   if (list_value.size() == 2 && list_value[1].is_string()) {

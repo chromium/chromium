@@ -121,7 +121,7 @@ absl::optional<base::Value> CrostiniPortForwarder::ReadPortPreference(
     const PortRuleKey& key) {
   PrefService* pref_service = profile_->GetPrefs();
   const base::Value::List& all_ports =
-      pref_service->GetValueList(crostini::prefs::kCrostiniPortForwarding);
+      pref_service->GetList(crostini::prefs::kCrostiniPortForwarding);
   auto it = std::find_if(
       all_ports.begin(), all_ports.end(),
       [&key, this](const auto& dict) { return MatchPortRuleDict(dict, key); });

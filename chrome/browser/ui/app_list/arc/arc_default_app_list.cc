@@ -117,7 +117,7 @@ std::unique_ptr<ArcDefaultAppList::AppInfoMap> ReadAppsFromFileThread(
 
 // Returns true if default app |app_id| is marked as hidden in the prefs.
 bool IsAppHidden(const PrefService* prefs, const std::string& app_id) {
-  const base::Value::Dict& apps_dict = prefs->GetValueDict(kDefaultApps);
+  const base::Value::Dict& apps_dict = prefs->GetDict(kDefaultApps);
 
   const base::Value::Dict* app_dict = apps_dict.FindDict(app_id);
   if (!app_dict)

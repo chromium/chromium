@@ -291,6 +291,6 @@ bool RecipesService::IsTaskDismissed(const std::string& task_name) {
     return false;
   }
   const base::Value::List& dismissed_tasks =
-      profile_->GetPrefs()->GetValueList(kDismissedTasksPrefName);
+      profile_->GetPrefs()->GetList(kDismissedTasksPrefName);
   return base::Contains(dismissed_tasks, base::Value(task_name));
 }

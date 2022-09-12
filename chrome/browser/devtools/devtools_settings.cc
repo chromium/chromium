@@ -41,7 +41,7 @@ void DevToolsSettings::Register(const std::string& name,
           ? prefs::kDevToolsPreferences
           : GetDictionaryNameForSyncedPrefs();
   const std::string* settings_value =
-      prefs->GetValueDict(dictionary_to_remove_from).FindString(name);
+      prefs->GetDict(dictionary_to_remove_from).FindString(name);
   if (!settings_value) {
     return;
   }
@@ -51,7 +51,7 @@ void DevToolsSettings::Register(const std::string& name,
   // Settings already moved to the synced dictionary on a different device have
   // precedence.
   const std::string* already_synced_value =
-      prefs->GetValueDict(dictionary_to_insert_into).FindString(name);
+      prefs->GetDict(dictionary_to_insert_into).FindString(name);
   if (dictionary_to_insert_into == prefs::kDevToolsPreferences ||
       !already_synced_value) {
     DictionaryPrefUpdate insert_update(profile_->GetPrefs(),
@@ -73,9 +73,8 @@ base::Value DevToolsSettings::Get() {
   settings.Set(
       kSyncDevToolsPreferencesFrontendName,
       prefs->GetBoolean(prefs::kDevToolsSyncPreferences) ? "true" : "false");
-  settings.Merge(prefs->GetValueDict(prefs::kDevToolsPreferences).Clone());
-  settings.Merge(
-      prefs->GetValueDict(GetDictionaryNameForSyncedPrefs()).Clone());
+  settings.Merge(prefs->GetDict(prefs::kDevToolsPreferences).Clone());
+  settings.Merge(prefs->GetDict(GetDictionaryNameForSyncedPrefs()).Clone());
 
   return base::Value(std::move(settings));
 }
@@ -89,7 +88,7 @@ absl::optional<base::Value> DevToolsSettings::Get(const std::string& name) {
     return base::Value(result ? "true" : "false");
   }
   const char* dict_name = GetDictionaryNameForSettingsName(name);
-  const base::Value::Dict& dict = prefs->GetValueDict(dict_name);
+  const base::Value::Dict& dict = prefs->GetDict(dict_name);
   const base::Value* value = dict.Find(name);
   return value ? absl::optional<base::Value>(value->Clone()) : absl::nullopt;
 }
@@ -171,7 +170,7 @@ void DevToolsSettings::DevToolsSyncPreferencesChanged() {
 
   DictionaryPrefUpdate target_update(profile_->GetPrefs(), target_dictionary);
   target_update.Get()->MergeDictionary(
-      // This should be `PrefService::GetValueDict`, but
+      // This should be `PrefService::GetDict`, but
       // `DictionaryPrefUpdate::Get()` currently yields a `base::Value*`.
       &profile_->GetPrefs()->GetValue(source_dictionary));
   DictionaryPrefUpdate source_update(profile_->GetPrefs(), source_dictionary);

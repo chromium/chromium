@@ -64,7 +64,7 @@ SuggestionGroupVisibility GetUserPreferenceForSuggestionGroupVisibility(
   DCHECK(prefs);
 
   const base::Value::Dict& dictionary =
-      prefs->GetValueDict(kSuggestionGroupVisibility);
+      prefs->GetDict(kSuggestionGroupVisibility);
 
   absl::optional<int> value =
       dictionary.FindInt(base::NumberToString(suggestion_group_id));
@@ -113,7 +113,7 @@ std::string GetUserPreferenceForZeroSuggestCachedResponse(
   DCHECK(prefs);
 
   const base::Value::Dict& dictionary =
-      prefs->GetValueDict(omnibox::kZeroSuggestCachedResultsWithURL);
+      prefs->GetDict(omnibox::kZeroSuggestCachedResultsWithURL);
   auto* value_ptr = dictionary.FindString(page_url);
   return (value_ptr ? *value_ptr : std::string());
 }

@@ -69,7 +69,7 @@ void AppPreloadService::StartAppInstallationForFirstLogin() {
 
 const base::Value::Dict& AppPreloadService::GetStateManager() const {
   const base::Value::Dict& value =
-      profile_->GetPrefs()->GetValueDict(prefs::kApsStateManager);
+      profile_->GetPrefs()->GetDict(prefs::kApsStateManager);
   return value;
 }
 

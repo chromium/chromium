@@ -42,7 +42,7 @@ absl::optional<SelectedSegment>
 SegmentationResultPrefs::ReadSegmentationResultFromPref(
     const std::string& result_key) {
   const base::Value::Dict& dictionary =
-      prefs_->GetValueDict(kSegmentationResultPref);
+      prefs_->GetDict(kSegmentationResultPref);
 
   const base::Value* value = dictionary.Find(result_key);
   if (!value)

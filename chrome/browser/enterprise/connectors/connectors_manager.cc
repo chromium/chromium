@@ -179,7 +179,7 @@ void ConnectorsManager::CacheAnalysisConnectorPolicy(
   DCHECK(pref);
 
   const base::Value::List& policy_value =
-      pref_change_registrar_.prefs()->GetValueList(pref);
+      pref_change_registrar_.prefs()->GetList(pref);
   for (const base::Value& service_settings : policy_value)
     analysis_connector_settings_[connector].emplace_back(
         service_settings, *service_provider_config_);
@@ -194,7 +194,7 @@ void ConnectorsManager::CacheReportingConnectorPolicy(
   DCHECK(pref);
 
   const base::Value::List& policy_value =
-      pref_change_registrar_.prefs()->GetValueList(pref);
+      pref_change_registrar_.prefs()->GetList(pref);
   for (const base::Value& service_settings : policy_value)
     reporting_connector_settings_[connector].emplace_back(
         service_settings, *service_provider_config_);
@@ -209,7 +209,7 @@ void ConnectorsManager::CacheFileSystemConnectorPolicy(
   DCHECK(pref);
 
   const base::Value::List& policy_value =
-      pref_change_registrar_.prefs()->GetValueList(pref);
+      pref_change_registrar_.prefs()->GetList(pref);
   for (const base::Value& service_settings : policy_value)
     file_system_connector_settings_[connector].emplace_back(
         service_settings, *service_provider_config_);

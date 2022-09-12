@@ -137,7 +137,7 @@ class NotificationsEnabledDeferred {
 
   bool Get(const std::string& app_id) {
     const base::Value::Dict& dict =
-        prefs_->GetValueDict(arc::prefs::kArcSetNotificationsEnabledDeferred);
+        prefs_->GetDict(arc::prefs::kArcSetNotificationsEnabledDeferred);
     return dict.FindBool(app_id).value_or(false);
   }
 
@@ -424,7 +424,7 @@ void ArcAppListPrefs::UprevCurrentIconsVersionForTesting() {
 
 std::string ArcAppListPrefs::GetAppIdByPackageName(
     const std::string& package_name) const {
-  const base::Value::Dict& apps = prefs_->GetValueDict(arc::prefs::kArcApps);
+  const base::Value::Dict& apps = prefs_->GetDict(arc::prefs::kArcApps);
 
   for (const auto it : apps) {
     const base::Value& value = it.second;
@@ -734,8 +734,7 @@ std::unique_ptr<ArcAppListPrefs::PackageInfo> ArcAppListPrefs::GetPackage(
   if (!IsArcAlive() || !IsArcAndroidEnabledForProfile(profile_))
     return nullptr;
 
-  const base::Value::Dict& packages =
-      prefs_->GetValueDict(arc::prefs::kArcPackages);
+  const base::Value::Dict& packages = prefs_->GetDict(arc::prefs::kArcPackages);
 
   const base::Value::Dict* package = packages.FindDict(package_name);
   if (!package)
@@ -836,7 +835,7 @@ std::vector<std::string> ArcAppListPrefs::GetAppIds() const {
 
 std::vector<std::string> ArcAppListPrefs::GetAppIdsNoArcEnabledCheck() const {
   std::vector<std::string> ids;
-  const base::Value::Dict& apps = prefs_->GetValueDict(arc::prefs::kArcApps);
+  const base::Value::Dict& apps = prefs_->GetDict(arc::prefs::kArcApps);
 
   // crx_file::id_util is de-facto utility for id generation.
   for (const auto app : apps) {
@@ -862,7 +861,7 @@ std::unique_ptr<ArcAppListPrefs::AppInfo> ArcAppListPrefs::GetApp(
 
 std::unique_ptr<ArcAppListPrefs::AppInfo> ArcAppListPrefs::GetAppFromPrefs(
     const std::string& app_id) const {
-  const base::Value::Dict& apps = prefs_->GetValueDict(arc::prefs::kArcApps);
+  const base::Value::Dict& apps = prefs_->GetDict(arc::prefs::kArcApps);
   const base::Value::Dict* app_dict = apps.FindDict(app_id);
   if (!app_dict)
     return nullptr;
@@ -948,7 +947,7 @@ bool ArcAppListPrefs::IsRegistered(const std::string& app_id) const {
       !default_apps_->HasApp(app_id))
     return false;
 
-  const base::Value::Dict& apps = prefs_->GetValueDict(arc::prefs::kArcApps);
+  const base::Value::Dict& apps = prefs_->GetDict(arc::prefs::kArcApps);
   return apps.FindDict(app_id);
 }
 
@@ -1918,7 +1917,7 @@ void ArcAppListPrefs::OnInstallShortcut(arc::mojom::ShortcutInfoPtr shortcut) {
 void ArcAppListPrefs::OnUninstallShortcut(const std::string& package_name,
                                           const std::string& intent_uri) {
   std::vector<std::string> shortcuts_to_remove;
-  const base::Value::Dict& apps = prefs_->GetValueDict(arc::prefs::kArcApps);
+  const base::Value::Dict& apps = prefs_->GetDict(arc::prefs::kArcApps);
   for (const auto app : apps) {
     if (!app.second.is_dict()) {
       VLOG(2) << "Failed to extract information for " << app.first << ".";
@@ -1959,7 +1958,7 @@ std::unordered_set<std::string> ArcAppListPrefs::GetAppsAndShortcutsForPackage(
     bool include_only_launchable_apps,
     bool include_shortcuts) const {
   std::unordered_set<std::string> app_set;
-  const base::Value::Dict& apps = prefs_->GetValueDict(arc::prefs::kArcApps);
+  const base::Value::Dict& apps = prefs_->GetDict(arc::prefs::kArcApps);
   for (const auto app : apps) {
     if (!crx_file::id_util::IdIsValid(app.first))
       continue;
@@ -2104,7 +2103,7 @@ void ArcAppListPrefs::OnTaskSetActive(int32_t task_id) {
 void ArcAppListPrefs::OnNotificationsEnabledChanged(
     const std::string& package_name,
     bool enabled) {
-  const base::Value::Dict& apps = prefs_->GetValueDict(arc::prefs::kArcApps);
+  const base::Value::Dict& apps = prefs_->GetDict(arc::prefs::kArcApps);
   for (const auto app : apps) {
     if (!app.second.is_dict()) {
       NOTREACHED();
@@ -2205,7 +2204,7 @@ std::vector<std::string> ArcAppListPrefs::GetPackagesFromPrefs(
   }
 
   const base::Value::Dict& package_prefs =
-      prefs_->GetValueDict(arc::prefs::kArcPackages);
+      prefs_->GetDict(arc::prefs::kArcPackages);
   for (const auto package : package_prefs) {
     if (!package.second.is_dict()) {
       NOTREACHED();
@@ -2224,7 +2223,7 @@ std::vector<std::string> ArcAppListPrefs::GetPackagesFromPrefs(
 }
 
 base::Time ArcAppListPrefs::GetInstallTime(const std::string& app_id) const {
-  const base::Value::Dict& apps = prefs_->GetValueDict(arc::prefs::kArcApps);
+  const base::Value::Dict& apps = prefs_->GetDict(arc::prefs::kArcApps);
 
   const base::Value::Dict* app = apps.FindDict(app_id);
   if (!app)

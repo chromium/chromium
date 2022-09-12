@@ -358,8 +358,7 @@ void NetworkMetadataStore::RemoveNetworkFromPref(
     return;
   }
 
-  const base::Value::Dict& dict =
-      pref_service->GetValueDict(kNetworkMetadataPref);
+  const base::Value::Dict& dict = pref_service->GetDict(kNetworkMetadataPref);
   if (!dict.contains(network_guid)) {
     return;
   }
@@ -517,7 +516,7 @@ void NetworkMetadataStore::SetPref(const std::string& network_guid,
 
   if (network && network->IsPrivate() && profile_pref_service_) {
     base::Value::Dict profile_dict =
-        profile_pref_service_->GetValueDict(kNetworkMetadataPref).Clone();
+        profile_pref_service_->GetDict(kNetworkMetadataPref).Clone();
     profile_dict.SetByDottedPath(GetPath(network_guid, key), std::move(value));
     profile_pref_service_->SetDict(kNetworkMetadataPref,
                                    std::move(profile_dict));
@@ -525,7 +524,7 @@ void NetworkMetadataStore::SetPref(const std::string& network_guid,
   }
 
   base::Value::Dict device_dict =
-      device_pref_service_->GetValueDict(kNetworkMetadataPref).Clone();
+      device_pref_service_->GetDict(kNetworkMetadataPref).Clone();
   device_dict.SetByDottedPath(GetPath(network_guid, key), std::move(value));
   device_pref_service_->SetDict(kNetworkMetadataPref, std::move(device_dict));
 }
@@ -542,7 +541,7 @@ const base::Value* NetworkMetadataStore::GetPref(
 
   if (network && network->IsPrivate() && profile_pref_service_) {
     const base::Value::Dict& profile_dict =
-        profile_pref_service_->GetValueDict(kNetworkMetadataPref);
+        profile_pref_service_->GetDict(kNetworkMetadataPref);
     const base::Value* value =
         profile_dict.FindByDottedPath(GetPath(network_guid, key));
     if (value)
@@ -550,7 +549,7 @@ const base::Value* NetworkMetadataStore::GetPref(
   }
 
   const base::Value::Dict& device_dict =
-      device_pref_service_->GetValueDict(kNetworkMetadataPref);
+      device_pref_service_->GetDict(kNetworkMetadataPref);
   return device_dict.FindByDottedPath(GetPath(network_guid, key));
 }
 

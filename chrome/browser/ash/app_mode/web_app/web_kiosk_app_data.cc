@@ -166,7 +166,7 @@ WebKioskAppData::~WebKioskAppData() = default;
 
 bool WebKioskAppData::LoadFromCache() {
   PrefService* local_state = g_browser_process->local_state();
-  const base::Value::Dict& dict = local_state->GetValueDict(dictionary_name());
+  const base::Value::Dict& dict = local_state->GetDict(dictionary_name());
 
   if (!LoadFromDictionary(dict, /* lazy_icon_load= */ true))
     return false;

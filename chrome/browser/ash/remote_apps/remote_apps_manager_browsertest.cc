@@ -680,7 +680,7 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, RemoteAppsNotSynced) {
 
   // Remote app sync item not added to local storage.
   const base::Value::Dict& local_items =
-      profile_->GetPrefs()->GetValueDict(prefs::kAppListLocalState);
+      profile_->GetPrefs()->GetDict(prefs::kAppListLocalState);
   const base::Value::Dict* dict_item = local_items.FindDict(kId1);
   EXPECT_FALSE(dict_item);
 
@@ -724,7 +724,7 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, RemoteFoldersNotSynced) {
 
   // Remote folder sync item not added to local storage.
   const base::Value::Dict& local_items =
-      profile_->GetPrefs()->GetValueDict(prefs::kAppListLocalState);
+      profile_->GetPrefs()->GetDict(prefs::kAppListLocalState);
   const base::Value::Dict* dict_item = local_items.FindDict(kId1);
   EXPECT_FALSE(dict_item);
 

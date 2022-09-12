@@ -174,7 +174,7 @@ TEST_F(FileSystemProviderRegistryTest, RememberFileSystem) {
   ASSERT_TRUE(pref_service);
 
   const base::Value::Dict& extensions =
-      pref_service->GetValueDict(prefs::kFileSystemProviderMounted);
+      pref_service->GetDict(prefs::kFileSystemProviderMounted);
 
   const base::Value::Dict* file_systems =
       extensions.FindDict(kProviderId.ToString());
@@ -255,7 +255,7 @@ TEST_F(FileSystemProviderRegistryTest, ForgetFileSystem) {
   ASSERT_TRUE(pref_service);
 
   const base::Value::Dict& extensions =
-      pref_service->GetValueDict(prefs::kFileSystemProviderMounted);
+      pref_service->GetDict(prefs::kFileSystemProviderMounted);
 
   const base::Value::Dict* file_systems =
       extensions.FindDict(kProviderId.GetExtensionId());
@@ -286,7 +286,7 @@ TEST_F(FileSystemProviderRegistryTest, UpdateWatcherTag) {
   ASSERT_TRUE(pref_service);
 
   const base::Value::Dict& extensions =
-      pref_service->GetValueDict(prefs::kFileSystemProviderMounted);
+      pref_service->GetDict(prefs::kFileSystemProviderMounted);
 
   const base::Value::Dict* file_systems =
       extensions.FindDict(kProviderId.ToString());

@@ -299,7 +299,7 @@ void ClearDictationOfflineNudgePref(const std::string& locale) {
 }
 
 absl::optional<bool> GetDictationOfflineNudgePref(const std::string& locale) {
-  const base::Value::Dict& offline_nudges = GetActiveUserPrefs()->GetValueDict(
+  const base::Value::Dict& offline_nudges = GetActiveUserPrefs()->GetDict(
       prefs::kAccessibilityDictationLocaleOfflineNudge);
   return offline_nudges.FindBool(locale);
 }

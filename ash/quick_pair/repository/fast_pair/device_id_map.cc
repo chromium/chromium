@@ -149,7 +149,7 @@ bool DeviceIdMap::HasPersistedRecordsForModelId(const std::string& model_id) {
   }
 
   const base::Value::Dict& device_id_map_dict =
-      local_state->GetValueDict(kDeviceIdMapPref);
+      local_state->GetDict(kDeviceIdMapPref);
   for (std::pair<const std::string&, const base::Value&> record :
        device_id_map_dict) {
     if (record.second.GetString() == model_id)
@@ -173,7 +173,7 @@ void DeviceIdMap::LoadPersistedRecordsFromPrefs() {
   }
 
   const base::Value::Dict& device_id_map_dict =
-      local_state->GetValueDict(kDeviceIdMapPref);
+      local_state->GetDict(kDeviceIdMapPref);
   for (std::pair<const std::string&, const base::Value&> record :
        device_id_map_dict) {
     device_id_to_model_id_[record.first] = record.second.GetString();

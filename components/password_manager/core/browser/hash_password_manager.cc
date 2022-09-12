@@ -223,7 +223,7 @@ std::vector<PasswordHashData> HashPasswordManager::RetrieveAllPasswordHashes() {
     return result;
 
   const base::Value::List& hash_list =
-      prefs_->GetValueList(prefs::kPasswordHashDataList);
+      prefs_->GetList(prefs::kPasswordHashDataList);
 
   for (const base::Value& entry : hash_list) {
     absl::optional<PasswordHashData> password_hash_data =
@@ -243,7 +243,7 @@ absl::optional<PasswordHashData> HashPasswordManager::RetrievePasswordHash(
   }
 
   for (const base::Value& entry :
-       prefs_->GetValueList(prefs::kPasswordHashDataList)) {
+       prefs_->GetList(prefs::kPasswordHashDataList)) {
     if (AreUsernamesSame(GetAndDecryptField(entry, kUsernameFieldKey),
                          IsGaiaPassword(entry), username, is_gaia_password)) {
       return ConvertToPasswordHashData(entry);
@@ -261,7 +261,7 @@ bool HashPasswordManager::HasPasswordHash(const std::string& username,
   }
 
   for (const base::Value& entry :
-       prefs_->GetValueList(prefs::kPasswordHashDataList)) {
+       prefs_->GetList(prefs::kPasswordHashDataList)) {
     if (AreUsernamesSame(GetAndDecryptField(entry, kUsernameFieldKey),
                          IsGaiaPassword(entry), username, is_gaia_password)) {
       return true;

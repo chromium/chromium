@@ -145,8 +145,7 @@ void MetadataTable::Load() {
   DCHECK(pref_service_);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  const base::Value::Dict& dict =
-      pref_service_->GetValueDict(kMetadataPrefPath);
+  const base::Value::Dict& dict = pref_service_->GetDict(kMetadataPrefPath);
   const base::Value::List* installed_items = dict.FindList(kMetadataContentKey);
   if (installed_items) {
     installed_items_ = installed_items->Clone();

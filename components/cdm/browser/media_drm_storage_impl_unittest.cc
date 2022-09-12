@@ -124,7 +124,7 @@ class MediaDrmStorageImplTest : public content::RenderViewHostTestHarness {
 
     // Verify the origin dictionary is created.
     const base::Value::Dict& storage_dict =
-        pref_service_->GetValueDict(prefs::kMediaDrmStorage);
+        pref_service_->GetDict(prefs::kMediaDrmStorage);
     EXPECT_TRUE(storage_dict.Find(kTestOrigin));
 
     DCHECK(*origin_id);
@@ -292,7 +292,7 @@ TEST_F(MediaDrmStorageImplTest, OnProvisioned) {
 
   // Verify the origin dictionary is created.
   const base::Value::Dict& storage_dict =
-      pref_service_->GetValueDict(prefs::kMediaDrmStorage);
+      pref_service_->GetDict(prefs::kMediaDrmStorage);
   EXPECT_TRUE(storage_dict.Find(kTestOrigin));
 }
 

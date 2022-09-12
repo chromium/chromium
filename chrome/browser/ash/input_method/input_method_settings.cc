@@ -250,7 +250,7 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
   // All input method settings are stored in a single pref whose value is a
   // dictionary.
   const base::Value::Dict& all_input_method_pref =
-      prefs.GetValueDict(::prefs::kLanguageInputMethodSpecificSettings);
+      prefs.GetDict(::prefs::kLanguageInputMethodSpecificSettings);
 
   // For each input method, the dictionary contains an entry, with the key being
   // a string that identifies the input method, and the value being a

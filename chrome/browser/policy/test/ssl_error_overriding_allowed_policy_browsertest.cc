@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   // default.
   EXPECT_TRUE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
   EXPECT_TRUE(
-      prefs->GetValueList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
+      prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
 
   // Policy allows overriding - navigate to an SSL error page and expect the
   // proceed link.
@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   // default.
   EXPECT_TRUE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
   EXPECT_TRUE(
-      prefs->GetValueList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
+      prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
 
   // Add a policy to allow overriding on specific sites only. Since
   // kSSLErrorOverrideAllowed is enabled, this should do nothing.
@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // Policy should be set.
   EXPECT_FALSE(
-      prefs->GetValueList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
+      prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
 
   // Policy allows overriding - navigate to an SSL error page and expect the
   // proceed link.
@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   // default.
   EXPECT_TRUE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
   EXPECT_TRUE(
-      prefs->GetValueList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
+      prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
 
   // Disallowing the proceed link by setting the policy to |false|.
   PolicyMap policies;
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   // Policy should be set.
   EXPECT_FALSE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
   EXPECT_FALSE(
-      prefs->GetValueList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
+      prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
 
   // Policy disallows overriding - navigate to an SSL error page and expect no
   // proceed link.
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
       chrome_test_utils::GetProfile(this)->GetPrefs();
   EXPECT_TRUE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
   EXPECT_TRUE(
-      prefs->GetValueList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
+      prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
 
   // Disallowing the proceed link by setting the policy to |false|.
   PolicyMap policies;
@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   // Policy should not allow overriding.
   EXPECT_FALSE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
   EXPECT_FALSE(
-      prefs->GetValueList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
+      prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
 
   // Policy disallows overriding - navigate to an SSL error page and expect no
   // proceed link.
@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
       chrome_test_utils::GetProfile(this)->GetPrefs();
   EXPECT_TRUE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
   EXPECT_TRUE(
-      prefs->GetValueList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
+      prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
 
   // Disallowing the proceed link by setting the policy to |false|.
   PolicyMap policies;
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   // Policy should not allow overriding.
   EXPECT_FALSE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
   EXPECT_TRUE(
-      prefs->GetValueList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
+      prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
 
   // Policy disallows overriding - navigate to an SSL error page and expect no
   // proceed link.
@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   // default.
   EXPECT_TRUE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
   EXPECT_TRUE(
-      prefs->GetValueList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
+      prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
 
   // Disallowing the proceed link by setting the policy to |false|.
   PolicyMap policies;
@@ -341,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   // Policy should be set.
   EXPECT_FALSE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
   EXPECT_FALSE(
-      prefs->GetValueList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
+      prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins).empty());
 
   // Policy allows overriding - navigate to an SSL error page and expect the
   // proceed link.

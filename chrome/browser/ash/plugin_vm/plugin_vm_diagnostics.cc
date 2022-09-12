@@ -124,7 +124,7 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
         case PolicyConfigured::kOk: {
           // Additional check for image policy. See b/185281662#comment2.
           const base::Value::Dict& image_policy =
-              active_profile_->GetPrefs()->GetValueDict(prefs::kPluginVmImage);
+              active_profile_->GetPrefs()->GetDict(prefs::kPluginVmImage);
           const base::Value* url =
               image_policy.Find(prefs::kPluginVmImageUrlKeyName);
           const base::Value* hash =

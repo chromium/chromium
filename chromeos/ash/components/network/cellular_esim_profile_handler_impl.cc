@@ -71,7 +71,7 @@ CellularESimProfileHandlerImpl::GetESimProfiles() {
     return std::vector<CellularESimProfile>();
 
   const base::Value::List& profiles_list =
-      device_prefs_->GetValueList(prefs::kESimProfiles);
+      device_prefs_->GetList(prefs::kESimProfiles);
 
   std::vector<CellularESimProfile> profiles;
   for (const base::Value& value : profiles_list) {
@@ -201,7 +201,7 @@ CellularESimProfileHandlerImpl::GetAutoRefreshedEuiccPathsFromPrefs() const {
   DCHECK(device_prefs_);
 
   const base::Value::List& euicc_paths_from_prefs =
-      device_prefs_->GetValueList(prefs::kESimRefreshedEuiccs);
+      device_prefs_->GetList(prefs::kESimRefreshedEuiccs);
 
   base::flat_set<std::string> euicc_paths;
   for (const auto& euicc : euicc_paths_from_prefs) {

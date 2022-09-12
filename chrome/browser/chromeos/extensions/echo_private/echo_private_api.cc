@@ -164,7 +164,7 @@ ExtensionFunction::ResponseAction EchoPrivateGetOfferInfoFunction::Run() {
   const std::string& service_id = params->id;
   PrefService* local_state = g_browser_process->local_state();
   const base::Value::Dict& offer_infos =
-      local_state->GetValueDict(prefs::kEchoCheckedOffers);
+      local_state->GetDict(prefs::kEchoCheckedOffers);
 
   const base::Value* offer_info = offer_infos.Find("echo." + service_id);
   if (!offer_info || !offer_info->is_dict()) {

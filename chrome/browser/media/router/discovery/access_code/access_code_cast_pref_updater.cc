@@ -73,11 +73,11 @@ void AccessCodeCastPrefUpdater::UpdateDeviceAddedTimeDict(
 }
 
 const base::Value::Dict& AccessCodeCastPrefUpdater::GetDevicesDict() {
-  return pref_service_->GetValueDict(prefs::kAccessCodeCastDevices);
+  return pref_service_->GetDict(prefs::kAccessCodeCastDevices);
 }
 
 const base::Value::Dict& AccessCodeCastPrefUpdater::GetDeviceAddedTimeDict() {
-  return pref_service_->GetValueDict(prefs::kAccessCodeCastDeviceAdditionTime);
+  return pref_service_->GetDict(prefs::kAccessCodeCastDeviceAdditionTime);
 }
 
 const base::Value::List AccessCodeCastPrefUpdater::GetSinkIdsFromDevicesDict() {

@@ -93,7 +93,7 @@ TEST_F(SystemExtensionsPersistenceManagerTest, WriteAndRemovePrefs) {
   auto* prefs = profile()->GetPrefs();
   {
     const base::Value::Dict& persisted_system_extensions_map =
-        prefs->GetValueDict(kPersistedSystemExtensions);
+        prefs->GetDict(kPersistedSystemExtensions);
     auto* persisted_system_extension =
         persisted_system_extensions_map.FindDict(kFirstIdStr);
     EXPECT_EQ(*persisted_system_extension->FindDict("manifest"),
@@ -114,7 +114,7 @@ TEST_F(SystemExtensionsPersistenceManagerTest, WriteAndRemovePrefs) {
   // Test that the System Extension was removed from prefs.
   {
     const base::Value::Dict& persisted_system_extensions_map =
-        prefs->GetValueDict(kPersistedSystemExtensions);
+        prefs->GetDict(kPersistedSystemExtensions);
     auto* persisted_system_extension =
         persisted_system_extensions_map.FindDict(kFirstIdStr);
     EXPECT_FALSE(persisted_system_extension);
@@ -134,7 +134,7 @@ TEST_F(SystemExtensionsPersistenceManagerTest, WriteAndRemovePrefs_Multiple) {
   auto* prefs = profile()->GetPrefs();
   {
     const base::Value::Dict& persisted_system_extensions_map =
-        prefs->GetValueDict(kPersistedSystemExtensions);
+        prefs->GetDict(kPersistedSystemExtensions);
 
     auto* first_persisted_system_extension =
         persisted_system_extensions_map.FindDict(kFirstIdStr);
@@ -172,7 +172,7 @@ TEST_F(SystemExtensionsPersistenceManagerTest, WriteAndRemovePrefs_Multiple) {
   // Test that the System Extension was removed from prefs.
   {
     const base::Value::Dict& persisted_system_extensions_map =
-        prefs->GetValueDict(kPersistedSystemExtensions);
+        prefs->GetDict(kPersistedSystemExtensions);
 
     auto* first_persisted_system_extension =
         persisted_system_extensions_map.FindDict(kFirstIdStr);
@@ -202,7 +202,7 @@ TEST_F(SystemExtensionsPersistenceManagerTest, WriteAndRemovePrefs_Multiple) {
   // Test that the last System Extension was removed from prefs.
   {
     const base::Value::Dict& persisted_system_extensions_map =
-        prefs->GetValueDict(kPersistedSystemExtensions);
+        prefs->GetDict(kPersistedSystemExtensions);
     EXPECT_TRUE(persisted_system_extensions_map.empty());
   }
 

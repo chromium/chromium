@@ -169,7 +169,7 @@ void MultiProfileUserController::RemoveCachedValues(
 std::string MultiProfileUserController::GetCachedValue(
     const std::string& user_email) const {
   const base::Value::Dict& dict =
-      local_state_->GetValueDict(prefs::kCachedMultiProfileUserBehavior);
+      local_state_->GetDict(prefs::kCachedMultiProfileUserBehavior);
 
   const std::string* value = dict.FindString(user_email);
   if (value)

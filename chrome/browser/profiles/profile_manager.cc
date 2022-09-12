@@ -667,7 +667,7 @@ std::vector<Profile*> ProfileManager::GetLastOpenedProfiles() {
   if (local_state->HasPrefPath(prefs::kProfilesLastActive)) {
     // Make a copy because the list might change in the calls to GetProfile.
     const base::Value::List profile_list =
-        local_state->GetValueList(prefs::kProfilesLastActive).Clone();
+        local_state->GetList(prefs::kProfilesLastActive).Clone();
     for (const auto& entry : profile_list) {
       const std::string* profile_base_name = entry.GetIfString();
       if (!profile_base_name || profile_base_name->empty() ||
@@ -1263,7 +1263,7 @@ void ProfileManager::CleanUpDeletedProfiles() {
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
   const base::Value::List& deleted_profiles =
-      local_state->GetValueList(prefs::kProfilesDeleted);
+      local_state->GetList(prefs::kProfilesDeleted);
 
   for (const base::Value& value : deleted_profiles) {
     absl::optional<base::FilePath> profile_path = base::ValueToFilePath(value);

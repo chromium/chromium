@@ -1096,7 +1096,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     if (prefs_->IsManagedPreference(::prefs::kParentAccessCodeConfig) &&
         user_->IsChild()) {
       const base::Value::Dict& value =
-          prefs_->GetValueDict(::prefs::kParentAccessCodeConfig);
+          prefs_->GetDict(::prefs::kParentAccessCodeConfig);
       known_user.SetPath(user_->GetAccountId(),
                          ::prefs::kKnownUserParentAccessCodeConfig,
                          base::Value(value.Clone()));

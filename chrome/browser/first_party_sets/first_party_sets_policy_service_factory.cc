@@ -55,7 +55,7 @@ const base::Value::Dict* FirstPartySetsPolicyServiceFactory::GetPolicyIfEnabled(
     return nullptr;
   }
 
-  return &profile.GetPrefs()->GetValueDict(
+  return &profile.GetPrefs()->GetDict(
       first_party_sets::kFirstPartySetsOverrides);
 }
 

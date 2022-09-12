@@ -258,7 +258,7 @@ void ExtensionServiceTestBase::
 
 size_t ExtensionServiceTestBase::GetPrefKeyCount() {
   const base::Value::Dict& dict =
-      profile()->GetPrefs()->GetValueDict(pref_names::kExtensions);
+      profile()->GetPrefs()->GetDict(pref_names::kExtensions);
   return dict.size();
 }
 
@@ -275,7 +275,7 @@ testing::AssertionResult ExtensionServiceTestBase::ValidateBooleanPref(
                                        expected_val ? "true" : "false");
 
   PrefService* prefs = profile()->GetPrefs();
-  const base::Value::Dict& dict = prefs->GetValueDict(pref_names::kExtensions);
+  const base::Value::Dict& dict = prefs->GetDict(pref_names::kExtensions);
 
   const base::Value::Dict* pref = dict.FindDict(extension_id);
   if (!pref) {
@@ -304,7 +304,7 @@ void ExtensionServiceTestBase::ValidateIntegerPref(
       base::NumberToString(expected_val).c_str());
 
   PrefService* prefs = profile()->GetPrefs();
-  const base::Value::Dict& dict = prefs->GetValueDict(pref_names::kExtensions);
+  const base::Value::Dict& dict = prefs->GetDict(pref_names::kExtensions);
   const base::Value::Dict* pref = dict.FindDict(extension_id);
   ASSERT_TRUE(pref) << msg;
   EXPECT_EQ(expected_val, pref->FindIntByDottedPath(pref_path)) << msg;
@@ -319,7 +319,7 @@ void ExtensionServiceTestBase::ValidateStringPref(
                                        expected_val.c_str());
 
   const base::Value::Dict& dict =
-      profile()->GetPrefs()->GetValueDict(pref_names::kExtensions);
+      profile()->GetPrefs()->GetDict(pref_names::kExtensions);
   std::string manifest_path = extension_id + ".manifest";
   const base::Value::Dict* pref = dict.FindDictByDottedPath(manifest_path);
   ASSERT_TRUE(pref) << msg;

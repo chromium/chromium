@@ -23,7 +23,7 @@ std::vector<CoreAccountId>
 UserApprovedAccountListManager::GetApprovedAccountIDList() const {
   DCHECK(pref_service_);
   const base::Value::List& accounts_pref =
-      pref_service_->GetValueList(prefs::kSigninLastAccounts);
+      pref_service_->GetList(prefs::kSigninLastAccounts);
   std::vector<CoreAccountId> accounts;
   for (const auto& value : accounts_pref) {
     DCHECK(value.is_string());

@@ -213,7 +213,7 @@ absl::optional<bool> GetDictationOfflineNudgePrefForLocale(
   if (dictation_locale.empty()) {
     return absl::nullopt;
   }
-  const base::Value::Dict& offline_nudges = profile->GetPrefs()->GetValueDict(
+  const base::Value::Dict& offline_nudges = profile->GetPrefs()->GetDict(
       prefs::kAccessibilityDictationLocaleOfflineNudge);
   return offline_nudges.FindBoolByDottedPath(dictation_locale);
 }

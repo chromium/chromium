@@ -518,8 +518,7 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
   }
 
   const base::Value::List& rules_list =
-      g_browser_process->local_state()->GetValueList(
-          policy_prefs::kDlpRulesList);
+      g_browser_process->local_state()->GetList(policy_prefs::kDlpRulesList);
 
   DlpBooleanHistogram(dlp::kDlpPolicyPresentUMA, !rules_list.empty());
   if (rules_list.empty()) {

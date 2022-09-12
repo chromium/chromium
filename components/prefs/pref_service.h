@@ -249,11 +249,17 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // Returns the branch if it exists, or the registered default value otherwise.
   // `path` must point to a registered preference whose value and registered
   // default are of type `base::Value::Type::DICT (DCHECK).
+  const base::Value::Dict& GetDict(const std::string& path) const;
+
+  // DEPRECATED, use GetDict instead.
   const base::Value::Dict& GetValueDict(const std::string& path) const;
 
   // Returns the branch if it exists, or the registered default value otherwise.
   // `path` must point to a registered preference whose value and registered
   // default are of type `base::Value::Type::LIST (DCHECK).
+  const base::Value::List& GetList(const std::string& path) const;
+
+  // DEPRECATED, use GetValueList instead.
   const base::Value::List& GetValueList(const std::string& path) const;
 
   // Removes a user pref and restores the pref to its default value.

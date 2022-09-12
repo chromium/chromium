@@ -311,19 +311,19 @@ std::unique_ptr<SystemNudge> ClipboardNudgeController::CreateSystemNudge() {
 
 int ClipboardNudgeController::GetShownCount(PrefService* prefs) {
   const base::Value::Dict& dictionary =
-      prefs->GetValueDict(prefs::kMultipasteNudges);
+      prefs->GetDict(prefs::kMultipasteNudges);
   return dictionary.FindInt(kShownCount).value_or(0);
 }
 
 int ClipboardNudgeController::GetNewFeatureBadgeShownCount(PrefService* prefs) {
   const base::Value::Dict& dictionary =
-      prefs->GetValueDict(prefs::kMultipasteNudges);
+      prefs->GetDict(prefs::kMultipasteNudges);
   return dictionary.FindInt(kNewFeatureBadgeCount).value_or(0);
 }
 
 base::Time ClipboardNudgeController::GetLastShownTime(PrefService* prefs) {
   const base::Value::Dict& dictionary =
-      prefs->GetValueDict(prefs::kMultipasteNudges);
+      prefs->GetDict(prefs::kMultipasteNudges);
   absl::optional<base::Time> last_shown_time =
       base::ValueToTime(dictionary.Find(kLastTimeShown));
   return last_shown_time.value_or(base::Time());

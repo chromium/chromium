@@ -60,7 +60,7 @@ SystemExtensionsPersistenceManager::Get(
     const SystemExtensionId& system_extension_id) {
   auto* prefs = profile_->GetPrefs();
   const base::Value::Dict& persisted_system_extensions_map =
-      prefs->GetValueDict(prefs::kPersistedSystemExtensions);
+      prefs->GetDict(prefs::kPersistedSystemExtensions);
 
   const base::Value::Dict* persisted_system_extension =
       persisted_system_extensions_map.FindDict(
@@ -87,7 +87,7 @@ SystemExtensionsPersistenceManager::GetAll() {
 
   auto* prefs = profile_->GetPrefs();
   const base::Value::Dict& persisted_system_extensions_map =
-      prefs->GetValueDict(prefs::kPersistedSystemExtensions);
+      prefs->GetDict(prefs::kPersistedSystemExtensions);
   for (const auto [id_str, _] : persisted_system_extensions_map) {
     absl::optional<SystemExtensionId> id = SystemExtension::StringToId(id_str);
     if (!id)

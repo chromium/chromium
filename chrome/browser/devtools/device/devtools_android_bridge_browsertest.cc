@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAndroidBridgeTest, DefaultValues) {
   service->ClearPref(prefs::kDevToolsTCPDiscoveryConfig);
 
   const base::Value::List& targets =
-      service->GetValueList(prefs::kDevToolsTCPDiscoveryConfig);
+      service->GetList(prefs::kDevToolsTCPDiscoveryConfig);
   EXPECT_EQ(2ul, targets.size());
 
   std::set<std::string> actual;

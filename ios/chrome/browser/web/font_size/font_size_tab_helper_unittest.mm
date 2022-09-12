@@ -291,7 +291,7 @@ TEST_F(FontSizeTabHelperTest, ZoomIn) {
   std::string pref_key =
       ZoomMultiplierPrefKey(preferred_content_size_category_, test_url);
   const base::Value::Dict& pref =
-      browser_state_->GetPrefs()->GetValueDict(prefs::kIosUserZoomMultipliers);
+      browser_state_->GetPrefs()->GetDict(prefs::kIosUserZoomMultipliers);
   EXPECT_EQ(1.1, pref.FindDoubleByDottedPath(pref_key));
 }
 
@@ -314,7 +314,7 @@ TEST_F(FontSizeTabHelperTest, ZoomOut) {
   std::string pref_key =
       ZoomMultiplierPrefKey(preferred_content_size_category_, test_url);
   const base::Value::Dict& pref =
-      browser_state_->GetPrefs()->GetValueDict(prefs::kIosUserZoomMultipliers);
+      browser_state_->GetPrefs()->GetDict(prefs::kIosUserZoomMultipliers);
   EXPECT_EQ(0.9, pref.FindDoubleByDottedPath(pref_key));
 }
 
@@ -331,7 +331,7 @@ TEST_F(FontSizeTabHelperTest, ResetZoom) {
   std::string pref_key =
       ZoomMultiplierPrefKey(preferred_content_size_category_, test_url);
   const base::Value::Dict& pref =
-      browser_state_->GetPrefs()->GetValueDict(prefs::kIosUserZoomMultipliers);
+      browser_state_->GetPrefs()->GetDict(prefs::kIosUserZoomMultipliers);
   EXPECT_EQ(1.1, pref.FindDoubleByDottedPath(pref_key));
 
   // Then reset. The pref key should be removed from the dictionary.
@@ -359,7 +359,7 @@ TEST_F(FontSizeTabHelperTest, ZoomAndAccessibilityTextSize) {
   EXPECT_TRUE(WaitForMainFrameTextSizeAdjustmentEqualTo(123));
   // Only the user zoom portion is stored in the preferences.
   const base::Value::Dict& pref =
-      browser_state_->GetPrefs()->GetValueDict(prefs::kIosUserZoomMultipliers);
+      browser_state_->GetPrefs()->GetDict(prefs::kIosUserZoomMultipliers);
   EXPECT_EQ(1.1, pref.FindDoubleByDottedPath(pref_key));
 }
 
@@ -376,7 +376,7 @@ TEST_F(FontSizeTabHelperTest, ClearUserZoomPrefs) {
 
   // Make sure the first value is stored in the pref store.
   const base::Value::Dict& pref =
-      browser_state_->GetPrefs()->GetValueDict(prefs::kIosUserZoomMultipliers);
+      browser_state_->GetPrefs()->GetDict(prefs::kIosUserZoomMultipliers);
   std::string pref_key =
       ZoomMultiplierPrefKey(preferred_content_size_category_, test_url);
   EXPECT_EQ(1.1, pref.FindDoubleByDottedPath(pref_key));
@@ -385,7 +385,7 @@ TEST_F(FontSizeTabHelperTest, ClearUserZoomPrefs) {
 
   EXPECT_TRUE(browser_state_.get()
                   ->GetPrefs()
-                  ->GetValueDict(prefs::kIosUserZoomMultipliers)
+                  ->GetDict(prefs::kIosUserZoomMultipliers)
                   .empty());
 }
 
@@ -413,7 +413,7 @@ TEST_F(FontSizeTabHelperTest, GoogleCachedAMPPageHasSeparateKey) {
   EXPECT_NE(google_pref_key, google_amp_pref_key);
 
   const base::Value::Dict& pref =
-      browser_state_->GetPrefs()->GetValueDict(prefs::kIosUserZoomMultipliers);
+      browser_state_->GetPrefs()->GetDict(prefs::kIosUserZoomMultipliers);
   EXPECT_EQ(1.1, pref.FindDoubleByDottedPath(google_pref_key));
   EXPECT_EQ(0.9, pref.FindDoubleByDottedPath(google_amp_pref_key));
 }

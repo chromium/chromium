@@ -445,7 +445,7 @@ TEST_F(SupervisedUserExtensionTest, UpdateWithoutPermissionIncrease) {
   PrefService* pref_service = profile()->GetPrefs();
   ASSERT_TRUE(pref_service);
   const base::Value::Dict& approved_extensions =
-      pref_service->GetValueDict(prefs::kSupervisedUserApprovedExtensions);
+      pref_service->GetDict(prefs::kSupervisedUserApprovedExtensions);
   EXPECT_TRUE(approved_extensions.FindString(id));
 }
 

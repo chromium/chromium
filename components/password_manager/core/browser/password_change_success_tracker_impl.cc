@@ -313,7 +313,7 @@ void PasswordChangeSuccessTrackerImpl::OnChangePasswordFlowCompleted(
   // If there are no ongoing change flows, return immediately to avoid disk
   // writes.
   const base::Value::List& read_flows =
-      pref_service_->GetValueList(prefs::kPasswordChangeSuccessTrackerFlows);
+      pref_service_->GetList(prefs::kPasswordChangeSuccessTrackerFlows);
   if (read_flows.empty())
     return;
 

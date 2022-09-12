@@ -98,7 +98,7 @@ KioskAppLaunchError::Error KioskAppLaunchError::Get() {
   s_last_error = Error::kNone;
   PrefService* local_state = g_browser_process->local_state();
   const base::Value::Dict& dict =
-      local_state->GetValueDict(KioskAppManager::kKioskDictionaryName);
+      local_state->GetDict(KioskAppManager::kKioskDictionaryName);
 
   absl::optional<int> error = dict.FindInt(kKeyLaunchError);
   if (error.has_value()) {

@@ -691,7 +691,7 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
 
   const base::Value::Dict* GetExtensionPref(const std::string& extension_id) {
     const base::Value::Dict& dict =
-        profile()->GetPrefs()->GetValueDict(pref_names::kExtensions);
+        profile()->GetPrefs()->GetDict(pref_names::kExtensions);
     const base::Value::Dict* pref = dict.FindDict(extension_id);
     if (!pref) {
       return nullptr;

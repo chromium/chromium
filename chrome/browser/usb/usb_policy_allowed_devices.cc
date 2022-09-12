@@ -72,9 +72,8 @@ bool UsbPolicyAllowedDevices::IsDeviceAllowed(
 }
 
 void UsbPolicyAllowedDevices::CreateOrUpdateMap() {
-  const base::Value::List& pref_list =
-      pref_change_registrar_.prefs()->GetValueList(
-          prefs::kManagedWebUsbAllowDevicesForUrls);
+  const base::Value::List& pref_list = pref_change_registrar_.prefs()->GetList(
+      prefs::kManagedWebUsbAllowDevicesForUrls);
   usb_device_ids_to_urls_.clear();
 
   // The pref value has already been validated by the policy handler, so it is

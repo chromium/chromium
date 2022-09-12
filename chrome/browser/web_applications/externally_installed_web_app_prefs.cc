@@ -66,7 +66,7 @@ const base::Value* GetPreferenceValue(const PrefService* pref_service,
                                       const AppId& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   const base::Value::Dict& urls_to_dicts =
-      pref_service->GetValueDict(prefs::kWebAppsExtensionIDs);
+      pref_service->GetDict(prefs::kWebAppsExtensionIDs);
   // Do a simple O(N) scan for app_id being a value in each dictionary's
   // key/value pairs. We expect both N and the number of times
   // GetPreferenceValue is called to be relatively small in practice. If they
@@ -152,7 +152,7 @@ ExternallyInstalledWebAppPrefs::BuildAppIdsMap(
     const PrefService* pref_service,
     ExternalInstallSource install_source) {
   const base::Value::Dict& urls_to_dicts =
-      pref_service->GetValueDict(prefs::kWebAppsExtensionIDs);
+      pref_service->GetDict(prefs::kWebAppsExtensionIDs);
 
   base::flat_map<AppId, base::flat_set<GURL>> ids_to_urls;
 
@@ -210,7 +210,7 @@ absl::optional<AppId> ExternallyInstalledWebAppPrefs::LookupAppId(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   const base::Value* v =
-      pref_service_->GetValueDict(prefs::kWebAppsExtensionIDs).Find(url.spec());
+      pref_service_->GetDict(prefs::kWebAppsExtensionIDs).Find(url.spec());
   if (v && v->is_dict()) {
     v = v->FindKey(kExtensionId);
     if (v && v->is_string()) {
@@ -225,7 +225,7 @@ absl::optional<AppId> ExternallyInstalledWebAppPrefs::LookupPlaceholderAppId(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   const base::Value* entry =
-      pref_service_->GetValueDict(prefs::kWebAppsExtensionIDs).Find(url.spec());
+      pref_service_->GetDict(prefs::kWebAppsExtensionIDs).Find(url.spec());
   if (!entry)
     return absl::nullopt;
 
@@ -240,8 +240,7 @@ void ExternallyInstalledWebAppPrefs::SetIsPlaceholder(const GURL& url,
                                                       bool is_placeholder) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  DCHECK(pref_service_->GetValueDict(prefs::kWebAppsExtensionIDs)
-             .Find(url.spec()));
+  DCHECK(pref_service_->GetDict(prefs::kWebAppsExtensionIDs).Find(url.spec()));
   DictionaryPrefUpdate update(pref_service_, prefs::kWebAppsExtensionIDs);
   base::Value* map = update.Get();
 
@@ -266,7 +265,7 @@ ExternallyInstalledWebAppPrefs::ParsedPrefs
 ExternallyInstalledWebAppPrefs::ParseExternalPrefsToWebAppData(
     PrefService* pref_service) {
   const base::Value::Dict& urls_to_dicts =
-      pref_service->GetValueDict(prefs::kWebAppsExtensionIDs);
+      pref_service->GetDict(prefs::kWebAppsExtensionIDs);
   ParsedPrefs ids_to_parsed_data;
 
   for (auto it : urls_to_dicts) {

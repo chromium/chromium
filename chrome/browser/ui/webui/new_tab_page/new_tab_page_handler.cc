@@ -644,7 +644,7 @@ void NewTabPageHandler::UpdateDisabledModules() {
   // (if invisible) or no modules (if visible).
   if (!profile_->GetPrefs()->IsManagedPreference(prefs::kNtpModulesVisible)) {
     const auto& module_ids_value =
-        profile_->GetPrefs()->GetValueList(prefs::kNtpDisabledModules);
+        profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules);
     for (const auto& id : module_ids_value) {
       module_ids.push_back(id.GetString());
     }
@@ -678,7 +678,7 @@ void NewTabPageHandler::GetModulesOrder(GetModulesOrderCallback callback) {
   // First, apply order as set by the last drag&drop interaction.
   if (base::FeatureList::IsEnabled(ntp_features::kNtpModulesDragAndDrop)) {
     const auto& module_ids_value =
-        profile_->GetPrefs()->GetValueList(prefs::kNtpModulesOrder);
+        profile_->GetPrefs()->GetList(prefs::kNtpModulesOrder);
     for (const auto& id : module_ids_value) {
       module_ids.push_back(id.GetString());
     }

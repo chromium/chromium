@@ -37,7 +37,7 @@ bool IsInNotDangerousOverrideList(const std::string& extension,
               kExemptDomainFileTypePairsFromFileTypeDownloadWarnings)) {
     return false;
   }
-  const base::Value::List& heuristic_overrides = prefs->GetValueList(
+  const base::Value::List& heuristic_overrides = prefs->GetList(
       file_type::prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings);
 
   const std::string lower_extension = base::ToLowerASCII(extension);

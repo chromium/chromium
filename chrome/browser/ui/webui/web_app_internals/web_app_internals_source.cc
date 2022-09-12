@@ -187,10 +187,10 @@ base::Value BuildPreinstalledWebAppConfigsJson(
 
 base::Value BuildExternallyManagedWebAppPrefsJson(Profile* profile) {
   base::Value root(base::Value::Type::DICTIONARY);
-  root.SetKey(kExternallyManagedWebAppPrefs,
-              base::Value(profile->GetPrefs()
-                              ->GetValueDict(prefs::kWebAppsExtensionIDs)
-                              .Clone()));
+  root.SetKey(
+      kExternallyManagedWebAppPrefs,
+      base::Value(
+          profile->GetPrefs()->GetDict(prefs::kWebAppsExtensionIDs).Clone()));
   return root;
 }
 
@@ -198,7 +198,7 @@ base::Value BuildUserUninstalledPreinstalledWebAppPrefsJson(Profile* profile) {
   base::Value::Dict root;
   root.Set(kUserUninstalledPreinstalledWebAppPrefs,
            profile->GetPrefs()
-               ->GetValueDict(prefs::kUserUninstalledPreinstalledWebAppPref)
+               ->GetDict(prefs::kUserUninstalledPreinstalledWebAppPref)
                .Clone());
   return base::Value(std::move(root));
 }

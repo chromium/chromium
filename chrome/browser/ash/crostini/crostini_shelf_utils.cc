@@ -131,7 +131,7 @@ std::string GetCrostiniShelfAppId(const Profile* profile,
     return std::string();
 
   const base::Value::Dict& apps =
-      profile->GetPrefs()->GetValueDict(guest_os::prefs::kGuestOsRegistry);
+      profile->GetPrefs()->GetDict(guest_os::prefs::kGuestOsRegistry);
 
   std::string app_id;
 
@@ -220,7 +220,7 @@ bool IsCrostiniShelfAppId(const Profile* profile,
   // For example, running windows with a no-longer-valid app id will try to
   // use the ExtensionContextMenuModel.
   const auto& apps =
-      profile->GetPrefs()->GetValueDict(guest_os::prefs::kGuestOsRegistry);
+      profile->GetPrefs()->GetDict(guest_os::prefs::kGuestOsRegistry);
   return apps.contains(shelf_app_id);
 }
 

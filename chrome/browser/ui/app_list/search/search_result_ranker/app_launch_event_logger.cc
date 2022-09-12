@@ -222,8 +222,8 @@ void AppLaunchEventLogger::SetRegistryAndArcInfo() {
 
   PrefService* pref_service = profile->GetPrefs();
   if (pref_service) {
-    arc_apps_ = &pref_service->GetValueDict(arc::prefs::kArcApps);
-    arc_packages_ = &pref_service->GetValueDict(arc::prefs::kArcPackages);
+    arc_apps_ = &pref_service->GetDict(arc::prefs::kArcApps);
+    arc_packages_ = &pref_service->GetDict(arc::prefs::kArcPackages);
   }
 }
 

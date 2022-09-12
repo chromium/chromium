@@ -2993,11 +2993,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, HostBindingsSyncIntegration) {
               DevToolsSettings::kSyncDevToolsPreferencesFrontendName)));
 
   const base::Value::Dict& synced_settings =
-      browser()->profile()->GetPrefs()->GetValueDict(
+      browser()->profile()->GetPrefs()->GetDict(
           prefs::kDevToolsSyncedPreferencesSyncDisabled);
   const base::Value::Dict& unsynced_settings =
-      browser()->profile()->GetPrefs()->GetValueDict(
-          prefs::kDevToolsPreferences);
+      browser()->profile()->GetPrefs()->GetDict(prefs::kDevToolsPreferences);
   EXPECT_EQ(*synced_settings.FindString("synced_setting"), "synced value");
   EXPECT_EQ(*unsynced_settings.FindString("unsynced_setting"),
             "unsynced value");

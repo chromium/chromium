@@ -392,7 +392,7 @@ void TaskManagerView::RetrieveSavedAlwaysOnTopState() {
     return;
 
   const base::Value::Dict& dictionary =
-      g_browser_process->local_state()->GetValueDict(GetWindowName());
+      g_browser_process->local_state()->GetDict(GetWindowName());
   is_always_on_top_ = dictionary.FindBool("always_on_top").value_or(false);
 }
 

@@ -111,8 +111,7 @@ void SharingSyncPreference::RegisterProfilePrefs(
 
 absl::optional<std::vector<uint8_t>> SharingSyncPreference::GetVapidKey()
     const {
-  const base::Value::Dict& vapid_key =
-      prefs_->GetValueDict(prefs::kSharingVapidKey);
+  const base::Value::Dict& vapid_key = prefs_->GetDict(prefs::kSharingVapidKey);
   const std::string* base64_private_key =
       vapid_key.FindString(kVapidECPrivateKey);
 
@@ -155,7 +154,7 @@ void SharingSyncPreference::ClearVapidKeyChangeObserver() {
 absl::optional<SharingSyncPreference::FCMRegistration>
 SharingSyncPreference::GetFCMRegistration() const {
   const base::Value::Dict& registration =
-      prefs_->GetValueDict(prefs::kSharingFCMRegistration);
+      prefs_->GetDict(prefs::kSharingFCMRegistration);
   const std::string* authorized_entity_ptr =
       registration.FindString(kRegistrationAuthorizedEntity);
   const base::Value* timestamp_value =
@@ -240,7 +239,7 @@ void SharingSyncPreference::ClearLocalSharingInfo() {
 absl::optional<syncer::DeviceInfo::SharingInfo>
 SharingSyncPreference::GetLocalSharingInfoForSync(PrefService* prefs) {
   const base::Value::Dict& registration =
-      prefs->GetValueDict(prefs::kSharingLocalSharingInfo);
+      prefs->GetDict(prefs::kSharingLocalSharingInfo);
 
   const base::Value::Dict* vapid_target_info_value =
       registration.FindDict(kSharingInfoVapidTargetInfo);

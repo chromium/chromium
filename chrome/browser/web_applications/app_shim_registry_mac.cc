@@ -60,7 +60,7 @@ void AppShimRegistry::GetProfilesSetForApp(
     const std::string& app_id,
     const std::string& profiles_key,
     std::set<base::FilePath>* profiles) const {
-  const base::Value::Dict& cache = GetPrefService()->GetValueDict(kAppShims);
+  const base::Value::Dict& cache = GetPrefService()->GetDict(kAppShims);
   const base::Value::Dict* app_info = cache.FindDict(app_id);
   if (!app_info)
     return;
@@ -109,8 +109,7 @@ void AppShimRegistry::OnAppQuit(const std::string& app_id,
 std::set<std::string> AppShimRegistry::GetInstalledAppsForProfile(
     const base::FilePath& profile) const {
   std::set<std::string> result;
-  const base::Value::Dict& app_shims =
-      GetPrefService()->GetValueDict(kAppShims);
+  const base::Value::Dict& app_shims = GetPrefService()->GetDict(kAppShims);
   for (const auto iter_app : app_shims) {
     const base::Value* installed_profiles_list =
         iter_app.second.FindListKey(kInstalledProfiles);
@@ -137,8 +136,7 @@ void AppShimRegistry::SetPrefServiceAndUserDataDirForTesting(
 }
 
 base::Value::Dict AppShimRegistry::AsDebugDict() const {
-  const base::Value::Dict& app_shims =
-      GetPrefService()->GetValueDict(kAppShims);
+  const base::Value::Dict& app_shims = GetPrefService()->GetDict(kAppShims);
 
   return app_shims.Clone();
 }

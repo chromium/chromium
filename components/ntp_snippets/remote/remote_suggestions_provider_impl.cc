@@ -1541,7 +1541,7 @@ void RemoteSuggestionsProviderImpl::RestoreCategoriesFromPrefs() {
   DCHECK(category_contents_.empty());
 
   const base::Value::List& list =
-      pref_service_->GetValueList(prefs::kRemoteSuggestionCategories);
+      pref_service_->GetList(prefs::kRemoteSuggestionCategories);
   for (const base::Value& entry : list) {
     if (!entry.is_dict()) {
       DLOG(WARNING) << "Invalid category pref value: " << entry;

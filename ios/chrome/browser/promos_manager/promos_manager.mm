@@ -75,12 +75,12 @@ void PromosManager::Init() {
 
   DCHECK(local_state_);
 
-  active_promos_ = ActivePromos(
-      local_state_->GetValueList(prefs::kIosPromosManagerActivePromos));
-  single_display_active_promos_ = ActivePromos(local_state_->GetValueList(
-      prefs::kIosPromosManagerSingleDisplayActivePromos));
+  active_promos_ =
+      ActivePromos(local_state_->GetList(prefs::kIosPromosManagerActivePromos));
+  single_display_active_promos_ = ActivePromos(
+      local_state_->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos));
   impression_history_ = ImpressionHistory(
-      local_state_->GetValueList(prefs::kIosPromosManagerImpressions));
+      local_state_->GetList(prefs::kIosPromosManagerImpressions));
 }
 
 // Impression history should grow in sorted order. Given this happens on the

@@ -637,7 +637,7 @@ TEST_F(AppActivityRegistryTest, RestoredApplicationInformation) {
 
   // Now let's test that the app activity are stored appropriately.
   const base::Value::List& list =
-      prefs()->GetValueList(prefs::kPerAppTimeLimitsAppActivities);
+      prefs()->GetList(prefs::kPerAppTimeLimitsAppActivities);
 
   const std::vector<PersistedAppInfo> app_infos =
       PersistedAppInfo::PersistedAppInfosFromList(
@@ -679,7 +679,7 @@ TEST_F(AppActivityRegistryTest, RemoveUninstalledApplications) {
 
   // Now let's test that the app activity are stored appropriately.
   const base::Value::List& list =
-      prefs()->GetValueList(prefs::kPerAppTimeLimitsAppActivities);
+      prefs()->GetList(prefs::kPerAppTimeLimitsAppActivities);
 
   const std::vector<PersistedAppInfo> app_infos =
       PersistedAppInfo::PersistedAppInfosFromList(
@@ -696,7 +696,7 @@ TEST_F(AppActivityRegistryTest, RemoveUninstalledApplications) {
   registry().OnSuccessfullyReported(base::Time::Now());
 
   const base::Value::List& new_list =
-      prefs()->GetValueList(prefs::kPerAppTimeLimitsAppActivities);
+      prefs()->GetList(prefs::kPerAppTimeLimitsAppActivities);
 
   const std::vector<PersistedAppInfo> final_app_infos =
       PersistedAppInfo::PersistedAppInfosFromList(
@@ -727,7 +727,7 @@ TEST_F(AppActivityRegistryTest, RemoveOldEntries) {
 
   // Now let's test that the app activity are stored appropriately.
   const base::Value::List& list =
-      prefs()->GetValueList(prefs::kPerAppTimeLimitsAppActivities);
+      prefs()->GetList(prefs::kPerAppTimeLimitsAppActivities);
 
   const std::vector<PersistedAppInfo> app_infos =
       PersistedAppInfo::PersistedAppInfosFromList(

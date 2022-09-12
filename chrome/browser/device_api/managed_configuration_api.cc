@@ -189,7 +189,7 @@ const std::set<url::Origin>& ManagedConfigurationAPI::GetManagedOrigins()
 
 void ManagedConfigurationAPI::OnConfigurationPolicyChanged() {
   const base::Value::List& managed_configurations =
-      profile_->GetPrefs()->GetValueList(prefs::kManagedConfigurationPerOrigin);
+      profile_->GetPrefs()->GetList(prefs::kManagedConfigurationPerOrigin);
 
   std::set<url::Origin> current_origins;
 
@@ -248,7 +248,7 @@ void ManagedConfigurationAPI::UpdateStoredDataForOrigin(
     const std::string& configuration_hash) {
   const std::string* last_hash_value =
       profile_->GetPrefs()
-          ->GetValueDict(prefs::kLastManagedConfigurationHashForOrigin)
+          ->GetDict(prefs::kLastManagedConfigurationHashForOrigin)
           .FindString(GetOriginEncoded(origin));
 
   // Nothing to be stored here, the hash value is the same.

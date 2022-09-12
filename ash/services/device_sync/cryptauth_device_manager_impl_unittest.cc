@@ -185,7 +185,7 @@ void ExpectSyncedDevicesAndPrefAreEqual(
   ExpectSyncedDevicesAreEqual(expected_devices, devices);
 
   const base::Value::List& synced_devices_pref =
-      pref_service.GetValueList(prefs::kCryptAuthDeviceSyncUnlockKeys);
+      pref_service.GetList(prefs::kCryptAuthDeviceSyncUnlockKeys);
   ASSERT_EQ(expected_devices.size(), synced_devices_pref.size());
   for (size_t i = 0; i < synced_devices_pref.size(); ++i) {
     SCOPED_TRACE(base::StringPrintf("Compare pref dictionary at index=%d",
@@ -956,8 +956,7 @@ TEST_F(DeviceSyncCryptAuthDeviceManagerImplTest, SyncThreeDevices) {
   device_manager_->Start();
   EXPECT_EQ(1u, device_manager_->GetSyncedDevices().size());
   EXPECT_EQ(
-      1u,
-      pref_service_.GetValueList(prefs::kCryptAuthDeviceSyncUnlockKeys).size());
+      1u, pref_service_.GetList(prefs::kCryptAuthDeviceSyncUnlockKeys).size());
 
   FireSchedulerForSync(cryptauth::INVOCATION_REASON_PERIODIC);
   ASSERT_FALSE(success_callback_.is_null());

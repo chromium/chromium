@@ -535,7 +535,7 @@ TEST_F(ProfileAttributesStorageTest, AddStubProfile) {
   std::vector<std::string> names;
   PrefService* local_state = g_browser_process->local_state();
   const base::Value::Dict& attributes =
-      local_state->GetValueDict(prefs::kProfileAttributes);
+      local_state->GetDict(prefs::kProfileAttributes);
   for (const auto kv : attributes) {
     const base::Value& info = kv.second;
     const std::string* name = info.FindStringKey("name");

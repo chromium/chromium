@@ -52,7 +52,7 @@ std::vector<PermissionActionsHistory::Entry>
 PermissionActionsHistory::GetHistory(const base::Time& begin,
                                      EntryFilter entry_filter) {
   const base::Value::Dict& dictionary =
-      pref_service_->GetValueDict(prefs::kPermissionActions);
+      pref_service_->GetDict(prefs::kPermissionActions);
 
   std::vector<PermissionActionsHistory::Entry> matching_actions;
   for (auto permission_entry : dictionary) {
@@ -142,7 +142,7 @@ PermissionActionsHistory::GetHistoryInternal(const base::Time& begin,
                                              const std::string& key,
                                              EntryFilter entry_filter) {
   const base::Value::List* permission_actions =
-      pref_service_->GetValueDict(prefs::kPermissionActions).FindList(key);
+      pref_service_->GetDict(prefs::kPermissionActions).FindList(key);
 
   if (!permission_actions)
     return {};

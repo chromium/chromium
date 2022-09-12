@@ -91,7 +91,7 @@ void SnapshotHoursPolicyService::UpdatePolicy() {
     return;
 
   const base::Value::Dict& dict =
-      local_state_->GetValueDict(prefs::kArcSnapshotHours);
+      local_state_->GetDict(prefs::kArcSnapshotHours);
 
   const auto* timezone = dict.FindString("timezone");
   std::string timezone_str = "";

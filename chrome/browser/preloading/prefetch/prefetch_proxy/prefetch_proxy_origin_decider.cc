@@ -80,7 +80,7 @@ void PrefetchProxyOriginDecider::LoadFromPrefs() {
   origin_retry_afters_.clear();
 
   const base::Value::Dict& dictionary =
-      pref_service_->GetValueDict(prefetch::prefs::kRetryAfterPrefPath);
+      pref_service_->GetDict(prefetch::prefs::kRetryAfterPrefPath);
 
   for (auto element : dictionary) {
     GURL url_origin(element.first);

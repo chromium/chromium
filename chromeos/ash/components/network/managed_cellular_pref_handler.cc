@@ -93,7 +93,7 @@ const std::string* ManagedCellularPrefHandler::GetSmdpAddressFromIccid(
     return nullptr;
   }
   const base::Value::Dict& iccid_smdp_pairs =
-      device_prefs_->GetValueDict(prefs::kManagedCellularIccidSmdpPair);
+      device_prefs_->GetDict(prefs::kManagedCellularIccidSmdpPair);
   return iccid_smdp_pairs.FindString(iccid);
 }
 

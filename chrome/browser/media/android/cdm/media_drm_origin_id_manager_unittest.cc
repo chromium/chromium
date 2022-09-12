@@ -100,8 +100,8 @@ class MediaDrmOriginIdManagerTest : public testing::Test {
     return output;
   }
 
-  const base::Value::Dict& GetValueDict(const std::string& path) const {
-    return profile_->GetTestingPrefService()->GetValueDict(path);
+  const base::Value::Dict& GetDict(const std::string& path) const {
+    return profile_->GetTestingPrefService()->GetDict(path);
   }
 
   // On devices that support per-application provisioning pre-provisioning
@@ -110,7 +110,7 @@ class MediaDrmOriginIdManagerTest : public testing::Test {
   void CheckPreferenceForPreProvisioning() {
     DVLOG(1) << "Checking preference " << kMediaDrmOriginIds;
 
-    auto& dict = GetValueDict(kMediaDrmOriginIds);
+    auto& dict = GetDict(kMediaDrmOriginIds);
     DVLOG(1) << DisplayPref(dict);
 
     const auto* list = dict.FindList(kAvailableOriginIds);
@@ -150,7 +150,7 @@ TEST_F(MediaDrmOriginIdManagerTest, DisablePreProvisioningAtStartup) {
 
   task_environment_.RunUntilIdle();
 
-  // Preference should not exist. Not using GetValueDict() as it will
+  // Preference should not exist. Not using GetDict() as it will
   // create the preference if it doesn't exist.
   EXPECT_FALSE(
       profile_->GetTestingPrefService()->HasPrefPath(kMediaDrmOriginIds));
@@ -220,7 +220,7 @@ TEST_F(MediaDrmOriginIdManagerTest, PreProvisionFailAtStartup) {
 
   // Pre-provisioning should have failed.
   DVLOG(1) << "Checking preference " << kMediaDrmOriginIds;
-  auto& dict = GetValueDict(kMediaDrmOriginIds);
+  auto& dict = GetDict(kMediaDrmOriginIds);
   DVLOG(1) << DisplayPref(dict);
 
   // After failure the preference should not contain |kExpireableToken| as that
@@ -261,7 +261,7 @@ TEST_F(MediaDrmOriginIdManagerTest, GetOriginIdCreatesList) {
 
   DVLOG(1) << "Checking preference " << kMediaDrmOriginIds;
 
-  auto& dict = GetValueDict(kMediaDrmOriginIds);
+  auto& dict = GetDict(kMediaDrmOriginIds);
   DVLOG(1) << DisplayPref(dict);
 
   const auto* list = dict.FindList(kAvailableOriginIds);
@@ -281,7 +281,7 @@ TEST_F(MediaDrmOriginIdManagerTest, OriginIdNotInList) {
 
   // Check that the preference does not contain |origin_id|.
   DVLOG(1) << "Checking preference " << kMediaDrmOriginIds;
-  auto& dict = GetValueDict(kMediaDrmOriginIds);
+  auto& dict = GetDict(kMediaDrmOriginIds);
   auto* list = dict.FindList(kAvailableOriginIds);
   EXPECT_FALSE(
       base::Contains(*list, base::UnguessableTokenToValue(origin_id.value())));
@@ -299,7 +299,7 @@ TEST_F(MediaDrmOriginIdManagerTest, ProvisioningFail) {
   // After failure the preference should contain |kExpireableToken| only if
   // per-application provisioning is NOT supported.
   DVLOG(1) << "Checking preference " << kMediaDrmOriginIds;
-  auto& dict = GetValueDict(kMediaDrmOriginIds);
+  auto& dict = GetDict(kMediaDrmOriginIds);
   DVLOG(1) << DisplayPref(dict);
 
   if (media::MediaDrmBridge::IsPerApplicationProvisioningSupported()) {
@@ -326,7 +326,7 @@ TEST_F(MediaDrmOriginIdManagerTest, ProvisioningSuccessAfterFail) {
 
   // After success the preference should not contain |kExpireableToken|.
   DVLOG(1) << "Checking preference " << kMediaDrmOriginIds;
-  auto& dict = GetValueDict(kMediaDrmOriginIds);
+  auto& dict = GetDict(kMediaDrmOriginIds);
   DVLOG(1) << DisplayPref(dict);
   EXPECT_FALSE(dict.Find(kExpirableToken));
 
@@ -350,7 +350,7 @@ TEST_F(MediaDrmOriginIdManagerTest, ProvisioningAfterExpiration) {
   {
     // Check that |kAvailableOriginIds| in the preference is empty.
     DVLOG(1) << "Checking preference " << kMediaDrmOriginIds;
-    auto& dict = GetValueDict(kMediaDrmOriginIds);
+    auto& dict = GetDict(kMediaDrmOriginIds);
     DVLOG(1) << DisplayPref(dict);
     EXPECT_FALSE(dict.Find(kAvailableOriginIds));
 
@@ -372,7 +372,7 @@ TEST_F(MediaDrmOriginIdManagerTest, ProvisioningAfterExpiration) {
 
   // Look at the preference again.
   DVLOG(1) << "Checking preference " << kMediaDrmOriginIds << " again";
-  auto& dict = GetValueDict(kMediaDrmOriginIds);
+  auto& dict = GetDict(kMediaDrmOriginIds);
   DVLOG(1) << DisplayPref(dict);
   auto* list = dict.FindList(kAvailableOriginIds);
 
@@ -419,7 +419,7 @@ TEST_F(MediaDrmOriginIdManagerTest, NetworkChange) {
   // Check that |kAvailableOriginIds| in the preference is empty.
   DVLOG(1) << "Checking preference " << kMediaDrmOriginIds;
   {
-    auto& dict = GetValueDict(kMediaDrmOriginIds);
+    auto& dict = GetDict(kMediaDrmOriginIds);
     DVLOG(1) << DisplayPref(dict);
     EXPECT_FALSE(dict.Find(kAvailableOriginIds));
   }
@@ -433,7 +433,7 @@ TEST_F(MediaDrmOriginIdManagerTest, NetworkChange) {
   // Check that |kAvailableOriginIds| is still empty.
   DVLOG(1) << "Checking preference " << kMediaDrmOriginIds << " again";
   {
-    auto& dict = GetValueDict(kMediaDrmOriginIds);
+    auto& dict = GetDict(kMediaDrmOriginIds);
     DVLOG(1) << DisplayPref(dict);
     EXPECT_FALSE(dict.Find(kAvailableOriginIds));
   }
@@ -446,7 +446,7 @@ TEST_F(MediaDrmOriginIdManagerTest, NetworkChange) {
   // Pre-provisioning should have run and filled up the list.
   DVLOG(1) << "Checking preference " << kMediaDrmOriginIds << " again";
   {
-    auto& dict = GetValueDict(kMediaDrmOriginIds);
+    auto& dict = GetDict(kMediaDrmOriginIds);
     DVLOG(1) << DisplayPref(dict);
     auto* list = dict.FindList(kAvailableOriginIds);
     EXPECT_EQ(list->size(), kExpectedPreferenceListSize);
@@ -474,7 +474,7 @@ TEST_F(MediaDrmOriginIdManagerTest, NetworkChangeFails) {
   // Check that |kAvailableOriginIds| in the preference is empty.
   DVLOG(1) << "Checking preference " << kMediaDrmOriginIds;
   {
-    auto& dict = GetValueDict(kMediaDrmOriginIds);
+    auto& dict = GetDict(kMediaDrmOriginIds);
     DVLOG(1) << DisplayPref(dict);
     EXPECT_FALSE(dict.Find(kAvailableOriginIds));
   }
@@ -491,7 +491,7 @@ TEST_F(MediaDrmOriginIdManagerTest, NetworkChangeFails) {
   // Check that |kAvailableOriginIds| is still empty.
   DVLOG(1) << "Checking preference " << kMediaDrmOriginIds << " again";
   {
-    auto& dict = GetValueDict(kMediaDrmOriginIds);
+    auto& dict = GetDict(kMediaDrmOriginIds);
     DVLOG(1) << DisplayPref(dict);
     EXPECT_FALSE(dict.Find(kAvailableOriginIds));
   }

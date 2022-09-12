@@ -167,10 +167,9 @@ void QuirksManager::OnIccFilePathRequestCompleted(
     return;
   }
 
-  double last_check =
-      local_state_->GetValueDict(prefs::kQuirksClientLastServerCheck)
-          .FindDouble(IdToHexString(product_id))
-          .value_or(0.0);
+  double last_check = local_state_->GetDict(prefs::kQuirksClientLastServerCheck)
+                          .FindDouble(IdToHexString(product_id))
+                          .value_or(0.0);
 
   const base::TimeDelta time_since =
       base::Time::Now() - base::Time::FromDoubleT(last_check);

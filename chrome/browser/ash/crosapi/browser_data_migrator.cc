@@ -490,7 +490,7 @@ void BrowserDataMigratorImpl::UpdateMigrationAttemptCountForUser(
 int BrowserDataMigratorImpl::GetMigrationAttemptCountForUser(
     PrefService* local_state,
     const std::string& user_id_hash) {
-  return local_state->GetValueDict(kMigrationAttemptCountPref)
+  return local_state->GetDict(kMigrationAttemptCountPref)
       .FindInt(user_id_hash)
       .value_or(0);
 }

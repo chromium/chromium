@@ -161,7 +161,7 @@ TEST_F(ConsentAuditorImplTest, LocalConsentPrefRepresentation) {
                                         kFeature1Confirmation);
   ASSERT_TRUE(pref_service()->HasPrefPath(prefs::kLocalConsentsDictionary));
   const base::Value::Dict& consents =
-      pref_service()->GetValueDict(prefs::kLocalConsentsDictionary);
+      pref_service()->GetDict(prefs::kLocalConsentsDictionary);
 
   std::string description, confirmation, version, locale;
   LoadEntriesFromLocalConsentRecord(consents, "feature1", &description,

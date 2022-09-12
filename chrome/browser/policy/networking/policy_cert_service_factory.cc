@@ -104,8 +104,7 @@ bool PolicyCertServiceFactory::MigrateLocalStatePrefIntoProfilePref(
     Profile* profile) {
   base::Value user_email_value(user_email);
   const base::Value::List& list =
-      g_browser_process->local_state()->GetValueList(
-          prefs::kUsedPolicyCertificates);
+      g_browser_process->local_state()->GetList(prefs::kUsedPolicyCertificates);
 
   if (base::Contains(list, user_email_value)) {
     profile->GetPrefs()->SetBoolean(prefs::kUsedPolicyCertificates, true);

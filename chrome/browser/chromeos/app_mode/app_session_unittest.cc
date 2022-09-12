@@ -168,8 +168,7 @@ TEST_F(AppSessionTest, WebKioskTracksBrowserCreation) {
   CloseMainBrowser();
   EXPECT_TRUE(IsSessionShuttingDown());
 
-  const base::Value::Dict& dict =
-      local_state()->GetValueDict(prefs::kKioskMetrics);
+  const base::Value::Dict& dict = local_state()->GetDict(prefs::kKioskMetrics);
   const base::Value::List* sessions_list =
       dict.FindList(kKioskSessionLastDayList);
   ASSERT_TRUE(sessions_list);
@@ -202,8 +201,7 @@ TEST_F(AppSessionTest, ChromeAppKioskTracksBrowserCreation) {
                                  KioskBrowserWindowType::kOther, 1);
   histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
 
-  const base::Value::Dict& dict =
-      local_state()->GetValueDict(prefs::kKioskMetrics);
+  const base::Value::Dict& dict = local_state()->GetDict(prefs::kKioskMetrics);
   const base::Value::List* sessions_list =
       dict.FindList(kKioskSessionLastDayList);
   ASSERT_TRUE(sessions_list);
@@ -264,8 +262,7 @@ TEST_F(AppSessionTest, WebKioskLastDaySessions) {
   CloseMainBrowser();
   EXPECT_TRUE(IsSessionShuttingDown());
 
-  const base::Value::Dict& dict =
-      local_state()->GetValueDict(prefs::kKioskMetrics);
+  const base::Value::Dict& dict = local_state()->GetDict(prefs::kKioskMetrics);
   const base::Value::List* sessions_list =
       dict.FindList(kKioskSessionLastDayList);
   ASSERT_TRUE(sessions_list);

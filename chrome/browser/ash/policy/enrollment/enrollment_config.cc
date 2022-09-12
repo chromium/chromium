@@ -126,7 +126,7 @@ EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
 
   // Gather enrollment signals from various sources.
   const base::Value::Dict& device_state =
-      local_state.GetValueDict(prefs::kServerBackedDeviceState);
+      local_state.GetDict(prefs::kServerBackedDeviceState);
 
   const std::string device_state_mode =
       GetString(device_state, kDeviceStateMode);
