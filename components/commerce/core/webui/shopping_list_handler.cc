@@ -3,16 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/commerce/core/webui/shopping_list_handler.h"
-#include "components/commerce/core/price_tracking_utils.h"
 
 #include <memory>
 #include <vector>
-#include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/browser/bookmark_node.h"
-#include "components/bookmarks/browser/bookmark_utils.h"
-#include "components/commerce/core/shopping_service.h"
-#include "components/power_bookmarks/core/power_bookmark_utils.h"
-#include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
