@@ -6,13 +6,13 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_encryption_keys_tab_helper.h"
-#include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -123,13 +123,6 @@ void ProfilePickerDiceSignInProvider::NavigateBack() {
   // picker contents.
   host_->ShowScreenInPickerContents(GURL());
   host_->SetNativeToolbarVisible(false);
-}
-
-ui::ColorProviderManager::ThemeInitializerSupplier*
-ProfilePickerDiceSignInProvider::GetCustomTheme() const {
-  if (!IsInitialized())
-    return nullptr;
-  return ThemeService::GetThemeSupplierForProfile(profile_);
 }
 
 bool ProfilePickerDiceSignInProvider::HandleContextMenu(
@@ -270,10 +263,6 @@ void ProfilePickerDiceSignInProvider::OnProfileInitialized(
                      // Unretained is enough as the callback is called by the
                      // host itself.
                      base::Unretained(host_), /*visible=*/true));
-}
-
-Profile* ProfilePickerDiceSignInProvider::GetInitializedProfile() {
-  return profile_;
 }
 
 bool ProfilePickerDiceSignInProvider::IsInitialized() const {

@@ -99,18 +99,6 @@ class ProfilePickerWidget : public views::Widget {
   }
   ~ProfilePickerWidget() override = default;
 
-  // views::Widget:
-  const ui::ThemeProvider* GetThemeProvider() const override {
-    Profile* profile = profile_picker_view_->GetProfileBeingCreated();
-    if (profile)
-      return &ThemeService::GetThemeProviderForProfile(profile);
-    return nullptr;
-  }
-  ui::ColorProviderManager::ThemeInitializerSupplier* GetCustomTheme()
-      const override {
-    return profile_picker_view_->GetCustomThemeForProfileBeingCreated();
-  }
-
  private:
   const raw_ptr<ProfilePickerView> profile_picker_view_;
 };
@@ -342,28 +330,6 @@ void ProfilePickerView::NavigationFinishedObserver::DidFinishNavigation(
 }
 
 // ProfilePickerView ----------------------------------------------------------
-
-// Returns the initialized profile or nullptr if the profile has not been
-// initialized yet or not in the dice flow.
-Profile* ProfilePickerView::GetProfileBeingCreated() const {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Theme provider is only needed for the dice flow.
-  if (dice_sign_in_provider_ && dice_sign_in_provider_->IsInitialized()) {
-    return dice_sign_in_provider_->GetInitializedProfile();
-  }
-#endif
-  return nullptr;
-}
-
-ui::ColorProviderManager::ThemeInitializerSupplier*
-ProfilePickerView::GetCustomThemeForProfileBeingCreated() const {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Custom theme is only needed for the dice flow.
-  if (dice_sign_in_provider_)
-    return dice_sign_in_provider_->GetCustomTheme();
-#endif
-  return nullptr;
-}
 
 void ProfilePickerView::UpdateParams(ProfilePicker::Params&& params) {
   DCHECK(params_.CanReusePickerWindow(params));

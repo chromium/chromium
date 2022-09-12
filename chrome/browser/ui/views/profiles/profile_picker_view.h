@@ -52,10 +52,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
   ProfilePickerView(const ProfilePickerView&) = delete;
   ProfilePickerView& operator=(const ProfilePickerView&) = delete;
 
-  Profile* GetProfileBeingCreated() const;
-  ui::ColorProviderManager::ThemeInitializerSupplier*
-  GetCustomThemeForProfileBeingCreated() const;
-
   // Updates the parameters. This calls existing callbacks with error values,
   // and requires `ProfilePicker::Params::CanReusePickerWindow()` to be true.
   void UpdateParams(ProfilePicker::Params&& params);
