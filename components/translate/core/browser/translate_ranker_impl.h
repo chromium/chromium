@@ -143,7 +143,7 @@ class TranslateRankerImpl : public TranslateRanker {
   raw_ptr<ukm::UkmRecorder> ukm_recorder_;
 
   // Used to sanity check the threading of this ranker.
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // A helper to load the translate ranker model from disk cache or a URL.
   std::unique_ptr<assist_ranker::RankerModelLoader> model_loader_;
