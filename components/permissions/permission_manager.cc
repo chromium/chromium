@@ -211,39 +211,26 @@ void PermissionManager::RequestPermission(
   NOTIMPLEMENTED();
 }
 
-// TODO(crbug.com/1271543): Remove
-// PermissionControllerDelegate::RequestPermissions.
 void PermissionManager::RequestPermissions(
-    const std::vector<PermissionType>& permissions,
+    const std::vector<PermissionType>& permissions_types,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     bool user_gesture,
-    base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback) {
-  NOTIMPLEMENTED();
-}
-
-void PermissionManager::ResetPermission(PermissionType permission,
-                                        const GURL& requesting_origin,
-                                        const GURL& embedding_origin) {
+    base::OnceCallback<void(const std::vector<PermissionStatus>&)>
+        permission_status_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  ContentSettingsType type =
-      PermissionUtil::PermissionTypeToContentSettingType(permission);
-  PermissionContextBase* context = GetPermissionContext(type);
-  if (!context)
-    return;
-  context->ResetPermission(PermissionUtil::GetCanonicalOrigin(
-                               type, requesting_origin, embedding_origin),
-                           embedding_origin.DeprecatedGetOriginAsURL());
+  RequestPermissionsInternal(permissions_types, render_frame_host,
+                             requesting_origin, user_gesture,
+                             std::move(permission_status_callback));
 }
 
-void PermissionManager::RequestPermissionsFromCurrentDocument(
-    const std::vector<PermissionType>& permissions_types,
+void PermissionManager::RequestPermissionsInternal(
+    const std::vector<blink::PermissionType>& permissions_types,
     content::RenderFrameHost* render_frame_host,
+    const GURL& requesting_origin,
     bool user_gesture,
     base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
         permission_status_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   std::vector<ContentSettingsType> permissions;
   std::transform(permissions_types.begin(), permissions_types.end(),
                  back_inserter(permissions),
@@ -265,8 +252,6 @@ void PermissionManager::RequestPermissionsFromCurrentDocument(
       request_local_id);
 
   const PermissionRequestID request_id(render_frame_host, request_local_id);
-  const GURL requesting_origin =
-      PermissionUtil::GetLastCommittedOriginAsURL(render_frame_host);
   const GURL embedding_origin =
       GetEmbeddingOrigin(render_frame_host, requesting_origin);
 
@@ -301,6 +286,34 @@ void PermissionManager::RequestPermissionsFromCurrentDocument(
             &PermissionResponseCallback::OnPermissionsRequestResponseStatus,
             std::move(response_callback)));
   }
+}
+
+void PermissionManager::ResetPermission(PermissionType permission,
+                                        const GURL& requesting_origin,
+                                        const GURL& embedding_origin) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  ContentSettingsType type =
+      PermissionUtil::PermissionTypeToContentSettingType(permission);
+  PermissionContextBase* context = GetPermissionContext(type);
+  if (!context)
+    return;
+  context->ResetPermission(PermissionUtil::GetCanonicalOrigin(
+                               type, requesting_origin, embedding_origin),
+                           embedding_origin.DeprecatedGetOriginAsURL());
+}
+
+void PermissionManager::RequestPermissionsFromCurrentDocument(
+    const std::vector<PermissionType>& permissions_types,
+    content::RenderFrameHost* render_frame_host,
+    bool user_gesture,
+    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+        permission_status_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  const GURL requesting_origin =
+      PermissionUtil::GetLastCommittedOriginAsURL(render_frame_host);
+  RequestPermissionsInternal(permissions_types, render_frame_host,
+                             requesting_origin, user_gesture,
+                             std::move(permission_status_callback));
 }
 
 PermissionStatus PermissionManager::GetPermissionStatus(

@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "third_party/blink/public/mojom/permissions/permission_status.mojom";
+import "url/mojom/origin.mojom";
 
 enum PermissionName {
   GEOLOCATION,
@@ -47,11 +48,19 @@ struct CameraDevicePermissionDescriptor {
   bool panTiltZoom;
 };
 
+struct StorageAccessPermissionDescriptor {
+  // Site vs Origin applicability is still in flux. The current naming indicates
+  // site, but origin is preferred as site can be derived from it and not vice-
+  // versa. See, e.g.: https://github.com/privacycg/storage-access/issues/113
+  url.mojom.Origin siteOverride;
+};
+
 // Union of possible extensions to the base PermissionDescriptor type.
 union PermissionDescriptorExtension {
   MidiPermissionDescriptor midi;
   ClipboardPermissionDescriptor clipboard;
   CameraDevicePermissionDescriptor camera_device;
+  StorageAccessPermissionDescriptor storage_access;
 };
 
 // This struct roughly corresponds to the PermissionDescriptor dictionary as

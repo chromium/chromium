@@ -17,8 +17,10 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-shared.h"
+#include "url/origin.h"
 
 using blink::mojom::PermissionDescriptorPtr;
 using blink::mojom::PermissionName;
@@ -35,6 +37,23 @@ void PermissionRequestResponseCallbackWrapper(
     const std::vector<PermissionStatus>& vector) {
   DCHECK_EQ(vector.size(), 1ul);
   std::move(callback).Run(vector[0]);
+}
+
+bool IsDomainOverride(const PermissionDescriptorPtr& descriptor) {
+  return descriptor->extension && descriptor->extension->is_storage_access();
+}
+
+url::Origin ExtractDomainOverride(const PermissionDescriptorPtr& descriptor) {
+  const blink::mojom::StorageAccessPermissionDescriptorPtr&
+      override_descriptor = descriptor->extension->get_storage_access();
+  return override_descriptor->siteOverride;
+}
+
+bool IsDomainOverrideEnabled() {
+  // This code path is currently available only when
+  // requestStorageAccessForSite is enabled.
+  return base::FeatureList::IsEnabled(
+      blink::features::kStorageAccessAPIForSiteExtension);
 }
 
 }  // anonymous namespace
@@ -125,11 +144,31 @@ void PermissionServiceImpl::RequestPermissions(
       std::make_unique<PendingRequest>(types, std::move(callback));
 
   int pending_request_id = pending_requests_.Add(std::move(pending_request));
-  PermissionControllerImpl::FromBrowserContext(browser_context)
-      ->RequestPermissionsFromCurrentDocument(
-          types, context_->render_frame_host(), user_gesture,
-          base::BindOnce(&PermissionServiceImpl::OnRequestPermissionsResponse,
-                         weak_factory_.GetWeakPtr(), pending_request_id));
+
+  if (!permissions.empty() && IsDomainOverride(permissions[0])) {
+    if (!IsDomainOverrideEnabled()) {
+      ReceivedBadMessage();
+      return;
+    }
+    if (types.size() > 1) {
+      // Requests with domain overrides must be requested individually.
+      ReceivedBadMessage();
+      return;
+    }
+    url::Origin requested_origin = ExtractDomainOverride(permissions[0]);
+    PermissionControllerImpl::FromBrowserContext(browser_context)
+        ->RequestPermissions(
+            types, context_->render_frame_host(), requested_origin,
+            user_gesture,
+            base::BindOnce(&PermissionServiceImpl::OnRequestPermissionsResponse,
+                           weak_factory_.GetWeakPtr(), pending_request_id));
+  } else {
+    PermissionControllerImpl::FromBrowserContext(browser_context)
+        ->RequestPermissionsFromCurrentDocument(
+            types, context_->render_frame_host(), user_gesture,
+            base::BindOnce(&PermissionServiceImpl::OnRequestPermissionsResponse,
+                           weak_factory_.GetWeakPtr(), pending_request_id));
+  }
 }
 
 void PermissionServiceImpl::OnRequestPermissionsResponse(

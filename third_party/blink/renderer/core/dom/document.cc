@@ -6142,11 +6142,39 @@ ScriptPromise Document::requestStorageAccessForSite(ScriptState* script_state,
     return promise;
   }
 
-  resolver->Reject();
-  AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-      mojom::blink::ConsoleMessageSource::kSecurity,
-      mojom::blink::ConsoleMessageLevel::kError,
-      "requestStorageAccessForSite: Rejecting experimental API request."));
+  auto descriptor = mojom::blink::PermissionDescriptor::New();
+  descriptor->name = mojom::blink::PermissionName::STORAGE_ACCESS;
+  auto storage_access_extension =
+      mojom::blink::StorageAccessPermissionDescriptor::New();
+  storage_access_extension->siteOverride = supplied_origin;
+  descriptor->extension =
+      mojom::blink::PermissionDescriptorExtension::NewStorageAccess(
+          std::move(storage_access_extension));
+
+  GetPermissionService(ExecutionContext::From(script_state))
+      ->RequestPermission(
+          std::move(descriptor), has_user_gesture,
+          WTF::Bind(
+              [](ScriptPromiseResolver* resolver, Document* document,
+                 mojom::blink::PermissionStatus status) {
+                DCHECK(resolver);
+                DCHECK(document);
+
+                switch (status) {
+                  case mojom::blink::PermissionStatus::GRANTED:
+                    document->expressly_denied_storage_access_ = false;
+                    resolver->Resolve();
+                    break;
+                  case mojom::blink::PermissionStatus::DENIED:
+                    document->expressly_denied_storage_access_ = true;
+                    [[fallthrough]];
+                  case mojom::blink::PermissionStatus::ASK:
+                  default:
+                    resolver->Reject();
+                }
+              },
+              WrapPersistent(resolver), WrapPersistent(this)));
+
   return promise;
 }
 

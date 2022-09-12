@@ -705,7 +705,7 @@ class StorageAccessAPIForSiteExtensionBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(StorageAccessAPIForSiteExtensionBrowserTest,
-                       OnlySameOriginGrantedByDefault) {
+                       SameOriginGrantedByDefault) {
   SetBlockThirdPartyCookies(true);
   base::HistogramTester histogram_tester;
 
@@ -720,6 +720,44 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIForSiteExtensionBrowserTest,
       GetPrimaryMainFrame(), base::StrCat({"https://", kHostA})));
   EXPECT_FALSE(storage::test::RequestStorageAccessForSite(
       GetFrame(), base::StrCat({"https://", kHostA})));
+}
+
+// Validate that if an iframe requests access that cookies become unblocked for
+// just that top-level/third-party combination.
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIForSiteExtensionBrowserTest,
+                       GrantGivesCrossSiteCookieAccess) {
+  SetBlockThirdPartyCookies(true);
+  base::HistogramTester histogram_tester;
+
+  // Set cross-site cookies on all hosts.
+  SetCrossSiteCookieOnHost(kHostA);
+  SetCrossSiteCookieOnHost(kHostB);
+
+  NavigateToPageWithFrame(kHostA);
+
+  // Allow all requests for kHostB to have cookie access from a.test.
+  NavigateFrameTo(kHostB, "/echoheader?cookie");
+  EXPECT_EQ(GetFrameContent(), "None");
+  EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "");
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_TRUE(storage::test::RequestStorageAccessForSite(
+      GetPrimaryMainFrame(),
+      base::StrCat({"https://", kHostB, ":",
+                    base::NumberToString(https_server().port())})));
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  // Navigate iframe to a cross-site, cookie-reading endpoint, and verify that
+  // the cookie is sent:
+  NavigateFrameTo(kHostB, "/echoheader?cookie");
+  EXPECT_EQ(GetFrameContent(), "cross-site=b.test");
+  EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "cross-site=b.test");
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  // Also validate that an additional site C was not granted access.
+  NavigateFrameTo(kHostC, "/echoheader?cookie");
+  EXPECT_EQ(GetFrameContent(), "None");
+  EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "");
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 }
 
 INSTANTIATE_TEST_CASE_P(/* no prefix */,

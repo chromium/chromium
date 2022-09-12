@@ -17,6 +17,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -274,6 +275,50 @@ void PermissionControllerImpl::UpdateDelegateOverridesForDevTools(
   PermissionOverrides current_overrides =
       devtools_permission_overrides_.GetAll(origin);
   delegate->SetPermissionOverridesForDevTools(origin, current_overrides);
+}
+
+void PermissionControllerImpl::RequestPermissions(
+    const std::vector<blink::PermissionType>& permissions,
+    RenderFrameHost* render_frame_host,
+    const url::Origin& requested_origin,
+    bool user_gesture,
+    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+        callback) {
+  for (PermissionType permission : permissions)
+    NotifySchedulerAboutPermissionRequest(render_frame_host, permission);
+
+  std::vector<PermissionType> permissions_without_overrides;
+  std::vector<absl::optional<blink::mojom::PermissionStatus>> results;
+  url::Origin origin = render_frame_host->GetLastCommittedOrigin();
+  for (const auto& permission : permissions) {
+    absl::optional<blink::mojom::PermissionStatus> override_status =
+        devtools_permission_overrides_.Get(origin, permission);
+    if (!override_status)
+      permissions_without_overrides.push_back(permission);
+    results.push_back(override_status);
+  }
+
+  auto wrapper = base::BindOnce(&MergeOverriddenAndDelegatedResults,
+                                std::move(callback), results);
+  if (permissions_without_overrides.empty()) {
+    std::move(wrapper).Run({});
+    return;
+  }
+
+  // Use delegate to find statuses of other permissions that have been requested
+  // but do not have overrides.
+  PermissionControllerDelegate* delegate =
+      browser_context_->GetPermissionControllerDelegate();
+  if (!delegate) {
+    std::move(wrapper).Run(std::vector<blink::mojom::PermissionStatus>(
+        permissions_without_overrides.size(),
+        blink::mojom::PermissionStatus::DENIED));
+    return;
+  }
+
+  delegate->RequestPermissions(permissions_without_overrides, render_frame_host,
+                               requested_origin.GetURL(), user_gesture,
+                               std::move(wrapper));
 }
 
 void PermissionControllerImpl::RequestPermissionFromCurrentDocument(

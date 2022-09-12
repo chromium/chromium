@@ -107,6 +107,13 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       blink::PermissionType permission,
       const url::Origin& requesting_origin,
       const url::Origin& embedding_origin) override;
+  void RequestPermissions(
+      const std::vector<blink::PermissionType>& permissions,
+      RenderFrameHost* render_frame_host,
+      const url::Origin& requested_origin,
+      bool user_gesture,
+      base::OnceCallback<
+          void(const std::vector<blink::mojom::PermissionStatus>&)> callback);
   void RequestPermissionFromCurrentDocument(
       PermissionType permission,
       RenderFrameHost* render_frame_host,
