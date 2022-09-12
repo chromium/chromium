@@ -655,6 +655,35 @@ TEST_F(ControllerTest, Autostart) {
   EXPECT_THAT(keyboard_states_, ElementsAre(true, true, false));
 }
 
+TEST_F(ControllerTest, AutostartWithoutKeyboardSuppression) {
+  SupportsScriptResponseProto script_response;
+  AddRunnableScript(&script_response, "runnable");
+  AddRunnableScript(&script_response, "autostart")
+      ->mutable_presentation()
+      ->set_autostart(true);
+  SetNextScriptResponse(script_response);
+
+  ActionsResponseProto autostart_script;
+  autostart_script.add_actions()->mutable_tell()->set_message("autostart");
+  autostart_script.add_actions()->mutable_stop();
+  SetupActionsForScript("autostart", autostart_script);
+
+  EXPECT_CALL(mock_client_, AttachUI());
+  TriggerContext::Options options;
+  // Turn off keyboard suppression.
+  options.suppress_browsing_features = false;
+  Start("http://a.example.com/path",
+        std::make_unique<TriggerContext>(
+            /* parameters = */ std::make_unique<ScriptParameters>(), options));
+  EXPECT_EQ(AutofillAssistantState::STOPPED, controller_->GetState());
+
+  // Full history state transitions
+  EXPECT_THAT(states_, ElementsAre(AutofillAssistantState::STARTING,
+                                   AutofillAssistantState::RUNNING,
+                                   AutofillAssistantState::STOPPED));
+  EXPECT_THAT(keyboard_states_, ElementsAre(false, false, false));
+}
+
 TEST_F(ControllerTest, InitialUrlLoads) {
   GURL initialUrl("http://a.example.com/path");
   EXPECT_CALL(*mock_service_, GetScriptsForUrl(Eq(initialUrl), _, _))

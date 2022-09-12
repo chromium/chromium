@@ -44,22 +44,6 @@
 namespace autofill_assistant {
 namespace {
 
-bool ShouldSuppressKeyboardForState(AutofillAssistantState state) {
-  switch (state) {
-    case AutofillAssistantState::STARTING:
-    case AutofillAssistantState::RUNNING:
-      return true;
-
-    case AutofillAssistantState::PROMPT:
-    case AutofillAssistantState::BROWSE:
-    case AutofillAssistantState::MODAL_DIALOG:
-    case AutofillAssistantState::STOPPED:
-    case AutofillAssistantState::TRACKING:
-    case AutofillAssistantState::INACTIVE:
-      return false;
-  }
-}
-
 bool ShouldSendModelVersionInContext(const TriggerContext& trigger_context) {
   return trigger_context.GetScriptParameters()
              .GetSendAnnotateDomModelVersion() ||
@@ -412,7 +396,7 @@ bool Controller::EnterState(AutofillAssistantState state) {
          (state == AutofillAssistantState::TRACKING && tracking_));
   state_ = state;
 
-  bool should_suppress_keyboard = ShouldSuppressKeyboardForState(state_);
+  bool should_suppress_keyboard = ShouldSuppressKeyboard();
   SuppressKeyboard(should_suppress_keyboard);
   for (ControllerObserver& observer : observers_) {
     observer.OnKeyboardSuppressionStateChanged(should_suppress_keyboard);
@@ -934,7 +918,23 @@ AutofillAssistantState Controller::GetState() const {
 }
 
 bool Controller::ShouldSuppressKeyboard() const {
-  return ShouldSuppressKeyboardForState(state_);
+  // Return early if keyboard suppression is turned off.
+  if (trigger_context_ && !trigger_context_->GetSuppressBrowsingFeatures()) {
+    return false;
+  }
+
+  switch (state_) {
+    case AutofillAssistantState::STARTING:
+    case AutofillAssistantState::RUNNING:
+      return true;
+    case AutofillAssistantState::PROMPT:
+    case AutofillAssistantState::BROWSE:
+    case AutofillAssistantState::MODAL_DIALOG:
+    case AutofillAssistantState::STOPPED:
+    case AutofillAssistantState::TRACKING:
+    case AutofillAssistantState::INACTIVE:
+      return false;
+  }
 }
 
 base::Value Controller::GetDebugContext() {
