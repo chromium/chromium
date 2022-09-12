@@ -79,6 +79,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_util.h"
 #include "services/device/public/mojom/mtp_manager.mojom.h"
 #include "services/device/public/mojom/mtp_storage_info.mojom.h"
@@ -1230,6 +1231,46 @@ FileManagerPrivateGetDlpRestrictionDetailsFunction::Run() {
 
   return RespondNow(ArgumentList(
       api::file_manager_private::GetDlpRestrictionDetails::Results::Create(
+          converted_list)));
+}
+
+FileManagerPrivateGetDlpBlockedComponentsFunction::
+    FileManagerPrivateGetDlpBlockedComponentsFunction() = default;
+
+FileManagerPrivateGetDlpBlockedComponentsFunction::
+    ~FileManagerPrivateGetDlpBlockedComponentsFunction() = default;
+
+ExtensionFunction::ResponseAction
+FileManagerPrivateGetDlpBlockedComponentsFunction::Run() {
+  if (!base::FeatureList::IsEnabled(
+          features::kDataLeakPreventionFilesRestriction)) {
+    return RespondNow(WithArguments(base::Value::List()));
+  }
+
+  policy::DlpRulesManager* rules_manager =
+      policy::DlpRulesManagerFactory::GetForPrimaryProfile();
+  policy::DlpFilesController* files_controller;
+  if (!rules_manager || !rules_manager->IsFilesPolicyEnabled() ||
+      !(files_controller = rules_manager->GetDlpFilesController())) {
+    return RespondNow(WithArguments(base::Value::List()));
+  }
+
+  using extensions::api::file_manager_private::GetDlpBlockedComponents::Params;
+  const std::unique_ptr<Params> params(Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  const std::vector<policy::DlpRulesManager::Component> components =
+      files_controller->GetBlockedComponents(params->source_url);
+
+  using extensions::api::file_manager_private::VolumeType;
+  std::vector<VolumeType> converted_list;
+
+  for (const auto& component : components) {
+    converted_list.emplace_back(DlpRulesManagerComponentToApiEnum(component));
+  }
+
+  return RespondNow(ArgumentList(
+      api::file_manager_private::GetDlpBlockedComponents::Results::Create(
           converted_list)));
 }
 

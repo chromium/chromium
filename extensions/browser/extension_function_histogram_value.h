@@ -1767,6 +1767,7 @@ enum HistogramValue {
   WMDESKSPRIVATE_SAVEACTIVEDESK = 1704,
   WMDESKSPRIVATE_DELETESAVEDDESK = 1705,
   WMDESKSPRIVATE_RECALLSAVEDDESK = 1706,
+  FILEMANAGERPRIVATE_GETDLPBLOCKEDCOMPONENTS = 1707,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

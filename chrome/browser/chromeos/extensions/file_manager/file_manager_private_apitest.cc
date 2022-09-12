@@ -861,6 +861,33 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpRestrictionDetails) {
                                {.load_as_component = true}));
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpBlockedComponents) {
+  policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
+      browser()->profile(),
+      base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
+                          base::Unretained(this)));
+  ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
+  EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled).Times(1);
+
+  policy::DlpRulesManager::AggregatedComponents components;
+  components[policy::DlpRulesManager::Level::kBlock].insert(
+      policy::DlpRulesManager::Component::kArc);
+  components[policy::DlpRulesManager::Level::kBlock].insert(
+      policy::DlpRulesManager::Component::kCrostini);
+  components[policy::DlpRulesManager::Level::kBlock].insert(
+      policy::DlpRulesManager::Component::kPluginVm);
+  components[policy::DlpRulesManager::Level::kBlock].insert(
+      policy::DlpRulesManager::Component::kUsb);
+  components[policy::DlpRulesManager::Level::kAllow].insert(
+      policy::DlpRulesManager::Component::kDrive);
+  EXPECT_CALL(*mock_rules_manager_, GetAggregatedComponents)
+      .WillOnce(testing::Return(components));
+
+  EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata",
+                               {.custom_arg = "blocked_components"},
+                               {.load_as_component = true}));
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata_Disabled) {
   policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
       browser()->profile(),
@@ -869,7 +896,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata_Disabled) {
   ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
   ON_CALL(*mock_rules_manager_, IsFilesPolicyEnabled)
       .WillByDefault(testing::Return(false));
-  EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled).Times(2);
+  EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled).Times(3);
   // We should not get to the point of checking DLP.
   EXPECT_CALL(*mock_rules_manager_, IsRestrictedByAnyRule).Times(0);
   EXPECT_CALL(*mock_rules_manager_, GetAggregatedComponents).Times(0);

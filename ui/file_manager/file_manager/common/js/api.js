@@ -127,6 +127,19 @@ export async function getDlpMetadata(entries) {
 }
 
 /**
+ * Retrieves the list of components to which the transfer of an Entry is blocked
+ * by Data Leak Prevention (DLP) policy.
+ * @param {string} sourceUrl Source URL of the Entry that should be checked.
+ * @return {!Promise<!Array<chrome.fileManagerPrivate.VolumeType>>}
+ * callback Callback with the list of components (subset of VolumeType) to which
+ * transferring an Entry is blocked by DLP.
+ */
+export async function getDlpBlockedComponents(sourceUrl) {
+  return promisify(
+      chrome.fileManagerPrivate.getDlpBlockedComponents, sourceUrl);
+}
+
+/**
  * Lists Guest OSs which support having their files mounted.
  * @return {!Promise<!Array<!chrome.fileManagerPrivate.MountableGuest>>}
  */

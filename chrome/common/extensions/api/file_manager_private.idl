@@ -1155,6 +1155,10 @@ callback GetDlpMetadataCallback =
 callback GetDlpRestrictionDetailsCallback =
     void(DlpRestrictionDetails[] restrictionDetails);
 
+// |blockedComponents| A list of components (subset of VolumeType) to which
+// transferring an Entry is blocked by Data Leak Prevention (DLP) policy.
+callback GetDlpBlockedComponentsCallback = void(VolumeType[] blockedComponents);
+
 // |copyId| ID of the copy task. Can be used to identify the progress, and to
 // cancel the task.
 callback StartCopyCallback = void(long copyId);
@@ -1457,6 +1461,14 @@ interface Functions {
   static void getDlpRestrictionDetails(
       DOMString sourceUrl,
       GetDlpRestrictionDetailsCallback callback);
+
+  // Retrieves the list of components to which the transfer of an Entry
+  // is blocked by Data Leak Prevention (DLP) policy.
+  // |sourceUrl| Source URL of the Entry that should be checked.
+  // |callback| Result callback.
+  static void getDlpBlockedComponents(
+      DOMString sourceUrl,
+      GetDlpBlockedComponentsCallback callback);
 
   // Starts to copy an entry. If the source is a directory, the copy is done
   // recursively.

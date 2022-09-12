@@ -374,8 +374,8 @@ void DlpFilesController::IsFilesTransferRestricted(
 }
 
 std::vector<DlpFilesController::DlpFileRestrictionDetails>
-DlpFilesController::GetDlpRestrictionDetails(const std::string& sourceUrl) {
-  const GURL source(sourceUrl);
+DlpFilesController::GetDlpRestrictionDetails(const std::string& source_url) {
+  const GURL source(source_url);
   const DlpRulesManager::AggregatedDestinations aggregated_destinations =
       rules_manager_.GetAggregatedDestinations(
           source, DlpRulesManager::Restriction::kFiles);
@@ -413,6 +413,22 @@ DlpFilesController::GetDlpRestrictionDetails(const std::string& sourceUrl) {
     result.emplace_back(std::move(details));
   }
 
+  return result;
+}
+
+std::vector<DlpRulesManager::Component>
+DlpFilesController::GetBlockedComponents(const std::string& source_url) {
+  const GURL source(source_url);
+  const DlpRulesManager::AggregatedComponents aggregated_components =
+      rules_manager_.GetAggregatedComponents(
+          source, DlpRulesManager::Restriction::kFiles);
+
+  std::vector<DlpRulesManager::Component> result;
+  const auto it = aggregated_components.find(DlpRulesManager::Level::kBlock);
+  if (it != aggregated_components.end()) {
+    base::ranges::move(it->second.begin(), it->second.end(),
+                       std::back_inserter(result));
+  }
   return result;
 }
 

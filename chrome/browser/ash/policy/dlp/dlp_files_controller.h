@@ -172,9 +172,14 @@ class DlpFilesController {
       FileAction files_action,
       IsFilesTransferRestrictedCallback result_callback);
 
-  // Returns restriction information for `sourceUrl`.
+  // Returns restriction information for `source_url`.
   std::vector<DlpFileRestrictionDetails> GetDlpRestrictionDetails(
-      const std::string& sourceUrl);
+      const std::string& source_url);
+
+  // Returns a list of components to which the transfer of a file with
+  // `source_url` is blocked.
+  std::vector<DlpRulesManager::Component> GetBlockedComponents(
+      const std::string& source_url);
 
   // Returns whether a dlp policy matches for the `file`.
   bool IsDlpPolicyMatched(const FileDaemonInfo& file);

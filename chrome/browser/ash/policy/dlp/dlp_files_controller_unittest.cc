@@ -521,6 +521,29 @@ TEST_F(DlpFilesControllerTest, GetDlpRestrictionDetails_Components) {
   EXPECT_EQ(result[0].components, expected_components);
 }
 
+TEST_F(DlpFilesControllerTest, GetBlockedComponents) {
+  DlpRulesManager::AggregatedComponents components;
+  components[DlpRulesManager::Level::kBlock].insert(
+      DlpRulesManager::Component::kArc);
+  components[DlpRulesManager::Level::kBlock].insert(
+      DlpRulesManager::Component::kCrostini);
+  components[DlpRulesManager::Level::kWarn].insert(
+      DlpRulesManager::Component::kUsb);
+  components[DlpRulesManager::Level::kReport].insert(
+      DlpRulesManager::Component::kDrive);
+
+  EXPECT_CALL(*rules_manager_, GetAggregatedComponents)
+      .WillOnce(testing::Return(components));
+
+  ASSERT_TRUE(files_controller_);
+  auto result = files_controller_->GetBlockedComponents(kExampleUrl1);
+  ASSERT_EQ(result.size(), 2);
+  std::vector<DlpRulesManager::Component> expected_components;
+  expected_components.push_back(DlpRulesManager::Component::kArc);
+  expected_components.push_back(DlpRulesManager::Component::kCrostini);
+  EXPECT_EQ(result, expected_components);
+}
+
 TEST_F(DlpFilesControllerTest, CheckReportingOnIsDlpPolicyMatched) {
   AddFilesToDlpClient();
 

@@ -86,11 +86,18 @@ chrome.test.getConfig(config => {
                 chrome.test.assertEq([], dlpMetadata);
               }))
         },
-        async function showDlpRestrictionDetails() {
+        async function getDlpRestrictionDetails_Disabled() {
           chrome.fileManagerPrivate.getDlpRestrictionDetails(
               'https://example1.com',
               chrome.test.callbackPass(dlpRestrictionDetails => {
                 chrome.test.assertEq([], dlpRestrictionDetails);
+              }));
+        },
+        async function getDlpBlockedComponents_Disabled() {
+          chrome.fileManagerPrivate.getDlpBlockedComponents(
+              'https://example1.com',
+              chrome.test.callbackPass(blockedComponents => {
+                chrome.test.assertEq([], blockedComponents);
               }));
         }
       ]);
@@ -139,6 +146,17 @@ chrome.test.getConfig(config => {
                     }
                   ],
                   dlpRestrictionDetails);
+            }));
+      }]);
+      break;
+    case 'blocked_components':
+      chrome.test.runTests([async function getDlpBlockedComponents() {
+        chrome.fileManagerPrivate.getDlpBlockedComponents(
+            'https://example1.com',
+            chrome.test.callbackPass(blockedComponents => {
+              chrome.test.assertEq(
+                  ['android_files', 'crostini', 'guest_os', 'removable'],
+                  blockedComponents);
             }));
       }]);
       break;

@@ -1022,6 +1022,17 @@ chrome.fileManagerPrivate.getDlpRestrictionDetails = function(
     sourceUrl, callback) {};
 
 /**
+ * Retrieves the list of components to which the transfer of an Entry is blocked
+ * by Data Leak Prevention (DLP) policy.
+ * @param {string} sourceUrl Source URL of the Entry that should be checked.
+ * @param {function(!Array<chrome.fileManagerPrivate.VolumeType>)}
+ * callback Callback with the list of components (subset of VolumeType) to which
+ * transferring an Entry is blocked by DLP.
+ */
+chrome.fileManagerPrivate.getDlpBlockedComponents = function(
+    sourceUrl, callback) {};
+
+/**
  * Starts to copy an entry. If the source is a directory, the copy is done
  * recursively. |entry| Entry of the source entry to be copied. |parent| Entry
  * of the destination directory. |newName| Name of the new entry. It must not

@@ -355,6 +355,22 @@ class FileManagerPrivateGetDlpRestrictionDetailsFunction
   ResponseAction Run() override;
 };
 
+// Implements the chrome.fileManagerPrivate.getDlpBlockedComponents method.
+class FileManagerPrivateGetDlpBlockedComponentsFunction
+    : public LoggedExtensionFunction {
+ public:
+  FileManagerPrivateGetDlpBlockedComponentsFunction();
+
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.getDlpBlockedComponents",
+                             FILEMANAGERPRIVATE_GETDLPBLOCKEDCOMPONENTS)
+
+ protected:
+  ~FileManagerPrivateGetDlpBlockedComponentsFunction() override;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 // Implements the chrome.fileManagerPrivate.startCopy method.
 class FileManagerPrivateInternalStartCopyFunction
     : public LoggedExtensionFunction {
