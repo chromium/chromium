@@ -4,6 +4,8 @@
 
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 
+#include "ash/display/screen_orientation_controller.h"
+#include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/splitview/split_view_constants.h"
@@ -25,6 +27,7 @@
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -711,8 +714,52 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuHalfFunctionality) {
                              ->GetBoundsInScreen()
                              .left_center());
   generator->ClickLeftButton();
-  EXPECT_TRUE(window_state()->GetStateType() ==
-              WindowStateType::kPrimarySnapped);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
+}
+
+// Tests that clicking the left side of the half button works as intended for
+// RTL setups.
+TEST_F(MultitaskMenuTest, HalfButtonRTL) {
+  UpdateDisplay("800x600");
+
+  base::i18n::SetRTLForTesting(true);
+
+  ShowMultitaskMenu();
+  GetEventGenerator()->MoveMouseTo(multitask_menu()
+                                       ->multitask_menu_view_for_testing()
+                                       ->half_button_for_testing()
+                                       ->GetBoundsInScreen()
+                                       .left_center());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
+  EXPECT_EQ(gfx::Rect(400, 552), GetWidget()->GetWindowBoundsInScreen());
+}
+
+// Tests that if the display is in secondary layout, pressing the physically
+// left side button should snap it to the correct side.
+TEST_F(MultitaskMenuTest, HalfButtonSecondaryLayout) {
+  // Rotate the display 180 degrees so its layout is not primary.
+  const int64_t display_id =
+      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  display::test::ScopedSetInternalDisplayId set_internal(
+      Shell::Get()->display_manager(), display_id);
+  ScreenOrientationControllerTestApi(
+      Shell::Get()->screen_orientation_controller())
+      .SetDisplayRotation(display::Display::ROTATE_180,
+                          display::Display::RotationSource::ACTIVE);
+
+  ShowMultitaskMenu();
+
+  // Click on the left side of the half button. It should be in secondary
+  // snapped state, because in this orientation secondary snapped is actually
+  // physically on the left side.
+  GetEventGenerator()->MoveMouseToInHost(multitask_menu()
+                                             ->multitask_menu_view_for_testing()
+                                             ->half_button_for_testing()
+                                             ->GetBoundsInScreen()
+                                             .left_center());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
 }
 
 // Test Partial Split Button Functionality.
@@ -730,8 +777,7 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
                              ->GetBoundsInScreen()
                              .left_center());
   generator->ClickLeftButton();
-  EXPECT_TRUE(window_state()->GetStateType() ==
-              WindowStateType::kPrimarySnapped);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
   EXPECT_EQ(window_state()->window()->bounds().width(),
             work_area_bounds_in_screen.width() * 0.67);
 
@@ -746,8 +792,7 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
                  partial_bounds.y() + partial_bounds.y() / 2));
   generator->MoveMouseTo(secondary_center);
   generator->ClickLeftButton();
-  EXPECT_TRUE(window_state()->GetStateType() ==
-              WindowStateType::kSecondarySnapped);
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
   EXPECT_EQ(window_state()->window()->bounds().width(),
             work_area_bounds_in_screen.width() * 0.33);
 }

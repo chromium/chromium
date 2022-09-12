@@ -6,6 +6,7 @@
 #define CHROMEOS_UI_FRAME_FRAME_UTILS_H_
 
 #include "base/component_export.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/widget/widget.h"
 
@@ -31,6 +32,10 @@ void ResolveInferredOpacity(views::Widget::InitParams* params);
 // Checks whether we should draw the restored window frame on |widget|.
 COMPONENT_EXPORT(CHROMEOS_UI_FRAME)
 bool ShouldUseRestoreFrame(const views::Widget* widget);
+
+// Gets the snap direction given a button associated with left/top or
+// right/bottom. Takes into account the orientation of the display.
+SnapDirection GetSnapDirectionForWindow(aura::Window* window, bool left_top);
 
 }  // namespace chromeos
 

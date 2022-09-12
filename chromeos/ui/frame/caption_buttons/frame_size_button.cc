@@ -9,17 +9,16 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
-#include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
+#include "chromeos/ui/frame/frame_utils.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
-#include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -62,34 +61,29 @@ bool HitTestButton(const views::FrameCaptionButton* button,
 }
 
 SnapDirection GetSnapDirection(const views::FrameCaptionButton* to_hover) {
-  if (to_hover) {
-    const bool is_primary_display_layout = chromeos::IsDisplayLayoutPrimary(
-        display::Screen::GetScreen()->GetDisplayNearestWindow(
-            to_hover->GetWidget()->GetNativeWindow()));
-    switch (to_hover->GetIcon()) {
-      case views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED:
-        return is_primary_display_layout ? SnapDirection::kPrimary
-                                         : SnapDirection::kSecondary;
-      case views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED:
-        return is_primary_display_layout ? SnapDirection::kSecondary
-                                         : SnapDirection::kPrimary;
-      case views::CAPTION_BUTTON_ICON_FLOAT:
-      case views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE:
-      case views::CAPTION_BUTTON_ICON_MINIMIZE:
-      case views::CAPTION_BUTTON_ICON_CLOSE:
-      case views::CAPTION_BUTTON_ICON_BACK:
-      case views::CAPTION_BUTTON_ICON_LOCATION:
-      case views::CAPTION_BUTTON_ICON_MENU:
-      case views::CAPTION_BUTTON_ICON_ZOOM:
-      case views::CAPTION_BUTTON_ICON_CENTER:
-      case views::CAPTION_BUTTON_ICON_CUSTOM:
-      case views::CAPTION_BUTTON_ICON_COUNT:
-        NOTREACHED();
-        break;
-    }
-  }
+  if (!to_hover)
+    return SnapDirection::kNone;
 
-  return SnapDirection::kNone;
+  aura::Window* window = to_hover->GetWidget()->GetNativeWindow();
+  switch (to_hover->GetIcon()) {
+    case views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED:
+      return GetSnapDirectionForWindow(window, /*left_top=*/true);
+    case views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED:
+      return GetSnapDirectionForWindow(window, /*left_top=*/false);
+    case views::CAPTION_BUTTON_ICON_FLOAT:
+    case views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE:
+    case views::CAPTION_BUTTON_ICON_MINIMIZE:
+    case views::CAPTION_BUTTON_ICON_CLOSE:
+    case views::CAPTION_BUTTON_ICON_BACK:
+    case views::CAPTION_BUTTON_ICON_LOCATION:
+    case views::CAPTION_BUTTON_ICON_MENU:
+    case views::CAPTION_BUTTON_ICON_ZOOM:
+    case views::CAPTION_BUTTON_ICON_CENTER:
+    case views::CAPTION_BUTTON_ICON_CUSTOM:
+    case views::CAPTION_BUTTON_ICON_COUNT:
+      NOTREACHED();
+      return SnapDirection::kNone;
+  }
 }
 
 }  // namespace

@@ -73,6 +73,9 @@ SplitButtonView::SplitButtonView(
     views::Button::PressedCallback secondary_callback,
     bool is_portrait_mode)
     : type_(type) {
+  // Left button should stay on the left side for RTL languages.
+  SetMirrored(false);
+
   SetOrientation(is_portrait_mode ? views::BoxLayout::Orientation::kVertical
                                   : views::BoxLayout::Orientation::kHorizontal);
   SetPreferredSize(is_portrait_mode ? kMultitaskButtonPortraitSize

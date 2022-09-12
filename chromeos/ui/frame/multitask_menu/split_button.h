@@ -67,12 +67,19 @@ class SplitButtonView : public views::BoxLayoutView {
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
-  // Called when either primary/secondary button is hovered,
-  // Update button colors.
+  // Called when either primary/secondary button is hovered. Updates button
+  // colors.
   void OnButtonHovered();
 
+  // Pointers to the buttons that are owned by the views hierarchy. Primary
+  // refers to the button that is physically associated with the left or top;
+  // secondary refers to the button that is physically associated with the
+  // bottom or right.
+  // TODO(shidi): Consider renaming these as primary/secondary snapped is
+  // different from physical left/top or right/bottom.
   SplitButton* primary_button_;
   SplitButton* secondary_button_;
+
   const SplitButton::SplitButtonType type_;
 
   SkColor border_color_ = kMultitaskButtonDefaultColor;
