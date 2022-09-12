@@ -12704,6 +12704,84 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
+<histogram name="SpellCheck.api.async" units="code units"
+    expires_after="2023-09-09">
+  <owner>basiaz@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The length of text checked via async checking.
+
+    Warning: this histogram was expired from M83 to M107; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="SpellCheck.api.check" units="code units"
+    expires_after="2023-09-09">
+  <owner>basiaz@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The length of text checked by spellCheck. No replacement suggestions were
+    requested.
+
+    Warning: this histogram was expired from M83 to M107; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="SpellCheck.api.check.suggestions" units="code units"
+    expires_after="2023-09-09">
+  <owner>basiaz@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The length of text checked by spellCheck. Replacement suggestions were
+    requested.
+
+    Warning: this histogram was expired from M83 to M107; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="SpellCheck.CheckedWords" units="words"
+    expires_after="2023-09-09">
+  <owner>basiaz@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The number of words checked within a session.
+
+    Warning: this histogram was expired from M83 to M107; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="SpellCheck.CheckedWordsPerHour" units="words"
+    expires_after="2023-09-09">
+  <owner>basiaz@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The average number of words checked per hour. Sampled every 30 minutes.
+    Warning: this histogram was expired from M83 to M107; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="SpellCheck.Enabled" enum="BooleanEnabled"
+    expires_after="2023-09-09">
+  <owner>basiaz@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The number of sessions that started with spellchecking enabled.
+
+    Warning: this histogram was expired from M83 to M107; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="SpellCheck.MisspelledWords" units="words"
+    expires_after="2023-09-09">
+  <owner>basiaz@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The number of misspelled words within a session.
+
+    Warning: this histogram was expired from M83 to M107; data may be missing.
+  </summary>
+</histogram>
+
 <histogram name="SpellCheck.MisspellRatio" units="%" expires_after="M90">
   <obsolete>
     Removed 2021/01: the relevant code path isn't used anymore.
@@ -12711,6 +12789,17 @@ should be kept until we remove incident reporting. -->
   <owner>gujen@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>The percentage of misspelled words within checked words.</summary>
+</histogram>
+
+<histogram name="SpellCheck.ReplacedWords" units="words"
+    expires_after="2023-09-09">
+  <owner>basiaz@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The number of misspelled-but-replaced words within a session.
+
+    Warning: this histogram was expired from M83 to M107; data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="SpellCheck.ReplaceRatio" units="%" expires_after="M90">
@@ -12722,8 +12811,21 @@ should be kept until we remove incident reporting. -->
   <summary>The percentage of replaced words within misspelled words.</summary>
 </histogram>
 
+<histogram name="SpellCheck.ShownSuggestions" units="suggestions"
+    expires_after="2023-09-09">
+  <owner>basiaz@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The number of occurrences that shows spelling suggestion within a session.
+    This is incremented and logged when a context menu with spelling suggestions
+    is shown for a misspelled word.
+
+    Warning: this histogram was expired from M83 to M107; data may be missing.
+  </summary>
+</histogram>
+
 <histogram name="SpellCheck.SpellingService.Enabled" enum="BooleanEnabled"
-    expires_after="2023-03-05">
+    expires_after="2023-09-09">
   <owner>groby@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
