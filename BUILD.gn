@@ -38,6 +38,12 @@ if (is_android) {
   import("//build/config/android/config.gni")
 }
 
+if (is_fuchsia) {
+  import("//build/config/fuchsia/generate_runner_scripts.gni")
+  import("//third_party/fuchsia-sdk/sdk/build/component.gni")
+  import("//third_party/fuchsia-sdk/sdk/build/package.gni")
+}
+
 if (is_linux) {
   import("build/config/linux/gtk/gtk.gni")
 }
@@ -930,16 +936,19 @@ if (is_android) {
 if (is_fuchsia) {
   # TODO(https://crbug.com/731217): This can't practically be in //v8 without
   # duplicating all the Fuchsia running infrastructure there.
-  cr_fuchsia_package("d8_fuchsia_pkg") {
+  fuchsia_component("d8_component") {
     testonly = true
-    binary = "//v8:d8"
-    manifest = "//v8/gni/v8.cmx"
-    package_name = "d8"
+    manifest = "//v8/gni/v8.cml"
+    data_deps = [ "//v8:d8" ]
   }
-
+  fuchsia_package("d8_pkg") {
+    testonly = true
+    package_name = "d8"
+    deps = [ ":d8_component" ]
+  }
   fuchsia_package_installer("d8_fuchsia") {
     testonly = true
-    package = ":d8_fuchsia_pkg"
+    package = ":d8_pkg"
     package_name = "d8"
   }
 }
