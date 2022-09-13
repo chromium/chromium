@@ -84,14 +84,22 @@ void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
   }
 
   bool is_disabled = GetVisualState() == Button::STATE_DISABLED;
-  SkColor background_color =
-      is_disabled ? GetForegroundColor(ButtonState::STATE_DISABLED)
-                  : GetColorProvider()->GetColor(
-                        kColorDownloadToolbarButtonRingBackground);
-  SkColor progress_color =
-      is_disabled
-          ? GetForegroundColor(ButtonState::STATE_DISABLED)
-          : GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive);
+  bool is_active = icon_info.is_active;
+  SkColor background_color, progress_color;
+  if (is_disabled) {
+    background_color = GetForegroundColor(ButtonState::STATE_DISABLED);
+    progress_color = GetForegroundColor(ButtonState::STATE_DISABLED);
+  } else if (!is_active) {
+    background_color =
+        GetColorProvider()->GetColor(kColorDownloadToolbarButtonRingBackground);
+    progress_color =
+        GetColorProvider()->GetColor(kColorDownloadToolbarButtonInactive);
+  } else {
+    background_color =
+        GetColorProvider()->GetColor(kColorDownloadToolbarButtonRingBackground);
+    progress_color =
+        GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive);
+  }
 
   int ring_radius = ui::TouchUiController::Get()->touch_ui()
                         ? kProgressRingRadiusTouchMode
