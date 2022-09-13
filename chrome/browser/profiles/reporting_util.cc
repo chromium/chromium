@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "components/account_id/account_id.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -27,8 +28,11 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/affiliation.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -210,5 +214,39 @@ absl::optional<std::string> GetUserClientId(Profile* profile) {
     return absl::nullopt;
   return policy_data->device_id();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+absl::optional<std::string> GetMGSUserClientId() {
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  const user_manager::UserManager* user_manager =
+      user_manager::UserManager::Get();
+  policy::DeviceLocalAccountPolicyService* policy_service =
+      connector->GetDeviceLocalAccountPolicyService();
+
+  // The policy service is null if the device is managed by Active Directory.
+  if (!policy_service) {
+    return absl::nullopt;
+  }
+
+  const policy::DeviceLocalAccountPolicyBroker* policy_broker =
+      policy_service->GetBrokerForUser(
+          user_manager->GetActiveUser()->GetAccountId().GetUserEmail());
+
+  // The policy broker is null if the active user does not belong to an existing
+  // device-local account, which should never be the case when calling this
+  // function.
+  DCHECK(policy_broker);
+
+  const enterprise_management::PolicyData* policy_data =
+      policy_broker->core()->store()->policy();
+
+  if (policy_data && policy_data->has_device_id()) {
+    return policy_data->device_id();
+  } else {
+    return absl::nullopt;
+  }
+}
+#endif
 
 }  // namespace reporting
