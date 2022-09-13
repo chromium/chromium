@@ -3684,14 +3684,6 @@
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
         },
       },
-      'linux-blink-optional-highdpi-rel-dummy': {
-        'mixins': [
-          'linux-bionic',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chromium_web_tests_high_dpi_isolated_scripts',
-        },
-      },
       'linux-blink-v8-sandbox-future-rel': {
         'mixins': [
           'linux-bionic',
@@ -3965,14 +3957,6 @@
           'isolated_scripts': 'upload_perfetto',
         },
         'use_swarming': False,
-      },
-      'mac11.0-blink-rel-dummy': {
-        'mixins': [
-          'mac_11_x64',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
       },
       'win-annotator-rel': {
         'test_suites': {

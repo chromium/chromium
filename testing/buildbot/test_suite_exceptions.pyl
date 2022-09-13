@@ -516,12 +516,6 @@
           'hard_timeout': 1800,
         },
       },
-      'mac11.0-blink-rel-dummy': {
-        'swarming': {
-          'shards': 5,
-          'hard_timeout': 1800,
-        },
-      },
       'win10-rel-no-external-ip': {
         'args': [
           '--target',
@@ -824,12 +818,6 @@
         },
       },
       'mac11.0-blink-rel': {
-        'swarming': {
-          'shards': 7,
-          'hard_timeout': 1800,
-        },
-      },
-      'mac11.0-blink-rel-dummy': {
         'swarming': {
           'shards': 7,
           'hard_timeout': 1800,
