@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 
+#import "components/signin/public/identity_manager/account_info.h"
 #include "ios/chrome/browser/signin/constants.h"
 
 @class ChromeIdentity;
@@ -34,5 +35,16 @@ CGSize GetSizeForIdentityAvatarSize(IdentityAvatarSize avatar_size);
 // needs to be called for the first time before IO is disallowed on UI thread.
 // The value is cached. The result is cached for later calls.
 signin::Tribool IsFirstSessionAfterDeviceRestore();
+
+// Stores a user's account info in memory, when we detect that it was
+// forgotten during a device restore.
+void StorePreRestoreIdentity(AccountInfo account);
+
+// Clears the identity that was signed-in before the restore.
+void ClearPreRestoreIdentity();
+
+// Returns the identity that was signed-in before the restore, but is now
+// not signed-in.
+absl::optional<AccountInfo> GetPreRestoreIdentity();
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_SIGNIN_UTIL_H_

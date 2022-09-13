@@ -15,6 +15,10 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+absl::optional<AccountInfo> g_pre_restore_identity;
+}
+
 NSArray* GetScopeArray(const std::set<std::string>& scopes) {
   NSMutableArray* scopes_array = [[NSMutableArray alloc] init];
   for (const auto& scope : scopes) {
@@ -54,4 +58,16 @@ signin::Tribool IsFirstSessionAfterDeviceRestore() {
         IsFirstSessionAfterDeviceRestoreInternal();
   });
   return is_first_session_after_device_restore;
+}
+
+void StorePreRestoreIdentity(AccountInfo account) {
+  g_pre_restore_identity = account;
+}
+
+void ClearPreRestoreIdentity() {
+  g_pre_restore_identity.reset();
+}
+
+absl::optional<AccountInfo> GetPreRestoreIdentity() {
+  return g_pre_restore_identity;
 }

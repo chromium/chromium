@@ -635,6 +635,15 @@ void AuthenticationService::HandleForgottenIdentity(
     signout_source = signin_metrics::ACCOUNT_REMOVED_FROM_DEVICE;
   }
 
+  // Store the pre-device-restore identity in-memory in order to prompt user
+  // to sign-in again later.
+  if (device_restore) {
+    AccountInfo extended_account_info =
+        identity_manager_->FindExtendedAccountInfoByAccountId(
+            account_info.account_id);
+    StorePreRestoreIdentity(extended_account_info);
+  }
+
   // Sign the user out.
   SignOut(signout_source, /*force_clear_browsing_data=*/false, nil);
 
