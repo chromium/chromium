@@ -10,6 +10,10 @@
 
 namespace remoting {
 
+namespace protocol {
+class VideoLayout;
+}  // namespace protocol
+
 class ScreenResolution;
 
 // Used to change the screen resolution (both dimensions and DPI).
@@ -31,6 +35,8 @@ class ScreenControls {
   virtual void SetScreenResolution(
       const ScreenResolution& resolution,
       absl::optional<webrtc::ScreenId> screen_id) = 0;
+
+  virtual void SetVideoLayout(const protocol::VideoLayout& video_layout) = 0;
 };
 
 }  // namespace remoting

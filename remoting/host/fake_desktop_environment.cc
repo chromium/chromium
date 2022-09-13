@@ -61,6 +61,9 @@ void FakeScreenControls::SetScreenResolution(
     const ScreenResolution& resolution,
     absl::optional<webrtc::ScreenId> screen_id) {}
 
+void FakeScreenControls::SetVideoLayout(
+    const protocol::VideoLayout& video_layout) {}
+
 FakeDesktopEnvironment::FakeDesktopEnvironment(
     scoped_refptr<base::SingleThreadTaskRunner> capture_thread,
     const DesktopEnvironmentOptions& options)

@@ -26,6 +26,7 @@ class IpcScreenControls : public ScreenControls {
   // ScreenControls interface.
   void SetScreenResolution(const ScreenResolution& resolution,
                            absl::optional<webrtc::ScreenId> screen_id) override;
+  void SetVideoLayout(const protocol::VideoLayout& video_layout) override;
 
  private:
   // Wraps the IPC channel to the desktop session agent.

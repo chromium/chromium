@@ -19,6 +19,7 @@
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/desktop_resizer.h"
+#include "remoting/proto/control.pb.h"
 
 namespace remoting {
 namespace {
@@ -235,6 +236,11 @@ void ResizingHostObserver::SetScreenResolution(
 
   // Update the time of last resize to allow it to be rate-limited.
   previous_resize_time_ = now;
+}
+
+void ResizingHostObserver::SetVideoLayout(
+    const protocol::VideoLayout& video_layout) {
+  desktop_resizer_->SetVideoLayout(video_layout);
 }
 
 void ResizingHostObserver::SetDisplayInfoForTesting(

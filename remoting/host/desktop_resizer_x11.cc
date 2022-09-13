@@ -6,15 +6,22 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "remoting/base/logging.h"
+#include "remoting/host/desktop_display_layout_util.h"
 #include "remoting/host/linux/x11_util.h"
 #include "remoting/host/x11_crtc_resizer.h"
+#include "remoting/host/x11_display_util.h"
+#include "remoting/proto/control.pb.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/randr.h"
 
@@ -211,6 +218,41 @@ void DesktopResizerX11::SetResolution(const ScreenResolution& resolution,
 void DesktopResizerX11::RestoreResolution(const ScreenResolution& original,
                                           webrtc::ScreenId screen_id) {
   SetResolution(original, screen_id);
+}
+
+void DesktopResizerX11::SetVideoLayout(const protocol::VideoLayout& layout) {
+  if (!has_randr_ || !is_virtual_session_)
+    return;
+
+  // Grab the X server while we're changing the display resolution. This ensures
+  // that the display configuration doesn't change under our feet.
+  ScopedXGrabServer grabber(connection_);
+
+  if (!resources_.Refresh(randr_, root_))
+    return;
+
+  auto reply = randr_->GetMonitors({root_}).Sync();
+  if (!reply) {
+    return;
+  }
+
+  std::vector<VideoTrackLayoutWithContext> current_displays;
+  for (auto& monitor : reply->monitors) {
+    current_displays.push_back(
+        {.layout = ToVideoTrackLayout(monitor), .context = &monitor});
+  }
+  DisplayLayoutDiff diff = CalculateDisplayLayoutDiff(current_displays, layout);
+  if (!diff.new_displays.empty()) {
+    NOTIMPLEMENTED() << "number of new displays: " << diff.new_displays.size();
+  }
+  for (const auto& updated_display : diff.updated_displays) {
+    NOTIMPLEMENTED() << "Updated display: "
+                     << updated_display.layout.screen_id();
+  }
+  for (const auto& removed_display : diff.removed_displays) {
+    NOTIMPLEMENTED() << "Removed display: "
+                     << removed_display.layout.screen_id();
+  }
 }
 
 void DesktopResizerX11::SetResolutionForOutput(

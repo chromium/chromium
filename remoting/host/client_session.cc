@@ -440,6 +440,10 @@ void ClientSession::ControlPeerConnection(
   }
 }
 
+void ClientSession::SetVideoLayout(const protocol::VideoLayout& video_layout) {
+  screen_controls_->SetVideoLayout(video_layout);
+}
+
 void ClientSession::OnConnectionAuthenticating() {
   event_handler_->OnSessionAuthenticating(this);
 }

@@ -124,6 +124,12 @@ void ClientControlDispatcher::ControlPeerConnection(
   message_pipe()->Send(&message, {});
 }
 
+void ClientControlDispatcher::SetVideoLayout(const VideoLayout& video_layout) {
+  ControlMessage message;
+  message.mutable_video_layout()->CopyFrom(video_layout);
+  message_pipe()->Send(&message, {});
+}
+
 void ClientControlDispatcher::OnIncomingMessage(
     std::unique_ptr<CompoundBuffer> buffer) {
   DCHECK(client_stub_);

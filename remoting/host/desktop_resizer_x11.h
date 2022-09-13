@@ -48,6 +48,7 @@ class DesktopResizerX11 : public DesktopResizer {
                      webrtc::ScreenId screen_id) override;
   void RestoreResolution(const ScreenResolution& original,
                          webrtc::ScreenId screen_id) override;
+  void SetVideoLayout(const protocol::VideoLayout& layout) override;
 
  private:
   // Add a mode matching the specified resolution and switch to it.

@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 
 namespace {
 // TODO(jamiewalch): Use the correct DPI for the mode: http://crbug.com/172405.
@@ -48,6 +49,7 @@ class DesktopResizerWin : public DesktopResizer {
                      webrtc::ScreenId screen_id) override;
   void RestoreResolution(const ScreenResolution& original,
                          webrtc::ScreenId screen_id) override;
+  void SetVideoLayout(const protocol::VideoLayout& layout) override;
 
  private:
   void UpdateBestModeForResolution(const DEVMODE& current_mode,
@@ -137,6 +139,10 @@ void DesktopResizerWin::RestoreResolution(const ScreenResolution& original,
   DWORD result = ChangeDisplaySettings(nullptr, 0);
   if (result != DISP_CHANGE_SUCCESSFUL)
     LOG(ERROR) << "RestoreResolution failed: " << result;
+}
+
+void DesktopResizerWin::SetVideoLayout(const protocol::VideoLayout& layout) {
+  NOTIMPLEMENTED();
 }
 
 void DesktopResizerWin::UpdateBestModeForResolution(

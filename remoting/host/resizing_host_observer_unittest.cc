@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -112,6 +113,9 @@ class FakeDesktopResizer : public DesktopResizer {
     ExpectValidId(screen_id);
     (*monitors_)[screen_id] = resolution;
     ++call_counts_->restore_resolution;
+  }
+  void SetVideoLayout(const protocol::VideoLayout& layout) override {
+    NOTIMPLEMENTED();
   }
 
  private:

@@ -42,6 +42,10 @@ class DesktopResizerLinux : public DesktopResizer {
                          webrtc::ScreenId screen_id) override {
     NOTIMPLEMENTED();
   }
+
+  void SetVideoLayout(const protocol::VideoLayout& layout) override {
+    NOTIMPLEMENTED();
+  }
 };
 
 }  // namespace

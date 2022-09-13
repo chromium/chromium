@@ -94,9 +94,13 @@ message ExtensionMessage {
 
 message VideoTrackLayout {
   // Unique display identifier, from ScreenId in desktop_capture_types.h.
+  // In client-to-host messages, an unset screen_id indicates that the client is
+  // requesting a new display to be added to the display layout.
   optional int64 screen_id = 8;
 
   // Name of the video stream, from the WebRTC MediaStream.id property.
+  // Absent in client-to-host messages if the client is requesting a new
+  // display.
   optional string media_stream_id = 1;
 
   // Position of the top left corner of the rectangle covered by the video
@@ -111,6 +115,8 @@ message VideoTrackLayout {
   // DPI of the screen.
   optional int32 x_dpi = 6;
   optional int32 y_dpi = 7;
+
+  // TODO(yuweih): Add bpp and is_default to the message.
 }
 
 message VideoLayout {
@@ -118,6 +124,7 @@ message VideoLayout {
   repeated VideoTrackLayout video_track = 1;
 
   // True if this display configuration supports capturing the entire desktop.
+  // Absent in client-to-host messages.
   optional bool supports_full_desktop_capture = 2;
 }
 
@@ -125,28 +132,6 @@ message SelectDesktopDisplayRequest {
   // Identifier for display to select. Valid strings are "0", "1", ...
   // The "all" string is used to select the entire desktop.
   optional string id = 1;
-}
-
-message DesktopDisplayInfo {
-  // Unique display identifier.
-  optional int64 id = 1;
-
-  // Position of the top left corner of this display (in pixels).
-  optional int32 x = 2;
-  optional int32 y = 3;
-
-  // Size of the display (in pixels).
-  optional int32 width = 4;
-  optional int32 height = 5;
-
-  // DPI of the screen.
-  optional int32 dpi = 6;
-
-  // Bits per pixel.
-  optional int32 bpp = 7;
-
-  // True if this is the default display.
-  optional bool is_default = 8;
 }
 
 // Next ID: 2

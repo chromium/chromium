@@ -250,6 +250,7 @@ class FakeConnectionEventLogger::CounterHostStub
   void SetCapabilities(const protocol::Capabilities& capabilities) override {}
   void SelectDesktopDisplay(
       const protocol::SelectDesktopDisplayRequest& select_display) override {}
+  void SetVideoLayout(const protocol::VideoLayout& video_layout) override {}
 };
 
 FakeConnectionEventLogger::CounterHostStub::CounterHostStub()

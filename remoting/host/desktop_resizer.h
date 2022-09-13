@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "remoting/host/base/screen_resolution.h"
+#include "remoting/proto/control.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace remoting {
@@ -56,6 +57,12 @@ class DesktopResizer {
   // virtual hosts will typically ignore it to avoid unnecessary resizes.
   virtual void RestoreResolution(const ScreenResolution& original,
                                  webrtc::ScreenId screen_id) = 0;
+
+  // Updates current display layout to match |layout|. If a video track doesn't
+  // have screen_id, a new monitor will be added with the matching geometry.
+  // This method has the same requirements and behavior as SetResolution()
+  // regarding the screen resolution.
+  virtual void SetVideoLayout(const protocol::VideoLayout& layout) = 0;
 };
 
 }  // namespace remoting

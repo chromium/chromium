@@ -19,6 +19,7 @@ class PairingRequest;
 class PeerConnectionParameters;
 class SelectDesktopDisplayRequest;
 class VideoControl;
+class VideoLayout;
 
 class HostStub {
  public:
@@ -56,6 +57,9 @@ class HostStub {
   // Select the specified host display.
   virtual void SelectDesktopDisplay(
       const SelectDesktopDisplayRequest& select_display) = 0;
+
+  // Changes the current video layout.
+  virtual void SetVideoLayout(const VideoLayout& video_layout) = 0;
 
  protected:
   virtual ~HostStub() = default;

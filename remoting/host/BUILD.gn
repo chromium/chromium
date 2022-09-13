@@ -274,6 +274,8 @@ static_library("common") {
     "desktop_display_info_loader.h",
     "desktop_display_info_monitor.cc",
     "desktop_display_info_monitor.h",
+    "desktop_display_layout_util.cc",
+    "desktop_display_layout_util.h",
     "desktop_process.cc",
     "desktop_process.h",
     "desktop_resizer.h",
@@ -497,6 +499,8 @@ static_library("common") {
       "input_injector_x11.cc",
       "x11_crtc_resizer.cc",
       "x11_crtc_resizer.h",
+      "x11_display_util.cc",
+      "x11_display_util.h",
     ]
     deps += [
       "//remoting/host/linux:x11",
@@ -723,6 +727,7 @@ source_set("unit_tests") {
     "config_file_watcher_unittest.cc",
     "daemon_process_unittest.cc",
     "desktop_display_info_unittest.cc",
+    "desktop_display_layout_util_unittest.cc",
     "desktop_process_unittest.cc",
     "desktop_session_agent_unittest.cc",
     "ftl_echo_message_listener_unittest.cc",
@@ -817,7 +822,11 @@ source_set("unit_tests") {
   }
 
   if (remoting_use_x11) {
-    sources += [ "x11_crtc_resizer_unittest.cc" ]
+    sources += [
+      "x11_crtc_resizer_unittest.cc",
+      "x11_display_util_unittest.cc",
+    ]
+    deps += [ "//ui/gfx/x" ]
   }
 
   if (is_chromeos_ash) {

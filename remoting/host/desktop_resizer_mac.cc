@@ -11,6 +11,7 @@
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "remoting/base/logging.h"
 
 namespace {
@@ -35,6 +36,7 @@ class DesktopResizerMac : public DesktopResizer {
                      webrtc::ScreenId screen_id) override;
   void RestoreResolution(const ScreenResolution& original,
                          webrtc::ScreenId screen_id) override;
+  void SetVideoLayout(const protocol::VideoLayout& layout) override;
 
  private:
   // If there is a single display, get its id and return true, otherwise return
@@ -121,6 +123,10 @@ void DesktopResizerMac::SetResolution(const ScreenResolution& resolution,
 void DesktopResizerMac::RestoreResolution(const ScreenResolution& original,
                                           webrtc::ScreenId screen_id) {
   SetResolution(original, screen_id);
+}
+
+void DesktopResizerMac::SetVideoLayout(const protocol::VideoLayout& layout) {
+  NOTIMPLEMENTED();
 }
 
 void DesktopResizerMac::GetSupportedModesAndResolutions(

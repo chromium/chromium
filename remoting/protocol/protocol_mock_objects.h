@@ -142,6 +142,7 @@ class MockHostStub : public HostStub {
   MOCK_METHOD1(DeliverClientMessage, void(const ExtensionMessage& message));
   MOCK_METHOD1(SelectDesktopDisplay,
                void(const SelectDesktopDisplayRequest& message));
+  MOCK_METHOD1(SetVideoLayout, void(const VideoLayout& video_layout));
 };
 
 class MockClientStub : public ClientStub {

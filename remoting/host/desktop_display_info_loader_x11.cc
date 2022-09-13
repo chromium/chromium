@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/numerics/safe_conversions.h"
 #include "remoting/base/logging.h"
+#include "remoting/host/x11_display_util.h"
 #include "ui/base/x/x11_display_util.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/connection.h"
@@ -24,9 +24,6 @@ namespace {
 
 // Monitors were added in XRANDR 1.5.
 constexpr int kMinRandrVersion = 105;
-
-constexpr int kDefaultScreenDpi = 96;
-constexpr double kMillimetersPerInch = 25.4;
 
 class DesktopDisplayInfoLoaderX11 : public DesktopDisplayInfoLoader,
                                     public x11::EventObserver {
@@ -100,16 +97,8 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderX11::GetCurrentDisplayInfo() {
     info.y = monitor.y;
     info.width = monitor.width;
     info.height = monitor.height;
-    info.dpi = kDefaultScreenDpi;
+    info.dpi = GetMonitorDpi(monitor).x();
     info.bpp = 24;
-
-    // Calculate DPI if possible, using width in millimeters.
-    if (monitor.width_in_millimeters != 0) {
-      double pixelsPerMillimeter =
-          static_cast<double>(monitor.width) / monitor.width_in_millimeters;
-      double pixelsPerInch = pixelsPerMillimeter * kMillimetersPerInch;
-      info.dpi = base::ClampRound(pixelsPerInch);
-    }
 
     result.AddDisplay(info);
   }

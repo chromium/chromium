@@ -141,6 +141,7 @@ class ClientSession : public protocol::HostStub,
       const protocol::SelectDesktopDisplayRequest& select_display) override;
   void ControlPeerConnection(
       const protocol::PeerConnectionParameters& parameters) override;
+  void SetVideoLayout(const protocol::VideoLayout& video_layout) override;
 
   // protocol::ConnectionToClient::EventHandler interface.
   void OnConnectionAuthenticating() override;
