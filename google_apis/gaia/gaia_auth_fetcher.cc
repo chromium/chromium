@@ -221,9 +221,6 @@ const char GaiaAuthFetcher::kErrorParam[] = "Error";
 const char GaiaAuthFetcher::kErrorUrlParam[] = "Url";
 
 // static
-const char GaiaAuthFetcher::kAuthHeaderFormat[] =
-    "Authorization: GoogleLogin auth=%s";
-// static
 const char GaiaAuthFetcher::kOAuthHeaderFormat[] = "Authorization: OAuth %s";
 // static
 const char GaiaAuthFetcher::kOAuthMultiBearerHeaderFormat[] =
@@ -417,12 +414,6 @@ std::string GaiaAuthFetcher::MakeMergeSessionQuery(
   }
 
   return result;
-}
-
-// static
-std::string GaiaAuthFetcher::MakeGetAuthCodeHeader(
-    const std::string& auth_token) {
-  return base::StringPrintf(kAuthHeaderFormat, auth_token.c_str());
 }
 
 // Helper method that extracts tokens from a successful reply.

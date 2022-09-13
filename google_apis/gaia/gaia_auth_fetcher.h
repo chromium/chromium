@@ -267,7 +267,6 @@ class GaiaAuthFetcher {
   static const char kErrorUrlParam[];
 
   // Constants for request/response for OAuth2 requests.
-  static const char kAuthHeaderFormat[];
   static const char kOAuthHeaderFormat[];
   static const char kOAuth2BearerHeaderFormat[];
   static const char kOAuthMultiBearerHeaderFormat[];
@@ -342,8 +341,6 @@ class GaiaAuthFetcher {
       const std::string& external_cc_result,
       const std::string& continue_url,
       const std::string& source);
-
-  static std::string MakeGetAuthCodeHeader(const std::string& auth_token);
 
   static std::string MakeOAuthLoginBody(const std::string& service,
                                         const std::string& source);
