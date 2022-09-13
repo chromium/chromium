@@ -64,7 +64,8 @@ export class ProgressCenterImpl {
   updateItem(item) {
     // Update item.
     const index = this.getItemIndex_(item.id);
-    if (item.state === ProgressItemState.PROGRESSING) {
+    if (item.state === ProgressItemState.PROGRESSING ||
+        item.state === ProgressItemState.SCANNING) {
       if (index === -1) {
         this.items_.push(item);
       } else {

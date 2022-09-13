@@ -92,7 +92,10 @@ void CopyOrMoveIOTaskScanningImpl::MaybeScanForDisallowedFiles(size_t idx) {
     return;
   }
 
-  // TODO(crbug.com/1353351): Set state to scanning.
+  if (progress_.state != State::kScanning) {
+    progress_.state = State::kScanning;
+    progress_callback_.Run(progress_);
+  }
 
   DCHECK_EQ(file_transfer_analysis_delegates_.size(), progress_.sources.size());
 

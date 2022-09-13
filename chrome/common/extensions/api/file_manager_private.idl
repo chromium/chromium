@@ -351,6 +351,7 @@ enum SharesheetLaunchSource {
 
 enum IOTaskState {
   queued,
+  scanning,
   in_progress,
   success,
   error,

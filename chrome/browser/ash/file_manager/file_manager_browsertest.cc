@@ -437,24 +437,53 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
                              destination->c_str()));
       return true;
     }
+    if (name == "issueFileTransferResponses") {
+      // Issue all saved responses and issue all future responses directly.
+      IssueResponses();
+      return true;
+    }
+
     return false;
   }
 
+  // Upload callback to issue responses.
   void FakeFileUploadCallback(
       safe_browsing::BinaryUploadService::Result result,
       const base::FilePath& path,
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
       enterprise_connectors::FakeFilesRequestHandler::FakeFileRequestCallback
           callback) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     EXPECT_FALSE(path.empty());
     EXPECT_EQ(request->device_token(), "dm_token");
     // Simulate a response.
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
+    base::OnceClosure response =
         base::BindOnce(std::move(callback), path,
                        safe_browsing::BinaryUploadService::Result::SUCCESS,
-                       ConnectorStatusCallback(path)),
-        kResponseDelay);
+                       ConnectorStatusCallback(path));
+    if (save_response_for_later_) {
+      // We save the responses for later such that we can check the scanning
+      // label.
+      // `await sendTestMessage({name: 'issueFileTransferResponses'})` is
+      // required from the test to issue the requests.
+      saved_responses_.push_back(std::move(response));
+    } else {
+      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+          FROM_HERE, std::move(response), kResponseDelay);
+    }
+  }
+
+  // Issues the saved responses and sets `save_response_for_later_` to `false`.
+  // After this method is called, no more responses will be saved. Instead, the
+  // responses will be issued directly.
+  void IssueResponses() {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    save_response_for_later_ = false;
+    for (auto&& response : saved_responses_) {
+      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+          FROM_HERE, std::move(response), kResponseDelay);
+    }
+    saved_responses_.clear();
   }
 
   enterprise_connectors::ContentAnalysisResponse ConnectorStatusCallback(
@@ -476,6 +505,12 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
           }());
     }
   }
+
+  // The saved scanning responses.
+  std::vector<base::OnceClosure> saved_responses_;
+  // Determines whether a current scanning response should be saved for later or
+  // issued directly.
+  bool save_response_for_later_ = true;
 };
 
 IN_PROC_BROWSER_TEST_P(FileTransferConnectorFilesAppBrowserTest, Test) {

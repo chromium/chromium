@@ -238,6 +238,8 @@ void CloudUploadHandler::OnIOTaskStatus(
     return;
   }
   switch (status.state) {
+    case file_manager::io_task::State::kScanning:
+      // TODO(crbug.com/1361915): Potentially adapt to show scanning.
     case file_manager::io_task::State::kQueued:
       return;
     case file_manager::io_task::State::kInProgress:

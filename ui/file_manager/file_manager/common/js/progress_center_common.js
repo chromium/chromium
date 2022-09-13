@@ -7,6 +7,7 @@
  * @const @enum {string}
  */
 export const ProgressItemState = {
+  SCANNING: 'scanning',
   PROGRESSING: 'progressing',
   COMPLETED: 'completed',
   ERROR: 'error',

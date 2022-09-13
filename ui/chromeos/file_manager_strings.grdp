@@ -861,6 +861,9 @@
   <message name="IDS_FILE_BROWSER_PENDING_LABEL" desc="Pending label.">
     Pending
   </message>
+  <message name="IDS_FILE_BROWSER_SCANNING_LABEL" desc="Scanning label.">
+    Scanning
+  </message>
   <message name="IDS_FILE_BROWSER_SEARCH_TEXT_LABEL" desc="Search text field label.">
     Search
   </message>

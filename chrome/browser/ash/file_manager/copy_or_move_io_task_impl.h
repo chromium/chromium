@@ -83,6 +83,10 @@ class CopyOrMoveIOTaskImpl {
   // guaranteed to outlive the CopyOrMoveIOTaskImpl.
   ProgressStatus& progress_;
 
+  // ProgressCallback for this operation, used to notify the UI of the current
+  // progress.
+  ProgressCallback progress_callback_;
+
  private:
   // Verifies the transfer, e.g., by using enterprise connectors for checking
   // whether a transfer is allowed.
@@ -140,10 +144,6 @@ class CopyOrMoveIOTaskImpl {
   // Speedometer for this operation, used to calculate the remaining time to
   // finish the operation.
   Speedometer speedometer_;
-
-  // ProgressCallback for this operation, used to notify the UI of the current
-  // progress.
-  ProgressCallback progress_callback_;
 
   // CompleteCallback for this operation, used to notify the UI when this
   // operation is completed.

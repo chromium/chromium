@@ -148,6 +148,7 @@ export class ProgressCenterPanel {
     const {source, destination, count} = info;
     const hasDestination = this.isNonEmptyString_(destination);
     switch (item.state) {
+      case ProgressItemState.SCANNING:
       case ProgressItemState.PROGRESSING:
         // Source and primary string are the same for missing destination.
         if (!hasDestination) {
@@ -251,6 +252,10 @@ export class ProgressCenterPanel {
     // remaining time).
     if (seconds == null) {
       return '';
+    }
+
+    if (item.state === ProgressItemState.SCANNING) {
+      return str('SCANNING_LABEL');
     }
 
     // Check if remaining time is valid (ie finite and positive).

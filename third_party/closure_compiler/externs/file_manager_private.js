@@ -309,6 +309,7 @@ chrome.fileManagerPrivate.SharesheetLaunchSource = {
 /** @enum {string} */
 chrome.fileManagerPrivate.IOTaskState = {
   QUEUED: 'queued',
+  SCANNING: 'scanning',
   IN_PROGRESS: 'in_progress',
   SUCCESS: 'success',
   ERROR: 'error',

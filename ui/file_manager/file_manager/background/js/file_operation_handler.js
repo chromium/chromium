@@ -94,11 +94,19 @@ export class FileOperationHandler {
         item.progressValue = event.bytesTransferred;
         item.remainingTime = event.remainingSeconds;
         break;
-
+      case chrome.fileManagerPrivate.IOTaskState.SCANNING:
+        item.sourceMessage = event.sourceName;
+        item.destinationMessage = event.destinationName;
+        item.state = ProgressItemState.SCANNING;
+        item.progressMax = event.totalBytes;
+        item.progressValue = event.bytesTransferred;
+        item.remainingTime = event.remainingSeconds;
+        break;
       case chrome.fileManagerPrivate.IOTaskState.IN_PROGRESS:
         item.progressMax = event.totalBytes;
         item.progressValue = event.bytesTransferred;
         item.remainingTime = event.remainingSeconds;
+        item.state = ProgressItemState.PROGRESSING;
         break;
 
       case chrome.fileManagerPrivate.IOTaskState.SUCCESS:

@@ -21,6 +21,9 @@ enum class State {
   // Task has been queued, but not yet started.
   kQueued,
 
+  // Task has started, but some initial scanning is performed.
+  kScanning,
+
   // Task is currently running.
   kInProgress,
 

@@ -670,10 +670,34 @@ class CopyOrMoveIOTaskWithScansTest
     if (total_num_files == -1) {
       total_num_files = file_infos.size();
     }
+
     EXPECT_CALL(progress_callback,
                 Run(AllOf(Field(&ProgressStatus::state, State::kInProgress),
                           GetBaseMatcher(file_infos, dest, total_num_files))))
         .Times(AnyNumber());
+  }
+
+  // Expect the specified number of scanning callback calls.
+  // `num_calls` has to be either 0 or 1.
+  void ExpectScanningCallbackCall(
+      base::MockRepeatingCallback<void(const ProgressStatus&)>&
+          progress_callback,
+      const std::vector<FileInfo>& file_infos,
+      const storage::FileSystemURL& dest,
+      size_t num_calls) {
+    ASSERT_TRUE(num_calls == 0 || num_calls == 1) << "num_calls=" << num_calls;
+
+    // For this call, `total_bytes` are not yet set!
+    EXPECT_CALL(
+        progress_callback,
+        Run(AllOf(
+            Field(&ProgressStatus::state, State::kScanning),
+            Field(&ProgressStatus::type, GetOperationType()),
+            Field(&ProgressStatus::sources,
+                  EntryStatusUrls(GetSourceUrlsFromFileInfos(file_infos))),
+            Field(&ProgressStatus::destination_folder, dest),
+            Field(&ProgressStatus::total_bytes, 0))))
+        .Times(num_calls);
   }
 
   // Expect a progress callback call for the specified files.
@@ -831,6 +855,7 @@ TEST_P(CopyOrMoveIOTaskWithScansTest, BlockSingleFileUsingResultBlocked) {
   base::MockOnceCallback<void(ProgressStatus)> complete_callback;
 
   ExpectExtraProgressCallbackCalls(progress_callback, {file}, dest);
+  ExpectScanningCallbackCall(progress_callback, {file}, dest, 1);
 
   ExpectCompletionCallbackCall(complete_callback, {file}, dest,
                                {base::File::FILE_ERROR_SECURITY},
@@ -863,6 +888,7 @@ TEST_P(CopyOrMoveIOTaskWithScansTest, BlockSingleFileUsingResultUnknown) {
   base::MockOnceCallback<void(ProgressStatus)> complete_callback;
 
   ExpectExtraProgressCallbackCalls(progress_callback, {file}, dest);
+  ExpectScanningCallbackCall(progress_callback, {file}, dest, 1);
 
   ExpectCompletionCallbackCall(complete_callback, {file}, dest,
                                {base::File::FILE_ERROR_SECURITY},
@@ -895,6 +921,7 @@ TEST_P(CopyOrMoveIOTaskWithScansTest, AllowSingleFileUsingResultAllowed) {
   base::MockOnceCallback<void(ProgressStatus)> complete_callback;
 
   ExpectExtraProgressCallbackCalls(progress_callback, {file}, dest);
+  ExpectScanningCallbackCall(progress_callback, {file}, dest, 1);
 
   ExpectCompletionCallbackCall(complete_callback, {file}, dest,
                                {base::File::FILE_OK}, run_loop.QuitClosure());
@@ -923,6 +950,7 @@ TEST_P(CopyOrMoveIOTaskWithScansTest, SingleFileOnDisabledFileSystem) {
   base::MockOnceCallback<void(ProgressStatus)> complete_callback;
 
   ExpectExtraProgressCallbackCalls(progress_callback, {file}, dest);
+  ExpectScanningCallbackCall(progress_callback, {file}, dest, 0);
 
   ExpectCompletionCallbackCall(complete_callback, {file}, dest,
                                {base::File::FILE_OK}, run_loop.QuitClosure());
@@ -958,6 +986,8 @@ TEST_P(CopyOrMoveIOTaskWithScansTest, FilesOnDisabledAndEnabledFileSystems) {
 
   ExpectExtraProgressCallbackCalls(progress_callback,
                                    {enabled_file, disabled_file}, dest);
+  ExpectScanningCallbackCall(progress_callback, {enabled_file, disabled_file},
+                             dest, 1);
 
   ExpectProgressCallbackCall(progress_callback, {enabled_file, disabled_file},
                              dest, {base::File::FILE_ERROR_SECURITY});
@@ -1010,6 +1040,7 @@ TEST_P(CopyOrMoveIOTaskWithScansTest, DirectoryTransferBlockAll) {
 
   ExpectExtraProgressCallbackCalls(progress_callback, {directory}, dest,
                                    /*total_num_files=*/2);
+  ExpectScanningCallbackCall(progress_callback, {directory}, dest, 1);
 
   // For moves, only the last error is reported. The last step the operation
   // performs is to try to remove the parent directory. This fails with
@@ -1065,6 +1096,7 @@ TEST_P(CopyOrMoveIOTaskWithScansTest, DirectoryTransferBlockOne) {
 
   ExpectExtraProgressCallbackCalls(progress_callback, {directory}, dest,
                                    /*total_num_files=*/2);
+  ExpectScanningCallbackCall(progress_callback, {directory}, dest, 1);
 
   // For moves, only the last error is reported. The last step the operation
   // performs is to try to remove the parent directory. This fails with
@@ -1120,6 +1152,7 @@ TEST_P(CopyOrMoveIOTaskWithScansTest, DirectoryTransferAllowAll) {
 
   ExpectExtraProgressCallbackCalls(progress_callback, {directory}, dest,
                                    /*total_num_files=*/2);
+  ExpectScanningCallbackCall(progress_callback, {directory}, dest, 1);
 
   ExpectCompletionCallbackCall(complete_callback, {directory}, dest,
                                {base::File::FILE_OK}, run_loop.QuitClosure(),

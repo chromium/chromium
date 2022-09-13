@@ -434,6 +434,33 @@ async function transferBetweenVolumes(
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('execCommand', appId, ['paste']));
 
+  // Check that a scanning label is shown.
+  const caller = getCaller();
+  await repeatUntil(async () => {
+    const element = await remoteCall.waitForElement(
+        appId, ['#progress-panel', 'xf-panel-item']);
+
+    const actualPrimaryText = element.attributes['primary-text'];
+    const actualSecondaryText = element.attributes['secondary-text'];
+
+    const expectedPrimaryTextPart = transferInfo.isMove ? 'Moving' : 'Copying';
+    const expectedSecondaryText = 'Scanning';
+    if (actualPrimaryText.includes(expectedPrimaryTextPart) &&
+        actualSecondaryText === expectedSecondaryText) {
+      return;
+    }
+
+    return pending(
+        caller,
+        `Expected feedback panel msg: "${expectedPrimaryTextPart}... - ${
+            expectedSecondaryText}", got "${actualPrimaryText} - ${
+            actualSecondaryText}"`);
+  });
+
+  // After the scanning label is shown, we resume the transfer.
+  // Issue the responses, s.t., the transfer can continue.
+  await sendTestMessage({name: 'issueFileTransferResponses'});
+
   // Wait for the expected files to appear in the file list.
   // Files marked as 'blocked' should not appear.
   const expectedEntries =
@@ -458,7 +485,6 @@ async function transferBetweenVolumes(
   // Check that the error appears in the feedback panel.
   // TODO(crbug.com/1361898): Adapt this check for proper error details.
   let element = {};
-  const caller = getCaller();
   await repeatUntil(async () => {
     element = await remoteCall.waitForElement(
         appId, ['#progress-panel', 'xf-panel-item']);

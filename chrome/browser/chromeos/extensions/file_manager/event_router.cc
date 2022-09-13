@@ -171,6 +171,8 @@ file_manager_private::IOTaskState GetIOTaskState(
   switch (state) {
     case file_manager::io_task::State::kQueued:
       return file_manager_private::IO_TASK_STATE_QUEUED;
+    case file_manager::io_task::State::kScanning:
+      return file_manager_private::IO_TASK_STATE_SCANNING;
     case file_manager::io_task::State::kInProgress:
       return file_manager_private::IO_TASK_STATE_IN_PROGRESS;
     case file_manager::io_task::State::kSuccess:
