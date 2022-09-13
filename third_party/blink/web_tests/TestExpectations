@@ -5172,8 +5172,6 @@ crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-tim
 crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-descriptors-writing-mode-rl.html [ Failure ]
 crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-descriptors.html [ Failure ]
 crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-quirks-mode.html [ Failure ]
-crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-writing-mode-rl.html [ Failure ]
-crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default.html [ Failure ]
 crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-frame-size-changed.html [ Failure ]
 crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-inline-orientation.html [ Failure ]
 crbug.com/1279648 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-iframe.html [ Failure ]
@@ -7112,9 +7110,10 @@ crbug.com/1356118 [ Linux ] external/wpt/html/anonymous-iframe/local-storage-ini
 crbug.com/1356118 [ Linux ] virtual/fenced-frame-mparch/external/wpt/html/anonymous-iframe/local-storage-initial-empty-document.tentative.https.window.html [ Failure Pass ]
 crbug.com/1356118 [ Linux ] virtual/partitioned-cookies/external/wpt/html/anonymous-iframe/local-storage-initial-empty-document.tentative.https.window.html [ Failure Pass ]
 
-# Temporaruly disable to land IndexedDB frontend changes
-crbug.com/1296584 http/tests/devtools/indexeddb/database-names.js [ Skip ]
-crbug.com/1296584 http/tests/devtools/indexeddb/upgrade-events.js [ Skip ]
+# Sheriff 2022-08-30
+crbug.com/1357621 [ Linux ] external/wpt/webauthn/getcredential-abort.https.html [ Failure Pass Timeout ]
+crbug.com/1357917 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default.html [ Failure Pass ]
+crbug.com/1357917 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-writing-mode-rl.html [ Failure Pass ]
 
 crbug.com/1358051 external/wpt/longtask-timing/containerTypes.html [ Failure Pass ]
 

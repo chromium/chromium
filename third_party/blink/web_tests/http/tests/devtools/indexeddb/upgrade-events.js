@@ -108,8 +108,8 @@
     indexedDBModel.refreshDatabaseNames();
 
     function step2() {
-      var names = indexedDBModel.databaseNamesBySecurityOrigin[securityOrigin];
-      TestRunner.assertGreaterOrEqual(0, names.indexOf(databaseName), 'Database should exist');
+      var names = indexedDBModel.databaseNamesBySecurityOrigin.get(securityOrigin);
+      TestRunner.assertEquals(true, names.has(databaseName), 'Database should exist');
       callback();
     }
   }
@@ -119,8 +119,8 @@
     indexedDBModel.refreshDatabaseNames();
 
     function step2() {
-      var names = indexedDBModel.databaseNamesBySecurityOrigin[securityOrigin];
-      TestRunner.assertEquals(-1, names.indexOf(databaseName), 'Database should not exist');
+      var names = indexedDBModel.databaseNamesBySecurityOrigin.get(securityOrigin);
+      TestRunner.assertEquals(false, names.has(databaseName), 'Database should not exist');
       callback();
     }
   }

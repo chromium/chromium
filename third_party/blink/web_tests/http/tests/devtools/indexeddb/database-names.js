@@ -15,9 +15,9 @@
     TestRunner.addResult('Dumping database names:');
     var securityOrigins = TestRunner.securityOriginManager.securityOrigins();
     var securityOrigin = securityOrigins[0];
-    var names = indexedDBModel.databaseNamesBySecurityOrigin[securityOrigin];
-    for (var i = 0; i < names.length; ++i)
-      TestRunner.addResult('    ' + names[i]);
+    var names = indexedDBModel.databaseNamesBySecurityOrigin.get(securityOrigin);
+    for (let name of names || [])
+      TestRunner.addResult('    ' + name);
     TestRunner.addResult('');
   }
 
