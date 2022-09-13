@@ -2323,11 +2323,22 @@ if (android_64bit_target_cpu) {
 
 generate_jni("chrome_jni_headers") {
   sources = [
+    "java/src/com/ark/browser/core/BadFlagsSnackbarManager.java",
     "java/src/com/ark/browser/core/BookmarkBridge.java",
+    "java/src/com/ark/browser/core/ChromeInterfaceRegistrar.java",
+    "java/src/com/ark/browser/core/CookieControlsServiceBridge.java",
+    "java/src/com/ark/browser/core/SigninBridge.java",
+    "java/src/com/ark/browser/core/net/NetworkQualityProvider.java",
+    "java/src/com/ark/browser/core/utils/ChromeHttpAuthHandler.java",
     "java/src/com/ark/browser/core/utils/ContentUtils.java",
+    "java/src/com/ark/browser/core/utils/DataSaverOSSetting.java",
     "java/src/com/ark/browser/core/utils/NavigationPredictorBridge.java",
     "java/src/com/ark/browser/core/utils/PolicyAuditor.java",
+    "java/src/com/ark/browser/core/utils/ResourceMapper.java",
+    "java/src/com/ark/browser/core/utils/RlzPingHandler.java",
     "java/src/com/ark/browser/core/utils/TabPrinter.java",
+    "java/src/com/ark/browser/core/utils/TaskTabHelper.java",
+    "java/src/com/ark/browser/core/utils/WebContextFetcher.java",
 
     # Files under a feature's public/ dir are included in chrome_java's source
     # files, so include these files in chrome_jni_headers.
@@ -2362,7 +2373,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/browsing_data/BrowsingDataBridge.java",
     "java/src/org/chromium/chrome/browser/browsing_data/BrowsingDataCounterBridge.java",
     "java/src/org/chromium/chrome/browser/browsing_data/UrlFilterBridge.java",
-    "java/src/org/chromium/chrome/browser/complex_tasks/TaskTabHelper.java",
     "java/src/org/chromium/chrome/browser/compositor/CompositorView.java",
     "java/src/org/chromium/chrome/browser/compositor/bottombar/OverlayPanelContent.java",
     "java/src/org/chromium/chrome/browser/compositor/layouts/content/TabContentManager.java",
@@ -2376,7 +2386,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchTabHelper.java",
     "java/src/org/chromium/chrome/browser/contextualsearch/CtrSuppression.java",
     "java/src/org/chromium/chrome/browser/crash/MinidumpUploadServiceImpl.java",
-    "java/src/org/chromium/chrome/browser/datareduction/DataSaverOSSetting.java",
     "java/src/org/chromium/chrome/browser/device_dialog/ChromeBluetoothChooserAndroidDelegate.java",
     "java/src/org/chromium/chrome/browser/device_dialog/ChromeBluetoothScanningPromptAndroidDelegate.java",
     "java/src/org/chromium/chrome/browser/device_dialog/UsbChooserDialog.java",
@@ -2391,7 +2400,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/download/DuplicateDownloadDialogBridge.java",
     "java/src/org/chromium/chrome/browser/download/service/DownloadBackgroundTask.java",
     "java/src/org/chromium/chrome/browser/download/service/DownloadTaskScheduler.java",
-    "java/src/org/chromium/chrome/browser/flags/BadFlagsSnackbarManager.java",
     "java/src/org/chromium/chrome/browser/history/BrowsingHistoryBridge.java",
     "java/src/org/chromium/chrome/browser/history/HistoryDeletionBridge.java",
     "java/src/org/chromium/chrome/browser/history/HistoryDeletionInfo.java",
@@ -2414,13 +2422,9 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/infobar/TranslateCompactInfoBar.java",
     "java/src/org/chromium/chrome/browser/infobar/UpdatePasswordInfoBar.java",
     "java/src/org/chromium/chrome/browser/init/NativeStartupBridge.java",
-    "java/src/org/chromium/chrome/browser/javascript/WebContextFetcher.java",
-    "java/src/org/chromium/chrome/browser/login/ChromeHttpAuthHandler.java",
     "java/src/org/chromium/chrome/browser/media/MediaCaptureDevicesDispatcherAndroid.java",
     "java/src/org/chromium/chrome/browser/media/PictureInPictureActivity.java",
     "java/src/org/chromium/chrome/browser/media/router/ChromeMediaRouterClient.java",
-    "java/src/org/chromium/chrome/browser/mojo/ChromeInterfaceRegistrar.java",
-    "java/src/org/chromium/chrome/browser/net/nqe/NetworkQualityProvider.java",
     "java/src/org/chromium/chrome/browser/notifications/ActionInfo.java",
     "java/src/org/chromium/chrome/browser/notifications/NotificationPlatformBridge.java",
     "java/src/org/chromium/chrome/browser/notifications/NotificationTriggerScheduler.java",
@@ -2449,15 +2453,9 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/permissions/PermissionSettingsBridge.java",
     "java/src/org/chromium/chrome/browser/permissions/PermissionUpdateRequester.java",
     "java/src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManagerImpl.java",
-    "java/src/org/chromium/chrome/browser/push_messaging/PushMessagingServiceObserver.java",
-    "java/src/org/chromium/chrome/browser/resources/ResourceMapper.java",
-    "java/src/org/chromium/chrome/browser/rlz/RevenueStats.java",
-    "java/src/org/chromium/chrome/browser/rlz/RlzPingHandler.java",
     "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingPasswordReuseDialogBridge.java",
     "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingReferringAppBridge.java",
     "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingSettingsLauncher.java",
-    "java/src/org/chromium/chrome/browser/signin/SigninBridge.java",
-    "java/src/org/chromium/chrome/browser/site_settings/CookieControlsServiceBridge.java",
     "java/src/org/chromium/chrome/browser/tab/TabBrowserControlsConstraintsHelper.java",
     "java/src/org/chromium/chrome/browser/tab/TabFavicon.java",
     "java/src/org/chromium/chrome/browser/tab/TabWebContentsDelegateAndroidImpl.java",
@@ -2467,10 +2465,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/usage_stats/NotificationSuspender.java",
     "java/src/org/chromium/chrome/browser/usage_stats/UsageStatsBridge.java",
   ]
-
-  if (enable_supervised_users) {
-    sources += [ "java/src/org/chromium/chrome/browser/supervised_user/ChildAccountService.java" ]
-  }
 
   # Used for testing only, should not be shipped to end users.
   if (enable_offline_pages_harness) {

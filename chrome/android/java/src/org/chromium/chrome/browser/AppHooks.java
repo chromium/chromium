@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.ark.browser.core.utils.PolicyAuditor;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -19,8 +20,6 @@ import org.chromium.chrome.browser.gsa.GSAHelper;
 import org.chromium.chrome.browser.init.ChromeStartupDelegate;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.chrome.browser.notifications.chime.ChimeDelegate;
-import com.ark.browser.core.utils.PolicyAuditor;
-import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.usage_stats.DigitalWellbeingClient;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
@@ -88,13 +87,6 @@ public abstract class AppHooks {
      */
     public ProcessInitializationHandler createProcessInitializationHandler() {
         return new ProcessInitializationHandler();
-    }
-
-    /**
-     * @return An instance of RevenueStats to be installed as a singleton.
-     */
-    public RevenueStats createRevenueStatsInstance() {
-        return new RevenueStats();
     }
 
     /**

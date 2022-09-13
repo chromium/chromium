@@ -43,38 +43,38 @@ public class DownloadManagerDialog {
 
     private static class DownloadListAdapter extends RecyclerView.Adapter<DownloadListViewHolder> {
 
-        private final List<DownloadItem> mChips = new ArrayList<>();
+        private final List<DownloadItem> mDownloadItems = new ArrayList<>();
 
         protected DownloadListAdapter() {
         }
 
         public List<DownloadItem> getCurrentList() {
-            return mChips;
+            return mDownloadItems;
         }
 
-        public void submitList(@NonNull List<DownloadItem> list) {
+        public void submitList(@NonNull List<DownloadItem> newItems) {
             DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
                 @Override
                 public int getOldListSize() {
-                    return mChips.size();
+                    return mDownloadItems.size();
                 }
 
                 @Override
                 public int getNewListSize() {
-                    return list.size();
+                    return newItems.size();
                 }
 
                 @Override
                 public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                    DownloadItem oldItem = mChips.get(oldItemPosition);
-                    DownloadItem newItem = list.get(newItemPosition);
+                    DownloadItem oldItem = mDownloadItems.get(oldItemPosition);
+                    DownloadItem newItem = newItems.get(newItemPosition);
                     return TextUtils.equals(oldItem.getId(), newItem.getId());
                 }
 
                 @Override
                 public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                    DownloadItem oldItem = mChips.get(oldItemPosition);
-                    DownloadItem newItem = list.get(newItemPosition);
+                    DownloadItem oldItem = mDownloadItems.get(oldItemPosition);
+                    DownloadItem newItem = newItems.get(newItemPosition);
                     return TextUtils.equals(oldItem.getId(), newItem.getId())
                             && oldItem.getDownloadInfo().equals(newItem.getDownloadInfo());
                 }
@@ -84,8 +84,8 @@ public class DownloadManagerDialog {
                 public Object getChangePayload(int oldItemPosition, int newItemPosition) {
 
                     if (oldItemPosition == newItemPosition) {
-                        DownloadItem oldItem = mChips.get(oldItemPosition);
-                        DownloadItem newItem = list.get(newItemPosition);
+                        DownloadItem oldItem = mDownloadItems.get(oldItemPosition);
+                        DownloadItem newItem = newItems.get(newItemPosition);
                         if (!areItemsTheSame(oldItemPosition, newItemPosition)) {
                             return null;
                         }
@@ -109,25 +109,21 @@ public class DownloadManagerDialog {
             //  properly, leading to missing change animations:
             //   diffResult.dispatchUpdatesTo(this);
             // The workaround is to update manually:
-            mChips.clear();
-            mChips.addAll(list);
+            mDownloadItems.clear();
+            mDownloadItems.addAll(newItems);
             diffResult.dispatchUpdatesTo(new ListUpdateCallback() {
                 @Override
                 public void onInserted(int position, int count) {
                     ArkLogger.e(DownloadListAdapter.class,
                             "onInserted pos=" + position + " count=" + count);
-                    for (int i = 0; i < count; ++i) {
-                        notifyItemInserted(position);
-                    }
+                    notifyItemRangeInserted(position, count);
                 }
 
                 @Override
                 public void onRemoved(int position, int count) {
                     ArkLogger.e(DownloadListAdapter.class,
                             "onRemoved pos=" + position + " count=" + count);
-                    for (int i = 0; i < count; ++i) {
-                        notifyItemRemoved(position);
-                    }
+                    notifyItemRangeRemoved(position, count);
                 }
 
                 @Override
@@ -159,10 +155,10 @@ public class DownloadManagerDialog {
         public void onBindViewHolder(@NonNull DownloadListViewHolder holder, int position, @NonNull List<Object> payloads) {
             for (Object payload : payloads) {
                 if ("update_state".equals(payload)) {
-                    updateState(holder, mChips.get(position));
+                    updateState(holder, mDownloadItems.get(position));
                     return;
                 } else if ("update_progress".equals(payload)) {
-                    updateProgress(holder, mChips.get(position));
+                    updateProgress(holder, mDownloadItems.get(position));
                     return;
                 }
             }
@@ -171,7 +167,7 @@ public class DownloadManagerDialog {
 
         @Override
         public void onBindViewHolder(@NonNull DownloadListViewHolder holder, int i) {
-            DownloadItem item = mChips.get(i);
+            DownloadItem item = mDownloadItems.get(i);
             DownloadInfo info = item.getDownloadInfo();
             ArkLogger.e(DownloadListAdapter.class, "onBindViewHolder i=" + i
                     + " state=" + info.state()
@@ -214,7 +210,7 @@ public class DownloadManagerDialog {
 
         @Override
         public int getItemCount() {
-            return mChips.size();
+            return mDownloadItems.size();
         }
 
         private void updateProgress(DownloadListViewHolder holder, DownloadItem item) {
@@ -403,17 +399,17 @@ public class DownloadManagerDialog {
 
             @Override
             public void onAddOrReplaceDownloadSharedPreferenceEntry(ContentId id) {
-                List<DownloadItem> items = new ArrayList<>(adapter.getCurrentList());
-                int i = 0;
-                for (DownloadItem downloadItem : items) {
-                    if (downloadItem.getContentId().equals(id)) {
-                        ArkLogger.e(DownloadManagerDialog.class, "onAddOrReplaceDownloadSharedPreferenceEntry "
-                                + "\noldInfo=" + downloadItem.getDownloadInfo());
-                        adapter.notifyItemChanged(i);
-                        break;
-                    }
-                    i++;
-                }
+//                List<DownloadItem> items = new ArrayList<>(adapter.getCurrentList());
+//                int i = 0;
+//                for (DownloadItem downloadItem : items) {
+//                    if (downloadItem.getContentId().equals(id)) {
+//                        ArkLogger.e(DownloadManagerDialog.class, "onAddOrReplaceDownloadSharedPreferenceEntry "
+//                                + "\noldInfo=" + downloadItem.getDownloadInfo());
+//                        adapter.notifyItemChanged(i);
+//                        break;
+//                    }
+//                    i++;
+//                }
                 ArkLogger.e(DownloadManagerDialog.class, "onAddOrReplaceDownloadSharedPreferenceEntry id=" + id);
             }
         };

@@ -2773,7 +2773,6 @@ static_library("browser") {
       "android/resource_id.h",
       "android/resource_mapper.cc",
       "android/resource_mapper.h",
-      "android/rlz/revenue_stats.cc",
       "android/rlz/rlz_ping_handler.cc",
       "android/rlz/rlz_ping_handler.h",
       "android/search_permissions/search_permissions_service.cc",
@@ -3246,10 +3245,6 @@ static_library("browser") {
     deps -= [ "//components/storage_monitor" ]
 
     if (enable_supervised_users) {
-      sources += [
-        "supervised_user/child_accounts/child_account_service_android.cc",
-        "supervised_user/child_accounts/child_account_service_android.h",
-      ]
       deps += [
         "//chrome/browser/supervised_user/supervised_user_error_page",
         "//chrome/browser/supervised_user/supervised_user_features",

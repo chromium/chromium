@@ -17,7 +17,3 @@ chrome_java_sources += public_autofill_assistant_java_sources
 if (enable_offline_pages_harness) {
   chrome_java_sources += [ "java/src/org/chromium/chrome/browser/offlinepages/evaluation/OfflinePageEvaluationBridge.java" ]
 }
-
-if (enable_supervised_users) {
-  chrome_java_sources += [ "java/src/org/chromium/chrome/browser/supervised_user/ChildAccountService.java" ]
-}

@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.translate;
+package com.ark.browser.translate;
 
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.translate.TranslateBridge;
 
 /**
  * Utility classes related to the translate feature.

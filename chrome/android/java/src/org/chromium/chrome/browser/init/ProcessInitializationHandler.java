@@ -54,7 +54,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
-import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.util.AfterStartupTaskUtils;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.browser_ui.util.ConversionUtils;
@@ -273,13 +272,6 @@ public class ProcessInitializationHandler {
             public void run() {
                 // Starts syncing with GSA.
                 AppHooks.get().createGsaHelper().startSync();
-            }
-        });
-
-        deferredStartupHandler.addDeferredTask(new Runnable() {
-            @Override
-            public void run() {
-                RevenueStats.getInstance();
             }
         });
 

@@ -23,7 +23,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.translate.TranslateIntentHandler;
+import com.ark.browser.translate.TranslateIntentHandler;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.media.MediaNotificationUma;
 import org.chromium.components.embedder_support.util.UrlConstants;

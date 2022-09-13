@@ -75,11 +75,6 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/jni_android.h"
-#include "chrome/android/chrome_jni_headers/PushMessagingServiceObserver_jni.h"
-#endif
-
 using instance_id::InstanceID;
 
 namespace {
@@ -655,11 +650,6 @@ void PushMessagingServiceImpl::DidHandleMessage(
 
   if (message_callback_for_testing_)
     message_callback_for_testing_.Run();
-
-#if BUILDFLAG(IS_ANDROID)
-  chrome::android::Java_PushMessagingServiceObserver_onMessageHandled(
-      base::android::AttachCurrentThread());
-#endif
 
   PushMessagingAppIdentifier app_identifier =
       PushMessagingAppIdentifier::FindByAppId(profile_, app_id);

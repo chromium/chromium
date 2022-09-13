@@ -4117,39 +4117,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: ProbeResult.NO_INTERNET, ProbeResult.SERVER_ERROR, ProbeResult.NOT_VALIDATED, ProbeResult.VALIDATED_WITH_NO_CONTENT, ProbeResult.VALIDATED_WITH_OK_BUT_ZERO_CONTENT_LENGTH, ProbeResult.VALIDATED_WITH_OK_BUT_NO_CONTENT_LENGTH"
-        errorLine1="                                    result, ProbeResult.RESULT_COUNT);"
-        errorLine2="                                                        ~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/net/connectivitydetector/ConnectivityDetector.java"
-            line="337"
-            column="57"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ProbeResult.NO_INTERNET, ProbeResult.SERVER_ERROR, ProbeResult.NOT_VALIDATED, ProbeResult.VALIDATED_WITH_NO_CONTENT, ProbeResult.VALIDATED_WITH_OK_BUT_ZERO_CONTENT_LENGTH, ProbeResult.VALIDATED_WITH_OK_BUT_NO_CONTENT_LENGTH"
-        errorLine1="                                    result, ProbeResult.RESULT_COUNT);"
-        errorLine2="                                                        ~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/net/connectivitydetector/ConnectivityDetector.java"
-            line="341"
-            column="57"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ConnectionState.NONE, ConnectionState.DISCONNECTED, ConnectionState.NO_INTERNET, ConnectionState.CAPTIVE_PORTAL, ConnectionState.VALIDATED"
-        errorLine1="                                mConnectionState, ConnectionState.RESULT_COUNT);"
-        errorLine2="                                                                  ~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/net/connectivitydetector/ConnectivityDetector.java"
-            line="350"
-            column="67"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: Type.CHROME_HTTP, Type.CHROME_HTTPS, Type.SYSTEM_HTTP, Type.SYSTEM_HTTPS"
         errorLine1="        for (@Type int t = Type.CHROME_HTTP; t &lt; Type.NUM_ENTRIES; t++) {"
         errorLine2="                                                      ~~~~~~~~~~~">
@@ -7281,50 +7248,6 @@
             file="../../chrome/android/java/src/org/chromium/chrome/browser/toolbar/ToolbarButtonInProductHelpController.java"
             line="244"
             column="34"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: TranslateAssistContentResult.FEATURE_DISABLED, TranslateAssistContentResult.TAB_WAS_NULL, TranslateAssistContentResult.INCOGNITO_TAB, TranslateAssistContentResult.OVERVIEW_MODE, TranslateAssistContentResult.CANNOT_TRANSLATE_TAB, TranslateAssistContentResult.MISSING_ORIGINAL_LANGUAGE, TranslateAssistContentResult.MISSING_CURRENT_LANGUAGE, TranslateAssistContentResult.JSON_EXCEPTION, TranslateAssistContentResult.TRANSLATABLE_PAGE, TranslateAssistContentResult.TRANSLATED_PAGE"
-        errorLine1="                TranslateAssistContentResult.NUM_ENTRIES);"
-        errorLine2="                                             ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/translate/TranslateAssistContent.java"
-            line="68"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: TranslateTabIntentResult.FEATURE_DISABLED, TranslateTabIntentResult.MISSING_AUTH_TOKEN, TranslateTabIntentResult.TAB_WAS_NULL, TranslateTabIntentResult.INCOGNITO_TAB, TranslateTabIntentResult.EXPECTED_URL_MISMATCH, TranslateTabIntentResult.CANNOT_TRANSLATE_TAB, TranslateTabIntentResult.SUCCESS"
-        errorLine1="                &quot;Translate.TranslateTabIntentResult&quot;, result, TranslateTabIntentResult.NUM_ENTRIES);"
-        errorLine2="                                                                                       ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/translate/TranslateIntentHandler.java"
-            line="82"
-            column="88"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: Type.NEVER_LANGUAGE, Type.NEVER_DOMAIN, Type.ALWAYS_LANGUAGE"
-        errorLine1="        assert Type.NUM_ENTRIES == 3;"
-        errorLine2="                    ~~~~~~~~~~~">
-        <location
-            file="../../components/translate/content/android/java/src/org/chromium/components/translate/TranslateOptions.java"
-            line="105"
-            column="21"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: Type.NEVER_LANGUAGE, Type.NEVER_DOMAIN, Type.ALWAYS_LANGUAGE"
-        errorLine1="        mOptions = new boolean[Type.NUM_ENTRIES];"
-        errorLine2="                                    ~~~~~~~~~~~">
-        <location
-            file="../../components/translate/content/android/java/src/org/chromium/components/translate/TranslateOptions.java"
-            line="106"
-            column="37"/>
     </issue>
 
     <issue

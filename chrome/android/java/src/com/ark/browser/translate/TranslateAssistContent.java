@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.translate;
+package com.ark.browser.translate;
 
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.json.JSONException;
 import org.json.JSONObject;
 

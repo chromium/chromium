@@ -19,10 +19,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/supervised_user/child_accounts/child_account_service_android.h"
-#endif
-
 // static
 std::unique_ptr<SupervisedUserGoogleAuthNavigationThrottle>
 SupervisedUserGoogleAuthNavigationThrottle::MaybeCreate(
@@ -42,10 +38,6 @@ SupervisedUserGoogleAuthNavigationThrottle::
         content::NavigationHandle* navigation_handle)
     : content::NavigationThrottle(navigation_handle),
       child_account_service_(ChildAccountServiceFactory::GetForProfile(profile))
-#if BUILDFLAG(IS_ANDROID)
-      ,
-      has_shown_reauth_(false)
-#endif
 {
 }
 
@@ -135,27 +127,6 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
   // while re-minting is underway.
   return content::NavigationThrottle::DEFER;
 #elif BUILDFLAG(IS_ANDROID)
-  if (!has_shown_reauth_) {
-    has_shown_reauth_ = true;
-
-    content::WebContents* web_contents = navigation_handle()->GetWebContents();
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents->GetBrowserContext());
-    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-    // This class doesn't care about browser sync consent.
-    CoreAccountInfo account_info =
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-    if (account_info.IsEmpty()) {
-      // No primary account (can happen when it was removed from the device).
-      return content::NavigationThrottle::DEFER;
-    }
-
-    ReauthenticateChildAccount(
-        web_contents, account_info.email,
-        base::BindRepeating(&SupervisedUserGoogleAuthNavigationThrottle::
-                                OnReauthenticationFailed,
-                            weak_ptr_factory_.GetWeakPtr()));
-  }
   return content::NavigationThrottle::DEFER;
 #else
   NOTREACHED();

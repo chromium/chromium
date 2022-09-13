@@ -20,6 +20,7 @@ import androidx.annotation.VisibleForTesting;
 import com.ark.browser.ArkBrowserActivity;
 import com.ark.browser.ArkWindowAndroid;
 import com.ark.browser.core.UserAgentManager;
+import com.ark.browser.core.utils.ContentUtils;
 import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.ContextUtils;
@@ -32,14 +33,12 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import com.ark.browser.core.utils.ContentUtils;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabContextMenuPopulatorFactory;
@@ -832,8 +831,6 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             }
 
             initializeNative();
-
-            RevenueStats.getInstance().tabCreated(this);
 
             // If there is a frozen WebContents state or a pending lazy load, don't create a new
             // WebContents. Restoring will be done when showing the tab in the foreground.

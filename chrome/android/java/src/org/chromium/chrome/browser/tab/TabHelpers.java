@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.tab;
 
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantTabHelper;
-import org.chromium.chrome.browser.complex_tasks.TaskTabHelper;
+import com.ark.browser.core.utils.TaskTabHelper;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchTabHelper;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;

@@ -617,12 +617,14 @@ void DownloadItemImpl::Pause() {
     case INTERRUPTED_TARGET_PENDING_INTERNAL:
     case RESUMING_INTERNAL:
       // No active request.
+      last_reason_ = DOWNLOAD_INTERRUPT_REASON_NONE;
       paused_ = true;
       UpdateObservers();
       return;
 
     case IN_PROGRESS_INTERNAL:
     case TARGET_PENDING_INTERNAL:
+      last_reason_ = DOWNLOAD_INTERRUPT_REASON_NONE;
       paused_ = true;
       job_->Pause();
       UpdateObservers();

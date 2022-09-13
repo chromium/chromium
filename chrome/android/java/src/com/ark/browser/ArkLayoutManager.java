@@ -21,9 +21,7 @@ import com.ark.browser.utils.ArkLogger;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.Layout.Orientation;
@@ -103,7 +101,6 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
     private final SparseArray<LayoutTab> mTabCache = new SparseArray<>();
     private int mControlsHidingToken = TokenHolder.INVALID_TOKEN;
     private boolean mUpdateRequested;
-    private final OverlayPanelManager mOverlayPanelManager;
 
     private final Context mContext;
 
@@ -128,7 +125,7 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
     protected final List<SceneOverlay> mSceneOverlays = new ArrayList<>();
 
     /** A map of {@link SceneOverlay} to its position relative to the others. */
-    private Map<Class, Integer> mOverlayOrderMap = new HashMap<>();
+    private final Map<Class<?>, Integer> mOverlayOrderMap = new HashMap<>();
 
     /**
      * Creates a {@link ArkLayoutManager} instance.
@@ -149,17 +146,8 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
 
         mAnimationHandler = new CompositorAnimationHandler(this::requestUpdate);
 
-        mOverlayPanelManager = new OverlayPanelManager();
-
         mFrameRequestSupplier =
                 new CompositorModelChangeProcessor.FrameRequestSupplier(this::requestUpdate);
-    }
-
-    /**
-     * @return The layout manager's panel manager.
-     */
-    public OverlayPanelManager getOverlayPanelManager() {
-        return mOverlayPanelManager;
     }
 
     @Override
@@ -330,12 +318,6 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
         mStaticLayout = new ArkStaticLayout(mContext, this, renderHost, mHost, mFrameRequestSupplier,
                 tabContentManager);
 
-
-//        setNextLayout(null, true);
-
-        // Set the dynamic resource loader for all overlay panels.
-        mOverlayPanelManager.setDynamicResourceLoader(dynamicResourceLoader);
-
         startShowing(mStaticLayout, false);
     }
 
@@ -344,7 +326,6 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
         mAnimationHandler.destroy();
         mSceneChangeObservers.clear();
         if (mStaticLayout != null) mStaticLayout.destroy();
-        if (mOverlayPanelManager != null) mOverlayPanelManager.destroy();
     }
 
     /** @return A resource manager to pull textures from. */

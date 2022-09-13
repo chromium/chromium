@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin;
+package com.ark.browser.core;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.signin.GAIAServiceType;
