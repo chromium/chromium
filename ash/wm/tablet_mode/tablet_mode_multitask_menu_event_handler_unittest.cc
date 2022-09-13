@@ -4,6 +4,8 @@
 
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
 
+#include <memory>
+
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/splitview/split_view_divider.h"
@@ -16,8 +18,55 @@
 #include "chromeos/ui/frame/multitask_menu/split_button.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/test/test_window_delegate.h"
+#include "ui/events/event_handler.h"
 
 namespace ash {
+
+// A simple event monitor that records the gesture event type, used to check
+// gesture event generation.
+class TestEventHandler : public ui::EventHandler {
+ public:
+  TestEventHandler() { Shell::Get()->AddPreTargetHandler(this); }
+
+  TestEventHandler(const TestEventHandler&) = delete;
+  TestEventHandler& operator=(const TestEventHandler&) = delete;
+
+  ~TestEventHandler() override { Shell::Get()->RemovePreTargetHandler(this); }
+
+  // ui::EventHandler:
+  void OnEvent(ui::Event* event) override {
+    switch (event->type()) {
+      case ui::ET_GESTURE_SCROLL_BEGIN:
+      case ui::ET_GESTURE_SCROLL_END:
+      case ui::ET_GESTURE_SCROLL_UPDATE:
+        is_scroll_ = true;
+        break;
+      case ui::ET_GESTURE_SWIPE:
+        is_swipe_ = true;
+        break;
+      case ui::ET_SCROLL_FLING_START:
+        is_fling_ = true;
+        break;
+      default:
+        break;
+    }
+  }
+
+  void ResetGestures() {
+    is_scroll_ = false;
+    is_swipe_ = false;
+    is_fling_ = false;
+  }
+
+  bool is_scroll() const { return is_scroll_; }
+  bool is_swipe() const { return is_swipe_; }
+  bool is_fling() const { return is_fling_; }
+
+ private:
+  bool is_scroll_ = false;
+  bool is_swipe_ = false;
+  bool is_fling_ = false;
+};
 
 class TabletModeMultitaskMenuEventHandlerTest : public AshTestBase {
  public:
@@ -38,20 +87,33 @@ class TabletModeMultitaskMenuEventHandlerTest : public AshTestBase {
     TabletModeControllerTestApi().EnterTabletMode();
   }
 
-  void GenerateVerticalScroll(
-      int x,
-      int start_y,
-      int end_y,
-      const base::TimeDelta& step_delay = base::Milliseconds(100),
-      int steps = 3) {
+  void GenerateScroll(int x, int start_y, int end_y) {
     GetEventGenerator()->GestureScrollSequence(
-        gfx::Point(x, start_y), gfx::Point(x, end_y), step_delay, steps);
+        gfx::Point(x, start_y), gfx::Point(x, end_y), base::Milliseconds(100),
+        /*steps=*/3);
   }
 
-  void ShowMultitaskMenu(aura::Window* window) {
-    // Swipe down from the top center of the window.
-    const int point_x = window->bounds().CenterPoint().x();
-    GenerateVerticalScroll(point_x, 1, 50);
+  void GenerateSwipe(int x, int start_y, int end_y) {
+    GetEventGenerator()->GestureScrollSequence(
+        gfx::Point(x, start_y), gfx::Point(x, end_y), base::Milliseconds(10),
+        /*steps=*/10);
+  }
+
+  void GenerateFling(int x, int start_y, int end_y) {
+    GetEventGenerator()->GestureScrollSequence(
+        gfx::Point(x, start_y), gfx::Point(x, end_y), base::Milliseconds(1),
+        /*steps=*/1);
+  }
+
+  void ShowMultitaskMenu(const aura::Window& window) {
+    GenerateScroll(/*x=*/window.bounds().CenterPoint().x(),
+                   /*start_y=*/1, /*end_y=*/50);
+  }
+
+  TabletModeMultitaskMenuEventHandler* GetMultitaskMenuEventHandler() {
+    return TabletModeControllerTestApi()
+        .tablet_mode_window_manager()
+        ->tablet_mode_multitask_menu_event_handler_for_testing();
   }
 
   TabletModeMultitaskMenu* GetMultitaskMenu() {
@@ -63,8 +125,8 @@ class TabletModeMultitaskMenuEventHandlerTest : public AshTestBase {
 
   chromeos::MultitaskMenuView* GetMultitaskMenuView(
       TabletModeMultitaskMenu* multitask_menu) const {
-    // The contents view of the widget is a `TabletModeMultitaskMenuView` class,
-    // which has one child that is the `MultitaskMenuView`.
+    // The contents view of the widget is a `TabletModeMultitaskMenuView`
+    // class, which has one child that is the `MultitaskMenuView`.
     views::View* contents_view =
         multitask_menu->multitask_menu_widget()->GetContentsView();
     EXPECT_EQ(1u, contents_view->children().size());
@@ -79,12 +141,50 @@ class TabletModeMultitaskMenuEventHandlerTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Verify that a swipe down gesture from the top center activates the multitask
-// menu.
+// Tests that the gesture generation used in later tests works as expected.
+TEST_F(TabletModeMultitaskMenuEventHandlerTest, GestureEventGeneration) {
+  TestEventHandler event_handler = TestEventHandler();
+  auto window = CreateTestWindow();
+
+  // Verify that scroll can open and close the menu.
+  GenerateScroll(/*x=*/window->bounds().CenterPoint().x(), /*start_y=*/1,
+                 /*end_y=*/50);
+  ASSERT_TRUE(event_handler.is_scroll());
+  ASSERT_TRUE(GetMultitaskMenu());
+
+  GenerateScroll(/*x=*/window->bounds().CenterPoint().x(), /*start_y=*/50,
+                 /*end_y=*/8);
+  ASSERT_FALSE(GetMultitaskMenu());
+
+  // Verify that swipe can open and close the menu.
+  event_handler.ResetGestures();
+  GenerateSwipe(/*x=*/window->bounds().CenterPoint().x(), /*start_y=*/1,
+                /*end_y=*/50);
+  ASSERT_TRUE(event_handler.is_swipe());
+  ASSERT_TRUE(GetMultitaskMenu());
+
+  GenerateSwipe(/*x=*/window->bounds().CenterPoint().x(), /*start_y=*/50,
+                /*end_y=*/8);
+  ASSERT_FALSE(GetMultitaskMenu());
+
+  // Verify that fling can open and close the menu.
+  event_handler.ResetGestures();
+  GenerateFling(/*x=*/window->bounds().CenterPoint().x(), /*start_y=*/1,
+                /*end_y=*/50);
+  ASSERT_TRUE(event_handler.is_fling());
+  ASSERT_TRUE(GetMultitaskMenu());
+
+  GenerateFling(/*x=*/window->bounds().CenterPoint().x(), /*start_y=*/50,
+                /*end_y=*/8);
+  ASSERT_FALSE(GetMultitaskMenu());
+}
+
+// Tests that a scroll down gesture from the top center activates the
+// multitask menu.
 TEST_F(TabletModeMultitaskMenuEventHandlerTest, ShowMultitaskMenu) {
   auto window = CreateTestWindow();
 
-  ShowMultitaskMenu(window.get());
+  ShowMultitaskMenu(*window);
 
   TabletModeMultitaskMenu* multitask_menu = GetMultitaskMenu();
   ASSERT_TRUE(multitask_menu);
@@ -110,12 +210,11 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, ShowMultitaskMenu) {
             window->GetBoundsInScreen().CenterPoint().x());
 }
 
-// Verify that the menu is closed when the window is closed or destroyed.
+// Tests that the menu is closed when the window is closed or destroyed.
 TEST_F(TabletModeMultitaskMenuEventHandlerTest, OnWindowDestroying) {
   auto window = CreateTestWindow();
 
-  ShowMultitaskMenu(window.get());
-
+  ShowMultitaskMenu(*window);
   ASSERT_TRUE(GetMultitaskMenu());
 
   // Close the window.
@@ -123,56 +222,70 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, OnWindowDestroying) {
   EXPECT_FALSE(GetMultitaskMenu());
 }
 
-// Tests that swipe down shows the menu as expected.
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, SwipeDownGestures) {
+// Tests that scroll down shows the menu as expected.
+TEST_F(TabletModeMultitaskMenuEventHandlerTest, ScrollDownGestures) {
   auto window = CreateTestWindow();
 
-  // Swipe down from the top left. Verify that we do not show the menu.
-  GenerateVerticalScroll(0, 1, 50);
+  // Scroll down from the top left. Verify that we do not show the menu.
+  GenerateScroll(0, 1, 50);
   ASSERT_FALSE(GetMultitaskMenu());
 
-  // Swipe down from the top right. Verify that we do not show the menu.
-  GenerateVerticalScroll(window->bounds().right(), 1, 50);
+  // Scroll down from the top right. Verify that we do not show the menu.
+  GenerateScroll(window->bounds().right(), 1, 50);
   ASSERT_FALSE(GetMultitaskMenu());
 
-  // Swipe down from the top center. Verify that we show the menu.
-  GenerateVerticalScroll(window->bounds().CenterPoint().x(), 1, 50);
+  // Scroll down from the top center. Verify that we show the menu.
+  GenerateScroll(window->bounds().CenterPoint().x(), 1, 50);
   ASSERT_TRUE(GetMultitaskMenu());
 
-  // Swipe up on the menu. Verify that we close the menu.
-  GenerateVerticalScroll(window->bounds().CenterPoint().x(), 10, 1);
+  // Scroll up on the menu. Verify that we close the menu.
+  GenerateScroll(window->bounds().CenterPoint().x(), 50, 8);
   EXPECT_FALSE(GetMultitaskMenu());
 
-  // Fling down with a fast velocity. Verify that we open the menu.
-  GenerateVerticalScroll(window->bounds().CenterPoint().x(), 1, 50,
-                         base::Milliseconds(10), 10);
-  ASSERT_TRUE(GetMultitaskMenu());
+  // Scroll down from the top left. Verify that we do not show the menu.
+  GenerateScroll(0, 1, 50);
+  ASSERT_FALSE(GetMultitaskMenu());
 }
 
-// Tests that swipe up closes the menu as expected.
-TEST_F(TabletModeMultitaskMenuEventHandlerTest, SwipeUpGestures) {
+// Tests that fast swipes/flings show the menu as expected.
+TEST_F(TabletModeMultitaskMenuEventHandlerTest, SwipeFlingGestures) {
   auto window = CreateTestWindow();
 
-  // Swipe up with no menu open. Verify that we do not show the menu.
-  GenerateVerticalScroll(window->bounds().CenterPoint().x(), 50, 1);
+  // Swipe down fast to send a ET_SCROLL_FLING_START event. Verify that we
+  // open the menu.
+  GenerateFling(window->bounds().CenterPoint().x(), 1, 50);
+  ASSERT_TRUE(GetMultitaskMenu());
+
+  // Swipe up fast to send a ET_SCROLL_FLING_START event. Verify that we close
+  // the menu.
+  GenerateFling(window->bounds().CenterPoint().x(), 50, 8);
+  ASSERT_FALSE(GetMultitaskMenu());
+}
+
+// Tests that scroll up closes the menu as expected.
+TEST_F(TabletModeMultitaskMenuEventHandlerTest, ScrollUpGestures) {
+  auto window = CreateTestWindow();
+
+  // Scroll up with no menu open. Verify no change.
+  GenerateScroll(window->bounds().CenterPoint().x(), 50, 8);
   ASSERT_FALSE(GetMultitaskMenu());
 
-  ShowMultitaskMenu(window.get());
+  ShowMultitaskMenu(*window);
   ASSERT_TRUE(GetMultitaskMenu());
 
-  // Swipe down again. Verify that we still show the menu.
-  GenerateVerticalScroll(window->bounds().CenterPoint().x(), 1, 50);
+  // Scroll down again. Verify that we still show the menu.
+  GenerateScroll(window->bounds().CenterPoint().x(), 1, 50);
   ASSERT_TRUE(GetMultitaskMenu());
 
-  // Swipe up on the menu. Verify that we close the menu.
-  GenerateVerticalScroll(window->bounds().CenterPoint().x(), 50, 1);
+  // Scroll up on the menu. Verify that we close the menu.
+  GenerateScroll(window->bounds().CenterPoint().x(), 50, 8);
   EXPECT_FALSE(GetMultitaskMenu());
 }
 
 TEST_F(TabletModeMultitaskMenuEventHandlerTest, HideMultitaskMenuInOverview) {
   auto window = CreateTestWindow();
 
-  ShowMultitaskMenu(window.get());
+  ShowMultitaskMenu(*window);
 
   auto* event_handler =
       TabletModeControllerTestApi()
@@ -193,7 +306,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, HideMultitaskMenuInOverview) {
 TEST_F(TabletModeMultitaskMenuEventHandlerTest, ButtonFunctionality) {
   auto window = CreateTestWindow();
 
-  ShowMultitaskMenu(window.get());
+  ShowMultitaskMenu(*window);
 
   // Press the primary half split button.
   auto* half_button = GetMultitaskMenu()
@@ -218,8 +331,8 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, ButtonFunctionality) {
   // Verify that the multitask menu has been closed.
   ASSERT_FALSE(GetMultitaskMenu());
 
-  // Swipe down again.
-  ShowMultitaskMenu(window.get());
+  // Scroll down again.
+  ShowMultitaskMenu(*window);
 
   // Verify that the multitask menu has been centered on the new window size.
   auto* multitask_menu = GetMultitaskMenu();
@@ -238,7 +351,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, CloseMultitaskMenuOnTap) {
   UpdateDisplay("1600x1000");
   auto window = CreateAppWindow();
 
-  ShowMultitaskMenu(window.get());
+  ShowMultitaskMenu(*window);
   ASSERT_TRUE(GetMultitaskMenu());
 
   // Tap outside the menu. Verify that we close the menu.
@@ -246,18 +359,19 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, CloseMultitaskMenuOnTap) {
   EXPECT_FALSE(GetMultitaskMenu());
 }
 
-// Tests that if a window cannot be snapped or floated, the buttons will not be
-// shown.
+// Tests that if a window cannot be snapped or floated, the buttons will not
+// be shown.
 TEST_F(TabletModeMultitaskMenuEventHandlerTest, HiddenButtons) {
   UpdateDisplay("800x600");
 
-  // A window with a minimum size of 600x600 will not be snappable or floatable.
+  // A window with a minimum size of 600x600 will not be snappable or
+  // floatable.
   aura::test::TestWindowDelegate window_delegate;
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
       &window_delegate, /*id=*/-1, gfx::Rect(700, 700)));
   window_delegate.set_minimum_size(gfx::Size(600, 600));
 
-  ShowMultitaskMenu(window.get());
+  ShowMultitaskMenu(*window);
 
   // Tests that only one button, the fullscreen button shows up.
   TabletModeMultitaskMenu* multitask_menu = GetMultitaskMenu();

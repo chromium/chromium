@@ -37,13 +37,15 @@ class TabletModeMultitaskMenuEventHandler : public ui::EventHandler {
   }
 
  private:
+  bool ProcessBeginFlingOrSwipe(const ui::GestureEvent& event);
+
   void ShowMultitaskMenu(aura::Window* active_window);
 
   std::unique_ptr<TabletModeMultitaskMenu> multitask_menu_;
 
   // Used to show or hide the multitask menu. Null if no drag is in
   // progress.
-  absl::optional<bool> is_drag_down_;
+  absl::optional<bool> is_drag_to_open_;
 };
 
 }  // namespace ash
