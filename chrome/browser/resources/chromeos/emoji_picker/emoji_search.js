@@ -355,8 +355,9 @@ export class EmojiSearch extends PolymerElement {
    * @returns {number} Number of search results.
    */
   getNumSearchResults() {
-    return this.searchResults.reduce(
-      (acc, item) => acc + item.emoji.length, 0);
+    return this.searchResults ?
+        this.searchResults.reduce((acc, item) => acc + item.emoji.length, 0) :
+        0;
   }
 
   /**

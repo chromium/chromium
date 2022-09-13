@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -372,12 +372,12 @@ suite('<emoji-picker>', () => {
   });
 
   suite('<emoji-search>', () => {
-    test('works when there are no results', async () => {
+    test('works when there are no results', () => {
       // This test just ensures that no errors are thrown.
       const enterEvent = new KeyboardEvent(
           'keydown', {cancelable: true, key: 'Enter', keyCode: 13});
       const search = findInEmojiPicker('emoji-search');
-      search.onKeyDown(enterEvent);
+      search.onSearchKeyDown(enterEvent);
     });
     test('finds results in the second group', async () => {
       const search = findInEmojiPicker('emoji-search');
