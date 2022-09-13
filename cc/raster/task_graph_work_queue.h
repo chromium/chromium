@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "cc/cc_export.h"
@@ -167,6 +168,19 @@ class CC_EXPORT TaskGraphWorkQueue {
           ++count;
         }
       }
+    }
+    return count;
+  }
+
+  size_t NumReadyTasksForCategory(uint16_t category) const {
+    auto found = ready_to_run_namespaces_.find(category);
+    if (found == ready_to_run_namespaces_.end())
+      return 0;
+    size_t count = 0;
+    for (auto* task_namespace_entry : found->second) {
+      DCHECK(
+          base::Contains(task_namespace_entry->ready_to_run_tasks, category));
+      count += task_namespace_entry->ready_to_run_tasks.at(category).size();
     }
     return count;
   }

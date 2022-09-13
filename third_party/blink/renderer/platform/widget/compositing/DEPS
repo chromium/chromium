@@ -1,6 +1,7 @@
 include_rules = [
     "+base/containers/circular_deque.h",
     "+base/task/task_traits.h",
+    "+base/task/post_job.h",
     "+base/task/thread_pool/thread_pool_instance.h",
     "+cc",
     "+components/viz/client",
