@@ -49,8 +49,6 @@ void LoginManagerTest::SetUpCommandLine(base::CommandLine* command_line) {
 }
 
 void LoginManagerTest::SetUpOnMainThread() {
-  LoginDisplayHostWebUI::DisableRestrictiveProxyCheckForTest();
-
   host_resolver()->AddRule("*", "127.0.0.1");
 
   test::UserSessionManagerTestApi session_manager_test_api(

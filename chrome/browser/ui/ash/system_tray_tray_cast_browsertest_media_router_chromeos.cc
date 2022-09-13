@@ -265,8 +265,6 @@ class SystemTrayTrayCastAccessCodeChromeOSTest
   }
 
   void SetUpOnMainThread() override {
-    ash::LoginDisplayHostWebUI::DisableRestrictiveProxyCheckForTest();
-
     ash::test::UserSessionManagerTestApi session_manager_test_api(
         ash::UserSessionManager::GetInstance());
     session_manager_test_api.SetShouldLaunchBrowserInTests(false);

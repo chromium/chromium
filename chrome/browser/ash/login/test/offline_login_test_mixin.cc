@@ -59,10 +59,6 @@ OfflineLoginTestMixin::OfflineLoginTestMixin(
 
 OfflineLoginTestMixin::~OfflineLoginTestMixin() = default;
 
-void OfflineLoginTestMixin::SetUpOnMainThread() {
-  LoginDisplayHostWebUI::DisableRestrictiveProxyCheckForTest();
-}
-
 void OfflineLoginTestMixin::TearDownOnMainThread() {
   GoOnline();
 }

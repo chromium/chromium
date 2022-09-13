@@ -116,9 +116,6 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
 
   views::Widget* login_window_for_test() { return login_window_; }
 
-  // Disable GaiaScreenHandler restrictive proxy check.
-  static void DisableRestrictiveProxyCheckForTest();
-
  protected:
   class KeyboardDrivenOobeKeyHandler;
 
@@ -244,8 +241,6 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   // True if WebUI is initialized in hidden state, the OOBE is not completed
   // and we're waiting for OOBE configuration check to finish.
   bool waiting_for_configuration_ = false;
-
-  static bool disable_restrictive_proxy_check_for_test_;
 
   // How many times renderer has crashed.
   int crash_count_ = 0;

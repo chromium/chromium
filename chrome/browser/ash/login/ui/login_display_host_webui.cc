@@ -389,8 +389,6 @@ PrefService* GetLocalState() {
 // static
 const char LoginDisplayHostWebUI::kShowLoginWebUIid[] = "ShowLoginWebUI";
 
-bool LoginDisplayHostWebUI::disable_restrictive_proxy_check_for_test_ = false;
-
 // A class to handle special menu key for keyboard driven OOBE.
 class LoginDisplayHostWebUI::KeyboardDrivenOobeKeyHandler
     : public ui::EventHandler {
@@ -890,9 +888,6 @@ void LoginDisplayHostWebUI::InitLoginWindowAndView() {
   login_view_ = new WebUILoginView(WebUILoginView::WebViewSettings(),
                                    weak_factory_.GetWeakPtr());
   login_view_->Init();
-  if (disable_restrictive_proxy_check_for_test_) {
-    DisableRestrictiveProxyCheckForTest();
-  }
 
   login_window_->SetVisibilityAnimationDuration(
       base::Milliseconds(kLoginFadeoutTransitionDurationMs));
@@ -971,15 +966,6 @@ void LoginDisplayHostWebUI::OnLoginPromptVisible() {
 void LoginDisplayHostWebUI::CreateExistingUserController() {
   existing_user_controller_ = std::make_unique<ExistingUserController>();
   login_display_->set_delegate(existing_user_controller_.get());
-}
-
-// static
-void LoginDisplayHostWebUI::DisableRestrictiveProxyCheckForTest() {
-  if (default_host() && default_host()->GetOobeUI()) {
-    disable_restrictive_proxy_check_for_test_ = false;
-  } else {
-    disable_restrictive_proxy_check_for_test_ = true;
-  }
 }
 
 void LoginDisplayHostWebUI::ShowGaiaDialog(const AccountId& prefilled_account) {

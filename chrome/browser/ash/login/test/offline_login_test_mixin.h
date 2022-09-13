@@ -27,7 +27,6 @@ class OfflineLoginTestMixin : public InProcessBrowserTestMixin {
   ~OfflineLoginTestMixin() override;
 
   // InProcessBrowserTestMixin:
-  void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
   // Initializes DeviceSettingsProvider to start with OfflineLogin on the next

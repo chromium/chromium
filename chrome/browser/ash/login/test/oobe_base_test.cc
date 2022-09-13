@@ -146,8 +146,6 @@ void OobeBaseTest::SetUpOnMainThread() {
       UserSessionManager::GetInstance());
   session_manager_test_api.SetShouldObtainTokenHandleInTests(false);
 
-  LoginDisplayHostWebUI::DisableRestrictiveProxyCheckForTest();
-
   if (ShouldWaitForOobeUI()) {
     MaybeWaitForLoginScreenLoad();
   }
