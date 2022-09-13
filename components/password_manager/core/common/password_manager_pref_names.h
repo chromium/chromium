@@ -95,6 +95,9 @@ extern const char kOsPasswordBlank[];
 
 // The number of seconds since epoch that the OS password was last changed.
 extern const char kOsPasswordLastChanged[];
+
+// Whether biometric authentication is available on this device.
+extern const char kIsBiometricAvailable[];
 #endif
 
 #if BUILDFLAG(IS_APPLE)

@@ -44,6 +44,7 @@ const char kUnenrolledFromGoogleMobileServicesAfterApiErrorCode[] =
 const char kOsPasswordBlank[] = "password_manager.os_password_blank";
 const char kOsPasswordLastChanged[] =
     "password_manager.os_password_last_changed";
+const char kIsBiometricAvailable[] = "password_manager.is_biometric_avaliable";
 #endif
 
 #if BUILDFLAG(IS_APPLE)

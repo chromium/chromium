@@ -6,12 +6,19 @@
 
 #include "chrome/browser/device_reauth/chrome_biometric_authenticator_factory.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/device_reauth/biometric_authenticator.h"
 #include "components/password_manager/core/browser/password_access_authenticator.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,12 +36,18 @@ class MockSystemAuthenticator : public AuthenticatorWinInterface {
               AuthenticateUser,
               (const std::u16string& message),
               (override));
+  MOCK_METHOD(void,
+              CheckIfBiometricsAvailable,
+              (AvailabilityCallback callback),
+              (override));
 };
 
 }  // namespace
 
 class BiometricAuthenticatorWinTest : public testing::Test {
  public:
+  BiometricAuthenticatorWinTest()
+      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
   void SetUp() override {
     std::unique_ptr<MockSystemAuthenticator> system_authenticator =
         std::make_unique<MockSystemAuthenticator>();
@@ -51,10 +64,17 @@ class BiometricAuthenticatorWinTest : public testing::Test {
 
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
+  void SetBiometricAvailability(bool available) {
+    testing_local_state_.Get()->SetBoolean(
+        password_manager::prefs::kIsBiometricAvailable, available);
+  }
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<BiometricAuthenticatorWin> authenticator_;
+
+  ScopedTestingLocalState testing_local_state_;
 
   // This is owned by the authenticator.
   raw_ptr<MockSystemAuthenticator> system_authenticator_ = nullptr;
@@ -135,4 +155,32 @@ TEST_F(BiometricAuthenticatorWinTest, ReauthenticationIfPreviousFailed) {
       result_callback.Get());
 
   task_environment().RunUntilIdle();
+}
+
+// Checks if CanAuthenticate returns a valid pref value.
+TEST_F(BiometricAuthenticatorWinTest, CanAuthenticate) {
+  SetBiometricAvailability(true);
+  EXPECT_TRUE(authenticator()->CanAuthenticate(
+      BiometricAuthRequester::kPasswordsInSettings));
+
+  SetBiometricAvailability(false);
+  EXPECT_FALSE(authenticator()->CanAuthenticate(
+      BiometricAuthRequester::kPasswordsInSettings));
+}
+
+// Verifies that the caching mechanism for BiometricsAvailable works.
+TEST_F(BiometricAuthenticatorWinTest, SavingBiometricsAvailability) {
+  EXPECT_CALL(system_authenticator(), CheckIfBiometricsAvailable)
+      .WillOnce(testing::WithArg<0>(
+          [](auto callback) { std::move(callback).Run(true); }));
+  authenticator()->CacheIfBiometricsAvailable();
+  EXPECT_TRUE(authenticator()->CanAuthenticate(
+      BiometricAuthRequester::kPasswordsInSettings));
+
+  EXPECT_CALL(system_authenticator(), CheckIfBiometricsAvailable)
+      .WillOnce(testing::WithArg<0>(
+          [](auto callback) { std::move(callback).Run(false); }));
+  authenticator()->CacheIfBiometricsAvailable();
+  EXPECT_FALSE(authenticator()->CanAuthenticate(
+      BiometricAuthRequester::kPasswordsInSettings));
 }

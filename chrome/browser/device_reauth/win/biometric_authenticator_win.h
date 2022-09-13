@@ -5,23 +5,12 @@
 #ifndef CHROME_BROWSER_DEVICE_REAUTH_WIN_BIOMETRIC_AUTHENTICATOR_WIN_H_
 #define CHROME_BROWSER_DEVICE_REAUTH_WIN_BIOMETRIC_AUTHENTICATOR_WIN_H_
 
+#include <memory>
+
 #include "chrome/browser/device_reauth/chrome_biometric_authenticator_common.h"
 #include "chrome/browser/device_reauth/chrome_biometric_authenticator_factory.h"
-#include "chrome/browser/password_manager/password_manager_util_win.h"
+#include "chrome/browser/device_reauth/win/authenticator_win.h"
 #include "components/device_reauth/biometric_authenticator.h"
-
-// Used for testing.
-class AuthenticatorWinInterface {
- public:
-  virtual ~AuthenticatorWinInterface() = default;
-  virtual bool AuthenticateUser(const std::u16string& message) = 0;
-};
-
-class AuthenticatorWin : public AuthenticatorWinInterface {
- public:
-  ~AuthenticatorWin() override;
-  bool AuthenticateUser(const std::u16string& message) override;
-};
 
 class BiometricAuthenticatorWin : public ChromeBiometricAuthenticatorCommon {
  public:
@@ -55,6 +44,12 @@ class BiometricAuthenticatorWin : public ChromeBiometricAuthenticatorCommon {
   // for which the auth was requested becomes obsolete or the object is
   // destroyed.
   void Cancel(device_reauth::BiometricAuthRequester requester) override;
+
+  // Asks Windows if user has configured and enabled biometrics on
+  // their machine. Stores the response in a local state pref for future usage,
+  // as that check is very expensive. Prefer using the cached value over calling
+  // this for every auth attempt.
+  void CacheIfBiometricsAvailable();
 
  private:
   friend class ChromeBiometricAuthenticatorFactory;

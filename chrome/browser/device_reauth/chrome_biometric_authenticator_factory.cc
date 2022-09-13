@@ -52,8 +52,16 @@ ChromeBiometricAuthenticatorFactory::GetOrCreateBiometricAuthenticator() {
   return base::WrapRefCounted(biometric_authenticator_.get());
 }
 
-ChromeBiometricAuthenticatorFactory::ChromeBiometricAuthenticatorFactory() =
-    default;
+ChromeBiometricAuthenticatorFactory::ChromeBiometricAuthenticatorFactory() {
+#if BUILDFLAG(IS_WIN)
+  // BiometricAuthenticatorWin is created here only to cache the biometric
+  // availability and die. If cached value is wrong(eg. user disable biometrics
+  // while chrome is running) then standard password prompt will appear.
+  base::WrapRefCounted(
+      new BiometricAuthenticatorWin(std::make_unique<AuthenticatorWin>()))
+      ->CacheIfBiometricsAvailable();
+#endif
+}
 
 ChromeBiometricAuthenticatorFactory::~ChromeBiometricAuthenticatorFactory() =
     default;

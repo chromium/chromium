@@ -5874,6 +5874,8 @@ static_library("browser") {
       "component_updater/recovery_improved_component_installer_win.cc",
       "component_updater/sw_reporter_installer_win.cc",
       "component_updater/sw_reporter_installer_win.h",
+      "device_reauth/win/authenticator_win.cc",
+      "device_reauth/win/authenticator_win.h",
       "device_reauth/win/biometric_authenticator_win.cc",
       "device_reauth/win/biometric_authenticator_win.h",
       "download/download_status_updater_win.cc",
