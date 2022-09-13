@@ -12,11 +12,12 @@
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/common/api/automation.h"
-#include "extensions/renderer/api/automation/automation_ax_tree_wrapper.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 #include "ipc/ipc_message.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_tree.h"
+#include "ui/accessibility/platform/automation/automation_ax_tree_wrapper.h"
+#include "ui/accessibility/platform/automation/automation_tree_manager_owner.h"
 #include "v8/include/v8.h"
 
 struct ExtensionMsg_AccessibilityEventBundleParams;
@@ -39,7 +40,8 @@ struct TreeChangeObserver {
 
 // The native component of custom bindings for the chrome.automationInternal
 // API.
-class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
+class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
+                                         public ui::AutomationTreeManagerOwner {
  public:
   AutomationInternalCustomBindings(
       ScriptContext* context,
@@ -57,62 +59,49 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
 
   void OnMessageReceived(const IPC::Message& message);
 
-  AutomationAXTreeWrapper* GetAutomationAXTreeWrapperFromTreeID(
-      ui::AXTreeID tree_id) const;
-
-  // Given a tree (|in_out_tree_wrapper|) and a node, returns the parent.
-  // If |node| is the root of its tree, the return value will be the host
-  // node of the parent tree and |in_out_tree_wrapper| will be updated to
-  // point to that parent tree.
-  //
-  // Optionally, |should_use_app_id|, if true, considers
-  // ax::mojom::IntAttribute::kChildTreeNodeAppId when moving to ancestors.
-  // |requires_unignored|, if true, keeps moving to ancestors until an unignored
-  // ancestor parent is found.
-  ui::AXNode* GetParent(ui::AXNode* node,
-                        AutomationAXTreeWrapper** in_out_tree_wrapper,
-                        bool should_use_app_id = true,
-                        bool requires_unignored = true) const;
-
-  // Gets the hosting node in a parent tree.
-  ui::AXNode* GetHostInParentTree(
-      AutomationAXTreeWrapper** in_out_tree_wrapper) const;
-
   // Gets the root(s) of a node's child tree. Multiple roots can occur when the
   // child tree uses ax::mojom::StringAttribute::kAppId.
   std::vector<ui::AXNode*> GetRootsOfChildTree(ui::AXNode* node) const;
 
   ui::AXNode* GetNextInTreeOrder(
       ui::AXNode* start,
-      AutomationAXTreeWrapper** in_out_tree_wrapper) const;
+      ui::AutomationAXTreeWrapper** in_out_tree_wrapper) const;
   ui::AXNode* GetPreviousInTreeOrder(
       ui::AXNode* start,
-      AutomationAXTreeWrapper** in_out_tree_wrapper) const;
+      ui::AutomationAXTreeWrapper** in_out_tree_wrapper) const;
 
   ScriptContext* context() const {
     return ObjectBackedNativeHandler::context();
   }
 
-  void SendNodesRemovedEvent(ui::AXTree* tree, const std::vector<int>& ids);
+  // ui::AutomationTreeManagerOwner:
+  ui::AutomationAXTreeWrapper* GetAutomationAXTreeWrapperFromTreeID(
+      ui::AXTreeID tree_id) const override;
+  ui::AXNode* GetParent(ui::AXNode* node,
+                        ui::AutomationAXTreeWrapper** in_out_tree_wrapper,
+                        bool should_use_app_id = true,
+                        bool requires_unignored = true) const override;
+  ui::AXNode* GetHostInParentTree(
+      ui::AutomationAXTreeWrapper** in_out_tree_wrapper) const override;
+  void SendNodesRemovedEvent(ui::AXTree* tree,
+                             const std::vector<int>& ids) override;
   bool SendTreeChangeEvent(ax::mojom::Mutation change_type,
                            ui::AXTree* tree,
-                           ui::AXNode* node);
+                           ui::AXNode* node) override;
   void SendAutomationEvent(
       ui::AXTreeID tree_id,
       const gfx::Point& mouse_location,
       const ui::AXEvent& event,
       absl::optional<ui::AXEventGenerator::Event> generated_event_type =
-          absl::optional<ui::AXEventGenerator::Event>());
-
-  void MaybeSendFocusAndBlur(AutomationAXTreeWrapper* tree,
+          absl::optional<ui::AXEventGenerator::Event>()) override;
+  void MaybeSendFocusAndBlur(ui::AutomationAXTreeWrapper* tree,
                              const ui::AXTreeID& tree_id,
                              const std::vector<ui::AXTreeUpdate>& updates,
                              const std::vector<ui::AXEvent>& events,
-                             gfx::Point mouse_location);
-
-  absl::optional<gfx::Rect> GetAccessibilityFocusedLocation() const;
-
-  void SendAccessibilityFocusedLocationChange(const gfx::Point& mouse_location);
+                             gfx::Point mouse_location) override;
+  absl::optional<gfx::Rect> GetAccessibilityFocusedLocation() const override;
+  void SendAccessibilityFocusedLocationChange(
+      const gfx::Point& mouse_location) override;
 
  private:
   friend class AutomationInternalCustomBindingsTest;
@@ -155,24 +144,24 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
 
   void GetFocus(const v8::FunctionCallbackInfo<v8::Value>& args);
 
-  // Given an initial AutomationAXTreeWrapper, return the
-  // AutomationAXTreeWrapper and node of the focused node within this tree or a
-  // focused descendant tree.
-  bool GetFocusInternal(AutomationAXTreeWrapper* top_tree,
-                        AutomationAXTreeWrapper** out_tree,
+  // Given an initial ui::AutomationAXTreeWrapper, return the
+  // ui::AutomationAXTreeWrapper and node of the focused node within this tree
+  // or a focused descendant tree.
+  bool GetFocusInternal(ui::AutomationAXTreeWrapper* top_tree,
+                        ui::AutomationAXTreeWrapper** out_tree,
                         ui::AXNode** out_node);
 
   void RouteTreeIDFunction(
       const std::string& name,
       void (*callback)(v8::Isolate* isolate,
                        v8::ReturnValue<v8::Value> result,
-                       AutomationAXTreeWrapper* tree_wrapper));
+                       ui::AutomationAXTreeWrapper* tree_wrapper));
 
   void RouteNodeIDFunction(
       const std::string& name,
       std::function<void(v8::Isolate* isolate,
                          v8::ReturnValue<v8::Value> result,
-                         AutomationAXTreeWrapper* tree_wrapper,
+                         ui::AutomationAXTreeWrapper* tree_wrapper,
                          ui::AXNode* node)> callback);
   void RouteNodeIDPlusAttributeFunction(
       const std::string& name,
@@ -185,7 +174,7 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
       const std::string& name,
       std::function<void(v8::Isolate* isolate,
                          v8::ReturnValue<v8::Value> result,
-                         AutomationAXTreeWrapper* tree_wrapper,
+                         ui::AutomationAXTreeWrapper* tree_wrapper,
                          ui::AXNode* node,
                          int start,
                          int end,
@@ -194,7 +183,7 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
       const std::string& name,
       std::function<void(v8::Isolate* isolate,
                          v8::ReturnValue<v8::Value> result,
-                         AutomationAXTreeWrapper* tree_wrapper,
+                         ui::AutomationAXTreeWrapper* tree_wrapper,
                          ui::AXNode* node,
                          const std::string& strVal,
                          bool boolVal)> callback);
@@ -202,7 +191,7 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
       const std::string& name,
       std::function<void(v8::Isolate* isolate,
                          v8::ReturnValue<v8::Value> result,
-                         AutomationAXTreeWrapper* tree_wrapper,
+                         ui::AutomationAXTreeWrapper* tree_wrapper,
                          ui::AXNode* node,
                          int start,
                          int end,
@@ -212,7 +201,7 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
       const std::string& name,
       std::function<void(v8::Isolate* isolate,
                          v8::ReturnValue<v8::Value> result,
-                         AutomationAXTreeWrapper* tree_wrapper,
+                         ui::AutomationAXTreeWrapper* tree_wrapper,
                          ui::AXNode* node,
                          api::automation::EventType event_type)> callback);
 
@@ -264,7 +253,7 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
       ax::mojom::ImageAnnotationStatus status) const;
 
   std::vector<int> CalculateSentenceBoundary(
-      AutomationAXTreeWrapper* tree_wrapper,
+      ui::AutomationAXTreeWrapper* tree_wrapper,
       ui::AXNode* node,
       bool start_boundary);
 
@@ -274,17 +263,17 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
   // If |clip_bounds| is false, the bounds of the node will not be clipped
   // to the ancestors bounding boxes if needed. Regardless of clipping, results
   // are returned in global coordinates.
-  gfx::Rect ComputeGlobalNodeBounds(AutomationAXTreeWrapper* tree_wrapper,
+  gfx::Rect ComputeGlobalNodeBounds(ui::AutomationAXTreeWrapper* tree_wrapper,
                                     ui::AXNode* node,
                                     gfx::RectF local_bounds = gfx::RectF(),
                                     bool* offscreen = nullptr,
                                     bool clip_bounds = true) const;
 
-  void TreeEventListenersChanged(AutomationAXTreeWrapper* tree_wrapper);
+  void TreeEventListenersChanged(ui::AutomationAXTreeWrapper* tree_wrapper);
 
   void MaybeSendOnAllAutomationEventListenersRemoved();
 
-  std::map<ui::AXTreeID, std::unique_ptr<AutomationAXTreeWrapper>>
+  std::map<ui::AXTreeID, std::unique_ptr<ui::AutomationAXTreeWrapper>>
       tree_id_to_tree_wrapper_map_;
   scoped_refptr<AutomationMessageFilter> message_filter_;
   bool is_active_profile_;

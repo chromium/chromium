@@ -5,6 +5,7 @@
 import("//build/config/features.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ui.gni")
+import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
@@ -90,6 +91,20 @@ source_set("platform") {
     "//ui/base:buildflags",
     "//ui/display",
   ]
+
+  if (enable_extensions) {
+    sources += [
+      # Use by the Automation API.
+      # TODO(crbug.com/1357889): Rename to atp/ or javascript/?
+      "automation/automation_api_util.cc",
+      "automation/automation_api_util.h",
+      "automation/automation_ax_tree_wrapper.cc",
+      "automation/automation_ax_tree_wrapper.h",
+      "automation/automation_tree_manager_owner.h",
+    ]
+
+    public_deps += [ "//components/crash/core/common:crash_key" ]
+  }
 
   if (is_fuchsia) {
     sources += [

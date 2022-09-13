@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/renderer/api/automation/automation_ax_tree_wrapper.h"
+#include "ui/accessibility/platform/automation/automation_ax_tree_wrapper.h"
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
@@ -10,28 +10,27 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "components/crash/core/common/crash_key.h"
-#include "extensions/renderer/api/automation/automation_api_util.h"
-#include "extensions/renderer/api/automation/automation_internal_custom_bindings.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_selection.h"
+#include "ui/accessibility/platform/automation/automation_api_util.h"
+#include "ui/accessibility/platform/automation/automation_tree_manager_owner.h"
 
-namespace extensions {
+namespace ui {
 
 // Multiroot tree lookup.
 // Represents an app node.
 struct AppNodeInfo {
-  ui::AXTreeID tree_id;
+  AXTreeID tree_id;
   int32_t node_id;
 };
 
 // These maps support moving from a node to a descendant tree node via an app id
 // (and vice versa).
-std::map<std::string, std::pair<ui::AXTreeID, int32_t>>&
+std::map<std::string, std::pair<AXTreeID, int32_t>>&
 GetAppIDToParentTreeNodeMap() {
-  static base::NoDestructor<
-      std::map<std::string, std::pair<ui::AXTreeID, int32_t>>>
+  static base::NoDestructor<std::map<std::string, std::pair<AXTreeID, int32_t>>>
       app_id_to_tree_node_map;
   return *app_id_to_tree_node_map;
 }
@@ -43,17 +42,16 @@ std::map<std::string, std::vector<AppNodeInfo>>& GetAppIDToTreeNodeMap() {
 }
 
 AutomationAXTreeWrapper::AutomationAXTreeWrapper(
-    ui::AXTreeID tree_id,
-    AutomationInternalCustomBindings* owner)
-    : ui::AXTreeManager(tree_id, std::make_unique<ui::AXTree>()),
-      owner_(owner) {}
+    AXTreeID tree_id,
+    AutomationTreeManagerOwner* owner)
+    : AXTreeManager(tree_id, std::make_unique<AXTree>()), owner_(owner) {}
 
 AutomationAXTreeWrapper::~AutomationAXTreeWrapper() = default;
 
 // static
 AutomationAXTreeWrapper* AutomationAXTreeWrapper::GetParentOfTreeId(
-    ui::AXTreeID tree_id) {
-  std::map<ui::AXTreeID, AutomationAXTreeWrapper*>& child_tree_id_reverse_map =
+    AXTreeID tree_id) {
+  std::map<AXTreeID, AutomationAXTreeWrapper*>& child_tree_id_reverse_map =
       GetChildTreeIDReverseMap();
   const auto& iter = child_tree_id_reverse_map.find(tree_id);
   if (iter != child_tree_id_reverse_map.end())
@@ -63,9 +61,9 @@ AutomationAXTreeWrapper* AutomationAXTreeWrapper::GetParentOfTreeId(
 }
 
 bool AutomationAXTreeWrapper::OnAccessibilityEvents(
-    const ui::AXTreeID& tree_id,
-    const std::vector<ui::AXTreeUpdate>& updates,
-    const std::vector<ui::AXEvent>& events,
+    const AXTreeID& tree_id,
+    const std::vector<AXTreeUpdate>& updates,
+    const std::vector<AXEvent>& events,
     gfx::Point mouse_location,
     bool is_active_profile) {
   TRACE_EVENT0("accessibility",
@@ -74,7 +72,7 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
   absl::optional<gfx::Rect> previous_accessibility_focused_global_bounds =
       owner_->GetAccessibilityFocusedLocation();
 
-  std::map<ui::AXTreeID, AutomationAXTreeWrapper*>& child_tree_id_reverse_map =
+  std::map<AXTreeID, AutomationAXTreeWrapper*>& child_tree_id_reverse_map =
       GetChildTreeIDReverseMap();
   const auto& child_tree_ids = ax_tree_->GetAllChildTreeIds();
 
@@ -110,7 +108,7 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
   }
 
   // Refresh child tree id  mappings.
-  for (const ui::AXTreeID& child_tree_id : ax_tree_->GetAllChildTreeIds()) {
+  for (const AXTreeID& child_tree_id : ax_tree_->GetAllChildTreeIds()) {
     DCHECK(!base::Contains(child_tree_id_reverse_map, child_tree_id));
     child_tree_id_reverse_map.insert(std::make_pair(child_tree_id, this));
   }
@@ -150,9 +148,10 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
 
   // Send auto-generated AXEventGenerator events.
   for (const auto& targeted_event : event_generator_) {
-    if (ShouldIgnoreGeneratedEvent(targeted_event.event_params.event))
+    if (ShouldIgnoreGeneratedEventForAutomation(
+            targeted_event.event_params.event))
       continue;
-    ui::AXEvent generated_event;
+    AXEvent generated_event;
     generated_event.id = targeted_event.node_id;
     generated_event.event_from = targeted_event.event_params.event_from;
     generated_event.event_from_action =
@@ -169,7 +168,7 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
       continue;
 
     // Send some events directly.
-    if (!ShouldIgnoreAXEvent(event.event_type)) {
+    if (!ShouldIgnoreAXEventForAutomation(event.event_type)) {
       owner_->SendAutomationEvent(tree_id, mouse_location, event);
     }
   }
@@ -205,12 +204,12 @@ bool AutomationAXTreeWrapper::IsInFocusChain(int32_t node_id) {
     return true;
 
   AutomationAXTreeWrapper* descendant_tree = this;
-  ui::AXTreeID descendant_tree_id = GetTreeID();
+  AXTreeID descendant_tree_id = GetTreeID();
   AutomationAXTreeWrapper* ancestor_tree = descendant_tree;
   bool found = true;
   while ((ancestor_tree = ancestor_tree->GetParentTree())) {
     int32_t ancestor_tree_focus_id = ancestor_tree->ax_tree()->data().focus_id;
-    ui::AXNode* ancestor_tree_focused_node =
+    AXNode* ancestor_tree_focused_node =
         ancestor_tree->ax_tree()->GetFromId(ancestor_tree_focus_id);
     if (!ancestor_tree_focused_node)
       return false;
@@ -220,13 +219,13 @@ bool AutomationAXTreeWrapper::IsInFocusChain(int32_t node_id) {
       // |ancestor_tree_focused_node| points to a tree with multiple roots as
       // its child tree node. Ensure the node points back to
       // |ancestor_tree_focused_node| as its parent.
-      ui::AXNode* parent_node = descendant_tree->GetParentTreeNodeForAppID(
+      AXNode* parent_node = descendant_tree->GetParentTreeNodeForAppID(
           ancestor_tree_focused_node->GetStringAttribute(
               ax::mojom::StringAttribute::kChildTreeNodeAppId),
           owner_);
       if (parent_node != ancestor_tree_focused_node)
         return false;
-    } else if (ui::AXTreeID::FromString(
+    } else if (AXTreeID::FromString(
                    ancestor_tree_focused_node->GetStringAttribute(
                        ax::mojom::StringAttribute::kChildTreeId)) !=
                    descendant_tree_id &&
@@ -253,12 +252,12 @@ bool AutomationAXTreeWrapper::IsInFocusChain(int32_t node_id) {
   return found;
 }
 
-ui::AXSelection AutomationAXTreeWrapper::GetUnignoredSelection() {
+AXSelection AutomationAXTreeWrapper::GetUnignoredSelection() {
   return ax_tree_->GetUnignoredSelection();
 }
 
-ui::AXNode* AutomationAXTreeWrapper::GetUnignoredNodeFromId(int32_t id) {
-  ui::AXNode* node = ax_tree_->GetFromId(id);
+AXNode* AutomationAXTreeWrapper::GetUnignoredNodeFromId(int32_t id) {
+  AXNode* node = ax_tree_->GetFromId(id);
   return (node && !node->IsIgnored()) ? node : nullptr;
 }
 
@@ -266,8 +265,8 @@ void AutomationAXTreeWrapper::SetAccessibilityFocus(int32_t node_id) {
   accessibility_focused_id_ = node_id;
 }
 
-ui::AXNode* AutomationAXTreeWrapper::GetAccessibilityFocusedNode() {
-  return accessibility_focused_id_ == ui::kInvalidAXNodeID
+AXNode* AutomationAXTreeWrapper::GetAccessibilityFocusedNode() {
+  return accessibility_focused_id_ == kInvalidAXNodeID
              ? nullptr
              : ax_tree_->GetFromId(accessibility_focused_id_);
 }
@@ -308,14 +307,14 @@ AutomationAXTreeWrapper* AutomationAXTreeWrapper::GetParentTreeFromAnyAppID() {
 }
 
 void AutomationAXTreeWrapper::EventListenerAdded(
-    const std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>& event_type,
-    ui::AXNode* node) {
+    const std::tuple<ax::mojom::Event, AXEventGenerator::Event>& event_type,
+    AXNode* node) {
   node_id_to_events_[node->id()].insert(event_type);
 }
 
 void AutomationAXTreeWrapper::EventListenerRemoved(
-    const std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>& event_type,
-    ui::AXNode* node) {
+    const std::tuple<ax::mojom::Event, AXEventGenerator::Event>& event_type,
+    AXNode* node) {
   auto it = node_id_to_events_.find(node->id());
   if (it != node_id_to_events_.end()) {
     it->second.erase(event_type);
@@ -325,8 +324,8 @@ void AutomationAXTreeWrapper::EventListenerRemoved(
 }
 
 bool AutomationAXTreeWrapper::HasEventListener(
-    const std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>& event_type,
-    ui::AXNode* node) {
+    const std::tuple<ax::mojom::Event, AXEventGenerator::Event>& event_type,
+    AXNode* node) {
   auto it = node_id_to_events_.find(node->id());
   if (it == node_id_to_events_.end())
     return false;
@@ -339,17 +338,17 @@ size_t AutomationAXTreeWrapper::EventListenerCount() const {
 }
 
 // static
-std::map<ui::AXTreeID, AutomationAXTreeWrapper*>&
+std::map<AXTreeID, AutomationAXTreeWrapper*>&
 AutomationAXTreeWrapper::GetChildTreeIDReverseMap() {
-  static base::NoDestructor<std::map<ui::AXTreeID, AutomationAXTreeWrapper*>>
+  static base::NoDestructor<std::map<AXTreeID, AutomationAXTreeWrapper*>>
       child_tree_id_reverse_map;
   return *child_tree_id_reverse_map;
 }
 
 // static
-ui::AXNode* AutomationAXTreeWrapper::GetParentTreeNodeForAppID(
+AXNode* AutomationAXTreeWrapper::GetParentTreeNodeForAppID(
     const std::string& app_id,
-    const AutomationInternalCustomBindings* owner) {
+    const AutomationTreeManagerOwner* owner) {
   auto& map = GetAppIDToParentTreeNodeMap();
   auto it = map.find(app_id);
   if (it == map.end())
@@ -366,7 +365,7 @@ ui::AXNode* AutomationAXTreeWrapper::GetParentTreeNodeForAppID(
 // static
 AutomationAXTreeWrapper* AutomationAXTreeWrapper::GetParentTreeWrapperForAppID(
     const std::string& app_id,
-    const AutomationInternalCustomBindings* owner) {
+    const AutomationTreeManagerOwner* owner) {
   auto& map = GetAppIDToParentTreeNodeMap();
   auto it = map.find(app_id);
   if (it == map.end())
@@ -376,15 +375,15 @@ AutomationAXTreeWrapper* AutomationAXTreeWrapper::GetParentTreeWrapperForAppID(
 }
 
 // static
-std::vector<ui::AXNode*> AutomationAXTreeWrapper::GetChildTreeNodesForAppID(
+std::vector<AXNode*> AutomationAXTreeWrapper::GetChildTreeNodesForAppID(
     const std::string& app_id,
-    const AutomationInternalCustomBindings* owner) {
+    const AutomationTreeManagerOwner* owner) {
   auto& map = GetAppIDToTreeNodeMap();
   auto it = map.find(app_id);
   if (it == map.end())
-    return std::vector<ui::AXNode*>();
+    return std::vector<AXNode*>();
 
-  std::vector<ui::AXNode*> nodes;
+  std::vector<AXNode*> nodes;
   for (const AppNodeInfo& app_node_info : it->second) {
     AutomationAXTreeWrapper* wrapper =
         owner->GetAutomationAXTreeWrapperFromTreeID(app_node_info.tree_id);
@@ -398,17 +397,17 @@ std::vector<ui::AXNode*> AutomationAXTreeWrapper::GetChildTreeNodesForAppID(
 }
 
 void AutomationAXTreeWrapper::OnNodeDataChanged(
-    ui::AXTree* tree,
-    const ui::AXNodeData& old_node_data,
-    const ui::AXNodeData& new_node_data) {
+    AXTree* tree,
+    const AXNodeData& old_node_data,
+    const AXNodeData& new_node_data) {
   if (old_node_data.GetStringAttribute(ax::mojom::StringAttribute::kName) !=
       new_node_data.GetStringAttribute(ax::mojom::StringAttribute::kName))
     text_changed_node_ids_.push_back(new_node_data.id);
 }
 
 void AutomationAXTreeWrapper::OnStringAttributeChanged(
-    ui::AXTree* tree,
-    ui::AXNode* node,
+    AXTree* tree,
+    AXNode* node,
     ax::mojom::StringAttribute attr,
     const std::string& old_value,
     const std::string& new_value) {
@@ -441,8 +440,7 @@ void AutomationAXTreeWrapper::OnStringAttributeChanged(
   }
 }
 
-void AutomationAXTreeWrapper::OnNodeWillBeDeleted(ui::AXTree* tree,
-                                                  ui::AXNode* node) {
+void AutomationAXTreeWrapper::OnNodeWillBeDeleted(AXTree* tree, AXNode* node) {
   did_send_tree_change_during_unserialization_ |= owner_->SendTreeChangeEvent(
       ax::mojom::Mutation::kNodeRemoved, tree, node);
   deleted_node_ids_.push_back(node->id());
@@ -471,8 +469,7 @@ void AutomationAXTreeWrapper::OnNodeWillBeDeleted(ui::AXTree* tree,
   }
 }
 
-void AutomationAXTreeWrapper::OnNodeCreated(ui::AXTree* tree,
-                                            ui::AXNode* node) {
+void AutomationAXTreeWrapper::OnNodeCreated(AXTree* tree, AXNode* node) {
   if (node->HasStringAttribute(
           ax::mojom::StringAttribute::kChildTreeNodeAppId)) {
     GetAppIDToParentTreeNodeMap()[node->GetStringAttribute(
@@ -490,12 +487,12 @@ void AutomationAXTreeWrapper::OnNodeCreated(ui::AXTree* tree,
 }
 
 void AutomationAXTreeWrapper::OnAtomicUpdateFinished(
-    ui::AXTree* tree,
+    AXTree* tree,
     bool root_changed,
-    const std::vector<ui::AXTreeObserver::Change>& changes) {
+    const std::vector<AXTreeObserver::Change>& changes) {
   DCHECK_EQ(ax_tree(), tree);
   for (const auto& change : changes) {
-    ui::AXNode* node = change.node;
+    AXNode* node = change.node;
     switch (change.type) {
       case NODE_CREATED:
         did_send_tree_change_during_unserialization_ |=
@@ -526,8 +523,8 @@ void AutomationAXTreeWrapper::OnAtomicUpdateFinished(
   text_changed_node_ids_.clear();
 }
 
-void AutomationAXTreeWrapper::OnIgnoredChanged(ui::AXTree* tree,
-                                               ui::AXNode* node,
+void AutomationAXTreeWrapper::OnIgnoredChanged(AXTree* tree,
+                                               AXNode* node,
                                                bool is_ignored_new_value) {
   owner_->SendTreeChangeEvent(is_ignored_new_value
                                   ? ax::mojom::Mutation::kNodeRemoved
@@ -539,7 +536,7 @@ bool AutomationAXTreeWrapper::IsTreeIgnored() {
   // Check the hosting nodes within the parenting trees for ignored host nodes.
   AutomationAXTreeWrapper* tree = this;
   while (tree) {
-    ui::AXNode* host = owner_->GetHostInParentTree(&tree);
+    AXNode* host = owner_->GetHostInParentTree(&tree);
     if (!host)
       break;
 
@@ -550,25 +547,23 @@ bool AutomationAXTreeWrapper::IsTreeIgnored() {
   return false;
 }
 
-ui::AXNode* AutomationAXTreeWrapper::GetNodeFromTree(
-    const ui::AXTreeID& tree_id,
-    const ui::AXNodeID node_id) const {
+AXNode* AutomationAXTreeWrapper::GetNodeFromTree(const AXTreeID& tree_id,
+                                                 const AXNodeID node_id) const {
   AutomationAXTreeWrapper* tree_wrapper =
       owner_->GetAutomationAXTreeWrapperFromTreeID(tree_id);
   return tree_wrapper ? tree_wrapper->GetNode(node_id) : nullptr;
 }
 
-ui::AXTreeID AutomationAXTreeWrapper::GetParentTreeID() const {
+AXTreeID AutomationAXTreeWrapper::GetParentTreeID() const {
   AutomationAXTreeWrapper* parent_tree = GetParentOfTreeId(ax_tree_id_);
-  return parent_tree ? parent_tree->GetTreeID() : ui::AXTreeIDUnknown();
+  return parent_tree ? parent_tree->GetTreeID() : AXTreeIDUnknown();
 }
 
-ui::AXNode* AutomationAXTreeWrapper::GetParentNodeFromParentTreeAsAXNode()
-    const {
+AXNode* AutomationAXTreeWrapper::GetParentNodeFromParentTreeAsAXNode() const {
   AutomationAXTreeWrapper* wrapper = const_cast<AutomationAXTreeWrapper*>(this);
   return owner_->GetParent(ax_tree_->root(), &wrapper,
                            /* should_use_app_id = */ true,
                            /* requires_unignored = */ false);
 }
 
-}  // namespace extensions
+}  // namespace ui

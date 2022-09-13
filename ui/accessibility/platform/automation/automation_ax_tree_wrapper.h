@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_RENDERER_API_AUTOMATION_AUTOMATION_AX_TREE_WRAPPER_H_
-#define EXTENSIONS_RENDERER_API_AUTOMATION_AUTOMATION_AX_TREE_WRAPPER_H_
+#ifndef UI_ACCESSIBILITY_PLATFORM_AUTOMATION_AUTOMATION_AX_TREE_WRAPPER_H_
+#define UI_ACCESSIBILITY_PLATFORM_AUTOMATION_AUTOMATION_AX_TREE_WRAPPER_H_
 
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_event_generator.h"
@@ -12,16 +12,15 @@
 #include "ui/accessibility/ax_tree_manager.h"
 #include "ui/accessibility/ax_tree_update.h"
 
-namespace extensions {
+namespace ui {
 
-class AutomationInternalCustomBindings;
+class AutomationTreeManagerOwner;
 
 // A class that wraps one AXTree and all of the additional state
 // and helper methods needed to use it for the automation API.
-class AutomationAXTreeWrapper : public ui::AXTreeManager {
+class AX_EXPORT AutomationAXTreeWrapper : public AXTreeManager {
  public:
-  AutomationAXTreeWrapper(ui::AXTreeID tree_id,
-                          AutomationInternalCustomBindings* owner);
+  AutomationAXTreeWrapper(AXTreeID tree_id, AutomationTreeManagerOwner* owner);
 
   AutomationAXTreeWrapper(const AutomationAXTreeWrapper&) = delete;
   AutomationAXTreeWrapper& operator=(const AutomationAXTreeWrapper&) = delete;
@@ -30,31 +29,31 @@ class AutomationAXTreeWrapper : public ui::AXTreeManager {
 
   // Returns the AutomationAXTreeWrapper that lists |tree_id| as one of its
   // child trees, if any.
-  static AutomationAXTreeWrapper* GetParentOfTreeId(ui::AXTreeID tree_id);
+  static AutomationAXTreeWrapper* GetParentOfTreeId(AXTreeID tree_id);
 
-  static std::map<ui::AXTreeID, AutomationAXTreeWrapper*>&
+  static std::map<AXTreeID, AutomationAXTreeWrapper*>&
   GetChildTreeIDReverseMap();
 
   // Multiroot tree lookup.
-  static ui::AXNode* GetParentTreeNodeForAppID(
+  static AXNode* GetParentTreeNodeForAppID(
       const std::string& app_id,
-      const AutomationInternalCustomBindings* owner);
+      const AutomationTreeManagerOwner* owner);
   static AutomationAXTreeWrapper* GetParentTreeWrapperForAppID(
       const std::string& app_id,
-      const AutomationInternalCustomBindings* owner);
-  static std::vector<ui::AXNode*> GetChildTreeNodesForAppID(
+      const AutomationTreeManagerOwner* owner);
+  static std::vector<AXNode*> GetChildTreeNodesForAppID(
       const std::string& app_id,
-      const AutomationInternalCustomBindings* owner);
+      const AutomationTreeManagerOwner* owner);
 
-  AutomationInternalCustomBindings* owner() { return owner_; }
+  AutomationTreeManagerOwner* owner() { return owner_; }
 
   // Called by AutomationInternalCustomBindings::OnAccessibilityEvents on
   // the AutomationAXTreeWrapper instance for the correct tree corresponding
   // to this event. Unserializes the tree update and calls back to
-  // AutomationInternalCustomBindings to fire any automation events needed.
-  bool OnAccessibilityEvents(const ui::AXTreeID& tree_id,
-                             const std::vector<ui::AXTreeUpdate>& updates,
-                             const std::vector<ui::AXEvent>& events,
+  // AutomationTreeManagerOwner to fire any automation events needed.
+  bool OnAccessibilityEvents(const AXTreeID& tree_id,
+                             const std::vector<AXTreeUpdate>& updates,
+                             const std::vector<AXEvent>& events,
                              gfx::Point mouse_location,
                              bool is_active_profile);
 
@@ -69,15 +68,15 @@ class AutomationAXTreeWrapper : public ui::AXTreeManager {
   // document.activeElement (within the DOM).
   bool IsInFocusChain(int32_t node_id);
 
-  ui::AXSelection GetUnignoredSelection();
+  AXSelection GetUnignoredSelection();
 
   // Returns an AXNode from the underlying tree if it both exists and is not
   // ignored.
-  ui::AXNode* GetUnignoredNodeFromId(int32_t id);
+  AXNode* GetUnignoredNodeFromId(int32_t id);
 
   // Accessibility focus is globally set via automation API from js.
   void SetAccessibilityFocus(int32_t node_id);
-  ui::AXNode* GetAccessibilityFocusedNode();
+  AXNode* GetAccessibilityFocusedNode();
 
   int32_t accessibility_focused_id() { return accessibility_focused_id_; }
 
@@ -97,16 +96,13 @@ class AutomationAXTreeWrapper : public ui::AXTreeManager {
 
   // Updates or gets this wrapper with the latest state of listeners in js.
   void EventListenerAdded(
-      const std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>&
-          event_type,
+      const std::tuple<ax::mojom::Event, AXEventGenerator::Event>& event_type,
       ui::AXNode* node);
   void EventListenerRemoved(
-      const std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>&
-          event_type,
+      const std::tuple<ax::mojom::Event, AXEventGenerator::Event>& event_type,
       ui::AXNode* node);
   bool HasEventListener(
-      const std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>&
-          event_type,
+      const std::tuple<ax::mojom::Event, AXEventGenerator::Event>& event_type,
       ui::AXNode* node);
   size_t EventListenerCount() const;
 
@@ -115,35 +111,35 @@ class AutomationAXTreeWrapper : public ui::AXTreeManager {
   bool IsTreeIgnored();
 
   // AXTreeManager overrides.
-  ui::AXNode* GetNodeFromTree(const ui::AXTreeID& tree_id,
-                              const ui::AXNodeID node_id) const override;
-  ui::AXTreeID GetParentTreeID() const override;
-  ui::AXNode* GetParentNodeFromParentTreeAsAXNode() const override;
+  AXNode* GetNodeFromTree(const AXTreeID& tree_id,
+                          const AXNodeID node_id) const override;
+  AXTreeID GetParentTreeID() const override;
+  AXNode* GetParentNodeFromParentTreeAsAXNode() const override;
 
  private:
   // AXTreeObserver overrides.
-  void OnNodeDataChanged(ui::AXTree* tree,
-                         const ui::AXNodeData& old_node_data,
-                         const ui::AXNodeData& new_node_data) override;
-  void OnStringAttributeChanged(ui::AXTree* tree,
-                                ui::AXNode* node,
+  void OnNodeDataChanged(AXTree* tree,
+                         const AXNodeData& old_node_data,
+                         const AXNodeData& new_node_data) override;
+  void OnStringAttributeChanged(AXTree* tree,
+                                AXNode* node,
                                 ax::mojom::StringAttribute attr,
                                 const std::string& old_value,
                                 const std::string& new_value) override;
-  void OnNodeWillBeDeleted(ui::AXTree* tree, ui::AXNode* node) override;
-  void OnNodeCreated(ui::AXTree* tree, ui::AXNode* node) override;
-  void OnAtomicUpdateFinished(ui::AXTree* tree,
+  void OnNodeWillBeDeleted(AXTree* tree, AXNode* node) override;
+  void OnNodeCreated(AXTree* tree, AXNode* node) override;
+  void OnAtomicUpdateFinished(AXTree* tree,
                               bool root_changed,
                               const std::vector<Change>& changes) override;
-  void OnIgnoredChanged(ui::AXTree* tree,
-                        ui::AXNode* node,
+  void OnIgnoredChanged(AXTree* tree,
+                        AXNode* node,
                         bool is_ignored_new_value) override;
 
-  AutomationInternalCustomBindings* owner_;
+  AutomationTreeManagerOwner* owner_;
   std::vector<int> deleted_node_ids_;
   std::vector<int> text_changed_node_ids_;
 
-  int32_t accessibility_focused_id_ = ui::kInvalidAXNodeID;
+  int32_t accessibility_focused_id_ = kInvalidAXNodeID;
 
   // Tracks whether a tree change event was sent during unserialization. Tree
   // changes outside of unserialization do not get reflected here. The value is
@@ -152,7 +148,7 @@ class AutomationAXTreeWrapper : public ui::AXTreeManager {
 
   // Maps a node to a set containing events for which the node has listeners.
   std::map<int32_t,
-           std::set<std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>>>
+           std::set<std::tuple<ax::mojom::Event, AXEventGenerator::Event>>>
       node_id_to_events_;
 
   // A collection of all nodes with
@@ -160,6 +156,6 @@ class AutomationAXTreeWrapper : public ui::AXTreeManager {
   std::set<std::string> all_tree_node_app_ids_;
 };
 
-}  // namespace extensions
+}  // namespace ui
 
-#endif  // EXTENSIONS_RENDERER_API_AUTOMATION_AUTOMATION_AX_TREE_WRAPPER_H_
+#endif  // UI_ACCESSIBILITY_PLATFORM_AUTOMATION_AUTOMATION_AX_TREE_WRAPPER_H_

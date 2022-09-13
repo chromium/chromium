@@ -16,6 +16,7 @@
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/platform/automation/automation_ax_tree_wrapper.h"
 
 namespace extensions {
 
@@ -55,7 +56,7 @@ class AutomationInternalCustomBindingsTest
     EXPECT_TRUE(availability.is_available()) << availability.message();
   }
 
-  std::map<ui::AXTreeID, std::unique_ptr<AutomationAXTreeWrapper>>&
+  std::map<ui::AXTreeID, std::unique_ptr<ui::AutomationAXTreeWrapper>>&
   GetTreeIDToTreeMap() {
     return automation_internal_bindings_->tree_id_to_tree_wrapper_map_;
   }
@@ -67,14 +68,14 @@ class AutomationInternalCustomBindingsTest
                                                          is_active_profile);
   }
 
-  bool CallGetFocusInternal(AutomationAXTreeWrapper* top_wrapper,
-                            AutomationAXTreeWrapper** focused_wrapper,
+  bool CallGetFocusInternal(ui::AutomationAXTreeWrapper* top_wrapper,
+                            ui::AutomationAXTreeWrapper** focused_wrapper,
                             ui::AXNode** focused_node) {
     return automation_internal_bindings_->GetFocusInternal(
         top_wrapper, focused_wrapper, focused_node);
   }
 
-  gfx::Rect CallComputeGlobalNodeBounds(AutomationAXTreeWrapper* wrapper,
+  gfx::Rect CallComputeGlobalNodeBounds(ui::AutomationAXTreeWrapper* wrapper,
                                         ui::AXNode* node) {
     return automation_internal_bindings_->ComputeGlobalNodeBounds(wrapper,
                                                                   node);
@@ -110,7 +111,8 @@ TEST_F(AutomationInternalCustomBindingsTest, GetDesktop) {
 
   ASSERT_EQ(1U, GetTreeIDToTreeMap().size());
 
-  AutomationAXTreeWrapper* desktop = GetTreeIDToTreeMap().begin()->second.get();
+  ui::AutomationAXTreeWrapper* desktop =
+      GetTreeIDToTreeMap().begin()->second.get();
   ASSERT_TRUE(desktop);
   EXPECT_TRUE(desktop->IsDesktopTree());
 }
@@ -139,10 +141,11 @@ TEST_F(AutomationInternalCustomBindingsTest, GetFocusOneTree) {
 
   ASSERT_EQ(1U, GetTreeIDToTreeMap().size());
 
-  AutomationAXTreeWrapper* desktop = GetTreeIDToTreeMap().begin()->second.get();
+  ui::AutomationAXTreeWrapper* desktop =
+      GetTreeIDToTreeMap().begin()->second.get();
   ASSERT_TRUE(desktop);
 
-  AutomationAXTreeWrapper* focused_wrapper = nullptr;
+  ui::AutomationAXTreeWrapper* focused_wrapper = nullptr;
   ui::AXNode* focused_node = nullptr;
   CallGetFocusInternal(desktop, &focused_wrapper, &focused_node);
   ASSERT_TRUE(focused_wrapper);
@@ -218,14 +221,17 @@ TEST_F(AutomationInternalCustomBindingsTest,
 
   ASSERT_EQ(3U, GetTreeIDToTreeMap().size());
 
-  AutomationAXTreeWrapper* wrapper_0 = GetTreeIDToTreeMap()[tree_0_id].get();
+  ui::AutomationAXTreeWrapper* wrapper_0 =
+      GetTreeIDToTreeMap()[tree_0_id].get();
   ASSERT_TRUE(wrapper_0);
-  AutomationAXTreeWrapper* wrapper_1 = GetTreeIDToTreeMap()[tree_1_id].get();
+  ui::AutomationAXTreeWrapper* wrapper_1 =
+      GetTreeIDToTreeMap()[tree_1_id].get();
   ASSERT_TRUE(wrapper_1);
-  AutomationAXTreeWrapper* wrapper_2 = GetTreeIDToTreeMap()[tree_2_id].get();
+  ui::AutomationAXTreeWrapper* wrapper_2 =
+      GetTreeIDToTreeMap()[tree_2_id].get();
   ASSERT_TRUE(wrapper_2);
 
-  AutomationAXTreeWrapper* focused_wrapper = nullptr;
+  ui::AutomationAXTreeWrapper* focused_wrapper = nullptr;
   ui::AXNode* focused_node = nullptr;
   CallGetFocusInternal(wrapper_0, &focused_wrapper, &focused_node);
   ASSERT_TRUE(focused_wrapper);
@@ -309,14 +315,17 @@ TEST_F(AutomationInternalCustomBindingsTest,
 
   ASSERT_EQ(3U, GetTreeIDToTreeMap().size());
 
-  AutomationAXTreeWrapper* wrapper_0 = GetTreeIDToTreeMap()[tree_0_id].get();
+  ui::AutomationAXTreeWrapper* wrapper_0 =
+      GetTreeIDToTreeMap()[tree_0_id].get();
   ASSERT_TRUE(wrapper_0);
-  AutomationAXTreeWrapper* wrapper_1 = GetTreeIDToTreeMap()[tree_1_id].get();
+  ui::AutomationAXTreeWrapper* wrapper_1 =
+      GetTreeIDToTreeMap()[tree_1_id].get();
   ASSERT_TRUE(wrapper_1);
-  AutomationAXTreeWrapper* wrapper_2 = GetTreeIDToTreeMap()[tree_2_id].get();
+  ui::AutomationAXTreeWrapper* wrapper_2 =
+      GetTreeIDToTreeMap()[tree_2_id].get();
   ASSERT_TRUE(wrapper_2);
 
-  AutomationAXTreeWrapper* focused_wrapper = nullptr;
+  ui::AutomationAXTreeWrapper* focused_wrapper = nullptr;
   ui::AXNode* focused_node = nullptr;
   CallGetFocusInternal(wrapper_0, &focused_wrapper, &focused_node);
   ASSERT_TRUE(focused_wrapper);
@@ -391,9 +400,11 @@ TEST_F(AutomationInternalCustomBindingsTest, GetBoundsAppIdConstruction) {
 
   ASSERT_EQ(2U, GetTreeIDToTreeMap().size());
 
-  AutomationAXTreeWrapper* wrapper_0 = GetTreeIDToTreeMap()[tree_0_id].get();
+  ui::AutomationAXTreeWrapper* wrapper_0 =
+      GetTreeIDToTreeMap()[tree_0_id].get();
   ASSERT_TRUE(wrapper_0);
-  AutomationAXTreeWrapper* wrapper_1 = GetTreeIDToTreeMap()[tree_1_id].get();
+  ui::AutomationAXTreeWrapper* wrapper_1 =
+      GetTreeIDToTreeMap()[tree_1_id].get();
   ASSERT_TRUE(wrapper_1);
 
   ui::AXNode* wrapper1_button = wrapper_1->ax_tree()->GetFromId(2);
@@ -480,9 +491,11 @@ TEST_F(AutomationInternalCustomBindingsTest, GetBoundsNestedAppIdConstruction) {
 
   ASSERT_EQ(2U, GetTreeIDToTreeMap().size());
 
-  AutomationAXTreeWrapper* wrapper_0 = GetTreeIDToTreeMap()[tree_0_id].get();
+  ui::AutomationAXTreeWrapper* wrapper_0 =
+      GetTreeIDToTreeMap()[tree_0_id].get();
   ASSERT_TRUE(wrapper_0);
-  AutomationAXTreeWrapper* wrapper_1 = GetTreeIDToTreeMap()[tree_1_id].get();
+  ui::AutomationAXTreeWrapper* wrapper_1 =
+      GetTreeIDToTreeMap()[tree_1_id].get();
   ASSERT_TRUE(wrapper_1);
 
   ui::AXNode* wrapper1_button = wrapper_1->ax_tree()->GetFromId(2);
@@ -553,11 +566,14 @@ TEST_F(AutomationInternalCustomBindingsTest, IgnoredAncestorTrees) {
 
   ASSERT_EQ(3U, GetTreeIDToTreeMap().size());
 
-  AutomationAXTreeWrapper* wrapper_0 = GetTreeIDToTreeMap()[tree_0_id].get();
+  ui::AutomationAXTreeWrapper* wrapper_0 =
+      GetTreeIDToTreeMap()[tree_0_id].get();
   ASSERT_TRUE(wrapper_0);
-  AutomationAXTreeWrapper* wrapper_1 = GetTreeIDToTreeMap()[tree_1_id].get();
+  ui::AutomationAXTreeWrapper* wrapper_1 =
+      GetTreeIDToTreeMap()[tree_1_id].get();
   ASSERT_TRUE(wrapper_1);
-  AutomationAXTreeWrapper* wrapper_2 = GetTreeIDToTreeMap()[tree_2_id].get();
+  ui::AutomationAXTreeWrapper* wrapper_2 =
+      GetTreeIDToTreeMap()[tree_2_id].get();
   ASSERT_TRUE(wrapper_2);
 
   // The root tree isn't ignored.
@@ -635,7 +651,8 @@ TEST_F(AutomationInternalCustomBindingsTest,
 
   ASSERT_EQ(2U, GetTreeIDToTreeMap().size());
 
-  AutomationAXTreeWrapper* wrapper_0 = GetTreeIDToTreeMap()[tree_0_id].get();
+  ui::AutomationAXTreeWrapper* wrapper_0 =
+      GetTreeIDToTreeMap()[tree_0_id].get();
   ASSERT_TRUE(wrapper_0);
 
   ui::AXNode* wrapper0_client = wrapper_0->ax_tree()->GetFromId(3);
