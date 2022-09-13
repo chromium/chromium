@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -202,7 +203,7 @@ TEST_F(SimpleGeolocationTest, ResponseOK) {
 
   GeolocationReceiver receiver;
   provider.RequestGeolocation(
-      base::Seconds(1), false, false,
+      base::Seconds(1), false, false, PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
       base::BindOnce(&GeolocationReceiver::OnRequestDone,
                      base::Unretained(&receiver)));
   receiver.WaitUntilRequestDone();
@@ -225,7 +226,7 @@ TEST_F(SimpleGeolocationTest, ResponseOKWithRetries) {
 
   GeolocationReceiver receiver;
   provider.RequestGeolocation(
-      base::Seconds(1), false, false,
+      base::Seconds(1), false, false, PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
       base::BindOnce(&GeolocationReceiver::OnRequestDone,
                      base::Unretained(&receiver)));
   receiver.WaitUntilRequestDone();
@@ -253,6 +254,7 @@ TEST_F(SimpleGeolocationTest, InvalidResponse) {
 
   provider.RequestGeolocation(
       base::Seconds(timeout_seconds), false, false,
+      PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
       base::BindOnce(&GeolocationReceiver::OnRequestDone,
                      base::Unretained(&receiver)));
   receiver.WaitUntilRequestDone();
@@ -298,7 +300,7 @@ TEST_F(SimpleGeolocationTest, NoWiFi) {
 
   GeolocationReceiver receiver;
   provider.RequestGeolocation(
-      base::Seconds(1), true, false,
+      base::Seconds(1), true, false, PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
       base::BindOnce(&GeolocationReceiver::OnRequestDone,
                      base::Unretained(&receiver)));
   receiver.WaitUntilRequestDone();
@@ -401,6 +403,7 @@ TEST_P(SimpleGeolocationWirelessTest, WiFiExists) {
     GeolocationReceiver receiver;
     provider.RequestGeolocation(
         base::Seconds(1), GetParam(), false,
+        PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
         base::BindOnce(&GeolocationReceiver::OnRequestDone,
                        base::Unretained(&receiver)));
     receiver.WaitUntilRequestDone();
@@ -428,6 +431,7 @@ TEST_P(SimpleGeolocationWirelessTest, WiFiExists) {
     GeolocationReceiver receiver;
     provider.RequestGeolocation(
         base::Seconds(1), GetParam(), false,
+        PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
         base::BindOnce(&GeolocationReceiver::OnRequestDone,
                        base::Unretained(&receiver)));
     receiver.WaitUntilRequestDone();
@@ -468,6 +472,7 @@ TEST_P(SimpleGeolocationWirelessTest, CellularExists) {
     GeolocationReceiver receiver;
     provider.RequestGeolocation(
         base::Seconds(1), false, GetParam(),
+        PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
         base::BindOnce(&GeolocationReceiver::OnRequestDone,
                        base::Unretained(&receiver)));
     receiver.WaitUntilRequestDone();
@@ -493,6 +498,7 @@ TEST_P(SimpleGeolocationWirelessTest, CellularExists) {
     GeolocationReceiver receiver;
     provider.RequestGeolocation(
         base::Seconds(1), false, GetParam(),
+        PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
         base::BindOnce(&GeolocationReceiver::OnRequestDone,
                        base::Unretained(&receiver)));
     receiver.WaitUntilRequestDone();
