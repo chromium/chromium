@@ -2,28 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/metrics/mobile_session_shutdown_metrics_provider.h"
+#import "ios/chrome/browser/metrics/mobile_session_shutdown_metrics_provider.h"
 
-#include <memory>
-#include <string>
+#import <memory>
+#import <string>
 
 #import <Foundation/Foundation.h>
 
-#include "base/bind.h"
-#include "base/files/file_path.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "base/test/test_simple_task_runner.h"
-#include "components/metrics/metrics_pref_names.h"
-#include "components/metrics/metrics_service.h"
-#include "components/metrics/metrics_state_manager.h"
-#include "components/metrics/test/test_enabled_state_provider.h"
-#include "components/metrics/test/test_metrics_service_client.h"
-#include "components/prefs/testing_pref_service.h"
+#import "base/bind.h"
+#import "base/files/file_path.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/test_simple_task_runner.h"
+#import "components/metrics/metrics_pref_names.h"
+#import "components/metrics/metrics_service.h"
+#import "components/metrics/metrics_state_manager.h"
+#import "components/metrics/test/test_enabled_state_provider.h"
+#import "components/metrics/test/test_metrics_service_client.h"
+#import "components/prefs/testing_pref_service.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/previous_session_info/previous_session_info_private.h"
-#include "testing/gtest/include/gtest/gtest-param-test.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "testing/gtest/include/gtest/gtest-param-test.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

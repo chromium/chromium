@@ -6,16 +6,16 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/mac/bridging.h"
+#import "base/mac/bridging.h"
 #import "ios/net/protocol_handler_util.h"
-#include "ios/web/test/test_url_constants.h"
+#import "ios/web/test/test_url_constants.h"
 #import "net/base/mac/url_conversions.h"
-#include "net/base/net_errors.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "net/base/net_errors.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "url/gurl.h"
-#include "url/scheme_host_port.h"
+#import "testing/platform_test.h"
+#import "url/gurl.h"
+#import "url/scheme_host_port.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

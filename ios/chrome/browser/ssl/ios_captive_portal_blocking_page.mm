@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ssl/ios_captive_portal_blocking_page.h"
+#import "ios/chrome/browser/ssl/ios_captive_portal_blocking_page.h"
 
-#include "base/i18n/rtl.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/values.h"
-#include "components/captive_portal/core/captive_portal_detector.h"
-#include "components/captive_portal/core/captive_portal_metrics.h"
-#include "components/security_interstitials/core/controller_client.h"
-#include "components/strings/grit/components_strings.h"
-#include "components/url_formatter/url_formatter.h"
-#include "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "base/i18n/rtl.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/values.h"
+#import "components/captive_portal/core/captive_portal_detector.h"
+#import "components/captive_portal/core/captive_portal_metrics.h"
+#import "components/security_interstitials/core/controller_client.h"
+#import "components/strings/grit/components_strings.h"
+#import "components/url_formatter/url_formatter.h"
+#import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,9 +4,9 @@
 
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_controller_client.h"
 
-#include "components/security_interstitials/core/metrics_helper.h"
-#include "ios/components/security_interstitials/ios_blocking_page_metrics_helper.h"
-#include "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
+#import "components/security_interstitials/core/metrics_helper.h"
+#import "ios/components/security_interstitials/ios_blocking_page_metrics_helper.h"
+#import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

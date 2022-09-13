@@ -7,15 +7,15 @@
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
 
-#include <memory>
+#import <memory>
 
 #import "base/test/ios/wait_util.h"
-#include "ios/net/cookies/system_cookie_store_unittest_template.h"
-#include "ios/web/public/test/fakes/fake_browser_state.h"
-#include "ios/web/public/test/scoped_testing_web_client.h"
-#include "ios/web/public/test/web_task_environment.h"
+#import "ios/net/cookies/system_cookie_store_unittest_template.h"
+#import "ios/web/public/test/fakes/fake_browser_state.h"
+#import "ios/web/public/test/scoped_testing_web_client.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,16 +4,16 @@
 
 #import "ios/web/js_features/context_menu/context_menu_params_utils.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "base/values.h"
-#include "components/url_formatter/url_formatter.h"
-#include "ios/web/common/referrer_util.h"
-#include "ios/web/js_features/context_menu/context_menu_constants.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/values.h"
+#import "components/url_formatter/url_formatter.h"
+#import "ios/web/common/referrer_util.h"
+#import "ios/web/js_features/context_menu/context_menu_constants.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "net/base/mac/url_conversions.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

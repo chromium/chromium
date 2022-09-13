@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/sessions/test_session_service.h"
 
-#include "base/memory/ref_counted.h"
-#include "base/threading/thread_task_runner_handle.h"
+#import "base/memory/ref_counted.h"
+#import "base/threading/thread_task_runner_handle.h"
 #import "ios/chrome/browser/sessions/session_ios_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

@@ -6,19 +6,19 @@
 
 #import <Foundation/Foundation.h>
 
-#include <memory>
+#import <memory>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
-#include "base/strings/utf_string_conversions.h"
+#import "base/bind.h"
+#import "base/callback_helpers.h"
+#import "base/strings/utf_string_conversions.h"
 #import "ios/web/public/test/crw_fake_web_state_delegate.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-#include "ui/base/page_transition_types.h"
+#import "ui/base/page_transition_types.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

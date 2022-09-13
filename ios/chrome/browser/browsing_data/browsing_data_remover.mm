@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/browsing_data/browsing_data_remover.h"
 
-#include "ios/chrome/browser/browsing_data/browsing_data_remover_observer.h"
+#import "ios/chrome/browser/browsing_data/browsing_data_remover_observer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,13 +4,13 @@
 
 #import "ios/showcase/core/app_delegate.h"
 
-#include "base/command_line.h"
-#include "base/i18n/icu_util.h"
-#include "base/memory/ptr_util.h"
-#include "base/path_service.h"
+#import "base/command_line.h"
+#import "base/i18n/icu_util.h"
+#import "base/memory/ptr_util.h"
+#import "base/path_service.h"
 #import "ios/showcase/core/showcase_model.h"
 #import "ios/showcase/core/showcase_view_controller.h"
-#include "ui/base/resource/resource_bundle.h"
+#import "ui/base/resource/resource_bundle.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

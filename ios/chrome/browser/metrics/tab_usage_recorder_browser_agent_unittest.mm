@@ -6,22 +6,22 @@
 
 #import <UIKit/UIKit.h>
 
-#include <memory>
-#include <tuple>
+#import <memory>
+#import <tuple>
 
-#include "base/metrics/histogram_samples.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "base/test/task_environment.h"
+#import "base/metrics/histogram_samples.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/task_environment.h"
 #import "components/previous_session_info/previous_session_info.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

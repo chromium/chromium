@@ -4,25 +4,25 @@
 
 #import "ios/chrome/browser/ui/settings/voice_search_table_view_controller.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/compiler_specific.h"
-#include "base/files/file_path.h"
-#include "base/mac/foundation_util.h"
-#include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
-#include "components/prefs/pref_member.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
+#import "base/compiler_specific.h"
+#import "base/files/file_path.h"
+#import "base/mac/foundation_util.h"
+#import "base/test/task_environment.h"
+#import "base/threading/thread_task_runner_handle.h"
+#import "components/prefs/pref_member.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
-#include "ios/chrome/browser/voice/speech_input_locale_config_impl.h"
-#include "ios/chrome/browser/voice/voice_search_prefs.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "ios/chrome/browser/voice/speech_input_locale_config_impl.h"
+#import "ios/chrome/browser/voice/voice_search_prefs.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,10 +4,10 @@
 
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
 
-#include "base/check.h"
-#include "ios/chrome/app/spotlight/actions_spotlight_manager.h"
-#include "ios/chrome/app/spotlight/bookmarks_spotlight_manager.h"
-#include "ios/chrome/app/spotlight/topsites_spotlight_manager.h"
+#import "base/check.h"
+#import "ios/chrome/app/spotlight/actions_spotlight_manager.h"
+#import "ios/chrome/app/spotlight/bookmarks_spotlight_manager.h"
+#import "ios/chrome/app/spotlight/topsites_spotlight_manager.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

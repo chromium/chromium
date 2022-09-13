@@ -4,15 +4,15 @@
 
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
 
-#include <memory>
-#include <string>
+#import <memory>
+#import <string>
 
 #import <PassKit/PassKit.h>
 
 #import "base/files/file_path.h"
-#include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "ios/chrome/browser/download/mime_type_util.h"
+#import "base/memory/ptr_util.h"
+#import "base/metrics/histogram_macros.h"
+#import "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/chrome/browser/download/pass_kit_tab_helper_delegate.h"
 #import "ios/web/public/download/download_task.h"
 

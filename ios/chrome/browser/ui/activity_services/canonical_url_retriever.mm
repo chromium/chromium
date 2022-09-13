@@ -4,16 +4,16 @@
 
 #import "ios/chrome/browser/ui/activity_services/canonical_url_retriever.h"
 
-#include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/values.h"
-#include "components/ui_metrics/canonical_url_share_metrics_types.h"
+#import "base/bind.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/values.h"
+#import "components/ui_metrics/canonical_url_share_metrics_types.h"
 #import "ios/chrome/browser/procedural_block_types.h"
-#include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/web_state.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

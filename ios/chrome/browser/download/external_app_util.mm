@@ -6,8 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/files/file_path.h"
-#include "ios/chrome/browser/download/download_directory_util.h"
+#import "base/files/file_path.h"
+#import "ios/chrome/browser/download/download_directory_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

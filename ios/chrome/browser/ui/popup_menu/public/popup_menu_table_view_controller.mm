@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_table_view_controller.h"
 
-#include "base/ios/ios_util.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
+#import "base/ios/ios_util.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_metrics_handler.h"
 #import "ios/chrome/browser/ui/popup_menu/public/cells/popup_menu_footer_item.h"
 #import "ios/chrome/browser/ui/popup_menu/public/cells/popup_menu_item.h"

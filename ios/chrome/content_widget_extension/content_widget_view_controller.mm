@@ -4,15 +4,15 @@
 
 #import "ios/chrome/content_widget_extension/content_widget_view_controller.h"
 
-#include "base/mac/foundation_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "ios/chrome/common/app_group/app_group_command.h"
-#include "ios/chrome/common/app_group/app_group_constants.h"
-#include "ios/chrome/common/app_group/app_group_metrics.h"
+#import "base/mac/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/common/app_group/app_group_command.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/common/ntp_tile/ntp_tile.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#include "ios/chrome/content_widget_extension/content_widget_view.h"
+#import "ios/chrome/content_widget_extension/content_widget_view.h"
 #import "ios/chrome/content_widget_extension/most_visited_tile_view.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/test/ocmock/OCMockObject+BreakpadControllerTesting.h"
 
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "third_party/breakpad/breakpad/src/client/ios/BreakpadController.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 

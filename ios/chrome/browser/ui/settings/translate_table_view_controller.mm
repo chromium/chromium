@@ -6,16 +6,16 @@
 
 #import <Foundation/Foundation.h>
 
-#include <memory>
+#import <memory>
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
-#include "base/mac/foundation_util.h"
-#include "components/google/core/common/google_util.h"
-#include "components/prefs/pref_member.h"
-#include "components/prefs/pref_service.h"
-#include "components/translate/core/browser/translate_pref_names.h"
-#include "components/translate/core/browser/translate_prefs.h"
+#import "base/mac/foundation_util.h"
+#import "components/google/core/common/google_util.h"
+#import "components/prefs/pref_member.h"
+#import "components/prefs/pref_service.h"
+#import "components/translate/core/browser/translate_pref_names.h"
+#import "components/translate/core/browser/translate_prefs.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
@@ -29,12 +29,12 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
-#include "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#include "ios/chrome/grit/ios_chromium_strings.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

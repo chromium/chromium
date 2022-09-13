@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/browser_container/browser_container_mediator.h"
 
-#include "base/check_op.h"
-#include "base/scoped_observation.h"
+#import "base/check_op.h"
+#import "base/scoped_observation.h"
 #import "ios/chrome/browser/overlays/public/overlay_presentation_context.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -6,8 +6,8 @@
 
 #import "base/check.h"
 #import "base/mac/foundation_util.h"
-#include "base/notreached.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "base/notreached.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"

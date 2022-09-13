@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 
 #import "components/policy/core/common/policy_loader_ios_constants.h"
-#include "components/prefs/pref_service.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

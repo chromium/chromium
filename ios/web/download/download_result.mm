@@ -4,7 +4,7 @@
 
 #import "ios/web/download/download_result.h"
 
-#include "net/base/net_errors.h"
+#import "net/base/net_errors.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

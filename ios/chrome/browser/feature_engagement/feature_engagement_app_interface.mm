@@ -4,20 +4,20 @@
 
 #import "ios/chrome/browser/feature_engagement/feature_engagement_app_interface.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/bind.h"
-#include "base/memory/singleton.h"
+#import "base/bind.h"
+#import "base/memory/singleton.h"
 #import "base/test/ios/wait_util.h"
-#include "base/test/scoped_feature_list.h"
-#include "components/feature_engagement/public/event_constants.h"
-#include "components/feature_engagement/public/feature_constants.h"
-#include "components/feature_engagement/public/tracker.h"
-#include "components/feature_engagement/test/test_tracker.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/translate/core/browser/translate_prefs.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/public/tracker.h"
+#import "components/feature_engagement/test/test_tracker.h"
+#import "components/keyed_service/core/keyed_service.h"
+#import "components/translate/core/browser/translate_prefs.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

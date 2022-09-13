@@ -6,24 +6,24 @@
 
 #import <MobileCoreServices/MobileCoreServices.h>
 
-#include <memory>
-#include <set>
-#include <string>
+#import <memory>
+#import <set>
+#import <string>
 
-#include "base/bind.h"
-#include "base/containers/contains.h"
-#include "base/hash/md5.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/task/cancelable_task_tracker.h"
-#include "build/branding_buildflags.h"
-#include "components/favicon/core/fallback_url_util.h"
-#include "components/favicon/core/large_icon_service.h"
-#include "components/favicon_base/fallback_icon_style.h"
-#include "components/favicon_base/favicon_types.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "base/bind.h"
+#import "base/containers/contains.h"
+#import "base/hash/md5.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/task/cancelable_task_tracker.h"
+#import "build/branding_buildflags.h"
+#import "components/favicon/core/fallback_url_util.h"
+#import "components/favicon/core/large_icon_service.h"
+#import "components/favicon_base/fallback_icon_style.h"
+#import "components/favicon_base/favicon_types.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
-#include "skia/ext/skia_utils_ios.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "skia/ext/skia_utils_ios.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

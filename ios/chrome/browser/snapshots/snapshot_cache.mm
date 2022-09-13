@@ -7,30 +7,30 @@
 
 #import <UIKit/UIKit.h>
 
-#include <set>
+#import <set>
 
-#include "base/base_paths.h"
-#include "base/bind.h"
-#include "base/containers/contains.h"
-#include "base/files/file_enumerator.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
+#import "base/base_paths.h"
+#import "base/bind.h"
+#import "base/containers/contains.h"
+#import "base/files/file_enumerator.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
 #import "base/ios/crb_protocol_observers.h"
-#include "base/logging.h"
+#import "base/logging.h"
 #import "base/mac/backup_util.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/path_service.h"
-#include "base/sequence_checker.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner_util.h"
-#include "base/task/thread_pool.h"
-#include "base/threading/scoped_blocking_call.h"
-#include "base/time/time.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/path_service.h"
+#import "base/sequence_checker.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
+#import "base/task/task_runner_util.h"
+#import "base/task/thread_pool.h"
+#import "base/threading/scoped_blocking_call.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache_observer.h"
 #import "ios/chrome/browser/snapshots/snapshot_lru_cache.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#include "ui/base/device_form_factor.h"
+#import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

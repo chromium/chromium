@@ -2,36 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/reading_list/url_downloader.h"
+#import "ios/chrome/browser/reading_list/url_downloader.h"
 
-#include <string>
-#include <vector>
+#import <string>
+#import <vector>
 
-#include "base/base64.h"
-#include "base/bind.h"
-#include "base/containers/contains.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/json/json_writer.h"
-#include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/path_service.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/task/thread_pool.h"
-#include "components/reading_list/core/offline_url_utils.h"
-#include "ios/chrome/browser/dom_distiller/distiller_viewer.h"
+#import "base/base64.h"
+#import "base/bind.h"
+#import "base/containers/contains.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/json/json_writer.h"
+#import "base/memory/ptr_util.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/path_service.h"
+#import "base/strings/string_util.h"
+#import "base/strings/stringprintf.h"
+#import "base/task/thread_pool.h"
+#import "components/reading_list/core/offline_url_utils.h"
+#import "ios/chrome/browser/dom_distiller/distiller_viewer.h"
 #import "ios/chrome/browser/paths/paths.h"
-#include "ios/chrome/browser/reading_list/reading_list_distiller_page.h"
-#include "ios/chrome/browser/reading_list/reading_list_distiller_page_factory.h"
-#include "net/base/load_flags.h"
-#include "net/base/mime_sniffer.h"
-#include "net/http/http_response_headers.h"
-#include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/cpp/simple_url_loader.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
-#include "url/gurl.h"
+#import "ios/chrome/browser/reading_list/reading_list_distiller_page.h"
+#import "ios/chrome/browser/reading_list/reading_list_distiller_page_factory.h"
+#import "net/base/load_flags.h"
+#import "net/base/mime_sniffer.h"
+#import "net/http/http_response_headers.h"
+#import "services/network/public/cpp/resource_request.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
+#import "services/network/public/cpp/simple_url_loader.h"
+#import "services/network/public/mojom/url_response_head.mojom.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/location_bar/location_bar_mediator.h"
 
-#include "base/memory/ptr_util.h"
+#import "base/memory/ptr_util.h"
 #import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/search_engines_util.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_consumer.h"
@@ -13,10 +13,10 @@
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
-#include "ios/chrome/grit/ios_theme_resources.h"
-#include "ios/web/public/navigation/navigation_item.h"
+#import "ios/chrome/grit/ios_theme_resources.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#include "skia/ext/skia_utils_ios.h"
+#import "skia/ext/skia_utils_ios.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

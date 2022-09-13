@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
 
-#include "base/bind.h"
-#include "base/memory/ptr_util.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "base/bind.h"
+#import "base/memory/ptr_util.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

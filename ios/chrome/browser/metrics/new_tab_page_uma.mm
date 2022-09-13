@@ -4,13 +4,13 @@
 
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 
-#include "base/metrics/histogram_macros.h"
-#include "components/google/core/common/google_util.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "base/metrics/histogram_macros.h"
+#import "components/google/core/common/google_util.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

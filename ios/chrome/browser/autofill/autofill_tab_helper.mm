@@ -4,13 +4,13 @@
 
 #import "ios/chrome/browser/autofill/autofill_tab_helper.h"
 
-#include "base/check.h"
-#include "base/memory/ptr_util.h"
+#import "base/check.h"
+#import "base/memory/ptr_util.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
-#include "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

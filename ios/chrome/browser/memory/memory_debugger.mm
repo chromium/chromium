@@ -4,13 +4,13 @@
 
 #import "ios/chrome/browser/memory/memory_debugger.h"
 
-#include <stdint.h>
+#import <stdint.h>
 
-#include <memory>
+#import <memory>
 
 #import "build/branding_buildflags.h"
 #import "ios/chrome/browser/memory/memory_metrics.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/device_util.h"
 

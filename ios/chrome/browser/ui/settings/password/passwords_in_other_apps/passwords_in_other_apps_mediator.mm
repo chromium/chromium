@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/histograms.h"
 #import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_manager.h"
 #import "ios/public/provider/chrome/browser/password_auto_fill/password_auto_fill_api.h"

@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
+#import "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
-#include "components/sync_device_info/device_info_sync_service.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/history/history_service_factory.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#import "components/sync_device_info/device_info_sync_service.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/sync/device_info_sync_service_factory.h"
-#include "ios/chrome/browser/sync/model_type_store_service_factory.h"
-#include "ios/chrome/common/channel_info.h"
+#import "ios/chrome/browser/sync/model_type_store_service_factory.h"
+#import "ios/chrome/common/channel_info.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

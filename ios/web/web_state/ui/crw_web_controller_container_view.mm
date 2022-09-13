@@ -4,12 +4,12 @@
 
 #import "ios/web/web_state/ui/crw_web_controller_container_view.h"
 
-#include "base/check.h"
-#include "base/notreached.h"
+#import "base/check.h"
+#import "base/notreached.h"
 #import "ios/web/common/crw_content_view.h"
 #import "ios/web/common/crw_viewport_adjustment_container.h"
 #import "ios/web/common/crw_web_view_content_view.h"
-#include "ios/web/common/features.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/ui/crw_context_menu_item.h"
 #import "ios/web/web_state/ui/crw_web_view_proxy_impl.h"
 

@@ -4,7 +4,7 @@
 
 #import "ios/web/web_state/ui/crw_html_element_fetch_request.h"
 
-#include "base/time/time.h"
+#import "base/time/time.h"
 #import "ios/web/public/ui/context_menu_params.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

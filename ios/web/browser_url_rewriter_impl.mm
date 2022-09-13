@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/browser_url_rewriter_impl.h"
+#import "ios/web/browser_url_rewriter_impl.h"
 
-#include "base/check.h"
-#include "base/no_destructor.h"
-#include "base/strings/string_util.h"
-#include "ios/web/public/browser_state.h"
+#import "base/check.h"
+#import "base/no_destructor.h"
+#import "base/strings/string_util.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_client.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

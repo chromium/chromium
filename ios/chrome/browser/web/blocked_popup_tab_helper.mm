@@ -4,29 +4,29 @@
 
 #import "ios/chrome/browser/web/blocked_popup_tab_helper.h"
 
-#include <UIKit/UIKit.h>
+#import <UIKit/UIKit.h>
 
-#include <memory>
-#include <utility>
+#import <memory>
+#import <utility>
 
-#include "base/format_macros.h"
-#include "base/mac/bundle_locations.h"
-#include "base/mac/foundation_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/infobars/core/confirm_infobar_delegate.h"
-#include "components/infobars/core/infobar.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "ios/chrome/browser/infobars/confirm_infobar_metrics_recorder.h"
-#include "ios/chrome/browser/infobars/infobar_ios.h"
-#include "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ios/web/public/navigation/referrer.h"
-#include "net/base/mac/url_conversions.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/image/image.h"
+#import "base/format_macros.h"
+#import "base/mac/bundle_locations.h"
+#import "base/mac/foundation_util.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/content_settings/core/browser/host_content_settings_map.h"
+#import "components/infobars/core/confirm_infobar_delegate.h"
+#import "components/infobars/core/infobar.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/infobars/confirm_infobar_metrics_recorder.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/navigation/referrer.h"
+#import "net/base/mac/url_conversions.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/gfx/image/image.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

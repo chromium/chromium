@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/signin/pattern_account_restriction.h"
 
-#include "base/values.h"
+#import "base/values.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 

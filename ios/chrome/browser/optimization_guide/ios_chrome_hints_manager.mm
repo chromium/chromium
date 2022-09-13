@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/optimization_guide/ios_chrome_hints_manager.h"
+#import "ios/chrome/browser/optimization_guide/ios_chrome_hints_manager.h"
 
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 

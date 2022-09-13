@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/webui/web_ui_ios_controller_factory_registry.h"
+#import "ios/web/webui/web_ui_ios_controller_factory_registry.h"
 
-#include <stddef.h>
-#include <memory>
+#import <stddef.h>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "ios/web/public/webui/web_ui_ios_controller.h"
-#include "url/gurl.h"
-#include "url/url_constants.h"
+#import "base/no_destructor.h"
+#import "ios/web/public/webui/web_ui_ios_controller.h"
+#import "url/gurl.h"
+#import "url/url_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

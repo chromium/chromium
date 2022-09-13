@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/browsing_data/sessions_storage_util.h"
 
-#include "base/files/file_path.h"
-#include "base/path_service.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/files/file_path.h"
+#import "base/path_service.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/paths/paths.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

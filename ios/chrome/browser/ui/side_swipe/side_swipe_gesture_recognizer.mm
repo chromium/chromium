@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_gesture_recognizer.h"
 
-#include <cmath>
+#import <cmath>
 
-#include "ui/gfx/geometry/angle_conversions.h"
+#import "ui/gfx/geometry/angle_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

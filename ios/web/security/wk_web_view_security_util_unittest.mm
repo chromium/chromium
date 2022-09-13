@@ -5,20 +5,20 @@
 #import "ios/web/security/wk_web_view_security_util.h"
 
 #import <Foundation/Foundation.h>
-#include <Security/Security.h>
+#import <Security/Security.h>
 
-#include <memory>
+#import <memory>
 
-#include "base/mac/bridging.h"
-#include "base/mac/scoped_cftyperef.h"
-#include "crypto/rsa_private_key.h"
-#include "net/cert/x509_certificate.h"
-#include "net/cert/x509_util.h"
-#include "net/cert/x509_util_apple.h"
-#include "net/ssl/ssl_info.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "base/mac/bridging.h"
+#import "base/mac/scoped_cftyperef.h"
+#import "crypto/rsa_private_key.h"
+#import "net/cert/x509_certificate.h"
+#import "net/cert/x509_util.h"
+#import "net/cert/x509_util_apple.h"
+#import "net/ssl/ssl_info.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

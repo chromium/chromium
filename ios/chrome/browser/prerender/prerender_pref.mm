@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/prerender/prerender_pref.h"
 
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_service.h"
+#import "components/pref_registry/pref_registry_syncable.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

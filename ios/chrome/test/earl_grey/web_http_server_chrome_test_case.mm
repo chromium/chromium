@@ -4,7 +4,7 @@
 
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/web/public/test/http_server/http_server.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

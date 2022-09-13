@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_coordinator.h"
 
-#include <memory>
+#import <memory>
 
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/main/browser.h"

@@ -4,13 +4,13 @@
 
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 
-#include "base/ios/ios_util.h"
-#include "base/test/scoped_feature_list.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "base/ios/ios_util.h"
+#import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,14 +4,14 @@
 
 #import "ios/web/common/user_agent.h"
 
-#include "base/strings/stringprintf.h"
-#include "base/system/sys_info.h"
-#include "base/test/scoped_feature_list.h"
-#include "ios/web/common/features.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "base/strings/stringprintf.h"
+#import "base/system/sys_info.h"
+#import "base/test/scoped_feature_list.h"
+#import "ios/web/common/features.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "ui/base/device_form_factor.h"
+#import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

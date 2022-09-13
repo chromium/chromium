@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/ui/settings/privacy/privacy_coordinator.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "base/mac/foundation_util.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"

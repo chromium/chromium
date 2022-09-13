@@ -4,33 +4,33 @@
 
 #import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
 
-#include <stdint.h>
+#import <stdint.h>
 
-#include <algorithm>
-#include <memory>
-#include <vector>
+#import <algorithm>
+#import <memory>
+#import <vector>
 
-#include "base/check.h"
-#include "base/ios/ios_util.h"
-#include "base/json/json_reader.h"
-#include "base/metrics/field_trial.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "base/notreached.h"
-#include "base/strings/string_util.h"
-#include "base/time/time.h"
-#include "base/values.h"
-#include "components/metrics/metrics_pref_names.h"
-#include "components/prefs/pref_service.h"
+#import "base/check.h"
+#import "base/ios/ios_util.h"
+#import "base/json/json_reader.h"
+#import "base/metrics/field_trial.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/notreached.h"
+#import "base/strings/string_util.h"
+#import "base/time/time.h"
+#import "base/values.h"
+#import "components/metrics/metrics_pref_names.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/flags/system_flags.h"
-#include "ios/chrome/browser/notification_promo.h"
+#import "ios/chrome/browser/notification_promo.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
-#include "ios/chrome/grit/ios_chromium_strings.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ios/chrome/grit/ios_theme_resources.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_theme_resources.h"
 #import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/resource_bundle.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/base/resource/resource_bundle.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

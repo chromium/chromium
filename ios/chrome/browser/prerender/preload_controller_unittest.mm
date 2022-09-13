@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
+#import <memory>
 
-#include "base/ios/device_util.h"
-#include "base/run_loop.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "base/ios/device_util.h"
+#import "base/run_loop.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/prerender/preload_controller.h"
 #import "ios/chrome/browser/prerender/prerender_pref.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/platform_test.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

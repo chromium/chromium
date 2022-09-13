@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/url_loading/image_search_param_generator.h"
 
-#include "base/strings/utf_string_conversions.h"
-#include "components/search_engines/template_url_service.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/search_engines/template_url_service.h"
 #import "ui/gfx/image/image.h"
 #import "ui/gfx/image/image_util.h"
 

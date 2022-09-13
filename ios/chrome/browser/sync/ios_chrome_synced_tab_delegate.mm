@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/sync/ios_chrome_synced_tab_delegate.h"
+#import "ios/chrome/browser/sync/ios_chrome_synced_tab_delegate.h"
 
-#include "base/memory/ref_counted.h"
-#include "components/sessions/ios/ios_serialized_navigation_builder.h"
-#include "components/sync_sessions/sync_sessions_client.h"
-#include "components/sync_sessions/synced_window_delegate.h"
-#include "components/sync_sessions/synced_window_delegates_getter.h"
-#include "components/sync_sessions/tab_node_pool.h"
+#import "base/memory/ref_counted.h"
+#import "components/sessions/ios/ios_serialized_navigation_builder.h"
+#import "components/sync_sessions/sync_sessions_client.h"
+#import "components/sync_sessions/synced_window_delegate.h"
+#import "components/sync_sessions/synced_window_delegates_getter.h"
+#import "components/sync_sessions/tab_node_pool.h"
 #import "ios/chrome/browser/complex_tasks/ios_task_tab_helper.h"
-#include "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
-#include "ios/web/public/favicon/favicon_status.h"
-#include "ios/web/public/navigation/navigation_item.h"
+#import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
+#import "ios/web/public/favicon/favicon_status.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#include "ios/web/public/session/crw_navigation_item_storage.h"
+#import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
-#include "ui/base/page_transition_types.h"
+#import "ui/base/page_transition_types.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

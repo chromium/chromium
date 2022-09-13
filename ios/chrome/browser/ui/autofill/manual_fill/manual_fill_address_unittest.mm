@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_address.h"
 
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

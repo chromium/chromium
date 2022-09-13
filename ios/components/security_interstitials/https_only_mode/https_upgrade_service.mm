@@ -4,7 +4,7 @@
 
 #import "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 
-#include "net/base/url_util.h"
+#import "net/base/url_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

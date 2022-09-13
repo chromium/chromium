@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 
 #import "ios/chrome/browser/ui/util/url_with_title.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/orchestrator/omnibox_focus_orchestrator.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/browser/ui/orchestrator/edit_view_animatee.h"
 #import "ios/chrome/browser/ui/orchestrator/location_bar_animatee.h"
 #import "ios/chrome/browser/ui/orchestrator/toolbar_animatee.h"

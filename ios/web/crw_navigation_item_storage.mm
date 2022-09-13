@@ -4,8 +4,8 @@
 
 #import "ios/web/public/session/crw_navigation_item_storage.h"
 
-#include "base/metrics/histogram_functions.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/web/navigation/nscoder_util.h"
 #import "ios/web/public/web_client.h"
 #import "net/base/mac/url_conversions.h"

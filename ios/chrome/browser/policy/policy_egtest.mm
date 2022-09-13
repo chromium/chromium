@@ -18,7 +18,6 @@
 #import "components/policy/test_support/embedded_policy_test_server.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/strings/grit/components_strings.h"
-#include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"

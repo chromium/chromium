@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/webui/autofill_and_password_manager_internals/internals_ui_handler.h"
+#import "ios/chrome/browser/ui/webui/autofill_and_password_manager_internals/internals_ui_handler.h"
 
-#include "components/autofill/core/browser/logging/log_router.h"
-#include "components/grit/dev_ui_components_resources.h"
-#include "components/version_info/version_info.h"
-#include "components/version_ui/version_handler_helper.h"
-#include "components/version_ui/version_ui_constants.h"
+#import "components/autofill/core/browser/logging/log_router.h"
+#import "components/grit/dev_ui_components_resources.h"
+#import "components/version_info/version_info.h"
+#import "components/version_ui/version_handler_helper.h"
+#import "components/version_ui/version_ui_constants.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/common/channel_info.h"

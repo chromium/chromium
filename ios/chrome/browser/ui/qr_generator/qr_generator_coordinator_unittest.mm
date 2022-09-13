@@ -6,7 +6,7 @@
 
 #import "base/mac/foundation_util.h"
 #import "base/test/task_environment.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -18,9 +18,9 @@
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "net/base/mac/url_conversions.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

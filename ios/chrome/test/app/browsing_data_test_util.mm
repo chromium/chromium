@@ -6,21 +6,21 @@
 
 #import <WebKit/WebKit.h>
 
-#include "base/logging.h"
-#include "base/task/cancelable_task_tracker.h"
+#import "base/logging.h"
+#import "base/task/cancelable_task_tracker.h"
 #import "base/test/ios/wait_util.h"
-#include "components/browsing_data/core/browsing_data_utils.h"
-#include "components/history/core/browser/history_service.h"
-#include "components/keyed_service/core/service_access_type.h"
+#import "components/browsing_data/core/browsing_data_utils.h"
+#import "components/history/core/browser/history_service.h"
+#import "components/keyed_service/core/service_access_type.h"
 #import "ios/chrome/app/main_controller.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/browsing_data/browsing_data_remove_mask.h"
-#include "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browsing_data/browsing_data_remove_mask.h"
+#import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
-#include "ios/web/public/security/certificate_policy_cache.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
+#import "ios/web/public/security/certificate_policy_cache.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

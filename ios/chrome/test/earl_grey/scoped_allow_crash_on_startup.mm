@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/test/earl_grey/scoped_allow_crash_on_startup.h"
+#import "ios/chrome/test/earl_grey/scoped_allow_crash_on_startup.h"
 
-#include <atomic>
+#import <atomic>
 
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/third_party/earl_grey2/src/CommonLib/Assertion/GREYFatalAsserts.h"

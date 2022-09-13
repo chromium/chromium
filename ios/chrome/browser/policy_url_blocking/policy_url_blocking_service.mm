@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/policy_url_blocking/policy_url_blocking_service.h"
+#import "ios/chrome/browser/policy_url_blocking/policy_url_blocking_service.h"
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/policy/core/common/policy_pref_names.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/policy/core/common/policy_pref_names.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/web/public/browser_state.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/web/public/browser_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

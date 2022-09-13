@@ -2,41 +2,41 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/crash_report/crash_helper.h"
+#import "ios/chrome/browser/crash_report/crash_helper.h"
 
 #import <UIKit/UIKit.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <sys/stat.h>
-#include <sys/sysctl.h>
+#import <stddef.h>
+#import <stdint.h>
+#import <sys/stat.h>
+#import <sys/sysctl.h>
 
-#include "base/auto_reset.h"
-#include "base/bind.h"
-#include "base/debug/crash_logging.h"
-#include "base/feature_list.h"
-#include "base/files/file_enumerator.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/ios/ios_util.h"
-#include "base/location.h"
-#include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/path_service.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/task/thread_pool.h"
-#include "base/time/time.h"
-#include "components/crash/core/app/crashpad.h"
-#include "components/crash/core/common/crash_key.h"
-#include "components/crash/core/common/reporter_running_ios.h"
+#import "base/auto_reset.h"
+#import "base/bind.h"
+#import "base/debug/crash_logging.h"
+#import "base/feature_list.h"
+#import "base/files/file_enumerator.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/ios/ios_util.h"
+#import "base/location.h"
+#import "base/logging.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/path_service.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/task/thread_pool.h"
+#import "base/time/time.h"
+#import "components/crash/core/app/crashpad.h"
+#import "components/crash/core/common/crash_key.h"
+#import "components/crash/core/common/reporter_running_ios.h"
 #import "ios/chrome/browser/crash_report/crash_report_user_application_state.h"
-#include "ios/chrome/browser/crash_report/crash_upload_list.h"
-#include "ios/chrome/browser/crash_report/features.h"
+#import "ios/chrome/browser/crash_report/crash_upload_list.h"
+#import "ios/chrome/browser/crash_report/features.h"
 #import "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
 #import "ios/chrome/browser/paths/paths.h"
-#include "ios/chrome/common/app_group/app_group_constants.h"
-#include "ios/chrome/common/channel_info.h"
-#include "ios/chrome/common/crash_report/crash_helper.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/channel_info.h"
+#import "ios/chrome/common/crash_report/crash_helper.h"
 #import "third_party/breakpad/breakpad/src/client/ios/BreakpadController.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

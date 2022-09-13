@@ -6,10 +6,10 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/memory/ptr_util.h"
-#include "ios/web/common/features.h"
+#import "base/memory/ptr_util.h"
+#import "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_item_impl.h"
-#include "net/http/http_response_headers.h"
+#import "net/http/http_response_headers.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

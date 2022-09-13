@@ -6,22 +6,22 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/metrics/histogram_macros.h"
+#import "base/metrics/histogram_macros.h"
 #import "components/previous_session_info/previous_session_info.h"
-#include "components/ukm/ios/ukm_url_recorder.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
-#include "ios/components/webui/web_ui_url_constants.h"
+#import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "ui/base/page_transition_types.h"
+#import "services/metrics/public/cpp/ukm_builders.h"
+#import "ui/base/page_transition_types.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

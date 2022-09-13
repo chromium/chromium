@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/crash_report/synthetic_crash_report_util.h"
+#import "ios/chrome/browser/crash_report/synthetic_crash_report_util.h"
 
 #import <Foundation/Foundation.h>
 
-#include "base/files/file.h"
-#include "base/files/file_enumerator.h"
-#include "base/files/file_path.h"
-#include "base/files/scoped_temp_dir.h"
-#include "base/path_service.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/system/sys_info.h"
+#import "base/files/file.h"
+#import "base/files/file_enumerator.h"
+#import "base/files/file_path.h"
+#import "base/files/scoped_temp_dir.h"
+#import "base/path_service.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/string_split.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/system/sys_info.h"
 #import "components/previous_session_info/previous_session_info_private.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

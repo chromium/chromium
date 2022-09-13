@@ -4,18 +4,18 @@
 
 #import "ios/chrome/browser/ui/first_run/welcome/welcome_screen_coordinator.h"
 
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/first_run/first_run_metrics.h"
-#include "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#include "ios/chrome/browser/ui/commands/tos_commands.h"
+#import "ios/chrome/browser/ui/commands/tos_commands.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
-#include "ios/chrome/browser/ui/first_run/uma/uma_coordinator.h"
-#include "ios/chrome/browser/ui/first_run/welcome/tos_coordinator.h"
-#include "ios/chrome/browser/ui/first_run/welcome/welcome_screen_mediator.h"
-#include "ios/chrome/browser/ui/first_run/welcome/welcome_screen_view_controller.h"
+#import "ios/chrome/browser/ui/first_run/uma/uma_coordinator.h"
+#import "ios/chrome/browser/ui/first_run/welcome/tos_coordinator.h"
+#import "ios/chrome/browser/ui/first_run/welcome/welcome_screen_mediator.h"
+#import "ios/chrome/browser/ui/first_run/welcome/welcome_screen_view_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

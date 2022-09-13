@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
+#import "ios/chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 
-#include "base/memory/ref_counted.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/policy/core/browser/browser_policy_connector.h"
-#include "components/policy/core/common/policy_pref_names.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_service.h"
+#import "base/memory/ref_counted.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/policy/core/browser/browser_policy_connector.h"
+#import "components/policy/core/common/policy_pref_names.h"
+#import "components/pref_registry/pref_registry_syncable.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
-#include "ios/chrome/browser/policy/cloud/user_policy_signin_service.h"
-#include "ios/chrome/browser/signin/identity_manager_factory.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
+#import "ios/chrome/browser/policy/cloud/user_policy_signin_service.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

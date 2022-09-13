@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/web/load_timing_tab_helper.h"
 
-#include "base/check_op.h"
-#include "base/metrics/histogram_macros.h"
+#import "base/check_op.h"
+#import "base/metrics/histogram_macros.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

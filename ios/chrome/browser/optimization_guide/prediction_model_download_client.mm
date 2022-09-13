@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/optimization_guide/prediction_model_download_client.h"
+#import "ios/chrome/browser/optimization_guide/prediction_model_download_client.h"
 
-#include "base/bind.h"
-#include "base/metrics/histogram_macros_local.h"
-#include "base/threading/sequenced_task_runner_handle.h"
-#include "components/download/public/background_service/download_metadata.h"
-#include "components/optimization_guide/core/prediction_manager.h"
-#include "components/optimization_guide/core/prediction_model_download_manager.h"
-#include "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
-#include "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
-#include "services/network/public/cpp/resource_request_body.h"
+#import "base/bind.h"
+#import "base/metrics/histogram_macros_local.h"
+#import "base/threading/sequenced_task_runner_handle.h"
+#import "components/download/public/background_service/download_metadata.h"
+#import "components/optimization_guide/core/prediction_manager.h"
+#import "components/optimization_guide/core/prediction_model_download_manager.h"
+#import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
+#import "services/network/public/cpp/resource_request_body.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

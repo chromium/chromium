@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/public/js_messaging/java_script_feature.h"
+#import "ios/web/public/js_messaging/java_script_feature.h"
 
 #import <Foundation/Foundation.h>
 
-#include "base/bind.h"
+#import "base/bind.h"
 #import "base/strings/sys_string_conversions.h"
-#include "base/time/time.h"
+#import "base/time/time.h"
 #import "ios/web/js_messaging/java_script_content_world.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
-#include "ios/web/js_messaging/page_script_util.h"
-#include "ios/web/js_messaging/web_frame_internal.h"
+#import "ios/web/js_messaging/page_script_util.h"
+#import "ios/web/js_messaging/web_frame_internal.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 
-#include "base/check.h"
-#include "base/format_macros.h"
+#import "base/check.h"
+#import "base/format_macros.h"
 #import "base/mac/foundation_util.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/sessions/NSCoder+Compatibility.h"
 #import "ios/chrome/browser/sessions/session_features.h"
 

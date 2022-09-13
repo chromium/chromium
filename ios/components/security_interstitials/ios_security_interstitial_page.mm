@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/components/security_interstitials/ios_security_interstitial_page.h"
+#import "ios/components/security_interstitials/ios_security_interstitial_page.h"
 
-#include "base/check.h"
-#include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
-#include "components/grit/components_resources.h"
-#include "components/security_interstitials/core/common_string_util.h"
-#include "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
-#include "ios/components/ui_util/dynamic_type_util.h"
-#include "ios/web/common/features.h"
+#import "base/check.h"
+#import "base/feature_list.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/stringprintf.h"
+#import "components/grit/components_resources.h"
+#import "components/security_interstitials/core/common_string_util.h"
+#import "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
+#import "ios/components/ui_util/dynamic_type_util.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/web_state.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/base/webui/jstemplate_builder.h"
-#include "ui/base/webui/web_ui_util.h"
+#import "ui/base/resource/resource_bundle.h"
+#import "ui/base/webui/jstemplate_builder.h"
+#import "ui/base/webui/web_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

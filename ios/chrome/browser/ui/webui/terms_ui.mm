@@ -6,13 +6,13 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/mac/bundle_locations.h"
-#include "base/memory/ref_counted_memory.h"
+#import "base/mac/bundle_locations.h"
+#import "base/memory/ref_counted_memory.h"
 #import "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/ui/util/terms_util.h"
-#include "ios/web/public/webui/url_data_source_ios.h"
-#include "ios/web/public/webui/web_ui_ios.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/ui/util/terms_util.h"
+#import "ios/web/public/webui/url_data_source_ios.h"
+#import "ios/web/public/webui/web_ui_ios.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

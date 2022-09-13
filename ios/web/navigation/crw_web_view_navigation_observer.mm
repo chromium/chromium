@@ -4,12 +4,12 @@
 
 #import "ios/web/navigation/crw_web_view_navigation_observer.h"
 
-#include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/logging.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/net/http_response_headers_util.h"
-#include "ios/web/common/features.h"
-#include "ios/web/common/url_util.h"
+#import "ios/web/common/features.h"
+#import "ios/web/common/url_util.h"
 #import "ios/web/navigation/crw_error_page_helper.h"
 #import "ios/web/navigation/crw_navigation_item_holder.h"
 #import "ios/web/navigation/crw_pending_navigation_info.h"
@@ -22,7 +22,7 @@
 #import "ios/web/web_state/web_state_impl.h"
 #import "ios/web/web_view/wk_web_view_util.h"
 #import "net/base/mac/url_conversions.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

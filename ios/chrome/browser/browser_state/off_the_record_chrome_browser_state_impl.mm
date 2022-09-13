@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/browser_state/off_the_record_chrome_browser_state_impl.h"
+#import "ios/chrome/browser/browser_state/off_the_record_chrome_browser_state_impl.h"
 
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/user_metrics.h"
-#include "base/notreached.h"
-#include "base/task/sequenced_task_runner.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/profile_metrics/browser_profile_type.h"
-#include "components/proxy_config/ios/proxy_service_factory.h"
-#include "components/proxy_config/pref_proxy_config_tracker.h"
-#include "components/sync_preferences/pref_service_syncable.h"
-#include "components/user_prefs/user_prefs.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/notreached.h"
+#import "base/task/sequenced_task_runner.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/profile_metrics/browser_profile_type.h"
+#import "components/proxy_config/ios/proxy_service_factory.h"
+#import "components/proxy_config/pref_proxy_config_tracker.h"
+#import "components/sync_preferences/pref_service_syncable.h"
+#import "components/user_prefs/user_prefs.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#include "ios/chrome/browser/net/ios_chrome_url_request_context_getter.h"
-#include "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
+#import "ios/chrome/browser/net/ios_chrome_url_request_context_getter.h"
+#import "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -6,15 +6,15 @@
 
 #import <WebKit/WebKit.h>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
+#import "base/bind.h"
+#import "base/callback_helpers.h"
 #import "base/test/ios/wait_util.h"
-#include "base/values.h"
+#import "base/values.h"
 #import "ios/web/test/fakes/crw_fake_script_message_handler.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#import "testing/platform_test.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

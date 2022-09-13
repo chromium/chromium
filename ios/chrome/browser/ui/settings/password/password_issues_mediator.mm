@@ -4,11 +4,11 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_issues_mediator.h"
 
-#include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
+#import "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/net/crurl.h"
-#include "ios/chrome/browser/passwords/password_check_observer_bridge.h"
+#import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
 #import "ios/chrome/browser/passwords/password_manager_util_ios.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues_consumer.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"

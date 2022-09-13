@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/signin/gaia_auth_fetcher_ios.h"
+#import "ios/chrome/browser/signin/gaia_auth_fetcher_ios.h"
 
 #import <WebKit/WebKit.h>
 
-#include "base/logging.h"
+#import "base/logging.h"
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/signin/gaia_auth_fetcher_ios_ns_url_session_bridge.h"
-#include "ios/web/public/browser_state.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#import "ios/web/public/browser_state.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

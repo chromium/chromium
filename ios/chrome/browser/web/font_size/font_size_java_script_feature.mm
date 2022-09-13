@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/web/font_size/font_size_java_script_feature.h"
 
-#include "base/no_destructor.h"
-#include "base/values.h"
+#import "base/no_destructor.h"
+#import "base/values.h"
 #import "ios/web/public/js_messaging/web_frame.h"
-#include "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

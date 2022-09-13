@@ -4,9 +4,9 @@
 
 #import "ios/components/security_interstitials/safe_browsing/pending_unsafe_resource_storage.h"
 
-#include "base/bind.h"
+#import "base/bind.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

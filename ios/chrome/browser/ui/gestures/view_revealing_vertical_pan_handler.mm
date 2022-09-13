@@ -5,14 +5,14 @@
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 
 #import "base/check_op.h"
-#include "base/cxx17_backports.h"
-#include "base/ios/block_types.h"
-#include "base/logging.h"
-#include "base/mac/foundation_util.h"
+#import "base/cxx17_backports.h"
+#import "base/ios/block_types.h"
+#import "base/logging.h"
+#import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/ui/gestures/layout_switcher.h"
 #import "ios/chrome/browser/ui/gestures/pan_handler_scroll_view.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

@@ -6,7 +6,7 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#include "base/mac/foundation_util.h"
+#import "base/mac/foundation_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

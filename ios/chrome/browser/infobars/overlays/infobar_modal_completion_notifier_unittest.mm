@@ -4,14 +4,14 @@
 
 #import "ios/chrome/browser/infobars/overlays/infobar_modal_completion_notifier.h"
 
-#include "base/scoped_observation.h"
+#import "base/scoped_observation.h"
 #import "ios/chrome/browser/infobars/test/fake_infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
-#include "ios/chrome/browser/overlays/public/overlay_request_queue.h"
-#include "ios/chrome/browser/overlays/test/fake_overlay_request_cancel_handler.h"
+#import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
+#import "ios/chrome/browser/overlays/test/fake_overlay_request_cancel_handler.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/platform_test.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

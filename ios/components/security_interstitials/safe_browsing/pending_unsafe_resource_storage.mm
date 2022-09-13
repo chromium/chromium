@@ -4,8 +4,8 @@
 
 #import "ios/components/security_interstitials/safe_browsing/pending_unsafe_resource_storage.h"
 
-#include "base/callback_helpers.h"
-#include "base/memory/ptr_util.h"
+#import "base/callback_helpers.h"
+#import "base/memory/ptr_util.h"
 #import "ios/components/security_interstitials/safe_browsing/unsafe_resource_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/browser_state/chrome_browser_state_removal_controller.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state_removal_controller.h"
 
 #import <Foundation/Foundation.h>
 
-#include "base/bind.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/location.h"
-#include "base/mac/foundation_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/task/thread_pool.h"
-#include "components/prefs/pref_service.h"
-#include "google_apis/gaia/gaia_auth_util.h"
+#import "base/bind.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/location.h"
+#import "base/mac/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/task/thread_pool.h"
+#import "components/prefs/pref_service.h"
+#import "google_apis/gaia/gaia_auth_util.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#include "ios/chrome/browser/browser_state/browser_state_info_cache.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
-#include "ios/chrome/browser/chrome_constants.h"
+#import "ios/chrome/browser/browser_state/browser_state_info_cache.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/chrome_constants.h"
 #import "ios/chrome/browser/paths/paths_internal.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"

@@ -4,15 +4,15 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/at_exit.h"
-#include "base/debug/crash_logging.h"
-#include "base/strings/sys_string_conversions.h"
-#include "ios/chrome/app/startup/ios_chrome_main.h"
-#include "ios/chrome/app/startup/ios_enable_sandbox_dump_buildflags.h"
-#include "ios/chrome/browser/crash_report/crash_helper.h"
+#import "base/at_exit.h"
+#import "base/debug/crash_logging.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/app/startup/ios_chrome_main.h"
+#import "ios/chrome/app/startup/ios_enable_sandbox_dump_buildflags.h"
+#import "ios/chrome/browser/crash_report/crash_helper.h"
 
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
-#include "ios/chrome/app/startup/sandbox_dump.h"  // nogncheck
+#import "ios/chrome/app/startup/sandbox_dump.h"  // nogncheck
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

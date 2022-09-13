@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/overlays/public/overlay_browser_agent_base.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/browser/main/browser.h"
-#include "ios/chrome/browser/overlays/public/overlay_request.h"
-#include "ios/chrome/browser/overlays/public/overlay_request_callback_installer.h"
+#import "ios/chrome/browser/overlays/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/public/overlay_request_callback_installer.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

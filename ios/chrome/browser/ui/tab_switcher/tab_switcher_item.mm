@@ -8,7 +8,7 @@
 #error "This file requires ARC support."
 #endif
 
-#include "base/check.h"
+#import "base/check.h"
 
 @implementation TabSwitcherItem
 

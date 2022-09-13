@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/ntp/incognito_view_controller.h"
 
-#include <string>
+#import <string>
 
-#include "components/content_settings/core/common/features.h"
+#import "components/content_settings/core/common/features.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/ntp/incognito_view.h"

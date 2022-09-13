@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 
-#include "ios/web/public/navigation/referrer.h"
-#include "url/gurl.h"
+#import "ios/web/public/navigation/referrer.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

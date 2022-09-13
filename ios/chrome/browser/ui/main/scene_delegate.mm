@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/main/scene_delegate.h"
 
-#include "base/mac/foundation_util.h"
+#import "base/mac/foundation_util.h"
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/main_application_delegate.h"
 #import "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"

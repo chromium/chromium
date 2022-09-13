@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/favicon/favicon_client_impl.h"
+#import "ios/chrome/browser/favicon/favicon_client_impl.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/bind.h"
-#include "base/check.h"
-#include "base/task/cancelable_task_tracker.h"
-#include "base/threading/thread_task_runner_handle.h"
-#include "components/favicon/core/favicon_service.h"
-#include "components/favicon_base/favicon_types.h"
-#include "components/favicon_base/select_favicon_frames.h"
-#include "components/grit/components_scaled_resources.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/components/webui/web_ui_url_constants.h"
-#include "ui/base/layout.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/gfx/favicon_size.h"
-#include "url/gurl.h"
+#import "base/bind.h"
+#import "base/check.h"
+#import "base/task/cancelable_task_tracker.h"
+#import "base/threading/thread_task_runner_handle.h"
+#import "components/favicon/core/favicon_service.h"
+#import "components/favicon_base/favicon_types.h"
+#import "components/favicon_base/select_favicon_frames.h"
+#import "components/grit/components_scaled_resources.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/components/webui/web_ui_url_constants.h"
+#import "ui/base/layout.h"
+#import "ui/base/resource/resource_bundle.h"
+#import "ui/gfx/favicon_size.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

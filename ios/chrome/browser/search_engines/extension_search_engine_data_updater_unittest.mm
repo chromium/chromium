@@ -4,13 +4,13 @@
 
 #import "ios/chrome/browser/search_engines/extension_search_engine_data_updater.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "components/search_engines/template_url.h"
-#include "components/search_engines/template_url_data.h"
-#include "components/search_engines/template_url_service.h"
-#include "ios/chrome/common/app_group/app_group_constants.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/search_engines/template_url.h"
+#import "components/search_engines/template_url_data.h"
+#import "components/search_engines/template_url_service.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

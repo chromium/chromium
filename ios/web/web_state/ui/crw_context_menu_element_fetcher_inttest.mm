@@ -7,14 +7,14 @@
 #import <WebKit/WebKit.h>
 
 #import "base/test/ios/wait_util.h"
-#include "ios/testing/scoped_block_swizzler.h"
+#import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/js_features/context_menu/context_menu_constants.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
 #import "ios/web/test/web_test_with_web_controller.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/web_state_impl.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

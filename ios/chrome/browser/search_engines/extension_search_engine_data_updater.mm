@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/search_engines/extension_search_engine_data_updater.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "components/search_engines/template_url_service.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/search_engines/search_engines_util.h"
-#include "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

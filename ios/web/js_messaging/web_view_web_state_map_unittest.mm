@@ -5,7 +5,7 @@
 #import "ios/web/js_messaging/web_view_web_state_map.h"
 
 #import <WebKit/WebKit.h>
-#include <memory>
+#import <memory>
 
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_test.h"

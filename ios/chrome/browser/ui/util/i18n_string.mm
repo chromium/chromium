@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/ui/util/i18n_string.h"
 
-#include <string>
+#import <string>
 
-#include "base/i18n/rtl.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/i18n/rtl.h"
+#import "base/strings/sys_string_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

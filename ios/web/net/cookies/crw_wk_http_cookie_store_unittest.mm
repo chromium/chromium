@@ -6,14 +6,14 @@
 
 #import <WebKit/WebKit.h>
 
-#include "base/run_loop.h"
+#import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
-#include "ios/net/cookies/cookie_store_ios_test_util.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "ios/web/public/test/web_test.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "ios/net/cookies/cookie_store_ios_test_util.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/test/web_test.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 

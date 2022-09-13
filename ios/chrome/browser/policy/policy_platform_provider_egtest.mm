@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/json/json_string_value_serializer.h"
-#include "base/strings/string_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/enterprise/browser/enterprise_switches.h"
+#import "base/json/json_string_value_serializer.h"
+#import "base/strings/string_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/enterprise/browser/enterprise_switches.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
-#include "components/policy/policy_constants.h"
-#include "components/strings/grit/components_strings.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "components/policy/policy_constants.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
-#include "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#include "ios/chrome/test/earl_grey/chrome_test_case.h"
-#include "ios/testing/earl_grey/app_launch_configuration.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_configuration.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

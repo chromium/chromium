@@ -2,33 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_ios.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_ios.h"
 
 #import <QuartzCore/QuartzCore.h>
 
-#include <memory>
-#include <string>
+#import <memory>
+#import <string>
 
-#include "base/check.h"
-#include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_popup_selection.h"
-#include "components/open_from_clipboard/clipboard_recent_content.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "base/check.h"
+#import "base/memory/ptr_util.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "components/omnibox/browser/autocomplete_match.h"
+#import "components/omnibox/browser/omnibox_edit_model.h"
+#import "components/omnibox/browser/omnibox_popup_selection.h"
+#import "components/open_from_clipboard/clipboard_recent_content.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator.h"
-#include "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_suggestions_delegate.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_suggestions_delegate.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#include "ios/chrome/grit/ios_theme_resources.h"
-#include "ios/web/public/thread/web_thread.h"
-#include "net/url_request/url_request_context_getter.h"
+#import "ios/chrome/grit/ios_theme_resources.h"
+#import "ios/web/public/thread/web_thread.h"
+#import "net/url_request/url_request_context_getter.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/recent_tabs/synced_sessions.h"
+#import "ios/chrome/browser/ui/recent_tabs/synced_sessions.h"
 
-#include <functional>
-#include <memory>
+#import <functional>
+#import <memory>
 
-#include "base/check_op.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/sync_sessions/open_tabs_ui_delegate.h"
-#include "components/sync_sessions/session_sync_service.h"
-#include "ios/chrome/browser/sync/sync_setup_service.h"
+#import "base/check_op.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/sync_sessions/open_tabs_ui_delegate.h"
+#import "components/sync_sessions/session_sync_service.h"
+#import "ios/chrome/browser/sync/sync_setup_service.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_coordinator.h"
 
-#include "base/check.h"
-#include "base/mac/foundation_util.h"
+#import "base/check.h"
+#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_support.h"

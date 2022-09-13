@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/language/language_model_manager_factory.h"
+#import "ios/chrome/browser/language/language_model_manager_factory.h"
 
-#include "base/feature_list.h"
-#include "base/no_destructor.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/language/core/browser/language_model.h"
-#include "components/language/core/browser/language_model_manager.h"
-#include "components/language/core/browser/pref_names.h"
-#include "components/language/core/common/language_experiments.h"
-#include "components/language/core/language_model/fluent_language_model.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_service.h"
+#import "base/feature_list.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/core/keyed_service.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/language/core/browser/language_model.h"
+#import "components/language/core/browser/language_model_manager.h"
+#import "components/language/core/browser/pref_names.h"
+#import "components/language/core/common/language_experiments.h"
+#import "components/language/core/language_model/fluent_language_model.h"
+#import "components/pref_registry/pref_registry_syncable.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

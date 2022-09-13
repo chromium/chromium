@@ -6,14 +6,14 @@
 
 #import <WebKit/WebKit.h>
 
-#include "base/check_op.h"
-#include "base/feature_list.h"
-#include "base/i18n/i18n_constants.h"
+#import "base/check_op.h"
+#import "base/feature_list.h"
+#import "base/i18n/i18n_constants.h"
 #import "base/ios/block_types.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/sys_string_conversions.h"
-#include "ios/web/common/features.h"
-#include "ios/web/common/referrer_util.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ios/web/common/features.h"
+#import "ios/web/common/referrer_util.h"
 #import "ios/web/navigation/crw_navigation_item_holder.h"
 #import "ios/web/navigation/crw_pending_navigation_info.h"
 #import "ios/web/navigation/crw_wk_navigation_handler.h"
@@ -28,7 +28,7 @@
 #import "ios/web/web_state/user_interaction_state.h"
 #import "ios/web/web_state/web_state_impl.h"
 #import "net/base/mac/url_conversions.h"
-#include "net/base/url_util.h"
+#import "net/base/url_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

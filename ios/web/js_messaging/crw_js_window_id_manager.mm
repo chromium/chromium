@@ -4,16 +4,16 @@
 
 #import "ios/web/js_messaging/crw_js_window_id_manager.h"
 
-#include <ostream>
+#import <ostream>
 
-#include "base/dcheck_is_on.h"
-#include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/notreached.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/time/time.h"
-#include "crypto/random.h"
+#import "base/dcheck_is_on.h"
+#import "base/logging.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/notreached.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
+#import "crypto/random.h"
 #import "ios/web/js_messaging/page_script_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

@@ -5,15 +5,15 @@
 #import "ios/web/session/session_certificate_policy_cache_storage_builder.h"
 
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
-#include "ios/web/public/test/fakes/fake_browser_state.h"
-#include "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/test/fakes/fake_browser_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
-#include "net/cert/x509_certificate.h"
-#include "net/test/cert_test_util.h"
-#include "net/test/test_data_directory.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "net/cert/x509_certificate.h"
+#import "net/test/cert_test_util.h"
+#import "net/test/test_data_directory.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

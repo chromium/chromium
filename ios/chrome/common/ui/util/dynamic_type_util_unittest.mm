@@ -6,9 +6,9 @@
 
 #import <UIKit/UIKit.h>
 
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "third_party/ocmock/gtest_support.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

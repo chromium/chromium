@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_link_item.h"
 
-#include "base/ios/ns_range.h"
-#include "base/mac/foundation_util.h"
+#import "base/ios/ns_range.h"
+#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"

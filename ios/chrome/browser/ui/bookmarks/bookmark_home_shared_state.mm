@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/bookmarks/bookmark_home_shared_state.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_table_cell_title_editing.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"

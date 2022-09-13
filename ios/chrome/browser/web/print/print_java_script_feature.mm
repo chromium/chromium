@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/web/print/print_java_script_feature.h"
 
-#include "base/values.h"
+#import "base/values.h"
 #import "ios/chrome/browser/web/print/print_tab_helper.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"

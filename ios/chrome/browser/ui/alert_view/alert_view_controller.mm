@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/alert_view/alert_view_controller.h"
 
-#include <ostream>
+#import <ostream>
 
-#include "base/notreached.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/ui/alert_view/alert_action.h"
 #import "ios/chrome/browser/ui/elements/gray_highlight_button.h"
 #import "ios/chrome/browser/ui/elements/text_field_configuration.h"

@@ -4,11 +4,11 @@
 
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model.h"
 
-#include <algorithm>
+#import <algorithm>
 
-#include "base/check_op.h"
+#import "base/check_op.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model_observer.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

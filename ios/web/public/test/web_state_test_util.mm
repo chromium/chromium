@@ -4,9 +4,9 @@
 
 #import "ios/web/public/test/web_state_test_util.h"
 
-#include "base/logging.h"
-#include "base/run_loop.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/logging.h"
+#import "base/run_loop.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/navigation/crw_wk_navigation_states.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -14,7 +14,7 @@
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "ios/web/web_state/web_state_impl.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

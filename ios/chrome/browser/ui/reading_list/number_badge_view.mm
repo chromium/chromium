@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/format_macros.h"
+#import "base/format_macros.h"
 #import "ios/chrome/browser/ui/reading_list/text_badge_view.h"
 #import "ios/chrome/common/material_timing.h"
 

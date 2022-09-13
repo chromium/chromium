@@ -6,22 +6,22 @@
 
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
-#include <vector>
+#import <vector>
 
-#include "base/check.h"
-#include "base/ios/ios_util.h"
-#include "base/memory/ptr_util.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/safe_browsing/core/common/features.h"
-#include "ios/web/common/features.h"
+#import "base/check.h"
+#import "base/ios/ios_util.h"
+#import "base/memory/ptr_util.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/safe_browsing/core/common/features.h"
+#import "ios/web/common/features.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
-#include "ios/web/js_messaging/java_script_feature_util_impl.h"
+#import "ios/web/js_messaging/java_script_feature_util_impl.h"
 #import "ios/web/js_messaging/page_script_util.h"
 #import "ios/web/js_messaging/web_frames_manager_java_script_feature.h"
 #import "ios/web/navigation/session_restore_java_script_feature.h"
-#include "ios/web/public/browser_state.h"
-#include "ios/web/public/web_client.h"
+#import "ios/web/public/browser_state.h"
+#import "ios/web/public/web_client.h"
 #import "ios/web/web_state/ui/wk_content_rule_list_provider.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider_observer.h"
 #import "ios/web/webui/crw_web_ui_scheme_handler.h"

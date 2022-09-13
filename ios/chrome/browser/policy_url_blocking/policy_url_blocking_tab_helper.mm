@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/policy_url_blocking/policy_url_blocking_tab_helper.h"
 
-#include "components/policy/core/browser/url_blocklist_manager.h"
+#import "components/policy/core/browser/url_blocklist_manager.h"
 #import "ios/chrome/browser/policy_url_blocking/policy_url_blocking_service.h"
 #import "ios/chrome/browser/policy_url_blocking/policy_url_blocking_util.h"
 #import "net/base/mac/url_conversions.h"

@@ -4,12 +4,12 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/upgrade_signin_logger.h"
 
-#include "base/metrics/histogram_macros.h"
-#include "base/metrics/user_metrics.h"
-#include "components/signin/public/base/signin_metrics.h"
-#include "components/version_info/version_info.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
+#import "components/signin/public/base/signin_metrics.h"
+#import "components/version_info/version_info.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
-#include "net/base/network_change_notifier.h"
+#import "net/base/network_change_notifier.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

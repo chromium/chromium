@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
 
-#include "base/check.h"
+#import "base/check.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

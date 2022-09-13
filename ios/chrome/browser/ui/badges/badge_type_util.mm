@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/badges/badge_type_util.h"
+#import "ios/chrome/browser/ui/badges/badge_type_util.h"
 
-#include <ostream>
-#include "base/notreached.h"
+#import <ostream>
+#import "base/notreached.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

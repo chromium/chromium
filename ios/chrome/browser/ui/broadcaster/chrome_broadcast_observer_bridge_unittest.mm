@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/broadcaster/chrome_broadcast_observer_bridge.h"
 
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

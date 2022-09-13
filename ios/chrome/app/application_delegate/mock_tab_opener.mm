@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/app/application_delegate/mock_tab_opener.h"
+#import "ios/chrome/app/application_delegate/mock_tab_opener.h"
 
-#include "base/ios/block_types.h"
-#include "ios/chrome/app/application_mode.h"
+#import "base/ios/block_types.h"
+#import "ios/chrome/app/application_mode.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "net/base/mac/url_conversions.h"
-#include "ui/base/page_transition_types.h"
-#include "url/gurl.h"
+#import "ui/base/page_transition_types.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

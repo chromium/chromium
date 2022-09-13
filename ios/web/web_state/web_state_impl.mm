@@ -4,11 +4,11 @@
 
 #import "ios/web/web_state/web_state_impl.h"
 
-#include <stddef.h>
-#include <stdint.h>
+#import <stddef.h>
+#import <stdint.h>
 
 #import "base/compiler_specific.h"
-#include "base/debug/dump_without_crashing.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/feature_list.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/js_messaging/web_frame.h"

@@ -6,21 +6,21 @@
 
 #import <MediaPlayer/MediaPlayer.h>
 
-#include "base/bind.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/task/thread_pool.h"
+#import "base/bind.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/task/thread_pool.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/ios_chrome_io_thread.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/omaha/omaha_service.h"
-#include "ios/chrome/browser/reading_list/reading_list_download_service.h"
-#include "ios/chrome/browser/reading_list/reading_list_download_service_factory.h"
+#import "ios/chrome/browser/reading_list/reading_list_download_service.h"
+#import "ios/chrome/browser/reading_list/reading_list_download_service_factory.h"
 #import "ios/chrome/browser/upgrade/upgrade_center.h"
-#include "ios/chrome/common/intents/SearchInChromeIntent.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/common/intents/SearchInChromeIntent.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

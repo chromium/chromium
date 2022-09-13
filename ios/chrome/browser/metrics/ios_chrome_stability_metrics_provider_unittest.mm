@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/metrics/ios_chrome_stability_metrics_provider.h"
+#import "ios/chrome/browser/metrics/ios_chrome_stability_metrics_provider.h"
 
-#include "base/test/metrics/histogram_tester.h"
-#include "components/metrics/stability_metrics_helper.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/scoped_user_pref_update.h"
-#include "components/prefs/testing_pref_service.h"
-#include "ios/web/common/features.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "components/metrics/stability_metrics_helper.h"
+#import "components/prefs/pref_service.h"
+#import "components/prefs/scoped_user_pref_update.h"
+#import "components/prefs/testing_pref_service.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

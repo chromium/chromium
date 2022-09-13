@@ -3,18 +3,18 @@
 // found in the LICENSE file.
 #import "ios/chrome/browser/ui/bookmarks/bookmark_folder_editor_view_controller.h"
 
-#include <memory>
-#include <set>
+#import <memory>
+#import <set>
 
-#include "base/auto_reset.h"
-#include "base/check_op.h"
-#include "base/i18n/rtl.h"
-#include "base/mac/foundation_util.h"
-#include "base/notreached.h"
+#import "base/auto_reset.h"
+#import "base/check_op.h"
+#import "base/i18n/rtl.h"
+#import "base/mac/foundation_util.h"
+#import "base/notreached.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/browser/bookmark_node.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -29,11 +29,11 @@
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#include "ios/chrome/browser/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,12 +4,12 @@
 
 #import "ios/chrome/browser/ui/sad_tab/sad_tab_view_controller.h"
 
-#include "components/strings/grit/components_strings.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "components/strings/grit/components_strings.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "third_party/ocmock/gtest_support.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

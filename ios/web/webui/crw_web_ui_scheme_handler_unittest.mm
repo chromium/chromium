@@ -4,16 +4,16 @@
 
 #import "ios/web/webui/crw_web_ui_scheme_handler.h"
 
-#include "base/run_loop.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/run_loop.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "ios/web/public/test/web_test.h"
-#include "ios/web/public/webui/web_ui_ios_controller.h"
-#include "ios/web/public/webui/web_ui_ios_controller_factory.h"
-#include "ios/web/test/test_url_constants.h"
+#import "ios/web/public/test/web_test.h"
+#import "ios/web/public/webui/web_ui_ios_controller.h"
+#import "ios/web/public/webui/web_ui_ios_controller_factory.h"
+#import "ios/web/test/test_url_constants.h"
 #import "net/base/mac/url_conversions.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/test/test_url_loader_factory.h"
+#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#import "services/network/test/test_url_loader_factory.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

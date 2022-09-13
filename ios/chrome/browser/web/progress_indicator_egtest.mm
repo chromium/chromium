@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
+#import <memory>
 
-#include "base/mac/foundation_util.h"
-#include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
-#include "base/synchronization/condition_variable.h"
+#import "base/mac/foundation_util.h"
+#import "base/run_loop.h"
+#import "base/strings/stringprintf.h"
+#import "base/synchronization/condition_variable.h"
 #import "base/test/ios/wait_util.h"
-#include "base/threading/thread_restrictions.h"
-#include "base/time/time.h"
+#import "base/threading/thread_restrictions.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/web/progress_indicator_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "ios/web/public/test/http_server/html_response_provider.h"
+#import "ios/web/public/test/http_server/html_response_provider.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #import "ios/web/public/test/http_server/http_server_util.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

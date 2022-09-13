@@ -6,12 +6,12 @@
 
 #import <UIKit/UIKit.h>
 
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/chrome_url_util.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
-#include "ios/chrome/browser/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/web/public/navigation/navigation_item.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

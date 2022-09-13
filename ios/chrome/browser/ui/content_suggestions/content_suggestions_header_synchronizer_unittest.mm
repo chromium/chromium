@@ -4,14 +4,14 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizer.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/run_loop.h"
-#include "base/test/task_environment.h"
+#import "base/run_loop.h"
+#import "base/test/task_environment.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_controlling.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_controlling.h"
 #import "ios/testing/scoped_block_swizzler.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 

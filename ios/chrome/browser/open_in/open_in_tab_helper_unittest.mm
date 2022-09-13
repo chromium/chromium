@@ -4,24 +4,24 @@
 
 #import "ios/chrome/browser/open_in/open_in_tab_helper.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/memory/ref_counted.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
+#import "base/memory/ref_counted.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/open_in/open_in_tab_helper_delegate.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ios/web/public/navigation/navigation_item.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "net/http/http_response_headers.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "net/http/http_response_headers.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
+#import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

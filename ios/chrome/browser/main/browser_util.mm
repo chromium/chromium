@@ -4,12 +4,12 @@
 
 #import "ios/chrome/browser/main/browser_util.h"
 
-#include <memory>
-#include <ostream>
-#include <set>
+#import <memory>
+#import <ostream>
+#import <set>
 
-#include "base/check_op.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "base/check_op.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"

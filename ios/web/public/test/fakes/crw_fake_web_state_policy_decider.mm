@@ -4,7 +4,7 @@
 
 #import "ios/web/public/test/fakes/crw_fake_web_state_policy_decider.h"
 
-#include <memory>
+#import <memory>
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

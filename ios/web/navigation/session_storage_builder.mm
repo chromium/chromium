@@ -4,21 +4,21 @@
 
 #import "ios/web/navigation/session_storage_builder.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/check_op.h"
-#include "base/mac/foundation_util.h"
-#include "ios/web/common/features.h"
+#import "base/check_op.h"
+#import "base/mac/foundation_util.h"
+#import "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/navigation/navigation_item_storage_builder.h"
-#include "ios/web/navigation/navigation_manager_impl.h"
+#import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
-#include "ios/web/session/session_certificate_policy_cache_storage_builder.h"
+#import "ios/web/session/session_certificate_policy_cache_storage_builder.h"
 #import "ios/web/web_state/web_state_impl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

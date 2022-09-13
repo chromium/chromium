@@ -4,14 +4,14 @@
 
 #import "ios/web/public/web_state_observer_bridge.h"
 
-#include "base/memory/ptr_util.h"
-#include "base/scoped_observation.h"
+#import "base/memory/ptr_util.h"
+#import "base/scoped_observation.h"
 #import "ios/web/navigation/navigation_context_impl.h"
-#include "ios/web/public/favicon/favicon_url.h"
+#import "ios/web/public/favicon/favicon_url.h"
 #import "ios/web/public/test/fakes/crw_fake_web_state_observer.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "net/http/http_response_headers.h"
-#include "testing/platform_test.h"
+#import "net/http/http_response_headers.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

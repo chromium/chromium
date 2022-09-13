@@ -4,16 +4,16 @@
 
 #import "ios/chrome/browser/ui/webui/translate_internals/translate_internals_ui.h"
 
-#include <string>
+#import <string>
 
-#include "components/translate/core/common/translate_util.h"
+#import "components/translate/core/common/translate_util.h"
 #import "components/translate/translate_internals/translate_internals_handler.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/webui/translate_internals/ios_translate_internals_handler.h"
-#include "ios/chrome/grit/ios_resources.h"
-#include "ios/web/public/webui/web_ui_ios.h"
-#include "ios/web/public/webui/web_ui_ios_data_source.h"
+#import "ios/chrome/grit/ios_resources.h"
+#import "ios/web/public/webui/web_ui_ios.h"
+#import "ios/web/public/webui/web_ui_ios_data_source.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

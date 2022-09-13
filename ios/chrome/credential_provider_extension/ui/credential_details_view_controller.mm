@@ -7,7 +7,7 @@
 #import <MobileCoreServices/UTCoreTypes.h>
 
 #import "base/mac/foundation_util.h"
-#include "ios/chrome/common/app_group/app_group_metrics.h"
+#import "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/constants.h"
 #import "ios/chrome/common/credential_provider/credential.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

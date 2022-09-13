@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/webui/policy/policy_ui.h"
+#import "ios/chrome/browser/ui/webui/policy/policy_ui.h"
 
-#include <memory>
-#include <string>
+#import <memory>
+#import <string>
 
-#include "components/grit/dev_ui_components_resources.h"
-#include "components/strings/grit/components_strings.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/ui/webui/policy/policy_ui_handler.h"
-#include "ios/web/public/webui/web_ui_ios.h"
-#include "ios/web/public/webui/web_ui_ios_data_source.h"
-#include "ios/web/public/webui/web_ui_ios_message_handler.h"
-#include "ui/base/webui/web_ui_util.h"
+#import "components/grit/dev_ui_components_resources.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/ui/webui/policy/policy_ui_handler.h"
+#import "ios/web/public/webui/web_ui_ios.h"
+#import "ios/web/public/webui/web_ui_ios_data_source.h"
+#import "ios/web/public/webui/web_ui_ios_message_handler.h"
+#import "ui/base/webui/web_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

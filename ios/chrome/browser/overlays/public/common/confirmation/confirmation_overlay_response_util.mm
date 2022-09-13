@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/overlays/public/common/confirmation/confirmation_overlay_response_util.h"
 
-#include "base/bind.h"
+#import "base/bind.h"
 #import "ios/chrome/browser/overlays/public/common/confirmation/confirmation_overlay_response.h"
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
 

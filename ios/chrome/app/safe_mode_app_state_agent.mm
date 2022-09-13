@@ -4,8 +4,8 @@
 
 #import "ios/chrome/app/safe_mode_app_state_agent.h"
 
-#include "base/ios/ios_util.h"
-#include "base/version.h"
+#import "base/ios/ios_util.h"
+#import "base/version.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"

@@ -4,10 +4,10 @@
 
 #import "ios/web/web_view/wk_web_view_util.h"
 
-#include "base/bind.h"
+#import "base/bind.h"
 #import "base/test/ios/wait_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

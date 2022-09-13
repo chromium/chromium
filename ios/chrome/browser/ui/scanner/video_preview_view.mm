@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/scanner/video_preview_view.h"
 
-#include "base/check.h"
-#include "base/mac/foundation_util.h"
+#import "base/check.h"
+#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

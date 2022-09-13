@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/optimization_guide/optimization_guide_tab_helper.h"
+#import "ios/chrome/browser/optimization_guide/optimization_guide_tab_helper.h"
 
-#include "base/command_line.h"
+#import "base/command_line.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"

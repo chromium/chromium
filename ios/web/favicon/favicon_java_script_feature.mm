@@ -4,13 +4,13 @@
 
 #import "ios/web/favicon/favicon_java_script_feature.h"
 
-#include <vector>
+#import <vector>
 
-#include "base/values.h"
+#import "base/values.h"
 #import "ios/web/favicon/favicon_util.h"
-#include "ios/web/public/js_messaging/java_script_feature_util.h"
-#include "ios/web/public/js_messaging/script_message.h"
-#include "ios/web/web_state/web_state_impl.h"
+#import "ios/web/public/js_messaging/java_script_feature_util.h"
+#import "ios/web/public/js_messaging/script_message.h"
+#import "ios/web/web_state/web_state_impl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

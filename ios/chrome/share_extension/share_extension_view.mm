@@ -4,7 +4,7 @@
 
 #import "ios/chrome/share_extension/share_extension_view.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/share_extension/ui_util.h"
 

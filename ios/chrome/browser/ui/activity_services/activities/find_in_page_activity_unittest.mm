@@ -5,11 +5,11 @@
 #import "ios/chrome/browser/ui/activity_services/activities/find_in_page_activity.h"
 
 #import "ios/chrome/browser/ui/activity_services/data/share_to_data.h"
-#include "ios/chrome/browser/ui/commands/find_in_page_commands.h"
-#include "testing/platform_test.h"
+#import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "third_party/ocmock/gtest_support.h"
-#include "url/gurl.h"
+#import "third_party/ocmock/gtest_support.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

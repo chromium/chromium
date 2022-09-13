@@ -4,9 +4,9 @@
 
 #import "ios/web/js_features/scroll_helper/scroll_helper_java_script_feature.h"
 
-#include "base/values.h"
-#include "ios/web/public/js_messaging/java_script_feature_util.h"
-#include "ios/web/public/js_messaging/web_frame_util.h"
+#import "base/values.h"
+#import "ios/web/public/js_messaging/java_script_feature_util.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

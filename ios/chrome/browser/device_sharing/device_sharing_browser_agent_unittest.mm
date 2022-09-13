@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/device_sharing/device_sharing_browser_agent.h"
 
-#include <memory>
+#import <memory>
 
 #import "components/handoff/handoff_manager.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"

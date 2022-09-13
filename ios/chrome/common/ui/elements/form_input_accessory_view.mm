@@ -6,8 +6,8 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#include "base/check.h"
-#include "base/i18n/rtl.h"
+#import "base/check.h"
+#import "base/i18n/rtl.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view_text_data.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"

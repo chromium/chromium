@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/web/web_navigation_ntp_delegate.h"

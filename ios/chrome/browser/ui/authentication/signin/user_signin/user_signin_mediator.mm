@@ -4,14 +4,14 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_mediator.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/check.h"
+#import "base/check.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/consent_auditor/consent_auditor.h"
 #import "components/unified_consent/unified_consent_service.h"
-#include "ios/chrome/browser/procedural_block_types.h"
+#import "ios/chrome/browser/procedural_block_types.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"

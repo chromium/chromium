@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/snapshots/snapshot_lru_cache.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

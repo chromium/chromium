@@ -6,8 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/logging.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/logging.h"
+#import "base/strings/sys_string_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

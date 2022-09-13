@@ -6,7 +6,7 @@
 
 #import <AuthenticationServices/AuthenticationServices.h>
 #import <UIKit/UIKit.h>
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_observer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

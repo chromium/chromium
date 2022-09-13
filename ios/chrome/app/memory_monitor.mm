@@ -4,18 +4,18 @@
 
 #import "ios/chrome/app/memory_monitor.h"
 
-#include <dispatch/dispatch.h>
 #import <Foundation/NSPathUtilities.h>
+#import <dispatch/dispatch.h>
 
-#include "base/bind.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/location.h"
+#import "base/bind.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/location.h"
 #import "base/mac/foundation_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/system/sys_info.h"
-#include "base/task/thread_pool.h"
-#include "base/threading/scoped_blocking_call.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/system/sys_info.h"
+#import "base/task/thread_pool.h"
+#import "base/threading/scoped_blocking_call.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 

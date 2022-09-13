@@ -6,11 +6,11 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/format_macros.h"
-#include "base/json/json_string_value_serializer.h"
-#include "base/logging.h"
-#include "base/mac/foundation_util.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/format_macros.h"
+#import "base/json/json_string_value_serializer.h"
+#import "base/logging.h"
+#import "base/mac/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -19,8 +19,8 @@
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/nserror_util.h"
-#include "ios/web/public/test/element_selector.h"
-#include "net/base/mac/url_conversions.h"
+#import "ios/web/public/test/element_selector.h"
+#import "net/base/mac/url_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

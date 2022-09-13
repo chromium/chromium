@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
 
-#include "base/i18n/rtl.h"
+#import "base/i18n/rtl.h"
 #import "base/logging.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"

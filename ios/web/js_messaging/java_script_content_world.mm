@@ -4,19 +4,19 @@
 
 #import "ios/web/js_messaging/java_script_content_world.h"
 
-#include "base/check_op.h"
-#include "base/notreached.h"
+#import "base/check_op.h"
+#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/js_messaging/web_view_web_state_map.h"
 #import "ios/web/public/browser_state.h"
-#include "ios/web/public/js_messaging/java_script_feature.h"
-#include "ios/web/public/js_messaging/script_message.h"
+#import "ios/web/public/js_messaging/java_script_feature.h"
+#import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "ios/web/web_state/web_state_impl.h"
 #import "net/base/mac/url_conversions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,18 +4,18 @@
 
 #import "ios/chrome/browser/ui/overlays/web_content_area/alerts/alert_overlay_coordinator.h"
 
-#include "base/mac/foundation_util.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
-#include "ios/chrome/browser/overlays/public/overlay_request.h"
-#include "ios/chrome/browser/overlays/public/web_content_area/alert_overlay.h"
-#include "ios/chrome/browser/overlays/test/overlay_test_macros.h"
+#import "ios/chrome/browser/overlays/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/public/web_content_area/alert_overlay.h"
+#import "ios/chrome/browser/overlays/test/overlay_test_macros.h"
 #import "ios/chrome/browser/ui/alert_view/alert_action.h"
 #import "ios/chrome/browser/ui/alert_view/alert_view_controller.h"
-#include "ios/chrome/browser/ui/overlays/test/fake_overlay_request_coordinator_delegate.h"
-#include "ios/chrome/test/scoped_key_window.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/platform_test.h"
+#import "ios/chrome/browser/ui/overlays/test/fake_overlay_request_coordinator_delegate.h"
+#import "ios/chrome/test/scoped_key_window.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

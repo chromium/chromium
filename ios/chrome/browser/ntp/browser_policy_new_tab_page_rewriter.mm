@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ntp/browser_policy_new_tab_page_rewriter.h"
+#import "ios/chrome/browser/ntp/browser_policy_new_tab_page_rewriter.h"
 
-#include "components/prefs/pref_service.h"
-#include "components/url_formatter/url_fixer.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "components/prefs/pref_service.h"
+#import "components/url_formatter/url_fixer.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
-#include "ios/components/webui/web_ui_url_constants.h"
-#include "ios/web/public/browser_state.h"
+#import "ios/components/webui/web_ui_url_constants.h"
+#import "ios/web/public/browser_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

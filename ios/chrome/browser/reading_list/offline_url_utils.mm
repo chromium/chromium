@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/reading_list/offline_url_utils.h"
+#import "ios/chrome/browser/reading_list/offline_url_utils.h"
 
-#include "base/check.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/reading_list/core/offline_url_utils.h"
-#include "components/reading_list/core/reading_list_entry.h"
-#include "components/reading_list/core/reading_list_model.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/components/webui/web_ui_url_constants.h"
-#include "net/base/url_util.h"
+#import "base/check.h"
+#import "base/strings/string_util.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/reading_list/core/offline_url_utils.h"
+#import "components/reading_list/core/reading_list_entry.h"
+#import "components/reading_list/core/reading_list_model.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/components/webui/web_ui_url_constants.h"
+#import "net/base/url_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/public/init/web_main_runner.h"
+#import "ios/web/public/init/web_main_runner.h"
 
-#include "base/check.h"
-#include "base/i18n/icu_util.h"
-#include "ios/web/init/web_main_loop.h"
-#include "ios/web/public/init/ios_global_state.h"
-#include "ios/web/public/navigation/url_schemes.h"
+#import "base/check.h"
+#import "base/i18n/icu_util.h"
+#import "ios/web/init/web_main_loop.h"
+#import "ios/web/public/init/ios_global_state.h"
+#import "ios/web/public/navigation/url_schemes.h"
 #import "ios/web/public/web_client.h"
-#include "ios/web/web_thread_impl.h"
-#include "mojo/core/embedder/embedder.h"
-#include "ui/base/ui_base_paths.h"
+#import "ios/web/web_thread_impl.h"
+#import "mojo/core/embedder/embedder.h"
+#import "ui/base/ui_base_paths.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/signin_settings_app_interface.h"
 
-#include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 

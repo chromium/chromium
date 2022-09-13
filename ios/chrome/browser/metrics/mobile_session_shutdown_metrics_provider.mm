@@ -2,28 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/metrics/mobile_session_shutdown_metrics_provider.h"
+#import "ios/chrome/browser/metrics/mobile_session_shutdown_metrics_provider.h"
 
 #import <Foundation/Foundation.h>
 
-#include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/path_service.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/system/sys_info.h"
-#include "base/task/thread_pool.h"
-#include "base/version.h"
+#import "base/logging.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/path_service.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/system/sys_info.h"
+#import "base/task/thread_pool.h"
+#import "base/version.h"
 #import "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
-#include "components/breadcrumbs/core/features.h"
-#include "components/metrics/metrics_pref_names.h"
-#include "components/metrics/metrics_service.h"
+#import "components/breadcrumbs/core/features.h"
+#import "components/metrics/metrics_pref_names.h"
+#import "components/metrics/metrics_service.h"
 #import "components/previous_session_info/previous_session_info.h"
-#include "components/version_info/version_info.h"
+#import "components/version_info/version_info.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#include "ios/chrome/browser/crash_report/crash_helper.h"
-#include "ios/chrome/browser/crash_report/features.h"
-#include "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
-#include "ios/chrome/browser/crash_report/synthetic_crash_report_util.h"
+#import "ios/chrome/browser/crash_report/crash_helper.h"
+#import "ios/chrome/browser/crash_report/features.h"
+#import "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
+#import "ios/chrome/browser/crash_report/synthetic_crash_report_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

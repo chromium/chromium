@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
 
-#include "base/check.h"
-#include "base/memory/ptr_util.h"
+#import "base/check.h"
+#import "base/memory/ptr_util.h"
 #import "ios/chrome/browser/autofill/form_suggestion_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

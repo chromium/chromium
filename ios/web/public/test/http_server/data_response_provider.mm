@@ -4,9 +4,9 @@
 
 #import "ios/web/public/test/http_server/data_response_provider.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

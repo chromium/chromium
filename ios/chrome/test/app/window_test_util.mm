@@ -7,7 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/app/main_controller.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"

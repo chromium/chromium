@@ -4,15 +4,15 @@
 
 #import "ios/chrome/browser/overlays/overlay_request_queue_impl.h"
 
-#include <vector>
+#import <vector>
 
-#include "ios/chrome/browser/overlays/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_cancel_handler.h"
-#include "ios/chrome/browser/overlays/test/fake_overlay_request_cancel_handler.h"
-#include "ios/chrome/browser/overlays/test/fake_overlay_user_data.h"
+#import "ios/chrome/browser/overlays/test/fake_overlay_request_cancel_handler.h"
+#import "ios/chrome/browser/overlays/test/fake_overlay_user_data.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/platform_test.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

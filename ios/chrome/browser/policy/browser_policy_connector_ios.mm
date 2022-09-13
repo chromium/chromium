@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
+#import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 
-#include <stdint.h>
+#import <stdint.h>
 
-#include <utility>
+#import <utility>
 
-#include "base/callback.h"
-#include "base/system/sys_info.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
-#include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
-#include "components/policy/core/common/async_policy_provider.h"
-#include "components/policy/core/common/cloud/device_management_service.h"
-#include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
-#include "components/policy/core/common/configuration_policy_provider.h"
-#include "components/policy/core/common/policy_loader_ios.h"
-#include "ios/chrome/browser/policy/chrome_browser_cloud_management_controller_ios.h"
-#include "ios/chrome/browser/policy/device_management_service_configuration_ios.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#import "base/callback.h"
+#import "base/system/sys_info.h"
+#import "base/task/sequenced_task_runner.h"
+#import "base/task/thread_pool.h"
+#import "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
+#import "components/policy/core/common/async_policy_provider.h"
+#import "components/policy/core/common/cloud/device_management_service.h"
+#import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#import "components/policy/core/common/configuration_policy_provider.h"
+#import "components/policy/core/common/policy_loader_ios.h"
+#import "ios/chrome/browser/policy/chrome_browser_cloud_management_controller_ios.h"
+#import "ios/chrome/browser/policy/device_management_service_configuration_ios.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

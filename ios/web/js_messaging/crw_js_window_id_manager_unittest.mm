@@ -7,7 +7,7 @@
 #import <WebKit/WebKit.h>
 
 #import "ios/web/js_messaging/page_script_util.h"
-#include "ios/web/public/test/fakes/fake_browser_state.h"
+#import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

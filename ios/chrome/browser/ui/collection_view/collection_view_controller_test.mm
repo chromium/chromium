@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller_test.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_account_item.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
@@ -12,8 +12,8 @@
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 
-#include "testing/gtest_mac.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "testing/gtest_mac.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

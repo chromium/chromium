@@ -6,17 +6,17 @@
 
 #import <UIKit/UIKit.h>
 
-#include <algorithm>
+#import <algorithm>
 
-#include "base/files/file_enumerator.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
-#include "base/ios/ios_util.h"
-#include "base/time/time.h"
+#import "base/files/file_enumerator.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/files/scoped_temp_dir.h"
+#import "base/ios/ios_util.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/sessions/scene_util_test_support.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

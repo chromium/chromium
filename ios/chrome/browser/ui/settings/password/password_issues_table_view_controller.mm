@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/settings/password/password_issues_table_view_controller.h"
 
 #import <UIKit/UIKit.h>
-#include "base/mac/foundation_util.h"
-#include "components/password_manager/core/common/password_manager_features.h"
+#import "base/mac/foundation_util.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/ui/settings/password/legacy_password_issue_content_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_issue_content_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues_consumer.h"
@@ -14,8 +14,8 @@
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -5,9 +5,9 @@
 #import "ios/testing/verify_custom_webkit.h"
 
 #import <Foundation/Foundation.h>
-#include <mach-o/dyld.h>
+#import <mach-o/dyld.h>
 
-#include "base/command_line.h"
+#import "base/command_line.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

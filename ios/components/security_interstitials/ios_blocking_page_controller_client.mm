@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
+#import "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
 
-#include "base/bind.h"
-#include "base/check_op.h"
-#include "base/notreached.h"
-#include "components/security_interstitials/core/metrics_helper.h"
+#import "base/bind.h"
+#import "base/check_op.h"
+#import "base/notreached.h"
+#import "components/security_interstitials/core/metrics_helper.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#include "ios/web/public/navigation/reload_type.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
+#import "ios/web/public/navigation/reload_type.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

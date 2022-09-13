@@ -6,17 +6,17 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#include "base/logging.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "ios/chrome/browser/ui/commands/load_query_commands.h"
-#include "ios/chrome/browser/ui/scanner/scanner_alerts.h"
-#include "ios/chrome/browser/ui/scanner/scanner_presenting.h"
-#include "ios/chrome/browser/ui/scanner/scanner_transitioning_delegate.h"
-#include "ios/chrome/browser/ui/scanner/scanner_view.h"
+#import "base/logging.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/ui/commands/load_query_commands.h"
+#import "ios/chrome/browser/ui/scanner/scanner_alerts.h"
+#import "ios/chrome/browser/ui/scanner/scanner_presenting.h"
+#import "ios/chrome/browser/ui/scanner/scanner_transitioning_delegate.h"
+#import "ios/chrome/browser/ui/scanner/scanner_view.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

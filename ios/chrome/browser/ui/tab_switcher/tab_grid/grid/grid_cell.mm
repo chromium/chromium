@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_cell.h"
 
 #import <MaterialComponents/MaterialActivityIndicator.h>
-#include <ostream>
+#import <ostream>
 
 #import "base/check.h"
 #import "base/feature_list.h"

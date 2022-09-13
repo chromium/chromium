@@ -6,13 +6,13 @@
 
 #import <UIKit/UIKit.h>
 
-#include "components/ukm/ios/ukm_url_recorder.h"
-#include "components/ukm/test_ukm_recorder.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
+#import "components/ukm/test_ukm_recorder.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

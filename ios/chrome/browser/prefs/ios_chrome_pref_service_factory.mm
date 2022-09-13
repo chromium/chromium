@@ -2,27 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
+#import "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
 
-#include <vector>
+#import <vector>
 
-#include "base/bind.h"
-#include "base/check.h"
-#include "base/feature_list.h"
-#include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "components/policy/core/browser/browser_policy_connector.h"
-#include "components/policy/core/common/policy_service.h"
-#include "components/prefs/json_pref_store.h"
-#include "components/prefs/persistent_pref_store.h"
-#include "components/prefs/pref_filter.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/pref_value_store.h"
-#include "components/proxy_config/proxy_config_pref_names.h"
-#include "components/sync_preferences/pref_service_syncable.h"
-#include "components/sync_preferences/pref_service_syncable_factory.h"
+#import "base/bind.h"
+#import "base/check.h"
+#import "base/feature_list.h"
+#import "base/memory/ptr_util.h"
+#import "base/metrics/histogram_macros.h"
+#import "components/policy/core/browser/browser_policy_connector.h"
+#import "components/policy/core/common/policy_service.h"
+#import "components/prefs/json_pref_store.h"
+#import "components/prefs/persistent_pref_store.h"
+#import "components/prefs/pref_filter.h"
+#import "components/prefs/pref_service.h"
+#import "components/prefs/pref_value_store.h"
+#import "components/proxy_config/proxy_config_pref_names.h"
+#import "components/sync_preferences/pref_service_syncable.h"
+#import "components/sync_preferences/pref_service_syncable_factory.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#include "ios/chrome/browser/prefs/ios_chrome_pref_model_associator_client.h"
+#import "ios/chrome/browser/prefs/ios_chrome_pref_model_associator_client.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

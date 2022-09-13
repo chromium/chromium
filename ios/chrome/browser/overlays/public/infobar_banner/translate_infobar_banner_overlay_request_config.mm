@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/overlays/public/infobar_banner/translate_infobar_banner_overlay_request_config.h"
 
-#include "components/infobars/core/infobar.h"
-#include "components/translate/core/browser/translate_infobar_delegate.h"
-#include "ios/chrome/browser/infobars/infobar_ios.h"
+#import "components/infobars/core/infobar.h"
+#import "components/translate/core/browser/translate_infobar_delegate.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_type.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
 

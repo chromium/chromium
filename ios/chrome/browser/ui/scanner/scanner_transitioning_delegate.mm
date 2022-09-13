@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/scanner/scanner_transitioning_delegate.h"
 
-#include "base/ios/block_types.h"
+#import "base/ios/block_types.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

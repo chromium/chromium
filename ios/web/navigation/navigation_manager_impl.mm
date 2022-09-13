@@ -5,32 +5,32 @@
 #import "ios/web/navigation/navigation_manager_impl.h"
 
 #import <Foundation/Foundation.h>
-#include <algorithm>
-#include <memory>
-#include <utility>
+#import <algorithm>
+#import <memory>
+#import <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/ios/ios_util.h"
-#include "base/logging.h"
-#include "base/mac/bundle_locations.h"
-#include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/numerics/checked_math.h"
-#include "base/strings/string_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/timer/elapsed_timer.h"
-#include "ios/web/common/features.h"
+#import "base/bind.h"
+#import "base/callback.h"
+#import "base/ios/ios_util.h"
+#import "base/logging.h"
+#import "base/mac/bundle_locations.h"
+#import "base/memory/ptr_util.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/numerics/checked_math.h"
+#import "base/strings/string_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/timer/elapsed_timer.h"
+#import "ios/web/common/features.h"
 #import "ios/web/navigation/crw_navigation_item_holder.h"
 #import "ios/web/navigation/navigation_manager_delegate.h"
 #import "ios/web/navigation/wk_navigation_util.h"
-#include "ios/web/public/browser_state.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/web_state/ui/crw_web_view_navigation_proxy.h"
 #import "net/base/mac/url_conversions.h"
-#include "ui/base/page_transition_types.h"
+#import "ui/base/page_transition_types.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

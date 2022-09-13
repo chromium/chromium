@@ -8,7 +8,7 @@
 
 #import "base/ios/block_types.h"
 #import "base/mac/foundation_util.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/common/app_group/app_group_command.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/crash_report/crash_helper.h"

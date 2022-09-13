@@ -5,31 +5,31 @@
 // TODO(crbug.com/850428): Move this and .h back to
 // ios/chrome/browser/consent_auditor.
 
-#include "ios/chrome/browser/sync/consent_auditor_factory.h"
+#import "ios/chrome/browser/sync/consent_auditor_factory.h"
 
-#include <memory>
-#include <utility>
+#import <memory>
+#import <utility>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
-#include "base/feature_list.h"
-#include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
-#include "base/time/default_clock.h"
-#include "components/consent_auditor/consent_auditor_impl.h"
-#include "components/consent_auditor/consent_sync_bridge.h"
-#include "components/consent_auditor/consent_sync_bridge_impl.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
-#include "components/sync/model/model_type_store_service.h"
-#include "components/version_info/version_info.h"
+#import "base/bind.h"
+#import "base/callback_helpers.h"
+#import "base/feature_list.h"
+#import "base/memory/ptr_util.h"
+#import "base/no_destructor.h"
+#import "base/time/default_clock.h"
+#import "components/consent_auditor/consent_auditor_impl.h"
+#import "components/consent_auditor/consent_sync_bridge.h"
+#import "components/consent_auditor/consent_sync_bridge_impl.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/pref_registry/pref_registry_syncable.h"
+#import "components/sync/base/report_unrecoverable_error.h"
+#import "components/sync/model/client_tag_based_model_type_processor.h"
+#import "components/sync/model/model_type_store_service.h"
+#import "components/version_info/version_info.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/sync/model_type_store_service_factory.h"
-#include "ios/chrome/common/channel_info.h"
-#include "ios/web/public/browser_state.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/sync/model_type_store_service_factory.h"
+#import "ios/chrome/common/channel_info.h"
+#import "ios/web/public/browser_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

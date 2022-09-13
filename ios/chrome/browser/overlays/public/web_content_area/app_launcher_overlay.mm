@@ -4,11 +4,11 @@
 
 #import "ios/chrome/browser/overlays/public/web_content_area/app_launcher_overlay.h"
 
-#include "base/bind.h"
-#include "components/strings/grit/components_strings.h"
+#import "base/bind.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/alert_overlay.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -5,7 +5,7 @@
 #import "ios/chrome/test/fakes/fake_language_detection_tab_helper_observer.h"
 
 #import "base/logging.h"
-#include "components/translate/core/common/language_detection_details.h"
+#import "components/translate/core/common/language_detection_details.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/main/fake_browser_observer.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/browser/main/browser.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

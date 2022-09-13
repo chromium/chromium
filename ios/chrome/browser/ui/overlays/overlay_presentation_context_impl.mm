@@ -6,9 +6,9 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/memory/ptr_util.h"
+#import "base/bind.h"
+#import "base/callback.h"
+#import "base/memory/ptr_util.h"
 #import "ios/chrome/browser/overlays/public/overlay_presentation_context_observer.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/ui/overlays/overlay_coordinator_factory.h"

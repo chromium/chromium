@@ -6,10 +6,10 @@
 
 #import <XCTest/XCTest.h>
 
-#include "base/command_line.h"
-#include "base/feature_list.h"
+#import "base/command_line.h"
+#import "base/feature_list.h"
 #import "base/ios/crb_protocol_observers.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/testing/earl_grey/app_launch_manager_app_interface.h"
 #import "ios/testing/earl_grey/base_earl_grey_test_case_app_interface.h"
 #import "ios/testing/earl_grey/coverage_utils.h"

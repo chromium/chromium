@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/settings/sync/utils/sync_error_infobar_delegate.h"
+#import "ios/chrome/browser/ui/settings/sync/utils/sync_error_infobar_delegate.h"
 
-#include <memory>
+#import <memory>
 
 #import "components/sync/driver/sync_service_utils.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"

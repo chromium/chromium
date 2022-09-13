@@ -4,23 +4,22 @@
 
 #import <PassKit/PassKit.h>
 
-#include <memory>
+#import <memory>
 
-#include "base/bind.h"
+#import "base/bind.h"
 #import "base/test/ios/wait_util.h"
-#include "ios/chrome/browser/download/download_test_util.h"
-#include "ios/chrome/browser/download/mime_type_util.h"
+#import "ios/chrome/browser/download/download_test_util.h"
+#import "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
-#include "ui/base/l10n/l10n_util_mac.h"
-
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/translate/fake_translate_infobar_delegate.h"
 
-#include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/translate/core/browser/mock_translate_client.h"
-#include "components/translate/core/browser/mock_translate_infobar_delegate.h"
-#include "components/translate/core/browser/mock_translate_ranker.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "components/translate/core/browser/mock_translate_client.h"
+#import "components/translate/core/browser/mock_translate_infobar_delegate.h"
+#import "components/translate/core/browser/mock_translate_ranker.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

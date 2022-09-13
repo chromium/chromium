@@ -4,18 +4,18 @@
 
 #import <WebKit/WebKit.h>
 
-#include <memory>
-#include <string>
+#import <memory>
+#import <string>
 
-#include "base/mac/foundation_util.h"
+#import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/common/web_view_creation_util.h"
-#include "ios/web/public/browser_state.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/test/web_int_test.h"
 #import "net/base/mac/url_conversions.h"
-#include "net/test/embedded_test_server/default_handlers.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "net/test/embedded_test_server/default_handlers.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

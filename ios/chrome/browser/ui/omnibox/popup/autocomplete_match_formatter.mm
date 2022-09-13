@@ -6,16 +6,16 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/metrics/field_trial_params.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/suggestion_answer.h"
+#import "base/metrics/field_trial_params.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/omnibox/browser/autocomplete_match.h"
+#import "components/omnibox/browser/suggestion_answer.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon_formatter.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 

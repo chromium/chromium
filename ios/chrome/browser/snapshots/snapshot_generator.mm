@@ -4,25 +4,25 @@
 
 #import "ios/chrome/browser/snapshots/snapshot_generator.h"
 
-#include <algorithm>
+#import <algorithm>
 
 // TODO(crbug.com/636188): required to implement ViewHierarchyContainsWKWebView
 // for -drawViewHierarchyInRect:afterScreenUpdates:, remove once the workaround
 // is no longer needed.
 #import <WebKit/WebKit.h>
 
-#include "base/bind.h"
-#include "base/check_op.h"
+#import "base/bind.h"
+#import "base/check_op.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_generator_delegate.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
-#include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/image/image.h"
+#import "ui/gfx/geometry/rect_f.h"
+#import "ui/gfx/image/image.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

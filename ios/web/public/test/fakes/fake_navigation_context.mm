@@ -5,9 +5,9 @@
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 
 #import "ios/web/public/web_state.h"
-#include "net/http/http_response_headers.h"
-#include "ui/base/page_transition_types.h"
-#include "url/gurl.h"
+#import "net/http/http_response_headers.h"
+#import "ui/base/page_transition_types.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

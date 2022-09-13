@@ -4,16 +4,16 @@
 
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_view_controller.h"
 
-#include <vector>
+#import <vector>
 
-#include "base/check_op.h"
-#include "base/mac/foundation_util.h"
+#import "base/check_op.h"
+#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/browser/ui/toolbar_container/collapsing_toolbar_height_constraint.h"
 #import "ios/chrome/browser/ui/toolbar_container/collapsing_toolbar_height_constraint_delegate.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_view.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_height_range.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

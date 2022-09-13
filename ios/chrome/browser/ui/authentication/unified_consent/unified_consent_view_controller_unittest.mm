@@ -4,12 +4,12 @@
 
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_view_controller.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/mac/foundation_util.h"
-#include "ios/chrome/common/string_util.h"
-#include "testing/platform_test.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "base/mac/foundation_util.h"
+#import "ios/chrome/common/string_util.h"
+#import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

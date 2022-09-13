@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/download/vcard_coordinator.h"
 
-#include <ContactsUI/ContactsUI.h>
+#import <ContactsUI/ContactsUI.h>
 
-#include "base/scoped_observation.h"
+#import "base/scoped_observation.h"
 #import "ios/chrome/browser/download/vcard_tab_helper.h"
 #import "ios/chrome/browser/download/vcard_tab_helper_delegate.h"
 #import "ios/chrome/browser/main/browser.h"

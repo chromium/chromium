@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/overlays/default_overlay_request_cancel_handler.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/web/public/navigation/navigation_context.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

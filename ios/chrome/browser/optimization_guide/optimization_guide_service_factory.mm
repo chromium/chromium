@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 
 #import "base/feature_list.h"
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/prediction_manager.h"
+#import "components/optimization_guide/core/prediction_manager.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
+#import "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
-#include "ios/chrome/browser/optimization_guide/ios_chrome_hints_manager.h"
+#import "ios/chrome/browser/optimization_guide/ios_chrome_hints_manager.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 

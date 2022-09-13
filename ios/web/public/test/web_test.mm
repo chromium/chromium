@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/public/test/web_test.h"
+#import "ios/web/public/test/web_test.h"
 
-#include "base/check.h"
-#include "base/memory/ptr_util.h"
+#import "base/check.h"
+#import "base/memory/ptr_util.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
-#include "ios/web/public/deprecated/global_web_state_observer.h"
-#include "ios/web/public/test/fakes/fake_browser_state.h"
+#import "ios/web/public/deprecated/global_web_state_observer.h"
+#import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 

@@ -4,9 +4,9 @@
 
 #import "ios/web/web_state/global_web_state_event_tracker.h"
 
-#include <stddef.h>
+#import <stddef.h>
 
-#include "base/no_destructor.h"
+#import "base/no_destructor.h"
 #import "ios/web/public/web_state_user_data.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

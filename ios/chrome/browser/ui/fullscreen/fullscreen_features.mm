@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 
 #import <Foundation/Foundation.h>
-#include "base/command_line.h"
-#include "base/feature_list.h"
+#import "base/command_line.h"
+#import "base/feature_list.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

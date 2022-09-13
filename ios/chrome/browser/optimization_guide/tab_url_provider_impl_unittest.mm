@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/optimization_guide/tab_url_provider_impl.h"
+#import "ios/chrome/browser/optimization_guide/tab_url_provider_impl.h"
 
-#include <memory>
+#import <memory>
 
 #import "base/test/simple_test_clock.h"
 #import "base/test/task_environment.h"

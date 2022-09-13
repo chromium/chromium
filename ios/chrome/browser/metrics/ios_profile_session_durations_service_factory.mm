@@ -8,16 +8,16 @@
 #error "This file requires ARC support."
 #endif
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/sync/driver/sync_service.h"
-#include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/metrics/ios_profile_session_durations_service.h"
-#include "ios/chrome/browser/signin/identity_manager_factory.h"
-#include "ios/chrome/browser/sync/sync_service_factory.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/sync/driver/sync_service.h"
+#import "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/metrics/ios_profile_session_durations_service.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 
 // static
 IOSProfileSessionDurationsService*

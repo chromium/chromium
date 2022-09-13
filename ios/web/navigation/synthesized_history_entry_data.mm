@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/navigation/synthesized_history_entry_data.h"
+#import "ios/web/navigation/synthesized_history_entry_data.h"
 
-#include "base/strings/utf_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

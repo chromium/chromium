@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/infobars/test_infobar_badge_tab_helper_delegate.h"
 
-#include <map>
+#import <map>
 #import "ios/chrome/browser/ui/badges/badge_tappable_item.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

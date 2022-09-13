@@ -4,13 +4,13 @@
 
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 
-#include "base/bind.h"
+#import "base/bind.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
-#include "testing/platform_test.h"
+#import "services/network/public/mojom/fetch_api.mojom.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

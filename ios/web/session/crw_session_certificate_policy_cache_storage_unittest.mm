@@ -4,13 +4,13 @@
 
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
 
-#include "net/cert/x509_certificate.h"
-#include "net/cert/x509_util.h"
-#include "net/test/cert_test_util.h"
-#include "net/test/test_data_directory.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "net/cert/x509_certificate.h"
+#import "net/cert/x509_util.h"
+#import "net/test/cert_test_util.h"
+#import "net/test/test_data_directory.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

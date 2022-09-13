@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
+#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
-#include "base/run_loop.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_mock_clock_override.h"
-#include "components/signin/internal/identity_manager/account_capabilities_constants.h"
-#include "components/signin/public/base/signin_metrics.h"
+#import "base/run_loop.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_mock_clock_override.h"
+#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

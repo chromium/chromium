@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/commerce/shopping_service_factory.h"
+#import "ios/chrome/browser/commerce/shopping_service_factory.h"
 
-#include "components/commerce/core/shopping_service.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
-#include "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
+#import "components/commerce/core/shopping_service.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 

@@ -4,7 +4,7 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/at_exit.h"
+#import "base/at_exit.h"
 #import "ios/showcase/core/app_delegate.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator.h"
 
 #import "base/metrics/histogram_functions.h"
-#include "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/prefs/pref_service.h"

@@ -4,16 +4,16 @@
 
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_blocking_page.h"
 
-#include <utility>
+#import <utility>
 
-#include "base/strings/string_number_conversions.h"
-#include "base/values.h"
-#include "components/lookalikes/core/lookalike_url_ui_util.h"
-#include "components/lookalikes/core/lookalike_url_util.h"
-#include "components/security_interstitials/core/common_string_util.h"
-#include "components/security_interstitials/core/metrics_helper.h"
-#include "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
-#include "ios/components/security_interstitials/ios_blocking_page_metrics_helper.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/values.h"
+#import "components/lookalikes/core/lookalike_url_ui_util.h"
+#import "components/lookalikes/core/lookalike_url_util.h"
+#import "components/security_interstitials/core/common_string_util.h"
+#import "components/security_interstitials/core/metrics_helper.h"
+#import "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
+#import "ios/components/security_interstitials/ios_blocking_page_metrics_helper.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

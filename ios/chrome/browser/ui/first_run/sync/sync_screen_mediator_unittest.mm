@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_mediator.h"
 
 #import "components/consent_auditor/fake_consent_auditor.h"
-#include "components/prefs/pref_service.h"
+#import "components/prefs/pref_service.h"
 #import "components/sync/test/mock_sync_service.h"
-#include "components/unified_consent/pref_names.h"
+#import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -27,7 +27,7 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
-#include "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

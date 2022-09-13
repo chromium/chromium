@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/presenters/vertical_animation_container.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
-#include "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/infobars/overlays/default_infobar_overlay_request_factory.h"
 
-#include "base/check.h"
-#include "components/infobars/core/infobar_delegate.h"
+#import "base/check.h"
+#import "components/infobars/core/infobar_delegate.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/add_to_reading_list_infobar_banner_overlay_request_config.h"

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/tabs/switch_to_tab_animation_view.h"
 
-#include "base/i18n/rtl.h"
+#import "base/i18n/rtl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

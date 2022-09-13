@@ -6,17 +6,17 @@
 
 #import <WebKit/WebKit.h>
 
-#include "base/memory/ptr_util.h"
+#import "base/memory/ptr_util.h"
 #import "ios/web/js_messaging/page_script_util.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
-#include "ios/web/public/test/fakes/fake_browser_state.h"
+#import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
-#include "ios/web/public/test/scoped_testing_web_client.h"
+#import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/test/fakes/fake_wk_configuration_provider_observer.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

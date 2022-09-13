@@ -4,29 +4,29 @@
 
 #import "ios/chrome/browser/upgrade/upgrade_center.h"
 
-#include <memory>
-#include <set>
-#include <utility>
+#import <memory>
+#import <set>
+#import <utility>
 
-#include "base/mac/bundle_locations.h"
-#include "base/scoped_observation.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/version.h"
-#include "components/infobars/core/confirm_infobar_delegate.h"
-#include "components/infobars/core/infobar.h"
-#include "components/infobars/core/infobar_manager.h"
-#include "components/version_info/version_info.h"
-#include "ios/chrome/browser/infobars/infobar_utils.h"
+#import "base/mac/bundle_locations.h"
+#import "base/scoped_observation.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/version.h"
+#import "components/infobars/core/confirm_infobar_delegate.h"
+#import "components/infobars/core/infobar.h"
+#import "components/infobars/core/infobar_manager.h"
+#import "components/version_info/version_info.h"
+#import "ios/chrome/browser/infobars/infobar_utils.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/upgrade/upgrade_constants.h"
-#include "ios/chrome/grit/ios_chromium_strings.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "net/base/mac/url_conversions.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/image/image.h"
-#include "url/gurl.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/gfx/image/image.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/main/browser_impl.h"
 
-#include "base/check.h"
-#include "base/memory/ptr_util.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "base/check.h"
+#import "base/memory/ptr_util.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser_agent_util.h"
 #import "ios/chrome/browser/main/browser_observer.h"
 #import "ios/chrome/browser/main/browser_web_state_list_delegate.h"

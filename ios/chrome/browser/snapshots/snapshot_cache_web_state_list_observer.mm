@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/snapshots/snapshot_cache_web_state_list_observer.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"

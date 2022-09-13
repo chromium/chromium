@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/app/main_application_delegate.h"
+#import "ios/chrome/app/main_application_delegate.h"
 
 #import <Foundation/Foundation.h>
 
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "testing/platform_test.h"
+#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

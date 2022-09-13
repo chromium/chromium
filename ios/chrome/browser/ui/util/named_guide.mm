@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/util/named_guide.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 

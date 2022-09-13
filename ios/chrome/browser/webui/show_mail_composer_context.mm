@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/webui/show_mail_composer_context.h"
 
-#include "base/check.h"
-#include "base/files/file_path.h"
+#import "base/check.h"
+#import "base/files/file_path.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

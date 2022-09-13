@@ -4,16 +4,16 @@
 
 #import "ios/chrome/browser/crash_report/crash_report_multi_parameter.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/check.h"
-#include "base/json/json_writer.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/values.h"
+#import "base/check.h"
+#import "base/json/json_writer.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/values.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/infobars/infobar_manager_app_interface.h"
 
-#include "components/infobars/core/infobar_manager.h"
+#import "components/infobars/core/infobar_manager.h"
 #import "ios/chrome/app/main_controller.h"
-#include "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/infobars/test_infobar_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"

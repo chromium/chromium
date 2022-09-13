@@ -4,27 +4,27 @@
 
 #import "ios/web/web_state/web_state_impl.h"
 
-#include <stddef.h>
+#import <stddef.h>
 
-#include <memory>
+#import <memory>
 
 #import <OCMock/OCMock.h>
 
-#include "base/base64.h"
-#include "base/bind.h"
-#include "base/logging.h"
-#include "base/mac/foundation_util.h"
+#import "base/base64.h"
+#import "base/bind.h"
+#import "base/logging.h"
+#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
-#include "base/test/gmock_callback_support.h"
+#import "base/test/gmock_callback_support.h"
 #import "base/test/ios/wait_util.h"
-#include "base/test/scoped_feature_list.h"
-#include "ios/web/common/features.h"
+#import "base/test/scoped_feature_list.h"
+#import "ios/web/common/features.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/navigation/serializable_user_data_manager_impl.h"
 #import "ios/web/navigation/wk_navigation_util.h"
-#include "ios/web/public/deprecated/global_web_state_observer.h"
+#import "ios/web/public/deprecated/global_web_state_observer.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/session/crw_navigation_item_storage.h"
@@ -36,21 +36,21 @@
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_state_delegate.h"
 #import "ios/web/public/test/fakes/fake_web_state_observer.h"
-#include "ios/web/public/test/web_test.h"
+#import "ios/web/public/test/web_test.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/ui/java_script_dialog_presenter.h"
 #import "ios/web/public/web_state_delegate.h"
-#include "ios/web/public/web_state_observer.h"
+#import "ios/web/public/web_state_observer.h"
 #import "ios/web/web_state/global_web_state_event_tracker.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
-#include "ios/web/web_state/web_state_policy_decider_test_util.h"
-#include "net/http/http_response_headers.h"
-#include "net/http/http_util.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "ios/web/web_state/web_state_policy_decider_test_util.h"
+#import "net/http/http_response_headers.h"
+#import "net/http/http_util.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

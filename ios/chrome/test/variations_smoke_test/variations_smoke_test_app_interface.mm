@@ -4,12 +4,12 @@
 
 #import "ios/chrome/test/variations_smoke_test/variations_smoke_test_app_interface.h"
 
-#include <sys/sysctl.h>
+#import <sys/sysctl.h>
 
-#include "base/process/process.h"
-#include "base/time/time.h"
-#include "components/prefs/pref_service.h"
-#include "components/variations/pref_names.h"
+#import "base/process/process.h"
+#import "base/time/time.h"
+#import "components/prefs/pref_service.h"
+#import "components/variations/pref_names.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

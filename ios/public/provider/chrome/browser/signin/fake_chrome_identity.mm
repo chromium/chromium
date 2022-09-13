@@ -4,7 +4,7 @@
 
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 
-#include "base/mac/foundation_util.h"
+#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

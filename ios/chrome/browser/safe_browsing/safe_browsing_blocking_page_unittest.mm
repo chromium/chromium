@@ -4,19 +4,19 @@
 
 #import "ios/chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
 
-#include "base/strings/string_number_conversions.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "base/values.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/values.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
-#include "components/security_interstitials/core/metrics_helper.h"
-#include "components/security_interstitials/core/unsafe_resource.h"
+#import "components/security_interstitials/core/metrics_helper.h"
+#import "components/security_interstitials/core/unsafe_resource.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/platform_test.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

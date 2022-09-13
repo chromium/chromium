@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/ui/settings/content_settings/block_popups_app_interface.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/content_settings/core/browser/host_content_settings_map.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

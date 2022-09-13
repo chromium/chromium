@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_banner_presentation_controller.h"
 
-#include <algorithm>
-#include <cmath>
+#import <algorithm>
+#import <cmath>
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_banner_positioner.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

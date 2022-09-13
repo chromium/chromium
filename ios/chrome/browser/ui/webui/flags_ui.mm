@@ -2,36 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/webui/flags_ui.h"
+#import "ios/chrome/browser/ui/webui/flags_ui.h"
 
-#include <memory>
-#include <string>
-#include <utility>
+#import <memory>
+#import <string>
+#import <utility>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
-#include "base/memory/ptr_util.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/values.h"
-#include "build/branding_buildflags.h"
-#include "components/flags_ui/flags_ui_constants.h"
-#include "components/flags_ui/flags_ui_pref_names.h"
-#include "components/flags_ui/pref_service_flags_storage.h"
-#include "components/grit/components_resources.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
-#include "components/strings/grit/components_chromium_strings.h"
-#include "components/strings/grit/components_strings.h"
-#include "components/version_info/version_info.h"
+#import "base/bind.h"
+#import "base/callback_helpers.h"
+#import "base/memory/ptr_util.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/values.h"
+#import "build/branding_buildflags.h"
+#import "components/flags_ui/flags_ui_constants.h"
+#import "components/flags_ui/flags_ui_pref_names.h"
+#import "components/flags_ui/pref_service_flags_storage.h"
+#import "components/grit/components_resources.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/pref_service.h"
+#import "components/strings/grit/components_chromium_strings.h"
+#import "components/strings/grit/components_strings.h"
+#import "components/version_info/version_info.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/flags/about_flags.h"
-#include "ios/web/public/webui/web_ui_ios.h"
-#include "ios/web/public/webui/web_ui_ios_data_source.h"
-#include "ios/web/public/webui/web_ui_ios_message_handler.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/resource_bundle.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/flags/about_flags.h"
+#import "ios/web/public/webui/web_ui_ios.h"
+#import "ios/web/public/webui/web_ui_ios_data_source.h"
+#import "ios/web/public/webui/web_ui_ios_message_handler.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/base/resource/resource_bundle.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

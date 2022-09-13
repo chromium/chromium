@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon_formatter.h"
 
-#include "base/notreached.h"
+#import "base/notreached.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"

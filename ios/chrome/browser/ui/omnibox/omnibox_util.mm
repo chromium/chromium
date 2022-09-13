@@ -4,11 +4,11 @@
 
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 
-#include "base/notreached.h"
-#include "base/strings/utf_string_conversions.h"
+#import "base/notreached.h"
+#import "base/strings/utf_string_conversions.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
-#include "ios/chrome/grit/ios_theme_resources.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/grit/ios_theme_resources.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

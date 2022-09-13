@@ -5,11 +5,11 @@
 #import "ios/chrome/app/app_startup_parameters.h"
 
 #import "base/feature_list.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "net/base/mac/url_conversions.h"
-#include "net/base/url_util.h"
-#include "url/gurl.h"
+#import "net/base/url_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

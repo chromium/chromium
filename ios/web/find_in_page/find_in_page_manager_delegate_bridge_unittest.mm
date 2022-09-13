@@ -7,7 +7,7 @@
 #import "ios/web/find_in_page/find_in_page_manager_impl.h"
 #import "ios/web/public/test/fakes/crw_fake_find_in_page_manager_delegate.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

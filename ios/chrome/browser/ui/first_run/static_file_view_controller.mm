@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/first_run/static_file_view_controller.h"
+#import "ios/chrome/browser/ui/first_run/static_file_view_controller.h"
 
 #import <WebKit/WebKit.h>
 
-#include "base/check.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "base/check.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
-#include "ios/chrome/browser/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/web/common/web_view_creation_util.h"
 

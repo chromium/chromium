@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/overlays/public/web_content_area/alert_overlay.h"
 
-#include "base/check_op.h"
-#include "base/strings/string_piece.h"
+#import "base/check_op.h"
+#import "base/strings/string_piece.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

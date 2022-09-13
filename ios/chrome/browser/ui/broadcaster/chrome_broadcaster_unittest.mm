@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/ui/broadcaster/chrome_broadcaster.h"
 
 #import "ios/chrome/browser/ui/broadcaster/chrome_broadcast_observer.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/perf/perf_test.h"
-#include "testing/platform_test.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/perf/perf_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

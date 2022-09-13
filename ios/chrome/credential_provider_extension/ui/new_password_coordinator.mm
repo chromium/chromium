@@ -6,7 +6,7 @@
 
 #import <AuthenticationServices/AuthenticationServices.h>
 
-#include "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/credential.h"
 #import "ios/chrome/credential_provider_extension/password_util.h"
 #import "ios/chrome/credential_provider_extension/ui/new_password_mediator.h"

@@ -6,21 +6,21 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/check_op.h"
+#import "base/check_op.h"
 #import "base/ios/ns_error_util.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/values.h"
-#include "components/error_page/common/error.h"
-#include "components/error_page/common/localized_error.h"
-#include "components/grit/components_resources.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/values.h"
+#import "components/error_page/common/error.h"
+#import "components/error_page/common/localized_error.h"
+#import "components/grit/components_resources.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/net/protocol_handler_util.h"
-#include "net/base/net_errors.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/base/resource/resource_scale_factor.h"
-#include "ui/base/webui/jstemplate_builder.h"
-#include "url/gurl.h"
+#import "net/base/net_errors.h"
+#import "ui/base/resource/resource_bundle.h"
+#import "ui/base/resource/resource_scale_factor.h"
+#import "ui/base/webui/jstemplate_builder.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -6,8 +6,8 @@
 
 #import "ios/chrome/browser/ui/toolbar/fullscreen/toolbar_ui.h"
 #import "ios/chrome/browser/ui/toolbar/test/test_toolbar_ui_observer.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
+#import "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

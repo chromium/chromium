@@ -4,7 +4,7 @@
 
 #import "ios/showcase/core/showcase_view_controller.h"
 
-#include "base/notreached.h"
+#import "base/notreached.h"
 #import "ios/showcase/common/coordinator.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

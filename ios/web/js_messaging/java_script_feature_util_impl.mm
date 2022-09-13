@@ -6,22 +6,22 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/ios/ios_util.h"
-#include "base/logging.h"
-#include "base/no_destructor.h"
+#import "base/ios/ios_util.h"
+#import "base/logging.h"
+#import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/annotations/annotations_java_script_feature.h"
 #import "ios/web/common/features.h"
 #import "ios/web/favicon/favicon_java_script_feature.h"
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
-#include "ios/web/js_features/context_menu/context_menu_java_script_feature.h"
-#include "ios/web/js_features/scroll_helper/scroll_helper_java_script_feature.h"
+#import "ios/web/js_features/context_menu/context_menu_java_script_feature.h"
+#import "ios/web/js_features/scroll_helper/scroll_helper_java_script_feature.h"
 #import "ios/web/js_features/window_error/window_error_java_script_feature.h"
 #import "ios/web/js_messaging/script_command_java_script_feature.h"
 #import "ios/web/js_messaging/web_frames_manager_java_script_feature.h"
 #import "ios/web/navigation/navigation_java_script_feature.h"
 #import "ios/web/navigation/session_restore_java_script_feature.h"
-#include "ios/web/public/js_messaging/java_script_feature.h"
+#import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/text_fragments/text_fragments_java_script_feature.h"
 

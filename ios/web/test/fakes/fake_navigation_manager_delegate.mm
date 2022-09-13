@@ -4,7 +4,7 @@
 
 #import "ios/web/test/fakes/fake_navigation_manager_delegate.h"
 #import "ios/web/web_state/ui/crw_web_view_navigation_proxy.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

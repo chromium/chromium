@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/voice/voice_search_availability.h"
 
 #import "ios/chrome/browser/voice/fake_voice_search_availability.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/platform_test.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 

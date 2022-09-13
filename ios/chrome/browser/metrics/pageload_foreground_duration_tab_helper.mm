@@ -6,9 +6,9 @@
 
 #import <UIKit/UIKit.h>
 
-#include "components/ukm/ios/ukm_url_recorder.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/web/public/navigation/navigation_context.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
+#import "services/metrics/public/cpp/ukm_builders.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

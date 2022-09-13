@@ -4,16 +4,16 @@
 
 #import "ios/chrome/browser/overlays/public/web_content_area/java_script_dialog_overlay.h"
 
-#include "base/bind.h"
-#include "base/logging.h"
-#include "components/strings/grit/components_strings.h"
-#include "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "base/bind.h"
+#import "base/logging.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/overlays/public/overlay_response.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/alert_constants.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/alert_overlay.h"
 #import "ios/chrome/browser/ui/dialogs/java_script_dialog_blocking_state.h"
 #import "ios/chrome/browser/ui/elements/text_field_configuration.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,12 +4,12 @@
 
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_pedal_annotator.h"
 
-#include "components/omnibox/browser/actions/omnibox_action.h"
-#include "components/omnibox/browser/actions/omnibox_pedal.h"
-#include "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
-#include "components/omnibox/browser/autocomplete_match.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "components/omnibox/browser/actions/omnibox_action.h"
+#import "components/omnibox/browser/actions/omnibox_pedal.h"
+#import "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
+#import "components/omnibox/browser/autocomplete_match.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -5,11 +5,11 @@
 #import "ios/web/common/crw_web_view_content_view.h"
 
 #import <WebKit/WebKit.h>
-#include <cmath>
-#include <limits>
+#import <cmath>
+#import <limits>
 
-#include "base/check.h"
-#include "base/notreached.h"
+#import "base/check.h"
+#import "base/notreached.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

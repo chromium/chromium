@@ -4,11 +4,11 @@
 
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_cancel_handler.h"
 
-#include "base/check.h"
-#include "base/feature_list.h"
-#include "components/infobars/core/infobar.h"
-#include "ios/chrome/browser/infobars/infobar_ios.h"
-#include "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
+#import "base/check.h"
+#import "base/feature_list.h"
+#import "components/infobars/core/infobar.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 

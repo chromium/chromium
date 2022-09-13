@@ -2,27 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/components/webui/sync_internals/sync_internals_message_handler.h"
+#import "ios/components/webui/sync_internals/sync_internals_message_handler.h"
 
-#include <utility>
-#include <vector>
+#import <utility>
+#import <vector>
 
-#include "base/bind.h"
-#include "base/command_line.h"
-#include "base/logging.h"
-#include "base/values.h"
-#include "components/sync/base/command_line_switches.h"
-#include "components/sync/base/weak_handle.h"
-#include "components/sync/driver/sync_internals_util.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_user_settings.h"
-#include "components/sync/engine/events/protocol_event.h"
-#include "components/sync/invalidations/sync_invalidations_service.h"
-#include "components/sync/model/type_entities_count.h"
-#include "components/sync/protocol/sync_invalidations_payload.pb.h"
-#include "ios/components/webui/web_ui_provider.h"
-#include "ios/web/public/thread/web_thread.h"
-#include "ios/web/public/webui/web_ui_ios.h"
+#import "base/bind.h"
+#import "base/command_line.h"
+#import "base/logging.h"
+#import "base/values.h"
+#import "components/sync/base/command_line_switches.h"
+#import "components/sync/base/weak_handle.h"
+#import "components/sync/driver/sync_internals_util.h"
+#import "components/sync/driver/sync_service.h"
+#import "components/sync/driver/sync_user_settings.h"
+#import "components/sync/engine/events/protocol_event.h"
+#import "components/sync/invalidations/sync_invalidations_service.h"
+#import "components/sync/model/type_entities_count.h"
+#import "components/sync/protocol/sync_invalidations_payload.pb.h"
+#import "ios/components/webui/web_ui_provider.h"
+#import "ios/web/public/thread/web_thread.h"
+#import "ios/web/public/webui/web_ui_ios.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

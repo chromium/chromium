@@ -4,13 +4,13 @@
 
 #import "ios/chrome/browser/chrome_url_util.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/components/webui/web_ui_url_constants.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/components/webui/web_ui_url_constants.h"
 #import "net/base/mac/url_conversions.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "url/gurl.h"
+#import "testing/platform_test.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

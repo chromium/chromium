@@ -4,13 +4,13 @@
 
 #import "ios/web/navigation/navigation_item_impl.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/strings/utf_string_conversions.h"
-#include "ios/web/navigation/wk_navigation_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "base/strings/utf_string_conversions.h"
+#import "ios/web/navigation/wk_navigation_util.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

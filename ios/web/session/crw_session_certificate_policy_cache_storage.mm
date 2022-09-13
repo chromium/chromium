@@ -5,9 +5,9 @@
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
 
 #import "base/strings/sys_string_conversions.h"
-#include "net/base/hash_value.h"
-#include "net/cert/x509_certificate.h"
-#include "net/cert/x509_util.h"
+#import "net/base/hash_value.h"
+#import "net/cert/x509_certificate.h"
+#import "net/cert/x509_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -6,10 +6,10 @@
 
 #import <MaterialComponents/MaterialActivityIndicator.h>
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#include "ios/chrome/grit/ios_theme_resources.h"
+#import "ios/chrome/grit/ios_theme_resources.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

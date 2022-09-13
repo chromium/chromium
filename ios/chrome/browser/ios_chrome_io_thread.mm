@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ios_chrome_io_thread.h"
+#import "ios/chrome/browser/ios_chrome_io_thread.h"
 
-#include "components/variations/net/variations_http_headers.h"
-#include "ios/chrome/browser/net/ios_chrome_network_delegate.h"
-#include "ios/chrome/common/channel_info.h"
-#include "ios/web/public/init/network_context_owner.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#import "components/variations/net/variations_http_headers.h"
+#import "ios/chrome/browser/net/ios_chrome_network_delegate.h"
+#import "ios/chrome/common/channel_info.h"
+#import "ios/web/public/init/network_context_owner.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
+#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

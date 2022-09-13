@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/web/web_performance_metrics/web_performance_metrics_java_script_feature.h"
+#import "ios/chrome/browser/web/web_performance_metrics/web_performance_metrics_java_script_feature.h"
 
-#include "base/ios/ios_util.h"
-#include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
-#include "base/strings/strcat.h"
-#include "base/values.h"
-#include "ios/chrome/browser/web/web_performance_metrics/web_performance_metrics_java_script_feature_util.h"
-#include "ios/chrome/browser/web/web_performance_metrics/web_performance_metrics_tab_helper.h"
-#include "ios/web/public/js_messaging/java_script_feature_util.h"
-#include "ios/web/public/js_messaging/script_message.h"
-#include "ios/web/public/js_messaging/web_frame_util.h"
+#import "base/ios/ios_util.h"
+#import "base/logging.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/no_destructor.h"
+#import "base/strings/strcat.h"
+#import "base/values.h"
+#import "ios/chrome/browser/web/web_performance_metrics/web_performance_metrics_java_script_feature_util.h"
+#import "ios/chrome/browser/web/web_performance_metrics/web_performance_metrics_tab_helper.h"
+#import "ios/web/public/js_messaging/java_script_feature_util.h"
+#import "ios/web/public/js_messaging/script_message.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

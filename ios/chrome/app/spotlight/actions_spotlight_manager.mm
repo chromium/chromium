@@ -6,15 +6,15 @@
 
 #import <CoreSpotlight/CoreSpotlight.h>
 
-#include "base/mac/foundation_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/app_startup_parameters.h"
-#include "ios/chrome/common/app_group/app_group_constants.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "net/base/mac/url_conversions.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "net/base/mac/url_conversions.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,9 +4,9 @@
 
 #import "ios/web/find_in_page/find_in_page_request.h"
 
-#include "ios/web/public/test/fakes/fake_web_frame.h"
-#include "ios/web/public/test/web_test.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "ios/web/public/test/fakes/fake_web_frame.h"
+#import "ios/web/public/test/web_test.h"
+#import "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

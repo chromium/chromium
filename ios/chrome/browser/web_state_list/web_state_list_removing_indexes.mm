@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/web_state_list/web_state_list_removing_indexes.h"
 
-#include <algorithm>
+#import <algorithm>
 
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 

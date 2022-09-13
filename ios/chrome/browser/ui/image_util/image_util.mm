@@ -6,8 +6,8 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/image_util/image_util.h"
-#include "ui/gfx/color_analysis.h"
-#include "ui/gfx/image/image.h"
+#import "ui/gfx/color_analysis.h"
+#import "ui/gfx/image/image.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

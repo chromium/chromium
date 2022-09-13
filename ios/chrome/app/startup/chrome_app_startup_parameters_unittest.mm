@@ -6,15 +6,15 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/strings/stringprintf.h"
-#include "base/test/metrics/histogram_tester.h"
+#import "base/strings/stringprintf.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "ios/chrome/app/app_startup_parameters.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/common/app_group/app_group_constants.h"
-#include "ios/components/webui/web_ui_url_constants.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "url/gurl.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/components/webui/web_ui_url_constants.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

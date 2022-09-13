@@ -4,13 +4,13 @@
 
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 
-#include <math.h>
-#include <algorithm>
-#include <memory>
+#import <math.h>
+#import <algorithm>
+#import <memory>
 
-#include "base/check_op.h"
+#import "base/check_op.h"
 #import "ios/chrome/common/material_timing.h"
-#include "ui/gfx/geometry/cubic_bezier.h"
+#import "ui/gfx/geometry/cubic_bezier.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

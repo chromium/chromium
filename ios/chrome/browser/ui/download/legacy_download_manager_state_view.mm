@@ -6,9 +6,9 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#include "base/mac/foundation_util.h"
-#include "base/notreached.h"
-#include "ios/chrome/browser/ui/download/download_manager_animation_constants.h"
+#import "base/mac/foundation_util.h"
+#import "base/notreached.h"
+#import "ios/chrome/browser/ui/download/download_manager_animation_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
+#import "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
 
-#include "base/debug/debugger.h"
+#import "base/debug/debugger.h"
 #import "base/files/file_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/time/time.h"
-#include "components/crash/core/app/crashpad.h"
-#include "components/crash/core/common/crash_key.h"
-#include "components/crash/core/common/reporter_running_ios.h"
-#include "ios/chrome/app/tests_hook.h"
-#include "ios/chrome/browser/crash_report/crash_helper.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
+#import "components/crash/core/app/crashpad.h"
+#import "components/crash/core/common/crash_key.h"
+#import "components/crash/core/common/reporter_running_ios.h"
+#import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/crash_report/crash_helper.h"
 #import "third_party/breakpad/breakpad/src/client/ios/Breakpad.h"
 #import "third_party/breakpad/breakpad/src/client/ios/BreakpadController.h"
 

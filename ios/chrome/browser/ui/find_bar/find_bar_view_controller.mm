@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/find_bar/find_bar_view_controller.h"
 
-#include "base/mac/foundation_util.h"
+#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_view.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

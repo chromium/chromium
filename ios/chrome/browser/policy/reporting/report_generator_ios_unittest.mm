@@ -6,27 +6,27 @@
 #error "This file requires ARC support."
 #endif
 
-#include <vector>
+#import <vector>
 
-#include "base/files/file_path.h"
-#include "base/run_loop.h"
-#include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "components/enterprise/browser/reporting/report_request.h"
-#include "components/policy/core/common/cloud/cloud_policy_util.h"
-#include "components/policy/core/common/mock_policy_service.h"
-#include "components/policy/core/common/policy_map.h"
-#include "components/policy/core/common/schema_registry.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
+#import "base/files/file_path.h"
+#import "base/run_loop.h"
+#import "base/test/bind.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "components/enterprise/browser/reporting/report_request.h"
+#import "components/policy/core/common/cloud/cloud_policy_util.h"
+#import "components/policy/core/common/mock_policy_service.h"
+#import "components/policy/core/common/policy_map.h"
+#import "components/policy/core/common/schema_registry.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/policy/browser_state_policy_connector_mock.h"
-#include "ios/chrome/browser/policy/reporting/reporting_delegate_factory_ios.h"
-#include "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/policy/reporting/reporting_delegate_factory_ios.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
-#include "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 namespace em = enterprise_management;
 

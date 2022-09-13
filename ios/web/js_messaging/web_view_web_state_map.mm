@@ -4,7 +4,7 @@
 
 #import "ios/web/js_messaging/web_view_web_state_map.h"
 
-#include "base/memory/ptr_util.h"
+#import "base/memory/ptr_util.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_state.h"
 

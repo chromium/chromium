@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/feature_engagement/tracker_util.h"
+#import "ios/chrome/browser/feature_engagement/tracker_util.h"
 
-#include "components/feature_engagement/public/event_constants.h"
-#include "components/feature_engagement/public/tracker.h"
-#include "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

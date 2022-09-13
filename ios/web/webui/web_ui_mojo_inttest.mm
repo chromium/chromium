@@ -2,29 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-#include <string>
+#import <memory>
+#import <string>
 
-#include "base/bind.h"
-#include "base/run_loop.h"
+#import "base/bind.h"
+#import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
-#include "base/threading/thread_task_runner_handle.h"
-#include "ios/web/grit/ios_web_resources.h"
+#import "base/threading/thread_task_runner_handle.h"
+#import "ios/web/grit/ios_web_resources.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/web_state.h"
-#include "ios/web/public/webui/web_ui_ios_controller.h"
-#include "ios/web/public/webui/web_ui_ios_controller_factory.h"
-#include "ios/web/public/webui/web_ui_ios_data_source.h"
-#include "ios/web/test/grit/test_resources.h"
-#include "ios/web/test/mojo_test.mojom.h"
-#include "ios/web/test/test_url_constants.h"
+#import "ios/web/public/webui/web_ui_ios_controller.h"
+#import "ios/web/public/webui/web_ui_ios_controller_factory.h"
+#import "ios/web/public/webui/web_ui_ios_data_source.h"
+#import "ios/web/test/grit/test_resources.h"
+#import "ios/web/test/mojo_test.mojom.h"
+#import "ios/web/test/test_url_constants.h"
 #import "ios/web/test/web_int_test.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "url/gurl.h"
-#include "url/scheme_host_port.h"
+#import "mojo/public/cpp/bindings/pending_remote.h"
+#import "mojo/public/cpp/bindings/receiver_set.h"
+#import "mojo/public/cpp/bindings/remote.h"
+#import "url/gurl.h"
+#import "url/scheme_host_port.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -7,9 +7,9 @@
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
 
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/values.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/values.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
 #import "ios/web/public/web_state.h"

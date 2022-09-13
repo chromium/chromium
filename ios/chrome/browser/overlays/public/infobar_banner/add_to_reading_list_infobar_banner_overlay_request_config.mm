@@ -4,15 +4,15 @@
 
 #import "ios/chrome/browser/overlays/public/infobar_banner/add_to_reading_list_infobar_banner_overlay_request_config.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "components/infobars/core/infobar.h"
-#include "ios/chrome/browser/infobars/infobar_ios.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/infobars/core/infobar.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_type.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
 #import "ios/chrome/browser/ui/reading_list/ios_add_to_reading_list_infobar_delegate.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

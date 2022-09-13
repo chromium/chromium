@@ -7,7 +7,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature_delegate.h"
-#include "ios/chrome/browser/web/java_script_console/java_script_console_message.h"
+#import "ios/chrome/browser/web/java_script_console/java_script_console_message.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"

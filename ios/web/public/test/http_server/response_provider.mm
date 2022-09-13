@@ -4,8 +4,8 @@
 
 #import "ios/web/public/test/http_server/response_provider.h"
 
-#include "base/strings/stringprintf.h"
-#include "net/http/http_response_headers.h"
+#import "base/strings/stringprintf.h"
+#import "net/http/http_response_headers.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

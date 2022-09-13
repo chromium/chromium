@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_mediator.h"
 
-#include "base/memory/ptr_util.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/url_formatter/url_formatter.h"
+#import "base/memory/ptr_util.h"
+#import "base/metrics/field_trial_params.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/url_formatter/url_formatter.h"
 #import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_consumer.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"

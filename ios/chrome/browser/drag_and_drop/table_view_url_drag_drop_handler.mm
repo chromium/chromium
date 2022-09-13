@@ -6,11 +6,11 @@
 
 #import <MobileCoreServices/UTCoreTypes.h>
 
-#include "base/check_op.h"
-#include "base/mac/foundation_util.h"
+#import "base/check_op.h"
+#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
 #import "net/base/mac/url_conversions.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

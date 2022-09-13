@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 
-#include "base/check.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "base/check.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

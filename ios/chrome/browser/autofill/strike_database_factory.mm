@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/autofill/strike_database_factory.h"
+#import "ios/chrome/browser/autofill/strike_database_factory.h"
 
-#include <utility>
+#import <utility>
 
-#include "base/no_destructor.h"
-#include "components/autofill/core/browser/strike_database.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "base/no_destructor.h"
+#import "components/autofill/core/browser/strike_database.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

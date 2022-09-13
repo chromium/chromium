@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_web_view_resizer.h"
 
-#include "base/ios/ios_util.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "base/ios/ios_util.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/web/common/features.h"

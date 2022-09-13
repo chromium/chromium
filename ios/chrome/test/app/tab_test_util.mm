@@ -8,7 +8,7 @@
 
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/app/main_controller_private.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"

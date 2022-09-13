@@ -4,7 +4,7 @@
 
 #import <UIKit/UIKit.h>
 
-#include "ios/chrome/share_extension/ui_util.h"
+#import "ios/chrome/share_extension/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

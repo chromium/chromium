@@ -4,19 +4,19 @@
 
 #import "ios/chrome/browser/download/vcard_tab_helper.h"
 
-#include "base/base_paths.h"
-#include "base/files/file_path.h"
-#include "base/path_service.h"
-#include "base/test/task_environment.h"
-#include "ios/chrome/browser/download/download_test_util.h"
-#include "ios/chrome/browser/download/mime_type_util.h"
+#import "base/base_paths.h"
+#import "base/files/file_path.h"
+#import "base/path_service.h"
+#import "base/test/task_environment.h"
+#import "ios/chrome/browser/download/download_test_util.h"
+#import "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/chrome/browser/download/vcard_tab_helper.h"
 #import "ios/chrome/browser/download/vcard_tab_helper_delegate.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "testing/platform_test.h"
-#include "third_party/ocmock/OCMock/OCMock.h"
-#include "third_party/ocmock/gtest_support.h"
+#import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

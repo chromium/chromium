@@ -4,11 +4,11 @@
 
 #import "ios/chrome/browser/ui/util/keyboard_observer_helper.h"
 
-#include "base/check.h"
-#include "base/check_op.h"
+#import "base/check.h"
+#import "base/check_op.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#include "ui/base/device_form_factor.h"
+#import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,9 +4,9 @@
 
 #import "ios/web/navigation/wk_navigation_action_policy_util.h"
 
-#include "base/feature_list.h"
-#include "ios/web/common/features.h"
-#include "ios/web/navigation/block_universal_links_buildflags.h"
+#import "base/feature_list.h"
+#import "ios/web/common/features.h"
+#import "ios/web/navigation/block_universal_links_buildflags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 
-#include "base/feature_list.h"
-#include "base/ios/ios_util.h"
-#include "base/version.h"
+#import "base/feature_list.h"
+#import "base/ios/ios_util.h"
+#import "base/version.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/whats_new_commands.h"

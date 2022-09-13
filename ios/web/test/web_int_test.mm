@@ -5,18 +5,18 @@
 #import "ios/web/test/web_int_test.h"
 
 #import "base/ios/block_types.h"
-#include "base/memory/ptr_util.h"
-#include "base/scoped_observation.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/memory/ptr_util.h"
+#import "base/scoped_observation.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/common/web_view_creation_util.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
-#include "ios/web/public/web_state_observer.h"
+#import "ios/web/public/web_state_observer.h"
 
 #if DCHECK_IS_ON()
-#include "ui/display/screen_base.h"
+#import "ui/display/screen_base.h"
 #endif
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

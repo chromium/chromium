@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/signin/signin_util_internal.h"
+#import "ios/chrome/browser/signin/signin_util_internal.h"
 
 #import <UIKit/UIKit.h>
 
@@ -10,7 +10,7 @@
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/path_service.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "ios/chrome/browser/paths/paths.h"
 

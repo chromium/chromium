@@ -4,7 +4,7 @@
 
 #import "ios/web/test/fakes/fake_java_script_feature.h"
 
-#include "base/time/time.h"
+#import "base/time/time.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

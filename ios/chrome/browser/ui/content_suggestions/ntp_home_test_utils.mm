@@ -4,13 +4,13 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_test_utils.h"
 
-#include <string>
+#import <string>
 
-#include "base/callback.h"
-#include "base/mac/foundation_util.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/ntp_snippets/content_suggestion.h"
-#include "components/ntp_snippets/status.h"
+#import "base/callback.h"
+#import "base/mac/foundation_util.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/ntp_snippets/content_suggestion.h"
+#import "components/ntp_snippets/status.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"

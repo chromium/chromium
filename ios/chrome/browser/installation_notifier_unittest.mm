@@ -4,15 +4,15 @@
 
 #import "ios/chrome/browser/installation_notifier.h"
 
-#include "base/task/current_thread.h"
+#import "base/task/current_thread.h"
 
-#include <stdint.h>
 #import <UIKit/UIKit.h>
+#import <stdint.h>
 
-#include "base/ios/block_types.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "net/base/backoff_entry.h"
-#include "testing/platform_test.h"
+#import "base/ios/block_types.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "net/base/backoff_entry.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

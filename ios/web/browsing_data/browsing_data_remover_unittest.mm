@@ -6,12 +6,12 @@
 
 #import <WebKit/WebKit.h>
 
-#include "base/bind.h"
+#import "base/bind.h"
 #import "base/test/ios/wait_util.h"
-#include "base/test/task_environment.h"
+#import "base/test/task_environment.h"
 #import "ios/web/common/uikit_ui_util.h"
-#include "ios/web/public/test/fakes/fake_browser_state.h"
-#include "testing/platform_test.h"
+#import "ios/web/public/test/fakes/fake_browser_state.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

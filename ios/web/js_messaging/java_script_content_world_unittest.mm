@@ -4,7 +4,7 @@
 
 #import "ios/web/js_messaging/java_script_content_world.h"
 
-#include "base/test/gtest_util.h"
+#import "base/test/gtest_util.h"
 #import "ios/web/public/test/web_test.h"
 #import "ios/web/test/fakes/fake_java_script_feature.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"

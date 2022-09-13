@@ -4,22 +4,22 @@
 
 #import "ios/chrome/app/safe_mode_app_state_agent.h"
 
-#include "base/ios/block_types.h"
-#include "base/test/ios/wait_util.h"
+#import "base/ios/block_types.h"
+#import "base/test/ios/wait_util.h"
 #import "ios/chrome/app/application_delegate/app_state_testing.h"
 #import "ios/chrome/app/application_delegate/browser_launcher.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/main_application_delegate.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/main/connection_information.h"
 #import "ios/chrome/browser/ui/main/test/fake_scene_state.h"
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_coordinator.h"
-#include "ios/chrome/test/block_cleanup_test.h"
+#import "ios/chrome/test/block_cleanup_test.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/testing/scoped_block_swizzler.h"
-#include "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "third_party/ocmock/gtest_support.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

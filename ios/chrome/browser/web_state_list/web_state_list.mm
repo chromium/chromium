@@ -4,11 +4,11 @@
 
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 
-#include <algorithm>
-#include <utility>
+#import <algorithm>
+#import <utility>
 
-#include "base/auto_reset.h"
-#include "base/check_op.h"
+#import "base/auto_reset.h"
+#import "base/check_op.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_order_controller.h"

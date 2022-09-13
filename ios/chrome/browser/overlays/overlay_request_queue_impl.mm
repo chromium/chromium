@@ -4,13 +4,13 @@
 
 #import "ios/chrome/browser/overlays/overlay_request_queue_impl.h"
 
-#include <utility>
+#import <utility>
 
-#include "base/check_op.h"
-#include "base/memory/ptr_util.h"
+#import "base/check_op.h"
+#import "base/memory/ptr_util.h"
 #import "ios/chrome/browser/overlays/default_overlay_request_cancel_handler.h"
-#include "ios/chrome/browser/overlays/overlay_request_impl.h"
-#include "ios/chrome/browser/overlays/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/overlay_request_impl.h"
+#import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/web/public/navigation/navigation_context.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

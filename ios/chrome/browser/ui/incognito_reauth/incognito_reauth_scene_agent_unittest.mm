@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 
-#include "base/feature_list.h"
-#include "base/test/scoped_feature_list.h"
-#include "components/prefs/testing_pref_service.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "base/feature_list.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/prefs/testing_pref_service.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
@@ -17,8 +17,8 @@
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/platform_test.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

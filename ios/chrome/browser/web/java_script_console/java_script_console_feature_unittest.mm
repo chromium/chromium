@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature.h"
 
-#include <memory>
+#import <memory>
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -16,11 +16,11 @@
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
-#include "ios/web/public/test/web_view_interaction_test_util.h"
+#import "ios/web/public/test/web_view_interaction_test_util.h"
 #import "ios/web/public/web_state.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

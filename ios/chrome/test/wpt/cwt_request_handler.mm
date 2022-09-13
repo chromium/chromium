@@ -6,19 +6,19 @@
 
 #import <XCTest/XCTest.h>
 
-#include "base/debug/stack_trace.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/guid.h"
-#include "base/json/json_reader.h"
-#include "base/json/json_writer.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/test/ios/wait_util.h"
-#include "components/version_info/version_info.h"
+#import "base/debug/stack_trace.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/guid.h"
+#import "base/json/json_reader.h"
+#import "base/json/json_writer.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
+#import "components/version_info/version_info.h"
 #import "ios/chrome/test/wpt/cwt_constants.h"
 #import "ios/chrome/test/wpt/cwt_webdriver_app_interface.h"
 #import "ios/third_party/edo/src/Service/Sources/EDOClientService.h"
-#include "net/http/http_status_code.h"
+#import "net/http/http_status_code.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

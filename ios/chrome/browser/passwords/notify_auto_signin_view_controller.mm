@@ -4,17 +4,17 @@
 
 #import "ios/chrome/browser/passwords/notify_auto_signin_view_controller.h"
 
-#include "base/bind.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/image_fetcher/core/image_fetcher_impl.h"
-#include "components/image_fetcher/ios/ios_image_decoder_impl.h"
-#include "components/strings/grit/components_strings.h"
+#import "base/bind.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/image_fetcher/core/image_fetcher_impl.h"
+#import "components/image_fetcher/ios/ios_image_decoder_impl.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
-#include "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/image/image.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/gfx/image/image.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

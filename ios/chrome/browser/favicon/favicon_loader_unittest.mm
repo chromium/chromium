@@ -4,15 +4,15 @@
 
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 
-#include "components/favicon/core/large_icon_service_impl.h"
-#include "components/favicon_base/fallback_icon_style.h"
-#include "components/favicon_base/favicon_types.h"
+#import "components/favicon/core/large_icon_service_impl.h"
+#import "components/favicon_base/fallback_icon_style.h"
+#import "components/favicon_base/favicon_types.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/gfx/codec/png_codec.h"
-#include "url/gurl.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
+#import "third_party/skia/include/core/SkBitmap.h"
+#import "ui/gfx/codec/png_codec.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

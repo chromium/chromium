@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/ui/main_content/main_content_ui_state.h"
 
-#include <ostream>
+#import <ostream>
 
-#include "base/check_op.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "base/check_op.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

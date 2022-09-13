@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/policy/cloud/user_policy_switch.h"
 
-#include "base/command_line.h"
+#import "base/command_line.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

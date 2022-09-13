@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/voice/fake_voice_search_availability.h"
 
-#include "base/memory/ptr_util.h"
+#import "base/memory/ptr_util.h"
 #import "ios/chrome/test/providers/voice_search/test_voice_search.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

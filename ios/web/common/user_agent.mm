@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/common/user_agent.h"
+#import "ios/web/common/user_agent.h"
 
 #import <UIKit/UIKit.h>
 
-#include <stddef.h>
-#include <stdint.h>
-#include <sys/sysctl.h>
-#include <string>
+#import <stddef.h>
+#import <stdint.h>
+#import <sys/sysctl.h>
+#import <string>
 
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/system/sys_info.h"
-#include "ios/web/common/features.h"
+#import "base/strings/string_util.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/system/sys_info.h"
+#import "ios/web/common/features.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/translate/translate_service_ios.h"
+#import "ios/chrome/browser/translate/translate_service_ios.h"
 
-#include "base/bind.h"
-#include "base/notreached.h"
-#include "components/language/core/browser/language_model.h"
-#include "components/prefs/pref_service.h"
-#include "components/translate/core/browser/translate_download_manager.h"
-#include "components/translate/core/browser/translate_manager.h"
+#import "base/bind.h"
+#import "base/notreached.h"
+#import "components/language/core/browser/language_model.h"
+#import "components/prefs/pref_service.h"
+#import "components/translate/core/browser/translate_download_manager.h"
+#import "components/translate/core/browser/translate_manager.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/translate/chrome_ios_translate_client.h"
-#include "ios/components/webui/web_ui_url_constants.h"
-#include "url/gurl.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
+#import "ios/components/webui/web_ui_url_constants.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

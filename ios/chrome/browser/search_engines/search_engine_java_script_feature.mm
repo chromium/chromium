@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/search_engines/search_engine_java_script_feature.h"
 
-#include "base/no_destructor.h"
-#include "ios/web/public/js_messaging/java_script_feature_util.h"
+#import "base/no_destructor.h"
+#import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

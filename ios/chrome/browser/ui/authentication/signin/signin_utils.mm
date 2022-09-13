@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 
-#include "base/command_line.h"
+#import "base/command_line.h"
 #import "base/strings/sys_string_conversions.h"
-#include "base/time/time.h"
+#import "base/time/time.h"
 #import "base/version.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"

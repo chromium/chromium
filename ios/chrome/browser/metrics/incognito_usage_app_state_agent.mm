@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/metrics/incognito_usage_app_state_agent.h"
 
-#include "base/metrics/histogram_functions.h"
-#include "base/time/time.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/time/time.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 

@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/public/init/ios_global_state.h"
+#import "ios/web/public/init/ios_global_state.h"
 
-#include "base/at_exit.h"
-#include "base/command_line.h"
-#include "base/memory/ptr_util.h"
-#include "base/message_loop/message_pump_type.h"
-#include "base/task/current_thread.h"
-#include "base/task/single_thread_task_executor.h"
-#include "base/task/thread_pool/initialization_util.h"
-#include "net/base/network_change_notifier.h"
+#import "base/at_exit.h"
+#import "base/command_line.h"
+#import "base/memory/ptr_util.h"
+#import "base/message_loop/message_pump_type.h"
+#import "base/task/current_thread.h"
+#import "base/task/single_thread_task_executor.h"
+#import "base/task/thread_pool/initialization_util.h"
+#import "net/base/network_change_notifier.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

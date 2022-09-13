@@ -4,14 +4,14 @@
 
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 
-#include "base/bind.h"
-#include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
+#import "base/bind.h"
+#import "base/memory/ptr_util.h"
+#import "base/metrics/histogram_macros.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_generator.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 

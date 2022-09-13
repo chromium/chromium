@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 
-#include "base/json/json_string_value_serializer.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/json/json_string_value_serializer.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

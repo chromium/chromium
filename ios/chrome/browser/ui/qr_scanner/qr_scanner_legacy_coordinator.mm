@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/qr_scanner/qr_scanner_legacy_coordinator.h"
 
-#include <ostream>
+#import <ostream>
 
-#include "base/check_op.h"
+#import "base/check_op.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/voice_search_keyboard_accessory_button.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/browser/voice/voice_search_availability.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

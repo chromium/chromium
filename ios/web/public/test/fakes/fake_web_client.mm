@@ -6,14 +6,14 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/web/common/uikit_ui_util.h"
-#include "ios/web/public/test/error_test_util.h"
+#import "ios/web/public/test/error_test_util.h"
 #import "ios/web/public/test/js_test_util.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/test/test_url_constants.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "url/gurl.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/test/test_url_constants.h"
+#import "ui/base/resource/resource_bundle.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

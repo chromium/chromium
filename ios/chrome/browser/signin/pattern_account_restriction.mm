@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/signin/pattern_account_restriction.h"
 
-#include "base/strings/string_util.h"
-#include "base/values.h"
+#import "base/strings/string_util.h"
+#import "base/values.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

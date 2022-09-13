@@ -4,15 +4,15 @@
 
 #import "ios/chrome/browser/send_tab_to_self/send_tab_to_self_browser_agent.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/bind.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#include "components/send_tab_to_self/send_tab_to_self_entry.h"
-#include "components/send_tab_to_self/send_tab_to_self_model.h"
-#include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
-#include "components/send_tab_to_self/test_send_tab_to_self_model.h"
+#import "base/bind.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "components/send_tab_to_self/send_tab_to_self_entry.h"
+#import "components/send_tab_to_self/send_tab_to_self_model.h"
+#import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#import "components/send_tab_to_self/test_send_tab_to_self_model.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/main/test_browser.h"

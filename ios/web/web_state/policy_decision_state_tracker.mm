@@ -4,7 +4,7 @@
 
 #import "ios/web/web_state/policy_decision_state_tracker.h"
 
-#include "base/barrier_closure.h"
+#import "base/barrier_closure.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

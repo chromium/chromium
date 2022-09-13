@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 
-#include "base/ios/ios_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "base/ios/ios_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/device_form_factor.h"
 

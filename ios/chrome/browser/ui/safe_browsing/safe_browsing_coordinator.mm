@@ -6,7 +6,7 @@
 
 #import "base/feature_list.h"
 #import "components/safe_browsing/core/common/features.h"
-#include "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_coordinator.h"

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 
-#include "base/notreached.h"
+#import "base/notreached.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

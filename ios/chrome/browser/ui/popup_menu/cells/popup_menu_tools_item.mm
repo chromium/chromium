@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/popup_menu/cells/popup_menu_tools_item.h"
 
-#include <stdlib.h>
+#import <stdlib.h>
 
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_ui_constants.h"

@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/toolbar/toolbar_progress_bar.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

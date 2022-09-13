@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/app/application_delegate/mock_metrickit_metric_payload.h"
+#import "ios/chrome/app/application_delegate/mock_metrickit_metric_payload.h"
 
 #import <Foundation/Foundation.h>
 #import <MetricKit/MetricKit.h>
 
-#include "base/strings/sys_string_conversions.h"
-#include "components/version_info/version_info.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/version_info/version_info.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "third_party/ocmock/gtest_support.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/overlays/public/common/confirmation/confirmation_overlay_response_util.h"
 
-#include "base/bind.h"
+#import "base/bind.h"
 #import "ios/chrome/browser/overlays/public/common/confirmation/confirmation_overlay_response.h"
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

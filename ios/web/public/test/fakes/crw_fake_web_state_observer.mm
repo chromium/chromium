@@ -4,13 +4,13 @@
 
 #import "ios/web/public/test/fakes/crw_fake_web_state_observer.h"
 
-#include <memory>
+#import <memory>
 
 #import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/permissions/permissions.h"
-#include "net/http/http_response_headers.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "net/http/http_response_headers.h"
+#import "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

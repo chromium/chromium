@@ -7,7 +7,7 @@
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
 
-#include "ios/web/public/browser_state.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/web_state/ui/wk_content_rule_list_util.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 

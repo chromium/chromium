@@ -4,22 +4,22 @@
 
 #import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
 
-#include <map>
+#import <map>
 
-#include "base/bind.h"
-#include "base/metrics/field_trial.h"
-#include "base/metrics/user_metrics.h"
-#include "base/time/time.h"
-#include "base/values.h"
-#include "components/metrics/metrics_pref_names.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
-#include "components/variations/variations_associated_data.h"
-#include "ios/chrome/browser/notification_promo.h"
-#include "ios/chrome/grit/ios_chromium_strings.h"
-#include "testing/platform_test.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
+#import "base/bind.h"
+#import "base/metrics/field_trial.h"
+#import "base/metrics/user_metrics.h"
+#import "base/time/time.h"
+#import "base/values.h"
+#import "components/metrics/metrics_pref_names.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/testing_pref_service.h"
+#import "components/variations/variations_associated_data.h"
+#import "ios/chrome/browser/notification_promo.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

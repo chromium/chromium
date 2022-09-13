@@ -4,15 +4,15 @@
 
 #import "ios/web/public/test/js_test_storage_util.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
+#import "base/bind.h"
+#import "base/callback.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "base/values.h"
-#include "ios/web/public/js_messaging/web_frame.h"
+#import "base/values.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/web_state.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

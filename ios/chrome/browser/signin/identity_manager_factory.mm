@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
 
-#include <memory>
-#include <utility>
+#import <memory>
+#import <utility>
 
-#include "base/no_destructor.h"
-#include "components/image_fetcher/ios/ios_image_decoder_impl.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/signin/public/base/signin_client.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/identity_manager_builder.h"
+#import "base/no_destructor.h"
+#import "components/image_fetcher/ios/ios_image_decoder_impl.h"
+#import "components/keyed_service/core/keyed_service.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/pref_registry/pref_registry_syncable.h"
+#import "components/signin/public/base/signin_client.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/identity_manager_builder.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#include "ios/chrome/browser/signin/device_accounts_provider_impl.h"
-#include "ios/chrome/browser/signin/identity_manager_factory_observer.h"
-#include "ios/chrome/browser/signin/signin_client_factory.h"
+#import "ios/chrome/browser/signin/device_accounts_provider_impl.h"
+#import "ios/chrome/browser/signin/identity_manager_factory_observer.h"
+#import "ios/chrome/browser/signin/signin_client_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

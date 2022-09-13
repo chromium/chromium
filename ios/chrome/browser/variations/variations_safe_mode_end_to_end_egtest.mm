@@ -3,20 +3,20 @@
 // found in the LICENSE file.
 
 #import <XCTest/XCTest.h>
-#include <objc/runtime.h>
+#import <objc/runtime.h>
 
-#include <memory>
+#import <memory>
 
-#include "base/base_switches.h"
-#include "base/files/scoped_temp_dir.h"
-#include "base/strings/strcat.h"
-#include "components/metrics/metrics_service.h"
-#include "components/prefs/json_pref_store.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/pref_service_factory.h"
-#include "components/variations/pref_names.h"
-#include "components/variations/service/safe_seed_manager.h"
-#include "components/variations/variations_test_utils.h"
+#import "base/base_switches.h"
+#import "base/files/scoped_temp_dir.h"
+#import "base/strings/strcat.h"
+#import "components/metrics/metrics_service.h"
+#import "components/prefs/json_pref_store.h"
+#import "components/prefs/pref_service.h"
+#import "components/prefs/pref_service_factory.h"
+#import "components/variations/pref_names.h"
+#import "components/variations/service/safe_seed_manager.h"
+#import "components/variations/variations_test_utils.h"
 
 #import "ios/chrome/browser/variations/variations_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"

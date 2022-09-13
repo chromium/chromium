@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/presenters/non_modal_view_controller_presenter.h"
 
-#include <ostream>
+#import <ostream>
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 

@@ -4,14 +4,14 @@
 
 #import "ios/web/js_messaging/web_view_js_utils.h"
 
-#include <CoreFoundation/CoreFoundation.h>
+#import <CoreFoundation/CoreFoundation.h>
 #import <WebKit/WebKit.h>
 
-#include "base/logging.h"
-#include "base/mac/foundation_util.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/values.h"
+#import "base/logging.h"
+#import "base/mac/foundation_util.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/values.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

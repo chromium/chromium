@@ -6,7 +6,7 @@
 
 #import "ios/chrome/browser/infobars/infobar_type.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
-#include "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
+#import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/overlays/public/common/placeholder_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_cancel_handler.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"

@@ -6,7 +6,7 @@
 
 #import <NotificationCenter/NotificationCenter.h>
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/search_widget_extension/search_widget_constants.h"
 

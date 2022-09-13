@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/dialogs/completion_block_util.h"
 
-#include <ostream>
+#import <ostream>
 
-#include "base/notreached.h"
+#import "base/notreached.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/sessions/session_ios.h"
 
 #import "base/mac/foundation_util.h"
-#include "ios/chrome/browser/sessions/session_features.h"
+#import "ios/chrome/browser/sessions/session_features.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

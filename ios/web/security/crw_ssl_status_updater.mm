@@ -7,11 +7,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
-#include "ios/web/navigation/navigation_manager_util.h"
-#include "ios/web/public/security/ssl_status.h"
+#import "ios/web/navigation/navigation_manager_util.h"
+#import "ios/web/public/security/ssl_status.h"
 #import "ios/web/security/wk_web_view_security_util.h"
-#include "net/cert/x509_certificate.h"
-#include "url/gurl.h"
+#import "net/cert/x509_certificate.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

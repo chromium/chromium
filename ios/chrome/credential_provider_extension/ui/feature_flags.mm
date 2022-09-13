@@ -4,8 +4,8 @@
 
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 
-#include "ios/chrome/common/app_group/app_group_constants.h"
-#include "ios/chrome/common/app_group/app_group_field_trial_version.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/app_group/app_group_field_trial_version.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

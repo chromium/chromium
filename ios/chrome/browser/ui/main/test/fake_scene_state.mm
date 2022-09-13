@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/main/test/fake_scene_state.h"
 
 #import "base/mac/foundation_util.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ui/main/test/stub_browser_interface.h"

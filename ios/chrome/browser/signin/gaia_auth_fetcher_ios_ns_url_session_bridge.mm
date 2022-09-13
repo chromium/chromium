@@ -6,16 +6,16 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
-#include "base/mac/foundation_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/signin/core/browser/chrome_connected_header_helper.h"
-#include "ios/net/cookies/system_cookie_util.h"
-#include "ios/web/public/browser_state.h"
+#import "base/bind.h"
+#import "base/callback_helpers.h"
+#import "base/mac/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/signin/core/browser/chrome_connected_header_helper.h"
+#import "ios/net/cookies/system_cookie_util.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_client.h"
 #import "net/base/mac/url_conversions.h"
-#include "net/http/http_request_headers.h"
+#import "net/http/http_request_headers.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

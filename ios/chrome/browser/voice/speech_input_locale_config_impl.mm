@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/voice/speech_input_locale_config_impl.h"
+#import "ios/chrome/browser/voice/speech_input_locale_config_impl.h"
 
 #import <Foundation/Foundation.h>
 
-#include "base/containers/contains.h"
-#include "base/mac/bundle_locations.h"
-#include "base/mac/foundation_util.h"
-#include "base/mac/scoped_cftyperef.h"
-#include "base/strings/string_split.h"
-#include "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/voice/speech_input_locale_match.h"
+#import "base/containers/contains.h"
+#import "base/mac/bundle_locations.h"
+#import "base/mac/foundation_util.h"
+#import "base/mac/scoped_cftyperef.h"
+#import "base/strings/string_split.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/voice/speech_input_locale_match.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

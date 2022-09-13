@@ -4,12 +4,12 @@
 
 #import "ios/chrome/browser/chrome_browser_provider_observer_bridge.h"
 
-#include <memory>
+#import <memory>
 
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

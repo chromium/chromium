@@ -4,7 +4,7 @@
 
 #import "ios/showcase/core/showcase_model.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/showcase/core/showcase_model_buildflags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

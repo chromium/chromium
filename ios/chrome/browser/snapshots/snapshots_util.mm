@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/snapshots/snapshots_util.h"
+#import "ios/chrome/browser/snapshots/snapshots_util.h"
 
 #import <UIKit/UIKit.h>
 
-#include "base/bind.h"
-#include "base/files/file_util.h"
-#include "base/location.h"
-#include "base/mac/foundation_util.h"
-#include "base/path_service.h"
-#include "base/strings/stringprintf.h"
-#include "base/task/thread_pool.h"
+#import "base/bind.h"
+#import "base/files/file_util.h"
+#import "base/location.h"
+#import "base/mac/foundation_util.h"
+#import "base/path_service.h"
+#import "base/strings/stringprintf.h"
+#import "base/task/thread_pool.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

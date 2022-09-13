@@ -6,17 +6,17 @@
 
 #import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
-#include "components/ukm/ios/ukm_url_recorder.h"
-#include "components/ukm/test_ukm_recorder.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
+#import "components/ukm/test_ukm_recorder.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/find_in_page/find_in_page_model.h"
 #import "ios/chrome/browser/find_in_page/find_in_page_response_delegate.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

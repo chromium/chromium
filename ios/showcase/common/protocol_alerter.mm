@@ -6,7 +6,7 @@
 
 #import <objc/runtime.h>
 
-#include "base/logging.h"
+#import "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

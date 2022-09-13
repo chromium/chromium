@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/util/reversed_animation.h"
+#import "ios/chrome/browser/ui/util/reversed_animation.h"
 
 #import <QuartzCore/QuartzCore.h>
-#include <algorithm>
-#include <cmath>
-
+#import <algorithm>
+#import <cmath>
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

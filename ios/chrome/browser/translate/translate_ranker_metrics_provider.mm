@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/translate/translate_ranker_metrics_provider.h"
+#import "ios/chrome/browser/translate/translate_ranker_metrics_provider.h"
 
-#include "components/translate/core/browser/translate_ranker.h"
+#import "components/translate/core/browser/translate_ranker.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
-#include "ios/chrome/browser/translate/translate_ranker_factory.h"
-#include "ios/web/public/browser_state.h"
-#include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
-#include "third_party/metrics_proto/translate_event.pb.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/translate/translate_ranker_factory.h"
+#import "ios/web/public/browser_state.h"
+#import "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
+#import "third_party/metrics_proto/translate_event.pb.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

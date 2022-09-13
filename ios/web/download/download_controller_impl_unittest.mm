@@ -4,17 +4,17 @@
 
 #import "ios/web/download/download_controller_impl.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/run_loop.h"
-#include "base/strings/utf_string_conversions.h"
-#include "ios/web/public/test/fakes/fake_download_controller_delegate.h"
+#import "base/run_loop.h"
+#import "base/strings/utf_string_conversions.h"
+#import "ios/web/public/test/fakes/fake_download_controller_delegate.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "ios/web/public/test/web_test.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/test/web_test.h"
 #import "ios/web/test/fakes/fake_native_task_bridge.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

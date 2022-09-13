@@ -2,31 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/app/application_delegate/user_activity_handler.h"
+#import "ios/chrome/app/application_delegate/user_activity_handler.h"
 
-#include <memory>
+#import <memory>
 
 #import <CoreSpotlight/CoreSpotlight.h>
 
-#include "base/memory/ptr_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/test/scoped_command_line.h"
+#import "base/memory/ptr_util.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_command_line.h"
 #import "base/test/task_environment.h"
 #import "base/test/with_feature_override.h"
-#include "components/handoff/handoff_utility.h"
+#import "components/handoff/handoff_utility.h"
 #import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
-#include "ios/chrome/app/application_delegate/fake_startup_information.h"
-#include "ios/chrome/app/application_delegate/mock_tab_opener.h"
-#include "ios/chrome/app/application_delegate/startup_information.h"
-#include "ios/chrome/app/application_delegate/tab_opening.h"
-#include "ios/chrome/app/application_mode.h"
-#include "ios/chrome/app/main_controller.h"
-#include "ios/chrome/app/spotlight/actions_spotlight_manager.h"
+#import "ios/chrome/app/application_delegate/fake_startup_information.h"
+#import "ios/chrome/app/application_delegate/mock_tab_opener.h"
+#import "ios/chrome/app/application_delegate/startup_information.h"
+#import "ios/chrome/app/application_delegate/tab_opening.h"
+#import "ios/chrome/app/application_mode.h"
+#import "ios/chrome/app/main_controller.h"
+#import "ios/chrome/app/spotlight/actions_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
@@ -43,12 +43,12 @@
 #import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "net/base/mac/url_conversions.h"
-#include "net/test/gtest_util.h"
-#include "testing/platform_test.h"
+#import "net/test/gtest_util.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "third_party/ocmock/gtest_support.h"
-#include "ui/base/page_transition_types.h"
-#include "url/gurl.h"
+#import "third_party/ocmock/gtest_support.h"
+#import "ui/base/page_transition_types.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

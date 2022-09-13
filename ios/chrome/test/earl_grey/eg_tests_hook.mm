@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/app/tests_hook.h"
 
-#include "base/command_line.h"
-#include "base/logging.h"
+#import "base/command_line.h"
+#import "base/logging.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
-#include "ios/chrome/browser/policy/test_platform_policy_provider.h"
+#import "ios/chrome/browser/policy/test_platform_policy_provider.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
-#include "ios/chrome/test/app/signin_test_util.h"
+#import "ios/chrome/test/app/signin_test_util.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service_constants.h"

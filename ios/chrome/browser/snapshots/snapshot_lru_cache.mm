@@ -4,12 +4,12 @@
 
 #import "ios/chrome/browser/snapshots/snapshot_lru_cache.h"
 
-#include <stddef.h>
+#import <stddef.h>
 
-#include <memory>
-#include <unordered_map>
+#import <memory>
+#import <unordered_map>
 
-#include "base/containers/lru_cache.h"
+#import "base/containers/lru_cache.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

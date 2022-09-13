@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/sad_tab/sad_tab_coordinator.h"
 
-#include "base/metrics/histogram_macros.h"
-#include "components/ui_metrics/sadtab_metrics_types.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "base/metrics/histogram_macros.h"
+#import "components/ui_metrics/sadtab_metrics_types.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"

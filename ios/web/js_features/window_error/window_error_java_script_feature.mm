@@ -5,7 +5,7 @@
 #import "ios/web/js_features/window_error/window_error_java_script_feature.h"
 
 #import "base/strings/sys_string_conversions.h"
-#include "ios/web/public/js_messaging/java_script_feature_util.h"
+#import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "net/base/mac/url_conversions.h"
 

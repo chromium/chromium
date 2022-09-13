@@ -4,7 +4,7 @@
 
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 
-#include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_content_adjustment_util.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"

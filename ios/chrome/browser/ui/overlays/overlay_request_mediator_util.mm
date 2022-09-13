@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator_util.h"
 
-#include "ios/chrome/browser/overlays/public/overlay_request_support.h"
+#import "ios/chrome/browser/overlays/public/overlay_request_support.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

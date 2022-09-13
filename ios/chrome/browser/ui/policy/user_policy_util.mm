@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/policy/user_policy_util.h"
 
-#include "components/policy/core/common/policy_pref_names.h"
-#include "components/prefs/pref_service.h"
+#import "components/policy/core/common/policy_pref_names.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_switch.h"

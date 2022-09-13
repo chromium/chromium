@@ -7,29 +7,29 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <StoreKit/StoreKit.h>
 
-#include <memory>
-#include <set>
-#include <utility>
+#import <memory>
+#import <set>
+#import <utility>
 
-#include "base/bind.h"
-#include "base/check_op.h"
-#include "base/mac/scoped_cftyperef.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/strings/grit/components_strings.h"
-#include "ios/chrome/browser/download/confirm_download_closing_overlay.h"
-#include "ios/chrome/browser/download/confirm_download_replacing_overlay.h"
-#include "ios/chrome/browser/download/download_directory_util.h"
-#include "ios/chrome/browser/download/download_manager_metric_names.h"
+#import "base/bind.h"
+#import "base/check_op.h"
+#import "base/mac/scoped_cftyperef.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/download/confirm_download_closing_overlay.h"
+#import "ios/chrome/browser/download/confirm_download_replacing_overlay.h"
+#import "ios/chrome/browser/download/download_directory_util.h"
+#import "ios/chrome/browser/download/download_manager_metric_names.h"
 #import "ios/chrome/browser/download/download_manager_tab_helper.h"
 #import "ios/chrome/browser/download/external_app_util.h"
 #import "ios/chrome/browser/installation_notifier.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/overlays/public/common/confirmation/confirmation_overlay_response.h"
-#include "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/store_kit/store_kit_coordinator.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
@@ -39,13 +39,13 @@
 #import "ios/chrome/browser/ui/download/download_manager_view_controller.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/download/download_task.h"
-#include "net/base/net_errors.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "net/base/net_errors.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

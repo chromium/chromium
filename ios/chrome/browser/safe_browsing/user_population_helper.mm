@@ -4,12 +4,12 @@
 
 #import "ios/chrome/browser/safe_browsing/user_population_helper.h"
 
-#include "components/safe_browsing/core/browser/user_population.h"
-#include "components/sync/driver/sync_service.h"
+#import "components/safe_browsing/core/browser/user_population.h"
+#import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
-#include "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

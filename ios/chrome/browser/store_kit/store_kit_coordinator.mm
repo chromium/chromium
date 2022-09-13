@@ -7,8 +7,8 @@
 #import <StoreKit/StoreKit.h>
 #import <UIKit/UIKit.h>
 
-#include "base/check.h"
-#include "base/metrics/histogram_macros.h"
+#import "base/check.h"
+#import "base/metrics/histogram_macros.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/complex_tasks/ios_task_tab_helper.h"
 
-#include <string>
+#import <string>
 
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"

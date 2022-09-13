@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/dialogs/java_script_dialog_blocking_state.h"
 
-#include "base/check_op.h"
+#import "base/check_op.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"

@@ -4,22 +4,22 @@
 
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_blocking_page.h"
 
-#include <set>
+#import <set>
 
-#include "base/containers/contains.h"
-#include "base/strings/string_number_conversions.h"
+#import "base/containers/contains.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "base/values.h"
-#include "components/security_interstitials/core/metrics_helper.h"
-#include "ios/components/security_interstitials/https_only_mode/https_only_mode_controller_client.h"
-#include "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
-#include "ios/components/security_interstitials/https_only_mode/https_upgrade_test_util.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/values.h"
+#import "components/security_interstitials/core/metrics_helper.h"
+#import "ios/components/security_interstitials/https_only_mode/https_only_mode_controller_client.h"
+#import "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
+#import "ios/components/security_interstitials/https_only_mode/https_upgrade_test_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/platform_test.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

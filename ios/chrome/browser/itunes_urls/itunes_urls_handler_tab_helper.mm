@@ -7,22 +7,22 @@
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
 
-#include <vector>
+#import <vector>
 
-#include "base/check.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "base/strings/string_split.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/check.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/strings/string_split.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/store_kit/store_kit_tab_helper.h"
-#include "ios/web/public/browser_state.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "net/base/mac/url_conversions.h"
-#include "net/base/url_util.h"
-#include "url/gurl.h"
+#import "net/base/url_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

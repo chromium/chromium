@@ -4,7 +4,7 @@
 
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_container.h"
 
-#include "base/memory/ptr_util.h"
+#import "base/memory/ptr_util.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/test/scoped_key_window.h"
 
-#include "base/check_op.h"
+#import "base/check_op.h"
 #import "base/ios/ios_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 

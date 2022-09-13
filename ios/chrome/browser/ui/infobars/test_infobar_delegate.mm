@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/infobars/test_infobar_delegate.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "components/infobars/core/infobar.h"
-#include "ios/chrome/browser/infobars/infobar_utils.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/infobars/core/infobar.h"
+#import "ios/chrome/browser/infobars/infobar_utils.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

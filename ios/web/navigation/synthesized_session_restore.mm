@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/navigation/synthesized_session_restore.h"
+#import "ios/web/navigation/synthesized_session_restore.h"
 
-#include "base/feature_list.h"
-#include "base/ios/ios_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/feature_list.h"
+#import "base/ios/ios_util.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_item_impl.h"
-#include "ios/web/navigation/synthesized_history_entry_data.h"
+#import "ios/web/navigation/synthesized_history_entry_data.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#include "ios/web/public/navigation/referrer.h"
+#import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 

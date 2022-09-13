@@ -4,12 +4,12 @@
 
 #import "ios/chrome/browser/screen_time/screen_time_history_deleter_factory.h"
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/history/history_service_factory.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/screen_time/screen_time_history_deleter.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

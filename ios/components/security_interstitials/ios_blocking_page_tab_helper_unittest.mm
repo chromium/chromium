@@ -4,11 +4,11 @@
 
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 
-#include "ios/components/security_interstitials/ios_security_interstitial_page.h"
+#import "ios/components/security_interstitials/ios_security_interstitial_page.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "testing/platform_test.h"
-#include "url/gurl.h"
+#import "testing/platform_test.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

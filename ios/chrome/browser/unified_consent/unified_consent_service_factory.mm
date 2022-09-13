@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
+#import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 
-#include <string>
-#include <vector>
+#import <string>
+#import <vector>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync_preferences/pref_service_syncable.h"
-#include "components/unified_consent/unified_consent_metrics.h"
-#include "components/unified_consent/unified_consent_service.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/sync/driver/sync_service.h"
+#import "components/sync_preferences/pref_service_syncable.h"
+#import "components/unified_consent/unified_consent_metrics.h"
+#import "components/unified_consent/unified_consent_service.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
-#include "ios/chrome/browser/signin/identity_manager_factory.h"
-#include "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

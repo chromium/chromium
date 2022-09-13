@@ -4,12 +4,12 @@
 
 #import "ios/web/public/test/web_view_interaction_test_util.h"
 
-#include "base/bind.h"
-#include "base/json/string_escape.h"
-#include "base/logging.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
+#import "base/bind.h"
+#import "base/json/string_escape.h"
+#import "base/logging.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/js_messaging/web_frame_impl.h"

@@ -4,20 +4,20 @@
 
 #import "ios/web/navigation/navigation_item_impl.h"
 
-#include <stddef.h>
+#import <stddef.h>
 
-#include <memory>
-#include <utility>
+#import <memory>
+#import <utility>
 
-#include "base/check_op.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/url_formatter/url_formatter.h"
-#include "ios/web/common/features.h"
+#import "base/check_op.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/url_formatter/url_formatter.h"
+#import "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
-#include "ios/web/navigation/wk_navigation_util.h"
+#import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/web_client.h"
-#include "ui/base/page_transition_types.h"
-#include "ui/gfx/text_elider.h"
+#import "ui/base/page_transition_types.h"
+#import "ui/gfx/text_elider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

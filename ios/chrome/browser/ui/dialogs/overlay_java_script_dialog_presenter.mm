@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/ui/dialogs/overlay_java_script_dialog_presenter.h"
 
-#include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
+#import "base/bind.h"
+#import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/public/overlay_response.h"

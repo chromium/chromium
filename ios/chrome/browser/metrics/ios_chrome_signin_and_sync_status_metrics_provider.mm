@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/metrics/ios_chrome_signin_and_sync_status_metrics_provider.h"
+#import "ios/chrome/browser/metrics/ios_chrome_signin_and_sync_status_metrics_provider.h"
 
-#include <vector>
+#import <vector>
 
-#include "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
-#include "ios/chrome/browser/metrics/ios_profile_session_durations_service.h"
-#include "ios/chrome/browser/metrics/ios_profile_session_durations_service_factory.h"
-#include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/metrics/ios_profile_session_durations_service.h"
+#import "ios/chrome/browser/metrics/ios_profile_session_durations_service_factory.h"
+#import "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

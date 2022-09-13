@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/test/ios_chrome_unit_test_suite.h"
+#import "ios/chrome/test/ios_chrome_unit_test_suite.h"
 
-#include "base/metrics/user_metrics.h"
-#include "base/path_service.h"
-#include "base/test/test_simple_task_runner.h"
-#include "components/content_settings/core/common/content_settings_pattern.h"
-#include "ios/chrome/browser/browser_state/browser_state_keyed_service_factories.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "base/metrics/user_metrics.h"
+#import "base/path_service.h"
+#import "base/test/test_simple_task_runner.h"
+#import "components/content_settings/core/common/content_settings_pattern.h"
+#import "ios/chrome/browser/browser_state/browser_state_keyed_service_factories.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/paths/paths.h"
-#include "ios/chrome/test/testing_application_context.h"
-#include "ios/components/webui/web_ui_url_constants.h"
+#import "ios/chrome/test/testing_application_context.h"
+#import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/public/provider/chrome/browser/app_utils/app_utils_api.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/web/public/web_client.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/base/ui_base_paths.h"
-#include "url/url_util.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "ui/base/resource/resource_bundle.h"
+#import "ui/base/ui_base_paths.h"
+#import "url/url_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

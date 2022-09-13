@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/shell/shell_web_main_parts.h"
+#import "ios/web/shell/shell_web_main_parts.h"
 
-#include "ios/web/shell/shell_browser_state.h"
+#import "ios/web/shell/shell_browser_state.h"
 
 #if DCHECK_IS_ON()
-#include "ui/display/screen_base.h"
+#import "ui/display/screen_base.h"
 #endif
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/popup_menu/public/features.h"
 
-#include "base/metrics/field_trial_params.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "base/metrics/field_trial_params.h"
+#import "ios/chrome/grit/ios_strings.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

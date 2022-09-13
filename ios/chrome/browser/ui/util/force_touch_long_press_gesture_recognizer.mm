@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/util/force_touch_long_press_gesture_recognizer.h"
 
 #import <UIKit/UIGestureRecognizerSubclass.h>
-#include "base/cxx17_backports.h"
+#import "base/cxx17_backports.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

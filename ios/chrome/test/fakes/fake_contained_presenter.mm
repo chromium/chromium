@@ -4,7 +4,7 @@
 
 #import "ios/chrome/test/fakes/fake_contained_presenter.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

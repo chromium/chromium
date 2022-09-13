@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/variations/ios_chrome_variations_service_client.h"
+#import "ios/chrome/browser/variations/ios_chrome_variations_service_client.h"
 
-#include "base/version.h"
-#include "components/version_info/version_info.h"
+#import "base/version.h"
+#import "components/version_info/version_info.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#include "ios/chrome/common/channel_info.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#import "ios/chrome/common/channel_info.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

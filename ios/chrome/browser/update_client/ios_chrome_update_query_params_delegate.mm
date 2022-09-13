@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/update_client/ios_chrome_update_query_params_delegate.h"
+#import "ios/chrome/browser/update_client/ios_chrome_update_query_params_delegate.h"
 
-#include "base/no_destructor.h"
-#include "base/strings/stringprintf.h"
-#include "components/version_info/version_info.h"
+#import "base/no_destructor.h"
+#import "base/strings/stringprintf.h"
+#import "components/version_info/version_info.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#include "ios/chrome/common/channel_info.h"
+#import "ios/chrome/common/channel_info.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

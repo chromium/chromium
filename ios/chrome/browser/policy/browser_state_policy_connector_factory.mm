@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/policy/browser_state_policy_connector_factory.h"
 
-#include "base/check.h"
-#include "ios/chrome/browser/policy/browser_state_policy_connector.h"
+#import "base/check.h"
+#import "ios/chrome/browser/policy/browser_state_policy_connector.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

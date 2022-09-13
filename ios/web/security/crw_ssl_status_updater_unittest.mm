@@ -6,20 +6,20 @@
 
 #import <WebKit/WebKit.h>
 
-#include "base/mac/bridging.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/mac/bridging.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/public/navigation/navigation_item.h"
-#include "ios/web/public/security/ssl_status.h"
-#include "ios/web/public/test/web_test.h"
+#import "ios/web/public/security/ssl_status.h"
+#import "ios/web/public/test/web_test.h"
 #import "ios/web/security/wk_web_view_security_util.h"
 #import "ios/web/test/fakes/crw_fake_back_forward_list.h"
 #import "ios/web/test/fakes/fake_navigation_manager_delegate.h"
-#include "net/cert/x509_util_apple.h"
-#include "net/test/cert_test_util.h"
-#include "net/test/test_data_directory.h"
-#include "third_party/ocmock/OCMock/OCMock.h"
-#include "third_party/ocmock/gtest_support.h"
+#import "net/cert/x509_util_apple.h"
+#import "net/test/cert_test_util.h"
+#import "net/test/test_data_directory.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

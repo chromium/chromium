@@ -4,19 +4,19 @@
 
 #import "ios/web/webui/mojo_facade.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/bind.h"
-#include "base/run_loop.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/bind.h"
+#import "base/run_loop.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/web_test.h"
+#import "ios/web/public/test/web_test.h"
 #import "ios/web/test/fakes/fake_web_frame_impl.h"
-#include "ios/web/test/mojo_test.mojom.h"
-#include "ios/web/web_state/web_state_impl.h"
+#import "ios/web/test/mojo_test.mojom.h"
+#import "ios/web/web_state/web_state_impl.h"
 #import "testing/gtest_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

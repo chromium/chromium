@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 
-#include "ios/chrome/browser/infobars/test/fake_infobar_delegate.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/platform_test.h"
+#import "ios/chrome/browser/infobars/test/fake_infobar_delegate.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

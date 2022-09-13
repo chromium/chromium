@@ -22,19 +22,19 @@
 
 #import <Foundation/Foundation.h>
 
-#include <stdio.h>
-#include <map>
-#include <set>
-#include <string>
-#include <utility>
-#include <vector>
+#import <stdio.h>
+#import <map>
+#import <set>
+#import <string>
+#import <utility>
+#import <vector>
 
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/strings/string_piece.h"
-#include "base/strings/sys_string_conversions.h"
-#include "ui/base/resource/data_pack.h"
-#include "ui/base/resource/resource_handle.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/strings/string_piece.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ui/base/resource/data_pack.h"
+#import "ui/base/resource/resource_handle.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

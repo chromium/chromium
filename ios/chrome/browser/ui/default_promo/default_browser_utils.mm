@@ -4,13 +4,13 @@
 
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 
-#include "base/feature_list.h"
-#include "base/ios/ios_util.h"
-#include "base/mac/foundation_util.h"
-#include "base/metrics/field_trial.h"
-#include "base/metrics/field_trial_params.h"
-#include "ios/chrome/browser/ui/first_run/fre_field_trial.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "base/feature_list.h"
+#import "base/ios/ios_util.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/field_trial.h"
+#import "base/metrics/field_trial_params.h"
+#import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

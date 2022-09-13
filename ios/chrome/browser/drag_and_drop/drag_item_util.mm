@@ -4,11 +4,11 @@
 
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
 
-#include "base/check_op.h"
+#import "base/check_op.h"
 #import "ios/chrome/browser/window_activities/window_activity_helpers.h"
-#include "ios/web/public/browser_state.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_state.h"
-#include "net/base/mac/url_conversions.h"
+#import "net/base/mac/url_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_coordinator.h"
 
-#include <ostream>
+#import <ostream>
 
-#include "base/notreached.h"
-#include "ios/chrome/browser/crash_report/crash_loop_detection_util.h"
+#import "base/notreached.h"
+#import "ios/chrome/browser/crash_report/crash_loop_detection_util.h"
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_view_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

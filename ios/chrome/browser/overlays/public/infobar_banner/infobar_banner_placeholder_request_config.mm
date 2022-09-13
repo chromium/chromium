@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_placeholder_request_config.h"
 
-#include "components/infobars/core/infobar.h"
-#include "ios/chrome/browser/infobars/infobar_ios.h"
+#import "components/infobars/core/infobar.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_type.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
 

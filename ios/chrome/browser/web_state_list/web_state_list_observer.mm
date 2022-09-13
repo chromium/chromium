@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 
-#include <ostream>
+#import <ostream>
 
 #import "base/check.h"
 

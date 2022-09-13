@@ -6,14 +6,14 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/bind.h"
-#include "ios/web/common/user_agent.h"
+#import "base/bind.h"
+#import "ios/web/common/user_agent.h"
 #import "ios/web/public/web_state.h"
-#include "ios/web/shell/shell_web_main_parts.h"
+#import "ios/web/shell/shell_web_main_parts.h"
 #import "ios/web/shell/web_usage_controller.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "ui/base/resource/resource_bundle.h"
+#import "mojo/public/cpp/bindings/pending_receiver.h"
+#import "mojo/public/cpp/bindings/self_owned_receiver.h"
+#import "ui/base/resource/resource_bundle.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

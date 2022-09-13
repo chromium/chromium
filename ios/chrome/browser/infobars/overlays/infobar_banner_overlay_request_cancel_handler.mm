@@ -4,10 +4,9 @@
 
 #import "ios/chrome/browser/infobars/overlays/infobar_banner_overlay_request_cancel_handler.h"
 
-#include "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_type.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
-#include "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

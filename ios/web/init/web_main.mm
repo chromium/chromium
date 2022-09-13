@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/public/init/web_main.h"
-#include "ios/web/public/init/web_main_runner.h"
+#import "ios/web/public/init/web_main.h"
+#import "ios/web/public/init/web_main_runner.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/passwords/password_protection_coordinator.h"
 
-#include "base/check.h"
-#include "base/notreached.h"
-#include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
+#import "base/check.h"
+#import "base/notreached.h"
+#import "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"

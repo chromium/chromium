@@ -9,10 +9,10 @@
 #import "ios/net/protocol_handler_util.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "net/base/net_errors.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "url/url_constants.h"
+#import "net/base/net_errors.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
+#import "url/url_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

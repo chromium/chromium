@@ -4,17 +4,17 @@
 
 #import "ios/chrome/browser/ui/webui/translate_internals/ios_translate_internals_handler.h"
 
-#include "components/translate/core/common/language_detection_details.h"
+#import "components/translate/core/common/language_detection_details.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/all_web_state_list_observation_registrar.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
-#include "ios/chrome/browser/translate/chrome_ios_translate_client.h"
-#include "ios/chrome/browser/translate/translate_service_ios.h"
+#import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
+#import "ios/chrome/browser/translate/translate_service_ios.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
-#include "ios/web/public/webui/web_ui_ios.h"
+#import "ios/web/public/webui/web_ui_ios.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

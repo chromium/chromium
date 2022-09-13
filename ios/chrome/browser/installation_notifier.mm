@@ -5,15 +5,15 @@
 #import "ios/chrome/browser/installation_notifier.h"
 
 #import <UIKit/UIKit.h>
-#include <stdint.h>
+#import <stdint.h>
 
-#include <memory>
+#import <memory>
 
-#include "base/check_op.h"
-#include "base/metrics/histogram_macros.h"
-#include "ios/web/public/thread/web_thread.h"
-#include "net/base/backoff_entry.h"
-#include "url/gurl.h"
+#import "base/check_op.h"
+#import "base/metrics/histogram_macros.h"
+#import "ios/web/public/thread/web_thread.h"
+#import "net/base/backoff_entry.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

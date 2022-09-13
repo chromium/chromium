@@ -4,8 +4,8 @@
 
 #import "ios/web/net/cookies/crw_wk_http_cookie_store.h"
 
-#include "base/check_op.h"
-#include "ios/web/public/thread/web_thread.h"
+#import "base/check_op.h"
+#import "ios/web/public/thread/web_thread.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

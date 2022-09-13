@@ -4,17 +4,17 @@
 
 #import "ios/web/public/test/web_test_with_web_state.h"
 
-#include "base/ios/ios_util.h"
-#include "ios/testing/embedded_test_server_handlers.h"
+#import "base/ios/ios_util.h"
+#import "ios/testing/embedded_test_server_handlers.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
 #import "ios/web/public/web_state.h"
-#include "ios/web/public/web_state_observer.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/embedded_test_server/request_handler_util.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#import "ios/web/public/web_state_observer.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/request_handler_util.h"
+#import "testing/gmock/include/gmock/gmock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

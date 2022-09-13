@@ -6,17 +6,17 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/run_loop.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/run_loop.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "ios/chrome/browser/download/download_directory_util.h"
+#import "ios/chrome/browser/download/download_directory_util.h"
 #import "ios/chrome/browser/download/external_app_util.h"
 #import "ios/chrome/test/fakes/fake_download_manager_consumer.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "net/base/net_errors.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "net/base/net_errors.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

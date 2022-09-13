@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/metrics/ios_chrome_stability_metrics_provider.h"
+#import "ios/chrome/browser/metrics/ios_chrome_stability_metrics_provider.h"
 
-#include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/components/webui/web_ui_url_constants.h"
-#include "ios/web/common/features.h"
+#import "base/feature_list.h"
+#import "base/metrics/histogram_macros.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/components/webui/web_ui_url_constants.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_context.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

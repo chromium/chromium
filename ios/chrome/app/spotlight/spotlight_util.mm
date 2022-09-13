@@ -6,11 +6,11 @@
 
 #import <CoreSpotlight/CoreSpotlight.h>
 
-#include "base/metrics/histogram_macros.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
-#include "build/branding_buildflags.h"
-#include "url/gurl.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
+#import "build/branding_buildflags.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

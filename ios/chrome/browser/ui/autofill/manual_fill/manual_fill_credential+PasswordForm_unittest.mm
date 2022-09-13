@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_credential+PasswordForm.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "components/password_manager/core/browser/password_form.h"
-#include "testing/platform_test.h"
-#include "url/gurl.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/password_manager/core/browser/password_form.h"
+#import "testing/platform_test.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

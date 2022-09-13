@@ -4,11 +4,11 @@
 
 #import "ios/chrome/browser/metrics/incognito_web_state_observer.h"
 
-#include <vector>
+#import <vector>
 
 #import "ios/chrome/browser/application_context/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/main/all_web_state_list_observation_registrar.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

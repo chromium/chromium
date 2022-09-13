@@ -4,23 +4,23 @@
 
 #import "ios/chrome/browser/download/ar_quick_look_tab_helper.h"
 
-#include <memory>
-#include <string>
+#import <memory>
+#import <string>
 
-#include "base/bind.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/task/thread_pool.h"
+#import "base/bind.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/task/thread_pool.h"
 #import "ios/chrome/browser/download/ar_quick_look_tab_helper_delegate.h"
-#include "ios/chrome/browser/download/download_directory_util.h"
-#include "ios/chrome/browser/download/mime_type_util.h"
+#import "ios/chrome/browser/download/download_directory_util.h"
+#import "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/web/public/download/download_task.h"
 #import "net/base/mac/url_conversions.h"
-#include "net/base/net_errors.h"
-#include "net/base/url_util.h"
+#import "net/base/net_errors.h"
+#import "net/base/url_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

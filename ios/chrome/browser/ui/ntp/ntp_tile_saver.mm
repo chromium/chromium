@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/ntp/ntp_tile_saver.h"
+#import "ios/chrome/browser/ui/ntp/ntp_tile_saver.h"
 
-#include "base/bind.h"
-#include "base/hash/md5.h"
-#include "base/logging.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/task/thread_pool.h"
-#include "base/threading/scoped_blocking_call.h"
-#include "components/favicon/core/fallback_url_util.h"
-#include "components/ntp_tiles/ntp_tile.h"
+#import "base/bind.h"
+#import "base/hash/md5.h"
+#import "base/logging.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/task/thread_pool.h"
+#import "base/threading/scoped_blocking_call.h"
+#import "components/favicon/core/fallback_url_util.h"
+#import "components/ntp_tiles/ntp_tile.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
-#include "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/ntp_tile/ntp_tile.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "net/base/mac/url_conversions.h"

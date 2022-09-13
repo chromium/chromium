@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/omnibox/popup/pedal_section_extractor.h"
 
-#include "base/check.h"
-#include "base/metrics/histogram_functions.h"
-#include "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
+#import "base/check.h"
+#import "base/metrics/histogram_functions.h"
+#import "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion_group_impl.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_pedal.h"

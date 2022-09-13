@@ -6,7 +6,7 @@
 
 #import "ios/chrome/test/block_cleanup_test.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "base/mac/foundation_util.h"
 
 void BlockCleanupTest::SetUp() {

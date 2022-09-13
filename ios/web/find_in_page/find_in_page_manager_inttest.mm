@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/strings/escape.h"
+#import "base/strings/escape.h"
 #import "base/test/ios/wait_util.h"
-#include "ios/testing/embedded_test_server_handlers.h"
+#import "ios/testing/embedded_test_server_handlers.h"
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
 #import "ios/web/public/find_in_page/find_in_page_manager.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -12,9 +12,9 @@
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/embedded_test_server/request_handler_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/request_handler_util.h"
+#import "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

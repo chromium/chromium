@@ -3,19 +3,19 @@
 // found in the LICENSE file.
 
 #import <Foundation/Foundation.h>
-#include <stddef.h>
+#import <stddef.h>
 
-#include "base/ios/ios_util.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "base/ios/ios_util.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "ui/base/device_form_factor.h"
+#import "testing/platform_test.h"
+#import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

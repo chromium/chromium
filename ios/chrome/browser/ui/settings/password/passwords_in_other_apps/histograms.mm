@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/histograms.h"
 
-#include <string>
+#import <string>
 #import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_manager.h"
 

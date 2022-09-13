@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
 
-#include "base/check.h"
-#include "base/ios/ios_util.h"
+#import "base/check.h"
+#import "base/ios/ios_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
