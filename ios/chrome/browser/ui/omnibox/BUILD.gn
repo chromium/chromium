@@ -260,6 +260,7 @@ source_set("eg2_tests") {
   sources = [ "omnibox_egtest.mm" ]
   deps = [
     ":eg_test_support+eg2",
+    ":features",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
