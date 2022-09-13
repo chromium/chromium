@@ -61,7 +61,7 @@ export function helpContentTestSuite() {
    * @param {!HelpContentType} expectedContentType
    * */
   function verifyIconName(linkElement, expectedContentType) {
-    assertEquals(2, linkElement.children.length);
+    assertEquals(1, linkElement.children.length);
     // The first child is an iron-icon.
     const iconName = linkElement.children[0].icon;
 
@@ -82,12 +82,12 @@ export function helpContentTestSuite() {
 
     // Verify the help links are displayed in order with correct title, url and
     // icon.
-    assertEquals('fake article', helpLinks[0].innerText);
+    assertEquals('fake article', helpLinks[0].innerText.trim());
     assertEquals(
         'https://support.google.com/chromebook/?q=article', helpLinks[0].href);
     verifyIconName(helpLinks[0], fakePopularHelpContentList[0].contentType);
 
-    assertEquals('fake forum', helpLinks[1].innerText);
+    assertEquals('fake forum', helpLinks[1].innerText.trim());
     assertEquals(
         'https://support.google.com/chromebook/?q=forum', helpLinks[1].href);
     verifyIconName(helpLinks[1], fakePopularHelpContentList[1].contentType);
@@ -153,26 +153,27 @@ export function helpContentTestSuite() {
 
     // Verify the help links are displayed in order with correct title, url and
     // icon.
-    assertEquals('Fix connection problems', helpLinks[0].innerText);
+    assertEquals('Fix connection problems', helpLinks[0].innerText.trim());
     assertEquals(
         'https://support.google.com/chromebook/?q=6318213', helpLinks[0].href);
     verifyIconName(helpLinks[0], fakeHelpContentList[0].contentType);
 
     assertEquals(
         'Why won\'t my wireless mouse with a USB piece wor...?',
-        helpLinks[1].innerText);
+        helpLinks[1].innerText.trim());
     assertEquals(
         'https://support.google.com/chromebook/?q=123920509',
         helpLinks[1].href);
     verifyIconName(helpLinks[1], fakeHelpContentList[1].contentType);
 
-    assertEquals('Wifi Issues - only on Chromebooks', helpLinks[2].innerText);
+    assertEquals(
+        'Wifi Issues - only on Chromebooks', helpLinks[2].innerText.trim());
     assertEquals(
         'https://support.google.com/chromebook/?q=114174470',
         helpLinks[2].href);
     verifyIconName(helpLinks[2], fakeHelpContentList[2].contentType);
 
-    assertEquals('Network Connectivity Fault', helpLinks[3].innerText);
+    assertEquals('Network Connectivity Fault', helpLinks[3].innerText.trim());
     assertEquals(
         'https://support.google.com/chromebook/?q=131459420',
         helpLinks[3].href);
@@ -180,7 +181,7 @@ export function helpContentTestSuite() {
 
     assertEquals(
         'Connected to WiFi but can\'t connect to the internet',
-        helpLinks[4].innerText);
+        helpLinks[4].innerText.trim());
     assertEquals(
         'https://support.google.com/chromebook/?q=22864239', helpLinks[4].href);
     verifyIconName(helpLinks[4], fakeHelpContentList[4].contentType);
