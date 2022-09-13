@@ -295,29 +295,6 @@ const char kGstaticImagePrefix[] =
     "https://www.gstatic.com/chromecast/home/chromeos/avatars/"
     "default_200_percent/";
 
-// Returns true if the string specified consists of the prefix and one of
-// the default images indices. Returns the index of the image in `image_id`
-// variable.
-bool IsDefaultImageString(const std::string& s,
-                          const std::string& prefix,
-                          int* image_id) {
-  DCHECK(image_id);
-  if (!base::StartsWith(s, prefix, base::CompareCase::SENSITIVE))
-    return false;
-
-  int image_index = -1;
-  if (base::StringToInt(
-          base::MakeStringPiece(s.begin() + prefix.length(), s.end()),
-          &image_index)) {
-    if (image_index < 0 || image_index >= kDefaultImagesCount)
-      return false;
-    *image_id = image_index;
-    return true;
-  }
-
-  return false;
-}
-
 }  // namespace
 
 const int kDefaultImagesCount = std::size(kDefaultImageInfo);
@@ -355,14 +332,6 @@ GURL GetDefaultImageUrl(int index) {
   if (index == 0)
     return GURL(kZeroDefaultUrl);
   return GURL(base::StringPrintf("%s%d", kDefaultUrlPrefix, index));
-}
-
-bool IsDefaultImageUrl(const std::string& url, int* image_id) {
-  if (url == kZeroDefaultUrl) {
-    *image_id = 0;
-    return true;
-  }
-  return IsDefaultImageString(url, kDefaultUrlPrefix, image_id);
 }
 
 const gfx::ImageSkia& GetDefaultImage(int index) {
