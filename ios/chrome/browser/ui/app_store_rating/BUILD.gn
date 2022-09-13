@@ -11,6 +11,7 @@ source_set("app_store_rating") {
   frameworks = [ "Foundation.framework" ]
   deps = [
     "//base",
+    "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/main:observing_scene_agent",
   ]
 }

@@ -4,9 +4,21 @@
 
 #import "ios/chrome/browser/ui/app_store_rating/app_store_rating_scene_agent.h"
 
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+// Key used to store the total number of unique days that the user has
+// started a session.
+NSString* const kTotalDaysOnChrome = @"TotalDaysOnChrome";
+
+// Key used to store an array of unique days that the user has started
+// a session in the past 7 days.
+NSString* const kActiveDaysInPastWeek = @"ActiveDaysInPastWeek";
+}  // namespace
 
 @interface AppStoreRatingSceneAgent ()
 
@@ -35,7 +47,8 @@
 }
 
 - (BOOL)isUserEngaged {
-  return NO;
+  return IsChromeLikelyDefaultBrowser() && self.chromeUsed3DaysInPastWeek &&
+         self.chromeUsed15Days && self.CPEEnabled;
 }
 
 #pragma mark - SceneStateObserver
@@ -47,11 +60,21 @@
 #pragma mark - Getters
 
 - (BOOL)isChromeUsed3DaysInPastWeek {
-  return NO;
+  if (![[NSUserDefaults standardUserDefaults]
+          objectForKey:kActiveDaysInPastWeek]) {
+    return NO;
+  }
+  return [[[NSUserDefaults standardUserDefaults]
+             objectForKey:kActiveDaysInPastWeek] count] >= 3 ? YES : NO;
 }
 
 - (BOOL)isChromeUsed15Days {
-  return NO;
+  if (![[NSUserDefaults standardUserDefaults]
+          integerForKey:kTotalDaysOnChrome]) {
+    return NO;
+  }
+  return [[NSUserDefaults standardUserDefaults]
+             integerForKey:kTotalDaysOnChrome] >= 15 ? YES : NO;
 }
 
 - (BOOL)isCPEEnabled {
