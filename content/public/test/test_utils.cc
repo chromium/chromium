@@ -525,7 +525,7 @@ bool RenderFrameHostWrapper::IsDestroyed() const {
 
 // See RenderFrameDeletedObserver for notes on the difference between
 // RenderFrame being deleted and RenderFrameHost being destroyed.
-bool RenderFrameHostWrapper::WaitUntilRenderFrameDeleted() {
+bool RenderFrameHostWrapper::WaitUntilRenderFrameDeleted() const {
   return deleted_observer_->WaitUntilDeleted();
 }
 

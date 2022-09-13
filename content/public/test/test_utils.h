@@ -419,7 +419,7 @@ class RenderFrameHostWrapper {
   // See RenderFrameDeletedObserver for notes on the difference between
   // RenderFrame being deleted and RenderFrameHost being destroyed.
   // Returns true if the frame was deleted before the timeout.
-  [[nodiscard]] bool WaitUntilRenderFrameDeleted();
+  [[nodiscard]] bool WaitUntilRenderFrameDeleted() const;
   bool IsRenderFrameDeleted() const;
 
   // Pointerish operators. Feel free to add more if you need them.
