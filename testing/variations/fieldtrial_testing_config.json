@@ -6196,7 +6196,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "nesting": "100"
+                        "nesting": "10"
                     },
                     "enable_features": [
                         "MaxUnthrottledTimeoutNestingLevel"

@@ -1347,7 +1347,7 @@ void ClearUnthrottledNestedTimeoutOverrideCacheForTesting() {
 const base::Feature kMaxUnthrottledTimeoutNestingLevel{
     "MaxUnthrottledTimeoutNestingLevel", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::FeatureParam<int> kMaxUnthrottledTimeoutNestingLevelParam{
-    &kMaxUnthrottledTimeoutNestingLevel, "nesting", 100};
+    &kMaxUnthrottledTimeoutNestingLevel, "nesting", 10};
 bool IsMaxUnthrottledTimeoutNestingLevelEnabled() {
   auto policy = GetUnthrottledNestedTimeoutPolicyOverride();
   if (policy != UnthrottledNestedTimeoutPolicyOverride::kNoOverride)
