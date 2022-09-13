@@ -105,19 +105,50 @@ class FakeAppListControllerDelegate
   std::unordered_set<std::string> open_apps_;
 };
 
+class FakeAppServiceAppItem : public AppServiceAppItem {
+ public:
+  FakeAppServiceAppItem(
+      Profile* profile,
+      AppListModelUpdater* model_updater,
+      const app_list::AppListSyncableService::SyncItem* sync_item,
+      const apps::AppUpdate& app_update)
+      : AppServiceAppItem(profile, model_updater, sync_item, app_update) {}
+  FakeAppServiceAppItem(const FakeAppServiceAppItem&) = delete;
+  FakeAppServiceAppItem& operator=(const FakeAppServiceAppItem&) = delete;
+  ~FakeAppServiceAppItem() override = default;
+
+  // app_list::AppContextMenuDelegate overrides:
+  void ExecuteLaunchCommand(int event_flags) override {
+    AppServiceAppItem::ExecuteLaunchCommand(event_flags);
+
+    if (!quit_callback_.is_null())
+      std::move(quit_callback_).Run();
+  }
+
+  void WaitForLaunch() {
+    base::RunLoop run_loop;
+    quit_callback_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+ private:
+  base::OnceClosure quit_callback_;
+};
+
 std::unique_ptr<KeyedService> MenuManagerFactory(
     content::BrowserContext* context) {
   return extensions::MenuManagerFactory::BuildServiceInstanceForTesting(
       context);
 }
 
-std::unique_ptr<AppServiceAppItem> GetAppListItem(Profile* profile,
-                                                  const std::string& app_id) {
-  std::unique_ptr<AppServiceAppItem> item;
+std::unique_ptr<FakeAppServiceAppItem> GetAppListItem(
+    Profile* profile,
+    const std::string& app_id) {
+  std::unique_ptr<FakeAppServiceAppItem> item;
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
       .ForOneApp(app_id, [profile, &item](const apps::AppUpdate& update) {
-        item = std::make_unique<AppServiceAppItem>(
+        item = std::make_unique<FakeAppServiceAppItem>(
             profile, /*model_updater=*/nullptr, /*sync_item=*/nullptr, update);
 
         // Because model updater is null, set position manually.
@@ -268,7 +299,6 @@ class AppContextMenuTest : public AppListTestBase {
     service_->AddExtension(store.get());
     service_->EnableExtension(app_id);
     app_service_test_.SetUp(profile());
-    app_service_test_.FlushMojoCalls();
 
     controller_ = std::make_unique<FakeAppListControllerDelegate>();
     controller_->SetAppPinnable(app_id, pinnable);
@@ -316,7 +346,6 @@ class AppContextMenuTest : public AppListTestBase {
     scoped_refptr<extensions::Extension> store = MakeChromeApp();
     service_->AddExtension(store.get());
     app_service_test_.SetUp(profile());
-    app_service_test_.FlushMojoCalls();
 
     controller_ = std::make_unique<FakeAppListControllerDelegate>();
     AppServiceContextMenu menu(menu_delegate(), profile(),
@@ -379,7 +408,6 @@ TEST_F(AppContextMenuTest, ChromeAppInRecentAppsList) {
   scoped_refptr<extensions::Extension> app = MakeChromeApp();
   service_->AddExtension(app.get());
   app_service_test().SetUp(profile());
-  app_service_test().FlushMojoCalls();
 
   // Simulate a context menu in the recent apps row.
   AppServiceContextMenu menu(menu_delegate(), profile(),
@@ -415,9 +443,9 @@ TEST_F(AppContextMenuTest, ArcMenu) {
   controller()->SetAppPinnable(app_id, AppListControllerDelegate::PIN_EDITABLE);
 
   arc_test.app_instance()->SendRefreshAppList(arc_test.fake_apps());
-  app_service_test().FlushMojoCalls();
 
-  std::unique_ptr<AppServiceAppItem> item = GetAppListItem(profile(), app_id);
+  std::unique_ptr<FakeAppServiceAppItem> item =
+      GetAppListItem(profile(), app_id);
 
   std::unique_ptr<ui::MenuModel> menu = GetContextMenuModel(item.get());
   ASSERT_NE(nullptr, menu);
@@ -438,7 +466,9 @@ TEST_F(AppContextMenuTest, ArcMenu) {
   EXPECT_EQ(0u, arc_test.app_instance()->launch_requests().size());
 
   menu->ActivatedAt(0);
-  app_service_test().FlushMojoCalls();
+
+  // Wait for the async menu item to be executed to launch the app.
+  item->WaitForLaunch();
 
   const std::vector<std::unique_ptr<arc::FakeAppInstance::Request>>&
       launch_requests = arc_test.app_instance()->launch_requests();
@@ -475,7 +505,6 @@ TEST_F(AppContextMenuTest, ArcMenu) {
   // Test launching app shortcut item.
   EXPECT_EQ(0, arc_test.app_instance()->launch_app_shortcut_item_count());
   menu->ActivatedAt(menu->GetItemCount() - 1);
-  app_service_test().FlushMojoCalls();
   EXPECT_EQ(1, arc_test.app_instance()->launch_app_shortcut_item_count());
 
   // This makes all apps non-ready.
@@ -510,7 +539,6 @@ TEST_F(AppContextMenuTest, ArcMenu) {
   // Uninstall all apps.
   arc_test.app_instance()->SendRefreshAppList(
       std::vector<arc::mojom::AppInfoPtr>());
-  app_service_test().FlushMojoCalls();
   controller()->SetAppOpen(app_id, false);
 
   // No app available case.
@@ -528,7 +556,6 @@ TEST_F(AppContextMenuTest, ArcMenuShortcut) {
   controller()->SetAppPinnable(app_id, AppListControllerDelegate::PIN_EDITABLE);
 
   arc_test.app_instance()->SendInstallShortcuts(arc_test.fake_shortcuts());
-  app_service_test().FlushMojoCalls();
 
   std::unique_ptr<AppServiceAppItem> item = GetAppListItem(profile(), app_id);
 
@@ -588,7 +615,6 @@ TEST_F(AppContextMenuTest, ArcMenuStickyItem) {
   arc_test.SetUp(profile());
 
   arc_test.app_instance()->SendRefreshAppList(arc_test.fake_apps());
-  app_service_test().FlushMojoCalls();
 
   {
     // Verify menu of store
@@ -632,7 +658,6 @@ TEST_F(AppContextMenuTest, ArcMenuSuspendedItem) {
   std::vector<arc::mojom::AppInfoPtr> apps;
   apps.emplace_back(arc_test.fake_apps()[0]->Clone())->suspended = true;
   arc_test.app_instance()->SendRefreshAppList(apps);
-  app_service_test().FlushMojoCalls();
 
   const std::string app_id = ArcAppTest::GetAppId(*apps[0]);
   controller()->SetAppPinnable(app_id, AppListControllerDelegate::PIN_EDITABLE);
@@ -733,7 +758,6 @@ class AppContextMenuLacrosTest : public AppContextMenuTest {
 
 TEST_F(AppContextMenuLacrosTest, LacrosApp) {
   app_service_test().SetUp(profile());
-  app_service_test().FlushMojoCalls();
 
   // Create the context menu.
   AppServiceContextMenu menu(menu_delegate(), profile(),

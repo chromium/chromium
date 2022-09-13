@@ -89,10 +89,4 @@ void AppServiceTest::WaitForAppService() {
   base::RunLoop().RunUntilIdle();
 }
 
-void AppServiceTest::FlushMojoCalls() {
-  if (app_service_proxy_) {
-    app_service_proxy_->FlushMojoCallsForTesting();
-  }
-}
-
 }  // namespace apps

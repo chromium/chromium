@@ -124,8 +124,6 @@ class WebApkInstallTaskTest : public testing::Test {
     fake_webapk_instance_ = std::make_unique<arc::FakeWebApkInstance>();
     arc_bridge_service->webapk()->SetInstance(fake_webapk_instance_.get());
 
-    app_service_test_.FlushMojoCalls();
-
     net::test_server::RegisterDefaultHandlers(&test_server_);
     webapk_test_server_ = std::make_unique<apps::WebApkTestServer>();
     ASSERT_TRUE(webapk_test_server_->SetUpAndStartServer(&test_server_));

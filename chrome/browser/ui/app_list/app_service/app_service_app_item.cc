@@ -163,6 +163,16 @@ void AppServiceAppItem::OnAppUpdate(const apps::AppUpdate& app_update,
   }
 }
 
+void AppServiceAppItem::ExecuteLaunchCommand(int event_flags) {
+  Launch(event_flags, apps::LaunchSource::kFromAppListGridContextMenu);
+
+  // TODO(crbug.com/826982): drop the if, and call MaybeDismissAppList
+  // unconditionally?
+  if (app_type_ == apps::AppType::kArc || app_type_ == apps::AppType::kRemote) {
+    MaybeDismissAppList();
+  }
+}
+
 void AppServiceAppItem::LoadIcon() {
   constexpr bool allow_placeholder_icon = true;
   CallLoadIcon(allow_placeholder_icon);
@@ -222,16 +232,6 @@ void AppServiceAppItem::GetContextMenuModel(
 
 app_list::AppContextMenu* AppServiceAppItem::GetAppContextMenu() {
   return context_menu_.get();
-}
-
-void AppServiceAppItem::ExecuteLaunchCommand(int event_flags) {
-  Launch(event_flags, apps::LaunchSource::kFromAppListGridContextMenu);
-
-  // TODO(crbug.com/826982): drop the if, and call MaybeDismissAppList
-  // unconditionally?
-  if (app_type_ == apps::AppType::kArc || app_type_ == apps::AppType::kRemote) {
-    MaybeDismissAppList();
-  }
 }
 
 void AppServiceAppItem::ResetIsNewInstall() {

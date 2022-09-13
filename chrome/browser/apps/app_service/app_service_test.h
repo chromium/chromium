@@ -44,9 +44,6 @@ class AppServiceTest {
   // Allow AppService async callbacks to run.
   void WaitForAppService();
 
-  // Flush mojo calls to allow AppService async callbacks to run.
-  void FlushMojoCalls();
-
  private:
   raw_ptr<AppServiceProxy> app_service_proxy_ = nullptr;
 };

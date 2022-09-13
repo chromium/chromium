@@ -27,6 +27,9 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/app_update.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,7 +68,8 @@ arc::mojom::ArcPackageInfoPtr GetArcPackage(const std::string& package_name) {
 
 }  // namespace
 
-class WebApkManagerTest : public testing::Test {
+class WebApkManagerTest : public apps::AppRegistryCache::Observer,
+                          public testing::Test {
  public:
   WebApkManagerTest() = default;
 
@@ -78,7 +82,6 @@ class WebApkManagerTest : public testing::Test {
 
   void StartWebApkManager() {
     app_service_test_.SetUp(&profile_);
-    app_service_test_.FlushMojoCalls();
     // This starts the ArcApps publisher, which owns the WebApkManager.
     arc_test_.SetUp(&profile_);
   }
@@ -96,6 +99,33 @@ class WebApkManagerTest : public testing::Test {
     return installed;
   }
 
+  void WaitForAppUninstall(const std::string& app_id) {
+    Observe(&(app_service_proxy()->AppRegistryCache()));
+    app_id_ = app_id;
+    base::RunLoop run_loop;
+    quit_callback_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  // apps::AppRegistryCache::Observer overrides.
+  void OnAppUpdate(const apps::AppUpdate& update) override {
+    if (app_id_.empty()) {
+      return;
+    }
+
+    if (app_id_ == update.AppId() &&
+        update.Readiness() == apps::Readiness::kUninstalledByUser &&
+        !quit_callback_.is_null()) {
+      std::move(quit_callback_).Run();
+      Observe(nullptr);
+    }
+  }
+
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override {
+    Observe(nullptr);
+  }
+
   TestingProfile* profile() { return &profile_; }
   apps::AppServiceTest* app_service_test() { return &app_service_test_; }
   apps::WebApkManager* webapk_manager() {
@@ -111,6 +141,8 @@ class WebApkManagerTest : public testing::Test {
   TestingProfile profile_;
   ArcAppTest arc_test_;
   apps::AppServiceTest app_service_test_;
+  std::string app_id_;
+  base::OnceClosure quit_callback_;
 };
 
 TEST_F(WebApkManagerTest, InstallsWebApkOnStartup) {
@@ -132,7 +164,6 @@ TEST_F(WebApkManagerTest, InstallWebApkAfterStartup) {
 
   auto app_id =
       web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
-  app_service_test()->FlushMojoCalls();
 
   auto install_task =
       webapk_manager()->GetInstallQueueForTest()->PopTaskForTest();
@@ -189,7 +220,6 @@ TEST_F(WebApkManagerTest, RemovesIneligibleWebApkOnStartup) {
 
   StartWebApkManager();
   arc_test()->app_instance()->SendRefreshPackageList({});
-  app_service_test()->FlushMojoCalls();
 
   // The WebAPK should have been uninstalled, but the app itself is still
   // installed.
@@ -214,7 +244,9 @@ TEST_F(WebApkManagerTest, RemovesAppUninstalledFromChrome) {
 
   app_service_proxy()->UninstallSilently(app_id,
                                          apps::UninstallSource::kUnknown);
-  app_service_test()->FlushMojoCalls();
+
+  // Wait for the async web app uninstallation.
+  WaitForAppUninstall(app_id);
 
   ASSERT_FALSE(apps::webapk_prefs::GetWebApkPackageName(profile(), app_id));
 }
@@ -232,7 +264,6 @@ TEST_F(WebApkManagerTest, QueuesUpdatedApp) {
   auto updated_app_id =
       web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
   EXPECT_EQ(app_id, updated_app_id);
-  app_service_test()->FlushMojoCalls();
 
   auto install_task =
       webapk_manager()->GetInstallQueueForTest()->PopTaskForTest();
@@ -279,7 +310,6 @@ TEST_F(WebApkManagerTest, IgnoresInstallsWhilePlayStoreDisabled) {
 
   auto app_id =
       web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
-  app_service_test()->FlushMojoCalls();
 
   AssertNoPendingInstalls();
 }
@@ -291,7 +321,6 @@ TEST_F(WebApkManagerTest, IgnoresInstallsWhilePolicyDisabled) {
 
   auto app_id =
       web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
-  app_service_test()->FlushMojoCalls();
 
   AssertNoPendingInstalls();
 }

@@ -625,10 +625,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
   }
 
   // Create and initialize the controller, owned by the test shell delegate.
-  void InitShelfController() {
-    CreateShelfController()->Init();
-    app_service_test_.FlushMojoCalls();
-  }
+  void InitShelfController() { CreateShelfController()->Init(); }
 
   // Create and initialize the controller; create a tab and show the browser.
   void InitShelfControllerWithBrowser() {
@@ -1046,7 +1043,6 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
     const std::string app_id =
         ArcAppListPrefs::GetAppId(app_info.package_name, app_info.activity);
     EXPECT_TRUE(prefs->GetApp(app_id));
-    app_service_test().FlushMojoCalls();
     return app_id;
   }
 
@@ -1124,7 +1120,6 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
     ASSERT_EQ(installed_app_id, web_app_id);
     web_app::AppReadinessWaiter(profile(), web_app_id).Await();
-    app_service_test_.FlushMojoCalls();
   }
 
   void RemoveWebApp(const char* web_app_id) {
@@ -3861,7 +3856,6 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   V2App v2_app_1(profile1, extension1_.get());
   EXPECT_TRUE(v2_app_1.window()->GetNativeWindow()->IsVisible());
   SwitchActiveUser(account_id2);
-  app_service_test().FlushMojoCalls();
   EXPECT_FALSE(v2_app_1.window()->GetNativeWindow()->IsVisible());
 
   // Add a v2 app for user #1 while on desktop #2 should not be shown.
@@ -3885,7 +3879,6 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   // Switching back to desktop#1 and creating an app for user #1 should move
   // the app on desktop #1.
   SwitchActiveUser(account_id1);
-  app_service_test().FlushMojoCalls();
   V2App v2_app_4(profile1, extension1_.get());
   EXPECT_FALSE(v2_app_1.window()->GetNativeWindow()->IsVisible());
   EXPECT_TRUE(v2_app_2.window()->GetNativeWindow()->IsVisible());
@@ -3895,7 +3888,6 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   // Switching to desktop #3 and creating an app for user #1 should place it
   // on that user's desktop (#1).
   SwitchActiveUser(account_id3);
-  app_service_test().FlushMojoCalls();
   V2App v2_app_5(profile1, extension1_.get());
   EXPECT_FALSE(v2_app_5.window()->GetNativeWindow()->IsVisible());
   SwitchActiveUser(account_id1);
@@ -3904,7 +3896,6 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   // Switching to desktop #2, hiding the app window and creating an app should
   // teleport there automatically.
   SwitchActiveUser(account_id2);
-  app_service_test().FlushMojoCalls();
   v2_app_1.window()->Hide();
   V2App v2_app_6(profile1, extension1_.get());
   EXPECT_FALSE(v2_app_1.window()->GetNativeWindow()->IsVisible());
@@ -4065,14 +4056,12 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
 
   // Switch to a new profile
   SwitchActiveUser(account_id2);
-  app_service_test().FlushMojoCalls();
   EXPECT_FALSE(shelf_controller_->IsAppPinned(app_id));
   EXPECT_EQ(1, model_->item_count());
   EXPECT_FALSE(shelf_controller_->GetShelfSpinnerController()->HasApp(app_id));
 
   // Switch back
   SwitchActiveUser(account_id);
-  app_service_test().FlushMojoCalls();
   EXPECT_TRUE(shelf_controller_->IsAppPinned(app_id));
   EXPECT_EQ(2, model_->item_count());
   EXPECT_TRUE(shelf_controller_->GetShelfSpinnerController()->HasApp(app_id));
@@ -4617,7 +4606,6 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, PlayStoreDeferredLaunch) {
       model_->GetShelfItemDelegate(ash::ShelfID(arc::kPlayStoreAppId));
   EXPECT_TRUE(item_delegate);
   SelectItem(item_delegate);
-  app_service_test().FlushMojoCalls();
   EXPECT_TRUE(shelf_controller_->IsAppPinned(arc::kPlayStoreAppId));
   EXPECT_TRUE(shelf_controller_->GetShelfSpinnerController()->HasApp(
       arc::kPlayStoreAppId));
@@ -4999,8 +4987,6 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOnline) {
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
 
-  app_service_test().FlushMojoCalls();
-
   // Since the device is online, all policy pinned apps are pinned.
   EXPECT_TRUE(shelf_controller_->IsAppPinned(extension1_->id()));
   EXPECT_EQ(AppListControllerDelegate::PIN_FIXED,
@@ -5059,7 +5045,6 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOffline) {
 
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
-  app_service_test().FlushMojoCalls();
 
   // Since the device is offline, the policy pinned apps that shouldn't be
   // pinned in Demo Mode are unpinned.

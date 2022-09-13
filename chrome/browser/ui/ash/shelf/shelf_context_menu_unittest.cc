@@ -227,7 +227,6 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
 
   void SendRefreshAppList(const std::vector<arc::mojom::AppInfoPtr>& apps) {
     arc_test_.app_instance()->SendRefreshAppList(apps);
-    app_service_test_.FlushMojoCalls();
   }
 
   void LaunchApp(const std::string& app_id,
@@ -640,7 +639,6 @@ TEST_F(ShelfContextMenuTest, InternalAppShelfContextMenuOptionsNumber) {
 TEST_F(ShelfContextMenuTest, CrostiniNormalApp) {
   const std::string app_name = "foo";
   crostini_helper()->AddApp(crostini::CrostiniTestHelper::BasicApp(app_name));
-  app_service_test().FlushMojoCalls();
   const std::string app_id =
       crostini::CrostiniTestHelper::GenerateAppId(app_name);
   guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile())
@@ -701,7 +699,6 @@ TEST_F(ShelfContextMenuTest, WebApp) {
   constexpr char kWebAppUrl[] = "https://webappone.com/";
   constexpr char kWebAppName[] = "WebApp1";
 
-  app_service_test().FlushMojoCalls();
   const web_app::AppId app_id = web_app::test::InstallDummyWebApp(
       profile(), kWebAppName, GURL(kWebAppUrl));
 
