@@ -33,21 +33,9 @@ class FileClusteringBackend : public ClusteringBackend {
   // invalid.
   FileClusteringBackend();
 
-  // Fulfills the request for the clusters for `visits` by returning
-  // all non-empty clusters after `clusters_from_command_line_` is filtered by
-  // `visits`. Will get the clusters from the file specified by the command line
-  // if file has not attempted to be read yet.
-  std::vector<history::Cluster> GetClustersOnBackgroundThread(
-      std::vector<history::AnnotatedVisit> visits);
-
   // The background task runner that processes the file passes in the command
   // line and does the heavy lifting for responding to cluster requests.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
-
-  // The clusters passed via command line. Will be nullopt until first call to
-  // `GetClusters`. Should only be accessed on the same sequence as
-  // `background_task_runner_`.
-  absl::optional<std::vector<history::Cluster>> clusters_from_command_line_;
 };
 
 }  // namespace history_clusters

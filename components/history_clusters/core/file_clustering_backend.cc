@@ -140,44 +140,10 @@ std::vector<history::Cluster> GetClustersFromFile() {
   return clusters;
 }
 
-}  // namespace
-
-FileClusteringBackend::FileClusteringBackend()
-    : background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {}
-FileClusteringBackend::~FileClusteringBackend() = default;
-
-// static
-std::unique_ptr<FileClusteringBackend>
-FileClusteringBackend::CreateIfEnabled() {
-  return GetClustersOverrideFilePath()
-             ? base::WrapUnique<FileClusteringBackend>(
-                   new FileClusteringBackend)
-             : nullptr;
-}
-
-void FileClusteringBackend::GetClusters(
-    ClusteringRequestSource clustering_request_source,
-    ClustersCallback callback,
+std::vector<history::Cluster> GetClustersOnBackgroundThread(
     std::vector<history::AnnotatedVisit> visits) {
-  background_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      // As `background_task_runner_` is owned and created by `this`, `this` is
-      // guaranteed to outlive `background_task_runer_` so using
-      // base::Unretained here is safe.
-      base::BindOnce(&FileClusteringBackend::GetClustersOnBackgroundThread,
-                     base::Unretained(this), std::move(visits)),
-      base::BindOnce(std::move(callback)));
-}
-
-std::vector<history::Cluster>
-FileClusteringBackend::GetClustersOnBackgroundThread(
-    std::vector<history::AnnotatedVisit> visits) {
-  if (!clusters_from_command_line_) {
-    // Read and parse the file for clusters if we haven't attempted to already.
-    clusters_from_command_line_ = GetClustersFromFile();
-  }
-  DCHECK(clusters_from_command_line_);
+  std::vector<history::Cluster> clusters_from_command_line =
+      GetClustersFromFile();
 
   // Build a map from visit ID to visit to make it easier for lookup when we
   // generate the clusters.
@@ -188,7 +154,7 @@ FileClusteringBackend::GetClustersOnBackgroundThread(
   }
 
   std::vector<history::Cluster> clusters;
-  for (const auto& cluster : *clusters_from_command_line_) {
+  for (const auto& cluster : clusters_from_command_line) {
     history::Cluster in_progress_cluster = cluster;
     in_progress_cluster.visits.clear();
 
@@ -236,6 +202,32 @@ FileClusteringBackend::GetClustersOnBackgroundThread(
   }
 
   return clusters;
+}
+
+}  // namespace
+
+FileClusteringBackend::FileClusteringBackend()
+    : background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {}
+FileClusteringBackend::~FileClusteringBackend() = default;
+
+// static
+std::unique_ptr<FileClusteringBackend>
+FileClusteringBackend::CreateIfEnabled() {
+  return GetClustersOverrideFilePath()
+             ? base::WrapUnique<FileClusteringBackend>(
+                   new FileClusteringBackend)
+             : nullptr;
+}
+
+void FileClusteringBackend::GetClusters(
+    ClusteringRequestSource clustering_request_source,
+    ClustersCallback callback,
+    std::vector<history::AnnotatedVisit> visits) {
+  background_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&GetClustersOnBackgroundThread, std::move(visits)),
+      base::BindOnce(std::move(callback)));
 }
 
 }  // namespace history_clusters
