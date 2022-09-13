@@ -465,7 +465,7 @@ const base::Feature kAutofillRemoveInaccessibleProfileValuesOnStartup{
 // TODO(crbug.com/1298424): Cleanup when launched.
 const base::Feature kAutofillRemoveInvalidPhoneNumberOnImport{
     "AutofillRemoveInvalidPhoneNumberOnImport",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether or not overall prediction are retrieved from the cache.
 const base::Feature kAutofillRetrieveOverallPredictionsFromCache{

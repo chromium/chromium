@@ -841,14 +841,9 @@ TEST_P(FormDataImporterTest, PhoneNumberRegionMetrics) {
             ConstructFormStructureFromTypeValuePairs(
                 profile_with_invalid_phone_number);
 
-        // Profiles with invalid phone number are rejected.
-        bool expect_success =
-            expected_result == AutofillMetrics::PhoneNumberImportParsingResult::
-                                   PARSED_WITH_VARIATION_COUNTRY_CODE ||
-            expected_result == AutofillMetrics::PhoneNumberImportParsingResult::
-                                   PARSED_WITH_BOTH;
+        // An invalid phone number is removed on import.
         base::HistogramTester histogram_tester;
-        ImportAddressProfiles(expect_success, *form_structure);
+        ImportAddressProfiles(/*extraction_successful=*/true, *form_structure);
         EXPECT_THAT(
             histogram_tester.GetAllSamples(
                 "Autofill.ProfileImport.PhoneNumberParsingResult"),
