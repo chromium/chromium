@@ -135,6 +135,13 @@ const char* kAllowedAppsForMultiWordSuggester[] = {
     "mmfbcljfglbokpmkimbfghdkjmjhdgbg",  // System text
 };
 
+const char* kDeniedDomainAndPathsForDiacritics[][2] = {
+    // Google Slides: delete on insert does not work
+    {"docs.google.com", "/presentation"},
+    // Google Docs: delete on insert does not work
+    {"docs.google.com", "/document"},
+};
+
 const char* kDeniedAppsForDiacritics[] = {
     "iodihamcpbpeioajjeobimgagajmlibd",  // SSH app
     "cgfnfgkafmcdkdgilmojlnaadileaach",  // Crosh app
@@ -201,7 +208,9 @@ void ReturnEnabledSuggestions(
     const absl::optional<GURL>& current_url) {
   // Deny-list (will block if matched, otherwise allow)
   bool diacritic_suggestions_allowed =
-      !IsMatchedApp(kDeniedAppsForDiacritics, window_properties);
+      !IsMatchedApp(kDeniedAppsForDiacritics, window_properties) &&
+      !(current_url && IsMatchedUrlWithPathPrefix(
+                           kDeniedDomainAndPathsForDiacritics, *current_url));
 
   // TODO(b/245469813): Investigate if denied is intentional for suggesters
   // below is intentional.
