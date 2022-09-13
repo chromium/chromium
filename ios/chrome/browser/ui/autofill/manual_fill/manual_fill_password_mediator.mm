@@ -273,8 +273,13 @@ BOOL AreCredentialsAtIndexesConnected(
         manual_fill::OtherPasswordsAccessibilityIdentifier;
     [actions addObject:otherPasswordsItem];
 
-    NSString* managePasswordsTitle =
-        l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_MANAGE_PASSWORDS);
+    // TODO(crbug.com/1361357) Remove IDS_IOS_MANUAL_FALLBACK_MANAGE_PASSWORDS
+    // after kIOSPasswordUISplit is on by default.
+    NSString* managePasswordsTitle = l10n_util::GetNSString(
+        base::FeatureList::IsEnabled(
+            password_manager::features::kIOSPasswordUISplit)
+            ? IDS_IOS_MANUAL_FALLBACK_MANAGE_SETTINGS
+            : IDS_IOS_MANUAL_FALLBACK_MANAGE_PASSWORDS);
     auto managePasswordsItem = [[ManualFillActionItem alloc]
         initWithTitle:managePasswordsTitle
                action:^{

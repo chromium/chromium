@@ -10,6 +10,7 @@
 #import "base/scoped_observation.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/signin/ios/browser/active_state_manager.h"
@@ -50,6 +51,7 @@
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_type.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_coordinator.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_coordinator.h"
 #import "ios/chrome/browser/ui/badges/badge_popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_coordinator.h"
@@ -122,6 +124,8 @@
 #import "ios/chrome/browser/ui/safe_browsing/safe_browsing_coordinator.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_coordinator.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_coordinator.h"
@@ -190,6 +194,7 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
                                   PageInfoPresentation,
                                   PasswordBreachCommands,
                                   PasswordProtectionCommands,
+                                  PasswordSettingsCoordinatorDelegate,
                                   PasswordSuggestionCommands,
                                   PasswordSuggestionCoordinatorDelegate,
                                   PolicyChangeCommands,
@@ -288,6 +293,10 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 // Coordinator for the password protection UI presentation.
 @property(nonatomic, strong)
     PasswordProtectionCoordinator* passwordProtectionCoordinator;
+
+// Coordinator for the password settings UI presentation.
+@property(nonatomic, strong)
+    PasswordSettingsCoordinator* passwordSettingsCoordinator;
 
 // Coordinator for the password suggestion UI presentation.
 @property(nonatomic, strong)
@@ -502,6 +511,10 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 
   [_sendTabToSelfCoordinator stop];
   _sendTabToSelfCoordinator = nil;
+
+  [self.passwordSettingsCoordinator stop];
+  self.passwordSettingsCoordinator.delegate = nil;
+  self.passwordSettingsCoordinator = nil;
 
   [self.viewController clearPresentedStateWithCompletion:completion
                                           dismissOmnibox:dismissOmnibox];
@@ -884,6 +897,8 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 
   /* passwordProtectionCoordinator is created and started by a BrowserCommand */
 
+  /* passwordSettingsCoordinator is created and started by a delegate method */
+
   /* passwordSuggestionCoordinator is created and started by a BrowserCommand */
 
   /* ReadingListCoordinator is created and started by a BrowserCommand */
@@ -1057,6 +1072,10 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 
   [self.whatsNewCoordinator stop];
   self.whatsNewCoordinator = nil;
+
+  [self.passwordSettingsCoordinator stop];
+  self.passwordSettingsCoordinator.delegate = nil;
+  self.passwordSettingsCoordinator = nil;
 }
 
 // Starts mediators owned by this coordinator.
@@ -1534,9 +1553,22 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 #pragma mark - FormInputAccessoryCoordinatorNavigator
 
 - (void)openPasswordSettings {
-  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
-      showSavedPasswordsSettingsFromViewController:self.viewController
-                                  showCancelButton:YES];
+  // TODO(crbug.com/1361357) Remove call to
+  // `showSavedPasswordsSettingsFromViewController` once `kIOSPasswordUISplit`
+  // is on by default.
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kIOSPasswordUISplit)) {
+    DCHECK(!self.passwordSettingsCoordinator);
+    self.passwordSettingsCoordinator = [[PasswordSettingsCoordinator alloc]
+        initWithBaseViewController:self.viewController
+                           browser:self.browser];
+    self.passwordSettingsCoordinator.delegate = self;
+    [self.passwordSettingsCoordinator start];
+  } else {
+    [HandlerForProtocol(self.dispatcher, ApplicationCommands)
+        showSavedPasswordsSettingsFromViewController:self.viewController
+                                    showCancelButton:YES];
+  }
 }
 
 - (void)openAddressSettings {
@@ -2332,6 +2364,16 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 
 - (CGPoint)convertToPresentationCoordinatesForOrigin:(CGPoint)origin {
   return [self.viewController.view convertPoint:origin fromView:nil];
+}
+
+#pragma mark - PasswordSettingsCoordinatorDelegate
+
+- (void)passwordSettingsCoordinatorDidRemove:
+    (PasswordSettingsCoordinator*)coordinator {
+  DCHECK_EQ(self.passwordSettingsCoordinator, coordinator);
+  [self.passwordSettingsCoordinator stop];
+  self.passwordSettingsCoordinator.delegate = nil;
+  self.passwordSettingsCoordinator = nil;
 }
 
 @end
