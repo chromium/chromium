@@ -537,6 +537,9 @@ ios_builder(
         ),
     ],
     cq_mirrors_console_view = "mirrors",
+    goma_backend = None,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ios_builder(
