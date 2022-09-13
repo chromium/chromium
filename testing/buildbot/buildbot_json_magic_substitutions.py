@@ -149,6 +149,36 @@ def GPUParallelJobs(test_config, _, tester_config):
   return ['--jobs=1']
 
 
+def GPUTelemetryNoRootForUnrootedDevices(test_config, _, tester_config):
+  """Disables Telemetry's root requests for unrootable Android devices.
+
+  Args:
+    test_config: A dict containing a configuration for a specific test on a
+        specific builder.
+    tester_config: A dict containing the configuration for the builder
+        that |test_config| is for.
+  """
+  os_type = tester_config.get('os_type')
+  assert os_type
+  if os_type != 'android':
+    return []
+
+  unrooted_devices = {'a13', 'a23'}
+  dimensions = test_config.get('swarming', {}).get('dimension_sets', [])
+  assert dimensions
+  num_unrooted_devices = 0
+  for d in dimensions:
+    device_type = d.get('device_type')
+    if device_type in unrooted_devices:
+      num_unrooted_devices += 1
+  # All devices should be either rooted or unrooted.
+  if num_unrooted_devices == 0:
+    return []
+  if num_unrooted_devices == len(dimensions):
+    return ['--compatibility-mode=dont-require-rooted-device']
+  raise RuntimeError('All devices must be either rooted or unrooted')
+
+
 def TestOnlySubstitution(_, __, ___):
   """Magic substitution used for unittests."""
   return ['--magic-substitution-success']

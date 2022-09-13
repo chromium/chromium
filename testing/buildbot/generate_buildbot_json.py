@@ -548,7 +548,8 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
           |test_config| is for.
     """
     substituted_array = []
-    for arg in test_config.get('args', []):
+    original_args = test_config.get('args', [])
+    for arg in original_args:
       if arg.startswith(magic_substitutions.MAGIC_SUBSTITUTION_PREFIX):
         function = arg.replace(
             magic_substitutions.MAGIC_SUBSTITUTION_PREFIX, '')
@@ -561,7 +562,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
               'Magic substitution function %s does not exist' % function)
       else:
         substituted_array.append(arg)
-    if substituted_array:
+    if substituted_array != original_args:
       test_config['args'] = self.maybe_fixup_args_array(substituted_array)
 
   def dictionary_merge(self, a, b, path=None, update=True):

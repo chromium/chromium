@@ -180,5 +180,50 @@ class GPUParallelJobs(unittest.TestCase):
             self.assertEqual(retval, ['--jobs=4'])
 
 
+def CreateConfigWithDeviceTypes(device_types):
+  dimension_sets = []
+  for d in device_types:
+    dimension_sets.append({'device_type': d})
+  return {
+      'swarming': {
+          'dimension_sets': dimension_sets,
+      },
+  }
+
+
+class GPUTelemetryNoRootForUnrootedDevices(unittest.TestCase):
+  def testNoOsType(self):
+    test_config = CreateConfigWithDeviceTypes(['a13'])
+    with self.assertRaises(AssertionError):
+      magic_substitutions.GPUTelemetryNoRootForUnrootedDevices(
+          test_config, None, {})
+
+  def testNonAndroidOs(self):
+    retval = magic_substitutions.GPUTelemetryNoRootForUnrootedDevices(
+        {}, None, {'os_type': 'linux'})
+    self.assertEqual(retval, [])
+
+  def testUnrootedDevices(self):
+    devices = ('a13', 'a23')
+    for d in devices:
+      test_config = CreateConfigWithDeviceTypes([d])
+      retval = magic_substitutions.GPUTelemetryNoRootForUnrootedDevices(
+          test_config, None, {'os_type': 'android'})
+      self.assertEqual(retval,
+                       ['--compatibility-mode=dont-require-rooted-device'])
+
+  def testMixedDevices(self):
+    test_config = CreateConfigWithDeviceTypes(['hammerhead', 'a13'])
+    with self.assertRaises(RuntimeError):
+      magic_substitutions.GPUTelemetryNoRootForUnrootedDevices(
+          test_config, None, {'os_type': 'android'})
+
+  def testRootedDevices(self):
+    test_config = CreateConfigWithDeviceTypes(['hammerhead'])
+    retval = magic_substitutions.GPUTelemetryNoRootForUnrootedDevices(
+        test_config, None, {'os_type': 'android'})
+    self.assertEqual(retval, [])
+
+
 if __name__ == '__main__':
   unittest.main()
