@@ -543,6 +543,39 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
 }
 
 TEST_P(DiceWebSigninInterceptorManagedAccountTest,
+       EnforceManagedAccountAsPrimaryManagedLinkDataSecondaryAccount) {
+  AccountInfo primary_account_info =
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "alice@example.com", signin::ConsentLevel::kSignin);
+  MakeValidAccountInfo(&primary_account_info, "example.com");
+  identity_test_env()->UpdateAccountInfoForAccount(primary_account_info);
+
+  std::string email = "bob@example.com";
+  AccountInfo account_info = identity_test_env()->MakeAccountAvailable(email);
+  MakeValidAccountInfo(&account_info, "example.com");
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  profile()->GetPrefs()->SetBoolean(
+      prefs::kManagedAccountsSigninRestrictionScopeMachine, true);
+  profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                   "primary_account_keep_existing_data");
+
+  // Check that interception works otherwise, as a sanity check.
+  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
+      DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced,
+      account_info, primary_account_info, SkColor(),
+      /*show_guest_option=*/false,
+      /*show_link_data_option=*/false);
+  EXPECT_CALL(*mock_delegate(),
+              ShowSigninInterceptionBubble(
+                  web_contents(), MatchBubbleParameters(expected_parameters),
+                  testing::_));
+  TestSynchronousInterception(
+      account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
+      SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
+}
+
+TEST_P(DiceWebSigninInterceptorManagedAccountTest,
        EnforceManagedAccountAsPrimaryManagedStrictLinkData) {
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("alice@example.com");
@@ -557,6 +590,37 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
       DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced,
       account_info, AccountInfo(), SkColor(), /*show_guest_option=*/false,
       /*show_link_data_option=*/true);
+  EXPECT_CALL(*mock_delegate(),
+              ShowSigninInterceptionBubble(
+                  web_contents(), MatchBubbleParameters(expected_parameters),
+                  testing::_));
+  TestSynchronousInterception(
+      account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
+      SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
+}
+
+TEST_P(DiceWebSigninInterceptorManagedAccountTest,
+       EnforceManagedAccountAsPrimaryManagedStrictLinkDataSecondaryAccount) {
+  AccountInfo primary_account_info =
+      identity_test_env()->MakePrimaryAccountAvailable(
+          "alice@example.com", signin::ConsentLevel::kSignin);
+  MakeValidAccountInfo(&primary_account_info, "example.com");
+  identity_test_env()->UpdateAccountInfoForAccount(primary_account_info);
+
+  std::string email = "bob@example.com";
+  AccountInfo account_info = identity_test_env()->MakeAccountAvailable(email);
+  MakeValidAccountInfo(&account_info, "example.com");
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                   "primary_account_strict_keep_existing_data");
+
+  // Check that interception works otherwise, as a sanity check.
+  DiceWebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
+      DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced,
+      account_info, primary_account_info, SkColor(),
+      /*show_guest_option=*/false,
+      /*show_link_data_option=*/false);
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
