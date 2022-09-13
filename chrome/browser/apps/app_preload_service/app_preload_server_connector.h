@@ -9,6 +9,8 @@
 
 namespace apps {
 
+class DeviceInfoManager;
+
 using GetInitialAppsCallback = base::OnceCallback<void()>;
 
 // The AppPreloadServerConnector is used to talk to the App Provisioning Service
@@ -22,7 +24,8 @@ class AppPreloadServerConnector {
       delete;
   ~AppPreloadServerConnector();
 
-  void GetAppsForFirstLogin(GetInitialAppsCallback callback);
+  void GetAppsForFirstLogin(const DeviceInfoManager& device_info,
+                            GetInitialAppsCallback callback);
 };
 
 }  // namespace apps

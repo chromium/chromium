@@ -4730,6 +4730,8 @@ static_library("browser") {
       "apps/app_preload_service/app_preload_service.h",
       "apps/app_preload_service/app_preload_service_factory.cc",
       "apps/app_preload_service/app_preload_service_factory.h",
+      "apps/app_preload_service/device_info_manager.cc",
+      "apps/app_preload_service/device_info_manager.h",
       "apps/app_provisioning_service/app_provisioning_data_manager.cc",
       "apps/app_provisioning_service/app_provisioning_data_manager.h",
       "apps/app_service/app_icon/arc_activity_adaptive_icon_impl.cc",

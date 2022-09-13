@@ -13,6 +13,7 @@ AppPreloadServerConnector::AppPreloadServerConnector() = default;
 AppPreloadServerConnector::~AppPreloadServerConnector() = default;
 
 void AppPreloadServerConnector::GetAppsForFirstLogin(
+    const DeviceInfoManager& device_info,
     GetInitialAppsCallback callback) {
   std::move(callback).Run();
 }
