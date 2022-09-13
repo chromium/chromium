@@ -38,6 +38,10 @@ struct HotspotConfig {
   string ssid;
   // Passphrase for WiFi downstream.
   string passphrase;
+  // When set to true, a new randomized BSSID will be used every time the
+  // hotspot starts up, even if no other configuration metadata (e.g.: SSID)
+  // has changed.
+  bool bssid_randomization;
 };
 
 // Result code when setting hotspot configuration.

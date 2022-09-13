@@ -136,7 +136,7 @@ hotspot_config::mojom::HotspotConfigPtr ShillTetheringConfigToMojomConfig(
   if (!auto_disable) {
     NET_LOG(ERROR) << "Auto_disable not found in tethering config.";
   }
-  result->auto_disable = auto_disable ? *auto_disable : false;
+  result->auto_disable = auto_disable.value_or(true);
   const std::string* wifi_band = shill_tethering_config.GetDict().FindString(
       shill::kTetheringConfBandProperty);
   if (!wifi_band) {
@@ -167,6 +167,16 @@ hotspot_config::mojom::HotspotConfigPtr ShillTetheringConfigToMojomConfig(
     NET_LOG(ERROR) << "Passphrase not found in tethering config.";
   }
   result->passphrase = passphrase ? *passphrase : std::string();
+  absl::optional<bool> bssid_randomization =
+      shill_tethering_config.GetDict().FindBool(
+          shill::kTetheringConfMARProperty);
+  if (!bssid_randomization) {
+    NET_LOG(ERROR) << shill::kTetheringConfMARProperty
+                   << " not found in tethering config.";
+  }
+  // Default to true for privacy concern, specifically, to lower the possibility
+  // of a user tracking.
+  result->bssid_randomization = bssid_randomization.value_or(true);
   return result;
 }
 
@@ -186,6 +196,8 @@ base::Value MojomConfigToShillConfig(
                        base::Value(HexEncode(mojom_config->ssid)));
   result.GetDict().Set(shill::kTetheringConfPassphraseProperty,
                        base::Value(mojom_config->passphrase));
+  result.GetDict().Set(shill::kTetheringConfMARProperty,
+                       base::Value(mojom_config->bssid_randomization));
   return result;
 }
 

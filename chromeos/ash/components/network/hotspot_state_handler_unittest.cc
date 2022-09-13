@@ -35,6 +35,7 @@ chromeos::hotspot_config::mojom::HotspotConfigPtr GenerateTestConfig() {
       chromeos::hotspot_config::mojom::WiFiSecurityMode::kWpa2;
   mojom_config->ssid = kHotspotConfigSSID;
   mojom_config->passphrase = kHotspotConfigPassphrase;
+  mojom_config->bssid_randomization = false;
   return mojom_config;
 }
 
@@ -386,14 +387,15 @@ TEST_F(HotspotStateHandlerTest, SetAndGetHotspotConfig) {
             SetHotspotConfig(GenerateTestConfig()));
   EXPECT_EQ(1u, observer_.hotspot_status_changed_count());
   auto hotspot_config = hotspot_state_handler_->GetHotspotConfig();
-  ASSERT_TRUE(hotspot_config);
-  ASSERT_FALSE(hotspot_config->auto_disable);
+  EXPECT_TRUE(hotspot_config);
+  EXPECT_FALSE(hotspot_config->auto_disable);
   EXPECT_EQ(hotspot_config->band,
             chromeos::hotspot_config::mojom::WiFiBand::k5GHz);
   EXPECT_EQ(hotspot_config->security,
             chromeos::hotspot_config::mojom::WiFiSecurityMode::kWpa2);
   EXPECT_EQ(hotspot_config->ssid, kHotspotConfigSSID);
   EXPECT_EQ(hotspot_config->passphrase, kHotspotConfigPassphrase);
+  EXPECT_FALSE(hotspot_config->bssid_randomization);
 
   Logout();
   ASSERT_FALSE(hotspot_state_handler_->GetHotspotConfig());
