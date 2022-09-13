@@ -89,7 +89,7 @@ bool IsNonPercentage(double value,
 
 }  // namespace
 
-VTTRegion::VTTRegion()
+VTTRegion::VTTRegion(Document& document)
     : id_(g_empty_string),
       width_(kDefaultRegionWidth),
       lines_(kDefaultHeightInLines),
@@ -97,7 +97,7 @@ VTTRegion::VTTRegion()
       viewport_anchor_(gfx::PointF(kDefaultAnchorPointX, kDefaultAnchorPointY)),
       scroll_(kDefaultScroll),
       current_top_(0),
-      scroll_timer_(Thread::Current()->GetDeprecatedTaskRunner(),
+      scroll_timer_(document.GetTaskRunner(TaskType::kInternalMedia),
                     this,
                     &VTTRegion::ScrollTimerFired) {}
 

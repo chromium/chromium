@@ -49,9 +49,11 @@ class VTTRegion final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static VTTRegion* Create() { return MakeGarbageCollected<VTTRegion>(); }
+  static VTTRegion* Create(Document& document) {
+    return MakeGarbageCollected<VTTRegion>(document);
+  }
 
-  VTTRegion();
+  explicit VTTRegion(Document& document);
   ~VTTRegion() override;
 
   const String& id() const { return id_; }

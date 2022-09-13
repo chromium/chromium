@@ -323,7 +323,7 @@ bool VTTParser::CheckAndCreateRegion(const String& line) {
   // (tab) characters expected other than these characters it is invalid.
   if (line.StartsWith("REGION") && StringView(line, kRegionIdentifierLength)
                                        .IsAllSpecialCharacters<IsASpace>()) {
-    current_region_ = VTTRegion::Create();
+    current_region_ = VTTRegion::Create(*document_);
     return true;
   }
   return false;
