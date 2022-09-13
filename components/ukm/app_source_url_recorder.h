@@ -22,6 +22,10 @@ namespace app_list {
 class AppLaunchEventLogger;
 }  // namespace app_list
 
+namespace arc::input_overlay {
+class InputOverlayUkm;
+}  // namespace arc::input_overlay
+
 namespace badging {
 class BadgeManager;
 }  // namespace badging
@@ -37,6 +41,8 @@ class AppSourceUrlRecorder {
   friend class AppSourceUrlRecorderTest;
 
   friend class app_list::AppLaunchEventLogger;
+
+  friend class arc::input_overlay::InputOverlayUkm;
 
   friend class badging::BadgeManager;
 

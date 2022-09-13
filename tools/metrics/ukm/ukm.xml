@@ -6950,6 +6950,72 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="GamingInputOverlay.Customization">
+  <owner>pjlee@google.com</owner>
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    An event for gaming input overlay that is logged when users enter into edit
+    mode.
+  </summary>
+  <metric name="CustomizationUsed" enum="Boolean">
+    <summary>
+      Whether the customization option was used.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="GamingInputOverlay.Feature">
+  <owner>pjlee@google.com</owner>
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    An event for gaming input overlay that is logged when the input overlay
+    feature itself changes state.
+  </summary>
+  <metric name="FeatureStateOn" enum="Boolean">
+    <summary>
+      Whether the gaming input overlay feature is in use.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="GamingInputOverlay.MappingHint">
+  <owner>pjlee@google.com</owner>
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    An event for gaming input overlay that is logged when the mapping hint state
+    is changed.
+  </summary>
+  <metric name="MappingHintStateOn" enum="Boolean">
+    <summary>
+      Whether the mapping hint for gaming input overlay is on.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="GeneratedNavigation" singular="True">
   <owner>ryansturm@chromium.org</owner>
   <owner>avi@chromium.org</owner>
