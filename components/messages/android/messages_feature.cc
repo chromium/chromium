@@ -4,9 +4,33 @@
 
 #include "components/messages/android/messages_feature.h"
 
+#include "base/android/jni_string.h"
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "components/messages/android/jni_headers/MessageFeatureList_jni.h"
+
+using base::android::ConvertJavaStringToUTF8;
+using base::android::JavaParamRef;
 
 namespace messages {
+
+namespace {
+
+const base::Feature* kFeaturesExposedToJava[] = {
+    &kMessagesForAndroidStackingAnimation,
+};
+
+const base::Feature* FindFeatureExposedToJava(const std::string& feature_name) {
+  for (const base::Feature* feature : kFeaturesExposedToJava) {
+    if (feature->name == feature_name)
+      return feature;
+  }
+  NOTREACHED() << "Queried feature not found in MessageFeatureList: "
+               << feature_name;
+  return nullptr;
+}
+
+}  // namespace
 
 const base::Feature kMessagesForAndroidAdsBlocked{
     "MessagesForAndroidAdsBlocked", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -152,6 +176,14 @@ bool UseGPayIconForSaveCardMessage() {
 
 bool UseDialogV2ForSaveCardMessage() {
   return kMessagesForAndroidSaveCard_UseDialogV2.Get();
+}
+
+static jboolean JNI_MessageFeatureList_IsEnabled(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& jfeature_name) {
+  const base::Feature* feature =
+      FindFeatureExposedToJava(ConvertJavaStringToUTF8(env, jfeature_name));
+  return base::FeatureList::IsEnabled(*feature);
 }
 
 }  // namespace messages

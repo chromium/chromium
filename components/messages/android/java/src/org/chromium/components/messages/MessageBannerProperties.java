@@ -120,6 +120,7 @@ public class MessageBannerProperties {
     static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
     static final WritableObjectPropertyKey<Runnable> ON_TOUCH_RUNNABLE =
             new WritableObjectPropertyKey<>();
+    static final WritableFloatPropertyKey ELEVATION = new WritableFloatPropertyKey();
     // PRIMARY_BUTTON_CLICK_LISTENER is SingleActionMessage's handler attached to primary button
     // view. SingleActionMessage calls ON_PRIMARY_ACTION from the handler.
     static final WritableObjectPropertyKey<OnClickListener> PRIMARY_BUTTON_CLICK_LISTENER =
@@ -136,5 +137,5 @@ public class MessageBannerProperties {
             ON_SECONDARY_BUTTON_CLICK, SECONDARY_ICON_CONTENT_DESCRIPTION, DISMISSAL_DURATION,
             TRANSLATION_X, TRANSLATION_Y, ALPHA, ON_TOUCH_RUNNABLE, ON_PRIMARY_ACTION,
             ON_SECONDARY_ACTION, ON_DISMISSED, ON_STARTED_SHOWING, SECONDARY_MENU_BUTTON_DELEGATE,
-            SECONDARY_MENU_MAX_SIZE, PRIMARY_WIDGET_APPEARANCE};
+            SECONDARY_MENU_MAX_SIZE, PRIMARY_WIDGET_APPEARANCE, ELEVATION};
 }

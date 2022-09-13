@@ -101,8 +101,20 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
                     mAnimatorStartCallback, mAutodismissDurationMs,
                     () -> { mDismissHandler.invoke(mModel, DismissReason.TIMER); });
         }
-        mContainer.addMessage(mView);
-        mContainer.setA11yDelegate(this);
+
+        // Update elevation to ensure background view is always behind the front one.
+        int elevationDimen = endIndex == Position.FRONT ? R.dimen.message_banner_elevation
+                                                        : R.dimen.message_banner_back_elevation;
+        mModel.set(MessageBannerProperties.ELEVATION,
+                mView.getResources().getDimension(elevationDimen));
+        // #show can be called multiple times when its own index is updated.
+        if (mContainer.indexOfChild(mView) == -1) {
+            mContainer.addMessage(mView);
+        }
+
+        if (endIndex == Position.FRONT) {
+            mContainer.setA11yDelegate(this);
+        }
 
         mMessageShownTime = MessagesMetrics.now();
         return mMessageBanner.show();
