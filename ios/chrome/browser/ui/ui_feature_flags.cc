@@ -94,8 +94,3 @@ const base::Feature kMapsExperienceKit{"MapsExperienceKit",
 
 const base::Feature kEnableMiniMap{"EnableMiniMap",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kIOSNewPostRestoreExperience{
-    "IOSNewPostRestoreExperience", base::FEATURE_DISABLED_BY_DEFAULT};
-const char kIOSNewPostRestoreExperienceParam[] =
-    "ios-new-post-restore-experience";

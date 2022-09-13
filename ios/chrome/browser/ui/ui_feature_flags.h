@@ -111,9 +111,4 @@ extern const base::Feature kMapsExperienceKit;
 // Feature flag to enable Mini Map in experience kit.
 extern const base::Feature kEnableMiniMap;
 
-// Feature flag and param that enables the new post device restore experience
-// which will prompt the user to sign-in again.
-extern const base::Feature kIOSNewPostRestoreExperience;
-extern const char kIOSNewPostRestoreExperienceParam[];
-
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

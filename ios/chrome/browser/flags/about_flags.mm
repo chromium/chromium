@@ -88,6 +88,7 @@
 #import "ios/chrome/browser/ui/open_in/features.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/public/features.h"
+#import "ios/chrome/browser/ui/post_restore_signin/features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_features.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -581,7 +582,7 @@ const FeatureEntry::FeatureVariation kAutofillBrandingIOSVariations[] = {
      std::size(kAutofillBrandingIOSMonotone), nullptr}};
 
 const FeatureEntry::FeatureParam kIOSNewPostRestoreExperienceMinimal[] = {
-    {kIOSNewPostRestoreExperienceParam, "minimal"}};
+    {post_restore_signin::features::kIOSNewPostRestoreExperienceParam, "true"}};
 const FeatureEntry::FeatureVariation kIOSNewPostRestoreExperienceVariations[] =
     {{"minimal", kIOSNewPostRestoreExperienceMinimal,
       std::size(kIOSNewPostRestoreExperienceMinimal), nullptr}};
@@ -1250,9 +1251,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSNewPostRestoreExperienceName,
      flag_descriptions::kIOSNewPostRestoreExperienceDescription,
      flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSNewPostRestoreExperience,
-                                    kIOSNewPostRestoreExperienceVariations,
-                                    "IOSNewPostRestoreExperience")},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         post_restore_signin::features::kIOSNewPostRestoreExperience,
+         kIOSNewPostRestoreExperienceVariations,
+         "IOSNewPostRestoreExperience")},
     {"most-visited-tiles", flag_descriptions::kMostVisitedTilesName,
      flag_descriptions::kMostVisitedTilesDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(omnibox::kMostVisitedTiles)},

@@ -1,0 +1,8 @@
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  public_deps = [ "//base" ]
+}
