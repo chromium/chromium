@@ -153,8 +153,6 @@ class ArcMetricsService : public KeyedService,
                          int64_t duration_ms) override;
   void ReportMemoryPressure(const std::vector<uint8_t>& psiFile) override;
   void ReportProvisioningPreSignIn() override;
-  void DEPRECATED_ReportWaylandLateTimingDuration(
-      base::TimeDelta duration) override;
   void ReportWaylandLateTimingEvent(mojom::WaylandTimingEvent event,
                                     base::TimeDelta duration) override;
   void ReportNonAndroidPlayFilesCount(

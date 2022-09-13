@@ -777,13 +777,6 @@ void ArcMetricsService::ReportProvisioningPreSignIn() {
   }
 }
 
-// TODO(b/244908773): Remove deprecated function.
-void ArcMetricsService::DEPRECATED_ReportWaylandLateTimingDuration(
-    base::TimeDelta duration) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::UmaHistogramLongTimes("Arc.Wayland.LateTiming.Duration", duration);
-}
-
 void ArcMetricsService::ReportWaylandLateTimingEvent(
     mojom::WaylandTimingEvent event,
     base::TimeDelta duration) {

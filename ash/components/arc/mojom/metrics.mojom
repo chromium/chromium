@@ -469,10 +469,6 @@ interface MetricsHost {
   [MinVersion=22] ReportProvisioningPreSignIn@24();
 
   // Reports the duration of late timing events for Wayland.
-  [MinVersion=23] DEPRECATED_ReportWaylandLateTimingDuration@25(
-      mojo_base.mojom.TimeDelta duration);
-
-  // Reports the duration of late timing events for Wayland.
   [MinVersion=26] ReportWaylandLateTimingEvent@30(
       WaylandTimingEvent event, mojo_base.mojom.TimeDelta duration);
 
