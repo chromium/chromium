@@ -1,5 +1,16 @@
 include_rules = [
   "+components/origin_trials/common",
+  "+components/prefs",
+  "+components/user_prefs",
+
+  "+content/public/browser",
 
   "+third_party/blink/public/common/origin_trials",
 ]
+
+specific_include_rules = {
+  ".*_unittest\.cc": [
+    "+components/sync_preferences/testing_pref_service_syncable.h",
+    "+content/public/test",
+  ]
+}

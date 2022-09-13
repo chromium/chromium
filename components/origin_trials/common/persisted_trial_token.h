@@ -8,6 +8,8 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
 
 namespace origin_trials {
@@ -27,10 +29,24 @@ struct PersistedTrialToken {
         token_expiry(expiry),
         usage_restriction(usage),
         token_signature(std::move(signature)) {}
+
+  // Create a PersistedToken from a |Dict| previously created by
+  // |PersistedToken::AsDict|
+  static absl::optional<PersistedTrialToken> FromDict(
+      const base::Value::Dict& dict);
+
+  // Convert the |PersistedToken| to a dict
+  base::Value::Dict AsDict() const;
 };
 
 // Comparison operator to let us store PersistedTokens in a flat_set
 bool operator<(const PersistedTrialToken& a, const PersistedTrialToken& b);
+
+// Equality operator for testing
+bool operator==(const PersistedTrialToken& a, const PersistedTrialToken& b);
+
+// Stream operator, mainly for GTEST output
+std::ostream& operator<<(std::ostream& out, const PersistedTrialToken& token);
 
 }  // namespace origin_trials
 

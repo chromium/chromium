@@ -6,10 +6,15 @@ source_set("browser") {
   sources = [
     "browser/origin_trials.cc",
     "browser/origin_trials.h",
+    "browser/prefservice_persistence_provider.cc",
+    "browser/prefservice_persistence_provider.h",
   ]
   deps = [
     ":common",
     "//base",
+    "//components/prefs",
+    "//components/user_prefs",
+    "//content/public/browser",
     "//third_party/blink/public/common:headers",
     "//url:url",
   ]
@@ -31,7 +36,8 @@ source_set("common") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "browser/origin_trials_unittests.cc",
+    "browser/origin_trials_unittest.cc",
+    "browser/prefservice_persistence_provider_unittest.cc",
     "common/persisted_trial_token_unittest.cc",
   ]
   deps = [
@@ -40,6 +46,10 @@ source_set("unit_tests") {
     "./test",
     "//base",
     "//base/test:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/user_prefs:user_prefs",
+    "//content/public/browser",
+    "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public:test_headers",
