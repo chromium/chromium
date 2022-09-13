@@ -416,6 +416,14 @@ struct GPU_EXPORT GPUInfo {
   bool is_asan = false;
 #endif
 
+#if defined(ARCH_CPU_64_BITS)
+  uint32_t target_cpu_bits = 64;
+#elif defined(ARCH_CPU_32_BITS)
+  uint32_t target_cpu_bits = 32;
+#elif defined(ARCH_CPU_31_BITS)
+  uint32_t target_cpu_bits = 31;
+#endif
+
 #if BUILDFLAG(IS_MAC)
   // Enum describing which texture target is used for native GpuMemoryBuffers on
   // MacOS. Valid values are GL_TEXTURE_2D and GL_TEXTURE_RECTANGLE_ARB.

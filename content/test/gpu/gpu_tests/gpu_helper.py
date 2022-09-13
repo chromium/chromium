@@ -179,6 +179,10 @@ def GetAsanStatus(gpu_info: tgi.GPUInfo) -> str:
   return 'no-asan'
 
 
+def GetTargetCpuStatus(gpu_info):
+  return 'target-cpu-%s' % (gpu_info.aux_attributes.get('target_cpu_bits',
+                                                        'unknown'), )
+
 # TODO(rivr): Use GPU feature status for Dawn instead of command line.
 def HasDawnSkiaRenderer(extra_browser_args: List[str]) -> bool:
   if extra_browser_args:
