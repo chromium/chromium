@@ -21,11 +21,16 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/idle_service_ash.h"
+#include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/login/login_state/login_state.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/test/browser_task_environment.h"
@@ -60,6 +65,7 @@ const char kExtensionId[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
 const char kExtensionUpdateManifest[] =
     "extensions/good_v1_update_manifest.xml";
 const char kExtensionCRXVersion[] = "1.0.0.0";
+const char kAccountId[] = "test@account.org";
 
 class MockExternalPolicyProviderVisitor
     : public extensions::ExternalProviderInterface::VisitorInterface {
@@ -174,17 +180,20 @@ class DeviceLocalAccountExternalCacheTest : public testing::Test {
           base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
               &test_url_loader_factory_)};
   base::FilePath test_dir_;
+  std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
 
   std::unique_ptr<DeviceLocalAccountExternalCache> external_cache_;
   MockExternalPolicyProviderVisitor visitor_;
   std::unique_ptr<extensions::ExternalProviderImpl> provider_;
+
+  TestingProfileManager testing_profile_manager_{
+      TestingBrowserProcess::GetGlobal()};
 
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper_;
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
 };
 
 void DeviceLocalAccountExternalCacheTest::SetUp() {
-  profile_ = std::make_unique<TestingProfile>();
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   cache_dir_ = temp_dir_.GetPath().Append(kCacheDir);
   ASSERT_TRUE(base::CreateDirectoryAndGetError(cache_dir_, /*error=*/nullptr));
@@ -192,10 +201,16 @@ void DeviceLocalAccountExternalCacheTest::SetUp() {
       test_shared_loader_factory_);
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir_));
 
+  ASSERT_TRUE(testing_profile_manager_.SetUp());
+  chromeos::LoginState::Initialize();
+  crosapi::IdleServiceAsh::DisableForTesting();
+  Profile* profile = testing_profile_manager_.CreateTestingProfile("Default");
+  crosapi_manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
+
   external_cache_ =
-      std::make_unique<DeviceLocalAccountExternalCache>(cache_dir_);
+      std::make_unique<DeviceLocalAccountExternalCache>(kAccountId, cache_dir_);
   provider_ = std::make_unique<extensions::ExternalProviderImpl>(
-      &visitor_, external_cache_->GetExtensionLoader(), profile_.get(),
+      &visitor_, external_cache_->GetExtensionLoader(), profile,
       ManifestLocation::kExternalPolicy,
       ManifestLocation::kExternalPolicyDownload,
       extensions::Extension::NO_FLAGS);
@@ -204,6 +219,9 @@ void DeviceLocalAccountExternalCacheTest::SetUp() {
 }
 
 void DeviceLocalAccountExternalCacheTest::TearDown() {
+  crosapi_manager_.reset();
+  testing_profile_manager_.DeleteAllTestingProfiles();
+  chromeos::LoginState::Shutdown();
   TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
 }
 

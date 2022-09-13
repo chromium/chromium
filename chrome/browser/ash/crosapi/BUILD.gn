@@ -89,6 +89,8 @@ source_set("crosapi") {
     "desk_template_ash.h",
     "device_attributes_ash.cc",
     "device_attributes_ash.h",
+    "device_local_account_extension_service_ash.cc",
+    "device_local_account_extension_service_ash.h",
     "device_oauth2_token_service_ash.cc",
     "device_oauth2_token_service_ash.h",
     "device_settings_ash.cc",

@@ -49,6 +49,7 @@ class ContentProtectionAsh;
 class CrosapiDependencyRegistry;
 class DeskTemplateAsh;
 class DeviceAttributesAsh;
+class DeviceLocalAccountExtensionServiceAsh;
 class DeviceOAuth2TokenServiceAsh;
 class DeviceSettingsAsh;
 class DlpAsh;
@@ -168,6 +169,9 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::DeskTemplate> receiver) override;
   void BindDeviceAttributes(
       mojo::PendingReceiver<mojom::DeviceAttributes> receiver) override;
+  void BindDeviceLocalAccountExtensionService(
+      mojo::PendingReceiver<mojom::DeviceLocalAccountExtensionService> receiver)
+      override;
   void BindDeviceOAuth2TokenService(
       mojo::PendingReceiver<mojom::DeviceOAuth2TokenService> receiver) override;
   void BindDeviceSettingsService(
@@ -367,6 +371,11 @@ class CrosapiAsh : public mojom::Crosapi {
     return chrome_app_kiosk_service_ash_.get();
   }
 
+  DeviceLocalAccountExtensionServiceAsh*
+  device_local_account_extension_service() {
+    return device_local_account_extension_service_ash_.get();
+  }
+
   PrintingMetricsAsh* printing_metrics_ash() {
     return printing_metrics_ash_.get();
   }
@@ -463,6 +472,8 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ContentProtectionAsh> content_protection_ash_;
   std::unique_ptr<DeskTemplateAsh> desk_template_ash_;
   std::unique_ptr<DeviceAttributesAsh> device_attributes_ash_;
+  std::unique_ptr<DeviceLocalAccountExtensionServiceAsh>
+      device_local_account_extension_service_ash_;
   std::unique_ptr<DeviceOAuth2TokenServiceAsh> device_oauth2_token_service_ash_;
   std::unique_ptr<DeviceSettingsAsh> device_settings_ash_;
   std::unique_ptr<ash::DiagnosticsServiceAsh> diagnostics_service_ash_;

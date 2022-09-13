@@ -38,6 +38,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_dependency_registry.h"
 #include "chrome/browser/ash/crosapi/desk_template_ash.h"
 #include "chrome/browser/ash/crosapi/device_attributes_ash.h"
+#include "chrome/browser/ash/crosapi/device_local_account_extension_service_ash.h"
 #include "chrome/browser/ash/crosapi/device_oauth2_token_service_ash.h"
 #include "chrome/browser/ash/crosapi/device_settings_ash.h"
 #include "chrome/browser/ash/crosapi/dlp_ash.h"
@@ -110,6 +111,7 @@
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_ash.h"
 #include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
+#include "chromeos/crosapi/mojom/device_local_account_extension_service.mojom.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
 #include "chromeos/crosapi/mojom/file_manager.mojom.h"
@@ -180,6 +182,8 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       content_protection_ash_(std::make_unique<ContentProtectionAsh>()),
       desk_template_ash_(std::make_unique<DeskTemplateAsh>()),
       device_attributes_ash_(std::make_unique<DeviceAttributesAsh>()),
+      device_local_account_extension_service_ash_(
+          std::make_unique<DeviceLocalAccountExtensionServiceAsh>()),
       device_oauth2_token_service_ash_(
           std::make_unique<DeviceOAuth2TokenServiceAsh>()),
       device_settings_ash_(std::make_unique<DeviceSettingsAsh>()),
@@ -590,6 +594,12 @@ void CrosapiAsh::BindKioskSessionService(
 void CrosapiAsh::BindChromeAppKioskService(
     mojo::PendingReceiver<mojom::ChromeAppKioskService> receiver) {
   chrome_app_kiosk_service_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindDeviceLocalAccountExtensionService(
+    mojo::PendingReceiver<mojom::DeviceLocalAccountExtensionService> receiver) {
+  device_local_account_extension_service_ash_->BindReceiver(
+      std::move(receiver));
 }
 
 void CrosapiAsh::BindTts(mojo::PendingReceiver<mojom::Tts> receiver) {

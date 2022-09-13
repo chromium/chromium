@@ -9,6 +9,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/tablet_mode/tablet_mode_page_behavior.h"
 #include "chrome/browser/lacros/app_mode/chrome_kiosk_launch_controller_lacros.h"
+#include "chrome/browser/lacros/app_mode/device_local_account_extension_installer_lacros.h"
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/arc/arc_icon_cache.h"
 #include "chrome/browser/lacros/automation_manager_lacros.h"
@@ -41,6 +42,7 @@
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/startup/browser_params_proxy.h"
 #include "components/arc/common/intent_helper/arc_icon_cache_delegate.h"
@@ -64,6 +66,15 @@ extensions::mojom::FeatureSessionType GetExtSessionType() {
   return FeatureSessionType::kUnknown;
 }
 
+bool IsSessionTypeDeviceLocalAccountSession(
+    crosapi::mojom::SessionType session_type) {
+  using crosapi::mojom::SessionType;
+
+  return session_type == SessionType::kAppKioskSession ||
+         session_type == crosapi::mojom::SessionType::kWebKioskSession ||
+         session_type == crosapi::mojom::SessionType::kPublicSession;
+}
+
 }  // namespace
 
 ChromeBrowserMainExtraPartsLacros::ChromeBrowserMainExtraPartsLacros() =
@@ -76,6 +87,12 @@ void ChromeBrowserMainExtraPartsLacros::PreProfileInit() {
   extensions::SetCurrentFeatureSessionType(GetExtSessionType());
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   tablet_mode_page_behavior_ = std::make_unique<TabletModePageBehavior>();
+
+  if (IsSessionTypeDeviceLocalAccountSession(
+          chromeos::BrowserParamsProxy::Get()->SessionType())) {
+    device_local_account_extension_installer_ =
+        std::make_unique<DeviceLocalAccountExtensionInstallerLacros>();
+  }
 }
 
 void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {

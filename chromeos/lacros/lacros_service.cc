@@ -33,6 +33,7 @@
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/desk_template.mojom.h"
+#include "chromeos/crosapi/mojom/device_local_account_extension_service.mojom.h"
 #include "chromeos/crosapi/mojom/device_oauth2_token_service.mojom.h"
 #include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
@@ -370,6 +371,10 @@ LacrosService::LacrosService()
   ConstructRemote<
       crosapi::mojom::KioskSessionService, &Crosapi::BindKioskSessionService,
       Crosapi::MethodMinVersions::kBindKioskSessionServiceMinVersion>();
+  ConstructRemote<crosapi::mojom::DeviceLocalAccountExtensionService,
+                  &Crosapi::BindDeviceLocalAccountExtensionService,
+                  Crosapi::MethodMinVersions::
+                      kBindDeviceLocalAccountExtensionServiceMinVersion>();
   ConstructRemote<crosapi::mojom::LocalPrinter,
                   &crosapi::mojom::Crosapi::BindLocalPrinter,
                   Crosapi::MethodMinVersions::kBindLocalPrinterMinVersion>();

@@ -23,7 +23,8 @@ class ExternalCache;
  */
 class DeviceLocalAccountExternalCache : public ExternalCacheDelegate {
  public:
-  explicit DeviceLocalAccountExternalCache(const base::FilePath& cache_dir);
+  DeviceLocalAccountExternalCache(const std::string& user_id,
+                                  const base::FilePath& cache_dir);
   ~DeviceLocalAccountExternalCache() override;
 
   // Start the cache using the supplied |cache_task_runner|.
@@ -44,7 +45,10 @@ class DeviceLocalAccountExternalCache : public ExternalCacheDelegate {
 
   scoped_refptr<extensions::ExternalLoader> GetExtensionLoader();
 
+  base::Value::Dict GetCachedExtensions() const;
+
  private:
+  const std::string user_id_;
   const base::FilePath cache_dir_;
   std::unique_ptr<ExternalCache> external_cache_;
   scoped_refptr<DeviceLocalAccountExternalPolicyLoader> loader_;

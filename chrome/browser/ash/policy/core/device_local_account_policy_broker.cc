@@ -10,9 +10,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_external_cache.h"
-#include "chrome/browser/chromeos/extensions/external_cache.h"
 #include "chrome/browser/extensions/policy_handlers.h"
 #include "components/policy/core/common/chrome_schema.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
@@ -102,6 +102,7 @@ DeviceLocalAccountPolicyBroker::DeviceLocalAccountPolicyBroker(
         account, store_.get(), &schema_registry_);
   }
   external_cache_ = std::make_unique<chromeos::DeviceLocalAccountExternalCache>(
+      user_id_,
       base::PathService::CheckedGet(ash::DIR_DEVICE_LOCAL_ACCOUNT_EXTENSIONS)
           .Append(GetCacheSubdirectoryForAccountID(account.account_id)));
   store_->AddObserver(this);
@@ -213,6 +214,10 @@ bool DeviceLocalAccountPolicyBroker::IsCacheRunning() const {
 void DeviceLocalAccountPolicyBroker::UpdateExtensionListFromStore() {
   external_cache_->UpdateExtensionsList(
       GetPrefsFromPolicy(store_->policy_map()));
+}
+
+base::Value::Dict DeviceLocalAccountPolicyBroker::GetCachedExtensions() const {
+  return external_cache_->GetCachedExtensions();
 }
 
 }  // namespace policy

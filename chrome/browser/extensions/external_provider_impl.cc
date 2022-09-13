@@ -79,6 +79,11 @@
 #include "chrome/browser/extensions/external_registry_loader_win.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/check_is_test.h"
+#include "chrome/browser/lacros/app_mode/device_local_account_extension_installer_lacros.h"
+#endif
+
 using content::BrowserThread;
 using extensions::mojom::ManifestLocation;
 
@@ -651,7 +656,9 @@ void ExternalProviderImpl::CreateExternalProviders(
     provider_list->push_back(std::move(signin_profile_provider));
     return;
   }
+#endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   bool is_chrome_os_public_session = false;
@@ -672,7 +679,20 @@ void ExternalProviderImpl::CreateExternalProviders(
     } else {
       NOTREACHED();
     }
-  } else {
+  }
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (profiles::IsKioskSession() || profiles::IsPublicSession()) {
+    if (DeviceLocalAccountExtensionInstallerLacros::Get()) {
+      external_loader =
+          DeviceLocalAccountExtensionInstallerLacros::Get()->extension_loader();
+      crx_location = ManifestLocation::kExternalPolicy;
+    } else {
+      CHECK_IS_TEST();
+    }
+  }
+#endif
+
+  if (!external_loader.get()) {
     external_loader = base::MakeRefCounted<ExternalPolicyLoader>(
         profile, ExtensionManagementFactory::GetForBrowserContext(profile),
         ExternalPolicyLoader::FORCED);
@@ -680,23 +700,13 @@ void ExternalProviderImpl::CreateExternalProviders(
         profile, ExtensionManagementFactory::GetForBrowserContext(profile),
         ExternalPolicyLoader::RECOMMENDED);
   }
-#else
-  external_loader = base::MakeRefCounted<ExternalPolicyLoader>(
-      profile, ExtensionManagementFactory::GetForBrowserContext(profile),
-      ExternalPolicyLoader::FORCED);
-  external_recommended_loader = base::MakeRefCounted<ExternalPolicyLoader>(
-      profile, ExtensionManagementFactory::GetForBrowserContext(profile),
-      ExternalPolicyLoader::RECOMMENDED);
-#endif
 
   // Policies are mandatory so they can't be skipped with command line flag.
-  if (external_loader.get()) {
-    auto policy_provider = std::make_unique<ExternalProviderImpl>(
-        service, external_loader, profile, crx_location,
-        ManifestLocation::kExternalPolicyDownload, Extension::NO_FLAGS);
-    policy_provider->set_allow_updates(true);
-    provider_list->push_back(std::move(policy_provider));
-  }
+  auto policy_provider = std::make_unique<ExternalProviderImpl>(
+      service, external_loader, profile, crx_location,
+      ManifestLocation::kExternalPolicyDownload, Extension::NO_FLAGS);
+  policy_provider->set_allow_updates(true);
+  provider_list->push_back(std::move(policy_provider));
 
   // Load the KioskAppExternalProvider when running in the Chrome App kiosk
   // mode.

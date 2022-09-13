@@ -16,6 +16,7 @@ class AutomationManagerLacros;
 class BrowserServiceLacros;
 class ChromeKioskLaunchControllerLacros;
 class DeskTemplateClientLacros;
+class DeviceLocalAccountExtensionInstallerLacros;
 class DriveFsCache;
 class DownloadControllerClientLacros;
 class ForceInstalledTrackerLacros;
@@ -107,6 +108,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
   // Manages the resources used in the web Kiosk session, and sends window
   // status changes of lacros-chrome to ash when necessary.
   std::unique_ptr<KioskSessionServiceLacros> kiosk_session_service_;
+
+  std::unique_ptr<DeviceLocalAccountExtensionInstallerLacros>
+      device_local_account_extension_installer_;
 
   // Provides ArcIconCache impl.
   std::unique_ptr<arc::ArcIconCacheDelegateProvider>

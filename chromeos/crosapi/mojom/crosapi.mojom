@@ -24,6 +24,7 @@ import "chromeos/crosapi/mojom/content_protection.mojom";
 import "chromeos/crosapi/mojom/cros_display_config.mojom";
 import "chromeos/crosapi/mojom/desk_template.mojom";
 import "chromeos/crosapi/mojom/device_attributes.mojom";
+import "chromeos/crosapi/mojom/device_local_account_extension_service.mojom";
 import "chromeos/crosapi/mojom/device_oauth2_token_service.mojom";
 import "chromeos/crosapi/mojom/device_settings_service.mojom";
 import "chromeos/crosapi/mojom/diagnostics_service.mojom";
@@ -126,8 +127,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 96
-// Next method id: 100
+// Next version: 97
+// Next method id: 101
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -603,6 +604,11 @@ interface Crosapi {
   // launch the chrome app inside lacros.
   [MinVersion=73] BindChromeAppKioskService@76(
       pending_receiver<ChromeAppKioskService> receiver);
+
+  // Binds the extension service for device local accounts. This service manages
+  // the cached install of extensions into Lacros.
+  [MinVersion=96] BindDeviceLocalAccountExtensionService@100(
+      pending_receiver<DeviceLocalAccountExtensionService> receiver);
 
   // Binds the VolumeManager interface for accessing volume list, etc.
   // Added in M106.

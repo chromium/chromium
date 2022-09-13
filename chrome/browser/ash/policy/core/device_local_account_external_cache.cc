@@ -7,9 +7,13 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/device_local_account_extension_service_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/device_local_account_external_policy_loader.h"
 #include "chrome/browser/chromeos/extensions/external_cache_impl.h"
@@ -19,8 +23,9 @@
 namespace chromeos {
 
 DeviceLocalAccountExternalCache::DeviceLocalAccountExternalCache(
+    const std::string& user_id,
     const base::FilePath& cache_dir)
-    : cache_dir_(cache_dir) {
+    : user_id_(user_id), cache_dir_(cache_dir) {
   loader_ = base::MakeRefCounted<DeviceLocalAccountExternalPolicyLoader>();
 }
 
@@ -66,13 +71,25 @@ bool DeviceLocalAccountExternalCache::IsCacheRunning() const {
 
 void DeviceLocalAccountExternalCache::OnExtensionListsUpdated(
     const base::DictionaryValue* prefs) {
-  // TODO(1323720): If this is Lacros, we need to call through mojom here
+  if (crosapi::CrosapiManager::IsInitialized()) {
+    crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->device_local_account_extension_service()
+        ->SetForceInstallExtensionsFromCache(user_id_,
+                                             prefs->GetDict().Clone());
+  } else {
+    CHECK_IS_TEST();
+  }
   loader_->OnExtensionListsUpdated(prefs);
 }
 
 scoped_refptr<extensions::ExternalLoader>
 DeviceLocalAccountExternalCache::GetExtensionLoader() {
   return loader_;
+}
+
+base::Value::Dict DeviceLocalAccountExternalCache::GetCachedExtensions() const {
+  return external_cache_->GetCachedExtensions()->GetDict().Clone();
 }
 
 }  // namespace chromeos

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/values.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_extension_tracker.h"
 #include "chrome/browser/ash/policy/core/device_local_account_external_cache.h"
@@ -114,6 +115,8 @@ class DeviceLocalAccountPolicyBroker
 
   // Return whether the cache is currently running.
   bool IsCacheRunning() const;
+
+  base::Value::Dict GetCachedExtensions() const;
 
  private:
   void CreateComponentCloudPolicyService(CloudPolicyClient* client);
