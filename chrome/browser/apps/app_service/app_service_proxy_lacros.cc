@@ -224,6 +224,7 @@ void AppServiceProxyLacros::LaunchAppWithIntent(
   CHECK(intent);
 
   if (!remote_crosapi_app_service_proxy_) {
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -233,6 +234,7 @@ void AppServiceProxyLacros::LaunchAppWithIntent(
     LOG(WARNING) << "Ash AppServiceProxy version "
                  << crosapi_app_service_proxy_version_
                  << " does not support Launch().";
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -244,6 +246,7 @@ void AppServiceProxyLacros::LaunchAppWithIntent(
       apps_util::ConvertAppServiceToCrosapiIntent(intent, profile_);
 
   ProxyLaunch(std::move(params));
+  std::move(callback).Run(/*success=*/true);
 }
 
 void AppServiceProxyLacros::LaunchAppWithUrl(const std::string& app_id,
