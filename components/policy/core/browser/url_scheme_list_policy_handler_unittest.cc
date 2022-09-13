@@ -205,7 +205,7 @@ TEST_F(URLSchemeListPolicyHandlerTest,
 
   ApplyPolicies();
 
-  auto error_str = errors_.GetErrors(kTestPolicyName);
+  auto error_str = errors_.GetErrorMessages(kTestPolicyName);
   auto expected_str = l10n_util::GetStringFUTF16(
       IDS_POLICY_URL_ALLOW_BLOCK_LIST_MAX_FILTERS_LIMIT_WARNING,
       base::NumberToString16(policy::kMaxUrlFiltersPerPolicy));

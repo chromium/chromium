@@ -73,53 +73,54 @@ INSTANTIATE_TEST_SUITE_P(/* no label */,
                          PolicyErrorMapTestResourceBundle,
                          testing::Bool());
 
-TEST(PolicyErrorMapTest, GetErrors) {
+TEST(PolicyErrorMapTest, GetErrorMessages) {
   PolicyErrorMap errors;
   ASSERT_TRUE(errors.IsReady());
   errors.AddError(kPolicyWithError, IDS_POLICY_BLOCKED);
 
-  EXPECT_EQ(errors.GetErrors(kPolicyWithError),
+  EXPECT_EQ(errors.GetErrorMessages(kPolicyWithError),
             u"This policy is blocked, its value will be ignored.");
 }
 
-TEST(PolicyErrorMapTest, GetErrorsWithReplacement) {
+TEST(PolicyErrorMapTest, GetErrorMessagesWithReplacement) {
   PolicyErrorMap errors;
   ASSERT_TRUE(errors.IsReady());
   errors.AddError(kPolicyWithError, IDS_POLICY_TYPE_ERROR, "string");
 
-  EXPECT_EQ(errors.GetErrors(kPolicyWithError), u"Expected string value.");
+  EXPECT_EQ(errors.GetErrorMessages(kPolicyWithError),
+            u"Expected string value.");
 }
 
-TEST(PolicyErrorMapTest, GetErrorsWithTwoReplacements) {
+TEST(PolicyErrorMapTest, GetErrorMessagesWithTwoReplacements) {
   PolicyErrorMap errors;
   ASSERT_TRUE(errors.IsReady());
   errors.AddError(kPolicyWithError, IDS_POLICY_DEPENDENCY_ERROR, "foo",
                   "Enabled");
 
-  EXPECT_EQ(errors.GetErrors(kPolicyWithError),
+  EXPECT_EQ(errors.GetErrorMessages(kPolicyWithError),
             u"Ignored because foo is not set to Enabled.");
 }
 
-TEST(PolicyErrorMapTest, GetErrorsWithNonAsciiReplacement) {
+TEST(PolicyErrorMapTest, GetErrorMessagesWithNonAsciiReplacement) {
   PolicyErrorMap errors;
   ASSERT_TRUE(errors.IsReady());
   errors.AddError(kPolicyWithError, IDS_POLICY_PROTO_PARSING_ERROR,
                   "\U0001D11E");
 
-  EXPECT_EQ(errors.GetErrors(kPolicyWithError),
+  EXPECT_EQ(errors.GetErrorMessages(kPolicyWithError),
             u"Policy parsing error: \U0001D11E");
 }
 
-TEST(PolicyErrorMapTest, GetErrorsWithBadUnicodeReplacement) {
+TEST(PolicyErrorMapTest, GetErrorMessagesWithBadUnicodeReplacement) {
   PolicyErrorMap errors;
   ASSERT_TRUE(errors.IsReady());
   errors.AddError(kPolicyWithError, IDS_POLICY_PROTO_PARSING_ERROR, "\xff");
 
-  EXPECT_EQ(errors.GetErrors(kPolicyWithError),
+  EXPECT_EQ(errors.GetErrorMessages(kPolicyWithError),
             u"Policy parsing error: <invalid Unicode string>");
 }
 
-TEST(PolicyErrorMapTest, GetErrorsMetadataWithNonfatalError) {
+TEST(PolicyErrorMapTest, GetErrorsWithNonfatalError) {
   PolicyErrorMap errors;
   ASSERT_TRUE(errors.IsReady());
   errors.AddError(kPolicyWithError, IDS_POLICY_BLOCKED, {},
@@ -128,10 +129,10 @@ TEST(PolicyErrorMapTest, GetErrorsMetadataWithNonfatalError) {
   std::vector<PolicyErrorMap::Data> expected = {PolicyErrorMap::Data{
       .message = u"This policy is blocked, its value will be ignored.",
       .level = PolicyMap::MessageType::kWarning}};
-  EXPECT_EQ(errors.GetErrorsMetadata(kPolicyWithError), expected);
+  EXPECT_EQ(errors.GetErrors(kPolicyWithError), expected);
 }
 
-TEST(PolicyErrorMapTest, GetErrorsMetadataWithFatalError) {
+TEST(PolicyErrorMapTest, GetErrorsWithFatalError) {
   PolicyErrorMap errors;
   ASSERT_TRUE(errors.IsReady());
   errors.AddError(kPolicyWithError, IDS_POLICY_BLOCKED, {},
@@ -140,7 +141,7 @@ TEST(PolicyErrorMapTest, GetErrorsMetadataWithFatalError) {
   std::vector<PolicyErrorMap::Data> expected = {PolicyErrorMap::Data{
       .message = u"This policy is blocked, its value will be ignored.",
       .level = PolicyMap::MessageType::kError}};
-  EXPECT_EQ(errors.GetErrorsMetadata(kPolicyWithError), expected);
+  EXPECT_EQ(errors.GetErrors(kPolicyWithError), expected);
 }
 
 }  // namespace policy

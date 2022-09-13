@@ -142,7 +142,7 @@ TEST(ExtensionListPolicyHandlerTest, CheckPolicySettings) {
   EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
   EXPECT_FALSE(errors.empty());
   EXPECT_FALSE(
-      errors.GetErrors(policy::key::kExtensionInstallBlocklist).empty());
+      errors.GetErrorMessages(policy::key::kExtensionInstallBlocklist).empty());
 }
 
 TEST(ExtensionSettingsPolicyHandlerTest, CheckPolicySettingsURL) {
@@ -370,7 +370,8 @@ TEST(ExtensionURLPatternListPolicyHandlerTest, CheckPolicySettings) {
   errors.Clear();
   EXPECT_FALSE(handler.CheckPolicySettings(policy_map, &errors));
   EXPECT_FALSE(errors.empty());
-  EXPECT_FALSE(errors.GetErrors(policy::key::kExtensionInstallSources).empty());
+  EXPECT_FALSE(
+      errors.GetErrorMessages(policy::key::kExtensionInstallSources).empty());
 
   // URLPattern syntax has a different way to express 'all urls'. Though '*'
   // would be compatible today, it would be brittle, so we disallow.
@@ -381,7 +382,8 @@ TEST(ExtensionURLPatternListPolicyHandlerTest, CheckPolicySettings) {
   errors.Clear();
   EXPECT_FALSE(handler.CheckPolicySettings(policy_map, &errors));
   EXPECT_FALSE(errors.empty());
-  EXPECT_FALSE(errors.GetErrors(policy::key::kExtensionInstallSources).empty());
+  EXPECT_FALSE(
+      errors.GetErrorMessages(policy::key::kExtensionInstallSources).empty());
 }
 
 TEST(ExtensionURLPatternListPolicyHandlerTest, ApplyPolicySettings) {
@@ -461,7 +463,7 @@ TEST(ExtensionSettingsPolicyHandlerTest, CheckPolicySettingsTooManyHosts) {
 
   EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
   EXPECT_EQ(2u, errors.size());
-  auto error_str = errors.GetErrors(policy::key::kExtensionSettings);
+  auto error_str = errors.GetErrorMessages(policy::key::kExtensionSettings);
   auto expected_allowed = l10n_util::GetStringFUTF16(
       IDS_POLICY_EXTENSION_SETTINGS_ORIGIN_LIMIT_WARNING,
       base::NumberToString16(schema_constants::kMaxItemsURLPatternSet));

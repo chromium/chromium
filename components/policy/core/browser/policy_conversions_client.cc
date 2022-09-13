@@ -290,14 +290,14 @@ Value::Dict PolicyConversionsClient::GetPolicyValue(
         PolicyMap::MessageType::kError,
         base::BindRepeating(&l10n_util::GetStringUTF16));
     auto error_map_errors =
-        errors ? errors->GetErrors(policy_name) : std::u16string();
+        errors ? errors->GetErrorMessages(policy_name) : std::u16string();
     if (policy_map_errors.empty())
       error = error_map_errors;
     else if (error_map_errors.empty())
       error = policy_map_errors;
     else
       error = base::JoinString(
-          {policy_map_errors, errors->GetErrors(policy_name)}, u"\n");
+          {policy_map_errors, errors->GetErrorMessages(policy_name)}, u"\n");
   }
   if (!error.empty())
     value.Set("error", error);

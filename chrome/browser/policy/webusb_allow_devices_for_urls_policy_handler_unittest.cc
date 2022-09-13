@@ -263,7 +263,8 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
   static constexpr char16_t kExpected[] =
       u"Error at WebUsbAllowDevicesForUrls[1]: Schema validation error: "
       u"Missing or invalid required property: devices";
-  EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
+  EXPECT_EQ(kExpected,
+            errors.GetErrorMessages(key::kWebUsbAllowDevicesForUrls));
 }
 
 TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
@@ -283,7 +284,8 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
   static constexpr char16_t kExpected[] =
       u"Error at WebUsbAllowDevicesForUrls[0]: Schema validation error: "
       u"Missing or invalid required property: devices";
-  EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
+  EXPECT_EQ(kExpected,
+            errors.GetErrorMessages(key::kWebUsbAllowDevicesForUrls));
 }
 
 TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
@@ -303,7 +305,8 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
   static constexpr char16_t kExpected[] =
       u"Error at WebUsbAllowDevicesForUrls[0]: Schema validation error: "
       u"Missing or invalid required property: urls";
-  EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
+  EXPECT_EQ(kExpected,
+            errors.GetErrorMessages(key::kWebUsbAllowDevicesForUrls));
 }
 
 TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
@@ -337,7 +340,8 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
       u"Error at WebUsbAllowDevicesForUrls[0].urls[1]: Schema validation "
       u"error: Policy type mismatch: expected: \"string\", actual: "
       u"\"integer\".";
-  EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
+  EXPECT_EQ(kExpected,
+            errors.GetErrorMessages(key::kWebUsbAllowDevicesForUrls));
 }
 
 TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
@@ -357,7 +361,8 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
   static constexpr char16_t kExpected[] =
       u"Error at WebUsbAllowDevicesForUrls[0].devices[0]: Schema validation "
       u"error: Unknown property: serialNumber";
-  EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
+  EXPECT_EQ(kExpected,
+            errors.GetErrorMessages(key::kWebUsbAllowDevicesForUrls));
 }
 
 TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
@@ -377,7 +382,8 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
   const std::u16string kExpected =
       u"Error at WebUsbAllowDevicesForUrls[0].devices[0].vendor_id: Schema "
       u"validation error: Invalid value for integer";
-  EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
+  EXPECT_EQ(kExpected,
+            errors.GetErrorMessages(key::kWebUsbAllowDevicesForUrls));
 }
 
 TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
@@ -397,7 +403,8 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
   const std::u16string kExpected =
       u"Error at WebUsbAllowDevicesForUrls[0].devices[0].product_id: Schema "
       u"validation error: Invalid value for integer";
-  EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
+  EXPECT_EQ(kExpected,
+            errors.GetErrorMessages(key::kWebUsbAllowDevicesForUrls));
 }
 
 TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
@@ -417,7 +424,8 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
   static constexpr char16_t kExpected[] =
       u"Error at WebUsbAllowDevicesForUrls[0].devices[0]: The attribute "
       u"\"vendor_id\" must also be specified.";
-  EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
+  EXPECT_EQ(kExpected,
+            errors.GetErrorMessages(key::kWebUsbAllowDevicesForUrls));
 }
 
 TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
@@ -436,7 +444,8 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
 
   static constexpr char16_t kExpected[] =
       u"Error at WebUsbAllowDevicesForUrls[0].urls[0]: Invalid URL.";
-  EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
+  EXPECT_EQ(kExpected,
+            errors.GetErrorMessages(key::kWebUsbAllowDevicesForUrls));
 }
 
 TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
@@ -455,7 +464,8 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
 
   static constexpr char16_t kExpected[] =
       u"Error at WebUsbAllowDevicesForUrls[0].urls[0]: Invalid URL.";
-  EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
+  EXPECT_EQ(kExpected,
+            errors.GetErrorMessages(key::kWebUsbAllowDevicesForUrls));
 }
 
 TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
@@ -475,7 +485,8 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
   static constexpr char16_t kExpected[] =
       u"Error at WebUsbAllowDevicesForUrls[0].urls[0]: Each urls string entry "
       u"must contain between 1 to 2 URLs.";
-  EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
+  EXPECT_EQ(kExpected,
+            errors.GetErrorMessages(key::kWebUsbAllowDevicesForUrls));
 }
 
 TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
@@ -495,7 +506,8 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
   static constexpr char16_t kExpected[] =
       u"Error at WebUsbAllowDevicesForUrls[0].urls[0]: Each urls string entry "
       u"must contain between 1 to 2 URLs.";
-  EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
+  EXPECT_EQ(kExpected,
+            errors.GetErrorMessages(key::kWebUsbAllowDevicesForUrls));
 }
 
 TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest, ApplyPolicySettings) {
@@ -818,7 +830,8 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
   constexpr char16_t kExpected[] =
       u"Error at WebUsbAllowDevicesForUrls[0]: Schema validation error: "
       u"Unknown property: unknown_top_level_property";
-  EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
+  EXPECT_EQ(kExpected,
+            errors.GetErrorMessages(key::kWebUsbAllowDevicesForUrls));
 
   EXPECT_FALSE(
       store_->GetValue(prefs::kManagedWebUsbAllowDevicesForUrls, nullptr));

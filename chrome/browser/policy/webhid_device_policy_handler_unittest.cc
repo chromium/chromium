@@ -355,7 +355,8 @@ TEST_P(WebHidInvalidPolicyTest, CheckPolicySettingsWithInvalidPolicy) {
   PolicyErrorMap errors;
   bool success = handler->CheckPolicySettings(policy, &errors);
   EXPECT_EQ(success, test_data.expected_pref != nullptr);
-  EXPECT_EQ(test_data.expected_errors, errors.GetErrors(test_data.policy_name));
+  EXPECT_EQ(test_data.expected_errors,
+            errors.GetErrorMessages(test_data.policy_name));
 
   EXPECT_FALSE(store_->GetValue(test_data.pref_name, /*result=*/nullptr));
 

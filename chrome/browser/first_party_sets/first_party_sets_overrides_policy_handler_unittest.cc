@@ -58,7 +58,8 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
   EXPECT_TRUE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
   ASSERT_TRUE(errors.empty());
-  EXPECT_EQ(errors.GetErrors(policy::key::kFirstPartySetsOverrides), u"");
+  EXPECT_EQ(errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
+            u"");
 }
 
 TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
@@ -89,7 +90,7 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
 
   EXPECT_TRUE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
-  EXPECT_EQ(errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+  EXPECT_EQ(errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
             u"Schema validation error: Unknown property: unknown");
 }
 
@@ -113,7 +114,7 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
   EXPECT_TRUE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
   EXPECT_EQ(
-      errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+      errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
       u"Error at FirstPartySetsOverrides.replacements[0]: Schema validation "
       u"error: Unknown property: unknown");
 }
@@ -137,7 +138,7 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
   // CheckPolicySettings will return true, but output an unknown property error.
   EXPECT_TRUE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
-  EXPECT_EQ(errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+  EXPECT_EQ(errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
             u"Error at FirstPartySetsOverrides.additions[0]: Schema validation "
             u"error: Unknown property: unknown");
 }
@@ -149,7 +150,7 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
 
   EXPECT_FALSE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
-  EXPECT_EQ(errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+  EXPECT_EQ(errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
             u"Schema validation error: Policy type mismatch: "
             u"expected: \"dictionary\", actual: \"list\".");
 }
@@ -167,7 +168,7 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
   EXPECT_FALSE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
   EXPECT_EQ(
-      errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+      errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
       u"Error at FirstPartySetsOverrides.replacements: Schema validation "
       u"error: Policy type mismatch: expected: \"list\", actual: \"integer\".");
 }
@@ -185,7 +186,7 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
   EXPECT_FALSE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
   EXPECT_EQ(
-      errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+      errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
       u"Error at FirstPartySetsOverrides.additions: Schema validation error: "
       u"Policy type mismatch: expected: \"list\", actual: \"integer\".");
 }
@@ -207,7 +208,7 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
   EXPECT_FALSE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
   EXPECT_EQ(
-      errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+      errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
       u"Error at FirstPartySetsOverrides.replacements[0]: Schema validation "
       u"error: Missing or invalid required property: primary");
 }
@@ -229,7 +230,7 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
 
   EXPECT_FALSE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
-  EXPECT_EQ(errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+  EXPECT_EQ(errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
             u"Error at FirstPartySetsOverrides.additions[0].primary: Schema "
             u"validation error: Policy type mismatch: expected: \"string\", "
             u"actual: \"integer\".");
@@ -252,7 +253,7 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
   EXPECT_FALSE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
   EXPECT_EQ(
-      errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+      errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
       u"Error at FirstPartySetsOverrides.replacements[0]: Schema validation "
       u"error: Missing or invalid required property: associatedSites");
 }
@@ -274,7 +275,7 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
 
   EXPECT_FALSE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
-  EXPECT_EQ(errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+  EXPECT_EQ(errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
             u"Error at FirstPartySetsOverrides.additions[0].associatedSites: "
             u"Schema validation error: Policy type mismatch: expected: "
             u"\"list\", actual: \"integer\".");
@@ -298,7 +299,7 @@ TEST_F(
 
   EXPECT_FALSE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
-  EXPECT_EQ(errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+  EXPECT_EQ(errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
             u"Error at "
             u"FirstPartySetsOverrides.additions[0].associatedSites[1]: Schema "
             u"validation error: Policy type mismatch: expected: \"string\", "
@@ -356,7 +357,7 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
   // CheckPolicySettings returns true, and errors on the last unknown property.
   EXPECT_TRUE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
-  EXPECT_EQ(errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+  EXPECT_EQ(errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
             u"Schema validation error: Unknown property: unknown3");
 }
 
@@ -378,7 +379,7 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
   EXPECT_FALSE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
   EXPECT_EQ(
-      errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+      errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
       u"Error at FirstPartySetsOverrides.replacements[0]: Schema validation "
       u"error: This set contains an invalid origin.");
 }
@@ -400,7 +401,7 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
 
   EXPECT_FALSE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
-  EXPECT_EQ(errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+  EXPECT_EQ(errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
             u"Error at FirstPartySetsOverrides.additions[0]: Schema validation "
             u"error: This set contains an invalid origin.");
 }
@@ -422,7 +423,7 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
 
   EXPECT_FALSE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
-  EXPECT_EQ(errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+  EXPECT_EQ(errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
             u"Error at FirstPartySetsOverrides.replacements[0]: Schema "
             u"validation error: This set doesn't contain any sites in its "
             u"associatedSites list.");
@@ -448,7 +449,7 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
 
   EXPECT_FALSE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
-  EXPECT_EQ(errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+  EXPECT_EQ(errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
             u"Error at FirstPartySetsOverrides.additions[1]: Schema validation "
             u"error: This set contains a domain that also exists in another "
             u"First-Party Set.");
@@ -475,7 +476,7 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
 
   EXPECT_FALSE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
-  EXPECT_EQ(errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+  EXPECT_EQ(errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
             u"Error at FirstPartySetsOverrides.additions[0]: Schema validation "
             u"error: This set contains a domain that also exists in another "
             u"First-Party Set.");
@@ -503,7 +504,7 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
   EXPECT_FALSE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
   EXPECT_EQ(
-      errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+      errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
       u"Error at FirstPartySetsOverrides.replacements[0]: Schema validation "
       u"error: This set contains more than one occurrence of the same domain.");
 }
@@ -530,7 +531,7 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
   EXPECT_FALSE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
   EXPECT_EQ(
-      errors.GetErrors(policy::key::kFirstPartySetsOverrides),
+      errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
       u"Error at FirstPartySetsOverrides.additions[0]: Schema validation "
       u"error: This set contains more than one occurrence of the same domain.");
 }

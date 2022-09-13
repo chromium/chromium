@@ -82,11 +82,11 @@ class POLICY_EXPORT PolicyErrorMap {
 
   // Returns all the error messages stored for |policy|, separated by a white
   // space. Returns an empty string if there are no errors for |policy|.
-  std::u16string GetErrors(const std::string& policy);
+  std::u16string GetErrorMessages(const std::string& policy);
 
-  // Returns all the error metadata stored for |policy|, separated by a white
-  // space. Returns an empty vector if there are no errors for |policy|.
-  std::vector<Data> GetErrorsMetadata(const std::string& policy);
+  // Returns all the error metadata stored for |policy| in a vector. Returns an
+  // empty vector if there are no errors for |policy|.
+  std::vector<Data> GetErrors(const std::string& policy);
 
   bool empty() const;
   size_t size();
