@@ -203,11 +203,11 @@ void FocusFakebox() {
                                    IDS_IOS_CONTENT_CONTEXT_COPYIMAGE)]
       performAction:grey_tap()];
 
-  GREYCondition* copyCondition = [GREYCondition
-      conditionWithName:@"Image copied condition"
-                  block:^BOOL {
-                    return [UIPasteboard.generalPasteboard hasImages];
-                  }];
+  GREYCondition* copyCondition =
+      [GREYCondition conditionWithName:@"Image copied condition"
+                                 block:^BOOL {
+                                   return [ChromeEarlGrey pasteboardHasImages];
+                                 }];
   // Wait for copy to happen or timeout after 5 seconds.
   GREYAssertTrue([copyCondition waitWithTimeout:5], @"Copying image failed");
 }

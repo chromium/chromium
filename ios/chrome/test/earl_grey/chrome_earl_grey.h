@@ -734,6 +734,9 @@ UIWindow* GetAnyKeyWindow();
 // Verifies that `text` was copied to the pasteboard.
 - (void)verifyStringCopied:(NSString*)text;
 
+// Returns YES if general pasteboard images property contains a nonempty array.
+- (BOOL)pasteboardHasImages;
+
 // Retrieves the GURL stored in the Pasteboard. Returns an empty GURL if no
 // URL is currently in the pasteboard.
 - (GURL)pasteboardURL;

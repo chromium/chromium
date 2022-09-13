@@ -623,6 +623,9 @@
 // Clears the pasteboard, from the tested app's perspective.
 + (void)clearPasteboard;
 
+// Returns YES if general pasteboard images property contains a nonempty array.
++ (BOOL)pasteboardHasImages;
+
 // Retrieves the currently stored strings on the pasteboard from the tested
 // app's perspective.
 + (NSArray<NSString*>*)pasteboardStrings;

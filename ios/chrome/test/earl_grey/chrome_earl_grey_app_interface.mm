@@ -1225,6 +1225,10 @@ NSString* SerializedValue(const base::Value* value) {
   [[UIPasteboard generalPasteboard] setItems:@[]];
 }
 
++ (BOOL)pasteboardHasImages {
+  return [UIPasteboard.generalPasteboard hasImages];
+}
+
 + (NSArray<NSString*>*)pasteboardStrings {
   return [UIPasteboard generalPasteboard].strings;
 }

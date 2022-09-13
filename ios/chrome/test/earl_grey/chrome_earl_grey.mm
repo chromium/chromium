@@ -1427,6 +1427,10 @@ UIWindow* GetAnyKeyWindow() {
              @"Waiting for '%@' to be copied to pasteboard.", text);
 }
 
+- (BOOL)pasteboardHasImages {
+  return [ChromeEarlGreyAppInterface pasteboardHasImages];
+}
+
 - (GURL)pasteboardURL {
   NSString* absoluteString = [ChromeEarlGreyAppInterface pasteboardURLSpec];
   return absoluteString ? GURL(base::SysNSStringToUTF8(absoluteString))
