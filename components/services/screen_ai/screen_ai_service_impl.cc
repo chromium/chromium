@@ -60,19 +60,24 @@ ScreenAIService::ScreenAIService(
       receiver_(this, std::move(receiver)) {
   DCHECK(init_function_ && annotate_function_ &&
          extract_main_content_function_);
-  if (!init_function_(
-          /*init_visual_annotations = */ features::
-                  IsScreenAIVisualAnnotationsEnabled() ||
-              features::IsPdfOcrEnabled(),
-          /*init_main_content_extraction = */
-          features::IsReadAnythingWithScreen2xEnabled(),
-          /*debug_mode = */ features::IsScreenAIDebugModeEnabled(),
-          /*models_path = */
-          GetLibraryFilePath().DirName().MaybeAsASCII().c_str())) {
+  if (!CallLibraryInitFunction()) {
     // TODO(https://crbug.com/1278249): Add UMA metrics to monitor failures.
     VLOG(0) << "Screen AI library initialization failed.";
     base::Process::TerminateCurrentProcessImmediately(-1);
   }
+}
+
+NO_SANITIZE("cfi-icall")
+bool ScreenAIService::CallLibraryInitFunction() {
+  return init_function_(
+      /*init_visual_annotations = */ features::
+              IsScreenAIVisualAnnotationsEnabled() ||
+          features::IsPdfOcrEnabled(),
+      /*init_main_content_extraction = */
+      features::IsReadAnythingWithScreen2xEnabled(),
+      /*debug_mode = */ features::IsScreenAIDebugModeEnabled(),
+      /*models_path = */
+      GetLibraryFilePath().DirName().MaybeAsASCII().c_str());
 }
 
 ScreenAIService::~ScreenAIService() = default;
@@ -108,7 +113,8 @@ void ScreenAIService::Annotate(const SkBitmap& image,
   uint32_t annotation_proto_length = 0;
   // TODO(https://crbug.com/1278249): Consider adding a signature that
   // verifies the data integrity and source.
-  if (!annotate_function_(image, annotation_proto, annotation_proto_length)) {
+  if (!CallLibraryAnnotateFunction(image, annotation_proto,
+                                   annotation_proto_length)) {
     std::move(callback).Run(ui::AXTreeID());
     VLOG(1) << "Screen AI library could not process snapshot.";
     return;
@@ -137,6 +143,14 @@ void ScreenAIService::Annotate(const SkBitmap& image,
   // TODO(https://crbug.com/1278249): Call [client]::HandleAXTreeUpdate(update);
 }
 
+NO_SANITIZE("cfi-icall")
+bool ScreenAIService::CallLibraryAnnotateFunction(
+    const SkBitmap& image,
+    char*& annotation_proto,
+    uint32_t& annotation_proto_length) {
+  return annotate_function_(image, annotation_proto, annotation_proto_length);
+}
+
 void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
                                          ContentExtractionCallback callback) {
   std::string serialized_snapshot = Screen2xSnapshotToViewHierarchy(snapshot);
@@ -144,9 +158,9 @@ void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
 
   int32_t* node_ids = nullptr;
   uint32_t nodes_count = 0;
-  if (!extract_main_content_function_(serialized_snapshot.c_str(),
-                                      serialized_snapshot.length(), node_ids,
-                                      nodes_count)) {
+  if (!CallLibraryExtractMainContentFunction(serialized_snapshot.c_str(),
+                                             serialized_snapshot.length(),
+                                             node_ids, nodes_count)) {
     VLOG(1) << "Screen2x did not return main content.";
   } else {
     content_node_ids.resize(nodes_count);
@@ -160,6 +174,16 @@ void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
   }
 
   std::move(callback).Run(content_node_ids);
+}
+
+NO_SANITIZE("cfi-icall")
+bool ScreenAIService::CallLibraryExtractMainContentFunction(
+    const char* serialized_snapshot,
+    const uint32_t serialized_snapshot_length,
+    int32_t*& node_ids,
+    uint32_t& nodes_count) {
+  return extract_main_content_function_(
+      serialized_snapshot, serialized_snapshot_length, node_ids, nodes_count);
 }
 
 }  // namespace screen_ai
