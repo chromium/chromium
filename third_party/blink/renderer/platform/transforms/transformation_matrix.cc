@@ -30,6 +30,7 @@
 #include <cmath>
 #include <cstdlib>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -43,6 +44,14 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
+
+#if defined(ARCH_CPU_X86_64)
+#include <emmintrin.h>
+#endif
+
+#if defined(HAVE_MIPS_MSA_INTRINSICS)
+#include "third_party/blink/renderer/platform/cpu/mips/common_macros_msa.h"
+#endif
 
 namespace blink {
 
@@ -697,20 +706,171 @@ TransformationMatrix& TransformationMatrix::Zoom(double zoom_factor) {
 // Also 'prod' corresponds to CSS transform:rotateZ(90deg)translate(12px,34px).
 TransformationMatrix& TransformationMatrix::Multiply(
     const TransformationMatrix& mat) {
+#if defined(ARCH_CPU_ARM64)
+  double* left_matrix = &(matrix_[0][0]);
+  const double* right_matrix = &(mat.matrix_[0][0]);
+  asm volatile(
+      // Load matrix_ to v24 - v31.
+      // Load mat.matrix_ to v16 - v23.
+      // Result: *this = *this * mat
+      // | v0 v2 v4 v6 |   | v24 v26 v28 v30 |   | v16 v18 v20 v22 |
+      // |             | = |                 | * |                 |
+      // | v1 v3 v5 v7 |   | v25 v27 v29 v31 |   | v17 v19 v21 v23 |
+      // |             |   |                 |   |                 |
+      "mov x9, %[left_matrix]   \t\n"
+      "ld1 {v16.2d - v19.2d}, [%[right_matrix]], 64  \t\n"
+      "ld1 {v20.2d - v23.2d}, [%[right_matrix]]      \t\n"
+      "ld1 {v24.2d - v27.2d}, [%[left_matrix]], 64 \t\n"
+      "ld1 {v28.2d - v31.2d}, [%[left_matrix]]     \t\n"
+
+      "fmul v0.2d, v24.2d, v16.d[0]  \t\n"
+      "fmul v1.2d, v25.2d, v16.d[0]  \t\n"
+      "fmul v2.2d, v24.2d, v18.d[0]  \t\n"
+      "fmul v3.2d, v25.2d, v18.d[0]  \t\n"
+      "fmul v4.2d, v24.2d, v20.d[0]  \t\n"
+      "fmul v5.2d, v25.2d, v20.d[0]  \t\n"
+      "fmul v6.2d, v24.2d, v22.d[0]  \t\n"
+      "fmul v7.2d, v25.2d, v22.d[0]  \t\n"
+
+      "fmla v0.2d, v26.2d, v16.d[1]  \t\n"
+      "fmla v1.2d, v27.2d, v16.d[1]  \t\n"
+      "fmla v2.2d, v26.2d, v18.d[1]  \t\n"
+      "fmla v3.2d, v27.2d, v18.d[1]  \t\n"
+      "fmla v4.2d, v26.2d, v20.d[1]  \t\n"
+      "fmla v5.2d, v27.2d, v20.d[1]  \t\n"
+      "fmla v6.2d, v26.2d, v22.d[1]  \t\n"
+      "fmla v7.2d, v27.2d, v22.d[1]  \t\n"
+
+      "fmla v0.2d, v28.2d, v17.d[0]  \t\n"
+      "fmla v1.2d, v29.2d, v17.d[0]  \t\n"
+      "fmla v2.2d, v28.2d, v19.d[0]  \t\n"
+      "fmla v3.2d, v29.2d, v19.d[0]  \t\n"
+      "fmla v4.2d, v28.2d, v21.d[0]  \t\n"
+      "fmla v5.2d, v29.2d, v21.d[0]  \t\n"
+      "fmla v6.2d, v28.2d, v23.d[0]  \t\n"
+      "fmla v7.2d, v29.2d, v23.d[0]  \t\n"
+
+      "fmla v0.2d, v30.2d, v17.d[1]  \t\n"
+      "fmla v1.2d, v31.2d, v17.d[1]  \t\n"
+      "fmla v2.2d, v30.2d, v19.d[1]  \t\n"
+      "fmla v3.2d, v31.2d, v19.d[1]  \t\n"
+      "fmla v4.2d, v30.2d, v21.d[1]  \t\n"
+      "fmla v5.2d, v31.2d, v21.d[1]  \t\n"
+      "fmla v6.2d, v30.2d, v23.d[1]  \t\n"
+      "fmla v7.2d, v31.2d, v23.d[1]  \t\n"
+
+      "st1 {v0.2d - v3.2d}, [x9], 64 \t\n"
+      "st1 {v4.2d - v7.2d}, [x9]     \t\n"
+      : [right_matrix] "+r"(right_matrix), [left_matrix] "+r"(left_matrix)
+      :
+      : "memory", "x9", "v16", "v17", "v18", "v19", "v20", "v21", "v22", "v23",
+        "v24", "v25", "v26", "v27", "v28", "v29", "v30", "v31", "v0", "v1",
+        "v2", "v3", "v4", "v5", "v6", "v7");
+#elif defined(HAVE_MIPS_MSA_INTRINSICS)
+  v2f64 v_right_m0, v_right_m1, v_right_m2, v_right_m3, v_right_m4, v_right_m5,
+      v_right_m6, v_right_m7;
+  v2f64 v_left_m0, v_left_m1, v_left_m2, v_left_m3, v_left_m4, v_left_m5,
+      v_left_m6, v_left_m7;
+  v2f64 v_tmp_m0, v_tmp_m1, v_tmp_m2, v_tmp_m3;
+
+  v_left_m0 = LD_DP(&(matrix_[0][0]));
+  v_left_m1 = LD_DP(&(matrix_[0][2]));
+  v_left_m2 = LD_DP(&(matrix_[1][0]));
+  v_left_m3 = LD_DP(&(matrix_[1][2]));
+  v_left_m4 = LD_DP(&(matrix_[2][0]));
+  v_left_m5 = LD_DP(&(matrix_[2][2]));
+  v_left_m6 = LD_DP(&(matrix_[3][0]));
+  v_left_m7 = LD_DP(&(matrix_[3][2]));
+
+  v_right_m0 = LD_DP(&(mat.matrix_[0][0]));
+  v_right_m2 = LD_DP(&(mat.matrix_[0][2]));
+  v_right_m4 = LD_DP(&(mat.matrix_[1][0]));
+  v_right_m6 = LD_DP(&(mat.matrix_[1][2]));
+
+  v_right_m1 = (v2f64)__msa_splati_d((v2i64)v_right_m0, 1);
+  v_right_m0 = (v2f64)__msa_splati_d((v2i64)v_right_m0, 0);
+  v_right_m3 = (v2f64)__msa_splati_d((v2i64)v_right_m2, 1);
+  v_right_m2 = (v2f64)__msa_splati_d((v2i64)v_right_m2, 0);
+  v_right_m5 = (v2f64)__msa_splati_d((v2i64)v_right_m4, 1);
+  v_right_m4 = (v2f64)__msa_splati_d((v2i64)v_right_m4, 0);
+  v_right_m7 = (v2f64)__msa_splati_d((v2i64)v_right_m6, 1);
+  v_right_m6 = (v2f64)__msa_splati_d((v2i64)v_right_m6, 0);
+
+  v_tmp_m0 = v_right_m0 * v_left_m0;
+  v_tmp_m1 = v_right_m0 * v_left_m1;
+  v_tmp_m0 += v_right_m1 * v_left_m2;
+  v_tmp_m1 += v_right_m1 * v_left_m3;
+  v_tmp_m0 += v_right_m2 * v_left_m4;
+  v_tmp_m1 += v_right_m2 * v_left_m5;
+  v_tmp_m0 += v_right_m3 * v_left_m6;
+  v_tmp_m1 += v_right_m3 * v_left_m7;
+
+  v_tmp_m2 = v_right_m4 * v_left_m0;
+  v_tmp_m3 = v_right_m4 * v_left_m1;
+  v_tmp_m2 += v_right_m5 * v_left_m2;
+  v_tmp_m3 += v_right_m5 * v_left_m3;
+  v_tmp_m2 += v_right_m6 * v_left_m4;
+  v_tmp_m3 += v_right_m6 * v_left_m5;
+  v_tmp_m2 += v_right_m7 * v_left_m6;
+  v_tmp_m3 += v_right_m7 * v_left_m7;
+
+  v_right_m0 = LD_DP(&(mat.matrix_[2][0]));
+  v_right_m2 = LD_DP(&(mat.matrix_[2][2]));
+  v_right_m4 = LD_DP(&(mat.matrix_[3][0]));
+  v_right_m6 = LD_DP(&(mat.matrix_[3][2]));
+
+  ST_DP(v_tmp_m0, &(matrix_[0][0]));
+  ST_DP(v_tmp_m1, &(matrix_[0][2]));
+  ST_DP(v_tmp_m2, &(matrix_[1][0]));
+  ST_DP(v_tmp_m3, &(matrix_[1][2]));
+
+  v_right_m1 = (v2f64)__msa_splati_d((v2i64)v_right_m0, 1);
+  v_right_m0 = (v2f64)__msa_splati_d((v2i64)v_right_m0, 0);
+  v_right_m3 = (v2f64)__msa_splati_d((v2i64)v_right_m2, 1);
+  v_right_m2 = (v2f64)__msa_splati_d((v2i64)v_right_m2, 0);
+  v_right_m5 = (v2f64)__msa_splati_d((v2i64)v_right_m4, 1);
+  v_right_m4 = (v2f64)__msa_splati_d((v2i64)v_right_m4, 0);
+  v_right_m7 = (v2f64)__msa_splati_d((v2i64)v_right_m6, 1);
+  v_right_m6 = (v2f64)__msa_splati_d((v2i64)v_right_m6, 0);
+
+  v_tmp_m0 = v_right_m0 * v_left_m0;
+  v_tmp_m1 = v_right_m0 * v_left_m1;
+  v_tmp_m0 += v_right_m1 * v_left_m2;
+  v_tmp_m1 += v_right_m1 * v_left_m3;
+  v_tmp_m0 += v_right_m2 * v_left_m4;
+  v_tmp_m1 += v_right_m2 * v_left_m5;
+  v_tmp_m0 += v_right_m3 * v_left_m6;
+  v_tmp_m1 += v_right_m3 * v_left_m7;
+
+  v_tmp_m2 = v_right_m4 * v_left_m0;
+  v_tmp_m3 = v_right_m4 * v_left_m1;
+  v_tmp_m2 += v_right_m5 * v_left_m2;
+  v_tmp_m3 += v_right_m5 * v_left_m3;
+  v_tmp_m2 += v_right_m6 * v_left_m4;
+  v_tmp_m3 += v_right_m6 * v_left_m5;
+  v_tmp_m2 += v_right_m7 * v_left_m6;
+  v_tmp_m3 += v_right_m7 * v_left_m7;
+
+  ST_DP(v_tmp_m0, &(matrix_[2][0]));
+  ST_DP(v_tmp_m1, &(matrix_[2][2]));
+  ST_DP(v_tmp_m2, &(matrix_[3][0]));
+  ST_DP(v_tmp_m3, &(matrix_[3][2]));
+#else
   auto c0 = Col(0);
   auto c1 = Col(1);
   auto c2 = Col(2);
   auto c3 = Col(3);
 
-  auto mc0 = mat.Col(0);
-  auto mc1 = mat.Col(1);
-  auto mc2 = mat.Col(2);
-  auto mc3 = mat.Col(3);
+  auto compute = [&](Double4 r) {
+    return c0 * r[0] + c1 * r[1] + c2 * r[2] + c3 * r[3];
+  };
 
-  SetCol(0, c0 * mc0[0] + c1 * mc0[1] + c2 * mc0[2] + c3 * mc0[3]);
-  SetCol(1, c0 * mc1[0] + c1 * mc1[1] + c2 * mc1[2] + c3 * mc1[3]);
-  SetCol(2, c0 * mc2[0] + c1 * mc2[1] + c2 * mc2[2] + c3 * mc2[3]);
-  SetCol(3, c0 * mc3[0] + c1 * mc3[1] + c2 * mc3[2] + c3 * mc3[3]);
+  SetCol(0, compute(mat.Col(0)));
+  SetCol(1, compute(mat.Col(1)));
+  SetCol(2, compute(mat.Col(2)));
+  SetCol(3, compute(mat.Col(3)));
+#endif
+
   return *this;
 }
 
