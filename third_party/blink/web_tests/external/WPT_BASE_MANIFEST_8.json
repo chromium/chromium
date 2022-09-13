@@ -145423,6 +145423,19 @@
        {}
       ]
      ],
+     "page-property-ignored.html": [
+      "7e77b846d9a6c237b694723f392079b33aefb358",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "remove-child-in-strict-containment-also-spanner.html": [
       "8dfbe1ecc4ab4ea108c0923af751073564142e28",
       [
@@ -164657,6 +164670,19 @@
        [
         [
          "/css/css-sizing/slice-nowrap-intrinsic-size-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "svg-intrinsic-size-005.html": [
+      "68be3f2e1156271e3c2139ee764abd8ec8d045a0",
+      [
+       null,
+       [
+        [
+         "/css/css-sizing/svg-intrinsic-size-005-ref.html",
          "=="
         ]
        ],
@@ -289902,6 +289928,10 @@
        []
       ]
      },
+     "svg-intrinsic-size-005-ref.html": [
+      "1d64836f885e1e29e8e5abd43f51fda756f6a726",
+      []
+     ],
      "thin-element-render-ref.html": [
       "0d5851d5544f9692d0761dc92c23b6b2b546b4d3",
       []
@@ -317600,36 +317630,16 @@
        []
       ],
       "canvas": {
-       "001.xhtml": [
-        "7b959be28407f1400669981f7773b4d49e14e0b0",
-        []
-       ],
-       "002.xhtml": [
-        "6cd8ee7a1ca7bd185b909329f413690031074061",
-        []
-       ],
        "003-1.xhtml": [
-        "b9eeb29a574d6d55def67e25f2c9f8418495baf1",
-        []
-       ],
-       "003.xhtml": [
-        "a30ec22a56475595aa56923c39ee021162e5803b",
+        "22adda8720fc0476198fd39b6c31e2d8fae8d38f",
         []
        ],
        "004.xhtml": [
         "5b03ed22f5a46240596c4eb16f6b5250876bd8ae",
         []
        ],
-       "005.xhtml": [
-        "655b4ae74fee3a2c97c3b8182580fb900a689e8f",
-        []
-       ],
        "006.xhtml": [
         "39274f4213ab5bbe2a014ec90299af9871351622",
-        []
-       ],
-       "007.xhtml": [
-        "33ff5e611a56654281a26def8ad449aa1cec2bd0",
         []
        ],
        "008.xhtml": [
@@ -317665,7 +317675,7 @@
         []
        ],
        "helper-drag-me-green-box.xhtml": [
-        "c6a8fca4c0fd0d44e61eb0f0a2fd53e5ce0a8707",
+        "91a9fa980850eeabd6a29fceb061e82b76381f9f",
         []
        ],
        "helper-drop-here-canvas.xhtml": [
@@ -482222,6 +482232,53 @@
       ]
      },
      "dnd": {
+      "canvas": {
+       "001.html": [
+        "2d3b4dd8ed44e1c4c471345aaab353cdd596821a",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "002.html": [
+        "c9a22ed6db3a9d05c0ebb6a627c29a390d6674cd",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "003.html": [
+        "b479341db1830cca81d699dc2acb85a89ab3b877",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "005.html": [
+        "33ed630fe061955d94cf0b314d665f4277102226",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "007.html": [
+        "d0ff4f64babc5f4ba4d452c82b890d794105a889",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ]
+      },
       "datastore": {
        "datatransfer-constructor-001.html": [
         "26f7421b65226e7f2eca7aea3a0a4a99f03605cd",
