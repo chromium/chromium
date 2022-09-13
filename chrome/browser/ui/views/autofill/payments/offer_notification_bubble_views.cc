@@ -179,10 +179,8 @@ void OfferNotificationBubbleViews::InitWithGPayPromoCodeOfferContent() {
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
   // Create bubble content:
-  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_OMNIBOX_TWO_LINE_CELL_VERTICAL_PADDING)));
+  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
+  layout->SetOrientation(views::BoxLayout::Orientation::kVertical);
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
 
