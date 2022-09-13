@@ -1862,23 +1862,15 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
             blink::StorageKey(render_frame_host()->GetLastCommittedOrigin()),
             profile, file_system_context,
             /*base_path=*/base::FilePath(), show_notification);
-        break;
-      } else {
-        return RespondNow(
-            Error("Invalid operation type: *",
-                  api::file_manager_private::ToString(params->type)));
       }
+      break;
     case file_manager::io_task::OperationType::kRestore:
       if (base::FeatureList::IsEnabled(chromeos::features::kFilesTrash)) {
         task = std::make_unique<file_manager::io_task::RestoreIOTask>(
             std::move(source_urls), profile, file_system_context,
             /*base_path=*/base::FilePath(), show_notification);
-        break;
-      } else {
-        return RespondNow(
-            Error("Invalid operation type: *",
-                  api::file_manager_private::ToString(params->type)));
       }
+      break;
     case file_manager::io_task::OperationType::kRestoreToDestination:
       if (base::FeatureList::IsEnabled(chromeos::features::kFilesTrash)) {
         task =
@@ -1886,23 +1878,15 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
                 std::move(source_urls), std::move(destination_folder_url),
                 profile, file_system_context,
                 /*base_path=*/base::FilePath(), show_notification);
-        break;
-      } else {
-        return RespondNow(
-            Error("Invalid operation type: *",
-                  api::file_manager_private::ToString(params->type)));
       }
+      break;
     case file_manager::io_task::OperationType::kTrash:
       if (base::FeatureList::IsEnabled(chromeos::features::kFilesTrash)) {
         task = std::make_unique<file_manager::io_task::TrashIOTask>(
             std::move(source_urls), profile, file_system_context,
             /*base_path=*/base::FilePath(), show_notification);
-        break;
-      } else {
-        return RespondNow(
-            Error("Invalid operation type: *",
-                  api::file_manager_private::ToString(params->type)));
       }
+      break;
     case file_manager::io_task::OperationType::kExtract:
       if (base::FeatureList::IsEnabled(
               chromeos::features::kFilesExtractArchive)) {
@@ -1914,15 +1898,12 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
             std::move(source_urls), std::move(password),
             std::move(destination_folder_url), profile, file_system_context,
             show_notification);
-        break;
       }
-      // Fall through
-      ABSL_FALLTHROUGH_INTENDED;
-    default:
-      // TODO(b/199804935): Replace with MoveIOTask when implemented.
-      task = std::make_unique<file_manager::io_task::DummyIOTask>(
-          std::move(source_urls), std::move(destination_folder_url), *type);
       break;
+  }
+  if (!task) {
+    return RespondNow(Error("Invalid operation type: *",
+                            api::file_manager_private::ToString(params->type)));
   }
   const auto taskId =
       volume_manager->io_task_controller()->Add(std::move(task));
