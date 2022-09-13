@@ -298,6 +298,7 @@ source_set("feed_app_agent") {
     "//ios/chrome/browser/discover_feed:discover_feed",
     "//ios/chrome/browser/discover_feed:discover_feed_factory",
     "//ios/chrome/browser/ntp:features",
+    "//ios/chrome/browser/signin",
   ]
   frameworks = [
     "BackgroundTasks.framework",

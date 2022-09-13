@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/discover_feed/feed_constants.h"
 #import "ios/chrome/browser/ntp/features.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -55,8 +57,14 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
     // available on any tab, and not just the NTP where the Following Feed
     // lives. This line is intended to crash if DiscoverFeedService is not able
     // to be instantiated here.
-    DiscoverFeedServiceFactory::GetForBrowserState(
-        self.appState.mainBrowserState);
+    AuthenticationService* authService =
+        AuthenticationServiceFactory::GetForBrowserState(
+            self.appState.mainBrowserState);
+    if (authService &&
+        authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+      DiscoverFeedServiceFactory::GetForBrowserState(
+          self.appState.mainBrowserState);
+    }
   }
   [super appState:appState didTransitionFromInitStage:previousInitStage];
 }
