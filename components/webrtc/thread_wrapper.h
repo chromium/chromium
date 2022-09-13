@@ -80,10 +80,10 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   ~ThreadWrapper() override;
 
   // Sets whether the thread can be used to send messages
-  // synchronously to another thread using Send() method. Set to false
-  // by default to avoid potential jankiness when Send() used on
+  // synchronously to another thread using BlockingCall() method. Set to false
+  // by default to avoid potential jankiness when BlockingCall() used on
   // renderer thread. It should be set explicitly for threads that
-  // need to call Send() for other threads.
+  // need to call BlockingCall() for other threads.
   void set_send_allowed(bool allowed) { send_allowed_ = allowed; }
 
   rtc::SocketServer* SocketServer();
@@ -106,10 +106,7 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
              uint32_t id,
              rtc::MessageList* removed) override;
   void Dispatch(rtc::Message* message) override;
-  void Send(const rtc::Location& posted_from,
-            rtc::MessageHandler* handler,
-            uint32_t id,
-            rtc::MessageData* data) override;
+  void BlockingCall(rtc::FunctionView<void()> functor) override;
 
   // Quitting is not supported (see below); this method performs
   // NOTIMPLEMENTED_LOG_ONCE() and returns false.

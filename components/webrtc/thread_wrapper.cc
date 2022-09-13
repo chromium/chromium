@@ -82,16 +82,12 @@ class ThreadWrapper::PostTaskLatencySampler {
 };
 
 struct ThreadWrapper::PendingSend {
-  explicit PendingSend(const rtc::Message& message_value)
-      : sending_thread(ThreadWrapper::current()),
-        message(message_value),
+  explicit PendingSend(rtc::FunctionView<void()> functor)
+      : functor(functor),
         done_event(base::WaitableEvent::ResetPolicy::MANUAL,
-                   base::WaitableEvent::InitialState::NOT_SIGNALED) {
-    DCHECK(sending_thread);
-  }
+                   base::WaitableEvent::InitialState::NOT_SIGNALED) {}
 
-  raw_ptr<ThreadWrapper> sending_thread;
-  rtc::Message message;
+  rtc::FunctionView<void()> functor;
   base::WaitableEvent done_event;
 };
 
@@ -156,6 +152,7 @@ ThreadWrapper::~ThreadWrapper() {
   g_jingle_thread_wrapper.Get().Set(nullptr);
 
   Clear(nullptr, rtc::MQID_ANY, nullptr);
+  CHECK(pending_send_messages_.empty());
   coalesced_tasks_.Clear();
 }
 
@@ -203,24 +200,6 @@ void ThreadWrapper::Clear(rtc::MessageHandler* handler,
 
     it = next;
   }
-
-  for (std::list<PendingSend*>::iterator it = pending_send_messages_.begin();
-       it != pending_send_messages_.end();) {
-    std::list<PendingSend*>::iterator next = it;
-    ++next;
-
-    if ((*it)->message.Match(handler, id)) {
-      if (removed) {
-        removed->push_back((*it)->message);
-      } else {
-        delete (*it)->message.pdata;
-      }
-      (*it)->done_event.Signal();
-      pending_send_messages_.erase(it);
-    }
-
-    it = next;
-  }
 }
 
 void ThreadWrapper::Dispatch(rtc::Message* message) {
@@ -230,22 +209,13 @@ void ThreadWrapper::Dispatch(rtc::Message* message) {
   message->phandler->OnMessage(message);
 }
 
-void ThreadWrapper::Send(const rtc::Location& posted_from,
-                         rtc::MessageHandler* handler,
-                         uint32_t id,
-                         rtc::MessageData* data) {
+void ThreadWrapper::BlockingCall(rtc::FunctionView<void()> functor) {
   ThreadWrapper* current_thread = ThreadWrapper::current();
-  DCHECK(current_thread != nullptr) << "Send() can be called only from a "
-                                       "thread that has ThreadWrapper.";
-
-  rtc::Message message;
-  message.posted_from = posted_from;
-  message.phandler = handler;
-  message.message_id = id;
-  message.pdata = data;
+  DCHECK(current_thread != nullptr) << "BlockingCall() can be called only from "
+                                       "a thread that has ThreadWrapper.";
 
   if (current_thread == this) {
-    Dispatch(&message);
+    functor();
     return;
   }
 
@@ -257,7 +227,7 @@ void ThreadWrapper::Send(const rtc::Location& posted_from,
       << "Send()'ing synchronous "
          "messages is not allowed from the current thread.";
 
-  PendingSend pending_send(message);
+  PendingSend pending_send(functor);
   {
     base::AutoLock auto_lock(lock_);
     pending_send_messages_.push_back(&pending_send);
@@ -296,7 +266,7 @@ void ThreadWrapper::ProcessPendingSends() {
       }
     }
     if (pending_send) {
-      Dispatch(&pending_send->message);
+      pending_send->functor();
       pending_send->done_event.Signal();
     }
   }
