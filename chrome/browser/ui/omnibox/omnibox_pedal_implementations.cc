@@ -26,6 +26,10 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/accessibility/accessibility_features.h"
+#endif
+
 // =============================================================================
 
 class OmniboxPedalClearBrowsingData : public OmniboxPedal {
@@ -415,7 +419,7 @@ class OmniboxPedalRunChromeSafetyCheck : public OmniboxPedal {
                 IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK),
 #endif  // BUILDFLAG(IS_ANDROID)
-            GURL()) {
+            GURL("chrome://settings/safetyCheck?activateSafetyCheck")) {
   }
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
@@ -475,7 +479,7 @@ class OmniboxPedalManageSecuritySettings : public OmniboxPedal {
                 IDS_OMNIBOX_PEDAL_MANAGE_SECURITY_SETTINGS_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_SECURITY_SETTINGS_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_SECURITY_SETTINGS),
-            GURL()) {}
+            GURL("chrome://settings/security")) {}
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
       bool locale_is_english) const override {
@@ -529,7 +533,7 @@ class OmniboxPedalManageCookies : public OmniboxPedal {
                          IDS_OMNIBOX_PEDAL_MANAGE_COOKIES_SUGGESTION_CONTENTS,
                          IDS_ACC_OMNIBOX_PEDAL_MANAGE_COOKIES_SUFFIX,
                          IDS_ACC_OMNIBOX_PEDAL_MANAGE_COOKIES),
-            GURL()) {}
+            GURL("chrome://settings/cookies")) {}
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
       bool locale_is_english) const override {
@@ -583,7 +587,7 @@ class OmniboxPedalManageAddresses : public OmniboxPedal {
                          IDS_OMNIBOX_PEDAL_MANAGE_ADDRESSES_SUGGESTION_CONTENTS,
                          IDS_ACC_OMNIBOX_PEDAL_MANAGE_ADDRESSES_SUFFIX,
                          IDS_ACC_OMNIBOX_PEDAL_MANAGE_ADDRESSES),
-            GURL()) {}
+            GURL("chrome://settings/addresses")) {}
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
       bool locale_is_english) const override {
@@ -637,7 +641,7 @@ class OmniboxPedalManageSync : public OmniboxPedal {
                          IDS_OMNIBOX_PEDAL_MANAGE_SYNC_SUGGESTION_CONTENTS,
                          IDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC_SUFFIX,
                          IDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC),
-            GURL()) {}
+            GURL("chrome://settings/syncSetup/advanced")) {}
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
       bool locale_is_english) const override {
@@ -686,7 +690,7 @@ class OmniboxPedalManageSiteSettings : public OmniboxPedal {
                 IDS_OMNIBOX_PEDAL_MANAGE_SITE_SETTINGS_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_SITE_SETTINGS_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_SITE_SETTINGS),
-            GURL()) {}
+            GURL("chrome://settings/content")) {}
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
       bool locale_is_english) const override {
@@ -728,8 +732,9 @@ class OmniboxPedalManageSiteSettings : public OmniboxPedal {
 class OmniboxPedalAuthRequired : public OmniboxPedal {
  public:
   explicit OmniboxPedalAuthRequired(OmniboxPedalId id,
-                                    LabelStrings label_strings)
-      : OmniboxPedal(id, label_strings, GURL()) {}
+                                    LabelStrings label_strings,
+                                    GURL url)
+      : OmniboxPedal(id, label_strings, url) {}
   bool IsReadyToTrigger(
       const AutocompleteInput& input,
       const AutocompleteProviderClient& client) const override {
@@ -753,7 +758,9 @@ class OmniboxPedalCreateGoogleDoc : public OmniboxPedalAuthRequired {
                 IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_HINT,
                 IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_SUFFIX,
-                IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC)) {}
+                IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC),
+            GURL("https://docs.google.com/document/u/0/"
+                 "create?usp=chrome_actions")) {}
 
   const gfx::VectorIcon& GetVectorIcon() const override {
     return omnibox::kDriveDocsIcon;
@@ -811,7 +818,9 @@ class OmniboxPedalCreateGoogleSheet : public OmniboxPedalAuthRequired {
                 IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_SHEET_HINT,
                 IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_SHEET_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_SHEET_SUFFIX,
-                IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_SHEET)) {}
+                IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_SHEET),
+            GURL("https://docs.google.com/spreadsheets/u/0/"
+                 "create?usp=chrome_actions")) {}
 
   const gfx::VectorIcon& GetVectorIcon() const override {
     return omnibox::kDriveSheetsIcon;
@@ -869,7 +878,9 @@ class OmniboxPedalCreateGoogleSlide : public OmniboxPedalAuthRequired {
                 IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_SLIDE_HINT,
                 IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_SLIDE_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_SLIDE_SUFFIX,
-                IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_SLIDE)) {}
+                IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_SLIDE),
+            GURL("https://docs.google.com/presentation/u/0/"
+                 "create?usp=chrome_actions")) {}
 
   const gfx::VectorIcon& GetVectorIcon() const override {
     return omnibox::kDriveSlidesIcon;
@@ -927,7 +938,9 @@ class OmniboxPedalCreateGoogleCalendarEvent : public OmniboxPedalAuthRequired {
                 IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_CALENDAR_EVENT_HINT,
                 IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_CALENDAR_EVENT_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_CALENDAR_EVENT_SUFFIX,
-                IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_CALENDAR_EVENT)) {}
+                IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_CALENDAR_EVENT),
+            GURL("https://calendar.google.com/calendar/u/0/r/"
+                 "eventedit?usp=chrome_actions")) {}
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const gfx::VectorIcon& GetVectorIcon() const override {
@@ -987,7 +1000,8 @@ class OmniboxPedalCreateGoogleSite : public OmniboxPedalAuthRequired {
                 IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_SITE_HINT,
                 IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_SITE_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_SITE_SUFFIX,
-                IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_SITE)) {}
+                IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_SITE),
+            GURL("https://sites.google.com/u/0/create?usp=chrome_actions")) {}
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const gfx::VectorIcon& GetVectorIcon() const override {
     return vector_icons::kGoogleSitesIcon;
@@ -1046,7 +1060,8 @@ class OmniboxPedalCreateGoogleKeepNote : public OmniboxPedalAuthRequired {
                 IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_KEEP_NOTE_HINT,
                 IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_KEEP_NOTE_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_KEEP_NOTE_SUFFIX,
-                IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_KEEP_NOTE)) {}
+                IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_KEEP_NOTE),
+            GURL("https://keep.google.com/u/0/?usp=chrome_actions#NEWNOTE")) {}
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const gfx::VectorIcon& GetVectorIcon() const override {
@@ -1106,7 +1121,9 @@ class OmniboxPedalCreateGoogleForm : public OmniboxPedalAuthRequired {
                 IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_FORM_HINT,
                 IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_FORM_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_FORM_SUFFIX,
-                IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_FORM)) {}
+                IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_FORM),
+            GURL("https://docs.google.com/forms/u/0/"
+                 "create?usp=chrome_actions")) {}
 
   const gfx::VectorIcon& GetVectorIcon() const override {
     return omnibox::kDriveFormsIcon;
@@ -1164,7 +1181,7 @@ class OmniboxPedalSeeChromeTips : public OmniboxPedal {
                          IDS_OMNIBOX_PEDAL_SEE_CHROME_TIPS_SUGGESTION_CONTENTS,
                          IDS_ACC_OMNIBOX_PEDAL_SEE_CHROME_TIPS_SUFFIX,
                          IDS_ACC_OMNIBOX_PEDAL_SEE_CHROME_TIPS),
-            GURL()) {}
+            GURL("https://www.google.com/chrome/tips/")) {}
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
       bool locale_is_english) const override {
@@ -1218,7 +1235,9 @@ class OmniboxPedalManageGoogleAccount : public OmniboxPedalAuthRequired {
                 IDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_ACCOUNT_HINT,
                 IDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_ACCOUNT_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_ACCOUNT_SUFFIX,
-                IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_ACCOUNT)) {}
+                IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_ACCOUNT),
+            GURL("https://myaccount.google.com/"
+                 "?utm_source=ga-chrome-actions&utm_medium=manageGA")) {}
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const gfx::VectorIcon& GetVectorIcon() const override {
@@ -1278,7 +1297,10 @@ class OmniboxPedalChangeGooglePassword : public OmniboxPedalAuthRequired {
                 IDS_OMNIBOX_PEDAL_CHANGE_GOOGLE_PASSWORD_HINT,
                 IDS_OMNIBOX_PEDAL_CHANGE_GOOGLE_PASSWORD_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_CHANGE_GOOGLE_PASSWORD_SUFFIX,
-                IDS_ACC_OMNIBOX_PEDAL_CHANGE_GOOGLE_PASSWORD)) {}
+                IDS_ACC_OMNIBOX_PEDAL_CHANGE_GOOGLE_PASSWORD),
+            GURL("https://myaccount.google.com/signinoptions/"
+                 "password?utm_source=ga-chrome-actions&utm_medium=changePW")) {
+  }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const gfx::VectorIcon& GetVectorIcon() const override {
@@ -1450,7 +1472,10 @@ class OmniboxPedalFindMyPhone : public OmniboxPedalAuthRequired {
             LabelStrings(IDS_OMNIBOX_PEDAL_FIND_MY_PHONE_HINT,
                          IDS_OMNIBOX_PEDAL_FIND_MY_PHONE_SUGGESTION_CONTENTS,
                          IDS_ACC_OMNIBOX_PEDAL_FIND_MY_PHONE_SUFFIX,
-                         IDS_ACC_OMNIBOX_PEDAL_FIND_MY_PHONE)) {}
+                         IDS_ACC_OMNIBOX_PEDAL_FIND_MY_PHONE),
+            GURL("https://myaccount.google.com/"
+                 "find-your-phone?utm_source=ga-chrome-actions&utm_medium="
+                 "findYourPhone")) {}
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
       bool locale_is_english) const override {
@@ -1505,7 +1530,10 @@ class OmniboxPedalManageGooglePrivacy : public OmniboxPedalAuthRequired {
                 IDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY_HINT,
                 IDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY_SUFFIX,
-                IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY)) {}
+                IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY),
+            GURL("https://myaccount.google.com/"
+                 "data-and-privacy?utm_source=ga-chrome-actions&utm_medium="
+                 "managePrivacy")) {}
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
       bool locale_is_english) const override {
@@ -1555,7 +1583,7 @@ class OmniboxPedalManageChromeSettings : public OmniboxPedal {
                 IDS_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS),
-            GURL()) {}
+            GURL("chrome://settings")) {}
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
       bool locale_is_english) const override {
@@ -1601,7 +1629,7 @@ class OmniboxPedalManageChromeDownloads : public OmniboxPedal {
                 IDS_OMNIBOX_PEDAL_MANAGE_CHROME_DOWNLOADS_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_DOWNLOADS_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_DOWNLOADS),
-            GURL()) {}
+            GURL("chrome://downloads")) {}
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
       bool locale_is_english) const override {
@@ -1650,7 +1678,7 @@ class OmniboxPedalViewChromeHistory : public OmniboxPedal {
                 IDS_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY),
-            GURL()) {}
+            GURL("chrome://history")) {}
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
       bool locale_is_english) const override {
@@ -1756,7 +1784,7 @@ class OmniboxPedalManageChromeAccessibility : public OmniboxPedal {
                 IDS_OMNIBOX_PEDAL_MANAGE_CHROME_ACCESSIBILITY_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_ACCESSIBILITY_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_ACCESSIBILITY),
-            GURL()) {}
+            GURL("chrome://settings/accessibility")) {}
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
       bool locale_is_english) const override {
@@ -1805,7 +1833,16 @@ class OmniboxPedalManageChromeOSAccessibility : public OmniboxPedal {
                 IDS_OMNIBOX_PEDAL_MANAGE_CHROMEOS_ACCESSIBILITY_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROMEOS_ACCESSIBILITY_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROMEOS_ACCESSIBILITY),
-            GURL()) {}
+            GURL("chrome://os-settings/manageAccessibility")) {}
+
+  void OnLoaded() override {
+    OmniboxPedal::OnLoaded();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (::features::IsAccessibilityOSSettingsVisibilityEnabled()) {
+      SetNavigationUrl(GURL("chrome://os-settings/osAccessibility"));
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
       bool locale_is_english) const override {
@@ -1859,7 +1896,7 @@ class OmniboxPedalCustomizeChromeFonts : public OmniboxPedal {
                 IDS_OMNIBOX_PEDAL_CUSTOMIZE_CHROME_FONTS_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_CUSTOMIZE_CHROME_FONTS_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_CUSTOMIZE_CHROME_FONTS),
-            GURL()) {}
+            GURL("chrome://settings/fonts")) {}
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
       bool locale_is_english) const override {
@@ -1914,7 +1951,7 @@ class OmniboxPedalManageChromeThemes : public OmniboxPedal {
                 IDS_OMNIBOX_PEDAL_MANAGE_CHROME_THEMES_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_THEMES_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_THEMES),
-            GURL()) {}
+            GURL("chrome://new-tab-page/?customize=backgrounds")) {}
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
       bool locale_is_english) const override {
@@ -1964,7 +2001,7 @@ class OmniboxPedalCustomizeSearchEngines : public OmniboxPedal {
                 IDS_OMNIBOX_PEDAL_CUSTOMIZE_SEARCH_ENGINES_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_CUSTOMIZE_SEARCH_ENGINES_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_CUSTOMIZE_SEARCH_ENGINES),
-            GURL()) {}
+            GURL("chrome://settings/searchEngines")) {}
 
   std::vector<SynonymGroupSpec> SpecifySynonymGroups(
       bool locale_is_english) const override {

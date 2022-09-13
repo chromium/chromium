@@ -237,6 +237,10 @@ OmniboxPedal::OmniboxPedal(OmniboxPedalId id, LabelStrings strings, GURL url)
 
 OmniboxPedal::~OmniboxPedal() = default;
 
+void OmniboxPedal::OnLoaded() {
+  // Default implementation makes no change so the pedal works as declared.
+}
+
 void OmniboxPedal::SetLabelStrings(const base::Value& ui_strings) {
   DCHECK(ui_strings.is_dict());
   // The pedal_processor tool ensures that this dictionary is either omitted,

@@ -177,6 +177,10 @@ class OmniboxPedal : public OmniboxAction {
 
   OmniboxPedal(OmniboxPedalId id, LabelStrings strings, GURL url);
 
+  // Called after the OmniboxPedalProvider finishes loading all pedals data.
+  // This can be used to override implementation bits based on flags, etc.
+  virtual void OnLoaded();
+
   // Writes labels associated with this Pedal by taking named
   //  values from provided dictionary value |ui_strings|.
   void SetLabelStrings(const base::Value& ui_strings);

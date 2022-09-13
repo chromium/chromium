@@ -290,7 +290,6 @@ static_library("browser") {
     "//sql",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/re2",
-    "//ui/accessibility:ax_base",
     "//ui/base",
     "//ui/gfx",
   ]
