@@ -279,6 +279,11 @@ public class CustomTabActivityTabController implements InflationObserver {
                     mIntent.getIntExtra(ServiceTabLauncher.LAUNCH_REQUEST_ID_EXTRA, 0),
                     tab.getWebContents());
         }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS)) {
+            mConnection.setGreatestScrollPercentageSupplier(
+                    () -> mScrollState != null ? mScrollState.mMaxReportedScrollPercentage : null);
+        }
     }
 
     // Creates the tab on native init, if it hasn't been created yet, and does all the additional
