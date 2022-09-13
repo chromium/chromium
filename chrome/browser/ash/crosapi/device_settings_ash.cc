@@ -11,12 +11,14 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/policy/status_provider/device_cloud_policy_status_provider_chromeos.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -105,6 +107,16 @@ void DeviceSettingsAsh::GetDeviceReportSources(
       plugin_vm::prefs::kPluginVmDataCollectionAllowed);
   std::move(callback).Run(std::move(report_sources),
                           plugin_vm_data_collection_enabled);
+}
+
+void DeviceSettingsAsh::IsDeviceDeprovisioned(
+    IsDeviceDeprovisionedCallback callback) {
+  auto is_deprovisioned =
+      ::ash::DeviceSettingsService::IsInitialized() &&
+      ::ash::DeviceSettingsService::Get()->policy_data() &&
+      ::ash::DeviceSettingsService::Get()->policy_data()->state() ==
+          enterprise_management::PolicyData::DEPROVISIONED;
+  std::move(callback).Run(is_deprovisioned);
 }
 
 }  // namespace crosapi

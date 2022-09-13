@@ -37,6 +37,7 @@ class DeviceSettingsAsh : public mojom::DeviceSettingsService,
   void GetDevicePolicyDeprecated(
       GetDevicePolicyDeprecatedCallback callback) override;
   void GetDeviceReportSources(GetDeviceReportSourcesCallback callback) override;
+  void IsDeviceDeprovisioned(IsDeviceDeprovisionedCallback callback) override;
 
  private:
   mojo::ReceiverSet<mojom::DeviceSettingsService> receivers_;

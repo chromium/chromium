@@ -397,6 +397,7 @@ source_set("unit_tests") {
     "crosapi_util_unittest.cc",
     "device_attributes_ash_unittest.cc",
     "device_oauth2_token_service_ash_unittest.cc",
+    "device_settings_ash_unittest.cc",
     "dlp_ash_unittest.cc",
     "document_scan_ash_unittest.cc",
     "download_controller_ash_unittest.cc",
