@@ -72,6 +72,13 @@ std::unique_ptr<message_center::Notification> CreatePost2022Notification(
           IDS_NEW_PORTAL_SUSPECTED_DETECTION_NOTIFICATION_BUTTON);
       data.buttons.emplace_back(std::move(button));
       break;
+    case NetworkState::PortalState::kProxyAuthRequired:
+      message =
+          IDS_NEW_PORTAL_PROXY_AUTH_REQUIRED_DETECTION_NOTIFICATION_MESSAGE;
+      button.title = l10n_util::GetStringUTF16(
+          IDS_NEW_PORTAL_DETECTION_NOTIFICATION_BUTTON);
+      data.buttons.emplace_back(std::move(button));
+      break;
     default:
       NOTREACHED();
       return nullptr;
@@ -200,7 +207,8 @@ void NetworkPortalNotificationController::PortalStateChanged(
     NetworkState::PortalState portal_state) {
   if (!network ||
       (portal_state != NetworkState::PortalState::kPortal &&
-       portal_state != NetworkState::PortalState::kPortalSuspected)) {
+       portal_state != NetworkState::PortalState::kPortalSuspected &&
+       portal_state != NetworkState::PortalState::kProxyAuthRequired)) {
     last_network_guid_.clear();
 
     // In browser tests we initiate fake network portal detection, but network

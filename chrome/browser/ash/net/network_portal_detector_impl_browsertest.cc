@@ -18,7 +18,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/ash/net/network_portal_detector_test_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
@@ -69,7 +68,15 @@ void SetConnected(const std::string& service_path) {
   base::RunLoop().RunUntilIdle();
 }
 
-void SetState(const std::string& service_path, const char* state) {
+void SetShillProxyAuthRequired() {
+  ShillServiceClient::Get()->SetProperty(
+      dbus::ObjectPath(kWifiServicePath),
+      shill::kPortalDetectionFailedStatusCodeProperty, base::Value(407),
+      base::DoNothing(), base::BindOnce(&ErrorCallbackFunction));
+  base::RunLoop().RunUntilIdle();
+}
+
+void SetState(const char* state) {
   ShillServiceClient::Get()->SetProperty(
       dbus::ObjectPath(kWifiServicePath), shill::kStateProperty,
       base::Value(state), base::DoNothing(),
@@ -99,6 +106,7 @@ class NetworkPortalDetectorImplBrowserTest
   void TestPortalStateAndNotification(
       const char* shill_state,
       chromeos::NetworkState::PortalState portal_state,
+      bool set_portal_status_for_proxy_auth,
       const std::u16string& expected_title,
       const std::u16string& expected_message,
       const std::u16string& expected_button_title,
@@ -122,9 +130,11 @@ class NetworkPortalDetectorImplBrowserTest
     EXPECT_EQ(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE,
               network_portal_detector::GetInstance()->GetCaptivePortalStatus());
 
-    // Setting a portal state should set portal detection and display a
+    // Setting a shill portal state should set portal detection and display a
     // notification
-    SetState(kWifiServicePath, shill_state);
+    if (set_portal_status_for_proxy_auth)
+      SetShillProxyAuthRequired();
+    SetState(shill_state);
 
     default_network = network_state_handler->DefaultNetwork();
     ASSERT_TRUE(default_network);
@@ -134,7 +144,7 @@ class NetworkPortalDetectorImplBrowserTest
               expected_title);
     EXPECT_EQ(display_service_->GetNotification(kNotificationId)->message(),
               expected_message);
-    if (expected_button_title == u"") {
+    if (expected_button_title.empty()) {
       EXPECT_EQ(
           display_service_->GetNotification(kNotificationId)->buttons().size(),
           0);
@@ -216,6 +226,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTest,
                        InSessionDetection) {
   TestPortalStateAndNotification(
       shill::kStateRedirectFound, chromeos::NetworkState::PortalState::kPortal,
+      /*set_portal_status_for_proxy_auth=*/false,
       l10n_util::GetStringUTF16(IDS_PORTAL_DETECTION_NOTIFICATION_TITLE_WIFI),
       l10n_util::GetStringFUTF16(IDS_PORTAL_DETECTION_NOTIFICATION_MESSAGE_WIFI,
                                  u"wifi"),
@@ -250,7 +261,7 @@ void NetworkPortalDetectorImplBrowserTestIgnoreProxy::TestImpl(
 
   // User connects to portalled wifi.
   SetConnected(kWifiServicePath);
-  SetState(kWifiServicePath, shill::kStateRedirectFound);
+  SetState(shill::kStateRedirectFound);
 
   // Check that the network is behind a portal and a notification is displayed.
   EXPECT_TRUE(display_service_->GetNotification(kNotificationId));
@@ -296,6 +307,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTestUI2022Update,
                        InSessionDetectionRedirectFoundState) {
   TestPortalStateAndNotification(
       shill::kStateRedirectFound, chromeos::NetworkState::PortalState::kPortal,
+      /*set_portal_status_for_proxy_auth=*/false,
       l10n_util::GetStringUTF16(
           IDS_NEW_PORTAL_DETECTION_NOTIFICATION_TITLE_WIFI),
       l10n_util::GetStringFUTF16(IDS_NEW_PORTAL_DETECTION_NOTIFICATION_MESSAGE,
@@ -309,6 +321,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTestUI2022Update,
   TestPortalStateAndNotification(
       shill::kStatePortalSuspected,
       chromeos::NetworkState::PortalState::kPortalSuspected,
+      /*set_portal_status_for_proxy_auth=*/false,
       l10n_util::GetStringUTF16(
           IDS_NEW_PORTAL_DETECTION_NOTIFICATION_TITLE_WIFI),
       l10n_util::GetStringFUTF16(
@@ -318,6 +331,25 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTestUI2022Update,
       // CaptivePortalStatus is online here because setting the
       // CaptivePortalResult from ChromeNetworkPortalDetector will default
       // to ONLINE from DetectionCompleted(). This results in the
+      // NetworkStateHandler using the shill state.
+      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+}
+
+IN_PROC_BROWSER_TEST_F(NetworkPortalDetectorImplBrowserTestUI2022Update,
+                       InSessionDetectionProxyAuthRequiredState) {
+  TestPortalStateAndNotification(
+      shill::kStatePortalSuspected,
+      chromeos::NetworkState::PortalState::kProxyAuthRequired,
+      /*set_portal_status_for_proxy_auth=*/true,
+      l10n_util::GetStringUTF16(
+          IDS_NEW_PORTAL_DETECTION_NOTIFICATION_TITLE_WIFI),
+      l10n_util::GetStringFUTF16(
+          IDS_NEW_PORTAL_PROXY_AUTH_REQUIRED_DETECTION_NOTIFICATION_MESSAGE,
+          u"wifi"),
+      l10n_util::GetStringUTF16(IDS_NEW_PORTAL_DETECTION_NOTIFICATION_BUTTON),
+      // CaptivePortalStatus is online here because setting the
+      // CaptivePortalResult from ChromeNetworkPortalDetector will default to
+      // ONLINE from DetectionCompleted(). This results in the
       // NetworkStateHandler using the shill state.
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
 }

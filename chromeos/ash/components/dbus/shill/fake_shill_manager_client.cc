@@ -38,10 +38,8 @@ namespace ash {
 
 namespace {
 
-int s_extra_wifi_networks = 0;
-
-// For testing dynamic WEP networks (uses wifi2).
-bool s_dynamic_wep = false;
+// For testing proxy-auth case for shill status code.
+const int ProxyAuthenticationRequiredStatusCode = 407;
 
 // Used to compare values for finding entries to erase in a ListValue.
 // (ListValue only implements a const_iterator version of Find).
@@ -210,6 +208,13 @@ void UpdatePortaledState(const std::string& service_path,
                          const std::string& state) {
   ShillServiceClient::Get()->GetTestInterface()->SetServiceProperty(
       service_path, shill::kStateProperty, base::Value(state));
+}
+
+void UpdateProxyState(const std::string& service_path) {
+  ShillServiceClient::Get()->GetTestInterface()->SetServiceProperty(
+      service_path, shill::kPortalDetectionFailedStatusCodeProperty,
+      base::Value(ProxyAuthenticationRequiredStatusCode));
+  UpdatePortaledState(service_path, shill::kStatePortalSuspected);
 }
 
 bool IsCellularTechnology(const std::string& type) {
@@ -946,9 +951,9 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
 
     const std::string kWifi2Path = "/service/wifi2";
     services->AddService(kWifi2Path, "wifi2_guid",
-                         s_dynamic_wep ? "wifi2_WEP" : "wifi2_PSK" /* name */,
+                         dynamic_wep_ ? "wifi2_WEP" : "wifi2_PSK" /* name */,
                          shill::kTypeWifi, shill::kStateIdle, add_to_visible);
-    if (s_dynamic_wep) {
+    if (dynamic_wep_) {
       services->SetServiceProperty(kWifi2Path, shill::kSecurityClassProperty,
                                    base::Value(shill::kSecurityClassWep));
       services->SetServiceProperty(kWifi2Path, shill::kEapKeyMgmtProperty,
@@ -984,16 +989,22 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
       services->SetServiceProperty(kPortaledWifiPath,
                                    shill::kSecurityClassProperty,
                                    base::Value(shill::kSecurityClassNone));
-      services->SetConnectBehavior(
-          kPortaledWifiPath,
-          base::BindRepeating(&UpdatePortaledState, kPortaledWifiPath,
-                              portal_state));
+      if (proxy_auth_) {
+        services->SetConnectBehavior(
+            kPortaledWifiPath,
+            base::BindRepeating(&UpdateProxyState, kPortaledWifiPath));
+      } else {
+        services->SetConnectBehavior(
+            kPortaledWifiPath,
+            base::BindRepeating(&UpdatePortaledState, kPortaledWifiPath,
+                                portal_state));
+      }
       services->SetServiceProperty(
           kPortaledWifiPath, shill::kConnectableProperty, base::Value(true));
       profiles->AddService(shared_profile, kPortaledWifiPath);
     }
 
-    for (int i = 0; i < s_extra_wifi_networks; ++i) {
+    for (int i = 0; i < extra_wifi_networks_; ++i) {
       int id = 4 + i;
       std::string path = base::StringPrintf("/service/wifi%d", id);
       std::string guid = base::StringPrintf("wifi%d_guid", id);
@@ -1329,7 +1340,7 @@ bool FakeShillManagerClient::ParseOption(const std::string& arg0,
     roaming_state_ = arg1;
     return true;
   } else if (arg0 == "dynamic_wep" && arg1 == "1") {
-    s_dynamic_wep = true;
+    dynamic_wep_ = true;
     return true;
   }
   return SetInitialNetworkState(arg0, arg1);
@@ -1354,7 +1365,7 @@ bool FakeShillManagerClient::SetInitialNetworkState(
   } else if (type_arg == shill::kTypeWifi && state_arg_as_int > 1) {
     // Enabled and connected, add extra wifi networks.
     state = shill::kStateOnline;
-    s_extra_wifi_networks = state_arg_as_int - 1;
+    extra_wifi_networks_ = state_arg_as_int - 1;
   } else if (state_arg == "disabled" || state_arg == "disconnect") {
     // Technology disabled but available, services created but not connected.
     state = kNetworkDisabled;
@@ -1371,6 +1382,11 @@ bool FakeShillManagerClient::SetInitialNetworkState(
   } else if (state_arg == "portal-suspected") {
     // Technology is enabled, a service is connected and in portal-suspected
     // state.
+    state = shill::kStatePortalSuspected;
+  } else if (state_arg == "proxy-auth") {
+    // Technology is enabled, a service is connected and in portal-suspected
+    // state for proxy-auth. Set the PortalDetectionStatusCode to 407.
+    proxy_auth_ = true;
     state = shill::kStatePortalSuspected;
   } else if (state_arg == "no-connectivity") {
     // Technology is enabled, a service is connected and in no-connectivity

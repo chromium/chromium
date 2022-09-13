@@ -201,6 +201,15 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
 
   bool return_null_properties_;
 
+  // For testing multiple wifi networks.
+  int extra_wifi_networks_ = 0;
+
+  // For testing dynamic WEP networks (uses wifi2).
+  bool dynamic_wep_ = false;
+
+  // For testing proxy-auth case for shill service state.
+  bool proxy_auth_ = false;
+
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<FakeShillManagerClient> weak_ptr_factory_{this};
