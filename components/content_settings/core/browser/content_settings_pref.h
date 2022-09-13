@@ -57,11 +57,6 @@ class ContentSettingsPref {
                          base::Value value,
                          const RuleMetaData& metadata);
 
-  // Returns the |last_modified| date of a setting.
-  base::Time GetWebsiteSettingLastModified(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern);
-
   void ClearPref();
 
   void ClearAllContentSettingsRules();

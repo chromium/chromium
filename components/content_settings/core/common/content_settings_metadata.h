@@ -12,9 +12,16 @@ namespace content_settings {
 
 // Holds metadata for a ContentSetting rule.
 struct RuleMetaData {
+  // Last Modified data as specified by some UserModifiableProvider
+  // implementations. May be null.
   base::Time last_modified;
+  // Last visited data as specified by some UserModifiableProvider
+  // implementations. Only populated when
+  // ContentSettingsConstraint::track_last_visit_for_autoexpiration is enabled.
   base::Time last_visited;
+  // Expiration date if defined through a ContentSettingsConstraint.
   base::Time expiration;
+  // SessionModel as defined through a ContentSettingsConstraint.
   SessionModel session_model = SessionModel::Durable;
 };
 

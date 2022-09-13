@@ -250,20 +250,6 @@ bool PrefProvider::SetWebsiteSetting(
   return true;
 }
 
-base::Time PrefProvider::GetWebsiteSettingLastModified(
-    const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
-  DCHECK(CalledOnValidThread());
-  DCHECK(prefs_);
-
-  if (!supports_type(content_type))
-    return base::Time();
-
-  return GetPref(content_type)
-      ->GetWebsiteSettingLastModified(primary_pattern, secondary_pattern);
-}
-
 bool PrefProvider::UpdateLastVisitTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,

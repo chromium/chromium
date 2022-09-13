@@ -28,6 +28,15 @@ ContentSettingsType kImages = ContentSettingsType::IMAGES;
 ContentSettingsType kPopups = ContentSettingsType::POPUPS;
 ContentSettingsType kLocation = ContentSettingsType::GEOLOCATION;
 
+base::Time GetSettingLastModifiedDate(HostContentSettingsMap* map,
+                                      GURL primary_url,
+                                      GURL secondary_url,
+                                      ContentSettingsType type) {
+  content_settings::SettingInfo info;
+  map->GetWebsiteSetting(primary_url, secondary_url, type, &info);
+  return info.metadata.last_modified;
+}
+
 }  // namespace
 
 class RecentSiteSettingsHelperTest : public testing::Test {
@@ -54,21 +63,15 @@ TEST_F(RecentSiteSettingsHelperTest, IncognitoPermissionTimestamps) {
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile());
   const GURL url("http://example.com");
-  const ContentSettingsPattern primary_pattern =
-      ContentSettingsPattern::FromURLNoWildcard(url);
-  const ContentSettingsPattern wildcard_pattern =
-      ContentSettingsPattern::Wildcard();
   map->SetContentSettingDefaultScope(url, url, kNotifications, kBlocked);
 
   CreateIncognitoProfile();
   HostContentSettingsMap* incognito_map =
       HostContentSettingsMapFactory::GetForProfile(incognito_profile());
   EXPECT_NE(base::Time(),
-            map->GetSettingLastModifiedDate(primary_pattern, wildcard_pattern,
-                                            kNotifications));
-  EXPECT_EQ(base::Time(),
-            incognito_map->GetSettingLastModifiedDate(
-                primary_pattern, wildcard_pattern, kNotifications));
+            GetSettingLastModifiedDate(map, url, url, kNotifications));
+  EXPECT_EQ(base::Time(), GetSettingLastModifiedDate(incognito_map, url, url,
+                                                     kNotifications));
 }
 
 TEST_F(RecentSiteSettingsHelperTest, CheckRecentSitePermissions) {

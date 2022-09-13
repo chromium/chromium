@@ -11,22 +11,20 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
-#include "base/time/default_clock.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/content_settings_mock_observer.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
-#include "components/content_settings/core/browser/content_settings_pref.h"
+#include "components/content_settings/core/browser/content_settings_provider.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
-#include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
+#include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -361,10 +359,12 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   channels_provider_->AddObserver(&mock_observer);
 
   // Set up some channels.
+  GURL abc_url("https://abc.com");
   ContentSettingsPattern abc_pattern =
-      ContentSettingsPattern::FromURLNoWildcard(GURL("https://abc.com"));
+      ContentSettingsPattern::FromURLNoWildcard(abc_url);
+  GURL xyz_url("https://xyz.com");
   ContentSettingsPattern xyz_pattern =
-      ContentSettingsPattern::FromURLNoWildcard(GURL("https://xyz.com"));
+      ContentSettingsPattern::FromURLNoWildcard(xyz_url);
   channels_provider_->SetWebsiteSetting(abc_pattern, ContentSettingsPattern(),
                                         ContentSettingsType::NOTIFICATIONS,
                                         base::Value(CONTENT_SETTING_ALLOW));
@@ -372,8 +372,8 @@ TEST_F(NotificationChannelsProviderAndroidTest,
                                         ContentSettingsType::NOTIFICATIONS,
                                         base::Value(CONTENT_SETTING_BLOCK));
 
-  EXPECT_NE(base::Time(), channels_provider_->GetWebsiteSettingLastModified(
-                              abc_pattern, ContentSettingsPattern(),
+  EXPECT_NE(base::Time(), content_settings::TestUtils::GetLastModified(
+                              channels_provider_.get(), abc_url, abc_url,
                               ContentSettingsType::NOTIFICATIONS));
 
   EXPECT_CALL(mock_observer,
@@ -385,8 +385,8 @@ TEST_F(NotificationChannelsProviderAndroidTest,
       ContentSettingsType::NOTIFICATIONS);
 
   // Ensure cached data is erased.
-  EXPECT_EQ(base::Time(), channels_provider_->GetWebsiteSettingLastModified(
-                              abc_pattern, ContentSettingsPattern(),
+  EXPECT_EQ(base::Time(), content_settings::TestUtils::GetLastModified(
+                              channels_provider_.get(), abc_url, abc_url,
                               ContentSettingsType::NOTIFICATIONS));
 
   // Check no rules are returned.
@@ -432,8 +432,8 @@ TEST_F(NotificationChannelsProviderAndroidTest,
        GetWebsiteSettingLastModifiedReturnsNullIfNoModifications) {
   InitChannelsProvider(true /* should_use_channels */);
 
-  auto result = channels_provider_->GetWebsiteSettingLastModified(
-      GetTestPattern(), ContentSettingsPattern(),
+  auto result = content_settings::TestUtils::GetLastModified(
+      channels_provider_.get(), GURL(kTestOrigin), GURL(kTestOrigin),
       ContentSettingsType::NOTIFICATIONS);
 
   EXPECT_TRUE(result.is_null());
@@ -447,14 +447,15 @@ TEST_F(NotificationChannelsProviderAndroidTest,
       GetTestPattern(), ContentSettingsPattern(),
       ContentSettingsType::NOTIFICATIONS, base::Value(CONTENT_SETTING_ALLOW));
 
-  auto result = channels_provider_->GetWebsiteSettingLastModified(
-      GetTestPattern(), ContentSettingsPattern(),
+  auto result = content_settings::TestUtils::GetLastModified(
+      channels_provider_.get(), GURL(kTestOrigin), GURL(kTestOrigin),
       ContentSettingsType::GEOLOCATION);
 
   EXPECT_TRUE(result.is_null());
 
-  result = channels_provider_->GetWebsiteSettingLastModified(
-      GetTestPattern(), ContentSettingsPattern(), ContentSettingsType::COOKIES);
+  result = content_settings::TestUtils::GetLastModified(
+      channels_provider_.get(), GURL(kTestOrigin), GURL(kTestOrigin),
+      ContentSettingsType::COOKIES);
 
   EXPECT_TRUE(result.is_null());
 }
@@ -468,35 +469,34 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   channels_provider_->SetClockForTesting(&clock);
 
   // Create channel and check last-modified time is the creation time.
-  std::string first_origin = "https://example.com";
-  channels_provider_->SetWebsiteSetting(
-      ContentSettingsPattern::FromString(first_origin),
-      ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_ALLOW));
+  GURL first_origin("https://example.com");
+  ContentSettingsPattern first_pattern =
+      ContentSettingsPattern::FromString(first_origin.spec());
+  channels_provider_->SetWebsiteSetting(first_pattern, ContentSettingsPattern(),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        base::Value(CONTENT_SETTING_ALLOW));
   clock.Advance(base::Seconds(1));
 
-  base::Time last_modified = channels_provider_->GetWebsiteSettingLastModified(
-      ContentSettingsPattern::FromString(first_origin),
-      ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS);
+  base::Time last_modified = content_settings::TestUtils::GetLastModified(
+      channels_provider_.get(), first_origin, first_origin,
+      ContentSettingsType::NOTIFICATIONS);
   EXPECT_EQ(last_modified, t1);
 
   // Delete and recreate the same channel after some time has passed.
   // This simulates the user clearing data and regranting permisison.
   clock.Advance(base::Seconds(3));
   base::Time t2 = clock.Now();
-  channels_provider_->SetWebsiteSetting(
-      ContentSettingsPattern::FromString(first_origin),
-      ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
-      base::Value());
-  channels_provider_->SetWebsiteSetting(
-      ContentSettingsPattern::FromString(first_origin),
-      ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
-      base::Value(CONTENT_SETTING_ALLOW));
+  channels_provider_->SetWebsiteSetting(first_pattern, ContentSettingsPattern(),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        base::Value());
+  channels_provider_->SetWebsiteSetting(first_pattern, ContentSettingsPattern(),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        base::Value(CONTENT_SETTING_ALLOW));
 
   // Last modified time should be updated.
-  last_modified = channels_provider_->GetWebsiteSettingLastModified(
-      ContentSettingsPattern::FromString(first_origin),
-      ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS);
+  last_modified = content_settings::TestUtils::GetLastModified(
+      channels_provider_.get(), first_origin, first_origin,
+      ContentSettingsType::NOTIFICATIONS);
   EXPECT_EQ(last_modified, t2);
 
   // Create an unrelated channel after some more time has passed.
@@ -508,9 +508,9 @@ TEST_F(NotificationChannelsProviderAndroidTest,
       base::Value(CONTENT_SETTING_ALLOW));
 
   // Expect first origin's last-modified time to be unchanged.
-  last_modified = channels_provider_->GetWebsiteSettingLastModified(
-      ContentSettingsPattern::FromString(first_origin),
-      ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS);
+  last_modified = content_settings::TestUtils::GetLastModified(
+      channels_provider_.get(), first_origin, first_origin,
+      ContentSettingsType::NOTIFICATIONS);
   EXPECT_EQ(last_modified, t2);
 }
 

@@ -12,8 +12,6 @@ namespace base {
 class Clock;
 }
 
-class ContentSettingsPattern;
-
 namespace content_settings {
 
 // Content settings provider that provides settings which may be modified by the
@@ -21,11 +19,6 @@ namespace content_settings {
 class UserModifiableProvider : public ObservableProvider {
  public:
   ~UserModifiableProvider() override {}
-  // Returns the timestamp that a particular setting was last modified.
-  virtual base::Time GetWebsiteSettingLastModified(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsType content_type) = 0;
   // Updates the last_visit time for the given setting. Returns true if the
   // setting was found and updated.
   virtual bool UpdateLastVisitTime(

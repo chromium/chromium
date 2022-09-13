@@ -182,18 +182,6 @@ void ContentSettingsPref::SetWebsiteSetting(
   notify_callback_.Run(primary_pattern, secondary_pattern, content_type_);
 }
 
-base::Time ContentSettingsPref::GetWebsiteSettingLastModified(
-    const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern) {
-  OriginIdentifierValueMap* map_to_modify = &off_the_record_value_map_;
-  if (!off_the_record_)
-    map_to_modify = &value_map_;
-
-  base::Time last_modified = map_to_modify->GetLastModified(
-      primary_pattern, secondary_pattern, content_type_);
-  return last_modified;
-}
-
 void ContentSettingsPref::ClearPref() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(prefs_);
@@ -309,8 +297,15 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
 
     const base::Value* value = settings_dictionary.FindKey(kSettingKey);
     if (value) {
-      base::Time last_modified = GetLastModified(settings_dictionary);
-      base::Time last_visited = GetLastVisit(settings_dictionary);
+      base::Time last_modified;
+      base::Time last_visited;
+      if (!off_the_record_) {
+        // Don't copy over timestamps for OTR profiles because some features
+        // rely on this to differentiate inherited from fresh OTR permissions.
+        // See RecentSiteSettingsHelperTest.IncognitoPermissionTimestamps
+        last_modified = GetLastModified(settings_dictionary);
+        last_visited = GetLastVisit(settings_dictionary);
+      }
       DCHECK(IsValueAllowedForType(*value, content_type_));
       value_map_.SetValue(std::move(pattern_pair.first),
                           std::move(pattern_pair.second), content_type_,

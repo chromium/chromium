@@ -20,13 +20,16 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/content_settings/core/browser/content_settings_observable_provider.h"
 #include "components/content_settings/core/browser/content_settings_pref.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/default_pref_store.h"
@@ -574,6 +577,8 @@ TEST_F(PrefProviderTest, LastModified) {
   sync_preferences::TestingPrefServiceSyncable prefs;
   PrefProvider::RegisterProfilePrefs(prefs.registry());
 
+  GURL url1("https://google.com");
+  GURL url2("https://www.google.com");
   ContentSettingsPattern pattern_1 =
       ContentSettingsPattern::FromString("google.com");
   ContentSettingsPattern pattern_2 =
@@ -598,13 +603,11 @@ TEST_F(PrefProviderTest, LastModified) {
   test_clock.Advance(base::Seconds(1));
   base::Time t2 = test_clock.Now();
 
-  base::Time last_modified = provider.GetWebsiteSettingLastModified(
-      pattern_1, ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES);
+  base::Time last_modified = TestUtils::GetLastModified(
+      &provider, url1, url1, ContentSettingsType::COOKIES);
   EXPECT_EQ(t1, last_modified);
-  last_modified = provider.GetWebsiteSettingLastModified(
-      pattern_2, ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES);
+  last_modified = TestUtils::GetLastModified(&provider, url2, url2,
+                                             ContentSettingsType::COOKIES);
   EXPECT_EQ(t1, last_modified);
 
   // A change for pattern_1, which will update the last_modified timestamp.
@@ -613,15 +616,13 @@ TEST_F(PrefProviderTest, LastModified) {
                              ContentSettingsType::COOKIES,
                              base::Value(CONTENT_SETTING_BLOCK), {});
 
-  last_modified = provider.GetWebsiteSettingLastModified(
-      pattern_1, ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES);
+  last_modified = TestUtils::GetLastModified(&provider, url1, url1,
+                                             ContentSettingsType::COOKIES);
   EXPECT_EQ(t2, last_modified);
 
   // The timestamp of pattern_2 shouldn't change.
-  last_modified = provider.GetWebsiteSettingLastModified(
-      pattern_2, ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES);
+  last_modified = TestUtils::GetLastModified(&provider, url2, url2,
+                                             ContentSettingsType::COOKIES);
   EXPECT_EQ(t1, last_modified);
 
   provider.ShutdownOnUIThread();
@@ -631,15 +632,13 @@ TEST_F(PrefProviderTest, LastModified) {
                          /*store_last_modified=*/true,
                          /*restore_session=*/false);
 
-  last_modified = provider2.GetWebsiteSettingLastModified(
-      pattern_1, ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES);
+  last_modified = TestUtils::GetLastModified(&provider, url1, url1,
+                                             ContentSettingsType::COOKIES);
   EXPECT_EQ(t2, last_modified);
 
   // The timestamp of pattern_2 shouldn't change.
-  last_modified = provider2.GetWebsiteSettingLastModified(
-      pattern_2, ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES);
+  last_modified = TestUtils::GetLastModified(&provider, url2, url2,
+                                             ContentSettingsType::COOKIES);
   EXPECT_EQ(t1, last_modified);
   provider2.ShutdownOnUIThread();
 }

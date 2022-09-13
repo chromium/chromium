@@ -120,23 +120,6 @@ const base::Value* OriginIdentifierValueMap::GetValue(
   return nullptr;
 }
 
-base::Time OriginIdentifierValueMap::GetLastModified(
-    const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) const {
-  DCHECK(primary_pattern.IsValid());
-  DCHECK(secondary_pattern.IsValid());
-
-  PatternPair patterns(primary_pattern, secondary_pattern);
-  auto it = entries_.find(content_type);
-  if (it == entries_.end())
-    return base::Time();
-  auto r = it->second.find(patterns);
-  if (r == it->second.end())
-    return base::Time();
-  return r->second.metadata.last_modified;
-}
-
 void OriginIdentifierValueMap::SetValue(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,

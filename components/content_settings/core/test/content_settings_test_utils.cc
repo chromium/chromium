@@ -37,6 +37,18 @@ ContentSetting TestUtils::GetContentSetting(const ProviderInterface* provider,
 }
 
 // static
+base::Time TestUtils::GetLastModified(
+    const content_settings::ProviderInterface* provider,
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType type) {
+  content_settings::RuleMetaData metadata;
+  content_settings::TestUtils::GetContentSetting(
+      provider, primary_url, secondary_url, type, false, &metadata);
+  return metadata.last_modified;
+}
+
+// static
 base::Value TestUtils::GetContentSettingValueAndPatterns(
     content_settings::RuleIterator* rule_iterator,
     const GURL& primary_url,

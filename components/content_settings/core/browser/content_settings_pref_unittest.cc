@@ -262,10 +262,9 @@ TEST(ContentSettingsPref, LegacyLastModifiedLoad) {
 
   // Ensure that after reading from our JSON/old value the last_modified time is
   // still parsed correctly.
-  base::Time retrieved_last_modified =
-      content_settings_pref.GetWebsiteSettingLastModified(
-          ContentSettingsPattern::FromString("http://example.com"),
-          ContentSettingsPattern::Wildcard());
+  EXPECT_EQ(content_settings_pref.GetNumExceptions(), 1u);
+  auto it = content_settings_pref.GetRuleIterator(false);
+  base::Time retrieved_last_modified = it->Next().metadata.last_modified;
   EXPECT_EQ(last_modified, retrieved_last_modified);
 }
 

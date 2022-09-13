@@ -32,6 +32,7 @@
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -59,6 +60,14 @@ bool MatchPrimaryPattern(const ContentSettingsPattern& expected_primary,
   return expected_primary == primary_pattern;
 }
 
+base::Time GetSettingLastModifiedDate(HostContentSettingsMap* map,
+                                      GURL primary_url,
+                                      GURL secondary_url,
+                                      ContentSettingsType type) {
+  content_settings::SettingInfo info;
+  map->GetWebsiteSetting(primary_url, secondary_url, type, &info);
+  return info.metadata.last_modified;
+}
 }  // namespace
 
 class MockUserModifiableProvider
@@ -80,11 +89,6 @@ class MockUserModifiableProvider
   MOCK_METHOD1(ClearAllContentSettingsRules, void(ContentSettingsType));
 
   MOCK_METHOD0(ShutdownOnUIThread, void());
-
-  MOCK_METHOD3(GetWebsiteSettingLastModified,
-               base::Time(const ContentSettingsPattern&,
-                          const ContentSettingsPattern&,
-                          ContentSettingsType));
 
   MOCK_METHOD3(UpdateLastVisitTime,
                bool(const ContentSettingsPattern& primary_pattern,
@@ -1597,19 +1601,16 @@ TEST_F(HostContentSettingsMapTest, GetSettingLastModified) {
   ContentSettingsForOneType host_settings;
 
   GURL url("https://www.google.com/");
-  ContentSettingsPattern pattern =
-      ContentSettingsPattern::FromURLNoWildcard(url);
 
-  // Last modified date for non existant settings should be base::Time().
-  base::Time t = map->GetSettingLastModifiedDate(
-      pattern, ContentSettingsPattern::Wildcard(), ContentSettingsType::POPUPS);
+  // Last modified date for non existent settings should be base::Time().
+  base::Time t =
+      GetSettingLastModifiedDate(map, url, url, ContentSettingsType::POPUPS);
   EXPECT_EQ(base::Time(), t);
 
   // Add setting for url.
   map->SetContentSettingDefaultScope(url, GURL(), ContentSettingsType::POPUPS,
                                      CONTENT_SETTING_BLOCK);
-  t = map->GetSettingLastModifiedDate(
-      pattern, ContentSettingsPattern::Wildcard(), ContentSettingsType::POPUPS);
+  t = GetSettingLastModifiedDate(map, url, url, ContentSettingsType::POPUPS);
   EXPECT_EQ(t, test_clock.Now());
 
   test_clock.Advance(base::Seconds(1));
@@ -1617,65 +1618,8 @@ TEST_F(HostContentSettingsMapTest, GetSettingLastModified) {
   map->SetContentSettingDefaultScope(url, GURL(), ContentSettingsType::POPUPS,
                                      CONTENT_SETTING_ALLOW);
 
-  t = map->GetSettingLastModifiedDate(
-      pattern, ContentSettingsPattern::Wildcard(), ContentSettingsType::POPUPS);
+  t = GetSettingLastModifiedDate(map, url, url, ContentSettingsType::POPUPS);
   EXPECT_EQ(t, test_clock.Now());
-}
-
-TEST_F(HostContentSettingsMapTest, LastModifiedMultipleModifiableProviders) {
-  TestingProfile profile;
-  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
-  GURL url("https://www.google.com/");
-  ContentSettingsPattern pattern =
-      ContentSettingsPattern::FromURLNoWildcard(url);
-
-  base::Time t1 = base::Time::Now();
-  auto test_clock = std::make_unique<base::SimpleTestClock>();
-  test_clock->SetNow(t1);
-
-  base::SimpleTestClock* clock = test_clock.get();
-  clock->Advance(base::Seconds(1));
-  base::Time t2 = clock->Now();
-
-  // Register a provider which reports a modification time of t1.
-  std::unique_ptr<MockUserModifiableProvider> provider =
-      std::make_unique<MockUserModifiableProvider>();
-  EXPECT_CALL(*provider, GetWebsiteSettingLastModified(
-                             _, _, ContentSettingsType::NOTIFICATIONS))
-      .WillOnce(Return(t1));
-  MockUserModifiableProvider* weak_provider = provider.get();
-  map->RegisterUserModifiableProvider(
-      HostContentSettingsMap::PROVIDER_FOR_TESTS, std::move(provider));
-
-  // Register another provider which reports a modification time of t2.
-  std::unique_ptr<MockUserModifiableProvider> other_provider =
-      std::make_unique<MockUserModifiableProvider>();
-  EXPECT_CALL(*other_provider, GetWebsiteSettingLastModified(
-                                   _, _, ContentSettingsType::NOTIFICATIONS))
-      .WillRepeatedly(Return(t2));
-  MockUserModifiableProvider* weak_other_provider = other_provider.get();
-  map->RegisterUserModifiableProvider(
-      HostContentSettingsMap::OTHER_PROVIDER_FOR_TESTS,
-      std::move(other_provider));
-
-  // Expect the more recent modification time to be reported.
-  EXPECT_EQ(t2, map->GetSettingLastModifiedDate(
-                    pattern, ContentSettingsPattern::Wildcard(),
-                    ContentSettingsType::NOTIFICATIONS));
-
-  // Now have original provider report a more recent modification time.
-  clock->Advance(base::Seconds(1));
-  base::Time t3 = clock->Now();
-  EXPECT_CALL(*weak_provider, GetWebsiteSettingLastModified(
-                                  _, _, ContentSettingsType::NOTIFICATIONS))
-      .WillOnce(Return(t3));
-
-  // Expect the timestamp from the registered provider to be reported now.
-  EXPECT_EQ(t3, map->GetSettingLastModifiedDate(
-                    pattern, ContentSettingsPattern::Wildcard(),
-                    ContentSettingsType::NOTIFICATIONS));
-  weak_provider->RemoveObserver(map);
-  weak_other_provider->RemoveObserver(map);
 }
 
 TEST_F(HostContentSettingsMapTest, IsRestrictedToSecureOrigins) {

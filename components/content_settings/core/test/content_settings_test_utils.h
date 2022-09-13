@@ -39,6 +39,12 @@ class TestUtils {
                                           bool include_incognito,
                                           RuleMetaData* metadata = nullptr);
 
+  static base::Time GetLastModified(
+      const content_settings::ProviderInterface* provider,
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType type);
+
   // This wrapper exists only to make
   // HostContentSettingsMap::GetContentSettingValueAndPatterns public for use in
   // tests.

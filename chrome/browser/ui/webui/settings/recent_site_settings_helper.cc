@@ -59,8 +59,7 @@ std::map<GURL, std::vector<TimestampedSetting>> GetAllSettingsForProfile(
     auto exceptions_for_type = site_settings::GetSiteExceptionsForContentType(
         content_settings_map, content_type);
     for (const auto& e : exceptions_for_type) {
-      auto last_modified = content_settings_map->GetSettingLastModifiedDate(
-          e.primary_pattern, e.secondary_pattern, content_type);
+      auto last_modified = e.metadata.last_modified;
       if (last_modified.is_null()) {
         continue;
       }

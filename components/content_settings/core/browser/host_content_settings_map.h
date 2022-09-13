@@ -92,8 +92,7 @@ class HostContentSettingsMap : public content_settings::Observer,
   // Adds a new provider for |type|. This should be used instead of
   // |RegisterProvider|, not in addition.
   //
-  // Providers added via this method will be queried when
-  // |GetSettingLastModifiedDate| is called and their settings may be cleared by
+  // Providers added via this method may be cleared by
   // |ClearSettingsForOneTypeWithPredicate| if they were recently modified.
   void RegisterUserModifiableProvider(
       ProviderType type,
@@ -264,18 +263,6 @@ class HostContentSettingsMap : public content_settings::Observer,
   //
   // This should only be called on the UI thread.
   void ClearSettingsForOneType(ContentSettingsType content_type);
-
-  // TODO(crbug.com/1345920): This method can be removed since last_modified is
-  // now part of ContentSettingsPatternSource and SettingInfo.
-  // Return the |last_modified| date of a content setting. This will only return
-  // valid values for settings from the PreferenceProvider. Settings from other
-  // providers will return base::Time().
-  //
-  // This may be called on any thread.
-  base::Time GetSettingLastModifiedDate(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsType content_type) const;
 
   using PatternSourcePredicate = base::RepeatingCallback<bool(
       const ContentSettingsPattern& primary_pattern,

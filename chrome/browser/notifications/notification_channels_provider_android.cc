@@ -371,27 +371,6 @@ void NotificationChannelsProviderAndroid::ShutdownOnUIThread() {
   RemoveAllObservers();
 }
 
-base::Time NotificationChannelsProviderAndroid::GetWebsiteSettingLastModified(
-    const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
-  if (content_type != ContentSettingsType::NOTIFICATIONS ||
-      !platform_supports_channels_) {
-    return base::Time();
-  }
-  url::Origin origin = url::Origin::Create(GURL(primary_pattern.ToString()));
-  if (origin.opaque())
-    return base::Time();
-  const std::string origin_string = origin.Serialize();
-
-  InitCachedChannels();
-  auto channel_entry = cached_channels_.find(origin_string);
-  if (channel_entry == cached_channels_.end())
-    return base::Time();
-
-  return channel_entry->second.timestamp;
-}
-
 bool NotificationChannelsProviderAndroid::UpdateLastVisitTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,

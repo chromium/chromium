@@ -710,19 +710,6 @@ void HostContentSettingsMap::ClearSettingsForOneType(
   FlushLossyWebsiteSettings();
 }
 
-base::Time HostContentSettingsMap::GetSettingLastModifiedDate(
-    const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) const {
-  base::Time most_recent_time;
-  for (auto* provider : user_modifiable_providers_) {
-    base::Time time = provider->GetWebsiteSettingLastModified(
-        primary_pattern, secondary_pattern, content_type);
-    most_recent_time = std::max(time, most_recent_time);
-  }
-  return most_recent_time;
-}
-
 void HostContentSettingsMap::ClearSettingsForOneTypeWithPredicate(
     ContentSettingsType content_type,
     base::Time begin_time,
@@ -740,11 +727,10 @@ void HostContentSettingsMap::ClearSettingsForOneTypeWithPredicate(
     if (pattern_predicate.is_null() ||
         pattern_predicate.Run(setting.primary_pattern,
                               setting.secondary_pattern)) {
-      for (auto* provider : user_modifiable_providers_) {
-        base::Time last_modified = provider->GetWebsiteSettingLastModified(
-            setting.primary_pattern, setting.secondary_pattern, content_type);
-        if (last_modified >= begin_time &&
-            (last_modified < end_time || end_time.is_null())) {
+      base::Time last_modified = setting.metadata.last_modified;
+      if (last_modified >= begin_time &&
+          (last_modified < end_time || end_time.is_null())) {
+        for (auto* provider : user_modifiable_providers_) {
           provider->SetWebsiteSetting(setting.primary_pattern,
                                       setting.secondary_pattern, content_type,
                                       base::Value(), {});

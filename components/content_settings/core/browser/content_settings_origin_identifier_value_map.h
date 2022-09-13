@@ -96,10 +96,6 @@ class OriginIdentifierValueMap {
                               const GURL& secondary_url,
                               ContentSettingsType content_type) const;
 
-  base::Time GetLastModified(const ContentSettingsPattern& primary_pattern,
-                             const ContentSettingsPattern& secondary_pattern,
-                             ContentSettingsType content_type) const;
-
   // Sets the |value| for the given |primary_pattern|, |secondary_pattern|,
   // |content_type| tuple. The caller can also store a
   // |last_modified| date for each value. The |constraints| will be used to

@@ -94,22 +94,6 @@ bool OneTimeGeolocationPermissionProvider::SetWebsiteSetting(
   return false;
 }
 
-base::Time OneTimeGeolocationPermissionProvider::GetWebsiteSettingLastModified(
-    const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
-  if (content_type != ContentSettingsType::GEOLOCATION)
-    return base::Time();
-  std::map<ContentSettingsPattern, base::Time>::const_iterator
-      matching_iterator = grants_with_open_tabs_.find(primary_pattern);
-  if (matching_iterator == grants_with_open_tabs_.end())
-    return base::Time();
-  if (matching_iterator->second + base::Days(1) < base::Time::Now()) {
-    return base::Time();
-  }
-  return matching_iterator->second;
-}
-
 bool OneTimeGeolocationPermissionProvider::UpdateLastVisitTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
