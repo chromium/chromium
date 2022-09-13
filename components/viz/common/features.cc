@@ -192,6 +192,11 @@ const base::Feature kAllowUndamagedNonrootRenderPassToSkip{
 const base::Feature kAggressiveFrameCulling{"AggressiveFrameCulling",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, do not rely on surface garbage collection to happen
+// periodically, but trigger it eagerly, to avoid missing calls.
+const base::Feature kEagerSurfaceGarbageCollection{
+    "EagerSurfaceGarbageCollecton", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsAdpfEnabled() {
   // TODO(crbug.com/1157620): Limit this to correct android version.
   return base::FeatureList::IsEnabled(kAdpf);
