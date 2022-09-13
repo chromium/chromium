@@ -131,7 +131,7 @@ class ConnectorsService : public KeyedService {
   // contain either POLICY_SCOPE_MACHINE or POLICY_SCOPE_USER.
   absl::optional<DmToken> GetDmToken(const char* scope_pref) const;
   absl::optional<DmToken> GetBrowserDmToken() const;
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   absl::optional<DmToken> GetProfileDmToken() const;
 
   // Returns true if the browser isn't managed by CBCM, otherwise this checks if

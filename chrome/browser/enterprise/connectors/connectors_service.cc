@@ -467,13 +467,21 @@ ConnectorsService::DmToken::~DmToken() = default;
 
 absl::optional<ConnectorsService::DmToken> ConnectorsService::GetDmToken(
     const char* scope_pref) const {
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On CrOS the settings from primary profile applies to all profiles.
   return GetBrowserDmToken();
 #else
-  return GetPolicyScope(scope_pref) == policy::POLICY_SCOPE_USER
-             ? GetProfileDmToken()
-             : GetBrowserDmToken();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  Profile* profile = Profile::FromBrowserContext(context_);
+  if (profile->IsMainProfile()) {
+    return GetBrowserDmToken();
+  } else
+#endif
+  {
+    return GetPolicyScope(scope_pref) == policy::POLICY_SCOPE_USER
+               ? GetProfileDmToken()
+               : GetBrowserDmToken();
+  }
 #endif
 }
 
@@ -488,7 +496,7 @@ ConnectorsService::GetBrowserDmToken() const {
   return DmToken(dm_token.value(), policy::POLICY_SCOPE_MACHINE);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 absl::optional<ConnectorsService::DmToken>
 ConnectorsService::GetProfileDmToken() const {
   if (!CanUseProfileDmToken())
@@ -609,9 +617,9 @@ content::BrowserContext* ConnectorsServiceFactory::GetBrowserContextToUse(
     if (primary_profile)
       return primary_profile;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    Profile* main_profile = GetMainProfileLacros();
-    if (main_profile)
-      return main_profile;
+    Profile* profile = Profile::FromBrowserContext(context);
+    if (profile)
+      return profile;
 #endif
   }
   return context;
