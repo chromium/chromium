@@ -71,7 +71,7 @@ suite('KeyboardAndTextInputPageTests', function() {
     const dictationSetting = page.shadowRoot.querySelector('#enableDictation');
     assertTrue(!!dictationSetting);
     assertTrue(dictationSetting.checked);
-    assertEquals('Enable dictation (speak to type)', dictationSetting.label);
+    assertEquals('Dictation', dictationSetting.label);
     assertEquals(
         'Type with your voice. Use Search + D, then start speaking.',
         dictationSetting.subLabel);
@@ -93,7 +93,7 @@ suite('KeyboardAndTextInputPageTests', function() {
     flush();
 
     // Only the dictation locale subtitle should have changed.
-    assertEquals('Enable dictation (speak to type)', dictationSetting.label);
+    assertEquals('Dictation', dictationSetting.label);
     assertEquals(
         'Type with your voice. Use Search + D, then start speaking.',
         dictationSetting.subLabel);
