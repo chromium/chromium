@@ -251,7 +251,7 @@ constexpr SkColor kIconColorInOobe = gfx::kGoogleGrey700;
 
 // Constants used for the autozoom toast.
 constexpr int kAutozoomToastMinWidth = 160;
-constexpr int kAutozoomToastMaxWidth = 320;
+constexpr int kAutozoomToastMaxWidth = 400;
 constexpr int kAutozoomToastMainLabelFontSize = 14;
 constexpr auto kAutozoomToastInsets = gfx::Insets::VH(10, 16);
 constexpr int kAutozoomToastSpacing = 16;

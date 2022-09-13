@@ -316,19 +316,19 @@ This file contains the strings for ash.
         VPN Settings
       </message>
       <message name="IDS_ASH_STATUS_TRAY_AUTOZOOM_BUTTON_LABEL" desc="The shorter label used for the button in the status tray to toggle the Autozoom feature (which controls if camera auto zoom to faces) on or off. [CHAR_LIMIT=14]">
-        Autozoom
+        Camera framing
       </message>
       <message name="IDS_ASH_STATUS_TRAY_AUTOZOOM_TOGGLE_TOOLTIP" desc="The tooltip text used for the button in the status tray to toggle the Autozoom feature (which controls if camera auto zoom to faces) on or off.">
-        Toggle autozoom. <ph name="STATE_TEXT">$1<ex>Autozoom is on.</ex></ph>
+        Toggle camera framing. <ph name="STATE_TEXT">$1<ex>Camera framing is on.</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_AUTOZOOM_TOGGLE_ACCESSIBILITY_DESCRIPTION" desc="The accessible description for the button in the status tray to toggle the Autozoom feature (which controls if camera auto zoom to faces) on or off.">
         Adjust camera to put you in the center of the screen.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_AUTOZOOM_OFF_STATE_TOOLTIP" desc="The tooltip text indicating the Autozoom feature is off.">
-        Autozoom is off.
+        Camera framing is off.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_AUTOZOOM_ON_STATE_TOOLTIP" desc="The tooltip text indicating the Autozoom feature is on.">
-        Autozoom is on.
+        Camera framing is on.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_AUTOZOOM_OFF_STATE" desc="Button label for the Autozoom feature." meaning="Autozoom feature is off. [CHAR_LIMIT=14]">
         Off
@@ -337,10 +337,10 @@ This file contains the strings for ash.
         On
       </message>
       <message name="IDS_ASH_STATUS_TRAY_AUTOZOOM_TOAST_ON_STATE" desc="The text for the toast after autozoom centers the camera.">
-        Autozoom centered the camera
+        Camera frame automatically centered
       </message>
       <message name="IDS_ASH_STATUS_TRAY_AUTOZOOM_EDUCATIONAL_NUDGE_TEXT" desc="The text for the educational nudge for autozoom.">
-        Try autozoom so you'll be in the center of the screen. Turn it on in Quick Settings.
+        Try camera framing so you’ll be in the center of the screen on video calls. Turn it on in Quick Settings.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BRAILLE_DISPLAY_CONNECTED" desc="The message shown on a notification when a braille display is connected">
         Braille display connected.
