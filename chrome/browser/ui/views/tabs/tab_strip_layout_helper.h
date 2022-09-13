@@ -67,11 +67,10 @@ class TabStripLayoutHelper {
 
   // Marks the tab at |model_index| as closing, but does not remove it from
   // |slots_|.
-  void RemoveTabAt(int model_index, Tab* tab);
+  void MarkTabAsClosing(int model_index, Tab* tab);
 
-  // Invoked when |tab| has been destroyed by TabStrip (i.e. the remove
-  // animation has completed).
-  void OnTabDestroyed(Tab* tab);
+  // Removes `tab` from `slots_`.
+  void RemoveTab(Tab* tab);
 
   // Moves the tab at |prev_index| with group |moving_tab_group| to |new_index|.
   // Also updates the group header's location if necessary.

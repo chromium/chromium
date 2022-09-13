@@ -285,8 +285,10 @@ void TabContainerImpl::SetActiveTab(absl::optional<size_t> prev_active_index,
 }
 
 std::unique_ptr<Tab> TabContainerImpl::TransferTabOut(int model_index) {
-  Tab* tab = GetTabAtModelIndex(model_index);
-  RemoveTabFromViewModel(model_index);
+  Tab* const tab = GetTabAtModelIndex(model_index);
+  tabs_view_model_.Remove(model_index);
+  layout_helper_->RemoveTab(tab);
+
   // TODO(1346023): Properly animate the other tabs.
   return RemoveChildViewT(tab);
 }
@@ -1113,7 +1115,7 @@ void TabContainerImpl::RemoveTabFromViewModel(int index) {
   UpdateHoverCard(nullptr, TabSlotController::HoverCardUpdateType::kTabRemoved);
 
   tabs_view_model_.Remove(index);
-  layout_helper_->RemoveTabAt(index, tab);
+  layout_helper_->MarkTabAsClosing(index, tab);
 
   if (tab_was_active)
     tab->ActiveStateChanged();
@@ -1122,8 +1124,8 @@ void TabContainerImpl::RemoveTabFromViewModel(int index) {
 void TabContainerImpl::OnTabCloseAnimationCompleted(Tab* tab) {
   DCHECK(tab->closing());
 
-  std::unique_ptr<Tab> deleter(tab);
-  layout_helper_->OnTabDestroyed(tab);
+  layout_helper_->RemoveTab(tab);
+  tab->parent()->RemoveChildViewT(tab);
 }
 
 void TabContainerImpl::UpdateClosingModeOnRemovedTab(int model_index,

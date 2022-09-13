@@ -113,13 +113,13 @@ void TabStripLayoutHelper::InsertTabAt(int model_index,
                 TabSlot::CreateForTab(tab, TabOpen::kOpen, pinned));
 }
 
-void TabStripLayoutHelper::RemoveTabAt(int model_index, Tab* tab) {
+void TabStripLayoutHelper::MarkTabAsClosing(int model_index, Tab* tab) {
   const int slot_index = GetSlotIndexForExistingTab(model_index);
   slots_[slot_index].state =
       slots_[slot_index].state.WithOpen(TabOpen::kClosed);
 }
 
-void TabStripLayoutHelper::OnTabDestroyed(Tab* tab) {
+void TabStripLayoutHelper::RemoveTab(Tab* tab) {
   auto it = base::ranges::find_if(slots_, [tab](const TabSlot& slot) {
     return slot.type == ViewType::kTab && slot.view == tab;
   });
