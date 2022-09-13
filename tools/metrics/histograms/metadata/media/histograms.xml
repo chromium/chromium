@@ -3304,7 +3304,9 @@ chromium-metrics-reviews@google.com.
   <owner>dalecurtis@chromium.org</owner>
   <summary>
     The total watch time (see Media.WatchTime) of a given playback divided by
-    the number of rebuffering events that occured during that playback.
+    the number of rebuffering events that occured during that playback. Only
+    reported when rebuffering happened. Therefore, alway refer to other UMAs
+    like `Media.RebuffersCount` when checking this UMA.
   </summary>
 </histogram>
 
