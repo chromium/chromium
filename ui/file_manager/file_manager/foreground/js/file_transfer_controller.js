@@ -395,27 +395,13 @@ export class FileTransferController {
    * @private
    */
   getDragAndDropGlobalData_() {
-    if (window.isSWA) {
-      const storage = window.localStorage;
-      const sourceRootURL =
-          storage.getItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_ROOT_URL}`);
-      const missingFileContents = storage.getItem(
-          `${DRAG_AND_DROP_GLOBAL_DATA}.${MISSING_FILE_CONTENTS}`);
-      if (sourceRootURL !== null && missingFileContents !== null) {
-        return {sourceRootURL, missingFileContents};
-      }
-    } else {
-      // TODO(b/198106171): Remove this code.
-      if (window[DRAG_AND_DROP_GLOBAL_DATA]) {
-        return window[DRAG_AND_DROP_GLOBAL_DATA];
-      }
-      // Dragging from other tabs/windows.
-      const views = chrome.extension.getViews();
-      for (let i = 0; i < views.length; i++) {
-        if (views[i][DRAG_AND_DROP_GLOBAL_DATA]) {
-          return views[i][DRAG_AND_DROP_GLOBAL_DATA];
-        }
-      }
+    const storage = window.localStorage;
+    const sourceRootURL =
+        storage.getItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_ROOT_URL}`);
+    const missingFileContents = storage.getItem(
+        `${DRAG_AND_DROP_GLOBAL_DATA}.${MISSING_FILE_CONTENTS}`);
+    if (sourceRootURL !== null && missingFileContents !== null) {
+      return {sourceRootURL, missingFileContents};
     }
     return null;
   }
@@ -634,78 +620,26 @@ export class FileTransferController {
                 if (entries.length === 0) {
                   return Promise.reject('ABORT');
                 }
-                if (window.isSWA) {
-                  if (isAllTrashEntries(entries, this.volumeManager_)) {
-                    await startIOTask(
-                        chrome.fileManagerPrivate.IOTaskType
-                            .RESTORE_TO_DESTINATION,
-                        entries, {destinationFolder: destinationEntry});
-                    return;
-                  }
-
-                  const taskType = toMove ?
-                      chrome.fileManagerPrivate.IOTaskType.MOVE :
-                      chrome.fileManagerPrivate.IOTaskType.COPY;
-                  try {
-                    // TODO(crbug/1290197): Start tracking the copy/move
-                    // operation starting here as both the legacy taskId and
-                    // IOTask taskId are available.
-                    await startIOTask(
-                        taskType, entries,
-                        {destinationFolder: destinationEntry});
-                  } catch (e) {
-                    console.error(`Failed to start ${taskType} io task:`, e);
-                  }
+                if (isAllTrashEntries(entries, this.volumeManager_)) {
+                  await startIOTask(
+                      chrome.fileManagerPrivate.IOTaskType
+                          .RESTORE_TO_DESTINATION,
+                      entries, {destinationFolder: destinationEntry});
                   return;
                 }
 
-                this.pendingTaskIds.push(taskId);
-                const item = new ProgressCenterItem();
-                item.id = taskId;
-                item.itemCount = entries.length;
-                if (toMove) {
-                  item.type = ProgressItemType.MOVE;
-                  if (entries.length === 1) {
-                    item.message = strf('MOVE_FILE_NAME', entries[0].name);
-                  } else {
-                    item.message = strf('MOVE_ITEMS_REMAINING', entries.length);
-                  }
-                } else {
-                  item.type = ProgressItemType.COPY;
-                  if (entries.length === 1) {
-                    item.message = strf('COPY_FILE_NAME', entries[0].name);
-                  } else {
-                    item.message = strf('COPY_ITEMS_REMAINING', entries.length);
-                  }
+                const taskType = toMove ?
+                    chrome.fileManagerPrivate.IOTaskType.MOVE :
+                    chrome.fileManagerPrivate.IOTaskType.COPY;
+                try {
+                  // TODO(crbug/1290197): Start tracking the copy/move
+                  // operation starting here as both the legacy taskId and
+                  // IOTask taskId are available.
+                  await startIOTask(
+                      taskType, entries, {destinationFolder: destinationEntry});
+                } catch (e) {
+                  console.error(`Failed to start ${taskType} io task:`, e);
                 }
-                // Store the source name or count for display in messages.
-                if (entries.length === 1) {
-                  item.sourceMessage = entries[0].name;
-                } else {
-                  item.sourceMessage = entries.length.toString();
-                }
-                // Store the destination name for display in messages.
-                const destinationLocationInfo =
-                    this.volumeManager_.getLocationInfo(destinationEntry);
-                const destinationName = util.getEntryLabel(
-                    destinationLocationInfo, destinationEntry);
-                // Root of removable volumes can result in an empty string,
-                // so use the filesystem name in that case.
-                if (destinationName === '') {
-                  if (destinationLocationInfo) {
-                    item.destinationMessage =
-                        util.getRootTypeLabel(destinationLocationInfo);
-                  }
-                } else {
-                  item.destinationMessage = destinationName;
-                }
-                this.progressCenter_.updateItem(item);
-
-                // Start the pasting operation.
-                this.fileOperationManager_.paste(
-                    entries, destinationEntry, toMove, taskId);
-                this.pendingTaskIds.splice(
-                    this.pendingTaskIds.indexOf(taskId), 1);
               })
         .catch(error => {
           if (error !== 'ABORT') {
@@ -827,22 +761,13 @@ export class FileTransferController {
 
     dataTransfer.setDragImage(thumbnail.element, thumbnail.x, thumbnail.y);
 
-    if (window.isSWA) {
-      const storage = window.localStorage;
-      storage.setItem(
-          `${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_ROOT_URL}`,
-          dataTransfer.getData(`fs/${SOURCE_ROOT_URL}`));
-      storage.setItem(
-          `${DRAG_AND_DROP_GLOBAL_DATA}.${MISSING_FILE_CONTENTS}`,
-          dataTransfer.getData(`fs/${MISSING_FILE_CONTENTS}`));
-    } else {
-      // TODO(b/198106171): Remove this code.
-      window[DRAG_AND_DROP_GLOBAL_DATA] = {
-        sourceRootURL: dataTransfer.getData(`fs/${SOURCE_ROOT_URL}`),
-        missingFileContents:
-            dataTransfer.getData(`fs/${MISSING_FILE_CONTENTS}`),
-      };
-    }
+    const storage = window.localStorage;
+    storage.setItem(
+        `${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_ROOT_URL}`,
+        dataTransfer.getData(`fs/${SOURCE_ROOT_URL}`));
+    storage.setItem(
+        `${DRAG_AND_DROP_GLOBAL_DATA}.${MISSING_FILE_CONTENTS}`,
+        dataTransfer.getData(`fs/${MISSING_FILE_CONTENTS}`));
   }
 
   /**
@@ -858,15 +783,9 @@ export class FileTransferController {
     const container = this.document_.body.querySelector('#drag-container');
     container.textContent = '';
     this.clearDropTarget_();
-    if (window.isSWA) {
-      const storage = window.localStorage;
-      storage.removeItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_ROOT_URL}`);
-      storage.removeItem(
-          `${DRAG_AND_DROP_GLOBAL_DATA}.${MISSING_FILE_CONTENTS}`);
-    } else {
-      // TODO(b/198106171): Remove this code.
-      delete window[DRAG_AND_DROP_GLOBAL_DATA];
-    }
+    const storage = window.localStorage;
+    storage.removeItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_ROOT_URL}`);
+    storage.removeItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${MISSING_FILE_CONTENTS}`);
   }
 
   /**

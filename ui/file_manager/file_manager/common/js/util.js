@@ -1288,14 +1288,6 @@ util.isTrashEnabled = () => {
 };
 
 /**
- * Returns true if Files SWA feature flag is enabled.
- * @return {boolean}
- */
-util.isSwaEnabled = () => {
-  return loadTimeData.getBoolean('FILES_SWA');
-};
-
-/**
  * Returns true if FilesSinglePartitionFormat flag is enabled.
  * @return {boolean}
  */
@@ -1467,12 +1459,6 @@ util.doIfPrimaryContext = async (callback) => {
   if (guestMode) {
     callback();
     return true;
-  }
-  if (!window.isSWA) {
-    if (!chrome.extension.inIncognitoContext) {
-      callback();
-      return true;
-    }
   }
   return false;
 };

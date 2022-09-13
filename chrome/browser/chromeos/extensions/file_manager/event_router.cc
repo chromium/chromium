@@ -388,9 +388,7 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
     // In SWA, there may not be a window open to listen to the event, so always
     // add the File Manager URL so events can be sent to the
     // SystemNotificationManager.
-    if (ash::features::IsFileManagerSwaEnabled()) {
-      urls.insert(file_manager::util::GetFileManagerURL());
-    }
+    urls.insert(file_manager::util::GetFileManagerURL());
     return urls;
   }
 
@@ -1026,10 +1024,8 @@ void EventRouter::OnVolumeMounted(ash::MountError error_code,
       file_manager_private::MOUNT_COMPLETED_EVENT_TYPE_MOUNT, error_code,
       volume);
 
-  // If the Files SWA is enabled, record the UMA metrics for mounted FSPs.
-  if (ash::features::IsFileManagerSwaEnabled()) {
-    RecordFileSystemProviderMountMetrics(volume);
-  }
+  // Record the UMA metrics for mounted FSPs.
+  RecordFileSystemProviderMountMetrics(volume);
 
   // TODO(mtomasz): Move VolumeManager and part of the event router outside of
   // file_manager, so there is no dependency between File System API and the

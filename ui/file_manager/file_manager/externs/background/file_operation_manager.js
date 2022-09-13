@@ -45,20 +45,6 @@ export class FileOperationManager extends EventTarget {
   filterSameDirectoryEntry(sourceEntries, targetEntry, isMove) {}
 
   /**
-   * Kick off pasting.
-   *
-   * @param {Array<Entry>} sourceEntries Entries of the source files.
-   * @param {DirectoryEntry} targetEntry The destination entry of the target
-   *     directory.
-   * @param {boolean} isMove True if the operation is "move", otherwise (i.e.
-   *     if the operation is "copy") false.
-   * @param {string=} opt_taskId If the corresponding item has already created
-   *     at another places, we need to specify the ID of the item. If the
-   *     item is not created, FileOperationManager generates new ID.
-   */
-  paste(sourceEntries, targetEntry, isMove, opt_taskId) {}
-
-  /**
    * Returns true if all entries will use trash for delete.
    *
    * @param {!VolumeManager} volumeManager
@@ -75,26 +61,6 @@ export class FileOperationManager extends EventTarget {
    *     than moved to trash.
    */
   deleteEntries(entries, permanentlyDelete = false) {}
-
-  /**
-   * Schedules the files to be restored.
-   *
-   * @param {!Array<!FilesAppEntry>} entries The trash entries.
-   */
-  restoreDeleted(entries) {}
-
-  /**
-   * Schedules the Trash to be emptied.
-   */
-  emptyTrash() {}
-
-  /**
-   * Creates a zip file for the selection of files.
-   *
-   * @param {!Array<!Entry>} selectionEntries The selected entries.
-   * @param {!DirectoryEntry} dirEntry The directory containing the selection.
-   */
-  zipSelection(selectionEntries, dirEntry) {}
 
   /**
    * Notifies File Manager that an extraction operation has finished.

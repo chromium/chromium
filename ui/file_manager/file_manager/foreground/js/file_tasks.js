@@ -1388,10 +1388,6 @@ function hasOfficeExtension(entry) {
  * @return {string}
  */
 export function parseActionId(actionId) {
-  if (window.isSWA) {
-    const swaUrl = SWA_FILES_APP_URL.toString() + '?';
-    return actionId.replace(swaUrl, '');
-  }
-
-  return actionId;
+  const swaUrl = SWA_FILES_APP_URL.toString() + '?';
+  return actionId.replace(swaUrl, '');
 }

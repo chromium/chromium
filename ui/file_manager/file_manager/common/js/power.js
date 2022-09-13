@@ -5,7 +5,7 @@
 // namespace
 export const power = {};
 
-if (window.isSWA && 'wakeLock' in navigator) {
+if ('wakeLock' in navigator) {
   power.lock_ = null;
   /** @type {function(string):!Promise<boolean>} */
   power.requestKeepAwake = async (type) => {
@@ -29,12 +29,6 @@ if (window.isSWA && 'wakeLock' in navigator) {
       power.lock_.release();
     }
   };
-} else if (chrome && chrome.power) {
-  power.requestKeepAwake = (type) => {
-    chrome.power.requestKeepAwake(type);
-    return Promise.resolve(true);
-  };
-  power.releaseKeepAwake = chrome.power.releaseKeepAwake;
 } else {
   power.callCount = 0;
   power.awake = false;

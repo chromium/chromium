@@ -235,10 +235,6 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MetadataProxyTest) {
   RunTestURL("background/js/metadata_proxy_unittest.js");
 }
 
-IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MountMetricsTest) {
-  RunTestURL("background/js/mount_metrics_unittest.js");
-}
-
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MultiMenu) {
   RunTestURL("foreground/js/ui/multi_menu_unittest.js");
 }

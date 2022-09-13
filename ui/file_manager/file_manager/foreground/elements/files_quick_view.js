@@ -21,12 +21,6 @@ export const FilesQuickView = Polymer({
   is: 'files-quick-view',
 
   properties: {
-    /**
-     * True if the Quick View is used in legacy mode.
-     * @type {boolean}
-     */
-    isLegacy: Boolean,
-
     // File media type, e.g. image, video.
     type: String,
     subtype: String,
@@ -129,7 +123,7 @@ export const FilesQuickView = Polymer({
    * browser directly as PDF/text/html) to the chrome-untrusted:// <iframe>.
    */
   refreshUntrustedIframe_: function() {
-    if (this.isLegacy || !this.browsable) {
+    if (!this.browsable) {
       return;
     }
 

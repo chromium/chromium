@@ -14,11 +14,9 @@ import {FILE_MANAGER_EXTENSIONS_ID, FILE_MANAGER_SWA_APP_ID, FILE_SWA_BASE_URL} 
  * @return {!chrome.fileManagerPrivate.FileTaskDescriptor}
  */
 function openDocWithDriveDescriptor() {
-  const filesAppId = remoteCall.isSwaMode() ? FILE_MANAGER_SWA_APP_ID :
-                                              FILE_MANAGER_EXTENSIONS_ID;
-  const filesTaskType = remoteCall.isSwaMode() ? 'web' : 'app';
-  const actionIdPrefix = remoteCall.isSwaMode() ? FILE_SWA_BASE_URL + '?' : '';
-  const actionId = `${actionIdPrefix}open-web-drive-office-word`;
+  const filesAppId = FILE_MANAGER_SWA_APP_ID;
+  const filesTaskType = 'web';
+  const actionId = `${FILE_SWA_BASE_URL}?open-web-drive-office-word`;
 
   return {appId: filesAppId, taskType: filesTaskType, actionId: actionId};
 }
@@ -29,11 +27,9 @@ function openDocWithDriveDescriptor() {
  * @return {!chrome.fileManagerPrivate.FileTaskDescriptor}
  */
 function openExcelWithDriveDescriptor() {
-  const filesAppId = remoteCall.isSwaMode() ? FILE_MANAGER_SWA_APP_ID :
-                                              FILE_MANAGER_EXTENSIONS_ID;
-  const filesTaskType = remoteCall.isSwaMode() ? 'web' : 'app';
-  const actionIdPrefix = remoteCall.isSwaMode() ? FILE_SWA_BASE_URL + '?' : '';
-  const actionId = `${actionIdPrefix}open-web-drive-office-excel`;
+  const filesAppId = FILE_MANAGER_SWA_APP_ID;
+  const filesTaskType = 'web';
+  const actionId = `${FILE_SWA_BASE_URL}?open-web-drive-office-excel`;
 
   return {appId: filesAppId, taskType: filesTaskType, actionId: actionId};
 }
@@ -44,11 +40,9 @@ function openExcelWithDriveDescriptor() {
  * @return {!chrome.fileManagerPrivate.FileTaskDescriptor}
  */
 function openPowerPointWithDriveDescriptor() {
-  const filesAppId = remoteCall.isSwaMode() ? FILE_MANAGER_SWA_APP_ID :
-                                              FILE_MANAGER_EXTENSIONS_ID;
-  const filesTaskType = remoteCall.isSwaMode() ? 'web' : 'app';
-  const actionIdPrefix = remoteCall.isSwaMode() ? FILE_SWA_BASE_URL + '?' : '';
-  const actionId = `${actionIdPrefix}open-web-drive-office-powerpoint`;
+  const filesAppId = FILE_MANAGER_SWA_APP_ID;
+  const filesTaskType = 'web';
+  const actionId = `${FILE_SWA_BASE_URL}?open-web-drive-office-powerpoint`;
 
   return {appId: filesAppId, taskType: filesTaskType, actionId: actionId};
 }

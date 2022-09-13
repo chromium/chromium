@@ -5,11 +5,6 @@
 // Runtime setup before main.js is executed.
 
 /**
- * @const {boolean}
- */
-window.isSWA = true;
-
-/**
  * Sets window.IN_TEST if this code is run in the test environment. We
  * detect this by checking for presence of domAutomationController.
  * @const {boolean}

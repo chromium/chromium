@@ -27,7 +27,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/url_utils.h"
 #include "extensions/browser/extension_util.h"
-#include "extensions/common/extension.h"
 #include "google_apis/common/task_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/isolated_context.h"
@@ -506,10 +505,7 @@ EntryDefinition::EntryDefinition(const EntryDefinition& other) = default;
 EntryDefinition::~EntryDefinition() = default;
 
 const GURL GetFileManagerURL() {
-  if (ash::features::IsFileManagerSwaEnabled()) {
-    return GURL(ash::file_manager::kChromeUIFileManagerURL);
-  }
-  return extensions::Extension::GetBaseURLFromExtensionId(kFileManagerAppId);
+  return GURL(ash::file_manager::kChromeUIFileManagerURL);
 }
 
 bool IsFileManagerURL(const GURL& source_url) {

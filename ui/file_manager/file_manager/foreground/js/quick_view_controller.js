@@ -501,7 +501,6 @@ export class QuickViewController {
     };
 
     this.quickView_.setProperties({
-      isLegacy: !window.isSWA,
       type: params.type || '',
       subtype: params.subtype || '',
       filePath: params.filePath || '',

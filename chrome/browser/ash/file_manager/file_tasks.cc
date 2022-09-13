@@ -848,7 +848,7 @@ bool ExecuteFileTask(Profile* profile,
   }
 
   // When the FilesSWA is enabled: Open Files SWA if the task is for Files app.
-  if (ash::features::IsFileManagerSwaEnabled() && IsFilesAppId(task.app_id)) {
+  if (IsFilesAppId(task.app_id)) {
     std::u16string title;
     const GURL destination_entry =
         file_urls.size() ? file_urls[0].ToGURL() : GURL();

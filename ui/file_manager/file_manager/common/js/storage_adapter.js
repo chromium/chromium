@@ -307,22 +307,6 @@ storage.onChanged;
 /** @private {?StorageChangeTracker} */
 let storageChangeTracker = null;
 
-if (window.isSWA) {
-  storage.local = new StorageAreaSWAImpl('local');
-  storageChangeTracker = new StorageChangeTracker('local');
-  storage.onChanged = storageChangeTracker;
-} else if (chrome && chrome.storage) {
-  storage.sync = new StorageAreaAsync(chrome.storage.sync);
-  storage.local = new StorageAreaAsync(chrome.storage.local);
-  storage.onChanged = {
-    addListener(callback) {
-      chrome.storage.onChanged.addListener(callback);
-    },
-    resetForTesting() {},
-  };
-} else {
-  console.warn('Creating local stubs for tests');
-  storage.local = new StorageAreaSWAImpl('test-local');
-  storageChangeTracker = new StorageChangeTracker('test-local');
-  storage.onChanged = storageChangeTracker;
-}
+storage.local = new StorageAreaSWAImpl('local');
+storageChangeTracker = new StorageChangeTracker('local');
+storage.onChanged = storageChangeTracker;

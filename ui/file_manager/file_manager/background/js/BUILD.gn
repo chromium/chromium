@@ -52,7 +52,6 @@ js_type_check("closure_compile_jsmodules") {
     ":metadata_proxy",
     ":metrics_start",
     ":mock_progress_center",
-    ":mount_metrics",
     ":progress_center",
     ":runtime_loaded_test_util",
     ":test_util_base",
@@ -101,7 +100,6 @@ js_library("app_window_wrapper") {
     "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:async_util",
     "//ui/file_manager/file_manager/common/js:files_app_state",
-    "//ui/file_manager/file_manager/common/js:xfm",
   ]
 }
 
@@ -116,7 +114,6 @@ js_library("file_manager_base") {
     ":file_operation_manager",
     ":file_operation_util",
     ":launcher",
-    ":mount_metrics",
     ":progress_center",
     ":volume_manager_factory",
     "//ui/file_manager/file_manager/common/js:files_app_state",
@@ -197,7 +194,6 @@ js_library("mock_drive_sync_handler") {
 js_library("drive_sync_handler") {
   deps = [
     ":file_operation_util",
-    ":launcher",
     "//ui/file_manager/file_manager/common/js:async_util",
     "//ui/file_manager/file_manager/common/js:progress_center_common",
     "//ui/file_manager/file_manager/common/js:url_constants",
@@ -472,24 +468,6 @@ js_library("volume_info_list_impl") {
   ]
 }
 
-js_unittest("mount_metrics_unittest") {
-  deps = [
-    ":mount_metrics",
-    "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:metrics",
-    "//ui/file_manager/file_manager/common/js:mock_chrome",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-  ]
-}
-
-js_library("mount_metrics") {
-  deps = [
-    "//ui/file_manager/file_manager/common/js:metrics",
-    "//ui/file_manager/file_manager/common/js:util",
-  ]
-}
-
 js_library("volume_manager_impl") {
   deps = [
     ":entry_location_impl",
@@ -544,7 +522,6 @@ js_test_type_check("js_test_type_check") {
     ":file_operation_handler_unittest",
     ":file_operation_manager_unittest",
     ":metadata_proxy_unittest",
-    ":mount_metrics_unittest",
     ":trash_unittest",
     ":volume_manager_unittest",
   ]

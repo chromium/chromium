@@ -15,9 +15,6 @@ export const xfm = {
    * @return {!chrome.app.window.AppWindow}
    */
   getCurrentWindow: () => {
-    if (!window.isSWA) {
-      return chrome.app.window.current();
-    }
     return /** @type {!chrome.app.window.AppWindow} */ ({
       minimize: () => {
         // TODO(1097066): Implement.

@@ -100,7 +100,7 @@ TEST_F(SelectFileDialogExtensionTest, FileSelected) {
   SelectFileDialogExtension::OnFileSelected(kDefaultRoutingID, info,
                                             kFileIndex);
   // Simulate closing the dialog so the listener gets invoked.
-  dialog->ExtensionDialogClosing(nullptr);
+  dialog->OnSystemDialogWillClose();
   EXPECT_TRUE(listener->selected());
   EXPECT_EQ(kFileIndex, listener->file_index());
 }
@@ -112,7 +112,7 @@ TEST_F(SelectFileDialogExtensionTest, FileSelectionCanceled) {
   // Simulate cancelling the dialog.
   SelectFileDialogExtension::OnFileSelectionCanceled(kDefaultRoutingID);
   // Simulate closing the dialog so the listener gets invoked.
-  dialog->ExtensionDialogClosing(nullptr);
+  dialog->OnSystemDialogWillClose();
   EXPECT_FALSE(listener->selected());
   EXPECT_EQ(-1, listener->file_index());
 }
@@ -124,5 +124,5 @@ TEST_F(SelectFileDialogExtensionTest, SelfDeleting) {
   ui::SelectedFileInfo file_info;
   SelectFileDialogExtension::OnFileSelected(kDefaultRoutingID, file_info, 0);
   // Simulate closing the dialog so the listener gets invoked.
-  client->dialog()->ExtensionDialogClosing(nullptr);
+  client->dialog()->OnSystemDialogWillClose();
 }

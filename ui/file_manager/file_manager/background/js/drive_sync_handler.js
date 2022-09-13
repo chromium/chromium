@@ -14,7 +14,6 @@ import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {DriveDialogControllerInterface} from '../../externs/drive_dialog_controller.js';
 
 import {fileOperationUtil} from './file_operation_util.js';
-import {launcher, LaunchType} from './launcher.js';
 
 /**
  * Handler of the background page for the Drive sync events.
@@ -163,10 +162,6 @@ export class DriveSyncHandlerImpl extends EventTarget {
         this.onFileTransfersStatusReceived_.bind(this, this.pinItem_));
     chrome.fileManagerPrivate.onDriveSyncError.addListener(
         this.onDriveSyncError_.bind(this));
-    if (!window.isSWA) {
-      chrome.fileManagerPrivate.onDriveConfirmDialog.addListener(
-          this.onDriveConfirmDialog_.bind(this));
-    }
     xfm.notifications.onButtonClicked.addListener(
         this.onNotificationButtonClicked_.bind(this));
     xfm.notifications.onClosed.addListener(
@@ -319,7 +314,7 @@ export class DriveSyncHandlerImpl extends EventTarget {
 
   /**
    * Attempts to infer of the given event is processable by the drive sync
-   * handler. It uses fileUrl and window.isSwa flag to make a decision. It
+   * handler. It uses fileUrl to make a decision. It
    * errs on the side of 'yes', when passing the judgement.
    * @param {!Object} event
    * @return {boolean} Whether or not the event should be processed.
@@ -424,53 +419,6 @@ export class DriveSyncHandlerImpl extends EventTarget {
       chrome.fileManagerPrivate.notifyDriveDialogResult(
           chrome.fileManagerPrivate.DriveDialogResult.DISMISS);
       this.dialogs_.delete(appId);
-    }
-  }
-
-  /**
-   * Handles showing dialogs from Drive.
-   * @param {chrome.fileManagerPrivate.DriveConfirmDialogEvent} event
-   * @private
-   */
-  async onDriveConfirmDialog_(event) {
-    if (!this.isProcessableEvent(event)) {
-      return;
-    }
-    let appId = null;
-    // When a file manager is launched, its dialog will be added to dialogs_, so
-    // check it to see if there is already a window open.
-    if (this.dialogs_.size > 0) {
-      // launchFileManager() should always return a string, but this is not
-      // shown in the closure type.
-      // TODO(austinct): Change launchFileManager() to have return type
-      // Promise<?string>.
-      appId = /** @type {?string} */ (await launcher.launchFileManager(
-          /*appState=*/ {},
-          /*id=*/ undefined, LaunchType.FOCUS_ANY_OR_CREATE));
-    }
-    if (!appId) {
-      xfm.notifications.create(
-          DriveSyncHandlerImpl.ENABLE_DOCS_OFFLINE_NOTIFICATION_ID_, {
-            type: 'basic',
-            title: str('FILEMANAGER_APP_NAME'),
-            message: str('OFFLINE_ENABLE_MESSAGE'),
-            iconUrl: getFilesAppIconURL().toString(),
-            buttons: [
-              {title: str('OFFLINE_ENABLE_REJECT')},
-              {title: str('OFFLINE_ENABLE_ACCEPT')},
-            ],
-          },
-          () => {});
-      this.savedDialogEvent_ = event;
-      return;
-    }
-
-    if (this.dialogs_.has(appId)) {
-      this.dialogs_.get(appId).showDialog(event);
-    } else {
-      // File manager is still being launched, so save the event for later when
-      // it has fully initialized.
-      this.savedDialogEvent_ = event;
     }
   }
 

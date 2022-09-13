@@ -106,9 +106,6 @@ export class MockFileOperationManager extends EventTarget {
     throw new Error('Not implemented');
   }
   deleteEntries() {}
-  restoreDeleted() {}
-  emptyTrash() {}
-  zipSelection() {}
   cancelZip() {}
   setFileManager() {}
   notifyExtractDone() {}

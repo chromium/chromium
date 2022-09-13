@@ -136,4 +136,4 @@ export class NotificationsBrowserProxyImpl {
   }
 }
 
-export const notifications = new NotificationsBrowserProxyImpl(!window.isSWA);
+export const notifications = new NotificationsBrowserProxyImpl(false);

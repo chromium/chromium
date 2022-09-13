@@ -2298,7 +2298,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
-  if (name == "launchFileManagerSwa") {
+  if (name == "launchFileManager") {
     const std::string* launch_dir = value.FindString("launchDir");
     base::Value::Dict arg_value;
     if (launch_dir)
@@ -2416,7 +2416,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
-  if (name == "getWindowsSWA") {
+  if (name == "getWindows") {
     base::Value::Dict dictionary;
 
     int counter = 0;

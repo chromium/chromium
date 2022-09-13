@@ -24,7 +24,6 @@ import {FileOperationHandler} from './file_operation_handler.js';
 import {FileOperationManagerImpl} from './file_operation_manager.js';
 import {fileOperationUtil} from './file_operation_util.js';
 import {FILES_ID_PATTERN, launcher, LaunchType, nextFileManagerWindowID} from './launcher.js';
-import {MountMetrics} from './mount_metrics.js';
 import {ProgressCenterImpl} from './progress_center.js';
 import {volumeManagerFactory} from './volume_manager_factory.js';
 
@@ -63,12 +62,6 @@ export class FileManagerBase {
     /** @private {?LaunchHandler} */
     this.launchHandler_ = null;
 
-    // Initialize handlers.
-    if (!window.isSWA) {
-      chrome.app.runtime.onLaunched.addListener(this.onLaunched_.bind(this));
-      chrome.app.runtime.onRestarted.addListener(this.onRestarted_.bind(this));
-    }
-
     this.setLaunchHandler(this.launch_);
 
     /**
@@ -98,34 +91,17 @@ export class FileManagerBase {
     /** @type {!Crostini} */
     this.crostini = new CrostiniImpl();
 
-    /** @type {!MountMetrics} */
-    this.mountMetrics = new MountMetrics();
-
     /**
      * String assets.
      * @type {Object<string>}
      */
     this.stringData = null;
 
-    if (!window.isSWA) {
-      // FIXME: chrome.contextMenus not enabled for Files SWA yet. See service
-      // onContextMenuClicked_ for adding "New Window" item to the OS shelf.
-      chrome.contextMenus.onClicked.addListener(
-          this.onContextMenuClicked_.bind(this));
-    }
-
     // Initialize string and volume manager related stuffs.
     this.initializationPromise_.then(strings => {
       this.stringData = strings;
-      if (!window.isSWA) {
-        this.initContextMenu_();
-      }
       this.crostini.initEnabled();
 
-      // Force disable of system notifications if the SWA feature flag is on.
-      if (!window.isSWA && util.isSwaEnabled()) {
-        xfm.notifications.setSystemNotificationEnabled(false);
-      }
       volumeManagerFactory.getInstance().then(volumeManager => {
         volumeManager.addEventListener(
             VolumeManagerCommon.VOLUME_ALREADY_MOUNTED,
@@ -152,53 +128,6 @@ export class FileManagerBase {
    */
   async getVolumeManager() {
     return volumeManagerFactory.getInstance();
-  }
-
-  /**
-   * Called when an app is launched.
-   *
-   * @param {!Object} launchData Launch data. See the manual of
-   *     chrome.app.runtime.onLaunched for detail.
-   */
-  async onLaunched_(launchData) {
-    metrics.startInterval('Load.BackgroundLaunch');
-    console.warn('onLaunched: ' + (launchData ? launchData.source : ''));
-    if (!launchData || !launchData.items || launchData.items.length == 0) {
-      this.launch_(undefined);
-      return;
-    }
-    // Skip if files are not selected.
-    if (!launchData || !launchData.items || launchData.items.length == 0) {
-      return;
-    }
-
-    await this.initializationPromise_;
-
-    // Volume list needs to be initialized (more precisely,
-    // chrome.fileManagerPrivate.getVolumeRoot needs to be called to grant
-    // access).
-    await volumeManagerFactory.getInstance();
-
-    const isolatedEntries = launchData.items.map(item => item.entry);
-
-    let urls = [];
-    try {
-      // Obtains entries in non-isolated file systems.
-      // The entries in launchData are stored in the isolated file system.
-      // We need to map the isolated entries to the normal entries to retrieve
-      // their parent directory.
-      const externalEntries =
-          await retryResolveIsolatedEntries(isolatedEntries);
-      urls = util.entriesToURLs(externalEntries);
-    } catch (error) {
-      // Just log the error and default no file/URL so we spawn the app window.
-      console.warn(error);
-      urls = [];
-    }
-
-    if (this.launchHandler_) {
-      this.launchHandler_(urls);
-    }
   }
 
   /**
@@ -441,63 +370,6 @@ export class FileManagerBase {
   }
 
   /**
-   * Restarted the app, restore windows.
-   * @private
-   */
-  onRestarted_() {
-    // Reopen file manager windows.
-    xfm.storage.local.get(items => {
-      for (const key in items) {
-        if (items.hasOwnProperty(key)) {
-          const match = key.match(FILES_ID_PATTERN);
-          if (match) {
-            metrics.startInterval('Load.BackgroundRestart');
-            const id = Number(match[1]);
-            try {
-              const appState =
-                  /** @type {!FilesAppState} */ (JSON.parse(items[key]));
-              launcher.launchFileManager(appState, id, undefined).then(() => {
-                metrics.recordInterval('Load.BackgroundRestart');
-              });
-            } catch (e) {
-              console.error('Corrupt launch data for ' + id);
-            }
-          }
-        }
-      }
-    });
-  }
-
-  /**
-   * Handles clicks on a custom item on the launcher context menu.
-   * @param {!Object} info Event details.
-   * @private
-   */
-  onContextMenuClicked_(info) {
-    if (info.menuItemId == 'new-window') {
-      // Find the focused window (if any) and use it's current url for the
-      // new window. If not found, then launch with the default url.
-      this.findFocusedWindow_()
-          .then(key => {
-            if (!key) {
-              launcher.launchFileManager();
-              return;
-            }
-            const appState = {
-              // Do not clone the selection url, only the current directory.
-              currentDirectoryURL:
-                  window.appWindows[key]
-                      .contentWindow.appState.currentDirectoryURL,
-            };
-            launcher.launchFileManager(appState);
-          })
-          .catch(error => {
-            console.warn(error.stack || error);
-          });
-    }
-  }
-
-  /**
    * Looks for a focused window.
    *
    * @return {!Promise<?string>} Promise fulfilled with a key of the focused
@@ -555,33 +427,6 @@ export class FileManagerBase {
         .catch(error => {
           console.warn(error.stack || error);
         });
-  }
-
-  /**
-   * Initializes the context menu. Recreates if already exists.
-   * @private
-   */
-  initContextMenu_() {
-    try {
-      // According to the spec [1], the callback is optional. But no callback
-      // causes an error for some reason, so we call it with null-callback to
-      // prevent the error. http://crbug.com/353877
-      // Also, we read the runtime.lastError here not to output the message on
-      // the console as an unchecked error.
-      // - [1]
-      // https://developer.chrome.com/extensions/contextMenus#method-remove
-      chrome.contextMenus.remove('new-window', () => {
-        const ignore = chrome.runtime.lastError;
-      });
-    } catch (ignore) {
-      // There is no way to detect if the context menu is already added,
-      // therefore try to recreate it every time.
-    }
-    chrome.contextMenus.create({
-      id: 'new-window',
-      contexts: ['launcher'],
-      title: str('NEW_WINDOW_BUTTON_LABEL'),
-    });
   }
 }
 

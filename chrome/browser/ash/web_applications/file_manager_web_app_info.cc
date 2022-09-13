@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/strings/utf_string_conversions.h"
@@ -172,7 +171,7 @@ bool FileManagerSystemAppDelegate::ShouldReuseExistingWindow() const {
 }
 
 bool FileManagerSystemAppDelegate::IsAppEnabled() const {
-  return ash::features::IsFileManagerSwaEnabled();
+  return true;
 }
 
 bool FileManagerSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
@@ -181,8 +180,5 @@ bool FileManagerSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
 
 std::vector<std::string>
 FileManagerSystemAppDelegate::GetAppIdsToUninstallAndReplace() const {
-  if (ash::features::IsFileManagerSwaEnabled()) {
-    return {extension_misc::kFilesManagerAppId};
-  }
-  return {};
+  return {extension_misc::kFilesManagerAppId};
 }

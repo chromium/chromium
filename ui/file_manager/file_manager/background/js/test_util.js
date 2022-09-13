@@ -359,7 +359,7 @@ test.util.sync.deleteFile = (contentWindow, filename) => {
  */
 test.util.sync.execCommand = (contentWindow, command) => {
   const ret = contentWindow.document.execCommand(command);
-  if (!ret && contentWindow.isSWA) {
+  if (!ret) {
     // TODO(b/191831968): Fix execCommand for SWA.
     console.warn(
         `execCommand(${command}) returned false for SWA, forcing ` +
@@ -923,8 +923,3 @@ test.util.sync.sendProgressItem =
       background.progressCenter.updateItem(item);
       return true;
     };
-
-// Register the test utils, however the SWA uses a different util.
-if (!window.isSWA) {
-  test.util.registerRemoteTestUtils();
-}

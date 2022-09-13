@@ -320,8 +320,6 @@ class SystemNotificationManager {
   // Cache the application name (used for notification display source).
   std::u16string app_name_;
 
-  // Caches the SWA feature flag.
-  bool swa_enabled_;
   base::WeakPtrFactory<SystemNotificationManager> weak_ptr_factory_{this};
 };
 

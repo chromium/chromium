@@ -239,23 +239,6 @@ export class FolderShortcutsDataModel extends EventTarget {
    * @private
    */
   async getPersistedShortcutPaths_() {
-    if (!window.isSWA) {
-      // Migration code works for non SWA.
-      const legacyPaths = await this.getPersistedShortcutPathsLegacy_();
-      if (legacyPaths.length) {
-        // Migrate to prefs. The onPreferencesChanged listener will make the
-        // value to be reloaded from prefs.
-        chrome.fileManagerPrivate.setPreferences(
-            {folderShortcuts: legacyPaths});
-
-        // Remove from legacy storage: xfm.storage.sync.
-        const prefs = {};
-        prefs[FolderShortcutsDataModel.NAME] = [];
-        xfm.storage.sync.setAsync(prefs);
-        return legacyPaths;
-      }
-    }
-
     const prefs = await getPreferences();
     if (prefs.folderShortcuts && prefs.folderShortcuts.length) {
       return prefs.folderShortcuts;

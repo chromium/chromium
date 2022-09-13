@@ -37,17 +37,3 @@ Window.prototype.HTMLImports.whenReady;
  * @type {boolean}
  */
 Window.prototype.IN_TEST;
-
-/**
- * Set true in some unit tests.
- *
- * @type {boolean}
- */
-Window.prototype.UNIT_TEST;
-
-/**
- * True if files app is running in a SWA container.
- *
- * @type {boolean}
- */
-Window.prototype.isSWA;

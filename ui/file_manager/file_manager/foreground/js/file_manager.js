@@ -327,12 +327,6 @@ export class FileManager extends EventTarget {
     // DOM elements.
 
     /**
-     * Background page.
-     * @type {?BackgroundWindow}.
-     */
-    this.backgroundPage_ = null;
-
-    /**
      * @private {?FileManagerBaseInterface}
      */
     this.fileBrowserBackground_ = null;
@@ -768,7 +762,6 @@ export class FileManager extends EventTarget {
     this.setContextMenuForInput_(this.ui_.listContainer.renameInput);
     this.setContextMenuForInput_(
         this.directoryTreeNamingController_.getInputElement());
-    CommandHandler.registerUndoDeleteToast(this);
   }
 
   /**
@@ -918,19 +911,8 @@ export class FileManager extends EventTarget {
   async startInitBackgroundPage_() {
     metrics.startInterval('Load.InitBackgroundPage');
 
-    /** @type {!BackgroundWindow} */
-    this.backgroundPage_ = await new Promise(resolve => {
-      if (window.isSWA) {
-        resolve(window);
-      } else {
-        chrome.runtime.getBackgroundPage(resolve);
-      }
-    });
-
-    assert(this.backgroundPage_);
     this.fileBrowserBackground_ =
-        /** @type {!FileManagerBaseInterface} */ (
-            this.backgroundPage_.background);
+        /** @type {!FileManagerBaseInterface} */ (window.background);
 
     await new Promise(resolve => this.fileBrowserBackground_.ready(resolve));
 
@@ -944,9 +926,7 @@ export class FileManager extends EventTarget {
     }
     this.fileOperationManager_ =
         this.fileBrowserBackground_.fileOperationManager;
-    if (window.isSWA) {
-      this.fileOperationManager_.setFileManager(this);
-    }
+    this.fileOperationManager_.setFileManager(this);
     this.crostini_ = this.fileBrowserBackground_.crostini;
 
     metrics.recordInterval('Load.InitBackgroundPage');
@@ -987,7 +967,7 @@ export class FileManager extends EventTarget {
     // Record stats of dialog types. New values must NOT be inserted into the
     // array enumerating the types. It must be in sync with
     // FileDialogType enum in tools/metrics/histograms/histogram.xml.
-    const metricName = window.isSWA ? 'SWA.Create' : 'Create';
+    const metricName = 'SWA.Create';
     metrics.recordEnum(metricName, this.dialogType, [
       DialogType.SELECT_FOLDER,
       DialogType.SELECT_UPLOAD_FOLDER,

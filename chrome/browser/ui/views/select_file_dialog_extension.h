@@ -9,16 +9,13 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/views/extensions/extension_dialog_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_provider_source_observer.h"
 #include "ui/gfx/native_widget_types.h"  // gfx::NativeWindow
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/gurl.h"
 
-class ExtensionDialog;
 class Profile;
 
 namespace aura {
@@ -37,9 +34,7 @@ class SelectFilePolicy;
 
 // Shows a dialog box for selecting a file or a folder, using the
 // file manager extension implementation.
-class SelectFileDialogExtension : public ui::SelectFileDialog,
-                                  public ExtensionDialogObserver,
-                                  public ui::ColorProviderSourceObserver {
+class SelectFileDialogExtension : public ui::SelectFileDialog {
  public:
   // Opaque ID type for identifying the tab spawned each dialog, unique for
   // every WebContents or every Android task ID.
@@ -55,13 +50,6 @@ class SelectFileDialogExtension : public ui::SelectFileDialog,
   // ui::SelectFileDialog:
   bool IsRunning(gfx::NativeWindow owner_window) const override;
   void ListenerDestroyed() override;
-
-  // ExtensionDialogObserver:
-  void ExtensionDialogClosing(ExtensionDialog* dialog) override;
-  void ExtensionTerminated(ExtensionDialog* dialog) override;
-
-  // ui::ColorProviderSourceObserver:
-  void OnColorProviderChanged() override;
 
   // Routes callback to appropriate SelectFileDialog::Listener based on the
   // owning |web_contents|.
@@ -135,6 +123,10 @@ class SelectFileDialogExtension : public ui::SelectFileDialog,
   friend class SelectFileDialogExtensionTest;
   friend class SelectFileDialogExtensionTestFactory;
   friend class SystemFilesAppDialogDelegate;
+  FRIEND_TEST_ALL_PREFIXES(SelectFileDialogExtensionTest, FileSelected);
+  FRIEND_TEST_ALL_PREFIXES(SelectFileDialogExtensionTest,
+                           FileSelectionCanceled);
+  FRIEND_TEST_ALL_PREFIXES(SelectFileDialogExtensionTest, SelfDeleting);
 
   // For the benefit of SystemFilesAppDialogDelegate.
   void OnSystemDialogShown(content::WebContents* content,
@@ -161,9 +153,6 @@ class SelectFileDialogExtension : public ui::SelectFileDialog,
   bool IsResizeable() const;
 
   bool has_multiple_file_type_choices_ = false;
-
-  // Host for the extension that implements this dialog.
-  scoped_refptr<ExtensionDialog> extension_dialog_;
 
   // If System Files App is enabled it stores the web contents associated with
   // System File App dialog. Not owned by this class. Set only while System

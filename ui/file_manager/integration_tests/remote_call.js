@@ -457,23 +457,12 @@ export class RemoteCall {
  */
 export class RemoteCallFilesApp extends RemoteCall {
   /**
-   * @return {boolean} Returns whether the code is running in SWA mode.
-   */
-  isSwaMode() {
-    return this.origin_.startsWith('chrome://');
-  }
-
-  /**
    * Sends a test |message| to the test code running in the File Manager.
    * @param {!Object} message
    * @return {!Promise<*>}
    * @override
    */
   sendMessage(message) {
-    if (!this.isSwaMode()) {
-      return super.sendMessage(message);
-    }
-
     const command = {
       name: 'callSwaTestMessageListener',
       appId: message.appId,
@@ -498,19 +487,11 @@ export class RemoteCallFilesApp extends RemoteCall {
 
   /** @override */
   async waitForWindow(windowIdPrefix) {
-    if (!this.isSwaMode()) {
-      return super.waitForWindow(windowIdPrefix);
-    }
-
     return this.waitForSwaWindow();
   }
 
   async getWindows() {
-    if (!this.isSwaMode()) {
-      return this.callRemoteTestUtil('getWindows', null, []);
-    }
-
-    return JSON.parse(await sendTestMessage({name: 'getWindowsSWA'}));
+    return JSON.parse(await sendTestMessage({name: 'getWindows'}));
   }
 
   /**
@@ -545,12 +526,7 @@ export class RemoteCallFilesApp extends RemoteCall {
    * @return {!Promise<*>} resolved with the return value of the `statement`.
    */
   async executeJsInPreviewTag(appId, query, statement) {
-    if (this.isSwaMode()) {
-      return this.executeJsInPreviewTagSwa_(statement);
-    }
-
-    return this.callRemoteTestUtil(
-        'deepExecuteScriptInWebView', appId, [query, statement]);
+    return this.executeJsInPreviewTagSwa_(statement);
   }
 
   /**

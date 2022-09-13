@@ -1181,13 +1181,9 @@ CommandHandler.deleteCommand_ = new (class extends FilesCommand {
     if (!permanentlyDelete &&
         fileManager.fileOperationManager.willUseTrash(
             fileManager.volumeManager, entries)) {
-      if (window.isSWA) {
-        chrome.fileManagerPrivate.startIOTask(
-            chrome.fileManagerPrivate.IOTaskType.TRASH, entries,
-            /*params=*/ {});
-        return;
-      }
-      fileManager.fileOperationManager.deleteEntries(entries);
+      chrome.fileManagerPrivate.startIOTask(
+          chrome.fileManagerPrivate.IOTaskType.TRASH, entries,
+          /*params=*/ {});
       return;
     }
 
@@ -1274,38 +1270,6 @@ CommandHandler.COMMANDS_['delete'] = CommandHandler.deleteCommand_;
 CommandHandler.COMMANDS_['move-to-trash'] = CommandHandler.deleteCommand_;
 
 /**
- * Register listener on background for delete event, and show undo toast if
- * files are in trash and can be restored.
- * @param {!CommandHandlerDeps} fileManager
- */
-CommandHandler.registerUndoDeleteToast = function(fileManager) {
-  /**
-   * @param {!FileOperationProgressEvent} e
-   */
-  const onDeleted = (e) => {
-    if (e.reason === 'BEGIN' || e.reason === 'PROGRESS' ||
-        !e.trashedEntries.length) {
-      return;
-    }
-    const message = e.trashedEntries.length === 1 ?
-        strf('UNDO_DELETE_ONE', e.trashedEntries[0].name) :
-        strf('UNDO_DELETE_SOME', e.trashedEntries.length);
-    fileManager.ui.toast.show(message, {
-      text: str('UNDO_DELETE_ACTION_LABEL'),
-      callback: () => {
-        fileManager.fileOperationManager.restoreDeleted(
-            assert(e.trashedEntries));
-      },
-    });
-  };
-
-  if (!window.isSWA) {
-    util.addEventListenerToBackgroundComponent(
-        assert(fileManager.fileOperationManager), 'delete', onDeleted);
-  }
-};
-
-/**
  * Restores selected files from trash.
  *
  * @suppress {invalidCasts} See FilesAppEntry in files_app_entry_interfaces.js
@@ -1317,20 +1281,13 @@ CommandHandler.COMMANDS_['restore-from-trash'] =
         const entries =
             CommandUtil.getCommandEntries(fileManager, event.target);
 
-        if (window.isSWA) {
-          const infoEntries = entries.map(e => {
-            const entry = /** @type {!TrashEntry} */ (e);
-            return entry.infoEntry;
-          });
-          startIOTask(
-              chrome.fileManagerPrivate.IOTaskType.RESTORE, infoEntries,
-              /*params=*/ {});
-          return;
-        }
-
-        fileManager.fileOperationManager.restoreDeleted(entries.map(e => {
-          return /** @type {!TrashEntry} */ (e);
-        }));
+        const infoEntries = entries.map(e => {
+          const entry = /** @type {!TrashEntry} */ (e);
+          return entry.infoEntry;
+        });
+        startIOTask(
+            chrome.fileManagerPrivate.IOTaskType.RESTORE, infoEntries,
+            /*params=*/ {});
       }
 
       /** @override */
@@ -1351,13 +1308,9 @@ CommandHandler.COMMANDS_['restore-from-trash'] =
 CommandHandler.COMMANDS_['empty-trash'] = new (class extends FilesCommand {
   execute(event, fileManager) {
     fileManager.ui.deleteConfirmDialog.show(str('CONFIRM_EMPTY_TRASH'), () => {
-      if (window.isSWA) {
-        startIOTask(
-            chrome.fileManagerPrivate.IOTaskType.EMPTY_TRASH, /*entries=*/[],
-            /*params=*/ {});
-        return;
-      }
-      fileManager.fileOperationManager.emptyTrash();
+      startIOTask(
+          chrome.fileManagerPrivate.IOTaskType.EMPTY_TRASH, /*entries=*/[],
+          /*params=*/ {});
     });
   }
 
@@ -2257,14 +2210,9 @@ CommandHandler.COMMANDS_['zip-selection'] = new (class extends FilesCommand {
     }
 
     const selectionEntries = fileManager.getSelection().entries;
-    if (window.isSWA) {
-      startIOTask(
-          chrome.fileManagerPrivate.IOTaskType.ZIP, selectionEntries,
-          {destinationFolder: /** @type {!DirectoryEntry} */ (dirEntry)});
-    } else {
-      fileManager.fileOperationManager.zipSelection(
-          selectionEntries, /** @type {!DirectoryEntry} */ (dirEntry));
-    }
+    startIOTask(
+        chrome.fileManagerPrivate.IOTaskType.ZIP, selectionEntries,
+        {destinationFolder: /** @type {!DirectoryEntry} */ (dirEntry)});
   }
 
   /** @override */
@@ -2923,19 +2871,6 @@ CommandHandler.COMMANDS_['inspect-element'] = new (class extends FilesCommand {
 })();
 
 /**
- * Open inspector for background page.
- */
-CommandHandler.COMMANDS_['inspect-background'] =
-    new (class extends FilesCommand {
-      execute(event, fileManager) {
-        if (!window.isSWA) {
-          chrome.fileManagerPrivate.openInspector(
-              chrome.fileManagerPrivate.InspectionType.BACKGROUND);
-        }
-      }
-    })();
-
-/**
  * Opens the gear menu.
  */
 CommandHandler.COMMANDS_['open-gear-menu'] = new (class extends FilesCommand {
@@ -3124,11 +3059,7 @@ CommandHandler.COMMANDS_['show-providers-submenu'] =
         if (fileManager.dialogType !== DialogType.FULL_PAGE) {
           event.canExecute = false;
         } else {
-          if (window.isSWA) {
-            event.canExecute = !fileManager.guestMode;
-          } else {
-            event.canExecute = !chrome.extension.inIncognitoContext;
-          }
+          event.canExecute = !fileManager.guestMode;
         }
       }
     })();

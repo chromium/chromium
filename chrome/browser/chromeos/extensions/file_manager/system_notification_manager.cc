@@ -5,7 +5,6 @@
 #include "chrome/browser/chromeos/extensions/file_manager/system_notification_manager.h"
 
 #include "ash/components/arc/arc_prefs.h"
-#include "ash/constants/ash_features.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
@@ -132,8 +131,7 @@ namespace file_manager {
 
 SystemNotificationManager::SystemNotificationManager(Profile* profile)
     : profile_(profile),
-      app_name_(l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME)),
-      swa_enabled_(ash::features::IsFileManagerSwaEnabled()) {}
+      app_name_(l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME)) {}
 
 SystemNotificationManager::~SystemNotificationManager() = default;
 
@@ -284,9 +282,6 @@ constexpr char kDeviceFailNotificationId[] = "swa-device-fail-id";
 
 void SystemNotificationManager::HandleDeviceEvent(
     const file_manager_private::DeviceEvent& event) {
-  if (!swa_enabled_) {
-    return;
-  }
   std::unique_ptr<message_center::Notification> notification;
 
   std::u16string title;
@@ -554,9 +549,6 @@ SystemNotificationManager::UpdateDriveSyncNotification(
 }
 
 void SystemNotificationManager::HandleEvent(const extensions::Event& event) {
-  if (!swa_enabled_) {
-    return;
-  }
   const base::Value::List& event_arguments = event.event_args;
   if (event_arguments.size() < 1) {
     return;
@@ -599,9 +591,6 @@ void SystemNotificationManager::HandleEvent(const extensions::Event& event) {
 void SystemNotificationManager::HandleCopyStart(
     int copy_id,
     file_manager_private::CopyOrMoveProgressStatus& status) {
-  if (!swa_enabled_) {
-    return;
-  }
   if (status.size) {
     required_copy_space_[copy_id] = *status.size;
   }
@@ -610,9 +599,6 @@ void SystemNotificationManager::HandleCopyStart(
 void SystemNotificationManager::HandleCopyEvent(
     int copy_id,
     file_manager_private::CopyOrMoveProgressStatus& status) {
-  if (!swa_enabled_) {
-    return;
-  }
   std::unique_ptr<message_center::Notification> notification;
   int progress = 0;
   std::string id =
@@ -676,10 +662,6 @@ void SystemNotificationManager::HandleCopyEvent(
 
 void SystemNotificationManager::HandleIOTaskProgress(
     const file_manager::io_task::ProgressStatus& status) {
-  if (!swa_enabled_) {
-    return;
-  }
-
   std::string id = base::StrCat(
       {kSwaFileOperationPrefix, base::NumberToString(status.task_id)});
 
@@ -971,9 +953,6 @@ SystemNotificationManager::MakeRemovableNotification(
 void SystemNotificationManager::HandleMountCompletedEvent(
     file_manager_private::MountCompletedEvent& event,
     const Volume& volume) {
-  if (!swa_enabled_) {
-    return;
-  }
   std::unique_ptr<message_center::Notification> notification;
 
   switch (event.event_type) {

@@ -87,31 +87,18 @@ export async function openNewWindow(initialRoot, appState = {}) {
   // file_manager_browser_test.cc.
   if (initialRoot) {
     const tail = `external${initialRoot}`;
-    if (remoteCall.isSwaMode()) {
-      appState.currentDirectoryURL =
-          `filesystem:${FILE_MANAGER_SWA_ID}/${tail}`;
-    } else {
-      appState.currentDirectoryURL =
-          `filesystem:chrome-extension://${FILE_MANAGER_EXTENSIONS_ID}/${tail}`;
-    }
+    appState.currentDirectoryURL = `filesystem:${FILE_MANAGER_SWA_ID}/${tail}`;
   }
 
-  let appId;
-
-  if (remoteCall.isSwaMode()) {
-    const launchDir = appState ? appState.currentDirectoryURL : undefined;
-    const type = appState ? appState.type : undefined;
-    const volumeFilter = appState ? appState.volumeFilter : undefined;
-    appId = await sendTestMessage({
-      name: 'launchFileManagerSwa',
-      launchDir: launchDir,
-      type: type,
-      volumeFilter,
-    });
-  } else {
-    appId =
-        await remoteCall.callRemoteTestUtil('openMainWindow', null, [appState]);
-  }
+  const launchDir = appState ? appState.currentDirectoryURL : undefined;
+  const type = appState ? appState.type : undefined;
+  const volumeFilter = appState ? appState.volumeFilter : undefined;
+  const appId = await sendTestMessage({
+    name: 'launchFileManager',
+    launchDir: launchDir,
+    type: type,
+    volumeFilter,
+  });
 
   return appId;
 }
@@ -283,11 +270,7 @@ export async function awaitAsyncTestResult(resultPromise) {
   const passCallback = chrome.test.callbackPass();
 
   try {
-    const result = await resultPromise;
-    // SWA doesn't have background page so we can't always check for errors.
-    if (result !== IGNORE_APP_ERRORS && !remoteCall.isSwaMode()) {
-      await checkIfNoErrorsOccuredOnApp(remoteCall);
-    }
+    await resultPromise;
   } catch (error) {
     // If the test has failed, ignore the exception and return.
     if (error == 'chrome.test.failure') {
