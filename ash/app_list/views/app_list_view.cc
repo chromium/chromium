@@ -1623,10 +1623,11 @@ void AppListView::ApplyBoundsAnimation(AppListViewState target_state,
 
 void AppListView::SetStateFromSearchBoxView(bool search_box_is_empty,
                                             bool triggered_by_contents_change) {
+  // TODO(https://crbug.com/1356661): Remove peeking and half launcher cases.
   switch (target_app_list_state_) {
     case AppListViewState::kPeeking:
       if (!search_box_is_empty || search_box_view()->is_search_box_active())
-        SetState(AppListViewState::kHalf);
+        SetState(AppListViewState::kFullscreenSearch);
       break;
     case AppListViewState::kHalf:
       if (search_box_is_empty && !triggered_by_contents_change)

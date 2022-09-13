@@ -230,46 +230,6 @@ class AppListMetricsPeekingLauncherTest : public AppListMetricsTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Test that the histogram records an app launch from the shelf while the half
-// launcher is showing.
-TEST_F(AppListMetricsPeekingLauncherTest, HalfLaunchFromShelf) {
-  base::HistogramTester histogram_tester;
-
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
-
-  // Press a letter key, the AppListView should transition to kHalf.
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_H);
-  GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
-
-  CreateAndClickShelfItem();
-  GetAppListTestHelper()->WaitUntilIdle();
-
-  histogram_tester.ExpectBucketCount(
-      "Apps.AppListAppLaunchedV2.Half", AppListLaunchedFrom::kLaunchedFromShelf,
-      1 /* Number of times launched from shelf */);
-}
-
-// Test that the histogram records an app launch from the search box while the
-// half launcher is showing.
-TEST_F(AppListMetricsPeekingLauncherTest, HalfLaunchFromSearchBox) {
-  base::HistogramTester histogram_tester;
-
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
-
-  // Press a letter key, the AppListView should transition to kHalf.
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_H);
-  GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
-
-  PopulateAndLaunchSearchBoxTileItem();
-
-  histogram_tester.ExpectBucketCount(
-      "Apps.AppListAppLaunchedV2.Half",
-      AppListLaunchedFrom::kLaunchedFromSearchBox,
-      1 /* Number of times launched from search box */);
-}
-
 // Test that the histogram records an app launch from the search box while the
 // fullscreen search launcher is showing.
 TEST_F(AppListMetricsPeekingLauncherTest, FullscreenSearchLaunchFromSearchBox) {

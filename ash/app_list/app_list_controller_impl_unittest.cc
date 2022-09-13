@@ -295,46 +295,6 @@ TEST_F(AppListControllerImplTest, PageResetByTimerInTabletMode) {
   EXPECT_EQ(0, apps_grid_view->pagination_model()->selected_page());
 }
 
-// Verifies that in clamshell mode the AppListView bounds remain in the
-// fullscreen size while the virtual keyboard is shown, even if the app list
-// view state changes.
-TEST_F(AppListControllerImplTest,
-       AppListViewBoundsRemainFullScreenWhenVKeyboardEnabled) {
-  Shell::Get()->keyboard_controller()->SetEnableFlag(
-      keyboard::KeyboardEnableFlag::kShelfEnabled);
-
-  // Show the AppListView in fullscreen state and click on the search box with
-  // the mouse. So the VirtualKeyboard is shown. Wait until the virtual keyboard
-  // shows.
-  ShowAppListNow(AppListViewState::kPeeking);
-  GetSearchBoxView()->SetSearchBoxActive(true, ui::ET_MOUSE_PRESSED);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(AppListViewState::kHalf, GetAppListView()->app_list_state());
-  EXPECT_TRUE(GetVirtualKeyboardWindow()->IsVisible());
-
-  EXPECT_EQ(0, GetAppListView()->GetBoundsInScreen().y());
-
-  // Simulate half state getting set again, and but verify the app list bounds
-  // remain at the top of the screen.
-  GetAppListView()->SetState(AppListViewState::kHalf);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(AppListViewState::kHalf, GetAppListView()->app_list_state());
-
-  EXPECT_EQ(0, GetAppListView()->GetBoundsInScreen().y());
-
-  // Close the virtual keyboard. Wait until it is hidden.
-  Shell::Get()->keyboard_controller()->HideKeyboard(HideReason::kUser);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(nullptr, GetVirtualKeyboardWindow());
-
-  // Verify the app list bounds have been updated to match kHalf state.
-  EXPECT_EQ(AppListViewState::kHalf, GetAppListView()->app_list_state());
-  const gfx::Rect shelf_bounds =
-      AshTestBase::GetPrimaryShelf()->shelf_widget()->GetWindowBoundsInScreen();
-  EXPECT_EQ(shelf_bounds.bottom() - 545 /*half app list height*/,
-            GetAppListView()->GetBoundsInScreen().y());
-}
-
 // Verifies that in tablet mode, the AppListView has correct bounds when the
 // virtual keyboard is dismissed (see https://crbug.com/944133).
 TEST_F(AppListControllerImplTest, CheckAppListViewBoundsWhenDismissVKeyboard) {

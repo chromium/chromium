@@ -1464,51 +1464,6 @@ TEST_P(GlobalAcceleratorsToggleProductivityLauncher,
   GetAppListTestHelper()->CheckVisibility(false);
 }
 
-TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleAppListFullscreen) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kProductivityLauncher);
-
-  base::HistogramTester histogram_tester;
-  int toggle_count = 0;
-
-  // Shift+VKEY_BROWSER_SEARCH should toggle the AppList in fullscreen mode.
-  EXPECT_TRUE(ProcessInController(
-      ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_SHIFT_DOWN)));
-  base::RunLoop().RunUntilIdle();
-  GetAppListTestHelper()->CheckVisibility(true);
-  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
-  histogram_tester.ExpectTotalCount("Apps.AppListShowSource", ++toggle_count);
-  histogram_tester.ExpectBucketCount("Apps.AppListShowSource",
-                                     kSearchKeyFullscreen, toggle_count);
-
-  EXPECT_TRUE(ProcessInController(
-      ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_SHIFT_DOWN)));
-  base::RunLoop().RunUntilIdle();
-  GetAppListTestHelper()->CheckVisibility(false);
-
-  // VKEY_BROWSER_SEARCH (no shift) also opens the AppList in fullscreen mode.
-  EXPECT_TRUE(ProcessInController(
-      ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_NONE)));
-  base::RunLoop().RunUntilIdle();
-  GetAppListTestHelper()->CheckVisibility(true);
-  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
-  histogram_tester.ExpectTotalCount("Apps.AppListShowSource", ++toggle_count);
-  histogram_tester.ExpectBucketCount("Apps.AppListShowSource",
-                                     kSearchKeyFullscreen, toggle_count);
-
-  // Type in the search box to change to fullscreen search state.
-  PressAndReleaseKey(ui::VKEY_0);
-  base::RunLoop().RunUntilIdle();
-  GetAppListTestHelper()->CheckVisibility(true);
-  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
-
-  // VKEY_BROWSER_SEARCH (no shift) closes the AppList.
-  EXPECT_TRUE(ProcessInController(
-      ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_NONE)));
-  base::RunLoop().RunUntilIdle();
-  GetAppListTestHelper()->CheckVisibility(false);
-}
-
 TEST_F(AcceleratorControllerTest, ImeGlobalAccelerators) {
   ASSERT_EQ(0u, Shell::Get()->ime_controller()->GetVisibleImes().size());
 
