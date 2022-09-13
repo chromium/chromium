@@ -15,7 +15,7 @@ import "mojo/public/mojom/base/time.mojom";
 // NetworkDiagnosticsRoutines interface for more details.
 [Stable, Extensible]
 enum RoutineType {
-  kLanConnectivity,
+  [Default] kLanConnectivity,
   kSignalStrength,
   kGatewayCanBePinged,
   kHasSecureWiFiConnection,
@@ -36,7 +36,7 @@ enum RoutineType {
 [Stable, Extensible]
 enum RoutineVerdict {
   // Routine ran successfully and no connectivity problem found.
-  kNoProblem,
+  [Default] kNoProblem,
   // Routine ran successfully and connectivity problem found.
   kProblem,
   // Routine has not been run.
@@ -46,20 +46,20 @@ enum RoutineVerdict {
 // Problems related to the LanConnectivity routine.
 [Stable, Extensible]
 enum LanConnectivityProblem {
-  kNoLanConnectivity,
+  [Default] kNoLanConnectivity,
 };
 
 // Problems related to the SignalStrength routine.
 [Stable, Extensible]
 enum SignalStrengthProblem {
-  kWeakSignal,
+  [Default] kWeakSignal,
 };
 
 // Problems related to the GatewayCanBePinged routine.
 [Stable, Extensible]
 enum GatewayCanBePingedProblem {
   // All gateways are unreachable, hence cannot be pinged.
-  kUnreachableGateway,
+  [Default] kUnreachableGateway,
   // The default network cannot be pinged.
   kFailedToPingDefaultNetwork,
   // The default network has a latency above the threshold.
@@ -73,7 +73,7 @@ enum GatewayCanBePingedProblem {
 // Problems related to the HasSecureWiFiConnection routine.
 [Stable, Extensible]
 enum HasSecureWiFiConnectionProblem {
-  kSecurityTypeNone,
+  [Default] kSecurityTypeNone,
   kSecurityTypeWep8021x,
   kSecurityTypeWepPsk,
   kUnknownSecurityType,
@@ -82,7 +82,7 @@ enum HasSecureWiFiConnectionProblem {
 // Problems related to the DnsResolverPresent routine.
 [Stable, Extensible]
 enum DnsResolverPresentProblem {
-  kNoNameServersFound,
+  [Default] kNoNameServersFound,
   kMalformedNameServers,
   kEmptyNameServers, // DEPRECATED: Use kNoNameServersFound instead
 };
@@ -91,7 +91,7 @@ enum DnsResolverPresentProblem {
 [Stable, Extensible]
 enum DnsLatencyProblem {
   // The routine was unable to resolve one or more hosts.
-  kHostResolutionFailure,
+  [Default] kHostResolutionFailure,
   // Average DNS latency across hosts is slightly above expected threshold
   kSlightlyAboveThreshold,
   // Average DNS latency across hosts is significantly above expected threshold
@@ -102,14 +102,14 @@ enum DnsLatencyProblem {
 [Stable, Extensible]
 enum DnsResolutionProblem {
   // The routine was unable to successfully resolve the test host
-  kFailedToResolveHost,
+  [Default] kFailedToResolveHost,
 };
 
 // Problems related to the CaptivePortal routine.
 [Stable, Extensible]
 enum CaptivePortalProblem {
   // No active networks found.
-  kNoActiveNetworks,
+  [Default] kNoActiveNetworks,
   // The active network is not connected or the portal state is not available.
   kUnknownPortalState,
   // A portal is suspected but no redirect was provided.
@@ -127,7 +127,7 @@ enum CaptivePortalProblem {
 [Stable, Extensible]
 enum HttpFirewallProblem {
   // DNS resolution failures above threshold.
-  kDnsResolutionFailuresAboveThreshold,
+  [Default] kDnsResolutionFailuresAboveThreshold,
   // Firewall detected.
   kFirewallDetected,
   // A firewall may potentially exist.
@@ -138,7 +138,7 @@ enum HttpFirewallProblem {
 [Stable, Extensible]
 enum HttpsFirewallProblem {
   // DNS resolution failure rate is high.
-  kHighDnsResolutionFailureRate,
+  [Default] kHighDnsResolutionFailureRate,
   // Firewall detected.
   kFirewallDetected,
   // A firewall may potentially exist.
@@ -149,7 +149,7 @@ enum HttpsFirewallProblem {
 [Stable, Extensible]
 enum HttpsLatencyProblem {
   // One or more DNS resolutions resulted in a failure.
-  kFailedDnsResolutions,
+  [Default] kFailedDnsResolutions,
   // One or more HTTPS requests resulted in a failure.
   kFailedHttpsRequests,
   // HTTPS request latency is high.
@@ -162,7 +162,7 @@ enum HttpsLatencyProblem {
 [Stable, Extensible]
 enum VideoConferencingProblem {
   // Failed requests to a STUN server via UDP.
-  kUdpFailure,
+  [Default] kUdpFailure,
   // Failed requests to a STUN server via TCP.
   kTcpFailure,
   // Failed to establish a TLS connection to media hostnames.
@@ -173,7 +173,7 @@ enum VideoConferencingProblem {
 [Stable, Extensible]
 enum ArcHttpProblem {
   // Failed to get the ARC Service Manager.
-  kFailedToGetArcServiceManager,
+  [Default] kFailedToGetArcServiceManager,
   // Failed to get instance of the NetInstance service.
   kFailedToGetNetInstanceForHttpTest,
   // HTTPS request latency is high.
@@ -188,7 +188,7 @@ enum ArcHttpProblem {
 [Stable, Extensible]
 enum ArcDnsResolutionProblem {
   // Failed to get the ARC Service Manager.
-  kFailedToGetArcServiceManager,
+  [Default] kFailedToGetArcServiceManager,
   // Failed to get instance of the NetInstance service.
   kFailedToGetNetInstanceForDnsResolutionTest,
   // DNS query latency is high.
@@ -203,7 +203,7 @@ enum ArcDnsResolutionProblem {
 [Stable, Extensible]
 enum ArcPingProblem {
   // Failed to get the ARC Service Manager.
-  kFailedToGetArcServiceManager,
+  [Default] kFailedToGetArcServiceManager,
   // Failed to get instance of the NetInstance service.
   kFailedToGetNetInstanceForPingTest,
   // Timeout failure when getting managed properties of networks.
