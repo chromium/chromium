@@ -27,11 +27,10 @@ class SessionLogAsyncHelper {
   // Gathers session data from three log sources: TelemetryLog, RoutineLog, and
   // NetworkingLog then writes the combined information to a location specified
   // by |file_path|.
-  bool CreateSessionLogOnBlockingPool(
-      const base::FilePath file_path,
-      base::raw_ptr<TelemetryLog> telemetry_log,
-      base::raw_ptr<RoutineLog> routine_log,
-      base::raw_ptr<NetworkingLog> networking_log);
+  bool CreateSessionLogOnBlockingPool(const base::FilePath file_path,
+                                      TelemetryLog* telemetry_log,
+                                      RoutineLog* routine_log,
+                                      NetworkingLog* networking_log);
 };
 
 }  // namespace ash::diagnostics
