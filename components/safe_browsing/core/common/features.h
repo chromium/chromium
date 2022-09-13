@@ -183,6 +183,9 @@ extern const base::Feature kVisualFeaturesSizes;
 // Controls whether we send visual features in CSPP pings.
 extern const base::Feature kVisualFeaturesInCsppPings;
 
+// Controls whether we send visual features in password reuse pings.
+extern const base::Feature kVisualFeaturesForReusePings;
+
 base::Value::List GetFeatureStatusList();
 
 // Returns the tag used for Client Side Phishing Detection models, as

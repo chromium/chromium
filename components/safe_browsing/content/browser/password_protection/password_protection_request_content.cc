@@ -246,8 +246,11 @@ void PasswordProtectionRequestContent::MaybeCollectVisualFeatures() {
 
   // Once the DOM features are collected, either collect visual features, or go
   // straight to sending the ping.
-  if (trigger_type() == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE &&
-      can_extract_visual_features) {
+  bool trigger_type_supports_visual_features =
+      trigger_type() == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE ||
+      (trigger_type() == LoginReputationClientRequest::PASSWORD_REUSE_EVENT &&
+       base::FeatureList::IsEnabled(kVisualFeaturesForReusePings));
+  if (trigger_type_supports_visual_features && can_extract_visual_features) {
     CollectVisualFeatures();
   } else {
     SendRequest();
