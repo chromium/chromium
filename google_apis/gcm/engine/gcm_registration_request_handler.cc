@@ -5,7 +5,6 @@
 #include "google_apis/gcm/engine/gcm_registration_request_handler.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "google_apis/gcm/base/gcm_util.h"
 
 namespace gcm {
@@ -21,16 +20,16 @@ GCMRegistrationRequestHandler::GCMRegistrationRequestHandler(
     const std::string& senders)
     : senders_(senders) {}
 
-GCMRegistrationRequestHandler::~GCMRegistrationRequestHandler() {}
+GCMRegistrationRequestHandler::~GCMRegistrationRequestHandler() = default;
 
 void GCMRegistrationRequestHandler::BuildRequestBody(std::string* body) {
   BuildFormEncoding(kSenderKey, senders_, body);
 }
 
 void GCMRegistrationRequestHandler::ReportStatusToUMA(
-    RegistrationRequest::Status status) {
-  UMA_HISTOGRAM_ENUMERATION("GCM.RegistrationRequestStatus", status,
-                            RegistrationRequest::STATUS_COUNT);
+    RegistrationRequest::Status status,
+    const std::string& subtype) {
+  base::UmaHistogramEnumeration("GCM.RegistrationRequestStatus", status);
 }
 
 void GCMRegistrationRequestHandler::ReportNetErrorCodeToUMA(

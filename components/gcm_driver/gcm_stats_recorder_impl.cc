@@ -116,9 +116,6 @@ std::string GetRegistrationStatusString(
       return "QUOTA_EXCEEDED";
     case gcm::RegistrationRequest::TOO_MANY_REGISTRATIONS:
       return "TOO_MANY_REGISTRATIONS";
-    case gcm::RegistrationRequest::STATUS_COUNT:
-      NOTREACHED();
-      break;
   }
   return "UNKNOWN_STATUS";
 }

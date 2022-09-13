@@ -40,7 +40,7 @@ class GCMStatsRecorder;
 class GCM_EXPORT RegistrationRequest {
  public:
   // This enum is also used in an UMA histogram (GCMRegistrationRequestStatus
-  // enum defined in tools/metrics/histograms/histogram.xml). Hence the entries
+  // enum defined in tools/metrics/histograms/enums.xml). Hence the entries
   // here shouldn't be deleted or re-ordered and new ones should be added to
   // the end.
   enum Status {
@@ -61,7 +61,7 @@ class GCM_EXPORT RegistrationRequest {
     // NOTE: always keep this entry at the end. Add new status types only
     // immediately above this line. Make sure to update the corresponding
     // histogram enum accordingly.
-    STATUS_COUNT
+    kMaxValue = TOO_MANY_REGISTRATIONS
   };
 
   // Callback completing the registration request.
@@ -107,7 +107,8 @@ class GCM_EXPORT RegistrationRequest {
     virtual void BuildRequestBody(std::string* body) = 0;
 
     // Reports the status of a request.
-    virtual void ReportStatusToUMA(Status status) = 0;
+    virtual void ReportStatusToUMA(Status status,
+                                   const std::string& subtype) = 0;
 
     // Reports the net error code from a request.
     virtual void ReportNetErrorCodeToUMA(int net_error_code) = 0;
@@ -133,8 +134,7 @@ class GCM_EXPORT RegistrationRequest {
   void Start();
 
   // Invoked from SimpleURLLoader.
-  void OnURLLoadComplete(const std::string& request_body,
-                         const network::SimpleURLLoader* source,
+  void OnURLLoadComplete(const network::SimpleURLLoader* source,
                          std::unique_ptr<std::string> body);
 
  private:
@@ -146,8 +146,7 @@ class GCM_EXPORT RegistrationRequest {
 
   // Parse the response returned by the URL loader into token, and returns the
   // status.
-  Status ParseResponse(const std::string& request_body,
-                       const network::SimpleURLLoader* source,
+  Status ParseResponse(const network::SimpleURLLoader* source,
                        std::unique_ptr<std::string> body,
                        std::string* token);
 

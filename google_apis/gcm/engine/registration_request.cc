@@ -88,9 +88,6 @@ bool ShouldRetryWithStatus(RegistrationRequest::Status status) {
     case RegistrationRequest::TOO_MANY_REGISTRATIONS:
     case RegistrationRequest::REACHED_MAX_RETRIES:
       return false;
-    case RegistrationRequest::STATUS_COUNT:
-      NOTREACHED();
-      break;
   }
   return false;
 }
@@ -195,8 +192,7 @@ void RegistrationRequest::Start() {
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&RegistrationRequest::OnURLLoadComplete,
-                     base::Unretained(this), std::move(body),
-                     url_loader_.get()));
+                     base::Unretained(this), url_loader_.get()));
 }
 
 void RegistrationRequest::BuildRequestHeaders(
@@ -241,7 +237,6 @@ void RegistrationRequest::RetryWithBackoff() {
 }
 
 RegistrationRequest::Status RegistrationRequest::ParseResponse(
-    const std::string& request_body,
     const network::SimpleURLLoader* source,
     std::unique_ptr<std::string> body,
     std::string* token) {
@@ -293,16 +288,15 @@ RegistrationRequest::Status RegistrationRequest::ParseResponse(
 }
 
 void RegistrationRequest::OnURLLoadComplete(
-    const std::string& request_body,
     const network::SimpleURLLoader* source,
     std::unique_ptr<std::string> body) {
   std::string token;
-  Status status = ParseResponse(request_body, source, std::move(body), &token);
+  Status status = ParseResponse(source, std::move(body), &token);
   recorder_->RecordRegistrationResponse(request_info_.app_id(),
                                         source_to_record_, status);
 
   DCHECK(custom_request_handler_.get());
-  custom_request_handler_->ReportStatusToUMA(status);
+  custom_request_handler_->ReportStatusToUMA(status, request_info_.subtype);
   custom_request_handler_->ReportNetErrorCodeToUMA(source->NetError());
 
   if (ShouldRetryWithStatus(status)) {
@@ -316,7 +310,7 @@ void RegistrationRequest::OnURLLoadComplete(
                                           source_to_record_, status);
 
     DCHECK(custom_request_handler_.get());
-    custom_request_handler_->ReportStatusToUMA(status);
+    custom_request_handler_->ReportStatusToUMA(status, request_info_.subtype);
   }
 
   std::move(callback_).Run(status, token);

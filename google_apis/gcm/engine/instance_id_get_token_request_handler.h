@@ -31,7 +31,8 @@ class GCM_EXPORT InstanceIDGetTokenRequestHandler
 
   // RegistrationRequest overrides:
   void BuildRequestBody(std::string* body) override;
-  void ReportStatusToUMA(RegistrationRequest::Status status) override;
+  void ReportStatusToUMA(RegistrationRequest::Status status,
+                         const std::string& subtype) override;
   void ReportNetErrorCodeToUMA(int net_error_code) override;
 
  private:
