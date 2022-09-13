@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager_provider.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -31,7 +30,7 @@ ReclaimableCodec::ReclaimableCodec(CodecType type, ExecutionContext* context)
       tick_clock_(base::DefaultTickClock::GetInstance()),
       inactivity_threshold_(kInactivityReclamationThreshold),
       last_activity_(tick_clock_->NowTicks()),
-      activity_timer_(Thread::Current()->GetDeprecatedTaskRunner(),
+      activity_timer_(context->GetTaskRunner(TaskType::kInternalMedia),
                       this,
                       &ReclaimableCodec::OnActivityTimerFired) {
   DCHECK(context);
