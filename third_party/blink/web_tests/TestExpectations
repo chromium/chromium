@@ -7138,6 +7138,11 @@ crbug.com/1356664 [ Debug Linux ] virtual/no-alloc-direct-call/fast/canvas/disco
 # Disable scrolling flake on win
 crbug.com/1359541 [ Win ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/mouse-scrolling-on-div-custom-scrollbar.html [ Failure Pass Timeout ]
 
+# Disable devtool flake on Mac11,12,10.15
+crbug.com/1363259 [ Mac11 ] http/tests/devtools/network/network-initiator.js [ Failure Pass ]
+crbug.com/1363259 [ Mac12 ] http/tests/devtools/network/network-initiator.js [ Failure Pass ]
+crbug.com/1363259 [ Mac10.15 ] http/tests/devtools/network/network-initiator.js [ Failure Pass ]
+
 # Sheriff 2022-09-07
 crbug.com/1360691 [ Debug Linux ] fast/canvas/disconnected-canvas-lost-gpu-context.html [ Failure ]
 
