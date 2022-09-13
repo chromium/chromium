@@ -188,11 +188,8 @@ struct NGStitchedAnchorQueries {
         return;
       if (layout_object->CanContainAbsolutePositionObjects() ||
           layout_object->CanContainFixedPositionObjects()) {
-        const auto result = anchor_queries_.insert(
-            layout_object, MakeGarbageCollected<NGStitchedAnchorQuery>());
-        NGStitchedAnchorQuery* stitched_query = result.stored_value->value;
-        stitched_query->AddChild(fragment, offset_from_fragmentainer,
-                                 fragmentainer);
+        EnsureStitchedAnchorQuery(*layout_object)
+            .AddChild(fragment, offset_from_fragmentainer, fragmentainer);
       }
     }
 
@@ -216,6 +213,14 @@ struct NGStitchedAnchorQueries {
           offset_from_fragmentainer + child.offset;
       AddChild(*child, child_offset_from_fragmentainer, fragmentainer);
     }
+  }
+
+  NGStitchedAnchorQuery& EnsureStitchedAnchorQuery(
+      const LayoutObject& containing_block) {
+    const auto result = anchor_queries_.insert(
+        &containing_block, MakeGarbageCollected<NGStitchedAnchorQuery>());
+    DCHECK(result.stored_value->value);
+    return *result.stored_value->value;
   }
 
   HeapHashMap<const LayoutObject*, Member<NGStitchedAnchorQuery>>
