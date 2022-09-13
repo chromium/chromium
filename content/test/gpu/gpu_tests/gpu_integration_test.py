@@ -466,8 +466,12 @@ class GpuIntegrationTest(
       # pylint: enable=attribute-defined-outside-init
       raise
     except Exception as e:
-      if not should_retry_on_failure:
-        should_retry_on_failure = self._DetermineRetryWorkaround(e)
+      if not should_retry_on_failure and self._DetermineRetryWorkaround(e):
+        should_retry_on_failure = True
+        # Notify typ that it should retry this test.
+        # pylint: disable=attribute-defined-outside-init
+        self.retryOnFailure = True
+        # pylint: enable=attribute-defined-outside-init
       if ResultType.Failure in expected_results or should_retry_on_failure:
         self._HandleExpectedFailureOrFlake(test_name, expected_crashes,
                                            should_retry_on_failure)
