@@ -1343,17 +1343,17 @@ TEST_F(SavedDeskTest, IconsOrder) {
 
   // The items previews should be ordered by activation index. Exclude the
   // final SavedDeskIconView since it will be the overflow counter.
-  EXPECT_EQ(5u, icon_views.size());
-  for (size_t i = 0; i < icon_views.size() - 2; ++i) {
+  EXPECT_EQ(6u, icon_views.size());
+  int previous_id;
+  for (size_t i = 0; i < icon_views.size() - 1; ++i) {
     int current_id;
     ASSERT_TRUE(
         base::StringToInt(icon_views[i]->icon_identifier(), &current_id));
 
-    int next_id;
-    ASSERT_TRUE(
-        base::StringToInt(icon_views[i + 1]->icon_identifier(), &next_id));
+    if (i)
+      EXPECT_TRUE(current_id > previous_id);
 
-    EXPECT_TRUE(current_id < next_id);
+    previous_id = current_id;
   }
 }
 
@@ -1460,7 +1460,7 @@ TEST_F(SavedDeskTest, IconsOrderWithInactiveTabs) {
   // ordered by activation index. The next two items should be the inactive tabs
   // with the lowest activation indices, i.e. the rest of the tabs from the
   // first browser instance.
-  ASSERT_EQ(5u, icon_views.size());
+  ASSERT_EQ(7u, icon_views.size());
   EXPECT_EQ(kTabs1[kActiveTabIndex1].spec(), icon_views[0]->icon_identifier());
   EXPECT_EQ(kTabs2[kActiveTabIndex2].spec(), icon_views[1]->icon_identifier());
   EXPECT_EQ(kTabs1[0].spec(), icon_views[2]->icon_identifier());
@@ -1535,9 +1535,13 @@ TEST_F(SavedDeskTest, OverflowIconView) {
   const std::vector<SavedDeskIconView*>& icon_views =
       SavedDeskItemViewTestApi(item_view).GetIconViews();
 
-  // There should only be the max number of icons plus the overflow icon.
-  EXPECT_EQ(SavedDeskIconContainer::kMaxIcons + 1,
-            static_cast<int>(icon_views.size()));
+  // There should be `kMaxIcons` + 1 visible icons.
+  int num_of_visibile_icon_views = 0;
+  for (auto* icon_view : icon_views) {
+    if (icon_view->GetVisible())
+      num_of_visibile_icon_views++;
+  }
+  EXPECT_EQ(SavedDeskIconContainer::kMaxIcons + 1, num_of_visibile_icon_views);
 
   // The overflow counter should have no identifier and its count should be
   // non-zero. It should also be visible and within the bounds of the host
@@ -1575,10 +1579,14 @@ TEST_F(SavedDeskTest, OverflowIconViewIncrementsForHiddenIcons) {
   const std::vector<SavedDeskIconView*>& icon_views =
       SavedDeskItemViewTestApi(item_view).GetIconViews();
 
-  // Even though there are more than `SavedDeskIconContainer::kMaxIcons`,
-  // there should still be `SavedDeskIconContainer::kMaxIcons`+ 1
-  // SavedDeskIconView's created.
-  EXPECT_EQ(icon_views.size(), SavedDeskIconContainer::kMaxIcons + 1u);
+  // Only 3 visible icons can fit, e.g. 2 icons with `+1` label, and the
+  // overflow icon.
+  int num_of_visibile_icon_views = 0;
+  for (auto* icon_view : icon_views) {
+    if (icon_view->GetVisible())
+      num_of_visibile_icon_views++;
+  }
+  EXPECT_GE(3, num_of_visibile_icon_views);
 
   // Count the number of hidden icon views and also check that there's a
   // contiguous block of visible icon views, followed by a contiguous block of
@@ -1644,31 +1652,42 @@ TEST_F(SavedDeskTest, IconViewMultipleWindows) {
   const std::vector<SavedDeskIconView*>& icon_views =
       SavedDeskItemViewTestApi(item_view).GetIconViews();
 
-  // There should be 1 * 2 icon views for the 2 apps with 1 window, 2 * 2 icon
-  // views for the 2 apps with multiple windows, and 1 overflow icon view.
-  EXPECT_EQ(5u, icon_views.size());
+  // There should be 2 icon views with count 1, 2 icon views with count 2, 1
+  // icon views with count 3, and 1 overflow icon view.
+  EXPECT_EQ(6u, icon_views.size());
 
   // Verify each of the apps' count labels are correct.
   SavedDeskIconViewTestApi icon_view_1(icon_views[0]);
+  EXPECT_TRUE(icon_view_1.desks_templates_icon_view()->GetVisible());
   EXPECT_TRUE(icon_view_1.icon_view());
   EXPECT_FALSE(icon_view_1.count_label());
 
   SavedDeskIconViewTestApi icon_view_2(icon_views[1]);
+  EXPECT_TRUE(icon_view_2.desks_templates_icon_view()->GetVisible());
   EXPECT_TRUE(icon_view_2.icon_view());
   EXPECT_FALSE(icon_view_2.count_label());
 
   SavedDeskIconViewTestApi icon_view_3(icon_views[2]);
+  EXPECT_TRUE(icon_view_3.desks_templates_icon_view()->GetVisible());
   EXPECT_TRUE(icon_view_3.icon_view());
   EXPECT_TRUE(icon_view_3.count_label());
   EXPECT_EQ(u"+1", icon_view_3.count_label()->GetText());
 
   SavedDeskIconViewTestApi icon_view_4(icon_views[3]);
+  EXPECT_FALSE(icon_view_4.desks_templates_icon_view()->GetVisible());
   EXPECT_TRUE(icon_view_4.icon_view());
   EXPECT_TRUE(icon_view_4.count_label());
   EXPECT_EQ(u"+1", icon_view_4.count_label()->GetText());
 
+  SavedDeskIconViewTestApi icon_view_5(icon_views[4]);
+  EXPECT_FALSE(icon_view_5.desks_templates_icon_view()->GetVisible());
+  EXPECT_TRUE(icon_view_5.icon_view());
+  EXPECT_TRUE(icon_view_5.count_label());
+  EXPECT_EQ(u"+2", icon_view_5.count_label()->GetText());
+
   // The overflow counter should display the number of excess windows.
   SavedDeskIconViewTestApi overflow_icon_view{icon_views.back()};
+  EXPECT_TRUE(overflow_icon_view.desks_templates_icon_view()->GetVisible());
   EXPECT_FALSE(overflow_icon_view.icon_view());
   EXPECT_TRUE(overflow_icon_view.count_label());
   EXPECT_EQ(u"+5", overflow_icon_view.count_label()->GetText());
@@ -1790,7 +1809,12 @@ TEST_F(SavedDeskTest, OverflowUnavailableMoreThan5Icons) {
 
   // The 4 available app icons should be visible, and the overflow icon should
   // contain the hidden (2) + unavailable (2) app counts.
-  EXPECT_EQ(5u, icon_views.size());
+  int num_of_visibile_icon_views = 0;
+  for (auto* icon_view : icon_views) {
+    if (icon_view->GetVisible())
+      num_of_visibile_icon_views++;
+  }
+  EXPECT_EQ(SavedDeskIconContainer::kMaxIcons + 1, num_of_visibile_icon_views);
 
   SavedDeskIconViewTestApi overflow_icon_view{icon_views.back()};
   EXPECT_FALSE(overflow_icon_view.icon_view());

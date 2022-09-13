@@ -76,9 +76,12 @@ SavedDeskIconView::SavedDeskIconView(
     const std::string& icon_identifier,
     const std::string& app_title,
     int count,
-    bool show_plus)
-    : icon_identifier_(icon_identifier), count_(count) {
-  if (count_ != 1) {
+    bool show_plus,
+    base::OnceCallback<void()> on_icon_loaded)
+    : icon_identifier_(icon_identifier),
+      count_(count),
+      on_icon_loaded_(std::move(on_icon_loaded)) {
+  if (visible_count() || is_overflow_icon()) {
     SetBackground(views::CreateThemedRoundedRectBackground(
         ash::kColorAshControlBackgroundColorInactive,
         /*radius=*/kIconViewSize / 2.0f));
@@ -88,21 +91,24 @@ SavedDeskIconView::SavedDeskIconView(
 }
 
 SavedDeskIconView::SavedDeskIconView(int count, bool show_plus)
-    : SavedDeskIconView(nullptr, "", "", count, show_plus) {}
+    : SavedDeskIconView(nullptr, "", "", count, show_plus, {}) {}
 
 SavedDeskIconView::~SavedDeskIconView() = default;
 
 void SavedDeskIconView::UpdateCount(int count) {
-  count_ = count;
+  DCHECK(is_overflow_icon());
   DCHECK(count_label_);
-  count_label_->SetText(GetCountString(count_, /*show_plus=*/true));
+  count_ = count;
+  count_label_->SetText(GetCountString(visible_count(), /*show_plus=*/true));
 }
 
 gfx::Size SavedDeskIconView::CalculatePreferredSize() const {
   int width = (icon_view_ ? kIconViewSize : 0);
-  if (count_ > 1 && count_label_) {
-    width +=
-        std::max(kIconViewSize, count_label_->CalculatePreferredSize().width());
+  if (count_label_) {
+    if (visible_count()) {
+      width += std::max(kIconViewSize,
+                        count_label_->CalculatePreferredSize().width());
+    }
   }
   return gfx::Size(width, kIconViewSize);
 }
@@ -142,28 +148,21 @@ void SavedDeskIconView::CreateChildViews(
     const ui::ColorProvider* incognito_window_color_provider,
     const std::string& app_title,
     bool show_plus) {
-  // The count to be displayed on the label. If `icon_identifier_` is empty, it
-  // is an overflow icon and should display the number of hidden icons.
-  // Otherwise, it should display `count_` - 1 to avoid overcounting the
-  // displayed icon.
-  const int visible_count =
-      count_ > 1 && !icon_identifier_.empty() ? count_ - 1 : count_;
-
-  if (count_ > 1 || icon_identifier_.empty()) {
+  if (visible_count() || is_overflow_icon()) {
     DCHECK(!count_label_);
-    count_label_ = AddChildView(
-        views::Builder<views::Label>()
-            .SetText(GetCountString(visible_count, show_plus))
-            .SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-                kCountLabelInsetSize, kCountLabelInsetSize,
-                kCountLabelInsetSize,
-                icon_identifier_.empty() ? kCountLabelInsetSize
-                                         : 2 * kCountLabelInsetSize)))
-            .SetAutoColorReadabilityEnabled(false)
-            .Build());
+    count_label_ =
+        AddChildView(views::Builder<views::Label>()
+                         .SetText(GetCountString(visible_count(), show_plus))
+                         .SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+                             kCountLabelInsetSize, kCountLabelInsetSize,
+                             kCountLabelInsetSize,
+                             is_overflow_icon() ? kCountLabelInsetSize
+                                                : 2 * kCountLabelInsetSize)))
+                         .SetAutoColorReadabilityEnabled(false)
+                         .Build());
   }
 
-  if (icon_identifier_.empty())
+  if (is_overflow_icon())
     return;
 
   // Add the icon to the front so that it gets read out before `count_label_` by
@@ -221,7 +220,10 @@ void SavedDeskIconView::OnIconLoaded(const gfx::ImageSkia& icon) {
   }
 
   LoadDefaultIcon();
-  MoveIconViewToBack();
+
+  // Notify the icon container to update the icon order and visibility.
+  if (parent() && on_icon_loaded_)
+    std::move(on_icon_loaded_).Run();
 }
 
 void SavedDeskIconView::LoadDefaultIcon() {
@@ -241,20 +243,6 @@ void SavedDeskIconView::LoadDefaultIcon() {
           AshColorProvider::Get()->GetContentLayerColor(
               AshColorProvider::ContentLayerType::kIconColorPrimary)),
       /*is_default=*/true));
-}
-
-void SavedDeskIconView::MoveIconViewToBack() {
-  // Move `this` to the back of the visible icons, i.e. before any invisible
-  // siblings and before the overflow counter. Notify the a11y API so that the
-  // spoken feedback order matches the view order.
-  auto siblings = parent()->children();
-  if (siblings.size() >= 2) {
-    size_t i = 0;
-    while (i < siblings.size() - 2 && siblings[i]->GetVisible())
-      ++i;
-    parent()->ReorderChildView(this, i);
-    parent()->NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
-  }
 }
 
 BEGIN_METADATA(SavedDeskIconView, views::View)

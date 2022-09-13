@@ -36,12 +36,13 @@ class SavedDeskIconView : public views::View {
   // determines what views need to be created and starts loading the icon
   // specified by `icon_identifier`. `show_plus` indicates whether to show "+"
   // before the count for normal overflow icons, or none for all unavailable
-  // icons.
+  // icons. `on_icon_loaded` is the callback for updating the icon container.
   SavedDeskIconView(const ui::ColorProvider* incognito_window_color_provider,
                     const std::string& icon_identifier,
                     const std::string& app_title,
                     int count,
-                    bool show_plus);
+                    bool show_plus,
+                    base::OnceCallback<void()> on_icon_loaded);
 
   // Create an icon view that only has a count and an optional plus.
   SavedDeskIconView(int count, bool show_plus);
@@ -52,9 +53,26 @@ class SavedDeskIconView : public views::View {
 
   const std::string& icon_identifier() const { return icon_identifier_; }
 
-  int count() const { return count_; }
+  int count() const {
+    DCHECK((is_overflow_icon() && count_ >= 0) ||
+           (!is_overflow_icon() && count_ >= 1));
+    return count_;
+  }
 
-  // Sets `count_` to `count` and updates the `count_label_`.
+  // Visible count. For overflow icon, this will be `count_`, for non-overflow
+  // icon, this will be `count_` - 1.
+  int visible_count() const {
+    int visible_count = is_overflow_icon() ? count_ : count_ - 1;
+    DCHECK(visible_count >= 0);
+    return visible_count;
+  }
+
+  bool is_showing_default_icon() const { return is_showing_default_icon_; }
+
+  bool is_overflow_icon() const { return icon_identifier_.empty(); }
+
+  // Sets `count_` to `count` and updates the `count_label_`. Please note,
+  // currently it does not support update on non-overflow icon.
   void UpdateCount(int count);
 
   // views::View:
@@ -81,11 +99,6 @@ class SavedDeskIconView : public views::View {
   // load an icon.
   void LoadDefaultIcon();
 
-  // Moves this icon view to the back of icons (excluding invisible icons and
-  // the overflow counter) in the parent SavedDeskIconContainer. This is
-  // currently only called when this is showing a default icon.
-  void MoveIconViewToBack();
-
   // The identifier for an icon. For a favicon, this will be a url. For an app,
   // this will be an app id.
   std::string icon_identifier_;
@@ -96,6 +109,10 @@ class SavedDeskIconView : public views::View {
 
   // True if this icon view is showing the default (fallback) icon.
   bool is_showing_default_icon_ = false;
+
+  // Callback from the icon container that updates the icon order and overflow
+  // icon.
+  base::OnceCallback<void()> on_icon_loaded_;
 
   // Owned by the views hierarchy.
   views::Label* count_label_ = nullptr;
