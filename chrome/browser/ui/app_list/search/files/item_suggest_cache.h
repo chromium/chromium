@@ -76,6 +76,9 @@ class ItemSuggestCache {
   // Updates the cache by calling ItemSuggest. Virtual for testing.
   virtual void MaybeUpdateCache();
 
+  // Updates the cache with a json response.
+  void UpdateCacheWithJsonForTest(const std::string json_response);
+
   static absl::optional<ItemSuggestCache::Results> ConvertJsonForTest(
       const base::Value* value);
 

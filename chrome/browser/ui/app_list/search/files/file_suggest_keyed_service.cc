@@ -89,15 +89,21 @@ FileSuggestKeyedService::FileSuggestKeyedService(Profile* profile)
               {base::TaskPriority::USER_BLOCKING, base::MayBlock(),
                base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // It's safe to use Unretained(this) by contract of the
+  // CallbackListSubscription.
+  item_suggest_subscription_ = item_suggest_cache_->RegisterCallback(
+      base::BindRepeating(&FileSuggestKeyedService::OnItemSuggestCacheUpdated,
+                          base::Unretained(this)));
 }
 
 FileSuggestKeyedService::~FileSuggestKeyedService() = default;
 
 void FileSuggestKeyedService::GetSuggestFileData(
-    SuggestDataType type,
+    SuggestionType type,
     GetSuggestDataCallback callback) {
   switch (type) {
-    case SuggestDataType::kItemSuggest:
+    case SuggestionType::kItemSuggest:
       GetDriveSuggestFileData(std::move(callback));
       return;
   }
@@ -105,15 +111,22 @@ void FileSuggestKeyedService::GetSuggestFileData(
   NOTREACHED();
 }
 
+void FileSuggestKeyedService::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void FileSuggestKeyedService::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void FileSuggestKeyedService::MaybeUpdateItemSuggestCache(
     base::PassKey<ZeroStateDriveProvider>) {
   item_suggest_cache_->MaybeUpdateCache();
 }
 
-base::CallbackListSubscription
-FileSuggestKeyedService ::RegisterItemSuggestUpdateCallback(
-    ItemSuggestCache::OnResultsCallback callback) {
-  return item_suggest_cache_->RegisterCallback(callback);
+void FileSuggestKeyedService::OnItemSuggestCacheUpdated() {
+  for (auto& observer : observers_)
+    observer.OnFileSuggestionUpdated(SuggestionType::kItemSuggest);
 }
 
 void FileSuggestKeyedService::GetDriveSuggestFileData(

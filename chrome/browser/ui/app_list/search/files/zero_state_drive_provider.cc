@@ -85,13 +85,6 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
   // exists. Therefore, `file_suggest_service_` should always be true.
   DCHECK(file_suggest_service_);
 
-  // It's safe to use Unretained(this) by contract of the
-  // CallbackListSubscription.
-  item_suggest_subscription_ =
-      file_suggest_service_->RegisterItemSuggestUpdateCallback(
-          base::BindRepeating(&ZeroStateDriveProvider::OnCacheUpdated,
-                              base::Unretained(this)));
-
   if (drive_service_) {
     if (drive_service_->IsMounted()) {
       // DriveFS is mounted, so we can fetch results immediately.
@@ -109,6 +102,8 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
   auto* power_manager = chromeos::PowerManagerClient::Get();
   if (power_manager)
     power_observation_.Observe(power_manager);
+
+  file_suggest_service_observation_.Observe(file_suggest_service_);
 }
 
 ZeroStateDriveProvider::~ZeroStateDriveProvider() = default;
@@ -186,7 +181,7 @@ void ZeroStateDriveProvider::StartZeroState() {
   weak_factory_.InvalidateWeakPtrs();
 
   file_suggest_service_->GetSuggestFileData(
-      FileSuggestKeyedService::SuggestDataType::kItemSuggest,
+      FileSuggestKeyedService::SuggestionType::kItemSuggest,
       base::BindOnce(&ZeroStateDriveProvider::OnSuggestFileDataFetched,
                      weak_factory_.GetWeakPtr()));
 }
@@ -236,15 +231,17 @@ std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeListResult(
   return result;
 }
 
-void ZeroStateDriveProvider::OnCacheUpdated() {
-  StartZeroState();
-}
-
 void ZeroStateDriveProvider::MaybeUpdateCache() {
   if (base::Time::Now() - kFirstUpdateDelay > construction_time_) {
     file_suggest_service_->MaybeUpdateItemSuggestCache(
         base::PassKey<ZeroStateDriveProvider>());
   }
+}
+
+void ZeroStateDriveProvider::OnFileSuggestionUpdated(
+    FileSuggestKeyedService::SuggestionType type) {
+  DCHECK_EQ(FileSuggestKeyedService::SuggestionType::kItemSuggest, type);
+  StartZeroState();
 }
 
 }  // namespace app_list
