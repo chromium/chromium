@@ -2887,6 +2887,17 @@
           'all'
         ],
       },
+      'Linux Builder (py2 less)': {
+        'mixins': [
+          'isolate_profile_data',
+        ],
+        'additional_compile_targets': [
+          'all'
+        ],
+        'test_suites': {
+          'scripts': 'chromium_linux_scripts',
+        }
+      },
       'Linux CFI (reclient shadow)': {
         'mixins': [
           'linux-bionic',
@@ -2926,6 +2937,16 @@
         'args': [
           '--test-launcher-print-test-stdio=always',
         ],
+      },
+      'Linux Tests (py2 less)': {
+        'mixins': [
+          'isolate_profile_data',
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_linux_gtests',
+          'isolated_scripts': 'chromium_linux_rel_isolated_scripts',
+        },
       },
       'Linux Viz': {
         'mixins': [

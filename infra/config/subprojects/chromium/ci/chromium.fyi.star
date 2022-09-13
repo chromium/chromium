@@ -1464,6 +1464,46 @@ ci.builder(
     execution_timeout = 14 * time.hour,
 )
 
+ci.builder(
+    name = "Linux Builder (py2 less)",
+    description_html = "This is mirror of <a href=\"https://ci.chromium.org/p/chromium/builders/ci/Linux%20Builder\">Linux Builder</a>, but runs on bots not having python2.",
+    builder_spec = builder_config.copy_from("ci/Linux Builder", lambda spec: structs.evolve(
+        spec,
+        build_gs_bucket = "chromium-fyi-archive",
+    )),
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "lin",
+        short_name = "py3",
+    ),
+    cores = 8,
+    goma_backend = None,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    os = os.LINUX_DEFAULT,
+    experiments = {
+        "luci.buildbucket.omit_python2": 100,
+    },
+)
+
+ci.builder(
+    name = "Linux Tests (py2 less)",
+    description_html = "This is mirror of <a href=\"https://ci.chromium.org/p/chromium/builders/ci/Linux%20Tests\">Linux Tests</a>, but runs on bots not having python2.",
+    builder_spec = builder_config.copy_from("ci/Linux Tests", lambda spec: structs.evolve(
+        spec,
+        build_gs_bucket = "chromium-fyi-archive",
+    )),
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "lin",
+        short_name = "py3",
+    ),
+    os = os.LINUX_DEFAULT,
+    triggered_by = ["ci/Linux Builder"],
+    experiments = {
+        "luci.buildbucket.omit_python2": 100,
+    },
+)
+
 # Start - Reclient migration, phase 2, block 1 shadow builders
 ci.builder(
     name = "Linux CFI (reclient shadow)",
