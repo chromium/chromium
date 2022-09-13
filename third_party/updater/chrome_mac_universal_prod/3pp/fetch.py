@@ -11,7 +11,7 @@ import sys
 import urllib.request
 
 # TODO(crbug.com/1336630): This is compared lexically. Remove it before M1000.
-MIN_VERSION = '106.0.5243.0'
+MIN_VERSION = '107.0.5298.0'
 
 def fetch():
     """
@@ -42,10 +42,10 @@ def get_url():
         json.dumps({
             'url': [
                 'https://edgedl.me.gvt1.com/edgedl/release2/182l0/latest/'
-                '%s_UpdaterSetup' % os.environ['_3PP_VERSION']
+                'GoogleUpdater-%s.zip' % os.environ['_3PP_VERSION']
             ],
-            'ext': '',
-            'name': ['UpdaterSetup']
+            'ext': '.zip',
+            'name': ['GoogleUpdater-%s.zip' % os.environ['_3PP_VERSION']]
         }))
 
 
