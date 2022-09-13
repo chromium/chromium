@@ -22,7 +22,6 @@ class GPU_GLES2_EXPORT GLTextureImageBackingHelper {
     GLenum format = 0;
     GLenum type = 0;
     bool is_cleared = false;
-    bool is_rgb_emulation = false;
     bool framebuffer_attachment_angle = false;
     bool has_immutable_storage = false;
   };

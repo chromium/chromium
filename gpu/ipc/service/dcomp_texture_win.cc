@@ -167,7 +167,6 @@ gpu::Mailbox DCOMPTexture::CreateSharedImage() {
   params.internal_format = GL_RGBA;
   params.format = GL_RGBA;
   params.is_cleared = true;
-  params.is_rgb_emulation = false;
   params.framebuffer_attachment_angle = false;
   auto shared_image = std::make_unique<GLImageBacking>(
       this, mailbox, viz::BGRA_8888, GetSize(), gfx::ColorSpace::CreateSRGB(),

@@ -413,10 +413,6 @@ void GLImageBacking::ReleaseGLTexture(bool have_context) {
     }
   }
 
-  if (rgb_emulation_texture_) {
-    rgb_emulation_texture_->RemoveLightweightRef(have_context);
-    rgb_emulation_texture_ = nullptr;
-  }
   if (IsPassthrough()) {
     if (passthrough_texture_) {
       if (have_context) {
@@ -612,56 +608,6 @@ std::unique_ptr<MemoryImageRepresentation> GLImageBacking::ProduceMemory(
       manager, this, tracker, base::WrapRefCounted(image_memory));
 }
 
-std::unique_ptr<GLTextureImageRepresentation>
-GLImageBacking::ProduceRGBEmulationGLTexture(SharedImageManager* manager,
-                                             MemoryTypeTracker* tracker) {
-  if (IsPassthrough())
-    return nullptr;
-
-  RetainGLTexture();
-  if (!rgb_emulation_texture_) {
-    const GLenum target = GetGLTarget();
-    gl::GLApi* api = gl::g_current_gl_context;
-    ScopedRestoreTexture scoped_restore(api, target);
-
-    // Set to false as this code path is only used on Mac.
-    const bool framebuffer_attachment_angle = false;
-    GLTextureImageBackingHelper::MakeTextureAndSetParameters(
-        target, 0 /* service_id */, framebuffer_attachment_angle, nullptr,
-        &rgb_emulation_texture_);
-    api->glBindTextureFn(target, rgb_emulation_texture_->service_id());
-
-    gles2::Texture::ImageState image_state = gles2::Texture::BOUND;
-    gl::GLImage* image = texture_->GetLevelImage(target, 0, &image_state);
-    DCHECK_EQ(image, image_.get());
-
-    DCHECK(image->ShouldBindOrCopy() == gl::GLImage::BIND);
-    const GLenum internal_format = GL_RGB;
-    if (!image->BindTexImageWithInternalformat(target, internal_format)) {
-      LOG(ERROR) << "Failed to bind image to rgb texture.";
-      rgb_emulation_texture_->RemoveLightweightRef(true /* have_context */);
-      rgb_emulation_texture_ = nullptr;
-      ReleaseGLTexture(true /* has_context */);
-      return nullptr;
-    }
-    GLenum format =
-        gles2::TextureManager::ExtractFormatFromStorageFormat(internal_format);
-    GLenum type =
-        gles2::TextureManager::ExtractTypeFromStorageFormat(internal_format);
-
-    const gles2::Texture::LevelInfo* info = texture_->GetLevelInfo(target, 0);
-    rgb_emulation_texture_->SetLevelInfo(target, 0, internal_format,
-                                         info->width, info->height, 1, 0,
-                                         format, type, info->cleared_rect);
-
-    rgb_emulation_texture_->SetLevelImage(target, 0, image, image_state);
-    rgb_emulation_texture_->SetImmutable(true, false);
-  }
-
-  return std::make_unique<GLTextureGLCommonRepresentation>(
-      manager, this, this, tracker, rgb_emulation_texture_);
-}
-
 void GLImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   if (in_fence) {
     // TODO(dcastagna): Don't wait for the fence if the SharedImage is going
@@ -776,16 +722,9 @@ bool GLImageBacking::BindOrCopyImageIfNeeded() {
   // Bind or copy the GLImage to the texture.
   gles2::Texture::ImageState new_state = gles2::Texture::UNBOUND;
   if (image_->ShouldBindOrCopy() == gl::GLImage::BIND) {
-    if (gl_params_.is_rgb_emulation) {
-      if (!image_->BindTexImageWithInternalformat(target, GL_RGB)) {
-        LOG(ERROR) << "Failed to bind GLImage to RGB target";
-        return false;
-      }
-    } else {
-      if (!image_->BindTexImage(target)) {
-        LOG(ERROR) << "Failed to bind GLImage to target";
-        return false;
-      }
+    if (!image_->BindTexImage(target)) {
+      LOG(ERROR) << "Failed to bind GLImage to target";
+      return false;
     }
     new_state = gles2::Texture::BOUND;
   } else {

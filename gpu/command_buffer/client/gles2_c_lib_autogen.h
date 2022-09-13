@@ -1650,14 +1650,6 @@ GLES2CreateAndTexStorage2DSharedImageCHROMIUM(const GLbyte* mailbox) {
   return gles2::GetGLContext()->CreateAndTexStorage2DSharedImageCHROMIUM(
       mailbox);
 }
-GLuint GL_APIENTRY
-GLES2CreateAndTexStorage2DSharedImageWithInternalFormatCHROMIUM(
-    const GLbyte* mailbox,
-    GLenum internalformat) {
-  return gles2::GetGLContext()
-      ->CreateAndTexStorage2DSharedImageWithInternalFormatCHROMIUM(
-          mailbox, internalformat);
-}
 void GL_APIENTRY GLES2BeginSharedImageAccessDirectCHROMIUM(GLuint texture,
                                                            GLenum mode) {
   gles2::GetGLContext()->BeginSharedImageAccessDirectCHROMIUM(texture, mode);
@@ -3033,11 +3025,6 @@ extern const NameToFunc g_gles2_function_table[] = {
         "glCreateAndTexStorage2DSharedImageCHROMIUM",
         reinterpret_cast<GLES2FunctionPointer>(
             glCreateAndTexStorage2DSharedImageCHROMIUM),
-    },
-    {
-        "glCreateAndTexStorage2DSharedImageWithInternalFormatCHROMIUM",
-        reinterpret_cast<GLES2FunctionPointer>(
-            glCreateAndTexStorage2DSharedImageWithInternalFormatCHROMIUM),
     },
     {
         "glBeginSharedImageAccessDirectCHROMIUM",

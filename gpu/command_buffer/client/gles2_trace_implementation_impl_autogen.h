@@ -2397,17 +2397,6 @@ GLuint GLES2TraceImplementation::CreateAndTexStorage2DSharedImageCHROMIUM(
   return gl_->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox);
 }
 
-GLuint GLES2TraceImplementation::
-    CreateAndTexStorage2DSharedImageWithInternalFormatCHROMIUM(
-        const GLbyte* mailbox,
-        GLenum internalformat) {
-  TRACE_EVENT_BINARY_EFFICIENT0(
-      "gpu",
-      "GLES2Trace::CreateAndTexStorage2DSharedImageWithInternalFormatCHROMIUM");
-  return gl_->CreateAndTexStorage2DSharedImageWithInternalFormatCHROMIUM(
-      mailbox, internalformat);
-}
-
 void GLES2TraceImplementation::BeginSharedImageAccessDirectCHROMIUM(
     GLuint texture,
     GLenum mode) {

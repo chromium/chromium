@@ -232,9 +232,6 @@ class GPU_GLES2_EXPORT GLImageBacking
   std::unique_ptr<MemoryImageRepresentation> ProduceMemory(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
-  std::unique_ptr<GLTextureImageRepresentation> ProduceRGBEmulationGLTexture(
-      SharedImageManager* manager,
-      MemoryTypeTracker* tracker) override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
 
   // GLTextureImageRepresentationClient:
@@ -263,7 +260,6 @@ class GPU_GLES2_EXPORT GLImageBacking
   // |texture_| is nullptr.
   gfx::Rect cleared_rect_;
 
-  gles2::Texture* rgb_emulation_texture_ = nullptr;
   gles2::Texture* texture_ = nullptr;
   scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
 

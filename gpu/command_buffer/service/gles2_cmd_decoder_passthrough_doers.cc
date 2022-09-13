@@ -4849,14 +4849,7 @@ error::Error GLES2DecoderPassthroughImpl::DoUnlockDiscardableTextureCHROMIUM(
 error::Error
 GLES2DecoderPassthroughImpl::DoCreateAndTexStorage2DSharedImageINTERNAL(
     GLuint texture_client_id,
-    GLenum internalformat,
     const volatile GLbyte* mailbox) {
-  // RGB emulation is not needed here.
-  if (internalformat != GL_NONE) {
-    InsertError(GL_INVALID_ENUM, "internal format not supported.");
-    return error::kNoError;
-  }
-
   if (!texture_client_id ||
       resources_->texture_id_map.HasClientID(texture_client_id)) {
     InsertError(GL_INVALID_OPERATION, "invalid client ID");

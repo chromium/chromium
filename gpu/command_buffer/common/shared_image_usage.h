@@ -30,37 +30,35 @@ enum SharedImageUsage : uint32_t {
   // RasterInterface for OOP rasterization. TODO(backer): Eliminate once we can
   // CPU raster to SkImage via RasterInterface.
   SHARED_IMAGE_USAGE_OOP_RASTERIZATION = 1 << 5,
-  // Image will be used for RGB emulation in WebGL on Mac.
-  SHARED_IMAGE_USAGE_RGB_EMULATION = 1 << 6,
   // Image will be used by Dawn (for WebGPU)
-  SHARED_IMAGE_USAGE_WEBGPU = 1 << 7,
+  SHARED_IMAGE_USAGE_WEBGPU = 1 << 6,
   // Image will be used in a protected Vulkan context on Fuchsia.
-  SHARED_IMAGE_USAGE_PROTECTED = 1 << 8,
+  SHARED_IMAGE_USAGE_PROTECTED = 1 << 7,
   // Image may use concurrent read/write access. Used by single buffered canvas.
   // TODO(crbug.com/969114): This usage is currently not supported in GL/Vulkan
   // interop cases.
-  SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE = 1 << 9,
+  SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE = 1 << 8,
   // Image will be used for video decode acceleration on Chrome OS.
-  SHARED_IMAGE_USAGE_VIDEO_DECODE = 1 << 10,
+  SHARED_IMAGE_USAGE_VIDEO_DECODE = 1 << 9,
   // Image will be used as a WebGPU swapbuffer
-  SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE = 1 << 11,
+  SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE = 1 << 10,
   // Image will be used by VideoToolbox on macOS. If this is set, then
   // GLImage::DisableInUseByWindowServer should be called on any GLImages that
   // use this SharedImage.
-  SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX = 1 << 12,
+  SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX = 1 << 11,
   // Image will be used with mipmap enabled
-  SHARED_IMAGE_USAGE_MIPMAP = 1 << 13,
+  SHARED_IMAGE_USAGE_MIPMAP = 1 << 12,
   // Image will be used for CPU Writes by client
-  SHARED_IMAGE_USAGE_CPU_WRITE = 1 << 14,
+  SHARED_IMAGE_USAGE_CPU_WRITE = 1 << 13,
   // Image will be used in RasterInterface with RawDraw.
-  SHARED_IMAGE_USAGE_RAW_DRAW = 1 << 15,
+  SHARED_IMAGE_USAGE_RAW_DRAW = 1 << 14,
   // Image will be used in RasterInterface for DelegatedCompositing.
   // TODO(crbug.com/1254033): this usage shall be removed after cc is able to
   // set a single (duplicated) fence for bunch of tiles instead of having the SI
   // framework creating fences for each single message when write access ends.
-  SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING = 1 << 16,
+  SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING = 1 << 15,
   // Image will be created on the high performance GPU if supported.
-  SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU = 1 << 17,
+  SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU = 1 << 16,
 
   // Start service side only usage flags after this entry. They must be larger
   // than `LAST_CLIENT_USAGE`.
@@ -69,7 +67,7 @@ enum SharedImageUsage : uint32_t {
   // Image will have pixels uploaded from CPU. The backing must implement
   // `UploadFromMemory()` if it supports this usage. Clients should specify
   // SHARED_IMAGE_USAGE_CPU_WRITE if they need to write pixels to the image.
-  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 18,
+  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 17,
 };
 
 // Returns true if usage is a valid client usage.

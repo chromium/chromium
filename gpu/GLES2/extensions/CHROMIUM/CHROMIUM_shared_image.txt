@@ -54,24 +54,6 @@ New Procedures and Functions
 
     The command
 
-      GLuint glCreateAndTexStorage2DSharedImageWithInternalFormatCHROMIUM (
-                                                  const GLbyte *mailbox,
-                                                  GLenum internal_format)
-
-    takes two arguments:
-
-    internal_format - Must match the internal format of the SharedImage at
-      creation time, with the exception that a caller may pass GL_RGB or
-      GL_RGBA for a SharedImage created as RGBA_8888.
-
-    mailbox - the mailbox referring to the SharedImage to assign to the
-      first level of the mailbox.
-
-    This function works similar to glCreateAndTexStorage2DSharedImageCHROMIUM
-    in other respects.
-
-    The command
-
       void glBeginSharedImageAccessDirectCHROMIUM (GLuint texture,
                                                    GLenum mode)
 

@@ -154,29 +154,6 @@ SharedImageManager::ProduceGLTexture(const Mailbox& mailbox,
   return representation;
 }
 
-std::unique_ptr<GLTextureImageRepresentation>
-SharedImageManager::ProduceRGBEmulationGLTexture(const Mailbox& mailbox,
-                                                 MemoryTypeTracker* tracker) {
-  CALLED_ON_VALID_THREAD();
-
-  AutoLock autolock(this);
-  auto found = images_.find(mailbox);
-  if (found == images_.end()) {
-    LOG(ERROR) << "SharedImageManager::ProduceRGBEmulationGLTexture: Trying to "
-                  "produce a representation from a non-existent mailbox.";
-    return nullptr;
-  }
-
-  auto representation = (*found)->ProduceRGBEmulationGLTexture(this, tracker);
-  if (!representation) {
-    LOG(ERROR) << "SharedImageManager::ProduceRGBEmulationGLTexture: Trying to "
-                  "produce a representation from an incompatible mailbox.";
-    return nullptr;
-  }
-
-  return representation;
-}
-
 std::unique_ptr<GLTexturePassthroughImageRepresentation>
 SharedImageManager::ProduceGLTexturePassthrough(const Mailbox& mailbox,
                                                 MemoryTypeTracker* tracker) {

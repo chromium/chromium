@@ -196,16 +196,13 @@ std::unique_ptr<SharedImageBacking> GLImageBackingFactory::CreateSharedImage(
   const bool for_framebuffer_attachment =
       (usage & (SHARED_IMAGE_USAGE_RASTER |
                 SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT)) != 0;
-  const bool is_rgb_emulation = (usage & SHARED_IMAGE_USAGE_RGB_EMULATION) != 0;
 
   InitializeGLTextureParams params;
   params.target = target;
-  params.internal_format =
-      is_rgb_emulation ? GL_RGB : image->GetInternalFormat();
-  params.format = is_rgb_emulation ? GL_RGB : image->GetDataFormat();
+  params.internal_format = image->GetInternalFormat();
+  params.format = image->GetDataFormat();
   params.type = image->GetDataType();
   params.is_cleared = true;
-  params.is_rgb_emulation = is_rgb_emulation;
   params.framebuffer_attachment_angle =
       for_framebuffer_attachment && texture_usage_angle_;
   return std::make_unique<GLImageBacking>(

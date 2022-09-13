@@ -134,12 +134,6 @@ SharedImageBacking::ProduceGLTexture(SharedImageManager* manager,
   return nullptr;
 }
 
-std::unique_ptr<GLTextureImageRepresentation>
-SharedImageBacking::ProduceRGBEmulationGLTexture(SharedImageManager* manager,
-                                                 MemoryTypeTracker* tracker) {
-  return nullptr;
-}
-
 std::unique_ptr<GLTexturePassthroughImageRepresentation>
 SharedImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
                                                 MemoryTypeTracker* tracker) {

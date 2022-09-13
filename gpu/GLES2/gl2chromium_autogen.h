@@ -367,8 +367,6 @@
 #define glMaxShaderCompilerThreadsKHR GLES2_GET_FUN(MaxShaderCompilerThreadsKHR)
 #define glCreateAndTexStorage2DSharedImageCHROMIUM \
   GLES2_GET_FUN(CreateAndTexStorage2DSharedImageCHROMIUM)
-#define glCreateAndTexStorage2DSharedImageWithInternalFormatCHROMIUM \
-  GLES2_GET_FUN(CreateAndTexStorage2DSharedImageWithInternalFormatCHROMIUM)
 #define glBeginSharedImageAccessDirectCHROMIUM \
   GLES2_GET_FUN(BeginSharedImageAccessDirectCHROMIUM)
 #define glEndSharedImageAccessDirectCHROMIUM \

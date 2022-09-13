@@ -15506,30 +15506,25 @@ struct CreateAndTexStorage2DSharedImageINTERNALImmediate {
 
   void SetHeader() { header.SetCmdByTotalSize<ValueType>(ComputeSize()); }
 
-  void Init(GLuint _texture, GLenum _internalformat, const GLbyte* _mailbox) {
+  void Init(GLuint _texture, const GLbyte* _mailbox) {
     SetHeader();
     texture = _texture;
-    internalformat = _internalformat;
     memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize());
   }
 
-  void* Set(void* cmd,
-            GLuint _texture,
-            GLenum _internalformat,
-            const GLbyte* _mailbox) {
-    static_cast<ValueType*>(cmd)->Init(_texture, _internalformat, _mailbox);
+  void* Set(void* cmd, GLuint _texture, const GLbyte* _mailbox) {
+    static_cast<ValueType*>(cmd)->Init(_texture, _mailbox);
     const uint32_t size = ComputeSize();
     return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
   }
 
   gpu::CommandHeader header;
   uint32_t texture;
-  uint32_t internalformat;
 };
 
 static_assert(
-    sizeof(CreateAndTexStorage2DSharedImageINTERNALImmediate) == 12,
-    "size of CreateAndTexStorage2DSharedImageINTERNALImmediate should be 12");
+    sizeof(CreateAndTexStorage2DSharedImageINTERNALImmediate) == 8,
+    "size of CreateAndTexStorage2DSharedImageINTERNALImmediate should be 8");
 static_assert(offsetof(CreateAndTexStorage2DSharedImageINTERNALImmediate,
                        header) == 0,
               "offset of CreateAndTexStorage2DSharedImageINTERNALImmediate "
@@ -15538,10 +15533,6 @@ static_assert(offsetof(CreateAndTexStorage2DSharedImageINTERNALImmediate,
                        texture) == 4,
               "offset of CreateAndTexStorage2DSharedImageINTERNALImmediate "
               "texture should be 4");
-static_assert(offsetof(CreateAndTexStorage2DSharedImageINTERNALImmediate,
-                       internalformat) == 8,
-              "offset of CreateAndTexStorage2DSharedImageINTERNALImmediate "
-              "internalformat should be 8");
 
 struct BeginSharedImageAccessDirectCHROMIUM {
   typedef BeginSharedImageAccessDirectCHROMIUM ValueType;

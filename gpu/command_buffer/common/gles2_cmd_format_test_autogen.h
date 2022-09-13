@@ -5144,8 +5144,7 @@ TEST_F(GLES2FormatTest, CreateAndTexStorage2DSharedImageINTERNALImmediate) {
   };
   cmds::CreateAndTexStorage2DSharedImageINTERNALImmediate& cmd =
       *GetBufferAs<cmds::CreateAndTexStorage2DSharedImageINTERNALImmediate>();
-  void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<GLenum>(12), data);
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLuint>(11), data);
   EXPECT_EQ(
       static_cast<uint32_t>(
           cmds::CreateAndTexStorage2DSharedImageINTERNALImmediate::kCmdId),
@@ -5153,7 +5152,6 @@ TEST_F(GLES2FormatTest, CreateAndTexStorage2DSharedImageINTERNALImmediate) {
   EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)),
             cmd.header.size * 4u);
   EXPECT_EQ(static_cast<GLuint>(11), cmd.texture);
-  EXPECT_EQ(static_cast<GLenum>(12), cmd.internalformat);
   CheckBytesWrittenMatchesExpectedSize(
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }

@@ -193,9 +193,6 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   virtual std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker);
-  virtual std::unique_ptr<GLTextureImageRepresentation>
-  ProduceRGBEmulationGLTexture(SharedImageManager* manager,
-                               MemoryTypeTracker* tracker);
   virtual std::unique_ptr<GLTexturePassthroughImageRepresentation>
   ProduceGLTexturePassthrough(SharedImageManager* manager,
                               MemoryTypeTracker* tracker);
