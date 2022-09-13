@@ -107,7 +107,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
 
   // Disables reference counting for backing. No references should be added,
   // either before or after this is called.
-  void SetNotRefCounted();
+  void SetNotReferencedCounted();
 
   // Concrete functions to manage a ref count.
   void AddRef(SharedImageRepresentation* representation);

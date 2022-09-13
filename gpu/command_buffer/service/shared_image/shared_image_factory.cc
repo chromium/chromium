@@ -321,8 +321,7 @@ SharedImageFactory::SharedImageFactory(
         std::make_unique<GLTextureImageBackingFactory>(
             gpu_preferences, workarounds, feature_info.get(),
             shared_context_state_ ? shared_context_state_->progress_reporter()
-                                  : nullptr,
-            /*for_cpu_upload_usage=*/false);
+                                  : nullptr);
     factories_.push_back(std::move(gl_texture_backing_factory));
   }
 
@@ -339,13 +338,12 @@ SharedImageFactory::SharedImageFactory(
 
 #if !BUILDFLAG(IS_ANDROID)
   if (use_gl) {
-    auto gl_texture_backing_factory =
-        std::make_unique<GLTextureImageBackingFactory>(
-            gpu_preferences, workarounds, feature_info.get(),
-            shared_context_state_ ? shared_context_state_->progress_reporter()
-                                  : nullptr,
-            /*for_cpu_upload_usage=*/true);
-    factories_.push_back(std::move(gl_texture_backing_factory));
+    auto gl_image_backing_factory = std::make_unique<GLImageBackingFactory>(
+        gpu_preferences, workarounds, feature_info.get(), image_factory,
+        shared_context_state_ ? shared_context_state_->progress_reporter()
+                              : nullptr,
+        /*for_shared_memory_gmbs=*/true);
+    factories_.push_back(std::move(gl_image_backing_factory));
   }
 #endif
 
@@ -434,7 +432,8 @@ SharedImageFactory::SharedImageFactory(
     auto gl_image_backing_factory = std::make_unique<GLImageBackingFactory>(
         gpu_preferences, workarounds, feature_info.get(), image_factory,
         shared_context_state_ ? shared_context_state_->progress_reporter()
-                              : nullptr);
+                              : nullptr,
+        /*for_shared_memory_gmbs=*/false);
     factories_.push_back(std::move(gl_image_backing_factory));
   }
 #endif
@@ -520,14 +519,9 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
 
   std::unique_ptr<SharedImageBacking> backing;
   if (use_compound) {
-#if BUILDFLAG(IS_WIN)
-    constexpr bool allow_shm_overlays = true;
-#else
-    constexpr bool allow_shm_overlays = false;
-#endif
     backing = CompoundImageBacking::CreateSharedMemory(
-        factory, allow_shm_overlays, mailbox, std::move(handle), format, plane,
-        surface_handle, size, color_space, surface_origin, alpha_type, usage);
+        factory, mailbox, std::move(handle), format, plane, surface_handle,
+        size, color_space, surface_origin, alpha_type, usage);
   } else {
     backing = factory->CreateSharedImage(
         mailbox, client_id, std::move(handle), format, plane, surface_handle,

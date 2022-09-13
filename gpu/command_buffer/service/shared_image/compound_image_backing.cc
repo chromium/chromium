@@ -248,10 +248,8 @@ class WrappedOverlayCompoundImageRepresentation
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      SharedImageAccessStream access_stream,
       std::unique_ptr<OverlayImageRepresentation> wrapped)
       : OverlayImageRepresentation(manager, backing, tracker),
-        access_stream_(access_stream),
         wrapped_(std::move(wrapped)) {
     DCHECK(wrapped_);
   }
@@ -262,7 +260,8 @@ class WrappedOverlayCompoundImageRepresentation
 
   // OverlayImageRepresentation implementation.
   bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) final {
-    compound_backing()->NotifyBeginAccess(access_stream_, AccessMode::kRead);
+    compound_backing()->NotifyBeginAccess(SharedImageAccessStream::kOverlay,
+                                          AccessMode::kRead);
 
     return wrapped_->BeginReadAccess(acquire_fence);
   }
@@ -272,14 +271,12 @@ class WrappedOverlayCompoundImageRepresentation
   gl::GLImage* GetGLImage() final { return wrapped_->GetGLImage(); }
 
  private:
-  const SharedImageAccessStream access_stream_;
   std::unique_ptr<OverlayImageRepresentation> wrapped_;
 };
 
 // static
 std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
     SharedImageBackingFactory* gpu_backing_factory,
-    bool allow_shm_overlays,
     const Mailbox& mailbox,
     gfx::GpuMemoryBufferHandle handle,
     gfx::BufferFormat buffer_format,
@@ -303,11 +300,11 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
   auto shm_backing = std::make_unique<SharedMemoryImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type,
       SHARED_IMAGE_USAGE_CPU_WRITE, std::move(shm_wrapper));
-  shm_backing->SetNotRefCounted();
+  shm_backing->SetNotReferencedCounted();
 
   return std::make_unique<CompoundImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      surface_handle, allow_shm_overlays, std::move(shm_backing),
+      surface_handle, std::move(shm_backing),
       gpu_backing_factory->GetWeakPtr());
 }
 
@@ -320,7 +317,6 @@ CompoundImageBacking::CompoundImageBacking(
     SkAlphaType alpha_type,
     uint32_t usage,
     SurfaceHandle surface_handle,
-    bool allow_shm_overlays,
     std::unique_ptr<SharedMemoryImageBacking> shm_backing,
     base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory)
     : SharedImageBacking(mailbox,
@@ -333,7 +329,6 @@ CompoundImageBacking::CompoundImageBacking(
                          shm_backing->estimated_size(),
                          /*is_thread_safe=*/false),
       surface_handle_(surface_handle),
-      allow_shm_overlays_(allow_shm_overlays),
       shm_backing_(std::move(shm_backing)),
       gpu_backing_factory_(std::move(gpu_backing_factory)) {
   DCHECK(shm_backing_);
@@ -349,15 +344,15 @@ CompoundImageBacking::~CompoundImageBacking() = default;
 
 void CompoundImageBacking::NotifyBeginAccess(SharedImageAccessStream stream,
                                              RepresentationAccessMode mode) {
-  // Compound backings don't support VAAPI yet.
+  // Compound backings don't support CPU access directly or copying
+  // from GPU back to CPU yet. Also no support for VAAPI.
+  DCHECK_NE(stream, SharedImageAccessStream::kMemory);
   DCHECK_NE(stream, SharedImageAccessStream::kVaapi);
 
   // TODO(kylechar): Keep track of access to the compound backing as we
   // only want to update a backing if it's not currently being accessed.
 
-  if (shm_has_update_ && stream != SharedImageAccessStream::kMemory) {
-    DCHECK(gpu_backing_);
-
+  if (shm_has_update_) {
     auto& wrapper = static_cast<SharedMemoryImageBacking*>(shm_backing_.get())
                         ->shared_memory_wrapper();
     DCHECK(wrapper.IsValid());
@@ -458,17 +453,6 @@ std::unique_ptr<SkiaImageRepresentation> CompoundImageBacking::ProduceSkia(
 std::unique_ptr<OverlayImageRepresentation>
 CompoundImageBacking::ProduceOverlay(SharedImageManager* manager,
                                      MemoryTypeTracker* tracker) {
-  if (allow_shm_overlays_) {
-    // The client has stated it wants shared memory backed overlays.
-    auto real_rep = shm_backing_->ProduceOverlay(manager, tracker);
-    if (!real_rep)
-      return nullptr;
-
-    return std::make_unique<WrappedOverlayCompoundImageRepresentation>(
-        manager, this, tracker, SharedImageAccessStream::kMemory,
-        std::move(real_rep));
-  }
-
   LazyAllocateGpuBacking();
   if (!gpu_backing_)
     return nullptr;
@@ -478,8 +462,7 @@ CompoundImageBacking::ProduceOverlay(SharedImageManager* manager,
     return nullptr;
 
   return std::make_unique<WrappedOverlayCompoundImageRepresentation>(
-      manager, this, tracker, SharedImageAccessStream::kOverlay,
-      std::move(real_rep));
+      manager, this, tracker, std::move(real_rep));
 }
 
 void CompoundImageBacking::OnMemoryDump(
@@ -550,7 +533,7 @@ void CompoundImageBacking::LazyAllocateGpuBacking() {
     return;
   }
 
-  gpu_backing_->SetNotRefCounted();
+  gpu_backing_->SetNotReferencedCounted();
   gpu_backing_->SetClearedRect(gfx::Rect(size()));
 }
 

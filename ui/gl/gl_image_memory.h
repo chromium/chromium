@@ -27,8 +27,7 @@ class GL_EXPORT GLImageMemory : public GLImage {
 
   bool Initialize(const unsigned char* memory,
                   gfx::BufferFormat format,
-                  size_t stride,
-                  bool disable_pbo_upload = false);
+                  size_t stride);
 
   // Safe downcast. Returns |nullptr| on failure.
   static GLImageMemory* FromGLImage(GLImage* image);
