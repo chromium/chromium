@@ -28,5 +28,5 @@ class LuciAuth(object):
     def get_access_token(self):
         # ScriptError will be raised if luci-auth fails.
         output = self._host.executive.run_command(
-            [self._luci_auth_executable, 'token'])
+            [self._luci_auth_executable, 'token'], debug_logging=False)
         return output.strip()
