@@ -545,9 +545,9 @@ bool ExecuteOpenInOfficeTask(Profile* profile,
     } else {
       // We need to move the file to ODFS first. This flow will eventually open
       // the file in the browser, too.
-      // TODO(petermarshall): Move to ODFS.
       LOG(ERROR) << "File can be moved to ODFS";
-      return true;
+      return chromeos::cloud_upload::CloudUploadDialog::Show(
+          profile, file_urls, chromeos::cloud_upload::UploadType::kOneDrive);
     }
   } else {
     // TODO(petermarshall): Launch QuickOffice or other fallback and return
