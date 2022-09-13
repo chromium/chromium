@@ -90,10 +90,7 @@ class MachinePolicyScope : public MacPreferences::PolicyScope {
                copyValueForKey:base::mac::CFToNSCast(key)]) != nil;
   }
 
-  void Enable(bool enable) override {
-    enable_ = enable && base::FeatureList::IsEnabled(
-                            policy::features::kPolicyScopeDetectionMac);
-  }
+  void Enable(bool enable) override { enable_ = enable; }
 
  private:
   base::scoped_nsobject<_CFXPreferences> cfx_prefs_;

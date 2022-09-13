@@ -39,10 +39,6 @@ POLICY_EXPORT extern const base::Feature
 // deleted from CBCM.
 POLICY_EXPORT extern const base::Feature kDmTokenDeletion;
 
-// Allow mac to detect policy scope with a private API. The feature is limited
-// in the policy component only.
-extern const base::Feature kPolicyScopeDetectionMac;
-
 }  // namespace features
 }  // namespace policy
 
