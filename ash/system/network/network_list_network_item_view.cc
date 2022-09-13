@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_icon.h"
 #include "ash/system/network/network_icon_animation.h"
@@ -353,12 +354,12 @@ void NetworkListNetworkItemView::UpdateDisabledTextColor() {
   if (text_label()) {
     SkColor primary_text_color = text_label()->GetEnabledColor();
     text_label()->SetEnabledColor(
-        AshColorProvider::GetDisabledColor(primary_text_color));
+        ColorUtil::GetDisabledColor(primary_text_color));
   }
   if (sub_text_label()) {
     SkColor sub_text_color = sub_text_label()->GetEnabledColor();
     sub_text_label()->SetEnabledColor(
-        AshColorProvider::GetDisabledColor(sub_text_color));
+        ColorUtil::GetDisabledColor(sub_text_color));
   }
 }
 
@@ -375,7 +376,7 @@ void NetworkListNetworkItemView::AddPowerStatusView() {
   icon_info.charge_percent = battery_percentage;
   image_icon->SetImage(PowerStatus::GetBatteryImage(
       icon_info, kMobileNetworkBatteryIconSize,
-      AshColorProvider::GetSecondToneColor(icon_color), icon_color));
+      ColorUtil::GetSecondToneColor(icon_color), icon_color));
 
   // Show the numeric battery percentage on hover.
   image_icon->SetTooltipText(base::FormatPercent(battery_percentage));

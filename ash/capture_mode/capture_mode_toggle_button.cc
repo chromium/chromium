@@ -7,6 +7,7 @@
 #include "ash/capture_mode/capture_mode_button.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
@@ -63,9 +64,9 @@ void CaptureModeToggleButton::SetIcon(const gfx::VectorIcon& icon) {
 
   SetImage(views::Button::STATE_NORMAL,
            gfx::CreateVectorIcon(icon, normal_color));
-  SetImage(views::Button::STATE_DISABLED,
-           gfx::CreateVectorIcon(
-               icon, color_provider->GetDisabledColor(normal_color)));
+  SetImage(
+      views::Button::STATE_DISABLED,
+      gfx::CreateVectorIcon(icon, ColorUtil::GetDisabledColor(normal_color)));
   // Note that a disabled button cannot be toggled, so we don't need to set a
   // toggled icon for the disabled state.
   const auto toggled_icon = gfx::CreateVectorIcon(icon, toggled_color);

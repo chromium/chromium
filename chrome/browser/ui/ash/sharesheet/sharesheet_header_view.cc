@@ -14,6 +14,7 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
@@ -149,9 +150,8 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
             /*use_debug_colors=*/false));
         label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
         auto second_tone_icon_color_prominent =
-            AshColorProvider::GetSecondToneColor(
-                color_provider->GetContentLayerColor(
-                    AshColorProvider::ContentLayerType::kIconColorProminent));
+            ColorUtil::GetSecondToneColor(color_provider->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kIconColorProminent));
         label->SetBackground(views::CreateRoundedRectBackground(
             second_tone_icon_color_prominent, kImagePreviewIconCornerRadius));
         label->SetPreferredSize(kImagePreviewQuarterSize);
@@ -329,8 +329,7 @@ void SharesheetHeaderView::ShowTextPreview() {
   if (!intent_->files.empty()) {
     std::vector<std::u16string> file_names;
     for (const auto& file : intent_->files) {
-      auto file_path =
-          apps::GetFileSystemURL(profile_, file->url).path();
+      auto file_path = apps::GetFileSystemURL(profile_, file->url).path();
       file_names.push_back(file_path.BaseName().LossyDisplayName());
     }
     std::u16string file_text;

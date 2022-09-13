@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_icon.h"
 #include "ash/system/network/network_icon_animation.h"
@@ -151,9 +152,8 @@ class VPNListProviderEntry : public views::View {
 
     const gfx::ImageSkia enabled_icon =
         gfx::CreateVectorIcon(kSystemMenuAddConnectionIcon, image_color);
-    const gfx::ImageSkia disabled_icon =
-        gfx::CreateVectorIcon(kSystemMenuAddConnectionIcon,
-                              AshColorProvider::GetDisabledColor(image_color));
+    const gfx::ImageSkia disabled_icon = gfx::CreateVectorIcon(
+        kSystemMenuAddConnectionIcon, ColorUtil::GetDisabledColor(image_color));
 
     SystemMenuButton* add_vpn_button = new SystemMenuButton(
         base::BindRepeating(&VPNListProviderEntry::AddVpnButtonPressed,
@@ -246,9 +246,7 @@ class VPNListNetworkEntry : public HoverHighlightView,
 VPNListNetworkEntry::VPNListNetworkEntry(VPNListView* owner,
                                          TrayNetworkStateModel* model,
                                          const NetworkStateProperties* network)
-    : HoverHighlightView(owner),
-      model_(model),
-      guid_(network->guid) {
+    : HoverHighlightView(owner), model_(model), guid_(network->guid) {
   UpdateFromNetworkState(network);
 }
 

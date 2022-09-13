@@ -8,8 +8,8 @@
 
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/color_util.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
-#include "ash/style/style_util.h"
 #include "base/check_op.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/color/color_id.h"
@@ -25,12 +25,6 @@ namespace {
 // Opacity of the light/dark indrop.
 constexpr float kLightInkDropOpacity = 0.08f;
 constexpr float kDarkInkDropOpacity = 0.06f;
-
-// The disabled color is always 38% opacity of the enabled color.
-constexpr float kDisabledColorOpacity = 0.38f;
-
-// Color of second tone is always 30% opacity of the color of first tone.
-constexpr float kSecondToneOpacity = 0.3f;
 
 AshColorProvider* g_instance = nullptr;
 
@@ -56,19 +50,6 @@ AshColorProvider::~AshColorProvider() {
 // static
 AshColorProvider* AshColorProvider::Get() {
   return g_instance;
-}
-
-// static
-SkColor AshColorProvider::GetDisabledColor(SkColor enabled_color) {
-  return SkColorSetA(enabled_color, std::round(SkColorGetA(enabled_color) *
-                                               kDisabledColorOpacity));
-}
-
-// static
-SkColor AshColorProvider::GetSecondToneColor(SkColor color_of_first_tone) {
-  return SkColorSetA(
-      color_of_first_tone,
-      std::round(SkColorGetA(color_of_first_tone) * kSecondToneOpacity));
 }
 
 SkColor AshColorProvider::GetShieldLayerColor(ShieldLayerType type) const {
@@ -262,7 +243,7 @@ std::pair<SkColor, float> AshColorProvider::GetInkDropBaseColorAndOpacity(
 }
 
 SkColor AshColorProvider::GetBackgroundColor() const {
-  return StyleUtil::GetBackgroundThemedColorImpl(
+  return ColorUtil::GetBackgroundThemedColor(
       GetColorProvider()->GetColor(kColorAshShieldAndBaseOpaque),
       IsDarkModeEnabled());
 }

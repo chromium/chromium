@@ -8,6 +8,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
@@ -64,10 +65,10 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
     SetImage(views::Button::STATE_NORMAL,
              gfx::CreateVectorIcon(*outer_button_->button_icon(),
                                    enabled_icon_color));
-    SetImage(views::Button::STATE_DISABLED,
-             gfx::CreateVectorIcon(
-                 *outer_button_->button_icon(),
-                 AshColorProvider::GetDisabledColor(enabled_icon_color)));
+    SetImage(
+        views::Button::STATE_DISABLED,
+        gfx::CreateVectorIcon(*outer_button_->button_icon(),
+                              ColorUtil::GetDisabledColor(enabled_icon_color)));
     SetButtonState(GetEnabled());
   }
 
@@ -86,7 +87,7 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
     background_color_ = color_provider->GetControlsLayerColor(
         AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
     if (!enabled)
-      background_color_ = AshColorProvider::GetDisabledColor(background_color_);
+      background_color_ = ColorUtil::GetDisabledColor(background_color_);
     StyleUtil::ConfigureInkDropAttributes(
         this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
     SchedulePaint();
@@ -137,9 +138,8 @@ void ExpandedDesksBarButton::SetButtonState(bool enabled) {
 void ExpandedDesksBarButton::UpdateLabelColor(bool enabled) {
   const SkColor label_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);
-  label_->SetEnabledColor(
-      enabled ? label_color
-              : AshColorProvider::Get()->GetDisabledColor(label_color));
+  label_->SetEnabledColor(enabled ? label_color
+                                  : ColorUtil::GetDisabledColor(label_color));
 }
 
 bool ExpandedDesksBarButton::IsPointOnButton(

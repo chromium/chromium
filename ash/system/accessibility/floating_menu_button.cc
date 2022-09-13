@@ -5,6 +5,7 @@
 #include "ash/system/accessibility/floating_menu_button.h"
 
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -157,9 +158,9 @@ void FloatingMenuButton::UpdateImage() {
   const SkColor icon_color = toggled_ ? toggled_icon_color : normal_color;
   SetImage(views::Button::STATE_NORMAL,
            gfx::CreateVectorIcon(*icon_, icon_color));
-  SetImage(views::Button::STATE_DISABLED,
-           gfx::CreateVectorIcon(
-               *icon_, AshColorProvider::GetDisabledColor(normal_color)));
+  SetImage(
+      views::Button::STATE_DISABLED,
+      gfx::CreateVectorIcon(*icon_, ColorUtil::GetDisabledColor(normal_color)));
 }
 
 BEGIN_METADATA(FloatingMenuButton, views::ImageButton)

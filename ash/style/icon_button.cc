@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
 #include "ash/utility/haptics_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -236,7 +237,7 @@ void IconButton::PaintButtonContents(gfx::Canvas* canvas) {
 
     // If the button is disabled, apply opacity filter to the color.
     if (!GetEnabled())
-      color = AshColorProvider::GetDisabledColor(color);
+      color = ColorUtil::GetDisabledColor(color);
 
     flags.setColor(color);
     flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -315,10 +316,10 @@ void IconButton::UpdateVectorIcon() {
   }
 
   SetImage(views::Button::STATE_NORMAL, new_normal_image);
-  SetImage(views::Button::STATE_DISABLED,
-           gfx::CreateVectorIcon(
-               *icon_, icon_size,
-               AshColorProvider::GetDisabledColor(normal_icon_color)));
+  SetImage(
+      views::Button::STATE_DISABLED,
+      gfx::CreateVectorIcon(*icon_, icon_size,
+                            ColorUtil::GetDisabledColor(normal_icon_color)));
 }
 
 BEGIN_METADATA(IconButton, views::ImageButton)

@@ -36,6 +36,7 @@
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/close_button.h"
+#include "ash/style/color_util.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_action_context_menu.h"
@@ -1926,7 +1927,7 @@ TEST_F(DesksTest, NewDeskButtonStateAndColor) {
       AshColorProvider::Get()->GetControlsLayerColor(
           AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
   const SkColor disabled_background_color =
-      AshColorProvider::GetDisabledColor(background_color);
+      ColorUtil::GetDisabledColor(background_color);
   EXPECT_TRUE(new_desk_button->GetEnabled());
   EXPECT_EQ(background_color, DesksTestApi::GetNewDeskButtonBackgroundColor());
 

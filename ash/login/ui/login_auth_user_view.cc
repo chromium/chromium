@@ -34,6 +34,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/time_of_day.h"
@@ -531,7 +532,7 @@ class LoginAuthUserView::FingerprintView : public views::View {
         state == FingerprintState::AVAILABLE_DEFAULT ||
                 state == FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING
             ? icon_color
-            : AshColorProvider::Get()->GetDisabledColor(icon_color);
+            : ColorUtil::GetDisabledColor(icon_color);
     switch (state) {
       case FingerprintState::UNAVAILABLE:
       case FingerprintState::AVAILABLE_DEFAULT:

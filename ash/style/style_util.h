@@ -6,15 +6,9 @@
 #define ASH_STYLE_STYLE_UTIL_H_
 
 #include "ash/ash_export.h"
-#include "ash/style/ash_color_provider_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
-
-namespace aura {
-class Window;
-}  // namespace aura
 
 namespace views {
 class Button;
@@ -92,19 +86,6 @@ class ASH_EXPORT StyleUtil {
   static views::FocusRing* SetUpFocusRingForView(
       views::View* view,
       absl::optional<int> halo_inset = absl::nullopt);
-
-  // Returns the color provider source for the given `window` if it has
-  // has a root window, otherwise returns nullptr.
-  static AshColorProviderSource* GetColorProviderSourceForWindow(
-      const aura::Window* window);
-
-  // Returns the background themed color that's calculated based on the color
-  // extracted from wallpaper. For dark mode, it will be dark muted wallpaper
-  // prominent color + SK_ColorBLACK 50%. For light mode, it will be light
-  // muted wallpaper prominent color + SK_ColorWHITE 75%. Extracts the color on
-  // dark mode if `use_dark_color` is true.
-  static SkColor GetBackgroundThemedColorImpl(SkColor default_color,
-                                              bool use_dark_color);
 
  private:
   StyleUtil() = default;

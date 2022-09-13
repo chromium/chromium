@@ -12,6 +12,7 @@
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -95,9 +96,8 @@ class PageIndicatorView::PageIndicatorButton : public views::Button {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(selected_
-                       ? selected_color
-                       : AshColorProvider::GetDisabledColor(selected_color));
+    flags.setColor(selected_ ? selected_color
+                             : ColorUtil::GetDisabledColor(selected_color));
     canvas->DrawCircle(rect.CenterPoint(), kUnifiedPageIndicatorButtonRadius,
                        flags);
   }

@@ -7,8 +7,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/color_util.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
-#include "ash/style/style_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
@@ -263,7 +263,7 @@ SkColor AppListColorProviderImpl::GetGridBackgroundCardActiveColor(
   SkColor background_color =
       GetGridBackgroundCardInactiveColor(app_list_widget);
   if (background_color == gfx::kPlaceholderColor) {
-    background_color = StyleUtil::GetBackgroundThemedColorImpl(
+    background_color = ColorUtil::GetBackgroundThemedColor(
         app_list_widget->GetColorProvider()->GetColor(
             kColorAshShieldAndBaseOpaque),
         IsDarkModeEnabled());
@@ -318,7 +318,7 @@ float AppListColorProviderImpl::GetInkDropOpacity(
   DCHECK(app_list_widget);
 
   if (bg_color == gfx::kPlaceholderColor) {
-    bg_color = StyleUtil::GetBackgroundThemedColorImpl(
+    bg_color = ColorUtil::GetBackgroundThemedColor(
         app_list_widget->GetColorProvider()->GetColor(
             kColorAshShieldAndBaseOpaque),
         IsDarkModeEnabled());

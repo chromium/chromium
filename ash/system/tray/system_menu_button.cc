@@ -5,6 +5,7 @@
 #include "ash/system/tray/system_menu_button.h"
 
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_ink_drop_style.h"
@@ -61,9 +62,9 @@ void SystemMenuButton::SetVectorIcon(const gfx::VectorIcon& icon) {
       AshColorProvider::ContentLayerType::kButtonIconColor);
   SetImage(views::Button::STATE_NORMAL,
            gfx::CreateVectorIcon(icon, icon_color));
-  SetImage(views::Button::STATE_DISABLED,
-           gfx::CreateVectorIcon(
-               icon, AshColorProvider::GetDisabledColor(icon_color)));
+  SetImage(
+      views::Button::STATE_DISABLED,
+      gfx::CreateVectorIcon(icon, ColorUtil::GetDisabledColor(icon_color)));
 }
 
 SystemMenuButton::~SystemMenuButton() = default;

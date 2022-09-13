@@ -8,6 +8,7 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "base/time/time.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -128,10 +129,9 @@ void ArrowButtonView::OnThemeChanged() {
   SetImage(views::Button::STATE_NORMAL,
            gfx::CreateVectorIcon(kLockScreenArrowIcon, kArrowIconSizeDp,
                                  icon_color));
-  SetImage(
-      views::Button::STATE_DISABLED,
-      gfx::CreateVectorIcon(kLockScreenArrowIcon, kArrowIconSizeDp,
-                            AshColorProvider::GetDisabledColor(icon_color)));
+  SetImage(views::Button::STATE_DISABLED,
+           gfx::CreateVectorIcon(kLockScreenArrowIcon, kArrowIconSizeDp,
+                                 ColorUtil::GetDisabledColor(icon_color)));
 }
 
 void ArrowButtonView::RunTransformAnimation() {

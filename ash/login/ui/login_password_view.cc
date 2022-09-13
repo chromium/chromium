@@ -12,10 +12,12 @@
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/public/cpp/login_types.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -401,8 +403,8 @@ class LoginPasswordView::EasyUnlockIcon : public views::ImageButton {
         // This is the default case in terms of icon and color.
         break;
       case EasyUnlockIconState::LOCKED_TO_BE_ACTIVATED:
-        color = AshColorProvider::GetDisabledColor(
-            color_provider->GetContentLayerColor(
+        color =
+            ColorUtil::GetDisabledColor(color_provider->GetContentLayerColor(
                 AshColorProvider::ContentLayerType::kIconColorPrimary));
         break;
       case EasyUnlockIconState::LOCKED_WITH_PROXIMITY_HINT:
@@ -484,7 +486,7 @@ class LoginPasswordView::DisplayPasswordButton
         kLockScreenPasswordVisibleIcon, kIconSizeDp, color);
     const gfx::ImageSkia visible_icon_disabled =
         gfx::CreateVectorIcon(kLockScreenPasswordVisibleIcon, kIconSizeDp,
-                              AshColorProvider::GetDisabledColor(color));
+                              ColorUtil::GetDisabledColor(color));
     SetImage(views::Button::STATE_NORMAL, visible_icon);
     SetImage(views::Button::STATE_DISABLED, visible_icon_disabled);
     SetToggledImage(views::Button::STATE_NORMAL, &invisible_icon);
@@ -968,7 +970,7 @@ void LoginPasswordView::SetCapsLockHighlighted(bool highlight) {
   is_capslock_higlight_ = highlight;
   SkColor color = palette_.button_enabled_color;
   if (!highlight)
-    color = AshColorProvider::GetDisabledColor(color);
+    color = ColorUtil::GetDisabledColor(color);
   capslock_icon_->SetImage(
       gfx::CreateVectorIcon(kLockScreenCapsLockIcon, kIconSizeDp, color));
 }

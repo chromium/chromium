@@ -37,14 +37,6 @@ class ASH_EXPORT AshColorProvider : public ColorProvider {
 
   static AshColorProvider* Get();
 
-  // Gets the disabled color on |enabled_color|. It can be disabled background,
-  // an disabled icon, etc.
-  static SkColor GetDisabledColor(SkColor enabled_color);
-
-  // Gets the color of second tone on the given |color_of_first_tone|. e.g,
-  // power status icon inside status area is a dual tone icon.
-  static SkColor GetSecondToneColor(SkColor color_of_first_tone);
-
   // ColorProvider:
   SkColor GetShieldLayerColor(ShieldLayerType type) const override;
   SkColor GetBaseLayerColor(BaseLayerType type) const override;

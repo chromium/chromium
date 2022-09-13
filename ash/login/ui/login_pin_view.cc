@@ -11,6 +11,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
@@ -381,7 +382,7 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
   void UpdateImage() {
     SkColor color = palette_.button_enabled_color;
     if (!GetEnabled())
-      color = AshColorProvider::GetDisabledColor(color);
+      color = ColorUtil::GetDisabledColor(color);
     image_->SetImage(gfx::CreateVectorIcon(kLockScreenBackspaceIcon, color));
   }
 
@@ -427,7 +428,7 @@ class LoginPinView::SubmitPinButton : public BasePinButton {
   void UpdateImage() {
     SkColor color = palette_.button_enabled_color;
     if (!GetEnabled())
-      color = AshColorProvider::GetDisabledColor(color);
+      color = ColorUtil::GetDisabledColor(color);
     image_->SetImage(gfx::CreateVectorIcon(kLockScreenArrowIcon, color));
   }
 

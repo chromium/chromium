@@ -7,7 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -357,7 +357,7 @@ void PillButton::UpdateTextColor() {
 
   SetEnabledTextColors(text_color);
   SetTextColor(views::Button::STATE_DISABLED,
-               AshColorProvider::GetDisabledColor(text_color));
+               ColorUtil::GetDisabledColor(text_color));
 }
 
 void PillButton::UpdateIconColor() {
@@ -380,10 +380,9 @@ void PillButton::UpdateIconColor() {
   DCHECK(icon_);
   SetImage(views::Button::STATE_NORMAL,
            gfx::CreateVectorIcon(*icon_, kIconSize, icon_color));
-  SetImage(
-      views::Button::STATE_DISABLED,
-      gfx::CreateVectorIcon(*icon_, kIconSize,
-                            AshColorProvider::GetDisabledColor(icon_color)));
+  SetImage(views::Button::STATE_DISABLED,
+           gfx::CreateVectorIcon(*icon_, kIconSize,
+                                 ColorUtil::GetDisabledColor(icon_color)));
   SetImageLabelSpacing(kIconPillButtonImageLabelSpacingDp);
 }
 

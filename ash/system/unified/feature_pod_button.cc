@@ -7,6 +7,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
@@ -187,17 +188,16 @@ void FeaturePodLabelButton::OnEnabledChanged() {
       ContentLayerType::kTextColorSecondary);
   label_->SetEnabledColor(
       GetEnabled() ? primary_text_color
-                   : AshColorProvider::GetDisabledColor(primary_text_color));
+                   : ColorUtil::GetDisabledColor(primary_text_color));
   sub_label_->SetEnabledColor(
       GetEnabled() ? secondary_text_color
-                   : AshColorProvider::GetDisabledColor(secondary_text_color));
+                   : ColorUtil::GetDisabledColor(secondary_text_color));
 
   const SkColor icon_color =
       color_provider->GetContentLayerColor(ContentLayerType::kIconColorPrimary);
   detailed_view_arrow_->SetImage(gfx::CreateVectorIcon(
       kUnifiedMenuMoreIcon,
-      GetEnabled() ? icon_color
-                   : AshColorProvider::GetDisabledColor(icon_color)));
+      GetEnabled() ? icon_color : ColorUtil::GetDisabledColor(icon_color)));
 }
 
 void FeaturePodLabelButton::LayoutInCenter(views::View* child, int y) {

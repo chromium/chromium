@@ -4,13 +4,9 @@
 
 #include "ash/style/style_util.h"
 
-#include "ash/root_window_controller.h"
-#include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
-#include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ui/color/color_id.h"
-#include "ui/gfx/color_analysis.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
@@ -19,11 +15,6 @@
 #include "ui/views/controls/focus_ring.h"
 
 namespace ash {
-
-// Alpha value that is used to calculate themed color. Please see function
-// GetBackgroundThemedColor() about how the themed color is calculated.
-constexpr int kDarkBackgroundBlendAlpha = 127;   // 50%
-constexpr int kLightBackgroundBlendAlpha = 127;  // 50%
 
 // static
 float StyleUtil::GetInkDropOpacity() {
@@ -121,43 +112,6 @@ views::FocusRing* StyleUtil::SetUpFocusRingForView(
   if (halo_inset)
     focus_ring->SetHaloInset(*halo_inset);
   return focus_ring;
-}
-
-// static
-AshColorProviderSource* StyleUtil::GetColorProviderSourceForWindow(
-    const aura::Window* window) {
-  DCHECK(window);
-  auto* root_window = window->GetRootWindow();
-  if (!root_window)
-    return nullptr;
-  return RootWindowController::ForWindow(root_window)->color_provider_source();
-}
-
-// static
-SkColor StyleUtil::GetBackgroundThemedColorImpl(SkColor default_color,
-                                                bool use_dark_color) {
-  // May be null in unit tests.
-  if (!Shell::HasInstance())
-    return default_color;
-  WallpaperControllerImpl* wallpaper_controller =
-      Shell::Get()->wallpaper_controller();
-  if (!wallpaper_controller)
-    return default_color;
-
-  color_utils::LumaRange luma_range = use_dark_color
-                                          ? color_utils::LumaRange::DARK
-                                          : color_utils::LumaRange::LIGHT;
-  SkColor muted_color =
-      wallpaper_controller->GetProminentColor(color_utils::ColorProfile(
-          luma_range, color_utils::SaturationRange::MUTED));
-  if (muted_color == kInvalidWallpaperColor)
-    return default_color;
-
-  return color_utils::GetResultingPaintColor(
-      SkColorSetA(use_dark_color ? SK_ColorBLACK : SK_ColorWHITE,
-                  use_dark_color ? kDarkBackgroundBlendAlpha
-                                 : kLightBackgroundBlendAlpha),
-      muted_color);
 }
 
 }  // namespace ash

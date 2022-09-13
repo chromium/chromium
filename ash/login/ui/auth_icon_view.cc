@@ -6,6 +6,7 @@
 
 #include "ash/login/ui/horizontal_image_sequence_animation_decoder.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
@@ -63,7 +64,7 @@ SkColor GetColor(AuthIconView::Color color) {
       return AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorPrimary);
     case AuthIconView::Color::kDisabled:
-      return AshColorProvider::Get()->GetDisabledColor(
+      return ColorUtil::GetDisabledColor(
           GetColor(AuthIconView::Color::kPrimary));
     case AuthIconView::Color::kError:
       // TODO(crbug.com/1233614): Either find a system color to match the color

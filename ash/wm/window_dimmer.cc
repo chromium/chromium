@@ -6,7 +6,7 @@
 
 #include "ash/root_window_controller.h"
 #include "ash/style/ash_color_provider_source.h"
-#include "ash/style/style_util.h"
+#include "ash/style/color_util.h"
 #include "base/time/time.h"
 #include "ui/aura/window.h"
 #include "ui/color/color_id.h"
@@ -60,7 +60,7 @@ WindowDimmer::WindowDimmer(aura::Window* parent,
   // window.
   if (!GetColorProviderSource()) {
     auto* color_provider_source =
-        StyleUtil::GetColorProviderSourceForWindow(window_);
+        ColorUtil::GetColorProviderSourceForWindow(window_);
     if (color_provider_source)
       ui::ColorProviderSourceObserver::Observe(color_provider_source);
   }
@@ -139,7 +139,7 @@ void WindowDimmer::OnWindowAddedToRootWindow(aura::Window* window) {
   // the root window yet, hence we should observe the `color_provider_source`
   // which is owned by the `RootWindowController` here.
   auto* color_provider_source =
-      StyleUtil::GetColorProviderSourceForWindow(window);
+      ColorUtil::GetColorProviderSourceForWindow(window);
   DCHECK(color_provider_source);
   ui::ColorProviderSourceObserver::Observe(color_provider_source);
   UpdateDimColor();

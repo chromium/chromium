@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "ash/system/machine_learning/user_settings_event_logger.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/hover_highlight_view.h"
@@ -93,14 +94,14 @@ views::View* CreateDisabledPanel() {
       container->AddChildView(std::make_unique<views::ImageView>());
   image_view->SetImage(gfx::CreateVectorIcon(
       kSystemMenuBluetoothDisabledIcon,
-      AshColorProvider::GetDisabledColor(color_provider->GetContentLayerColor(
+      ColorUtil::GetDisabledColor(color_provider->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorPrimary))));
   image_view->SetVerticalAlignment(views::ImageView::Alignment::kTrailing);
 
   auto* label = container->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED)));
   label->SetEnabledColor(
-      AshColorProvider::GetDisabledColor(color_provider->GetContentLayerColor(
+      ColorUtil::GetDisabledColor(color_provider->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kTextColorPrimary)));
   TrayPopupUtils::SetLabelFontList(
       label, TrayPopupUtils::FontStyle::kDetailedViewLabel);

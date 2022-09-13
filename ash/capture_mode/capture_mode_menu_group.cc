@@ -13,6 +13,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/ranges/algorithm.h"
@@ -274,11 +275,11 @@ class CaptureModeOption
         AshColorProvider::ContentLayerType::kButtonLabelColorBlue);
     const bool is_disabled = GetState() == STATE_DISABLED;
     label_view_->SetEnabledColor(
-        is_disabled ? provider->GetDisabledColor(label_enabled_color)
+        is_disabled ? ColorUtil::GetDisabledColor(label_enabled_color)
                     : label_enabled_color);
     checked_icon_view_->SetImage(gfx::CreateVectorIcon(
         kHollowCheckCircleIcon,
-        is_disabled ? provider->GetDisabledColor(icon_enabled_color)
+        is_disabled ? ColorUtil::GetDisabledColor(icon_enabled_color)
                     : icon_enabled_color));
   }
 

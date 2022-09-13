@@ -12,6 +12,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "ash/system/time/date_helper.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
@@ -214,7 +215,7 @@ SkColor GetDisabledTextColor() {
   const ash::AshColorProvider* color_provider = ash::AshColorProvider::Get();
   const SkColor primary_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);
-  return color_provider->GetDisabledColor(primary_color);
+  return ColorUtil::GetDisabledColor(primary_color);
 }
 
 base::Time GetFirstDayOfMonth(const base::Time& date) {

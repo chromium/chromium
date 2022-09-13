@@ -10,6 +10,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/check.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -43,10 +44,10 @@ BluetoothDisabledDetailedView::BluetoothDisabledDetailedView() {
 
   AshColorProvider* color_provider = AshColorProvider::Get();
   const SkColor icon_color =
-      AshColorProvider::GetDisabledColor(color_provider->GetContentLayerColor(
+      ColorUtil::GetDisabledColor(color_provider->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorPrimary));
   const SkColor text_color =
-      AshColorProvider::GetDisabledColor(color_provider->GetContentLayerColor(
+      ColorUtil::GetDisabledColor(color_provider->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kTextColorPrimary));
 
   ImageView* image_view = AddChildView(std::make_unique<ImageView>(
