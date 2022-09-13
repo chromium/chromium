@@ -130,13 +130,16 @@ int GetDialogTopMargins(LayoutProvider* layout_provider,
 
 int GetDialogBottomMargins(LayoutProvider* layout_provider,
                            ui::DialogModelField* last_field,
+                           bool has_buttons,
                            base::PassKey<ui::DialogModelHost> pass_key) {
   const BubbleDialogModelHost::FieldType field_type =
       last_field ? GetFieldTypeForField(last_field, pass_key)
                  : BubbleDialogModelHost::FieldType::kControl;
   switch (field_type) {
     case BubbleDialogModelHost::FieldType::kMenuItem:
-      return 0;
+      return has_buttons ? layout_provider->GetDistanceMetric(
+                               DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL)
+                         : 0;
     case BubbleDialogModelHost::FieldType::kControl:
       return layout_provider->GetDistanceMetric(
           DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL);
@@ -623,7 +626,10 @@ void BubbleDialogModelHost::UpdateSpacingAndMargins() {
 
   set_margins(gfx::Insets::TLBR(
       GetDialogTopMargins(layout_provider, first_field, GetPassKey()), 0,
-      GetDialogBottomMargins(layout_provider, last_field, GetPassKey()), 0));
+      GetDialogBottomMargins(layout_provider, last_field,
+                             GetDialogButtons() != ui::DIALOG_BUTTON_NONE,
+                             GetPassKey()),
+      0));
 }
 
 void BubbleDialogModelHost::OnWindowClosing() {

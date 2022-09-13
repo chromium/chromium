@@ -16,6 +16,7 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/omnibox/browser/favicon_cache.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -251,6 +252,11 @@ views::Widget* ShowPageSpecificSiteDataDialog(
   builder
       .SetTitle(l10n_util::GetStringUTF16(IDS_COLLECTED_COOKIES_DIALOG_TITLE))
       .SetInternalName("PageSpecificSiteDataDialog")
+      .AddOkButton(
+          base::BindRepeating(&PageSpecificSiteDataDialogModelDelegate::
+                                  OnDialogExplicitlyClosed,
+                              base::Unretained(delegate)),
+          l10n_util::GetStringUTF16(IDS_DONE))
       .SetCloseActionCallback(base::BindOnce(
           &PageSpecificSiteDataDialogModelDelegate::OnDialogExplicitlyClosed,
           base::Unretained(delegate)));
