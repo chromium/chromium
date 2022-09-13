@@ -8,7 +8,7 @@
  */
 // #import { dedupingMixin } from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import { loadTimeData } from 'chrome://resources/js/load_time_data.m.js';
-// #import { SanitizeInnerHtmlOpts } from 'chrome://resources/js/parse_html_subset.m.js';
+// #import { SanitizeInnerHtmlOpts } from 'chrome://resources/js/parse_html_subset.js';
 // #import { I18nMixin } from './i18n_mixin.m.js';
 
 /**

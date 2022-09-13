@@ -10,7 +10,7 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isWindows} from 'chrome://resources/js/cr.m.js';
 import {decorate, define as crUiDefine} from 'chrome://resources/js/cr/ui.js';
-import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
 import {Menu} from './menu.js';
 import {MenuItem} from './menu_item.js';

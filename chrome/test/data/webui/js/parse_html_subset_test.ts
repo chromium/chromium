@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {parseHtmlSubset, sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.m.js';
+import {parseHtmlSubset, sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {assertEquals, assertFalse, assertThrows} from 'chrome://webui-test/chai_assert.js';
 
 declare global {

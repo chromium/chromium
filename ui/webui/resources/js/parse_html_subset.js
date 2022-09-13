@@ -9,7 +9,7 @@
  *   tags: (!Array<string>|undefined),
  * }}
  */
-/* #export */ let SanitizeInnerHtmlOpts;
+export let SanitizeInnerHtmlOpts;
 
 /**
  * Make a string safe for Polymer bindings that are inner-h-t-m-l or other
@@ -19,7 +19,7 @@
  *     attributes.
  * @return {string}
  */
-/* #export */ const sanitizeInnerHtml = function(rawString, opts) {
+export const sanitizeInnerHtml = function(rawString, opts) {
   opts = opts || {};
   return parseHtmlSubset('<b>' + rawString + '</b>', opts.tags, opts.attrs)
       .firstChild.innerHTML;
@@ -36,7 +36,7 @@
  * @throws {Error} In case of non supported markup.
  * @return {DocumentFragment} A document fragment containing the DOM tree.
  */
-/* #export */ const parseHtmlSubset = (function() {
+export const parseHtmlSubset = (function() {
   'use strict';
 
   /** @typedef {function(!Node, string):boolean} */
@@ -209,4 +209,3 @@
   };
 })();
 
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

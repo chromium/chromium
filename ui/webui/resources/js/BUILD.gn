@@ -67,8 +67,10 @@ preprocess_if_expr("preprocess_src") {
     "cr.m.js",
     "cr/event_target.js",
     "cr/ui.js",
+    "event_tracker.js",
     "icon.js",
     "load_time_data.m.js",
+    "parse_html_subset.js",
     "plural_string_proxy.js",
     "static_types.js",
     "test_loader.js",
@@ -95,10 +97,8 @@ preprocess_if_expr("preprocess_src") {
   if (is_chromeos_ash) {
     in_files += [
       "cr.js",
-      "event_tracker.js",
       "i18n_template_no_process.js",
       "list_property_update_behavior.js",
-      "parse_html_subset.js",
       "promise_resolver.js",
     ]
   }
@@ -121,9 +121,7 @@ preprocess_if_expr("preprocess_generated") {
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
     "assert.m.js",
-    "event_tracker.m.js",
     "load_time_data.js",
-    "parse_html_subset.m.js",
     "promise_resolver.m.js",
     "util.m.js",
   ]
@@ -160,9 +158,7 @@ js_type_check("js_resources") {
   if (is_chromeos_ash) {
     deps += [
       ":action_link",
-      ":event_tracker",
       ":i18n_template_no_process",
-      ":parse_html_subset",
     ]
   }
 }
@@ -184,10 +180,6 @@ js_library("cr") {
 }
 
 if (is_chromeos_ash) {
-  js_library("event_tracker") {
-    deps = [ ":cr" ]
-  }
-
   js_library("i18n_template_no_process") {
     deps = [ ":load_time_data" ]
   }
@@ -196,11 +188,6 @@ if (is_chromeos_ash) {
 js_library("load_time_data") {
   sources = [ "$root_gen_dir/ui/webui/resources/js/load_time_data.js" ]
   extra_deps = [ ":unmodulize" ]
-}
-
-if (is_chromeos_ash) {
-  js_library("parse_html_subset") {
-  }
 }
 
 js_library("promise_resolver") {
@@ -224,8 +211,6 @@ js_library("webui_resource_test") {
 js_modulizer("modulize") {
   input_files = [
     "assert.js",
-    "event_tracker.js",
-    "parse_html_subset.js",
     "promise_resolver.js",
     "util.js",
   ]
@@ -262,11 +247,11 @@ js_type_check("js_resources_modules") {
   deps = [
     ":assert.m",
     ":cr.m",
-    ":event_tracker.m",
+    ":event_tracker",
     ":icon",
     ":list_property_update_behavior",
     ":load_time_data.m",
-    ":parse_html_subset.m",
+    ":parse_html_subset",
     ":plural_string_proxy",
     ":promise_resolver.m",
     ":static_types",
@@ -295,9 +280,7 @@ js_library("cr.m") {
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
-js_library("event_tracker.m") {
-  sources = [ "$root_gen_dir/ui/webui/resources/js/event_tracker.m.js" ]
-  extra_deps = [ ":modulize" ]
+js_library("event_tracker") {
 }
 
 js_library("icon") {
@@ -313,9 +296,7 @@ js_library("list_property_update_behavior") {
 js_library("load_time_data.m") {
 }
 
-js_library("parse_html_subset.m") {
-  sources = [ "$root_gen_dir/ui/webui/resources/js/parse_html_subset.m.js" ]
-  extra_deps = [ ":modulize" ]
+js_library("parse_html_subset") {
 }
 
 js_library("plural_string_proxy") {

@@ -4,7 +4,7 @@
 
 // clang-format off
 import {assert, assertInstanceof} from 'chrome://resources/js/assert_ts.js';
-import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {hasKeyModifiers, isRTL} from 'chrome://resources/js/util.m.js';
 // clang-format on
 

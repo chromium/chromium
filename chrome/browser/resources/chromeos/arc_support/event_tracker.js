@@ -11,7 +11,8 @@
  * calling Function.bind.
  */
 
-  export class EventTracker {
+cr.define('cr', function() {
+  /* #export */ class EventTracker {
     /**
      * Create an EventTracker to track a set of events.
      * EventTracker instances are typically tied 1:1 with other objects or
@@ -88,3 +89,7 @@
    */
   let EventTrackerEntry;
 
+  // #cr_define_end
+  console.warn('crbug/1173575, non-JS module files deprecated.');
+  return {EventTracker};
+});

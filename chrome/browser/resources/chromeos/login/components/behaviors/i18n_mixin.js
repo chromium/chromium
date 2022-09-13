@@ -6,7 +6,7 @@
  */
 // #import { dedupingMixin } from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import { loadTimeData } from 'chrome://resources/js/load_time_data.m.js';
-// #import {parseHtmlSubset, SanitizeInnerHtmlOpts, sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.m.js';
+// #import {parseHtmlSubset, SanitizeInnerHtmlOpts, sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 /**
  * TODO(crbug.com/1319543) - Remove this file once it is possible.

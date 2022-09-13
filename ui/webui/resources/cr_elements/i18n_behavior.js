@@ -12,7 +12,7 @@
  * code.
  */
 
-import {parseHtmlSubset, SanitizeInnerHtmlOpts, sanitizeInnerHtml} from '../js/parse_html_subset.m.js';
+import {parseHtmlSubset, SanitizeInnerHtmlOpts, sanitizeInnerHtml} from '../js/parse_html_subset.js';
 import {loadTimeData} from '../js/load_time_data.m.js';
 
 /** @polymerBehavior */

@@ -6,7 +6,7 @@ import './folder_node.js';
 import './item.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {isTextInputElement} from 'chrome://resources/js/util.m.js';
 
 import {changeFolderOpen, deselectItems, selectItem} from './actions.js';

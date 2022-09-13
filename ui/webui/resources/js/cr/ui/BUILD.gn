@@ -83,7 +83,7 @@ if (is_chromeos_ash) {
   js_library("focus_row_js") {
     deps = [
       "../..:assert.m",
-      "../..:event_tracker.m",
+      "../..:event_tracker",
       "../..:util.m",
     ]
   }

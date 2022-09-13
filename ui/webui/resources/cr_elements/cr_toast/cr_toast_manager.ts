@@ -5,7 +5,7 @@
 /** @fileoverview Element which shows toasts with optional undo button. */
 
 import '../../js/cr.m.js';
-import '../../js/event_tracker.m.js';
+import '../../js/event_tracker.js';
 import '../cr_hidden_style.css.js';
 import './cr_toast.js';
 

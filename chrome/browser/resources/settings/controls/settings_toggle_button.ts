@@ -15,7 +15,7 @@ import '../settings_shared.css.js';
 import {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // <if expr="chromeos_ash">
-import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.m.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 // </if>
 

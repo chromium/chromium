@@ -14,7 +14,7 @@ import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/pape
 import {Debouncer, microTask, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assert} from '../../js/assert_ts.js';
-import {EventTracker} from '../../js/event_tracker.m.js';
+import {EventTracker} from '../../js/event_tracker.js';
 
 import {getTemplate} from './cr_slider.html.js';
 

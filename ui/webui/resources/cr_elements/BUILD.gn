@@ -121,7 +121,7 @@ js_type_check("cr_elements_module_resources") {
 js_library("i18n_behavior") {
   deps = [
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:parse_html_subset.m",
+    "//ui/webui/resources/js:parse_html_subset",
   ]
 }
 
