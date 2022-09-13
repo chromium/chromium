@@ -7,7 +7,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
-#include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -22,7 +21,6 @@
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/field_trial_register.h"
-#include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 
@@ -110,6 +108,7 @@ SegmentSelectorImpl::SegmentSelectorImpl(
   if (selected_segment.has_value()) {
     selected_segment_last_session_.segment = selected_segment->segment_id;
     selected_segment_last_session_.is_ready = true;
+    selected_segment_last_session_.rank = selected_segment->rank;
     stats::RecordSegmentSelectionFailure(
         config_->segmentation_key,
         stats::SegmentationSelectionFailureReason::kSelectionAvailableInPrefs);
@@ -241,17 +240,19 @@ void SegmentSelectorImpl::GetRankForNextSegment(
   }
 
   // Finished fetching ranks for all segments.
-  SegmentId selected_segment = FindBestSegment(*ranks);
+  auto segment_id_and_rank = FindBestSegment(*ranks);
   if (config_->on_demand_execution) {
     DCHECK(!callback.is_null());
     SegmentSelectionResult result;
     result.is_ready = true;
-    result.segment = selected_segment;
+    result.segment = segment_id_and_rank.first;
+    result.rank = segment_id_and_rank.second;
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), result));
   } else {
     DCHECK(callback.is_null());
-    UpdateSelectedSegment(selected_segment);
+    UpdateSelectedSegment(segment_id_and_rank.first,
+                          segment_id_and_rank.second);
   }
 }
 
@@ -276,7 +277,7 @@ void SegmentSelectorImpl::OnGetResultForSegmentSelection(
   GetRankForNextSegment(std::move(ranks), input_context, std::move(callback));
 }
 
-SegmentId SegmentSelectorImpl::FindBestSegment(
+std::pair<SegmentId, float> SegmentSelectorImpl::FindBestSegment(
     const SegmentRanks& segment_results) {
   int max_rank = 0;
   SegmentId max_rank_id = SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
@@ -293,10 +294,11 @@ SegmentId SegmentSelectorImpl::FindBestSegment(
     }
   }
 
-  return max_rank_id;
+  return std::make_pair(max_rank_id, max_rank);
 }
 
-void SegmentSelectorImpl::UpdateSelectedSegment(SegmentId new_selection) {
+void SegmentSelectorImpl::UpdateSelectedSegment(SegmentId new_selection,
+                                                float rank) {
   VLOG(1) << __func__
           << ": Updating selected segment=" << SegmentId_Name(new_selection);
   const auto& previous_selection =
@@ -326,7 +328,8 @@ void SegmentSelectorImpl::UpdateSelectedSegment(SegmentId new_selection) {
     return;
 
   // Write result to prefs.
-  auto updated_selection = absl::make_optional<SelectedSegment>(new_selection);
+  auto updated_selection =
+      absl::make_optional<SelectedSegment>(new_selection, rank);
   updated_selection->selection_time = clock_->Now();
 
   result_prefs_->SaveSegmentationResultToPref(config_->segmentation_key,

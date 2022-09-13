@@ -22,9 +22,9 @@
 namespace segmentation_platform {
 namespace {
 
-int ComputeDiscreteMapping(const std::string& segmentation_key,
-                           const proto::SegmentInfo& segment_info) {
-  int rank = metadata_utils::ConvertToDiscreteScore(
+float ComputeDiscreteMapping(const std::string& segmentation_key,
+                             const proto::SegmentInfo& segment_info) {
+  float rank = metadata_utils::ConvertToDiscreteScore(
       segmentation_key, segment_info.prediction_result().result(),
       segment_info.model_metadata());
   VLOG(1) << __func__
@@ -225,8 +225,8 @@ void SegmentResultProviderImpl::GetCachedModelScore(
     return;
   }
 
-  int rank = ComputeDiscreteMapping(request_state->options->segmentation_key,
-                                    *db_segment_info);
+  float rank = ComputeDiscreteMapping(request_state->options->segmentation_key,
+                                      *db_segment_info);
   auto execution_result = std::make_unique<ModelExecutionResult>(
       ModelExecutionResult::Tensor(),
       db_segment_info->prediction_result().result());
@@ -304,8 +304,8 @@ void SegmentResultProviderImpl::OnModelExecuted(
       FilterSegmentInfoBySource(request_state->available_segments, source);
   if (result->status == ModelExecutionStatus::kSuccess) {
     segment_info->mutable_prediction_result()->set_result(result->score);
-    int rank = ComputeDiscreteMapping(request_state->options->segmentation_key,
-                                      *segment_info);
+    float rank = ComputeDiscreteMapping(
+        request_state->options->segmentation_key, *segment_info);
     ResultState state =
         source == DefaultModelManager::SegmentSource::DEFAULT_MODEL
             ? ResultState::kDefaultModelScoreUsed
@@ -337,7 +337,7 @@ SegmentResultProvider::SegmentResult::SegmentResult(ResultState state)
     : state(state) {}
 SegmentResultProvider::SegmentResult::SegmentResult(
     ResultState state,
-    int rank,
+    float rank,
     std::unique_ptr<ModelExecutionResult> execution_result)
     : state(state), rank(rank), execution_result(std::move(execution_result)) {}
 SegmentResultProvider::SegmentResult::~SegmentResult() = default;

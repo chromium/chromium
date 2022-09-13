@@ -310,15 +310,15 @@ SignalKey::Kind SignalTypeToSignalKind(proto::SignalType signal_type) {
   }
 }
 
-int ConvertToDiscreteScore(const std::string& mapping_key,
-                           float input_score,
-                           const proto::SegmentationModelMetadata& metadata) {
+float ConvertToDiscreteScore(const std::string& mapping_key,
+                             float input_score,
+                             const proto::SegmentationModelMetadata& metadata) {
   auto iter = metadata.discrete_mappings().find(mapping_key);
   if (iter == metadata.discrete_mappings().end()) {
     iter =
         metadata.discrete_mappings().find(metadata.default_discrete_mapping());
     if (iter == metadata.discrete_mappings().end())
-      return 0;
+      return input_score;
   }
   DCHECK(iter != metadata.discrete_mappings().end());
 

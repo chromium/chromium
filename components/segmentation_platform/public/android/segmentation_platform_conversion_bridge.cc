@@ -19,7 +19,8 @@ SegmentationPlatformConversionBridge::CreateJavaSegmentSelectionResult(
                              ? result.segment.value()
                              : proto::SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
   return Java_SegmentationPlatformConversionBridge_createSegmentSelectionResult(
-      env, result.is_ready, selected_segment);
+      env, result.is_ready, selected_segment, result.rank.has_value(),
+      result.rank.has_value() ? *result.rank : 0);
 }
 
 // static

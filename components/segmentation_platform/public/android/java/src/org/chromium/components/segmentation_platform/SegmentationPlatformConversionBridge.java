@@ -15,10 +15,11 @@ import org.chromium.components.segmentation_platform.proto.SegmentationProto.Seg
 public class SegmentationPlatformConversionBridge {
     @CalledByNative
     private static SegmentSelectionResult createSegmentSelectionResult(
-            boolean isReady, int selectedSegment) {
+            boolean isReady, int selectedSegment, boolean hasRank, float rank) {
         SegmentId segment = SegmentId.forNumber(selectedSegment);
         if (segment == null) segment = SegmentId.OPTIMIZATION_TARGET_UNKNOWN;
-        return new SegmentSelectionResult(isReady, segment);
+        Float optionalRank = hasRank ? rank : null;
+        return new SegmentSelectionResult(isReady, segment, optionalRank);
     }
 
     @CalledByNative

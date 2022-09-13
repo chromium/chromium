@@ -146,7 +146,7 @@ TEST_F(SegmentationUkmHelperTest, TestTrainingDataCollectionReporting) {
   std::vector<int> output_indexes = {2, 3};
 
   SelectedSegment selected_segment(
-      proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
+      proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 10);
   selected_segment.selection_time = base::Time::Now() - base::Seconds(10);
   SegmentationUkmHelper::GetInstance()->RecordTrainingData(
       proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101, input_tensors,

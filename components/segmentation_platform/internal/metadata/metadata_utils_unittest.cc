@@ -649,8 +649,10 @@ TEST_F(MetadataUtilsTest, CheckMissingDiscreteMapping) {
   std::string segmentation_key = "some_key";
 
   // Any value should result in a 0 mapping, since no mapping exists.
-  ASSERT_EQ(0, metadata_utils::ConvertToDiscreteScore(segmentation_key, 0.9,
-                                                      metadata));
+  ASSERT_NEAR(
+      0.9,
+      metadata_utils::ConvertToDiscreteScore(segmentation_key, 0.9, metadata),
+      0.01);
 }
 
 TEST_F(MetadataUtilsTest, CheckDefaultDiscreteMapping) {
@@ -661,15 +663,20 @@ TEST_F(MetadataUtilsTest, CheckDefaultDiscreteMapping) {
   AddDiscreteMapping(&metadata, mapping_specific, 3, segmentation_key);
   AddDiscreteMapping(&metadata, mapping_default, 3, "my-default");
 
-  // No valid mapping should be found since there is no default mapping.
-  EXPECT_EQ(0, metadata_utils::ConvertToDiscreteScore("non-existing-key", 0.6,
-                                                      metadata));
+  // No valid mapping should be found since there is no default mapping, returns
+  // the score.
+  EXPECT_NEAR(
+      0.6,
+      metadata_utils::ConvertToDiscreteScore("non-existing-key", 0.6, metadata),
+      0.01);
 
   metadata.set_default_discrete_mapping("my-default");
   // Should now use the default values instead of the one from the
   // one in the configuration key.
-  EXPECT_EQ(6, metadata_utils::ConvertToDiscreteScore("non-existing-key", 0.6,
-                                                      metadata));
+  EXPECT_NEAR(
+      6,
+      metadata_utils::ConvertToDiscreteScore("non-existing-key", 0.6, metadata),
+      0.01);
 }
 
 TEST_F(MetadataUtilsTest, CheckMissingDefaultDiscreteMapping) {
@@ -680,9 +687,11 @@ TEST_F(MetadataUtilsTest, CheckMissingDefaultDiscreteMapping) {
   metadata.set_default_discrete_mapping("not-my-default");
 
   // Should not find 'not-my-default' mapping, since it is registered as
-  // 'my-default', so we should get a 0 result.
-  EXPECT_EQ(0, metadata_utils::ConvertToDiscreteScore("non-existing-key", 0.6,
-                                                      metadata));
+  // 'my-default', so we should get the score as default value.
+  EXPECT_NEAR(
+      0.6,
+      metadata_utils::ConvertToDiscreteScore("non-existing-key", 0.6, metadata),
+      0.01);
 }
 
 TEST_F(MetadataUtilsTest, SegmetationModelMetadataToString) {

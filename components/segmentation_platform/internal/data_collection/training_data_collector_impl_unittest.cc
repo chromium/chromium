@@ -94,7 +94,7 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
 
     SegmentationResultPrefs result_prefs(&prefs_);
     SelectedSegment selected_segment(
-        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE, 10);
     selected_segment.selection_time = base::Time::Now() - base::Days(1);
     result_prefs.SaveSegmentationResultToPref(kSegmentationKey,
                                               selected_segment);

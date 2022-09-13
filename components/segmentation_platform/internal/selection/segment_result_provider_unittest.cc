@@ -16,7 +16,7 @@
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/internal/execution/model_executor_impl.h"
 #include "components/segmentation_platform/internal/execution/processing/mock_feature_list_query_processor.h"
-#include "components/segmentation_platform/internal/platform_options.h"
+#include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/internal/scheduler/execution_service.h"
 #include "components/segmentation_platform/internal/signals/signal_handler.h"
 #include "components/segmentation_platform/public/local_state_helper.h"
@@ -40,7 +40,7 @@ const SegmentId kTestSegment2 =
 
 constexpr float kTestScore = 0.1;
 constexpr float kDatabaseScore = 0.6;
-constexpr int kTestRank = 0;
+constexpr float kTestRank = 0;
 constexpr int kDatabaseRank = 1;
 
 class TestModelProvider : public ModelProvider {
@@ -51,7 +51,11 @@ class TestModelProvider : public ModelProvider {
   void InitAndFetchModel(
       const ModelUpdatedCallback& model_updated_callback) override {
     proto::SegmentationModelMetadata metadata;
-    metadata.set_time_unit(proto::TimeUnit::DAY);
+    MetadataWriter writer(&metadata);
+    writer.SetDefaultSegmentationMetadataConfig();
+    std::pair<float, int> mapping[] = {{kTestScore + 0.1, kTestRank},
+                                       {kDatabaseScore - 0.1, kDatabaseRank}};
+    writer.AddDiscreteMappingEntries("test_key", mapping, 2);
     model_updated_callback.Run(segment_id_, metadata, kVersion);
   }
 
@@ -110,7 +114,7 @@ class SegmentResultProviderTest : public testing::Test {
       SegmentId segment_id,
       bool ignore_db_scores,
       SegmentResultProvider::ResultState expected_state,
-      absl::optional<int> expected_rank) {
+      absl::optional<float> expected_rank) {
     base::RunLoop wait_for_result;
     auto options = std::make_unique<SegmentResultProvider::GetResultOptions>();
     options->segment_id = segment_id;
@@ -118,11 +122,11 @@ class SegmentResultProviderTest : public testing::Test {
     options->ignore_db_scores = ignore_db_scores;
     options->callback = base::BindOnce(
         [](SegmentResultProvider::ResultState expected_state,
-           absl::optional<int> expected_rank, base::OnceClosure quit,
+           absl::optional<float> expected_rank, base::OnceClosure quit,
            std::unique_ptr<SegmentResultProvider::SegmentResult> result) {
           EXPECT_EQ(result->state, expected_state);
           if (expected_rank) {
-            EXPECT_EQ(*expected_rank, result->rank);
+            EXPECT_NEAR(*expected_rank, *result->rank, 0.01);
           } else {
             EXPECT_FALSE(result->rank);
           }

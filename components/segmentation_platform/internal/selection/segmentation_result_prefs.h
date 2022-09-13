@@ -20,11 +20,17 @@ using proto::SegmentId;
 // reading and writing to prefs.
 struct SelectedSegment {
  public:
-  explicit SelectedSegment(SegmentId segment_id);
+  SelectedSegment(SegmentId segment_id, absl::optional<float> rank);
   ~SelectedSegment();
 
   // The segment selection result.
   SegmentId segment_id;
+
+  // The discrete score computed based on the `segment_id` model execution. If a
+  // discrete mapping is not provided, the value will be equal to the model
+  // score. Otherwise the value will be the mapped score based on the mapping.
+  // May not be available in prefs for versions older than M107.
+  absl::optional<float> rank;
 
   // The time when the segment was selected.
   base::Time selection_time;

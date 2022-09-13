@@ -50,14 +50,14 @@ class SegmentResultProvider {
   struct SegmentResult {
     explicit SegmentResult(ResultState state);
     SegmentResult(ResultState state,
-                  int rank,
+                  float rank,
                   std::unique_ptr<ModelExecutionResult> execution_result);
     ~SegmentResult();
     SegmentResult(SegmentResult&) = delete;
     SegmentResult& operator=(SegmentResult&) = delete;
 
     ResultState state = ResultState::kUnknown;
-    absl::optional<int> rank;
+    absl::optional<float> rank;
 
     // The execution result is only available when the model is executed.
     // TODO(ssid): Support storing inputs to disk if needed.

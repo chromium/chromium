@@ -25,6 +25,11 @@ struct SegmentSelectionResult {
   // The result of segmentation. Can be empty if the the backend couldn't select
   // a segment with confidence.
   absl::optional<proto::SegmentId> segment;
+
+  // The discrete score computed based on the `segment` model execution. If a
+  // discrete mapping is not provided, the value will be equal to the model
+  // score. Otherwise the value will be the mapped score based on the mapping.
+  absl::optional<float> rank;
 };
 
 }  // namespace segmentation_platform

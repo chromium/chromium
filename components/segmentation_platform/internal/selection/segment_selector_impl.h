@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_SEGMENT_SELECTOR_IMPL_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_SEGMENT_SELECTOR_IMPL_H_
 
+#include <utility>
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -62,7 +63,7 @@ class SegmentSelectorImpl : public SegmentSelector {
 
   // Helper function to update the selected segment in the prefs. Auto-extends
   // the selection if the new result is unknown.
-  virtual void UpdateSelectedSegment(SegmentId new_selection);
+  virtual void UpdateSelectedSegment(SegmentId new_selection, float rank);
 
   // Called whenever a model eval completes. Runs segment selection to find the
   // best segment, and writes it to the pref.
@@ -77,7 +78,7 @@ class SegmentSelectorImpl : public SegmentSelector {
   // For testing.
   friend class SegmentSelectorTest;
 
-  using SegmentRanks = base::flat_map<SegmentId, int>;
+  using SegmentRanks = base::flat_map<SegmentId, float>;
 
   // Determines whether segment selection can be run based on whether the
   // segment selection TTL has expired, or selection is unavailable.
@@ -104,7 +105,8 @@ class SegmentSelectorImpl : public SegmentSelector {
   // Loops through all segments, performs discrete mapping, honors finch
   // supplied tie-breakers, TTL, inertia etc, and finds the highest rank.
   // Ignores the segments that have no results.
-  SegmentId FindBestSegment(const SegmentRanks& segment_scores);
+  std::pair<SegmentId, float> FindBestSegment(
+      const SegmentRanks& segment_scores);
 
   std::unique_ptr<SegmentResultProvider> segment_result_provider_;
 
