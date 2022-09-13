@@ -83,4 +83,15 @@ TEST_F(PluralStringHandlerTest, SingularString) {
   EXPECT_EQ("Edit file", call_data.arg3()->GetString());
 }
 
+TEST_F(PluralStringHandlerTest, InvalidPluralStringRequest) {
+  base::ListValue args;
+  args.Append(kHandlerFunctionName);
+  args.Append(/*name=*/"invalidKey");
+  args.Append(/*count=*/2);
+  web_ui_.HandleReceivedMessage("getPluralString", &args);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(0u, web_ui_.call_data().size());
+}
+
 }  // namespace ash
