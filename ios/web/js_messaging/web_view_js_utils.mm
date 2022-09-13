@@ -20,7 +20,7 @@
 namespace {
 
 // Converts result of WKWebView script evaluation to base::Value, parsing
-// |wk_result| up to a depth of |max_depth|.
+// `wk_result` up to a depth of `max_depth`.
 std::unique_ptr<base::Value> ValueResultFromWKResult(id wk_result,
                                                      int max_depth) {
   if (!wk_result)
@@ -135,11 +135,11 @@ void ExecuteJavaScript(WKWebView* web_view,
     return;
   }
 
-  // If |content_world| is not the page world, a |frame_info| must be specified.
-  // |frame_info| is required to ensure |script| is executed on the correct
+  // If `content_world` is not the page world, a `frame_info` must be specified.
+  // `frame_info` is required to ensure `script` is executed on the correct
   // webpage.
-  // NOTE: The page content world uses windowID to ensure that |script| is being
-  // executed on the intended page. Both windowID and |frame_info| are
+  // NOTE: The page content world uses windowID to ensure that `script` is being
+  // executed on the intended page. Both windowID and `frame_info` are
   // associated with the loaded page and are destroyed on navigation.
   DCHECK(content_world == WKContentWorld.pageWorld || frame_info);
 

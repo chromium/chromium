@@ -29,7 +29,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 // Returns the first WebFrame found which is not the main frame in the given
-// |web_state|. Does not wait and returns null if such a frame is not found.
+// `web_state`. Does not wait and returns null if such a frame is not found.
 web::WebFrame* GetChildWebFrameForWebState(web::WebState* web_state) {
   __block web::WebFramesManager* manager = web_state->GetWebFramesManager();
   web::WebFrame* iframe = nullptr;
@@ -49,7 +49,7 @@ namespace web {
 typedef WebTestWithWebState WebFrameImplIntTest;
 
 // Tests that the expected result is received from executing a JavaScript
-// function via |CallJavaScriptFunction| on the main frame.
+// function via `CallJavaScriptFunction` on the main frame.
 TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionOnMainFrame) {
   ASSERT_TRUE(LoadHtml("<p>"));
 
@@ -197,7 +197,7 @@ TEST_F(WebFrameImplIntTest, JavaScriptMessageFromFrame) {
 }
 
 // Tests that the expected result is received from executing a JavaScript
-// function via |CallJavaScriptFunction| on the main frame in the page content
+// function via `CallJavaScriptFunction` on the main frame in the page content
 // world.
 TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFramePageContentWorld) {
   ASSERT_TRUE(LoadHtml("<p>"));
@@ -231,7 +231,7 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFramePageContentWorld) {
 }
 
 // Tests that the expected result is received from executing a JavaScript
-// function via |CallJavaScriptFunction| on the main frame in an isolated
+// function via `CallJavaScriptFunction` on the main frame in an isolated
 // world.
 TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFrameIsolatedWorld) {
   ASSERT_TRUE(LoadHtml("<p>"));

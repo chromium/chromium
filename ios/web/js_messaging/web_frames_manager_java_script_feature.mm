@@ -100,7 +100,7 @@ void WebFramesManagerJavaScriptFeature::FrameAvailableMessageReceived(
   WebState* web_state = WebViewWebStateMap::FromBrowserState(browser_state_)
                             ->GetWebStateForWebView(message.webView);
   if (!web_state) {
-    // Ignore this message if |message.webView| is no longer associated with a
+    // Ignore this message if `message.webView` is no longer associated with a
     // WebState.
     return;
   }
@@ -119,10 +119,10 @@ void WebFramesManagerJavaScriptFeature::FrameAvailableMessageReceived(
     return;
   }
 
-  // Validate |frame_id| is a proper hex string.
+  // Validate `frame_id` is a proper hex string.
   for (const char& c : frame_id) {
     if (!base::IsHexDigit(c)) {
-      // Ignore frame if |frame_id| is malformed.
+      // Ignore frame if `frame_id` is malformed.
       return;
     }
   }
@@ -143,7 +143,7 @@ void WebFramesManagerJavaScriptFeature::FrameUnavailableMessageReceived(
   WebState* web_state = WebViewWebStateMap::FromBrowserState(browser_state_)
                             ->GetWebStateForWebView(message.webView);
   if (!web_state) {
-    // Ignore this message if |message.webView| is no longer associated with a
+    // Ignore this message if `message.webView` is no longer associated with a
     // WebState.
     return;
   }

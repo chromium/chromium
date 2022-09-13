@@ -22,7 +22,7 @@ namespace {
 const char kWebJavaScriptFeatureManagerKeyName[] =
     "web_java_script_feature_manager";
 
-// Adds common features to |world|.
+// Adds common features to `world`.
 void AddSharedCommonFeatures(web::JavaScriptContentWorld* world) {
   // The scripts defined by these features were previously hardcoded into
   // js_compile.gni and are assumed to always exist by other feature javascript

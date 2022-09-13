@@ -45,7 +45,7 @@ class ScopedWKScriptMessageHandlerTest : public WebTestWithWebState {
   ScopedWKScriptMessageHandlerTest() = default;
   ~ScopedWKScriptMessageHandlerTest() override = default;
 
-  // Returns the user content controller associated with |GetBrowserState()|.
+  // Returns the user content controller associated with `GetBrowserState()`.
   WKUserContentController* GetUserContentController() {
     WKWebViewConfigurationProvider& configuration_provider =
         WKWebViewConfigurationProvider::FromBrowserState(GetBrowserState());

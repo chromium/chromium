@@ -21,10 +21,10 @@ NSString* GetPageScript(NSString* script_file_name);
 // JavaScript call). Injecting the script multiple times invalidates the
 // __gCrWeb.windowId variable and will break the ability to send messages from
 // JS to the native code. Wrapping injected script into "if (!injected)" check
-// prevents multiple injections into the same page. |script_identifier| should
+// prevents multiple injections into the same page. `script_identifier` should
 // identify the script being injected in order to enforce the injection of
-// |script| to only once.
-// NOTE: |script_identifier| will be used as the suffix for a JavaScript var, so
+// `script` to only once.
+// NOTE: `script_identifier` will be used as the suffix for a JavaScript var, so
 // it must adhere to JavaScript var naming rules.
 NSString* MakeScriptInjectableOnce(NSString* script_identifier,
                                    NSString* script);

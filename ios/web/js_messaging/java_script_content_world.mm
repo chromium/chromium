@@ -38,7 +38,7 @@ WKUserScriptInjectionTime InjectionTimeToWKUserScriptInjectionTime(
   return WKUserScriptInjectionTimeAtDocumentStart;
 }
 
-// Returns the WKUserContentController associated with |browser_state|.
+// Returns the WKUserContentController associated with `browser_state`.
 // NOTE: Only fetch the WKUserContentController once at construction. Although
 // it is not guaranteed to remain constant over the lifetime of the
 // application, the entire JavaScriptcontentWorld will be recreated when it
@@ -72,11 +72,11 @@ bool JavaScriptContentWorld::HasFeature(const JavaScriptFeature* feature) {
 
 void JavaScriptContentWorld::AddFeature(const JavaScriptFeature* feature) {
   if (HasFeature(feature)) {
-    // |feature| has already been added to this content world.
+    // `feature` has already been added to this content world.
     return;
   }
 
-  // Ensure |feature| supports this content world.
+  // Ensure `feature` supports this content world.
   if (content_world_) {
     JavaScriptFeature::ContentWorld incompatible_world_value;
     if (content_world_ == WKContentWorld.pageWorld) {

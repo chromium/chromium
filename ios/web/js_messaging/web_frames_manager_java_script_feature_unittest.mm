@@ -45,7 +45,7 @@ class WebFramesManagerJavaScriptFeatureTest : public WebTestWithWebState {
                                            GURL("https://www.frame2.test"))) {}
 
   // Mocks a JS message to notify the WebFramesManagerJavaScriptFeature
-  // associated with GetBrowserState() of a new |web_frame|.
+  // associated with GetBrowserState() of a new `web_frame`.
   void SendFrameBecameAvailableMessage(const FakeWebFrame* web_frame) {
     // Mock WKSecurityOrigin.
     WKSecurityOrigin* security_origin = OCMClassMock([WKSecurityOrigin class]);
@@ -78,7 +78,7 @@ class WebFramesManagerJavaScriptFeatureTest : public WebTestWithWebState {
   }
 
   // Mocks a JS message to notify the WebFramesManagerJavaScriptFeature
-  // associated with GetBrowserState() of a removed |web_frame|.
+  // associated with GetBrowserState() of a removed `web_frame`.
   void SendFrameBecameUnavailableMessage(const FakeWebFrame* web_frame) {
     // Mock WKSecurityOrigin.
     WKSecurityOrigin* security_origin = OCMClassMock([WKSecurityOrigin class]);
@@ -260,8 +260,8 @@ TEST_F(WebFramesManagerJavaScriptFeatureTest, OnWebViewUpdated) {
   web_state_impl->RemoveAllWebFrames();
 
   // Send JS message of loaded/unloaded web frames in previous WKWebView (i.e.
-  // web_view_). |frames_manager_| should have unregistered JS message handlers
-  // for |web_view_| and removed all web frames, so no web frame should be
+  // web_view_). `frames_manager_` should have unregistered JS message handlers
+  // for `web_view_` and removed all web frames, so no web frame should be
   // added.
   SendFrameBecameAvailableMessage(frame_1_.get());
   EXPECT_EQ(0ul, GetWebFramesManager().GetAllWebFrames().size());

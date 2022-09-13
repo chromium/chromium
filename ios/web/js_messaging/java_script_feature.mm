@@ -21,9 +21,9 @@
 
 namespace {
 
-// Returns a JavaScript safe string based on |script_filename|. This is used as
+// Returns a JavaScript safe string based on `script_filename`. This is used as
 // a unique identifier for a given script and passed to
-// |MakeScriptInjectableOnce| which ensures JS isn't executed multiple times due
+// `MakeScriptInjectableOnce` which ensures JS isn't executed multiple times due
 // to duplicate injection.
 NSString* InjectionTokenForScript(NSString* script_filename) {
   NSMutableCharacterSet* validCharacters =
@@ -86,7 +86,7 @@ NSString* JavaScriptFeature::FeatureScript::GetScriptString() const {
   }
   // WKUserScript instances will automatically be re-injected by WebKit when the
   // document is re-created, even though the JavaScript context will not be
-  // re-created. So the script needs to be wrapped in |MakeScriptInjectableOnce|
+  // re-created. So the script needs to be wrapped in `MakeScriptInjectableOnce`
   // so that is is not re-injected.
   return MakeScriptInjectableOnce(
       InjectionTokenForScript(script_filename),

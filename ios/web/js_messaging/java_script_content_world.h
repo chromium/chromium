@@ -26,7 +26,7 @@ class JavaScriptFeature;
 // improve the security and robustness of a feature's JavaScript.
 // NOTE: Destruction of a JavaScriptContentWorld can not completely clean up
 // the state added to the WKUserContentController associated with
-// |browser_state| because WKUserContentController does not expose API to remove
+// `browser_state` because WKUserContentController does not expose API to remove
 // specific WKUserScript instances.
 class JavaScriptContentWorld {
  public:
@@ -34,27 +34,27 @@ class JavaScriptContentWorld {
   JavaScriptContentWorld(const JavaScriptContentWorld&) = delete;
 
   // Creates a content world for features which will interact with the given
-  // |content_world|.
+  // `content_world`.
   JavaScriptContentWorld(BrowserState* browser_state,
                          WKContentWorld* content_world);
 
   // Returns the associated WKContentWorld.
   WKContentWorld* GetWKContentWorld();
 
-  // Adds |feature| by configuring the feature scripts and communication
+  // Adds `feature` by configuring the feature scripts and communication
   // callbacks.
   void AddFeature(const JavaScriptFeature* feature);
 
-  // Returns true if and only if |feature| has been added to this content world.
+  // Returns true if and only if `feature` has been added to this content world.
   bool HasFeature(const JavaScriptFeature* feature);
 
  private:
-  // Processes the response of a script message and forwards it to |handler|.
+  // Processes the response of a script message and forwards it to `handler`.
   void ScriptMessageReceived(JavaScriptFeature::ScriptMessageHandler handler,
                              BrowserState* browser_state,
                              WKScriptMessage* script_message);
 
-  // The features which have already been configured for |content_world_|.
+  // The features which have already been configured for `content_world_`.
   std::set<const JavaScriptFeature*> features_;
 
   // The associated browser state for configuring injected scripts and

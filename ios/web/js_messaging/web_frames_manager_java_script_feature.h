@@ -24,13 +24,13 @@ class WebFramesManagerJavaScriptFeature : public base::SupportsUserData::Data,
   ~WebFramesManagerJavaScriptFeature() override;
 
   // Returns the WebFramesManagerJavaScriptFeature associated with
-  // |browser_state|, creating one if necessary. |browser_state| must not be
+  // `browser_state`, creating one if necessary. `browser_state` must not be
   // null.
   static WebFramesManagerJavaScriptFeature* FromBrowserState(
       BrowserState* browser_state);
 
   // Configures message handlers for the creation and destruction of frames.
-  // |user_content_controller| is used directly (instead of using the built-in
+  // `user_content_controller` is used directly (instead of using the built-in
   // JavaScriptFeature message handling) because constructing WebFrame instances
   // requires access to the WKScriptMessage's WKFrameInfo instance.
   void ConfigureHandlers(WKUserContentController* user_content_controller);

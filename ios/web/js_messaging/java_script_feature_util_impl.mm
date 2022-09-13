@@ -62,13 +62,13 @@ NSDictionary<NSString*, NSString*>* PlaceholderReplacements() {
 }
 
 FaviconJavaScriptFeature* GetFaviconJavaScriptFeature() {
-  // Static storage is ok for |favicon_feature| as it holds no state.
+  // Static storage is ok for `favicon_feature` as it holds no state.
   static base::NoDestructor<FaviconJavaScriptFeature> favicon_feature;
   return favicon_feature.get();
 }
 
 WindowErrorJavaScriptFeature* GetWindowErrorJavaScriptFeature() {
-  // Static storage is ok for |window_error_feature| as it holds no state.
+  // Static storage is ok for `window_error_feature` as it holds no state.
   static base::NoDestructor<WindowErrorJavaScriptFeature> window_error_feature(
       base::BindRepeating(^(
           WindowErrorJavaScriptFeature::ErrorDetails error_details) {
@@ -90,7 +90,7 @@ WindowErrorJavaScriptFeature* GetWindowErrorJavaScriptFeature() {
 }
 
 JavaScriptFeature* GetPluginPlaceholderJavaScriptFeature() {
-  // Static storage is ok for |plugin_placeholder_feature| as it holds no state.
+  // Static storage is ok for `plugin_placeholder_feature` as it holds no state.
   static base::NoDestructor<JavaScriptFeature> plugin_placeholder_feature(
       JavaScriptFeature::ContentWorld::kAnyContentWorld,
       std::vector<const JavaScriptFeature::FeatureScript>(
@@ -105,7 +105,7 @@ JavaScriptFeature* GetPluginPlaceholderJavaScriptFeature() {
 }
 
 JavaScriptFeature* GetShareWorkaroundJavaScriptFeature() {
-  // Static storage is ok for |share_workaround_feature| as it holds no state.
+  // Static storage is ok for `share_workaround_feature` as it holds no state.
   static base::NoDestructor<JavaScriptFeature> share_workaround_feature(
       JavaScriptFeature::ContentWorld::kPageContentWorld,
       std::vector<const JavaScriptFeature::FeatureScript>(
@@ -152,14 +152,14 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
 }
 
 ScrollHelperJavaScriptFeature* GetScrollHelperJavaScriptFeature() {
-  // Static storage is ok for |scroll_helper_feature| as it holds no state.
+  // Static storage is ok for `scroll_helper_feature` as it holds no state.
   static base::NoDestructor<ScrollHelperJavaScriptFeature>
       scroll_helper_feature;
   return scroll_helper_feature.get();
 }
 
 JavaScriptFeature* GetBaseJavaScriptFeature() {
-  // Static storage is ok for |base_feature| as it holds no state.
+  // Static storage is ok for `base_feature` as it holds no state.
   static base::NoDestructor<JavaScriptFeature> base_feature(
       JavaScriptFeature::ContentWorld::kAnyContentWorld,
       std::vector<const JavaScriptFeature::FeatureScript>(
@@ -171,7 +171,7 @@ JavaScriptFeature* GetBaseJavaScriptFeature() {
 }
 
 JavaScriptFeature* GetCommonJavaScriptFeature() {
-  // Static storage is ok for |common_feature| as it holds no state.
+  // Static storage is ok for `common_feature` as it holds no state.
   static base::NoDestructor<JavaScriptFeature> common_feature(
       JavaScriptFeature::ContentWorld::kAnyContentWorld,
       std::vector<const JavaScriptFeature::FeatureScript>(
@@ -184,7 +184,7 @@ JavaScriptFeature* GetCommonJavaScriptFeature() {
 }
 
 JavaScriptFeature* GetMessageJavaScriptFeature() {
-  // Static storage is ok for |message_feature| as it holds no state.
+  // Static storage is ok for `message_feature` as it holds no state.
   static base::NoDestructor<JavaScriptFeature> message_feature(
       JavaScriptFeature::ContentWorld::kAnyContentWorld,
       std::vector<const JavaScriptFeature::FeatureScript>(

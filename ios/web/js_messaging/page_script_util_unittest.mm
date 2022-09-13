@@ -54,7 +54,7 @@ class PageScriptUtilTest : public WebTest {
   }
 };
 
-// Tests that |MakeScriptInjectableOnce| prevents a script from being injected
+// Tests that `MakeScriptInjectableOnce` prevents a script from being injected
 // twice.
 TEST_F(PageScriptUtilTest, MakeScriptInjectableOnce) {
   WKWebView* web_view = BuildWKWebView(CGRectZero, GetBrowserState());

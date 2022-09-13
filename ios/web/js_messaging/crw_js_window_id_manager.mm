@@ -31,7 +31,7 @@ const size_t kUniqueKeyLength = 16;
 // value.
 const double kSignificantInjectionTime = 0.1;
 
-// Returns whether |error| represents a failure to execute JavaScript due to
+// Returns whether `error` represents a failure to execute JavaScript due to
 // JavaScript execution being disallowed.
 bool IsJavaScriptExecutionProhibitedError(NSError* error) {
   return error.code == WKErrorJavaScriptExceptionOccurred &&
@@ -104,7 +104,7 @@ bool IsJavaScriptExecutionProhibitedError(NSError* error) {
                  return;
                }
 
-               // If |result| is an incorrect type, do not check its value.
+               // If `result` is an incorrect type, do not check its value.
                // Also do not attempt to re-inject scripts as it may lead to
                // endless recursion attempting to inject the scripts correctly.
                if (result && CFBooleanGetTypeID() !=

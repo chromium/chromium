@@ -22,22 +22,22 @@ namespace {
 // URL of a page with test links.
 const char kLinksPageURL[] = "/links.html";
 
-// Text of the link to |kPonyPageURL| on |kLinksPageURL|.
+// Text of the link to `kPonyPageURL` on `kLinksPageURL`.
 const char kLinksPagePonyLinkText[] = "Normal Link";
 
-// ID of the link to |kPonyPageURL| on |kLinksPageURL|.
+// ID of the link to `kPonyPageURL` on `kLinksPageURL`.
 const char kLinksPagePonyLinkID[] = "normal-link";
 
-// Text of the same page link on |kLinksPageURL|.
+// Text of the same page link on `kLinksPageURL`.
 const char kLinksPageSamePageLinkText[] = "Same-page Link";
 
-// ID of the same page link on |kLinksPageURL|.
+// ID of the same page link on `kLinksPageURL`.
 const char kLinksPageSamePageLinkID[] = "same-page-link";
 
-// URL of a page linked to by a link on |kLinksPageURL|.
+// URL of a page linked to by a link on `kLinksPageURL`.
 const char kPonyPageURL[] = "/pony.html";
 
-// Text on |kPonyPageURL|.
+// Text on `kPonyPageURL`.
 const char kPonyPageText[] = "Anyone know any good pony jokes?";
 }  // namespace
 

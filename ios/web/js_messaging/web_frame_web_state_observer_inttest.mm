@@ -39,7 +39,7 @@ class WebStateObserverMock : public web::WebStateObserver {
   void WebStateDestroyed(web::WebState* web_state) override { NOTREACHED(); }
 };
 
-// A predicate that returns true if |frame| is a main frame.
+// A predicate that returns true if `frame` is a main frame.
 bool IsMainFrame(web::WebFrame* frame) {
   return frame->IsMainFrame();
 }
@@ -106,7 +106,7 @@ TEST_F(WebFrameWebStateObserverInttest, SingleWebFrameHTTPS) {
   EXPECT_CALL(observer_, WebFrameDidBecomeAvailable(web_state(), testing::_))
       .WillOnce(VerifyMainWebFrame(web_state()));
 
-  // Load a first page to avoid having an item inserted during the |LoadHtml|.
+  // Load a first page to avoid having an item inserted during the `LoadHtml`.
   test::LoadUrl(web_state(), test_server_.GetURL("/echo-query?test"));
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "test"));
 
@@ -130,7 +130,7 @@ TEST_F(WebFrameWebStateObserverInttest, TwoWebFrameHTTPS) {
   EXPECT_CALL(observer_, WebFrameDidBecomeAvailable(web_state(), testing::_))
       .WillOnce(VerifyMainWebFrame(web_state()));
 
-  // Load a first page to avoid having an item inserted during the |LoadHtml|.
+  // Load a first page to avoid having an item inserted during the `LoadHtml`.
   test::LoadUrl(web_state(), test_server_.GetURL("/echo-query?test"));
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "test"));
 

@@ -19,13 +19,13 @@ namespace web {
 
 class WebFramesManagerImplTest : public WebTestWithWebState {
  protected:
-  // Notifies |web_state()| of a newly available |web_frame|.
+  // Notifies `web_state()` of a newly available `web_frame`.
   void SendFrameBecameAvailableMessage(std::unique_ptr<WebFrame> web_frame) {
     WebStateImpl* web_state_impl = static_cast<WebStateImpl*>(web_state());
     web_state_impl->WebFrameBecameAvailable(std::move(web_frame));
   }
 
-  // Notifies |web_state()| that the web frame with |frame_id| will become
+  // Notifies `web_state()` that the web frame with `frame_id` will become
   // unavailable.
   void SendFrameBecameUnavailableMessage(const std::string& frame_id) {
     WebStateImpl* web_state_impl = static_cast<WebStateImpl*>(web_state());
@@ -79,7 +79,7 @@ TEST_F(WebFramesManagerImplTest, DuplicateMainWebFrame) {
   SendFrameBecameAvailableMessage(std::move(frame));
   SendFrameBecameAvailableMessage(std::move(second_main_frame));
 
-  // Validate that |frame| remains the main frame and |second_main_frame| is
+  // Validate that `frame` remains the main frame and `second_main_frame` is
   // ignored.
   EXPECT_EQ(1ul, GetWebFramesManager().GetAllWebFrames().size());
   WebFrame* main_frame = GetWebFramesManager().GetMainWebFrame();

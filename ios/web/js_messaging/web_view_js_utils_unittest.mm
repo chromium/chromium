@@ -141,7 +141,7 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromDictionaryWithDepthCheckWKResult) {
   }));
 
   // Check that parsing the dictionary stopped at a depth of
-  // |kMaximumParsingRecursionDepth|.
+  // `kMaximumParsingRecursionDepth`.
   std::unique_ptr<base::Value> value =
       web::ValueResultFromWKResult(test_dictionary);
   base::DictionaryValue* current_dictionary = nullptr;
@@ -174,7 +174,7 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromArrayWithDepthCheckWKResult) {
   }));
 
   // Check that parsing the array stopped at a depth of
-  // |kMaximumParsingRecursionDepth|.
+  // `kMaximumParsingRecursionDepth`.
   std::unique_ptr<base::Value> value = web::ValueResultFromWKResult(test_array);
   absl::optional<base::Value::ConstListView> current_list;
   absl::optional<base::Value::ConstListView> inner_list;
@@ -245,7 +245,7 @@ TEST_F(WebViewJsUtilsTest, ExecuteJavaScriptPageContentWorldByDefault) {
   __block bool set_value_complete = false;
   __block NSError* set_value_error = nil;
 
-  // Set |value| in the page content world.
+  // Set `value` in the page content world.
   web::ExecuteJavaScript(web_view, WKContentWorld.pageWorld,
                          /*frame_info=*/nil, @"var value = 3;",
                          ^(id innerResult, NSError* innerError) {
@@ -287,7 +287,7 @@ TEST_F(WebViewJsUtilsTest, ExecuteJavaScriptInPageWorldWithoutFrameInfo) {
   __block bool set_value_complete = false;
   __block NSError* set_value_error = nil;
 
-  // Set |value| in the page content world.
+  // Set `value` in the page content world.
   web::ExecuteJavaScript(web_view, WKContentWorld.pageWorld,
                          /*frame_info=*/nil, @"var value = 3;",
                          ^(id innerResult, NSError* innerError) {
@@ -347,7 +347,7 @@ TEST_F(WebViewJsUtilsTest, ExecuteJavaScriptPageContentWorld) {
   __block bool set_value_complete = false;
   __block NSError* set_value_error = nil;
 
-  // Set |value| in the page content world.
+  // Set `value` in the page content world.
   web::ExecuteJavaScript(web_view, WKContentWorld.pageWorld, frame_info,
                          @"var value = 3;",
                          ^(id innerResult, NSError* innerError) {
@@ -360,7 +360,7 @@ TEST_F(WebViewJsUtilsTest, ExecuteJavaScriptPageContentWorld) {
   }));
   ASSERT_FALSE(set_value_error);
 
-  // Ensure the value can be accessed when specifying |frame_info|.
+  // Ensure the value can be accessed when specifying `frame_info`.
   web::ExecuteJavaScript(web_view, WKContentWorld.pageWorld, frame_info,
                          @"value", ^(id block_result, NSError* block_error) {
                            result = [block_result copy];
@@ -401,7 +401,7 @@ TEST_F(WebViewJsUtilsTest, ExecuteJavaScriptIsolatedWorld) {
 
   __block bool set_value_complete = false;
   __block NSError* set_value_error = nil;
-  // Set |value| in the page content world.
+  // Set `value` in the page content world.
   web::ExecuteJavaScript(web_view, WKContentWorld.defaultClientWorld,
                          frame_info, @"var value = 3;",
                          ^(id result, NSError* error) {
@@ -418,7 +418,7 @@ TEST_F(WebViewJsUtilsTest, ExecuteJavaScriptIsolatedWorld) {
   __block id isolated_world_result = nil;
   __block NSError* isolated_world_error = nil;
   // Ensure the value can be accessed when specifying an isolated world and
-  // |frame_info|.
+  // `frame_info`.
   web::ExecuteJavaScript(web_view, WKContentWorld.defaultClientWorld,
                          frame_info, @"value",
                          ^(id block_result, NSError* block_error) {

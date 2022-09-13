@@ -77,7 +77,7 @@ TEST_F(JSWindowIDManagerTest, MultipleInjections) {
   EXPECT_NSNE(windowID, [manager windowID]);
 }
 
-// Tests that injection will retry if |window.__gCrWeb| is not present.
+// Tests that injection will retry if `window.__gCrWeb` is not present.
 TEST_F(JSWindowIDManagerTest, InjectionRetry) {
   WKWebView* web_view = [[WKWebView alloc] init];
 

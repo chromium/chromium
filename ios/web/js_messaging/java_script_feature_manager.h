@@ -18,34 +18,34 @@ namespace web {
 class BrowserState;
 class JavaScriptFeature;
 
-// Configures JavaScriptFeatures for |browser_state|. The features will be
-// added to either |page_content_world_| or |isolated_world_|  based on
+// Configures JavaScriptFeatures for `browser_state`. The features will be
+// added to either `page_content_world_` or `isolated_world_`  based on
 // JavaScriptFeature::GetSupportedContentWorld() and the operating system of the
 // user's device (which determines if isolated worlds are supported).
 class JavaScriptFeatureManager : public base::SupportsUserData::Data {
  public:
   ~JavaScriptFeatureManager() override;
 
-  // Returns the JavaScriptFeatureManager associated with |browser_state.|
+  // Returns the JavaScriptFeatureManager associated with `browser_state`.
   // If a JavaScriptFeatureManager does not already exist, one will be created
-  // and associated with |browser_state|. |browser_state| must not be null.
+  // and associated with `browser_state`. `browser_state` must not be null.
   static JavaScriptFeatureManager* FromBrowserState(
       BrowserState* browser_state);
 
   // Returns the JavaScriptContentWorld for the page content world associated
-  // with |browser_state|. If a JavaScriptFeatureManager does not already exist,
-  // one will be created and associated with |browser_state|. |browser_state|
+  // with `browser_state`. If a JavaScriptFeatureManager does not already exist,
+  // one will be created and associated with `browser_state`. `browser_state`
   // must not be null.
   static JavaScriptContentWorld* GetPageContentWorldForBrowserState(
       BrowserState* browser_state);
 
-  // Configures |features| on |user_content_controller_| by adding user scripts
+  // Configures `features` on `user_content_controller_` by adding user scripts
   // and script message handlers.
-  // NOTE: |page_content_world_| and |isolated_world_| will be recreated.
+  // NOTE: `page_content_world_` and `isolated_world_` will be recreated.
   void ConfigureFeatures(std::vector<JavaScriptFeature*> features);
 
-  // Returns the content world associated with |feature| or null if the feature
-  // has not be added to the associated |browser_state_|.
+  // Returns the content world associated with `feature` or null if the feature
+  // has not be added to the associated `browser_state_`.
   JavaScriptContentWorld* GetContentWorldForFeature(JavaScriptFeature* feature);
 
   JavaScriptFeatureManager(const JavaScriptFeatureManager&) = delete;

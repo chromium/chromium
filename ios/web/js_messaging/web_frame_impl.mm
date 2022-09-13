@@ -26,8 +26,8 @@
 
 namespace {
 
-// Creates a JavaScript string for executing the function __gCrWeb.|name| with
-// |parameters|.
+// Creates a JavaScript string for executing the function __gCrWeb.`name` with
+// `parameters`.
 NSString* CreateFunctionCallWithParamaters(
     const std::string& name,
     const std::vector<base::Value>& parameters) {

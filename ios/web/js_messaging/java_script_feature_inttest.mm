@@ -282,7 +282,7 @@ TEST_F(JavaScriptFeatureAnyContentWorldTest, ReinjectionBehaviorIsolatedWorld) {
 }
 
 // Sets up a FakeJavaScriptFeature in an isolated world using
-// |ContentWorld::kIsolatedWorldOnly|.
+// `ContentWorld::kIsolatedWorldOnly`.
 class JavaScriptFeatureIsolatedWorldTest : public WebTestWithWebState {
  protected:
   JavaScriptFeatureIsolatedWorldTest()

@@ -69,7 +69,7 @@ TEST_F(JavaScriptFeatureTest, FeatureScriptReinjectionBehavior) {
 }
 
 // Tests that FeatureScripts are only injected once when created with
-// |ReinjectionBehavior::kInjectOncePerWindow|.
+// `ReinjectionBehavior::kInjectOncePerWindow`.
 TEST_F(JavaScriptFeatureTest, ReinjectionBehaviorOnce) {
   auto feature_script =
       web::JavaScriptFeature::FeatureScript::CreateWithFilename(
@@ -86,14 +86,14 @@ TEST_F(JavaScriptFeatureTest, ReinjectionBehaviorOnce) {
   ASSERT_TRUE(web::test::ExecuteJavaScript(
       web_view, @"try { !!window.__gCrWeb; } catch (err) {false;}"));
 
-  // Store a value within |window.__gCrWeb|.
+  // Store a value within `window.__gCrWeb`.
   web::test::ExecuteJavaScript(web_view, @"window.__gCrWeb.someData = 1;");
   ASSERT_NSEQ(@(1), web::test::ExecuteJavaScript(web_view,
                                                  @"window.__gCrWeb.someData"));
 
   // Execute feature script again, which should not overwrite window state.
   web::test::ExecuteJavaScript(web_view, feature_script.GetScriptString());
-  // The |someData| value should still exist.
+  // The `someData` value should still exist.
   EXPECT_NSEQ(@(1), web::test::ExecuteJavaScript(web_view,
                                                  @"window.__gCrWeb.someData"));
 }
