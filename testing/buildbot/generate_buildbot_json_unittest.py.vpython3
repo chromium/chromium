@@ -1,0 +1,10 @@
+python_version: "3.8"
+
+wheel: <
+  name: "infra/python/wheels/pyfakefs-py2_py3"
+  version: "version:3.7.2"
+>
+wheel <
+  name: "infra/python/wheels/six-py2_py3"
+  version: "version:1.15.0"
+>
