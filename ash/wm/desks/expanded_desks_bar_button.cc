@@ -7,6 +7,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
@@ -126,8 +127,6 @@ ExpandedDesksBarButton::ExpandedDesksBarButton(
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  label_->SetBackgroundColor(AshColorProvider::Get()->GetShieldLayerColor(
-      AshColorProvider::ShieldLayerType::kShield80));
   SetButtonState(initially_enabled);
 }
 
@@ -202,6 +201,8 @@ void ExpandedDesksBarButton::Layout() {
 
 void ExpandedDesksBarButton::OnThemeChanged() {
   views::View::OnThemeChanged();
+  label_->SetBackgroundColor(
+      GetColorProvider()->GetColor(kColorAshShieldAndBase80));
   UpdateBorderColor();
 }
 

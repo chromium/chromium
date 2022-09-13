@@ -163,7 +163,6 @@ class ASH_EXPORT DesksBarView : public views::View,
   void Layout() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-  void OnThemeChanged() override;
 
   // DesksController::Observer:
   void OnDeskAdded(const Desk* desk) override;

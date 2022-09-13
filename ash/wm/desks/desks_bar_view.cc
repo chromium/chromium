@@ -17,6 +17,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
 #include "ash/utility/haptics_util.h"
@@ -362,9 +363,7 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
         /*use_light_colors=*/false));
   }
 
-  SetBackground(
-      views::CreateSolidBackground(AshColorProvider::Get()->GetShieldLayerColor(
-          AshColorProvider::ShieldLayerType::kShield80)));
+  SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
   scroll_view_->SetPaintToLayer();
   scroll_view_->layer()->SetFillsBoundsOpaquely(false);
@@ -827,14 +826,6 @@ void DesksBarView::OnGestureEvent(ui::GestureEvent* event) {
     default:
       break;
   }
-}
-
-void DesksBarView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  background()->SetNativeControlColor(
-      AshColorProvider::Get()->GetShieldLayerColor(
-          AshColorProvider::ShieldLayerType::kShield80));
-  SchedulePaint();
 }
 
 void DesksBarView::OnDeskAdded(const Desk* desk) {

@@ -19,6 +19,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -866,8 +867,7 @@ void LoginExpandedPublicAccountView::OnPaint(gfx::Canvas* canvas) {
 
   cc::PaintFlags flags;
   flags.setStyle(cc::PaintFlags::kFill_Style);
-  flags.setColor(AshColorProvider::Get()->GetShieldLayerColor(
-      AshColorProvider::ShieldLayerType::kShield80));
+  flags.setColor(GetColorProvider()->GetColor(kColorAshShieldAndBase80));
   flags.setAntiAlias(true);
   canvas->DrawRoundRect(GetContentsBounds(), kRoundRectCornerRadiusDp, flags);
 }

@@ -28,6 +28,7 @@
 #include "ash/search_box/search_box_constants.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -462,17 +463,16 @@ void AssistantPageView::UpdateBackground(bool in_tablet_mode) {
   }
 
   // Color
-  const auto* color_provider = ColorProvider::Get();
-  // ColorProvide might be nullptr in tests as shell might not has an instance
-  // in tests.
+  const auto* color_provider =
+      GetWidget() ? GetWidget()->GetColorProvider() : nullptr;
+  // ColorProvide might be nullptr in tests or this function is triggered before
+  // `this` is added to the view hierarchy.
   if (color_provider && features::IsProductivityLauncherEnabled()) {
-    layer()->SetColor(color_provider->GetBaseLayerColor(
-        ColorProvider::BaseLayerType::kTransparent80));
+    layer()->SetColor(color_provider->GetColor(kColorAshShieldAndBase80));
   } else if (color_provider && features::IsDarkLightModeEnabled()) {
-    layer()->SetColor(color_provider->GetShieldLayerColor(
-        features::IsBackgroundBlurEnabled()
-            ? ColorProvider::ShieldLayerType::kShield80
-            : ColorProvider::ShieldLayerType::kShield95));
+    layer()->SetColor(color_provider->GetColor(
+        features::IsBackgroundBlurEnabled() ? kColorAshShieldAndBase80
+                                            : kColorAshShieldAndBase95));
   } else {
     layer()->SetColor(SK_ColorWHITE);
   }

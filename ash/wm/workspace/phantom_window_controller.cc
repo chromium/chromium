@@ -10,6 +10,7 @@
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/root_window_controller.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/window_util.h"
 #include "ui/aura/window.h"
@@ -206,10 +207,8 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreatePhantomWidget(
 
   phantom_widget->SetContentsView(
       views::Builder<views::View>()
-          .SetBackground(views::CreateRoundedRectBackground(
-              AshColorProvider::Get()->GetShieldLayerColor(
-                  AshColorProvider::ShieldLayerType::kShield20),
-              kPhantomWindowCornerRadius))
+          .SetBackground(views::CreateThemedRoundedRectBackground(
+              kColorAshShieldAndBase20, kPhantomWindowCornerRadius))
           .SetBorder(std::make_unique<views::HighlightBorder>(
               kPhantomWindowCornerRadius,
               views::HighlightBorder::Type::kHighlightBorder1,

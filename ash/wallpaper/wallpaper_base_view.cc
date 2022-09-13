@@ -7,7 +7,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/numerics/safe_conversions.h"
 #include "cc/paint/paint_flags.h"
@@ -20,11 +20,12 @@ namespace {
 
 // Gets the shield color based on the state. This is used for the login, lock,
 // overview and tablet mode.
-SkColor GetWallpaperShieldColor() {
-  return AshColorProvider::Get()->GetShieldLayerColor(
+SkColor GetWallpaperShieldColor(const views::Widget* widget) {
+  DCHECK(widget);
+  return widget->GetColorProvider()->GetColor(
       Shell::Get()->session_controller()->IsUserSessionBlocked()
-          ? AshColorProvider::ShieldLayerType::kShield80
-          : AshColorProvider::ShieldLayerType::kShield40);
+          ? kColorAshShieldAndBase40
+          : kColorAshShieldAndBase80);
 }
 
 }  // namespace
@@ -103,7 +104,7 @@ void WallpaperBaseView::OnPaint(gfx::Canvas* canvas) {
   }
 
   if (controller->ShouldApplyShield())
-    canvas->FillRect(GetLocalBounds(), GetWallpaperShieldColor());
+    canvas->FillRect(GetLocalBounds(), GetWallpaperShieldColor(GetWidget()));
 }
 
 void WallpaperBaseView::OnThemeChanged() {

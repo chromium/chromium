@@ -82,7 +82,8 @@ class ASH_EXPORT ScrollableUsersListView : public views::ScrollView,
 
  private:
   struct GradientParams {
-    static GradientParams BuildForStyle(LoginDisplayStyle style);
+    static GradientParams BuildForStyle(LoginDisplayStyle style,
+                                        views::View* view);
 
     // Start color for drawing linear gradient.
     SkColor color_from = SK_ColorTRANSPARENT;
