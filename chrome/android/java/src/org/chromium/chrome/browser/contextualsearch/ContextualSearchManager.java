@@ -231,6 +231,9 @@ public class ContextualSearchManager
     /** A means of observing scene changes and attaching overlays. */
     private LayoutManagerImpl mLayoutManager;
 
+    /** The pixel density. */
+    private final float mDpToPx;
+
     /**
      * The delegate that is responsible for promoting a {@link WebContents} to a {@link Tab}
      * when necessary.
@@ -273,6 +276,7 @@ public class ContextualSearchManager
         mWindowAndroid = windowAndroid;
         mTabModelSelector = tabModelSelector;
         mLastUserInteractionTimeSupplier = lastUserInteractionTimeSupplier;
+        mDpToPx = mActivity.getResources().getDisplayMetrics().density;
 
         final View controlContainer = mActivity.findViewById(R.id.control_container);
         mOnFocusChangeListener = new OnGlobalFocusChangeListener() {
@@ -1981,20 +1985,19 @@ public class ContextualSearchManager
 
     @VisibleForTesting
     public boolean isSuppressed() {
-        int viewHeightLimitPixels = mActivity.getResources().getDimensionPixelSize(
-                R.dimen.contextual_search_minimum_base_page_height);
-        return isSuppressed(viewHeightLimitPixels);
-    }
-
-    /** Whether triggering should be suppressed with the given view height limit. */
-    @VisibleForTesting
-    public boolean isSuppressed(int viewHeightLimitPixels) {
         boolean shouldSimplySuppress = mIsBottomSheetVisible || mIsAccessibilityModeEnabled;
         if (shouldSimplySuppress) return true;
 
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW)) {
             return false;
         }
+
+        int limitViewDp = ContextualSearchFieldTrial.getContextualSearchMinimumBasePageHeightDp();
+
+        int viewHeightLimitPixels = limitViewDp == 0
+                ? mActivity.getResources().getDimensionPixelSize(
+                        R.dimen.contextual_search_minimum_base_page_height)
+                : Math.round(limitViewDp * mDpToPx);
 
         boolean isViewTooSmall = isViewTooSmall(viewHeightLimitPixels);
         ContextualSearchUma.logViewTooSmall(isViewTooSmall);

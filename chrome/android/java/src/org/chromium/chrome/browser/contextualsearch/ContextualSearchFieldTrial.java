@@ -35,6 +35,9 @@ public class ContextualSearchFieldTrial {
     static final String RELATED_SEARCHES_DEFAULT_QUERY_CHIP_MAX_WIDTH_SP_PARAM_NAME =
             "default_query_max_width_sp";
 
+    static final String CONTEXTUAL_SEARCH_MINIMUM_PAGE_HEIGHT_NAME =
+            "contextual_search_minimum_page_height_dp";
+
     // Cached values to avoid repeated and redundant JNI operations.
     private static Boolean sEnabled;
 
@@ -103,6 +106,13 @@ public class ContextualSearchFieldTrial {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.RELATED_SEARCHES_ALTERNATE_UX,
                 RELATED_SEARCHES_DEFAULT_QUERY_CHIP_MAX_WIDTH_SP_PARAM_NAME, 0);
+    }
+
+    /** Return The minimum height dp for the contextual search page. */
+    static int getContextualSearchMinimumBasePageHeightDp() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW,
+                CONTEXTUAL_SEARCH_MINIMUM_PAGE_HEIGHT_NAME, 0);
     }
 
     // --------------------------------------------------------------------------------------------
