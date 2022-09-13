@@ -20,6 +20,7 @@
 #include "net/base/url_util.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -244,11 +245,11 @@ void InputMenuView::Init(const gfx::Size& parent_size) {
     game_control_toggle_->SetIsOn(
         display_overlay_controller_->GetTouchInjectorEnable());
 
-    auto close_icon =
-        gfx::CreateVectorIcon(views::kIcCloseIcon, kCloseButtonSize, color);
+    auto close_icon = ui::ImageModel::FromVectorIcon(views::kIcCloseIcon, color,
+                                                     kCloseButtonSize);
     auto close_button = std::make_unique<views::ImageButton>(
         base::BindRepeating(&InputMenuView::CloseMenu, base::Unretained(this)));
-    close_button->SetImage(views::Button::STATE_NORMAL, close_icon);
+    close_button->SetImageModel(views::Button::STATE_NORMAL, close_icon);
     close_button->SetBackground(
         views::CreateSolidBackground(SK_ColorTRANSPARENT));
     close_button->SetBorder(views::CreateEmptyBorder(
