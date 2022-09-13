@@ -719,7 +719,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
   onBack_() {
     this.RecordUMAHistogramForUserActions_(
         ConsolidatedConsentUserAction.BACK_DEMO_BUTTON);
-    this.userActed('back-demo-button-clicked');
+    this.userActed('back');
   }
 
   RecordUMAHistogramForUserActions_(result) {
