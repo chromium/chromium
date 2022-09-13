@@ -12,6 +12,7 @@
 #include "build/buildflag.h"
 #include "build/chromecast_buildflags.h"
 #include "components/viz/common/surfaces/surface_id.h"
+#include "media/base/media_player_logging_id.h"
 #include "media/base/renderer_factory_selector.h"
 #include "media/base/routing_token_callback.h"
 #include "media/media_buildflags.h"
@@ -121,6 +122,7 @@ class MediaFactory {
   void EnsureDecoderFactory();
 
   std::unique_ptr<media::RendererFactorySelector> CreateRendererFactorySelector(
+      media::MediaPlayerLoggingID player_id,
       media::MediaLog* media_log,
       blink::WebURL url,
       const RenderFrameMediaPlaybackOptions& renderer_media_playback_options,

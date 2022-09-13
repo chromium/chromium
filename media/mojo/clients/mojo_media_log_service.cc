@@ -27,11 +27,6 @@ void MojoMediaLogService::AddLogRecord(const MediaLogRecord& event) {
   std::unique_ptr<media::MediaLogRecord> modified_event =
       std::make_unique<media::MediaLogRecord>(event);
 
-  // |id| is player-unique per-process, but the remote side does not know the
-  // correct value (nor would we necessarily trust it). Overwrite with the
-  // correct value.
-  modified_event->id = media_log_->id();
-
   media_log_->AddLogRecord(std::move(modified_event));
 }
 

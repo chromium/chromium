@@ -61,7 +61,8 @@ class MEDIA_EXPORT VideoRendererImpl
       const CreateVideoDecodersCB& create_video_decoders_cb,
       bool drop_frames,
       MediaLog* media_log,
-      std::unique_ptr<GpuMemoryBufferVideoFramePool> gmb_pool);
+      std::unique_ptr<GpuMemoryBufferVideoFramePool> gmb_pool,
+      MediaPlayerLoggingID media_player_id);
 
   VideoRendererImpl(const VideoRendererImpl&) = delete;
   VideoRendererImpl& operator=(const VideoRendererImpl&) = delete;
@@ -241,6 +242,8 @@ class MEDIA_EXPORT VideoRendererImpl
   raw_ptr<DemuxerStream> demuxer_stream_;
 
   raw_ptr<MediaLog> media_log_;
+
+  MediaPlayerLoggingID player_id_;
 
   // Flag indicating low-delay mode.
   bool low_delay_;

@@ -383,19 +383,22 @@ class WebMediaPlayerImplTest
     auto factory_selector = std::make_unique<media::RendererFactorySelector>();
     renderer_factory_selector_ = factory_selector.get();
     decoder_factory_ = std::make_unique<media::DefaultDecoderFactory>(nullptr);
+    media::MediaPlayerLoggingID player_id =
+        media::GetNextMediaPlayerLoggingID();
 #if BUILDFLAG(IS_ANDROID)
     factory_selector->AddBaseFactory(
         media::RendererType::kDefault,
         std::make_unique<media::DefaultRendererFactory>(
             media_log.get(), decoder_factory_.get(),
-            media::DefaultRendererFactory::GetGpuFactoriesCB()));
+            media::DefaultRendererFactory::GetGpuFactoriesCB(), player_id));
     factory_selector->StartRequestRemotePlayStateCB(base::DoNothing());
 #else
     factory_selector->AddBaseFactory(
         media::RendererType::kDefault,
         std::make_unique<media::DefaultRendererFactory>(
             media_log.get(), decoder_factory_.get(),
-            media::DefaultRendererFactory::GetGpuFactoriesCB(), nullptr));
+            media::DefaultRendererFactory::GetGpuFactoriesCB(), player_id,
+            nullptr));
 #endif
 
     mojo::Remote<media::mojom::MediaMetricsProvider> provider;
@@ -431,8 +434,8 @@ class WebMediaPlayerImplTest
     wmpi_ = std::make_unique<WebMediaPlayerImpl>(
         GetWebLocalFrame(), &client_, &encrypted_client_, &delegate_,
         std::move(factory_selector), url_index_.get(), std::move(compositor),
-        std::move(media_log), WebMediaPlayerBuilder::DeferLoadCB(), audio_sink_,
-        media_thread_.task_runner(), media_thread_.task_runner(),
+        std::move(media_log), player_id, WebMediaPlayerBuilder::DeferLoadCB(),
+        audio_sink_, media_thread_.task_runner(), media_thread_.task_runner(),
         media_thread_.task_runner(), media_thread_.task_runner(),
         base::BindRepeating(&WebMediaPlayerImplTest::OnAdjustAllocatedMemory,
                             base::Unretained(this)),
@@ -831,8 +834,6 @@ class WebMediaPlayerImplTest
   media::MemoryDumpProviderProxy* GetMediaThreadMemDumper() {
     return wmpi_->media_thread_mem_dumper_.get();
   }
-
-  int32_t GetMediaLogId() { return media_log_->id(); }
 
   // "Media" thread. This is necessary because WMPI destruction waits on a
   // WaitableEvent.
@@ -2172,7 +2173,7 @@ TEST_F(WebMediaPlayerImplTest, MemDumpReporting) {
       1 /* dump_guid*/, base::trace_event::MemoryDumpType::EXPLICITLY_TRIGGERED,
       base::trace_event::MemoryDumpLevelOfDetail::DETAILED};
 
-  int32_t id = GetMediaLogId();
+  int32_t id = 0;
   int dump_count = 0;
 
   auto on_memory_dump_done = base::BindLambdaForTesting(

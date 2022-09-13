@@ -46,7 +46,7 @@ TEST_F(MediaLogTest, ClonedLogsInhertParentPlayerId) {
   child_media_log->AddMessage(MediaLogMessageLevel::kERROR, "test");
   auto event = root_log->take_most_recent_event();
   EXPECT_NE(event, nullptr);
-  EXPECT_EQ(event->id, root_log->id());
+  EXPECT_EQ(event->id, 0);
 }
 
 TEST_F(MediaLogTest, DontTruncateShortUrlString) {

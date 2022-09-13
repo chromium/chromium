@@ -208,6 +208,8 @@ source_set("base") {
     "media_observer.h",
     "media_permission.cc",
     "media_permission.h",
+    "media_player_logging_id.cc",
+    "media_player_logging_id.h",
     "media_resource.cc",
     "media_resource.h",
     "media_serializers.h",

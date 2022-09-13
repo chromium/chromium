@@ -23,10 +23,12 @@ namespace media {
 DefaultRendererFactory::DefaultRendererFactory(
     MediaLog* media_log,
     DecoderFactory* decoder_factory,
-    const GetGpuFactoriesCB& get_gpu_factories_cb)
+    const GetGpuFactoriesCB& get_gpu_factories_cb,
+    MediaPlayerLoggingID media_player_id)
     : media_log_(media_log),
       decoder_factory_(decoder_factory),
-      get_gpu_factories_cb_(get_gpu_factories_cb) {
+      get_gpu_factories_cb_(get_gpu_factories_cb),
+      media_player_id_(media_player_id) {
   DCHECK(decoder_factory_);
 }
 #else
@@ -34,10 +36,12 @@ DefaultRendererFactory::DefaultRendererFactory(
     MediaLog* media_log,
     DecoderFactory* decoder_factory,
     const GetGpuFactoriesCB& get_gpu_factories_cb,
+    MediaPlayerLoggingID media_player_id,
     std::unique_ptr<SpeechRecognitionClient> speech_recognition_client)
     : media_log_(media_log),
       decoder_factory_(decoder_factory),
       get_gpu_factories_cb_(get_gpu_factories_cb),
+      media_player_id_(media_player_id),
       speech_recognition_client_(std::move(speech_recognition_client)) {
   DCHECK(decoder_factory_);
 }
@@ -91,10 +95,12 @@ std::unique_ptr<Renderer> DefaultRendererFactory::CreateRenderer(
       // finishes.
       base::BindRepeating(&DefaultRendererFactory::CreateAudioDecoders,
                           base::Unretained(this), media_task_runner),
+      media_log_, media_player_id_
 #if BUILDFLAG(IS_ANDROID)
-      media_log_));
+      ));
 #else
-      media_log_, speech_recognition_client_.get()));
+      ,
+      speech_recognition_client_.get()));
 #endif
 
   GpuVideoAcceleratorFactories* gpu_factories = nullptr;
@@ -120,7 +126,7 @@ std::unique_ptr<Renderer> DefaultRendererFactory::CreateRenderer(
                           base::Unretained(this), media_task_runner,
                           std::move(request_overlay_info_cb),
                           target_color_space, gpu_factories),
-      true, media_log_, std::move(gmb_pool)));
+      true, media_log_, std::move(gmb_pool), media_player_id_));
 
   return std::make_unique<RendererImpl>(
       media_task_runner, std::move(audio_renderer), std::move(video_renderer));

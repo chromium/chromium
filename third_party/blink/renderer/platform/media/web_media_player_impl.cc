@@ -42,6 +42,7 @@
 #include "media/base/limits.h"
 #include "media/base/media_content_type.h"
 #include "media/base/media_log.h"
+#include "media/base/media_player_logging_id.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_url_demuxer.h"
 #include "media/base/memory_dump_provider_proxy.h"
@@ -398,6 +399,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
     UrlIndex* url_index,
     std::unique_ptr<VideoFrameCompositor> compositor,
     std::unique_ptr<media::MediaLog> media_log,
+    media::MediaPlayerLoggingID player_id,
     WebMediaPlayerBuilder::DeferLoadCB defer_load_cb,
     scoped_refptr<media::SwitchableAudioRendererSink> audio_renderer_sink,
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
@@ -424,6 +426,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
       main_task_runner_(frame->GetTaskRunner(TaskType::kMediaElementEvent)),
       media_task_runner_(std::move(media_task_runner)),
       worker_task_runner_(std::move(worker_task_runner)),
+      media_player_id_(player_id),
       media_log_(std::move(media_log)),
       client_(client),
       encrypted_client_(encrypted_client),
@@ -554,7 +557,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
   main_thread_mem_dumper_ = std::make_unique<media::MemoryDumpProviderProxy>(
       "WebMediaPlayer_MainThread", main_task_runner_,
       base::BindRepeating(&WebMediaPlayerImpl::OnMainThreadMemoryDump,
-                          weak_this_, media_log_->id()));
+                          weak_this_, media_player_id_));
 
   media_metrics_provider_->AcquirePlaybackEventsRecorder(
       playback_events_recorder_.BindNewPipeAndPassReceiver());
@@ -830,7 +833,7 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
                                 const WebURL& url,
                                 CorsMode cors_mode,
                                 bool is_cache_disabled) {
-  TRACE_EVENT1("media", "WebMediaPlayerImpl::DoLoad", "id", media_log_->id());
+  TRACE_EVENT1("media", "WebMediaPlayerImpl::DoLoad", "id", media_player_id_);
   DVLOG(1) << __func__;
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
@@ -1043,7 +1046,7 @@ void WebMediaPlayerImpl::Seek(double seconds) {
 void WebMediaPlayerImpl::DoSeek(base::TimeDelta time, bool time_updated) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   TRACE_EVENT2("media", "WebMediaPlayerImpl::DoSeek", "target",
-               time.InSecondsF(), "id", media_log_->id());
+               time.InSecondsF(), "id", media_player_id_);
 
   ReadyState old_state = ready_state_;
   if (ready_state_ > WebMediaPlayer::kReadyStateHaveMetadata)
@@ -1703,7 +1706,7 @@ void WebMediaPlayerImpl::OnCdmAttached(bool success) {
 
 void WebMediaPlayerImpl::OnPipelineSeeked(bool time_updated) {
   TRACE_EVENT2("media", "WebMediaPlayerImpl::OnPipelineSeeked", "target",
-               seek_time_.InSecondsF(), "id", media_log_->id());
+               seek_time_.InSecondsF(), "id", media_player_id_);
   seeking_ = false;
   seek_time_ = base::TimeDelta();
 
@@ -1992,7 +1995,7 @@ void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
 
 void WebMediaPlayerImpl::OnEnded() {
   TRACE_EVENT2("media", "WebMediaPlayerImpl::OnEnded", "duration", Duration(),
-               "id", media_log_->id());
+               "id", media_player_id_);
   DVLOG(1) << __func__;
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
@@ -2258,7 +2261,7 @@ void WebMediaPlayerImpl::OnBufferingStateChangeInternal(
 
   if (state == media::BUFFERING_HAVE_ENOUGH) {
     TRACE_EVENT1("media", "WebMediaPlayerImpl::BufferingHaveEnough", "id",
-                 media_log_->id());
+                 media_player_id_);
     // The SetReadyState() call below may clear
     // `skip_metrics_due_to_startup_suspend_` so report this first.
     if (!have_reported_time_to_play_ready_ &&
@@ -3318,7 +3321,7 @@ void WebMediaPlayerImpl::SetDemuxer(std::unique_ptr<Demuxer> demuxer) {
   media_thread_mem_dumper_ = std::make_unique<media::MemoryDumpProviderProxy>(
       "WebMediaPlayer_MediaThread", media_task_runner_,
       base::BindRepeating(&WebMediaPlayerImpl::OnMediaThreadMemoryDump,
-                          media_log_->id(), base::Unretained(demuxer_.get())));
+                          media_player_id_, base::Unretained(demuxer_.get())));
 }
 
 void WebMediaPlayerImpl::ReportMemoryUsage() {
@@ -3383,7 +3386,7 @@ void WebMediaPlayerImpl::FinishMemoryUsageReport(int64_t demuxer_memory_usage) {
 }
 
 void WebMediaPlayerImpl::OnMainThreadMemoryDump(
-    int32_t id,
+    media::MediaPlayerLoggingID id,
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
   const auto stats = GetPipelineStatistics();
@@ -3412,7 +3415,7 @@ void WebMediaPlayerImpl::OnMainThreadMemoryDump(
 
 // static
 void WebMediaPlayerImpl::OnMediaThreadMemoryDump(
-    int32_t id,
+    media::MediaPlayerLoggingID id,
     Demuxer* demuxer,
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {

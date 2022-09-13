@@ -122,6 +122,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
       UrlIndex* url_index,
       std::unique_ptr<VideoFrameCompositor> compositor,
       std::unique_ptr<media::MediaLog> media_log,
+      media::MediaPlayerLoggingID player_id,
       WebMediaPlayerBuilder::DeferLoadCB defer_load_cb,
       scoped_refptr<media::SwitchableAudioRendererSink> audio_renderer_sink,
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
@@ -686,6 +687,11 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
   const scoped_refptr<base::TaskRunner> worker_task_runner_;
+
+  // This is the ID that is used within the internals of the media element
+  // primarily for correlating logs.
+  const media::MediaPlayerLoggingID media_player_id_;
+
   std::unique_ptr<media::MediaLog> media_log_;
 
   // |pipeline_controller_| owns an instance of Pipeline.

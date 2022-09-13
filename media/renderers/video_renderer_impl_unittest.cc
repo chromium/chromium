@@ -96,7 +96,7 @@ class VideoRendererImplTest : public testing::Test {
         base::ThreadTaskRunnerHandle::Get(), null_video_sink_.get(),
         base::BindRepeating(&VideoRendererImplTest::CreateVideoDecodersForTest,
                             base::Unretained(this)),
-        true, &media_log_, nullptr);
+        true, &media_log_, nullptr, 0);
     renderer_->SetTickClockForTesting(&tick_clock_);
     null_video_sink_->set_tick_clock_for_testing(&tick_clock_);
     time_source_.SetTickClockForTesting(&tick_clock_);
@@ -1186,7 +1186,8 @@ class VideoRendererImplAsyncAddFrameReadyTest : public VideoRendererImplTest {
                                 CreateVideoDecodersForTest,
                             base::Unretained(this)),
         true, &media_log_,
-        std::make_unique<MockGpuMemoryBufferVideoFramePool>(&frame_ready_cbs_));
+        std::make_unique<MockGpuMemoryBufferVideoFramePool>(&frame_ready_cbs_),
+        0);
     VideoRendererImplTest::Initialize();
   }
 

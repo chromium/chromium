@@ -60,15 +60,17 @@ std::unique_ptr<Renderer> TestMojoMediaClient::CreateRenderer(
     decoder_factory_ = std::make_unique<media::DefaultDecoderFactory>(nullptr);
   }
 
+  media::MediaPlayerLoggingID player_id = media::GetNextMediaPlayerLoggingID();
+
   if (!renderer_factory_) {
 #if BUILDFLAG(IS_ANDROID)
     renderer_factory_ = std::make_unique<DefaultRendererFactory>(
         media_log, decoder_factory_.get(),
-        DefaultRendererFactory::GetGpuFactoriesCB());
+        DefaultRendererFactory::GetGpuFactoriesCB(), player_id);
 #else
     renderer_factory_ = std::make_unique<DefaultRendererFactory>(
         media_log, decoder_factory_.get(),
-        DefaultRendererFactory::GetGpuFactoriesCB(), nullptr);
+        DefaultRendererFactory::GetGpuFactoriesCB(), player_id, nullptr);
 #endif
   }
 

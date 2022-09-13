@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/atomic_sequence_num.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -17,10 +16,6 @@ namespace media {
 // different |MediaLogRecord|s. We declare them here so if they change, its
 // only in one spot.
 const char MediaLog::kEventKey[] = "event";
-
-// A count of all MediaLogs created in the current process. Used to generate
-// unique IDs.
-static base::AtomicSequenceNumber g_media_log_count;
 
 MediaLog::MediaLog() : MediaLog(new ParentLogRecord(this)) {}
 
@@ -93,7 +88,9 @@ void MediaLog::AddLogRecord(std::unique_ptr<MediaLogRecord> record) {
 std::unique_ptr<MediaLogRecord> MediaLog::CreateRecord(
     MediaLogRecord::Type type) {
   auto record = std::make_unique<MediaLogRecord>();
-  record->id = id();
+  // Record IDs are populated by event handlers before they are sent to various
+  // log viewers, such as the media-internals page, or devtools.
+  record->id = 0;
   record->type = type;
   record->time = base::TimeTicks::Now();
   return record;
@@ -108,8 +105,7 @@ void MediaLog::InvalidateLog() {
   // Keep |parent_log_record_| around, since the lock must keep working.
 }
 
-MediaLog::ParentLogRecord::ParentLogRecord(MediaLog* log)
-    : id(g_media_log_count.GetNext()), media_log(log) {}
+MediaLog::ParentLogRecord::ParentLogRecord(MediaLog* log) : media_log(log) {}
 MediaLog::ParentLogRecord::~ParentLogRecord() = default;
 
 LogHelper::LogHelper(MediaLogMessageLevel level, MediaLog* media_log)

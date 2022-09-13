@@ -939,7 +939,8 @@ std::unique_ptr<media::MediaLog> RendererBlinkPlatformImpl::GetMediaLog(
   // This should only be created in the main Window context, and not from
   // a worker context.
   if (!is_on_worker)
-    handlers.push_back(std::make_unique<RenderMediaEventHandler>());
+    handlers.push_back(std::make_unique<RenderMediaEventHandler>(
+        media::GetNextMediaPlayerLoggingID()));
 
   // For devtools' media tab.
   handlers.push_back(

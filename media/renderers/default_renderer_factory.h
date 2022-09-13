@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "media/base/media_export.h"
+#include "media/base/media_player_logging_id.h"
 #include "media/base/renderer_factory.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -43,12 +44,14 @@ class MEDIA_EXPORT DefaultRendererFactory final : public RendererFactory {
 #if BUILDFLAG(IS_ANDROID)
   DefaultRendererFactory(MediaLog* media_log,
                          DecoderFactory* decoder_factory,
-                         const GetGpuFactoriesCB& get_gpu_factories_cb);
+                         const GetGpuFactoriesCB& get_gpu_factories_cb,
+                         MediaPlayerLoggingID media_player_id);
 #else
   DefaultRendererFactory(
       MediaLog* media_log,
       DecoderFactory* decoder_factory,
       const GetGpuFactoriesCB& get_gpu_factories_cb,
+      MediaPlayerLoggingID media_player_id,
       std::unique_ptr<SpeechRecognitionClient> speech_recognition_client);
 #endif
 
@@ -82,6 +85,9 @@ class MEDIA_EXPORT DefaultRendererFactory final : public RendererFactory {
 
   // Creates factories for supporting video accelerators. May be null.
   GetGpuFactoriesCB get_gpu_factories_cb_;
+
+  // WebMediaPlayerImpl id.
+  MediaPlayerLoggingID media_player_id_;
 
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<SpeechRecognitionClient> speech_recognition_client_;

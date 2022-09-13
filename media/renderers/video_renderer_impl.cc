@@ -53,13 +53,15 @@ VideoRendererImpl::VideoRendererImpl(
     const CreateVideoDecodersCB& create_video_decoders_cb,
     bool drop_frames,
     MediaLog* media_log,
-    std::unique_ptr<GpuMemoryBufferVideoFramePool> gmb_pool)
+    std::unique_ptr<GpuMemoryBufferVideoFramePool> gmb_pool,
+    MediaPlayerLoggingID media_player_id)
     : task_runner_(media_task_runner),
       sink_(sink),
       sink_started_(false),
       client_(nullptr),
       gpu_memory_buffer_pool_(std::move(gmb_pool)),
       media_log_(media_log),
+      player_id_(media_player_id),
       low_delay_(false),
       received_end_of_stream_(false),
       rendered_end_of_stream_(false),
@@ -225,8 +227,7 @@ scoped_refptr<VideoFrame> VideoRendererImpl::Render(
     base::TimeTicks deadline_min,
     base::TimeTicks deadline_max,
     RenderingMode rendering_mode) {
-  TRACE_EVENT_BEGIN1("media", "VideoRendererImpl::Render", "id",
-                     media_log_->id());
+  TRACE_EVENT_BEGIN1("media", "VideoRendererImpl::Render", "id", player_id_);
   base::AutoLock auto_lock(lock_);
   DCHECK_EQ(state_, kPlaying);
   last_render_time_ = tick_clock_->NowTicks();
@@ -825,7 +826,7 @@ void VideoRendererImpl::UpdateStats_Locked(bool force_update) {
   if (stats_.video_frames_dropped) {
     TRACE_EVENT_INSTANT2("media", "VideoFramesDropped",
                          TRACE_EVENT_SCOPE_THREAD, "count",
-                         stats_.video_frames_dropped, "id", media_log_->id());
+                         stats_.video_frames_dropped, "id", player_id_);
   }
 
   const size_t memory_usage = algorithm_->GetMemoryUsage();

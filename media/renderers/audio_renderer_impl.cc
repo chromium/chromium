@@ -47,11 +47,13 @@ AudioRendererImpl::AudioRendererImpl(
     AudioRendererSink* sink,
     const CreateAudioDecodersCB& create_audio_decoders_cb,
     MediaLog* media_log,
+    MediaPlayerLoggingID media_player_id,
     SpeechRecognitionClient* speech_recognition_client)
     : task_runner_(task_runner),
       expecting_config_changes_(false),
       sink_(sink),
       media_log_(media_log),
+      player_id_(media_player_id),
       client_(nullptr),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       last_audio_memory_usage_(0),
@@ -1165,7 +1167,7 @@ int AudioRendererImpl::Render(base::TimeDelta delay,
                               base::TimeTicks delay_timestamp,
                               int prior_frames_skipped,
                               AudioBus* audio_bus) {
-  TRACE_EVENT1("media", "AudioRendererImpl::Render", "id", media_log_->id());
+  TRACE_EVENT1("media", "AudioRendererImpl::Render", "id", player_id_);
   int frames_requested = audio_bus->frames();
   DVLOG(4) << __func__ << " delay:" << delay
            << " prior_frames_skipped:" << prior_frames_skipped

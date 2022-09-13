@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/layers/surface_layer.h"
+#include "media/base/media_player_logging_id.h"
 #include "media/base/routing_token_callback.h"
 #include "media/mojo/mojom/media_metrics_provider.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -74,6 +75,7 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerBuilder {
       UrlIndex* url_index,
       std::unique_ptr<VideoFrameCompositor> compositor,
       std::unique_ptr<media::MediaLog> media_log,
+      media::MediaPlayerLoggingID player_id,
       DeferLoadCB defer_load_cb,
       scoped_refptr<media::SwitchableAudioRendererSink> audio_renderer_sink,
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
