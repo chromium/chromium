@@ -1,4 +1,5 @@
 src/common/framework/test_config.ts
+src/external/petamoriken/float16/float16.d.ts
 src/common/internal/version.ts
 src/common/internal/stack.ts
 src/common/internal/logging/log_message.ts
@@ -439,3 +440,4 @@ src/webgpu/web_platform/reftests/canvas_size_different_with_back_buffer_size.htm
 src/webgpu/web_platform/worker/worker.spec.ts
 src/webgpu/web_platform/worker/worker.ts
 src/webgpu/web_platform/worker/worker_launcher.ts
+src/external/petamoriken/float16/float16.js

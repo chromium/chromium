@@ -19,7 +19,7 @@ foreach(file, list_from_ts_sources_txt) {
 }
 
 js_outputs = []
-foreach(ts_file, list_from_ts_sources_txt) {
+foreach(ts_file, filter_exclude(list_from_ts_sources_txt, [ "*.d.ts" ])) {
   js_file = string_replace(ts_file, ".ts", ".js")
   js_node_file = string_replace(js_file, "src/", "src-node/")
 
