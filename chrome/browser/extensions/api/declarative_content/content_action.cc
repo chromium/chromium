@@ -177,9 +177,8 @@ class SetIcon : public ContentAction {
 };
 
 // Helper for getting JS collections into C++.
-static bool AppendJSStringsToCPPStrings(
-    const base::Value::ConstListView& append_strings,
-    std::vector<std::string>* append_to) {
+static bool AppendJSStringsToCPPStrings(const base::Value::List& append_strings,
+                                        std::vector<std::string>* append_to) {
   for (const auto& entry : append_strings) {
     if (entry.is_string()) {
       append_to->push_back(entry.GetString());
@@ -265,16 +264,14 @@ bool RequestContentScript::InitScriptData(const base::Value::Dict* dict,
     return false;
   }
   if (css) {
-    if (!css->is_list() ||
-        !AppendJSStringsToCPPStrings(css->GetListDeprecated(),
-                                     &script_data->css_file_names)) {
+    if (!css->is_list() || !AppendJSStringsToCPPStrings(
+                               css->GetList(), &script_data->css_file_names)) {
       return false;
     }
   }
   if (js) {
-    if (!js->is_list() ||
-        !AppendJSStringsToCPPStrings(js->GetListDeprecated(),
-                                     &script_data->js_file_names)) {
+    if (!js->is_list() || !AppendJSStringsToCPPStrings(
+                              js->GetList(), &script_data->js_file_names)) {
       return false;
     }
   }

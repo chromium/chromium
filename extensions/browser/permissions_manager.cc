@@ -85,7 +85,7 @@ std::set<url::Origin> GetSitesFromPrefs(ExtensionPrefs* extension_prefs,
   if (!list)
     return sites;
 
-  for (const auto& site : list->GetListDeprecated()) {
+  for (const auto& site : list->GetList()) {
     const std::string* site_as_string = site.GetIfString();
     if (!site_as_string)
       continue;

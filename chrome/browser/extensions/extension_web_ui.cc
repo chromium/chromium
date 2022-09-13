@@ -463,7 +463,7 @@ bool ExtensionWebUI::HandleChromeURLOverrideReverse(
     if (!dict_iter.second.is_list())
       continue;
 
-    for (const auto& list_iter : dict_iter.second.GetListDeprecated()) {
+    for (const auto& list_iter : dict_iter.second.GetList()) {
       const std::string* override = nullptr;
       if (list_iter.is_dict())
         override = list_iter.FindStringKey(kEntry);

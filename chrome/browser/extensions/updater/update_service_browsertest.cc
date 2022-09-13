@@ -105,8 +105,7 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, NoUpdate) {
       std::get<0>(update_interceptor_->GetRequests()[0]);
     const auto root = base::JSONReader::Read(update_request);
     ASSERT_TRUE(root);
-    const auto& app =
-        root->FindKey("request")->FindKey("app")->GetListDeprecated()[0];
+    const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
     EXPECT_EQ(kExtensionId, app.FindKey("appid")->GetString());
     EXPECT_EQ("0.10", app.FindKey("version")->GetString());
     EXPECT_TRUE(app.FindKey("enabled")->GetBool());
@@ -149,8 +148,7 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, UpdateCheckError) {
       std::get<0>(update_interceptor_->GetRequests()[0]);
     const auto root = base::JSONReader::Read(update_request);
     ASSERT_TRUE(root);
-    const auto& app =
-        root->FindKey("request")->FindKey("app")->GetListDeprecated()[0];
+    const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
     EXPECT_EQ(kExtensionId, app.FindKey("appid")->GetString());
     EXPECT_EQ("0.10", app.FindKey("version")->GetString());
     EXPECT_TRUE(app.FindKey("enabled")->GetBool());
@@ -257,8 +255,7 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, SuccessfulUpdate) {
       std::get<0>(update_interceptor_->GetRequests()[0]);
     const auto root = base::JSONReader::Read(update_request);
     ASSERT_TRUE(root);
-    const auto& app =
-        root->FindKey("request")->FindKey("app")->GetListDeprecated()[0];
+    const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
     EXPECT_EQ(kExtensionId, app.FindKey("appid")->GetString());
     EXPECT_EQ("0.10", app.FindKey("version")->GetString());
     EXPECT_TRUE(app.FindKey("enabled")->GetBool());
@@ -344,14 +341,13 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, PolicyCorrupted) {
       std::get<0>(update_interceptor_->GetRequests()[0]);
     const auto root = base::JSONReader::Read(update_request);
     ASSERT_TRUE(root);
-    const auto& app =
-        root->FindKey("request")->FindKey("app")->GetListDeprecated()[0];
+    const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
     EXPECT_EQ(kExtensionId, app.FindKey("appid")->GetString());
     EXPECT_EQ("0.0.0.0", app.FindKey("version")->GetString());
     EXPECT_EQ("reinstall", app.FindKey("installsource")->GetString());
     EXPECT_EQ("policy", app.FindKey("installedby")->GetString());
     EXPECT_FALSE(app.FindKey("enabled")->GetBool());
-    const auto& disabled = app.FindKey("disabled")->GetListDeprecated()[0];
+    const auto& disabled = app.FindKey("disabled")->GetList()[0];
     EXPECT_EQ(disable_reason::DISABLE_CORRUPTED,
               disabled.FindKey("reason")->GetInt());
 }
@@ -548,14 +544,13 @@ IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, FailedUpdateRetries) {
       std::get<0>(update_interceptor_->GetRequests()[0]);
     const auto root = base::JSONReader::Read(update_request);
     ASSERT_TRUE(root);
-    const auto& app =
-        root->FindKey("request")->FindKey("app")->GetListDeprecated()[0];
+    const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
     EXPECT_EQ(id_, app.FindKey("appid")->GetString());
     EXPECT_EQ("0.0.0.0", app.FindKey("version")->GetString());
     EXPECT_EQ("reinstall", app.FindKey("installsource")->GetString());
     EXPECT_EQ("policy", app.FindKey("installedby")->GetString());
     EXPECT_FALSE(app.FindKey("enabled")->GetBool());
-    const auto& disabled = app.FindKey("disabled")->GetListDeprecated()[0];
+    const auto& disabled = app.FindKey("disabled")->GetList()[0];
     EXPECT_EQ(disable_reason::DISABLE_CORRUPTED,
               disabled.FindKey("reason")->GetInt());
 }
@@ -668,14 +663,13 @@ IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, PolicyCorruptedOnStartup) {
       std::get<0>(update_interceptor_->GetRequests()[0]);
     const auto root = base::JSONReader::Read(update_request);
     ASSERT_TRUE(root);
-    const auto& app =
-        root->FindKey("request")->FindKey("app")->GetListDeprecated()[0];
+    const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
     EXPECT_EQ(id_, app.FindKey("appid")->GetString());
     EXPECT_EQ("0.0.0.0", app.FindKey("version")->GetString());
     EXPECT_EQ("reinstall", app.FindKey("installsource")->GetString());
     EXPECT_EQ("policy", app.FindKey("installedby")->GetString());
     EXPECT_FALSE(app.FindKey("enabled")->GetBool());
-    const auto& disabled = app.FindKey("disabled")->GetListDeprecated()[0];
+    const auto& disabled = app.FindKey("disabled")->GetList()[0];
     EXPECT_EQ(disable_reason::DISABLE_CORRUPTED,
               disabled.FindKey("reason")->GetInt());
 }

@@ -382,7 +382,7 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
 
     std::u16string error;
     std::vector<std::string> actual_ids;
-    for (const auto& val : ids_value.GetListDeprecated())
+    for (const auto& val : ids_value.GetList())
       actual_ids.push_back(val.GetString());
 
     EXPECT_THAT(expected_ids, UnorderedElementsAreArray(actual_ids));
@@ -509,7 +509,7 @@ class SingleRulesetTest : public DeclarativeNetRequestUnittest {
     if (expected_rules_count)
       rules_count = *expected_rules_count;
     else if (rules_value_ && rules_value_->is_list())
-      rules_count = rules_value_->GetListDeprecated().size();
+      rules_count = rules_value_->GetList().size();
     else
       rules_count = rules_list_.size();
 
@@ -1043,7 +1043,7 @@ TEST_P(SingleRulesetTest, SessionRules) {
 
   base::Value result(base::Value::Type::LIST);
   RunGetRulesFunction(*extension(), RulesetScope::kSession, &result);
-  EXPECT_TRUE(result.GetListDeprecated().empty());
+  EXPECT_TRUE(result.GetList().empty());
 
   TestRule rule_1 = CreateGenericRule();
   rule_1.id = 1;
@@ -1052,7 +1052,7 @@ TEST_P(SingleRulesetTest, SessionRules) {
   ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(
       *extension(), {}, {rule_1, rule_2}, RulesetScope::kSession));
   RunGetRulesFunction(*extension(), RulesetScope::kSession, &result);
-  EXPECT_THAT(result.GetListDeprecated(),
+  EXPECT_THAT(result.GetList(),
               ::testing::UnorderedElementsAre(
                   ::testing::Eq(std::cref(*rule_1.ToValue())),
                   ::testing::Eq(std::cref(*rule_2.ToValue()))));
@@ -1061,16 +1061,15 @@ TEST_P(SingleRulesetTest, SessionRules) {
 
   // No dynamic rules should be returned.
   RunGetRulesFunction(*extension(), RulesetScope::kDynamic, &result);
-  EXPECT_TRUE(result.GetListDeprecated().empty());
+  EXPECT_TRUE(result.GetList().empty());
 
   ASSERT_NO_FATAL_FAILURE(RunUpdateRulesFunction(*extension(), {*rule_2.id}, {},
                                                  RulesetScope::kSession));
   RunGetRulesFunction(*extension(), RulesetScope::kSession, &result);
-  EXPECT_THAT(result.GetListDeprecated(),
-              ::testing::UnorderedElementsAre(
-                  ::testing::Eq(std::cref(*rule_1.ToValue()))));
+  EXPECT_THAT(result.GetList(), ::testing::UnorderedElementsAre(::testing::Eq(
+                                    std::cref(*rule_1.ToValue()))));
   RunGetRulesFunction(*extension(), RulesetScope::kDynamic, &result);
-  EXPECT_TRUE(result.GetListDeprecated().empty());
+  EXPECT_TRUE(result.GetList().empty());
 }
 
 // Ensure an error is raised when an extension adds a session-scoped regex rule
@@ -1394,7 +1393,7 @@ class MultipleRulesetsTest : public DeclarativeNetRequestUnittest {
     size_t rules_count = 0u;
     size_t rules_enabled_count = 0u;
     for (const TestRulesetInfo& info : rulesets_) {
-      size_t count = info.rules_value.GetListDeprecated().size();
+      size_t count = info.rules_value.GetList().size();
 
       // We only index up to |static_rule_limit| rules per ruleset, but
       // may index more rules than this limit across rulesets.

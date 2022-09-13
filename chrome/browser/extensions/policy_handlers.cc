@@ -115,7 +115,7 @@ bool ExtensionInstallForceListPolicyHandler::ParseList(
   }
 
   int index = -1;
-  for (const auto& entry : policy_value->GetListDeprecated()) {
+  for (const auto& entry : policy_value->GetList()) {
     ++index;
     if (!entry.is_string()) {
       if (errors) {
@@ -202,7 +202,7 @@ bool ExtensionURLPatternListPolicyHandler::CheckPolicySettings(
 
   // Check that the list contains valid URLPattern strings only.
   int index = 0;
-  for (const auto& entry : value->GetListDeprecated()) {
+  for (const auto& entry : value->GetList()) {
     if (!entry.is_string()) {
       errors->AddError(policy_name(), IDS_POLICY_TYPE_ERROR,
                        base::Value::GetTypeName(base::Value::Type::STRING),

@@ -312,7 +312,7 @@ void ExtensionAssetsManagerChromeOS::CheckSharedExtension(
   if (shared_path && users) {
     // This extension version already in shared location.
     bool user_found = false;
-    for (const base::Value& user : users->GetListDeprecated()) {
+    for (const base::Value& user : users->GetList()) {
       const std::string* temp = user.GetIfString();
       if (temp && *temp == user_id) {
         // Re-installation for the same user.

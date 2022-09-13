@@ -321,8 +321,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnReuseDetected_Warned) {
   TriggerOnPolicySpecifiedPasswordReuseDetectedEvent(/*warning_shown*/ true);
   base::RunLoop().RunUntilIdle();
 
-  auto captured_args =
-      event_observer.PassEventArgs().GetListDeprecated()[0].Clone();
+  auto captured_args = event_observer.PassEventArgs().GetList()[0].Clone();
   EXPECT_EQ("https://phishing.com/", captured_args.FindKey("url")->GetString());
   EXPECT_EQ("user_name_1", captured_args.FindKey("userName")->GetString());
 
@@ -358,8 +357,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnReuseDetected_Allowed) {
   TriggerOnPolicySpecifiedPasswordReuseDetectedEvent(/*warning_shown*/ false);
   base::RunLoop().RunUntilIdle();
 
-  auto captured_args =
-      event_observer.PassEventArgs().GetListDeprecated()[0].Clone();
+  auto captured_args = event_observer.PassEventArgs().GetList()[0].Clone();
   EXPECT_EQ("https://phishing.com/", captured_args.FindKey("url")->GetString());
   EXPECT_EQ("user_name_1", captured_args.FindKey("userName")->GetString());
 
@@ -394,8 +392,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnPasswordChanged) {
   TriggerOnPolicySpecifiedPasswordChangedEvent();
   base::RunLoop().RunUntilIdle();
 
-  auto captured_args =
-      event_observer.PassEventArgs().GetListDeprecated()[0].Clone();
+  auto captured_args = event_observer.PassEventArgs().GetList()[0].Clone();
   EXPECT_EQ("user_name_2", captured_args.GetString());
 
   Mock::VerifyAndClearExpectations(client_.get());
@@ -424,8 +421,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnDangerousDownloadOpened) {
   TriggerOnDangerousDownloadOpenedEvent();
   base::RunLoop().RunUntilIdle();
 
-  auto captured_args =
-      event_observer.PassEventArgs().GetListDeprecated()[0].Clone();
+  auto captured_args = event_observer.PassEventArgs().GetList()[0].Clone();
   EXPECT_EQ("https://evil.com/malware.exe",
             captured_args.FindKey("url")->GetString());
   EXPECT_EQ("/path/to/malware.exe",
@@ -472,8 +468,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
   TriggerOnSecurityInterstitialProceededEvent();
   base::RunLoop().RunUntilIdle();
 
-  auto captured_args =
-      event_observer.PassEventArgs().GetListDeprecated()[0].Clone();
+  auto captured_args = event_observer.PassEventArgs().GetList()[0].Clone();
   EXPECT_EQ("https://phishing.com/", captured_args.FindKey("url")->GetString());
   EXPECT_EQ("PHISHING", captured_args.FindKey("reason")->GetString());
   EXPECT_EQ("-201", captured_args.FindKey("netErrorCode")->GetString());
@@ -509,8 +504,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSecurityInterstitialShown) {
   TriggerOnSecurityInterstitialShownEvent();
   base::RunLoop().RunUntilIdle();
 
-  auto captured_args =
-      event_observer.PassEventArgs().GetListDeprecated()[0].Clone();
+  auto captured_args = event_observer.PassEventArgs().GetList()[0].Clone();
   EXPECT_EQ("https://phishing.com/", captured_args.FindKey("url")->GetString());
   EXPECT_EQ("PHISHING", captured_args.FindKey("reason")->GetString());
   EXPECT_FALSE(captured_args.FindKey("netErrorCode"));
@@ -617,7 +611,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, PolicyControlOnToOffIsDynamic) {
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _)).Times(1);
   TriggerOnSecurityInterstitialShownEvent();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u, event_observer.PassEventArgs().GetListDeprecated().size());
+  EXPECT_EQ(1u, event_observer.PassEventArgs().GetList().size());
   Mock::VerifyAndClearExpectations(client_.get());
 
   // Now turn off policy.  This time no report should be generated.
@@ -625,7 +619,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, PolicyControlOnToOffIsDynamic) {
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _)).Times(0);
   TriggerOnSecurityInterstitialShownEvent();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u, event_observer.PassEventArgs().GetListDeprecated().size());
+  EXPECT_EQ(1u, event_observer.PassEventArgs().GetList().size());
   Mock::VerifyAndClearExpectations(client_.get());
 }
 
@@ -637,14 +631,14 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, PolicyControlOffToOnIsDynamic) {
 
   TriggerOnSecurityInterstitialShownEvent();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u, event_observer.PassEventArgs().GetListDeprecated().size());
+  EXPECT_EQ(1u, event_observer.PassEventArgs().GetList().size());
 
   // Now turn on policy.
   SetReportingPolicy(true);
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _)).Times(1);
   TriggerOnSecurityInterstitialShownEvent();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u, event_observer.PassEventArgs().GetListDeprecated().size());
+  EXPECT_EQ(1u, event_observer.PassEventArgs().GetList().size());
   Mock::VerifyAndClearExpectations(client_.get());
 }
 
@@ -1135,8 +1129,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestProfileUsername) {
   // With no primary account, we should not set the username.
   TriggerOnSecurityInterstitialShownEvent();
   base::RunLoop().RunUntilIdle();
-  auto captured_args =
-      event_observer.PassEventArgs().GetListDeprecated()[0].Clone();
+  auto captured_args = event_observer.PassEventArgs().GetList()[0].Clone();
   EXPECT_EQ("", captured_args.FindKey("userName")->GetString());
 
   // With an unconsented primary account, we should set the username.
@@ -1144,7 +1137,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestProfileUsername) {
       "profile@example.com", signin::ConsentLevel::kSignin);
   TriggerOnSecurityInterstitialShownEvent();
   base::RunLoop().RunUntilIdle();
-  captured_args = event_observer.PassEventArgs().GetListDeprecated()[0].Clone();
+  captured_args = event_observer.PassEventArgs().GetList()[0].Clone();
   EXPECT_EQ("profile@example.com",
             captured_args.FindKey("userName")->GetString());
 
@@ -1153,7 +1146,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestProfileUsername) {
       "profile@example.com", signin::ConsentLevel::kSync);
   TriggerOnSecurityInterstitialShownEvent();
   base::RunLoop().RunUntilIdle();
-  captured_args = event_observer.PassEventArgs().GetListDeprecated()[0].Clone();
+  captured_args = event_observer.PassEventArgs().GetList()[0].Clone();
   EXPECT_EQ("profile@example.com",
             captured_args.FindKey("userName")->GetString());
 }
@@ -1178,7 +1171,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestPasswordChangedEnabled) {
   base::RunLoop().RunUntilIdle();
 
   // Assert the event actually did fire.
-  ASSERT_EQ(1u, event_observer.PassEventArgs().GetListDeprecated().size());
+  ASSERT_EQ(1u, event_observer.PassEventArgs().GetList().size());
 
   // Make sure UploadSecurityEventReport was called the expected number of
   // times.
@@ -1202,7 +1195,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestPasswordReuseEnabled) {
   base::RunLoop().RunUntilIdle();
 
   // Assert the event actually did fire.
-  ASSERT_EQ(1u, event_observer.PassEventArgs().GetListDeprecated().size());
+  ASSERT_EQ(1u, event_observer.PassEventArgs().GetList().size());
 
   // Make sure UploadSecurityEventReport was called the expected number of
   // times.
@@ -1227,7 +1220,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestDangerousDownloadEnabled) {
   base::RunLoop().RunUntilIdle();
 
   // Assert the event actually did fire.
-  ASSERT_EQ(1u, event_observer.PassEventArgs().GetListDeprecated().size());
+  ASSERT_EQ(1u, event_observer.PassEventArgs().GetList().size());
 
   // Make sure UploadSecurityEventReport was called the expected number of
   // times.
@@ -1254,8 +1247,8 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestInterstitialEnabled) {
   base::RunLoop().RunUntilIdle();
 
   // Assert the event actually did fire.
-  ASSERT_EQ(1u, event_observer1.PassEventArgs().GetListDeprecated().size());
-  ASSERT_EQ(1u, event_observer2.PassEventArgs().GetListDeprecated().size());
+  ASSERT_EQ(1u, event_observer1.PassEventArgs().GetList().size());
+  ASSERT_EQ(1u, event_observer2.PassEventArgs().GetList().size());
 
   // Make sure UploadSecurityEventReport was called the expected number of
   // times.
@@ -1401,7 +1394,7 @@ TEST_P(SafeBrowsingIsRealtimeReportingEnabledTest, CheckRealtimeReport) {
   base::RunLoop().RunUntilIdle();
 
   // Assert the trigger actually did fire.
-  EXPECT_EQ(1u, event_observer.PassEventArgs().GetListDeprecated().size());
+  EXPECT_EQ(1u, event_observer.PassEventArgs().GetList().size());
 
   // Make sure UploadSecurityEventReport was called the expected number of
   // times.
@@ -1476,11 +1469,11 @@ TEST_P(SafeBrowsingIsRealtimeReportingEventDisabledTest,
   base::RunLoop().RunUntilIdle();
 
   // Assert the events with triggers actually did fire.
-  EXPECT_EQ(1u, event_observer1.PassEventArgs().GetListDeprecated().size());
-  EXPECT_EQ(1u, event_observer2.PassEventArgs().GetListDeprecated().size());
-  EXPECT_EQ(1u, event_observer3.PassEventArgs().GetListDeprecated().size());
-  EXPECT_EQ(1u, event_observer4.PassEventArgs().GetListDeprecated().size());
-  EXPECT_EQ(1u, event_observer5.PassEventArgs().GetListDeprecated().size());
+  EXPECT_EQ(1u, event_observer1.PassEventArgs().GetList().size());
+  EXPECT_EQ(1u, event_observer2.PassEventArgs().GetList().size());
+  EXPECT_EQ(1u, event_observer3.PassEventArgs().GetList().size());
+  EXPECT_EQ(1u, event_observer4.PassEventArgs().GetList().size());
+  EXPECT_EQ(1u, event_observer5.PassEventArgs().GetList().size());
 
   // Make sure UploadSecurityEventReport was called the expected number of
   // times.

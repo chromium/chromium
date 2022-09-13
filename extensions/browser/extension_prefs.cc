@@ -2121,7 +2121,7 @@ ExtensionPrefs::GetDNREnabledStaticRulesets(
     return absl::nullopt;
 
   DCHECK(ids_value);
-  for (const base::Value& id_value : ids_value->GetListDeprecated()) {
+  for (const base::Value& id_value : ids_value->GetList()) {
     if (!id_value.is_int())
       return absl::nullopt;
 
@@ -2319,7 +2319,7 @@ bool ExtensionPrefs::GetUserExtensionPrefIntoContainer(
 
   std::insert_iterator<ExtensionIdContainer> insert_iterator(
       *id_container_out, id_container_out->end());
-  for (const auto& entry : user_pref_value->GetListDeprecated()) {
+  for (const auto& entry : user_pref_value->GetList()) {
     if (!entry.is_string()) {
       NOTREACHED();
       continue;

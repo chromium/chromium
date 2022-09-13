@@ -36,7 +36,7 @@ void WalkNode(const base::Value& node, DescriptionAndStyles* result) {
     return;
 
   DCHECK(children->is_list());
-  for (const base::Value& child : children->GetListDeprecated()) {
+  for (const base::Value& child : children->GetList()) {
     // Append text nodes to our description.
     if (data_decoder::IsXmlElementOfType(
             child, data_decoder::mojom::XmlParser::kTextNodeType)) {
@@ -111,8 +111,8 @@ bool PopulateEntriesFromNode(const base::Value& root_node,
     return false;
 
   DCHECK(children->is_list());
-  entries_out->reserve(children->GetListDeprecated().size());
-  for (const base::Value& child : children->GetListDeprecated()) {
+  entries_out->reserve(children->GetList().size());
+  for (const base::Value& child : children->GetList()) {
     if (!data_decoder::IsXmlElementOfType(
             child, data_decoder::mojom::XmlParser::kElementType)) {
       return false;

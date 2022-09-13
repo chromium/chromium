@@ -332,7 +332,7 @@ class QuickUnlockPrivateUnitTest
     QuickUnlockModeList modes;
 
     EXPECT_TRUE(result->is_list());
-    for (const base::Value& value : result->GetListDeprecated()) {
+    for (const base::Value& value : result->GetList()) {
       EXPECT_TRUE(value.is_string());
       modes.push_back(
           quick_unlock_private::ParseQuickUnlockMode(value.GetString()));
@@ -350,7 +350,7 @@ class QuickUnlockPrivateUnitTest
     QuickUnlockModeList modes;
 
     EXPECT_TRUE(result->is_list());
-    for (const base::Value& value : result->GetListDeprecated()) {
+    for (const base::Value& value : result->GetList()) {
       EXPECT_TRUE(value.is_string());
       modes.push_back(
           quick_unlock_private::ParseQuickUnlockMode(value.GetString()));

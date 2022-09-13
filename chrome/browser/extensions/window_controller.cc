@@ -46,7 +46,7 @@ WindowController::TypeFilter WindowController::GetFilterFromWindowTypesValues(
   WindowController::TypeFilter filter = WindowController::kNoWindowFilter;
   if (!types)
     return filter;
-  for (const base::Value& type : types->GetListDeprecated()) {
+  for (const base::Value& type : types->GetList()) {
     const std::string* window_type = type.GetIfString();
     if (window_type)
       filter |= 1 << api::windows::ParseWindowType(*window_type);

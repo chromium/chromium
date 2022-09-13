@@ -286,7 +286,7 @@ bool GetProxyRulesStringFromExtensionPref(
   return true;
 }
 
-bool JoinUrlList(base::Value::ConstListView list,
+bool JoinUrlList(const base::Value::List& list,
                  const std::string& joiner,
                  std::string* out,
                  std::string* error,
@@ -336,8 +336,7 @@ bool GetBypassListFromExtensionPref(const base::DictionaryValue* proxy_config,
     return false;
   }
 
-  return JoinUrlList(bypass_list->GetListDeprecated(), ",", out, error,
-                     bad_message);
+  return JoinUrlList(bypass_list->GetList(), ",", out, error, bad_message);
 }
 
 std::unique_ptr<base::Value> CreateProxyConfigDict(

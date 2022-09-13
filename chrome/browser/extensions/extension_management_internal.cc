@@ -156,8 +156,7 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
     // Get the list of URLPatterns.
     const base::Value* host_list_value = dict->FindListKey(key);
     if (host_list_value) {
-      base::Value::ConstListView host_list_view =
-          host_list_value->GetListDeprecated();
+      const base::Value::List& host_list_view = host_list_value->GetList();
       if (host_list_view.size() > schema_constants::kMaxItemsURLPatternSet) {
         LOG(WARNING) << "Exceeded maximum number of URL match patterns ("
                      << schema_constants::kMaxItemsURLPatternSet

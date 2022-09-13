@@ -1152,33 +1152,39 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateGetExtensionsInfo) {
   // ExtensionInfoGenerator's unittest), but rather just to make sure we can
   // serialize/deserialize the result - which implicity tests that everything
   // has a sane value.
-  scoped_refptr<ExtensionFunction> function(
-      new api::DeveloperPrivateGetExtensionsInfoFunction());
-  EXPECT_TRUE(RunFunction(function, base::ListValue())) << function->GetError();
-  const base::Value::List* results = function->GetResultList();
-  ASSERT_EQ(1u, results->size());
-  ASSERT_TRUE((*results)[0].is_list());
-  base::Value::ConstListView list = (*results)[0].GetListDeprecated();
-  ASSERT_EQ(1u, list.size());
-  std::unique_ptr<api::developer_private::ExtensionInfo> info =
-      api::developer_private::ExtensionInfo::FromValue(list[0]);
-  ASSERT_TRUE(info);
+  {
+    scoped_refptr<ExtensionFunction> function(
+        new api::DeveloperPrivateGetExtensionsInfoFunction());
+    EXPECT_TRUE(RunFunction(function, base::ListValue()))
+        << function->GetError();
+    const base::Value::List* results = function->GetResultList();
+    ASSERT_EQ(1u, results->size());
+    ASSERT_TRUE((*results)[0].is_list());
+    const base::Value::List& list = (*results)[0].GetList();
+    ASSERT_EQ(1u, list.size());
+    std::unique_ptr<api::developer_private::ExtensionInfo> info =
+        api::developer_private::ExtensionInfo::FromValue(list[0]);
+    ASSERT_TRUE(info);
+  }
 
   // As a sanity check, also run the GetItemsInfo and make sure it returns a
   // sane value.
-  function = new api::DeveloperPrivateGetItemsInfoFunction();
-  base::ListValue args;
-  args.Append(false);
-  args.Append(false);
-  EXPECT_TRUE(RunFunction(function, args)) << function->GetError();
-  results = function->GetResultList();
-  ASSERT_EQ(1u, results->size());
-  ASSERT_TRUE((*results)[0].is_list());
-  list = (*results)[0].GetListDeprecated();
-  ASSERT_EQ(1u, list.size());
-  std::unique_ptr<api::developer_private::ItemInfo> item_info =
-      api::developer_private::ItemInfo::FromValue(list[0]);
-  ASSERT_TRUE(item_info);
+  {
+    scoped_refptr<ExtensionFunction> function(
+        new api::DeveloperPrivateGetItemsInfoFunction());
+    base::ListValue args;
+    args.Append(false);
+    args.Append(false);
+    EXPECT_TRUE(RunFunction(function, args)) << function->GetError();
+    const base::Value::List* results = function->GetResultList();
+    ASSERT_EQ(1u, results->size());
+    ASSERT_TRUE((*results)[0].is_list());
+    const base::Value::List& list = (*results)[0].GetList();
+    ASSERT_EQ(1u, list.size());
+    std::unique_ptr<api::developer_private::ItemInfo> item_info =
+        api::developer_private::ItemInfo::FromValue(list[0]);
+    ASSERT_TRUE(item_info);
+  }
 }
 
 // Test developerPrivate.deleteExtensionErrors.

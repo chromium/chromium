@@ -738,7 +738,7 @@ std::set<std::string> EventRouter::GetRegisteredEvents(
     return events;
   }
 
-  for (const base::Value& event_val : events_value->GetListDeprecated()) {
+  for (const base::Value& event_val : events_value->GetList()) {
     const std::string* event = event_val.GetIfString();
     if (event)
       events.insert(*event);

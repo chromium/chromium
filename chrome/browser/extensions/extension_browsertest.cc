@@ -251,8 +251,7 @@ bool ModifyExtensionForServiceWorker(const base::FilePath& extension_root,
   }
 
   // Number of JS scripts must be >= 1.
-  base::Value::ConstListView scripts_list =
-      background_scripts_list->GetListDeprecated();
+  const base::Value::List& scripts_list = background_scripts_list->GetList();
   if (scripts_list.size() < 1) {
     ADD_FAILURE() << extension_root.value()
                   << ": Only event pages with JS script(s) can be loaded "

@@ -255,7 +255,7 @@ TEST_F(PermissionsAPIUnitTest, ContainsAndGetAllWithRuntimeHostPermissions) {
 
     const base::Value* origins_value =
         (*results)[0].FindKeyOfType("origins", base::Value::Type::LIST);
-    for (const auto& value : origins_value->GetListDeprecated())
+    for (const auto& value : origins_value->GetList())
       origins.push_back(value.GetString());
 
     return origins;

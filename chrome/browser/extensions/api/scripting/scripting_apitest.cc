@@ -247,9 +247,9 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, ExecuteScriptBeforeInitialCommit) {
 
     // Now we check the function call returned what we expected in the result.
     ASSERT_TRUE(result.get());
-    ASSERT_EQ(1u, result->GetListDeprecated().size());
+    ASSERT_EQ(1u, result->GetList().size());
     const std::string* result_returned =
-        result->GetListDeprecated()[0].FindStringKey("result");
+        result->GetList()[0].FindStringKey("result");
     EXPECT_EQ("Modified Title", *result_returned);
 
     // We also check that the tab itself was modified by the call.

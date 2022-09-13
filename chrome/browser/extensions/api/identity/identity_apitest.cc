@@ -624,38 +624,37 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
         ExtensionBuilder("Test").SetID(kExtensionId).Build().get());
     if (!utils::RunFunction(func.get(), std::string("[]"), browser(),
                             api_test_utils::NONE)) {
-      return GenerateFailureResult(gaia_ids, absl::nullopt)
+      return GenerateFailureResult(gaia_ids, nullptr)
              << "getAccounts did not return a result.";
     }
     const base::Value::List* callback_arguments_list = func->GetResultList();
     if (!callback_arguments_list)
-      return GenerateFailureResult(gaia_ids, absl::nullopt) << "NULL result";
+      return GenerateFailureResult(gaia_ids, nullptr) << "NULL result";
 
     if (callback_arguments_list->size() != 1u) {
-      return GenerateFailureResult(gaia_ids, absl::nullopt)
+      return GenerateFailureResult(gaia_ids, nullptr)
              << "Expected 1 argument but got "
              << callback_arguments_list->size();
     }
 
     if (!(*callback_arguments_list)[0].is_list())
-      GenerateFailureResult(gaia_ids, absl::nullopt)
-          << "Result was not an array";
-    base::Value::ConstListView results =
-        (*callback_arguments_list)[0].GetListDeprecated();
+      GenerateFailureResult(gaia_ids, nullptr) << "Result was not an array";
+    const base::Value::List& results = (*callback_arguments_list)[0].GetList();
 
     std::set<std::string> result_ids;
     for (const base::Value& item : results) {
       std::unique_ptr<api::identity::AccountInfo> info =
           api::identity::AccountInfo::FromValue(item);
-      if (info.get())
+      if (info.get()) {
         result_ids.insert(info->id);
-      else
-        return GenerateFailureResult(gaia_ids, results);
+      } else {
+        return GenerateFailureResult(gaia_ids, &results);
+      }
     }
 
     for (const std::string& gaia_id : gaia_ids) {
       if (result_ids.find(gaia_id) == result_ids.end())
-        return GenerateFailureResult(gaia_ids, results);
+        return GenerateFailureResult(gaia_ids, &results);
     }
 
     return testing::AssertionResult(true);
@@ -663,16 +662,16 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
 
   testing::AssertionResult GenerateFailureResult(
       const ::std::vector<std::string>& gaia_ids,
-      absl::optional<base::Value::ConstListView> results) {
+      const base::Value::List* results) {
     testing::Message msg("Expected: ");
     for (const std::string& gaia_id : gaia_ids) {
       msg << gaia_id << " ";
     }
     msg << "Actual: ";
-    if (!results.has_value()) {
+    if (!results) {
       msg << "NULL";
     } else {
-      for (const auto& result : results.value()) {
+      for (const auto& result : *results) {
         std::unique_ptr<api::identity::AccountInfo> info =
             api::identity::AccountInfo::FromValue(result);
         if (info.get())
