@@ -955,6 +955,21 @@ message ClientDownloadRequest {
     optional int32 directory_count = 3;
   }
   optional ArchiveSummary archive_summary = 85;
+
+  // Additional information for the Safe Browsing server to generate tailored
+  // verdicts. See go/tailored-download-proto.
+  message TailoredInfo {
+    // |version| helps the Safe Browsing server understand which tailored
+    // warnings Chrome understands and generate responses accordingly. It should
+    // be incremented by 1 when adding new fields in TailoredVerdict or making
+    // changes to how these fields may be interpreted in Chrome.
+    // Version 0: Client doesn't support tailored warnings. Any info set in
+    // TailoredVerdict is ignored.
+    // Version 1: Client supports CT warnings and suspicious archives. Supported
+    // in M107. See go/tailored-download-v1.
+    optional int32 version = 1;
+  }
+  optional TailoredInfo tailored_info = 86;
 }
 
 message ReferrerChainOptions {
@@ -1123,6 +1138,37 @@ message ClientDownloadResponse {
 
   // Whether or not Chrome should prompt the user for deep scanning
   optional bool request_deep_scan = 19;
+
+  // Verdict used as supplemental information to decide the tailored warning UI.
+  // The |verdict| field takes precedence over this field (e.g. this field is
+  // ignored if |verdict| is SAFE).
+  message TailoredVerdict {
+    enum TailoredVerdictType {
+      VERDICT_TYPE_UNSPECIFIED = 0;
+      // Download is associated with stealing cookies and account compromise.
+      // Effective if |verdict| is DANGEROUS_ACCOUNT_COMPROMISE. Ignored
+      // otherwise.
+      COOKIE_THEFT = 1;
+      // This archive's metadata indicates tactics used by attackers to
+      // distribute malware and viruses. For example, it is encrypted to prevent
+      // scanning by Safe Browsing. Effective if |verdict| is UNCOMMON. Ignored
+      // otherwise.
+      SUSPICIOUS_ARCHIVE = 2;
+    }
+    optional TailoredVerdictType tailored_verdict_type = 1;
+
+    // This field provides flexibility on testing minor UI adjustments on
+    // warnings. These adjustments are only expected to be set during UX
+    // experiments. Only effective when |tailored_verdict_type| is set.
+    enum ExperimentalWarningAdjustment {
+      ADJUSTMENT_UNSPECIFIED = 0;
+      // Include account information in the warning. Only apply to COOKIE_THEFT
+      // tailored verdict.
+      ACCOUNT_INFO_STRING = 1;
+    }
+    repeated ExperimentalWarningAdjustment adjustments = 2 [packed = true];
+  }
+  optional TailoredVerdict tailored_verdict = 20;
 }
 
 // The following protocol buffer holds the feedback report gathered
