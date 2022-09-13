@@ -133,4 +133,17 @@ suite('emoji-search', () => {
             buttonClickPromise, 1000,
             'Failed to receive emoji button click event.');
       });
+
+  test('Search only emoji groups are discoverable through search', async () => {
+    emojiSearch.setSearchQuery('gamma');
+    await waitForCondition(
+        () => findInEmojiPicker('emoji-search', 'emoji-group'));
+    const emojiResults =
+        findInEmojiPicker('emoji-search', 'emoji-group[category="symbol"]')
+            .shadowRoot.querySelectorAll('.emoji-button');
+    assertEquals(
+        emojiResults.length,
+        4,  // normal, italic, bold and san-serif bold
+    );
+  });
 });

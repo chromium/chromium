@@ -333,7 +333,7 @@ export class EmojiPicker extends PolymerElement {
     const baseIndex = this.categoriesGroupElements.length;
     const categoriesGroupElements = [];
 
-    data.forEach((emojiGroup, index) => {
+    data.filter(item => !item.searchOnly).forEach((emojiGroup, index) => {
       const tabIndex = baseIndex + index;
       const tabCategory = V2_SUBCATEGORY_TABS[tabIndex].category;
       categoriesGroupElements.push(
