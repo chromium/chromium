@@ -1744,6 +1744,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.PeerConnection.SdpFormatReceived"
     enum="PeerConnectionSdpFormatReceived" expires_after="2022-10-30">
+  <obsolete>
+    Removed 09/2022.
+  </obsolete>
   <owner>steveanton@chromium.org</owner>
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
@@ -1761,6 +1764,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.PeerConnection.SdpFormatReceivedAnswer"
     enum="PeerConnectionSdpFormatReceived" expires_after="2022-11-13">
+  <obsolete>
+    Removed 09/2022.
+  </obsolete>
   <owner>steveanton@chromium.org</owner>
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
@@ -1773,6 +1779,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.PeerConnection.SdpSemanticNegotiated"
     enum="PeerConnectionSdpSemanticNegotiated" expires_after="2023-01-15">
+  <obsolete>
+    Removed 09/2022.
+  </obsolete>
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
