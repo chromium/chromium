@@ -60,6 +60,13 @@ class WidevineKeySystemInfo : public media::KeySystemInfo {
   media::EmeFeatureSupport GetPersistentStateSupport() const override;
   media::EmeFeatureSupport GetDistinctiveIdentifierSupport() const override;
 
+// `is_experimental_` is used to differentiate between
+// `kWidevineExperimentKeySystem` and `kWidevineKeySystem`. Please refer to
+// b/219818166 for more information.
+#if BUILDFLAG(IS_WIN)
+  void set_experimental() { is_experimental_ = true; }
+#endif  // BUILDFLAG(IS_WIN)
+
  private:
   const media::SupportedCodecs codecs_;
   const base::flat_set<media::EncryptionScheme> encryption_schemes_;
@@ -71,6 +78,9 @@ class WidevineKeySystemInfo : public media::KeySystemInfo {
   const Robustness max_video_robustness_;
   const media::EmeFeatureSupport persistent_state_support_;
   const media::EmeFeatureSupport distinctive_identifier_support_;
+#if BUILDFLAG(IS_WIN)
+  bool is_experimental_ = false;
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 }  // namespace cdm
