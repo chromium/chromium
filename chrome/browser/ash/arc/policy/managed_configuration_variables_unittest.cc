@@ -226,7 +226,7 @@ class ManagedConfigurationVariablesBase {
     fake_device_attributes_ = std::make_unique<policy::FakeDeviceAttributes>();
     fake_device_attributes_->SetFakeDirectoryApiId(kTestDeviceDirectoryId);
     fake_device_attributes_->SetFakeDeviceAssetId(kTestDeviceAssetId);
-    fake_device_attributes_->SetFakeDeviceAnotatedLocation(
+    fake_device_attributes_->SetFakeDeviceAnnotatedLocation(
         kTestDeviceAnnotatedLocation);
   }
 
@@ -306,7 +306,7 @@ TEST_F(ManagedConfigurationVariablesTest, VariableChains) {
   EXPECT_EQ(*dict.FindStringKey(kKey), kTestDeviceAnnotatedLocation);
 
   // Clear location and expect chain resolves to asset ID.
-  device_attributes()->SetFakeDeviceAnotatedLocation("");
+  device_attributes()->SetFakeDeviceAnnotatedLocation("");
   dict.SetStringKey(kKey, kChain);
   RecursivelyReplaceManagedConfigurationVariables(profile(),
                                                   device_attributes(), &dict);
@@ -352,7 +352,7 @@ TEST_F(ManagedConfigurationVariablesTest, IgnoresInvalidVariables) {
   dict.SetStringKey(kInvalidKey3, kInvalidChain3);
 
   // Clear location, valid chain should resolve to asset ID.
-  device_attributes()->SetFakeDeviceAnotatedLocation("");
+  device_attributes()->SetFakeDeviceAnnotatedLocation("");
   RecursivelyReplaceManagedConfigurationVariables(profile(),
                                                   device_attributes(), &dict);
   // Expect the valid chain was replaced.
@@ -394,7 +394,7 @@ TEST_F(ManagedConfigurationVariablesTest, RecursiveValuesAreReplacedCorrectly) {
 
   // Setup fake asset ID and location that are also valid variables.
   device_attributes()->SetFakeDeviceAssetId(kVariable2);
-  device_attributes()->SetFakeDeviceAnotatedLocation(kVariable1);
+  device_attributes()->SetFakeDeviceAnnotatedLocation(kVariable1);
   RecursivelyReplaceManagedConfigurationVariables(profile(),
                                                   device_attributes(), &dict);
   // Expect variables are replaced only once without an infinite loop.

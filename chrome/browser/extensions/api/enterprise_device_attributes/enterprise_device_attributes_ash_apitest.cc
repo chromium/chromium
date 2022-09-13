@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
-#include "base/files/file_path.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
@@ -136,8 +135,6 @@ IN_PROC_BROWSER_TEST_F(
                                {.page_url = "api_not_available.html"},
                                {.ignore_manifest_warnings = true}));
 
-  base::FilePath extension_path =
-      test_data_dir_.AppendASCII("enterprise_device_attributes");
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(profile())
           ->enabled_extensions()

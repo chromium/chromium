@@ -978,6 +978,7 @@ static_library("extensions") {
       "api/certificate_provider/certificate_provider_api.h",
       "api/document_scan/document_scan_api.cc",
       "api/document_scan/document_scan_api.h",
+      "api/enterprise_device_attributes/enterprise_device_attributes_api.cc",
       "api/enterprise_device_attributes/enterprise_device_attributes_api.h",
       "api/enterprise_networking_attributes/enterprise_networking_attributes_api.cc",
       "api/enterprise_networking_attributes/enterprise_networking_attributes_api.h",
@@ -1084,8 +1085,6 @@ static_library("extensions") {
     sources += [
       "api/crash_report_private/crash_report_private_api.cc",
       "api/crash_report_private/crash_report_private_api.h",
-      "api/enterprise_device_attributes/enterprise_device_attributes_api_ash.cc",
-      "api/enterprise_device_attributes/enterprise_device_attributes_api_ash.h",
       "api/enterprise_platform_keys_private/enterprise_platform_keys_private_api.cc",
       "api/enterprise_platform_keys_private/enterprise_platform_keys_private_api.h",
       "api/file_handlers/non_native_file_system_delegate_chromeos.cc",
@@ -1215,8 +1214,6 @@ static_library("extensions") {
 
   if (is_chromeos_lacros) {
     sources += [
-      "api/enterprise_device_attributes/enterprise_device_attributes_api_lacros.cc",
-      "api/enterprise_device_attributes/enterprise_device_attributes_api_lacros.h",
       "api/enterprise_reporting_private/chrome_desktop_report_request_helper.cc",
       "api/enterprise_reporting_private/chrome_desktop_report_request_helper.h",
       "api/file_browser_handler/file_browser_handler_flow_lacros.cc",

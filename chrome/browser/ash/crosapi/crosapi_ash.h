@@ -334,6 +334,10 @@ class CrosapiAsh : public mojom::Crosapi {
 
   DeskTemplateAsh* desk_template_ash() { return desk_template_ash_.get(); }
 
+  DeviceAttributesAsh* device_attributes_ash() {
+    return device_attributes_ash_.get();
+  }
+
   DocumentScanAsh* document_scan_ash() { return document_scan_ash_.get(); }
 
   DownloadControllerAsh* download_controller_ash() {

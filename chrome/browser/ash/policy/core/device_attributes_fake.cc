@@ -7,6 +7,7 @@
 #include <string>
 
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -33,12 +34,20 @@ std::string FakeDeviceAttributes::GetDeviceAssetID() const {
   return fake_device_asset_id_;
 }
 
+std::string FakeDeviceAttributes::GetDeviceSerialNumber() const {
+  return fake_device_serial_number_;
+}
+
 std::string FakeDeviceAttributes::GetMachineName() const {
   return fake_machine_name_;
 }
 
 std::string FakeDeviceAttributes::GetDeviceAnnotatedLocation() const {
-  return fake_device_anotated_location_;
+  return fake_device_annotated_location_;
+}
+
+absl::optional<std::string> FakeDeviceAttributes::GetDeviceHostname() const {
+  return fake_device_hostname_;
 }
 
 std::string FakeDeviceAttributes::GetDirectoryApiID() const {
@@ -80,13 +89,23 @@ void FakeDeviceAttributes::SetFakeDeviceAssetId(
   fake_device_asset_id_ = device_asset_id;
 }
 
+void FakeDeviceAttributes::SetFakeDeviceSerialNumber(
+    const std::string& device_serial_number) {
+  fake_device_serial_number_ = device_serial_number;
+}
+
 void FakeDeviceAttributes::SetFakeMachineName(const std::string& machine_name) {
   fake_machine_name_ = machine_name;
 }
 
-void FakeDeviceAttributes::SetFakeDeviceAnotatedLocation(
-    const std::string& device_anotated_location) {
-  fake_device_anotated_location_ = device_anotated_location;
+void FakeDeviceAttributes::SetFakeDeviceAnnotatedLocation(
+    const std::string& device_annotated_location) {
+  fake_device_annotated_location_ = device_annotated_location;
+}
+
+void FakeDeviceAttributes::SetFakeDeviceHostname(
+    const absl::optional<std::string> device_hostname) {
+  fake_device_hostname_ = device_hostname;
 }
 
 void FakeDeviceAttributes::SetFakeDirectoryApiId(

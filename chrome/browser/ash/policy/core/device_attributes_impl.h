@@ -38,9 +38,13 @@ class DeviceAttributesImpl : public DeviceAttributes {
 
   std::string GetDeviceAssetID() const override;
 
+  std::string GetDeviceSerialNumber() const override;
+
   std::string GetMachineName() const override;
 
   std::string GetDeviceAnnotatedLocation() const override;
+
+  absl::optional<std::string> GetDeviceHostname() const override;
 
   std::string GetDirectoryApiID() const override;
 

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -35,11 +36,18 @@ class DeviceAttributes {
   // Returns the device asset ID if it is set.
   virtual std::string GetDeviceAssetID() const = 0;
 
+  // Returns the device serial number if it is found.
+  virtual std::string GetDeviceSerialNumber() const = 0;
+
   // Returns the machine name if it is set.
   virtual std::string GetMachineName() const = 0;
 
   // Returns the device annotated location if it is set.
   virtual std::string GetDeviceAnnotatedLocation() const = 0;
+
+  // Returns the device's hostname as set by DeviceHostnameTemplate policy or
+  // null if no policy is set by admin.
+  virtual absl::optional<std::string> GetDeviceHostname() const = 0;
 
   // Returns the cloud directory API ID or an empty string if it is not set.
   virtual std::string GetDirectoryApiID() const = 0;
