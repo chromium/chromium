@@ -40,8 +40,21 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<
     kAutomaticLazyFrameLoadingToEmbedLoadingStrategyParam;
 BLINK_COMMON_EXPORT extern const base::Feature kBackForwardCacheDedicatedWorker;
 BLINK_COMMON_EXPORT extern const base::Feature kBatchFetchRequests;
+
+// - kBackForwardCacheSendNotRestoredReasons = {true: {"requires_origin_trial":
+// false}} to enable the features globally.
+// - kBackForwardCacheSendNotRestoredReasons = {true: {"requires_origin_trial":
+// true}} to enable the features only for execution context with OT token.
 BLINK_COMMON_EXPORT extern const base::Feature
     kBackForwardCacheSendNotRestoredReasons;
+// If true, the execution context from client request needs to have OT token in
+// it, in addition to `kBackForwardCacheSendNotRestoredReasons` being set to
+// true, such that the API can be enabled. If false, setting
+// `kBackForwardCacheSendNotRestoredReasons` to true enable the API both in
+// Chromium & in Blink.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kBackForwardCacheSendNotRestoredReasonsRequiresOriginTrial;
+
 BLINK_COMMON_EXPORT extern const base::Feature
     kBlockingDownloadsInAdFrameWithoutUserActivation;
 BLINK_COMMON_EXPORT extern const base::Feature kConversionMeasurement;

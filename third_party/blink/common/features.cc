@@ -94,6 +94,10 @@ const base::Feature kBackForwardCacheDedicatedWorker{
 const base::Feature kBackForwardCacheSendNotRestoredReasons{
     "BackForwardCacheSendNotRestoredReasons",
     base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<bool>
+    kBackForwardCacheSendNotRestoredReasonsRequiresOriginTrial = {
+        &kBackForwardCacheSendNotRestoredReasons, "requires_origin_trial",
+        false};
 
 // Accumulates the fetch requests for resources while parsing chunks of HTML so
 // they can be evaluated, prioritized and processed as a group rather than as

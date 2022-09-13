@@ -389,6 +389,10 @@ void WebRuntimeFeatures::EnablePrerender2RelatedFeatures(bool enable) {
   RuntimeEnabledFeatures::SetPrerender2RelatedFeaturesEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableBackForwardCacheNotRestoredReasons(bool enable) {
+  RuntimeEnabledFeatures::SetBackForwardCacheNotRestoredReasonsEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableV8IdleTasks(bool enable) {
   RuntimeEnabledFeatures::SetV8IdleTasksEnabled(enable);
 }

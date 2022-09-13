@@ -511,6 +511,11 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
     return base::FeatureList::IsEnabled(features::kPendingBeaconAPI);
   }
 
+  if (trial_name == "BackForwardCacheSendNotRestoredReasons") {
+    return base::FeatureList::IsEnabled(
+        features::kBackForwardCacheSendNotRestoredReasons);
+  }
+
   return true;
 }
 

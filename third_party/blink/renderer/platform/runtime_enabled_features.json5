@@ -299,6 +299,11 @@
       status: "experimental",
     },
     {
+      name: "BackForwardCacheNotRestoredReasons",
+      status: "experimental",
+      origin_trial_feature_name: "BackForwardCacheNotRestoredReasons",
+    },
+    {
       name: "BackgroundFetch",
       status: "stable",
     },
