@@ -3395,6 +3395,12 @@
           '--jobs=1',
         ],
       },
+      'Linux Tests (py2 less)': {
+        'args': [
+          '--xvfb',
+          '--jobs=1',
+        ],
+      },
       'Mac11 Tests': {
         'ci_only': True,
       },
