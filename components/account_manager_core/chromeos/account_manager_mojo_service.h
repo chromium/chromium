@@ -95,6 +95,10 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerMojoService
       const GoogleServiceAuthError& error,
       const std::vector<account_manager::Account>& known_accounts);
 
+  // Notifies observers that the account addition / re-authentication dialog was
+  // closed (either successfully, or the user cancelled the flow).
+  void NotifySigninDialogClosed();
+
   void FlushMojoForTesting();
   int GetNumPendingAccessTokenRequests() const;
 

@@ -93,6 +93,10 @@ class TestAccountManagerObserver
     return std::make_pair(last_err_account_.value(), last_error_.value());
   }
 
+  int GetNumSigninDialogClosedNotifications() const {
+    return num_signin_dialog_closed_notifications_;
+  }
+
  private:
   // mojom::AccountManagerObserverInterceptorForTesting override:
   AccountManagerObserver* GetForwardingInterface() override { return this; }
@@ -117,9 +121,15 @@ class TestAccountManagerObserver
     last_error_ = account_manager::FromMojoGoogleServiceAuthError(error);
   }
 
+  // mojom::AccountManagerObserverInterceptorForTesting override:
+  void OnSigninDialogClosed() override {
+    ++num_signin_dialog_closed_notifications_;
+  }
+
   int num_token_upserted_calls_ = 0;
   int num_account_removed_calls_ = 0;
   int num_auth_errors_ = 0;
+  int num_signin_dialog_closed_notifications_ = 0;
   absl::optional<account_manager::Account> last_upserted_account_;
   absl::optional<account_manager::Account> last_removed_account_;
   absl::optional<account_manager::AccountKey> last_err_account_;
@@ -274,6 +284,10 @@ class AccountManagerMojoServiceTest : public ::testing::Test {
     account_manager_mojo_service_->ReportAuthError(
         account_manager::ToMojoAccountKey(account_key),
         account_manager::ToMojoGoogleServiceAuthError(error));
+  }
+
+  void NotifySigninDialogClosed() {
+    account_manager_mojo_service_->NotifySigninDialogClosed();
   }
 
   int GetNumObservers() const {
@@ -714,6 +728,41 @@ TEST_F(AccountManagerMojoServiceTest,
 
   // Transient errors should not be reported.
   EXPECT_EQ(0, observer.GetNumAuthErrors());
+}
+
+TEST_F(AccountManagerMojoServiceTest,
+       ObserversAreNotifiedAboutAccountAdditionDialogClosure) {
+  TestAccountManagerObserver observer;
+  observer.Observe(account_manager_async_waiter());
+  ASSERT_EQ(1, GetNumObservers());
+
+  EXPECT_EQ(0, observer.GetNumSigninDialogClosedNotifications());
+  GetFakeAccountManagerUI()->SetIsDialogShown(false);
+  base::RunLoop run_loop;
+  mojom::AccountAdditionResultPtr account_addition_result =
+      ShowAddAccountDialog(run_loop.QuitClosure());
+  // Simulate closing the dialog.
+  GetFakeAccountManagerUI()->CloseDialog();
+  run_loop.Run();
+  FlushMojoForTesting();
+  EXPECT_EQ(1, observer.GetNumSigninDialogClosedNotifications());
+}
+
+TEST_F(AccountManagerMojoServiceTest,
+       ObserversAreNotifiedAboutReautDialogClosure) {
+  TestAccountManagerObserver observer;
+  observer.Observe(account_manager_async_waiter());
+  ASSERT_EQ(1, GetNumObservers());
+
+  EXPECT_EQ(0, observer.GetNumSigninDialogClosedNotifications());
+  GetFakeAccountManagerUI()->SetIsDialogShown(false);
+  base::RunLoop run_loop;
+  ShowReauthAccountDialog(kFakeEmail, run_loop.QuitClosure());
+  // Simulate closing the dialog.
+  GetFakeAccountManagerUI()->CloseDialog();
+  run_loop.Run();
+  FlushMojoForTesting();
+  EXPECT_EQ(1, observer.GetNumSigninDialogClosedNotifications());
 }
 
 }  // namespace crosapi

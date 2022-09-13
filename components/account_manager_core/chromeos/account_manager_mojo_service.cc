@@ -139,7 +139,18 @@ void AccountManagerMojoService::ShowReauthAccountDialog(
   if (account_manager_ui_->IsDialogShown())
     return;
 
-  account_manager_ui_->ShowReauthAccountDialog(email, std::move(closure));
+  // `closure` is used by the entity which launched the account
+  // re-authentication flow in the first place to know about the completion of
+  // the flow. The notification that we are going to chain here will inform all
+  // observers of `AccountManagerFacade` (see
+  // `AccountManagerFacade::Observer::OnSigninDialogClosed()`), that the signin
+  // dialog was closed.
+  // As of this writing, this notification is used by `AccountReconcilor` to
+  // force mint cookies.
+  account_manager_ui_->ShowReauthAccountDialog(
+      email, std::move(closure).Then(base::BindOnce(
+                 &AccountManagerMojoService::NotifySigninDialogClosed,
+                 weak_ptr_factory_.GetWeakPtr())));
 }
 
 void AccountManagerMojoService::ShowManageAccountsSettings() {
@@ -229,6 +240,7 @@ void AccountManagerMojoService::FinishAddAccount(
   DCHECK(!account_addition_callback_.is_null());
   std::move(account_addition_callback_)
       .Run(ToMojoAccountAdditionResult(result));
+  NotifySigninDialogClosed();
 }
 
 void AccountManagerMojoService::DeletePendingAccessTokenFetchRequest(
@@ -258,6 +270,12 @@ void AccountManagerMojoService::MaybeNotifyAuthErrorObservers(
     observer->OnAuthErrorChanged(
         account_manager::ToMojoAccountKey(account_key),
         account_manager::ToMojoGoogleServiceAuthError(error));
+  }
+}
+
+void AccountManagerMojoService::NotifySigninDialogClosed() {
+  for (auto& observer : observers_) {
+    observer->OnSigninDialogClosed();
   }
 }
 
