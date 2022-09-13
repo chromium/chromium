@@ -926,7 +926,7 @@ TEST_P(PasswordManagerTest, FormSubmitNoGoodMatch) {
 
   PasswordForm form(MakeSimpleForm());
   std::vector<FormData> observed = {form.form_data};
-  EXPECT_CALL(driver_, SetPasswordFillData(_)).Times(3);
+  EXPECT_CALL(driver_, SetPasswordFillData(_)).Times(2);
   // TODO(https://crbug.com/949519): replace WillRepeatedly with WillOnce when
   // the old parser is gone.
   EXPECT_CALL(*store_, GetLogins(PasswordFormDigest(form), _))
@@ -971,7 +971,7 @@ TEST_P(PasswordManagerTest, DontSaveAlreadySavedCredential) {
   // the old parser is gone.
   EXPECT_CALL(*store_, GetLogins(_, _))
       .WillRepeatedly(WithArg<1>(InvokeConsumer(store_.get(), form)));
-  EXPECT_CALL(driver_, SetPasswordFillData(_)).Times(3);
+  EXPECT_CALL(driver_, SetPasswordFillData(_)).Times(2);
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed);
 
@@ -1290,7 +1290,7 @@ TEST_P(PasswordManagerTest, InitiallyInvisibleForm) {
   PasswordForm form(MakeSimpleForm());
   std::vector<FormData> observed;
   observed.push_back(form.form_data);
-  EXPECT_CALL(driver_, SetPasswordFillData(_)).Times(2);
+  EXPECT_CALL(driver_, SetPasswordFillData(_));
   // TODO(https://crbug.com/949519): replace WillRepeatedly with WillOnce when
   // the
   // old parser is gone.
@@ -1309,7 +1309,7 @@ TEST_P(PasswordManagerTest, FillPasswordsOnDisabledManager) {
       .WillRepeatedly(Return(false));
   std::vector<FormData> observed;
   observed.push_back(form.form_data);
-  EXPECT_CALL(driver_, SetPasswordFillData(_)).Times(2);
+  EXPECT_CALL(driver_, SetPasswordFillData(_));
   // TODO(https://crbug.com/949519): replace WillRepeatedly with WillOnce when
   // the old parser is gone.
   EXPECT_CALL(*store_, GetLogins(_, _))
@@ -1512,7 +1512,7 @@ TEST_P(PasswordManagerTest, ReportFormLoginSuccessAndShouldSaveCalled) {
   // Simulate that |form| is already in the store, making this an update.
   EXPECT_CALL(*store_, GetLogins(_, _))
       .WillRepeatedly(WithArg<1>(InvokeConsumer(store_.get(), stored_form)));
-  EXPECT_CALL(driver_, SetPasswordFillData(_)).Times(2);
+  EXPECT_CALL(driver_, SetPasswordFillData(_));
   manager()->OnPasswordFormsParsed(&driver_, observed);
   EXPECT_CALL(driver_, SetPasswordFillData(_));
   manager()->OnPasswordFormsRendered(&driver_, observed);
@@ -1548,7 +1548,7 @@ TEST_P(PasswordManagerTest, SyncCredentialsNotDroppedIfUpToDate) {
 
   std::vector<FormData> observed;
   observed.push_back(form.form_data);
-  EXPECT_CALL(driver_, SetPasswordFillData(_)).Times(3);
+  EXPECT_CALL(driver_, SetPasswordFillData(_)).Times(2);
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed);
 
@@ -1923,7 +1923,7 @@ TEST_P(PasswordManagerTest, FormSubmittedUnchangedNotifiesClient) {
   std::vector<FormData> observed;
   PasswordForm form(MakeSimpleForm());
   observed.push_back(form.form_data);
-  EXPECT_CALL(driver_, SetPasswordFillData(_)).Times(3);
+  EXPECT_CALL(driver_, SetPasswordFillData(_)).Times(2);
   // TODO(https://crbug.com/949519): replace WillRepeatedly with WillOnce when
   // the old parser is gone.
   EXPECT_CALL(*store_, GetLogins(_, _))
@@ -2235,7 +2235,7 @@ TEST_P(PasswordManagerTest, PasswordGenerationPresavePasswordAndLogin) {
     if (found_matched_logins_in_store) {
       EXPECT_CALL(*store_, GetLogins(_, _))
           .WillRepeatedly(WithArg<1>(InvokeConsumer(store_.get(), form)));
-      EXPECT_CALL(driver_, SetPasswordFillData(_)).Times(3);
+      EXPECT_CALL(driver_, SetPasswordFillData(_)).Times(2);
     } else {
       EXPECT_CALL(*store_, GetLogins(_, _))
           .WillRepeatedly(
@@ -2385,7 +2385,7 @@ TEST_P(PasswordManagerTest, UpdatePasswordOfAffiliatedCredential) {
   PasswordForm observed_form(MakeSimpleForm());
   std::vector<FormData> observed_forms = {observed_form.form_data};
 
-  EXPECT_CALL(driver_, SetPasswordFillData(_)).Times(3);
+  EXPECT_CALL(driver_, SetPasswordFillData(_)).Times(2);
   // TODO(https://crbug.com/949519): replace WillRepeatedly with WillOnce when
   // the old parser is gone.
   EXPECT_CALL(*store_, GetLogins(_, _))
@@ -2522,7 +2522,7 @@ TEST_P(PasswordManagerTest, ManualFallbackForSaving) {
   // the old parser is gone.
   EXPECT_CALL(*store_, GetLogins(_, _))
       .WillRepeatedly(WithArg<1>(InvokeConsumer(store_.get(), stored_form)));
-  EXPECT_CALL(driver_, SetPasswordFillData(_)).Times(3);
+  EXPECT_CALL(driver_, SetPasswordFillData(_)).Times(2);
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed);
 
@@ -2969,7 +2969,7 @@ TEST_P(PasswordManagerTest, ManualFallbackForSavingNewParser) {
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*store_, GetLogins(_, _))
       .WillRepeatedly(WithArg<1>(InvokeConsumer(store_.get(), stored_form)));
-  EXPECT_CALL(driver_, SetPasswordFillData(_)).Times(3);
+  EXPECT_CALL(driver_, SetPasswordFillData(_)).Times(2);
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed);
 

@@ -141,17 +141,9 @@ PasswordFormManager::PasswordFormManager(
 
     WebAuthnCredentialsDelegate* delegate =
         client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get());
-    bool is_webauthn_autofill_enabled =
-        delegate && delegate->IsWebAuthnAutofillEnabled();
-
-    // The barrier closure is invoked by the WebAuthnCredentialsDelegate,
-    // if enabled, and by ProcessServerPredictions. A fill will trigger
-    // when both requests are satisfied.
-    async_predictions_waiter_.InitializeClosure(
-        is_webauthn_autofill_enabled ? 2 : 1);
-    if (is_webauthn_autofill_enabled) {
+    if (delegate && delegate->IsWebAuthnAutofillEnabled()) {
       delegate->RetrieveWebAuthnSuggestions(
-          async_predictions_waiter_.closure());
+          async_predictions_waiter_.CreateClosure());
     }
   }
   votes_uploader_.StoreInitialFieldValues(*observed_form());
@@ -656,6 +648,7 @@ PasswordFormManager::PasswordFormManager(
 void PasswordFormManager::DelayFillForServerSidePredictions() {
   waiting_for_server_predictions_ = true;
   async_predictions_waiter_.StartTimer();
+  server_predictions_closure_ = async_predictions_waiter_.CreateClosure();
 }
 
 void PasswordFormManager::OnFetchCompleted() {
@@ -820,12 +813,14 @@ void PasswordFormManager::ProcessServerPredictions(
     return;
   }
   UpdatePredictionsForObservedForm(predictions);
-  if (!async_predictions_waiter_.closure().is_null()) {
-    // Signals the availability of server predictions, but there might be
-    // other callbacks still outstanding.
-    async_predictions_waiter_.closure().Run();
-  } else if (parser_.predictions()) {
-    Fill();
+  if (parser_.predictions()) {
+    if (!server_predictions_closure_.is_null()) {
+      // Signals the availability of server predictions, but there might be
+      // other callbacks still outstanding.
+      std::move(server_predictions_closure_).Run();
+    } else {
+      Fill();
+    }
   }
 }
 

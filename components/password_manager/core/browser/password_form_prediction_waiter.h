@@ -22,11 +22,12 @@ constexpr base::TimeDelta kMaxFillingDelayForAsyncPredictions =
     base::Milliseconds(500);
 
 // Helper class for PasswordFormManager to manage outstanding asynchronous
-// prediction fetches. This uses a barrier callback to wait on multiple
+// prediction fetches. This issues callbacks to wait on multiple
 // asynchronous events, signalling when all are complete, and also a timer
 // that will signal OnTimeout() if there are still outstanding callbacks.
 // It is possible for both OnTimeout() and OnWaitCompleted() to be called if
-// OnTimeout() is called first.
+// OnTimeout() is called first. If the timer is not active, every closure
+// invocation will cause a call to OnWaitCompleted().
 class PasswordFormPredictionWaiter {
  public:
   class Client {
@@ -45,8 +46,12 @@ class PasswordFormPredictionWaiter {
 
   void StartTimer();
 
-  void InitializeClosure(size_t callback_count);
-  const base::RepeatingClosure& closure() const { return barrier_closure_; }
+  // Issues a new closure that should be invoked when a task is completed.
+  // When the timer is active, all issued closures have to be invoked before
+  // the Client's OnWaitCompleted() method is called.
+  // If the timer has expired or has not been set, then any single closure
+  // invocation will result in a call to OnWaitCompleted().
+  base::OnceClosure CreateClosure();
 
  private:
   void OnTimeout();
@@ -58,9 +63,9 @@ class PasswordFormPredictionWaiter {
 
   base::OneShotTimer timer_;
 
-  // BarrierClosure is used to wait until predictions are obtained from
-  // all asynchronous sources.
-  base::RepeatingClosure barrier_closure_;
+  // Tracks the number of outstanding closure. Notifies the client when
+  // a closure is activated and this returns to 0.
+  int outstanding_closures_ = 0;
 
   base::WeakPtrFactory<PasswordFormPredictionWaiter> weak_ptr_factory_{this};
 };

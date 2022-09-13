@@ -19,18 +19,18 @@ class WaiterClient : public PasswordFormPredictionWaiter::Client {
   WaiterClient(const WaiterClient&) = delete;
   WaiterClient& operator=(const WaiterClient&) = delete;
 
-  bool wait_completed() const { return wait_completed_; }
+  int wait_completed_count() const { return wait_completed_count_; }
   bool timed_out() const { return timed_out_; }
   void Reset() {
-    wait_completed_ = false;
+    wait_completed_count_ = 0;
     timed_out_ = false;
   }
 
  protected:
-  void OnWaitCompleted() override { wait_completed_ = true; }
+  void OnWaitCompleted() override { wait_completed_count_++; }
   void OnTimeout() override { timed_out_ = true; }
 
-  bool wait_completed_ = false;
+  int wait_completed_count_ = 0;
   bool timed_out_ = false;
 };
 
@@ -55,45 +55,60 @@ TEST_F(PasswordFormPredictionWaiterTest, WaitCompletedOnTimeout) {
 TEST_F(PasswordFormPredictionWaiterTest,
        WaitCompletedOnTimeoutWithOutstandingCallback) {
   prediction_waiter_.StartTimer();
-  prediction_waiter_.InitializeClosure(2);
-  prediction_waiter_.closure().Run();
+  auto closure1 = prediction_waiter_.CreateClosure();
+  auto closure2 = prediction_waiter_.CreateClosure();
+  std::move(closure1).Run();
 
   task_environment_.FastForwardBy(kMaxFillingDelayForAsyncPredictions);
-  EXPECT_FALSE(client_.wait_completed());
+  EXPECT_EQ(client_.wait_completed_count(), 0);
   EXPECT_TRUE(client_.timed_out());
 }
 
-TEST_F(PasswordFormPredictionWaiterTest, WaitCompletedOnSingleBarrierCallback) {
-  prediction_waiter_.InitializeClosure(1);
-  prediction_waiter_.closure().Run();
+TEST_F(PasswordFormPredictionWaiterTest, WaitCompletedOnSingleCallback) {
+  auto closure1 = prediction_waiter_.CreateClosure();
+  std::move(closure1).Run();
 
-  EXPECT_TRUE(prediction_waiter_.closure().is_null());
-  EXPECT_TRUE(client_.wait_completed());
+  EXPECT_EQ(client_.wait_completed_count(), 1);
   EXPECT_FALSE(client_.timed_out());
 }
 
-TEST_F(PasswordFormPredictionWaiterTest,
-       WaitCompletedOnMultipleBarrierCallbacks) {
-  prediction_waiter_.InitializeClosure(3);
-  for (int i = 0; i < 3; ++i) {
-    prediction_waiter_.closure().Run();
-  }
+TEST_F(PasswordFormPredictionWaiterTest, WaitCompletedOnMultipleCallbacks) {
+  prediction_waiter_.StartTimer();
+  auto closure1 = prediction_waiter_.CreateClosure();
+  auto closure2 = prediction_waiter_.CreateClosure();
+  auto closure3 = prediction_waiter_.CreateClosure();
+  std::move(closure1).Run();
+  std::move(closure2).Run();
+  std::move(closure3).Run();
 
-  EXPECT_TRUE(prediction_waiter_.closure().is_null());
-  EXPECT_TRUE(client_.wait_completed());
+  EXPECT_EQ(client_.wait_completed_count(), 1);
   EXPECT_FALSE(client_.timed_out());
 }
 
 TEST_F(PasswordFormPredictionWaiterTest,
        WaitCompletedOnTimeoutAndCallbackCompletion) {
   prediction_waiter_.StartTimer();
-  prediction_waiter_.InitializeClosure(1);
+  auto closure1 = prediction_waiter_.CreateClosure();
 
   task_environment_.FastForwardBy(kMaxFillingDelayForAsyncPredictions);
   EXPECT_TRUE(client_.timed_out());
-  EXPECT_FALSE(client_.wait_completed());
-  prediction_waiter_.closure().Run();
-  EXPECT_TRUE(client_.wait_completed());
+  EXPECT_EQ(client_.wait_completed_count(), 0);
+  std::move(closure1).Run();
+  EXPECT_EQ(client_.wait_completed_count(), 1);
+}
+
+TEST_F(PasswordFormPredictionWaiterTest,
+       MultipleWaitsCompletedOnTimeoutAndCallbackCompletion) {
+  prediction_waiter_.StartTimer();
+  auto closure1 = prediction_waiter_.CreateClosure();
+  auto closure2 = prediction_waiter_.CreateClosure();
+
+  task_environment_.FastForwardBy(kMaxFillingDelayForAsyncPredictions);
+  EXPECT_TRUE(client_.timed_out());
+  EXPECT_EQ(client_.wait_completed_count(), 0);
+  std::move(closure1).Run();
+  std::move(closure2).Run();
+  EXPECT_EQ(client_.wait_completed_count(), 2);
 }
 
 }  // namespace
