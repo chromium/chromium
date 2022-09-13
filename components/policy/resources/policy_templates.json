@@ -22207,7 +22207,7 @@
     },
     {
       'name': 'CrostiniArcAdbSideloadingAllowed',
-      'owners': ['janagrill@chromium.org', 'okalitova@chromium.org'],
+      'owners': ['janagrill@google.com', 'okalitova@chromium.org'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -22245,7 +22245,7 @@
     },
     {
       'name': 'DeviceCrostiniArcAdbSideloadingAllowed',
-      'owners': ['janagrill@chromium.org', 'okalitova@chromium.org'],
+      'owners': ['janagrill@google.com', 'okalitova@chromium.org'],
       'device_only': True,
       'type': 'int-enum',
       'schema': {
@@ -24372,7 +24372,7 @@
     },
     {
       'name': 'UserPluginVmAllowed',
-      'owners': ['okalitova@chromium.org', 'janagrill@chromium.org'],
+      'owners': ['okalitova@chromium.org', 'janagrill@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:84-'],
@@ -24464,7 +24464,7 @@
     },
     {
       'name': 'PluginVmDataCollectionAllowed',
-      'owners': ['okalitova@chromium.org', 'janagrill@chromium.org'],
+      'owners': ['okalitova@chromium.org', 'janagrill@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:85-'],
@@ -24483,7 +24483,7 @@
     },
     {
       'name': 'PluginVmRequiredFreeDiskSpace',
-      'owners': ['okalitova@chromium.org', 'janagrill@chromium.org'],
+      'owners': ['okalitova@chromium.org', 'janagrill@google.com'],
       'type': 'int',
       'schema': {
         'type': 'integer',
