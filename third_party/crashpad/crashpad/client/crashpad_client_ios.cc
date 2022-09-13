@@ -1,4 +1,4 @@
-// Copyright 2020 The Crashpad Authors. All rights reserved.
+// Copyright 2020 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -72,11 +72,14 @@ class CrashHandler : public Thread,
     instance_ = nullptr;
   }
 
-  bool Initialize(const base::FilePath& database,
-                  const std::string& url,
-                  const std::map<std::string, std::string>& annotations) {
+  bool Initialize(
+      const base::FilePath& database,
+      const std::string& url,
+      const std::map<std::string, std::string>& annotations,
+      internal::InProcessHandler::ProcessPendingReportsObservationCallback
+          callback) {
     INITIALIZATION_STATE_SET_INITIALIZING(initialized_);
-    if (!in_process_handler_.Initialize(database, url, annotations) ||
+    if (!in_process_handler_.Initialize(database, url, annotations, callback) ||
         !InstallMachExceptionHandler() ||
         // xnu turns hardware faults into Mach exceptions, so the only signal
         // left to register is SIGABRT, which never starts off as a hardware
@@ -411,10 +414,11 @@ CrashpadClient::~CrashpadClient() {}
 bool CrashpadClient::StartCrashpadInProcessHandler(
     const base::FilePath& database,
     const std::string& url,
-    const std::map<std::string, std::string>& annotations) {
+    const std::map<std::string, std::string>& annotations,
+    ProcessPendingReportsObservationCallback callback) {
   CrashHandler* crash_handler = CrashHandler::Get();
   DCHECK(crash_handler);
-  return crash_handler->Initialize(database, url, annotations);
+  return crash_handler->Initialize(database, url, annotations, callback);
 }
 
 // static

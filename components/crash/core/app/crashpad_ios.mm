@@ -171,7 +171,8 @@ bool PlatformCrashpadInitialization(
                           ? ""
                           : crash_reporter_client->GetUploadUrl();
     return GetCrashpadClient().StartCrashpadInProcessHandler(
-        *database_path, url, GetProcessSimpleAnnotations());
+        *database_path, url, GetProcessSimpleAnnotations(),
+        crashpad::CrashpadClient::ProcessPendingReportsObservationCallback());
   }  // @autoreleasepool
 }
 

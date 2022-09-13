@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -63,12 +63,36 @@ const int kRetryWorkIntervalSeconds = 15 * 60;
 const int kRetryAttempts = 5;
 #endif
 
+// Wraps a reference to a no-args function (which can be empty). When this
+// object goes out of scope, invokes the function if it is non-empty.
+//
+// The lifetime of the function must outlive the lifetime of this object.
+class ScopedFunctionInvoker final {
+ public:
+  ScopedFunctionInvoker(const std::function<void()>& function)
+      : function_(function) {}
+  ScopedFunctionInvoker(const ScopedFunctionInvoker&) = delete;
+  ScopedFunctionInvoker& operator=(const ScopedFunctionInvoker&) = delete;
+
+  ~ScopedFunctionInvoker() {
+    if (function_) {
+      function_();
+    }
+  }
+
+ private:
+  const std::function<void()>& function_;
+};
+
 }  // namespace
 
-CrashReportUploadThread::CrashReportUploadThread(CrashReportDatabase* database,
-                                                 const std::string& url,
-                                                 const Options& options)
+CrashReportUploadThread::CrashReportUploadThread(
+    CrashReportDatabase* database,
+    const std::string& url,
+    const Options& options,
+    ProcessPendingReportsObservationCallback callback)
     : options_(options),
+      callback_(callback),
       url_(url),
       // When watching for pending reports, check every 15 minutes, even in the
       // absence of a signal from the handler thread. This allows for failed
@@ -104,6 +128,10 @@ void CrashReportUploadThread::ProcessPendingReports() {
 #if BUILDFLAG(IS_IOS)
   internal::ScopedBackgroundTask scoper("CrashReportUploadThread");
 #endif  // BUILDFLAG(IS_IOS)
+
+  // If callback_ is non-empty, invoke it when this function returns after
+  // uploads complete (regardless of whether or not that succeeded).
+  ScopedFunctionInvoker scoped_function_invoker(callback_);
 
   std::vector<UUID> known_report_uuids = known_pending_report_uuids_.Drain();
   for (const UUID& report_uuid : known_report_uuids) {

@@ -1,4 +1,4 @@
-// Copyright 2021 The Crashpad Authors. All rights reserved.
+// Copyright 2021 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 #include <stdint.h>
 
 #include <atomic>
+#include <functional>
 #include <map>
 #include <string>
 #include <vector>
@@ -42,6 +43,17 @@ class InProcessHandler {
   InProcessHandler(const InProcessHandler&) = delete;
   InProcessHandler& operator=(const InProcessHandler&) = delete;
 
+  //! \brief Observation callback invoked each time this object finishes
+  //!     processing and attempting to upload on-disk crash reports (whether or
+  //!     not the uploads succeeded).
+  //!
+  //! This callback is copied into this object. Any references or pointers
+  //! inside must outlive this object.
+  //!
+  //! The callback might be invoked on a background thread, so clients must
+  //! synchronize appropriately.
+  using ProcessPendingReportsObservationCallback = std::function<void()>;
+
   //! \brief Initializes the in-process handler.
   //!
   //! This method must be called only once, and must be successfully called
@@ -50,11 +62,16 @@ class InProcessHandler {
   //! \param[in] database The path to a Crashpad database.
   //! \param[in] url The URL of an upload server.
   //! \param[in] annotations Process annotations to set in each crash report.
+  //! \param[in] callback Optional callback invoked zero or more times
+  //!     on a background thread each time this object finishes
+  //!     processing and attempting to upload on-disk crash reports.
   //! \return `true` if a handler to a pending intermediate dump could be
   //!     opened.
   bool Initialize(const base::FilePath& database,
                   const std::string& url,
-                  const std::map<std::string, std::string>& annotations);
+                  const std::map<std::string, std::string>& annotations,
+                  ProcessPendingReportsObservationCallback callback =
+                      ProcessPendingReportsObservationCallback());
 
   //! \brief Generate an intermediate dump from a signal handler exception.
   //!      Writes the dump with the cached writer does not allow concurrent

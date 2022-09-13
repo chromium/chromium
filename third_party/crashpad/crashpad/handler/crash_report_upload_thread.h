@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 #ifndef CRASHPAD_HANDLER_CRASH_REPORT_UPLOAD_THREAD_H_
 #define CRASHPAD_HANDLER_CRASH_REPORT_UPLOAD_THREAD_H_
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -63,14 +64,30 @@ class CrashReportUploadThread : public WorkerThread::Delegate,
     bool watch_pending_reports;
   };
 
+  //! \brief Observation callback invoked each time the in-process handler
+  //!     finishes processing and attempting to upload on-disk crash reports
+  //!     (whether or not the uploads succeeded).
+  //!
+  //! This callback is copied into this object. Any references or pointers
+  //! inside must outlive this object.
+  //!
+  //! The callback might be invoked on a background thread, so clients must
+  //! synchronize appropriately.
+  using ProcessPendingReportsObservationCallback = std::function<void()>;
+
   //! \brief Constructs a new object.
   //!
   //! \param[in] database The database to upload crash reports from.
   //! \param[in] url The URL of the server to upload crash reports to.
   //! \param[in] options Options for the report uploads.
+  //! \param[in] callback Optional callback invoked zero or more times
+  //!     on a background thread each time the this object finishes
+  //!     processing and attempting to upload on-disk crash reports.
+  //!     If this callback is empty, it is not invoked.
   CrashReportUploadThread(CrashReportDatabase* database,
                           const std::string& url,
-                          const Options& options);
+                          const Options& options,
+                          ProcessPendingReportsObservationCallback callback);
 
   CrashReportUploadThread(const CrashReportUploadThread&) = delete;
   CrashReportUploadThread& operator=(const CrashReportUploadThread&) = delete;
@@ -207,6 +224,7 @@ class CrashReportUploadThread : public WorkerThread::Delegate,
 #endif
 
   const Options options_;
+  const ProcessPendingReportsObservationCallback callback_;
   const std::string url_;
   WorkerThread thread_;
   ThreadSafeVector<UUID> known_pending_report_uuids_;

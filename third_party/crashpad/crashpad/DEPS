@@ -1,4 +1,4 @@
-# Copyright 2014 The Crashpad Authors. All rights reserved.
+# Copyright 2014 The Crashpad Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ deps = {
       'e1e7b0ad8ee99a875b272c8e33e308472e897660',
   'crashpad/third_party/mini_chromium/mini_chromium':
       Var('chromium_git') + '/chromium/mini_chromium@' +
-      '75dcb8dc417af77fdb9ec23c7b51cb1d57dfcee2',
+      '4332ddb6963750e1106efdcece6d6e2de6dc6430',
   'crashpad/third_party/libfuzzer/src':
       Var('chromium_git') + '/chromium/llvm-project/compiler-rt/lib/fuzzer.git@' +
       'fda403cf93ecb8792cb1d061564d89a6553ca020',
