@@ -36,7 +36,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.IntentHandler;
@@ -167,7 +166,6 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.NetError;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -789,13 +787,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             @Override
             public void onLoadStarted(Tab tab, boolean toDifferentDocument) {
                 if (!toDifferentDocument) return;
-                if (ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.DELAY_TOOLBAR_UPDATE_ON_LOAD_STARTED)) {
-                    PostTask.postTask(
-                            UiThreadTaskTraits.USER_BLOCKING, () -> updateTabLoadingState(true));
-                } else {
-                    updateTabLoadingState(true);
-                }
+                updateTabLoadingState(true);
             }
 
             @Override

@@ -230,7 +230,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kContextualTriggersSelectionHandles,
     &kContextualTriggersSelectionMenu,
     &kContextualTriggersSelectionSize,
-    &kDelayToolbarUpdateOnLoadStarted,
     &kDirectActions,
     &kDisableCompositedProgressBar,
     &kDownloadFileProvider,
@@ -659,9 +658,6 @@ const base::Feature kContextualTriggersSelectionMenu{
 
 const base::Feature kContextualTriggersSelectionSize{
     "ContextualTriggersSelectionSize", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kDelayToolbarUpdateOnLoadStarted{
-    "DelayToolbarUpdateOnLoadStarted", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kDirectActions{"DirectActions",
                                    base::FEATURE_ENABLED_BY_DEFAULT};
