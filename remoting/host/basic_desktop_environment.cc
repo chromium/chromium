@@ -16,7 +16,6 @@
 #include "remoting/host/base/screen_controls.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/desktop_capturer_proxy.h"
-#include "remoting/host/desktop_capturer_wrapper.h"
 #include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/file_transfer/local_file_operations.h"
 #include "remoting/host/input_injector.h"
@@ -195,12 +194,8 @@ std::unique_ptr<DesktopCapturer> BasicDesktopEnvironment::CreateVideoCapturer(
     const webrtc::DesktopCaptureOptions& capture_options) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  // TODO(joedow): Determine whether we can migrate additional platforms to
-  // using the DesktopCaptureWrapper instead of the DesktopCaptureProxy. Then
-  // clean up DesktopCapturerProxy::Core::CreateCapturer().
-#if BUILDFLAG(IS_LINUX) && !defined(REMOTING_USE_WAYLAND)
-  auto desktop_capturer = std::make_unique<DesktopCapturerWrapper>();
-#else  // !BUILDFLAG(IS_LINUX) || defined(REMOTING_USE_WAYLAND)
+  // TODO(joedow): Detangle the threads involved in the mouse cursor composer
+  // classes so we can run the capturer and scheduler on a dedicated thread.
   scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   capture_task_runner = ui_task_runner_;
@@ -211,10 +206,9 @@ std::unique_ptr<DesktopCapturer> BasicDesktopEnvironment::CreateVideoCapturer(
       {base::TaskPriority::HIGHEST},
       base::SingleThreadTaskRunnerThreadMode::DEDICATED);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
   auto desktop_capturer =
       std::make_unique<DesktopCapturerProxy>(std::move(capture_task_runner));
-#endif  // !BUILDFLAG(IS_LINUX) || defined(REMOTING_USE_WAYLAND)
-
   desktop_capturer->CreateCapturer(capture_options);
   return std::move(desktop_capturer);
 }
