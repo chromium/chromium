@@ -21,7 +21,7 @@ FastPairRepository* g_instance = nullptr;
 
 // static
 FastPairRepository* FastPairRepository::Get() {
-  DCHECK(g_instance);
+  // g_instance should always exist
   return g_instance;
 }
 

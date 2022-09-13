@@ -102,9 +102,25 @@ void FastPairSavedDevicesHandler::HandleLoadSavedDevicePage(
 
   loading_saved_device_page_ = true;
   loading_start_time_ = base::TimeTicks::Now();
+  if (!ash::quick_pair::FastPairRepository::Get()) {
+    // while we always expect the FastPairRepository to exist, we have run into
+    // crashes where it becomes null for an unknown reason. Until we better
+    // understand the problem we want to handle the situation gracefully by
+    // telling the UI we ran into an error and recording the error for further
+    // investigation.
+    FireWebUIListener(kOptInStatusMessage,
+                      base::Value(static_cast<int>(
+                          nearby::fastpair::OptInStatus::
+                              STATUS_ERROR_RETRIEVING_FROM_FOOTPRINTS_SERVER)));
+    ash::quick_pair::RecordGetFastPairRepositoryForSavedDevicesPageResult(
+        /*success=*/false);
+    return;
+  }
   ash::quick_pair::FastPairRepository::Get()->GetSavedDevices(
       base::BindOnce(&FastPairSavedDevicesHandler::OnGetSavedDevices,
                      weak_ptr_factory_.GetWeakPtr()));
+  ash::quick_pair::RecordGetFastPairRepositoryForSavedDevicesPageResult(
+      /*success=*/true);
 }
 
 void FastPairSavedDevicesHandler::OnGetSavedDevices(

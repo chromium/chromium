@@ -91,6 +91,8 @@ const char kSavedDevicesTotalUxLoadTimeMetricName[] =
     "Bluetooth.ChromeOS.FastPair.SavedDevices.TotalUxLoadTime";
 const char kSavedDevicesCountMetricName[] =
     "Bluetooth.ChromeOS.FastPair.SavedDevices.DeviceCount";
+const char kSavedDeviceGetFastPairRepositoryResultMetricName[] =
+    "Bluetooth.ChromeOS.FastPair.SavedDevices.GetFastPairRepository.Result";
 
 nearby::fastpair::FastPairDevice CreateFastPairDevice(
     const std::string device_name,
@@ -169,6 +171,8 @@ class FastPairSavedDevicesHandlerTest : public testing::Test {
         std::move(mock_decoder));
     handler_->set_web_ui(test_web_ui_.get());
     handler_->RegisterMessages();
+    fast_pair_repository_ =
+        std::make_unique<ash::quick_pair::FakeFastPairRepository>();
   }
 
   content::TestWebUI* test_web_ui() { return test_web_ui_.get(); }
@@ -193,7 +197,7 @@ class FastPairSavedDevicesHandlerTest : public testing::Test {
         CreateFastPairDevice(/*device_name=*/device_name3,
                              /*image_bytes=*/device_image_bytes3,
                              /*account_key=*/account_key3)};
-    fast_pair_repository_.SetSavedDevices(
+    fast_pair_repository_->SetSavedDevices(
         /*status=*/opt_in_status,
         /*devices=*/std::move(devices));
   }
@@ -276,7 +280,8 @@ class FastPairSavedDevicesHandlerTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
-  ash::quick_pair::FakeFastPairRepository fast_pair_repository_;
+  std::unique_ptr<ash::quick_pair::FakeFastPairRepository>
+      fast_pair_repository_;
   gfx::Image test_image_;
   ash::quick_pair::MockFastPairImageDecoder* mock_decoder_;
   std::unique_ptr<content::TestWebUI> test_web_ui_;
@@ -312,6 +317,46 @@ TEST_F(FastPairSavedDevicesHandlerTest, GetSavedDevices) {
       /*account_key3=*/kAccountKey3);
   histogram_tester().ExpectTotalCount(kSavedDevicesTotalUxLoadTimeMetricName,
                                       1);
+}
+
+TEST_F(FastPairSavedDevicesHandlerTest, NoRepository) {
+  histogram_tester().ExpectTotalCount(
+      kSavedDeviceGetFastPairRepositoryResultMetricName, 0);
+  InitializeSavedDevicesList(
+      /*device_name1=*/kDeviceName1, /*device_image_bytes1=*/kImageBytes1,
+      /*account_key1=*/kAccountKey1, /*device_name2=*/kDeviceName2,
+      /*device_image_bytes2=*/kImageBytes2, /*account_key2=*/kAccountKey2,
+      /*device_name3=*/kDeviceName3, /*device_image_bytes3=*/kImageBytes3,
+      /*account_key3=*/kAccountKey3,
+      /*opt_in_status=*/nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
+  fast_pair_repository_.reset();
+  LoadPage();
+  base::RunLoop().RunUntilIdle();
+
+  VerifyOptInStatus(*test_web_ui()->call_data()[0],
+                    nearby::fastpair::OptInStatus::
+                        STATUS_ERROR_RETRIEVING_FROM_FOOTPRINTS_SERVER);
+  histogram_tester().ExpectTotalCount(
+      kSavedDeviceGetFastPairRepositoryResultMetricName, 1);
+}
+
+TEST_F(FastPairSavedDevicesHandlerTest, HasRepository) {
+  histogram_tester().ExpectTotalCount(
+      kSavedDeviceGetFastPairRepositoryResultMetricName, 0);
+  InitializeSavedDevicesList(
+      /*device_name1=*/kDeviceName1, /*device_image_bytes1=*/kImageBytes1,
+      /*account_key1=*/kAccountKey1, /*device_name2=*/kDeviceName2,
+      /*device_image_bytes2=*/kImageBytes2, /*account_key2=*/kAccountKey2,
+      /*device_name3=*/kDeviceName3, /*device_image_bytes3=*/kImageBytes3,
+      /*account_key3=*/kAccountKey3,
+      /*opt_in_status=*/nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
+  LoadPage();
+  base::RunLoop().RunUntilIdle();
+
+  VerifyOptInStatus(*test_web_ui()->call_data()[0],
+                    nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
+  histogram_tester().ExpectTotalCount(
+      kSavedDeviceGetFastPairRepositoryResultMetricName, 1);
 }
 
 // TODO(crbug.com/1362118): Fix flaky test.
@@ -412,7 +457,7 @@ TEST_F(FastPairSavedDevicesHandlerTest, EmptyListSentToWebUi) {
                                       0);
   histogram_tester().ExpectBucketCount(kSavedDevicesCountMetricName,
                                        /*num_devices=*/0, 0);
-  fast_pair_repository_.SetSavedDevices(
+  fast_pair_repository_->SetSavedDevices(
       /*status=*/nearby::fastpair::OptInStatus::STATUS_OPTED_OUT,
       /*devices=*/{});
   LoadPage();
@@ -458,7 +503,7 @@ TEST_F(FastPairSavedDevicesHandlerTest, SavedDevicesBecomesEmpty) {
   histogram_tester().ExpectBucketCount(kSavedDevicesCountMetricName,
                                        /*num_devices=*/0, 0);
 
-  fast_pair_repository_.SetSavedDevices(
+  fast_pair_repository_->SetSavedDevices(
       /*status=*/nearby::fastpair::OptInStatus::STATUS_OPTED_OUT,
       /*devices=*/{});
   LoadPage();
