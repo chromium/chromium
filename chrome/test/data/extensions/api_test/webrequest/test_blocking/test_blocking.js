@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+const isServiceWorker = ('ServiceWorkerGlobalScope' in self);
 var pass = chrome.test.callbackPass;
 
 // Constants as functions, not to be called until after runTests.
@@ -670,17 +671,12 @@ function modifyResponseHeaders() {
     ],
     {urls: ["<all_urls>"]}, ["blocking", "responseHeaders"]);
   navigateAndWait(getURL("simpleLoad/a.html"), function() {
-    // Check that the header will be removed from the XMLHttpRequest.
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", getURLSetHeader(), true);
-    xhr.onload = pass(function() {
-      chrome.test.assertTrue(xhr.getResponseHeader('Foo') == null,
-          'Header was not removed.');
-    });
-    xhr.onerror = function() {
+    fetch(getURLSetHeader()).then((response) => {
+      chrome.test.assertTrue(response.headers.get('Foo') == null,
+                             'Header was not removed.');
+    }).catch((e) => {
       chrome.test.fail();
-    }
-    xhr.send();
+    });
   });
 };
 
@@ -826,17 +822,13 @@ function handleNonUTF8InModifyResponseHeaders() {
     ],
     {urls: ["<all_urls>"]}, ["blocking", "responseHeaders"]);
   navigateAndWait(getURL("simpleLoad/a.html"), function() {
-    // Check that the header will be removed from the XMLHttpRequest.
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", getURLNonUTF8SetHeader(), true);
-    xhr.onload = pass(function() {
-      chrome.test.assertTrue(xhr.getResponseHeader('Foo') == null,
-          'Header was not removed.');
-    });
-    xhr.onerror = function() {
+    // Check that the header will be removed from the request.
+    fetch(getURLNonUTF8SetHeader()).then((response) => {
+      chrome.test.assertTrue(response.headers.get('Foo') == null,
+                             'Header was not removed.');
+    }).catch((e) => {
       chrome.test.fail();
-    }
-    xhr.send();
+    });
   });
 };
 
@@ -1210,11 +1202,10 @@ function asyncXhrsFromOurselfAreVisible() {
     {urls: ["<all_urls>"]}, ["blocking"]);
   // Check the page content for our modified User-Agent string.
   navigateAndWait(getURL("simpleLoad/a.html"), function() {
-      var req = new XMLHttpRequest();
-      var asynchronous = true;
-      req.open("GET", getURLHttpXHRData(), asynchronous);
-      req.send(null);
-      navigateAndWait(getURL("complexLoad/b.jpg"));
+    fetch(getURLHttpXHRData()).catch((e) => {
+      chrome.test.fail();
+    });
+    navigateAndWait(getURL("complexLoad/b.jpg"));
   });
 };
 
@@ -1365,17 +1356,53 @@ var slowTests = [
   dataUrlJavaScriptExecution
 ];
 
+// TODO(crbug.com/1093066): The first test is incompatible with
+// service workers, but the other tests should be fine. Investigate
+// why those tests are failing.
+var nonServiceWorkerTests = [
+  // Tests that use synchronous XMLHttpRequest are not compatible with
+  // service workers.
+  syncXhrsFromOurselfAreInvisible,
+  // This test fails because the header is not removed from the response as
+  // expected. The same code works fine with a legacy background page.
+  // See crbug.com/1361610.
+  modifyResponseHeaders,
+  // This test results in an XMLHttpRequest being issued from outside of the
+  // test.
+  asyncXhrsFromOurselfAreVisible,
+  // This test fails because the header is not removed from the response as
+  // expected. The same code works fine with a legacy background page.
+  // See crbug.com/1361610.
+  handleNonUTF8InModifyResponseHeaders,
+  // This test is flaky and can cause a DCHECK to fail in
+  // ExtensionWebRequestEventRouter::DecrementBlockCount.
+  // See crbug.com/1361616.
+  dataUrlJavaScriptExecution,
+  // This test is flaky and can cause a DCHECK to fail in
+  // ExtensionWebRequestEventRouter::DecrementBlockCount.
+  // See crbug.com/1361616.
+  simpleLoadRedirectOnReceiveHeaders,
+];
+
 const scriptUrl = '_test_resources/api_test/webrequest/framework.js';
 let loadScript = chrome.test.loadScript(scriptUrl);
+
+function getFilteredTests(tests) {
+  if (!isServiceWorker)
+    return tests;
+  return tests.filter(function(op) {
+    return !nonServiceWorkerTests.includes(op);
+  });
+}
 
 loadScript.then(async function() {
   chrome.test.getConfig(function(config) {
     let args = JSON.parse(config.customArg);
     if (args.testSuite == 'normal') {
-      runTests(normalTests);
+      runTests(getFilteredTests(normalTests));
     } else {
       chrome.test.assertEq('slow', args.testSuite);
-      runTests(slowTests);
+      runTests(getFilteredTests(slowTests));
     }
   });
 });
