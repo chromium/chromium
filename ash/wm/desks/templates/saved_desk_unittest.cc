@@ -4440,4 +4440,18 @@ TEST_F(DeskSaveAndRecallTest, ExitOverviewDeskItemFocusCrash) {
   ASSERT_FALSE(InOverviewSession());
 }
 
+// Tests that we can not save an empty desk as a template. Regression test for
+// https://crbug.com/1351520.
+TEST_F(SavedDeskTest, NoEmptyDeskTemplate) {
+  // Try to save a template for the current desk without having any windows.
+  ToggleOverview();
+  auto* overview_session = GetOverviewSession();
+  ASSERT_TRUE(overview_session);
+  overview_session->saved_desk_presenter()->MaybeSaveActiveDeskAsTemplate(
+      DeskTemplateType::kTemplate, Shell::GetPrimaryRootWindow());
+
+  // Ensure there are no templates.
+  EXPECT_EQ(0u, desk_model()->GetEntryCount());
+}
+
 }  // namespace ash

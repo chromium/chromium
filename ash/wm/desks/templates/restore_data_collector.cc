@@ -43,8 +43,6 @@ void RestoreDataCollector::CaptureActiveDeskAsTemplate(
   DCHECK(emplace_result.second);
   Call& call = emplace_result.first->second;
 
-  if (root_window_to_show)
-    window_tracker_.Add(root_window_to_show);
   call.root_window_to_show = root_window_to_show;
   call.template_type = template_type;
   call.template_name = template_name;
@@ -53,6 +51,7 @@ void RestoreDataCollector::CaptureActiveDeskAsTemplate(
   auto mru_windows =
       shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
   auto* delegate = shell->desks_templates_delegate();
+  bool has_supported_apps = false;
   for (auto* window : mru_windows) {
     // Skip transient windows without reporting.
     if (wm::GetTransientParent(window))
@@ -72,6 +71,7 @@ void RestoreDataCollector::CaptureActiveDeskAsTemplate(
       call.unsupported_apps.push_back(window);
       continue;
     }
+    has_supported_apps = true;
 
     const int32_t window_id = window->GetProperty(app_restore::kWindowIdKey);
     std::unique_ptr<app_restore::WindowInfo> window_info =
@@ -88,6 +88,15 @@ void RestoreDataCollector::CaptureActiveDeskAsTemplate(
                                window_id, std::move(window_info)));
   }
 
+  // Do not create a saved desk if the desk is empty or only contains
+  // unsupported apps.
+  if (!has_supported_apps) {
+    calls_.erase(current_serial);
+    return;
+  }
+
+  if (root_window_to_show)
+    window_tracker_.Add(root_window_to_show);
   call.callback = std::move(callback);
 
   // If all requests in the loop above returned data synchronously, then we have
