@@ -10617,9 +10617,6 @@ void RenderFrameHostImpl::BindMediaMetricsProviderReceiver(
   auto is_shutting_down_cb = base::BindRepeating(
       []() { return GetContentClient()->browser()->IsShuttingDown(); });
 
-  // TODO(crbug.com/1316388): With MPArch there may be embedded main frames
-  // and so is_main_frame should not be used to identify all embedded frames.
-  // Follow up to confirm correctness.
   media::MediaMetricsProvider::Create(
       GetProcess()->GetBrowserContext()->IsOffTheRecord()
           ? media::MediaMetricsProvider::BrowsingMode::kIncognito
