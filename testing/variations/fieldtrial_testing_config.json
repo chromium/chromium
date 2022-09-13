@@ -1988,21 +1988,6 @@
             ]
         }
     ],
-    "BatchImageDecoding": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BatchImageDecoding"
-                    ]
-                }
-            ]
-        }
-    ],
     "BatchSimpleURLLoader": [
         {
             "platforms": [
@@ -2915,16 +2900,18 @@
     "CombinedNavigationOptimizations2": [
         {
             "platforms": [
-                "android",
-                "android_webview"
+                "android"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20220912",
                     "enable_features": [
+                        "BatchImageDecoding",
                         "DecodeScriptSourceOffThread",
                         "EstablishGpuChannelAsync",
-                        "OptimizeDataUrls"
+                        "OptimizeDataUrls",
+                        "PrefetchFontLookupTables",
+                        "SplitCompositorTask"
                     ]
                 }
             ]
@@ -2939,7 +2926,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20220912",
                     "params": {
                         "prewarm_cursive": "false",
                         "prewarm_fantasy": "false",
@@ -2952,6 +2939,22 @@
                         "DecodeScriptSourceOffThread",
                         "OptimizeDataUrls",
                         "PrewarmDefaultFontFamilies"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220912",
+                    "enable_features": [
+                        "DecodeScriptSourceOffThread",
+                        "EstablishGpuChannelAsync",
+                        "OptimizeDataUrls",
+                        "PrefetchFontLookupTables"
                     ]
                 }
             ]
@@ -7857,24 +7860,6 @@
             ]
         }
     ],
-    "PrefetchFontLookupTables": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrefetchFontLookupTables"
-                    ]
-                }
-            ]
-        }
-    ],
     "PreloadCookies": [
         {
             "platforms": [
@@ -9527,21 +9512,6 @@
                         "AppendFrameOriginToNetworkIsolationKey",
                         "SplitCacheByNetworkIsolationKey",
                         "UseRegistrableDomainInNetworkIsolationKey"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SplitCompositorTask": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SplitCompositorTask"
                     ]
                 }
             ]
