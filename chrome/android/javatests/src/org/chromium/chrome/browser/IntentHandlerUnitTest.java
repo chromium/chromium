@@ -32,7 +32,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
+import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -372,7 +372,7 @@ public class IntentHandlerUnitTest {
         connection.overridePackageNameForSessionForTesting(token, "app1");
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> OriginVerifier.addVerificationOverride("app1",
+                        -> ChromeOriginVerifier.addVerificationOverride("app1",
                                 Origin.create(headersIntent.getData()),
                                 CustomTabsService.RELATION_USE_AS_ORIGIN));
 
@@ -380,7 +380,7 @@ public class IntentHandlerUnitTest {
         assertTrue(extraHeaders.contains("bearer-token: Some token"));
         assertTrue(extraHeaders.contains("redirect-url: https://www.google.com"));
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> OriginVerifier.clearCachedVerificationsForTesting());
+                () -> ChromeOriginVerifier.clearCachedVerificationsForTesting());
     }
 
     @Test
@@ -404,14 +404,14 @@ public class IntentHandlerUnitTest {
         connection.overridePackageNameForSessionForTesting(token, "app1");
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> OriginVerifier.addVerificationOverride("app2",
+                        -> ChromeOriginVerifier.addVerificationOverride("app2",
                                 Origin.create(headersIntent.getData()),
                                 CustomTabsService.RELATION_USE_AS_ORIGIN));
 
         String extraHeaders = IntentHandler.getExtraHeadersFromIntent(headersIntent);
         assertNull(extraHeaders);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> OriginVerifier.clearCachedVerificationsForTesting());
+                () -> ChromeOriginVerifier.clearCachedVerificationsForTesting());
     }
 
     @Test

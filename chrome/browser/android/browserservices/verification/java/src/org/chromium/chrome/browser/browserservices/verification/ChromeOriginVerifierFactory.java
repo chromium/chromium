@@ -11,13 +11,13 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.content_public.browser.WebContents;
 
 /**
- * A factory that creates instances of {@link OriginVerifier}.
+ * A factory that creates instances of {@link ChromeOriginVerifier}.
  *
- * Most classes that are Activity scoped should take an OriginVerifierFactory and create
+ * Most classes that are Activity scoped should take an ChromeOriginVerifierFactory and create
  * OriginVerifiers as needed.
  */
-public interface OriginVerifierFactory {
+public interface ChromeOriginVerifierFactory {
     /** Creates an {@link OriginVerifier}. */
-    OriginVerifier create(String packageName, @CustomTabsService.Relation int relation,
+    ChromeOriginVerifier create(String packageName, @CustomTabsService.Relation int relation,
             @Nullable WebContents webContents, @Nullable ExternalAuthUtils externalAuthUtils);
 }

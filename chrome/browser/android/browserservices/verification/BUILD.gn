@@ -6,11 +6,11 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/browserservices/verification/ChromeOriginVerifier.java",
+    "java/src/org/chromium/chrome/browser/browserservices/verification/ChromeOriginVerifierFactory.java",
+    "java/src/org/chromium/chrome/browser/browserservices/verification/ChromeOriginVerifierFactoryImpl.java",
+    "java/src/org/chromium/chrome/browser/browserservices/verification/ChromeVerificationResultStore.java",
     "java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifier.java",
-    "java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifierFactory.java",
-    "java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifierFactoryImpl.java",
-    "java/src/org/chromium/chrome/browser/browserservices/verification/Relationship.java",
-    "java/src/org/chromium/chrome/browser/browserservices/verification/VerificationResultStore.java",
   ]
   deps = [
     "//base:base_java",
@@ -21,6 +21,7 @@ android_library("java") {
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//components/digital_asset_links:java",
+    "//components/digital_asset_links/android:java",
     "//components/embedder_support/android:util_java",
     "//components/externalauth/android:java",
     "//content/public/android:content_java",
@@ -33,12 +34,12 @@ android_library("java") {
 }
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifier.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/browserservices/verification/ChromeOriginVerifier.java" ]
 }
 
 android_library("javatests") {
   testonly = true
-  sources = [ "java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifierTest.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/browserservices/verification/ChromeOriginVerifierTest.java" ]
 
   deps = [
     ":java",
@@ -46,6 +47,7 @@ android_library("javatests") {
     "//base:base_java_test_support",
     "//chrome/browser/flags:java",
     "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/digital_asset_links/android:java",
     "//components/embedder_support/android:util_java",
     "//components/externalauth/android:java",
     "//content/public/android:content_java",
@@ -57,7 +59,7 @@ android_library("javatests") {
 }
 
 robolectric_library("junit_test_support") {
-  sources = [ "java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifierUnitTestSupport.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/browserservices/verification/ChromeOriginVerifierUnitTestSupport.java" ]
   deps = [
     ":java",
     "//components/embedder_support/android:util_java",

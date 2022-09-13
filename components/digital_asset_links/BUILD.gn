@@ -16,6 +16,13 @@ source_set("digital_asset_links") {
     "//services/network/public/cpp",
     "//url",
   ]
+  if (is_android) {
+    sources += [
+      "origin_verifier.cc",
+      "origin_verifier.h",
+    ]
+    deps += [ "//components/digital_asset_links/android:jni_headers" ]
+  }
 }
 
 source_set("unit_tests") {

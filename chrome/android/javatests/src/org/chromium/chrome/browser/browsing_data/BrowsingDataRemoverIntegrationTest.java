@@ -15,7 +15,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.verification.VerificationResultStore;
+import org.chromium.chrome.browser.browserservices.verification.ChromeVerificationResultStore;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge.OnClearBrowsingDataListener;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.webapps.TestFetchStorageCallback;
@@ -122,7 +122,8 @@ public class BrowsingDataRemoverIntegrationTest {
         Set<String> savedLinks = new HashSet<>();
         savedLinks.add(relationship);
 
-        VerificationResultStore mStore = VerificationResultStore.getInstanceForTesting();
+        ChromeVerificationResultStore mStore =
+                ChromeVerificationResultStore.getInstanceForTesting();
 
         mStore.setRelationships(savedLinks);
 

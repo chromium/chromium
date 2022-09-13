@@ -139,7 +139,7 @@
 #include "net/net_buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/customtabs/origin_verifier.h"
+#include "chrome/browser/android/customtabs/chrome_origin_verifier.h"
 #include "chrome/browser/android/explore_sites/explore_sites_service_factory.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_decider.h"
 #include "chrome/browser/android/webapps/webapp_registry.h"
@@ -515,9 +515,9 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     // registered webapps.
     webapp_registry_->ClearWebappHistoryForUrls(filter);
 
-    // The OriginVerifier caches origins for Trusted Web Activities that have
-    // been verified and stores them in Android Preferences.
-    customtabs::OriginVerifier::ClearBrowsingData();
+    // The ChromeOriginVerifier caches origins for Trusted Web Activities that
+    // have been verified and stores them in Android Preferences.
+    customtabs::ChromeOriginVerifier::ClearBrowsingData();
 #endif
 
     heavy_ad_intervention::HeavyAdService* heavy_ad_service =

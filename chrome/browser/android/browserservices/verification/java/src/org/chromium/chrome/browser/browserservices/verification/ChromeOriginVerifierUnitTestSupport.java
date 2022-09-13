@@ -15,9 +15,9 @@ import org.chromium.base.PackageUtils;
 import org.chromium.components.embedder_support.util.Origin;
 
 /**
- * Methods that make it easier to unit test functionality relying on {@link OriginVerifier}.
+ * Methods that make it easier to unit test functionality relying on {@link ChromeOriginVerifier}.
  */
-public class OriginVerifierUnitTestSupport {
+public class ChromeOriginVerifierUnitTestSupport {
     // A valid Android package signature - there are no requirements other than it being valid.
     private static final byte[] PACKAGE_SIGNATURE = new byte[] {48, -126, 3, -121, 48, -126, 2, 111,
             -96, 3, 2, 1, 2, 2, 4, 20, -104, -66, -126, 48, 13, 6, 9, 42, -122, 72, -122, -9, 13, 1,
@@ -42,17 +42,18 @@ public class OriginVerifierUnitTestSupport {
     }
 
     /**
-     * Registers the given relationship as valid, so future attempts by the OriginVerifier to
-     * validate that relationship will pass.
+     * Registers the given relation as valid, so future attempts by the ChromeOriginVerifier to
+     * validate that relation will pass.
      */
     public static void addVerification(
-            String packageName, Origin origin, @CustomTabsService.Relation int relationship) {
+            String packageName, Origin origin, @CustomTabsService.Relation int relation) {
         // A more thorough way to override test verification would be to mock out
-        // OriginVerifier.Natives. This would mean that most of the logic inside OriginVerifier
-        // would also be tested. Unfortunately OriginVerifier relies on native being loaded (it
-        // uses Profile.getLastUsedRegularProfile()), so even with the natives mocked out, it would
-        // fail to run.
+        // ChromeOriginVerifier.Natives. This would mean that most of the logic inside
+        // ChromeOriginVerifier would also be tested. Unfortunately ChromeOriginVerifier relies on
+        // native being loaded (it uses Profile.getLastUsedRegularProfile()), so even with the
+        // natives mocked out, it would fail to run.
 
-        VerificationResultStore.getInstance().addOverride(packageName, origin, relationship);
+        ChromeVerificationResultStore.getInstance().addOverride(
+                packageName, origin, ChromeOriginVerifier.relationToRelationship(relation));
     }
 }

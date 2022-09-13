@@ -15,17 +15,17 @@ import javax.inject.Inject;
 import dagger.Reusable;
 
 /**
- * The main implementation of {@link OriginVerifierFactory} used in production.
+ * The main implementation of {@link ChromeOriginVerifierFactory} used in production.
  */
 @Reusable
-public class OriginVerifierFactoryImpl implements OriginVerifierFactory {
+public class ChromeOriginVerifierFactoryImpl implements ChromeOriginVerifierFactory {
     @Inject
-    public OriginVerifierFactoryImpl() {}
+    public ChromeOriginVerifierFactoryImpl() {}
 
     @Override
-    public OriginVerifier create(String packageName, @CustomTabsService.Relation int relation,
+    public ChromeOriginVerifier create(String packageName, @CustomTabsService.Relation int relation,
             @Nullable WebContents webContents, @Nullable ExternalAuthUtils externalAuthUtils) {
-        return new OriginVerifier(packageName, relation, webContents, externalAuthUtils,
-                VerificationResultStore.getInstance());
+        return new ChromeOriginVerifier(packageName, relation, webContents, externalAuthUtils,
+                ChromeVerificationResultStore.getInstance());
     }
 }

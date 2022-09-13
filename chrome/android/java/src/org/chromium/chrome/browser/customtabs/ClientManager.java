@@ -31,10 +31,10 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.PostMessageHandler;
-import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
-import org.chromium.chrome.browser.browserservices.verification.OriginVerifier.OriginVerificationListener;
-import org.chromium.chrome.browser.browserservices.verification.OriginVerifierFactory;
-import org.chromium.chrome.browser.browserservices.verification.OriginVerifierFactoryImpl;
+import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
+import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
+import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactoryImpl;
+import org.chromium.components.digital_asset_links.OriginVerifier.OriginVerificationListener;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.installedapp.InstalledAppProviderImpl;
@@ -172,7 +172,7 @@ class ClientManager {
         public final PostMessageHandler postMessageHandler;
         public final PostMessageServiceConnection serviceConnection;
         public final Set<Origin> mLinkedOrigins = new HashSet<>();
-        public OriginVerifier originVerifier;
+        public ChromeOriginVerifier originVerifier;
         public boolean mIgnoreFragments;
         public boolean lowConfidencePrediction;
         public boolean highConfidencePrediction;
@@ -289,7 +289,7 @@ class ClientManager {
         }
     }
 
-    private final OriginVerifierFactory mOriginVerifierFactory;
+    private final ChromeOriginVerifierFactory mOriginVerifierFactory;
     private final InstalledAppProviderWrapper mInstalledAppProviderWrapper;
 
     private final Map<CustomTabsSessionToken, SessionParams> mSessionParams = new HashMap<>();
@@ -298,10 +298,10 @@ class ClientManager {
     private boolean mWarmupHasBeenCalled;
 
     public ClientManager() {
-        this(new OriginVerifierFactoryImpl(), new ProdInstalledAppProviderWrapper());
+        this(new ChromeOriginVerifierFactoryImpl(), new ProdInstalledAppProviderWrapper());
     }
 
-    public ClientManager(OriginVerifierFactory originVerifierFactory,
+    public ClientManager(ChromeOriginVerifierFactory originVerifierFactory,
             InstalledAppProviderWrapper installedAppProviderWrapper) {
         mOriginVerifierFactory = originVerifierFactory;
         mInstalledAppProviderWrapper = installedAppProviderWrapper;
@@ -707,8 +707,8 @@ class ClientManager {
      */
     public synchronized boolean isFirstPartyOriginForSession(
             CustomTabsSessionToken session, Origin origin) {
-        return OriginVerifier.wasPreviouslyVerified(getClientPackageNameForSession(session), origin,
-                CustomTabsService.RELATION_USE_AS_ORIGIN);
+        return ChromeOriginVerifier.wasPreviouslyVerified(getClientPackageNameForSession(session),
+                origin, CustomTabsService.RELATION_USE_AS_ORIGIN);
     }
 
     /** Tries to bind to a client to keep it alive, and returns true for success. */

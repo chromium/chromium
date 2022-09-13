@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.browserservices.verification;
+package org.chromium.components.digital_asset_links;
 
 import org.chromium.components.embedder_support.util.Origin;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * This is a plain-old-data class to store a Digital Asset Link relationship [1].
@@ -14,14 +17,14 @@ import org.chromium.components.embedder_support.util.Origin;
 public class Relationship {
     public final String packageName;
     public final Origin origin;
-    public final int relation;
-    public final String signatureFingerprint;
+    public final String relation;
+    public final List<String> signatureFingerprints;
 
     /** Creates a {@link Relationship} to hold relationship details. */
-    public Relationship(
-            String packageName, String signatureFingerprint, Origin origin, int relation) {
+    public Relationship(String packageName, List<String> signatureFingerprints, Origin origin,
+            String relation) {
         this.packageName = packageName;
-        this.signatureFingerprint = signatureFingerprint;
+        this.signatureFingerprints = signatureFingerprints;
         this.origin = origin;
         this.relation = relation;
     }
@@ -33,6 +36,11 @@ public class Relationship {
     @Override
     public String toString() {
         // Neither package names nor origins contain commas.
-        return packageName + "," + origin + "," + relation + "," + signatureFingerprint;
+        String fingerprints = "";
+        if (signatureFingerprints != null) {
+            Collections.sort(signatureFingerprints);
+            fingerprints = String.join(",", signatureFingerprints);
+        }
+        return packageName + "," + origin + "," + relation + "," + fingerprints;
     }
 }

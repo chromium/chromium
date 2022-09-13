@@ -19,10 +19,10 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.browser.browserservices.verification.OriginVerifier.OriginVerificationListener;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.digital_asset_links.OriginVerifier.OriginVerificationListener;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -34,11 +34,11 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-/** Tests for OriginVerifier. */
+/** Tests for ChromeOriginVerifier. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(OriginVerifierTest.TEST_BATCH_NAME)
-public class OriginVerifierTest {
+@Batch(ChromeOriginVerifierTest.TEST_BATCH_NAME)
+public class ChromeOriginVerifierTest {
     public static final String TEST_BATCH_NAME = "origin_verifier";
 
     @Rule
@@ -49,7 +49,7 @@ public class OriginVerifierTest {
     private static final String PACKAGE_NAME =
             ContextUtils.getApplicationContext().getPackageName();
 
-    private final OriginVerifierFactory mFactory = new OriginVerifierFactoryImpl();
+    private final ChromeOriginVerifierFactory mFactory = new ChromeOriginVerifierFactoryImpl();
 
     private Origin mHttpsOrigin;
     private Origin mHttpOrigin;
@@ -80,8 +80,8 @@ public class OriginVerifierTest {
     }
 
     private Semaphore mVerificationResultSemaphore;
-    private OriginVerifier mUseAsOriginVerifier;
-    private OriginVerifier mHandleAllUrlsVerifier;
+    private ChromeOriginVerifier mUseAsOriginVerifier;
+    private ChromeOriginVerifier mHandleAllUrlsVerifier;
     private volatile String mLastPackageName;
     private volatile Origin mLastOrigin;
     private volatile boolean mLastVerified;
@@ -119,7 +119,7 @@ public class OriginVerifierTest {
     public void testMultipleRelationships() throws Exception {
         PostTask.postTask(UiThreadTaskTraits.DEFAULT,
                 ()
-                        -> OriginVerifier.addVerificationOverride(PACKAGE_NAME, mHttpsOrigin,
+                        -> ChromeOriginVerifier.addVerificationOverride(PACKAGE_NAME, mHttpsOrigin,
                                 CustomTabsService.RELATION_USE_AS_ORIGIN));
         PostTask.postTask(UiThreadTaskTraits.DEFAULT,
                 ()
@@ -130,12 +130,16 @@ public class OriginVerifierTest {
         Assert.assertTrue(mLastVerified);
         Assert.assertTrue(TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> OriginVerifier.wasPreviouslyVerified(PACKAGE_NAME, mHttpsOrigin,
+                        -> ChromeOriginVerifier.wasPreviouslyVerified(PACKAGE_NAME, mHttpsOrigin,
                                 CustomTabsService.RELATION_USE_AS_ORIGIN)));
+        Assert.assertTrue(TestThreadUtils.runOnUiThreadBlocking(
+                () -> mUseAsOriginVerifier.wasPreviouslyVerified(mHttpsOrigin)));
+
         Assert.assertFalse(TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> OriginVerifier.wasPreviouslyVerified(PACKAGE_NAME, mHttpsOrigin,
+                        -> ChromeOriginVerifier.wasPreviouslyVerified(PACKAGE_NAME, mHttpsOrigin,
                                 CustomTabsService.RELATION_HANDLE_ALL_URLS)));
+
         Assert.assertEquals(mLastPackageName, PACKAGE_NAME);
         Assert.assertEquals(mLastOrigin, mHttpsOrigin);
     }
@@ -143,7 +147,7 @@ public class OriginVerifierTest {
     @Test
     @SmallTest
     public void testVerificationBypass() throws InterruptedException {
-        OriginVerifier verifier = mFactory.create(
+        ChromeOriginVerifier verifier = mFactory.create(
                 PACKAGE_NAME, CustomTabsService.RELATION_HANDLE_ALL_URLS, null, mExternalAuthUtils);
 
         PostTask.postTask(UiThreadTaskTraits.DEFAULT,
@@ -158,6 +162,38 @@ public class OriginVerifierTest {
                 () -> verifier.start(new TestOriginVerificationListener(), mHttpsOrigin));
         Assert.assertTrue(
                 mVerificationResultSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+
         Assert.assertTrue(mLastVerified);
+    }
+
+    @Test
+    @SmallTest
+    public void testRelationToRelationship() throws InterruptedException {
+        Assert.assertEquals(ChromeOriginVerifier.relationToRelationship(
+                                    CustomTabsService.RELATION_USE_AS_ORIGIN),
+                "delegate_permission/common.use_as_origin");
+        Assert.assertEquals(ChromeOriginVerifier.relationToRelationship(
+                                    CustomTabsService.RELATION_HANDLE_ALL_URLS),
+                "delegate_permission/common.handle_all_urls");
+    }
+
+    @Test
+    @SmallTest
+    public void testIsAllowlisted() throws InterruptedException {
+        ChromeOriginVerifier verifier = mFactory.create(
+                PACKAGE_NAME, CustomTabsService.RELATION_HANDLE_ALL_URLS, null, mExternalAuthUtils);
+        Assert.assertFalse(verifier.isAllowlisted("no.existing.package",
+                Origin.create("https://not.exist.com"),
+                "delegate_permission/common.handle_all_urls"));
+        mExternalAuthUtils.addToAllowlist(PACKAGE_NAME, mHttpsOrigin);
+        Assert.assertFalse(verifier.isAllowlisted(
+                PACKAGE_NAME, mHttpsOrigin, "delegate_permission/common.use_as_origin"));
+        Assert.assertTrue(verifier.isAllowlisted(
+                PACKAGE_NAME, mHttpsOrigin, "delegate_permission/common.handle_all_urls"));
+
+        ChromeOriginVerifier verifierNoAuth = mFactory.create(
+                PACKAGE_NAME, CustomTabsService.RELATION_HANDLE_ALL_URLS, null, null);
+        Assert.assertFalse(verifierNoAuth.isAllowlisted(
+                PACKAGE_NAME, mHttpsOrigin, "delegate_permission/common.handle_all_urls"));
     }
 }

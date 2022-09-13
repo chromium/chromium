@@ -11,7 +11,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
-import static org.chromium.chrome.browser.browserservices.verification.OriginVerifierUnitTestSupport.addVerification;
+import static org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierUnitTestSupport.addVerification;
 
 import android.net.Uri;
 import android.os.Process;
@@ -35,9 +35,10 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
-import org.chromium.chrome.browser.browserservices.verification.OriginVerifierFactoryImpl;
-import org.chromium.chrome.browser.browserservices.verification.OriginVerifierUnitTestSupport;
+import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
+import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactoryImpl;
+import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierUnitTestSupport;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 
@@ -56,20 +57,25 @@ public class ClientManagerTest {
     @Mock
     private ClientManager.InstalledAppProviderWrapper mInstalledAppProviderWrapper;
 
+    @Mock
+    private Profile mProfile;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        Profile.setLastUsedProfileForTesting(mProfile);
+
         RequestThrottler.purgeAllEntriesForTesting();
 
-        OriginVerifierUnitTestSupport.registerPackageWithSignature(
+        ChromeOriginVerifierUnitTestSupport.registerPackageWithSignature(
                 shadowOf(ApplicationProvider.getApplicationContext().getPackageManager()),
                 PACKAGE_NAME, mUid);
 
-        mClientManager =
-                new ClientManager(new OriginVerifierFactoryImpl(), mInstalledAppProviderWrapper);
+        mClientManager = new ClientManager(
+                new ChromeOriginVerifierFactoryImpl(), mInstalledAppProviderWrapper);
 
-        OriginVerifier.clearCachedVerificationsForTesting();
+        ChromeOriginVerifier.clearCachedVerificationsForTesting();
         UmaRecorderHolder.resetForTesting();
 
         ShadowUrlUtilities.setTestImpl(new ShadowUrlUtilities.TestImpl() {

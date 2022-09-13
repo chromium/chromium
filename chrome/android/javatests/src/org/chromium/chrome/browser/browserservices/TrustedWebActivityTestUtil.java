@@ -14,7 +14,7 @@ import androidx.browser.customtabs.TrustedWebUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
-import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
+import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
@@ -77,8 +77,8 @@ public class TrustedWebActivityTestUtil {
     /** Caches a successful verification for the given |packageName| and |url|. */
     public static void spoofVerification(String packageName, String url) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> OriginVerifier.addVerificationOverride(packageName, Origin.create(url),
-                        CustomTabsService.RELATION_HANDLE_ALL_URLS));
+                () -> ChromeOriginVerifier.addVerificationOverride(packageName,
+                                Origin.create(url), CustomTabsService.RELATION_HANDLE_ALL_URLS));
     }
 
     /** Creates a Custom Tabs Session from the Intent, specifying the |packageName|. */
