@@ -1576,15 +1576,14 @@ void ServiceWorkerContextWrapper::SetLoaderFactoryForUpdateCheckForTest(
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
-ServiceWorkerContextWrapper::GetLoaderFactoryForUpdateCheck(
-    const GURL& scope,
-    network::mojom::ClientSecurityStatePtr client_security_state) {
+ServiceWorkerContextWrapper::GetLoaderFactoryForUpdateCheck(const GURL& scope) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // TODO(https://crbug.com/1211361): Do we want to instrument this with
   // devtools? It is currently not recorded at all.
+  // TODO(https://crbug.com/1239551): pass in proper client security state
   return GetLoaderFactoryForBrowserInitiatedRequest(
       scope,
-      /*version_id=*/absl::nullopt, std::move(client_security_state));
+      /*version_id=*/absl::nullopt, /*client_security_state=*/nullptr);
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
