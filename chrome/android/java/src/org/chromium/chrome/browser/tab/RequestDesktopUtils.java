@@ -41,7 +41,6 @@ import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.ukm.UkmRecorder;
-import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -135,13 +134,14 @@ public class RequestDesktopUtils {
     /**
      * Set or remove a domain level exception with URL for {@link
      * ContentSettingsType.REQUEST_DESKTOP_SITE}. Clear the subdomain level exception if any.
-     * @param browserContextHandle Target browser context whose content settings needs to be
-     *         updated.
+     * @param profile Target profile whose content settings needs to be updated.
      * @param url  {@link GURL} for the site that changes in desktop user agent.
      * @param useDesktopUserAgent True if the input |url| needs to use desktop user agent.
      */
     public static void setRequestDesktopSiteContentSettingsForUrl(
-            BrowserContextHandle browserContextHandle, GURL url, boolean useDesktopUserAgent) {
+            Profile profile, GURL url, boolean useDesktopUserAgent) {
+        boolean isIncognito =
+                Profile.getBrowserProfileTypeFromProfile(profile) == BrowserProfileType.INCOGNITO;
         String domainAndRegistry =
                 UrlUtilities.getDomainAndRegistry(url.getSpec(), /*includePrivateRegistries*/ true);
         // Use host only (no scheme/port/path) for ContentSettings to ensure consistency.
@@ -152,30 +152,28 @@ public class RequestDesktopUtils {
         } else {
             hostPattern = ANY_SUBDOMAIN_PATTERN + domainAndRegistry;
             // Clear subdomain level exception if any.
-            WebsitePreferenceBridge.setContentSettingCustomScope(browserContextHandle,
+            WebsitePreferenceBridge.setContentSettingCustomScope(profile,
                     ContentSettingsType.REQUEST_DESKTOP_SITE, url.getHost(),
                     /*secondaryPattern*/ SITE_WILDCARD, ContentSettingValues.DEFAULT);
         }
         @ContentSettingValues
         int defaultValue = WebsitePreferenceBridge.getDefaultContentSetting(
-                browserContextHandle, ContentSettingsType.REQUEST_DESKTOP_SITE);
-        @ContentSettingValues
-        int contentSettingValue;
-
+                profile, ContentSettingsType.REQUEST_DESKTOP_SITE);
         assert defaultValue == ContentSettingValues.ALLOW
                 || defaultValue == ContentSettingValues.BLOCK;
-        boolean blockDesktopGlobally = defaultValue == ContentSettingValues.BLOCK;
-
-        if (useDesktopUserAgent) {
-            contentSettingValue = blockDesktopGlobally ? ContentSettingValues.ALLOW
-                                                       : ContentSettingValues.DEFAULT;
-        } else {
-            contentSettingValue = blockDesktopGlobally ? ContentSettingValues.DEFAULT
-                                                       : ContentSettingValues.BLOCK;
+        boolean rdsGlobalSetting = defaultValue == ContentSettingValues.ALLOW;
+        @ContentSettingValues
+        int contentSettingValue =
+                useDesktopUserAgent ? ContentSettingValues.ALLOW : ContentSettingValues.BLOCK;
+        // For normal profile, remove domain level setting if it matches the global setting.
+        // For incognito profile, keep the domain level setting to override the settings from normal
+        // profile.
+        if (!isIncognito && useDesktopUserAgent == rdsGlobalSetting) {
+            contentSettingValue = ContentSettingValues.DEFAULT;
         }
 
         // Set or remove a domain level exception.
-        WebsitePreferenceBridge.setContentSettingCustomScope(browserContextHandle,
+        WebsitePreferenceBridge.setContentSettingCustomScope(profile,
                 ContentSettingsType.REQUEST_DESKTOP_SITE, hostPattern,
                 /*secondaryPattern*/ SITE_WILDCARD, contentSettingValue);
     }

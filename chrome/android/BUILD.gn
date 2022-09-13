@@ -1195,6 +1195,7 @@ robolectric_binary("chrome_junit_tests") {
     "//components/policy/android:policy_java",
     "//components/power_bookmarks/core:proto_java",
     "//components/prefs/android:java",
+    "//components/profile_metrics:browser_profile_type_enum_java",
     "//components/schema_org/common:mojom_java",
     "//components/search_engines/android:java",
     "//components/security_state/content/android:java",
