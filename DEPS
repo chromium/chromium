@@ -4519,6 +4519,18 @@ hooks = [
     ],
   },
   {
+    'name': 'Fetch Chrome OS AFDO profiles (from Arm)',
+    'pattern': '.',
+    'condition': 'checkout_chromeos or checkout_simplechrome',
+    'action': [ 'python3',
+                'src/tools/download_optimization_profile.py',
+                '--newest_state=src/chromeos/profiles/arm.afdo.newest.txt',
+                '--local_state=src/chromeos/profiles/arm.afdo.local.txt',
+                '--output_name=src/chromeos/profiles/arm.afdo.prof',
+                '--gs_url_base=chromeos-prebuilt/afdo-job/vetted/release',
+    ],
+  },
+  {
     # Pull doclava binaries if building for Android.
     'name': 'doclava',
     'pattern': '.',
