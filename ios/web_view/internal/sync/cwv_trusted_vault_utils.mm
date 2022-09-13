@@ -14,7 +14,7 @@ namespace {
 syncer::TrustedVaultDeviceRegistrationStateForUMA CWVConvertTrustedVaultState(
     CWVTrustedVaultState state) {
   switch (state) {
-    case CWVTrustedVaultStateAlreadyRegistered:
+    case CWVTrustedVaultStateAlreadyRegisteredV0:
       return syncer::TrustedVaultDeviceRegistrationStateForUMA::
           kAlreadyRegisteredV0;
     case CWVTrustedVaultStateLocalKeysAreStale:
@@ -32,6 +32,9 @@ syncer::TrustedVaultDeviceRegistrationStateForUMA CWVConvertTrustedVaultState(
     case CWVTrustedVaultStateAttemptingRegistrationWithPersistentAuthError:
       return syncer::TrustedVaultDeviceRegistrationStateForUMA::
           kAttemptingRegistrationWithPersistentAuthError;
+    case CWVTrustedVaultStateAlreadyRegisteredV1:
+      return syncer::TrustedVaultDeviceRegistrationStateForUMA::
+          kAlreadyRegisteredV1;
   }
 }
 }  // namespace
