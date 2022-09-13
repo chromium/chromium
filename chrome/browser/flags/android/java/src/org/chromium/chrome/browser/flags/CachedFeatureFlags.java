@@ -92,7 +92,7 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.QUERY_TILES_ON_START, false)
                     .put(ChromeFeatureList.PREFETCH_NOTIFICATION_SCHEDULING_INTEGRATION, false)
                     .put(ChromeFeatureList.READ_LATER, false)
-                    .put(ChromeFeatureList.START_SURFACE_ANDROID, false)
+                    .put(ChromeFeatureList.START_SURFACE_ANDROID, true)
                     .put(ChromeFeatureList.START_SURFACE_REFACTOR, false)
                     .put(ChromeFeatureList.STORE_HOURS, false)
                     .put(ChromeFeatureList.SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT, true)
