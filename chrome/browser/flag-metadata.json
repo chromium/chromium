@@ -5683,11 +5683,6 @@
     "expiry_milestone": 114
   },
   {
-    "name": "remove-extra-ntps",
-    "owners": [ "thegreenfrog@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "request-desktop-site-additions",
     "owners": [ "shuyng@google.com", "twellington", "clank-app-team@google.com" ],
     "expiry_milestone": 108
@@ -6067,11 +6062,6 @@
     "name": "sim-lock-policy",
     "owners": [ "hsuregan@google.com", "cros-connectivity@google.com" ],
     "expiry_milestone": 110
-  },
-  {
-    "name": "single-ntp",
-    "owners": [ "thegreenfrog@google.com", "sczs@google.com"],
-    "expiry_milestone": 106
   },
   {
     "name": "site-data-improvements",
