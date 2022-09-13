@@ -83,7 +83,7 @@ TEST_P(NameFieldTest, NameSurname) {
       features::kAutofillEnableNameSurenameParsing);
 
   AddTextFormFieldData("name", "name", NAME_FIRST);
-  AddTextFormFieldData("surename", "surname", NAME_LAST);
+  AddTextFormFieldData("surname", "surname", NAME_LAST);
 
   ClassifyAndVerify(ParseResult::PARSED);
 }
@@ -95,7 +95,7 @@ TEST_P(NameFieldTest, NameSurnameWithMiddleName) {
 
   AddTextFormFieldData("name", "name", NAME_FIRST);
   AddTextFormFieldData("middlename", "middlename", NAME_MIDDLE);
-  AddTextFormFieldData("surename", "surname", NAME_LAST);
+  AddTextFormFieldData("surname", "surname", NAME_LAST);
 
   ClassifyAndVerify(ParseResult::PARSED);
 }
@@ -143,7 +143,7 @@ TEST_P(NameFieldTest, FirstMiddleLastEmpty) {
 
 TEST_P(NameFieldTest, MiddleInitial) {
   AddTextFormFieldData("first_name", "Name", NAME_FIRST);
-  AddTextFormFieldData("middle_name", "MI", NAME_MIDDLE_INITIAL);
+  AddTextFormFieldData("middle_initial", "MI", NAME_MIDDLE_INITIAL);
   AddTextFormFieldData("last_name", "", NAME_LAST);
 
   ClassifyAndVerify(ParseResult::PARSED);
@@ -151,7 +151,7 @@ TEST_P(NameFieldTest, MiddleInitial) {
 
 TEST_P(NameFieldTest, MiddleInitialNoLastName) {
   AddTextFormFieldData("first_name", "First Name", UNKNOWN_TYPE);
-  AddTextFormFieldData("middle_name", "MI", UNKNOWN_TYPE);
+  AddTextFormFieldData("middle_initial", "MI", UNKNOWN_TYPE);
 
   ClassifyAndVerify(ParseResult::NOT_PARSED);
 }
