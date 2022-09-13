@@ -260,6 +260,8 @@ class FixtureWithMockMessagePump : public Fixture {
       : call_counting_clock_(&mock_clock_), wake_up_type_(wake_up_type) {
     if (wake_up_type_ == WakeUpType::kAlign)
       feature_list_.InitAndEnableFeature(kAlignWakeUps);
+    else
+      feature_list_.InitAndDisableFeature(kAlignWakeUps);
     // A null clock triggers some assertions.
     mock_clock_.Advance(Milliseconds(1));
 

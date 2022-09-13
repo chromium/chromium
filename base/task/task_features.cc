@@ -36,7 +36,7 @@ const base::FeatureParam<TimeDelta> kTaskLeewayParam{&kAddTaskLeewayFeature,
                                                      "leeway", kDefaultLeeway};
 
 const BASE_EXPORT Feature kAlignWakeUps = {"AlignWakeUps",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 const BASE_EXPORT Feature kExplicitHighResolutionTimerWin = {
     "ExplicitHighResolutionTimerWin", base::FEATURE_DISABLED_BY_DEFAULT};
