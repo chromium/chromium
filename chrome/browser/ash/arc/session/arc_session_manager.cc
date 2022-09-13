@@ -1571,7 +1571,7 @@ void ArcSessionManager::ExpandPropertyFilesAndReadSalt() {
 
   std::deque<JobDesc> jobs = {
       JobDesc{kArcPrepareHostGeneratedDirJobName,
-              UpstartOperation::JOB_START,
+              UpstartOperation::JOB_STOP_AND_START,
               {std::string("IS_ARCVM=") + (is_arcvm ? "1" : "0")}},
   };
   ConfigureUpstartJobs(std::move(jobs),
