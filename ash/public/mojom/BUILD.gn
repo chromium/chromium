@@ -15,7 +15,6 @@ mojom("mojom") {
     "accelerator_keys.mojom",
     "assistant_volume_control.mojom",
     "tray_action.mojom",
-    "voice_interaction_controller.mojom",
   ]
 
   public_deps = [
