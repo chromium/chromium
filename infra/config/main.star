@@ -115,7 +115,7 @@ luci.project(
         ),
         luci.binding(
             roles = "role/analysis.editor",
-            groups = "project-chromium-committers",
+            groups = ["project-chromium-committers", "googlers"],
         ),
         # Roles for Weetbix.
         # TODO(b/243488110): Delete when renaming to
@@ -130,7 +130,7 @@ luci.project(
         ),
         luci.binding(
             roles = "role/weetbix.editor",
-            groups = "project-chromium-committers",
+            groups = ["project-chromium-committers", "googlers"],
         ),
     ],
 )
