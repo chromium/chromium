@@ -15,6 +15,7 @@ import './drive_specific.js';
 import './file_dialog.js';
 import './file_display.js';
 import './file_list.js';
+import './file_transfer_connector.js';
 import './files_tooltip.js';
 import './folder_shortcuts.js';
 import './format_dialog.js';

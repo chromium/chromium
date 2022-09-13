@@ -794,7 +794,7 @@ async function checkRecentsContextMenu(
   await remoteCall.waitForFiles(appId, expectedRows);
 
   if (opt_selectMultiple) {
-    // Select all the files and check that the delete button isn't visible.
+    // Select all the files.
     const ctrlA = ['#file-list', 'a', true, false, false];
     await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, ctrlA);
 

@@ -135,6 +135,9 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
 
     // Whether test should run with the DriveFsMirroring flag.
     bool enable_mirrorsync = false;
+
+    // Whether test should enable the file transfer connector.
+    bool enable_file_transfer_connector = false;
   };
 
   FileManagerBrowserTestBase(const FileManagerBrowserTestBase&) = delete;
@@ -204,6 +207,12 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
   virtual bool HandleDlpCommands(const std::string& name,
                                  const base::Value::Dict& value,
                                  std::string* output);
+
+  // Checks if the command is from enterprise connectors. If so, handles it and
+  // returns true, otherwise it returns false.
+  virtual bool HandleEnterpriseConnectorCommands(const std::string& name,
+                                                 const base::Value::Dict& value,
+                                                 std::string* output);
 
   // Called during setup if needed, to create a drive integration service for
   // the given |profile|. Caller owns the return result.

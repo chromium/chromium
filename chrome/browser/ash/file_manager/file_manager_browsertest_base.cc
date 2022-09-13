@@ -82,6 +82,7 @@
 #include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/sync_file_system/mock_remote_file_sync_service.h"
@@ -244,6 +245,7 @@ struct AddEntriesMessage {
     MEDIA_VIEW_VIDEOS,
     MEDIA_VIEW_DOCUMENTS,
     SMBFS_VOLUME,
+    MTP_VOLUME,
   };
 
   // Represents the different types of entries (e.g. file, folder).
@@ -305,6 +307,8 @@ struct AddEntriesMessage {
       *volume = MEDIA_VIEW_DOCUMENTS;
     else if (value == "smbfs")
       *volume = SMBFS_VOLUME;
+    else if (value == "mtp")
+      *volume = MTP_VOLUME;
     else
       return false;
     return true;
@@ -1969,6 +1973,16 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(chromeos::features::kFiltersInRecentsV2);
   }
 
+  if (options.enable_file_transfer_connector) {
+    enabled_features.push_back(
+        enterprise_connectors::kEnterpriseConnectorsEnabled);
+    enabled_features.push_back(features::kFileTransferEnterpriseConnector);
+  } else {
+    disabled_features.push_back(
+        enterprise_connectors::kEnterpriseConnectorsEnabled);
+    disabled_features.push_back(features::kFileTransferEnterpriseConnector);
+  }
+
   // This is destroyed in |TearDown()|. We cannot initialize this in the
   // constructor due to this feature values' above dependence on virtual
   // method calls, but by convention subclasses of this fixture may initialize
@@ -2542,7 +2556,8 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   if (name == "addEntries") {
     // Add the message.entries to the message.volume.
     AddEntriesMessage message;
-    ASSERT_TRUE(AddEntriesMessage::ConvertJSONValue(value, &message));
+    ASSERT_TRUE(AddEntriesMessage::ConvertJSONValue(value, &message))
+        << value.DebugString();
 
     for (size_t i = 0; i < message.entries.size(); ++i) {
       switch (message.volume) {
@@ -2628,6 +2643,13 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
           CHECK(smbfs_volume_);
           ASSERT_TRUE(smbfs_volume_->Initialize(profile()));
           smbfs_volume_->CreateEntry(*message.entries[i]);
+          break;
+        case AddEntriesMessage::MTP_VOLUME:
+          if (mtp_volume_) {
+            mtp_volume_->CreateEntry(*message.entries[i]);
+          } else {
+            LOG(FATAL) << "Add entry: but no MTP volume.";
+          }
           break;
       }
     }
@@ -3125,6 +3147,10 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
+  if (HandleEnterpriseConnectorCommands(name, value, output)) {
+    return;
+  }
+
   FAIL() << "Unknown test message: " << name;
 }
 
@@ -3187,6 +3213,15 @@ bool FileManagerBrowserTestBase::HandleDlpCommands(
     const base::Value::Dict& value,
     std::string* output) {
   // DLP commands are only handled by the DlpFilesAppBrowserTest.
+  return false;
+}
+
+bool FileManagerBrowserTestBase::HandleEnterpriseConnectorCommands(
+    const std::string& name,
+    const base::Value::Dict& value,
+    std::string* output) {
+  // Enterprise connector commands are only handled by the
+  // FileTransferConnectorFilesAppBrowserTest.
   return false;
 }
 

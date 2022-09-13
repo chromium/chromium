@@ -15,7 +15,12 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
+#include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_delegate.h"
+#include "chrome/browser/enterprise/connectors/analysis/fake_files_request_handler.h"
+#include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "components/prefs/pref_service.h"
@@ -165,6 +170,11 @@ struct TestCase {
 
   TestCase& EnableMirrorSync() {
     options.enable_mirrorsync = true;
+    return *this;
+  }
+
+  TestCase& EnableFileTransferConnector() {
+    options.enable_file_transfer_connector = true;
     return *this;
   }
 
@@ -352,6 +362,123 @@ IN_PROC_BROWSER_TEST_P(DlpFilesAppBrowserTest, Test) {
   ON_CALL(*mock_rules_manager_, GetReportingManager)
       .WillByDefault(::testing::Return(nullptr));
 
+  StartTest();
+}
+
+constexpr char kBlockingScansForDlpAndMalware[] = R"(
+{
+  "service_provider": "google",
+  "enable": [
+    {
+      "source_destination_list": [
+        {
+          "sources": [{
+            "file_system_type": "%s"
+          }],
+          "destinations": [{
+            "file_system_type": "%s"
+          }]
+        }
+      ],
+      "tags": ["dlp", "malware"]
+    }
+  ],
+  "block_until_verdict": 1
+})";
+
+base::TimeDelta kResponseDelay = base::Seconds(0);
+
+// A version of FilesAppBrowserTest that supports the file transfer enterprise
+// connector.
+class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
+ public:
+  FileTransferConnectorFilesAppBrowserTest(
+      const FileTransferConnectorFilesAppBrowserTest&) = delete;
+  FileTransferConnectorFilesAppBrowserTest& operator=(
+      const FileTransferConnectorFilesAppBrowserTest&) = delete;
+
+ protected:
+  FileTransferConnectorFilesAppBrowserTest() = default;
+  ~FileTransferConnectorFilesAppBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    FilesAppBrowserTest::SetUpOnMainThread();
+
+    // Set a device management token. It is required to enable scanning.
+    // Without it, FileTransferAnalysisDelegate::IsEnabled() always
+    // returns absl::nullopt.
+    SetDMTokenForTesting(
+        policy::DMToken::CreateValidTokenForTesting("dm_token"));
+
+    enterprise_connectors::FilesRequestHandler::SetFactoryForTesting(
+        base::BindRepeating(
+            &enterprise_connectors::FakeFilesRequestHandler::Create,
+            base::BindRepeating(&FileTransferConnectorFilesAppBrowserTest::
+                                    FakeFileUploadCallback,
+                                base::Unretained(this))));
+  }
+
+  bool HandleEnterpriseConnectorCommands(const std::string& name,
+                                         const base::Value::Dict& value,
+                                         std::string* output) override {
+    if (name == "setupFileTransferPolicy") {
+      // Set the analysis connector (enterprise_connectors) for FILE_TRANSFER.
+      // It is also required for FileTransferAnalysisDelegate::IsEnabled() to
+      // return a meaningful result.
+      const std::string* source = value.FindString("source");
+      CHECK(source);
+      const std::string* destination = value.FindString("destination");
+      CHECK(destination);
+      LOG(INFO) << "Setting file transfer policy for transfers from " << *source
+                << " to " << *destination;
+      safe_browsing::SetAnalysisConnector(
+          profile()->GetPrefs(), enterprise_connectors::FILE_TRANSFER,
+          base::StringPrintf(kBlockingScansForDlpAndMalware, source->c_str(),
+                             destination->c_str()));
+      return true;
+    }
+    return false;
+  }
+
+  void FakeFileUploadCallback(
+      safe_browsing::BinaryUploadService::Result result,
+      const base::FilePath& path,
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+      enterprise_connectors::FakeFilesRequestHandler::FakeFileRequestCallback
+          callback) {
+    EXPECT_FALSE(path.empty());
+    EXPECT_EQ(request->device_token(), "dm_token");
+    // Simulate a response.
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), path,
+                       safe_browsing::BinaryUploadService::Result::SUCCESS,
+                       ConnectorStatusCallback(path)),
+        kResponseDelay);
+  }
+
+  enterprise_connectors::ContentAnalysisResponse ConnectorStatusCallback(
+      const base::FilePath& path) {
+    // We return a block verdict if the basename contains "blocked".
+    if (base::Contains(path.BaseName().value(), "blocked")) {
+      return enterprise_connectors::FakeContentAnalysisDelegate::
+          FakeContentAnalysisDelegate::MalwareAndDlpResponse(
+              enterprise_connectors::TriggeredRule::BLOCK,
+              enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS,
+              "rule", enterprise_connectors::TriggeredRule::BLOCK);
+    } else {
+      return enterprise_connectors::FakeContentAnalysisDelegate::
+          SuccessfulResponse([]() {
+            std::set<std::string> tags;
+            tags.insert("dlp");
+            tags.insert("malware");
+            return tags;
+          }());
+    }
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(FileTransferConnectorFilesAppBrowserTest, Test) {
   StartTest();
 }
 
@@ -870,6 +997,34 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("transferShowDlpToast").EnableDlp(),
         TestCase("dlpShowManagedIcon").EnableDlp(),
         TestCase("dlpContextMenuRestrictionDetails").EnableDlp()));
+
+#define FILE_TRANSFER_TEST_CASE(name) \
+  TestCase(name).EnableFileTransferConnector()
+
+WRAPPED_INSTANTIATE_TEST_SUITE_P(
+    FileTransferConnector, /* file_transfer_connector.js */
+    FileTransferConnectorFilesAppBrowserTest,
+    ::testing::Values(
+        FILE_TRANSFER_TEST_CASE(
+            "transferConnectorFromAndroidFilesToDownloadsDeep"),
+        FILE_TRANSFER_TEST_CASE(
+            "transferConnectorFromAndroidFilesToDownloadsFlat"),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromCrostiniToDownloadsDeep"),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromCrostiniToDownloadsFlat"),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromDriveToDownloadsDeep"),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromDriveToDownloadsFlat"),
+        FILE_TRANSFER_TEST_CASE(
+            "transferConnectorFromDriveToDownloadsMoveDeep"),
+        FILE_TRANSFER_TEST_CASE(
+            "transferConnectorFromDriveToDownloadsMoveFlat"),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromMtpToDownloadsDeep"),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromMtpToDownloadsFlat"),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromSmbfsToDownloadsDeep"),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromSmbfsToDownloadsFlat"),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromUsbToDownloadsDeep"),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromUsbToDownloadsFlat")));
+
+#undef FILE_TRANSFER_TEST_CASE
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     RestorePrefs, /* restore_prefs.js */

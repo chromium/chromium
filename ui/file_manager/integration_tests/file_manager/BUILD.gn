@@ -21,6 +21,7 @@ js_type_check("closure_compile") {
     ":file_dialog",
     ":file_display",
     ":file_list",
+    ":file_transfer_connector",
     ":files_tooltip",
     ":folder_shortcuts",
     ":format_dialog",
@@ -170,6 +171,14 @@ js_library("file_display") {
 }
 
 js_library("file_list") {
+  testonly = true
+  deps = [
+    ":test_data",
+    "//ui/file_manager/integration_tests:testcase",
+  ]
+}
+
+js_library("file_transfer_connector") {
   testonly = true
   deps = [
     ":test_data",
