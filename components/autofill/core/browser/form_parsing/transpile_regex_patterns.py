@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -248,7 +248,7 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
   yield '}, NameAndLanguageComparator());'
 
 def generate_cpp_lines(id_to_name_to_lang_to_patterns):
-  yield """// Copyright 2022 The Chromium Authors. All rights reserved.
+  yield """// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 

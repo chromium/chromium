@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--Copyright 2019 The Chromium Authors. All rights reserved. Use of this source code is governed by a BSD-style license that can be found in the LICENSE file.-->
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="32dp" android:height="20dp" android:viewportWidth="32" android:viewportHeight="20">
     <path android:pathData="M3 1h26a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2z" android:strokeWidth="1" android:fillColor="#FFFFFF" android:fillType="evenOdd"/>
     <path android:pathData="M9 19h20.997C30.551 19 31 18.553 31 18.004V11.5S22.722 16.774 9 19z" android:strokeWidth="1" android:fillColor="#F68221" android:fillType="evenOdd"/>

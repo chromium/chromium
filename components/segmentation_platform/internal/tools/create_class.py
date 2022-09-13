@@ -1,4 +1,4 @@
-# Copyright 2022 The Chromium Authors. All rights reserved.
+# Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Script to generate header cc and unittest file for a class in chromium.
@@ -19,7 +19,7 @@ import os
 import sys
 
 _HEADER_TEMPLATE = (
-"""// Copyright {year} The Chromium Authors. All rights reserved.
+"""// Copyright {year} The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,7 @@ class {clas} {{
 """)
 
 _CC_TEMPLATE = (
-"""// Copyright {year} The Chromium Authors. All rights reserved.
+"""// Copyright {year} The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,7 +60,7 @@ namespace {namespace} {{
 """)
 
 _TEST_TEMPLATE = (
-"""// Copyright {year} The Chromium Authors. All rights reserved.
+"""// Copyright {year} The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
