@@ -112,7 +112,7 @@ class PageHandler : public DevToolsDomainHandler,
   void DidCancelPrerender(const GURL& prerendering_url,
                           const std::string& initiating_frame_id,
                           PrerenderHost::FinalStatus status,
-                          const std::string& reason_details);
+                          const std::string& disallowed_api_method);
 
   Response Enable() override;
   Response Disable() override;

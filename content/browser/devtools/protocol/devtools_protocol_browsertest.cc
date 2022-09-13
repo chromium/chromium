@@ -3476,7 +3476,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
 
   // Verify Mojo capability control cancels prerendering.
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
-  EXPECT_THAT(*result.FindString("reasonDetails"),
+  EXPECT_THAT(*result.FindString("disallowedApiMethod"),
               Eq("device.mojom.GamepadMonitor"));
 
   histogram_tester.ExpectUniqueSample(

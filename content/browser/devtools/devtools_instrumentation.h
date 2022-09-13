@@ -187,13 +187,14 @@ void BackForwardCacheNotUsed(
 void DidActivatePrerender(const NavigationRequest& nav_request);
 
 // This function reports cancellation status to DevTools with the
-// `reason_details`, which is used to give users more information about the
-// cancellation details, and reason_details will be formatted for display in
-// the DevTools. See the DevTools implementation for the format.
+// `disallowed_api_method`, which is used to give users more information about
+// the cancellation details if the prerendering uses disallowed API method, and
+// disallowed_api_method will be formatted for display in the DevTools. See the
+// DevTools implementation for the format.
 void DidCancelPrerender(const GURL& prerendering_url,
                         FrameTreeNode* ftn,
                         PrerenderHost::FinalStatus status,
-                        const std::string& reason_details);
+                        const std::string& disallowed_api_method);
 
 void OnSignedExchangeReceived(
     FrameTreeNode* frame_tree_node,

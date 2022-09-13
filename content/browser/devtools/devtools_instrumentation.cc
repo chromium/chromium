@@ -332,11 +332,11 @@ void DidActivatePrerender(const NavigationRequest& nav_request) {
 void DidCancelPrerender(const GURL& prerendering_url,
                         FrameTreeNode* ftn,
                         PrerenderHost::FinalStatus status,
-                        const std::string& reason_details) {
+                        const std::string& disallowed_api_method) {
   std::string initiating_frame_id = ftn->devtools_frame_token().ToString();
   DispatchToAgents(ftn, &protocol::PageHandler::DidCancelPrerender,
                    prerendering_url, initiating_frame_id, status,
-                   reason_details);
+                   disallowed_api_method);
 }
 
 namespace {
