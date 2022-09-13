@@ -1983,8 +1983,6 @@ crbug.com/1158554 external/wpt/css/css-conditional/css-supports-040.xht [ Failur
 crbug.com/1158554 external/wpt/css/css-conditional/css-supports-041.xht [ Failure ]
 crbug.com/1158554 external/wpt/css/css-conditional/css-supports-042.xht [ Failure ]
 crbug.com/1158554 external/wpt/css/css-conditional/at-supports-046.html [ Failure ]
-crbug.com/1255685 external/wpt/css/css-conditional/at-supports-font-format-001.html [ Failure ]
-crbug.com/1255685 external/wpt/css/css-conditional/at-supports-font-tech-001.html [ Failure ]
 
 # CSS Scrollbars
 crbug.com/891944 external/wpt/css/css-scrollbars/textarea-scrollbar-width-none.html [ Failure ]

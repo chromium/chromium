@@ -2425,6 +2425,10 @@
       status: "experimental"
     },
     {
+      name: "SupportsFontFormatTech",
+      status: "experimental"
+    },
+    {
       // When a Web application calls getDisplayMedia() and asks for video,
       // allow a hint to be provided to offer the user an option to
       // dynamically switch the source display surface during the capture.

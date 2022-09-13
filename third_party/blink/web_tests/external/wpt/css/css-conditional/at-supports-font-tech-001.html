@@ -11,20 +11,20 @@
     width: 100px;
   }
   /* assume all browsers support at least feature-opentype and color-COLRv0 */
-  @supports font-tech(feature-opentype) {
+  @supports font-tech(features-opentype) {
     #test1 { background: green };
   }
   @supports font-tech(color-COLRv0) {
     #test2 { background: green };
   }
   /* forms that should NOT be recognized as supported */
-  @supports not font-tech(feature-opentype color-COLRv1) {
+  @supports not font-tech(features-opentype color-COLRv1) {
     #test3 { background: green };
   }
-  @supports not font-tech(feature-opentype, color-COLRv0) {
+  @supports not font-tech(features-opentype, color-COLRv0) {
     #test4 { background: green };
   }
-  @supports not font-tech(feature-opentype, feature-opentype) {
+  @supports not font-tech(features-opentype, features-opentype) {
     #test5 { background: green };
   }
   @supports not font-tech() {
@@ -33,7 +33,7 @@
   @supports not font-tech(xyzzy) {
     #test7 { background: green };
   }
-  @supports not font-tech("feature-opentype") {
+  @supports not font-tech("features-opentype") {
     #test8 { background: green };
   }
 </style>

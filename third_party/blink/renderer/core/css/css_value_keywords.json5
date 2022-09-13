@@ -168,6 +168,10 @@
     "fallback",
     "optional",
 
+    // https://drafts.csswg.org/css-conditional-5/#typedef-supports-font-tech-fn
+    "font-tech",
+    "font-format",
+
     //
     // *-color
     //
@@ -1251,14 +1255,14 @@
     "features-opentype",
     "features-aat",
     "features-graphite",
-    "variations",
-    "palettes",
-    "incremental",
     "color-COLRv0",
     "color-COLRv1",
     "color-SVG",
     "color-sbix",
     "color-CBDT",
+    "variations",
+    "palettes",
+    "incremental",
 
     // (-webkit-)filter
     "invert",
