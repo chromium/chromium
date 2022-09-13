@@ -67834,6 +67834,11 @@ Called by update_use_counter_css.py.-->
   <int value="3" label="Navigation not intercepted"/>
 </enum>
 
+<enum name="NavigationIsGuest">
+  <int value="0" label="Not a guest navigation"/>
+  <int value="1" label="Guest navigation"/>
+</enum>
+
 <enum name="NavigationIsLockedProcess">
   <int value="0" label="Process is not locked to origin"/>
   <int value="1" label="Process is locked to origin"/>

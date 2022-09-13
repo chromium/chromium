@@ -706,6 +706,17 @@ void RecordReadyToCommitMetrics(
     UMA_HISTOGRAM_ENUMERATION("Navigation.OriginAgentCluster.Result",
                               origin_agent_cluster_end_result);
   }
+
+  // Guest (<webview> tag) metrics.
+  {
+    base::UmaHistogramBoolean("Navigation.IsGuest",
+                              new_rfh->GetSiteInstance()->IsGuest());
+    if (new_rfh->GetSiteInstance()->IsGuest()) {
+      base::UmaHistogramBoolean("Navigation.Guest.IsHTTPOrHTTPS",
+                                common_params.url.SchemeIsHTTPOrHTTPS());
+      base::UmaHistogramBoolean("Navigation.Guest.IsMainFrame", is_main_frame);
+    }
+  }
 }
 
 // Convert the navigation type to the appropriate cross-document one.

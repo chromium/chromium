@@ -690,6 +690,32 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
+<histogram name="Navigation.Guest.IsHTTPOrHTTPS"
+    enum="BooleanHttpBasedOrOtherScheme" expires_after="2023-03-09">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <owner>wjmaclean@chromium.org</owner>
+  <summary>
+    Whether the committing guest navigation targets an HTTP(S) URL. Logged at
+    ready-to-commit time for navigations in a webview tag (also known as
+    &quot;guest&quot; in process model terminology), excluding same-document
+    navigations and errors.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.Guest.IsMainFrame" enum="BooleanMainFrame"
+    expires_after="2023-03-09">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <owner>wjmaclean@chromium.org</owner>
+  <summary>
+    Whether the committing guest navigation is in a main frame. Logged at
+    ready-to-commit time for navigations in a webview tag (also known as
+    &quot;guest&quot; in process model terminology), excluding same-document
+    navigations and errors.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.Home.IsChromeInternal" enum="Boolean"
     expires_after="never">
 <!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->
@@ -720,6 +746,18 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
     Counts the number of typed and pasted main frame navigations to hostnames
     that contain characters that are treated differently between IDNA 2003 and
     IDNA 2008, aka deviation characters. Ignores reload navigations.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.IsGuest" enum="NavigationIsGuest"
+    expires_after="2023-03-09">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <owner>wjmaclean@chromium.org</owner>
+  <summary>
+    Whether the committing navigation is for a webview tag (also known as
+    &quot;guest&quot; in process model terminology). Logged at ready-to-commit
+    time for every navigation, excluding same-document navigations and errors.
   </summary>
 </histogram>
 
