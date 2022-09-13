@@ -1,17 +1,17 @@
-From 63a2bb9118f7abc06888d97e7861d73ab1c270a6 Mon Sep 17 00:00:00 2001
+From 3339763a6d8bedc6be9a60a71d0a822f8b6e0e5a Mon Sep 17 00:00:00 2001
 From: Andrew Grieve <agrieve@google.com>
 Date: Wed, 17 Aug 2022 13:00:30 -0400
-Subject: [PATCH 3/3] Enable SameFilePolicy for Horizontal class merging
+Subject: [PATCH 2/2] Enable SameFilePolicy for Horizontal class merging
 
 ---
  src/main/java/com/android/tools/r8/utils/InternalOptions.java | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/main/java/com/android/tools/r8/utils/InternalOptions.java b/src/main/java/com/android/tools/r8/utils/InternalOptions.java
-index 85b6eb2199..d119745099 100644
+index 70495fbcda..7a2f32a5d9 100644
 --- a/src/main/java/com/android/tools/r8/utils/InternalOptions.java
 +++ b/src/main/java/com/android/tools/r8/utils/InternalOptions.java
-@@ -1511,7 +1511,7 @@ public class InternalOptions implements GlobalKeepInfoConfiguration {
+@@ -1519,7 +1519,7 @@ public class InternalOptions implements GlobalKeepInfoConfiguration {
      private boolean enableInterfaceMerging =
          System.getProperty("com.android.tools.r8.enableHorizontalInterfaceMerging") != null;
      private boolean enableInterfaceMergingInInitial = false;
@@ -21,5 +21,5 @@ index 85b6eb2199..d119745099 100644
      private boolean ignoreRuntimeTypeChecksForTesting = false;
      private boolean restrictToSynthetics = false;
 -- 
-2.37.1.595.g718a3a8f04-goog
+2.37.2.789.g6183377224-goog
 
