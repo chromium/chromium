@@ -7,7 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/dlcservice/fake_dlcservice_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -26,14 +26,14 @@ class PumpkinInstallerTest : public testing::Test {
         ::features::kExperimentalAccessibilityDictationWithPumpkin);
     installer_ = std::make_unique<PumpkinInstaller>();
 
-    chromeos::DlcserviceClient::InitializeFake();
-    fake_dlcservice_client_ = static_cast<chromeos::FakeDlcserviceClient*>(
-        chromeos::DlcserviceClient::Get());
+    DlcserviceClient::InitializeFake();
+    fake_dlcservice_client_ =
+        static_cast<FakeDlcserviceClient*>(DlcserviceClient::Get());
   }
 
   void TearDown() override {
     installer_.reset();
-    chromeos::DlcserviceClient::Shutdown();
+    DlcserviceClient::Shutdown();
   }
 
   void MaybeInstall() {
@@ -102,7 +102,7 @@ class PumpkinInstallerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<PumpkinInstaller> installer_;
-  chromeos::FakeDlcserviceClient* fake_dlcservice_client_;
+  FakeDlcserviceClient* fake_dlcservice_client_;
   base::HistogramTester histogram_tester_;
   bool install_succeeded_ = false;
   bool install_failed_ = false;

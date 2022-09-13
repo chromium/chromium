@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
-#include "chromeos/dbus/dlcservice/dlcservice.pb.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/prefs/pref_service.h"
@@ -411,7 +411,7 @@ void PluginVmManagerImpl::InstallDlcAndUpdateVmState(
   LOG_FUNCTION_CALL();
   dlcservice::InstallRequest install_request;
   install_request.set_id(kPitaDlc);
-  chromeos::DlcserviceClient::Get()->Install(
+  ash::DlcserviceClient::Get()->Install(
       install_request,
       base::BindOnce(&PluginVmManagerImpl::OnInstallPluginVmDlc,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -422,7 +422,7 @@ void PluginVmManagerImpl::InstallDlcAndUpdateVmState(
 void PluginVmManagerImpl::OnInstallPluginVmDlc(
     base::OnceCallback<void(bool default_vm_exists)> success_callback,
     base::OnceClosure error_callback,
-    const chromeos::DlcserviceClient::InstallResult& install_result) {
+    const ash::DlcserviceClient::InstallResult& install_result) {
   LOG_FUNCTION_CALL();
   if (install_result.error == dlcservice::kErrorNone) {
     StartDispatcher(base::BindOnce(

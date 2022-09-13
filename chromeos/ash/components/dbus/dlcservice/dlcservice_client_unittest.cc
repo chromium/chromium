@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 
 #include <algorithm>
 #include <atomic>
@@ -26,7 +26,7 @@ using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::WithArg;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 std::unique_ptr<dbus::Signal> CreateSignal(
@@ -495,4 +495,4 @@ TEST_F(DlcserviceClientTest, StateChangeObserver) {
 
 }  // namespace
 
-}  // namespace chromeos
+}  // namespace ash

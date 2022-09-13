@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -44,8 +44,7 @@ class BruschettaLauncher {
   base::File MaybeOpenBios();
 
   void EnsureDlcInstalled();
-  void OnMountDlc(
-      const chromeos::DlcserviceClient::InstallResult& install_result);
+  void OnMountDlc(const ash::DlcserviceClient::InstallResult& install_result);
 
   void OnContainerRunning(guest_os::GuestInfo info);
 

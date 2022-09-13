@@ -23,8 +23,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
-#include "chromeos/dbus/dlcservice/dlcservice.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
@@ -89,7 +89,7 @@ class BorealisInstallerImpl::Installation
     SetState(InstallingState::kInstallingDlc);
     dlcservice::InstallRequest install_request;
     install_request.set_id(kBorealisDlcName);
-    chromeos::DlcserviceClient::Get()->Install(
+    ash::DlcserviceClient::Get()->Install(
         install_request,
         base::BindOnce(&Installation::OnDlcInstallationCompleted,
                        weak_factory_.GetWeakPtr()),
@@ -103,7 +103,7 @@ class BorealisInstallerImpl::Installation
   }
 
   void OnDlcInstallationCompleted(
-      const chromeos::DlcserviceClient::InstallResult& install_result) {
+      const ash::DlcserviceClient::InstallResult& install_result) {
     DCHECK_EQ(installing_state_, InstallingState::kInstallingDlc);
 
     // If success, continue to the next state.
@@ -288,7 +288,7 @@ class BorealisInstallerImpl::Uninstallation
       return;
     }
 
-    chromeos::DlcserviceClient::Get()->Uninstall(
+    ash::DlcserviceClient::Get()->Uninstall(
         kBorealisDlcName, base::BindOnce(&Uninstallation::OnDlcUninstalled,
                                          weak_factory_.GetWeakPtr()));
   }

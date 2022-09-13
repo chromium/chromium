@@ -13,7 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/services/machine_learning/public/mojom/document_scanner.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"

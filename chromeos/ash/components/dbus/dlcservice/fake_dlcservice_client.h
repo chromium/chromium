@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_DLCSERVICE_FAKE_DLCSERVICE_CLIENT_H_
-#define CHROMEOS_DBUS_DLCSERVICE_FAKE_DLCSERVICE_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_DLCSERVICE_FAKE_DLCSERVICE_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_DLCSERVICE_FAKE_DLCSERVICE_CLIENT_H_
 
 #include <string>
 
 #include "base/component_export.h"
 #include "base/containers/queue.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // A fake implementation of DlcserviceClient.
 class COMPONENT_EXPORT(DLCSERVICE_CLIENT) FakeDlcserviceClient
@@ -75,11 +75,6 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) FakeDlcserviceClient
   base::ObserverList<Observer> observers_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-using ::chromeos::FakeDlcserviceClient;
-}
-
-#endif  // CHROMEOS_DBUS_DLCSERVICE_FAKE_DLCSERVICE_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_DLCSERVICE_FAKE_DLCSERVICE_CLIENT_H_

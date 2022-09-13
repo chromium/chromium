@@ -64,7 +64,7 @@ void BruschettaLauncher::EnsureRunning(
 void BruschettaLauncher::EnsureDlcInstalled() {
   dlcservice::InstallRequest request;
   request.set_id(crostini::kCrostiniDlcName);
-  chromeos::DlcserviceClient::Get()->Install(
+  ash::DlcserviceClient::Get()->Install(
       request,
       base::BindOnce(&BruschettaLauncher::OnMountDlc,
                      weak_factory_.GetWeakPtr()),
@@ -72,7 +72,7 @@ void BruschettaLauncher::EnsureDlcInstalled() {
 }
 
 void BruschettaLauncher::OnMountDlc(
-    const chromeos::DlcserviceClient::InstallResult& install_result) {
+    const ash::DlcserviceClient::InstallResult& install_result) {
   if (install_result.error != dlcservice::kErrorNone) {
     LOG(ERROR) << "Error installing DLC: " << install_result.error;
     callbacks_.Notify(BruschettaResult::kDlcInstallError);

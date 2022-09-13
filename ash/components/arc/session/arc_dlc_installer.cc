@@ -6,7 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "chromeos/dbus/dlcservice/dlcservice.pb.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 
 namespace arc {
 
@@ -64,7 +64,7 @@ void ArcDlcInstaller::Install() {
   VLOG(2) << "Installing ARC DLC: " << kHoudiniRvcDlc;
   dlcservice::InstallRequest install_request;
   install_request.set_id(kHoudiniRvcDlc);
-  chromeos::DlcserviceClient::Get()->Install(
+  ash::DlcserviceClient::Get()->Install(
       install_request,
       base::BindOnce(&ArcDlcInstaller::OnDlcInstalled,
                      weak_ptr_factory_.GetWeakPtr(), kHoudiniRvcDlc),
@@ -73,7 +73,7 @@ void ArcDlcInstaller::Install() {
 
 void ArcDlcInstaller::OnDlcInstalled(
     const std::string& dlc,
-    const chromeos::DlcserviceClient::InstallResult& install_result) {
+    const ash::DlcserviceClient::InstallResult& install_result) {
   if (install_result.error == dlcservice::kErrorNone) {
     VLOG(1) << dlc << " is installed successfully.";
   } else if (install_result.error == dlcservice::kErrorInvalidDlc) {
@@ -117,7 +117,7 @@ void ArcDlcInstaller::Uninstall() {
 
   state_ = InstallerState::kUninstalling;
   VLOG(2) << "Uninstalling ARC DLC: " << kHoudiniRvcDlc;
-  chromeos::DlcserviceClient::Get()->Uninstall(
+  ash::DlcserviceClient::Get()->Uninstall(
       kHoudiniRvcDlc,
       base::BindOnce(&ArcDlcInstaller::OnDlcUninstalled,
                      weak_ptr_factory_.GetWeakPtr(), kHoudiniRvcDlc));

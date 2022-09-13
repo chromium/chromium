@@ -15,7 +15,7 @@
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 
 namespace borealis {
 
@@ -83,9 +83,8 @@ class MountDlc : public BorealisTask {
   void RunInternal(BorealisContext* context) override;
 
  private:
-  void OnMountDlc(
-      BorealisContext* context,
-      const chromeos::DlcserviceClient::InstallResult& install_result);
+  void OnMountDlc(BorealisContext* context,
+                  const ash::DlcserviceClient::InstallResult& install_result);
   base::WeakPtrFactory<MountDlc> weak_factory_{this};
 };
 

@@ -276,7 +276,7 @@ void OnGetDlcState(base::OnceCallback<void(const std::string& path)> callback,
 }
 
 void GetDlcPath(base::OnceCallback<void(const std::string& path)> callback) {
-  chromeos::DlcserviceClient::Get()->GetDlcState(
+  ash::DlcserviceClient::Get()->GetDlcState(
       kBorealisDlcName, base::BindOnce(&OnGetDlcState, std::move(callback)));
 }
 

@@ -10,7 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crostini {
@@ -79,7 +79,7 @@ class TerminaInstaller {
                   bool is_initial_install);
   void OnInstallDlc(base::OnceCallback<void(InstallResult)> callback,
                     bool is_initial_install,
-                    const chromeos::DlcserviceClient::InstallResult& result);
+                    const ash::DlcserviceClient::InstallResult& result);
   void RetryInstallDlc(base::OnceCallback<void(InstallResult)> callback,
                        bool is_initial_install);
 

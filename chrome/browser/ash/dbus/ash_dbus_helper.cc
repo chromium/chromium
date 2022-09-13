@@ -37,6 +37,7 @@
 #include "chromeos/ash/components/dbus/cups_proxy/cups_proxy_client.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/easy_unlock/easy_unlock_client.h"
 #include "chromeos/ash/components/dbus/federated/federated_client.h"
 #include "chromeos/ash/components/dbus/fusebox/fusebox_reverse_client.h"
@@ -78,7 +79,6 @@
 #include "chromeos/ash/components/hibernate/buildflags.h"  // ENABLE_HIBERNATE
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
@@ -159,7 +159,7 @@ void InitializeDBus() {
   InitializeDBusClient<CryptohomePkcs11Client>(bus);
   InitializeDBusClient<CupsProxyClient>(bus);
   InitializeDBusClient<DebugDaemonClient>(bus);
-  InitializeDBusClient<chromeos::DlcserviceClient>(bus);
+  InitializeDBusClient<DlcserviceClient>(bus);
   InitializeDBusClient<chromeos::DlpClient>(bus);
   InitializeDBusClient<EasyUnlockClient>(bus);
   InitializeDBusClient<FederatedClient>(bus);
@@ -302,7 +302,7 @@ void ShutdownDBus() {
   FuseBoxReverseClient::Shutdown();
   FederatedClient::Shutdown();
   EasyUnlockClient::Shutdown();
-  chromeos::DlcserviceClient::Shutdown();
+  DlcserviceClient::Shutdown();
   chromeos::DlpClient::Shutdown();
   DebugDaemonClient::Shutdown();
   CupsProxyClient::Shutdown();

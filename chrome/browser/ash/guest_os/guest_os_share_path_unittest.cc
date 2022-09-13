@@ -35,12 +35,12 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/seneschal/fake_seneschal_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_service.pb.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "components/account_id/account_id.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -277,7 +277,7 @@ class GuestOsSharePathTest : public testing::Test {
             component_updater::CrOSComponentManager::Error::NONE,
             base::FilePath("/install/path"), base::FilePath("/mount/path")));
     browser_part_.InitializeCrosComponentManager(component_manager_);
-    chromeos::DlcserviceClient::InitializeFake();
+    ash::DlcserviceClient::InitializeFake();
 
     run_loop_ = std::make_unique<base::RunLoop>();
     profile_ = std::make_unique<TestingProfile>();
@@ -322,7 +322,7 @@ class GuestOsSharePathTest : public testing::Test {
     scoped_user_manager_.reset();
     profile_.reset();
     ash::disks::DiskMountManager::Shutdown();
-    chromeos::DlcserviceClient::Shutdown();
+    ash::DlcserviceClient::Shutdown();
     browser_part_.ShutdownCrosComponentManager();
     component_manager_.reset();
   }

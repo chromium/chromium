@@ -29,8 +29,8 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
-#include "chromeos/dbus/dlcservice/fake_dlcservice_client.h"
 #include "components/account_id/account_id.h"
 #include "components/download/public/background_service/test/test_download_service.h"
 #include "components/drive/service/dummy_drive_service.h"
@@ -188,9 +188,9 @@ class PluginVmInstallerTestBase : public testing::Test {
 
     fake_concierge_client_ = ash::FakeConciergeClient::Get();
 
-    chromeos::DlcserviceClient::InitializeFake();
-    fake_dlcservice_client_ = static_cast<chromeos::FakeDlcserviceClient*>(
-        chromeos::DlcserviceClient::Get());
+    ash::DlcserviceClient::InitializeFake();
+    fake_dlcservice_client_ =
+        static_cast<ash::FakeDlcserviceClient*>(ash::DlcserviceClient::Get());
   }
 
   void TearDown() override {
@@ -202,7 +202,7 @@ class PluginVmInstallerTestBase : public testing::Test {
     ash::VmPluginDispatcherClient::Shutdown();
     ash::DebugDaemonClient::Shutdown();
     ash::ConciergeClient::Shutdown();
-    chromeos::DlcserviceClient::Shutdown();
+    ash::DlcserviceClient::Shutdown();
   }
 
   void SetPluginVmImagePref(std::string url, std::string hash) {
@@ -279,7 +279,7 @@ class PluginVmInstallerTestBase : public testing::Test {
   // ConciergeClient::Shutdown() is called.
   ash::FakeConciergeClient* fake_concierge_client_;
   // Owned by ash::DBusThreadManager
-  chromeos::FakeDlcserviceClient* fake_dlcservice_client_;
+  ash::FakeDlcserviceClient* fake_dlcservice_client_;
 
  private:
   void CreateProfile() {

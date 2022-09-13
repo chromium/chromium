@@ -63,12 +63,12 @@ source_set("loader") {
   deps = [
     "//base",
     "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/dlcservice",
+    "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ash/services/libassistant/public/cpp:loader",
     "//chromeos/assistant/internal:libassistant",
     "//chromeos/assistant/internal:libassistant_shared_headers",
-    "//chromeos/dbus/dlcservice",
-    "//chromeos/dbus/dlcservice:dlcservice_proto",
     "//net",
   ]
 }
@@ -288,6 +288,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/assistant/test_support:test_support",
+    "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ash/services/libassistant/grpc:assistant_client",
     "//chromeos/ash/services/libassistant/public/mojom",
@@ -295,7 +296,6 @@ source_set("unit_tests") {
     "//chromeos/assistant/internal:libassistant_shared_headers",
     "//chromeos/assistant/internal:support",
     "//chromeos/assistant/internal:test_support",
-    "//chromeos/dbus/dlcservice",
     "//chromeos/dbus/power",
     "//services/audio/public/cpp:test_support",
     "//services/device/public/cpp:test_support",

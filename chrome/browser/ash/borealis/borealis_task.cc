@@ -31,8 +31,8 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/vm_launch/launch.pb.h"
-#include "chromeos/dbus/dlcservice/dlcservice.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace borealis {
@@ -105,7 +105,7 @@ void MountDlc::RunInternal(BorealisContext* context) {
   // otherwise we will silently download borealis here.
   dlcservice::InstallRequest install_request;
   install_request.set_id(kBorealisDlcName);
-  chromeos::DlcserviceClient::Get()->Install(
+  ash::DlcserviceClient::Get()->Install(
       install_request,
       base::BindOnce(&MountDlc::OnMountDlc, weak_factory_.GetWeakPtr(),
                      context),
@@ -114,7 +114,7 @@ void MountDlc::RunInternal(BorealisContext* context) {
 
 void MountDlc::OnMountDlc(
     BorealisContext* context,
-    const chromeos::DlcserviceClient::InstallResult& install_result) {
+    const ash::DlcserviceClient::InstallResult& install_result) {
   if (install_result.error != dlcservice::kErrorNone) {
     Complete(BorealisStartupResult::kMountFailed,
              "Mounting the DLC for Borealis failed: " + install_result.error);

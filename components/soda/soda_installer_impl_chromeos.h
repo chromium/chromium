@@ -7,7 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "components/soda/soda_installer.h"
 
 class PrefService;
@@ -55,11 +55,11 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstallerImplChromeOS
   // These functions are the InstallCallbacks for DlcserviceClient::Install().
   void OnSodaInstalled(
       const base::Time start_time,
-      const chromeos::DlcserviceClient::InstallResult& install_result);
+      const ash::DlcserviceClient::InstallResult& install_result);
   void OnLanguageInstalled(
       const LanguageCode language_code,
       const base::Time start_time,
-      const chromeos::DlcserviceClient::InstallResult& install_result);
+      const ash::DlcserviceClient::InstallResult& install_result);
 
   // These functions are the ProgressCallbacks for DlcserviceClient::Install().
   void OnSodaProgress(double progress);

@@ -8,12 +8,9 @@
 namespace ash {
 class FakeCiceroneClient;
 class FakeConciergeClient;
+class FakeDlcserviceClient;
 class FakeSeneschalClient;
 }  // namespace ash
-
-namespace chromeos {
-class FakeDlcserviceClient;
-}  // namespace chromeos
 
 namespace guest_os {
 
@@ -40,7 +37,7 @@ class FakeDlcserviceHelper {
   FakeDlcserviceHelper();
   ~FakeDlcserviceHelper();
 
-  chromeos::FakeDlcserviceClient* FakeDlcserviceClient();
+  ash::FakeDlcserviceClient* FakeDlcserviceClient();
 };
 
 class FakeConciergeHelper {

@@ -11,9 +11,9 @@
 #include "base/scoped_native_library.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/services/libassistant/public/cpp/libassistant_loader.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "net/base/backoff_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -51,8 +51,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_LOADER) LibassistantLoaderImpl
 
   // Call DlcServiceClient to install libassistant DLC.
   void InstallDlc(LoadCallback callback);
-  void OnInstallDlcComplete(
-      const chromeos::DlcserviceClient::InstallResult& result);
+  void OnInstallDlcComplete(const DlcserviceClient::InstallResult& result);
 
   // Called when the libassistant DLC is loaded.
   void OnLibraryLoaded(base::ScopedNativeLibrary library);

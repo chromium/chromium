@@ -19,7 +19,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
-#include "chromeos/dbus/dlcservice/dlcservice.pb.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -54,7 +54,7 @@ void TerminaInstaller::InstallDlc(
     bool is_initial_install) {
   dlcservice::InstallRequest install_request;
   install_request.set_id(kCrostiniDlcName);
-  chromeos::DlcserviceClient::Get()->Install(
+  ash::DlcserviceClient::Get()->Install(
       install_request,
       base::BindOnce(&TerminaInstaller::OnInstallDlc,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
@@ -65,7 +65,7 @@ void TerminaInstaller::InstallDlc(
 void TerminaInstaller::OnInstallDlc(
     base::OnceCallback<void(InstallResult)> callback,
     bool is_initial_install,
-    const chromeos::DlcserviceClient::InstallResult& result) {
+    const ash::DlcserviceClient::InstallResult& result) {
   CHECK(result.dlc_id == kCrostiniDlcName);
   InstallResult response;
   if (is_cancelled_) {
@@ -178,7 +178,7 @@ void TerminaInstaller::RemoveComponentIfPresent(
 
 void TerminaInstaller::RemoveDlcIfPresent(base::OnceCallback<void()> callback,
                                           UninstallResult* result) {
-  chromeos::DlcserviceClient::Get()->GetExistingDlcs(base::BindOnce(
+  ash::DlcserviceClient::Get()->GetExistingDlcs(base::BindOnce(
       [](base::WeakPtr<TerminaInstaller> weak_this,
          base::OnceCallback<void()> callback, UninstallResult* result,
          const std::string& err,
@@ -208,7 +208,7 @@ void TerminaInstaller::RemoveDlcIfPresent(base::OnceCallback<void()> callback,
 
 void TerminaInstaller::RemoveDlc(base::OnceCallback<void()> callback,
                                  UninstallResult* result) {
-  chromeos::DlcserviceClient::Get()->Uninstall(
+  ash::DlcserviceClient::Get()->Uninstall(
       kCrostiniDlcName,
       base::BindOnce(
           [](base::OnceCallback<void()> callback, UninstallResult* result,

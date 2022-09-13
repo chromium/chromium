@@ -59,11 +59,10 @@ bool IsLibHandwritingDlcEnabled() {
 // Called when InstallDlc completes.
 // Returns an error if the `result.error` is not dlcservice::kErrorNone.
 // Calls mlservice to LoadHandwritingModel otherwise.
-void OnInstallDlcComplete(
-    HandwritingRecognizerSpecPtr spec,
-    HandwritingRecognizer receiver,
-    LoadHandwritingModelCallback callback,
-    const chromeos::DlcserviceClient::InstallResult& result) {
+void OnInstallDlcComplete(HandwritingRecognizerSpecPtr spec,
+                          HandwritingRecognizer receiver,
+                          LoadHandwritingModelCallback callback,
+                          const DlcserviceClient::InstallResult& result) {
   // Call LoadHandwritingModelWithSpec if no error was found.
   if (result.error == dlcservice::kErrorNone) {
     chromeos::machine_learning::ServiceConnection::GetInstance()
@@ -85,7 +84,7 @@ void OnGetExistingDlcsComplete(
     HandwritingRecognizerSpecPtr spec,
     HandwritingRecognizer receiver,
     LoadHandwritingModelCallback callback,
-    chromeos::DlcserviceClient* const dlc_client,
+    DlcserviceClient* const dlc_client,
     const std::string& err,
     const dlcservice::DlcsWithContent& dlcs_with_content) {
   // Loop over dlcs_with_content, and installs libhandwriting if already exists.
@@ -112,11 +111,10 @@ void OnGetExistingDlcsComplete(
 
 }  // namespace
 
-void LoadHandwritingModelFromRootfsOrDlc(
-    HandwritingRecognizerSpecPtr spec,
-    HandwritingRecognizer receiver,
-    LoadHandwritingModelCallback callback,
-    chromeos::DlcserviceClient* const dlc_client) {
+void LoadHandwritingModelFromRootfsOrDlc(HandwritingRecognizerSpecPtr spec,
+                                         HandwritingRecognizer receiver,
+                                         LoadHandwritingModelCallback callback,
+                                         DlcserviceClient* const dlc_client) {
   // Returns FEATURE_NOT_SUPPORTED_ERROR if both rootfs and dlc are not enabled.
   if (!IsLibHandwritingRootfsEnabled() && !IsLibHandwritingDlcEnabled()) {
     RecordLoadHandwritingModelResult(

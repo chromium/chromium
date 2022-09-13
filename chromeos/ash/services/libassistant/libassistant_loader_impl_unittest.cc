@@ -9,8 +9,8 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -68,7 +68,7 @@ TEST_F(LibassistantLoaderImplTest, ShouldRunCallbackWithDlcFeature) {
   run_loop.Run();
 
   // Should success with dlcservice client.
-  chromeos::DlcserviceClient::InitializeFake();
+  DlcserviceClient::InitializeFake();
   loader->Load(base::BindOnce(
       [](base::RunLoop* run_loop, bool success) {
         EXPECT_TRUE(success);
@@ -76,7 +76,7 @@ TEST_F(LibassistantLoaderImplTest, ShouldRunCallbackWithDlcFeature) {
       },
       &run_loop));
   run_loop.Run();
-  chromeos::DlcserviceClient::Shutdown();
+  DlcserviceClient::Shutdown();
 }
 
 }  // namespace libassistant

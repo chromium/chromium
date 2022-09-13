@@ -18,9 +18,9 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
 namespace chromeos::libassistant {
@@ -56,7 +56,7 @@ base::FilePath GetLibassisantPath(const std::string& dlc_path) {
 }
 
 void RecordLibassistantDlcInstallResult(
-    const chromeos::DlcserviceClient::InstallResult& result) {
+    const DlcserviceClient::InstallResult& result) {
   InstallResult install_result = InstallResult::kErrorInternal;
   if (result.error == dlcservice::kErrorNone) {
     install_result = InstallResult::kSuccess;
@@ -119,7 +119,7 @@ void LibassistantLoaderImpl::InstallDlc(LoadCallback callback) {
   callback_ = std::move(callback);
 
   // Install libassistant.so from DLC.
-  auto* client = chromeos::DlcserviceClient::Get();
+  auto* client = DlcserviceClient::Get();
   if (!client) {
     DVLOG(1) << "DlcService client is not available";
     RunCallback(/*success=*/false);
@@ -136,7 +136,7 @@ void LibassistantLoaderImpl::InstallDlc(LoadCallback callback) {
 }
 
 void LibassistantLoaderImpl::OnInstallDlcComplete(
-    const chromeos::DlcserviceClient::InstallResult& result) {
+    const DlcserviceClient::InstallResult& result) {
   RecordLibassistantDlcInstallResult(result);
 
   if (result.error != dlcservice::kErrorNone) {

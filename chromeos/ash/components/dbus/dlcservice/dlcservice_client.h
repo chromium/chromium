@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_DLCSERVICE_DLCSERVICE_CLIENT_H_
-#define CHROMEOS_DBUS_DLCSERVICE_DLCSERVICE_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_DLCSERVICE_DLCSERVICE_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_DLCSERVICE_DLCSERVICE_CLIENT_H_
 
 #include <stdint.h>
 
@@ -13,12 +13,12 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/dbus/common/dbus_client.h"
-#include "chromeos/dbus/dlcservice/dlcservice.pb.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 // This class is a singleton and should be accessed using |Get()|.
 // DlcserviceClient is used to communicate with the dlcservice daemon which
@@ -149,11 +149,11 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) DlcserviceClient {
   virtual ~DlcserviceClient();
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::DlcserviceClient;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_DLCSERVICE_DLCSERVICE_CLIENT_H_
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::DlcserviceClient;
+}
+
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_DLCSERVICE_DLCSERVICE_CLIENT_H_

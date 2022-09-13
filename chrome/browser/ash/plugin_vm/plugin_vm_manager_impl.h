@@ -13,9 +13,9 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_uninstaller_notification.h"
 #include "chrome/browser/ash/vm_starting_observer.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher.pb.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -92,7 +92,7 @@ class PluginVmManagerImpl : public PluginVmManager,
   void OnInstallPluginVmDlc(
       base::OnceCallback<void(bool default_vm_exists)> success_callback,
       base::OnceClosure error_callback,
-      const chromeos::DlcserviceClient::InstallResult& install_result);
+      const ash::DlcserviceClient::InstallResult& install_result);
   void OnStartDispatcher(
       base::OnceCallback<void(bool default_vm_exists)> success_callback,
       base::OnceClosure error_callback,

@@ -54,7 +54,7 @@ void DocumentScannerInstaller::TriggerInstall() {
 
   dlcservice::InstallRequest install_request;
   install_request.set_id(kDocumentScannerDlcId);
-  chromeos::DlcserviceClient::Get()->Install(
+  DlcserviceClient::Get()->Install(
       install_request,
       base::BindOnce(&DocumentScannerInstaller::OnInstalled,
                      base::Unretained(this)),
@@ -65,7 +65,7 @@ DocumentScannerInstaller::DocumentScannerInstaller()
     : ui_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
 
 void DocumentScannerInstaller::OnInstalled(
-    const chromeos::DlcserviceClient::InstallResult& install_result) {
+    const DlcserviceClient::InstallResult& install_result) {
   base::AutoLock auto_lock(library_path_lock_);
   if (install_result.error == dlcservice::kErrorNone) {
     library_path_ = install_result.root_path;

@@ -28,11 +28,11 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
 #include "chromeos/ash/components/dbus/seneschal/fake_seneschal_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/fake_vm_plugin_dispatcher_client.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
-#include "chromeos/dbus/dlcservice/fake_dlcservice_client.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -71,7 +71,7 @@ class PluginVmManagerImplTest : public testing::Test {
         std::make_unique<ShelfControllerHelper>(testing_profile_.get()));
     chrome_shelf_controller_->Init();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
-    chromeos::DlcserviceClient::InitializeFake();
+    ash::DlcserviceClient::InitializeFake();
 
     // Make StartVm succeed by default, tests can override as needed.
     VmPluginDispatcherClient().set_start_vm_response(
@@ -86,7 +86,7 @@ class PluginVmManagerImplTest : public testing::Test {
   PluginVmManagerImplTest& operator=(const PluginVmManagerImplTest&) = delete;
 
   ~PluginVmManagerImplTest() override {
-    chromeos::DlcserviceClient::Shutdown();
+    ash::DlcserviceClient::Shutdown();
     histogram_tester_.reset();
     chrome_shelf_controller_.reset();
     shelf_model_.reset();

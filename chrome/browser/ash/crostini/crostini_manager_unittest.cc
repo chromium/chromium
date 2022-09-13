@@ -47,11 +47,11 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/ash/components/disks/mock_disk_mount_manager.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -229,7 +229,7 @@ class CrostiniManagerTest : public testing::Test {
             component_updater::CrOSComponentManager::Error::NONE,
             base::FilePath("/install/path"), base::FilePath("/mount/path")));
     browser_part_.InitializeCrosComponentManager(component_manager_);
-    chromeos::DlcserviceClient::InitializeFake();
+    ash::DlcserviceClient::InitializeFake();
 
     scoped_feature_list_.InitWithFeatures({features::kCrostini}, {});
     run_loop_ = std::make_unique<base::RunLoop>();
@@ -277,7 +277,7 @@ class CrostiniManagerTest : public testing::Test {
     crostini_manager_->Shutdown();
     profile_.reset();
     run_loop_.reset();
-    chromeos::DlcserviceClient::Shutdown();
+    ash::DlcserviceClient::Shutdown();
     browser_part_.ShutdownCrosComponentManager();
     component_manager_.reset();
   }

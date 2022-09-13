@@ -11,7 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 
 namespace ash::language_packs {
 

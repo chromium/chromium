@@ -20,8 +20,8 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -68,7 +68,7 @@ class CrostiniUtilTest : public testing::Test {
   CrostiniUtilTest& operator=(const CrostiniUtilTest&) = delete;
 
   void SetUp() override {
-    chromeos::DlcserviceClient::InitializeFake();
+    ash::DlcserviceClient::InitializeFake();
 
     component_manager_ =
         base::MakeRefCounted<component_updater::FakeCrOSComponentManager>();
@@ -95,7 +95,7 @@ class CrostiniUtilTest : public testing::Test {
     profile_.reset();
     browser_part_.ShutdownCrosComponentManager();
     component_manager_.reset();
-    chromeos::DlcserviceClient::Shutdown();
+    ash::DlcserviceClient::Shutdown();
   }
 
  protected:

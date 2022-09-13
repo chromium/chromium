@@ -7,8 +7,8 @@
 #include "chromeos/ash/components/dbus/chunneld/fake_chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
 #include "chromeos/ash/components/dbus/seneschal/fake_seneschal_client.h"
-#include "chromeos/dbus/dlcservice/fake_dlcservice_client.h"
 
 namespace guest_os {
 
@@ -37,16 +37,15 @@ ash::FakeSeneschalClient* FakeSeneschalHelper::FakeSeneschalClient() {
 }
 
 FakeDlcserviceHelper::FakeDlcserviceHelper() {
-  chromeos::DlcserviceClient::InitializeFake();
+  ash::DlcserviceClient::InitializeFake();
 }
 
 FakeDlcserviceHelper::~FakeDlcserviceHelper() {
-  chromeos::DlcserviceClient::Shutdown();
+  ash::DlcserviceClient::Shutdown();
 }
 
-chromeos::FakeDlcserviceClient* FakeDlcserviceHelper::FakeDlcserviceClient() {
-  return static_cast<chromeos::FakeDlcserviceClient*>(
-      chromeos::DlcserviceClient::Get());
+ash::FakeDlcserviceClient* FakeDlcserviceHelper::FakeDlcserviceClient() {
+  return static_cast<ash::FakeDlcserviceClient*>(ash::DlcserviceClient::Get());
 }
 
 FakeConciergeHelper::FakeConciergeHelper(FakeCiceroneHelper* cicerone_helper) {

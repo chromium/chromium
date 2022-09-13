@@ -26,10 +26,10 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/mock_disk_mount_manager.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -115,7 +115,7 @@ class CrostiniInstallerTest : public testing::Test {
             base::FilePath("/install/path"), base::FilePath("/mount/path")));
     browser_part_.InitializeCrosComponentManager(component_manager_);
 
-    chromeos::DlcserviceClient::InitializeFake();
+    ash::DlcserviceClient::InitializeFake();
     ash::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ash::DebugDaemonClient::InitializeFake();
@@ -157,7 +157,7 @@ class CrostiniInstallerTest : public testing::Test {
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
     ash::ChunneldClient::Shutdown();
-    chromeos::DlcserviceClient::Shutdown();
+    ash::DlcserviceClient::Shutdown();
 
     browser_part_.ShutdownCrosComponentManager();
     component_manager_.reset();

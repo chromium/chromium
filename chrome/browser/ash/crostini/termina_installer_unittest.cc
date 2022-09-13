@@ -12,8 +12,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
-#include "chromeos/dbus/dlcservice/fake_dlcservice_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -28,9 +28,9 @@ class TerminaInstallTest : public testing::Test {
     component_manager_ =
         base::MakeRefCounted<component_updater::FakeCrOSComponentManager>();
     browser_part_.InitializeCrosComponentManager(component_manager_);
-    chromeos::DlcserviceClient::InitializeFake();
-    fake_dlc_client_ = static_cast<chromeos::FakeDlcserviceClient*>(
-        chromeos::DlcserviceClient::Get());
+    ash::DlcserviceClient::InitializeFake();
+    fake_dlc_client_ =
+        static_cast<ash::FakeDlcserviceClient*>(ash::DlcserviceClient::Get());
     fake_dlc_client_->set_install_root_path(dlc_root_path_);
   }
 
@@ -42,7 +42,7 @@ class TerminaInstallTest : public testing::Test {
   }
 
   void TearDown() override {
-    chromeos::DlcserviceClient::Shutdown();
+    ash::DlcserviceClient::Shutdown();
     browser_part_.ShutdownCrosComponentManager();
     component_manager_.reset();
   }
@@ -141,7 +141,7 @@ class TerminaInstallTest : public testing::Test {
  protected:
   scoped_refptr<component_updater::FakeCrOSComponentManager> component_manager_;
   BrowserProcessPlatformPartTestApi browser_part_;
-  chromeos::FakeDlcserviceClient* fake_dlc_client_;
+  ash::FakeDlcserviceClient* fake_dlc_client_;
   TerminaInstaller termina_installer_;
   base::test::TaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

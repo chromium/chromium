@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_license_checker.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "components/download/public/background_service/download_params.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -200,7 +200,7 @@ class PluginVmInstaller : public KeyedService,
   // Called repeatedly.
   void OnDlcDownloadProgressUpdated(double progress);
   void OnDlcDownloadCompleted(
-      const chromeos::DlcserviceClient::InstallResult& install_result);
+      const ash::DlcserviceClient::InstallResult& install_result);
 
   void StartDispatcher();
   void OnDispatcherStarted(bool success);

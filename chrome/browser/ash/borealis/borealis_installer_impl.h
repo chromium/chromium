@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/infra/described.h"
 #include "chrome/browser/ash/borealis/infra/expected.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 
 class Profile;
 

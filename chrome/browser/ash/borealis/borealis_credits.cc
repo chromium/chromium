@@ -11,8 +11,8 @@
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
-#include "chromeos/dbus/dlcservice/dlcservice.pb.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
 namespace borealis {
@@ -60,7 +60,7 @@ void LoadBorealisCredits(Profile* profile,
     std::move(callback).Run("");
     return;
   }
-  chromeos::DlcserviceClient::Get()->GetDlcState(
+  ash::DlcserviceClient::Get()->GetDlcState(
       kBorealisDlcName, base::BindOnce(&OnStateQueried, std::move(callback)));
 }
 

@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/dlcservice/fake_dlcservice_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -106,16 +106,16 @@ constexpr CallbackTestData callback_test_data[] = {
 class ArcDlcInstallerTest : public testing::Test {
  protected:
   void SetUp() override {
-    chromeos::DlcserviceClient::InitializeFake();
-    fake_dlc_client_ = static_cast<chromeos::FakeDlcserviceClient*>(
-        chromeos::DlcserviceClient::Get());
+    ash::DlcserviceClient::InitializeFake();
+    fake_dlc_client_ =
+        static_cast<ash::FakeDlcserviceClient*>(ash::DlcserviceClient::Get());
     fake_dlc_client_->set_install_root_path("default_dlc_root_path_");
     arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
   }
 
   void TearDown() override {
     arc_dlc_installer_.reset();
-    chromeos::DlcserviceClient::Shutdown();
+    ash::DlcserviceClient::Shutdown();
   }
 
   // Get installed DLC names from |fake_dlc_client_|.
@@ -138,7 +138,7 @@ class ArcDlcInstallerTest : public testing::Test {
     return dlc_list;
   }
 
-  chromeos::FakeDlcserviceClient* fake_dlc_client_;
+  ash::FakeDlcserviceClient* fake_dlc_client_;
   base::test::SingleThreadTaskEnvironment task_environment;
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
 };

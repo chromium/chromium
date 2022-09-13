@@ -11,8 +11,8 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
-#include "chromeos/dbus/dlcservice/dlcservice.pb.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/pref_names.h"
@@ -64,7 +64,7 @@ void SodaInstallerImplChromeOS::InstallSoda(PrefService* global_prefs) {
   // Install SODA DLC.
   dlcservice::InstallRequest install_request;
   install_request.set_id(kSodaDlcName);
-  chromeos::DlcserviceClient::Get()->Install(
+  ash::DlcserviceClient::Get()->Install(
       install_request,
       base::BindOnce(&SodaInstallerImplChromeOS::OnSodaInstalled,
                      base::Unretained(this), base::Time::Now()),
@@ -92,7 +92,7 @@ void SodaInstallerImplChromeOS::InstallLanguage(const std::string& language,
 
   dlcservice::InstallRequest install_request;
   install_request.set_id(kSodaEnglishUsDlcName);
-  chromeos::DlcserviceClient::Get()->Install(
+  ash::DlcserviceClient::Get()->Install(
       install_request,
       base::BindOnce(&SodaInstallerImplChromeOS::OnLanguageInstalled,
                      base::Unretained(this), LanguageCode::kEnUs,
@@ -111,14 +111,14 @@ std::vector<std::string> SodaInstallerImplChromeOS::GetAvailableLanguages()
 void SodaInstallerImplChromeOS::UninstallSoda(PrefService* global_prefs) {
   soda_binary_installed_ = false;
   SetSodaBinaryPath(base::FilePath());
-  chromeos::DlcserviceClient::Get()->Uninstall(
+  ash::DlcserviceClient::Get()->Uninstall(
       kSodaDlcName, base::BindOnce(&SodaInstallerImplChromeOS::OnDlcUninstalled,
                                    base::Unretained(this), kSodaDlcName));
   installed_languages_.clear();
   language_pack_progress_.clear();
   SodaInstaller::UnregisterLanguages(global_prefs);
   SetLanguagePath(base::FilePath());
-  chromeos::DlcserviceClient::Get()->Uninstall(
+  ash::DlcserviceClient::Get()->Uninstall(
       kSodaEnglishUsDlcName,
       base::BindOnce(&SodaInstallerImplChromeOS::OnDlcUninstalled,
                      base::Unretained(this), kSodaEnglishUsDlcName));
@@ -135,7 +135,7 @@ void SodaInstallerImplChromeOS::SetLanguagePath(base::FilePath new_path) {
 
 void SodaInstallerImplChromeOS::OnSodaInstalled(
     const base::Time start_time,
-    const chromeos::DlcserviceClient::InstallResult& install_result) {
+    const ash::DlcserviceClient::InstallResult& install_result) {
   is_soda_downloading_ = false;
   if (install_result.error == dlcservice::kErrorNone) {
     soda_binary_installed_ = true;
@@ -163,7 +163,7 @@ void SodaInstallerImplChromeOS::OnSodaInstalled(
 void SodaInstallerImplChromeOS::OnLanguageInstalled(
     const LanguageCode language_code,
     const base::Time start_time,
-    const chromeos::DlcserviceClient::InstallResult& install_result) {
+    const ash::DlcserviceClient::InstallResult& install_result) {
   language_pack_progress_.erase(language_code);
   if (install_result.error == dlcservice::kErrorNone) {
     installed_languages_.insert(language_code);

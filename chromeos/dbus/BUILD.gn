@@ -12,7 +12,7 @@ source_set("unit_tests") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//chromeos/dbus/dlcservice:unit_tests",
+    "//chromeos/dbus/common",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/dbus/power:test_support",
     "//chromeos/dbus/tpm_manager",

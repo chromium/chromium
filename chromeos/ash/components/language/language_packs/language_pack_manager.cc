@@ -13,8 +13,8 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "chromeos/dbus/dlcservice/dlcservice.pb.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::language_packs {
