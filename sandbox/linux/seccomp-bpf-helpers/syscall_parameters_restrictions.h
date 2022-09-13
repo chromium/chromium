@@ -120,6 +120,9 @@ SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictPtrace();
 // Restrict the flags argument for pkey_alloc. It's specified to always be 0.
 SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictPkeyAllocFlags();
 
+// Restrict the which argument to getitimer() and setitimer().
+SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictGoogle3Threading(int sysno);
+
 }  // namespace sandbox.
 
 #endif  // SANDBOX_LINUX_SECCOMP_BPF_HELPERS_SYSCALL_PARAMETERS_RESTRICTIONS_H_

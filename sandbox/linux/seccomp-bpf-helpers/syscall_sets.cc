@@ -1196,4 +1196,14 @@ bool SyscallSets::IsMipsMisc(int sysno) {
   }
 }
 #endif  // defined(__mips__)
+
+bool SyscallSets::IsGoogle3Threading(int sysno) {
+  switch (sysno) {
+    case __NR_getitimer:
+    case __NR_setitimer:
+      return true;
+    default:
+      return false;
+  }
+}
 }  // namespace sandbox.

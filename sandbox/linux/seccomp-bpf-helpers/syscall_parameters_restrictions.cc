@@ -466,4 +466,11 @@ ResultExpr RestrictPkeyAllocFlags() {
   return If(flags == 0, Allow()).Else(CrashSIGSYS());
 }
 
+ResultExpr RestrictGoogle3Threading(int sysno) {
+  DCHECK(sysno == __NR_getitimer || sysno == __NR_setitimer);
+
+  const Arg<int> which(0);
+  return If(which == ITIMER_PROF, Allow()).Else(Error(EPERM));
+}
+
 }  // namespace sandbox.

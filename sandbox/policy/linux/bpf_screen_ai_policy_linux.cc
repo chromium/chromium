@@ -6,6 +6,7 @@
 
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.h"
+#include "sandbox/linux/seccomp-bpf-helpers/syscall_sets.h"
 #include "sandbox/linux/system_headers/linux_futex.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
@@ -44,12 +45,6 @@ ResultExpr ScreenAIProcessPolicy::EvaluateSyscall(
           .Default(Error(ENOSYS));
     }
 
-    case __NR_getitimer:
-    case __NR_setitimer: {
-      const Arg<int> which(0);
-      return If(which == ITIMER_PROF, Allow()).Else(Error(EPERM));
-    }
-
     case __NR_get_mempolicy: {
       const Arg<unsigned long> which(4);
       return If(which == 0, Allow()).Else(Error(EPERM));
@@ -65,6 +60,10 @@ ResultExpr ScreenAIProcessPolicy::EvaluateSyscall(
       return RestrictSchedTarget(GetPolicyPid(), system_call_number);
 
     default:
+      if (SyscallSets::IsGoogle3Threading(system_call_number)) {
+        return RestrictGoogle3Threading(system_call_number);
+      }
+
       return BPFBasePolicy::EvaluateSyscall(system_call_number);
   }
 }

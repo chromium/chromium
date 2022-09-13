@@ -9,6 +9,7 @@
 
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.h"
+#include "sandbox/linux/seccomp-bpf-helpers/syscall_sets.h"
 #include "sandbox/linux/syscall_broker/broker_process.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
@@ -29,17 +30,10 @@ LibassistantProcessPolicy::~LibassistantProcessPolicy() = default;
 
 ResultExpr LibassistantProcessPolicy::EvaluateSyscall(int sysno) const {
   switch (sysno) {
-#if defined(__NR_sched_getparam)
     case __NR_sched_getparam:
-#endif
-#if defined(__NR_sched_getscheduler)
     case __NR_sched_getscheduler:
-#endif
-#if defined(__NR_sched_setscheduler)
     case __NR_sched_setscheduler:
-#endif
       return RestrictSchedTarget(GetPolicyPid(), sysno);
-#if defined(__NR_socket)
     case __NR_socket: {
       const Arg<int> domain(0);
       const Arg<int> type(1);
@@ -50,16 +44,12 @@ ResultExpr LibassistantProcessPolicy::EvaluateSyscall(int sysno) const {
                 Allow())
           .Else(Error(EPERM));
     }
-#endif
-#if defined(__NR_getsockopt)
     case __NR_getsockopt: {
       const Arg<int> level(1);
       const Arg<int> optname(2);
       return If(AllOf(level == SOL_SOCKET, optname == SO_REUSEADDR), Allow())
           .Else(BPFBasePolicy::EvaluateSyscall(sysno));
     }
-#endif
-#if defined(__NR_setsockopt)
     case __NR_setsockopt: {
       const Arg<int> level(1);
       const Arg<int> optname(2);
@@ -69,28 +59,19 @@ ResultExpr LibassistantProcessPolicy::EvaluateSyscall(int sysno) const {
                 Allow())
           .Else(BPFBasePolicy::EvaluateSyscall(sysno));
     }
-#endif
-#if defined(__NR_accept4)
     case __NR_accept4:
-#endif
-#if defined(__NR_bind)
     case __NR_bind:
-#endif
-#if defined(__NR_connect)
     case __NR_connect:
-#endif
-#if defined(__NR_getcpu)
     // Needed by arm devices.
     case __NR_getcpu:
-#endif
-#if defined(__NR_getsockname)
     case __NR_getsockname:
-#endif
-#if defined(__NR_listen)
     case __NR_listen:
-#endif
       return Allow();
     default:
+      if (SyscallSets::IsGoogle3Threading(sysno)) {
+        return RestrictGoogle3Threading(sysno);
+      }
+
       auto* sandbox_linux = SandboxLinux::GetInstance();
       if (sandbox_linux->ShouldBrokerHandleSyscall(sysno))
         return sandbox_linux->HandleViaBroker(sysno);

@@ -117,6 +117,7 @@ class SANDBOX_EXPORT SyscallSets {
   static bool IsMipsPrivate(int sysno);
   static bool IsMipsMisc(int sysno);
 #endif  // defined(__mips__)
+  static bool IsGoogle3Threading(int sysno);
 };
 
 }  // namespace sandbox.
