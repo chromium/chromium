@@ -44,14 +44,14 @@
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "ui/views/widget/widget.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
 const char kNotifierNetworkPortalDetector[] = "ash.network.portal-detector";
 
 std::unique_ptr<message_center::Notification> CreatePost2022Notification(
-    const ash::NetworkState* network,
+    const NetworkState* network,
     scoped_refptr<message_center::NotificationDelegate> delegate,
     message_center::NotifierId notifier_id,
     bool is_wifi,
@@ -78,7 +78,7 @@ std::unique_ptr<message_center::Notification> CreatePost2022Notification(
   }
 
   std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
+      CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           NetworkPortalNotificationController::kNotificationId,
           l10n_util::GetStringUTF16(
@@ -95,11 +95,11 @@ std::unique_ptr<message_center::Notification> CreatePost2022Notification(
 }
 
 std::unique_ptr<message_center::Notification> CreatePre2022Notification(
-    const ash::NetworkState* network,
+    const NetworkState* network,
     scoped_refptr<message_center::NotificationDelegate> delegate,
     message_center::NotifierId notifier_id,
     bool is_wifi) {
-  return ash::CreateSystemNotification(
+  return CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       NetworkPortalNotificationController::kNotificationId,
       l10n_util::GetStringUTF16(
@@ -216,7 +216,7 @@ void NetworkPortalNotificationController::PortalStateChanged(
   }
 
   // Don't do anything if we're currently activating the device.
-  if (ash::MobileActivator::GetInstance()->RunningActivation())
+  if (MobileActivator::GetInstance()->RunningActivation())
     return;
 
   // Don't do anything if notification for |network| already was
@@ -258,13 +258,13 @@ void NetworkPortalNotificationController::OnDialogDestroyed(
     const NetworkPortalWebDialog* dialog) {
   if (dialog == dialog_) {
     dialog_ = nullptr;
-    ash::SigninProfileHandler::Get()->ClearSigninProfile(base::NullCallback());
+    SigninProfileHandler::Get()->ClearSigninProfile(base::NullCallback());
   }
 }
 
 std::unique_ptr<message_center::Notification>
 NetworkPortalNotificationController::CreateDefaultCaptivePortalNotification(
-    const ash::NetworkState* network,
+    const NetworkState* network,
     NetworkState::PortalState portal_state) {
   auto delegate =
       base::MakeRefCounted<NetworkPortalNotificationControllerDelegate>(
@@ -272,10 +272,10 @@ NetworkPortalNotificationController::CreateDefaultCaptivePortalNotification(
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT,
       kNotifierNetworkPortalDetector,
-      ash::NotificationCatalogName::kNetworkPortalDetector);
+      NotificationCatalogName::kNetworkPortalDetector);
   bool is_wifi = NetworkTypePattern::WiFi().MatchesType(network->type());
   std::unique_ptr<message_center::Notification> notification;
-  if (ash::features::IsCaptivePortalUI2022Enabled()) {
+  if (features::IsCaptivePortalUI2022Enabled()) {
     notification = CreatePost2022Notification(network, delegate, notifier_id,
                                               is_wifi, portal_state);
   } else {
@@ -299,4 +299,4 @@ NetworkPortalNotificationController::GetDialogForTesting() const {
   return dialog_;
 }
 
-}  // namespace chromeos
+}  // namespace ash

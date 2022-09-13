@@ -31,7 +31,8 @@
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-namespace chromeos {
+namespace ash {
+
 namespace {
 
 const char kWiFi1Guid[] = "wifi1_guid";
@@ -124,8 +125,8 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
     NetworkHandler::Get()
         ->network_state_handler()
         ->set_stub_cellular_networks_provider(nullptr);
-    ash::ShillServiceClient::TestInterface* service_test =
-        ash::ShillServiceClient::Get()->GetTestInterface();
+    ShillServiceClient::TestInterface* service_test =
+        ShillServiceClient::Get()->GetTestInterface();
     service_test->ClearServices();
 
     hermes_manager_test_ = HermesManagerClient::Get()->GetTestInterface();
@@ -147,7 +148,7 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
   }
 
   void SetCellularDeviceLocked(bool is_locked) {
-    ash::ShillDeviceClient::TestInterface* device_test =
+    ShillDeviceClient::TestInterface* device_test =
         network_handler_test_helper_->device_test();
 
     std::string lock_pin = is_locked ? shill::kSIMLockPin : "";
@@ -160,11 +161,11 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
   }
 
   void SetupDefaultShillState() {
-    ash::ShillDeviceClient::TestInterface* device_test =
+    ShillDeviceClient::TestInterface* device_test =
         network_handler_test_helper_->device_test();
     device_test->ClearDevices();
 
-    ash::ShillServiceClient::TestInterface* service_test =
+    ShillServiceClient::TestInterface* service_test =
         network_handler_test_helper_->service_test();
     service_test->ClearServices();
 
@@ -215,7 +216,7 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
 
   HermesManagerClient::TestInterface* hermes_manager_test_;
   HermesEuiccClient::TestInterface* hermes_euicc_test_;
-  ash::TestSystemTrayClient test_system_tray_client_;
+  TestSystemTrayClient test_system_tray_client_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<NetworkConnectTestDelegate> network_connect_delegate_;
   TestingPrefServiceSimple user_prefs_;
@@ -276,8 +277,8 @@ TEST_F(NetworkStateNotifierTest, CellularEsimConnectionFailure) {
                 IDS_NETWORK_CONNECTION_ERROR_MESSAGE, kTestEsimProfileName16,
                 l10n_util::GetStringUTF16(IDS_NETWORK_LIST_SIM_CARD_LOCKED)));
 
-  ash::ShillServiceClient::TestInterface* service_test =
-      ash::ShillServiceClient::Get()->GetTestInterface();
+  ShillServiceClient::TestInterface* service_test =
+      ShillServiceClient::Get()->GetTestInterface();
   service_test->SetServiceProperty(
       kCellularEsimServicePath, shill::kConnectableProperty, base::Value(true));
 
@@ -293,4 +294,4 @@ TEST_F(NetworkStateNotifierTest, CellularEsimConnectionFailure) {
   EXPECT_FALSE(notification);
 }
 
-}  // namespace chromeos
+}  // namespace ash

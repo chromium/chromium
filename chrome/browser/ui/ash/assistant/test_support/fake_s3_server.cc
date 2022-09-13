@@ -20,8 +20,7 @@
 #include "chromeos/assistant/internal/internal_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 namespace {
 
@@ -179,23 +178,22 @@ void FakeS3Server::SetAccessTokenForMode(FakeS3Mode mode) {
 
 void FakeS3Server::SetFakeS3ServerURI() {
   // Note this must be stored in a local variable, as
-  // |ash::assistant::Service::OverrideS3ServerUriForTesting| does not take
-  // ownership of the |const char *|.
+  // `Service::OverrideS3ServerUriForTesting` does not take ownership of the
+  // `const char *`.
   fake_s3_server_uri_ = "localhost:" + base::NumberToString(port());
-  ash::assistant::Service::OverrideS3ServerUriForTesting(
-      fake_s3_server_uri_.c_str());
+  Service::OverrideS3ServerUriForTesting(fake_s3_server_uri_.c_str());
 }
 
 void FakeS3Server::SetDeviceId() {
-  ash::assistant::Service::OverrideDeviceIdForTesting(kDeviceId);
+  Service::OverrideDeviceIdForTesting(kDeviceId);
 }
 
 void FakeS3Server::UnsetDeviceId() {
-  ash::assistant::Service::OverrideDeviceIdForTesting(nullptr);
+  Service::OverrideDeviceIdForTesting(nullptr);
 }
 
 void FakeS3Server::UnsetFakeS3ServerURI() {
-  ash::assistant::Service::OverrideS3ServerUriForTesting(nullptr);
+  Service::OverrideS3ServerUriForTesting(nullptr);
   fake_s3_server_uri_ = "";
 }
 
@@ -252,5 +250,4 @@ int FakeS3Server::port() const {
   return port_selector_->port();
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

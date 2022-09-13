@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/network/network_connect_delegate_chromeos.h"
+#include "chrome/browser/ui/ash/network/network_connect_delegate.h"
+
+#include <memory>
 
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ui/ash/network/enrollment_dialog_view.h"
@@ -20,33 +22,32 @@ bool IsUIAvailable() {
 
 }  // namespace
 
-NetworkConnectDelegateChromeOS::NetworkConnectDelegateChromeOS()
-    : network_state_notifier_(new chromeos::NetworkStateNotifier()) {}
+NetworkConnectDelegate::NetworkConnectDelegate()
+    : network_state_notifier_(std::make_unique<ash::NetworkStateNotifier>()) {}
 
-NetworkConnectDelegateChromeOS::~NetworkConnectDelegateChromeOS() {}
+NetworkConnectDelegate::~NetworkConnectDelegate() = default;
 
-void NetworkConnectDelegateChromeOS::ShowNetworkConfigure(
+void NetworkConnectDelegate::ShowNetworkConfigure(
     const std::string& network_id) {
   if (!IsUIAvailable())
     return;
   SystemTrayClientImpl::Get()->ShowNetworkConfigure(network_id);
 }
 
-void NetworkConnectDelegateChromeOS::ShowNetworkSettings(
+void NetworkConnectDelegate::ShowNetworkSettings(
     const std::string& network_id) {
   if (!IsUIAvailable())
     return;
   SystemTrayClientImpl::Get()->ShowNetworkSettings(network_id);
 }
 
-bool NetworkConnectDelegateChromeOS::ShowEnrollNetwork(
-    const std::string& network_id) {
+bool NetworkConnectDelegate::ShowEnrollNetwork(const std::string& network_id) {
   if (!IsUIAvailable())
     return false;
-  return chromeos::enrollment::CreateEnrollmentDialog(network_id);
+  return ash::enrollment::CreateEnrollmentDialog(network_id);
 }
 
-void NetworkConnectDelegateChromeOS::ShowMobileSetupDialog(
+void NetworkConnectDelegate::ShowMobileSetupDialog(
     const std::string& network_id) {
   if (!IsUIAvailable())
     return;
@@ -54,26 +55,26 @@ void NetworkConnectDelegateChromeOS::ShowMobileSetupDialog(
       /*show_psim_flow=*/true);
 }
 
-void NetworkConnectDelegateChromeOS::ShowCarrierAccountDetail(
+void NetworkConnectDelegate::ShowCarrierAccountDetail(
     const std::string& network_id) {
   if (!IsUIAvailable())
     return;
   ash::cellular_setup::MobileSetupDialog::ShowByNetworkId(network_id);
 }
 
-void NetworkConnectDelegateChromeOS::ShowNetworkConnectError(
+void NetworkConnectDelegate::ShowNetworkConnectError(
     const std::string& error_name,
     const std::string& network_id) {
   network_state_notifier_->ShowNetworkConnectErrorForGuid(error_name,
                                                           network_id);
 }
 
-void NetworkConnectDelegateChromeOS::ShowMobileActivationError(
+void NetworkConnectDelegate::ShowMobileActivationError(
     const std::string& network_id) {
   network_state_notifier_->ShowMobileActivationErrorForGuid(network_id);
 }
 
-void NetworkConnectDelegateChromeOS::SetSystemTrayClient(
+void NetworkConnectDelegate::SetSystemTrayClient(
     ash::SystemTrayClient* system_tray_client) {
   network_state_notifier_->set_system_tray_client(system_tray_client);
 }

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_CELLULAR_SETUP_MOBILE_SETUP_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_CELLULAR_SETUP_MOBILE_SETUP_DIALOG_H_
 
-#include "chrome/browser/ui/ash/network/network_connect_delegate_chromeos.h"
+#include "chrome/browser/ui/ash/network/network_connect_delegate.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 
 namespace ash {
@@ -31,13 +31,12 @@ class MobileSetupDialog : public SystemWebDialogDelegate {
                        bool* out_close_dialog) override;
 
  private:
-  friend void NetworkConnectDelegateChromeOS::ShowCarrierAccountDetail(
+  friend void NetworkConnectDelegate::ShowCarrierAccountDetail(
       const std::string& network_id);
   static void ShowByNetworkId(const std::string& network_id);
 };
 
 }  // namespace cellular_setup
-
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_CELLULAR_SETUP_MOBILE_SETUP_DIALOG_H_

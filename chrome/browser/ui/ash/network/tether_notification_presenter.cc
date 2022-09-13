@@ -31,9 +31,7 @@
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
-namespace chromeos {
-
-namespace tether {
+namespace ash::tether {
 
 namespace {
 
@@ -90,8 +88,8 @@ const gfx::ImageSkia GetImageForSignalStrength(int signal_strength) {
   int normalized_signal_strength = base::clamp(signal_strength / 25, 0, 4);
 
   return gfx::CanvasImageSource::MakeImageSkia<
-      ash::network_icon::SignalStrengthImageSource>(
-      ash::network_icon::BARS, gfx::kGoogleBlue500, kTetherSignalIconSize,
+      network_icon::SignalStrengthImageSource>(
+      network_icon::BARS, gfx::kGoogleBlue500, kTetherSignalIconSize,
       normalized_signal_strength);
 }
 
@@ -120,7 +118,7 @@ constexpr const char* const
 
 TetherNotificationPresenter::TetherNotificationPresenter(
     Profile* profile,
-    ash::NetworkConnect* network_connect)
+    NetworkConnect* network_connect)
     : profile_(profile),
       network_connect_(network_connect),
       settings_ui_delegate_(base::WrapUnique(new SettingsUiDelegateImpl())) {}
@@ -144,7 +142,7 @@ void TetherNotificationPresenter::NotifyPotentialHotspotNearby(
 
   ShowNotification(CreateNotification(
       kPotentialHotspotNotificationId,
-      ash::NotificationCatalogName::kTetherPotentialHotspot,
+      NotificationCatalogName::kTetherPotentialHotspot,
       l10n_util::GetStringUTF16(
           IDS_TETHER_NOTIFICATION_WIFI_AVAILABLE_ONE_DEVICE_TITLE),
       l10n_util::GetStringFUTF16(
@@ -162,7 +160,7 @@ void TetherNotificationPresenter::NotifyMultiplePotentialHotspotsNearby() {
 
   ShowNotification(CreateNotification(
       kPotentialHotspotNotificationId,
-      ash::NotificationCatalogName::kTetherPotentialHotspot,
+      NotificationCatalogName::kTetherPotentialHotspot,
       l10n_util::GetStringUTF16(
           IDS_TETHER_NOTIFICATION_WIFI_AVAILABLE_MULTIPLE_DEVICES_TITLE),
       l10n_util::GetStringUTF16(
@@ -202,7 +200,7 @@ void TetherNotificationPresenter::NotifySetupRequired(
 
   ShowNotification(CreateNotification(
       kSetupRequiredNotificationId,
-      ash::NotificationCatalogName::kTetherSetupRequired,
+      NotificationCatalogName::kTetherSetupRequired,
       l10n_util::GetStringFUTF16(IDS_TETHER_NOTIFICATION_SETUP_REQUIRED_TITLE,
                                  base::ASCIIToUTF16(device_name)),
       l10n_util::GetStringFUTF16(IDS_TETHER_NOTIFICATION_SETUP_REQUIRED_MESSAGE,
@@ -219,7 +217,7 @@ void TetherNotificationPresenter::NotifyConnectionToHostFailed() {
   PA_LOG(VERBOSE) << "Displaying \"connection attempt failed\" notification. "
                   << "Notification ID = " << id;
 
-  ShowNotification(ash::CreateSystemNotification(
+  ShowNotification(CreateSystemNotification(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE, id,
       l10n_util::GetStringUTF16(
           IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_TITLE),
@@ -228,7 +226,7 @@ void TetherNotificationPresenter::NotifyConnectionToHostFailed() {
       std::u16string() /* display_source */, GURL() /* origin_url */,
       message_center::NotifierId(
           message_center::NotifierType::SYSTEM_COMPONENT, kNotifierTether,
-          ash::NotificationCatalogName::kTetherConnectionError),
+          NotificationCatalogName::kTetherConnectionError),
       {} /* rich_notification_data */,
       new message_center::HandleNotificationClickDelegate(base::BindRepeating(
           &TetherNotificationPresenter::OnNotificationClicked,
@@ -302,7 +300,7 @@ void TetherNotificationPresenter::OnNotificationClosed(
 std::unique_ptr<message_center::Notification>
 TetherNotificationPresenter::CreateNotification(
     const std::string& id,
-    const ash::NotificationCatalogName& catalog_name,
+    const NotificationCatalogName& catalog_name,
     const std::u16string& title,
     const std::u16string& message,
     const gfx::ImageSkia& small_image,
@@ -359,6 +357,4 @@ void TetherNotificationPresenter::RemoveNotificationIfVisible(
       NotificationHandler::Type::TRANSIENT, notification_id);
 }
 
-}  // namespace tether
-
-}  // namespace chromeos
+}  // namespace ash::tether

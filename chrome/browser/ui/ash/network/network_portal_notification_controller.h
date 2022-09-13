@@ -14,12 +14,9 @@
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {
-class NetworkPortalWebDialog;
-}  // namespace ash
-
-namespace chromeos {
 
 class NetworkPortalNotificationControllerTest;
+class NetworkPortalWebDialog;
 
 // Shows a message center notification when the networking stack detects a
 // captive portal.
@@ -54,14 +51,14 @@ class NetworkPortalNotificationController
   void CloseDialog();
 
   // NULLifies reference to the active dialog.
-  void OnDialogDestroyed(const ash::NetworkPortalWebDialog* dialog);
+  void OnDialogDestroyed(const NetworkPortalWebDialog* dialog);
 
   // Ignores "No network" errors in browser tests.
   void SetIgnoreNoNetworkForTesting();
 
   // Browser tests should be able to verify that NetworkPortalWebDialog is
   // shown.
-  const ash::NetworkPortalWebDialog* GetDialogForTesting() const;
+  const NetworkPortalWebDialog* GetDialogForTesting() const;
 
  private:
   friend NetworkPortalNotificationControllerTest;
@@ -71,7 +68,7 @@ class NetworkPortalNotificationController
   // browser.
   std::unique_ptr<message_center::Notification>
   CreateDefaultCaptivePortalNotification(
-      const ash::NetworkState* network,
+      const NetworkState* network,
       NetworkState::PortalState portal_state);
 
   // NetworkStateHandlerObserver:
@@ -86,7 +83,7 @@ class NetworkPortalNotificationController
   std::string last_network_guid_;
 
   // Currently displayed authorization dialog, or NULL if none.
-  ash::NetworkPortalWebDialog* dialog_ = nullptr;
+  NetworkPortalWebDialog* dialog_ = nullptr;
 
   // Do not close Portal Login dialog on "No network" error in browser tests.
   bool ignore_no_network_for_testing_ = false;
@@ -94,11 +91,6 @@ class NetworkPortalNotificationController
   base::WeakPtrFactory<NetworkPortalNotificationController> weak_factory_{this};
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-using ::chromeos::NetworkPortalNotificationController;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_ASH_NETWORK_NETWORK_PORTAL_NOTIFICATION_CONTROLLER_H_
