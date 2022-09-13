@@ -55,6 +55,7 @@ non_preprocessed_files = [
   "cr_tree_test.ts",
   "cr_view_manager_test.ts",
   "find_shortcut_mixin_test.ts",
+  "i18n_behavior_test.js",
   "iron_list_focus_test.ts",
 ]
 

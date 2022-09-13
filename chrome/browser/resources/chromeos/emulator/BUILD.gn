@@ -27,7 +27,7 @@ js_library("audio_settings") {
 js_library("bluetooth_settings") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
@@ -35,7 +35,7 @@ js_library("bluetooth_settings") {
 js_library("battery_settings") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
@@ -43,7 +43,7 @@ js_library("battery_settings") {
 js_library("input_device_settings") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
 }

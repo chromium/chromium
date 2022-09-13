@@ -13,7 +13,7 @@ import './cr_policy_network_indicator_mojo.js';
 import './network_shared_css.js';
 
 import {assertNotReached} from '//resources/js/assert.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';

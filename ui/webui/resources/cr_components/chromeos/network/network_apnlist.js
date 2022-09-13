@@ -16,7 +16,7 @@ import './network_shared_css.js';
 
 import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.js';
 import {assert} from '//resources/js/assert.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

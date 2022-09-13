@@ -16,7 +16,7 @@ import './network_shared_css.js';
 import {assert} from '//resources/js/assert.m.js';
 import {flush, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
+import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
 
 import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
 import {FAKE_CREDENTIAL, OncMojo} from './onc_mojo.js';

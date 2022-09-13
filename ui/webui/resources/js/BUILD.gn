@@ -96,12 +96,10 @@ preprocess_if_expr("preprocess_src") {
     in_files += [
       "cr.js",
       "event_tracker.js",
-      "i18n_behavior.js",
       "i18n_template_no_process.js",
       "list_property_update_behavior.js",
       "parse_html_subset.js",
       "promise_resolver.js",
-      "web_ui_listener_behavior.js",
     ]
   }
 
@@ -129,13 +127,6 @@ preprocess_if_expr("preprocess_generated") {
     "promise_resolver.m.js",
     "util.m.js",
   ]
-
-  if (include_polymer) {
-    in_files += [
-      "i18n_behavior.m.js",
-      "web_ui_listener_behavior.m.js",
-    ]
-  }
 
   if (is_chromeos_ash) {
     in_files += [
@@ -170,10 +161,8 @@ js_type_check("js_resources") {
     deps += [
       ":action_link",
       ":event_tracker",
-      ":i18n_behavior",
       ":i18n_template_no_process",
       ":parse_html_subset",
-      ":web_ui_listener_behavior",
     ]
   }
 }
@@ -202,12 +191,6 @@ if (is_chromeos_ash) {
   js_library("i18n_template_no_process") {
     deps = [ ":load_time_data" ]
   }
-  js_library("i18n_behavior") {
-    deps = [
-      ":load_time_data",
-      ":parse_html_subset",
-    ]
-  }
 }
 
 js_library("load_time_data") {
@@ -232,12 +215,6 @@ js_library("util") {
 js_library("webview_manager") {
 }
 
-if (is_chromeos_ash) {
-  js_library("web_ui_listener_behavior") {
-    deps = [ ":cr" ]
-  }
-}
-
 js_library("webui_resource_test") {
   externs_list = [ "dom_automation_controller.js" ]
 }
@@ -248,11 +225,9 @@ js_modulizer("modulize") {
   input_files = [
     "assert.js",
     "event_tracker.js",
-    "i18n_behavior.js",
     "parse_html_subset.js",
     "promise_resolver.js",
     "util.js",
-    "web_ui_listener_behavior.js",
   ]
   if (is_chromeos_ash) {
     input_files += [
@@ -288,7 +263,6 @@ js_type_check("js_resources_modules") {
     ":assert.m",
     ":cr.m",
     ":event_tracker.m",
-    ":i18n_behavior.m",
     ":icon",
     ":list_property_update_behavior",
     ":load_time_data.m",
@@ -297,7 +271,6 @@ js_type_check("js_resources_modules") {
     ":promise_resolver.m",
     ":static_types",
     ":util.m",
-    ":web_ui_listener_behavior.m",
   ]
 
   if (is_chromeos_ash) {
@@ -329,15 +302,6 @@ js_library("event_tracker.m") {
 
 js_library("icon") {
   deps = [ ":cr.m" ]
-}
-
-js_library("i18n_behavior.m") {
-  sources = [ "$root_gen_dir/ui/webui/resources/js/i18n_behavior.m.js" ]
-  deps = [
-    ":load_time_data.m",
-    ":parse_html_subset.m",
-  ]
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("list_property_update_behavior") {
@@ -403,12 +367,5 @@ js_library("util.m") {
     ":cr.m",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
-  extra_deps = [ ":modulize" ]
-}
-
-js_library("web_ui_listener_behavior.m") {
-  sources =
-      [ "$root_gen_dir/ui/webui/resources/js/web_ui_listener_behavior.m.js" ]
-  deps = [ ":cr.m" ]
   extra_deps = [ ":modulize" ]
 }

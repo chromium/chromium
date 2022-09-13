@@ -33,7 +33,7 @@ import './pin_keyboard_icon.js';
 
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
+import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
 
 /**
  * Once auto backspace starts, the time between individual backspaces.

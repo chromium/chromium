@@ -99,7 +99,7 @@ js_library("firmware_update_app") {
     ":firmware_update_dialog",
     ":peripheral_updates_list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
@@ -109,7 +109,7 @@ js_library("firmware_confirmation_dialog") {
     ":mojo_utils",
     "//ash/webui/firmware_update_ui/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
@@ -119,7 +119,7 @@ js_library("firmware_update_dialog") {
     ":mojo_utils",
     "//ash/webui/firmware_update_ui/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
@@ -148,7 +148,7 @@ js_library("peripheral_updates_list") {
     "//ash/webui/firmware_update_ui/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
@@ -157,7 +157,7 @@ js_library("update_card") {
     ":firmware_update_types",
     "//ash/webui/firmware_update_ui/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 

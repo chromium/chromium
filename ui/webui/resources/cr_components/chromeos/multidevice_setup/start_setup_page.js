@@ -14,7 +14,7 @@ import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {WebUIListenerBehavior} from '../../../js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from '../../../cr_elements/web_ui_listener_behavior.js';
 
 import {MultiDeviceSetupDelegate} from './multidevice_setup_delegate.js';
 import {UiPageContainerBehavior} from './ui_page_container_behavior.js';

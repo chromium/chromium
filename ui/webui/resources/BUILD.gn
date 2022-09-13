@@ -53,11 +53,13 @@ generate_grd("build_grd") {
       "cr_components/customize_themes:build_grdp",
       "cr_components/help_bubble:build_grdp",
       "cr_components/most_visited:build_grdp",
+      "cr_elements:build_grdp",
       "js/browser_command:build_grdp",
       "//third_party/polymer/v3_0:build_grdp",
     ]
     grdp_files += [
       "$root_gen_dir/third_party/polymer/v3_0/polymer_3_0_resources.grdp",
+      "$root_gen_dir/ui/webui/resources/cr_elements/cr_elements_resources.grdp",
       "$target_gen_dir/cr_components/app_management/resources.grdp",
       "$target_gen_dir/cr_components/cr_components_resources.grdp",
       "$target_gen_dir/cr_components/customize_themes/resources.grdp",
@@ -81,7 +83,6 @@ generate_grd("build_grd") {
   if (is_chromeos_ash) {
     public_deps += [
       ":build_cros_styles_grdp",
-      "cr_elements:build_grdp",
       "js/cr/ui:build_grdp",
       "//ash/webui/common/resources:build_grdp",
       "//ash/webui/common/resources:build_html_css_wrapper_files_grdp",
@@ -95,7 +96,6 @@ generate_grd("build_grd") {
       "$root_gen_dir/chromeos/ash/components/cros_elements/cros_elements_resources.grdp",
       "$root_gen_dir/third_party/material_web_components/material_web_components_resources.grdp",
       "$root_gen_dir/third_party/web-animations-js/web_animations_resources.grdp",
-      "$root_gen_dir/ui/webui/resources/cr_elements/cr_elements_resources.grdp",
       "$root_gen_dir/ui/webui/resources/cros_styles_resources.grdp",
       "$root_gen_dir/ui/webui/resources/js/cr/ui/resources.grdp",
     ]
@@ -157,12 +157,12 @@ preprocessed_folder = "$target_gen_dir/preprocessed"
 checked_in_dts_files = [
   "cr_elements/cr_scrollable_behavior.d.ts",
   "cr_elements/find_shortcut_behavior.d.ts",
+  "cr_elements/i18n_behavior.d.ts",
   "cr_elements/policy/cr_policy_indicator_behavior.d.ts",
-  "js/i18n_behavior.m.d.ts",
+  "cr_elements/web_ui_listener_behavior.d.ts",
   "js/parse_html_subset.m.d.ts",
   "js/promise_resolver.m.d.ts",
   "js/static_types.d.ts",
-  "js/web_ui_listener_behavior.m.d.ts",
 ]
 
 if (is_chromeos_ash) {

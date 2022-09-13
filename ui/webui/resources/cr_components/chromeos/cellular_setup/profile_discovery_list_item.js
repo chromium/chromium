@@ -15,7 +15,7 @@ import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './cellular_setup_icons.js';
 
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 Polymer({

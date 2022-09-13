@@ -161,6 +161,17 @@ TEST_F('CrElementsFingerprintProgressArcTest', 'MAYBE_Fingerprint', function() {
   mocha.run();
 });
 
+var CrElementsI18nBehaviorTest = class extends CrElementsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=cr_elements/i18n_behavior_test.js';
+  }
+};
+
+TEST_F('CrElementsI18nBehaviorTest', 'All', function() {
+  mocha.run();
+});
+
 var CrElementsIconButtonTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {

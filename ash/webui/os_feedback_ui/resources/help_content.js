@@ -13,7 +13,7 @@ import '//resources/cr_elements/policy/cr_tooltip_icon.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 
 import {mojoString16ToString} from '//resources/ash/common/mojo_utils.js';
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/cr_elements/i18n_behavior.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {HelpContent, HelpContentList, HelpContentType, SearchResult} from './feedback_types.js';

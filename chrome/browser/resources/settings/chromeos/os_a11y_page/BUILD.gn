@@ -46,9 +46,9 @@ js_library("change_dictation_locale_dialog") {
     "//chrome/browser/resources/settings/chromeos:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
+    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
@@ -66,9 +66,9 @@ js_library("manage_a11y_page") {
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
     "//chrome/browser/resources/settings/chromeos:route_origin_behavior",
     "//chrome/browser/resources/settings/chromeos/device_page:device_page_browser_proxy",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
+    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
 }
 
@@ -86,8 +86,8 @@ js_library("text_to_speech_page") {
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
     "//chrome/browser/resources/settings/chromeos:route_origin_behavior",
     "//chrome/browser/resources/settings/chromeos/device_page:device_page_browser_proxy",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
+    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
   ]
 }
 
@@ -104,8 +104,8 @@ js_library("display_and_magnification_page") {
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
     "//chrome/browser/resources/settings/chromeos:route_origin_behavior",
     "//chrome/browser/resources/settings/chromeos/device_page:device_page_browser_proxy",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
+    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
   ]
 }
 
@@ -118,8 +118,8 @@ js_library("keyboard_and_text_input_page") {
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
     "//chrome/browser/resources/settings/chromeos:route_origin_behavior",
     "//chrome/browser/resources/settings/chromeos/device_page:device_page_browser_proxy",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
+    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
   ]
 }
 
@@ -137,8 +137,8 @@ js_library("cursor_and_touchpad_page") {
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
     "//chrome/browser/resources/settings/chromeos:route_origin_behavior",
     "//chrome/browser/resources/settings/chromeos/device_page:device_page_browser_proxy",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
+    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
   ]
 }
 
@@ -156,8 +156,8 @@ js_library("audio_and_captions_page") {
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
     "//chrome/browser/resources/settings/chromeos:route_origin_behavior",
     "//chrome/browser/resources/settings/chromeos/device_page:device_page_browser_proxy",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
+    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
   ]
 }
 
@@ -174,8 +174,8 @@ js_library("os_a11y_page") {
     "//chrome/browser/resources/settings/chromeos:os_route",
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   externs_list = [ "../settings_controls_types.js" ]
 }
@@ -189,9 +189,9 @@ js_library("switch_access_action_assignment_dialog") {
     ":switch_access_constants",
     "//chrome/browser/resources/settings/chromeos:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
+    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
@@ -203,9 +203,9 @@ js_library("switch_access_action_assignment_pane") {
   deps = [
     ":switch_access_constants",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
+    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
@@ -224,9 +224,9 @@ js_library("switch_access_setup_guide_dialog") {
     ":switch_access_constants",
     "//chrome/browser/resources/settings/chromeos:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
+    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
@@ -238,7 +238,7 @@ js_library("switch_access_setup_guide_dialog") {
 js_library("switch_access_setup_guide_warning_dialog") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
@@ -255,9 +255,9 @@ js_library("switch_access_subpage") {
     "//chrome/browser/resources/settings/chromeos:os_route",
     "//chrome/browser/resources/settings/chromeos:prefs_behavior",
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
+    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_slider/cr_slider_externs.js" ]
@@ -277,8 +277,8 @@ js_library("tts_subpage") {
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
     "//chrome/browser/resources/settings/chromeos/os_languages_page:languages_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
+    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
   ]
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",

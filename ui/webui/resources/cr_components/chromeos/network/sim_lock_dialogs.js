@@ -18,7 +18,8 @@ import './network_shared_css.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertNotReached} from '../../../js/assert.m.js';
-import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
+import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
+import {loadTimeData} from '../../../js/load_time_data.m.js';
 
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
 import {OncMojo} from './onc_mojo.js';

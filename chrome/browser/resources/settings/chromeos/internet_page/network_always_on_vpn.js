@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/md_select.css.js';
 import 'chrome://resources/cr_components/chromeos/network/network_shared_css.js';
 
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 const mojom = chromeos.networkConfig.mojom;

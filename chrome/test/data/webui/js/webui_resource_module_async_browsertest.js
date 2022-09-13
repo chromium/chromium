@@ -114,17 +114,6 @@ TEST_F('LoadTimeDataModuleTest', 'All', function() {
   mocha.run();
 });
 
-var I18nBehaviorModuleTest = class extends WebUIResourceModuleAsyncTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://test/test_loader.html?module=js/i18n_behavior_test.js';
-  }
-};
-
-TEST_F('I18nBehaviorModuleTest', 'All', function() {
-  mocha.run();
-});
-
 var I18nMixinTest = class extends WebUIResourceModuleAsyncTest {
   /** @override */
   get browsePreload() {

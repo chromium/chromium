@@ -37,7 +37,7 @@ js_type_check("closure_compile_module") {
 js_library("base_page") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
@@ -45,7 +45,7 @@ js_library("final_page") {
   deps = [
     ":base_page",
     ":cellular_setup_delegate",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
@@ -53,7 +53,7 @@ js_library("activation_verification_page") {
   deps = [
     ":base_page",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_lottie/cr_lottie_externs.js" ]
@@ -65,28 +65,28 @@ js_library("activation_code_page") {
     ":subflow_behavior",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
 js_library("confirmation_code_page") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
 js_library("profile_discovery_list_item") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
 js_library("profile_discovery_list_page") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
@@ -129,8 +129,8 @@ js_library("provisioning_page") {
     ":cellular_setup_delegate",
     ":webview_post_util",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
   ]
   externs_list = [
     "$externs_path/chrome_extensions.js",
@@ -142,7 +142,7 @@ js_library("button_bar") {
   deps = [
     ":cellular_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/js/cr/ui:focus_without_ink_js",
   ]
 }
@@ -168,8 +168,8 @@ js_library("psim_flow_ui") {
     ":subflow_behavior",
     "//chromeos/ash/services/cellular_setup/public/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
   ]
   externs_list = [ "$externs_path/metrics_private.js" ]
 }
@@ -191,14 +191,14 @@ js_library("esim_flow_ui") {
     "//ui/webui/resources/cr_components/chromeos/network:cellular_utils",
     "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider",
     "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
   ]
   externs_list = [ "$externs_path/metrics_private.js" ]
 }
 
 js_library("cellular_eid_dialog") {
-  deps = [ "//ui/webui/resources/js:i18n_behavior.m" ]
+  deps = [ "//ui/webui/resources/cr_elements:i18n_behavior" ]
 }
 
 js_library("cellular_setup") {
@@ -210,7 +210,7 @@ js_library("cellular_setup") {
     ":psim_flow_ui",
     "//ui/webui/resources/cr_components/chromeos/network:cellular_utils",
     "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 

@@ -22,7 +22,7 @@ import {assert} from '//resources/js/assert.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FocusRowBehavior} from '../../../js/cr/ui/focus_row_behavior.js';
-import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
+import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
 
 import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';

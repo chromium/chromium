@@ -20,7 +20,7 @@ import './network_logs_ui.js';
 import './network_metrics_ui.js';
 
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

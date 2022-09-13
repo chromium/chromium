@@ -29,7 +29,7 @@ js_library("traffic_counters_test") {
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
     "//ui/webui/resources/cr_components/chromeos/network_health:network_health_container",
     "//ui/webui/resources/cr_components/chromeos/traffic_counters:traffic_counters",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

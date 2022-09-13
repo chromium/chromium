@@ -75,7 +75,7 @@ js_library("app_details_item") {
     ":actions",
     ":store_client",
     ":util",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "./types.js" ]
@@ -227,8 +227,8 @@ js_library("store_client") {
 js_library("supported_links_overlapping_apps_dialog") {
   deps = [
     ":store_client",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
   ]
   externs_list = [
     "./types.js",

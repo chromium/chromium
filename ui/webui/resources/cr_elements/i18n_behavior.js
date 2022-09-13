@@ -12,11 +12,11 @@
  * code.
  */
 
-// #import {parseHtmlSubset, SanitizeInnerHtmlOpts, sanitizeInnerHtml} from './parse_html_subset.m.js';
-// #import {loadTimeData} from './load_time_data.m.js';
+import {parseHtmlSubset, SanitizeInnerHtmlOpts, sanitizeInnerHtml} from '../js/parse_html_subset.m.js';
+import {loadTimeData} from '../js/load_time_data.m.js';
 
 /** @polymerBehavior */
-/* #export */ const I18nBehavior = {
+export const I18nBehavior = {
   // <if expr="chromeos_ash">
   // Dynamic locale changes are only relevant in ChromeOS OOBE/Login flows.
   // On other platforms Chrome process is restarted upon locale changes.
@@ -135,7 +135,7 @@
 };
 
 /** @interface */
-/* #export */ class I18nBehaviorInterface {
+export class I18nBehaviorInterface {
   constructor() {
     // <if expr="chromeos_ash">
     /** @type {string} */
@@ -184,4 +184,3 @@
   i18nExists(id) {}
 }
 
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

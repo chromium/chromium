@@ -32,7 +32,7 @@ js_library("nearby_share_confirm_page") {
     "//chrome/browser/resources/nearby_share/shared:nearby_page_template",
     "//chrome/browser/resources/nearby_share/shared:nearby_preview",
     "//chrome/browser/resources/nearby_share/shared:nearby_progress",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
@@ -52,7 +52,7 @@ js_library("nearby_share_data_usage_dialog") {
     ":types",
     "//chrome/browser/resources/nearby_share/shared:nearby_share_settings",
     "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
@@ -64,7 +64,7 @@ js_library("nearby_share_data_usage_dialog") {
 js_library("nearby_share_device_name_dialog") {
   deps = [
     "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
@@ -76,7 +76,7 @@ js_library("nearby_share_device_name_dialog") {
 js_library("nearby_share_high_visibility_page") {
   deps = [
     "//chrome/browser/resources/nearby_share/shared:nearby_page_template",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_lottie/cr_lottie_externs.js" ]
@@ -91,8 +91,8 @@ js_library("nearby_share_receive_dialog") {
     "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page",
     "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
     "//chrome/browser/resources/nearby_share/shared:nearby_visibility_page",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data",
   ]
   externs_list = [
@@ -108,7 +108,7 @@ js_library("nearby_share_receive_manager") {
     ":nearby_share_high_visibility_page",
     "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
     "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
@@ -134,8 +134,8 @@ js_library("nearby_share_subpage") {
     "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page",
     "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
     "//chrome/browser/resources/nearby_share/shared:nearby_visibility_page",
+    "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data",
   ]
 }

@@ -8,7 +8,7 @@ import './strings.m.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {PageName} from 'chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup.js';
 import {MultiDeviceSetupDelegate} from 'chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup_delegate.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PostOobeDelegate} from './post_oobe_delegate.js';

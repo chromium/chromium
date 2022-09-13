@@ -10,7 +10,7 @@ import {NetworkType, PortalState} from 'chrome://resources/mojo/chromeos/service
 import {Network, NetworkHealthService, NetworkHealthServiceRemote, NetworkHealthState, NetworkState, UInt32Value} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_health.mojom-webui.js';
 
 import {assertNotReached} from '../../../js/assert.m.js';
-import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
+import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
 import {OncMojo} from '../network/onc_mojo.js';
 
 const TechnologyIcons = {

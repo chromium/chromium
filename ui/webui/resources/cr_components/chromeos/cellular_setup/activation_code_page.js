@@ -17,7 +17,7 @@ import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink_js.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {afterNextRender, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
+import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
 
 /**
  * @type {!number}

@@ -14,7 +14,7 @@ import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {assert} from '//resources/js/assert.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {WebUIListenerBehavior} from '../../../js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from '../../../cr_elements/web_ui_listener_behavior.js';
 
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_api.js';
 import {MultiDeviceSetupDelegate} from './multidevice_setup_delegate.js';
