@@ -259,8 +259,11 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
     suggestion_view_->description()->SetTextWithStyling(
         match_.answer->second_line(), true);
   } else {
+    // Not all 2-line suggestions have deemphasized descriptions; specifically,
+    // calculator answers are 2-line but not deemphasized.
     const bool deemphasize =
-        match_.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY;
+        match_.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY &&
+        OmniboxMatchCellView::IsTwoLineLayout(match_);
     suggestion_view_->description()->SetTextWithStyling(
         match_.description, match_.description_class, deemphasize);
   }

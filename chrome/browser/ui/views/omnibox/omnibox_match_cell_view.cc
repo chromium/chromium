@@ -190,15 +190,17 @@ int OmniboxMatchCellView::GetTextIndent() {
   return ui::TouchUiController::Get()->touch_ui() ? 51 : 47;
 }
 
+// static
+bool OmniboxMatchCellView::IsTwoLineLayout(const AutocompleteMatch& match) {
+  return match.answer || match.type == AutocompleteMatchType::CALCULATOR ||
+         !match.image_url.is_empty();
+}
+
 void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
                                          const AutocompleteMatch& match) {
-  is_rich_suggestion_ = match.answer ||
-                        match.type == AutocompleteMatchType::CALCULATOR ||
-                        !match.image_url.is_empty();
   is_search_type_ = AutocompleteMatch::IsSearchType(match.type);
-
   // Decide layout style once before Layout, while match data is available.
-  const bool two_line = is_rich_suggestion_;
+  const bool two_line = IsTwoLineLayout(match);
   layout_style_ = two_line ? LayoutStyle::TWO_LINE_SUGGESTION
                            : LayoutStyle::ONE_LINE_SUGGESTION;
 
@@ -207,8 +209,7 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
                                     : separator_view_->GetPreferredSize());
 
   // Set up the small icon.
-  icon_view_->SetSize(is_rich_suggestion_ ? gfx::Size()
-                                          : icon_view_->GetPreferredSize());
+  icon_view_->SetSize(two_line ? gfx::Size() : icon_view_->GetPreferredSize());
 
   const auto apply_vector_icon = [=](const gfx::VectorIcon& vector_icon) {
     const auto* color_provider = GetColorProvider();
@@ -224,7 +225,7 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
   };
   if (match.type == AutocompleteMatchType::CALCULATOR) {
     apply_vector_icon(omnibox::kAnswerCalculatorIcon);
-  } else if (!is_rich_suggestion_) {
+  } else if (!two_line) {
     answer_image_view_->SetImage(gfx::ImageSkia());
     answer_image_view_->SetSize(gfx::Size());
   } else {
@@ -289,9 +290,8 @@ void OmniboxMatchCellView::Layout() {
   int x = child_area.x();
   int y = child_area.y();
   const int row_height = child_area.height();
-  views::ImageView* const image_view = (two_line && is_rich_suggestion_)
-                                           ? answer_image_view_.get()
-                                           : icon_view_.get();
+  views::ImageView* const image_view =
+      two_line ? answer_image_view_.get() : icon_view_.get();
   image_view->SetBounds(x, y, OmniboxMatchCellView::kImageBoundsWidth,
                         row_height);
 

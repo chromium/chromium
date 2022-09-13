@@ -60,6 +60,9 @@ class OmniboxMatchCellView : public views::View {
 
   static int GetTextIndent();
 
+  // Determine whether `match` should be displayed on 2 lines.
+  static bool IsTwoLineLayout(const AutocompleteMatch& match);
+
   void OnMatchUpdate(const OmniboxResultView* result_view,
                      const AutocompleteMatch& match);
 
@@ -81,7 +84,6 @@ class OmniboxMatchCellView : public views::View {
 
   void SetTailSuggestCommonPrefixWidth(const std::u16string& common_prefix);
 
-  bool is_rich_suggestion_ = false;
   bool is_search_type_ = false;
   LayoutStyle layout_style_ = LayoutStyle::ONE_LINE_SUGGESTION;
 
