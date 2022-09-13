@@ -344,7 +344,7 @@ test-2{
               138,
               "Z"
             ],
-            "baseline": 20
+            "baseline": 0
           },
           {
             "itemBorder": [
@@ -362,7 +362,7 @@ test-2{
               168,
               "Z"
             ],
-            "baseline": 20
+            "baseline": 0
           },
           {
             "itemBorder": [
@@ -380,7 +380,7 @@ test-2{
               198,
               "Z"
             ],
-            "baseline": 20
+            "baseline": 0
           }
         ]
       ],

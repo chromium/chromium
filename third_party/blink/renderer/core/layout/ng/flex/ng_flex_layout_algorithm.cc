@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_item_iterator.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_line.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_baseline_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
@@ -541,6 +542,8 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       /* number_of_items */ 1,
       /* is_reversed */ false);
 
+  bool is_wrap_reverse = Style().FlexWrap() == EFlexWrap::kWrapReverse;
+
   for (NGBlockNode child = iterator.NextChild(); child;
        child = iterator.NextChild()) {
     if (child.IsOutOfFlowPositioned()) {
@@ -552,12 +555,14 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     }
 
     const ComputedStyle& child_style = child.Style();
+    const auto child_writing_mode = child_style.GetWritingMode();
+
     if (is_alignment_behavior_change_possible &&
         all_items_match_container_alignment && !is_computing_intrinsic_size) {
       LayoutUnit item_offset = FlexItem::AlignmentOffset(
           kAvailableFreeSpace,
           FlexLayoutAlgorithm::AlignmentForChild(Style(), child_style),
-          LayoutUnit(), LayoutUnit(), /* is_wrap_reverse */ false,
+          LayoutUnit(), /* is_wrap_reverse */ false,
           Style().IsDeprecatedWebkitBox());
       all_items_match_container_alignment = (item_offset == line_offset);
     }
@@ -593,8 +598,8 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         // pass child's writing mode as the first parameter, which is nominally
         // |container_writing_mode|.
         const auto child_space = BuildSpaceForIntrinsicBlockSize(child);
-        min_max_sizes = child.ComputeMinMaxSizes(child_style.GetWritingMode(),
-                                                 type, child_space);
+        min_max_sizes =
+            child.ComputeMinMaxSizes(child_writing_mode, type, child_space);
       }
       return *min_max_sizes;
     };
@@ -829,14 +834,22 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     DCHECK_GE(min_max_sizes_in_main_axis_direction.min_size, 0);
     DCHECK_GE(min_max_sizes_in_main_axis_direction.max_size, 0);
 
-    NGBoxStrut scrollbars = ComputeScrollbarsForNonAnonymous(child);
+    const NGBoxStrut scrollbars = ComputeScrollbarsForNonAnonymous(child);
+
+    const auto baseline_writing_mode = DetermineBaselineWritingMode(
+        ConstraintSpace().GetWritingMode(), child_writing_mode,
+        /* is_parallel_context */ !is_column_);
+    const auto baseline_group = DetermineBaselineGroup(
+        ConstraintSpace().GetWritingDirection(), baseline_writing_mode,
+        /* is_parallel_context */ !is_column_,
+        /* is_flipped */ is_wrap_reverse);
     algorithm_
         .emplace_back(nullptr, child.Style(), flex_base_content_size,
                       min_max_sizes_in_main_axis_direction,
                       min_max_sizes_in_cross_axis_direction,
                       main_axis_border_padding, cross_axis_border_padding,
-                      physical_child_margins, scrollbars,
-                      min_max_sizes.has_value())
+                      physical_child_margins, scrollbars, baseline_writing_mode,
+                      baseline_group, min_max_sizes.has_value())
         .ng_input_node_ = child;
     // Save the layout result so that we can maybe reuse it later.
     if (layout_result) {
@@ -1821,7 +1834,10 @@ NGLayoutResult::EStatus NGFlexLayoutAlgorithm::PropagateFlexItemInfo(
     // devtools uses margin box.
     item_rect.Expand(flex_item->physical_margins_);
     DCHECK_GE(layout_info_for_devtools_->lines.size(), 1u);
-    DevtoolsFlexInfo::Item item(item_rect, flex_item->MarginBoxAscent());
+    DevtoolsFlexInfo::Item item(item_rect,
+                                flex_item->MarginBoxAscent(
+                                    /* is_wrap_reverse */ Style().FlexWrap() ==
+                                    EFlexWrap::kWrapReverse));
     layout_info_for_devtools_->lines[flex_line_idx].items.push_back(item);
   }
 
@@ -1925,7 +1941,8 @@ void NGFlexLayoutAlgorithm::PropagateBaselineFromChild(
   // auto-margins in the cross axis (even if we have to synthesize the
   // baseline).
   if (FlexLayoutAlgorithm::AlignmentForChild(Style(), flex_item_style) ==
-      ItemPosition::kBaseline) {
+          ItemPosition::kBaseline &&
+      !is_column_) {
     container_builder_.SetFirstBaseline(baseline_offset);
     return;
   }

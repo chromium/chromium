@@ -1374,7 +1374,8 @@ void LayoutFlexibleBox::ConstructAndAppendFlexItem(
   algorithm->emplace_back(
       &child, child.StyleRef(), child_inner_flex_base_size, sizes,
       /* min_max_cross_sizes */ absl::nullopt, main_axis_border_padding,
-      cross_axis_border_padding, physical_margins, /* unused */ NGBoxStrut());
+      cross_axis_border_padding, physical_margins, /* unused */ NGBoxStrut(),
+      StyleRef().GetWritingMode());
 }
 
 void LayoutFlexibleBox::SetOverrideMainAxisContentSizeForChild(FlexItem& item) {
@@ -1416,8 +1417,7 @@ LayoutUnit CrossAxisStaticPositionCommon(const LayoutBox& child,
       available_space,
       FlexLayoutAlgorithm::AlignmentForChild(parent->StyleRef(),
                                              child.StyleRef()),
-      LayoutUnit(), LayoutUnit(),
-      parent->StyleRef().FlexWrap() == EFlexWrap::kWrapReverse,
+      LayoutUnit(), parent->StyleRef().FlexWrap() == EFlexWrap::kWrapReverse,
       parent->StyleRef().IsDeprecatedWebkitBox());
 }
 

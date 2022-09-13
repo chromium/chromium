@@ -49,29 +49,37 @@ inline WritingMode DetermineBaselineWritingMode(
 inline BaselineGroup DetermineBaselineGroup(
     const WritingDirectionMode container_writing_direction,
     const WritingMode baseline_writing_mode,
-    bool is_parallel_context) {
+    bool is_parallel_context,
+    bool is_flipped = false) {
   const auto container_writing_mode =
       container_writing_direction.GetWritingMode();
+
+  auto start_group = BaselineGroup::kMajor;
+  auto end_group = BaselineGroup::kMinor;
+  if (is_flipped)
+    std::swap(start_group, end_group);
+
   if (is_parallel_context) {
     DCHECK(
         IsParallelWritingMode(container_writing_mode, baseline_writing_mode));
-    return (baseline_writing_mode == container_writing_mode)
-               ? BaselineGroup::kMajor
-               : BaselineGroup::kMinor;
+    return (baseline_writing_mode == container_writing_mode) ? start_group
+                                                             : end_group;
   }
 
   // For each writing-mode the "major" group is aligned with the container's
   // direction. This is to ensure the inline-start offset (for the grid-item)
   // matches the baseline offset we calculate.
-  const bool is_ltr = container_writing_direction.IsLtr();
+  //
+  // TODO(ikilpatrick): The logic below may be incorrect. We may want to flip
+  // the group based on the container's direction.
   switch (baseline_writing_mode) {
     case WritingMode::kHorizontalTb:
     case WritingMode::kVerticalLr:
     case WritingMode::kSidewaysLr:
-      return is_ltr ? BaselineGroup::kMajor : BaselineGroup::kMinor;
+      return start_group;
     case WritingMode::kVerticalRl:
     case WritingMode::kSidewaysRl:
-      return is_ltr ? BaselineGroup::kMinor : BaselineGroup::kMajor;
+      return end_group;
   }
 
   NOTREACHED();

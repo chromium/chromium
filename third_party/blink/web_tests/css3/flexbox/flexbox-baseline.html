@@ -37,14 +37,10 @@ before text
 after text
 </div>
 
-<!-- This flexbox has a baseline flexitem, but it's orthogonal so it doesn't
-participate in baseline alignment. Instead, the baseline is the first flex
-item's baseline. -->
 <div>
 before text
 <div class="inline-flexbox" style="height: 40px">
     <div style="align-self: flex-end">baseline</div>
-    <div style="align-self: baseline; writing-mode: vertical-rl"></div>
     <div style="align-self: flex-start">above</div>
 </div>
 after text
