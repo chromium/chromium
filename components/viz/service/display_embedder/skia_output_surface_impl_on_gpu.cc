@@ -374,7 +374,11 @@ SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
     }
     // This ensures any outstanding callbacks for promise images are
     // performed.
-    gr_context()->flushAndSubmit();
+    GrFlushInfo flush_info = {};
+    gpu::AddVulkanCleanupTaskForSkiaFlush(context_state_->vk_context_provider(),
+                                          &flush_info);
+    gr_context()->flush(flush_info);
+    gr_context()->submit(true);
   }
 
   sync_point_client_state_->Destroy();
