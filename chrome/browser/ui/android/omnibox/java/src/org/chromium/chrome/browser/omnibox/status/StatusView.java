@@ -5,11 +5,14 @@
 package org.chromium.chrome.browser.omnibox.status;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RotateDrawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.graphics.drawable.VectorDrawable;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.TouchDelegate;
@@ -331,8 +334,24 @@ public class StatusView extends LinearLayout {
      */
     void setStatusIconResources(@Nullable Drawable statusIconDrawable,
             @IconTransitionType int transitionType, @Nullable Runnable animationFinishedCallback) {
+        // TransitionDrawable and VectorDrawable do not play nicely together. Use BitmapDrawable
+        // instead otherwise the crossfade breaks, one of the icons will be fully visible when it
+        // should be fading. Solution from https://stackoverflow.com/q/49777302.
+        if (statusIconDrawable instanceof VectorDrawable) {
+            statusIconDrawable = convertToBitmapDrawable(statusIconDrawable);
+        }
+
         mStatusIconDrawable = statusIconDrawable;
         animateStatusIcon(transitionType, animationFinishedCallback);
+    }
+
+    private BitmapDrawable convertToBitmapDrawable(Drawable drawable) {
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return new BitmapDrawable(getResources(), bitmap);
     }
 
     /** Specify the status icon alpha. */
