@@ -202,6 +202,11 @@ tast_disabled_tests_from_chrome_all = [
 
   # https://crbug.com/1361078
   "shelf.HotseatSmoke",
+
+  # https://crbug.com/1362184
+  "dlp.DataLeakPreventionRulesListClipboardHistory.ash",
+  "dlp.DataLeakPreventionRulesListClipboardOmni",
+  "dlp.DataLeakPreventionRulesListPrinting.ash_allowed",
 ]
 
 # To create filters to be used on specific builders add them like this:
