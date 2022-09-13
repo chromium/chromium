@@ -3134,6 +3134,7 @@ group("gpu_pytype") {
     "//content/test/gpu/validate_tag_consistency.py",
 
     "//content/test/gpu/gold_inexact_matching/",
+    "//content/test/gpu/flake_suppressor/",
     "//testing/flake_suppressor_common/",
     "//content/test/gpu/unexpected_passes/",
     "//testing/unexpected_passes_common/",

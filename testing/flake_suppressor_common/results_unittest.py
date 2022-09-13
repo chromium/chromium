@@ -10,6 +10,8 @@ import unittest.mock as mock
 
 from flake_suppressor_common import data_types
 from flake_suppressor_common import results
+from flake_suppressor_common import tag_utils as common_tag_utils
+from flake_suppressor import gpu_tag_utils as tag_utils
 
 GENERIC_EXPECTATION_FILE_CONTENTS = """\
 # tags: [ win ]
@@ -27,6 +29,9 @@ crbug.com/1111 [ win nvidia ] conformance/textures/misc/video-rotation.html [ Fa
 
 class BaseResultsUnittest(unittest.TestCase):
   def setUp(self) -> None:
+    # TODO(crbug.com/1358733): this will be removed when this module is
+    # generalized.
+    common_tag_utils.SetTagUtilsImplementation(tag_utils.GpuTagUtils)
     self._local_patcher = mock.patch(
         'flake_suppressor_common.results.expectations.'
         'GetExpectationFilesFromLocalCheckout')

@@ -67,6 +67,17 @@ def CommonChecks(input_api, output_api):
           run_on_python3=True,
           skip_shebang_check=True))
 
+  results.extend(
+      input_api.canned_checks.RunUnitTestsInDirectory(
+          input_api,
+          output_api,
+          input_api.os_path.join(input_api.PresubmitLocalPath(),
+                                 'flake_suppressor'), [r'^.+_unittest\.py$'],
+          env=gpu_env,
+          run_on_python2=False,
+          run_on_python3=True,
+          skip_shebang_check=True))
+
   pylint_extra_paths = [
       input_api.os_path.join(chromium_src_path, *component)
       for component in EXTRA_PATHS_COMPONENTS

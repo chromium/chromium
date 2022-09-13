@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
+from flake_suppressor_common import queries
 
 
 def CreateFile(test: fake_filesystem_unittest.TestCase, *args,
@@ -19,3 +20,11 @@ def CreateFile(test: fake_filesystem_unittest.TestCase, *args,
 class FakeProcess():
   def __init__(self, stdout: str):
     self.stdout = stdout or ''
+
+
+class UnitTest_BigQueryQuerier(queries.BigQueryQuerier):
+  def GetResultCountCIQuery(self) -> str:
+    return """SELECT * FROM foo"""
+
+  def GetResultCountTryQuery(self) -> str:
+    return """submitted_builds SELECT * FROM bar"""

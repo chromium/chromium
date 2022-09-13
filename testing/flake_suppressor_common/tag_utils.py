@@ -3,56 +3,59 @@
 # found in the LICENSE file.
 """Module for tag-related helper functions."""
 
-from typing import Iterable
+from typing import Iterable, Type
 
 from flake_suppressor_common import common_typing as ct
 
-from gpu_tests import gpu_integration_test
-
-IGNORED_TAGS_TO_TEMPORARILY_KEEP = set([
-    'webgl-version-1',
-    'webgl-version-2',
-])
+TagUtils = None
 
 
-def RemoveMostIgnoredTags(tags: Iterable[str]) -> ct.TagTupleType:
-  """Removes ignored tags from |tags| except temporarily kept ones.
-
-  The temporarily kept ones can later be removed by
-  RemoveTemporarilyKeptIgnoredTags().
-
-  Some tags are kept around temporarily because they contain useful information
-  for other parts of the script, but are not present in expectation files.
-
-  Args:
-    tags: An iterable of strings containing tags
-
-  Returns:
-    A tuple of strings containing the contents of |tags| with ignored tags
-    removed except for the ones in IGNORED_TAGS_TO_TEMPORARILY_KEEP.
-  """
-  ignored_tags = set(gpu_integration_test.GpuIntegrationTest.IgnoredTags())
-  tags = set(tags)
-  ignored_tags_to_keep = tags & IGNORED_TAGS_TO_TEMPORARILY_KEEP
-  tags -= ignored_tags
-  tags |= ignored_tags_to_keep
-  tags = list(tags)
-  tags.sort()
-  return tuple(tags)
+def SetTagUtilsImplementation(impl: Type['BaseTagUtils']) -> None:
+  global TagUtils
+  assert issubclass(impl, BaseTagUtils)
+  TagUtils = impl()
 
 
-def RemoveTemporarilyKeptIgnoredTags(tags: Iterable[str]) -> ct.TagTupleType:
-  """Removes ignored tags that were temporarily kept.
+class BaseTagUtils():
+  def RemoveMostIgnoredTags(self, tags: Iterable[str]) -> ct.TagTupleType:
+    """Removes ignored tags from |tags| except temporarily kept ones.
 
-  Args:
-    tags: An iterable of strings containing tags that at one point were passed
-        through RemoveMostIgnoredTags()
+    The temporarily kept ones can later be removed by
+    RemoveTemporarilyKeptIgnoredTags().
 
-  Returns:
-    A tuple of strings containing the contents of |tags| with the contents of
-    IGNORED_TAGS_TO_TEMPORARILY_KEEP removed. Thus, the return value should not
-    have any remaining ignored tags.
-  """
-  tags = list(set(tags) - IGNORED_TAGS_TO_TEMPORARILY_KEEP)
-  tags.sort()
-  return tuple(tags)
+    Some tags are kept around temporarily because they contain useful
+    information for other parts of the script, but are not present in
+    expectation files.
+
+    Here we return all the tags as is, since child classes will do the
+    implementation specific filtering.
+
+    Args:
+      tags: An iterable of strings containing tags
+
+    Returns:
+      A tuple of strings containing the contents of |tags| with ignored tags
+      removed except for the ones in IGNORED_TAGS_TO_TEMPORARILY_KEEP.
+    """
+    return tuple(tags)
+
+  def RemoveTemporarilyKeptIgnoredTags(self,
+                                       tags: Iterable[str]) -> ct.TagTupleType:
+    """Removes ignored tags that were temporarily kept.
+
+    Here we return all the tags as is, since child classes will do the
+    implementation specific filtering.
+
+    Args:
+      tags: An iterable of strings containing tags that at one point were passed
+          through RemoveMostIgnoredTags()
+
+    Returns:
+      A tuple of strings containing the contents of |tags| with the contents of
+      IGNORED_TAGS_TO_TEMPORARILY_KEEP removed. Thus, the return value should
+      not have any remaining ignored tags.
+    """
+    return tuple(tags)
+
+
+TagUtils = BaseTagUtils()

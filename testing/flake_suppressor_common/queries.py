@@ -25,143 +25,19 @@ MAX_ROWS = (2**31) - 1
 
 # Subquery for getting all builds used for CL submission in the past
 # |sample_period| days. Will be inserted into other queries.
-SUBMITTED_BUILDS_SUBQUERY = """\
-  submitted_builds AS (
-    SELECT
-      CONCAT("build-", CAST(unnested_builds.id AS STRING)) as id
-    FROM
-      `commit-queue.chromium.attempts`,
-      UNNEST(builds) as unnested_builds,
-      UNNEST(gerrit_changes) as unnested_changes
-    WHERE
-      unnested_builds.host = "cr-buildbucket.appspot.com"
-      AND unnested_changes.submit_status = "SUCCESS"
-      AND start_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
-                                     INTERVAL @sample_period DAY)
-  ),
+SUBMITTED_BUILDS_TEMPLATE = """\
+  SELECT
+    CONCAT("build-", CAST(unnested_builds.id AS STRING)) as id
+  FROM
+    `commit-queue.chromium.attempts`,
+    UNNEST(builds) as unnested_builds,
+    UNNEST(gerrit_changes) as unnested_changes
+  WHERE
+    unnested_builds.host = "cr-buildbucket.appspot.com"
+    AND unnested_changes.submit_status = "SUCCESS"
+    AND start_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
+                                    INTERVAL @sample_period DAY)
 """
-
-# Gets all failures from the past |sample_period| days from CI bots that did not
-# already have an associated test suppression when the test ran.
-CI_FAILED_TEST_QUERY = """\
-WITH
-  failed_tests AS (
-    SELECT
-      exported.id,
-      test_metadata.name,
-      ARRAY(
-        SELECT value
-        FROM tr.tags
-        WHERE key = "typ_tag") as typ_tags,
-      ARRAY(
-        SELECT value
-        FROM tr.tags
-        WHERE key = "raw_typ_expectation") as typ_expectations
-    FROM
-      `chrome-luci-data.chromium.gpu_ci_test_results` tr
-    WHERE
-      status = "FAIL"
-      AND exported.realm = "chromium:ci"
-      AND partition_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
-                                         INTERVAL @sample_period DAY)
-  )
-SELECT *
-FROM failed_tests ft
-WHERE
-  ARRAY_TO_STRING(ft.typ_expectations, '') = "Pass"
-"""
-
-# Gets all failures from the past |sample_period| days from trybots that did not
-# already have an associated test suppresssion when the test ran, only including
-# data from builds that were used for CL submission.
-TRY_FAILED_TEST_QUERY = """\
-WITH
-  {submitted_builds_subquery}
-  failed_tests AS (
-    SELECT
-      exported.id,
-      test_metadata.name,
-      ARRAY(
-        SELECT value
-        FROM tr.tags
-        WHERE key = "typ_tag") as typ_tags,
-      ARRAY(
-        SELECT value
-        FROM tr.tags
-        WHERE key = "raw_typ_expectation") as typ_expectations
-    FROM
-      `chrome-luci-data.chromium.gpu_try_test_results` tr,
-      submitted_builds sb
-    WHERE
-      status = "FAIL"
-      AND exported.realm = "chromium:try"
-      AND partition_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
-                                         INTERVAL @sample_period DAY)
-      AND exported.id = sb.id
-  )
-SELECT *
-FROM failed_tests ft
-WHERE
-  ARRAY_TO_STRING(ft.typ_expectations, '') = "Pass"
-""".format(submitted_builds_subquery=SUBMITTED_BUILDS_SUBQUERY)
-
-# Gets the count of all results in the past |sample_period| days for distinct
-# test/tag combinations from CI bots.
-CI_RESULT_COUNT_QUERY = """\
-WITH
-  grouped_results AS (
-    SELECT
-      exported.id as id,
-      test_metadata.name as name,
-      ARRAY(
-        SELECT value
-        FROM tr.tags
-        WHERE key = "typ_tag") as typ_tags
-    FROM
-      `chrome-luci-data.chromium.gpu_ci_test_results` tr
-    WHERE
-      exported.realm = "chromium:ci"
-      AND partition_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
-                                         INTERVAL @sample_period DAY)
-  )
-SELECT
-  COUNT(gr.id) as result_count,
-  ANY_VALUE(gr.name) as test_name,
-  ANY_VALUE(gr.typ_tags) as typ_tags
-FROM grouped_results gr
-GROUP BY gr.name, ARRAY_TO_STRING(gr.typ_tags, '')
-"""
-
-# Gets the count of all results in the past |sample_period| days for distinct
-# test/tag combinations from trybots, only including data from builds that were
-# used for CL submission.
-TRY_RESULT_COUNT_QUERY = """\
-WITH
-  {submitted_builds_subquery}
-  grouped_results AS (
-    SELECT
-      exported.id as id,
-      test_metadata.name as name,
-      ARRAY(
-        SELECT value
-        FROM tr.tags
-        WHERE key = "typ_tag") as typ_tags
-    FROM
-      `chrome-luci-data.chromium.gpu_try_test_results` tr,
-      submitted_builds sb
-    WHERE
-      exported.realm = "chromium:try"
-      AND partition_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
-                                         INTERVAL @sample_period DAY)
-      AND exported.id = sb.id
-  )
-SELECT
-  COUNT(gr.id) as result_count,
-  ANY_VALUE(gr.name) as test_name,
-  ANY_VALUE(gr.typ_tags) as typ_tags
-FROM grouped_results gr
-GROUP BY gr.name, ARRAY_TO_STRING(gr.typ_tags, '')
-""".format(submitted_builds_subquery=SUBMITTED_BUILDS_SUBQUERY)
 
 
 class BigQueryQuerier():
@@ -184,7 +60,7 @@ class BigQueryQuerier():
       A JSON representation of the BigQuery results containing all found flaky
       or failing test results that came from CI bots.
     """
-    return self._GetJsonResultsFromBigQuery(CI_FAILED_TEST_QUERY)
+    return self._GetJsonResultsFromBigQuery(self.GetFlakyOrFailingCiQuery())
 
   def GetFlakyOrFailingTryTests(self) -> ct.QueryJsonType:
     """Gets all flaky or failing GPU tests from the trybots.
@@ -196,7 +72,7 @@ class BigQueryQuerier():
       or failing test results that came from trybots AND came from builds that
       were used for CL submission.
     """
-    return self._GetJsonResultsFromBigQuery(TRY_FAILED_TEST_QUERY)
+    return self._GetJsonResultsFromBigQuery(self.GetFlakyOrFailingTryQuery())
 
   def GetResultCounts(self) -> ct.ResultCountType:
     """Gets the result count for each test/config combination.
@@ -212,9 +88,39 @@ class BigQueryQuerier():
     # A default dict of default dicts of ints.
     result_counts = collections.defaultdict(lambda: collections.defaultdict(int)
                                             )
-    self._GetResultCountWithQuery(CI_RESULT_COUNT_QUERY, result_counts)
-    self._GetResultCountWithQuery(TRY_RESULT_COUNT_QUERY, result_counts)
+    self._GetResultCountWithQuery(self.GetResultCountCIQuery(), result_counts)
+    self._GetResultCountWithQuery(self.GetResultCountTryQuery(), result_counts)
     return result_counts
+
+  def GetFlakyOrFailingCiQuery(self) -> str:
+    """
+    Returns:
+      Query string to get all the failing or flaky results from CI bots.
+    """
+    raise NotImplementedError
+
+  def GetFlakyOrFailingTryQuery(self) -> str:
+    """
+    Returns:
+      Query string to get all the failing or flaky results from Try bots.
+    """
+    raise NotImplementedError
+
+  def GetResultCountCIQuery(self) -> str:
+    """
+    Returns:
+      Query string to get the result count for test/tag combination from CI
+      bots.
+    """
+    raise NotImplementedError
+
+  def GetResultCountTryQuery(self) -> str:
+    """
+    Returns:
+      Query string to get result count for test/tag combination from Try
+      bots.
+    """
+    raise NotImplementedError
 
   def _GetJsonResultsFromBigQuery(self, query: str) -> ct.QueryJsonType:
     """Gets the JSON results from a BigQuery query.
@@ -257,7 +163,7 @@ class BigQueryQuerier():
     json_results = self._GetJsonResultsFromBigQuery(query)
 
     for r in json_results:
-      typ_tags = tuple(tag_utils.RemoveMostIgnoredTags(r['typ_tags']))
+      typ_tags = tuple(tag_utils.TagUtils.RemoveMostIgnoredTags(r['typ_tags']))
       test_name = r['test_name']
       _, test_name = results_module.GetTestSuiteAndNameFromResultDbName(
           test_name)

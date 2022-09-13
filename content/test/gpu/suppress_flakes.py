@@ -25,9 +25,11 @@ sys.path.append(os.path.join(CHROMIUM_SRC_DIR, 'testing'))
 
 # pylint: disable=wrong-import-position
 from flake_suppressor_common import expectations
-from flake_suppressor_common import queries
 from flake_suppressor_common import result_output
 from flake_suppressor_common import results as results_module
+from flake_suppressor_common import tag_utils as common_tag_utils
+from flake_suppressor import gpu_queries
+from flake_suppressor import gpu_tag_utils as tag_utils
 # pylint: enable=wrong-import-position
 
 
@@ -108,9 +110,11 @@ def ParseArgs():
 
 def main():
   args = ParseArgs()
+  common_tag_utils.SetTagUtilsImplementation(tag_utils.GpuTagUtils)
   if not args.bypass_up_to_date_check:
     expectations.AssertCheckoutIsUpToDate()
-  querier_instance = queries.BigQueryQuerier(args.sample_period, args.project)
+  querier_instance = gpu_queries.GpuBigQueryQuerier(args.sample_period,
+                                                    args.project)
   results = querier_instance.GetFlakyOrFailingCiTests()
   results.extend(querier_instance.GetFlakyOrFailingTryTests())
   aggregated_results = results_module.AggregateResults(results)

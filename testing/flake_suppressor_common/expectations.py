@@ -302,7 +302,7 @@ def ModifyFileForResult(suite: str, test: str, typ_tags: ct.TagTupleType,
     # Remove temporarily un-ignored tags, namely webgl-version-x tags, since
     # those were necessary to find the correct file. However, we do not want
     # to actually include them in the file since they are unused/ignored.
-    typ_tags = tag_utils.RemoveTemporarilyKeptIgnoredTags(typ_tags)
+    typ_tags = tag_utils.TagUtils.RemoveTemporarilyKeptIgnoredTags(typ_tags)
     typ_tags = FilterToMostSpecificTypTags(typ_tags, expectation_file)
   bug = '%s ' % bug if bug else bug
 

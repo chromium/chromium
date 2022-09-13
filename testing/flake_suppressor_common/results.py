@@ -59,7 +59,7 @@ def _ConvertJsonResultsToResultObjects(results: ct.QueryJsonType
   for r in results:
     suite, test_name = GetTestSuiteAndNameFromResultDbName(r['name'])
     build_id = r['id'].split('-')[-1]
-    typ_tags = tuple(tag_utils.RemoveMostIgnoredTags(r['typ_tags']))
+    typ_tags = tuple(tag_utils.TagUtils.RemoveMostIgnoredTags(r['typ_tags']))
     object_results.append(
         data_types.Result(suite, test_name, typ_tags, build_id))
   return object_results
