@@ -39,7 +39,7 @@ class WindowManagementImpl : public WmDefaultLayoutManager,
   void DispatchWindowOpenedEvent(const base::UnguessableToken& id);
 
   // Sends an AcceleratorEvent to the renderer through the
-  // blink::mojom::CrosWindowManagementStartObserver interface.
+  // blink::mojom::CrosWindowManagementObserver interface.
   void DispatchAcceleratorEvent(blink::mojom::AcceleratorEventPtr event_ptr);
 
   // blink::mojom::CrosWindowManagement
