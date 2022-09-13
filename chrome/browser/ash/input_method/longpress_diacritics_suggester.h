@@ -92,7 +92,6 @@ class LongpressDiacriticsSuggester : public Suggester {
   absl::optional<char> displayed_window_base_character_;
   // Highlighted index can be nullopt even if window displayed.
   absl::optional<size_t> highlighted_index_;
-  bool text_changed_since_longpress_ = false;
 };
 
 }  // namespace input_method

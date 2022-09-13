@@ -195,15 +195,8 @@ bool LongpressDiacriticsSuggester::TrySuggestWithSurroundingText(
     const std::u16string& text,
     int cursor_pos,
     int anchor_pos) {
-  if (displayed_window_base_character_ == absl::nullopt ||
-      text_changed_since_longpress_ || anchor_pos != cursor_pos ||
-      cursor_pos <= 0 || cursor_pos > text.size() ||
-      text[cursor_pos - 1] != *displayed_window_base_character_) {
-    return false;
-  }
-
-  text_changed_since_longpress_ = true;
-  return true;
+  // Should dismiss on text change.
+  return false;
 }
 
 bool LongpressDiacriticsSuggester::AcceptSuggestion(size_t index) {
@@ -306,7 +299,6 @@ LongpressDiacriticsSuggester::GetCurrentShownDiacritics() {
 }
 
 void LongpressDiacriticsSuggester::Reset() {
-  text_changed_since_longpress_ = false;
   displayed_window_base_character_ = absl::nullopt;
   highlighted_index_ = absl::nullopt;
 }

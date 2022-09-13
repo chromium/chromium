@@ -97,25 +97,6 @@ TEST_P(LongpressDiacriticsSuggesterTest, SuggestsOnTrySuggest) {
 }
 
 TEST_P(LongpressDiacriticsSuggesterTest,
-       ShouldOnlyReturnTrueForFirstTextChangeEvent) {
-  FakeSuggestionHandler suggestion_handler;
-  LongpressDiacriticsSuggester suggester =
-      LongpressDiacriticsSuggester(&suggestion_handler);
-  suggester.OnFocus(kContextId);
-
-  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
-
-  EXPECT_TRUE(suggester.TrySuggestWithSurroundingText(
-      GetParam().surrounding_text, GetParam().surrounding_text.size(),
-      GetParam().surrounding_text.size()));
-  // This cursor position hasn't changed, so the text is still valid. However
-  // it should return false because it is the second on change event.
-  EXPECT_FALSE(suggester.TrySuggestWithSurroundingText(
-      GetParam().surrounding_text + u"somechanges",
-      GetParam().surrounding_text.size(), GetParam().surrounding_text.size()));
-}
-
-TEST_P(LongpressDiacriticsSuggesterTest,
        ShouldReturnFalseForInvalidTextChangeEvent) {
   FakeSuggestionHandler suggestion_handler;
   LongpressDiacriticsSuggester suggester =
