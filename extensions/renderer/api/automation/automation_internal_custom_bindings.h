@@ -15,6 +15,7 @@
 #include "extensions/renderer/object_backed_native_handler.h"
 #include "ipc/ipc_message.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/platform/automation/automation_ax_tree_wrapper.h"
 #include "ui/accessibility/platform/automation/automation_tree_manager_owner.h"
@@ -59,30 +60,11 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
 
   void OnMessageReceived(const IPC::Message& message);
 
-  // Gets the root(s) of a node's child tree. Multiple roots can occur when the
-  // child tree uses ax::mojom::StringAttribute::kAppId.
-  std::vector<ui::AXNode*> GetRootsOfChildTree(ui::AXNode* node) const;
-
-  ui::AXNode* GetNextInTreeOrder(
-      ui::AXNode* start,
-      ui::AutomationAXTreeWrapper** in_out_tree_wrapper) const;
-  ui::AXNode* GetPreviousInTreeOrder(
-      ui::AXNode* start,
-      ui::AutomationAXTreeWrapper** in_out_tree_wrapper) const;
-
   ScriptContext* context() const {
     return ObjectBackedNativeHandler::context();
   }
 
   // ui::AutomationTreeManagerOwner:
-  ui::AutomationAXTreeWrapper* GetAutomationAXTreeWrapperFromTreeID(
-      ui::AXTreeID tree_id) const override;
-  ui::AXNode* GetParent(ui::AXNode* node,
-                        ui::AutomationAXTreeWrapper** in_out_tree_wrapper,
-                        bool should_use_app_id = true,
-                        bool requires_unignored = true) const override;
-  ui::AXNode* GetHostInParentTree(
-      ui::AutomationAXTreeWrapper** in_out_tree_wrapper) const override;
   void SendNodesRemovedEvent(ui::AXTree* tree,
                              const std::vector<int>& ids) override;
   bool SendTreeChangeEvent(ax::mojom::Mutation change_type,
@@ -94,14 +76,6 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
       const ui::AXEvent& event,
       absl::optional<ui::AXEventGenerator::Event> generated_event_type =
           absl::optional<ui::AXEventGenerator::Event>()) override;
-  void MaybeSendFocusAndBlur(ui::AutomationAXTreeWrapper* tree,
-                             const ui::AXTreeID& tree_id,
-                             const std::vector<ui::AXTreeUpdate>& updates,
-                             const std::vector<ui::AXEvent>& events,
-                             gfx::Point mouse_location) override;
-  absl::optional<gfx::Rect> GetAccessibilityFocusedLocation() const override;
-  void SendAccessibilityFocusedLocationChange(
-      const gfx::Point& mouse_location) override;
 
  private:
   friend class AutomationInternalCustomBindingsTest;
@@ -143,13 +117,6 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
       const v8::FunctionCallbackInfo<v8::Value>& args);
 
   void GetFocus(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  // Given an initial ui::AutomationAXTreeWrapper, return the
-  // ui::AutomationAXTreeWrapper and node of the focused node within this tree
-  // or a focused descendant tree.
-  bool GetFocusInternal(ui::AutomationAXTreeWrapper* top_tree,
-                        ui::AutomationAXTreeWrapper** out_tree,
-                        ui::AXNode** out_node);
 
   void RouteTreeIDFunction(
       const std::string& name,
@@ -242,6 +209,7 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
   void OnAccessibilityEvents(
       const ExtensionMsg_AccessibilityEventBundleParams& events,
       bool is_active_profile);
+
   void OnAccessibilityLocationChange(
       const ExtensionMsg_AccessibilityLocationChangeParams& params);
 
@@ -252,29 +220,10 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
   std::string GetLocalizedStringForImageAnnotationStatus(
       ax::mojom::ImageAnnotationStatus status) const;
 
-  std::vector<int> CalculateSentenceBoundary(
-      ui::AutomationAXTreeWrapper* tree_wrapper,
-      ui::AXNode* node,
-      bool start_boundary);
-
-  // Adjust the bounding box of a node from local to global coordinates,
-  // walking up the parent hierarchy to offset by frame offsets and
-  // scroll offsets.
-  // If |clip_bounds| is false, the bounds of the node will not be clipped
-  // to the ancestors bounding boxes if needed. Regardless of clipping, results
-  // are returned in global coordinates.
-  gfx::Rect ComputeGlobalNodeBounds(ui::AutomationAXTreeWrapper* tree_wrapper,
-                                    ui::AXNode* node,
-                                    gfx::RectF local_bounds = gfx::RectF(),
-                                    bool* offscreen = nullptr,
-                                    bool clip_bounds = true) const;
-
   void TreeEventListenersChanged(ui::AutomationAXTreeWrapper* tree_wrapper);
 
   void MaybeSendOnAllAutomationEventListenersRemoved();
 
-  std::map<ui::AXTreeID, std::unique_ptr<ui::AutomationAXTreeWrapper>>
-      tree_id_to_tree_wrapper_map_;
   scoped_refptr<AutomationMessageFilter> message_filter_;
   bool is_active_profile_;
   std::vector<TreeChangeObserver> tree_change_observers_;
@@ -282,19 +231,6 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
   int tree_change_observer_overall_filter_;
   NativeExtensionBindingsSystem* bindings_system_;
   bool should_ignore_context_;
-
-  // The global focused tree id.
-  ui::AXTreeID focus_tree_id_;
-
-  // The global focused node id.
-  int32_t focus_id_ = -1;
-
-  // The global accessibility focused id set by a js client. Differs from focus
-  // as used in ui::AXTree.
-  ui::AXTreeID accessibility_focused_tree_id_ = ui::AXTreeIDUnknown();
-
-  // Keeps track  of the single desktop tree, if it exists.
-  ui::AXTreeID desktop_tree_id_ = ui::AXTreeIDUnknown();
 
   // Keeps track of all trees with event listeners.
   std::set<ui::AXTreeID> trees_with_event_listeners_;

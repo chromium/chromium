@@ -95,11 +95,11 @@ source_set("platform") {
   if (enable_extensions) {
     sources += [
       # Use by the Automation API.
-      # TODO(crbug.com/1357889): Rename to atp/ or javascript/?
       "automation/automation_api_util.cc",
       "automation/automation_api_util.h",
       "automation/automation_ax_tree_wrapper.cc",
       "automation/automation_ax_tree_wrapper.h",
+      "automation/automation_tree_manager_owner.cc",
       "automation/automation_tree_manager_owner.h",
     ]
 
