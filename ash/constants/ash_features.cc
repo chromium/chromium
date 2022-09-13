@@ -667,7 +667,7 @@ const base::Feature kEnableSamlNotificationOnPasswordChangeSuccess{
     base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kEnableSavedDesks{"EnableSavedDesks",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables all registered system web apps, regardless of their respective
 // feature flags.
