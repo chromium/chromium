@@ -150,40 +150,6 @@ TEST_F(CalendarModelUtilsTest, SurroundingMonths) {
   EXPECT_TRUE(months.find(start_of_next_month_3) != months.end());
 }
 
-// A mock `CalendarClient` which uses the set Error and Event list as the
-// response. This mock client's `GetEventList` waits for a short duration to
-// mock the fetching process.
-class CalendarClientTestImpl : public CalendarClient {
- public:
-  CalendarClientTestImpl() = default;
-  CalendarClientTestImpl(const CalendarClientTestImpl& other) = delete;
-  CalendarClientTestImpl& operator=(const CalendarClientTestImpl& other) =
-      delete;
-  ~CalendarClientTestImpl() override = default;
-
-  // CalendarClient:
-  base::OnceClosure GetEventList(
-      google_apis::calendar::CalendarEventListCallback callback,
-      const base::Time& start_time,
-      const base::Time& end_time) override {
-    // Give it a little bit of time to mock the api calling.
-    base::PlatformThread::Sleep(base::Seconds(1));
-    std::move(callback).Run(error_, std::move(events_));
-    return base::DoNothing();
-  }
-
-  void SetEventList(std::unique_ptr<google_apis::calendar::EventList> events) {
-    events_.reset();
-    events_ = std::move(events);
-  }
-
-  void SetError(google_apis::ApiErrorCode error) { error_ = error; }
-
- private:
-  google_apis::ApiErrorCode error_ = google_apis::HTTP_SUCCESS;
-  std::unique_ptr<google_apis::calendar::EventList> events_ = nullptr;
-};
-
 class CalendarModelTest : public AshTestBase {
  public:
   CalendarModelTest()
@@ -201,7 +167,8 @@ class CalendarModelTest : public AshTestBase {
     Shell::Get()->calendar_controller()->SetActiveUserAccountIdForTesting(
         account_id);
     calendar_model_ = std::make_unique<CalendarModel>();
-    calendar_client_ = std::make_unique<CalendarClientTestImpl>();
+    calendar_client_ =
+        std::make_unique<calendar_test_utils::CalendarClientTestImpl>();
     Shell::Get()->calendar_controller()->RegisterClientForUser(
         account_id, calendar_client_.get());
     Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
@@ -314,12 +281,11 @@ class CalendarModelTest : public AshTestBase {
     }
   }
 
-  // Wait until the response is back. The sleep duration may be in
-  // `base::Time` or `base::TimeTicks`, depending on platform in the platform
-  // threads. So using a relatively longer waiting duration to make sure the
-  // platform thread sleeping ends.
+  // Wait until the response is back. Since we used `PostDelayedTask` with 1
+  // second to mimic the behavior of fetching, duration of 1 minute should be
+  // enough.
   void WaitUntilFetched() {
-    task_environment()->FastForwardBy(base::Minutes(10));
+    task_environment()->FastForwardBy(base::Minutes(1));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -369,7 +335,7 @@ class CalendarModelTest : public AshTestBase {
   std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_overrides_;
 
   std::unique_ptr<CalendarModel> calendar_model_;
-  std::unique_ptr<CalendarClientTestImpl> calendar_client_;
+  std::unique_ptr<calendar_test_utils::CalendarClientTestImpl> calendar_client_;
   base::Time now_;
 };
 
@@ -416,6 +382,18 @@ TEST_F(CalendarModelTest, FetchingSuccessfullyWithOneEvent) {
   EXPECT_EQ(1, EventsNumberOfDay(kStartTime0, &events));
   EXPECT_FALSE(events.empty());
   EXPECT_TRUE(events.size() == 1);
+
+  // Now we do a refetch.
+  calendar_model()->FetchEvents(calendar_utils::GetStartOfMonthUTC(now()));
+
+  EXPECT_EQ(CalendarModel::kRefetching,
+            calendar_model()->FindFetchingStatus(start_of_month));
+  EXPECT_EQ(1, EventsNumberOfDay(kStartTime0, &events));
+
+  WaitUntilFetched();
+
+  EXPECT_EQ(CalendarModel::kSuccess,
+            calendar_model()->FindFetchingStatus(start_of_month));
 }
 
 TEST_F(CalendarModelTest, FetchingSuccessfullyWithMultiEvents) {
@@ -497,6 +475,18 @@ TEST_F(CalendarModelTest, FetchingSuccessfullyWithMultiEvents) {
   EXPECT_EQ(1, EventsNumberOfDay(kStartTime2, &events));
   EXPECT_EQ(1, EventsNumberOfDay(kStartTime3, &events));
   EXPECT_EQ(1, EventsNumberOfDay(kStartTime13, &events));
+
+  // Now we do a refetch.
+  calendar_model()->FetchEvents(calendar_utils::GetStartOfMonthUTC(now()));
+
+  EXPECT_EQ(CalendarModel::kRefetching,
+            calendar_model()->FindFetchingStatus(start_of_month0));
+  EXPECT_EQ(1, EventsNumberOfDay(kStartTime0, &events));
+
+  WaitUntilFetched();
+
+  EXPECT_EQ(CalendarModel::kSuccess,
+            calendar_model()->FindFetchingStatus(start_of_month0));
 }
 
 TEST_F(CalendarModelTest, ChangeTimeDifference) {
@@ -616,12 +606,16 @@ TEST_F(CalendarModelTest, PruneEvents) {
   // Loop from base start time to mock the initial cached months.
   base::Time current_month =
       calendar_test_utils::GetTimeFromString(kBaseStartTime);
-  for (int i = 0; i < kNumEvents; ++i) {
-    // Set index 2 as today. The default surrounding months number is 2. This
-    // sets the first 5 months as the non_prunable months.
-    if (i == 2)
-      SetTodayFromTime(current_month);
 
+  // Set the next next month as today. The default surrounding months number is
+  // 2. This sets the first 5 months as the non_prunable months.
+  // NOTE: We must set today before injecting any events because if we set it
+  // at the i == 2 loop, the first two months will be added to mru_months_ and
+  // will be prunable.
+  base::Time next_month = calendar_utils::GetStartOfNextMonthUTC(current_month);
+  SetTodayFromTime(calendar_utils::GetStartOfNextMonthUTC(next_month));
+
+  for (int i = 0; i < kNumEvents; ++i) {
     // Inject events.
     MockOnEventsFetched(current_month, google_apis::ApiErrorCode::HTTP_SUCCESS,
                         nullptr);

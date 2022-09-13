@@ -101,13 +101,11 @@ CalendarDateCellView::CalendarDateCellView(
 
   DisableFocus();
   if (!grayed_out_) {
-    if (calendar_utils::ShouldFetchEvents() && is_fetched_) {
-      event_number_ = calendar_view_controller_->GetEventNumber(date_);
-    }
+    if (calendar_utils::ShouldFetchEvents() && is_fetched_)
+      UpdateFetchStatus(true);
+
     SetTooltipAndAccessibleName();
     is_selected_ = calendar_view_controller->selected_date_cell_view() == this;
-    calendar_utils::IsTheSameDay(date_,
-                                 calendar_view_controller_->selected_date());
   }
   scoped_calendar_view_controller_observer_.Observe(calendar_view_controller_);
 }
@@ -334,6 +332,7 @@ void CalendarDateCellView::MaybeDrawEventsIndicator(gfx::Canvas* canvas) {
   indicator_paint_flags.setAntiAlias(true);
   canvas->DrawCircle(GetEventsPresentIndicatorCenterPosition(),
                      indicator_radius, indicator_paint_flags);
+  is_events_indicator_drawn = true;
 }
 
 CalendarMonthView::CalendarMonthView(
@@ -365,8 +364,8 @@ CalendarMonthView::CalendarMonthView(
   // Fetch events for the month.
   fetch_month_ = first_day_of_month_local.UTCMidnight();
   FetchEvents(fetch_month_);
-  bool is_fetched =
-      calendar_view_controller_->isSuccessfullyFetched(fetch_month_);
+  bool has_fetched_data =
+      calendar_view_controller_->IsSuccessfullyFetched(fetch_month_);
 
   // TODO(https://crbug.com/1236276): Extract the following 3 parts (while
   // loops) into a method.
@@ -377,7 +376,7 @@ CalendarMonthView::CalendarMonthView(
          (first_day_of_month_exploded.month - 1) % 12) {
     AddDateCellToLayout(current_date, column,
                         /*is_in_current_month=*/false, /*row_index=*/0,
-                        /*is_fetched=*/is_fetched);
+                        /*is_fetched=*/has_fetched_data);
     MoveToNextDay(column, current_date, current_date_local,
                   current_date_exploded);
     ++safe_index;
@@ -399,7 +398,7 @@ CalendarMonthView::CalendarMonthView(
     auto* cell = AddDateCellToLayout(current_date, column,
                                      /*is_in_current_month=*/true,
                                      /*row_index=*/row_number - 1,
-                                     /*is_fetched=*/is_fetched);
+                                     /*is_fetched=*/has_fetched_data);
     // Add the first non-grayed-out cell of the row to the `focused_cells_`.
     if (column == 0 || current_date_exploded.day_of_month == 1) {
       focused_cells_.push_back(cell);
@@ -432,12 +431,12 @@ CalendarMonthView::CalendarMonthView(
 
   // Gets the fetched status again in case the events are fetched in the middle
   // of rendering date cells.
-  bool updated_is_fetched =
-      calendar_view_controller_->isSuccessfullyFetched(fetch_month_);
+  bool updated_has_fetched_data =
+      calendar_view_controller_->IsSuccessfullyFetched(fetch_month_);
 
   // If the fetching status changed, schedule repaint.
-  if (updated_is_fetched != is_fetched)
-    UpdateIsFetchedAndRepaint(updated_is_fetched);
+  if (updated_has_fetched_data != has_fetched_data)
+    UpdateIsFetchedAndRepaint(updated_has_fetched_data);
 
   if (calendar_utils::GetDayOfWeekInt(current_date) == 1)
     return;
@@ -461,7 +460,7 @@ CalendarMonthView::CalendarMonthView(
     AddDateCellToLayout(current_date, column,
                         /*is_in_current_month=*/false,
                         /*row_index=*/row_number,
-                        /*is_fetched=*/is_fetched);
+                        /*is_fetched=*/has_fetched_data);
     MoveToNextDay(column, current_date, current_date_local,
                   current_date_exploded);
 

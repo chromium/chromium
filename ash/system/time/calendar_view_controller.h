@@ -161,15 +161,16 @@ class ASH_EXPORT CalendarViewController {
     todays_date_cell_view_ = todays_date_cell_view;
   }
 
-  // Returns whether the events for `start_of_month` is fetched or not.
-  bool isSuccessfullyFetched(base::Time start_of_month);
+  // Returns whether the events for `start_of_month` have been successfully
+  // fetched. The `FetchingStatus` should be either `kSuccess` or `kRefetching`.
+  bool IsSuccessfullyFetched(base::Time start_of_month);
 
  private:
   // For unit tests.
   friend class CalendarMonthViewTest;
+  friend class CalendarViewAnimationTest;
   friend class CalendarViewEventListViewTest;
   friend class CalendarViewTest;
-  friend class CalendarViewAnimationTest;
 
   // Adds the time difference and returns the adjusted time.
   base::Time ApplyTimeDifference(base::Time date);

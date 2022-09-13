@@ -57,8 +57,8 @@ class CalendarHeaderView : public views::View {
   void UpdateHeaders(const std::u16string& month, const std::u16string& year);
 
  private:
-  friend class CalendarViewTest;
   friend class CalendarViewAnimationTest;
+  friend class CalendarViewTest;
 
   // The main header which shows the month name.
   views::Label* const header_;
@@ -229,10 +229,6 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
 
   // Updates the on-screen month map with the current months on screen.
   void UpdateOnScreenMonthMap();
-
-  // If the key `start_of_month` is not in the map, insert it with the value as
-  // the fetching status of `start_of_month`.
-  void MaybeAddOnScreenMonth(base::Time start_of_month);
 
   // Checks if all months in the visible window have finished fetching. If so,
   // stop showing the loading bar.

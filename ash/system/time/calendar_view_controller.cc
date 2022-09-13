@@ -228,11 +228,12 @@ base::Time CalendarViewController::GetOnScreenMonthFirstDayUTC() {
          time_difference;
 }
 
-bool CalendarViewController::isSuccessfullyFetched(base::Time start_of_month) {
-  return Shell::Get()
-             ->system_tray_model()
-             ->calendar_model()
-             ->FindFetchingStatus(start_of_month) == CalendarModel::kSuccess;
+bool CalendarViewController::IsSuccessfullyFetched(base::Time start_of_month) {
+  auto fetch_status =
+      Shell::Get()->system_tray_model()->calendar_model()->FindFetchingStatus(
+          start_of_month);
+  return fetch_status == CalendarModel::kSuccess ||
+         fetch_status == CalendarModel::kRefetching;
 }
 
 base::Time CalendarViewController::ApplyTimeDifference(base::Time date) {

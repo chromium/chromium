@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "ash/calendar/calendar_client.h"
 #include "base/time/time.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 
@@ -253,6 +254,37 @@ bool IsTheSameMonth(const base::Time& date_a, const base::Time& date_b);
 
 // Returns the `base:Time` from the given string.
 base::Time GetTimeFromString(const char* start_time);
+
+// A mock `CalendarClient` which uses `SetEventList` and `SetError` to set the
+// response. This mock client's `GetEventList` waits for a short duration to
+// mock the fetching process. This client can be used in calendar unittests to
+// mock the process of fetching events and getting back event list or error
+// message. It needs to be registered to a calendar client in `SetUp`.
+class CalendarClientTestImpl : public CalendarClient {
+ public:
+  CalendarClientTestImpl();
+  CalendarClientTestImpl(const CalendarClientTestImpl& other) = delete;
+  CalendarClientTestImpl& operator=(const CalendarClientTestImpl& other) =
+      delete;
+  ~CalendarClientTestImpl() override;
+
+  // CalendarClient:
+  base::OnceClosure GetEventList(
+      google_apis::calendar::CalendarEventListCallback callback,
+      const base::Time& start_time,
+      const base::Time& end_time) override;
+
+  // Sets `events` as the fetched event list.
+  void SetEventList(std::unique_ptr<google_apis::calendar::EventList> events);
+
+  // Sets `error` as the error message. The value of `error` is
+  // `google_apis::HTTP_SUCCESS` by default.
+  void SetError(google_apis::ApiErrorCode error) { error_ = error; }
+
+ private:
+  google_apis::ApiErrorCode error_ = google_apis::HTTP_SUCCESS;
+  std::unique_ptr<google_apis::calendar::EventList> events_ = nullptr;
+};
 
 }  // namespace calendar_test_utils
 

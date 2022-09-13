@@ -75,6 +75,29 @@ base::Time GetTimeFromString(const char* start_time) {
   return date;
 }
 
+CalendarClientTestImpl::CalendarClientTestImpl() = default;
+
+CalendarClientTestImpl::~CalendarClientTestImpl() = default;
+
+base::OnceClosure CalendarClientTestImpl::GetEventList(
+    google_apis::calendar::CalendarEventListCallback callback,
+    const base::Time& start_time,
+    const base::Time& end_time) {
+  // Give it a little bit of time to mock the api calling.
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), error_, std::move(events_)),
+      base::Seconds(1));
+
+  return base::DoNothing();
+}
+
+void CalendarClientTestImpl::SetEventList(
+    std::unique_ptr<google_apis::calendar::EventList> events) {
+  events_.reset();
+  events_ = std::move(events);
+}
+
 }  // namespace calendar_test_utils
 
 }  // namespace ash

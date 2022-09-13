@@ -43,10 +43,13 @@ using SingleDayEventList = std::list<google_apis::calendar::CalendarEvent>;
 // Controller of the `CalendarView`.
 class ASH_EXPORT CalendarModel : public SessionObserver {
  public:
-  // kNa is used to represent the fetching status when on the non-logged-in
-  // screens. If kNa is returned, the loading bar won't be shown since events
+  // `kNa` is used to represent the fetching status when on the non-logged-in
+  // screens. If `kNa` is returned, the loading bar won't be shown since events
   // are not being fetched.
-  enum FetchingStatus { kNever, kFetching, kSuccess, kError, kNa };
+  // `kRefetching` is used to represent the fetching status when there're cached
+  // events for a month but another fetching request has been sent. In this
+  // case, the event indicator dots and the tooltip will show the cached events.
+  enum FetchingStatus { kNever, kFetching, kRefetching, kSuccess, kError, kNa };
 
   CalendarModel();
   CalendarModel(const CalendarModel& other) = delete;
@@ -121,10 +124,11 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
  private:
   // For unit tests.
   friend class CalendarModelTest;
-  friend class CalendarViewEventListViewTest;
+  friend class CalendarMonthViewFetchTest;
   friend class CalendarMonthViewTest;
-  friend class CalendarViewTest;
   friend class CalendarViewAnimationTest;
+  friend class CalendarViewEventListViewTest;
+  friend class CalendarViewTest;
   friend class GlanceablesTest;
 
   // Checks if the event has allowed statuses and is eligible for insertion.
@@ -185,12 +189,6 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   void OnEventFetchFailedInternalError(
       base::Time start_of_month,
       CalendarEventFetchInternalErrorCode error);
-
-  // Inserts month into `pending_fetches_`. For testing only.
-  void InsertPendingFetchesForTesting(base::Time start_of_month);
-
-  // Deletes month from `pending_fetches_`. For testing only.
-  void DeletePendingFetchesForTesting(base::Time start_of_month);
 
   // Methods for dumping various event containers/representations to logs.
   void DebugDumpOnEventFetched(const google_apis::calendar::EventList* events,

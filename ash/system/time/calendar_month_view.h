@@ -76,6 +76,7 @@ class CalendarDateCellView : public CalendarViewController::Observer,
 
  private:
   // For unit tests.
+  friend class CalendarMonthViewFetchTest;
   friend class CalendarMonthViewTest;
 
   // Callback called when this view is activated.
@@ -107,6 +108,9 @@ class CalendarDateCellView : public CalendarViewController::Observer,
 
   // The number of event for `date_`.
   int event_number_ = 0;
+
+  // For testing. Whether the events indicator is drawn or not.
+  bool is_events_indicator_drawn = false;
 
   // The tool tip for this view. Before events data is back, only show date.
   // After the events date is back, show date and event numbers.
@@ -159,6 +163,8 @@ class ASH_EXPORT CalendarMonthView : public views::View,
  private:
   // For unit tests.
   friend class CalendarMonthViewTest;
+  friend class CalendarMonthViewFetchTest;
+
   // Adds the `current_date`'s `CalendarDateCellView` to the table layout and
   // returns it.
   CalendarDateCellView* AddDateCellToLayout(base::Time current_date,

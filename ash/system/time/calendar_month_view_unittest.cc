@@ -6,7 +6,13 @@
 
 #include <memory>
 
+#include "ash/calendar/calendar_client.h"
+#include "ash/calendar/calendar_controller.h"
 #include "ash/components/settings/scoped_timezone_settings.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
@@ -14,13 +20,15 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
-#include "ui/gfx/canvas.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/views_test_utils.h"
 
 namespace ash {
 
 namespace {
+
+using ::google_apis::calendar::CalendarEvent;
+using ::google_apis::calendar::EventList;
 
 std::unique_ptr<google_apis::calendar::EventList> CreateMockEventList() {
   auto event_list = std::make_unique<google_apis::calendar::EventList>();
@@ -80,40 +88,8 @@ class CalendarMonthViewTest : public AshTestBase {
     views::test::RunScheduledLayout(calendar_month_view_.get());
   }
 
-  void MockFetchEvents(base::Time start_of_month) {
-    calendar_month_view_->calendar_model_->InsertPendingFetchesForTesting(
-        start_of_month);
-  }
-
-  void TriggerPaint() {
-    gfx::Canvas canvas;
-    for (auto* cell : calendar_month_view_->children())
-      static_cast<CalendarDateCellView*>(cell)->PaintButtonContents(&canvas);
-  }
-
   CalendarMonthView* month_view() { return calendar_month_view_.get(); }
   CalendarViewController* controller() { return controller_.get(); }
-
-  void InsertPendingFetches(base::Time start_of_month) {
-    calendar_month_view_->calendar_model_->InsertPendingFetchesForTesting(
-        start_of_month);
-  }
-
-  void DeletePendingFetches(base::Time start_of_month) {
-    calendar_month_view_->calendar_model_->DeletePendingFetchesForTesting(
-        start_of_month);
-  }
-
-  void NotifyObservers(base::Time start_of_month) {
-    calendar_month_view_->calendar_model_->PruneEventCache();
-    calendar_month_view_->calendar_model_->OnEventsFetched(
-        start_of_month, google_apis::ApiErrorCode::HTTP_SUCCESS,
-        CreateMockEventList().get());
-  }
-
-  CalendarModel::MonthToEventsMap event_months() {
-    return calendar_month_view_->calendar_model_->event_months_;
-  }
 
   static base::Time FakeTimeNow() { return fake_time_; }
   static void SetFakeNow(base::Time fake_now) { fake_time_ = fake_now; }
@@ -309,185 +285,372 @@ TEST_F(CalendarMonthViewTest, TodayInMonth) {
   EXPECT_EQ(3, bottom / (bottom - top));
 }
 
-TEST_F(CalendarMonthViewTest, UpdateEvents) {
+class CalendarMonthViewFetchTest : public AshTestBase {
+ public:
+  CalendarMonthViewFetchTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  CalendarMonthViewFetchTest(const CalendarMonthViewFetchTest& other) = delete;
+  CalendarMonthViewFetchTest& operator=(
+      const CalendarMonthViewFetchTest& other) = delete;
+  ~CalendarMonthViewFetchTest() override = default;
+
+  void SetUp() override {
+    AshTestBase::SetUp();
+
+    // Register a mock `CalendarClient` to the `CalendarController`.
+    const std::string email = "user1@email.com";
+    account_id_ = AccountId::FromUserEmail(email);
+    Shell::Get()->calendar_controller()->SetActiveUserAccountIdForTesting(
+        account_id_);
+    calendar_model_ = Shell::Get()->system_tray_model()->calendar_model();
+    calendar_client_ =
+        std::make_unique<calendar_test_utils::CalendarClientTestImpl>();
+    controller_ = std::make_unique<CalendarViewController>();
+    Shell::Get()->calendar_controller()->RegisterClientForUser(
+        account_id_, calendar_client_.get());
+    Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+        ash::prefs::kCalendarIntegrationEnabled, true);
+    widget_ = CreateFramelessTestWidget();
+    widget_->SetFullscreen(true);
+  }
+
+  void TearDown() override {
+    widget_.reset();
+    time_overrides_.reset();
+    controller_.reset();
+
+    AshTestBase::TearDown();
+  }
+
+  void CreateMonthView(base::Time date) {
+    if (!widget_) {
+      widget_ = CreateFramelessTestWidget();
+      widget_->SetFullscreen(true);
+    }
+    GetSessionControllerClient()->SwitchActiveUser(account_id_);
+    controller_.reset();
+    controller_ = std::make_unique<CalendarViewController>();
+    controller_->UpdateMonth(date);
+    auto calendar_month_view = std::make_unique<CalendarMonthView>(
+        controller_->GetOnScreenMonthFirstDayUTC(), controller_.get());
+    calendar_month_view_ =
+        widget_->SetContentsView(std::move(calendar_month_view));
+    calendar_month_view_->Layout();
+  }
+
+  void DestroyCalendarMonthViewWidget() { widget_.reset(); }
+
+  int EventsNumberOfDay(const char* day, SingleDayEventList* events) {
+    base::Time day_base = calendar_test_utils::GetTimeFromString(day);
+
+    if (events)
+      events->clear();
+
+    return calendar_model_->EventsNumberOfDay(day_base, events);
+  }
+
+  int EventsNumberOfDay(base::Time day, SingleDayEventList* events) {
+    if (events)
+      events->clear();
+
+    return calendar_model_->EventsNumberOfDay(day, events);
+  }
+
+  // Wait until the response is back. Since we used `PostDelayedTask` with 1
+  // second to mimic the behavior of fetching, duration of 1 minute should be
+  // enough.
+  void WaitUntilFetched() {
+    task_environment()->FastForwardBy(base::Minutes(1));
+    base::RunLoop().RunUntilIdle();
+  }
+
+  // Wait until the scheduled paint is done.
+  void WaitUntilPainted() {
+    task_environment()->FastForwardBy(base::Milliseconds(100));
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetTodayFromTime(base::Time date) {
+    std::set<base::Time> months = calendar_utils::GetSurroundingMonthsUTC(
+        date, calendar_utils::kNumSurroundingMonthsCached);
+
+    calendar_model_->non_prunable_months_.clear();
+    // Non-prunable months are today's date and the two surrounding months.
+    calendar_model_->AddNonPrunableMonths(months);
+  }
+
+  void SetEventList(std::unique_ptr<google_apis::calendar::EventList> events) {
+    calendar_client_->SetEventList(std::move(events));
+  }
+
+  bool is_events_indicator_drawn(int date_index) {
+    return static_cast<CalendarDateCellView*>(
+               calendar_month_view_->children()[date_index])
+        ->is_events_indicator_drawn;
+  }
+
+  std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_overrides_;
+
+  std::unique_ptr<views::Widget> widget_;
+  CalendarModel* calendar_model_;
+  std::unique_ptr<calendar_test_utils::CalendarClientTestImpl> calendar_client_;
+  CalendarMonthView* calendar_month_view_;
+  std::unique_ptr<CalendarViewController> controller_;
+  AccountId account_id_;
+};
+
+TEST_F(CalendarMonthViewFetchTest, FetchedBeforeMonthViewIsCreated) {
   // Create a monthview based on Aug,1st 2021. Today is set to 18th.
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("1 Aug 2021 10:00 GMT", &date));
-
-  // Set "Now" to a date that is in this month.
   base::Time today;
   ASSERT_TRUE(base::Time::FromString("18 Aug 2021 10:00 GMT", &today));
-  SetFakeNow(today);
-  base::subtle::ScopedTimeClockOverrides in_month_time_override(
-      &CalendarMonthViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
-      /*thread_ticks_override=*/nullptr);
+  SetTodayFromTime(today);
 
-  ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
-  CreateMonthView(date);
-  // Used to fetch events and notify observers.
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
+
+  // Used to fetch events.
   base::Time month_start_midnight = calendar_utils::GetStartOfMonthUTC(today);
 
-  TriggerPaint();
-  // Grayed out cell. Sep 2nd is the 33 one in this calendar, which is with
-  // index 32.
-  EXPECT_EQ(u"2",
-            static_cast<CalendarDateCellView*>(month_view()->children()[32])
-                ->GetText());
-  EXPECT_EQ(u"",
-            static_cast<CalendarDateCellView*>(month_view()->children()[32])
-                ->GetTooltipText());
-  // Regular cell. The 18th child is the cell 18 which is with index 17.
-  EXPECT_EQ(u"18",
-            static_cast<CalendarDateCellView*>(month_view()->children()[17])
-                ->GetText());
-  EXPECT_EQ(u"Wednesday, August 18, 2021, Loading events.",
-            static_cast<CalendarDateCellView*>(month_view()->children()[17])
-                ->GetTooltipText());
+  // Sets the event list response and fetches the events.
+  auto event_list = CreateMockEventList();
+  SingleDayEventList events;
+  EXPECT_EQ(0, EventsNumberOfDay(today, &events));
+  EXPECT_TRUE(events.empty());
+  SetEventList(std::move(event_list));
+  calendar_model_->FetchEvents(month_start_midnight);
 
-  InsertPendingFetches(month_start_midnight);
-  // Grayed out cell. Sep 2nd is the 33 one in this calendar, which is with
-  // index 32.
-  EXPECT_EQ(u"2",
-            static_cast<CalendarDateCellView*>(month_view()->children()[32])
-                ->GetText());
-  EXPECT_EQ(u"",
-            static_cast<CalendarDateCellView*>(month_view()->children()[32])
-                ->GetTooltipText());
-  // Regular cell. The 18th child is the cell 18 which is with index 17.
-  EXPECT_EQ(u"18",
-            static_cast<CalendarDateCellView*>(month_view()->children()[17])
-                ->GetText());
-  EXPECT_EQ(u"Wednesday, August 18, 2021, Loading events.",
-            static_cast<CalendarDateCellView*>(month_view()->children()[17])
-                ->GetTooltipText());
+  EXPECT_EQ(CalendarModel::kFetching,
+            calendar_model_->FindFetchingStatus(month_start_midnight));
 
-  // After events are fetched before the observers are notified the event number
-  // is not updated.
-  DeletePendingFetches(month_start_midnight);
-  MockFetchEvents(month_start_midnight);
-  // Grayed out cell. Sep 2nd is the 33 one in this calendar, which is with
-  // index 32.
-  EXPECT_EQ(u"2",
-            static_cast<CalendarDateCellView*>(month_view()->children()[32])
-                ->GetText());
-  EXPECT_EQ(u"",
-            static_cast<CalendarDateCellView*>(month_view()->children()[32])
-                ->GetTooltipText());
-  // Regular cell. The 18th child is the cell 18 which is with index 17.
-  EXPECT_EQ(u"18",
-            static_cast<CalendarDateCellView*>(month_view()->children()[17])
-                ->GetText());
-  EXPECT_EQ(u"Wednesday, August 18, 2021, Loading events.",
-            static_cast<CalendarDateCellView*>(month_view()->children()[17])
-                ->GetTooltipText());
+  WaitUntilFetched();
 
-  // After notifying observers and repainting, the event numbers are updated for
-  // regular cells, not for grayed out cells.
-  NotifyObservers(month_start_midnight);
-  EXPECT_EQ(u"2",
-            static_cast<CalendarDateCellView*>(month_view()->children()[32])
-                ->GetText());
-  EXPECT_EQ(u"",
-            static_cast<CalendarDateCellView*>(month_view()->children()[32])
-                ->GetTooltipText());
+  EXPECT_EQ(CalendarModel::kSuccess,
+            calendar_model_->FindFetchingStatus(month_start_midnight));
 
-  EXPECT_EQ(u"18",
-            static_cast<CalendarDateCellView*>(month_view()->children()[17])
-                ->GetText());
-  EXPECT_EQ(u"Wednesday, August 18, 2021, 4 events",
-            static_cast<CalendarDateCellView*>(month_view()->children()[17])
-                ->GetTooltipText());
+  // Events have been fetched before the month view is constructed.
+  EXPECT_EQ(4, EventsNumberOfDay(today, &events));
+  EXPECT_FALSE(events.empty());
+  EXPECT_TRUE(events.size() == 4);
+
+  // Creates the month view and now the fetching status should be `kRefetching`.
+  SetEventList(CreateMockEventList());
+  CreateMonthView(month_start_midnight);
+
+  EXPECT_EQ(CalendarModel::kRefetching,
+            calendar_model_->FindFetchingStatus(month_start_midnight));
+
+  EXPECT_EQ(4, EventsNumberOfDay(today, &events));
+
+  WaitUntilPainted();
+
+  EXPECT_FALSE(is_events_indicator_drawn(0));
+  EXPECT_EQ(u"18", static_cast<views::LabelButton*>(
+                       calendar_month_view_->children()[17])
+                       ->GetText());
+  EXPECT_TRUE(is_events_indicator_drawn(17));
 }
 
-TEST_F(CalendarMonthViewTest, TimeZone) {
-  // Set "Now" to a date that is in this month.
+TEST_F(CalendarMonthViewFetchTest, UpdateEvents) {
+  // Create a monthview based on Aug,1st 2021. Today is set to 18th.
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("1 Aug 2021 10:00 GMT", &date));
   base::Time today;
   ASSERT_TRUE(base::Time::FromString("18 Aug 2021 10:00 GMT", &today));
-  SetFakeNow(today);
-  base::subtle::ScopedTimeClockOverrides in_month_time_override(
-      &CalendarMonthViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
-      /*thread_ticks_override=*/nullptr);
+  SetTodayFromTime(today);
 
-  // Used to fetch events and notify observers.
-  base::Time month_start_midnight = calendar_utils::GetStartOfMonthUTC(today);
-
-  // Sets the timezone to "America/Los_Angeles";
   ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
-  CreateMonthView(today);
-  TriggerPaint();
-  MockFetchEvents(month_start_midnight);
-  NotifyObservers(month_start_midnight);
 
-  EXPECT_EQ(u"18",
-            static_cast<CalendarDateCellView*>(month_view()->children()[17])
-                ->GetText());
-  EXPECT_EQ(u"Wednesday, August 18, 2021, 4 events",
-            static_cast<CalendarDateCellView*>(month_view()->children()[17])
-                ->GetTooltipText());
+  CreateMonthView(date);
+  WaitUntilPainted();
 
-  EXPECT_EQ(u"10",
-            static_cast<CalendarDateCellView*>(month_view()->children()[9])
-                ->GetText());
-  EXPECT_EQ(u"Tuesday, August 10, 2021, 2 events",
-            static_cast<CalendarDateCellView*>(month_view()->children()[9])
-                ->GetTooltipText());
+  // Grayed out cell. Sep 2nd is the 33 one in this calendar, which is with
+  // index 32.
+  EXPECT_EQ(u"2", static_cast<CalendarDateCellView*>(
+                      calendar_month_view_->children()[32])
+                      ->GetText());
+  EXPECT_EQ(u"", static_cast<CalendarDateCellView*>(
+                     calendar_month_view_->children()[32])
+                     ->GetTooltipText());
+  // Regular cell. The 18th child is the cell 18 which is with index 17.
+  EXPECT_EQ(u"18", static_cast<CalendarDateCellView*>(
+                       calendar_month_view_->children()[17])
+                       ->GetText());
+  EXPECT_EQ(
+      u"Wednesday, August 18, 2021, Loading events.",
+      static_cast<CalendarDateCellView*>(calendar_month_view_->children()[17])
+          ->GetTooltipText());
+
+  // Sets the event list response and fetches the events.
+  auto event_list = CreateMockEventList();
+  SingleDayEventList events;
+  EXPECT_EQ(0, EventsNumberOfDay(today, &events));
+  EXPECT_TRUE(events.empty());
+  SetEventList(std::move(event_list));
+  calendar_model_->FetchEvents(calendar_utils::GetStartOfMonthUTC(today));
+
+  // After events are fetched before the response is back the event number
+  // is not updated.
+  EXPECT_EQ(u"2", static_cast<CalendarDateCellView*>(
+                      calendar_month_view_->children()[32])
+                      ->GetText());
+  EXPECT_EQ(u"", static_cast<CalendarDateCellView*>(
+                     calendar_month_view_->children()[32])
+                     ->GetTooltipText());
+  // Regular cell. The 18th child is the cell 18 which is with index 17.
+  EXPECT_EQ(u"18", static_cast<CalendarDateCellView*>(
+                       calendar_month_view_->children()[17])
+                       ->GetText());
+  EXPECT_EQ(
+      u"Wednesday, August 18, 2021, Loading events.",
+      static_cast<CalendarDateCellView*>(calendar_month_view_->children()[17])
+          ->GetTooltipText());
+
+  // After the events are fetched, the event numbers are updated for regular
+  // cells, not for grayed out cells.
+  WaitUntilFetched();
+
+  EXPECT_EQ(u"2", static_cast<CalendarDateCellView*>(
+                      calendar_month_view_->children()[32])
+                      ->GetText());
+  EXPECT_EQ(u"", static_cast<CalendarDateCellView*>(
+                     calendar_month_view_->children()[32])
+                     ->GetTooltipText());
+
+  EXPECT_EQ(u"18", static_cast<CalendarDateCellView*>(
+                       calendar_month_view_->children()[17])
+                       ->GetText());
+  EXPECT_EQ(
+      u"Wednesday, August 18, 2021, 4 events",
+      static_cast<CalendarDateCellView*>(calendar_month_view_->children()[17])
+          ->GetTooltipText());
+}
+
+TEST_F(CalendarMonthViewFetchTest, TimeZone) {
+  // Create a monthview based on Aug,1st 2021. Today is set to 18th.
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("1 Aug 2021 10:00 GMT", &date));
+  base::Time today;
+  ASSERT_TRUE(base::Time::FromString("18 Aug 2021 10:00 GMT", &today));
+  SetTodayFromTime(today);
+
+  ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
+
+  CreateMonthView(date);
+  WaitUntilPainted();
+
+  // Sets the event list response and fetches the events.
+  auto event_list = CreateMockEventList();
+  SingleDayEventList events;
+  EXPECT_EQ(0, EventsNumberOfDay(today, &events));
+  EXPECT_TRUE(events.empty());
+  SetEventList(std::move(event_list));
+  calendar_model_->FetchEvents(calendar_utils::GetStartOfMonthUTC(today));
+
+  // Waits the fetch to be completed.
+  WaitUntilFetched();
+
+  EXPECT_EQ(u"18", static_cast<CalendarDateCellView*>(
+                       calendar_month_view_->children()[17])
+                       ->GetText());
+  EXPECT_EQ(
+      u"Wednesday, August 18, 2021, 4 events",
+      static_cast<CalendarDateCellView*>(calendar_month_view_->children()[17])
+          ->GetTooltipText());
+
+  EXPECT_EQ(u"10", static_cast<CalendarDateCellView*>(
+                       calendar_month_view_->children()[9])
+                       ->GetText());
+  EXPECT_EQ(
+      u"Tuesday, August 10, 2021, 2 events",
+      static_cast<CalendarDateCellView*>(calendar_month_view_->children()[9])
+          ->GetTooltipText());
 
   // Based on the timezone the event that happens on 10th GMT time is showing on
   // the 9th.
-  EXPECT_EQ(u"9",
-            static_cast<CalendarDateCellView*>(month_view()->children()[8])
-                ->GetText());
-  EXPECT_EQ(u"Monday, August 9, 2021, 1 event",
-            static_cast<CalendarDateCellView*>(month_view()->children()[8])
-                ->GetTooltipText());
+  EXPECT_EQ(u"9", static_cast<CalendarDateCellView*>(
+                      calendar_month_view_->children()[8])
+                      ->GetText());
+  EXPECT_EQ(
+      u"Monday, August 9, 2021, 1 event",
+      static_cast<CalendarDateCellView*>(calendar_month_view_->children()[8])
+          ->GetTooltipText());
 }
 
-TEST_F(CalendarMonthViewTest, InactiveUserSession) {
-  // Set "Now" to a date that is in this month.
+TEST_F(CalendarMonthViewFetchTest, InactiveUserSession) {
+  // Create a monthview based on Aug,1st 2021. Today is set to 18th.
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("1 Aug 2021 10:00 GMT", &date));
   base::Time today;
   ASSERT_TRUE(base::Time::FromString("18 Aug 2021 10:00 GMT", &today));
-  SetFakeNow(today);
-  base::subtle::ScopedTimeClockOverrides in_month_time_override(
-      &CalendarMonthViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
-      /*thread_ticks_override=*/nullptr);
+  SetTodayFromTime(today);
 
   ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
-  CreateMonthView(today);
-  // Used to fetch events and notify observers.
-  base::Time month_start_midnight = calendar_utils::GetStartOfMonthUTC(today);
 
-  TriggerPaint();
-  MockFetchEvents(month_start_midnight);
-  NotifyObservers(month_start_midnight);
-  EXPECT_EQ(u"18",
-            static_cast<CalendarDateCellView*>(month_view()->children()[17])
-                ->GetText());
-  EXPECT_EQ(u"Wednesday, August 18, 2021, 4 events",
-            static_cast<CalendarDateCellView*>(month_view()->children()[17])
-                ->GetTooltipText());
+  CreateMonthView(date);
+  WaitUntilPainted();
 
-  // Changes user session to inactive. Should not show event number.
+  // Sets the event list response and fetches the events.
+  auto event_list = CreateMockEventList();
+  SingleDayEventList events;
+  EXPECT_EQ(0, EventsNumberOfDay(today, &events));
+  EXPECT_TRUE(events.empty());
+  SetEventList(std::move(event_list));
+  calendar_model_->FetchEvents(calendar_utils::GetStartOfMonthUTC(today));
+
+  // Waits the fetch to be completed.
+  WaitUntilFetched();
+
+  EXPECT_EQ(u"18", static_cast<CalendarDateCellView*>(
+                       calendar_month_view_->children()[17])
+                       ->GetText());
+  EXPECT_EQ(
+      u"Wednesday, August 18, 2021, 4 events",
+      static_cast<CalendarDateCellView*>(calendar_month_view_->children()[17])
+          ->GetTooltipText());
+
+  // Destroys the month view widget before creating a new month view to avoid a
+  // crash.
+  DestroyCalendarMonthViewWidget();
+
+  // Changes user session to inactive.
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::OOBE);
-  month_view()->UpdateIsFetchedAndRepaint(false);
-  TriggerPaint();
-  EXPECT_EQ(u"18",
-            static_cast<CalendarDateCellView*>(month_view()->children()[17])
-                ->GetText());
-  EXPECT_EQ(u"Wednesday, August 18, 2021",
-            static_cast<CalendarDateCellView*>(month_view()->children()[17])
-                ->GetTooltipText());
+
+  // Creates a new month view to simulate the behavior of opening the calendar
+  // and check date cell tooltips.
+  CreateMonthView(date);
+  WaitUntilPainted();
+
+  // Should not show event number.
+  EXPECT_EQ(0, EventsNumberOfDay(today, &events));
+  EXPECT_TRUE(events.empty());
+  EXPECT_EQ(u"18", static_cast<CalendarDateCellView*>(
+                       calendar_month_view_->children()[17])
+                       ->GetText());
+  EXPECT_EQ(
+      u"Wednesday, August 18, 2021",
+      static_cast<CalendarDateCellView*>(calendar_month_view_->children()[17])
+          ->GetTooltipText());
+
+  DestroyCalendarMonthViewWidget();
 
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOCKED);
-  month_view()->UpdateIsFetchedAndRepaint(false);
-  TriggerPaint();
-  EXPECT_EQ(u"18",
-            static_cast<CalendarDateCellView*>(month_view()->children()[17])
-                ->GetText());
-  EXPECT_EQ(u"Wednesday, August 18, 2021",
-            static_cast<CalendarDateCellView*>(month_view()->children()[17])
-                ->GetTooltipText());
+
+  CreateMonthView(date);
+  WaitUntilPainted();
+
+  // Should not show event number.
+  EXPECT_EQ(0, EventsNumberOfDay(today, &events));
+  EXPECT_TRUE(events.empty());
+  EXPECT_EQ(u"18", static_cast<CalendarDateCellView*>(
+                       calendar_month_view_->children()[17])
+                       ->GetText());
+  EXPECT_EQ(
+      u"Wednesday, August 18, 2021",
+      static_cast<CalendarDateCellView*>(calendar_month_view_->children()[17])
+          ->GetTooltipText());
 }
 
 }  // namespace ash

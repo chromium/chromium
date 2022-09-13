@@ -445,8 +445,12 @@ CalendarModel::FetchingStatus CalendarModel::FindFetchingStatus(
   if (!calendar_utils::ShouldFetchEvents())
     return kNa;
 
-  if (pending_fetches_.count(start_time))
+  if (pending_fetches_.count(start_time)) {
+    if (event_months_.count(start_time))
+      return kRefetching;
+
     return kFetching;
+  }
 
   if (event_months_.count(start_time))
     return kSuccess;
@@ -513,14 +517,6 @@ void CalendarModel::PruneEventCache() {
     months_fetched_.erase(lru_month);
     mru_months_.pop_back();
   }
-}
-
-void CalendarModel::InsertPendingFetchesForTesting(base::Time start_of_month) {
-  pending_fetches_.emplace(start_of_month, nullptr);
-}
-
-void CalendarModel::DeletePendingFetchesForTesting(base::Time start_of_month) {
-  pending_fetches_.erase(start_of_month);
 }
 
 void CalendarModel::DebugDumpOnEventFetched(

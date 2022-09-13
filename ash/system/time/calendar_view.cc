@@ -673,49 +673,31 @@ void CalendarView::UpdateOnScreenMonthMap() {
   base::Time start_time = calendar_utils::GetStartOfMonthUTC(
       current_date + calendar_utils::GetTimeDifference(current_date));
 
-  MaybeAddOnScreenMonth(start_time);
-
-  std::set<base::Time> updated_on_screen_month;
-  updated_on_screen_month.insert(start_time);
+  on_screen_month_.clear();
+  on_screen_month_[start_time] =
+      calendar_model_->FindFetchingStatus(start_time);
 
   // Checks if `next_month_` is in the visible view. If so, adds it to
-  // `on_screen_month_` if not already presents.
+  // `on_screen_month_` if not already presents. Otherwise updates the fetching
+  // status. This is needed since a refetching request may be sent when this
+  // function is called and we need to update the fetching status to toggle the
+  // visibility of the loading bar.
   if (scroll_view_->GetVisibleRect().bottom() >= next_month_->y()) {
     base::Time next_start_time =
         calendar_utils::GetStartOfNextMonthUTC(start_time);
-    updated_on_screen_month.insert(next_start_time);
-    MaybeAddOnScreenMonth(next_start_time);
+    on_screen_month_[next_start_time] =
+        calendar_model_->FindFetchingStatus(next_start_time);
 
-    // Checks if `next_next_month_` is in the visible view. If so, adds it to
-    // `on_screen_month_` if not already presents.
+    // Checks if `next_next_month_` is in the visible view.
     if (scroll_view_->GetVisibleRect().bottom() >= next_next_month_->y()) {
       base::Time next_next_start_time =
           calendar_utils::GetStartOfNextMonthUTC(next_start_time);
-      updated_on_screen_month.insert(next_next_start_time);
-      MaybeAddOnScreenMonth(next_next_start_time);
+      on_screen_month_[next_next_start_time] =
+          calendar_model_->FindFetchingStatus(next_next_start_time);
     }
-  }
-
-  // Checks if all months in `on_screen_month_` is within the visible window. If
-  // not, removes it from the map.
-  for (auto it = on_screen_month_.begin(); it != on_screen_month_.end();) {
-    if (updated_on_screen_month.find(it->first) ==
-        updated_on_screen_month.end()) {
-      it = on_screen_month_.erase(it);
-      continue;
-    }
-    // Increments the iterator here to avoid a crash since the iterator will
-    // be modified in the loop body.
-    ++it;
   }
 
   MaybeUpdateLoadingBarVisibility();
-}
-
-void CalendarView::MaybeAddOnScreenMonth(base::Time start_of_month) {
-  if (on_screen_month_.find(start_of_month) == on_screen_month_.end())
-    on_screen_month_.emplace(
-        start_of_month, calendar_model_->FindFetchingStatus(start_of_month));
 }
 
 void CalendarView::MaybeUpdateLoadingBarVisibility() {
