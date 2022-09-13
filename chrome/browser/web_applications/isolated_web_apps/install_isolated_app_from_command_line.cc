@@ -110,7 +110,7 @@ void SetNextInstallationDoneCallbackForTesting(  // IN-TEST
 absl::optional<GURL> GetAppToInstallFromCommandLine(
     const base::CommandLine& command_line) {
   std::string switch_value =
-      command_line.GetSwitchValueASCII(switches::kInstallIsolatedAppsAtStartup);
+      command_line.GetSwitchValueASCII(switches::kInstallIsolatedAppAtStartup);
 
   GURL url{switch_value};
 
