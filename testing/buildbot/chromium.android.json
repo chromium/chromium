@@ -1560,7 +1560,8 @@
       "all"
     ]
   },
-  "Android x64 Builder (dbg)": {
+  "Android x64 Builder (dbg)": {},
+  "Android x64 Builder All Targets (dbg)": {
     "additional_compile_targets": [
       "all"
     ]

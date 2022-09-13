@@ -40,14 +40,18 @@
           "project": "chromium"
         }
       ],
-      "is_compile_only": true
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "android_compile_x64_dbg",
+          "group": "tryserver.chromium.android"
+        }
+      ]
     }
   },
-  "$build/goma": {
-    "enable_ats": true,
-    "rpc_extra_params": "?prod",
-    "server_host": "goma.chromium.org",
-    "use_luci_auth": true
+  "$build/reclient": {
+    "instance": "rbe-chromium-trusted",
+    "jobs": 500,
+    "metrics_project": "chromium-reclient-metrics"
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -56,6 +60,9 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "tryserver.chromium.android",
-  "recipe": "chromium_trybot"
+  "builder_group": "chromium.android",
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "android"
+  ]
 }

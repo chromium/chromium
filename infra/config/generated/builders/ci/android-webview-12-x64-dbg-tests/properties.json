@@ -76,10 +76,6 @@
         {
           "builder": "android-webview-12-x64-dbg",
           "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "android_compile_x64_dbg",
-          "group": "tryserver.chromium.android"
         }
       ]
     }

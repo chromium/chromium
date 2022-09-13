@@ -614,8 +614,11 @@ try_.builder(
 try_.builder(
     name = "android_compile_x64_dbg",
     branch_selector = branches.STANDARD_MILESTONE,
+    # Since we expect this builder to compile all, let it mirror
+    # "Android x64 Builder All Targets (dbg)" rather than
+    # "Android x64 Builder (dbg)"
     mirrors = [
-        "ci/Android x64 Builder (dbg)",
+        "ci/Android x64 Builder All Targets (dbg)",
     ],
     try_settings = builder_config.try_settings(
         include_all_triggered_testers = True,

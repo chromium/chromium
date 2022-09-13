@@ -332,6 +332,8 @@ ci.builder(
     tree_closing = True,
 )
 
+# This builder should be used for trybot mirroring when no need to compile all.
+# See the builder "Android x64 Builder All Targets (dbg)" for more details.
 ci.builder(
     name = "Android x64 Builder (dbg)",
     branch_selector = branches.STANDARD_MILESTONE,
@@ -359,6 +361,23 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "builder|x86",
         short_name = "64",
+    ),
+    cq_mirrors_console_view = "mirrors",
+    execution_timeout = 7 * time.hour,
+)
+
+# Similar to crbug.com/1246468#c34, as android has some non standard
+# buildchains, `mb analyze` will not be able to filter out compile targets when
+# running a trybot and thus tries to compile everythings. If the builder
+# specifies `all` target, the compile time can take 5+ hours.
+# So this builder matches "Android x64 Builder (dbg)", but compiles everything.
+ci.builder(
+    name = "Android x64 Builder All Targets (dbg)",
+    branch_selector = branches.STANDARD_MILESTONE,
+    builder_spec = builder_config.copy_from("ci/Android x64 Builder (dbg)"),
+    console_view_entry = consoles.console_view_entry(
+        category = "builder|x86",
+        short_name = "64-all",
     ),
     cq_mirrors_console_view = "mirrors",
     execution_timeout = 7 * time.hour,
