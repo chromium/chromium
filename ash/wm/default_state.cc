@@ -234,8 +234,8 @@ void DefaultState::HandleCompoundEvents(WindowState* window_state,
   switch (event->type()) {
     case WM_EVENT_TOGGLE_MAXIMIZE_CAPTION:
       if (window_state->IsFullscreen()) {
-        const WMEvent event(WM_EVENT_TOGGLE_FULLSCREEN);
-        window_state->OnWMEvent(&event);
+        const WMEvent wm_event(WM_EVENT_TOGGLE_FULLSCREEN);
+        window_state->OnWMEvent(&wm_event);
       } else if (window_state->IsMaximized()) {
         window_state->Restore();
       } else if (window_state->IsNormalOrSnapped() ||
@@ -246,8 +246,8 @@ void DefaultState::HandleCompoundEvents(WindowState* window_state,
       return;
     case WM_EVENT_TOGGLE_MAXIMIZE:
       if (window_state->IsFullscreen()) {
-        const WMEvent event(WM_EVENT_TOGGLE_FULLSCREEN);
-        window_state->OnWMEvent(&event);
+        const WMEvent wm_event(WM_EVENT_TOGGLE_FULLSCREEN);
+        window_state->OnWMEvent(&wm_event);
       } else if (window_state->IsMaximized()) {
         window_state->Restore();
       } else if (window_state->CanMaximize()) {

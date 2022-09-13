@@ -189,7 +189,7 @@ void AdjustBoundsWithinConfinedBounds(const gfx::Rect& confined_bounds,
   const int x = preview_bounds.x();
   if (int offset = x - confined_bounds.x(); offset < 0) {
     preview_bounds.set_x(x - offset);
-  } else if (int offset = confined_bounds.right() - preview_bounds.right();
+  } else if (offset = confined_bounds.right() - preview_bounds.right();
              offset < 0) {
     preview_bounds.set_x(x + offset);
   }
@@ -197,7 +197,7 @@ void AdjustBoundsWithinConfinedBounds(const gfx::Rect& confined_bounds,
   const int y = preview_bounds.y();
   if (int offset = y - confined_bounds.y(); offset < 0) {
     preview_bounds.set_y(y - offset);
-  } else if (int offset = confined_bounds.bottom() - preview_bounds.bottom();
+  } else if (offset = confined_bounds.bottom() - preview_bounds.bottom();
              offset < 0) {
     preview_bounds.set_y(y + offset);
   }

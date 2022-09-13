@@ -178,12 +178,13 @@ void RootWindowDeskSwitchAnimator::StartAnimation() {
 
   // Animate the parent "animation layer" towards the ending transform.
   ui::Layer* animation_layer = animation_layer_owner_->root();
-  ui::ScopedLayerAnimationSettings settings(animation_layer->GetAnimator());
-  settings.SetPreemptionStrategy(
+  ui::ScopedLayerAnimationSettings scoped_settings(
+      animation_layer->GetAnimator());
+  scoped_settings.SetPreemptionStrategy(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  settings.AddObserver(this);
-  settings.SetTransitionDuration(kAnimationDuration);
-  settings.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
+  scoped_settings.AddObserver(this);
+  scoped_settings.SetTransitionDuration(kAnimationDuration);
+  scoped_settings.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
   animation_layer->SetTransform(animation_layer_ending_transform);
 
   if (for_remove_) {
@@ -194,10 +195,13 @@ void RootWindowDeskSwitchAnimator::StartAnimation() {
     // Translate the old layers of removed desk's windows back down by
     // `kRemovedDeskWindowYTranslation`.
     gfx::Transform transform = old_windows_layer->GetTargetTransform();
-    ui::ScopedLayerAnimationSettings settings(old_windows_layer->GetAnimator());
-    settings.SetPreemptionStrategy(ui::LayerAnimator::ENQUEUE_NEW_ANIMATION);
-    settings.SetTransitionDuration(kRemovedDeskWindowTranslationDuration);
-    settings.SetTweenType(gfx::Tween::EASE_IN);
+    ui::ScopedLayerAnimationSettings scoped_settings_2(
+        old_windows_layer->GetAnimator());
+    scoped_settings_2.SetPreemptionStrategy(
+        ui::LayerAnimator::ENQUEUE_NEW_ANIMATION);
+    scoped_settings_2.SetTransitionDuration(
+        kRemovedDeskWindowTranslationDuration);
+    scoped_settings_2.SetTweenType(gfx::Tween::EASE_IN);
     transform.Translate(0, kRemovedDeskWindowYTranslation);
     old_windows_layer->SetTransform(transform);
   }

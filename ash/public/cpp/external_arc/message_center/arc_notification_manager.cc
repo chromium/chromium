@@ -275,9 +275,9 @@ void ArcNotificationManager::OnNotificationUpdated(
              (previously_focused_notification_key_ == key)) {
     // The case that the previously-focused notification gets unfocused. Notify
     // the previously-focused notification if the notification still exists.
-    auto it = items_.find(previously_focused_notification_key_);
-    if (it != items_.end())
-      it->second->OnRemoteInputActivationChanged(false);
+    auto previous_it = items_.find(previously_focused_notification_key_);
+    if (previous_it != items_.end())
+      previous_it->second->OnRemoteInputActivationChanged(false);
 
     previously_focused_notification_key_.clear();
   }

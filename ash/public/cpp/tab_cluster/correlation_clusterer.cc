@@ -258,10 +258,10 @@ std::pair<absl::optional<int>, double> CorrelationClusterer::BestMoveFromStats(
       class_2_currently_separate.NetWeight(max_edges, config_);
 
   max_edges = 0;
-  for (const auto& cluster_moving_weights : cluster_moving_weights) {
+  for (const auto& cluster_moving_weight : cluster_moving_weights) {
     max_edges +=
-        moving_nodes_weight * (GetClusterWeight(cluster_moving_weights.first) -
-                               cluster_moving_weights.second);
+        moving_nodes_weight * (GetClusterWeight(cluster_moving_weight.first) -
+                               cluster_moving_weight.second);
   }
   change_in_objective -=
       class_1_currently_together.NetWeight(max_edges, config_);

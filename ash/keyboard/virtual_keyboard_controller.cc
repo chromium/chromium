@@ -126,9 +126,9 @@ void VirtualKeyboardController::UpdateDevices() {
 }
 
 void VirtualKeyboardController::UpdateKeyboardEnabled() {
-  bool ignore_internal_keyboard_ = Shell::Get()
-                                       ->tablet_mode_controller()
-                                       ->AreInternalInputDeviceEventsBlocked();
+  ignore_internal_keyboard_ = Shell::Get()
+                                  ->tablet_mode_controller()
+                                  ->AreInternalInputDeviceEventsBlocked();
   bool is_internal_keyboard_active =
       internal_keyboard_name_ && !ignore_internal_keyboard_;
   keyboard::SetTouchKeyboardEnabled(

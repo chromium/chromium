@@ -125,8 +125,8 @@ class AppListModelTest : public testing::Test {
     AppListFolderItem* folder = new AppListFolderItem(name, model_.get());
     model_->AddItem(folder);  // Takes ownership.
     for (int i = 0; static_cast<size_t>(i) < num_apps; ++i) {
-      std::string name = model_->GetItemName(i);
-      model_->AddItemToFolder(model_->CreateItem(name), folder->id());
+      model_->AddItemToFolder(model_->CreateItem(model_->GetItemName(i)),
+                              folder->id());
     }
     return folder;
   }

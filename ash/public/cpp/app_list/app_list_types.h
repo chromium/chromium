@@ -591,17 +591,17 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
   SearchResultTextItem& SetOverflowBehavior(OverflowBehavior overflow_behavior);
 
  private:
-  SearchResultTextItemType item_type;
+  SearchResultTextItemType item_type_;
   // used for type SearchResultTextItemType::kString.
-  absl::optional<std::u16string> raw_text;
-  absl::optional<SearchResultTags> text_tags;
+  absl::optional<std::u16string> raw_text_;
+  absl::optional<SearchResultTags> text_tags_;
   // used for type SearchResultTextItemType::kIconCode.
-  absl::optional<IconCode> icon_code;
+  absl::optional<IconCode> icon_code_;
   // used for type SearchResultTextItemType::kCustomIcon.
-  absl::optional<gfx::ImageSkia> raw_image;
+  absl::optional<gfx::ImageSkia> raw_image_;
   // Behavior of the text item when there is not enough space to show it in the
   // UI. only applicable to SearchResultTextItemType::kString.
-  OverflowBehavior overflow_behavior = kElide;
+  OverflowBehavior overflow_behavior_ = kElide;
 };
 
 // A structure holding the common information which is sent from chrome to ash,

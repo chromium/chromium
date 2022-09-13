@@ -107,19 +107,21 @@ class ResolutionNotificationControllerTest
       bool new_is_native,
       crosapi::mojom::DisplayConfigSource source =
           crosapi::mojom::DisplayConfigSource::kUser) {
-    const display::ManagedDisplayInfo& info =
-        display_manager()->GetDisplayInfo(display.id());
-    display::ManagedDisplayMode old_mode(info.size_in_pixel(),
-                                         info.refresh_rate(),
-                                         false /* interlaced */, old_is_native);
-    display::ManagedDisplayMode new_mode(
-        new_resolution, new_refresh_rate, old_mode.is_interlaced(),
-        new_is_native, old_mode.device_scale_factor());
+    {
+      const display::ManagedDisplayInfo& info =
+          display_manager()->GetDisplayInfo(display.id());
+      display::ManagedDisplayMode old_mode(
+          info.size_in_pixel(), info.refresh_rate(), false /* interlaced */,
+          old_is_native);
+      display::ManagedDisplayMode new_mode(
+          new_resolution, new_refresh_rate, old_mode.is_interlaced(),
+          new_is_native, old_mode.device_scale_factor());
 
-    EXPECT_TRUE(controller()->PrepareNotificationAndSetDisplayMode(
-        display.id(), old_mode, new_mode, source,
-        base::BindOnce(&ResolutionNotificationControllerTest::OnAccepted,
-                       base::Unretained(this))));
+      EXPECT_TRUE(controller()->PrepareNotificationAndSetDisplayMode(
+          display.id(), old_mode, new_mode, source,
+          base::BindOnce(&ResolutionNotificationControllerTest::OnAccepted,
+                         base::Unretained(this))));
+    }
 
     // OnConfigurationChanged event won't be emitted in the test environment,
     // so invoke UpdateDisplay() to emit that event explicitly.

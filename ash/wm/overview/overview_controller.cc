@@ -367,8 +367,7 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     DCHECK(CanEnterOverview());
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", "OverviewController::EnterOverview",
                                       this);
-    auto* active_window = window_util::GetActiveWindow();
-    if (active_window) {
+    if (auto* active_window = window_util::GetActiveWindow(); active_window) {
       auto* active_widget =
           views::Widget::GetWidgetForNativeView(active_window);
       if (active_widget)
@@ -415,8 +414,8 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
       should_focus_overview_ = false;
     } else {
       // Avoid stealing activation from a dragged active window.
-      aura::Window* active_window = window_util::GetActiveWindow();
-      if (active_window && WindowState::Get(active_window)->is_dragged()) {
+      if (auto* active_window = window_util::GetActiveWindow();
+          active_window && WindowState::Get(active_window)->is_dragged()) {
         DCHECK(window_util::ShouldExcludeForOverview(active_window));
         should_focus_overview_ = false;
       }

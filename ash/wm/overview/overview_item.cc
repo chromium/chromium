@@ -1316,14 +1316,14 @@ void OverviewItem::AnimateOpacity(float opacity,
   transform_window_.BeginScopedAnimation(animation_type, &animation_settings);
   transform_window_.SetOpacity(opacity);
 
-  ScopedOverviewAnimationSettings animation_settings_label(
+  ScopedOverviewAnimationSettings scoped_animation_settings(
       animation_type, item_widget_->GetNativeWindow());
   item_widget_->SetOpacity(opacity);
 
   if (cannot_snap_widget_) {
     aura::Window* cannot_snap_widget_window =
         cannot_snap_widget_->GetNativeWindow();
-    ScopedOverviewAnimationSettings animation_settings_label(
+    ScopedOverviewAnimationSettings scoped_animation_settings_2(
         animation_type, cannot_snap_widget_window);
     cannot_snap_widget_window->layer()->SetOpacity(opacity);
   }

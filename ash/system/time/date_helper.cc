@@ -278,7 +278,7 @@ void DateHelper::CalculateLocalWeekTitles() {
   while (day_int != 1) {
     start_date += base::Hours(25);
     day_of_week = GetFormattedTime(&day_of_week_formatter_, start_date);
-    bool result = base::StringToInt(day_of_week, &day_int);
+    result = base::StringToInt(day_of_week, &day_int);
     DCHECK(result);
     ++safe_index;
     if (safe_index == calendar_utils::kDateInOneWeek) {

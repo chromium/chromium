@@ -647,9 +647,9 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
   const bool is_user_switch = source == DesksSwitchSource::kUserSwitch;
   std::vector<base::AutoReset<bool>> desks_scoped_notify_disablers;
   if (is_user_switch) {
-    for (const auto& desk : desks_) {
+    for (const auto& desk_to_notify : desks_) {
       desks_scoped_notify_disablers.push_back(
-          desk->GetScopedNotifyContentChangedDisabler());
+          desk_to_notify->GetScopedNotifyContentChangedDisabler());
     }
   }
 

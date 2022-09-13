@@ -135,10 +135,11 @@ void ExpectSyncedDevicesAreEqual(
     EXPECT_EQ(expected_device.device_type(), device.device_type());
 
     ASSERT_EQ(expected_device.beacon_seeds_size(), device.beacon_seeds_size());
-    for (int i = 0; i < expected_device.beacon_seeds_size(); i++) {
+    for (int beacon_seed = 0; beacon_seed < expected_device.beacon_seeds_size();
+         beacon_seed++) {
       const cryptauth::BeaconSeed expected_seed =
-          expected_device.beacon_seeds(i);
-      const cryptauth::BeaconSeed seed = device.beacon_seeds(i);
+          expected_device.beacon_seeds(beacon_seed);
+      const cryptauth::BeaconSeed seed = device.beacon_seeds(beacon_seed);
       EXPECT_TRUE(expected_seed.has_data());
       EXPECT_TRUE(seed.has_data());
       EXPECT_EQ(expected_seed.data(), seed.data());
@@ -297,8 +298,9 @@ void ExpectSyncedDevicesAndPrefAreEqual(
     if (beacon_seeds_from_prefs) {
       ASSERT_EQ(static_cast<size_t>(expected_device.beacon_seeds_size()),
                 beacon_seeds_from_prefs->size());
-      for (size_t i = 0; i < beacon_seeds_from_prefs->size(); i++) {
-        const base::Value& seed = (*beacon_seeds_from_prefs)[i];
+      for (size_t beacon_seed = 0;
+           beacon_seed < beacon_seeds_from_prefs->size(); beacon_seed++) {
+        const base::Value& seed = (*beacon_seeds_from_prefs)[beacon_seed];
         ASSERT_TRUE(seed.is_dict());
 
         const std::string* data_b64 = seed.FindStringKey("beacon_seed_data");
@@ -310,7 +312,7 @@ void ExpectSyncedDevicesAndPrefAreEqual(
         EXPECT_TRUE(end_ms);
 
         const cryptauth::BeaconSeed& expected_seed =
-            expected_device.beacon_seeds((int)i);
+            expected_device.beacon_seeds(static_cast<int>(beacon_seed));
 
         std::string data;
         EXPECT_TRUE(base::Base64UrlDecode(

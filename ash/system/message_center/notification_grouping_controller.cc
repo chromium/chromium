@@ -390,8 +390,7 @@ void NotificationGroupingController::OnNotificationAdded(
       return;
     }
 
-    Notification* parent_notification =
-        MessageCenter::Get()->FindNotificationById(parent_id);
+    parent_notification = MessageCenter::Get()->FindNotificationById(parent_id);
     parent_id = SetupParentNotification(parent_notification, parent_id);
   }
 

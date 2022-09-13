@@ -111,8 +111,6 @@ absl::optional<ArcFeatures> ParseFeaturesJson(base::StringPiece input_json) {
 
 absl::optional<ArcFeatures> ReadOnFileThread(const base::FilePath& file_path) {
   DCHECK(!file_path.empty());
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
 
   std::string input_json;
   {

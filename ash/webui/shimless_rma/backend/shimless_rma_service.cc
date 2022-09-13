@@ -1254,8 +1254,9 @@ void ShimlessRmaService::ObserveHardwareVerificationStatus(
     ::mojo::PendingRemote<mojom::HardwareVerificationStatusObserver> observer) {
   hardware_verification_observers_.Add(std::move(observer));
   if (last_hardware_verification_result_) {
-    for (auto& observer : hardware_verification_observers_) {
-      observer->OnHardwareVerificationResult(
+    for (auto& hardware_verification_observer :
+         hardware_verification_observers_) {
+      hardware_verification_observer->OnHardwareVerificationResult(
           last_hardware_verification_result_->is_compliant(),
           last_hardware_verification_result_->error_str());
     }

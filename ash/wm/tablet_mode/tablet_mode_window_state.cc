@@ -153,9 +153,9 @@ bool IsTabDraggingSourceWindow(aura::Window* window) {
   // Find the window that's currently in tab-dragging process. There is at most
   // one such window.
   aura::Window* dragged_window = nullptr;
-  for (auto* window : window_list) {
-    if (window_util::IsDraggingTabs(window)) {
-      dragged_window = window;
+  for (auto* maybe_dragged_window : window_list) {
+    if (window_util::IsDraggingTabs(maybe_dragged_window)) {
+      dragged_window = maybe_dragged_window;
       break;
     }
   }

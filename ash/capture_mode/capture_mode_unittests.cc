@@ -5687,13 +5687,13 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
   struct {
     const std::string scope_trace;
     const ShelfAlignment shelf_alignment;
-  } kTestCases[] = {
+  } kAlignmentTestCases[] = {
       {"Shelf has botton alignment", ShelfAlignment::kBottom},
       {"Shelf has left alignment", ShelfAlignment::kLeft},
       {"Shelf has right alignment", ShelfAlignment::kRight},
   };
 
-  for (const auto& test_case : kTestCases) {
+  for (const auto& test_case : kAlignmentTestCases) {
     SCOPED_TRACE(test_case.scope_trace);
     // Enable annotation.
     projector_controller->EnableAnnotatorTool();
@@ -6072,7 +6072,7 @@ TEST_F(CaptureModeSettingsTest, NudgeDoesNotShowForAllUserTypes) {
     std::string trace;
     user_manager::UserType user_type;
     bool can_see_nudge;
-  } kTestCases[] = {
+  } kUserTypeTestCases[] = {
       {"regular user", user_manager::USER_TYPE_REGULAR, true},
       {"child", user_manager::USER_TYPE_CHILD, true},
       {"guest", user_manager::USER_TYPE_GUEST, false},
@@ -6083,7 +6083,7 @@ TEST_F(CaptureModeSettingsTest, NudgeDoesNotShowForAllUserTypes) {
       {"active dir", user_manager::USER_TYPE_ACTIVE_DIRECTORY, false},
   };
 
-  for (const auto& test_case : kTestCases) {
+  for (const auto& test_case : kUserTypeTestCases) {
     SCOPED_TRACE(test_case.trace);
     ClearLogin();
     SimulateUserLogin("example@gmail.com", test_case.user_type);

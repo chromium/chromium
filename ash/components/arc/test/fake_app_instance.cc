@@ -382,30 +382,30 @@ void FakeAppInstance::GetRecentAndSuggestedAppsFromPlayStore(
               ArcPlayStoreSearchRequestState::PHONESKY_RESULT_INVALID_DATA);
   }
 
-  auto icon = GetFakeIcon(mojom::ScaleFactor::SCALE_FACTOR_100P);
-  const auto& fake_icon_png_data = (!icon || !icon->icon_png_data)
-                                       ? std::vector<uint8_t>()
-                                       : icon->icon_png_data.value();
+  const bool has_price_and_rating = query != "QueryWithoutRatingAndPrice";
+  {
+    auto icon = GetFakeIcon(mojom::ScaleFactor::SCALE_FACTOR_100P);
+    const auto& fake_icon_png_data = (!icon || !icon->icon_png_data)
+                                         ? std::vector<uint8_t>()
+                                         : icon->icon_png_data.value();
+    fake_apps.push_back(mojom::AppDiscoveryResult::New(
+        std::string("LauncherIntentUri"),  // launch_intent_uri
+        std::string("InstallIntentUri"),   // install_intent_uri
+        std::string(query),                // label
+        false,                             // is_instant_app
+        false,                             // is_recent
+        std::string("Publisher"),          // publisher_name
+        has_price_and_rating ? std::string("$7.22")
+                             : std::string(),  // formatted_price
+        has_price_and_rating ? 5 : -1,         // review_score
+        fake_icon_png_data,                    // icon_png_data
+        std::string("com.google.android.gm"),  // package_name
+        std::move(icon)));                     // icon
+  }
 
   const int num_results =
       (state_code == ArcPlayStoreSearchRequestState::SUCCESS) ? max_results
                                                               : max_results / 2;
-  const bool has_price_and_rating = query != "QueryWithoutRatingAndPrice";
-
-  fake_apps.push_back(mojom::AppDiscoveryResult::New(
-      std::string("LauncherIntentUri"),  // launch_intent_uri
-      std::string("InstallIntentUri"),   // install_intent_uri
-      std::string(query),                // label
-      false,                             // is_instant_app
-      false,                             // is_recent
-      std::string("Publisher"),          // publisher_name
-      has_price_and_rating ? std::string("$7.22")
-                           : std::string(),  // formatted_price
-      has_price_and_rating ? 5 : -1,         // review_score
-      fake_icon_png_data,                    // icon_png_data
-      std::string("com.google.android.gm"),  // package_name
-      std::move(icon)));                     // icon
-
   for (int i = 0; i < num_results - 1; ++i) {
     const bool has_icon =
         query != "QueryWithSomeResultsMissingIcon" || i < num_results / 2;

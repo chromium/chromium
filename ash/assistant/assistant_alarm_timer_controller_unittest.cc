@@ -490,9 +490,9 @@ TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationHasExpectedMessage) {
   typedef struct {
     std::string locale;
     std::vector<TestTimer> timers;
-  } I18nTestCase;
+  } I18nTimerTestCase;
 
-  std::vector<I18nTestCase> i18n_test_cases;
+  std::vector<I18nTimerTestCase> i18n_test_cases;
 
   // We'll test in English (United States).
   i18n_test_cases.push_back({

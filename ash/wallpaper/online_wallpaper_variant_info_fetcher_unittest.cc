@@ -144,12 +144,13 @@ TEST_F(OnlineWallpaperVariantInfoFetcherTest,
 
   client_.AddCollection(kCollectionId, images);
 
-  base::test::TestFuture<absl::optional<OnlineWallpaperParams>> test_future;
   WallpaperInfo info("", WallpaperLayout::WALLPAPER_LAYOUT_CENTER,
                      WallpaperType::kOnline, base::Time::Now());
   info.collection_id = kCollectionId;
   info.asset_id = kLightAssetId;
   {
+    base::test::TestFuture<absl::optional<OnlineWallpaperParams>> test_future;
+
     // Checking light mode where asset id matches.
     wallpaper_fetcher_->FetchOnlineWallpaper(
         kAccount1, info, ColorMode::kLightMode, test_future.GetCallback());

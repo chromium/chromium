@@ -2460,16 +2460,16 @@ TEST_F(ShelfLayoutManagerTest, SwipeUpAutoHideHiddenShelf) {
   const int y_offsets[] = {70, 100, 300, 500};
 
   for (int time_delta : time_deltas) {
-    for (int num_scroll_steps : num_scroll_steps) {
+    for (int scroll_steps : num_scroll_steps) {
       for (int x_offset : x_offsets) {
         for (int y_offset : y_offsets) {
           const gfx::Point start(display_bounds.bottom_center());
           const gfx::Point end(start + gfx::Vector2d(x_offset, -y_offset));
           generator->GestureScrollSequence(
-              start, end, base::Milliseconds(time_delta), num_scroll_steps);
+              start, end, base::Milliseconds(time_delta), scroll_steps);
           EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState())
               << "Failure to show shelf after a swipe up in " << time_delta
-              << "ms, " << num_scroll_steps << " steps, " << x_offset
+              << "ms, " << scroll_steps << " steps, " << x_offset
               << " X-offset and " << y_offset << " Y-offset.";
           generator->GestureTapAt(tap_to_hide_shelf_location);
           EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());

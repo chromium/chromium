@@ -75,7 +75,6 @@ TEST_F(LogoutButtonTrayTest, Visibility) {
 }
 
 TEST_F(LogoutButtonTrayTest, ButtonPressed) {
-  constexpr char kUserEmail[] = "user1@test.com";
   constexpr char kUserAction[] = "DemoMode.ExitFromShelf";
 
   LogoutButtonTray* const tray = Shell::GetPrimaryRootWindowController()

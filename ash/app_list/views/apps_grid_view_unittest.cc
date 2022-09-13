@@ -3257,29 +3257,34 @@ TEST_P(AppsGridViewTabletTest, ControlShiftArrowFailsToFolderAcrossPages) {
               test_api_->GetViewAtIndex(moved_view_index));
     EXPECT_EQ(0, GetPaginationModel()->selected_page());
   }
-  // The last item on the col is selected, try moving right and test that that
-  // fails as well.
-  GridIndex moved_view_index(0, GetTilesPerPage(0) - 1);
-  AppListItemView* attempted_folder_view =
-      test_api_->GetViewAtIndex(moved_view_index);
 
-  SimulateKeyPress(is_rtl_ ? ui::VKEY_LEFT : ui::VKEY_RIGHT,
-                   ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  {
+    // The last item on the col is selected, try moving right and test that that
+    // fails as well.
+    GridIndex moved_view_index(0, GetTilesPerPage(0) - 1);
+    AppListItemView* attempted_folder_view =
+        test_api_->GetViewAtIndex(moved_view_index);
 
-  EXPECT_EQ(attempted_folder_view, test_api_->GetViewAtIndex(moved_view_index));
+    SimulateKeyPress(is_rtl_ ? ui::VKEY_LEFT : ui::VKEY_RIGHT,
+                     ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
 
-  // Move to the second page and test that foldering up to a new page fails.
-  SimulateKeyPress(ui::VKEY_DOWN);
+    EXPECT_EQ(attempted_folder_view,
+              test_api_->GetViewAtIndex(moved_view_index));
 
-  // Select the first item on the second page.
-  moved_view_index = GridIndex(1, 0);
-  attempted_folder_view = test_api_->GetViewAtIndex(moved_view_index);
+    // Move to the second page and test that foldering up to a new page fails.
+    SimulateKeyPress(ui::VKEY_DOWN);
 
-  // Try to folder left to the previous page, it  should fail.
-  SimulateKeyPress(is_rtl_ ? ui::VKEY_RIGHT : ui::VKEY_LEFT,
-                   ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+    // Select the first item on the second page.
+    moved_view_index = GridIndex(1, 0);
+    attempted_folder_view = test_api_->GetViewAtIndex(moved_view_index);
 
-  EXPECT_EQ(attempted_folder_view, test_api_->GetViewAtIndex(moved_view_index));
+    // Try to folder left to the previous page, it  should fail.
+    SimulateKeyPress(is_rtl_ ? ui::VKEY_RIGHT : ui::VKEY_LEFT,
+                     ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+
+    EXPECT_EQ(attempted_folder_view,
+              test_api_->GetViewAtIndex(moved_view_index));
+  }
 
   // For every item on the first row of the second page, test that foldering to
   // the next page fails.

@@ -506,8 +506,10 @@ TEST_F(FloatingAccessibilityControllerTest, CollisionWithAutoclicksMenu) {
       SCOPED_TRACE(
           base::StringPrintf("Testing position #[%d]", test.expected_position));
       // Tap the position button.
-      ui::GestureEvent event = CreateTapEvent();
-      button->OnGestureEvent(&event);
+      {
+        ui::GestureEvent event = CreateTapEvent();
+        button->OnGestureEvent(&event);
+      }
 
       // Pref change happened.
       EXPECT_EQ(test.expected_position, menu_position());

@@ -49,8 +49,8 @@ WindowPreviewView::WindowPreviewView(aura::Window* window,
   DCHECK(window);
   aura::client::GetTransientWindowClient()->AddObserver(this);
 
-  for (auto* window : GetTransientTreeIterator(window_))
-    AddWindow(window);
+  for (auto* transient_window : GetTransientTreeIterator(window_))
+    AddWindow(transient_window);
 }
 
 WindowPreviewView::~WindowPreviewView() {

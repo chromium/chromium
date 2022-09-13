@@ -166,17 +166,17 @@ class SyncSingleKeyResponseData {
       const KeyCreation& new_key_creation,
       const absl::optional<KeyType>& new_key_type,
       const absl::optional<KeyDirective>& new_key_directive) {
-    SyncSingleKeyResponse single_response;
-    single_response.set_key_creation(new_key_creation);
+    SyncSingleKeyResponse generated_response;
+    generated_response.set_key_creation(new_key_creation);
     if (new_key_type)
-      single_response.set_key_type(*new_key_type);
+      generated_response.set_key_type(*new_key_type);
     if (new_key_directive)
-      single_response.mutable_key_directive()->CopyFrom(*new_key_directive);
+      generated_response.mutable_key_directive()->CopyFrom(*new_key_directive);
 
     // If there are no keys, we don't need to add key actions.
     const CryptAuthKeyBundle* bundle = key_registry->GetKeyBundle(bundle_name);
     if (!bundle || handle_to_action_map.empty())
-      return single_response;
+      return generated_response;
 
     // We assume the enroller populated SyncSingleKeyRequest::key_handles in
     // the same order as the key bundle's handle-to-key map. Populate
@@ -189,10 +189,10 @@ class SyncSingleKeyResponseData {
       KeyAction key_action = it == handle_to_action_map.end()
                                  ? SyncSingleKeyResponse::KEY_ACTION_UNSPECIFIED
                                  : it->second;
-      single_response.add_key_actions(key_action);
+      generated_response.add_key_actions(key_action);
     }
 
-    return single_response;
+    return generated_response;
   }
 };
 

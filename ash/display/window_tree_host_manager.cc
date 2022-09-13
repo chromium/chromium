@@ -461,7 +461,6 @@ void WindowTreeHostManager::UpdateMouseLocationAfterDisplayChange() {
     int64_t distance_squared = (center - point_in_screen).LengthSquared();
     if (closest_distance_squared < 0 ||
         closest_distance_squared > distance_squared) {
-      aura::Window* root_window = GetRootWindowForDisplayId(display.id());
       ::wm::ConvertPointFromScreen(root_window, &center);
       root_window->GetHost()->ConvertDIPToScreenInPixels(&center);
       dst_root_window = root_window;

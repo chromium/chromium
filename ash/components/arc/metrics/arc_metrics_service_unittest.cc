@@ -390,8 +390,8 @@ TEST_F(ArcMetricsServiceTest, GetArcStartTimeFromEvents_NoArcUpgradedEvent) {
 TEST_F(ArcMetricsServiceTest, UserInteractionObserver) {
   class Observer : public ArcMetricsService::UserInteractionObserver {
    public:
-    void OnUserInteraction(UserInteractionType type) override {
-      this->type = type;
+    void OnUserInteraction(UserInteractionType interaction_type) override {
+      type = interaction_type;
     }
     absl::optional<UserInteractionType> type;
   } observer;
@@ -601,7 +601,6 @@ static void ExpectOneSampleAppKillCounts(
 }
 
 TEST_P(ArcVmArcMetricsServiceTest, AppLowMemoryKills) {
-  base::HistogramTester tester;
   // The test code sets the initial counts to 0.
   auto c0 = mojom::LowMemoryKillCounts::New(0, 0, 0, 0, 0, 0, 0);
   // First sample counts.

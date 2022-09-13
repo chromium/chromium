@@ -158,10 +158,10 @@ void BaseState::CycleSnap(WindowState* window_state, WMEventType event) {
           window, is_desired_primary_snapped ? SplitViewController::LEFT
                                              : SplitViewController::RIGHT);
     } else {
-      const WindowSnapWMEvent event(is_desired_primary_snapped
-                                        ? WM_EVENT_SNAP_PRIMARY
-                                        : WM_EVENT_SNAP_SECONDARY);
-      window_state->OnWMEvent(&event);
+      const WindowSnapWMEvent wm_event(is_desired_primary_snapped
+                                           ? WM_EVENT_SNAP_PRIMARY
+                                           : WM_EVENT_SNAP_SECONDARY);
+      window_state->OnWMEvent(&wm_event);
     }
     window_state->ReadOutWindowCycleSnapAction(
         is_desired_primary_snapped ? IDS_WM_SNAP_WINDOW_TO_LEFT_ON_SHORTCUT

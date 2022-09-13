@@ -296,17 +296,19 @@ void MultiUserWindowManagerImpl::OnWindowVisibilityChanging(
   if (suppress_visibility_changes_)
     return;
 
-  WindowToEntryMap::iterator it = window_to_entry_.find(window);
   // If the window is not owned by anyone it is shown on all desktops.
-  if (it != window_to_entry_.end()) {
+  if (WindowToEntryMap::iterator it = window_to_entry_.find(window);
+      it != window_to_entry_.end()) {
     // Remember what was asked for so that we can restore this when the user's
     // desktop gets restored.
     it->second->set_show(visible);
-  } else {
-    TransientWindowToVisibility::iterator it =
-        transient_window_to_visibility_.find(window);
-    if (it != transient_window_to_visibility_.end())
-      it->second = visible;
+    return;
+  }
+
+  if (TransientWindowToVisibility::iterator it =
+          transient_window_to_visibility_.find(window);
+      it != transient_window_to_visibility_.end()) {
+    it->second = visible;
   }
 }
 

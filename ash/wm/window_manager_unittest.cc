@@ -358,8 +358,8 @@ TEST_F(WindowManagerTest, ActivateOnMouse) {
     std::unique_ptr<aura::Window> w11(CreateTestWindowWithDelegate(
         &nfd, -1, gfx::Rect(10, 10, 10, 10), w1.get()));
     // Move focus to |w2| first.
-    std::unique_ptr<aura::Window> w2(CreateTestWindowInShellWithDelegate(
-        &wd, -1, gfx::Rect(70, 70, 50, 50)));
+    w2.reset(CreateTestWindowInShellWithDelegate(&wd, -1,
+                                                 gfx::Rect(70, 70, 50, 50)));
     ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(), w2.get());
     generator.ClickLeftButton();
     EXPECT_EQ(w2.get(), focus_client->GetFocusedWindow());

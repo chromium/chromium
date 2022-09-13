@@ -668,11 +668,11 @@ TEST_F(SystemModalContainerLayoutManagerTest, ShowNormalBackgroundOrLocked) {
 
     // Normal system modal window while blocked, but it belongs to the normal
     // window.  Shouldn't show blocked system modal background, but normal.
-    std::unique_ptr<aura::Window> modal_window(
+    std::unique_ptr<aura::Window> modal_window_while_blocked(
         ShowTestWindowWithParent(parent.get(), true));
     EXPECT_TRUE(AllRootWindowsHaveModalBackgrounds());
     EXPECT_FALSE(AllRootWindowsHaveLockedModalBackgrounds());
-    TestWindow::CloseTestWindow(modal_window.release());
+    TestWindow::CloseTestWindow(modal_window_while_blocked.release());
 
     // Close |lock_parent| before unlocking so that Shell::OnLockStateChanged
     // does not DCHECK on finding a system modal in Lock layer when unlocked.

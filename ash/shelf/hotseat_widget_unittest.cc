@@ -2648,9 +2648,11 @@ TEST_P(HotseatWidgetTest, PresentationTimeMetricDuringDrag) {
 TEST_P(HotseatWidgetTest, DISABLED_OverviewToHomeAnimationAndBackIsSmooth) {
   // Go into tablet mode and make sure animations are over.
   HotseatWidget* hotseat = GetPrimaryShelf()->hotseat_widget();
-  views::WidgetAnimationWaiter waiter(hotseat);
-  TabletModeControllerTestApi().EnterTabletMode();
-  waiter.WaitForAnimation();
+  {
+    views::WidgetAnimationWaiter waiter(hotseat);
+    TabletModeControllerTestApi().EnterTabletMode();
+    waiter.WaitForAnimation();
+  }
 
   ui::ScopedAnimationDurationScaleMode regular_animations(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);

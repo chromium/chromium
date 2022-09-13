@@ -240,7 +240,6 @@ TEST_F(LoginAuthFactorsViewUnittest, TapOrClickCalled) {
 
 TEST_F(LoginAuthFactorsViewUnittest, ShouldAnnounceLabel) {
   AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
-  auto* factor = auth_factors_[0];
   LoginAuthFactorsView::TestApi test_api(view_);
   views::Label* label = test_api.label();
   ScopedAXEventObserver alert_observer(label, ax::mojom::Event::kAlert);
@@ -248,6 +247,7 @@ TEST_F(LoginAuthFactorsViewUnittest, ShouldAnnounceLabel) {
     factor->state_ = AuthFactorState::kAvailable;
   }
 
+  auto* factor = auth_factors_[0];
   ASSERT_FALSE(factor->ShouldAnnounceLabel());
   ASSERT_FALSE(alert_observer.event_called);
 

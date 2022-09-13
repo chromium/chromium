@@ -1123,8 +1123,8 @@ void UnifiedMessageListView::UpdateClearAllAnimation() {
       UpdateBounds();
       start_height_ = target_height_;
       for (auto* child : children()) {
-        auto* view = AsMVC(child);
-        view->set_start_bounds(view->target_bounds());
+        auto* child_view = AsMVC(child);
+        child_view->set_start_bounds(child_view->target_bounds());
       }
       PreferredSizeChanged();
     } else {

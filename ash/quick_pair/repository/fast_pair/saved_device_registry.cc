@@ -80,7 +80,6 @@ bool SavedDeviceRegistry::DeleteAccountKey(
   std::string encoded_key = base::Base64Encode(account_key);
   for (const auto it : saved_devices) {
     const std::string* value = it.second.GetIfString();
-    DictionaryPrefUpdate update(pref_service, kFastPairSavedDevicesPref);
     if (value && *value == encoded_key) {
       DictionaryPrefUpdate update(pref_service, kFastPairSavedDevicesPref);
       return update->RemoveKey(it.first);
