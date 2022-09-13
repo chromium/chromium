@@ -209,10 +209,6 @@
     min-width: 119px;
   }
 
-  #selectAvatarCancelButton {
-    margin-inline-end: 12px;
-  }
-
   @media (prefers-color-scheme: dark) {
     .in-dialog-design .avatar-badge {
       border: 1px solid var(--google-grey-500);
@@ -303,7 +299,7 @@
       <div class="select-avatar-header">
         <cr-icon-button iron-icon="cr:arrow-back" id="selectAvatarCloseButton"
             aria-label="$i18n{profileCustomizationAvatarSelectionBackButtonLabel}"
-            on-click="onSelectAvatarCancelClicked_">
+            on-click="onSelectAvatarBackClicked_">
         </cr-icon-button>
         <div class="select-avatar-title">
           $i18n{profileCustomizationAvatarSelectionTitle}
@@ -316,10 +312,6 @@
         <cr-button id="selectAvatarConfirmButton" class="action-button"
             on-click="onSelectAvatarConfirmClicked_">
           $i18n{profileCustomizationAvatarSelectionConfirmButtonLabel}
-        </cr-button>
-        <cr-button id="selectAvatarCancelButton" class="cancel-button"
-            on-click="onSelectAvatarCancelClicked_">
-          $i18n{profileCustomizationAvatarSelectionCancelButtonLabel}
         </cr-button>
       </div>
     </div>

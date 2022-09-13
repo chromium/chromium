@@ -38,7 +38,29 @@ export class TestProfileCustomizationBrowserProxy extends TestBrowserProxy
 
   getAvailableIcons() {
     this.methodCalled('getAvailableIcons');
-    return Promise.resolve([]);
+    return Promise.resolve([
+      {
+        url: 'fake-icon-0.png',
+        label: 'fake-icon-0',
+        index: 0,
+        selected: true,
+        isGaiaAvatar: false,
+      },
+      {
+        url: 'fake-icon-1.png',
+        label: 'fake-icon-1',
+        index: 1,
+        selected: false,
+        isGaiaAvatar: false,
+      },
+      {
+        url: 'fake-icon-2.png',
+        label: 'fake-icon-2',
+        index: 2,
+        selected: false,
+        isGaiaAvatar: false,
+      },
+    ]);
   }
 
   done(profileName: string) {

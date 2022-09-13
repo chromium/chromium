@@ -209,10 +209,10 @@ suite(`LocalProfileCreationTest`, function() {
     assertFalse(profileCustomizationDialog.classList.contains(activeView));
     assertTrue(avatarSelectionDialog.classList.contains(activeView));
 
-    const selectAvatarCancelButton =
+    const selectAvatarConfirmButton =
         app.shadowRoot!.querySelector<CrButtonElement>(
-            '#selectAvatarCancelButton')!;
-    selectAvatarCancelButton.click();
+            '#selectAvatarConfirmButton')!;
+    selectAvatarConfirmButton.click();
     assertTrue(profileCustomizationDialog.classList.contains(activeView));
     assertFalse(avatarSelectionDialog.classList.contains(activeView));
   });

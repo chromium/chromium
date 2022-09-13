@@ -207,7 +207,7 @@ export class ProfileCustomizationAppElement extends
     this.closeSelectAvatar_();
   }
 
-  private onSelectAvatarCancelClicked_() {
+  private onSelectAvatarBackClicked_() {
     assert(this.isLocalProfileCreation_);
     this.closeSelectAvatar_();
     this.selectedAvatar_ = this.confirmedAvatar_;
