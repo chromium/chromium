@@ -1253,6 +1253,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSNewPostRestoreExperience,
                                     kIOSNewPostRestoreExperienceVariations,
                                     "IOSNewPostRestoreExperience")},
+    {"most-visited-tiles", flag_descriptions::kMostVisitedTilesName,
+     flag_descriptions::kMostVisitedTilesDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(omnibox::kMostVisitedTiles)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -424,6 +424,11 @@ extern const char kMetrickitNonCrashReportDescription[];
 extern const char kModernTabStripName[];
 extern const char kModernTabStripDescription[];
 
+// Title and description of the flag to enable the most visited tiles in the
+// omnibox.
+extern const char kMostVisitedTilesName[];
+extern const char kMostVisitedTilesDescription[];
+
 // Title and description for the flag to use the new MICe FRE.
 extern const char kNewMobileIdentityConsistencyFREName[];
 extern const char kNewMobileIdentityConsistencyFREDescription[];
