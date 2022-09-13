@@ -1,0 +1,27 @@
+{% from 'templates/macros.tmpl' import license, source_files_for_generated_file %}
+{{license()}}
+
+{{source_files_for_generated_file(template_file, input_files)}}
+
+#ifndef {{header_guard}}
+#define {{header_guard}}
+
+#include "third_party/blink/public/platform/web_common.h"
+
+namespace blink {
+
+class BLINK_PLATFORM_EXPORT WebRuntimeFeaturesBase {
+ public:
+{% for feature in features %}
+{% if feature.public %}
+  static void Enable{{feature.name}}(bool);
+  static bool Is{{feature.name}}Enabled();
+{% endif %}
+{% endfor %}
+
+  WebRuntimeFeaturesBase() = delete;
+};
+
+}  // namespace blink
+
+#endif  // {{header_guard}}

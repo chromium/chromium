@@ -45,6 +45,7 @@ blink_python_runner("runtime_enabled_features") {
              "../build/scripts/templates/runtime_enabled_features.cc.tmpl",
              "../build/scripts/templates/runtime_enabled_features.h.tmpl",
              "../build/scripts/templates/runtime_enabled_features_test_helpers.h.tmpl",
+             "../build/scripts/templates/web_runtime_features_base.cc.tmpl",
            ]
 
   build_scripts_output_dir = "$blink_platform_output_dir/../build/scripts"
@@ -52,6 +53,7 @@ blink_python_runner("runtime_enabled_features") {
     "$blink_platform_output_dir/runtime_enabled_features.cc",
     "$blink_platform_output_dir/runtime_enabled_features.h",
     "$blink_platform_output_dir/testing/runtime_enabled_features_test_helpers.h",
+    "$blink_platform_output_dir/exported/web_runtime_features_base.cc",
     "$build_scripts_output_dir/runtime_enabled_features.pickle",
   ]
 

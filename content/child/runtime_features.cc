@@ -208,8 +208,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableConsolidatedMovementXY, features::kConsolidatedMovementXY},
     {wf::EnableCooperativeScheduling, features::kCooperativeScheduling},
     {wf::EnableDevicePosture, features::kDevicePosture},
-    {wf::EnableDigitalGoodsAPI, features::kDigitalGoodsApi,
-     kSetOnlyIfOverridden},
+    {wf::EnableDigitalGoods, features::kDigitalGoodsApi, kSetOnlyIfOverridden},
     {wf::EnableDirectSockets, features::kIsolatedWebApps},
     {wf::EnableDocumentPictureInPictureAPI,
      features::kDocumentPictureInPictureAPI},
@@ -224,7 +223,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      kSetOnlyIfOverridden},
     {wf::EnableForcedColors, features::kForcedColors},
     {wf::EnableFractionalScrollOffsets, features::kFractionalScrollOffsets},
-    {wf::EnableGenericSensorExtraClasses, features::kGenericSensorExtraClasses},
+    {wf::EnableSensorExtraClasses, features::kGenericSensorExtraClasses},
 #if BUILDFLAG(IS_ANDROID)
     {wf::EnableGetDisplayMedia, features::kUserMediaScreenCapturing},
 #endif
@@ -256,7 +255,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnablePeriodicBackgroundSync, features::kPeriodicBackgroundSync},
     {wf::EnablePictureInPicture, media::kPictureInPicture},
     {wf::EnablePointerLockOptions, features::kPointerLockOptions},
-    {wf::EnablePushSubscriptionChangeEvent,
+    {wf::EnablePushMessagingSubscriptionChange,
      features::kPushSubscriptionChangeEvent},
     {wf::EnableRestrictGamepadAccess, features::kRestrictGamepadAccess},
     {wf::EnableSecurePaymentConfirmation, features::kSecurePaymentConfirmation},
@@ -281,12 +280,12 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableWebBluetoothWatchAdvertisements,
      features::kWebBluetoothNewPermissionsBackend, kSetOnlyIfOverridden},
 #if BUILDFLAG(IS_ANDROID)
-    {wf::EnableWebNfc, features::kWebNfc, kSetOnlyIfOverridden},
+    {wf::EnableWebNFC, features::kWebNfc, kSetOnlyIfOverridden},
 #endif
     {wf::EnableWebOTP, features::kWebOTP, kSetOnlyIfOverridden},
     {wf::EnableWebOTPAssertionFeaturePolicy,
      features::kWebOTPAssertionFeaturePolicy, kSetOnlyIfOverridden},
-    {wf::EnableWebUsb, features::kWebUsb},
+    {wf::EnableWebUSB, features::kWebUsb},
     {wf::EnableWebXR, features::kWebXr},
     {wf::EnableWebXRARModule, features::kWebXrArModule},
     {wf::EnableWebXRCameraAccess, device::features::kWebXrIncubations},
@@ -369,10 +368,9 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
   using wrf = WebRuntimeFeatures;
   const SwitchToFeatureMap switchToFeatureMapping[] = {
       // Stable Features
-      {wrf::EnablePermissionsAPI, switches::kDisablePermissionsAPI, false},
-      {wrf::EnablePresentationAPI, switches::kDisablePresentationAPI, false},
-      {wrf::EnableRemotePlaybackAPI, switches::kDisableRemotePlaybackAPI,
-       false},
+      {wrf::EnablePermissions, switches::kDisablePermissionsAPI, false},
+      {wrf::EnablePresentation, switches::kDisablePresentationAPI, false},
+      {wrf::EnableRemotePlayback, switches::kDisableRemotePlaybackAPI, false},
       {wrf::EnableTimerThrottlingForBackgroundTabs,
        switches::kDisableBackgroundTimerThrottling, false},
       // End of Stable Features
@@ -395,8 +393,8 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
       {wrf::EnableScriptedSpeechSynthesis, switches::kDisableSpeechSynthesisAPI,
        false},
       {wrf::EnableSharedWorker, switches::kDisableSharedWorkers, false},
-      {wrf::EnableTextFragmentAnchor, switches::kDisableScrollToTextFragment,
-       false},
+      {wrf::EnableTextFragmentIdentifiers,
+       switches::kDisableScrollToTextFragment, false},
       {wrf::EnableWebAuthenticationRemoteDesktopSupport,
        switches::kWebAuthRemoteDesktopSupport, true},
       {wrf::EnableWebGLDeveloperExtensions,

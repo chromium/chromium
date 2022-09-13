@@ -6,6 +6,7 @@ import("//build/buildflag_header.gni")
 import("//build/config/devtools.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/blink/public/public_features.gni")
+import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/config.gni")
 import("//third_party/blink/renderer/core/core.gni")
 import("//third_party/webrtc/webrtc.gni")
@@ -16,6 +17,8 @@ if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
 }
+
+blink_public_output_dir = "$root_gen_dir/third_party/blink/public"
 
 group("blink") {
   public_deps = [ ":blink_headers" ]
@@ -433,6 +436,7 @@ source_set("blink_headers") {
   public_deps = [
     ":devtools_inspector_resources_grit",
     ":resources_grit",
+    ":runtime_features_for_public",
     "//net",
     "//services/network/public/mojom:mojom_shared",
     "//services/service_manager/public/cpp",
@@ -472,6 +476,26 @@ source_set("blink_headers") {
   ]
 }
 
+blink_python_runner("runtime_features_for_public") {
+  script = "../renderer/build/scripts/make_runtime_features_for_public.py"
+
+  runtime_enabled_features_json5 =
+      "../renderer/platform/runtime_enabled_features.json5"
+  inputs =
+      scripts_for_json5_files + [
+        runtime_enabled_features_json5,
+        "../renderer/build/scripts/templates/web_runtime_features_base.h.tmpl",
+      ]
+
+  outputs = [ "$blink_public_output_dir/platform/web_runtime_features_base.h" ]
+
+  args = [
+    rebase_path(runtime_enabled_features_json5, root_build_dir),
+    "--output_dir",
+    rebase_path("$blink_public_output_dir/platform", root_build_dir),
+  ]
+}
+
 devtools_frontend_path = "//$devtools_root_location"
 
 group("blink_devtools_frontend_resources") {
@@ -491,7 +515,7 @@ group("blink_generate_devtools_grd") {
   public_deps = [ "$devtools_frontend_path:generate_devtools_grd" ]
 }
 
-resources_out_dir = "$root_gen_dir/third_party/blink/public/resources"
+resources_out_dir = "$blink_public_output_dir/resources"
 
 grit("resources") {
   output_dir = resources_out_dir

@@ -104,6 +104,13 @@
       valid_type: "bool",
     },
 
+    // public specifies whether a feature can be accessed via
+    // third_party/blink/public/platform/web_runtime_features.h, with the
+    // default being false.
+    public: {
+      valid_type: "bool",
+    },
+
     // Feature policy IDL extended attribute (see crrev.com/2247923004).
     feature_policy: {
     },
@@ -172,6 +179,7 @@
     },
     {
       name: "AccessibilityAriaVirtualContent",
+      public: true,
       status: "experimental",
     },
     {
@@ -180,9 +188,11 @@
     },
     {
       name: "AccessibilityExposeHTMLElement",
+      public: true,
     },
     {
       name: "AccessibilityExposeIgnoredNodes",
+      public: true,
     },
     {
       name: "AccessibilityObjectModel",
@@ -190,9 +200,11 @@
     },
     {
       name: "AccessibilityPageZoom",
+      public: true,
     },
     {
       name: "AccessibilityUseAXPositionForDocumentMarkers",
+      public: true,
     },
     {
       name: "AddressSpace",
@@ -207,6 +219,7 @@
     },
     {
       name: "AdTagging",
+      public: true,
       status: "test",
     },
     {
@@ -214,6 +227,7 @@
     },
     {
       name: "AndroidDownloadableFontsMatching",
+      public: true,
     },
     {
       name: "AnimationWorklet",
@@ -223,10 +237,12 @@
       name: "AnonymousIframe",
       origin_trial_allows_third_party: true,
       origin_trial_feature_name: "AnonymousIframeOriginTrial",
+      public: true,
       status: "test",
     },
     {
       name: "AOMAriaRelationshipProperties",
+      public: true,
       status: "experimental",
     },
     {
@@ -272,6 +288,7 @@
     },
     {
       name: "AutomationControlled",
+      public: true,
       settable_from_internals: true,
     },
     {
@@ -282,6 +299,7 @@
     {
       // Flag set by the media::kAutoplayIgnoreWebAudio feature flag.
       name: "AutoplayIgnoresWebAudio",
+      public: true,
       settable_from_internals: true,
     },
     // When enabled, enforces new interoperable semantics for 3D transforms.
@@ -292,6 +310,7 @@
     },
     {
       name: "BackForwardCache",
+      public: true,
     },
     {
       name: "BackForwardCacheExperimentHTTPHeader",
@@ -302,9 +321,11 @@
       name: "BackForwardCacheNotRestoredReasons",
       status: "experimental",
       origin_trial_feature_name: "BackForwardCacheNotRestoredReasons",
+      public: true,
     },
     {
       name: "BackgroundFetch",
+      public: true,
       status: "stable",
     },
     {
@@ -359,9 +380,11 @@
     },
     {
       name: "BrowserVerifiedUserActivationKeyboard",
+      public: true,
     },
     {
       name: "BrowserVerifiedUserActivationMouse",
+      public: true,
     },
     {
       name: "CacheStorageCodeCacheHint",
@@ -370,6 +393,7 @@
     },
     {
       name: "Canvas2dImageChromium",
+      public: true,
     },
     {
       name: "Canvas2dLayers",
@@ -454,6 +478,7 @@
     },
     {
       name: "CompositeBGColorAnimation",
+      public: true,
       status: "experimental",
     },
     {
@@ -464,6 +489,7 @@
     },
     {
       name: "CompositedSelectionUpdate",
+      public: true,
       status: {"Android": "stable"},
     },
     {
@@ -486,6 +512,7 @@
     },
     {
       name: "ConsolidatedMovementXY",
+      public: true,
     },
     {
       name: "ContactsManager",
@@ -508,7 +535,8 @@
       status: "experimental",
     },
     {
-      name: "CooperativeScheduling"
+      name: "CooperativeScheduling",
+      public: true,
     },
     {
       name: "CorsRFC1918",
@@ -837,14 +865,17 @@
     },
     {
       name: "Database",
+      public: true,
       status: "stable",
     },
     {
       name: "DecodeJpeg420ImagesToYUV",
+      public: true,
       status: "stable",
     },
     {
       name: "DecodeLossyWebPImagesToYUV",
+      public: true,
       status: "stable",
     },
     {
@@ -884,12 +915,14 @@
     },
     {
       name: "DevicePosture",
+      public: true,
       status: "experimental",
     },
     {
       name: "DigitalGoods",
       origin_trial_feature_name: "DigitalGoodsV2",
       origin_trial_os: ["android", "chromeos"],
+      public: true,
       status: {
         "Android": "stable",
         "ChromeOS_Ash": "stable",
@@ -912,6 +945,7 @@
     },
     {
       name: "DirectSockets",
+      public: true,
       status: "experimental",
     },
     {
@@ -932,9 +966,11 @@
       // called "DisplayCapturePermissionsPolicyEnabled".
       // TODO(crbug.com/1233969): Remove this around m100.
       name: "DisplayCapturePermissionsPolicy",
+      public: true,
     },
     {
       name: "DisplayCutoutAPI",
+      public: true,
       settable_from_internals: true,
     },
     {
@@ -955,10 +991,12 @@
     {
       name: "DocumentPictureInPictureAPI",
       depends_on: ["PictureInPictureAPI"],
+      public: true,
       settable_from_internals: true,
     },
     {
       name: "DocumentPolicy",
+      public: true,
       status: "stable",
     },
     // Enables the ability to use Document Policy header to control feature
@@ -971,6 +1009,7 @@
     {
       name: "DocumentPolicyNegotiation",
       origin_trial_feature_name: "DocumentPolicyNegotiation",
+      public: true,
       status: "experimental",
       depends_on: ["DocumentPolicy"],
     },
@@ -1010,6 +1049,7 @@
       // Non-standard API Event.path. Should be replaced by Event.composedPath.
       // TODO(1277431): This flag should be eventually disabled.
       name: "EventPath",
+      public: true,
       status: "stable",
       base_feature: "EventPath",
     },
@@ -1067,23 +1107,28 @@
       name: "FedCm",
       origin_trial_feature_name: "FedCM",
       origin_trial_allows_third_party: true,
+      public: true,
       status: "test",
     },
     {
       name: "FedCmIdpSigninStatus",
+      public: true,
       status: "test",
     },
     {
       name: "FedCmIdpSignout",
+      public: true,
       status: "test",
     },
     {
       name: "FedCmIframeSupport",
+      public: true,
       status: "test",
     },
     {
       name: "FedCmMultipleIdentityProviders",
       depends_on: ["FedCm"],
+      public: true,
       status: "test",
     },
     {
@@ -1095,6 +1140,7 @@
       // effect.
       origin_trial_feature_name: "PrivacySandboxAdsAPIs",
       origin_trial_allows_third_party: true,
+      public: true,
     },
     {
       name: "FetchUploadStreaming",
@@ -1117,6 +1163,7 @@
     },
     {
       name: "FileSystem",
+      public: true,
       status: "stable",
     },
     {
@@ -1187,6 +1234,7 @@
       // feature has shipped) until there are settings to allow users to
       // customize the feature.
       name: "ForcedColors",
+      public: true,
       status: "stable",
     },
     {
@@ -1213,6 +1261,7 @@
     {
       name: "FractionalScrollOffsets",
       implied_by: ["PercentBasedScrolling"],
+      public: true,
     },
     {
       name: "FreezeFramesOnVisibility",
@@ -1224,6 +1273,7 @@
     },
     {
       name: "GetDisplayMedia",
+      public: true,
       status: {
         "Android": "experimental",
         "default": "stable",
@@ -1233,11 +1283,13 @@
       // Enables the getDisplayMediaSet API for multi surface capture.
       name: "GetDisplayMediaSet",
       depends_on: ["GetDisplayMedia"],
+      public: true,
       status: "test",
     },
     {
       name: "GetDisplayMediaSetAutoSelectAllScreens",
       depends_on: ["GetDisplayMediaSet"],
+      public: true,
       status: {
         "ChromeOS_Ash": "test",
         "ChromeOS_Lacros": "test",
@@ -1307,14 +1359,17 @@
     },
     {
       name: "IdentityInCanMakePaymentEventFeature",
+      public: true,
       status: "stable",
     },
     {
       name: "IdleDetection",
+      public: true,
       status: "stable",
     },
     {
       name: "ImplicitRootScroller",
+      public: true,
       settable_from_internals: true,
       status: {"Android": "stable"},
     },
@@ -1334,6 +1389,7 @@
     },
     {
       name: "InstalledApp",
+      public: true,
       status: "stable",
     },
     {
@@ -1421,20 +1477,25 @@
     },
     {
       name: "LazyFrameLoading",
+      public: true,
       status: "stable",
     },
     {
       name: "LazyFrameVisibleLoadTimeMetrics",
+      public: true,
     },
     {
       name: "LazyImageLoading",
+      public: true,
       status: "stable",
     },
     {
       name: "LazyImageVisibleLoadTimeMetrics",
+      public: true,
     },
     {
       name: "LazyInitializeMediaControls",
+      public: true,
       // This is enabled by features::kLazyInitializeMediaControls.
     },
     {
@@ -1495,12 +1556,15 @@
     // Set to reflect the MediaCastOverlayButton feature.
     {
       name: "MediaCastOverlayButton",
+      public: true,
     },
     {
-      name: "MediaControlsExpandGesture"
+      name: "MediaControlsExpandGesture",
+      public: true,
     },
     {
       name: "MediaControlsOverlayPlayButton",
+      public: true,
       settable_from_internals: true,
       status: {"Android": "stable"},
     },
@@ -1510,6 +1574,7 @@
     // Set to reflect the kMediaEngagementBypassAutoplayPolicies feature.
     {
       name: "MediaEngagementBypassAutoplayPolicies",
+      public: true,
     },
     {
       name: "MediaLatencyHint",
@@ -1520,10 +1585,12 @@
     },
     {
       name: "MediaSession",
+      public: true,
       status: "stable",
     },
     {
       name: "MediaSessionWebRTC",
+      public: true,
     },
     {
       name: "MediaSourceExperimental",
@@ -1595,6 +1662,7 @@
     {
       // When enabled, iframes are not capturing mouse events by default.
       name: "MouseSubframeNoImplicitCapture",
+      public: true,
     },
     {
       name: "NavigationApi",
@@ -1611,6 +1679,7 @@
     },
     {
       name: "NetInfoDownlinkMax",
+      public: true,
       // Only Android, ChromeOS support NetInfo downlinkMax, type and ontypechange now
       status: {
         "Android": "stable",
@@ -1621,6 +1690,7 @@
     },
     {
       name: "NeverSlowMode",
+      public: true,
     },
     {
       name: "NewFlexboxSizing",
@@ -1639,10 +1709,12 @@
     // The Notification Center on Mac OS X does not support content images.
     {
       name: "NotificationContentImage",
+      public: true,
       status: {"Mac": "test", "default": "stable"},
     },
     {
       name: "Notifications",
+      public: true,
       status: "stable",
     },
     {
@@ -1814,15 +1886,19 @@
     },
     {
       name: "PaymentApp",
+      depends_on: ["PaymentRequest"],
+      public: true,
       status: "experimental",
     },
     {
       name: "PaymentMethodChangeEvent",
+      depends_on: ["PaymentRequest"],
       status: "stable",
     },
     // PaymentRequest is enabled by default on Android
     {
       name: "PaymentRequest",
+      public: true,
       status: "experimental",
     },
     {
@@ -1833,17 +1909,21 @@
       name: "PendingBeaconAPI",
       origin_trial_feature_name: "PendingBeaconAPI",
       origin_trial_allows_third_party: true,
+      public: true,
       status: "experimental",
     },
     {
       name: "PercentBasedScrolling",
+      public: true,
       settable_from_internals: true,
     },
     {
       name: "PerformanceManagerInstrumentation",
+      public: true,
     },
     {
       name: "PeriodicBackgroundSync",
+      public: true,
       status: "stable",
     },
     {
@@ -1853,6 +1933,7 @@
     },
     {
       name: "Permissions",
+      public: true,
       status: "stable",
     },
     // See https://crbug.com/1324111
@@ -1866,10 +1947,12 @@
     },
     {
       name: "PictureInPicture",
+      public: true,
       settable_from_internals: true,
     },
     {
       name: "PictureInPictureAPI",
+      public: true,
       status: "stable"
     },
     // This is a reverse OT used for a phased deprecation.
@@ -1881,6 +1964,7 @@
     {
       name: "PointerLockOptions",
       origin_trial_feature_name: "PointerLockOptions",
+      public: true,
       status: "stable",
     },
     {
@@ -1896,12 +1980,13 @@
       // enable portals without browser process support.
       origin_trial_feature_name: "Portals",
       origin_trial_os: ["android"],
-
+      public: true,
       base_feature: "Portals",
       copied_from_base_feature_if: "overridden",
     },
     {
       name: "PreciseMemoryInfo",
+      public: true,
     },
     // Prefer not using composited scrolling. Composited scrolling will still
     // be used if there are other reasons forcing compositing. For consistency,
@@ -1924,6 +2009,7 @@
     // legacy quota API window.webkitStorageInfo.
     {
       name: "PrefixedStorageInfo",
+      public: true,
       status: "stable",
       base_feature: "PrefixedStorageInfo",
     },
@@ -1948,9 +2034,11 @@
       // This is not going into origin trial, "origin_trial_feature_name" is
       // required for using the "implied_by" behaviour.
       origin_trial_feature_name: "Prerender2RelatedFeatures__DONOTUSE",
+      public: true,
     },
     {
       name: "Presentation",
+      public: true,
       status: "stable",
     },
     {
@@ -1977,10 +2065,12 @@
     },
     {
       name: "PushMessaging",
+      public: true,
       status: "stable",
     },
     {
       name: "PushMessagingSubscriptionChange",
+      public: true,
       status: "experimental",
     },
     {
@@ -2010,6 +2100,7 @@
     },
     {
       name: "RemotePlayback",
+      public: true,
       status: "stable",
     },
     {
@@ -2020,6 +2111,7 @@
     },
     {
       name: "RemoveMobileViewportDoubleTap",
+      public: true,
       status: "stable"
     },
     {
@@ -2037,6 +2129,7 @@
     },
     {
       name: "RestrictGamepadAccess",
+      public: true,
       status: "experimental",
     },
     {
@@ -2102,10 +2195,12 @@
     // is not fully enabled on all platforms.
     {
       name: "ScriptedSpeechRecognition",
+      public: true,
       status: "stable",
     },
     {
       name: "ScriptedSpeechSynthesis",
+      public: true,
       status: "stable",
     },
     {
@@ -2157,10 +2252,12 @@
     // require blink-side support to function.
     {
       name: "SecurePaymentConfirmation",
+      public: true,
       status: "test",
     },
     {
       name: "SecurePaymentConfirmationDebug",
+      public: true,
     },
     {
       name: "SecurePaymentConfirmationOptOut",
@@ -2178,6 +2275,7 @@
     },
     {
       name: "SendBeaconThrowForBlobWithNonSimpleType",
+      public: true,
       status: "stable",
     },
     {
@@ -2191,6 +2289,7 @@
     },
     {
       name: "SensorExtraClasses",
+      public: true,
       status: "experimental",
     },
     {
@@ -2207,24 +2306,30 @@
     },
     {
       name: "SharedArrayBuffer",
+      public: true,
     },
     {
       name: "SharedArrayBufferOnDesktop",
+      public: true,
     },
     {
       name: "SharedArrayBufferUnrestrictedAccessAllowed",
+      public: true,
     },
     {
       name: "SharedAutofill",
+      public: true,
       status: "test",
     },
     {
       name: "SharedStorageAPI",
       origin_trial_feature_name: "PrivacySandboxAdsAPIs",
       origin_trial_allows_third_party: true,
+      public: true,
     },
     {
       name: "SharedWorker",
+      public: true,
       // Android does not yet support SharedWorker. crbug.com/154571
       status: {"Android": "", "default": "stable"},
     },
@@ -2294,6 +2399,7 @@
     },
     {
       name: "StorageAccessAPIForSiteExtension",
+      public: true,
       status: "test",
       base_feature: "StorageAccessAPIForSiteExtension",
     },
@@ -2315,6 +2421,7 @@
     },
     {
       name: "SubresourceWebBundles",
+      public: true,
       status: "experimental"
     },
     {
@@ -2378,6 +2485,7 @@
     {
       name: "TextFragmentIdentifiers",
       origin_trial_feature_name: "TextFragmentIdentifiers",
+      public: true,
       status: "stable",
       base_feature: "TextFragmentAnchor",
     },
@@ -2392,6 +2500,7 @@
     },
     {
       name: "TimerThrottlingForBackgroundTabs",
+      public: true,
       status: "stable",
     },
     {
@@ -2402,6 +2511,7 @@
       name: "TopicsAPI",
       origin_trial_feature_name: "PrivacySandboxAdsAPIs",
       origin_trial_allows_third_party: true,
+      public: true,
     },
     // https://crbug.com/1314739
     {
@@ -2416,6 +2526,7 @@
     {
       name: "TouchDragAndContextMenu",
       implied_by: ["TouchDragOnShortPress"],
+      public: true,
     },
     // This feature makes touch dragging to occur at the short-press gesture,
     // which occurs right before the long-press gesture.  This feature assumes
@@ -2431,6 +2542,7 @@
     {
       name: "TouchEventFeatureDetection",
       origin_trial_feature_name: "ForceTouchEventFeatureDetectionForInspector",
+      public: true,
       status: "stable",
     },
     // This is conditionally set if the platform supports translation.
@@ -2449,6 +2561,7 @@
       name: "TrustTokens",
       origin_trial_feature_name: "TrustTokens",
       origin_trial_allows_third_party: true,
+      public: true,
       status: "test",
     },
     {
@@ -2457,6 +2570,7 @@
       // if this RuntimeEnabledFeature is not present, guarantees the origin
       // trial is enabled.
       name: "TrustTokensAlwaysAllowIssuance",
+      public: true,
       status: "test",
     },
     // This is a reverse OT used for a phased deprecation of Cryptotoken, the
@@ -2488,6 +2602,7 @@
     },
     {
       name: "UserActivationSameOriginVisibility",
+      public: true,
     },
     {
       name: "UserAgentClientHint",
@@ -2504,6 +2619,7 @@
     },
     {
       name: "V8IdleTasks",
+      public: true,
     },
     {
       name: "VariableCOLRV1",
@@ -2520,6 +2636,7 @@
     },
     {
       name: "VideoPlaybackQuality",
+      public: true,
       status: "stable",
     },
     {
@@ -2538,6 +2655,7 @@
     },
     {
       name: "VideoWakeLockOptimisationHiddenMuted",
+      public: true,
       status: "stable",
     },
     {
@@ -2669,11 +2787,13 @@
     },
     {
       name: "WebAuthenticationRemoteDesktopSupport",
+      public: true,
     },
     // WebBluetooth is enabled by default on Android, ChromeOS and Mac.
     // It is also supported in Windows 10 which is handled in runtime_features.cc
     {
       name: "WebBluetooth",
+      public: true,
       status: {
         "Android": "stable",
         "ChromeOS_Ash": "stable", "ChromeOS_Lacros": "stable",
@@ -2683,6 +2803,7 @@
     },
     {
       name: "WebBluetoothGetDevices",
+      public: true,
       status: "experimental",
     },
     {
@@ -2691,6 +2812,7 @@
     },
     {
       name: "WebBluetoothWatchAdvertisements",
+      public: true,
       status: "experimental",
     },
     {
@@ -2708,15 +2830,18 @@
     },
     {
       name: "WebGLDeveloperExtensions",
+      public: true,
       status: "experimental",
     },
     {
       // Draft WebGL extensions are deliberately not enabled by experimental web
       // platform features.
       name: "WebGLDraftExtensions",
+      public: true,
     },
     {
       name: "WebGLImageChromium",
+      public: true,
     },
     // WebGPU adds a large attack surface area to the GPU process and allows
     // running arbitrary programs on the GPU (compute shaders), which may
@@ -2726,11 +2851,13 @@
     {
       name: "WebGPU",
       origin_trial_feature_name: "WebGPU",
+      public: true,
     },
     {
       // WebGPU developer features are deliberately not enabled by experimental
       // web platform features.
       name: "WebGPUDeveloperFeatures",
+      public: true,
     },
     {
       // Requires both WebGPU and --enable-experimental-web-platform-features
@@ -2749,6 +2876,7 @@
       // It is only enabled in extension environment for now.
       name: "WebHIDOnServiceWorkers",
       depends_on: ["WebHID"],
+      public: true,
     },
     // Legacy ::-webkit-scrollbar* pseudo element styling. Enabled for stable
     // but configurable via WebPreferences.
@@ -2758,6 +2886,7 @@
     },
     {
       name: "WebNFC",
+      public: true,
       status: {"Android": "stable", "default": "test"},
     },
     {
@@ -2767,21 +2896,25 @@
     },
     {
       name: "WebOTP",
+      public: true,
       status: "stable",
     },
     {
       name: "WebOTPAssertionFeaturePolicy",
       depends_on: ["WebOTP"],
+      public: true,
       status: "stable",
     },
     {
       name: "WebPaymentAPICSP",
       origin_trial_feature_name: "WebPaymentAPICSP",
       origin_trial_allows_third_party: true,
+      public: true,
     },
     // WebShare is enabled by default on Android.
     {
       name: "WebShare",
+      public: true,
       status: "test",
     },
     {
@@ -2795,6 +2928,7 @@
     },
     {
       name: "WebUSB",
+      public: true,
       status: "stable",
     },
     {
@@ -2812,6 +2946,7 @@
     },
     {
       name: "WebXR",
+      public: true,
       status: "stable",
     },
     {
@@ -2822,27 +2957,32 @@
     {
       name: "WebXRARModule",
       depends_on: ["WebXR"],
+      public: true,
       status: "stable",
     },
     {
       name: "WebXRCameraAccess",
       depends_on: ["WebXRARModule"],
+      public: true,
       status: "experimental",
     },
     {
       name: "WebXRDepth",
       origin_trial_feature_name: "WebXRDepth",
       depends_on: ["WebXRARModule"],
+      public: true,
       status: "stable",
     },
     {
       name: "WebXRHandInput",
       depends_on: ["WebXRARModule"],
+      public: true,
       status: "experimental"
     },
     {
       name: "WebXRHitTest",
       depends_on: ["WebXRARModule"],
+      public: true,
       status: "stable",
     },
     {
@@ -2854,22 +2994,26 @@
       name: "WebXRImageTracking",
       origin_trial_feature_name: "WebXRImageTracking",
       depends_on: ["WebXRARModule"],
+      public: true,
       status: "experimental",
     },
     {
       name: "WebXRLightEstimation",
       depends_on: ["WebXRARModule"],
+      public: true,
       status: "stable",
     },
     {
       name: "WebXRPlaneDetection",
       origin_trial_feature_name: "WebXRPlaneDetection",
       depends_on: ["WebXRARModule"],
+      public: true,
       status: "experimental",
     },
     {
       name: "WebXRViewportScale",
       depends_on: ["WebXRARModule"],
+      public: true,
       status: "stable",
     },
     {

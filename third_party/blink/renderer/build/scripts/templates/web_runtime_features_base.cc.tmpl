@@ -1,0 +1,30 @@
+{% from 'templates/macros.tmpl' import license, source_files_for_generated_file %}
+{{license()}}
+
+{{source_files_for_generated_file(template_file, input_files)}}
+
+#include "third_party/blink/public/platform/web_runtime_features_base.h"
+
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+
+namespace blink {
+
+{% for feature in features %}
+{% if feature.public %}
+// static
+void WebRuntimeFeaturesBase::Enable{{feature.name}}(bool enable) {
+  RuntimeEnabledFeatures::Set{{feature.name}}Enabled(enable);
+}
+
+// static
+bool WebRuntimeFeaturesBase::Is{{feature.name}}Enabled() {
+{% if feature.in_origin_trial %}
+  return RuntimeEnabledFeatures::{{feature.name}}EnabledByRuntimeFlag();
+{% else %}
+  return RuntimeEnabledFeatures::{{feature.name}}Enabled();
+{% endif %}
+}
+
+{% endif %}
+{% endfor %}
+}  // namespace blink
