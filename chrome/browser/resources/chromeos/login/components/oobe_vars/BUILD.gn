@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/chromeos/login/oobe_auto_imports.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
 
@@ -44,12 +45,14 @@ polymer_modulizer("oobe_custom_vars_css") {
   js_file = "oobe_custom_vars_css.m.js"
   html_file = "oobe_custom_vars_css.html"
   html_type = "custom-style"
+  migrated_imports = oobe_migrated_imports
 }
 
 polymer_modulizer("oobe_custom_vars_remora_css") {
   js_file = "oobe_custom_vars_remora_css.m.js"
   html_file = "oobe_custom_vars_remora_css.html"
   html_type = "custom-style"
+  migrated_imports = oobe_migrated_imports
 }
 
 polymer_modulizer("oobe_shared_vars_css") {

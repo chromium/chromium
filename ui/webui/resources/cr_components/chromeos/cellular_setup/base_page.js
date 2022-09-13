@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /** Base template with elements common to all Cellular Setup flow sub-pages. */
-import '../../../cr_elements/shared_vars_css.m.js';
+import '../../../cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_components/chromeos/cellular_setup/cellular_setup_icons.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 

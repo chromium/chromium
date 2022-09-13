@@ -26,7 +26,10 @@
  * class will set an image to the --cr-icon-image variable.
  *
  * Example of using an iron-icon:
- * <link rel="import" href="chrome://resources/cr_elements/icons.html">
+ * In the TS file:
+ * import 'chrome://resources/cr_elements/icons.html.js';
+ *
+ * In the HTML template file:
  * <cr-icon-button iron-icon="cr:icon-key"></cr-icon-button>
  *
  * The color of the icon can be overridden using CSS variables. When using

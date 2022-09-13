@@ -706,6 +706,7 @@ polymer_modulizer("family_link_notice") {
   html_file = "family_link_notice.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 
@@ -767,6 +768,7 @@ polymer_modulizer("os_install") {
   html_file = "os_install.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 
@@ -775,6 +777,7 @@ polymer_modulizer("os_trial") {
   html_file = "os_trial.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 

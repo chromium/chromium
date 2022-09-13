@@ -6,7 +6,7 @@
  * screen.
  */
 
-import '//resources/cr_elements/icons.m.js';
+import '//resources/cr_elements/icons.html.js';
 import '../../components/buttons/oobe_text_button.m.js';
 import '../../components/common_styles/oobe_dialog_host_styles.m.js';
 import '../../components/dialogs/oobe_adaptive_dialog.m.js';
