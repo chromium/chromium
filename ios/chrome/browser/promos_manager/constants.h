@@ -27,6 +27,7 @@ enum class Promo {
   CredentialProviderExtension = 3,  // Credential Provider Extension
   PostRestoreSignInFullscreen =
       4,  // Post Restore Sign-In (fullscreen, FRE-like promo)
+  PostRestoreSignInAlert = 5,  // Post Restore Sign-In (native iOS alert)
 };
 
 typedef struct Impression {
