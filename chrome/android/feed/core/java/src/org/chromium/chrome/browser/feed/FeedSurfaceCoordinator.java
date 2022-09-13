@@ -608,7 +608,7 @@ public class FeedSurfaceCoordinator
         RecyclerView view;
         if (mHybridListRenderer != null) {
             // XSurface returns a View, but it should be a RecyclerView.
-            view = (RecyclerView) mHybridListRenderer.bind(mContentManager, mViewportView);
+            view = (RecyclerView) mHybridListRenderer.bind(mContentManager, mViewportView, false);
             view.setId(R.id.feed_stream_recycler_view);
             view.setClipToPadding(false);
             view.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(mActivity));

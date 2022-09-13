@@ -266,7 +266,8 @@ public class FeedSurfaceCoordinatorTest {
         when(mProcessScope.obtainSurfaceScope(any(SurfaceScopeDependencyProvider.class)))
                 .thenReturn(mSurfaceScope);
         when(mSurfaceScope.provideListRenderer()).thenReturn(mRenderer);
-        when(mRenderer.bind(mContentManagerCaptor.capture(), isNull())).thenReturn(mRecyclerView);
+        when(mRenderer.bind(mContentManagerCaptor.capture(), isNull(), eq(false)))
+                .thenReturn(mRecyclerView);
         when(mSurfaceScope.getFeedLaunchReliabilityLogger()).thenReturn(mLaunchReliabilityLogger);
         TrackerFactory.setTrackerForTests(mTracker);
         when(mTabModelSelector.getModel(eq(false))).thenReturn(mTabModel);
