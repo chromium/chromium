@@ -37,9 +37,13 @@ class PolicyFetcher : public base::RefCountedThreadSafe<PolicyFetcher> {
   void RegisterDevice(
       scoped_refptr<base::SequencedTaskRunner> main_task_runner,
       base::OnceCallback<void(bool, DMClient::RequestResult)> callback);
+  void OnRegisterDeviceRequestComplete(
+      base::OnceCallback<void(int, std::unique_ptr<PolicyManagerInterface>)>
+          callback,
+      bool is_enrollment_mandatory,
+      DMClient::RequestResult result);
 
   void FetchPolicy(
-      scoped_refptr<base::SequencedTaskRunner> main_task_runner,
       base::OnceCallback<void(std::unique_ptr<PolicyManagerInterface>)>
           callback);
   std::unique_ptr<PolicyManagerInterface> OnFetchPolicyRequestComplete(

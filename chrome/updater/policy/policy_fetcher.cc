@@ -58,27 +58,8 @@ void PolicyFetcher::FetchPolicies(
       base::BindOnce(
           &PolicyFetcher::RegisterDevice, this,
           base::SequencedTaskRunnerHandle::Get(),
-          base::BindOnce(
-              [](scoped_refptr<PolicyFetcher> policy_fetcher,
-                 base::OnceCallback<void(
-                     int, std::unique_ptr<PolicyManagerInterface>)> callback,
-                 bool is_enrollment_mandatory, DMClient::RequestResult result) {
-                if (result == DMClient::RequestResult::kSuccess ||
-                    result == DMClient::RequestResult::kAlreadyRegistered) {
-                  policy_fetcher->sequenced_task_runner_->PostTask(
-                      FROM_HERE,
-                      base::BindOnce(
-                          &PolicyFetcher::FetchPolicy, policy_fetcher,
-                          base::SequencedTaskRunnerHandle::Get(),
-                          base::BindOnce(std::move(callback), kErrorOk)));
-                } else {
-                  std::move(callback).Run(is_enrollment_mandatory
-                                              ? kErrorDMRegistrationFailed
-                                              : kErrorOk,
-                                          nullptr);
-                }
-              },
-              base::WrapRefCounted(this), std::move(callback))));
+          base::BindOnce(&PolicyFetcher::OnRegisterDeviceRequestComplete, this,
+                         std::move(callback))));
 }
 
 void PolicyFetcher::RegisterDevice(
@@ -95,8 +76,33 @@ void PolicyFetcher::RegisterDevice(
                                         dm_storage->IsEnrollmentMandatory())));
 }
 
+void PolicyFetcher::OnRegisterDeviceRequestComplete(
+    base::OnceCallback<void(int, std::unique_ptr<PolicyManagerInterface>)>
+        callback,
+    bool is_enrollment_mandatory,
+    DMClient::RequestResult result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
+
+  if (result == DMClient::RequestResult::kSuccess ||
+      result == DMClient::RequestResult::kAlreadyRegistered) {
+    sequenced_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &PolicyFetcher::FetchPolicy, this,
+            base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                               base::BindOnce(std::move(callback), kErrorOk))));
+  } else {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            is_enrollment_mandatory ? kErrorDMRegistrationFailed : kErrorOk,
+            nullptr));
+  }
+}
+
 void PolicyFetcher::FetchPolicy(
-    scoped_refptr<base::SequencedTaskRunner> main_task_runner,
     base::OnceCallback<void(std::unique_ptr<PolicyManagerInterface>)>
         callback) {
   VLOG(1) << __func__;
@@ -105,7 +111,7 @@ void PolicyFetcher::FetchPolicy(
       DMClient::CreateDefaultConfigurator(policy_service_proxy_configuration_),
       GetDefaultDMStorage(),
       base::BindOnce(&PolicyFetcher::OnFetchPolicyRequestComplete, this)
-          .Then(base::BindPostTask(main_task_runner, std::move(callback))));
+          .Then(std::move(callback)));
 }
 
 std::unique_ptr<PolicyManagerInterface>
@@ -118,7 +124,7 @@ PolicyFetcher::OnFetchPolicyRequestComplete(
     return CreateDMPolicyManager();
 
   for (const auto& validation_result : validation_results) {
-    sequenced_task_runner_->PostTask(
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(
             &DMClient::ReportPolicyValidationErrors,
