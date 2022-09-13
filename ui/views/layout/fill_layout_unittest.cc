@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/border.h"
 #include "ui/views/test/test_views.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -148,13 +149,13 @@ TEST_F(FillLayoutTest, GetPreferredHeightForWidthWithMultipleChildren) {
 }
 
 TEST_F(FillLayoutTest, LayoutWithNoChildren) {
-  host_->Layout();
+  test::RunScheduledLayout(host_.get());
   // Makes sure there is no crash.
 }
 
 TEST_F(FillLayoutTest, LayoutWithOneChild) {
   View* const child = AddChildView(25, 50);
-  host_->Layout();
+  test::RunScheduledLayout(host_.get());
 
   EXPECT_EQ(gfx::Rect(0, 0, kDefaultHostWidth, kDefaultHostHeight),
             child->bounds());
@@ -171,7 +172,7 @@ TEST_F(FillLayoutTest, LayoutWithInsets) {
   View* const child = AddChildView(kChildWidth, kChildHeight);
   SetHostInsets(
       gfx::Insets::TLBR(kTopInset, kLeftInset, kBottomInset, kRightInset));
-  host_->Layout();
+  test::RunScheduledLayout(host_.get());
 
   EXPECT_EQ(gfx::Rect(kLeftInset, kTopInset,
                       kDefaultHostWidth - kLeftInset - kRightInset,
@@ -186,7 +187,7 @@ TEST_F(FillLayoutTest, LayoutMultipleChildren) {
 
   const gfx::Rect kExpectedBounds(0, 0, kDefaultHostWidth, kDefaultHostHeight);
 
-  host_->Layout();
+  test::RunScheduledLayout(host_.get());
 
   EXPECT_EQ(kExpectedBounds, child_1->bounds());
   EXPECT_EQ(kExpectedBounds, child_2->bounds());
@@ -200,7 +201,7 @@ TEST_F(FillLayoutTest, LayoutIgnoreView) {
 
   layout_->SetChildViewIgnoredByLayout(child_3, true);
   EXPECT_EQ(gfx::Size(10, 50), GetPreferredSize());
-  host_->Layout();
+  test::RunScheduledLayout(host_.get());
 
   const gfx::Size kExpectedSize(kDefaultHostWidth, kDefaultHostHeight);
   EXPECT_EQ(kExpectedSize, child_1->size());
@@ -216,7 +217,7 @@ TEST_F(FillLayoutTest, LayoutIgnoresHiddenView) {
   layout_->SetIncludeHiddenViews(false);
 
   EXPECT_EQ(gfx::Size(10, 50), GetPreferredSize());
-  host_->Layout();
+  test::RunScheduledLayout(host_.get());
 
   const gfx::Size kExpectedSize(kDefaultHostWidth, kDefaultHostHeight);
   EXPECT_EQ(kExpectedSize, child_1->size());
@@ -231,7 +232,7 @@ TEST_F(FillLayoutTest, LayoutIncludesHiddenView) {
   child_3->SetVisible(false);
 
   EXPECT_EQ(gfx::Size(25, 50), GetPreferredSize());
-  host_->Layout();
+  test::RunScheduledLayout(host_.get());
 
   const gfx::Size kExpectedSize(kDefaultHostWidth, kDefaultHostHeight);
   EXPECT_EQ(kExpectedSize, child_1->size());
