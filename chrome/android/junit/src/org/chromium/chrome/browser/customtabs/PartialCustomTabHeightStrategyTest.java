@@ -67,6 +67,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.test.util.browser.Features;
@@ -154,6 +155,8 @@ public class PartialCustomTabHeightStrategyTest {
     private View mDragHandlebar;
     @Mock
     private CommandLine mCommandLine;
+    @Mock
+    private FullscreenManager mFullscreenManager;
 
     private Context mContext;
     private List<WindowManager.LayoutParams> mAttributeResults;
@@ -240,7 +243,7 @@ public class PartialCustomTabHeightStrategyTest {
     private PartialCustomTabHeightStrategy createPcctAtHeight(int heightPx, boolean isFixedHeight) {
         PartialCustomTabHeightStrategy pcct =
                 new PartialCustomTabHeightStrategy(mActivity, heightPx, null, null, isFixedHeight,
-                        mOnResizedCallback, mActivityLifecycleDispatcher);
+                        mOnResizedCallback, mActivityLifecycleDispatcher, mFullscreenManager);
         pcct.setWindowAboveNavbarForTesting(mWindowAboveNavbar);
         pcct.setMockViewForTesting(
                 mNavbar, mSpinnerView, mSpinner, mToolbarView, mToolbarCoordinator);
@@ -843,5 +846,25 @@ public class PartialCustomTabHeightStrategyTest {
         strategy.onConfigurationChanged(mConfiguration);
         attrs = getWindowAttributes();
         assertEquals(WindowManager.LayoutParams.MATCH_PARENT, attrs.width);
+    }
+
+    @Test
+    public void enterAndExitHtmlFullscreen() {
+        Assume.assumeTrue("HTML fullscreen mode is supported in 'window-above-navbar' version.",
+                mWindowAboveNavbar);
+
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
+        assertFalse(isFullscreen());
+
+        strategy.onEnterFullscreen(null, null);
+        assertTrue(isFullscreen());
+
+        strategy.onExitFullscreen(null);
+        assertFalse(isFullscreen());
+    }
+
+    private boolean isFullscreen() {
+        WindowManager.LayoutParams attrs = mAttributeResults.get(mAttributeResults.size() - 1);
+        return attrs.isFullscreen();
     }
 }

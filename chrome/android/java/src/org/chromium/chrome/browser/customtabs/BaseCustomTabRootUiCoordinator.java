@@ -254,7 +254,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 intentDataProvider.getColorProvider().getNavigationBarDividerColor(),
                 intentDataProvider.isPartialCustomTabFixedHeight(),
                 CustomTabsConnection.getInstance(), intentDataProvider.getSession(),
-                mActivityLifecycleDispatcher);
+                mActivityLifecycleDispatcher, mFullscreenManager);
     }
 
     @Override
@@ -307,6 +307,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             mBrandingController.destroy();
             mBrandingController = null;
         }
+
+        mCustomTabHeightStrategy.destroy();
     }
 
     /**

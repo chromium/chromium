@@ -49,9 +49,12 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.util.ColorUtils;
 
 import java.lang.annotation.Retention;
@@ -63,7 +66,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         implements ConfigurationChangedObserver, ValueAnimator.AnimatorUpdateListener,
-                   PartialCustomTabHandleStrategy.DragEventCallback {
+                   PartialCustomTabHandleStrategy.DragEventCallback, FullscreenManager.Observer {
     @VisibleForTesting
     static final long SPINNER_TIMEOUT_MS = 500;
     /**
@@ -97,6 +100,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private final int mCachedHandleHeight;
     private final boolean mIsFixedHeight;
     private final @Px int mUnclampedInitialHeight;
+    private final FullscreenManager mFullscreenManager;
 
     private @Px int mDisplayHeight;
     private @Px int mFullyExpandedAdjustmentHeight;
@@ -135,6 +139,9 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private Runnable mPositionUpdater;
     private boolean mStopShowingSpinner;
 
+    // Window attributes backed up for HTML fullscreen mode.
+    private WindowManager.LayoutParams mPreFullscreenAttrs;
+
     // Runnable finishing the activity after the exit animation. Non-null when PCCT is closing.
     @Nullable
     private Runnable mFinishRunnable;
@@ -172,13 +179,15 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
     public PartialCustomTabHeightStrategy(Activity activity, @Px int initialHeight,
             Integer navigationBarColor, Integer navigationBarDividerColor, boolean isFixedHeight,
-            OnResizedCallback onResizedCallback, ActivityLifecycleDispatcher lifecycleDispatcher) {
+            OnResizedCallback onResizedCallback, ActivityLifecycleDispatcher lifecycleDispatcher,
+            FullscreenManager fullscreenManager) {
         mWindowAboveNavbar = ChromeFeatureList.sCctResizableWindowAboveNavbar.isEnabled();
         mActivity = activity;
         mDisplayHeight = getDisplayHeight();
         mUnclampedInitialHeight = initialHeight;
         mIsFixedHeight = isFixedHeight;
         mOnResizedCallback = onResizedCallback;
+        mFullscreenManager = fullscreenManager;
 
         mAnimator = new ValueAnimator();
         mAnimator.setDuration(SCROLL_DURATION_MS);
@@ -235,6 +244,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
                 }
             });
         };
+        fullscreenManager.addObserver(this);
     }
 
     @Override
@@ -505,16 +515,20 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             mShadowOffset = mActivity.getResources().getDimensionPixelSize(
                     R.dimen.custom_tabs_shadow_offset);
         }
+        setTopMargins(mShadowOffset, getHandleHeight());
+        mToolbarCoordinator.requestLayout();
+    }
+
+    private void setTopMargins(int shadowOffset, int handleOffset) {
         View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
         ViewGroup.MarginLayoutParams lp =
                 (ViewGroup.MarginLayoutParams) handleView.getLayoutParams();
-        lp.setMargins(0, mShadowOffset, 0, 0);
+        lp.setMargins(0, shadowOffset, 0, 0);
 
         // Make enough room for the handle View.
         ViewGroup.MarginLayoutParams mlp =
                 (ViewGroup.MarginLayoutParams) mToolbarCoordinator.getLayoutParams();
-        mlp.setMargins(0, getHandleHeight() + mShadowOffset, 0, 0);
-        mToolbarCoordinator.requestLayout();
+        mlp.setMargins(0, handleOffset, 0, 0);
     }
 
     private int getHandleHeight() {
@@ -962,6 +976,36 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mAnimator.setIntValues(currentY, animateEndY);
         mAnimator.start();
         return true;
+    }
+
+    // FullscreenManager.Observer implementation
+
+    @Override
+    public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
+        // TODO(jinsukkim): Handle fullscreen in non-'window-above-navbar' version as well.
+        if (mPreFullscreenAttrs != null || !mWindowAboveNavbar) return;
+        mPreFullscreenAttrs = mActivity.getWindow().getAttributes();
+        WindowManager.LayoutParams attrs = new WindowManager.LayoutParams();
+        attrs.copyFrom(mPreFullscreenAttrs);
+        attrs.x = 0;
+        attrs.y = 0;
+        attrs.height = MATCH_PARENT;
+        attrs.width = MATCH_PARENT;
+        mActivity.getWindow().setAttributes(attrs);
+        setTopMargins(0, 0);
+    }
+
+    @Override
+    public void onExitFullscreen(Tab tab) {
+        if (mPreFullscreenAttrs == null || !mWindowAboveNavbar) return;
+        mActivity.getWindow().setAttributes(mPreFullscreenAttrs);
+        mPreFullscreenAttrs = null;
+        setTopMargins(mShadowOffset, getHandleHeight());
+    }
+
+    @Override
+    public void destroy() {
+        mFullscreenManager.removeObserver(this);
     }
 
     @VisibleForTesting

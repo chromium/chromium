@@ -12,6 +12,7 @@ import androidx.annotation.Px;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
 /**
@@ -22,14 +23,15 @@ public class CustomTabHeightStrategy {
             Integer navigationBarColor, Integer navigationBarDividerColor,
             boolean isPartialCustomTabFixedHeight, CustomTabsConnection connection,
             @Nullable CustomTabsSessionToken session,
-            ActivityLifecycleDispatcher lifecycleDispatcher) {
+            ActivityLifecycleDispatcher lifecycleDispatcher, FullscreenManager fullscreenManager) {
         if (initialHeight <= 0) {
             return new CustomTabHeightStrategy();
         }
 
         return new PartialCustomTabHeightStrategy(activity, initialHeight, navigationBarColor,
                 navigationBarDividerColor, isPartialCustomTabFixedHeight,
-                size -> connection.onResized(session, size), lifecycleDispatcher);
+                size -> connection.onResized(session, size),
+                lifecycleDispatcher, fullscreenManager);
     }
 
     /**
@@ -75,4 +77,9 @@ public class CustomTabHeightStrategy {
     public boolean canDrawOutsideScreen() {
         return false;
     }
+
+    /**
+     * Destroy the height strategy object.
+     */
+    public void destroy() {}
 }
