@@ -865,9 +865,6 @@ void NavigationControllerImpl::RegisterExistingOriginAsHavingDefaultIsolation(
     entry_replaced_by_post_commit_error_
         ->RegisterExistingOriginAsHavingDefaultIsolation(origin);
   }
-  // TODO(wjmaclean): Register pending commit NavigationRequests rather than
-  // visiting pending_entry_, which lacks a committed origin. This will be done
-  // in https://chromium-review.googlesource.com/c/chromium/src/+/2136703.
 }
 
 void NavigationControllerImpl::SetPendingEntry(
