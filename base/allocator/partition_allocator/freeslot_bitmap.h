@@ -85,7 +85,7 @@ PA_ALWAYS_INLINE void FreeSlotBitmapReset(uintptr_t begin_addr,
                                           uintptr_t slot_size) {
   PA_DCHECK(begin_addr <= end_addr);
   // |end_addr| has to be kSmallestBucket-aligned.
-  PA_DCHECK(end_addr & (kSmallestBucket - 1) == 0u);
+  PA_DCHECK((end_addr & (kSmallestBucket - 1)) == 0u);
   for (uintptr_t slot_start = begin_addr; slot_start < end_addr;
        slot_start += slot_size) {
     auto [cell, bit_index] = GetFreeSlotBitmapCellPtrAndBitIndex(slot_start);
