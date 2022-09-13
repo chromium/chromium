@@ -58,6 +58,9 @@ SYMBOLS_GROUPS = {
         (0x0391, 0x0391 + 25),
         # Normal Small Letters.
         (0x03b1, 0x03b1 + 25),
+        # Mathematical Operators
+        (0x2200, 0x2235),
+        (0x2260, 0x228b),
     ],
     'Miscellaneous': [
         # Miscellaneous Symbols Unicode Block.
@@ -67,6 +70,10 @@ SYMBOLS_GROUPS = {
 
 # List of unicode ranges (inclusive) for each search only symbol group.
 SEARCH_ONLY_SYMBOLS_GROUPS = {
+    'Letterlike': [
+        # Letterlike Symbols Unicode Block.
+        (0x2110, 0x214f),
+    ],
     'Math': [
         # Greek Letters and Symbols from Mathematical and Alphanumeric
         # Symbols Unicode Block.
@@ -76,6 +83,13 @@ SEARCH_ONLY_SYMBOLS_GROUPS = {
         (0x1D6E2, 0x1D6E2 + 25),
         # Bold-Italic Capital Letters.
         (0x1D71C, 0x1D71C + 25),
+        # Mathematical Operators
+        (0x2236, 0x225f),
+        (0x228c, 0x22df),
+    ],
+    'Miscellaneous': [
+        # Miscellaneous Symbols Unicode Block.
+        (0x2300, 0x23cf)
     ],
 }
 
