@@ -4672,6 +4672,11 @@ const char kArcFilePickerExperimentName[] =
 const char kArcFilePickerExperimentDescription[] =
     "Enables using ChromeOS file picker in ARC.";
 
+extern const char kArcFixupWindowName[] =
+    "Enable ARC Ghost Window for ARC App fixup";
+extern const char kArcFixupWindowDescription[] =
+    "Popup ARC Ghost Window app launching before fixup finishes.";
+
 const char kArcGameModeName[] = "Enable Game Mode for ARC";
 const char kArcGameModeDescription[] =
     "ARC Fullscreen Games will request accomodation from ChromeOS for "

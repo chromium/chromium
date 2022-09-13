@@ -2672,6 +2672,9 @@ extern const char kArcDocumentsProviderUnknownSizeDescription[];
 extern const char kArcFilePickerExperimentName[];
 extern const char kArcFilePickerExperimentDescription[];
 
+extern const char kArcFixupWindowName[];
+extern const char kArcFixupWindowDescription[];
+
 extern const char kArcGameModeName[];
 extern const char kArcGameModeDescription[];
 

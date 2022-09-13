@@ -60064,6 +60064,7 @@ from previous Chrome versions.
   <int value="233721248" label="DownloadRename:disabled"/>
   <int value="235191586"
       label="AutofillEnableVirtualCardFidoEnrollment:enabled"/>
+  <int value="236498704" label="ArcFixupWindowFeature:disabled"/>
   <int value="237066116" label="PageInfoV2:disabled"/>
   <int value="237570976" label="CommandLineOnNonRooted:disabled"/>
   <int value="237964589"
@@ -61711,6 +61712,7 @@ from previous Chrome versions.
   <int value="1242632259" label="ContentSuggestionsCategoryOrder:disabled"/>
   <int value="1242669640" label="AutofillServerTypeTakesPrecedence:enabled"/>
   <int value="1243180545" label="HarfBuzzPDFSubsetter:enabled"/>
+  <int value="1243704644" label="ArcFixupWindowFeature:enabled"/>
   <int value="1243890754" label="ForbidSyncXHRInPageDismissal:disabled"/>
   <int value="1244050764" label="LauncherPulsingBlocksRefresh:disabled"/>
   <int value="1245889469" label="enable-surface-worker"/>

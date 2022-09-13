@@ -10,6 +10,7 @@
 #include <tuple>
 #include <utility>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
@@ -202,6 +203,10 @@ std::string ConstructArcAppShortcutUrl(const std::string& app_id,
   return "appshortcutsearch://" + app_id + "/" + shortcut_id;
 }
 
+bool IsFixupWindowEnabled() {
+  return base::FeatureList::IsEnabled(arc::kFixupWindowFeature);
+}
+
 }  // namespace
 
 // Package names, kept in sorted order.
@@ -312,7 +317,11 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(context);
   std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
   absl::optional<std::string> launch_intent_to_send = launch_intent;
-  if (app_info && (!app_info->ready || app_info->need_fixup)) {
+
+  // Some apps need fixup when ARC version upgrade e.g. from ARC P to ARC R.
+  // Before fixup finishes, the |app_info->ready| is true but not launchable.
+  if (app_info &&
+      ((IsFixupWindowEnabled() && app_info->need_fixup) || !app_info->ready)) {
     if (!IsArcPlayStoreEnabledForProfile(profile)) {
       if (prefs->IsDefault(app_id)) {
         // The setting can fail if the preference is managed.  However, the
@@ -359,8 +368,17 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
       arc::ArcBootPhaseMonitorBridge::RecordFirstAppLaunchDelayUMA(context);
     }
 
-    if (full_restore::features::IsArcWindowPredictorEnabled() &&
-        IsArcVmEnabled()) {
+    if (IsFixupWindowEnabled() && app_info->need_fixup) {
+      // TODO(sstan): Use different UI after UX design finalized.
+      if (LaunchArcAppWithGhostWindow(profile, app_id, *app_info, event_flags,
+                                      user_action, window_info)) {
+        prefs->SetLastLaunchTime(app_id);
+        return true;
+      }
+      // Block launch request if failed to launch ghost window.
+      return false;
+    } else if (full_restore::features::IsArcWindowPredictorEnabled() &&
+               IsArcVmEnabled()) {
       if (LaunchArcAppWithGhostWindow(profile, app_id, *app_info, event_flags,
                                       user_action, window_info)) {
         prefs->SetLastLaunchTime(app_id);

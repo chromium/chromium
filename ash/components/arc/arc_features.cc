@@ -69,6 +69,10 @@ const base::Feature kEnableUsap{"ArcEnableUsap",
 const base::Feature kEnableVirtioBlkForData{"ArcEnableVirtioBlkForData",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to pop up ghost window for ARC app before fixup finishes.
+const base::Feature kFixupWindowFeature{"ArcFixupWindowFeature",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Used for overriding config params for the virtio-blk feature above.
 const base::Feature kVirtioBlkDataConfigOverride{
     "ArcVirtioBlkDataConfigOverride", base::FEATURE_DISABLED_BY_DEFAULT};
