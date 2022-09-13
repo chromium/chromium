@@ -209,7 +209,7 @@ class FakeColorChooserClient : public GarbageCollected<FakeColorChooserClient>,
   void DidChooseColor(const Color& color) override {}
   void DidEndChooser() override {}
   Element& OwnerElement() const override { return *owner_element_; }
-  gfx::Rect ElementRectRelativeToLocalRoot() const override {
+  gfx::Rect ElementRectRelativeToViewport() const override {
     return gfx::Rect();
   }
   Color CurrentColor() override { return Color(); }

@@ -647,10 +647,6 @@ bool VisualViewport::DidSetScaleOrLocation(float scale,
   probe::DidChangeViewport(&LocalMainFrame());
   LocalMainFrame().Loader().SaveScrollState();
 
-  // VisualViewport scale/scrolling should be treated as root layer scrolling
-  // so that frame rects are updated for out of process frames.
-  LocalMainFrame().View()->SetRootLayerDidScroll();
-
   ClampToBoundaries();
 
   needs_paint_property_update_ = true;

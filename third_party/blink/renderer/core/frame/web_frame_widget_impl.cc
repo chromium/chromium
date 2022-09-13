@@ -4050,12 +4050,6 @@ void WebFrameWidgetImpl::NotifyPageScaleFactorChanged(
   // descendant of this widget.
   page_scale_factor_in_mainframe_ = page_scale_factor;
   is_pinch_gesture_active_in_mainframe_ = is_pinch_gesture_active;
-
-  // Since the scale has changed, child frames' screen position is likely to
-  // have changed as a result.
-  if (auto* frame_view = LocalRootImpl()->GetFrameView())
-    frame_view->PropagateFrameRects();
-
   // Push the page scale factor down to any child RemoteFrames.
   // TODO(danakj): This ends up setting the page scale factor in the
   // RenderWidgetHost of the child WebFrameWidgetImpl, so that it can bounce

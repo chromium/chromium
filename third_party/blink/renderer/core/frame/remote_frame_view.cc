@@ -13,9 +13,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_client.h"
-#include "third_party/blink/renderer/core/frame/visual_viewport.h"
-#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
-#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -287,36 +284,6 @@ void RemoteFrameView::PropagateFrameRects() {
 
   if (LocalFrameView* parent = ParentFrameView()) {
     rect_in_local_root = parent->ConvertToRootFrame(rect_in_local_root);
-    gfx::Size unscaled_size = rect_in_local_root.size();
-
-    DCHECK(ParentLocalRootFrameView());
-    // If the local root is the main frame then we have to transform by the
-    // full visual viewport transform since the frame's location will be
-    // dependent on the visual viewport offset. In a nested local root, the
-    // visual viewport offset is already baked into the local root's ViewRect.
-    // However, the page scale must still be applied to the offset from the
-    // local root.
-    if (ParentLocalRootFrameView()->GetFrame().IsMainFrame()) {
-      VisualViewport& viewport =
-          ParentLocalRootFrameView()->GetPage()->GetVisualViewport();
-      if (viewport.IsActiveViewport())
-        rect_in_local_root = viewport.RootFrameToViewport(rect_in_local_root);
-    } else {
-      auto* widget =
-          WebLocalFrameImpl::FromFrame(ParentLocalRootFrameView()->GetFrame())
-              ->LocalRootFrameWidget();
-      rect_in_local_root = gfx::ScaleToEnclosingRect(
-          rect_in_local_root, widget->PageScaleInMainFrame());
-    }
-
-    // Unfortunately, rect_in_local_root has multiple meanings in the browser:
-    // it's origin is used to position popups so it must have scaling applied
-    // so that popup locations are correct under pinch-zoom; however, the size
-    // is used to create the physical backing size for the compositor so it
-    // must be unscaled. See comments in
-    // RenderWidgetHostViewChildFrame::GetViewBounds and
-    // https://crbug.com/928825 for details.
-    rect_in_local_root.set_size(unscaled_size);
   }
 
   gfx::Size frame_size = frame_rect.size();

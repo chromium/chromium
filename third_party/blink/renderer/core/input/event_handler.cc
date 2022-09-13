@@ -2196,10 +2196,12 @@ WebInputEventResult EventHandler::ShowNonLocatedContextMenu(
   }
 
   frame_->View()->SetCursor(PointerCursor());
+  gfx::Point location_in_viewport =
+      visual_viewport.RootFrameToViewport(location_in_root_frame);
   gfx::Point global_position =
       view->GetChromeClient()
-          ->LocalRootToScreen(gfx::Rect(location_in_root_frame, gfx::Size()),
-                              frame_->View())
+          ->ViewportToScreen(gfx::Rect(location_in_viewport, gfx::Size()),
+                             frame_->View())
           .origin();
 
   // Use the focused node as the target for hover and active.

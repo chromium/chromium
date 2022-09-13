@@ -3553,8 +3553,7 @@ String Internals::selectedTextForClipboard() {
 void Internals::setVisualViewportOffset(int x, int y) {
   if (!GetFrame())
     return;
-  float zoom = GetFrame()->PageZoomFactor();
-  gfx::PointF offset(x * zoom, y * zoom);
+  gfx::PointF offset(x, y);
   GetFrame()->GetPage()->GetVisualViewport().SetLocation(offset);
 }
 

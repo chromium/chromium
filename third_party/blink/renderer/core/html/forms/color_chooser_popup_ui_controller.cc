@@ -92,8 +92,8 @@ void ColorChooserPopupUIController::WriteDocument(SharedBuffer* data) {
 
 void ColorChooserPopupUIController::WriteColorPickerDocument(
     SharedBuffer* data) {
-  gfx::Rect anchor_rect_in_screen = chrome_client_->LocalRootToScreen(
-      client_->ElementRectRelativeToLocalRoot(), frame_->View());
+  gfx::Rect anchor_rect_in_screen = chrome_client_->ViewportToScreen(
+      client_->ElementRectRelativeToViewport(), frame_->View());
 
   PagePopupClient::AddString(
       "<!DOCTYPE html><head><meta charset='UTF-8'><meta name='color-scheme' "
@@ -162,8 +162,8 @@ void ColorChooserPopupUIController::WriteColorSuggestionPickerDocument(
     suggestion_values.push_back(
         Color::FromRGBA32(suggestion->color).SerializeAsCSSColor());
   }
-  gfx::Rect anchor_rect_in_screen = chrome_client_->LocalRootToScreen(
-      client_->ElementRectRelativeToLocalRoot(), frame_->View());
+  gfx::Rect anchor_rect_in_screen = chrome_client_->ViewportToScreen(
+      client_->ElementRectRelativeToViewport(), frame_->View());
 
   PagePopupClient::AddString(
       "<!DOCTYPE html><head><meta charset='UTF-8'><meta name='color-scheme' "

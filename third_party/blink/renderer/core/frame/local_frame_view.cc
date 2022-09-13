@@ -3950,7 +3950,7 @@ gfx::Point LocalFrameView::FrameToViewport(
 
 gfx::Rect LocalFrameView::FrameToScreen(const gfx::Rect& rect) const {
   if (auto* client = GetChromeClient())
-    return client->LocalRootToScreen(ConvertToRootFrame(rect), this);
+    return client->ViewportToScreen(FrameToViewport(rect), this);
   return gfx::Rect();
 }
 
