@@ -39,7 +39,6 @@ std::string GetUpdatesResponseEvent::GetDetails() const {
       return base::StringPrintf("Received %d update(s).  Some updates remain.",
                                 response_.get_updates().entries_size());
     case SyncerError::UNSET:
-    case SyncerError::CANNOT_DO_WORK:
     case SyncerError::NETWORK_CONNECTION_UNAVAILABLE:
     case SyncerError::NETWORK_IO_ERROR:
     case SyncerError::SYNC_SERVER_ERROR:
@@ -53,10 +52,8 @@ std::string GetUpdatesResponseEvent::GetDetails() const {
     case SyncerError::SERVER_RETURN_CONFLICT:
     case SyncerError::SERVER_RESPONSE_VALIDATION_FAILED:
     case SyncerError::SERVER_RETURN_DISABLED_BY_ADMIN:
-    case SyncerError::SERVER_RETURN_PARTIAL_FAILURE:
     case SyncerError::SERVER_RETURN_CLIENT_DATA_OBSOLETE:
     case SyncerError::SERVER_RETURN_ENCRYPTION_OBSOLETE:
-    case SyncerError::DATATYPE_TRIGGERED_RETRY:
       return "Received error: " + error_.ToString();
   }
 }

@@ -43,9 +43,7 @@ std::string RandASCIIString(size_t length) {
 SyncCommitError GetSyncCommitError(SyncerError syncer_error) {
   switch (syncer_error.value()) {
     case SyncerError::UNSET:
-    case SyncerError::CANNOT_DO_WORK:
     case SyncerError::SYNCER_OK:
-    case SyncerError::DATATYPE_TRIGGERED_RETRY:
     case SyncerError::SERVER_MORE_TO_DOWNLOAD:
       NOTREACHED();
       break;
@@ -62,7 +60,6 @@ SyncCommitError GetSyncCommitError(SyncerError syncer_error) {
     case SyncerError::SERVER_RETURN_CLEAR_PENDING:
     case SyncerError::SERVER_RETURN_NOT_MY_BIRTHDAY:
     case SyncerError::SERVER_RETURN_CONFLICT:
-    case SyncerError::SERVER_RETURN_PARTIAL_FAILURE:
     case SyncerError::SERVER_RETURN_CLIENT_DATA_OBSOLETE:
     case SyncerError::SERVER_RETURN_ENCRYPTION_OBSOLETE:
     case SyncerError::SERVER_RETURN_DISABLED_BY_ADMIN:

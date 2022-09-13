@@ -94280,12 +94280,12 @@ would be helpful to identify which type is being sent.
 
 <enum name="SyncerErrorValues">
   <int value="0" label="UNSET"/>
-  <int value="1" label="CANNOT_DO_WORK"/>
+  <int value="1" label="(deprecated) CANNOT_DO_WORK"/>
   <int value="2" label="NETWORK_CONNECTION_UNAVAILABLE"/>
   <int value="3" label="NETWORK_IO_ERROR"/>
   <int value="4" label="SYNC_SERVER_ERROR"/>
   <int value="5" label="SYNC_AUTH_ERROR"/>
-  <int value="6" label="SERVER_RETURN_INVALID_CREDENTIAL"/>
+  <int value="6" label="(deprecated) SERVER_RETURN_INVALID_CREDENTIAL"/>
   <int value="7" label="SERVER_RETURN_UNKNOWN_ERROR"/>
   <int value="8" label="SERVER_RETURN_THROTTLED"/>
   <int value="9" label="SERVER_RETURN_TRANSIENT_ERROR"/>
@@ -94295,11 +94295,11 @@ would be helpful to identify which type is being sent.
   <int value="13" label="SERVER_RETURN_CONFLICT"/>
   <int value="14" label="SERVER_RESPONSE_VALIDATION_FAILED"/>
   <int value="15" label="SERVER_RETURN_DISABLED_BY_ADMIN"/>
-  <int value="16" label="SERVER_RETURN_USER_ROLLBACK"/>
-  <int value="17" label="SERVER_RETURN_PARTIAL_FAILURE"/>
+  <int value="16" label="(deprecated) SERVER_RETURN_USER_ROLLBACK"/>
+  <int value="17" label="(deprecated) SERVER_RETURN_PARTIAL_FAILURE"/>
   <int value="18" label="SERVER_RETURN_CLIENT_DATA_OBSOLETE"/>
   <int value="19" label="SERVER_RETURN_ENCRYPTION_OBSOLETE"/>
-  <int value="20" label="DATATYPE_TRIGGERED_RETRY"/>
+  <int value="20" label="(deprecated) DATATYPE_TRIGGERED_RETRY"/>
   <int value="21" label="SERVER_MORE_TO_DOWNLOAD"/>
   <int value="22" label="SYNCER_OK"/>
 </enum>
