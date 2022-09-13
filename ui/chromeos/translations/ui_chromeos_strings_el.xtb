@@ -85,6 +85,7 @@
 <translation id="1722487484194605434">Συμπίεση <ph name="NUMBER_OF_ITEMS" /> στοιχείων...</translation>
 <translation id="1722687688096767818">Προσθήκη προφίλ…</translation>
 <translation id="1726100011689679555">Διακομιστές ονομάτων</translation>
+<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> στοιχεία μετακινήθηκαν στον κάδο</translation>
 <translation id="1729953886957086472">Γερμανικά (Γερμανίας)</translation>
 <translation id="1730235522912993863">Κινεζικά Cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> στοιχεία αντιγράφηκαν.</translation>
@@ -217,6 +218,7 @@
 <translation id="2888807692577297075">Δεν υπάρχουν στοιχεία σε αντιστοιχία με το &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Πληροφορίες</translation>
 <translation id="2902734494705624966">Εκτεταμένο ΗΠΑ</translation>
+<translation id="2906052776158021882">Μετακίνηση <ph name="NUMBER_OF_ITEMS" /> στοιχείων στον κάδο</translation>
 <translation id="290843123675549676">Μαραθικά</translation>
 <translation id="2923240520113693977">Εσθονικά
 </translation>
@@ -486,6 +488,7 @@
 <translation id="5068919226082848014">Πίτσα</translation>
 <translation id="5081517858322016911">Θα διαγραφούν αρχεία που καταλαμβάνουν συνολικά <ph name="TOTAL_FILE_SIZE" /></translation>
 <translation id="508423945471810158">Μετακίνηση <ph name="NUMBER_OF_ITEMS" /> στοιχείων στον φάκελο <ph name="FOLDER_NAME" /></translation>
+<translation id="5092200349368278146">Το <ph name="FILE_NAME" /> μετακινήθηκε στον κάδο</translation>
 <translation id="509429900233858213">Παρουσιάστηκε σφάλμα.</translation>
 <translation id="5098629044894065541">Εβραϊκά
 </translation>
@@ -594,6 +597,7 @@
 <translation id="5845721951356578987">Νοσοκόμος</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">Αποτυχία αναζήτησης DHCP</translation>
+<translation id="5887342613489958822">Μετακίνηση <ph name="FILE_NAME" /> στον κάδο</translation>
 <translation id="5896749729057314184">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Απενεργοποιημένο, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Λεπτομέρειες</translation>
 <translation id="5911887972742538906">Παρουσιάστηκε σφάλμα κατά την εγκατάσταση της εφαρμογής σας Linux.</translation>
 <translation id="5912396950572065471">Διαμόρφωση</translation>

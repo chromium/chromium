@@ -130,11 +130,6 @@
 
           Si se inhabilita esta política, las contraseñas no se recordarán nunca y se quitarán todas las contraseñas previamente almacenadas. Los usuarios deberán ingresar su contraseña cada vez que necesiten autenticación en el sistema Kerberos. Según la configuración del servidor, esta acción debe realizarse cada 8 horas o cada varios meses.</translation>
 <translation id="1133622335785078255">Permitir que los usuarios creen y utilicen perfiles secundarios y usen el modo de invitado en el navegador <ph name="LACROS_NAME" /></translation>
-<translation id="1133814529606590009">Si habilitas la política, estará siempre activa la recopilación de datos anónimos con URL, la cual envía a Google las URL de las páginas que visita el usuario para mejorar la búsqueda y la exploración.
-
-      Si inhabilitas la política, no se recopilarán datos anónimos con URL.
-
-      Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, se activará la recopilación de datos anónimos con URL, pero los usuarios podrán cambiar esta configuración.</translation>
 <translation id="1137096407176363892">Permite las voces de texto a voz de la red mejorada en la función de accesibilidad Seleccionar para pronunciar. Estas voces envían texto a los servidores de Google para sintetizar enunciaciones que suenan naturales.
 
           Si estableces esta política como falsa, la función de voces de texto a voz de la red mejorada de Seleccionar para pronunciar estará siempre inhabilitada.
@@ -7429,6 +7424,20 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8656110680728938054">Habilita Seleccionar para pronunciar</translation>
 <translation id="8659843732895043951">Permitir el portapapeles en estos sitios</translation>
 <translation id="8661297125441579970">No permitir la migración de datos y ARC</translation>
+<translation id="8664285601317301180">Esta política controla el valor de <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> <ph name="IPP_PROTOCOL" /> (<ph name="INTERNET_PRINTING_PROTOCOL" />) <ph name="IPP_ATTRIBUTE" /> en los trabajos de impresión.
+
+      Si estableces la política como una string, se agregará un elemento <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> adicional a cada trabajo de impresión. El miembro <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> del elemento <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> agregado se establecerá con el valor de la política después de la sustitución de variables.
+
+      Las variables admitidas son <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />. No se remplazarán las variables de marcador de posición no admitidas.
+
+      El valor resultante después de la sustitución de variables se considera válido si contiene solo caracteres imprimibles <ph name="ASCII" /> y su longitud no supera los 255 caracteres.
+
+      Ten en cuenta que, por motivos de privacidad, esta política se aplica solo cuando te comunicas con una impresora mediante los protocolos <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" /> o <ph name="IPP_USB_PROTOCOL" />. Además, ten en cuenta que esta política solo se aplica a las impresoras que admiten <ph name="CLIENT_NAME_IPP_ATTRIBUTE" />.
+
+      La política solo se aplica a los usuarios afiliados.
+
+      Si no estableces la política o la estableces como un valor vacío o no válido, no se agregará un <ph name="CLIENT_INFO_PLACEHOLDER" /> adicional a las solicitudes de trabajos de impresión.
+      </translation>
 <translation id="8665314828727504286">Nivel de protección de la Navegación segura</translation>
 <translation id="8666123502812856425">Si estableces la política, podrás crear una lista de URLs que indiquen los sitios a los que se les otorga permiso automáticamente para acceder a un dispositivo HID que tenga una colección de nivel superior con el uso determinado de HID. Para que la política sea válida, cada elemento de la lista debe tener especificados los campos <ph name="USAGES_FIELD_NAME" /> y <ph name="URLS_FIELD_NAME" />. Cada elemento del campo <ph name="USAGES_FIELD_NAME" /> debe tener especificado el campo <ph name="USAGE_PAGE_FIELD_NAME" /> y puede tener el campo <ph name="USAGE_FIELD_NAME" />. Si omites el campo <ph name="USAGE_FIELD_NAME" />, se creará una política que funcione con cualquier dispositivo que tenga una colección de nivel superior con un uso de la página de uso determinado. Los elementos que tengan especificado el campo <ph name="USAGE_FIELD_NAME" />, pero que no tengan el campo <ph name="USAGE_PAGE_FIELD_NAME" /> no serán válidos y se ignorarán.
 

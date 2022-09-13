@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">در حال فشرده‌سازی <ph name="NUMBER_OF_ITEMS" /> مورد…</translation>
 <translation id="1722687688096767818">درحال افزودن نمایه…</translation>
 <translation id="1726100011689679555">سرورهای نام</translation>
+<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> مورد به «حذف‌شده‌ها» منتقل شد</translation>
 <translation id="1729953886957086472">آلمانی (آلمان)</translation>
 <translation id="1730235522912993863">چینی (کانجی)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> مورد کپی شد.</translation>
@@ -214,6 +215,7 @@
 <translation id="2888807692577297075">‏هیچ موردی با &lt;b&gt;«<ph name="SEARCH_STRING" />»&lt;/b&gt; مطابق نیست</translation>
 <translation id="2894654529758326923">اطلاعات</translation>
 <translation id="2902734494705624966">گسترده آمریکایی</translation>
+<translation id="2906052776158021882">درحال انتقال <ph name="NUMBER_OF_ITEMS" /> مورد به «حذف‌شده‌ها»</translation>
 <translation id="290843123675549676">ماراتی</translation>
 <translation id="2923240520113693977">استونیایی</translation>
 <translation id="2938685643439809023">مغولی</translation>
@@ -476,6 +478,7 @@
 <translation id="5068919226082848014">پیتزا</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> فایل حذف خواهد شد</translation>
 <translation id="508423945471810158">درحال انتقال <ph name="NUMBER_OF_ITEMS" /> مورد به <ph name="FOLDER_NAME" /></translation>
+<translation id="5092200349368278146"><ph name="FILE_NAME" /> به «حذف‌شده‌ها» منتقل شد</translation>
 <translation id="509429900233858213">خطایی روی داد.</translation>
 <translation id="5098629044894065541">عبری</translation>
 <translation id="5102922915594634436">مدیریت پوشه‌های همگام‌سازی‌شده</translation>
@@ -581,6 +584,7 @@
 <translation id="5845721951356578987">پرستار</translation>
 <translation id="5861477046012235702">بازیکن</translation>
 <translation id="5864471791310927901">‏بررسی DHCP انجام نشد</translation>
+<translation id="5887342613489958822">درحال انتقال <ph name="FILE_NAME" /> به «حذف‌شده‌ها»</translation>
 <translation id="5896749729057314184">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />،‏ <ph name="NETWORK_NAME" />،‏ غیرفعال، قدرت سیگنال: <ph name="SIGNAL_STRENGTH" />٪، جزئیات</translation>
 <translation id="5911887972742538906">‏هنگام نصب برنامه Linux خطایی روی داد.</translation>
 <translation id="5912396950572065471">قالب</translation>

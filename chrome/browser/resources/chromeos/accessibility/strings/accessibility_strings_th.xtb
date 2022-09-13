@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">คุณไปยังส่วนต่างๆ ของหน้าได้ด้วย ตัวอย่างเช่น คุณอาจเลื่อนไปมาระหว่าง Launcher, แถบ และแท็บใน Chrome หากต้องการไปยังส่วนถัดไป ให้ใช้ 4 นิ้วปัดจากซ้ายไปขวา ลองทำเลยเพื่อไปต่อ</translation>
 <translation id="2624431853467395961">เปิดโหมดการเรียนรู้</translation>
 <translation id="2626530649491650971">คลิกได้</translation>
+<translation id="263637551280112393">กดค้นหา + Shift + เว้นวรรค</translation>
 <translation id="2637227747952042642">คณิตศาสตร์</translation>
 <translation id="2638785836053527382">เริ่มดาวน์โหลด <ph name="FILE_NAME" /> ต่อ</translation>
 <translation id="2639750663247012216">คีย์ตัวปรับแต่ง ChromeVox</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">ไม่มีส่วนถัดไป</translation>
 <translation id="5368000168321181111">Earcons ปิด</translation>
 <translation id="5368505757342402527">ดาวน์โหลด <ph name="FILE_NAME" /> เสร็จแล้ว <ph name="PROGRESS" />% เหลืออีกประมาณ <ph name="TIME" /> <ph name="UNITS" /></translation>
+<translation id="5381388086899614489">คลิกค้าง</translation>
 <translation id="5400836586163650660">สีเทา</translation>
 <translation id="5402367795255837559">เบรลล์</translation>
 <translation id="5402791055281059602">การแจ้งเตือนแบบโมดัล</translation>

@@ -3308,20 +3308,17 @@
 <translation id="4062561150282203854">သင်၏ <ph name="DEVICE_TYPE" /> အက်ပ်များ၊ ဆက်တင်များ စသည်တို့ကို စင့်ခ်လုပ်ပါ</translation>
 <translation id="4065876735068446555">သင့်အသုံးပြုနေသည့် ကွန်ရက်(<ph name="NETWORK_ID" />)သည် ၎င်း၏ စာမျက်နှာကို ဝင်ကြည့်ရန် လိုအပ်သည်။</translation>
 <translation id="4066207411788646768">သင့်ကွန်ရက်အတွင်း ရနိုင်သည့် ပုံနှိပ်စက်များကို ကြည့်ရန် သင့်ချိတ်ဆက်မှုကို စစ်ဆေးပါ</translation>
-<translation id="4066945815577305767">စကားဝှက်များ အချိန်ကုန်သွားသည်</translation>
 <translation id="4067839975993712852">လက်ရှိတဘ်ကို ဖတ်ပြီးဟု မှတ်ရန်</translation>
 <translation id="4068776064906523561">သိမ်းဆည်းထားသည့် လက်ဗွေများ</translation>
 <translation id="407173827865827707">ကလစ်နှိပ်လျှင်</translation>
 <translation id="4072701974556190758">သင့် Google Account <ph name="ACCOUNT" /> တွင်စကားဝှက် သိမ်းပါမည်။ သင်မှတ်ထားစရာ မလိုပါ။</translation>
 <translation id="407520071244661467">အတိုင်းအတာ</translation>
 <translation id="407543464472585404"><ph name="NAME" /> ၏ ပရိုဖိုင်ကို <ph name="EMAIL" /> နှင့် လင့်ခ်ချိတ်ထားသည်</translation>
-<translation id="4075639477629295004"><ph name="FILE_NAME" /> ကို ကာစ်လုပ်၍မရပါ။</translation>
 <translation id="4077917118009885966">ဤဝဘ်ဆိုက်တွင် ကြော်ငြာများကို ပိတ်ထားပါသည်</translation>
 <translation id="4077919383365622693"><ph name="SITE" /> က သိုလှောင်ထားသည့် ဒေတာများနှင့် ကွတ်ကီးများအားလုံးကို ရှင်းလင်းလိုက်ပါမည်။</translation>
 <translation id="4078738236287221428">အတင်းလုပ်ဆောင်ပါ</translation>
 <translation id="4079140982534148664">အဆင့်မြင့် စာလုံးပေါင်းစစ်ဆေးခြင်းကို အသုံးပြုပါ</translation>
 <translation id="4081203444152654304"><ph name="VISUAL_SEARCH_PROVIDER" /> ဖြင့် အတွင်းရှိပုံ ရှာရန်</translation>
-<translation id="4081242589061676262">ဖိုင်ကို ကာစ်လုပ်၍ မရပါ။</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> က သင့်ဖုန်းသို့ အကြောင်းကြားချက် ပို့ထားသည်။ သင်ဖြစ်ကြောင်း အတည်ပြုရန် ၎င်းရှိအဆင့်များအတိုင်း လုပ်ဆောင်ပါ။</translation>
 <translation id="4084682180776658562">စာညှပ်</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" />ကို ပိတ်ပါ</translation>
@@ -4891,7 +4888,6 @@
 <translation id="5620568081365989559"><ph name="FOLDER_PATH" /> သို့ အပြည့်အဝ ရယူသုံးခွင့်ကို တောင်းဆိုနေသည်။
 သင်သည် အရေးပါသည့် အချက်အလက် တစ်ခုကိုမှ ထုတ်မပေးဖြစ်တာ သေချာပါစေ။</translation>
 <translation id="5620612546311710611">အသုံးပြုမှု စာရင်းအင်းများ</translation>
-<translation id="5620655347161642930">စကားဝှက်များကို တင်ပို့ခြင်း...</translation>
 <translation id="5623282979409330487">ဤဝဘ်ဆိုက်က သင့်လှုပ်ရှားမှု အာရုံခံစနစ်များကို ဝင်သုံးနေသည်။</translation>
 <translation id="5623842676595125836">မှတ်တမ်း</translation>
 <translation id="5624120631404540903">စကားဝှက်များကို စီမံကွပ်ကဲရန်</translation>
@@ -6286,7 +6282,6 @@
 <translation id="6970543303783413625">စကားဝှက်များ ထည့်သွင်း၍မရပါ။ တစ်ကြိမ်လျှင် စကားဝှက် <ph name="COUNT" /> ခုအထိသာ ထည့်သွင်းနိုင်ပါသည်။</translation>
 <translation id="6970856801391541997">တိကျသည့် စာမျက်နှာများ ပရင့်ထုတ်မည်</translation>
 <translation id="6970861306198150268">ဤဝဘ်ဆိုက်အတွက် လက်ရှိစကားဝှက်ကို သိမ်းနေကြောင်း သေချာပါစေ</translation>
-<translation id="6972180789171089114">အသံ/ဗီဒီယို</translation>
 <translation id="6972754398087986839">စကြရအောင်</translation>
 <translation id="697312151395002334">ပေါ့ပ်အပ်များပို့ရန်နှင့် တစ်ဆင့်ပြန်ညွှန်ပြရန် ခွင့်ပြုထားသည်</translation>
 <translation id="6973611239564315524">Debian 10 (Buster) သို့ အဆင့်မြှင့်တင်နိုင်ပါပြီ</translation>
@@ -7154,7 +7149,6 @@
 <translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" /> သည် စက်နောက်တစ်ခုတွင် Google Assistant ကို စနစ်ထည့်သွင်းပြီးပုံ ရပါသည်။ ဤစက်တွင် ‘ဖန်သားပြင်’ အကြောင်းအရာ ဖွင့်ခြင်းဖြင့် <ph name="SUPERVISED_USER_NAME" /> သည် Assistant ကို အကောင်းဆုံးအသုံးပြုနိုင်သည်။</translation>
 <translation id="7807711621188256451"><ph name="HOST" />အား သင့် ကင်မရာကို ရယူသုံးမှု အမြဲတမ်း ခွင့်ပြုရန်</translation>
 <translation id="7810202088502699111">ဤစာမျက်နှာတွင် ပေါ့ပ်အာ့ပ်များ ပိတ်ဆို့ထားသည်။</translation>
-<translation id="781167124805380294"><ph name="FILE_NAME" /> ကို ကာစ်လုပ်ရန်</translation>
 <translation id="7814458197256864873">&amp;ကူးယူ</translation>
 <translation id="7815680994978050279">အန္တရာယ်ရှိသော ဒေါင်းလုဒ်ကို ပိတ်ဆို့ထားသည်</translation>
 <translation id="7817361223956157679">မျက်နှာပြင် လက်ကွက်ကို Linux အက်ပ်များတွင် အသုံးပြု၍မရသေးပါ</translation>
@@ -7659,7 +7653,6 @@
 <translation id="8272194309885535896">ပုံကို ဒေါင်းလုဒ်လုပ်ရန်</translation>
 <translation id="8272443605911821513">"နောက်ထပ် ကိရိယာများ" မီနူးထဲမှာ တိုးချဲ့မှုများကို ကလစ်လျက် သင်၏ တိုးချဲ့မှုများကို စီမံကွပ်ကဲပါ။</translation>
 <translation id="8273905181216423293">ယခုဒေါင်းလုဒ်လုပ်ရန်</translation>
-<translation id="8274332263553132018">ဖိုင်ကို ကာစ်လုပ်ရန်</translation>
 <translation id="8274921654076766238">စာရိုက်သည့်အတိုင်း မှန်ဘီလူးက လိုက်ပြသည်</translation>
 <translation id="8274924778568117936">အပ်ဒိတ်မပြီးဘဲနှင့် သင်၏ <ph name="DEVICE_TYPE" /> ကို မပိတ်ပါနှင့်။ ထည့်သွင်းမှုပြီးစီးသည့်အခါ <ph name="DEVICE_TYPE" /> သည် ပြန်လည်စတင်ပါလိမ့်မည်။</translation>
 <translation id="8275038454117074363">တင်သွင်းရန်</translation>
@@ -8146,7 +8139,6 @@
 <translation id="8756969031206844760">စကားဝှက်ကို အပ်ဒိတ်လုပ်လိုပါသလား။</translation>
 <translation id="8757203080302669031">ဤတဘ်က ဘလူးတုသ်သုံးစက်များကို ယခု ရှာနေသည်။</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> ကို ဖယ်ရှားလိုက်ပြီ</translation>
-<translation id="8758418656925882523">နှုတ်တိုက်ချပေးခြင်းကို ဖွင့်ရန် (စာရိုက်ရန် စကားပြောပါ)</translation>
 <translation id="8759753423332885148">နောက်ထပ် လေ့လာပါ။</translation>
 <translation id="8761945298804995673">ဤအသုံးပြုသူသည် ရှိပြီးသားဖြစ်သည်</translation>
 <translation id="8762886931014513155">သင့် <ph name="DEVICE_TYPE" /> အတွက် အပ်ဒိတ်လိုပါသည်</translation>

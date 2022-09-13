@@ -279,6 +279,7 @@
 <translation id="3414856743105198592">Siirrettävän tietovälineen alustaminen poistaa kaikki sen tiedot. Haluatko jatkaa?</translation>
 <translation id="3437801641691368414">Luontiaika</translation>
 <translation id="343907260260897561">Pikakamera</translation>
+<translation id="3452106565701029351">Irrota pikatiedostoista</translation>
 <translation id="3455931012307786678">viro</translation>
 <translation id="3466147780910026086">Tarkistetaan medialaitettasi…</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> kuvaa on varmuuskopioitu <ph name="BEGIN_LINK" />Google Driveen<ph name="END_LINK" />.</translation>
@@ -690,6 +691,7 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">Yhdysvallat, Workman</translation>
 <translation id="6930242544192836755">Kesto</translation>
+<translation id="6931302001003657424">Kiinnitä pikatiedostoihin</translation>
 <translation id="6934241953272494177">Medialaitettasi tutkitaan…
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> löytyi</translation>

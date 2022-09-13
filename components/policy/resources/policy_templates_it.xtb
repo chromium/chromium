@@ -131,11 +131,6 @@
 
           Se il criterio viene disattivato, le password non vengono mai memorizzate e tutte le password salvate in precedenza vengono rimosse. Gli utenti devono inserire la propria password ogni volta che devono eseguire l'autenticazione con il sistema Kerberos. In base alle impostazioni del server, generalmente questa operazione deve essere svolta con una frequenza che varia da 8 ore e diversi mesi.</translation>
 <translation id="1133622335785078255">Consenti agli utenti di creare e usare profili secondari e di utilizzare la modalità ospite nel browser <ph name="LACROS_NAME" /></translation>
-<translation id="1133814529606590009">Se il criterio viene impostato su Attivato, la raccolta di dati anonimizzati con chiave URL, che invia gli URL delle pagine visitate dagli utenti a Google per migliorare le esperienze di ricerca e navigazione, è sempre attiva.
-
-      Se viene impostato su Disattivato, non viene attivata alcuna raccolta di dati anonimizzati con chiave URL.
-
-      Se il criterio viene configurato, gli utenti non possono modificarlo. In caso contrario, la raccolta di dati anonimizzati con chiave URL viene attivata, ma gli utenti possono disattivarla.</translation>
 <translation id="1137096407176363892">Consenti le voci di sintesi vocale di rete migliorate durante l'utilizzo della funzione di accessibilità in Seleziona per ascoltare. Queste voci inviano il testo ai server di Google per sintetizzare un discorso dal tono naturale.
 
           Se questo criterio è impostato su false, la funzionalità di sintesi vocale di rete migliorata in Seleziona per ascoltare sarà sempre disattivata.
@@ -317,6 +312,7 @@
       Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> non viene configurato, viene utilizzato il nome host specificato dall'URL di ricerca.</translation>
 <translation id="1312799700549720683">Consente di gestire le impostazioni di visualizzazione.</translation>
 <translation id="131353325527891113">Mostra nomi utente nella schermata di accesso</translation>
+<translation id="1317658068839330898">Non consentire l'utilizzo di <ph name="ASSISTANT_PRODUCT_NAME" /> sul Web</translation>
 <translation id="1327466551276625742">Attivazione richiesta di configurazione della rete offline</translation>
 <translation id="1330145147221172764">Attiva tastiera sullo schermo</translation>
 <translation id="13356285923490863">Nome criterio</translation>
@@ -354,6 +350,7 @@
 <translation id="1361661842732478894">Mostra il pulsante Pagina iniziale nella barra degli strumenti</translation>
 <translation id="1363275621236827384">Attiva le query in Quirks Server per i profili hardware</translation>
 <translation id="1371626834351873151">La riduzione dello user agent verrà attivata per tutte le origini.</translation>
+<translation id="1371851989348083665">Consenti l'utilizzo di <ph name="ASSISTANT_PRODUCT_NAME" /> sul Web</translation>
 <translation id="1372618949173323717">Viene disattivato JavaScript</translation>
 <translation id="1376119291123231789">Attiva modalità di ricarica avanzata della batteria</translation>
 <translation id="1384459581748403878">Riferimento: <ph name="REFERENCE_URL" /></translation>
@@ -4022,6 +4019,7 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
       * Off, o se il valore non viene configurato, la Modalità con restrizioni su YouTube non viene applicata da Chrome. I criteri esterni, come quelli di YouTube, potrebbero applicare comunque la Modalità con restrizioni.</translation>
 <translation id="5191476996923842491">Comportamento predefinito per l'impostazione della funzione setTimeout().</translation>
 <translation id="519247340330463721">Configura le norme relative alla Navigazione sicura.</translation>
+<translation id="5194683382395300627">Consenti l'utilizzo di <ph name="ASSISTANT_PRODUCT_NAME" /> sul Web, ad esempio per attivare la modifica automatica delle password</translation>
 <translation id="5196520640744454600">Attiva i tasti permanenti nella schermata di accesso</translation>
 <translation id="5196630732055960309">Consenti l'API File Handling su queste app web</translation>
 <translation id="5206454085187851382">Se per il criterio <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> viene selezionata l'opzione <ph name="PRINTERS_ALLOWLIST" />, la configurazione del criterio <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> consente di specificare le stampanti che possono essere utilizzate dagli utenti. Soltanto le stampanti con ID corrispondenti ai valori specificati in questo criterio saranno a disposizione degli utenti. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nel criterio <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
@@ -7338,6 +7336,20 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8656110680728938054">Attiva Seleziona per ascoltare</translation>
 <translation id="8659843732895043951">Consenti gli appunti su questi siti</translation>
 <translation id="8661297125441579970">Non consentire migrazione dei dati e ARC.</translation>
+<translation id="8664285601317301180">Questo criterio consente di stabilire il valore dell'<ph name="IPP_ATTRIBUTE" /> <ph name="IPP_PROTOCOL" /> (<ph name="INTERNET_PRINTING_PROTOCOL" />) <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> nei processi di stampa.
+
+      Se il criterio viene impostato su una stringa, viene aggiunto un ulteriore elemento <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> a ogni processo di stampa. Il membro <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> dell'elemento <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> aggiunto verrà impostato sul valore del criterio dopo la sostituzione delle variabili.
+
+      Le variabili supportate sono <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" /> e <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />. Le variabili segnaposto non supportate non verranno sostituite.
+
+      Il valore ottenuto dopo la sostituzione delle variabili viene considerato valido se è costituito soltanto da caratteri stampabili <ph name="ASCII" /> e non supera i 255 caratteri.
+
+      Tieni presente che, per motivi di privacy, questo criterio si applica soltanto in caso di comunicazione con una stampante usando i protocolli <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" /> o <ph name="IPP_USB_PROTOCOL" />. Tieni inoltre presente che questo criterio si applica soltanto alle stampanti che supportano <ph name="CLIENT_NAME_IPP_ATTRIBUTE" />.
+
+      Il criterio viene applicato solo agli utenti affiliati.
+
+      Se il criterio non viene configurato oppure se viene impostato un valore vuoto o non valido, non verrà aggiunto un ulteriore elemento <ph name="CLIENT_INFO_PLACEHOLDER" /> alle richieste di processi di stampa.
+      </translation>
 <translation id="8665314828727504286">Livello di protezione Navigazione sicura</translation>
 <translation id="8666123502812856425">La configurazione del criterio consente di elencare gli URL che specificano i siti a cui viene automaticamente concessa l'autorizzazione di accesso a un dispositivo HID che contiene una raccolta di livello superiore con l'utilizzo dell'HID specificato. Perché il criterio sia valido, ogni elemento nell'elenco richiede entrambi i campi <ph name="USAGES_FIELD_NAME" /> e <ph name="URLS_FIELD_NAME" />. Ogni elemento nel campo <ph name="USAGES_FIELD_NAME" /> deve avere un campo <ph name="USAGE_PAGE_FIELD_NAME" /> e potrebbe avere un campo <ph name="USAGE_FIELD_NAME" />. Se il campo <ph name="USAGE_FIELD_NAME" /> viene omesso, viene creato un criterio che corrisponde a qualsiasi dispositivo che contiene una raccolta di livello superiore con un utilizzo dalla relativa pagina specificata. Un elemento con un campo <ph name="USAGE_FIELD_NAME" /> senza un campo <ph name="USAGE_PAGE_FIELD_NAME" /> non è valido e viene ignorato.
 
@@ -7433,6 +7445,11 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8763716376920670835">WebSQL è attivo per impostazione predefinita a partire da M101, ma può essere disattivato tramite il flag ti Chrome.
           Se questo criterio viene impostato su falso o se non viene configurato, WebSQL può essere disattivato.
           Se viene impostato su vero, WebSQL non può essere disattivato.</translation>
+<translation id="8766308369516978190">Se il criterio viene impostato su Attivato, gli utenti possono usare <ph name="ASSISTANT_PRODUCT_NAME" /> sul Web, ad esempio per velocizzare i pagamenti e modificare le password. L'utilizzo di <ph name="ASSISTANT_PRODUCT_NAME" /> richiede il consenso aggiuntivo dell'utente e <ph name="ASSISTANT_PRODUCT_NAME" /> verrà eseguito solo se gli utenti scelgono di fornire questo consenso, anche se il criterio è impostato su Attivato.
+
+      Se il criterio viene impostato su Disattivato, gli utenti non possono usare <ph name="ASSISTANT_PRODUCT_NAME" /> sul Web.
+
+      Se il criterio non viene configurato, l'utente può disattivare <ph name="ASSISTANT_PRODUCT_NAME" />.</translation>
 <translation id="8766910236040529804">Abilita container dell'app del renderer</translation>
 <translation id="8767743923206070405">Se il criterio viene impostato su Attivato, nella barra degli strumenti di <ph name="PRODUCT_NAME" /> viene mostrato il pulsante Pagina iniziale. Se viene impostato su Disattivato, il pulsante Pagina iniziale non viene mostrato.
 

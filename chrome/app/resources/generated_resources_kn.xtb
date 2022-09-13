@@ -3305,20 +3305,17 @@
 <translation id="4062561150282203854">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಆ್ಯಪ್‌ಗಳು, ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಹಾಗೂ ಇತ್ಯಾದಿಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="4065876735068446555">ನೀವು ಬಳಸುತ್ತಿರುವ ನೆಟ್‌ವರ್ಕ್ (<ph name="NETWORK_ID" />) ನ ಲಾಗಿನ್ ಪುಟಕ್ಕೆ ಭೇಟಿ ನೀಡಬೇಕಾದ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="4066207411788646768">ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್‌ನಲ್ಲಿ ಲಭ್ಯವಿರುವ ಪ್ರಿಂಟರ್‌ಗಳನ್ನು ನೋಡಲು, ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
-<translation id="4066945815577305767">ಪಾಸ್‌ವರ್ಡ್‌ಗಳ ದೃಢೀಕರಣ ಅವಧಿ ಮೀರಿದೆ</translation>
 <translation id="4067839975993712852">ಪ್ರಸ್ತುತ ಟ್ಯಾಬ್ ಅನ್ನು ಓದಲಾಗಿದೆ ಎಂದು ಗುರುತಿಸಿ</translation>
 <translation id="4068776064906523561">ಉಳಿಸಿದ ಬೆರಳಚ್ಚುಗಳು</translation>
 <translation id="407173827865827707">ಕ್ಲಿಕ್ ಮಾಡಿದಾಗ</translation>
 <translation id="4072701974556190758">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ <ph name="ACCOUNT" /> ಉಳಿಸಲಾಗುತ್ತದೆ. ನೀವು ಅದನ್ನು ನೆನಪಿಟ್ಟುಕೊಳ್ಳಬೇಕಾಗಿಲ್ಲ.</translation>
 <translation id="407520071244661467">ಮಾಪಕ</translation>
 <translation id="407543464472585404"><ph name="NAME" /> ಅವರ ಪ್ರೊಫೈಲ್ ಅನ್ನು <ph name="EMAIL" /> ಗೆ ಲಿಂಕ್ ಮಾಡಲಾಗಿದೆ</translation>
-<translation id="4075639477629295004"><ph name="FILE_NAME" /> ಬಿತ್ತರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="4077917118009885966">ಈ ಸೈಟ್‌ನಲ್ಲಿ ಜಾಹೀರಾತುಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="4077919383365622693"><ph name="SITE" /> ವೆಬ್‌ಸೈಟ್‌ ಮೂಲಕ ಸಂಗ್ರಹಿಸಲಾದ ಎಲ್ಲಾ ಡೇಟಾ ಮತ್ತು ಕುಕೀಗಳನ್ನು ತೆರವುಗೊಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="4078738236287221428">ಆಕ್ರಮಣಕಾರಿ</translation>
 <translation id="4079140982534148664">ವರ್ಧಿತ ಕಾಗುಣಿತ ಪರೀಕ್ಷೆಯನ್ನು ಬಳಸಿ</translation>
 <translation id="4081203444152654304"><ph name="VISUAL_SEARCH_PROVIDER" /> ಮೂಲಕ ಚಿತ್ರದ ಒಳಗೆ ಹುಡುಕಿ</translation>
-<translation id="4081242589061676262">ಫೈಲ್‌ ಬಿತ್ತರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" />, ನಿಮ್ಮ ಫೋನ್‌ಗೆ ಅಧಿಸೂಚನೆಯನ್ನು ಕಳುಹಿಸಿದೆ. ಇದು ನೀವೇ ಎಂದು ಖಚಿತಪಡಿಸಲು, ಅಲ್ಲಿನ ಹಂತಗಳನ್ನು ಅನುಸರಿಸಿ.</translation>
 <translation id="4084682180776658562">ಬುಕ್‌ಮಾರ್ಕ್</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> ಮುಚ್ಚಿ</translation>
@@ -4888,7 +4885,6 @@
 <translation id="5620568081365989559"><ph name="FOLDER_PATH" /> ಗೆ DevTools ಪೂರ್ಣ ಪ್ರವೇಶವನ್ನು ವಿನಂತಿಸುತ್ತದೆ.
 ಯಾವುದೇ ಸೂಕ್ಷ್ಮ ಮಾಹಿತಿಯನ್ನು ನೀವು ಬಹಿರಂಗಪಡಿಸುತ್ತಿಲ್ಲ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="5620612546311710611">ಬಳಕೆಯ ಅಂಕಿಅಂಶಗಳು</translation>
-<translation id="5620655347161642930">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಫ್ತು ಮಾಡಿ...</translation>
 <translation id="5623282979409330487">ಈ ಸೈಟ್ ನಿಮ್ಮ ಚಲನಾ ಸೆನ್ಸರ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸುತ್ತಿದೆ.</translation>
 <translation id="5623842676595125836">ಲಾಗ್</translation>
 <translation id="5624120631404540903">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
@@ -6289,7 +6285,6 @@
 <translation id="6970543303783413625">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆಮದು ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ನೀವು ಒಂದು ಬಾರಿಗೆ ಗರಿಷ್ಠ <ph name="COUNT" /> ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಮಾತ್ರ ಆಮದು ಮಾಡಿಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="6970856801391541997">ನಿರ್ದಿಷ್ಟ ಪುಟಗಳನ್ನು ಮುದ್ರಿಸಿ</translation>
 <translation id="6970861306198150268">ಈ ಸೈಟ್‌ಗೆ ಸಂಬಂಧಿಸಿದ ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನೀವು ಉಳಿಸುತ್ತಿದ್ದೀರಿ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
-<translation id="6972180789171089114">ಆಡಿಯೋ/ವೀಡಿಯೊ</translation>
 <translation id="6972754398087986839">ಪ್ರಾರಂಭಗೊಂಡಿದೆ</translation>
 <translation id="697312151395002334">ಪಾಪ್-ಅಪ್‌ಗಳನ್ನು ಕಳುಹಿಸಲು ಮತ್ತು ಮರುನಿರ್ದೇಶನಗಳನ್ನು ಬಳಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="6973611239564315524">Debian 10 (Buster) ಗೆ ಅಪ್‌ಗ್ರೇಡ್ ಲಭ್ಯವಿದೆ</translation>
@@ -7157,7 +7152,6 @@
 <translation id="7807117920154132308">ಮತ್ತೊಂದು ಸಾಧನದಲ್ಲಿ <ph name="SUPERVISED_USER_NAME" /> ಅವರು ಈಗಾಗಲೇ Google Assistant ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿರುವಂತೆ ತೋರುತ್ತಿದೆ. ಈ ಸಾಧನದಲ್ಲಿ ಸ್ಕ್ರೀನ್ ಸಂದರ್ಭವನ್ನು ಆನ್ ಮಾಡುವ ಮೂಲಕ <ph name="SUPERVISED_USER_NAME" /> ಅವರು Assistant ನಿಂದ ಇನ್ನೂ ಹೆಚ್ಚಿನ ಪ್ರಯೋಜನವನ್ನು ಪಡೆಯಬಹುದು.</translation>
 <translation id="7807711621188256451">ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಪ್ರವೇಶಿಸಲು <ph name="HOST" /> ಅನ್ನು ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
 <translation id="7810202088502699111">ಈ ಪುಟದಲ್ಲಿ ಪಾಪ್-ಅಪ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.</translation>
-<translation id="781167124805380294"><ph name="FILE_NAME" /> ಅನ್ನು ಬಿತ್ತರಿಸಿ</translation>
 <translation id="7814458197256864873">&amp;ನಕಲಿಸಿ</translation>
 <translation id="7815680994978050279">ಅಪಾಯಕಾರಿ ಡೌನ್‌ಲೋಡ್ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="7817361223956157679">ಆನ್-ಸ್ಕ್ರೀನ್ ಕೀಬೋರ್ಡ್, Linux ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ಈಗಲೂ ಕೆಲಸ ಮಾಡುತ್ತಿಲ್ಲ</translation>
@@ -7660,7 +7654,6 @@
 <translation id="8272194309885535896">ಚಿತ್ರ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="8272443605911821513">"ಹೆಚ್ಚಿನ ಪರಿಕರಗಳು" ಮೆನುನಲ್ಲಿರುವ ‘ವಿಸ್ತರಣೆಗಳು’ಕ್ಲಿಕ್ ಮಾಡುವ ಮೂಲಕ ನಿಮ್ಮ ವಿಸ್ತರಣೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ.</translation>
 <translation id="8273905181216423293">ಈಗಲೇ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
-<translation id="8274332263553132018">ಫೈಲ್‌ ಅನ್ನು ಬಿತ್ತರಿಸಿ</translation>
 <translation id="8274921654076766238">ಮ್ಯಾಗ್ನಿಫೈರ್, ಕೀಬೋರ್ಡ್ ಫೋಕಸ್ ಅನ್ನು ಅನುಸರಿಸುತ್ತದೆ</translation>
 <translation id="8274924778568117936">ಅಪ್‌ಡೇಟ್ ಮುಕ್ತಾಯಗೊಳ್ಳುವವರೆಗೆ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಆಫ್ ಮಾಡಬೇಡಿ. ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಪ್ರಕ್ರಿಯೆ ಪೂರ್ಣಗೊಂಡ ನಂತರ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಮರುಪ್ರಾರಂಭವಾಗುತ್ತದೆ.</translation>
 <translation id="8275038454117074363">ಆಮದು</translation>
@@ -8147,7 +8140,6 @@
 <translation id="8756969031206844760">ಪಾಸ್‌ವರ್ಡ್ ಅಪ್‌ಡೇಟ್ ಮಾಡುವುದೇ?</translation>
 <translation id="8757203080302669031">ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳಿಗಾಗಿ ಈ ಟ್ಯಾಬ್ ಸಕ್ರಿಯವಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡುತ್ತಿದೆ.</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> ಅವರನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
-<translation id="8758418656925882523">ಉಕ್ತಲೇಖನ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ (ಟೈಪ್ ಮಾಡಲು ಮಾತನಾಡಿ)</translation>
 <translation id="8759753423332885148">ಮತ್ತಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
 <translation id="8761945298804995673">ಈ ಬಳಕೆದಾರರು ಈಗಾಗಲೇ ಅಸ್ತಿತ್ವದಲ್ಲಿದ್ದಾರೆ</translation>
 <translation id="8762886931014513155">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಗೆ ಅಪ್‌ಡೇಟ್‌ ಒಂದರ ಅಗತ್ಯವಿದೆ</translation>

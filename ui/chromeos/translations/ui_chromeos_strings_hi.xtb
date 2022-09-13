@@ -312,7 +312,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> रद्द करें.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> का नेटवर्क <ph name="NETWORK_INDEX" />, चालू नहीं किया गया, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, जानकारी</translation>
 <translation id="3691184985318546178">सिंहला</translation>
-<translation id="3722341589402358578">कोई गड़बड़ी हुई. कुछ आइटम ट्रैश में शायद न भेजे गए हों.</translation>
+<translation id="3722341589402358578">कोई गड़बड़ी हुई. हो सकता है कि कुछ आइटम ट्रैश में न भेजे गए हों.</translation>
 <translation id="3726463242007121105">यह डिवाइस नहीं खोला जा सकता क्‍योंकि इसका फ़ाइल सिस्‍टम समर्थित नहीं है.</translation>
 <translation id="3727148787322499904">यह सेटिंग बदलने से सभी शेयर नेटवर्क प्रभावित होंगे</translation>
 <translation id="3737576078404241332">साइडबार से हटाएं</translation>

@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">กำลังซิป <ph name="NUMBER_OF_ITEMS" /> รายการ...</translation>
 <translation id="1722687688096767818">กำลังเพิ่มโปรไฟล์...</translation>
 <translation id="1726100011689679555">เซิร์ฟเวอร์ชื่อ</translation>
+<translation id="1726600877401297672">ย้าย <ph name="NUMBER_OF_ITEMS" /> รายการไปที่ถังขยะแล้ว</translation>
 <translation id="1729953886957086472">เยอรมัน (เยอรมนี)</translation>
 <translation id="1730235522912993863">จีน (Cangjie)</translation>
 <translation id="1731889557567069540">คัดลอก <ph name="NUMBER_OF_ITEMS" /> รายการแล้ว</translation>
@@ -214,6 +215,7 @@
 <translation id="2888807692577297075">ไม่มีรายการที่ตรงกับ &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">ข้อมูล</translation>
 <translation id="2902734494705624966">แป้นพิมพ์ขยายแบบสหรัฐอเมริกา</translation>
+<translation id="2906052776158021882">กำลังย้าย <ph name="NUMBER_OF_ITEMS" /> รายการไปที่ถังขยะ</translation>
 <translation id="290843123675549676">มราฐี</translation>
 <translation id="2923240520113693977">เอสโตเนีย</translation>
 <translation id="2938685643439809023">มองโกเลีย</translation>
@@ -476,6 +478,7 @@
 <translation id="5068919226082848014">พิซซ่า</translation>
 <translation id="5081517858322016911">ระบบจะลบไฟล์ที่รวมแล้วมีขนาด <ph name="TOTAL_FILE_SIZE" /></translation>
 <translation id="508423945471810158">กำลังย้าย <ph name="NUMBER_OF_ITEMS" /> รายการไปยัง <ph name="FOLDER_NAME" /></translation>
+<translation id="5092200349368278146">ย้าย <ph name="FILE_NAME" /> ไปที่ถังขยะแล้ว</translation>
 <translation id="509429900233858213">มีข้อผิดพลาดเกิดขึ้น</translation>
 <translation id="5098629044894065541">ฮิบรู</translation>
 <translation id="5102922915594634436">จัดการโฟลเดอร์ที่ซิงค์</translation>
@@ -581,6 +584,7 @@
 <translation id="5845721951356578987">พยาบาล</translation>
 <translation id="5861477046012235702">เกมเมอร์</translation>
 <translation id="5864471791310927901">การค้นหา DHCP ล้มเหลว</translation>
+<translation id="5887342613489958822">กำลังย้าย <ph name="FILE_NAME" /> ไปที่ถังขยะ</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" /> เครือข่าย, <ph name="NETWORK_NAME" />, ไม่ได้เปิดใช้งาน, ความแรงของสัญญาณ <ph name="SIGNAL_STRENGTH" />%, รายละเอียด</translation>
 <translation id="5911887972742538906">ข้อผิดพลาดเกิดขึ้นระหว่างการติดตั้งแอปพลิเคชัน Linux</translation>
 <translation id="5912396950572065471">รูปแบบ</translation>
@@ -685,6 +689,7 @@
 <translation id="6874758081814639712">คนกำลังรำไทชิ</translation>
 <translation id="6876155724392614295">จักรยาน</translation>
 <translation id="6878261347041253038">แป้นพิมพ์ภาษาเทวานาครี (คำที่ใช้ออกเสียง)</translation>
+<translation id="6881853403185175088">Office</translation>
 <translation id="6885780034956018177">หอยทาก</translation>
 <translation id="6896758677409633944">คัดลอก</translation>
 <translation id="6898028766943174120">โฟลเดอร์ย่อยเพิ่มเติม...</translation>

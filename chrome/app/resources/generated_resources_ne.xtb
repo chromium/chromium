@@ -3293,20 +3293,17 @@
 <translation id="4062561150282203854">आफ्नो <ph name="DEVICE_TYPE" /> मा भएका एप, सेटिङ र अन्य कुराहरू सिंक गर्नुहोस्</translation>
 <translation id="4065876735068446555">तपाईँले प्रयोग गरिरहनु भएको सञ्जाल (<ph name="NETWORK_ID" />) लाई तपाईँले यसको लगइन पृष्ठ भ्रमण गर्न आवश्यकता हुन सक्छ।</translation>
 <translation id="4066207411788646768">आफ्नो नेटवर्कमा उपलब्ध प्रिन्टरहरू हेर्न आफ्नो इन्टरनेटको जाँच गर्नुहोस्</translation>
-<translation id="4066945815577305767">पासवर्डहरूको म्याद सकियो</translation>
 <translation id="4067839975993712852">हालको ट्याबलाई "पढिसकिएको" भनी चिन्ह लगाउनुहोस्</translation>
 <translation id="4068776064906523561">सुरक्षित गरिएका फिंगरप्रिन्टहरू</translation>
 <translation id="407173827865827707">क्लिक गर्दा</translation>
 <translation id="4072701974556190758">यो पासवर्ड तपाईंको Google खाता <ph name="ACCOUNT" /> मा सेभ गरिने छ। तपाईंले यो पासवर्ड याद गरिराख्नु पर्दैन।</translation>
 <translation id="407520071244661467">मापन</translation>
 <translation id="407543464472585404"><ph name="NAME" /> को प्रोफाइल <ph name="EMAIL" /> सँग लिंक गरिएको छ</translation>
-<translation id="4075639477629295004"><ph name="FILE_NAME" /> लाई cast गर्न सकिएन।</translation>
 <translation id="4077917118009885966">यो साइटमा विज्ञापनहरूमाथि रोक लगाइएको छ</translation>
 <translation id="4077919383365622693"><ph name="SITE" /> मा भण्डारण गरिएका सबै डेटा र कुकीहरू मेटाइने छन्।</translation>
 <translation id="4078738236287221428">आक्रामक</translation>
 <translation id="4079140982534148664">हिज्जे जाँचसम्बन्धी परिष्कृत सुविधा प्रयोग गर्नुहोस्</translation>
 <translation id="4081203444152654304"><ph name="VISUAL_SEARCH_PROVIDER" /> प्रयोग गरी फोटोमा खोजियोस्</translation>
-<translation id="4081242589061676262">फाइललाई cast गर्न सकिएन।</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> ले तपाईंको फोनमा एउटा सूचना पठाएको छ। साइन इन गर्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्न त्यहाँ दिइएका निर्देशनहरू पालना गर्नुहोस्।</translation>
 <translation id="4084682180776658562">बुकमार्क</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" />बन्द गर्नुहोस्</translation>
@@ -4874,7 +4871,6 @@
            र <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /> ले यो सूचीमा प्रभाव पार्छ</translation>
 <translation id="5620568081365989559">DevTools <ph name="FOLDER_PATH" />} को पूर्ण पहुँचको लागि अनुरोध गर्छ। तपाईंले कुनैपनि संवेदनशील जानकारी खुलासा गर्नुहुने छैन भनि सुनिश्चित गर्नुहोस्।।</translation>
 <translation id="5620612546311710611">प्रयोग तथ्यांकहरू</translation>
-<translation id="5620655347161642930">पासवर्डहरू निर्यात गर्नुहोस्...</translation>
 <translation id="5623282979409330487">यो साइटले तपाईंका चालसम्बन्धी सेन्सरहरूमाथि पहुँच राख्दै छ।</translation>
 <translation id="5623842676595125836">लग</translation>
 <translation id="5624120631404540903">पासवर्डहरू व्यवस्थापन गर्नुहोस्</translation>
@@ -5356,6 +5352,7 @@
 <translation id="6087960857463881712">उत्कृष्ट अनुहार</translation>
 <translation id="608912389580139775">यो पेज आफ्नो पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हाल्न बुकमार्क आइकनमा क्लिक गर्नुहोस्</translation>
 <translation id="6091761513005122595">आदान प्रदान माउन्ट गर्ने कार्य सफलतापूर्वक सम्पन्न भयो।</translation>
+<translation id="6093803049406781019">प्रोफाइल मेटाउनुहोस्</translation>
 <translation id="6093888419484831006">अद्यावधिक रद्द गर्दै...</translation>
 <translation id="6095541101974653012">तपाईं लग आउट हुनुभयो।</translation>
 <translation id="6095984072944024315">-</translation>
@@ -6271,7 +6268,6 @@
 <translation id="6970543303783413625">पासवर्डहरू इम्पोर्ट गर्न सकिएन। तपाईं एक पटकमा अधिकतम <ph name="COUNT" /> वटा पासवर्ड मात्र इम्पोर्ट गर्न सक्नुहुन्छ।</translation>
 <translation id="6970856801391541997">निर्दिष्ट पृष्ठहरू प्रिन्ट गर्नुहोस्</translation>
 <translation id="6970861306198150268">तपाईंले हाल यो साइटका लागि तोक्नुभएको पासवर्ड सेभ गर्न नभुल्नुहोस्</translation>
-<translation id="6972180789171089114">अडियो/भिडियो</translation>
 <translation id="6972754398087986839">सुरु गर्नुहोस्</translation>
 <translation id="697312151395002334">पप-अपहरू पठाउन र रिडिरेक्टहरू प्रयोग गर्ने अनुमति दिइएका साइटहरू</translation>
 <translation id="6973611239564315524">Debian 10 (Buster) मा स्तरोन्नति गर्ने सुविधा उपलब्ध छ</translation>
@@ -7139,7 +7135,6 @@
 <translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" /> ले अर्को डिभाइसमा Google सहायक सेटअप गरिसकेका छन् जस्तो देखिन्छ। <ph name="SUPERVISED_USER_NAME" /> यो डिभाइसमा स्क्रिन कन्टेक्स्ट अन गरेर सहायकबाट अझ बढी फाइदा लिन सक्छन्।</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> लाई तपाईंको क्यामेराको पहुँच गर्ने अनुमति सँधै दिनुहोस्</translation>
 <translation id="7810202088502699111">पप-अप यो पेजमा अवरुद्ध भएको थियो ।</translation>
-<translation id="781167124805380294"><ph name="FILE_NAME" /> लाई Cast गर्नुहोस्</translation>
 <translation id="7814458197256864873">&amp;प्रतिलिपि बनाउनुहोस्</translation>
 <translation id="7815680994978050279">खतरनाक डाउनलोडमाथि रोक लगाइयो</translation>
 <translation id="7817361223956157679">अनस्क्रिन किबोर्डले Linux का एपहरूमा अझै काम गर्दैन</translation>
@@ -7644,7 +7639,6 @@
 <translation id="8272194309885535896">छवि डाउनलोड गर्नुहोस्</translation>
 <translation id="8272443605911821513">"थप उपकरण" मेनुमा एक्सटेन्सन क्लिक गरेर तपाईंको एक्सटेन्सनहरूको प्रबन्ध मिलाउनुहोस्।</translation>
 <translation id="8273905181216423293">अहिले नै डाउनलोड गर्नुहोस्</translation>
-<translation id="8274332263553132018">फाइललाई Cast गर्नुहोस्</translation>
 <translation id="8274921654076766238">म्याग्निफायर किबोर्डको फोकससँगै सर्छ</translation>
 <translation id="8274924778568117936">अद्यावधिक पूरा नहुन्जेल आफ्नो <ph name="DEVICE_TYPE" /> लाई निष्क्रिय नपार्नुहोस् वा बन्द नगर्नुहोस्‌। स्थापना सम्पन्न भएपछि तपाईंको <ph name="DEVICE_TYPE" /> पुनः सुरु हुनेछ।</translation>
 <translation id="8275038454117074363">आयात गर्नुहोस्</translation>
@@ -8131,7 +8125,6 @@
 <translation id="8756969031206844760">पासवर्ड अद्यावधिक गर्ने हो?</translation>
 <translation id="8757203080302669031">यो ट्याब सक्रिय रूपमा वरपर रहेका ब्लुटुथ चल्ने डिभाइसहरू खोज्दै छ।</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> लाई हटाइयो</translation>
-<translation id="8758418656925882523">श्रुतिलेखन सेवा (टाइप गर्नका लागि बोल्नुहोस्) सक्षम पार्नुहोस्</translation>
 <translation id="8759753423332885148">बढी जान्नुहोस्।</translation>
 <translation id="8761945298804995673">यी प्रयोगकर्ता पहिले नै विद्यमान छन्</translation>
 <translation id="8762886931014513155">तपाईंको <ph name="DEVICE_TYPE" /> अद्यावधिक गर्नु आवश्यक छ</translation>

@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">Та мөн дэлгэцийн хэсэг хооронд шилжих боломжтой. Жишээлбэл та эхлүүлэгч, тавиур болон өөрийн Chrome-н табууд хооронд шилжих боломжтой. Дараагийн хэсэг рүү очихын тулд дөрвөн хуруугаараа зүүнээс баруун тийш шударна уу. Үргэлжлүүлэхийн тулд үүнийг одоо туршиж үзнэ үү.</translation>
 <translation id="2624431853467395961">Сурах горимыг нээх</translation>
 <translation id="2626530649491650971">дарж болохоор</translation>
+<translation id="263637551280112393">Search+Shift+Space дээр дарна уу</translation>
 <translation id="2637227747952042642">Математик</translation>
 <translation id="2638785836053527382"><ph name="FILE_NAME" />-н таталтыг үргэлжлүүллээ</translation>
 <translation id="2639750663247012216">ChromeVox хувиргагч түлхүүр</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">Дараагийн хэсэг алга байна</translation>
 <translation id="5368000168321181111">Алдаа гарахад дуугарах хөгжмийг унтраах</translation>
 <translation id="5368505757342402527"><ph name="FILE_NAME" />-г <ph name="PROGRESS" />% татлаа. Ойролцоогоор <ph name="TIME" /> <ph name="UNITS" /> үлдсэн байна.</translation>
+<translation id="5381388086899614489">удаан дарах</translation>
 <translation id="5400836586163650660">Саарал</translation>
 <translation id="5402367795255837559">Брайль</translation>
 <translation id="5402791055281059602">Баймж сануулга</translation>

@@ -3296,20 +3296,17 @@
 <translation id="4062561150282203854">შეასრულეთ თქვენი <ph name="DEVICE_TYPE" />-ის აპების, პარამეტრებისა და სხვა კონტენტის სინქრონიზაცია</translation>
 <translation id="4065876735068446555">ქსელმა, რომელსაც იყენებთ (<ph name="NETWORK_ID" />), შესაძლოა მოგთხოვოთ მისი საწყისი შესვლის გვერდის მონახულება.</translation>
 <translation id="4066207411788646768">თქვენს ქსელში ხელმისაწვდომი პრინტერების სანახავად შეამოწმეთ კავშირი</translation>
-<translation id="4066945815577305767">პაროლების მოლოდინის დრო ამოიწურა</translation>
 <translation id="4067839975993712852">მიმდინარე ჩანართის მონიშვნა წაკითხულად</translation>
 <translation id="4068776064906523561">შენახული თითის ანაბეჭდები</translation>
 <translation id="407173827865827707">დაწკაპუნებისას</translation>
 <translation id="4072701974556190758">პაროლი შეინახება თქვენს Google ანგარიშში (<ph name="ACCOUNT" />). მისი დამახსოვრება არ მოგიწევთ.</translation>
 <translation id="407520071244661467">მასშტაბირება</translation>
 <translation id="407543464472585404"><ph name="NAME" />-ის პროფილი მიბმულია <ph name="EMAIL" />-თან</translation>
-<translation id="4075639477629295004"><ph name="FILE_NAME" /> ვერ ტრანსლირდება.</translation>
 <translation id="4077917118009885966">რეკლამა დაბლოკილია ამ საიტზე</translation>
 <translation id="4077919383365622693">გასუფთავდება <ph name="SITE" />-ის მიერ შენახული ყველა მონაცემი და ქუქი-ჩანაწერი.</translation>
 <translation id="4078738236287221428">აგრესიული</translation>
 <translation id="4079140982534148664">მართლწერის გაძლიერებული შემოწმების გამოყენება</translation>
 <translation id="4081203444152654304">სურათში ძიება <ph name="VISUAL_SEARCH_PROVIDER" />-ით</translation>
-<translation id="4081242589061676262">ფაილის ტრანსლირება ვერ ხერხდება.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" />-მა გამოგიგზავნათ შეტყობინება ტელეფონზე. თქვენი ვინაობის დასადასტურებლად, შეასრულეთ იქ მოცემული ნაბიჯები.</translation>
 <translation id="4084682180776658562">სანიშნე</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" />-ის დახურვა</translation>
@@ -4877,7 +4874,6 @@
            და <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /></translation>
 <translation id="5620568081365989559">მოწყობილობის ხელსაწყოები მოითხოვს სრულ წვდომას <ph name="FOLDER_PATH" /> -ზე. დარწმუნდით, რომ არ ამჟღავნებთ კონფიდენციალურ ინფორმაციას.</translation>
 <translation id="5620612546311710611">გამოყენების სტატისტიკა</translation>
-<translation id="5620655347161642930">პაროლების ექსპორტი...</translation>
 <translation id="5623282979409330487">ამ საიტს აქვს წვდომა მოძრაობის სენსორებზე.</translation>
 <translation id="5623842676595125836">ჟურნალი</translation>
 <translation id="5624120631404540903">პაროლების მართვა</translation>
@@ -6276,7 +6272,6 @@
 <translation id="6970543303783413625">პაროლების იმპორტირება ვერ მოხერხდა. ერთდროულად <ph name="COUNT" /> პაროლის იმპორტირება შეგიძლიათ.</translation>
 <translation id="6970856801391541997">კონკრეტული გვერდების ბეჭდვა</translation>
 <translation id="6970861306198150268">დარწმუნდით, რომ ამ საიტისთვის თქვენს ამჟამინდელ პაროლს ინახავთ</translation>
-<translation id="6972180789171089114">აუდიო/ვიდეო</translation>
 <translation id="6972754398087986839">დაწყება</translation>
 <translation id="697312151395002334">ამომხტარი ფანჯრების გამოგზავნა და გადამისამართებების გამოყენება დაშვებულია</translation>
 <translation id="6973611239564315524">ხელმისაწვდომია Debian 10-ზე (Buster) განახლება</translation>
@@ -7144,7 +7139,6 @@
 <translation id="7807117920154132308">როგორც ჩანს, <ph name="SUPERVISED_USER_NAME" />-მა უკვე დააყენა Google ასისტენტი სხვა მოწყობილობაზე. ამ მოწყობილობაზე ეკრანის კონტექსტის ჩართვის შემთხვევაში <ph name="SUPERVISED_USER_NAME" /> ასისტენტის კიდევ უფრო მეტ შესაძლებლობას გამოიყენებს.</translation>
 <translation id="7807711621188256451">ყოველთვის მიეცით <ph name="HOST" />-ს თქვენს კამერაზე წვდომის ნება</translation>
 <translation id="7810202088502699111">კონტექსტური ფანჯრები დაბლოკილია ამ გვერდზე.</translation>
-<translation id="781167124805380294"><ph name="FILE_NAME" />-ის ტრანსლირება</translation>
 <translation id="7814458197256864873">&amp;კოპირება</translation>
 <translation id="7815680994978050279">სახიფათო ჩამოტვირთვა დაიბლოკა</translation>
 <translation id="7817361223956157679">ეკრანული კლავიატურა ჯერ არ მუშაობს Linux აპებში</translation>
@@ -7648,7 +7642,6 @@
 <translation id="8272194309885535896">სურათის ჩამოტვირთვა</translation>
 <translation id="8272443605911821513">მართეთ თქვენი გაფართოებები ღილაკზე „გაფართოებები“ დაწკაპუნებით მენიუში „სხვა ხელსაწყოები“.</translation>
 <translation id="8273905181216423293">ახლავე ჩამოტვირთვა</translation>
-<translation id="8274332263553132018">ფაილის ტრანსლირება</translation>
 <translation id="8274921654076766238">ლუპა იმეორებს კლავიატურით ფოკუსში მოქცეულს</translation>
 <translation id="8274924778568117936">არ გამორთოთ და არ დახუროთ თქვენი <ph name="DEVICE_TYPE" /> განახლების დასრულებამდე. ინსტალაციის დასრულების შემდეგ <ph name="DEVICE_TYPE" /> გადაიტვირთება.</translation>
 <translation id="8275038454117074363">იმპორტი</translation>
@@ -8135,7 +8128,6 @@
 <translation id="8756969031206844760">გსურთ პაროლის განახლება?</translation>
 <translation id="8757203080302669031">ეს ჩანართი აქტიურად ასკანირებს Bluetooth მოწყობილობებს.</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> წაიშალა</translation>
-<translation id="8758418656925882523">კარნახის (ტექსტის წარმოთქმით აკრეფის) ჩართვა</translation>
 <translation id="8759753423332885148">დეტალური ინფორმაცია.</translation>
 <translation id="8761945298804995673">ეს მომხმარებელი უკვე არსებობს</translation>
 <translation id="8762886931014513155">თქვენი <ph name="DEVICE_TYPE" /> საჭიროებს განახლებას</translation>

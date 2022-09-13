@@ -140,6 +140,7 @@
 <translation id="1834891354138622109">நெடுவரிசை</translation>
 <translation id="1846771122725914429">புளூடூத் பிரெய்ல் காட்சி</translation>
 <translation id="1852018405765032699">நான்கு விரல்களால் திரையைத் தட்டினால் ChromeVox மெனுக்கள் திறக்கப்படும் மூடப்படும். கட்டளைகள் &amp; ஷார்ட்கட்கள் குறித்த உதவிகரமான தகவல்கள் அவற்றில் இருக்கும். மெனுக்கள் திறக்கப்பட்டதும் அவற்றில் உள்ளவற்றைப் பார்க்க ஒரு விரலால் ஸ்வைப் செய்யலாம், அவற்றைச் செயல்படுத்த இருமுறை தட்டலாம். தொடர, நான்கு விரல்களால் திரையைத் தட்டவும்.</translation>
+<translation id="1864430479908918647">Search+Space பட்டன்களை அழுத்தவும்</translation>
 <translation id="1865601187525349519">உரையின் இறுதி</translation>
 <translation id="1876229593313240038">doc</translation>
 <translation id="1902396333223336119">கலம்</translation>
@@ -778,6 +779,7 @@
 <translation id="6236061028292614533">அடுத்த தலைப்பு</translation>
 <translation id="6254901459154107917">அடுத்த திருத்தக்கூடிய உரைப் பகுதி</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> இலிருந்து வெளியேறினார்.</translation>
+<translation id="6280088282605782512">இருமுறை தட்டவும்</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">முக்கியமான விசைகள்: Search</translation>
 <translation id="6305702903308659374">ChromeVox பேசும் போது, இயல்பான ஒலியளவில் இயக்கு</translation>
@@ -981,6 +983,7 @@
 <translation id="7731785449856576010">அடுத்த ஊடக விட்ஜெட் எதுவும் இல்லை</translation>
 <translation id="7735498529470878067">'தொட்டு அறிக' அம்சத்தின் மூலம் திரையில் உள்ளவற்றை விரைவாக அறிந்துகொள்ளலாம்.</translation>
 <translation id="773906353055481349">ஒவ்வொரு கலத்திற்கும் செல்ல Search+Ctrl+Alt விசைகளையும் அம்புக்குறி விசைகளையும் அழுத்தவும்</translation>
+<translation id="7746976083433980639"><ph name="LABEL" /> - <ph name="ACTION" /></translation>
 <translation id="7763537600611320912"><ph name="FILE_NAME" /> ஃபைலின் பதிவிறக்கம் தொடங்கியது</translation>
 <translation id="7768784765476638775">பேசும் திரை</translation>
 <translation id="7776293189010177726">ChromeVox மெனுக்களைத் திறக்கும்</translation>

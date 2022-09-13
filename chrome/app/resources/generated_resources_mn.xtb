@@ -3309,20 +3309,17 @@
 <translation id="4062561150282203854"><ph name="DEVICE_TYPE" />-н апп, тохиргоо болон бусад зүйлээ синк хийгээрэй</translation>
 <translation id="4065876735068446555">Таны ашиглаж буй сүлжээ (<ph name="NETWORK_ID" />) таныг өөрийн нэвтрэх хуудаст хандахыг шаардах магадлалтай.</translation>
 <translation id="4066207411788646768">Таны сүлжээнд холбогдсон боломжтой байгаа хэвлэгчийг харахын тулд холболтоо шалгана уу</translation>
-<translation id="4066945815577305767">Нууц үг завсарласан</translation>
 <translation id="4067839975993712852">Одоогийн табыг уншсан гэж тэмдэглэх</translation>
 <translation id="4068776064906523561">Хадгалсан хурууны хээ</translation>
 <translation id="407173827865827707">Товшсон</translation>
 <translation id="4072701974556190758">Нууц үгийг таны <ph name="ACCOUNT" /> Google Бүртгэлд хадгална. Та үүнийг санах шаардлагагүй.</translation>
 <translation id="407520071244661467">Хэмжээ</translation>
 <translation id="407543464472585404"><ph name="NAME" />-н профайл <ph name="EMAIL" />-д холбоотой байна</translation>
-<translation id="4075639477629295004"><ph name="FILE_NAME" />-г дамжуулах боломжгүй байна.</translation>
 <translation id="4077917118009885966">Энэ сайтад блоклосон зар</translation>
 <translation id="4077919383365622693"><ph name="SITE" />-н хадгалсан бүх өгөгдөл болон күүкийг устгах болно.</translation>
 <translation id="4078738236287221428">Түрэмгий</translation>
 <translation id="4079140982534148664">Зөв бичгийн алдаа шалгах сайжруулсан онцлогийг ашиглах</translation>
 <translation id="4081203444152654304"><ph name="VISUAL_SEARCH_PROVIDER" /> ашиглан дотор талын зураг хайх</translation>
-<translation id="4081242589061676262">Файлыг дамжуулах боломжгүй.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> таны утас руу мэдэгдэл илгээсэн. Та өөрийгөө мөн болохыг баталгаажуулахын тулд тэнд байгаа алхмуудыг дагана уу.</translation>
 <translation id="4084682180776658562">Хадгалах</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" />-ыг хаах</translation>
@@ -3551,6 +3548,7 @@
 <translation id="4306119971288449206">Аппыг заавал "<ph name="CONTENT_TYPE" />" агуулгын төрөлтэй ажиллуулах шаардлагатай</translation>
 <translation id="4307992518367153382">Үндэс</translation>
 <translation id="4309165024397827958">Байршлын зөвшөөрөлтэй Android аппууд болон үйлчилгээнүүдэд таны төхөөрөмжийн байршлыг ашиглахыг зөвшөөрнө үү. Google нь байршлын нарийвчлал болон байршилд тулгуурласан үйлчилгээг сайжруулахын тулд байршлын өгөгдлийг үе үе цуглуулж, энэ өгөгдлийг нэргүй байдлаар ашиглаж магадгүй.</translation>
+<translation id="4309183709806093061">Мөн системийн аудиог хуваалцана уу. Санал хүсэлтээс сэргийлэхийн тулд энэ төхөөрөмжийн дууг хаана.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K live)</translation>
 <translation id="4310132194679586591">Энэ холбоосыг нээхийн тулд төхөөрөмж дээрээ апп сонгоно уу</translation>
 <translation id="4310139701823742692">Файлын формат буруу байна. PPD файлыг шалгаад дахин оролдоно уу.</translation>
@@ -4565,6 +4563,7 @@
 <translation id="5305145881844743843">Энэ бүртгэлийг <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" />-с удирддаг</translation>
 <translation id="5307030433605830021">Эх сурвалжийг дэмжээгүй байна</translation>
 <translation id="5307386115243749078">Bluetooth сэлгэгчийг хослуулах</translation>
+<translation id="5307958609248661362">Google Password Manager завсарласан</translation>
 <translation id="5308380583665731573">Холбо</translation>
 <translation id="5309418307557605830">Google Туслах энд ч бас ажиллана</translation>
 <translation id="5311304534597152726">Дараахаар нэвтэрч байна</translation>
@@ -4894,7 +4893,6 @@
 <translation id="5620568081365989559">DevTools нь <ph name="FOLDER_PATH" /> руу бүрэн нэвтрэхийг хүсч байна.
 Та ямар нэг нууц мэдээлэл оруулаагүй эсэхээ шалгаарай.</translation>
 <translation id="5620612546311710611">Хэрэглээний статистик мэдээ</translation>
-<translation id="5620655347161642930">Нууц үгийг экспортлох...</translation>
 <translation id="5623282979409330487">Энэ сайт таны хөдөлгөөн мэдрэгчид хандаж байна.</translation>
 <translation id="5623842676595125836">Нэвтрэх</translation>
 <translation id="5624120631404540903">Нууц үгийг удирдах</translation>
@@ -6294,7 +6292,6 @@
 <translation id="6970543303783413625">Нууц үгнүүдийг импорт хийх боломжгүй. Та нэг дор зөвхөн <ph name="COUNT" /> хүртэлх нууц үг импорт хийх боломжтой.</translation>
 <translation id="6970856801391541997">Тусгайлан хэвлэх хуудаснууд</translation>
 <translation id="6970861306198150268">Та энэ сайтын одоогийн нууц үгийг хадгалж байгаа эсэхээ шалгана уу</translation>
-<translation id="6972180789171089114">Аудио/Видео</translation>
 <translation id="6972754398087986839">Эхлүүлэх</translation>
 <translation id="697312151395002334">Попап илгээх болон дахин чиглүүлэлт ашиглахыг зөвшөөрсөн</translation>
 <translation id="6973611239564315524">Debian 10 (Buster) руу дэвшүүлэх боломжтой байна</translation>
@@ -7162,7 +7159,6 @@
 <translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" /> өөр төхөөрөмжид Google Туслахыг аль хэдийн тохируулсан бололтой. <ph name="SUPERVISED_USER_NAME" /> энэ төхөөрөмж дээр Дэлгэцийн хам сэдвийг асааснаар Туслахаа илүү сайн ашиглах боломжтой.</translation>
 <translation id="7807711621188256451"><ph name="HOST" />-д таны камерт нэвтрэх зөвшөөрөл олгох</translation>
 <translation id="7810202088502699111">Зар сурталчилгааг энэ хуудсанд хориглосон байна.</translation>
-<translation id="781167124805380294"><ph name="FILE_NAME" />-г дамжуулах</translation>
 <translation id="7814458197256864873">Хуулах</translation>
 <translation id="7815680994978050279">Аюултай таталтыг блоклосон</translation>
 <translation id="7817361223956157679">Дэлгэцэн дээрх гар Linux апп дээр хараахан ажиллахгүй байна</translation>
@@ -7365,6 +7361,7 @@
 <translation id="7988805580376093356">Үйлдлийн системээ хэвээр үлдээж, USB-с <ph name="DEVICE_OS" />-г ажиллуулаарай.</translation>
 <translation id="7991296728590311172">Сэлгүүрийн тохиргоо</translation>
 <translation id="7992203134935383159">Ярианы синтез</translation>
+<translation id="799570308305997052">Webview</translation>
 <translation id="7997826902155442747">Боловсруулалтын тэргүүлэх чиглэл</translation>
 <translation id="7999229196265990314">Дараах файлуудыг үүсгэсэн болно:
 Өргөтгөл: <ph name="EXTENSION_FILE" /> 
@@ -7668,7 +7665,6 @@
 <translation id="8272194309885535896">Зураг татах</translation>
 <translation id="8272443605911821513">"More tools" цэсэн дэх өргөтгөл дээр дарж өргөтгөлүүдээ удирдаарай.</translation>
 <translation id="8273905181216423293">Одоо татах</translation>
-<translation id="8274332263553132018">Файл дамжуулах</translation>
 <translation id="8274921654076766238">Томруулагч нь гарын фокусыг дагадаг</translation>
 <translation id="8274924778568117936">Шинэчилж дуустал <ph name="DEVICE_TYPE" />-г унтрааж эсвэл хааж болохгүй. Суулгаж дууссан үед <ph name="DEVICE_TYPE" />-г дахин эхлүүлнэ.</translation>
 <translation id="8275038454117074363">Импортлох</translation>
@@ -8154,7 +8150,6 @@
 <translation id="8756969031206844760">Нууц үгийг шинэчлэх үү?</translation>
 <translation id="8757203080302669031">Энэ таб Bluetooth төхөөрөмжүүдийг идэвхтэйгээр скан хийж байна.</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" />-г хассан</translation>
-<translation id="8758418656925882523">Диктафоныг идэвхжүүлэх (бичихийн тулд чангаар унших)</translation>
 <translation id="8759753423332885148">Дэлгэрэнгүй үзэх.</translation>
 <translation id="8761945298804995673">Ийм хэрэглэгч аль хэдийн байна</translation>
 <translation id="8762886931014513155">Таны <ph name="DEVICE_TYPE" />-г шинэчлэх шаардлагатай байна</translation>

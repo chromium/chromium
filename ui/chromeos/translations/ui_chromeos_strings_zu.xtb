@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">Izipha izinto ezingu-<ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="1722687688096767818">Ingeza Iphrofayela...</translation>
 <translation id="1726100011689679555">Amagama wamasevisi</translation>
+<translation id="1726600877401297672">Izinto ezingu-<ph name="NUMBER_OF_ITEMS" /> zihanjiswe Kudoti</translation>
 <translation id="1729953886957086472">German (Germany)</translation>
 <translation id="1730235522912993863">Chinese Cangjie</translation>
 <translation id="1731889557567069540">izinto ezingu-<ph name="NUMBER_OF_ITEMS" /> zikopishiwe.</translation>
@@ -214,6 +215,7 @@
 <translation id="2888807692577297075">Azikho izinto ezifana ne-&lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Ulwazi</translation>
 <translation id="2902734494705624966">Inwetshwelwe i-US</translation>
+<translation id="2906052776158021882">Ukuhambisa izinto ezingu-<ph name="NUMBER_OF_ITEMS" /> Kudoti</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Isi-Estonian</translation>
 <translation id="2938685643439809023">Mongolian</translation>
@@ -476,6 +478,7 @@
 <translation id="5068919226082848014">I-Pizza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> wamafayela uzosulwa</translation>
 <translation id="508423945471810158">Ihambisa izinto ezi-<ph name="NUMBER_OF_ITEMS" /> ku-<ph name="FOLDER_NAME" /></translation>
+<translation id="5092200349368278146">I-<ph name="FILE_NAME" /> ihanjiswe Kudoti</translation>
 <translation id="509429900233858213">Kuvele iphutha.</translation>
 <translation id="5098629044894065541">Hebrew</translation>
 <translation id="5102922915594634436">Phatha amafolda avumelanisiwe</translation>
@@ -580,6 +583,7 @@
 <translation id="5845721951356578987">Umhlengikazi</translation>
 <translation id="5861477046012235702">Umdlali wamageyimu</translation>
 <translation id="5864471791310927901">Ukubheka kwe-DHCP kuhlulekile</translation>
+<translation id="5887342613489958822">Ukuhambisa i-<ph name="FILE_NAME" /> Kudoti</translation>
 <translation id="5896749729057314184">Inethiwekhi engu-<ph name="NETWORK_INDEX" /> kwezingu-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Akusetshenzisiwe, Amandla Wesignali <ph name="SIGNAL_STRENGTH" />%, Imininingwane</translation>
 <translation id="5911887972742538906">Kuvele iphutha phakathi nokufakwa kohlelo lwakho lokusebenza lwe-Linux.</translation>
 <translation id="5912396950572065471">Ifomethi</translation>

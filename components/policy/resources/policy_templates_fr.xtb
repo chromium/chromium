@@ -130,11 +130,6 @@
 
           Si cette règle est désactivée, les mots de passe ne sont jamais mémorisés et tous ceux qui l'ont été précédemment sont supprimés. Les utilisateurs doivent saisir leur mot de passe à chaque authentification auprès du système Kerberos. De manière générale, la fréquence d'authentification est comprise entre huit heures et plusieurs mois selon les paramètres du serveur.</translation>
 <translation id="1133622335785078255">Autoriser les utilisateurs à créer et utiliser des profils secondaires, et à utiliser le mode Invité dans le navigateur <ph name="LACROS_NAME" /></translation>
-<translation id="1133814529606590009">Si vous activez cette règle, la collecte de données anonymes incluant les URL, qui envoie à Google les URL des pages que l'utilisateur visite afin d'améliorer la recherche et la navigation, est toujours active.
-
-      Si vous la désactivez, les données anonymes incluant les URL ne sont pas collectées.
-
-      Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si vous ne la configurez pas, les données anonymes incluant les URL sont collectées, mais les utilisateurs peuvent modifier ce comportement.</translation>
 <translation id="1137096407176363892">Autoriser la synthèse vocale améliorée via le réseau pour la fonctionnalité d'accessibilité Sélectionner pour prononcer. Le texte à lire sera alors envoyé aux serveurs Google pour être synthétisé en discours naturel.
 
           Si cette règle est définie sur "False", la fonctionnalité de synthèse vocale améliorée via le réseau pour Sélectionner pour prononcer est toujours désactivée.
@@ -312,6 +307,7 @@
       Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> n'est pas configurée, le nom d'hôte indiqué par l'URL de recherche est utilisé.</translation>
 <translation id="1312799700549720683">Contrôle les paramètres d'affichage.</translation>
 <translation id="131353325527891113">Afficher les noms d'utilisateur sur l'écran de connexion</translation>
+<translation id="1317658068839330898">Ne pas autoriser l'utilisation de l'<ph name="ASSISTANT_PRODUCT_NAME" /> sur le Web</translation>
 <translation id="1327466551276625742">Activer l'invite de configuration réseau lorsque l'utilisateur n'est pas connecté</translation>
 <translation id="1330145147221172764">Activer le clavier à l'écran</translation>
 <translation id="13356285923490863">Nom de stratégie</translation>
@@ -349,6 +345,7 @@
 <translation id="1361661842732478894">Afficher le bouton Accueil dans la barre d'outils</translation>
 <translation id="1363275621236827384">Activer l'envoi de requêtes de profils matériels à Quirks Server</translation>
 <translation id="1371626834351873151">La réduction user-agent sera activée pour toutes les origines.</translation>
+<translation id="1371851989348083665">Autoriser l'utilisation de l'<ph name="ASSISTANT_PRODUCT_NAME" /> sur le Web</translation>
 <translation id="1372618949173323717">Désactiver JavaScript</translation>
 <translation id="1376119291123231789">Activer le mode avancé de recharge de la batterie</translation>
 <translation id="1384459581748403878">Référence : <ph name="REFERENCE_URL" /></translation>
@@ -4028,6 +4025,7 @@ Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> ignore toutes les opti
       * Si cette règle est désactivée ou qu'aucune valeur n'est définie, le mode restreint sur YouTube n'est pas appliqué d'office par Chrome. Toutefois, des règles externes comme les règles de YouTube peuvent quand même appliquer d'office le mode restreint.</translation>
 <translation id="5191476996923842491">Comportement par défaut pour l'écrêtage de la fonction setTimeout().</translation>
 <translation id="519247340330463721">Configurez les règles associées à la navigation sécurisée.</translation>
+<translation id="5194683382395300627">Autoriser l'utilisation de l'<ph name="ASSISTANT_PRODUCT_NAME" /> sur le Web (par ex. : pour activer la modification automatique des mots de passe)</translation>
 <translation id="5196520640744454600">Activer les touches persistantes sur l'écran de connexion</translation>
 <translation id="5196630732055960309">Autoriser l'API File Handling pour ces applis Web</translation>
 <translation id="5206454085187851382">Si <ph name="PRINTERS_ALLOWLIST" /> est sélectionné pour la règle <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, la définition de <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> indique les imprimantes accessibles aux utilisateurs. Seules les imprimantes dont les ID correspondent aux valeurs définies dans cette règle sont proposées aux utilisateurs. Ces ID doivent correspondre à ceux indiqués dans les champs <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> du fichier spécifié dans la règle <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
@@ -7360,6 +7358,20 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8656110680728938054">Activer la fonctionnalité Sélectionner pour prononcer</translation>
 <translation id="8659843732895043951">Autoriser le presse-papiers sur ces sites</translation>
 <translation id="8661297125441579970">Interdire la migration de données et ARC.</translation>
+<translation id="8664285601317301180">Cette règle contrôle la valeur de l'<ph name="IPP_ATTRIBUTE" /> <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> <ph name="IPP_PROTOCOL" /> (<ph name="INTERNET_PRINTING_PROTOCOL" />) dans les tâches d'impression.
+
+      Si cette règle est définie sur une chaîne, un élément <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> supplémentaire est ajouté à chaque tâche d'impression. Le membre <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> de l'élément <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> ajouté sera défini sur la valeur de la règle après le remplacement des variables.
+
+      Les variables compatibles sont <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" /> et <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />. Les variables d'espaces réservés non acceptées ne seront pas remplacées.
+
+      La valeur obtenue après la substitution des variables est considérée comme valide si elle ne comprend que des caractères imprimables <ph name="ASCII" /> et que sa longueur ne dépasse pas 255.
+
+      Notez que, pour des raisons de confidentialité, cette règle ne s'applique que lorsque vous communiquez avec une imprimante à l'aide des protocoles <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" /> ou <ph name="IPP_USB_PROTOCOL" />. Notez également que cette règle ne s'applique qu'aux imprimantes compatibles avec <ph name="CLIENT_NAME_IPP_ATTRIBUTE" />.
+
+      La règle ne s'applique qu'aux utilisateurs affiliés.
+
+      Si la règle n'est pas configurée, si elle est définie sur une valeur vide ou non valide, aucun <ph name="CLIENT_INFO_PLACEHOLDER" /> supplémentaire ne sera ajouté aux requêtes de tâches d'impression.
+      </translation>
 <translation id="8665314828727504286">Mode de protection de la navigation sécurisée</translation>
 <translation id="8666123502812856425">Cette règle permet de dresser la liste des URL des sites automatiquement autorisés à se connecter à un appareil HID contenant une collection de niveau supérieur avec l'utilisation donnée de l'appareil HID. Pour que la règle soit valide, les champs <ph name="USAGES_FIELD_NAME" /> et <ph name="URLS_FIELD_NAME" /> doivent être renseignés pour chaque élément de la liste. Chaque élément du champ <ph name="USAGES_FIELD_NAME" /> doit avoir un champ <ph name="USAGE_PAGE_FIELD_NAME" /> et peut avoir un champ <ph name="USAGE_FIELD_NAME" />. Si vous ne renseignez pas le champ <ph name="USAGE_FIELD_NAME" />, la règle qui est créée correspond à tous les appareils contenant une collection de niveau supérieur avec une utilisation tirée de la page d'utilisation spécifiée. Une règle ayant un champ <ph name="USAGE_FIELD_NAME" />, mais pas de champ <ph name="USAGE_PAGE_FIELD_NAME" /> n'est pas valide et est ignorée.
 
@@ -7455,6 +7467,11 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8763716376920670835">WebSQL est activé par défaut depuis la version M101, mais peut être désactivé via un indicateur Chrome.
           Si cette règle est définie sur "false" ou "unset", WebSQL peut être désactivé.
           Si cette règle est définie sur "true", WebSQL ne peut pas être désactivé.</translation>
+<translation id="8766308369516978190">Si cette règle est activée, elle permet à l'utilisateur de solliciter l'<ph name="ASSISTANT_PRODUCT_NAME" /> sur le Web (par exemple, pour payer et changer de mot de passe plus vite). Le recours à l'<ph name="ASSISTANT_PRODUCT_NAME" /> nécessite une autorisation supplémentaire de l'utilisateur. L'<ph name="ASSISTANT_PRODUCT_NAME" /> ne fonctionne que si l'utilisateur choisit de donner son autorisation, même si la règle est activée.
+
+      Si cette règle est désactivée, l'utilisateur ne peut pas solliciter l'<ph name="ASSISTANT_PRODUCT_NAME" /> sur le Web.
+
+      Si cette règle n'est pas configurée, l'utilisateur peut désactiver l'<ph name="ASSISTANT_PRODUCT_NAME" />.</translation>
 <translation id="8766910236040529804">Activer le conteneur d'appli de moteur de rendu</translation>
 <translation id="8767743923206070405">Si cette règle est activée, le bouton d'accueil s'affiche sur la barre d'outils de <ph name="PRODUCT_NAME" />. Si elle est désactivée, le bouton d'accueil ne s'affiche pas.
 

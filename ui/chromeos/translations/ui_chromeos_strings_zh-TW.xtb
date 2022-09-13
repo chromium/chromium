@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">正在壓縮 <ph name="NUMBER_OF_ITEMS" /> 個項目...</translation>
 <translation id="1722687688096767818">正在新增設定檔…</translation>
 <translation id="1726100011689679555">名稱伺服器</translation>
+<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> 個項目已移至垃圾桶</translation>
 <translation id="1729953886957086472">德文 (德國)</translation>
 <translation id="1730235522912993863">中文 (倉頡)</translation>
 <translation id="1731889557567069540">已複製 <ph name="NUMBER_OF_ITEMS" /> 個項目。</translation>
@@ -214,6 +215,7 @@
 <translation id="2888807692577297075">找不到符合「<ph name="SEARCH_STRING" />」&lt;b&gt;&lt;/b&gt;的項目</translation>
 <translation id="2894654529758326923">資訊</translation>
 <translation id="2902734494705624966">美式改良</translation>
+<translation id="2906052776158021882">正在將 <ph name="NUMBER_OF_ITEMS" /> 個項目移至垃圾桶</translation>
 <translation id="290843123675549676">馬拉地文</translation>
 <translation id="2923240520113693977">愛沙尼亞</translation>
 <translation id="2938685643439809023">蒙古語</translation>
@@ -476,6 +478,7 @@
 <translation id="5068919226082848014">披薩</translation>
 <translation id="5081517858322016911">系統將刪除 <ph name="TOTAL_FILE_SIZE" /> 的檔案</translation>
 <translation id="508423945471810158">正在將 <ph name="NUMBER_OF_ITEMS" /> 個項目移至「<ph name="FOLDER_NAME" />」</translation>
+<translation id="5092200349368278146"><ph name="FILE_NAME" /> 已移至垃圾桶</translation>
 <translation id="509429900233858213">發生錯誤。</translation>
 <translation id="5098629044894065541">希伯來文</translation>
 <translation id="5102922915594634436">管理已同步的資料夾</translation>
@@ -581,6 +584,7 @@
 <translation id="5845721951356578987">護士</translation>
 <translation id="5861477046012235702">遊戲玩家</translation>
 <translation id="5864471791310927901">DHCP 查閱失敗</translation>
+<translation id="5887342613489958822">正在將 <ph name="FILE_NAME" /> 移至垃圾桶</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" /> 個網路中的第 <ph name="NETWORK_INDEX" /> 個，<ph name="NETWORK_NAME" />，未啟用，訊號強度 <ph name="SIGNAL_STRENGTH" />%，詳細資料</translation>
 <translation id="5911887972742538906">安裝 Linux 應用程式的過程中發生錯誤。</translation>
 <translation id="5912396950572065471">格式</translation>

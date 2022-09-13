@@ -84,7 +84,7 @@
 <translation id="1722487484194605434">Izrađivanje zip arhive sljedećeg broja stavki: <ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="1722687688096767818">Dodavanje profila...</translation>
 <translation id="1726100011689679555">Poslužitelji naziva</translation>
-<translation id="1726600877401297672">Stavke premještene u otpad: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="1726600877401297672">Broj datoteka koje su premještene u otpad: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="1729953886957086472">njemački (Njemačka)</translation>
 <translation id="1730235522912993863">kineski cangjie</translation>
 <translation id="1731889557567069540">Broj kopiranih stavki: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -215,7 +215,7 @@
 <translation id="2888807692577297075">Nema stavki koje su podudarne s &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Informacije</translation>
 <translation id="2902734494705624966">SAD prošireni</translation>
-<translation id="2906052776158021882">Premještanje <ph name="NUMBER_OF_ITEMS" /> stavke/stavki u otpad</translation>
+<translation id="2906052776158021882">Broj datoteka koje se premještaju u otpad: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="290843123675549676">marati</translation>
 <translation id="2923240520113693977">Estonska</translation>
 <translation id="2938685643439809023">Mongolska</translation>
@@ -478,7 +478,7 @@
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911">Broj fajlova koji će se izbrisati: <ph name="TOTAL_FILE_SIZE" /></translation>
 <translation id="508423945471810158">Premještanje stavki (njih <ph name="NUMBER_OF_ITEMS" />) u folder <ph name="FOLDER_NAME" /></translation>
-<translation id="5092200349368278146">Datoteka <ph name="FILE_NAME" /> premještena je u otpad</translation>
+<translation id="5092200349368278146">Datoteka <ph name="FILE_NAME" /> je premještena u otpad</translation>
 <translation id="509429900233858213">Došlo je do greške.</translation>
 <translation id="5098629044894065541">Hebrejska</translation>
 <translation id="5102922915594634436">Upravljajte sinhroniziranim folderima</translation>

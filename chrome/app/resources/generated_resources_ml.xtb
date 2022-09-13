@@ -3294,20 +3294,17 @@
 <translation id="4062561150282203854">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ആപ്പുകൾ, ക്രമീകരണം എന്നിവയും മറ്റും സമന്വയിപ്പിക്കുക</translation>
 <translation id="4065876735068446555">നിങ്ങൾ ഉപയോഗിക്കുന്ന നെറ്റ്‌വർക്ക് (<ph name="NETWORK_ID" />) അതിന്റെ ലോഗിൻ പേജ് സന്ദർശിക്കാൻ നിങ്ങളോട് ആവശ്യപ്പെടാം.</translation>
 <translation id="4066207411788646768">നിങ്ങളുടെ നെറ്റ്‌വർക്കിൽ ലഭ്യമായ പ്രിന്ററുകൾ കാണാൻ നിങ്ങളുടെ കണക്ഷൻ പരിശോധിക്കുക</translation>
-<translation id="4066945815577305767">പാസ്‌വേഡ് ടൈംഔട്ടായി</translation>
 <translation id="4067839975993712852">നിലവിലെ ടാബ് വായിച്ചതായി അടയാളപ്പെടുത്തുക</translation>
 <translation id="4068776064906523561">സംരക്ഷിച്ച വിരലടയാളങ്ങൾ</translation>
 <translation id="407173827865827707">ക്ലിക്കിൽ</translation>
 <translation id="4072701974556190758">നിങ്ങളുടെ <ph name="ACCOUNT" /> എന്ന Google അക്കൗണ്ടിൽ പാസ്‌വേഡ് സംരക്ഷിക്കും. നിങ്ങൾ ഇത് ഓർത്തിരിക്കേണ്ടതില്ല.</translation>
 <translation id="407520071244661467">സ്കെയിൽ</translation>
 <translation id="407543464472585404"><ph name="NAME" /> എന്നയാളുടെ പ്രൊഫൈൽ <ph name="EMAIL" /> എന്നതിലേക്ക് ലിങ്ക് ചെയ്തു</translation>
-<translation id="4075639477629295004"><ph name="FILE_NAME" /> കാസ്‌റ്റ് ചെയ്യാനാവുന്നില്ല.</translation>
 <translation id="4077917118009885966">ഈ സൈറ്റിലെ ‌പരസ്യങ്ങൾ ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="4077919383365622693"><ph name="SITE" /> സംഭരിച്ചിരിക്കുന്ന എല്ലാ ഡാറ്റയും കുക്കികളും മായ്‌ക്കും.</translation>
 <translation id="4078738236287221428">അഗ്രസ്സീവ്</translation>
 <translation id="4079140982534148664">മെച്ചപ്പെട്ട സ്പെൽ ചെക്ക് ഉപയോഗിക്കുക</translation>
 <translation id="4081203444152654304"><ph name="VISUAL_SEARCH_PROVIDER" /> ഉപയോഗിച്ച് ചിത്രത്തിൽ തിരയുക</translation>
-<translation id="4081242589061676262">ഫയൽ കാസ്റ്റ് ചെയ്യാനാവുന്നില്ല.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" />, നിങ്ങളുടെ ഫോണിലേക്ക് ഒരു അറിയിപ്പ് അയച്ചു. ഇത് നിങ്ങൾ തന്നെയാണെന്ന് സ്ഥിരീകരിക്കാൻ, അവിടെ കാണുന്ന ഘട്ടങ്ങൾ പാലിക്കുക.</translation>
 <translation id="4084682180776658562">ബുക്മാര്‍ക്ക്</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> അടയ്‌ക്കുക</translation>
@@ -4875,7 +4872,6 @@
            , <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /> എന്നിവ ഈ ലിസ്റ്റിനെ ബാധിക്കുന്നു</translation>
 <translation id="5620568081365989559"><ph name="FOLDER_PATH" />-ലേക്ക് DevTools പൂർണ്ണമായ ആക്‌സസ് അഭ്യർത്ഥിക്കുന്നു. സെൻസിറ്റീവായ വിവരങ്ങളൊന്നും തന്നെ വെളിപ്പെടുത്തുന്നില്ലെന്ന് ഉറപ്പാക്കുക.</translation>
 <translation id="5620612546311710611">ഉപയോഗ സ്ഥിതിവിവരക്കണക്കുകൾ</translation>
-<translation id="5620655347161642930">പാസ്‌വേഡുകൾ എക്‌സ്‌പോർട്ട് ചെയ്യുക...</translation>
 <translation id="5623282979409330487">ഈ സൈറ്റ് നിങ്ങളുടെ ചലന സെൻസറുകൾ ഉപയോഗിക്കുന്നു.</translation>
 <translation id="5623842676595125836">ലോഗ്</translation>
 <translation id="5624120631404540903">പാസ്‌വേഡുകൾ നിയന്ത്രിക്കുക</translation>
@@ -6276,7 +6272,6 @@
 <translation id="6970543303783413625">പാസ്‌വേഡുകൾ ഇമ്പോർട്ട് ചെയ്യാനാകുന്നില്ല. നിങ്ങൾക്ക് ഒരു സമയത്ത് <ph name="COUNT" /> പാസ്‌വേഡുകൾ വരെ മാത്രമേ ഇമ്പോർട്ട് ചെയ്യാനാകൂ.</translation>
 <translation id="6970856801391541997">പ്രത്യേക പേജുകൾ പ്രിന്റ് ചെയ്യുക</translation>
 <translation id="6970861306198150268">ഈ സൈറ്റിനുള്ള നിങ്ങളുടെ നിലവിലെ പാസ്‌വേഡ് സംരക്ഷിക്കുന്നുണ്ടെന്ന് ഉറപ്പാക്കുക</translation>
-<translation id="6972180789171089114">ഓഡിയോ/വീഡിയോ</translation>
 <translation id="6972754398087986839">ആരംഭിക്കാം</translation>
 <translation id="697312151395002334">പോപ്പ് അപ്പ് അയയ്‌ക്കുന്നതും റീഡയറക്‌റ്റുകൾ ഉപയോഗിക്കുന്നതും അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="6973611239564315524">Debian 10 (Buster) -ലേക്കുള്ള അപ്ഗ്രേഡ് ലഭ്യമാണ്</translation>
@@ -7144,7 +7139,6 @@
 <translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" /> മറ്റൊരു ഉപകരണത്തിൽ Google Assistant മുമ്പേ സജ്ജീകരിച്ചിട്ടുണ്ടെന്ന് തോന്നുന്നു. ഈ ഉപകരണത്തിൽ സ്‌ക്രീൻ പശ്ചാത്തലം ഓണാക്കുന്നതിലൂടെ <ph name="SUPERVISED_USER_NAME" /> എന്ന കുട്ടിക്ക് Assistant കൂടുതൽ പ്രയോജനപ്പെടുത്താനാകും.</translation>
 <translation id="7807711621188256451">നിങ്ങളുടെ ക്യാമറ ആക്‌സസ് ചെയ്യുന്നതിന് എപ്പോഴും <ph name="HOST" />-ന് അനുമതി നൽകുക</translation>
 <translation id="7810202088502699111">ഈ പേജില്‍‌ പോപ്പ്-അപ്പുകളെ തടഞ്ഞു.</translation>
-<translation id="781167124805380294"><ph name="FILE_NAME" /> കാസ്‌റ്റ് ചെയ്യുക</translation>
 <translation id="7814458197256864873">&amp;പകര്‍ത്തൂ</translation>
 <translation id="7815680994978050279">ദോഷകരമായ ഡൗൺലോഡ് ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="7817361223956157679">Linux ആപ്പുകളിൽ ഇപ്പോഴും ഓൺ-സ്‌ക്രീൻ കീബോർഡ് പ്രവർത്തിക്കില്ല</translation>
@@ -7649,7 +7643,6 @@
 <translation id="8272194309885535896">ചിത്രം ഡൗൺലോഡുചെയ്യുക</translation>
 <translation id="8272443605911821513">"കൂടുതൽ ഉപകരണങ്ങൾ" മെനുവിലെ വിപുലീകരണങ്ങളിൽ ക്ലിക്ക് ചെയ്യുന്നതിലൂടെ നിങ്ങളുടെ വിപുലീകരണങ്ങൾ നിയന്ത്രിക്കുക.</translation>
 <translation id="8273905181216423293">ഇപ്പോൾ ഡൗൺലോഡ് ചെയ്യുക</translation>
-<translation id="8274332263553132018">ഫയൽ കാസ്‌റ്റ് ചെയ്യുക</translation>
 <translation id="8274921654076766238">മാഗ്നിഫയർ, കീബോർഡ് ഫോക്കസിനെ പിന്തുടരുന്നു</translation>
 <translation id="8274924778568117936">അപ്‌ഡേറ്റ് പൂർത്തിയാകുന്നതുവരെ നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഓഫാക്കുകയോ അടയ്‌ക്കുകയോ ചെയ്യരുത്. ഇൻസ്‌റ്റലേഷൻ പൂർത്തിയായിക്കഴിഞ്ഞാൽ <ph name="DEVICE_TYPE" /> റീസ്‌റ്റാർട്ട് ആകുന്നതാണ്.</translation>
 <translation id="8275038454117074363">ഇറക്കുമതിചെയ്യുക</translation>
@@ -8135,7 +8128,6 @@
 <translation id="8756969031206844760">പാസ്‌വേഡ് അപ്‌ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="8757203080302669031">ഈ ടാബ് Bluetooth ഉപകരണങ്ങൾ കണ്ടെത്താൻ സജീവമായി സ്‌കാൻ ചെയ്യുന്നു.</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> നീക്കം ചെയ്‌തു</translation>
-<translation id="8758418656925882523">പറഞ്ഞ് കൊടുക്കൽ പ്രവർത്തനക്ഷമമാക്കുക (ടൈപ്പ് ചെയ്യാൻ പറഞ്ഞ് കൊടുക്കുക)</translation>
 <translation id="8759753423332885148">കൂടുതലറിയുക.</translation>
 <translation id="8761945298804995673">ഇത് നിലവിലുള്ള ഉപയോക്താവാണ്</translation>
 <translation id="8762886931014513155">നിങ്ങളുടെ <ph name="DEVICE_TYPE" />-ന് അപ്‌ഡേറ്റ് ആവശ്യമാണ്</translation>

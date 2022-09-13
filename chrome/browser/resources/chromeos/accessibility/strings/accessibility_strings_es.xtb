@@ -140,6 +140,7 @@
 <translation id="1834891354138622109">Columna</translation>
 <translation id="1846771122725914429">Pantalla braille Bluetooth</translation>
 <translation id="1852018405765032699">Toca la pantalla con cuatro dedos para abrir y cerrar los menús de ChromeVox. Estos menús contienen información útil sobre comandos y atajos. Una vez abiertos los menús, puedes deslizar un dedo para desplazarte por los elementos y dar dos toques para activarlos. Para continuar, toca la pantalla con cuatro dedos.</translation>
+<translation id="1864430479908918647">Pulsa la tecla de búsqueda + barra espaciadora</translation>
 <translation id="1865601187525349519">Fin del texto</translation>
 <translation id="1876229593313240038">doc</translation>
 <translation id="1902396333223336119">Celda</translation>
@@ -778,6 +779,7 @@
 <translation id="6236061028292614533">Siguiente encabezado</translation>
 <translation id="6254901459154107917">Siguiente área de texto editable</translation>
 <translation id="6259464875943891919">Has salido de <ph name="TYPE" />.</translation>
+<translation id="6280088282605782512">Toca dos veces</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">Teclas imprescindibles: tecla de búsqueda</translation>
 <translation id="6305702903308659374">Reproducir a un volumen normal aunque ChromeVox hable</translation>
@@ -981,6 +983,7 @@
 <translation id="7731785449856576010">No hay ningún widget multimedia posterior</translation>
 <translation id="7735498529470878067">La exploración táctil te permite hacerte una idea rápidamente de lo que hay en la pantalla.</translation>
 <translation id="773906353055481349">Pulsa la tecla de búsqueda + Ctrl + Alt con las flechas para desplazarte por las celdas</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> para <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">Se ha iniciado la descarga de <ph name="FILE_NAME" /></translation>
 <translation id="7768784765476638775">Enunciar selección</translation>
 <translation id="7776293189010177726">Abre los menús de ChromeVox</translation>

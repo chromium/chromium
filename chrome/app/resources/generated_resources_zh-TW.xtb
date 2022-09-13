@@ -1503,6 +1503,7 @@
 <translation id="2356070529366658676">詢問</translation>
 <translation id="2357330829548294574">移除「<ph name="USER_NAME" />」</translation>
 <translation id="2358561147588818967">網站可以使用 JavaScript</translation>
+<translation id="2358777858338503863">按一下即可允許存取 <ph name="ORIGIN" />：</translation>
 <translation id="2359071692152028734">Linux 應用程式可能會沒有回應。</translation>
 <translation id="2359345697448000899">如要管理擴充功能，只要按一下 [工具] 選單裡的 [擴充功能] 即可。</translation>
 <translation id="2359556993567737338">連線至藍牙裝置</translation>
@@ -2244,6 +2245,7 @@
 <translation id="3046178388369461825">Linux 磁碟空間嚴重不足</translation>
 <translation id="3046910703532196514">完整的網頁</translation>
 <translation id="304747341537320566">語音引擎</translation>
+<translation id="3048051495640130973">你可以前往設定控制開啟省電模式的時機</translation>
 <translation id="3048336643003835855">來自供應商 <ph name="VENDOR_ID" /> 的 HID 裝置</translation>
 <translation id="3048917188684939573">投放與裝置記錄</translation>
 <translation id="3051250416341590778">顯示大小</translation>
@@ -2834,6 +2836,7 @@
 <translation id="3641456520301071208">網站可以要求取得你的位置資訊</translation>
 <translation id="3642070413432681490">圓形游標</translation>
 <translation id="3642699533549879077">有人窺探你的螢幕時，系統會發出警示並隱藏通知內容。</translation>
+<translation id="3643962751030964445">這是由 <ph name="DEVICE_MANAGER" /> 管理的裝置。<ph name="DEVICE_MANAGER" /> 要求必須為 <ph name="USER_EMAIL_ADDRESS" /> 帳戶設定新的設定檔</translation>
 <translation id="3645372836428131288">請稍微移動手指，讓系統擷取完整指紋</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{已收到來自「<ph name="DEVICE_NAME" />」的 <ph name="ATTACHMENTS" />}other{已收到來自「<ph name="DEVICE_NAME" />」的 <ph name="ATTACHMENTS" />}}</translation>
 <translation id="3648348069317717750">偵測到 <ph name="USB_DEVICE_NAME" /></translation>
@@ -3295,20 +3298,17 @@
 <translation id="4062561150282203854">同步處理 <ph name="DEVICE_TYPE" /> 的應用程式和設定等資料</translation>
 <translation id="4065876735068446555">目前使用的網路 (<ph name="NETWORK_ID" />) 可能會要求您造訪登入網頁。</translation>
 <translation id="4066207411788646768">如要查看網路中的可用印表機，請檢查你的連線狀態</translation>
-<translation id="4066945815577305767">密碼逾時</translation>
 <translation id="4067839975993712852">將目前的分頁標示為已讀取</translation>
 <translation id="4068776064906523561">已儲存的指紋</translation>
 <translation id="407173827865827707">點擊時</translation>
 <translation id="4072701974556190758">密碼會儲存在你的 Google 帳戶 (<ph name="ACCOUNT" />) 中，因此你不必記住密碼。</translation>
 <translation id="407520071244661467">縮放比例</translation>
 <translation id="407543464472585404"><ph name="NAME" />的設定檔已連結至 <ph name="EMAIL" /></translation>
-<translation id="4075639477629295004">無法投放「<ph name="FILE_NAME" />」。</translation>
 <translation id="4077917118009885966">已封鎖這個網站的廣告</translation>
 <translation id="4077919383365622693"><ph name="SITE" /> 儲存的所有資料和 Cookie 都將遭到清除。</translation>
 <translation id="4078738236287221428">積極</translation>
 <translation id="4079140982534148664">使用進階拼字檢查功能</translation>
 <translation id="4081203444152654304">使用 <ph name="VISUAL_SEARCH_PROVIDER" /> 在圖片內搜尋</translation>
-<translation id="4081242589061676262">無法投放檔案。</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> 已傳送通知到你的手機。如要確認自己的身分，請按照手機上的步驟操作。</translation>
 <translation id="4084682180776658562">書籤</translation>
 <translation id="4084835346725913160">關閉 <ph name="TAB_NAME" /></translation>
@@ -3405,6 +3405,7 @@
 <translation id="4175137578744761569">淺紫色與白色</translation>
 <translation id="4175737294868205930">永久儲存空間</translation>
 <translation id="4176463684765177261">已停用</translation>
+<translation id="4176864026061939326">這是受管理的裝置。你的裝置管理員要求必須為 <ph name="USER_EMAIL_ADDRESS" /> 帳戶設定新的設定檔</translation>
 <translation id="4180788401304023883">刪除憑證授權單位(CA) 的「<ph name="CERTIFICATE_NAME" />」憑證？</translation>
 <translation id="4181602000363099176">20 倍</translation>
 <translation id="4181841719683918333">語言</translation>
@@ -3791,6 +3792,7 @@
 <translation id="4554591392113183336">外部擴充功能與現有擴充功能的版本相同，或版本較低。</translation>
 <translation id="4555769855065597957">陰影</translation>
 <translation id="4555863373929230635">如要將密碼儲存到你的 Google 帳戶，請登入並開啟同步功能。</translation>
+<translation id="4556194354084985730">使用已儲存的密碼輕鬆登入網站和應用程式。如果關閉這項設定，系統會在你登入前要求你開啟。</translation>
 <translation id="4558426062282641716">已要求自動啟動權限</translation>
 <translation id="4559617833001311418">這個網站正在存取你的動作感應器或光源感應器。</translation>
 <translation id="4561893854334016293">最近未變更任何權限</translation>
@@ -4874,7 +4876,6 @@
 <translation id="5620540760831960151">這份清單會受到 <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />、<ph name="BEGIN_LINK2" />{BrowserSwitcherExternalSitelistUrl}<ph name="END_LINK2" /> 和 <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /> 政策影響</translation>
 <translation id="5620568081365989559">DevTools 要求取得 <ph name="FOLDER_PATH" /> 的完整權限。請務必小心，不要透露任何機密資訊。</translation>
 <translation id="5620612546311710611">使用統計資料</translation>
-<translation id="5620655347161642930">匯出密碼...</translation>
 <translation id="5623282979409330487">這個網站正在存取你的動作感應器。</translation>
 <translation id="5623842676595125836">記錄</translation>
 <translation id="5624120631404540903">管理密碼</translation>
@@ -5343,6 +5344,7 @@
 <translation id="6077476112742402730">說話即可輸入</translation>
 <translation id="6078121669093215958">{0,plural, =1{訪客}other{# 個開啟的訪客視窗}}</translation>
 <translation id="6078323886959318429">新增捷徑</translation>
+<translation id="6078742430369906859">「<ph name="NETWORK_ID" />」的連線能力可能受到限制</translation>
 <translation id="6078752646384677957">請檢查麥克風和音量。</translation>
 <translation id="6078769373519310690">「<ph name="CHROME_EXTENSION_NAME" />」要求與 HID 裝置連線</translation>
 <translation id="608029822688206592">找不到網路。請插入 SIM 卡，然後再試一次</translation>
@@ -6053,6 +6055,7 @@
 <translation id="6779447100905857289">你的購物車</translation>
 <translation id="677965093459947883">非常小</translation>
 <translation id="6781005693196527806">管理搜尋引擎...(&amp;M)</translation>
+<translation id="6781012982807899368">已儲存的密碼會顯示在這裡。<ph name="BEGIN_LINK" />匯入密碼<ph name="END_LINK" /></translation>
 <translation id="6781284683813954823">Doodle 連結</translation>
 <translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />應用程式資料泛指應用程式依據開發人員設定所儲存的任何資料，包括聯絡人、訊息和相片等。備份資料不會計入貴子女的雲端硬碟儲存空間配額。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您可以在「設定」中關閉這項服務。<ph name="END_PARAGRAPH2" /></translation>
@@ -6272,7 +6275,6 @@
 <translation id="6970543303783413625">無法匯入密碼，一次最多只能匯入 <ph name="COUNT" /> 個密碼。</translation>
 <translation id="6970856801391541997">列印特定網頁</translation>
 <translation id="6970861306198150268">請確認要為這個網站儲存目前的密碼</translation>
-<translation id="6972180789171089114">音效/影片</translation>
 <translation id="6972754398087986839">開始使用</translation>
 <translation id="697312151395002334">可以傳送彈出式視窗及使用重新導向</translation>
 <translation id="6973611239564315524">現在可以升級至 Debian 10 (Buster)</translation>
@@ -6566,6 +6568,7 @@
 <translation id="7267875682732693301">重複按壓指紋感應器，建立完整的指紋檔案</translation>
 <translation id="7267898843336437186">選取這個網站能夠查看的資料夾</translation>
 <translation id="7268127947535186412">這項設定受到裝置管理員控管。</translation>
+<translation id="7269229526547981029">這個設定檔是由 <ph name="PROFILE_MANAGER" /> 管理，<ph name="ACCOUNT_MANAGER" /> 要求必須為 <ph name="USER_EMAIL_ADDRESS" /> 帳戶設定新的設定檔</translation>
 <translation id="7269736181983384521">鄰近分享功能數據用量</translation>
 <translation id="7272674038937250585">沒有任何說明</translation>
 <translation id="7273110280511444812">最後附加日期為 <ph name="DATE" /></translation>
@@ -7140,7 +7143,6 @@
 <translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" />似乎已在其他裝置上設定 Google 助理。只要在這部裝置上開啟 [畫面內容] 設定，<ph name="SUPERVISED_USER_NAME" />就能運用 Google 助理的更多功能。</translation>
 <translation id="7807711621188256451">一律允許 <ph name="HOST" /> 存取你的攝影機</translation>
 <translation id="7810202088502699111">系統已封鎖此網頁的彈出式視窗。</translation>
-<translation id="781167124805380294">投放 <ph name="FILE_NAME" /></translation>
 <translation id="7814458197256864873">複製(&amp;C)</translation>
 <translation id="7815680994978050279">已封鎖危險下載內容</translation>
 <translation id="7817361223956157679">Linux 應用程式目前不支援螢幕小鍵盤</translation>
@@ -7205,6 +7207,7 @@
 <translation id="7870790288828963061">找不到新版 Kiosk 應用程式，沒有可更新的內容。請移除 USB 隨身碟。</translation>
 <translation id="7871049986386271121">一律在這個網站上使用</translation>
 <translation id="7871109039747854576">使用 <ph name="COMMA" /> 鍵與 <ph name="PERIOD" /> 鍵呼叫候選字清單</translation>
+<translation id="7872494313446521576">按一下即可允許「<ph name="EXTENSIONS_REQUESTING_ACCESS" />」存取 <ph name="ORIGIN" />：</translation>
 <translation id="787268756490971083">關閉</translation>
 <translation id="7872758299142009420">巢狀群組過多：<ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">Chrome 背景</translation>
@@ -7576,6 +7579,7 @@
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新通知}other{# 則新通知}}</translation>
 <translation id="821119981794423735">如要將密碼匯入到 <ph name="USER_EMAIL" /> 的 Google 密碼管理工具，請選取 CSV 檔案</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{正在執行一項下載作業}other{正在執行多項下載作業}}</translation>
+<translation id="8212601853154459483">這個設定檔是由 <ph name="PROFILE_MANAGER" /> 管理，你必須為 <ph name="USER_EMAIL_ADDRESS" /> 帳戶建立個別的設定檔</translation>
 <translation id="8213449224684199188">已進入相片模式</translation>
 <translation id="8214489666383623925">開啟檔案...</translation>
 <translation id="8215129063232901118">透過 <ph name="DEVICE_TYPE" /> 使用手機上的功能和內容</translation>
@@ -7646,7 +7650,6 @@
 <translation id="8272194309885535896">下載圖片</translation>
 <translation id="8272443605911821513">如要管理擴充功能，只需按一下 [其他工具] 選單裡的 [擴充功能] 即可。</translation>
 <translation id="8273905181216423293">立即下載</translation>
-<translation id="8274332263553132018">投放檔案</translation>
 <translation id="8274921654076766238">放大鏡追蹤鍵盤焦點</translation>
 <translation id="8274924778568117936">完成更新前，請勿將 <ph name="DEVICE_TYPE" /> 關機。<ph name="DEVICE_TYPE" /> 會在安裝完成後重新啟動。</translation>
 <translation id="8275038454117074363">匯入</translation>
@@ -7882,6 +7885,7 @@
 <translation id="8523493869875972733">保留變更</translation>
 <translation id="8523849605371521713">依政策新增</translation>
 <translation id="8524783101666974011">將卡片儲存到你的 Google 帳戶</translation>
+<translation id="8525157245469383124">零售商商店 ID 的格式為 ABC-1234</translation>
 <translation id="8525306231823319788">全螢幕</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">新增語言</translation>
@@ -8133,7 +8137,6 @@
 <translation id="8756969031206844760">要更新密碼嗎？</translation>
 <translation id="8757203080302669031">這個分頁正在主動掃描藍牙裝置。</translation>
 <translation id="8757368836647541092">已移除「<ph name="USER_NAME_OR_EMAIL" />」</translation>
-<translation id="8758418656925882523">啟用語音輸入 (說話即可輸入)</translation>
 <translation id="8759753423332885148">瞭解詳情</translation>
 <translation id="8761945298804995673">這名使用者已經存在。</translation>
 <translation id="8762886931014513155">你的 <ph name="DEVICE_TYPE" /> 需要更新</translation>

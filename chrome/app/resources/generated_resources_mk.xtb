@@ -1519,6 +1519,7 @@
 <translation id="2356070529366658676">Прашај</translation>
 <translation id="2357330829548294574">Отстранете <ph name="USER_NAME" /></translation>
 <translation id="2358561147588818967">Сајтовите може да користат JavaScript</translation>
+<translation id="2358777858338503863">Кликнете за да се дозволи на <ph name="ORIGIN" />:</translation>
 <translation id="2359071692152028734">Апликациите на Linux може да не реагираат.</translation>
 <translation id="2359345697448000899">Уредувајте со наставки со кликнување на Наставки во менито Алатки.</translation>
 <translation id="2359556993567737338">Поврзи уред со Bluetooth</translation>
@@ -3314,20 +3315,17 @@
 <translation id="4062561150282203854">Синхронизирајте ги вашите апликации, поставки и друго на <ph name="DEVICE_TYPE" /></translation>
 <translation id="4065876735068446555">Мрежата што ја користите (<ph name="NETWORK_ID" />) може да бара да ја посетите страницата за најавување.</translation>
 <translation id="4066207411788646768">Проверете ја врската за да ги видите достапните печатачи во мрежата</translation>
-<translation id="4066945815577305767">Истечено време на лозинките</translation>
 <translation id="4067839975993712852">Означи ја тековната картичка како прочитана</translation>
 <translation id="4068776064906523561">Зачувани отпечатоци</translation>
 <translation id="407173827865827707">На клик</translation>
 <translation id="4072701974556190758">Лозинката ќе се зачува во вашата сметка на Google, <ph name="ACCOUNT" />. Нема да треба да ја помните.</translation>
 <translation id="407520071244661467">Размер</translation>
 <translation id="407543464472585404">Профилот на <ph name="NAME" /> е поврзан со <ph name="EMAIL" /></translation>
-<translation id="4075639477629295004">Не може да се емитува <ph name="FILE_NAME" />.</translation>
 <translation id="4077917118009885966">Рекламите се блокирани на сајтов</translation>
 <translation id="4077919383365622693">Сите податоци и колачиња складирани од <ph name="SITE" /> ќе се избришат.</translation>
 <translation id="4078738236287221428">Агресивно</translation>
 <translation id="4079140982534148664">Користи подобрена проверка на правопис</translation>
 <translation id="4081203444152654304">Пребарајте во сликата со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
-<translation id="4081242589061676262">Не може да се емитува датотеката.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> испрати известување на вашиот телефон. За да потврдите дека сте вие, следете ги чекорите таму.</translation>
 <translation id="4084682180776658562">Обележувач</translation>
 <translation id="4084835346725913160">Затвори <ph name="TAB_NAME" /></translation>
@@ -3812,6 +3810,7 @@
 <translation id="4554591392113183336">Надворешната наставка е иста или пониска верзија споредена со постоечката.</translation>
 <translation id="4555769855065597957">Сенка</translation>
 <translation id="4555863373929230635">За да се зачувуваат лозинки во сметката на Google, најавете се и вклучете синхронизација.</translation>
+<translation id="4556194354084985730">Лесно најавувајте се на апликации и сајтови со зачуваните лозинки. Кога е исклучено, ќе бидете прашани пред најавувањето.</translation>
 <translation id="4558426062282641716">Потребна е дозвола за автоматско стартување</translation>
 <translation id="4559617833001311418">Сајтов пристапува до сензорите за движење или светлина.</translation>
 <translation id="4561893854334016293">Нема неодамна променети дозволи</translation>
@@ -4897,7 +4896,6 @@
            и <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /></translation>
 <translation id="5620568081365989559">DevTools бара целосен пристап до <ph name="FOLDER_PATH" />. Погрижете се да не откривате чувствителни информации.</translation>
 <translation id="5620612546311710611">статистика на користење</translation>
-<translation id="5620655347161642930">Извезување лозинки…</translation>
 <translation id="5623282979409330487">Овој сајт пристапува до вашите сензори за движење.</translation>
 <translation id="5623842676595125836">Дневник</translation>
 <translation id="5624120631404540903">Управувај со лозинки</translation>
@@ -5367,6 +5365,7 @@
 <translation id="6077476112742402730">Зборувајте за пишување</translation>
 <translation id="6078121669093215958">{0,plural, =1{Гостин}one{# отворен гостински прозорец}other{# отворени гостински прозорци}}</translation>
 <translation id="6078323886959318429">Додајте кратенка</translation>
+<translation id="6078742430369906859">Поврзливоста на „<ph name="NETWORK_ID" />“ може да биде ограничена</translation>
 <translation id="6078752646384677957">Проверете ги нивоата на микрофонот и аудиото.</translation>
 <translation id="6078769373519310690">„<ph name="CHROME_EXTENSION_NAME" />“ сака да се поврзе со HID-уред</translation>
 <translation id="608029822688206592">Не е најдена мрежа. Вметнете ја вашата SIM-картичка и обидете се повторно.</translation>
@@ -6079,6 +6078,7 @@
 <translation id="6779447100905857289">вашите кошнички</translation>
 <translation id="677965093459947883">Многу мал</translation>
 <translation id="6781005693196527806">&amp;Управувајте со пребарувачите…</translation>
+<translation id="6781012982807899368">Зачуваните лозинки ќе се појават тука. <ph name="BEGIN_LINK" /> Увезете ги лозинките<ph name="END_LINK" /></translation>
 <translation id="6781284683813954823">Линк за Doodle</translation>
 <translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />„Податоци од апликација“ се сите податоци што ги зачувала некоја апликација (според поставките на програмерот), вклучувајќи податоци како што се контакти, пораки и фотографии. Податоците од бекапот нема да се вбројуваат во квотата за складирање на Drive на вашето дете.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Услугава може да ја исклучите во „Поставки“.<ph name="END_PARAGRAPH2" /></translation>
@@ -6298,7 +6298,6 @@
 <translation id="6970543303783413625">Не може да се увезат лозинките. Може да увезете најмногу <ph name="COUNT" /> лозинки истовремено.</translation>
 <translation id="6970856801391541997">Печати специфични страници</translation>
 <translation id="6970861306198150268">Уверете се дека ја зачувувате тековната лозинка за сајтов</translation>
-<translation id="6972180789171089114">Аудио/видео</translation>
 <translation id="6972754398087986839">Започни</translation>
 <translation id="697312151395002334">Дозволено им е да испраќаат скокачки програми и да користат пренасочувања</translation>
 <translation id="6973611239564315524">Достапна е надградба на Debian 10 (Buster)</translation>
@@ -7167,7 +7166,6 @@
 <translation id="7807117920154132308">Се чини дека <ph name="SUPERVISED_USER_NAME" /> веќе има поставено „Помошник на Google“ на друг уред. <ph name="SUPERVISED_USER_NAME" /> може да извлече максимум од „Помошникот“ ако вклучи „Контекст на екранот“ на овој уред.</translation>
 <translation id="7807711621188256451">Секогаш дозволувај <ph name="HOST" /> да пристапи до камерата</translation>
 <translation id="7810202088502699111">На оваа страница се блокирани појавни прозорци.</translation>
-<translation id="781167124805380294">Cast <ph name="FILE_NAME" /></translation>
 <translation id="7814458197256864873">&amp;Копирај</translation>
 <translation id="7815680994978050279">Блокирано е опасно преземање</translation>
 <translation id="7817361223956157679">Тастатурата на екран сѐ уште не функционира во апликациите на Linux</translation>
@@ -7232,6 +7230,7 @@
 <translation id="7870790288828963061">Не се пронајдени апликации на Киоск со понова верзија. Нема што да се ажурира. Отстранете ја USB-меморијата.</translation>
 <translation id="7871049986386271121">Секогаш на сајтов</translation>
 <translation id="7871109039747854576">Користи ги копчињата <ph name="COMMA" /> и <ph name="PERIOD" /> за прелистување список со кандидати</translation>
+<translation id="7872494313446521576">Кликнете за да се дозволи „<ph name="EXTENSIONS_REQUESTING_ACCESS" />“ на <ph name="ORIGIN" />:</translation>
 <translation id="787268756490971083">Исклучено</translation>
 <translation id="7872758299142009420">Премногу вгнездени групи: <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">Заднини на Chrome</translation>
@@ -7676,7 +7675,6 @@
 <translation id="8272194309885535896">Преземи слика</translation>
 <translation id="8272443605911821513">Управувајте ги вашите наставки со кликнување на Наставки во менито „Повеќе алатки“.</translation>
 <translation id="8273905181216423293">Преземи сега</translation>
-<translation id="8274332263553132018">Датотека за Cast</translation>
 <translation id="8274921654076766238">Лупата го следи фокусот на тастатурата</translation>
 <translation id="8274924778568117936">Не исклучувајте и не затворајте <ph name="DEVICE_TYPE" /> пред да заврши ажурирањето. <ph name="DEVICE_TYPE" /> ќе се рестартира откако ќе заврши инсталацијата.</translation>
 <translation id="8275038454117074363">Увези</translation>
@@ -7912,6 +7910,7 @@
 <translation id="8523493869875972733">Откажи</translation>
 <translation id="8523849605371521713">Додадено од правилото</translation>
 <translation id="8524783101666974011">Зачувувајте картички во вашата сметка на Google</translation>
+<translation id="8525157245469383124">ID-форматот на малопродажната продавница е ABC-1234</translation>
 <translation id="8525306231823319788">Цел екран</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Додај јазици</translation>
@@ -8163,7 +8162,6 @@
 <translation id="8756969031206844760">Дали да се ажурира лозинката?</translation>
 <translation id="8757203080302669031">Картичкава активно бара уреди со Bluetooth.</translation>
 <translation id="8757368836647541092">Контактот <ph name="USER_NAME_OR_EMAIL" /> е отстранет</translation>
-<translation id="8758418656925882523">Овозможи диктирање (зборувајте за да напишете)</translation>
 <translation id="8759753423332885148">Дознајте повеќе.</translation>
 <translation id="8761945298804995673">Корисников веќе постои</translation>
 <translation id="8762886931014513155">На вашиот <ph name="DEVICE_TYPE" /> му е потребно ажурирање</translation>

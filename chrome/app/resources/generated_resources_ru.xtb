@@ -3298,20 +3298,17 @@
 <translation id="4062561150282203854">Синхронизируйте приложения, настройки и другие данные на устройстве <ph name="DEVICE_TYPE" /></translation>
 <translation id="4065876735068446555">Возможно, вам нужно перейти на страницу входа сети <ph name="NETWORK_ID" />.</translation>
 <translation id="4066207411788646768">Чтобы увидеть принтеры, доступные в вашей сети, подключитесь к Интернету.</translation>
-<translation id="4066945815577305767">Превышено время ожидания</translation>
 <translation id="4067839975993712852">Отметить текущую вкладку как прочитанную</translation>
 <translation id="4068776064906523561">Сохраненные отпечатки пальцев</translation>
 <translation id="407173827865827707">При нажатии</translation>
 <translation id="4072701974556190758">Пароль будет сохранен в вашем аккаунте Google (<ph name="ACCOUNT" />). Вам не нужно его запоминать.</translation>
 <translation id="407520071244661467">Масштаб</translation>
 <translation id="407543464472585404">Профиль пользователя <ph name="NAME" /> связан с аккаунтом <ph name="EMAIL" />.</translation>
-<translation id="4075639477629295004">Невозможно транслировать файл "<ph name="FILE_NAME" />"</translation>
 <translation id="4077917118009885966">Реклама заблокирована на этом сайте</translation>
 <translation id="4077919383365622693">Все данные и файлы cookie, хранящиеся на сайте <ph name="SITE" />, будут удалены.</translation>
 <translation id="4078738236287221428">Всегда</translation>
 <translation id="4079140982534148664">Использовать расширенную проверку правописания</translation>
 <translation id="4081203444152654304">Найти по области изображения через <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
-<translation id="4081242589061676262">Ошибка трансляции файла.</translation>
 <translation id="408223403876103285">С сайта <ph name="WEBSITE" /> отправлено уведомление на ваш телефон. Чтобы подтвердить свою личность, выполните указанные в нем действия.</translation>
 <translation id="4084682180776658562">Закладка</translation>
 <translation id="4084835346725913160">Закрыть вкладку "<ph name="TAB_NAME" />"</translation>
@@ -4879,7 +4876,6 @@
            и <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" />.</translation>
 <translation id="5620568081365989559">Инструменты разработчика запрашивают полный доступ к каталогу <ph name="FOLDER_PATH" />. Убедитесь, что в нем нет конфиденциальных данных.</translation>
 <translation id="5620612546311710611">статистика использования</translation>
-<translation id="5620655347161642930">Экспорт паролей</translation>
 <translation id="5623282979409330487">У этого сайта есть доступ к датчикам движения.</translation>
 <translation id="5623842676595125836">Журнал</translation>
 <translation id="5624120631404540903">Настройки паролей</translation>
@@ -6284,7 +6280,6 @@
 <translation id="6970543303783413625">Не удалось выполнить импорт. Максимальное число паролей, которые можно импортировать за один раз: <ph name="COUNT" />.</translation>
 <translation id="6970856801391541997">Печать выбранных страниц</translation>
 <translation id="6970861306198150268">Не забудьте сохранить текущий пароль для этого сайта.</translation>
-<translation id="6972180789171089114">Аудио/видео</translation>
 <translation id="6972754398087986839">Начать</translation>
 <translation id="697312151395002334">Разрешить сайтам показывать всплывающие окна или использовать переадресацию</translation>
 <translation id="6973611239564315524">Доступна версия Debian 10 (Buster).</translation>
@@ -7152,7 +7147,6 @@
 <translation id="7807117920154132308">Пользователь <ph name="SUPERVISED_USER_NAME" /> уже настроил Google Ассистента на другом устройстве. Если разрешить доступ к содержимому экрана, <ph name="SUPERVISED_USER_NAME" /> сможет пользоваться дополнительными возможностями Ассистента на этом устройстве.</translation>
 <translation id="7807711621188256451">Всегда предоставлять <ph name="HOST" /> доступ к моей камере</translation>
 <translation id="7810202088502699111">Всплывающие окна были заблокированы. </translation>
-<translation id="781167124805380294">Трансляция файла "<ph name="FILE_NAME" />"</translation>
 <translation id="7814458197256864873">&amp;Копировать</translation>
 <translation id="7815680994978050279">Заблокировано скачивание опасного файла</translation>
 <translation id="7817361223956157679">Экранная клавиатура пока не работает в приложениях для Linux.</translation>
@@ -7657,7 +7651,6 @@
 <translation id="8272194309885535896">Скачать изображение</translation>
 <translation id="8272443605911821513">Управляйте расширениями в соответствующем разделе в меню дополнительных инструментов.</translation>
 <translation id="8273905181216423293">Скачать</translation>
-<translation id="8274332263553132018">Файл для трансляции</translation>
 <translation id="8274921654076766238">Перемещение лупы с помощью клавиатуры</translation>
 <translation id="8274924778568117936">Не выключайте и не закрывайте <ph name="DEVICE_TYPE" />, выполняется обновление. После завершения установки <ph name="DEVICE_TYPE" /> перезагрузится.</translation>
 <translation id="8275038454117074363">Импорт</translation>
@@ -8144,7 +8137,6 @@
 <translation id="8756969031206844760">Обновить пароль?</translation>
 <translation id="8757203080302669031">На этой вкладке выполняется активный поиск устройств Bluetooth.</translation>
 <translation id="8757368836647541092">Пользователь <ph name="USER_NAME_OR_EMAIL" /> удален</translation>
-<translation id="8758418656925882523">Включить голосовой ввод (преобразование речи в текст)</translation>
 <translation id="8759753423332885148">Подробнее…</translation>
 <translation id="8761945298804995673">Такой пользователь уже существует.</translation>
 <translation id="8762886931014513155">Требуется обновить устройство <ph name="DEVICE_TYPE" /></translation>

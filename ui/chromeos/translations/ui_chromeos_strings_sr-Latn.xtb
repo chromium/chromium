@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">Stavke (<ph name="NUMBER_OF_ITEMS" />) se dodaju u datoteku...</translation>
 <translation id="1722687688096767818">Dodaje se profil…</translation>
 <translation id="1726100011689679555">Serveri imena</translation>
+<translation id="1726600877401297672">Stavke (<ph name="NUMBER_OF_ITEMS" />) su premeštene u otpad</translation>
 <translation id="1729953886957086472">nemački (Nemačka)</translation>
 <translation id="1730235522912993863">kineski, čangčije</translation>
 <translation id="1731889557567069540">Kopiranih stavki: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -214,6 +215,7 @@
 <translation id="2888807692577297075">Nijedna stavka se ne podudara sa upitom &lt;b&gt;„<ph name="SEARCH_STRING" />“&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Informacije</translation>
 <translation id="2902734494705624966">proširena američka</translation>
+<translation id="2906052776158021882">Stavke (<ph name="NUMBER_OF_ITEMS" />) se premeštaju u otpad</translation>
 <translation id="290843123675549676">marati</translation>
 <translation id="2923240520113693977">estonski</translation>
 <translation id="2938685643439809023">mongolski</translation>
@@ -476,6 +478,7 @@
 <translation id="5068919226082848014">Pica</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> datoteka će se izbrisati</translation>
 <translation id="508423945471810158">Stavke (<ph name="NUMBER_OF_ITEMS" />) se premeštaju u direktorijum <ph name="FOLDER_NAME" /></translation>
+<translation id="5092200349368278146">Fajl <ph name="FILE_NAME" /> je premešten u otpad</translation>
 <translation id="509429900233858213">Došlo je do greške.</translation>
 <translation id="5098629044894065541">hebrejski</translation>
 <translation id="5102922915594634436">Upravljajte sinhronizovanim folderima</translation>
@@ -581,6 +584,7 @@
 <translation id="5845721951356578987">Medicinska sestra</translation>
 <translation id="5861477046012235702">Gejmer</translation>
 <translation id="5864471791310927901">Pronalaženje DHCP-a nije uspelo</translation>
+<translation id="5887342613489958822"><ph name="FILE_NAME" /> se premešta u otpad</translation>
 <translation id="5896749729057314184">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nije aktivirana, jačina signala <ph name="SIGNAL_STRENGTH" />%, detalji</translation>
 <translation id="5911887972742538906">Došlo je do greške tokom instaliranja Linux aplikacije.</translation>
 <translation id="5912396950572065471">Format</translation>

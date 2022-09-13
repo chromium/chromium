@@ -110,6 +110,7 @@
 <translation id="1099282607296956954">為所有網站啟用網站隔離</translation>
 <translation id="1100840127293327071">不要勾選保留現有瀏覽資料的預設選項</translation>
 <translation id="1105572260329131950">使用預設圖示代表安全連線</translation>
+<translation id="1105711894873068933"><ph name="LACROS_NAME" /> 停用後，系統會在下一次登入時移除所有使用者資料。</translation>
 <translation id="1107538157073168076">停用深入分析擴充功能</translation>
 <translation id="1110426799149444997">停用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />的區域搜尋功能。</translation>
 <translation id="1117535567637097036">處理 Android 意圖時，系統不會使用透過這項政策設定的通訊協定處理常式。</translation>
@@ -130,11 +131,6 @@
 
           如果停用這項政策，系統不會記住任何密碼，並且會將先前儲存的所有密碼移除。每次使用者需要透過 Kerberos 系統進行驗證時，都必須輸入密碼。根據伺服器的設定而定，通常每 8 小時到數個月需要輸入一次密碼。</translation>
 <translation id="1133622335785078255">允許使用者在 <ph name="LACROS_NAME" /> 瀏覽器中建立及使用次要設定檔，以及使用訪客模式</translation>
-<translation id="1133814529606590009">如果將這項政策設為啟用，系統會將輸入網址匿名資料收集功能設為一律開啟；該功能會將使用者造訪的網頁網址傳送給 Google，協助改善搜尋與瀏覽服務。
-
-      如果將這項政策設為停用，則會關閉輸入網址匿名資料收集功能。
-
-      如果設定這項政策，使用者將無法變更設定。如果不設定，系統會先開啟輸入網址匿名資料收集功能，但使用者可進行變更。</translation>
 <translation id="1137096407176363892">允許使用隨選朗讀無障礙功能中的加強型網路文字轉語音功能。這些語音會傳送文字到 Google 的伺服器，藉此合成自然語音。
 
           如果將這項政策設為 False，系統會一律停用隨選朗讀中的加強型網路文字轉語音功能。
@@ -2519,6 +2515,7 @@
       連線並下載設定檔。
 
       如果將這項政策設為 True 或不設定，<ph name="PRODUCT_OS_NAME" />會自動連線至 Quirks Server，並下載可用的設定檔，然後儲存到裝置上。這類檔案的用途可能包括改善外接螢幕的顯示品質。</translation>
+<translation id="351654132746710200"><ph name="LACROS_NAME" /> 停用後，系統將不會再遷移資料。系統會移除「<ph name="LACROS_NAME" />」資料夾，而使用者會繼續使用剩餘的資料。</translation>
 <translation id="3522257170445891912">如果設定這項政策，系統會根據設定值，採用下列其中一種登入驗證流程：如果設為 GAIA，系統會透過一般的 GAIA 驗證流程完成登入程序。如果設為 SAML_INTERSTITIAL，系統預設會自動重新導向至 SAML IdP。使用者仍可返回一般的 GAIA 登入流程。注意：系統不會再顯示 <ph name="PRODUCT_NAME" /> 版本 99 之前的額外使用者確認畫面。如果未設定 SAML IdP，且這項政策已設為 SAML_INTERSTITIAL，系統重新導向將會失敗，並傳回錯誤 400。</translation>
 <translation id="3524204464536655762">不允許任何網站透過 WebUSB API 要求存取 USB 裝置</translation>
 <translation id="3526752951628474302">僅限單色列印</translation>
@@ -3871,6 +3868,13 @@
 <translation id="5082296146261894974">允許使用者透過點選 Phone Hub 通知的方式啟動 Eche 應用程式。</translation>
 <translation id="5082572440690475059">允許這些網站透過 File System API 進行讀取</translation>
 <translation id="5085647276663819155">停用列印預覽</translation>
+<translation id="5087974224086385270">這項設定會決定系統在 <ph name="LACROS_NAME" /> 停用後保留的資料量。
+
+      如果政策設為 <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE" />，系統將會移除所有使用者資料。這是最安全的選項。
+
+      如果政策設為 <ph name="LACROS_BACKWARD_MIGRATION_KEEP_SAFE_DATA" />，系統將會移除大部分的使用者資料，只保留不屬於瀏覽器的檔案，例如下載的檔案。
+
+      如果政策設為 <ph name="LACROS_BACKWARD_MIGRATION_KEEP_ALL" />，系統會保留所有使用者資料。這個選項有很高的失敗風險，必須要恢復原廠設定才能復原。</translation>
 <translation id="5090791951240382356">允許合併不同來源的字典政策</translation>
 <translation id="5091315650312105069">允許透過 HTTP 使用<ph name="BASIC_AUTH" />驗證</translation>
 <translation id="5099239365323299669">自版本 M106 起，系統不再支援永久配額功能。這項政策會重新啟用永久配額功能，直到 M107 推出為止。
@@ -4103,6 +4107,7 @@
       如果不設定這項政策，則使用快速解鎖功能的使用者每天都必須在螢幕鎖定畫面輸入密碼。</translation>
 <translation id="5306186200045823863">信任 Symantec 公司的舊版 PKI 基礎架構</translation>
 <translation id="5307432759655324440">無痕模式適用性</translation>
+<translation id="5308551343115571396"><ph name="LACROS_NAME" /> 停用後，我們將移除所有瀏覽器資料，但會盡可能嘗試保留使用者資料。</translation>
 <translation id="5311275381462687162">預設的舊版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> Cookie 行為設定</translation>
 <translation id="5312253627576569499">如果系統在螢幕調暗時或畫面關閉後不久便偵測到使用者活動，要將螢幕調暗延遲時間延長的百分比</translation>
 <translation id="5317852436044398288">你可以透過這項政策設定網址模式清單，指定可以使用視窗和分頁擷取功能的網站。
@@ -4245,6 +4250,7 @@
 
       如果未設定這項政策，使用者可控管卡片顯示設定。預設值為可顯示卡片。
       </translation>
+<translation id="5448022937220253000">選擇系統在 <ph name="LACROS_NAME" /> 停用後要如何處理使用者資料</translation>
 <translation id="5449690328792750354">Event.path API 將可供使用。</translation>
 <translation id="5455609857202311243">在 HTTP 驗證期間忽略 KDC 政策的核准結果</translation>
 <translation id="5455888515928026628">透過螢幕鎖定畫面登入時，<ph name="PRODUCT_OS_NAME" />可以透過伺服器進行線上驗證，或使用快取密碼進行離線驗證。
@@ -7233,6 +7239,7 @@
 <translation id="8634062512783775032">採用 <ph name="AES_KL_NAME" /> 做為加密使用者儲存空間的加密演算法 (如果支援)</translation>
 <translation id="8637566476051166626">明確允許的網路通訊埠</translation>
 <translation id="8643838501942693770">允許第三方 Cookie，但使用者可以變更這項設定</translation>
+<translation id="864611373241249369"><ph name="LACROS_NAME" /> 停用後，系統會嘗試遷移所有資料。</translation>
 <translation id="8648844602494595665">這項政策可控管網址列中鎖頭圖示的處理方式。
        Chrome M93 以上版本新增了代表安全連線的網址列圖示。
        如果啟用這項政策，Chrome 會使用現有的鎖頭圖示代表安全連線。
@@ -7634,6 +7641,9 @@
       如果不設定這項政策，系統不會為任何網站自動選取憑證。
 
       如果想進一步瞭解有效的網址模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
+<translation id="906349948439898016">自 M105 起，系統預設會在不安全的內容中啟用 WebSQL，但你可以透過 Chrome 旗標停用。
+          如果這項政策設為 False 或不設定，就可以停用不安全內容中的 WebSQL。
+          如果將這項政策設為 True，系統將無法停用 WebSQL。</translation>
 <translation id="9068629430243705879">通訊埠 6566 (2021 年 10 月 15 日前可解除封鎖)</translation>
 <translation id="9069588907259547232">如果將這項政策設為啟用或不設定，已註冊的裝置會回報裝置音量。
 

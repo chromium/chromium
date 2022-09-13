@@ -140,6 +140,7 @@
 <translation id="1834891354138622109">Sütun</translation>
 <translation id="1846771122725914429">Bluetooth Brayl Displeyi</translation>
 <translation id="1852018405765032699">Dörd barmaqla ekrana toxunsanız ChromeVox menyuları açılacaq və bağlanacaqdır. Bu menyular əmrlər və qısayollar haqqında faydalı məlumatlar ehtiva edir. Menyular açıldıqdan sonra elementlər arasında keçid üçün bir barmağınızla sürüşdürə və elementləri aktivləşdirmək üçün iki dəfə toxuna bilərsiniz. Davam etmək üçün dörd barmağınızla ekrana toxunun.</translation>
+<translation id="1864430479908918647">Axtarış+Boşluq düyməsini basın</translation>
 <translation id="1865601187525349519">Mətnin sonu</translation>
 <translation id="1876229593313240038">sənəd</translation>
 <translation id="1902396333223336119">Xana</translation>
@@ -778,6 +779,7 @@
 <translation id="6236061028292614533">Növbəti başlıq</translation>
 <translation id="6254901459154107917">Növbəti redaktə edilə bilən sahə</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> üzərindən çıxdı.</translation>
+<translation id="6280088282605782512">İki dəfə toxunun</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">Vacib Düymələr: Axtarış</translation>
 <translation id="6305702903308659374">ChromeVox danışsa belə, normal səs ilə oxudun</translation>
@@ -981,6 +983,7 @@
 <translation id="7731785449856576010">Sonrakı media vidceti yoxdur</translation>
 <translation id="7735498529470878067">"Toxunma ilə kəşf edin" düyməsi ekranda olanları tez bir zamanda anlamanıza kömək edə bilər.</translation>
 <translation id="773906353055481349">Xanalarla hərəkət etmək üçün oxlarla Search+Ctrl+Alt düymələrinə basın</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> - <ph name="LABEL" /></translation>
 <translation id="7763537600611320912"><ph name="FILE_NAME" /> faylının endirilməsi başlandı</translation>
 <translation id="7768784765476638775">Seç və Dinlə</translation>
 <translation id="7776293189010177726">ChromeVox menyularını açın</translation>

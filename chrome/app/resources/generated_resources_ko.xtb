@@ -3312,20 +3312,17 @@
 <translation id="4062561150282203854"><ph name="DEVICE_TYPE" /> 앱, 설정 등을 동기화</translation>
 <translation id="4065876735068446555">사용 중인 네트워크(<ph name="NETWORK_ID" />)에서 로그인 페이지 방문을 요청할 수 있습니다.</translation>
 <translation id="4066207411788646768">네트워크 내 사용 가능한 프린터를 보려면 인터넷 연결 상태를 확인하세요.</translation>
-<translation id="4066945815577305767">비밀번호 시간 초과</translation>
 <translation id="4067839975993712852">현재 탭을 읽음으로 표시</translation>
 <translation id="4068776064906523561">저장된 지문</translation>
 <translation id="407173827865827707">클릭 시</translation>
 <translation id="4072701974556190758">비밀번호가 Google 계정(<ph name="ACCOUNT" />)에 저장됩니다. 기억하지 않아도 됩니다.</translation>
 <translation id="407520071244661467">배율</translation>
 <translation id="407543464472585404"><ph name="NAME" />님의 프로필이 <ph name="EMAIL" />에 연결되었습니다.</translation>
-<translation id="4075639477629295004"><ph name="FILE_NAME" />을(를) 전송할 수 없습니다.</translation>
 <translation id="4077917118009885966">이 사이트의 광고가 차단됨</translation>
 <translation id="4077919383365622693"><ph name="SITE" />에서 저장한 모든 데이터와 쿠키가 삭제됩니다.</translation>
 <translation id="4078738236287221428">강한 규칙</translation>
 <translation id="4079140982534148664">향상된 맞춤법 검사 기능 사용</translation>
 <translation id="4081203444152654304"><ph name="VISUAL_SEARCH_PROVIDER" />로 이미지 내 검색</translation>
-<translation id="4081242589061676262">파일을 전송할 수 없음</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" />에서 휴대전화로 알림을 보냈습니다. 본인 인증을 하려면 알림의 단계를 따라주세요.</translation>
 <translation id="4084682180776658562">북마크</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> 닫기</translation>
@@ -4892,7 +4889,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
            <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" />의 영향을 받습니다.</translation>
 <translation id="5620568081365989559">DevTools에서 <ph name="FOLDER_PATH" />에 대한 완전한 액세스를 요청합니다. 민감한 정보를 노출하지 않도록 주의하시기 바랍니다.</translation>
 <translation id="5620612546311710611">사용 통계</translation>
-<translation id="5620655347161642930">비밀번호 내보내기...</translation>
 <translation id="5623282979409330487">사이트에서 움직임 감지 센서에 액세스하는 중입니다.</translation>
 <translation id="5623842676595125836">로그</translation>
 <translation id="5624120631404540903">비밀번호 관리</translation>
@@ -6291,7 +6287,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6970543303783413625">비밀번호를 가져올 수 없습니다. 비밀번호는 한 번에 최대 <ph name="COUNT" />개까지 가져올 수 있습니다.</translation>
 <translation id="6970856801391541997">특정 페이지 인쇄</translation>
 <translation id="6970861306198150268">사이트의 현재 비밀번호를 저장해 두시기 바랍니다.</translation>
-<translation id="6972180789171089114">오디오/비디오</translation>
 <translation id="6972754398087986839">시작하기</translation>
 <translation id="697312151395002334">팝업 전송 및 리디렉션 사용이 허용됨</translation>
 <translation id="6973611239564315524">Debian 10(Buster)으로 업그레이드할 수 있습니다.</translation>
@@ -7159,7 +7154,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" />님이 다른 기기에서 이미 Google 어시스턴트를 설정한 것 같습니다. <ph name="SUPERVISED_USER_NAME" />님은 이 기기에서 화면 컨텍스트를 사용 설정하여 어시스턴트를 더 유용하게 활용할 수 있습니다.</translation>
 <translation id="7807711621188256451"><ph name="HOST" />에서 카메라에 액세스하도록 항상 허용</translation>
 <translation id="7810202088502699111">이 페이지에서 팝업이 차단되었습니다.</translation>
-<translation id="781167124805380294"><ph name="FILE_NAME" /> 전송</translation>
 <translation id="7814458197256864873">복사(&amp;C)</translation>
 <translation id="7815680994978050279">위험한 다운로드가 차단됨</translation>
 <translation id="7817361223956157679">Linux 앱에서는 아직 터치 키보드가 지원되지 않습니다.</translation>
@@ -7666,7 +7660,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8272194309885535896">이미지 다운로드</translation>
 <translation id="8272443605911821513">'추가 도구' 메뉴에서 확장 프로그램을 클릭하여 확장 프로그램을 관리할 수 있습니다.</translation>
 <translation id="8273905181216423293">지금 다운로드</translation>
-<translation id="8274332263553132018">파일 전송</translation>
 <translation id="8274921654076766238">키보드 포커스를 따라 돋보기 이동</translation>
 <translation id="8274924778568117936">업데이트가 완료될 때까지 <ph name="DEVICE_TYPE" />을(를) 끄거나 닫지 마세요. 설치가 완료되면 <ph name="DEVICE_TYPE" />이(가) 다시 시작됩니다.</translation>
 <translation id="8275038454117074363">가져오기</translation>
@@ -8153,7 +8146,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8756969031206844760">비밀번호를 업데이트하시겠습니까?</translation>
 <translation id="8757203080302669031">이 탭은 현재 블루투스 기기를 검사하고 있습니다.</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> 삭제됨</translation>
-<translation id="8758418656925882523">음성기록 사용(말하여 입력)</translation>
 <translation id="8759753423332885148">자세히 알아보기</translation>
 <translation id="8761945298804995673">이미 존재하는 사용자입니다.</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> 업데이트 필요</translation>

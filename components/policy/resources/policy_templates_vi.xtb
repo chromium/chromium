@@ -131,11 +131,6 @@
 
           Nếu bạn tắt chính sách này, thì hệ thống sẽ không bao giờ ghi nhớ mật khẩu và mọi mật khẩu đã lưu trữ trước đây đều bị xoá. Người dùng phải nhập mật khẩu của mình mỗi khi cần xác thực với hệ thống Kerberos. Tuỳ thuộc vào các chế độ cài đặt của máy chủ, điều này thường diễn ra từ 8 giờ một lần đến vài tháng một lần.</translation>
 <translation id="1133622335785078255">Cho phép người dùng tạo và sử dụng các hồ sơ phụ cũng như dùng chế độ khách trong trình duyệt <ph name="LACROS_NAME" /></translation>
-<translation id="1133814529606590009">Khi bạn đặt chính sách này thành Bật, tính năng thu thập dữ liệu ẩn danh nhập ở dạng URL sẽ luôn hoạt động. Tính năng này gửi URL của các trang mà người dùng truy cập đến Google nhằm giúp cải thiện tính năng tìm kiếm và duyệt web.
-
-      Khi bạn đặt chính sách này thành Tắt, tính năng thu thập dữ liệu ẩn danh nhập ở dạng URL sẽ không hoạt động.
-
-      Nếu bạn đặt chính sách này, người dùng sẽ không thể thay đổi được. Nếu bạn không đặt chính sách này, tính năng thu thập dữ liệu ẩn danh nhập ở dạng URL sẽ hoạt động trước tiên, nhưng người dùng có thể thay đổi tùy chọn cài đặt này.</translation>
 <translation id="1137096407176363892">Cho phép dùng các giọng nói của tính năng chuyển văn bản sang lời nói trên mạng nâng cao trong tính năng hỗ trợ tiếp cận Chọn để nói. Những giọng nói này sẽ gửi văn bản đến các máy chủ của Google để tổng hợp giọng nói tự nhiên.
 
           Nếu bạn tắt chính sách này, thì những giọng nói của tính năng chuyển văn bản sang lời nói trên mạng nâng cao có trong tính năng Chọn để nói sẽ luôn tắt.

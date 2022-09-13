@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">You can also move between sections of the screen. For example, you can move between the Launcher, the shelf and your Chrome tabs. To move to the next section, swipe from left to right with four fingers. Try it now to continue.</translation>
 <translation id="2624431853467395961">Open learn mode</translation>
 <translation id="2626530649491650971">clickable</translation>
+<translation id="263637551280112393">Press Search+Shift+Space</translation>
 <translation id="2637227747952042642">Math</translation>
 <translation id="2638785836053527382">Download resumed <ph name="FILE_NAME" /></translation>
 <translation id="2639750663247012216">ChromeVox modifier</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">No next section</translation>
 <translation id="5368000168321181111">Earcons off</translation>
 <translation id="5368505757342402527">Download <ph name="PROGRESS" />% complete <ph name="FILE_NAME" />. About <ph name="TIME" /> <ph name="UNITS" /> remaining.</translation>
+<translation id="5381388086899614489">long click</translation>
 <translation id="5400836586163650660">Grey</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402791055281059602">A modal alert</translation>

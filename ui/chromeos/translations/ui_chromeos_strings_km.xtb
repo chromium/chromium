@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">កំពុងបង្រួមធាតុ <ph name="NUMBER_OF_ITEMS" /> ...</translation>
 <translation id="1722687688096767818">កំពុងបញ្ចូល​កម្រងព័ត៌មាន...</translation>
 <translation id="1726100011689679555">ដាក់​ឈ្មោះ​ឲ្យ​ម៉ាស៊ីន​មេ</translation>
+<translation id="1726600877401297672">បានផ្លាស់ទីធាតុចំនួន <ph name="NUMBER_OF_ITEMS" /> ទៅ​ក្នុង​ធុង​សំរាម</translation>
 <translation id="1729953886957086472">ភាសា​អាល្លឺម៉ង់ (អាល្លឺម៉ង់)</translation>
 <translation id="1730235522912993863">ភាសាចិនខាន់ជី</translation>
 <translation id="1731889557567069540">បានចម្លង​ធាតុ <ph name="NUMBER_OF_ITEMS" />។</translation>
@@ -214,6 +215,7 @@
 <translation id="2888807692577297075">គ្មានធាតុត្រូវគ្នាទេ &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">ព័ត៌មាន</translation>
 <translation id="2902734494705624966">US extended</translation>
+<translation id="2906052776158021882">កំពុងផ្លាស់ទីធាតុចំនួន <ph name="NUMBER_OF_ITEMS" /> ទៅក្នុង​ធុងសំរាម</translation>
 <translation id="290843123675549676">ភាសា​ម៉ារ៉ាទី</translation>
 <translation id="2923240520113693977">ភាសាអេស្តូនី</translation>
 <translation id="2938685643439809023">ភាសាមុងហ្គោលី</translation>
@@ -476,6 +478,7 @@
 <translation id="5068919226082848014">ភីហ្សា</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> នៃឯកសារ​នឹងត្រូវលុប</translation>
 <translation id="508423945471810158">កំពុងផ្លាស់ទីធាតុ <ph name="NUMBER_OF_ITEMS" /> ទៅ <ph name="FOLDER_NAME" /></translation>
+<translation id="5092200349368278146">បានផ្លាស់ទី <ph name="FILE_NAME" /> ទៅក្នុងធុងសំរាម</translation>
 <translation id="509429900233858213">កំហុសឆ្គងបានកើតឡើង។</translation>
 <translation id="5098629044894065541">ភាសាហ៊ីប៊្រូ</translation>
 <translation id="5102922915594634436">គ្រប់គ្រង​ថត​ដែលបានធ្វើសមកាលកម្ម</translation>
@@ -580,6 +583,7 @@
 <translation id="5845721951356578987">គិលានុបដ្ឋាយិកា</translation>
 <translation id="5861477046012235702">អ្នកលេង​ហ្គេម</translation>
 <translation id="5864471791310927901">DHCP lookup បានបរាជ័យ</translation>
+<translation id="5887342613489958822">កំពុងផ្លាស់ទី <ph name="FILE_NAME" /> ទៅក្នុង​ធុងសំរាម</translation>
 <translation id="5896749729057314184">បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, បានបិទដំណើរការ, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" />%, ព័ត៌មានលម្អិត</translation>
 <translation id="5911887972742538906">មានបញ្ហា​កើតឡើង អំឡុង​ពេលដំឡើង​កម្មវិធី Linux របស់អ្នក។</translation>
 <translation id="5912396950572065471">ទម្រង់</translation>

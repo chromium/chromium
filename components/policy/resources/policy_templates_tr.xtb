@@ -130,11 +130,6 @@
 
           Bu politika devre dışı bırakılırsa şifreler hiçbir zaman hatırlanmaz ve daha önce saklanan tüm şifreler silinir. Kullanıcılar, Kerberos sisteminde kimlik doğrulamaları gerektiğinde her zaman şifrelerini girmelidirler. Sunucu ayarlarına bağlı olarak, bu genellikle her 8 saatte bir ile birkaç ayda bir arasında olur.</translation>
 <translation id="1133622335785078255">Kullanıcıların, <ph name="LACROS_NAME" /> tarayıcıda hem ikinci profiller oluşturup kullanmalarına hem de misafir modunu kullanmalarına izin ver</translation>
-<translation id="1133814529606590009">Politika, Etkin değerine ayarlanırsa kullanıcının ziyaret ettiği sayfaların URL'lerini, arama ve göz atmayı iyileştirmek için Google'a gönderen, URL içeren veya URL'lerle ilişkili anonim veri toplama her zaman etkin olur.
-
-      Politika, Devre Dışı değerine ayarlanırsa URL içeren veya URL'lerle ilişkili anonim veriler toplanmaz.
-
-      Bu politikayı ayarlarsanız kullanıcılar değiştiremez. Politika ayarlanmazsa URL içeren veya URL'lerle ilişkili anonim veri toplama başta etkin olur, ancak kullanıcılar bunu değiştirebilir.</translation>
 <translation id="1137096407176363892">Seç ve Dinle erişilebilirlik özelliğinde gelişmiş ağ metin okuma seslerine izin ver. Bu sesler, kulağa doğal gelen konuşmaları sentezlemek için Google sunucularına metin gönderir.
 
           Bu politika yanlış değerine ayarlanırsa Seç ve Dinle içerisindeki gelişmiş ağ metin okuma sesleri özelliği her zaman devre dışı kalır.
