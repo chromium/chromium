@@ -14,10 +14,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
+#include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/input_device_event_observer.h"
 #include "url/gurl.h"
 
 namespace user_prefs {
@@ -124,6 +127,10 @@ class PreinstalledWebAppManager {
   const DebugInfo* debug_info() const { return debug_info_.get(); }
 
  private:
+  // Helper to delay a task until device information is fully initialized in
+  // ui::DeviceDataManager.
+  class DeviceDataInitializedEvent;
+
   void LoadAndSynchronize(SynchronizeCallback callback);
 
   void Load(ConsumeInstallOptions callback);
@@ -162,6 +169,8 @@ class PreinstalledWebAppManager {
   const raw_ptr<Profile> profile_;
 
   std::unique_ptr<DebugInfo> debug_info_;
+
+  std::unique_ptr<DeviceDataInitializedEvent> device_data_initialized_event_;
 
   base::ObserverList<PreinstalledWebAppManager::Observer> observers_;
 

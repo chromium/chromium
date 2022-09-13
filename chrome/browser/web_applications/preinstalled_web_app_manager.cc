@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
@@ -104,7 +105,8 @@ enum class DisabledReason {
   kReplacingAppUninstalledByUser = 13,
   kStylusRequired = 14,
   kPreinstalledAppUninstalledByUserNoOverride = 15,
-  kMaxValue = kPreinstalledAppUninstalledByUserNoOverride
+  kStylusRequiredNoDeviceData = 16,
+  kMaxValue = kStylusRequiredNoDeviceData
 };
 
 struct LoadedConfig {
@@ -413,6 +415,14 @@ absl::optional<std::string> GetDisableReason(
 
   // Only install if device has a built-in touch screen with stylus support.
   if (options.disable_if_touchscreen_with_stylus_not_supported) {
+    if (!ui::DeviceDataManager::HasInstance()) {
+      base::UmaHistogramEnumeration(
+          kHistogramMigrationDisabledReason,
+          DisabledReason::kStylusRequiredNoDeviceData);
+      return options.install_url.spec() +
+             " disabled because touchscreen device information is unavailable";
+    }
+
     DCHECK(ui::DeviceDataManager::GetInstance()->AreDeviceListsComplete());
     bool have_touchscreen_with_stylus = false;
     for (const ui::TouchscreenDevice& device :
@@ -451,6 +461,53 @@ absl::optional<std::string> GetDisableReason(
 }
 
 }  // namespace
+
+class PreinstalledWebAppManager::DeviceDataInitializedEvent
+    : public ui::InputDeviceEventObserver {
+ public:
+  DeviceDataInitializedEvent() = default;
+  DeviceDataInitializedEvent(const DeviceDataInitializedEvent&) = delete;
+  DeviceDataInitializedEvent& operator=(const DeviceDataInitializedEvent&) =
+      delete;
+
+  // Posts a `task` to be run once ui::DeviceDataManager has complete device
+  // lists. If device lists are already complete, or DeviceDataManager is not
+  // available, the task will be posted immediately.
+  void Post(base::OnceClosure task);
+
+ private:
+  // ui::InputDeviceEventObserver:
+  void OnDeviceListsComplete() override;
+
+  // Task to run once ui::DeviceDataManager initialization is complete.
+  base::OnceClosure initialized_task_;
+
+  base::ScopedObservation<ui::DeviceDataManager, ui::InputDeviceEventObserver>
+      device_data_observation_{this};
+};
+
+void PreinstalledWebAppManager::DeviceDataInitializedEvent::Post(
+    base::OnceClosure task) {
+  // DeviceDataManager does not exist on all platforms, but on platforms where
+  // it exists, it's always created early in startup, so HasInstance() is a
+  // reliable indicator of availability. However, loading device information is
+  // asynchronous and may not have completed by this point.
+  if (!ui::DeviceDataManager::HasInstance() ||
+      ui::DeviceDataManager::GetInstance()->AreDeviceListsComplete()) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                     std::move(task));
+  } else {
+    DCHECK(!device_data_observation_.IsObserving());
+    device_data_observation_.Observe(ui::DeviceDataManager::GetInstance());
+    initialized_task_ = std::move(task);
+  }
+}
+
+void PreinstalledWebAppManager::DeviceDataInitializedEvent::
+    OnDeviceListsComplete() {
+  std::move(initialized_task_).Run();
+  device_data_observation_.Reset();
+}
 
 const char* PreinstalledWebAppManager::kHistogramEnabledCount =
     "WebApp.Preinstalled.EnabledCount";
@@ -508,7 +565,9 @@ void PreinstalledWebAppManager::SetFileUtilsForTesting(
 }
 
 PreinstalledWebAppManager::PreinstalledWebAppManager(Profile* profile)
-    : profile_(profile) {
+    : profile_(profile),
+      device_data_initialized_event_(
+          std::make_unique<DeviceDataInitializedEvent>()) {
   if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo)) {
     debug_info_ = std::make_unique<DebugInfo>();
   }
@@ -558,14 +617,16 @@ void PreinstalledWebAppManager::LoadAndSynchronizeForTesting(
 
 void PreinstalledWebAppManager::LoadAndSynchronize(
     SynchronizeCallback callback) {
-  // Make sure ExtensionSystem is ready to know if default apps new installation
-  // will be performed.
-  extensions::OnExtensionSystemReady(
-      profile_,
+  base::RepeatingClosure barrier_closure = base::BarrierClosure(
+      2,
       base::BindOnce(
           &PreinstalledWebAppManager::Load, weak_ptr_factory_.GetWeakPtr(),
           base::BindOnce(&PreinstalledWebAppManager::Synchronize,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+  // Make sure ExtensionSystem is ready to know if default apps new installation
+  // will be performed.
+  extensions::OnExtensionSystemReady(profile_, barrier_closure);
+  device_data_initialized_event_->Post(barrier_closure);
 }
 
 void PreinstalledWebAppManager::Load(ConsumeInstallOptions callback) {
