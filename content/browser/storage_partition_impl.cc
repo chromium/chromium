@@ -32,6 +32,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/time/default_clock.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
@@ -2074,9 +2075,15 @@ void StoragePartitionImpl::OnClearSiteData(
   auto web_contents_getter = base::BindRepeating(
       GetWebContents, url_loader_network_observers_.current_context());
 
+  absl::optional<blink::StorageKey> storage_key = CalculateStorageKey(
+      url::Origin::Create(url),
+      cookie_partition_key.has_value()
+          ? base::OptionalToPtr(cookie_partition_key.value().nonce())
+          : nullptr);
+
   ClearSiteDataHandler::HandleHeader(
       browser_context_getter, web_contents_getter, url, header_value,
-      load_flags, cookie_partition_key, std::move(callback));
+      load_flags, cookie_partition_key, storage_key, std::move(callback));
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -3029,6 +3036,25 @@ void StoragePartitionImpl::
         &StoragePartitionImpl::OnLocalTrustTokenFulfillerConnectionError,
         weak_factory_.GetWeakPtr()));
   }
+}
+
+absl::optional<blink::StorageKey> StoragePartitionImpl::CalculateStorageKey(
+    const url::Origin& origin,
+    const base::UnguessableToken* nonce) {
+  if (!blink::StorageKey::IsThirdPartyStoragePartitioningEnabled())
+    return absl::nullopt;
+
+  NavigationOrDocumentHandle* handle =
+      url_loader_network_observers_.current_context().navigation_or_document();
+  if (!handle)
+    return absl::nullopt;
+  FrameTreeNode* node = handle->GetFrameTreeNode();
+  if (!node)
+    return absl::nullopt;
+  RenderFrameHostImpl* frame_host = node->current_frame_host();
+  if (!frame_host)
+    return absl::nullopt;
+  return frame_host->CalculateStorageKey(origin, nonce);
 }
 
 StoragePartitionImpl::URLLoaderNetworkContext::URLLoaderNetworkContext(

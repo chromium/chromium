@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "net/cookies/cookie_partition_key.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -81,6 +82,7 @@ class CONTENT_EXPORT ClearSiteDataHandler {
       const std::string& header_value,
       int load_flags,
       const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
+      const absl::optional<blink::StorageKey>& storage_key,
       base::OnceClosure callback);
 
   // Exposes ParseHeader() publicly for testing.
@@ -99,6 +101,7 @@ class CONTENT_EXPORT ClearSiteDataHandler {
       const std::string& header_value,
       int load_flags,
       const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
+      const absl::optional<blink::StorageKey>& storage_key,
       base::OnceClosure callback,
       std::unique_ptr<ConsoleMessagesDelegate> delegate);
   virtual ~ClearSiteDataHandler();
@@ -151,6 +154,10 @@ class CONTENT_EXPORT ClearSiteDataHandler {
     return cookie_partition_key_;
   }
 
+  const absl::optional<blink::StorageKey> StorageKeyForTesting() const {
+    return storage_key_;
+  }
+
  private:
   // Required to clear the data.
   base::RepeatingCallback<BrowserContext*()> browser_context_getter_;
@@ -168,6 +175,10 @@ class CONTENT_EXPORT ClearSiteDataHandler {
   // The cookie partition key for which we need to clear partitioned cookies
   // when we receive the Clear-Site-Data header.
   absl::optional<net::CookiePartitionKey> cookie_partition_key_;
+
+  // The storage key for which we need to clear partitioned storage when we
+  // receive the Clear-Site-Data header.
+  absl::optional<blink::StorageKey> storage_key_;
 
   // Used to notify that the clearing has completed. Callers could resuming
   // loading after this point.

@@ -1,0 +1,56 @@
+<!doctype html>
+<head>
+<title>Test Clear-Site-Data and partitioned storage</title>
+<script src="/resources/testharness.js"></script>
+<script src="/storage/resources/testharness-helpers.js"></script>
+</head>
+<body>
+<script>
+
+const step = new URL(location.href).searchParams.get("step");
+const originFromHost =
+    host => `https://${host}:${window.location.port}`;
+
+promise_test(async () => {
+  assert_equals(window.location.hostname, TEST_HOST);
+  assert_true(step == 1 || step == 2);
+
+  if (step == 1) {
+    assert_equals(localStorage.length, 0);
+
+    localStorage.setItem("cross-site-frame", "test");
+    assert_equals(localStorage.length, 1);
+
+    // Test that Clear-Site-Data deletes the local storage in this partition.
+    const resp = await fetch(
+      "/storage/resources/clear-site-data.php", {method: "GET"});
+    assert_equals(resp.status, 200);
+    var totalTime = 0;
+    // 2 second timeout.
+    while ((localStorage.length != 0) && (totalTime < 2000)) {
+        await timePasses(50);
+        totalTime += 50;
+    }
+    assert_equals(localStorage.length, 0);
+
+    // Reset the test item, we will use this later to verify that this item
+    // should not get removed when another partition receives Clear-Site-Data.
+    localStorage.setItem("cross-site-frame", "test");
+  }
+
+  assert_equals(localStorage.length, 1);
+  assert_equals(localStorage.getItem("cross-site-frame"), "test");
+
+  if (step == 1) {
+    const url = new URL(
+        "/storage/partitioned-storage/resources/" +
+            "clear-site-data-cross-site-window.html",
+        originFromHost(TEST_HOST));
+    const popup = window.open(String(url));
+    fetch_tests_from_window(popup);
+  }
+}, (step == 1 ? "Clearing partitioned storage"
+              : "Clear-Site-Data does not leak across partitions"));
+
+</script>
+</body>

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_deletion_info.h"
 #include "services/network/cookie_manager.h"
@@ -396,7 +397,7 @@ TEST(BrowsingDataFilterBuilderImplTest, PartitionedCookies) {
   }
 }
 
-TEST(BrowserDataFilterBuilderImplTest, IsCrossSiteClearSiteDataForCookies) {
+TEST(BrowsingDataFilterBuilderImplTest, IsCrossSiteClearSiteDataForCookies) {
   struct TestCase {
     const std::string desc;
     const net::CookiePartitionKeyCollection cookie_partition_key_collection;
@@ -451,6 +452,49 @@ TEST(BrowserDataFilterBuilderImplTest, IsCrossSiteClearSiteDataForCookies) {
     builder.SetCookiePartitionKeyCollection(
         test_case.cookie_partition_key_collection);
     EXPECT_EQ(test_case.expected, builder.IsCrossSiteClearSiteDataForCookies());
+  }
+}
+
+TEST(BrowsingDataFilterBuilderImplTest, StorageKey) {
+  base::test::ScopedFeatureList scope_feature_list;
+  scope_feature_list.InitAndEnableFeature(
+      net::features::kThirdPartyStoragePartitioning);
+  absl::optional<blink::StorageKey> keys[] = {
+      // No storage key provided.
+      absl::nullopt,
+      // Top-level (Foo).
+      blink::StorageKey::CreateFromStringForTesting("https://foo.com"),
+      // Foo -> Bar.
+      blink::StorageKey::CreateWithOptionalNonce(
+          url::Origin::Create(GURL("https://foo.com")),
+          net::SchemefulSite(url::Origin::Create(GURL("https://bar.com"))),
+          nullptr, blink::mojom::AncestorChainBit::kCrossSite),
+      // Foo -> Bar -> Foo.
+      blink::StorageKey::CreateWithOptionalNonce(
+          url::Origin::Create(GURL("https://foo.com")),
+          net::SchemefulSite(url::Origin::Create(GURL("https://foo.com"))),
+          nullptr, blink::mojom::AncestorChainBit::kCrossSite),
+  };
+  for (size_t i = 0; i < std::size(keys); ++i) {
+    const auto& storage_key = keys[i];
+    BrowsingDataFilterBuilderImpl builder(
+        BrowsingDataFilterBuilderImpl::Mode::kDelete);
+    if (storage_key.has_value())
+      builder.AddOrigin(storage_key.value().origin());
+    else
+      builder.AddOrigin(url::Origin::Create(GURL("https://foo.com")));
+    builder.SetStorageKey(storage_key);
+    EXPECT_EQ(storage_key.has_value(), builder.HasStorageKey());
+    // Start from 1 to ignore the nullopt key.
+    for (size_t j = 1; j < std::size(keys); ++j) {
+      const auto& key_to_compare = keys[j];
+      auto matcher_function = builder.BuildStorageKeyFilter();
+      // Only matches either when the keys are exactly the same, or when there
+      // is no stored key.
+      bool expected = ((i == j) || (!storage_key.has_value()));
+      EXPECT_EQ(expected,
+                std::move(matcher_function).Run(key_to_compare.value()));
+    }
   }
 }
 

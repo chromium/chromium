@@ -1,0 +1,9 @@
+CONSOLE MESSAGE: Clear-Site-Data header on 'https://storage.not-example.test:8443/storage/resources/clear-site-data.php': Cleared data types: "storage".
+CONSOLE MESSAGE: Clear-Site-Data header on 'https://storage.not-example.test:8443/storage/resources/clear-site-data.php': Cleared data types: "storage".
+This is a testharness.js-based test.
+PASS Clearing partitioned storage
+PASS Clearing partitioned storage in another partition
+PASS Opened page from first partition
+PASS Clear-Site-Data does not leak across partitions
+Harness: the test ran to completion.
+

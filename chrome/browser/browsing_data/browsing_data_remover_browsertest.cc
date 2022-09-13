@@ -766,18 +766,21 @@ class BrowsingDataRemoverWithPasswordsAccountStorageBrowserTest
 
   void ClearSiteDataAndWait(
       const url::Origin& origin,
-      const absl::optional<net::CookiePartitionKey>& cookie_partition_key) {
+      const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
+      const absl::optional<blink::StorageKey>& storage_key) {
     base::RunLoop loop;
-    content::ClearSiteData(base::BindRepeating(
+    content::ClearSiteData(/*browser_context_getter=*/base::BindRepeating(
                                [](content::BrowserContext* browser_context) {
                                  return browser_context;
                                },
                                base::Unretained(GetBrowser()->profile())),
-                           origin,
+                           /*origin=*/origin,
                            /*clear_cookies=*/true, /*clear_storage=*/true,
                            /*clear_cache=*/true,
                            /*avoid_closing_connections=*/true,
-                           cookie_partition_key, loop.QuitClosure());
+                           /*cookie_partition_key=*/cookie_partition_key,
+                           /*storage_key=*/storage_key,
+                           /*callback=*/loop.QuitClosure());
     loop.Run();
   }
 
@@ -877,26 +880,46 @@ IN_PROC_BROWSER_TEST_F(
   const struct {
     const url::Origin origin;
     const absl::optional<net::CookiePartitionKey> cookie_partition_key;
+    const absl::optional<blink::StorageKey> storage_key;
     bool expects_opted_in;
   } test_cases[] = {
       {
           url::Origin::Create(kFirstPartyURL),
+          absl::nullopt,
           absl::nullopt,
           false,
       },
       {
           url::Origin::Create(kCrossSiteURL),
           absl::nullopt,
+          absl::nullopt,
           true,
       },
       {
           url::Origin::Create(kFirstPartyURL),
           net::CookiePartitionKey::FromURLForTesting(kFirstPartyURL),
+          absl::nullopt,
+          false,
+      },
+      {
+          url::Origin::Create(kFirstPartyURL),
+          net::CookiePartitionKey::FromURLForTesting(kFirstPartyURL),
+          blink::StorageKey(url::Origin::Create(kFirstPartyURL)),
           false,
       },
       {
           url::Origin::Create(kFirstPartyURL),
           net::CookiePartitionKey::FromURLForTesting(kCrossSiteURL),
+          absl::nullopt,
+          true,
+      },
+      {
+          url::Origin::Create(kFirstPartyURL),
+          net::CookiePartitionKey::FromURLForTesting(kCrossSiteURL),
+          blink::StorageKey::CreateWithOptionalNonce(
+              url::Origin::Create(kCrossSiteURL),
+              net::SchemefulSite(url::Origin::Create(kFirstPartyURL)), nullptr,
+              blink::mojom::AncestorChainBit::kCrossSite),
           true,
       },
   };
@@ -904,7 +927,8 @@ IN_PROC_BROWSER_TEST_F(
     password_manager::features_util::OptInToAccountStorage(prefs,
                                                            &sync_service);
 
-    ClearSiteDataAndWait(test_case.origin, test_case.cookie_partition_key);
+    ClearSiteDataAndWait(test_case.origin, test_case.cookie_partition_key,
+                         test_case.storage_key);
 
     ASSERT_EQ(password_manager::features_util::IsOptedInForAccountStorage(
                   prefs, &sync_service),

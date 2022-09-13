@@ -110,10 +110,11 @@ void ClearSiteDataHandler::HandleHeader(
     const std::string& header_value,
     int load_flags,
     const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
+    const absl::optional<blink::StorageKey>& storage_key,
     base::OnceClosure callback) {
   ClearSiteDataHandler handler(browser_context_getter, web_contents_getter, url,
                                header_value, load_flags, cookie_partition_key,
-                               std::move(callback),
+                               storage_key, std::move(callback),
                                std::make_unique<ConsoleMessagesDelegate>());
   handler.HandleHeaderAndOutputConsoleMessages();
 }
@@ -137,6 +138,7 @@ ClearSiteDataHandler::ClearSiteDataHandler(
     const std::string& header_value,
     int load_flags,
     const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
+    const absl::optional<blink::StorageKey>& storage_key,
     base::OnceClosure callback,
     std::unique_ptr<ConsoleMessagesDelegate> delegate)
     : browser_context_getter_(browser_context_getter),
@@ -145,6 +147,7 @@ ClearSiteDataHandler::ClearSiteDataHandler(
       header_value_(header_value),
       load_flags_(load_flags),
       cookie_partition_key_(cookie_partition_key),
+      storage_key_(storage_key),
       callback_(std::move(callback)),
       delegate_(std::move(delegate)) {
   DCHECK(browser_context_getter_);
@@ -304,7 +307,7 @@ void ClearSiteDataHandler::ExecuteClearingTask(const url::Origin& origin,
                                                base::OnceClosure callback) {
   ClearSiteData(browser_context_getter_, origin, clear_cookies, clear_storage,
                 clear_cache, true /*avoid_closing_connections*/,
-                cookie_partition_key_, std::move(callback));
+                cookie_partition_key_, storage_key_, std::move(callback));
 }
 
 // static

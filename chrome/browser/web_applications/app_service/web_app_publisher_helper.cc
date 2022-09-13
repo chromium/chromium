@@ -840,8 +840,9 @@ void WebAppPublisherHelper::UninstallWebApp(
                              },
                              base::Unretained(profile())),
                          origin, kClearCookies, kClearStorage, kClearCache,
-                         kAvoidClosingConnections, absl::nullopt,
-                         base::DoNothing());
+                         kAvoidClosingConnections,
+                         /*cookie_partition_key=*/absl::nullopt,
+                         /*storage_key=*/absl::nullopt, base::DoNothing());
 }
 
 apps::mojom::IconKeyPtr WebAppPublisherHelper::MakeIconKey(

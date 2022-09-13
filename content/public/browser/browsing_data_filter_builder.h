@@ -14,6 +14,7 @@
 #include "net/cookies/cookie_partition_key_collection.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 class GURL;
 
@@ -72,6 +73,21 @@ class CONTENT_EXPORT BrowsingDataFilterBuilder {
   // (which means the filter contains a single domain) when partitioned cookies
   // are enabled.
   virtual bool IsCrossSiteClearSiteDataForCookies() const = 0;
+
+  // Set the StorageKey for the filter.
+  // If the key is set, then only the StoragePartition that matches the key
+  // exactly will be deleted. Without the key, all storage that matches the
+  // other criteria is deleted.
+  virtual void SetStorageKey(
+      const absl::optional<blink::StorageKey>& storage_key) = 0;
+
+  // Returns whether the StorageKey is set (e.g. using the method above).
+  virtual bool HasStorageKey() const = 0;
+
+  // Returns whether the filter's StorageKey matches the given one.
+  // Note: the StorageKey in the filter has to be set.
+  virtual bool MatchesWithSavedStorageKey(
+      const blink::StorageKey& other_key) const = 0;
 
   // Returns true if we're an empty preserve list, where we delete everything.
   virtual bool MatchesAllOriginsAndDomains() = 0;

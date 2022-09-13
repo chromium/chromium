@@ -165,6 +165,21 @@ bool BrowsingDataFilterBuilderImpl::IsCrossSiteClearSiteDataForCookies() const {
   return true;
 }
 
+void BrowsingDataFilterBuilderImpl::SetStorageKey(
+    const absl::optional<blink::StorageKey>& storage_key) {
+  storage_key_ = storage_key;
+}
+
+bool BrowsingDataFilterBuilderImpl::HasStorageKey() const {
+  return storage_key_.has_value();
+}
+
+bool BrowsingDataFilterBuilderImpl::MatchesWithSavedStorageKey(
+    const blink::StorageKey& other_key) const {
+  DCHECK(storage_key_.has_value());
+  return storage_key_.value() == other_key;
+}
+
 bool BrowsingDataFilterBuilderImpl::MatchesAllOriginsAndDomains() {
   return mode_ == Mode::kPreserve && origins_.empty() && domains_.empty();
 }
@@ -183,6 +198,12 @@ BrowsingDataFilterBuilderImpl::BuildStorageKeyFilter() {
     return NotReachedFilter<blink::StorageKey>();
   if (MatchesAllOriginsAndDomains())
     return base::BindRepeating([](const blink::StorageKey&) { return true; });
+  // If the filter has a StorageKey set, use it to match.
+  if (HasStorageKey()) {
+    return base::BindRepeating(
+        &BrowsingDataFilterBuilderImpl::MatchesWithSavedStorageKey,
+        base::Unretained(this));
+  }
   return base::BindRepeating(&MatchesStorageKey, origins_, domains_, mode_);
 }
 

@@ -47,6 +47,7 @@
 #include "storage/browser/blob/blob_url_registry.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_settings.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/dom_storage/dom_storage.mojom.h"
 
@@ -597,6 +598,10 @@ class CONTENT_EXPORT StoragePartitionImpl
   // rejects the connection, this will be reflected asynchronously by a call to
   // OnLocalTrustTokenFulfillerConnectionError.
   void ProvisionallyBindUnboundLocalTrustTokenFulfillerIfSupportedBySystem();
+
+  absl::optional<blink::StorageKey> CalculateStorageKey(
+      const url::Origin& origin,
+      const base::UnguessableToken* nonce);
 
   // Raw pointer that should always be valid. The BrowserContext owns the
   // StoragePartitionImplMap which then owns StoragePartitionImpl. When the
