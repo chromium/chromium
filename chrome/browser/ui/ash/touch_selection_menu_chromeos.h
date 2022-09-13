@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TOUCH_SELECTION_MENU_CHROMEOS_H_
-#define CHROME_BROWSER_UI_VIEWS_TOUCH_SELECTION_MENU_CHROMEOS_H_
+#ifndef CHROME_BROWSER_UI_ASH_TOUCH_SELECTION_MENU_CHROMEOS_H_
+#define CHROME_BROWSER_UI_ASH_TOUCH_SELECTION_MENU_CHROMEOS_H_
 
 #include <vector>
 
@@ -46,4 +46,4 @@ class TouchSelectionMenuChromeOS : public views::TouchSelectionMenuViews {
   int64_t display_id_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TOUCH_SELECTION_MENU_CHROMEOS_H_
+#endif  // CHROME_BROWSER_UI_ASH_TOUCH_SELECTION_MENU_CHROMEOS_H_
