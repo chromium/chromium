@@ -6177,7 +6177,7 @@
   {
     "name": "suggestions-scrolling-ipad",
     "owners": [ "christianxu", "bling-flags@google.com" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 120
   },
   {
     "name": "support-tool",
