@@ -286,6 +286,7 @@ bool SkiaOutputDeviceVulkan::Initialize() {
                                            gpu::VulkanSurface::FORMAT_RGBA_32);
   if (UNLIKELY(!result)) {
     LOG(ERROR) << "Failed to initialize vulkan surface.";
+    vulkan_surface->Destroy();
     return false;
   }
   vulkan_surface_ = std::move(vulkan_surface);
