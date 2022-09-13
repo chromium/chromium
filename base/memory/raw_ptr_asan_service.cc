@@ -38,7 +38,7 @@ constexpr uint8_t kAsanUserPoisonedMemoryMagic = 0xf7;
 // that.
 __pragma(comment(linker,
                  "/alternatename:__sanitizer_report_error_summary=__sanitizer_"
-                 "report_error_summary__dll"));
+                 "report_error_summary__dll"))
 #endif  // defined(COMPONENT_BUILD) && defined(_WIN32)
 
 // static
