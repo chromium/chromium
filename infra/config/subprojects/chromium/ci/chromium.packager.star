@@ -234,6 +234,10 @@ ci.builder(
             },
             # use x86_64 since sdkmanager don't ship x86 for android-31 and above.
             {
+                "sdk_package_name": "system-images;android-31;google_apis;arm64-v8a",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-31/google_apis/arm64.yaml",
+            },
+            {
                 "sdk_package_name": "system-images;android-31;google_apis;x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-31/google_apis/x86_64.yaml",
             },
