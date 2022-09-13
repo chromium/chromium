@@ -463,7 +463,8 @@ TEST_P(AssistantAudioInputControllerTest,
   EXPECT_EQ(false, IsRecordingAudio());
 }
 
-TEST_P(AssistantAudioInputControllerTest, DSPTrigger) {
+// Disabled due to excessive flakiness. http://crbug.com/1363156
+TEST_P(AssistantAudioInputControllerTest, DISABLED_DSPTrigger) {
   if (!IsEnableDspFlagOn()) {
     GTEST_SKIP() << kSkipForNonDspMessage;
   }
@@ -506,7 +507,8 @@ TEST_P(AssistantAudioInputControllerTest, DSPTrigger) {
   EXPECT_EQ(GetOpenDeviceId(), kHotwordDeviceId);
 }
 
-TEST_P(AssistantAudioInputControllerTest, DSPTriggerredButSoftwareRejection) {
+// Disabled due to excessive flakiness. http://crbug.com/1363156
+TEST_P(AssistantAudioInputControllerTest, DISABLED_DSPTriggerredButSoftwareRejection) {
   if (!IsEnableDspFlagOn()) {
     GTEST_SKIP() << kSkipForNonDspMessage;
   }
