@@ -1729,7 +1729,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + 'c036420683f672d685e27415de0a5f5e85bdc23f',
 
   'src/third_party/tflite/src':
-    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '5e03ce9de0d8d32744c0267b358193e7011b7afb',
+    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '620ab3e167b0a64b6732dac16fd0edaf8284cb8e',
 
   'src/third_party/turbine': {
       'packages': [
