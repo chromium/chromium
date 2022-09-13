@@ -152,7 +152,12 @@ public class AutofillPaymentMethodsFragment extends PreferenceFragmentCompat
                 card_pref.setFragment(AutofillLocalCardEditor.class.getName());
             } else {
                 card_pref.setFragment(AutofillServerCardEditor.class.getName());
-                card_pref.setWidgetLayoutResource(R.layout.autofill_server_data_label);
+                if (ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA)) {
+                    card_pref.setWidgetLayoutResource(R.layout.autofill_server_data_label);
+                } else {
+                    card_pref.setWidgetLayoutResource(R.layout.autofill_server_data_text_label);
+                }
             }
 
             Bundle args = card_pref.getExtras();
