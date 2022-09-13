@@ -110,6 +110,26 @@ void PromosManager::RegisterPromoForSingleDisplay(promos_manager::Promo promo) {
       promo, prefs::kIosPromosManagerSingleDisplayActivePromos, local_state_);
 }
 
+void PromosManager::DeregisterPromo(promos_manager::Promo promo) {
+  DCHECK(local_state_);
+
+  ListPrefUpdate active_promos_update(local_state_,
+                                      prefs::kIosPromosManagerActivePromos);
+  ListPrefUpdate single_display_promos_update(
+      local_state_, prefs::kIosPromosManagerSingleDisplayActivePromos);
+
+  base::Value::List& active_promos = active_promos_update->GetList();
+  base::Value::List& single_display_promos =
+      single_display_promos_update->GetList();
+
+  std::string promo_name = promos_manager::NameForPromo(promo);
+
+  // Erase `promo_name` from the single-display and continuous-display active
+  // promos lists.
+  active_promos.EraseValue(base::Value(promo_name));
+  single_display_promos.EraseValue(base::Value(promo_name));
+}
+
 void PromosManager::InitializePromoImpressionLimits(
     base::small_map<std::map<promos_manager::Promo, NSArray<ImpressionLimit*>*>>
         promo_impression_limits) {

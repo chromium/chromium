@@ -48,6 +48,11 @@ class PromosManager {
   // status across app launches.
   void RegisterPromoForSingleDisplay(promos_manager::Promo promo);
 
+  // Deregisters `promo` (stopping `promo` from being displayed) by removing the
+  // promo entry from the single-display and continuous-display active promos
+  // lists.
+  void DeregisterPromo(promos_manager::Promo promo);
+
   // Initialize the Promos Manager by restoring state from Prefs. Must be called
   // after creation and before any other operation.
   void Init();
@@ -228,6 +233,8 @@ class PromosManager {
   FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
                            RegistersPromoSpecificImpressionLimits);
   FRIEND_TEST_ALL_PREFIXES(PromosManagerTest, RecordsImpression);
+  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest, DeregistersActivePromo);
+  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest, DeregistersNonExistentPromo);
 };
 
 #endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_H_

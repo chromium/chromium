@@ -948,3 +948,79 @@ TEST_F(PromosManagerTest, RecordsImpression) {
       second_impression.FindInt(promos_manager::kImpressionDayKey).value(),
       TodaysDay());
 }
+
+// Tests PromosManager::DeregisterPromo() correctly deregisters a currently
+// active promo campaign.
+TEST_F(PromosManagerTest, DeregistersActivePromo) {
+  CreatePromosManager();
+
+  EXPECT_EQ(local_state_->GetList(prefs::kIosPromosManagerActivePromos).size(),
+            (size_t)0);
+  EXPECT_EQ(
+      local_state_->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos)
+          .size(),
+      (size_t)0);
+
+  promos_manager_->RegisterPromoForContinuousDisplay(
+      promos_manager::Promo::CredentialProviderExtension);
+
+  EXPECT_EQ(local_state_->GetList(prefs::kIosPromosManagerActivePromos).size(),
+            (size_t)1);
+  EXPECT_EQ(
+      local_state_->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos)
+          .size(),
+      (size_t)0);
+
+  promos_manager_->RegisterPromoForSingleDisplay(
+      promos_manager::Promo::CredentialProviderExtension);
+
+  EXPECT_EQ(local_state_->GetList(prefs::kIosPromosManagerActivePromos).size(),
+            (size_t)1);
+  EXPECT_EQ(
+      local_state_->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos)
+          .size(),
+      (size_t)1);
+
+  promos_manager_->DeregisterPromo(
+      promos_manager::Promo::CredentialProviderExtension);
+
+  EXPECT_EQ(local_state_->GetList(prefs::kIosPromosManagerActivePromos).size(),
+            (size_t)0);
+  EXPECT_EQ(
+      local_state_->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos)
+          .size(),
+      (size_t)0);
+}
+
+// Tests PromosManager::DeregisterPromo() gracefully handles deregistration if
+// the promo doesn't exist in a given active promos list.
+TEST_F(PromosManagerTest, DeregistersNonExistentPromo) {
+  CreatePromosManager();
+
+  EXPECT_EQ(local_state_->GetList(prefs::kIosPromosManagerActivePromos).size(),
+            (size_t)0);
+  EXPECT_EQ(
+      local_state_->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos)
+          .size(),
+      (size_t)0);
+
+  promos_manager_->RegisterPromoForContinuousDisplay(
+      promos_manager::Promo::CredentialProviderExtension);
+
+  EXPECT_EQ(local_state_->GetList(prefs::kIosPromosManagerActivePromos).size(),
+            (size_t)1);
+  EXPECT_EQ(
+      local_state_->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos)
+          .size(),
+      (size_t)0);
+
+  promos_manager_->DeregisterPromo(
+      promos_manager::Promo::CredentialProviderExtension);
+
+  EXPECT_EQ(local_state_->GetList(prefs::kIosPromosManagerActivePromos).size(),
+            (size_t)0);
+  EXPECT_EQ(
+      local_state_->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos)
+          .size(),
+      (size_t)0);
+}
