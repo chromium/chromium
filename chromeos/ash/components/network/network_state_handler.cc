@@ -92,13 +92,6 @@ bool ShouldIncludeNetworkInList(const NetworkState* network_state,
     return false;
   }
 
-  if (network_state->type() == shill::kTypeVPN) {
-    if (network_state->GetVpnProviderType() == shill::kProviderIKEv2 &&
-        !base::FeatureList::IsEnabled(features::kEnableIkev2Vpn)) {
-      return false;
-    }
-  }
-
   return true;
 }
 
