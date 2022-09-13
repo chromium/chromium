@@ -286,9 +286,12 @@ class PictureInPictureTestWebFrameClient
   std::unique_ptr<WebMediaPlayer> web_media_player_;
 };
 
-// These tests should be for video Picture in Picture.  See below if you'd like
-// to test document Picture in Picture.
-class PictureInPictureControllerVideoTest : public RenderingTest {
+// PictureInPictureController tests that require a Widget.
+// Video PiP tests typically do, while Document PiP tests typically do not.
+// If you need to mock the ChromeClient, then this is not the right test harness
+// for you. If you need to mock the client and have a Widget, then you'll
+// probably need to modify `WebViewHelper`.
+class PictureInPictureControllerTestWithWidget : public RenderingTest {
  public:
   void SetUp() override {
     client_ = std::make_unique<PictureInPictureTestWebFrameClient>(
@@ -353,7 +356,8 @@ class PictureInPictureControllerVideoTest : public RenderingTest {
   frame_test_helpers::WebViewHelper helper_;
 };
 
-TEST_F(PictureInPictureControllerVideoTest, EnterPictureInPictureFiresEvent) {
+TEST_F(PictureInPictureControllerTestWithWidget,
+       EnterPictureInPictureFiresEvent) {
   EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
                          .PictureInPictureElement());
 
@@ -372,7 +376,7 @@ TEST_F(PictureInPictureControllerVideoTest, EnterPictureInPictureFiresEvent) {
                          .PictureInPictureElement());
 }
 
-TEST_F(PictureInPictureControllerVideoTest,
+TEST_F(PictureInPictureControllerTestWithWidget,
        FrameThrottlingIsSetProperlyWithoutSetup) {
   // This test assumes that it throttling is allowed by default.
   ASSERT_TRUE(GetWidget()->GetMayThrottleIfUndrawnFramesForTesting());
@@ -392,7 +396,8 @@ TEST_F(PictureInPictureControllerVideoTest,
   EXPECT_TRUE(GetWidget()->GetMayThrottleIfUndrawnFramesForTesting());
 }
 
-TEST_F(PictureInPictureControllerVideoTest, ExitPictureInPictureFiresEvent) {
+TEST_F(PictureInPictureControllerTestWithWidget,
+       ExitPictureInPictureFiresEvent) {
   EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
                          .PictureInPictureElement());
 
@@ -419,7 +424,7 @@ TEST_F(PictureInPictureControllerVideoTest, ExitPictureInPictureFiresEvent) {
                          .PictureInPictureElement());
 }
 
-TEST_F(PictureInPictureControllerVideoTest, StartObserving) {
+TEST_F(PictureInPictureControllerTestWithWidget, StartObserving) {
   EXPECT_FALSE(PictureInPictureControllerImpl::From(GetDocument())
                    .IsSessionObserverReceiverBoundForTesting());
 
@@ -438,7 +443,7 @@ TEST_F(PictureInPictureControllerVideoTest, StartObserving) {
                   .IsSessionObserverReceiverBoundForTesting());
 }
 
-TEST_F(PictureInPictureControllerVideoTest, StopObserving) {
+TEST_F(PictureInPictureControllerTestWithWidget, StopObserving) {
   EXPECT_FALSE(PictureInPictureControllerImpl::From(GetDocument())
                    .IsSessionObserverReceiverBoundForTesting());
 
@@ -464,7 +469,8 @@ TEST_F(PictureInPictureControllerVideoTest, StopObserving) {
                    .IsSessionObserverReceiverBoundForTesting());
 }
 
-TEST_F(PictureInPictureControllerVideoTest, PlayPauseButton_InfiniteDuration) {
+TEST_F(PictureInPictureControllerTestWithWidget,
+       PlayPauseButton_InfiniteDuration) {
   EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
                          .PictureInPictureElement());
 
@@ -482,7 +488,7 @@ TEST_F(PictureInPictureControllerVideoTest, PlayPauseButton_InfiniteDuration) {
                                      event_type_names::kEnterpictureinpicture);
 }
 
-TEST_F(PictureInPictureControllerVideoTest, PlayPauseButton_MediaSource) {
+TEST_F(PictureInPictureControllerTestWithWidget, PlayPauseButton_MediaSource) {
   EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
                          .PictureInPictureElement());
 
@@ -501,7 +507,7 @@ TEST_F(PictureInPictureControllerVideoTest, PlayPauseButton_MediaSource) {
                                      event_type_names::kEnterpictureinpicture);
 }
 
-TEST_F(PictureInPictureControllerVideoTest, PerformMediaPlayerAction) {
+TEST_F(PictureInPictureControllerTestWithWidget, PerformMediaPlayerAction) {
   frame_test_helpers::WebViewHelper helper;
   helper.Initialize();
 
@@ -520,7 +526,7 @@ TEST_F(PictureInPictureControllerVideoTest, PerformMediaPlayerAction) {
       bounds, blink::mojom::MediaPlayerActionType::kPictureInPicture, true);
 }
 
-TEST_F(PictureInPictureControllerVideoTest,
+TEST_F(PictureInPictureControllerTestWithWidget,
        EnterPictureInPictureAfterResettingWMP) {
   V8TestingScope scope;
 
@@ -545,7 +551,7 @@ TEST_F(PictureInPictureControllerVideoTest,
             dom_exception->code());
 }
 
-TEST_F(PictureInPictureControllerVideoTest,
+TEST_F(PictureInPictureControllerTestWithWidget,
        EnterPictureInPictureProvideSourceBoundsSetToBoundsInWidget) {
   EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
                          .PictureInPictureElement());
@@ -567,7 +573,7 @@ TEST_F(PictureInPictureControllerVideoTest,
   EXPECT_EQ(Service().source_bounds(), Video()->BoundsInWidget());
 }
 
-TEST_F(PictureInPictureControllerVideoTest,
+TEST_F(PictureInPictureControllerTestWithWidget,
        EnterPictureInPictureProvideSourceBoundsSetToReplacedContentRect) {
   // Create one image with a size of 10x10px
   SkImageInfo raster_image_info =
@@ -621,7 +627,7 @@ TEST_F(PictureInPictureControllerVideoTest,
   EXPECT_EQ(Service().source_bounds(), gfx::Rect(173, 173, 20, 20));
 }
 
-TEST_F(PictureInPictureControllerVideoTest, VideoIsNotAllowedIfAutoPip) {
+TEST_F(PictureInPictureControllerTestWithWidget, VideoIsNotAllowedIfAutoPip) {
   EXPECT_EQ(PictureInPictureControllerImpl::Status::kEnabled,
             PictureInPictureControllerImpl::From(GetDocument())
                 .IsElementAllowed(*Video(), /*report_failure=*/false));
@@ -634,7 +640,8 @@ TEST_F(PictureInPictureControllerVideoTest, VideoIsNotAllowedIfAutoPip) {
                 .IsElementAllowed(*Video(), /*report_failure=*/false));
 }
 
-TEST_F(PictureInPictureControllerVideoTest, AutoEnterAndExitPictureInPicture) {
+TEST_F(PictureInPictureControllerTestWithWidget,
+       AutoEnterAndExitPictureInPicture) {
   WebMediaPlayer* player = Video()->GetWebMediaPlayer();
   EXPECT_CALL(Service(),
               StartSession(player->GetDelegateId(), _, TestSurfaceId(),
@@ -675,7 +682,7 @@ TEST_F(PictureInPictureControllerVideoTest, AutoEnterAndExitPictureInPicture) {
                          .PictureInPictureElement());
 }
 
-TEST_F(PictureInPictureControllerVideoTest,
+TEST_F(PictureInPictureControllerTestWithWidget,
        AutoEnterPictureInPictureDuringDocumentPiP) {
   WebMediaPlayer* player = Video()->GetWebMediaPlayer();
   EXPECT_CALL(Service(),
@@ -710,6 +717,23 @@ TEST_F(PictureInPictureControllerVideoTest,
                          .PictureInPictureElement());
 }
 
+TEST_F(PictureInPictureControllerTestWithWidget,
+       DocumentPiPDoesNotAllowVizThrottling) {
+  EXPECT_TRUE(GetWidget()->GetMayThrottleIfUndrawnFramesForTesting());
+
+  V8TestingScope v8_scope;
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(GetDocument().GetFrame());
+  ScriptState::Scope entered_context_scope(script_state);
+  OpenDocumentPictureInPictureSession(v8_scope, GetDocument(),
+                                      CopyStyleSheetOptions::kNo);
+
+  EXPECT_FALSE(GetWidget()->GetMayThrottleIfUndrawnFramesForTesting());
+
+  // TODO(1357125): Check that GetMayThrottle... returns true once the PiP
+  // window is closed.
+}
+
 class PictureInPictureControllerChromeClient
     : public RenderingTestChromeClient {
  public:
@@ -732,11 +756,11 @@ class PictureInPictureControllerChromeClient
   DummyPageHolder* dummy_page_holder_;
 };
 
-// Tests for Document Picture in Picture.
-// Unlike the video tests above, these don't have a widget.  However, that makes
-// it much easier to use RenderingTest more properly to set the ChromeClient.
-// Having the ChromeClient lets us mock SetWindowRect.
-class PictureInPictureControllerDocumentTest : public RenderingTest {
+// Tests for Picture in Picture with a mockable chrome client.  This makes it
+// easy to mock things like `SetWindowRect` on the client.  However, it skips
+// the setup in `WebViewHelper` that provides a Widget.  `WebViewHelper` makes
+// it hard to mock the client, since it provides a real `ChromeClient`.
+class PictureInPictureControllerTestWithChromeClient : public RenderingTest {
  public:
   void SetUp() override {
     chrome_client_ =
@@ -807,7 +831,7 @@ class PictureInPictureControllerDocumentTest : public RenderingTest {
   const char* style_sheet_title_ = "our_style_sheet";
 };
 
-TEST_F(PictureInPictureControllerDocumentTest,
+TEST_F(PictureInPictureControllerTestWithChromeClient,
        CreateDocumentPictureInPictureWindow) {
   EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
                          .pictureInPictureWindow());
@@ -858,7 +882,7 @@ TEST_F(PictureInPictureControllerDocumentTest,
   }
 }
 
-TEST_F(PictureInPictureControllerDocumentTest,
+TEST_F(PictureInPictureControllerTestWithChromeClient,
        CopyStylesToDocumentPictureInPictureWindow) {
   V8TestingScope v8_scope;
   InitializeDocumentPictureInPictureOpener(v8_scope);
@@ -872,7 +896,7 @@ TEST_F(PictureInPictureControllerDocumentTest,
             "rgb(0, 0, 255)");
 }
 
-TEST_F(PictureInPictureControllerDocumentTest,
+TEST_F(PictureInPictureControllerTestWithChromeClient,
        DoesNotCopyDisabledStyleSheetsToDocumentPictureInPictureWindow) {
   V8TestingScope v8_scope;
   InitializeDocumentPictureInPictureOpener(v8_scope);

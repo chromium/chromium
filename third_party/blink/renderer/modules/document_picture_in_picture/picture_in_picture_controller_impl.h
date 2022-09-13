@@ -144,6 +144,33 @@ class MODULES_EXPORT PictureInPictureControllerImpl
   // initialized successfully.
   bool EnsureService();
 
+  // Observer to watch a Document Picture in Picture window, so that the opener
+  // can find out when it is being destroyed.
+  class DocumentPictureInPictureObserver final
+      : public GarbageCollected<DocumentPictureInPictureObserver>,
+        public ContextLifecycleObserver {
+   public:
+    // Notify `controller` when our context is destroyed.
+    explicit DocumentPictureInPictureObserver(
+        PictureInPictureControllerImpl* controller);
+    ~DocumentPictureInPictureObserver() final;
+
+    void Trace(Visitor* visitor) const final;
+
+   protected:
+    void ContextDestroyed() final;
+
+    Member<PictureInPictureControllerImpl> controller_;
+  };
+
+  friend class DocumentPictureInPictureObserver;
+
+  // Called by DocumentPictureInPictureObserver.
+  void OnDocumentPictureInPictureContextDestroyed();
+
+  // Nullable observer for Document Picture in Picture.
+  Member<DocumentPictureInPictureObserver> document_pip_context_observer_;
+
   // The Picture-in-Picture element for the associated document.
   Member<HTMLVideoElement> picture_in_picture_element_;
 

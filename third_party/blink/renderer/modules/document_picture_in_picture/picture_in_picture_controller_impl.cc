@@ -448,7 +448,7 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
 
   // Set the Picture-in-Picture window's base URL to be the same as the opener
   // window's so that relative URLs will be resolved in the same way.
-  auto* pip_document = local_dom_window->document();
+  Document* pip_document = local_dom_window->document();
   DCHECK(pip_document);
   pip_document->SetBaseURLOverride(opener.document()->BaseURL());
 
@@ -476,8 +476,24 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
     }
   }
 
+  SetMayThrottleIfUndrawnFrames(false);
+
+  if (!document_pip_context_observer_) {
+    document_pip_context_observer_ =
+        MakeGarbageCollected<DocumentPictureInPictureObserver>(this);
+  }
+  document_pip_context_observer_->SetContextLifecycleNotifier(
+      pip_document->GetExecutionContext());
+
   // TODO(https://crbug.com/1329698): Resolve this in a posted task instead.
   resolver->Resolve(document_picture_in_picture_session_);
+}
+
+void PictureInPictureControllerImpl::
+    OnDocumentPictureInPictureContextDestroyed() {
+  // The document PIP window has been destroyed, so the opener is no longer
+  // associated with it.  Allow throttling again.
+  SetMayThrottleIfUndrawnFrames(true);
 }
 
 void PictureInPictureControllerImpl::PageVisibilityChanged() {
@@ -534,6 +550,10 @@ void PictureInPictureControllerImpl::OnStopped() {
 
 void PictureInPictureControllerImpl::SetMayThrottleIfUndrawnFrames(
     bool may_throttle) {
+  if (!GetSupplementable()->GetFrame()->GetWidgetForLocalRoot()) {
+    // Tests do not always have a widget.
+    return;
+  }
   GetSupplementable()
       ->GetFrame()
       ->GetWidgetForLocalRoot()
@@ -548,6 +568,7 @@ void PictureInPictureControllerImpl::Trace(Visitor* visitor) const {
   visitor->Trace(session_observer_receiver_);
   visitor->Trace(picture_in_picture_service_);
   visitor->Trace(video_picture_in_picture_session_);
+  visitor->Trace(document_pip_context_observer_);
   PictureInPictureController::Trace(visitor);
   PageVisibilityObserver::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
@@ -575,6 +596,23 @@ bool PictureInPictureControllerImpl::EnsureService() {
   GetSupplementable()->GetFrame()->GetBrowserInterfaceBroker().GetInterface(
       picture_in_picture_service_.BindNewPipeAndPassReceiver(task_runner));
   return true;
+}
+
+PictureInPictureControllerImpl::DocumentPictureInPictureObserver::
+    DocumentPictureInPictureObserver(PictureInPictureControllerImpl* controller)
+    : controller_(controller) {}
+PictureInPictureControllerImpl::DocumentPictureInPictureObserver::
+    ~DocumentPictureInPictureObserver() = default;
+
+void PictureInPictureControllerImpl::DocumentPictureInPictureObserver::
+    ContextDestroyed() {
+  controller_->OnDocumentPictureInPictureContextDestroyed();
+}
+
+void PictureInPictureControllerImpl::DocumentPictureInPictureObserver::Trace(
+    Visitor* visitor) const {
+  visitor->Trace(controller_);
+  ContextLifecycleObserver::Trace(visitor);
 }
 
 }  // namespace blink

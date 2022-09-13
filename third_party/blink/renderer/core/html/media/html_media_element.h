@@ -454,7 +454,7 @@ class CORE_EXPORT HTMLMediaElement
   // Friend class for testing.
   friend class ContextMenuControllerTest;
   friend class HTMLMediaElementTest;
-  friend class PictureInPictureControllerVideoTest;
+  friend class PictureInPictureControllerTestWithWidget;
   friend class VideoWakeLockTest;
 
   class SourceMetadata {
