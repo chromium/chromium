@@ -13,6 +13,7 @@
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -431,6 +432,32 @@ TEST_P(CollisionDetectionUtilsDisplayTest, AutoHideShownShelfAffectsWindow) {
   auto bounds = CallAvoidObstacles(
       GetDisplay(), gfx::Rect(shelf_bounds.CenterPoint(), gfx::Size(1, 1)));
   EXPECT_FALSE(shelf_bounds.Intersects(bounds));
+}
+
+TEST_P(CollisionDetectionUtilsDisplayTest,
+       AvoidObstaclesWorksWithHorizontalShelf) {
+  auto* shelf = Shelf::ForWindow(root_window());
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  shelf->SetAlignment(ShelfAlignment::kLeft);
+  EXPECT_FALSE(shelf->IsHorizontalAlignment());
+  ShelfLayoutManager* manager = shelf->shelf_layout_manager();
+  manager->LayoutShelf();
+
+  auto shelf_bounds = shelf->GetWindow()->GetBoundsInScreen();
+  {
+    auto initial_bounds = gfx::Rect(shelf_bounds.right() - 10,
+                                    shelf_bounds.CenterPoint().y(), 1, 1);
+    auto bounds = CallAvoidObstacles(GetDisplay(), initial_bounds);
+    EXPECT_NE(initial_bounds, bounds);
+  }
+  {
+    auto initial_bounds = gfx::Rect(shelf_bounds.right() + 10,
+                                    shelf_bounds.CenterPoint().y(), 1, 1);
+    auto bounds = CallAvoidObstacles(GetDisplay(), initial_bounds);
+    EXPECT_EQ(initial_bounds, bounds);
+  }
 }
 
 // TODO: UpdateDisplay() doesn't support different layouts of multiple displays.
