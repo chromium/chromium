@@ -114,11 +114,11 @@ def diff_binary(first_filepath, second_filepath, file_len):
       if not lhs_data or not rhs_data:
         break
       if lhs_data != rhs_data:
-        for i in xrange(min(len(lhs_data), len(rhs_data))):
+        for i in range(min(len(lhs_data), len(rhs_data))):
           if lhs_data[i] != rhs_data[i]:
             num_diffs += 1
         if len(streams) < MAX_STREAMS:
-          for idx in xrange(NUM_CHUNKS_IN_BLOCK):
+          for idx in range(NUM_CHUNKS_IN_BLOCK):
             lhs_chunk = lhs_data[idx * CHUNK_SIZE:(idx + 1) * CHUNK_SIZE]
             rhs_chunk = rhs_data[idx * CHUNK_SIZE:(idx + 1) * CHUNK_SIZE]
             if lhs_chunk != rhs_chunk:
@@ -295,8 +295,8 @@ def compare_build_artifacts(first_dir, second_dir, ninja_path, target_platform,
     return 1
 
   epoch_hex = struct.pack('<I', int(time.time())).encode('hex')
-  print('Epoch: %s' %
-      ' '.join(epoch_hex[i:i+2] for i in xrange(0, len(epoch_hex), 2)))
+  print('Epoch: %s' % ' '.join(epoch_hex[i:i + 2]
+                               for i in range(0, len(epoch_hex), 2)))
 
   with open(os.path.join(BASE_DIR, 'deterministic_build_ignorelist.pyl')) as f:
     raw_ignorelist = ast.literal_eval(f.read())
