@@ -29,6 +29,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread.h"
@@ -1334,7 +1335,7 @@ int main(int argc, char** argv) {
       continue;
     }
     if (it->first == "perf_decode_times") {
-      perf_decode_times = std::stoi(it->second);
+      LOG_ASSERT(base::StringToInt(it->second, &perf_decode_times));
       continue;
     }
     if (it->first == "save_to_file") {
@@ -1345,8 +1346,8 @@ int main(int argc, char** argv) {
       continue;
     if (it->first == "h" || it->first == "help")
       continue;
-    LOG(ERROR) << "Unexpected switch: " << it->first << ":" << it->second;
-    return -EINVAL;
+    LOG_ASSERT(false) << "Unexpected switch: " << it->first << ":"
+                      << it->second;
   }
 #if BUILDFLAG(USE_VAAPI)
   media::VaapiWrapper::PreSandboxInitialization();
