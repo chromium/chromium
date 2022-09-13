@@ -418,15 +418,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             for r in failed_tests
         ]
 
-        # we do not create baselines for reftests.
-        port_name = self._tool.builders.port_name_for_builder_name(
-            build.builder_name)
-        port = self._tool.port_factory.get(port_name, None)
-        tests_to_rebaseline = []
-        for test_name in failed_test_names:
-            if not port.reference_files(test_name):
-                tests_to_rebaseline.append(test_name)
-        return tests_to_rebaseline
+        return failed_test_names
 
     def _tests_to_rebaseline(self, build, web_test_results):
         """Fetches a list of tests that should be rebaselined for some build.
