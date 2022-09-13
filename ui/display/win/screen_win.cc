@@ -918,7 +918,10 @@ void ScreenWin::UpdateAllDisplaysAndNotify() {
 
   std::vector<Display> old_displays = std::move(displays_);
   UpdateFromDisplayInfos(GetDisplayInfosFromSystem());
-  change_notifier_.NotifyDisplaysChanged(old_displays, displays_);
+  // It's possible notifying of display changes may trigger reentrancy. Copy
+  // `displays_` to ensure there are no problems if reentrancy happens.
+  std::vector<Display> displays_copy = displays_;
+  change_notifier_.NotifyDisplaysChanged(old_displays, displays_copy);
 }
 
 ScreenWinDisplay ScreenWin::GetScreenWinDisplayNearestHWND(HWND hwnd) const {
