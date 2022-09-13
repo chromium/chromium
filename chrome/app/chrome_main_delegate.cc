@@ -20,6 +20,7 @@
 #include "base/i18n/rtl.h"
 #include "base/immediate_crash.h"
 #include "base/lazy_instance.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/process/memory.h"
@@ -650,6 +651,9 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
 
     ProcessSingleton::NotifyResult notify_result =
         ChromeProcessSingleton::GetInstance()->NotifyOtherProcessOrCreate();
+    UMA_HISTOGRAM_ENUMERATION("Chrome.ProcessSingleton.NotifyResult",
+                              notify_result,
+                              ProcessSingleton::kNumNotifyResults);
     switch (notify_result) {
       case ProcessSingleton::PROCESS_NONE:
         // No process already running, continue on to starting a new one.
