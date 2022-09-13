@@ -120,12 +120,7 @@ bool SubframeHasAllowedContainerPolicy(LocalFrame* frame) {
   for (const auto& decl : frame_policy.container_policy) {
     if (decl.feature ==
         mojom::blink::PermissionsPolicyFeature::kAttributionReporting) {
-      // TODO(csharrison): This logic duplicates existing code in
-      // PermissionsPolicy::Allowlist. Clean this up by enhancing the logic
-      // exposed by PermissionsPolicy code and re-using that.
-      return decl.matches_all_origins ||
-             (decl.matches_opaque_src && origin->IsOpaque()) ||
-             base::Contains(decl.allowed_origins, origin->ToUrlOrigin());
+      return decl.Contains(origin->ToUrlOrigin());
     }
   }
   return false;

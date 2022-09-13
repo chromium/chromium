@@ -7,6 +7,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "url/origin.h"
 
 namespace blink {
@@ -34,6 +35,12 @@ ParsedPermissionsPolicyDeclaration::ParsedPermissionsPolicyDeclaration(
 ParsedPermissionsPolicyDeclaration&
 ParsedPermissionsPolicyDeclaration::operator=(
     const ParsedPermissionsPolicyDeclaration& rhs) = default;
+
+bool ParsedPermissionsPolicyDeclaration::Contains(
+    const url::Origin& origin) const {
+  return matches_all_origins || (matches_opaque_src && origin.opaque()) ||
+         base::Contains(allowed_origins, origin);
+}
 
 ParsedPermissionsPolicyDeclaration::~ParsedPermissionsPolicyDeclaration() =
     default;

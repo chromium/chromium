@@ -31,6 +31,13 @@ struct BLINK_COMMON_EXPORT ParsedPermissionsPolicyDeclaration {
       const ParsedPermissionsPolicyDeclaration& rhs);
   ~ParsedPermissionsPolicyDeclaration();
 
+  // Prefer querying a PermissionsPolicy::Allowlist directly if possible. This
+  // method is provided for cases when either an Allowlist is not available or
+  // creating one is not desirable, e.g. when looking specifically at the
+  // contents of an allow attribute or header value, rather than the active
+  // policy on a document
+  bool Contains(const url::Origin& origin) const;
+
   mojom::PermissionsPolicyFeature feature;
 
   // An alphabetically sorted list of all the origins allowed.
