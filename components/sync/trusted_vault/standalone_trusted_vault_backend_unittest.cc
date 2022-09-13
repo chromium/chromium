@@ -417,7 +417,36 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_THAT(proto.user(1).vault_key(),
               ElementsAre(KeyMaterialEq(GetConstantTrustedVaultKey()),
                           KeyMaterialEq(kKey2)));
-  EXPECT_THAT(proto.data_version(), Eq(1));
+  EXPECT_THAT(proto.data_version(), testing::Ge(1));
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldUpgradeAllUsersDataToVersion2AndResetKeysAreStale) {
+  const CoreAccountInfo account_info_1 = MakeAccountInfoWithGaiaId("user1");
+  const CoreAccountInfo account_info_2 = MakeAccountInfoWithGaiaId("user2");
+
+  sync_pb::LocalTrustedVault initial_data;
+  sync_pb::LocalTrustedVaultPerUser* user_data1 = initial_data.add_user();
+  sync_pb::LocalTrustedVaultPerUser* user_data2 = initial_data.add_user();
+  user_data1->set_gaia_id(account_info_1.gaia);
+  user_data1->set_keys_are_stale(true);
+  user_data2->set_gaia_id(account_info_2.gaia);
+  user_data2->set_keys_are_stale(true);
+  std::string encrypted_data;
+  ASSERT_TRUE(OSCrypt::EncryptString(initial_data.SerializeAsString(),
+                                     &encrypted_data));
+  ASSERT_NE(-1, base::WriteFile(file_path(), encrypted_data.c_str(),
+                                encrypted_data.size()));
+
+  // Backend should reset |keys_are_stale| for both accounts and write new
+  // state.
+  backend()->ReadDataFromDisk();
+
+  sync_pb::LocalTrustedVault new_data = ReadLocalTrustedVaultFile(file_path());
+  ASSERT_THAT(new_data.user_size(), Eq(2));
+  EXPECT_FALSE(new_data.user(0).keys_are_stale());
+  EXPECT_FALSE(new_data.user(1).keys_are_stale());
+  EXPECT_THAT(new_data.data_version(), Eq(2));
 }
 
 // This test ensures that migration logic in ReadDataFromDisk() doesn't create

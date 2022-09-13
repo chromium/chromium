@@ -138,6 +138,11 @@ inline constexpr base::Feature kSyncTrustedVaultRedoDeviceRegistration{
     "SyncTrustedVaultRedoDeviceRegistration",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Triggers one-off reset of `keys_are_stale`, allowing another device
+// registration attempt if previous was failed.
+inline constexpr base::Feature kSyncTrustedVaultResetKeysAreStale{
+    "SyncTrustedVaultResetKeysAreStale", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // If enabled, the device will register with FCM and listen to new
 // invalidations. Also, FCM token will be set in DeviceInfo, which signals to
 // the server that device listens to new invalidations.
