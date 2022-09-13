@@ -49,10 +49,6 @@
 #include "third_party/zlib/google/compression_utils.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "components/sync/base/features.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace feed {
 namespace {
 
@@ -116,10 +112,6 @@ void SetConsentLevelNeededForFeedPersonalization(
   switch (consent_level) {
     case signin::ConsentLevel::kSignin:
       enable_features.push_back(kPersonalizeFeedNonSyncUsers);
-#if BUILDFLAG(IS_ANDROID)
-      enable_features.push_back(syncer::kSyncAndroidPromosWithTitle);
-      enable_features.push_back(syncer::kSyncAndroidPromosWithAlternativeTitle);
-#endif  // BUILDFLAG(IS_ANDROID)
       break;
     case signin::ConsentLevel::kSync:
       disable_features.push_back(kPersonalizeFeedNonSyncUsers);
