@@ -16,8 +16,10 @@
 #include "base/profiler/stack_sampling_profiler.h"
 #include "base/profiler/unwinder.h"
 #include "build/build_config.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/profiler/process_type.h"
 #include "components/metrics/call_stack_profile_params.h"
+#include "components/version_info/channel.h"
 
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL) && \
     BUILDFLAG(ENABLE_ARM_CFI_TABLE)
@@ -143,6 +145,17 @@ std::vector<std::unique_ptr<base::Unwinder>> CreateCoreUnwinders(
   unwinders.push_back(chrome_unwinder_creator->Create());
   return unwinders;
 }
+
+// Checks whether unwinder assets -- such as call frame information needed for
+// unwinders to work -- are available in the current context. Unwinder assets
+// are only embedded into certain builds of Chrome.
+bool AreUnwinderAssetsAvailable() {
+  const version_info::Channel channel = chrome::GetChannel();
+  // CFI is currently only embedded into dev and canary builds of Chrome:
+  // https://crsrc.org/c/chrome/android/chrome_public_apk_tmpl.gni;l=30-36;drc=2b4d4975755c2394a9d45a77a8acf7597ff67dfc
+  return channel == version_info::Channel::CANARY ||
+         channel == version_info::Channel::DEV;
+}
 #endif  // ANDROID_ARM32_UNWINDING_SUPPORTED
 
 }  // namespace
@@ -161,7 +174,8 @@ void UnwindPrerequisites::RequestInstallation() {
 // static
 bool UnwindPrerequisites::Available() {
 #if ANDROID_ARM32_UNWINDING_SUPPORTED
-  return stack_unwinder::Module::IsInstalled();
+  // We need both (1) unwinder assets and (2) unwinder module to be available.
+  return AreUnwinderAssetsAvailable() && stack_unwinder::Module::IsInstalled();
 #else   // ANDROID_ARM32_UNWINDING_SUPPORTED
   return true;
 #endif  // ANDROID_ARM32_UNWINDING_SUPPORTED
