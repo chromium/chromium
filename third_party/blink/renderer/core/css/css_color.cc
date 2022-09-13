@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/css_color.h"
-
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
 
 namespace blink::cssvalue {

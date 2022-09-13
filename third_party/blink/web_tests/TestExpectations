@@ -1881,6 +1881,8 @@ crbug.com/1321114 paint/markers/suggestion-marker-basic.html [ Failure ]
 crbug.com/1205953 external/wpt/css/css-will-change/will-change-fixpos-cb-position-1.html [ Failure ]
 crbug.com/1207788 external/wpt/css/css-will-change/will-change-stacking-context-mask-1.html [ Failure ]
 
+# lab color space not yet implemented
+crbug.com/1358565 external/wpt/css/css-images/gradient/gradient-eval-003.html [ Failure ]
 # color() function not implemented
 crbug.com/1068610 external/wpt/css/css-color/predefined-008.html [ Failure ]
 crbug.com/1068610 external/wpt/css/css-color/predefined-005.html [ Failure ]

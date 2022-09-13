@@ -2514,6 +2514,62 @@ static CSSValue* ConsumeDeprecatedRadialGradient(
              : nullptr;
 }
 
+static bool ConsumeColorSpace(CSSParserTokenRange& args,
+                              Color::ColorInterpolationSpace& result) {
+  if (!RuntimeEnabledFeatures::CSSColor4Enabled())
+    return false;
+
+  if (!ConsumeIdent<CSSValueID::kIn>(args))
+    return false;
+
+  if (ConsumeIdent<CSSValueID::kXyz>(args)) {
+    result = Color::ColorInterpolationSpace::kXYZD65;
+    return true;
+  }
+  if (ConsumeIdent<CSSValueID::kXyzD50>(args)) {
+    result = Color::ColorInterpolationSpace::kXYZD50;
+    return true;
+  }
+  if (ConsumeIdent<CSSValueID::kXyzD65>(args)) {
+    result = Color::ColorInterpolationSpace::kXYZD65;
+    return true;
+  }
+  if (ConsumeIdent<CSSValueID::kSRGBLinear>(args)) {
+    result = Color::ColorInterpolationSpace::kSRGBLinear;
+    return true;
+  }
+  if (ConsumeIdent<CSSValueID::kLab>(args)) {
+    result = Color::ColorInterpolationSpace::kLab;
+    return true;
+  }
+  if (ConsumeIdent<CSSValueID::kOklab>(args)) {
+    result = Color::ColorInterpolationSpace::kOKLab;
+    return true;
+  }
+  if (ConsumeIdent<CSSValueID::kLch>(args)) {
+    result = Color::ColorInterpolationSpace::kLCH;
+    return true;
+  }
+  if (ConsumeIdent<CSSValueID::kOklch>(args)) {
+    result = Color::ColorInterpolationSpace::kOKLCH;
+    return true;
+  }
+  if (ConsumeIdent<CSSValueID::kSRGB>(args)) {
+    result = Color::ColorInterpolationSpace::kSRGB;
+    return true;
+  }
+  if (ConsumeIdent<CSSValueID::kHsl>(args)) {
+    result = Color::ColorInterpolationSpace::kHSL;
+    return true;
+  }
+  if (ConsumeIdent<CSSValueID::kHwb>(args)) {
+    result = Color::ColorInterpolationSpace::kHWB;
+    return true;
+  }
+
+  return false;
+}
+
 static CSSValue* ConsumeRadialGradient(CSSParserTokenRange& args,
                                        const CSSParserContext& context,
                                        cssvalue::CSSGradientRepeat repeating) {
@@ -2522,10 +2578,15 @@ static CSSValue* ConsumeRadialGradient(CSSParserTokenRange& args,
   const CSSPrimitiveValue* horizontal_size = nullptr;
   const CSSPrimitiveValue* vertical_size = nullptr;
 
-  // First part of grammar, the size/shape clause:
-  // [ circle || <length> ] |
+  // First part of grammar, the size/shape/color space clause:
+  // [ in <color-space>? &&
+  // [[ circle || <length> ] |
   // [ ellipse || [ <length> | <percentage> ]{2} ] |
-  // [ [ circle | ellipse] || <size-keyword> ]
+  // [ [ circle | ellipse] || <size-keyword> ]] ]
+
+  Color::ColorInterpolationSpace color_space;
+  bool has_color_space = ConsumeColorSpace(args, color_space);
+
   for (int i = 0; i < 3; ++i) {
     if (args.Peek().GetType() == kIdentToken) {
       CSSValueID id = args.Peek().Id();
@@ -2591,7 +2652,11 @@ static CSSValue* ConsumeRadialGradient(CSSParserTokenRange& args,
     // Right now, CSS radial gradients have the same start and end centers.
   }
 
-  if ((shape || size_keyword || horizontal_size || center_x || center_y) &&
+  if (!has_color_space)
+    has_color_space = ConsumeColorSpace(args, color_space);
+
+  if ((shape || size_keyword || horizontal_size || center_x || center_y ||
+       has_color_space) &&
       !ConsumeCommaIncludingWhitespace(args)) {
     return nullptr;
   }
@@ -2600,6 +2665,10 @@ static CSSValue* ConsumeRadialGradient(CSSParserTokenRange& args,
       MakeGarbageCollected<cssvalue::CSSRadialGradientValue>(
           center_x, center_y, shape, size_keyword, horizontal_size,
           vertical_size, repeating, cssvalue::kCSSRadialGradient);
+
+  if (has_color_space)
+    result->SetColorInterpolationSpace(color_space);
+
   return ConsumeGradientColorStops(args, context, result,
                                    ConsumeGradientLengthOrPercent)
              ? result
@@ -2611,12 +2680,18 @@ static CSSValue* ConsumeLinearGradient(
     const CSSParserContext& context,
     cssvalue::CSSGradientRepeat repeating,
     cssvalue::CSSGradientType gradient_type) {
+  // First part of grammar, the size/shape/color space clause:
+  // [ in <color-space>? || [ <angle> | to <side-or-corner> ]?]
   bool expect_comma = true;
+  Color::ColorInterpolationSpace color_space;
+  bool has_color_space = ConsumeColorSpace(args, color_space);
+
   const CSSPrimitiveValue* angle =
       ConsumeAngle(args, context, WebFeature::kUnitlessZeroAngleGradient);
   const CSSIdentifierValue* end_x = nullptr;
   const CSSIdentifierValue* end_y = nullptr;
   if (!angle) {
+    // <side-or-corner> parsing
     if (gradient_type == cssvalue::kCSSPrefixedLinearGradient ||
         ConsumeIdent<CSSValueID::kTo>(args)) {
       end_x = ConsumeIdent<CSSValueID::kLeft, CSSValueID::kRight>(args);
@@ -2630,9 +2705,17 @@ static CSSValue* ConsumeLinearGradient(
         end_x = ConsumeIdent<CSSValueID::kLeft, CSSValueID::kRight>(args);
       }
     } else {
+      // No <angle> or <side-to-corner>
       expect_comma = false;
     }
   }
+  // It's possible that the <color-space> comes after the [ <angle> |
+  // <side-or-corner> ]
+  if (!has_color_space)
+    has_color_space = ConsumeColorSpace(args, color_space);
+
+  if (has_color_space)
+    expect_comma = true;
 
   if (expect_comma && !ConsumeCommaIncludingWhitespace(args))
     return nullptr;
@@ -2640,6 +2723,10 @@ static CSSValue* ConsumeLinearGradient(
   cssvalue::CSSGradientValue* result =
       MakeGarbageCollected<cssvalue::CSSLinearGradientValue>(
           end_x, end_y, nullptr, nullptr, angle, repeating, gradient_type);
+
+  if (has_color_space)
+    result->SetColorInterpolationSpace(color_space);
+
   return ConsumeGradientColorStops(args, context, result,
                                    ConsumeGradientLengthOrPercent)
              ? result
@@ -2649,6 +2736,9 @@ static CSSValue* ConsumeLinearGradient(
 static CSSValue* ConsumeConicGradient(CSSParserTokenRange& args,
                                       const CSSParserContext& context,
                                       cssvalue::CSSGradientRepeat repeating) {
+  Color::ColorInterpolationSpace color_space;
+  bool has_color_space = ConsumeColorSpace(args, color_space);
+
   const CSSPrimitiveValue* from_angle = nullptr;
   if (ConsumeIdent<CSSValueID::kFrom>(args)) {
     if (!(from_angle = ConsumeAngle(args, context,
@@ -2664,14 +2754,22 @@ static CSSValue* ConsumeConicGradient(CSSParserTokenRange& args,
       return nullptr;
   }
 
-  // Comma separator required when fromAngle or position is present.
-  if ((from_angle || center_x || center_y) &&
+  if (!has_color_space)
+    has_color_space = ConsumeColorSpace(args, color_space);
+
+  // Comma separator required when fromAngle, position or color_space is
+  // present.
+  if ((from_angle || center_x || center_y || has_color_space) &&
       !ConsumeCommaIncludingWhitespace(args)) {
     return nullptr;
   }
 
   auto* result = MakeGarbageCollected<cssvalue::CSSConicGradientValue>(
       center_x, center_y, from_angle, repeating);
+
+  if (has_color_space)
+    result->SetColorInterpolationSpace(color_space);
+
   return ConsumeGradientColorStops(args, context, result,
                                    ConsumeGradientAngleOrPercent)
              ? result

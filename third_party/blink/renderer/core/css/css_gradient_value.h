@@ -121,6 +121,11 @@ class CSSGradientValue : public CSSImageGeneratorValue {
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
+  void SetColorInterpolationSpace(Color::ColorInterpolationSpace cs) {
+    color_interpolation_space_ = cs;
+  }
+  bool ShouldSerializeColorSpace() const;
+
   struct GradientDesc;
 
  protected:
@@ -152,6 +157,8 @@ class CSSGradientValue : public CSSImageGeneratorValue {
   CSSGradientType gradient_type_;
   bool repeating_ : 1;
   bool is_cacheable_ : 1;
+  Color::ColorInterpolationSpace color_interpolation_space_ =
+      Color::ColorInterpolationSpace::kNone;
 };
 
 class CSSLinearGradientValue final : public CSSGradientValue {

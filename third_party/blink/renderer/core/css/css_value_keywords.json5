@@ -1301,6 +1301,9 @@
     "xyz-d50",
     "xyz-d65",
 
+    // For gradient interpolations in certain color spaces
+    "in",
+
     // transform
     "matrix",
     "matrix3d",
