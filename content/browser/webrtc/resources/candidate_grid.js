@@ -102,9 +102,7 @@ function appendRow(peerConnectionElement, active, candidatePair, stats) {
       '0x' + parseInt(candidatePair.priority, 10).toString(16);
   pairRow.children[6].innerText =
       candidatePair.bytesSent + ' / ' + candidatePair.bytesReceived;
-  pairRow.children[7].innerText =
-    (parseInt(candidatePair.requestsSent, 10) +
-      parseInt(candidatePair.consentRequestsSent, 10)) + ' / ' +
+  pairRow.children[7].innerText = candidatePair.requestsSent + ' / ' +
     candidatePair.responsesReceived;
   pairRow.children[8].innerText = candidatePair.requestsReceived + ' / ' +
     candidatePair.responsesSent;
