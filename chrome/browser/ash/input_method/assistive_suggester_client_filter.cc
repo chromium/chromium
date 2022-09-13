@@ -146,6 +146,7 @@ const char* kDeniedAppsForDiacritics[] = {
     "iodihamcpbpeioajjeobimgagajmlibd",  // SSH app
     "cgfnfgkafmcdkdgilmojlnaadileaach",  // Crosh app
     "fhicihalidkgcimdmhpohldehjmcabcf",  // Terminal app
+    "mmfbcljfglbokpmkimbfghdkjmjhdgbg",  // System text
 };
 
 bool IsTestUrl(GURL url) {

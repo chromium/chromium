@@ -294,7 +294,7 @@ INSTANTIATE_TEST_SUITE_P(
          EnabledSuggestions{.emoji_suggestions = true,
                             .multi_word_suggestions = true,
                             .personal_info_suggestions = true,
-                            .diacritic_suggestions = true}},
+                            .diacritic_suggestions = false}},
         {"ChromeSSHApp",
          /* url=*/"chrome-extension://iodihamcpbpeioajjeobimgagajmlibd",
          /* app_id=*/"iodihamcpbpeioajjeobimgagajmlibd",
