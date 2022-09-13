@@ -31,6 +31,10 @@ void MetadataWriter::AddUmaFeatures(const UMAFeature features[],
     for (size_t j = 0; j < feature.enum_ids_size; j++) {
       uma_feature->add_enum_ids(feature.accepted_enum_ids[j]);
     }
+
+    for (size_t j = 0; j < feature.default_values_size; j++) {
+      uma_feature->add_default_values(feature.default_values[j]);
+    }
   }
 }
 

@@ -32,6 +32,8 @@ class MetadataWriter {
     const proto::Aggregation aggregation{proto::Aggregation::UNKNOWN};
     const size_t enum_ids_size{0};
     const int32_t* const accepted_enum_ids = nullptr;
+    const size_t default_values_size{0};
+    const float* const default_values = nullptr;
 
     static constexpr UMAFeature FromUserAction(const char* name,
                                                uint64_t bucket_count) {
@@ -47,14 +49,18 @@ class MetadataWriter {
     static constexpr UMAFeature FromValueHistogram(
         const char* name,
         uint64_t bucket_count,
-        proto::Aggregation aggregation) {
+        proto::Aggregation aggregation,
+        size_t default_values_size = 0,
+        const float* const default_values = nullptr) {
       return MetadataWriter::UMAFeature{
           .signal_type = proto::SignalType::HISTOGRAM_VALUE,
           .name = name,
           .bucket_count = bucket_count,
           .tensor_length = 1,
           .aggregation = aggregation,
-          .enum_ids_size = 0};
+          .enum_ids_size = 0,
+          .default_values_size = default_values_size,
+          .default_values = default_values};
     }
 
     static constexpr UMAFeature FromEnumHistogram(const char* name,
