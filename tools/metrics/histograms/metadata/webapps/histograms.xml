@@ -611,8 +611,8 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-02-12">
 <!-- Name completed by histogram_suffixes name="WebAppType" -->
 
-  <owner>calamity@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
+  <owner>qjw@chromium.org</owner>
   <summary>Records the result code of Web App installs.</summary>
 </histogram>
 
@@ -898,7 +898,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Webapp.SystemApps.BadNavigate.Type" units="App ID"
     expires_after="2022-12-31">
-  <owner>calamity@chromium.org</owner>
+  <owner>ortuno@chromium.org</owner>
   <owner>qjw@chromium.org</owner>
   <summary>
     Records the type of System Web App that caused a bad navigation. This is
@@ -912,8 +912,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Webapp.SystemApps.FreshInstallDuration" units="ms"
     expires_after="2023-01-29">
-  <owner>calamity@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
+  <owner>qjw@chromium.org</owner>
   <summary>
     Records the time taken to perform a fresh install of all system web apps. It
     measures the time from when we dispatch a call to install them, until we get
