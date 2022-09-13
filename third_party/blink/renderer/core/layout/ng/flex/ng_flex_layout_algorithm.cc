@@ -1925,8 +1925,7 @@ void NGFlexLayoutAlgorithm::PropagateBaselineFromChild(
   // auto-margins in the cross axis (even if we have to synthesize the
   // baseline).
   if (FlexLayoutAlgorithm::AlignmentForChild(Style(), flex_item_style) ==
-          ItemPosition::kBaseline &&
-      !FlexItem::HasAutoMarginsInCrossAxis(flex_item_style, &algorithm_)) {
+      ItemPosition::kBaseline) {
     container_builder_.SetFirstBaseline(baseline_offset);
     return;
   }

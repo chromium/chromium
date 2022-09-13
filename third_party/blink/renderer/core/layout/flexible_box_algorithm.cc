@@ -343,15 +343,6 @@ LayoutUnit FlexItem::AlignmentOffset(LayoutUnit available_free_space,
   return LayoutUnit();
 }
 
-bool FlexItem::HasAutoMarginsInCrossAxis(const ComputedStyle& item_style,
-                                         FlexLayoutAlgorithm* algorithm) {
-  if (algorithm->IsHorizontalFlow()) {
-    return item_style.MarginTop().IsAuto() ||
-           item_style.MarginBottom().IsAuto();
-  }
-  return item_style.MarginLeft().IsAuto() || item_style.MarginRight().IsAuto();
-}
-
 void FlexLine::FreezeViolations(ViolationsVector& violations) {
   const ComputedStyle& flex_box_style = algorithm_->StyleRef();
   for (wtf_size_t i = 0; i < violations.size(); ++i) {
@@ -558,8 +549,7 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
     flex_item.UpdateAutoMarginsInMainAxis(auto_margin_offset);
 
     LayoutUnit child_cross_axis_margin_box_extent;
-    if (flex_item.Alignment() == ItemPosition::kBaseline &&
-        !FlexItem::HasAutoMarginsInCrossAxis(flex_item.style_, algorithm_)) {
+    if (flex_item.Alignment() == ItemPosition::kBaseline) {
       LayoutUnit ascent = flex_item.MarginBoxAscent();
       LayoutUnit descent =
           (flex_item.CrossAxisMarginExtent() + flex_item.cross_axis_size_) -
@@ -911,7 +901,6 @@ void FlexLayoutAlgorithm::AlignChildren() {
         min_margin_after_baselines[line_number++];
     for (FlexItem& flex_item : line_context.line_items_) {
       if (flex_item.Alignment() == ItemPosition::kBaseline &&
-          !FlexItem::HasAutoMarginsInCrossAxis(flex_item.style_, this) &&
           min_margin_after_baseline) {
         flex_item.offset_->cross_axis_offset += min_margin_after_baseline;
       }
@@ -1118,9 +1107,24 @@ ItemPosition FlexLayoutAlgorithm::TranslateItemPosition(
     }
   }
 
-  if (align == ItemPosition::kBaseline &&
-      IsHorizontalFlow(flexbox_style) != child_style.IsHorizontalWritingMode())
-    align = ItemPosition::kFlexStart;
+  if (align == ItemPosition::kBaseline) {
+    if (IsHorizontalFlow(flexbox_style)) {
+      if (child_style.MarginTop().IsAuto() ||
+          child_style.MarginBottom().IsAuto()) {
+        align = ItemPosition::kFlexStart;
+      }
+    } else {
+      if (child_style.MarginLeft().IsAuto() ||
+          child_style.MarginRight().IsAuto()) {
+        align = ItemPosition::kFlexStart;
+      }
+    }
+
+    if (IsHorizontalFlow(flexbox_style) !=
+        child_style.IsHorizontalWritingMode()) {
+      align = ItemPosition::kFlexStart;
+    }
+  }
 
   if (flexbox_style.FlexWrap() == EFlexWrap::kWrapReverse) {
     if (align == ItemPosition::kFlexStart)

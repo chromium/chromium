@@ -193,9 +193,6 @@ class FlexItem {
                                     bool is_wrap_reverse,
                                     bool is_deprecated_webkit_box);
 
-  static bool HasAutoMarginsInCrossAxis(const ComputedStyle& item_style,
-                                        FlexLayoutAlgorithm* algorithm);
-
   void Trace(Visitor*) const;
 
   const FlexLayoutAlgorithm* algorithm_;
