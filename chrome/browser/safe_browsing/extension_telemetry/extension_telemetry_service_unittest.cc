@@ -465,16 +465,56 @@ TEST_F(ExtensionTelemetryServiceTest, PersistsReportsOnInterval) {
   // intervals. There should be three files on disk now.
   task_environment_.FastForwardBy(interval - base::Seconds(1));
   task_environment_.RunUntilIdle();
-  base::FilePath persisted_file;
   base::FilePath persisted_dir = profile_.GetPath();
   persisted_dir = persisted_dir.AppendASCII("CRXTelemetry");
   EXPECT_TRUE(base::PathExists(persisted_dir.AppendASCII("CRXTelemetry_0")));
   EXPECT_TRUE(base::PathExists(persisted_dir.AppendASCII("CRXTelemetry_1")));
   EXPECT_TRUE(base::PathExists(persisted_dir.AppendASCII("CRXTelemetry_2")));
-  // After a full reporting interval, files should be uploaded.
+  // After a full reporting interval, check that four reports were uploaded,
+  // the active report and the three persisted files. The cache should be empty.
   task_environment_.FastForwardBy(base::Seconds(1));
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(base::PathExists(persisted_file));
+  EXPECT_EQ(test_url_loader_factory_.total_requests(),
+            /*num_uploaded_reports=*/static_cast<size_t>(4));
+  EXPECT_FALSE(base::PathExists(persisted_dir.AppendASCII("CRXTelemetry_0")));
+  EXPECT_FALSE(base::PathExists(persisted_dir.AppendASCII("CRXTelemetry_1")));
+  EXPECT_FALSE(base::PathExists(persisted_dir.AppendASCII("CRXTelemetry_2")));
+}
+
+TEST_F(ExtensionTelemetryServiceTest, MalformedPersistedFile) {
+  // Setting up the persister, signals, upload/write intervals, and the
+  // uploader itself.
+  telemetry_service_->SetEnabled(false);
+  scoped_feature_list.InitAndEnableFeature(kExtensionTelemetryPersistence);
+  telemetry_service_->SetEnabled(true);
+  base::TimeDelta interval = telemetry_service_->current_reporting_interval();
+  profile_.GetPrefs()->SetTime(prefs::kExtensionTelemetryLastUploadTime,
+                               base::Time::NowFromSystemTime());
+  test_url_loader_factory_.AddResponse(
+      ExtensionTelemetryUploader::GetUploadURLForTest(), "Dummy", net::HTTP_OK);
+  // Fast forward a (reporting interval - 1) seconds which is three write
+  // intervals. There should be three files on disk now.
+  task_environment_.FastForwardBy(interval - base::Seconds(1));
+  task_environment_.RunUntilIdle();
+  base::FilePath persisted_dir = profile_.GetPath();
+  persisted_dir = persisted_dir.AppendASCII("CRXTelemetry");
+  EXPECT_TRUE(base::PathExists(persisted_dir.AppendASCII("CRXTelemetry_0")));
+  EXPECT_TRUE(base::PathExists(persisted_dir.AppendASCII("CRXTelemetry_1")));
+  EXPECT_TRUE(base::PathExists(persisted_dir.AppendASCII("CRXTelemetry_2")));
+  // Write to one of the files, malforming the protobuf.
+  base::WriteFile(persisted_dir.AppendASCII("CRXTelemetry_1"), "BAD FILE");
+  // After a full reporting interval 3 reports should be uploaded, the current
+  // report in memory plus 2 properly formatted files on disk. The Bad File
+  // should have been deleted and not uploaded.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  task_environment_.RunUntilIdle();
+  // Check to make sure the in-memory report and the 2 properly formatted files
+  // were uploaded.
+  EXPECT_EQ(test_url_loader_factory_.total_requests(),
+            /*num_uploaded_reports=*/static_cast<size_t>(3));
+  EXPECT_FALSE(base::PathExists(persisted_dir.AppendASCII("CRXTelemetry_0")));
+  EXPECT_FALSE(base::PathExists(persisted_dir.AppendASCII("CRXTelemetry_1")));
+  EXPECT_FALSE(base::PathExists(persisted_dir.AppendASCII("CRXTelemetry_2")));
 }
 
 TEST_F(ExtensionTelemetryServiceTest, StartupUploadCheck) {

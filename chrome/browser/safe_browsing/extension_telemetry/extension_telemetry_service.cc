@@ -336,27 +336,29 @@ void ExtensionTelemetryService::OnUploadComplete(bool success) {
       active_report_->SerializeToString(&write_string);
       persister_.AsyncCall(&ExtensionTelemetryPersister::WriteReport)
           .WithArgs(std::move(write_string));
-      active_uploader_.reset();
-      active_report_.reset();
     }
-  } else {
-    active_report_.reset();
-    active_uploader_.reset();
   }
+  active_report_.reset();
+  active_uploader_.reset();
 }
 
 void ExtensionTelemetryService::UploadPersistedFile(std::string report) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!report.empty()) {
     auto upload_data = std::make_unique<std::string>(report);
-    if (!active_report_->SerializeToString(upload_data.get())) {
+    // Ensure that `upload_data` is a properly formatted protobuf. If it
+    // isn't, skip the upload and attempt to upload the next persisted file.
+    active_report_ = std::make_unique<ExtensionTelemetryReportRequest>();
+    if (active_report_->ParseFromString(*upload_data.get())) {
+      UploadReport(std::move(upload_data));
+    } else {
       active_report_.reset();
-      return;
+      auto read_callback =
+          base::BindOnce(&ExtensionTelemetryService::UploadPersistedFile,
+                         weak_factory_.GetWeakPtr());
+      persister_.AsyncCall(&ExtensionTelemetryPersister::ReadReport)
+          .Then(std::move(read_callback));
     }
-    UploadReport(std::move(upload_data));
-  } else {
-    active_report_.reset();
-    active_uploader_.reset();
   }
 }
 
