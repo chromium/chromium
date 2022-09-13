@@ -592,7 +592,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
       return false;
 
     base::Value::Dict* dict = value->GetIfDict();
-    if (!value)
+    if (!dict)
       return false;
 
     // Max-Age property is missing or malformed.

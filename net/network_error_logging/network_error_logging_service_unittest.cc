@@ -1192,6 +1192,10 @@ TEST_P(NetworkErrorLoggingServiceTest, StatusAsValue) {
   EXPECT_EQ(expected, actual);
 }
 
+TEST_P(NetworkErrorLoggingServiceTest, InvalidHeaderData) {
+  service()->OnHeader(kNik_, kOrigin_, kServerIP_, "0");
+}
+
 TEST_P(NetworkErrorLoggingServiceTest, NoReportingService_SignedExchange) {
   service_ = NetworkErrorLoggingService::Create(store_.get());
 
