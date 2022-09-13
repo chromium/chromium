@@ -50,9 +50,8 @@ def target_builder(*, name, dimensions):
     }
 
 builder(
-    name = "coordinator",
+    name = "android-launcher",
     executable = "recipe:chromium_polymorphic/launcher",
-    # TODO(crbug/1346396) Figure out what machines the coordinator should run on
     os = os.LINUX_DEFAULT,
     pool = "luci.chromium.ci",
     properties = {
@@ -61,7 +60,6 @@ builder(
             "bucket": "reviver",
             "builder": "runner",
         },
-        # TODO(crbug/1346396) Figure out what machines the runnner should run on
         "target_builders": [
             target_builder(
                 name = "android-marshmallow-x86-rel",
@@ -75,9 +73,8 @@ builder(
             ),
         ],
     },
-    # TODO(crbug/1346396) Switch this to an appropriate schedule once the
-    # builders are verified
-    schedule = "triggered",
+    # To avoid peak hours, we run it at 1 AM, 4 AM, 7 AM, 10AM, 1 PM UTC.
+    schedule = "0 1,4,7,10,13 * * *",
 )
 
 builder(
@@ -85,7 +82,6 @@ builder(
     executable = "recipe:reviver/chromium/runner",
     auto_builder_dimension = False,
     execution_timeout = 6 * time.hour,
-    # TODO(crbug/1346396) Figure out what machines the runnner should run on
     pool = ci.DEFAULT_POOL,
     # TODO(crbug/1346396) Remove this once the reviver service account has
     # necessary permissions
