@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
@@ -44,78 +45,27 @@ class EventLogger {
 
 class SequenceBoundTest : public ::testing::Test {
  public:
-  // Helpful values that our test classes use.
-  enum Value {
-    kInitialValue = 0,
-    kDifferentValue = 1,
-
-    // Values used by the Derived class.
-    kDerivedCtorValue = 111,
-    kDerivedDtorValue = 222,
-
-    // Values used by the Other class.
-    kOtherCtorValue = 333,
-    kOtherDtorValue = 444,
-  };
-
   void TearDown() override {
     // Make sure that any objects owned by `SequenceBound` have been destroyed
     // to avoid tripping leak detection.
-    {
-      RunLoop run_loop;
-      main_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
-      run_loop.Run();
-    }
     task_environment_.RunUntilIdle();
   }
 
-  // Do-nothing base class, just so we can test assignment of derived classes.
-  // It introduces a virtual destructor, so that casting derived classes to
-  // Base should still use the appropriate (virtual) destructor.
-  class Base {
-   public:
-    virtual ~Base() {}
-  };
-
-  // Handy class to set an int ptr to different values, to verify that things
-  // are being run properly.
-  class Derived : public Base {
-   public:
-    Derived(Value* ptr) : ptr_(ptr) { *ptr_ = kDerivedCtorValue; }
-    ~Derived() override { *ptr_ = kDerivedDtorValue; }
-    void SetValue(Value value) { *ptr_ = value; }
-    raw_ptr<Value> ptr_;
-  };
-
-  // Another base class, which sets ints to different values.
-  class Other {
-   public:
-    Other(Value* ptr) : ptr_(ptr) { *ptr = kOtherCtorValue; }
-    virtual ~Other() { *ptr_ = kOtherDtorValue; }
-    void SetValue(Value value) { *ptr_ = value; }
-    raw_ptr<Value> ptr_;
-  };
-
-  class MultiplyDerived : public Other, public Derived {
-   public:
-    MultiplyDerived(Value* ptr1, Value* ptr2) : Other(ptr1), Derived(ptr2) {}
-  };
-
-  // TODO(dcheng): This isn't used, but upcasting to a virtual base class is
-  // unsafe and is currently unchecked! Add these safety checks back in.
-  struct VirtuallyDerived : public virtual Base {};
+  // Helper for tests that want to synchronize on a `SequenceBound` which has
+  // already been `Reset()`: a null `SequenceBound` has no `SequencedTaskRunner`
+  // associated with it, so the usual `FlushPostedTasksForTesting()` helper does
+  // not work.
+  void FlushPostedTasks() {
+    RunLoop run_loop;
+    background_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
 
   test::TaskEnvironment task_environment_;
 
-  // Tests that use `RunUntilIdle()` will want to use `main_task_runner_`.
-  // TODO(dcheng): Convert these tests to use `EventLogger` and use
-  // `background_task_runner_` consistently.
-  scoped_refptr<SequencedTaskRunner> main_task_runner_ =
-      SequencedTaskRunnerHandle::Get();
   // Otherwise, default to using `background_task_runner_` for new tests.
   scoped_refptr<SequencedTaskRunner> background_task_runner_ =
       ThreadPool::CreateSequencedTaskRunner({});
-  Value value_ = kInitialValue;
 
   // Defined as part of the test fixture so that tests using `EventLogger` do
   // not need to explicitly synchronize on `Reset() to avoid use-after-frees;
@@ -124,10 +74,77 @@ class SequenceBoundTest : public ::testing::Test {
   EventLogger logger_;
 };
 
+class Base {
+ public:
+  explicit Base(EventLogger& logger) : logger_(logger) {
+    logger_->AddEvent("constructed Base");
+  }
+  virtual ~Base() { logger_->AddEvent("destroyed Base"); }
+
+ protected:
+  EventLogger& GetLogger() { return *logger_; }
+
+ private:
+  const raw_ref<EventLogger> logger_;
+};
+
+class Derived : public Base {
+ public:
+  explicit Derived(EventLogger& logger) : Base(logger) {
+    GetLogger().AddEvent("constructed Derived");
+  }
+
+  ~Derived() override { GetLogger().AddEvent("destroyed Derived"); }
+
+  void SetValue(int value) {
+    GetLogger().AddEvent(StringPrintf("set Derived to %d", value));
+  }
+};
+
+class Leftmost {
+ public:
+  explicit Leftmost(EventLogger& logger) : logger_(logger) {
+    logger_->AddEvent("constructed Leftmost");
+  }
+  virtual ~Leftmost() { logger_->AddEvent("destroyed Leftmost"); }
+
+  void SetValue(int value) {
+    logger_->AddEvent(StringPrintf("set Leftmost to %d", value));
+  }
+
+ private:
+  const raw_ref<EventLogger> logger_;
+};
+
+class Rightmost : public Base {
+ public:
+  explicit Rightmost(EventLogger& logger) : Base(logger) {
+    GetLogger().AddEvent("constructed Rightmost");
+  }
+
+  ~Rightmost() override { GetLogger().AddEvent("destroyed Rightmost"); }
+
+  void SetValue(int value) {
+    GetLogger().AddEvent(StringPrintf("set Rightmost to %d", value));
+  }
+};
+
+class MultiplyDerived : public Leftmost, public Rightmost {
+ public:
+  explicit MultiplyDerived(EventLogger& logger)
+      : Leftmost(logger), Rightmost(logger) {
+    GetLogger().AddEvent("constructed MultiplyDerived");
+  }
+
+  ~MultiplyDerived() override {
+    GetLogger().AddEvent("destroyed MultiplyDerived");
+  }
+};
+
 class BoxedValue {
  public:
-  explicit BoxedValue(int initial_value, EventLogger* tracker = nullptr)
-      : tracker_(tracker), value_(initial_value) {
+  explicit BoxedValue(int initial_value, EventLogger* logger = nullptr)
+      : logger_(logger), value_(initial_value) {
     AddEventIfNeeded(StringPrintf("constructed BoxedValue = %d", value_));
   }
 
@@ -160,291 +177,328 @@ class BoxedValue {
 
  private:
   void AddEventIfNeeded(StringPiece event) const {
-    if (tracker_) {
-      tracker_->AddEvent(event);
+    if (logger_) {
+      logger_->AddEvent(event);
     }
   }
 
   SequenceChecker sequence_checker;
 
-  mutable raw_ptr<EventLogger> tracker_ = nullptr;
+  mutable raw_ptr<EventLogger> logger_ = nullptr;
 
   int value_ = 0;
   OnceClosure destruction_callback_;
 };
 
-#if BUILDFLAG(IS_IOS) && !TARGET_OS_SIMULATOR
-#define MAYBE_ConstructAsyncCallReset FLAKY_ConstructAsyncCallReset
-#else
-#define MAYBE_ConstructAsyncCallReset ConstructAsyncCallReset
-#endif
-// https://crbug.com/899779 tracks test flakiness on iOS.
-TEST_F(SequenceBoundTest, MAYBE_ConstructAsyncCallReset) {
-  auto derived = SequenceBound<Derived>(main_task_runner_, &value_);
-  EXPECT_FALSE(derived.is_null());
-  EXPECT_TRUE(derived);
+// Smoke test that all interactions with the wrapped object are posted to the
+// correct task runner.
+TEST_F(SequenceBoundTest, SequenceValidation) {
+  class Validator {
+   public:
+    explicit Validator(scoped_refptr<SequencedTaskRunner> task_runner)
+        : task_runner_(std::move(task_runner)) {
+      EXPECT_TRUE(task_runner_->RunsTasksInCurrentSequence());
+    }
 
-  // Nothing should happen until we run the message loop.
-  EXPECT_EQ(value_, kInitialValue);
-  RunLoop().RunUntilIdle();
-  EXPECT_EQ(value_, kDerivedCtorValue);
+    ~Validator() { EXPECT_TRUE(task_runner_->RunsTasksInCurrentSequence()); }
 
-  // Post now that the object has been constructed.
-  derived.AsyncCall(&Derived::SetValue).WithArgs(kDifferentValue);
-  EXPECT_EQ(value_, kDerivedCtorValue);
-  RunLoop().RunUntilIdle();
-  EXPECT_EQ(value_, kDifferentValue);
+    void ReturnsVoid() const {
+      EXPECT_TRUE(task_runner_->RunsTasksInCurrentSequence());
+    }
 
-  // Reset it, and make sure that destruction is posted.  The owner should
-  // report that it is null immediately.
-  derived.Reset();
-  EXPECT_TRUE(derived.is_null());
-  EXPECT_FALSE(derived);
-  EXPECT_EQ(value_, kDifferentValue);
-  RunLoop().RunUntilIdle();
-  EXPECT_EQ(value_, kDerivedDtorValue);
+    void ReturnsVoidMutable() {
+      EXPECT_TRUE(task_runner_->RunsTasksInCurrentSequence());
+    }
+
+    int ReturnsInt() const {
+      EXPECT_TRUE(task_runner_->RunsTasksInCurrentSequence());
+      return 0;
+    }
+
+    int ReturnsIntMutable() {
+      EXPECT_TRUE(task_runner_->RunsTasksInCurrentSequence());
+      return 0;
+    }
+
+   private:
+    scoped_refptr<SequencedTaskRunner> task_runner_;
+  };
+
+  SequenceBound<Validator> validator(background_task_runner_,
+                                     background_task_runner_);
+  validator.AsyncCall(&Validator::ReturnsVoid);
+  validator.AsyncCall(&Validator::ReturnsVoidMutable);
+  validator.AsyncCall(&Validator::ReturnsInt).Then(BindOnce([](int) {}));
+  validator.AsyncCall(&Validator::ReturnsIntMutable).Then(BindOnce([](int) {}));
+  validator.AsyncCall(IgnoreResult(&Validator::ReturnsInt));
+  validator.AsyncCall(IgnoreResult(&Validator::ReturnsIntMutable));
+  validator.emplace(background_task_runner_, background_task_runner_);
+  validator.PostTaskWithThisObject(
+      BindLambdaForTesting([](const Validator& v) { v.ReturnsVoid(); }));
+  validator.PostTaskWithThisObject(
+      BindLambdaForTesting([](Validator* v) { v->ReturnsVoidMutable(); }));
+  validator.Reset();
+  FlushPostedTasks();
 }
 
-TEST_F(SequenceBoundTest, PostBeforeConstruction) {
-  // Construct an object and post a message to it, before construction has been
-  // run on |main_task_runner_|.
-  auto derived = SequenceBound<Derived>(main_task_runner_, &value_);
-  derived.AsyncCall(&Derived::SetValue).WithArgs(kDifferentValue);
-  EXPECT_EQ(value_, kInitialValue);
-  // Both construction and SetValue should run.
-  RunLoop().RunUntilIdle();
-  EXPECT_EQ(value_, kDifferentValue);
+TEST_F(SequenceBoundTest, Basic) {
+  SequenceBound<BoxedValue> value(background_task_runner_, 0, &logger_);
+  // Construction of `BoxedValue` is posted to `background_task_runner_`, but
+  // the `SequenceBound` itself should immediately be treated as valid /
+  // non-null.
+  EXPECT_FALSE(value.is_null());
+  EXPECT_TRUE(value);
+  value.FlushPostedTasksForTesting();
+  EXPECT_THAT(logger_.TakeEvents(),
+              ::testing::ElementsAre("constructed BoxedValue = 0"));
+
+  value.AsyncCall(&BoxedValue::set_value).WithArgs(66);
+  value.FlushPostedTasksForTesting();
+  EXPECT_THAT(logger_.TakeEvents(),
+              ::testing::ElementsAre("updated BoxedValue from 0 to 66"));
+
+  // Destruction of `BoxedValue` is posted to `background_task_runner_`, but the
+  // `SequenceBound` itself should immediately be treated as valid / non-null.
+  value.Reset();
+  EXPECT_TRUE(value.is_null());
+  EXPECT_FALSE(value);
+  FlushPostedTasks();
+  EXPECT_THAT(logger_.TakeEvents(),
+              ::testing::ElementsAre("destroyed BoxedValue = 66"));
 }
 
-TEST_F(SequenceBoundTest, MoveConstructionFromSameClass) {
-  // Verify that we can move-construct with the same class.
-  auto derived_old = SequenceBound<Derived>(main_task_runner_, &value_);
-  auto derived_new = std::move(derived_old);
+TEST_F(SequenceBoundTest, ConstructAndImmediateAsyncCall) {
+  // Calling `AsyncCall` immediately after construction should always work.
+  SequenceBound<BoxedValue> value(background_task_runner_, 0, &logger_);
+  value.AsyncCall(&BoxedValue::set_value).WithArgs(8);
+  value.FlushPostedTasksForTesting();
+  EXPECT_THAT(logger_.TakeEvents(),
+              ::testing::ElementsAre("constructed BoxedValue = 0",
+                                     "updated BoxedValue from 0 to 8"));
+}
+
+TEST_F(SequenceBoundTest, MoveConstruction) {
+  // std::ref() is required here: internally, the async work is bound into the
+  // standard base callback infrastructure, which requires the explicit use of
+  // `std::cref()` and `std::ref()` when passing by reference.
+  SequenceBound<Derived> derived_old(background_task_runner_,
+                                     std::ref(logger_));
+  SequenceBound<Derived> derived_new = std::move(derived_old);
   EXPECT_TRUE(derived_old.is_null());
   EXPECT_FALSE(derived_new.is_null());
-  RunLoop().RunUntilIdle();
-  EXPECT_EQ(value_, kDerivedCtorValue);
-
-  // Verify that |derived_new| owns the object now, and that the virtual
-  // destructor is called.
   derived_new.Reset();
-  EXPECT_EQ(value_, kDerivedCtorValue);
-  RunLoop().RunUntilIdle();
-  EXPECT_EQ(value_, kDerivedDtorValue);
+  FlushPostedTasks();
+  EXPECT_THAT(logger_.TakeEvents(),
+              ::testing::ElementsAre("constructed Base", "constructed Derived",
+                                     "destroyed Derived", "destroyed Base"));
 }
 
-TEST_F(SequenceBoundTest, MoveConstructionFromDerivedClass) {
-  // Verify that we can move-construct to a base class from a derived class.
-  auto derived = SequenceBound<Derived>(main_task_runner_, &value_);
-  SequenceBound<Base> base(std::move(derived));
+TEST_F(SequenceBoundTest, MoveConstructionUpcastsToBase) {
+  SequenceBound<Derived> derived(background_task_runner_, std::ref(logger_));
+  SequenceBound<Base> base = std::move(derived);
   EXPECT_TRUE(derived.is_null());
   EXPECT_FALSE(base.is_null());
-  RunLoop().RunUntilIdle();
-  EXPECT_EQ(value_, kDerivedCtorValue);
 
-  // Verify that |base| owns the object now, and that destruction still destroys
-  // Derived properly.
+  // The original `Derived` object is now owned by `SequencedBound<Base>`; make
+  // sure `~Derived()` still runs when it is reset.
   base.Reset();
-  EXPECT_EQ(value_, kDerivedCtorValue);
-  RunLoop().RunUntilIdle();
-  EXPECT_EQ(value_, kDerivedDtorValue);
+  FlushPostedTasks();
+  EXPECT_THAT(logger_.TakeEvents(),
+              ::testing::ElementsAre("constructed Base", "constructed Derived",
+                                     "destroyed Derived", "destroyed Base"));
 }
 
-TEST_F(SequenceBoundTest, MultiplyDerivedDestructionWorksLeftSuper) {
-  // Verify that everything works when we're casting around in ways that might
-  // change the address.  We cast to the left side of MultiplyDerived and then
-  // reset the owner.  ASAN will catch free() errors.
-  Value value2 = kInitialValue;
-  auto mderived =
-      SequenceBound<MultiplyDerived>(main_task_runner_, &value_, &value2);
-  RunLoop().RunUntilIdle();
-  EXPECT_EQ(value_, kOtherCtorValue);
-  EXPECT_EQ(value2, kDerivedCtorValue);
-  SequenceBound<Other> other = std::move(mderived);
+// Classes with multiple-derived bases may need pointer adjustments when
+// upcasting. These tests rely on sanitizers to catch potential mistakes.
+TEST_F(SequenceBoundTest, MoveConstructionUpcastsToLeftmost) {
+  SequenceBound<MultiplyDerived> multiply_derived(background_task_runner_,
+                                                  std::ref(logger_));
+  SequenceBound<Leftmost> leftmost_base = std::move(multiply_derived);
+  EXPECT_TRUE(multiply_derived.is_null());
+  EXPECT_FALSE(leftmost_base.is_null());
 
-  other.Reset();
-  RunLoop().RunUntilIdle();
-
-  // Both destructors should have run.
-  EXPECT_EQ(value_, kOtherDtorValue);
-  EXPECT_EQ(value2, kDerivedDtorValue);
+  // The original `MultiplyDerived` object is now owned by
+  // `SequencedBound<Leftmost>`; make sure all the expected destructors
+  // still run when it is reset.
+  leftmost_base.Reset();
+  FlushPostedTasks();
+  EXPECT_THAT(
+      logger_.TakeEvents(),
+      ::testing::ElementsAre(
+          "constructed Leftmost", "constructed Base", "constructed Rightmost",
+          "constructed MultiplyDerived", "destroyed MultiplyDerived",
+          "destroyed Rightmost", "destroyed Base", "destroyed Leftmost"));
 }
 
-TEST_F(SequenceBoundTest, MultiplyDerivedDestructionWorksRightSuper) {
-  // Verify that everything works when we're casting around in ways that might
-  // change the address.  We cast to the right side of MultiplyDerived and then
-  // reset the owner.  ASAN will catch free() errors.
-  Value value2 = kInitialValue;
-  auto mderived =
-      SequenceBound<MultiplyDerived>(main_task_runner_, &value_, &value2);
-  RunLoop().RunUntilIdle();
-  EXPECT_EQ(value_, kOtherCtorValue);
-  EXPECT_EQ(value2, kDerivedCtorValue);
-  SequenceBound<Base> base = std::move(mderived);
+TEST_F(SequenceBoundTest, MoveConstructionUpcastsToRightmost) {
+  SequenceBound<MultiplyDerived> multiply_derived(background_task_runner_,
+                                                  std::ref(logger_));
+  SequenceBound<Rightmost> rightmost_base = std::move(multiply_derived);
+  EXPECT_TRUE(multiply_derived.is_null());
+  EXPECT_FALSE(rightmost_base.is_null());
 
-  base.Reset();
-  RunLoop().RunUntilIdle();
-
-  // Both destructors should have run.
-  EXPECT_EQ(value_, kOtherDtorValue);
-  EXPECT_EQ(value2, kDerivedDtorValue);
+  // The original `MultiplyDerived` object is now owned by
+  // `SequencedBound<Rightmost>`; make sure all the expected destructors
+  // still run when it is reset.
+  rightmost_base.Reset();
+  FlushPostedTasks();
+  EXPECT_THAT(
+      logger_.TakeEvents(),
+      ::testing::ElementsAre(
+          "constructed Leftmost", "constructed Base", "constructed Rightmost",
+          "constructed MultiplyDerived", "destroyed MultiplyDerived",
+          "destroyed Rightmost", "destroyed Base", "destroyed Leftmost"));
 }
 
-TEST_F(SequenceBoundTest, MoveAssignmentFromSameClass) {
-  // Test move-assignment using the same classes.
-  auto derived_old = SequenceBound<Derived>(main_task_runner_, &value_);
+TEST_F(SequenceBoundTest, MoveAssignment) {
+  SequenceBound<Derived> derived_old(background_task_runner_,
+                                     std::ref(logger_));
   SequenceBound<Derived> derived_new;
 
   derived_new = std::move(derived_old);
   EXPECT_TRUE(derived_old.is_null());
   EXPECT_FALSE(derived_new.is_null());
-  RunLoop().RunUntilIdle();
-  EXPECT_EQ(value_, kDerivedCtorValue);
 
-  // Verify that |derived_new| owns the object now.  Also verifies that move
-  // assignment from the same class deletes the outgoing object.
+  // Note that this explicitly avoids using `Reset()` as a basic test that
+  // assignment resets any previously-owned object.
   derived_new = SequenceBound<Derived>();
-  EXPECT_EQ(value_, kDerivedCtorValue);
-  RunLoop().RunUntilIdle();
-  EXPECT_EQ(value_, kDerivedDtorValue);
+  FlushPostedTasks();
+  EXPECT_THAT(logger_.TakeEvents(),
+              ::testing::ElementsAre("constructed Base", "constructed Derived",
+                                     "destroyed Derived", "destroyed Base"));
 }
 
-TEST_F(SequenceBoundTest, MoveAssignmentFromDerivedClass) {
-  // Move-assignment from a derived class to a base class.
-  auto derived = SequenceBound<Derived>(main_task_runner_, &value_);
+TEST_F(SequenceBoundTest, MoveAssignmentUpcastsToBase) {
+  SequenceBound<Derived> derived(background_task_runner_, std::ref(logger_));
   SequenceBound<Base> base;
 
   base = std::move(derived);
   EXPECT_TRUE(derived.is_null());
   EXPECT_FALSE(base.is_null());
-  RunLoop().RunUntilIdle();
-  EXPECT_EQ(value_, kDerivedCtorValue);
 
-  // Verify that |base| owns the object now, and that destruction still destroys
-  // Derived properly.
+  // The original `Derived` object is now owned by `SequencedBound<Base>`; make
+  // sure `~Derived()` still runs when it is reset.
   base.Reset();
-  EXPECT_EQ(value_, kDerivedCtorValue);
-  RunLoop().RunUntilIdle();
-  EXPECT_EQ(value_, kDerivedDtorValue);
+  FlushPostedTasks();
+  EXPECT_THAT(logger_.TakeEvents(),
+              ::testing::ElementsAre("constructed Base", "constructed Derived",
+                                     "destroyed Derived", "destroyed Base"));
 }
 
-TEST_F(SequenceBoundTest, MoveAssignmentFromDerivedClassDestroysOldObject) {
-  // Verify that move-assignment from a derived class runs the dtor of the
-  // outgoing object.
-  auto derived = SequenceBound<Derived>(main_task_runner_, &value_);
+TEST_F(SequenceBoundTest, MoveAssignmentUpcastsToLeftmost) {
+  SequenceBound<MultiplyDerived> multiply_derived(background_task_runner_,
+                                                  std::ref(logger_));
+  SequenceBound<Leftmost> leftmost_base;
 
-  Value value1 = kInitialValue;
-  Value value2 = kInitialValue;
-  auto mderived =
-      SequenceBound<MultiplyDerived>(main_task_runner_, &value1, &value2);
-  RunLoop().RunUntilIdle();
+  leftmost_base = std::move(multiply_derived);
+  EXPECT_TRUE(multiply_derived.is_null());
+  EXPECT_FALSE(leftmost_base.is_null());
 
-  EXPECT_EQ(value_, kDerivedCtorValue);
-
-  // Assign |mderived|, and verify that the original object in |derived| is
-  // destroyed properly.
-  derived = std::move(mderived);
-  RunLoop().RunUntilIdle();
-  EXPECT_EQ(value_, kDerivedDtorValue);
-
-  // Delete |derived|, since it has pointers to local vars.
-  derived.Reset();
-  RunLoop().RunUntilIdle();
+  // The original `MultiplyDerived` object is now owned by
+  // `SequencedBound<Leftmost>`; make sure all the expected destructors
+  // still run when it is reset.
+  leftmost_base.Reset();
+  FlushPostedTasks();
+  EXPECT_THAT(
+      logger_.TakeEvents(),
+      ::testing::ElementsAre(
+          "constructed Leftmost", "constructed Base", "constructed Rightmost",
+          "constructed MultiplyDerived", "destroyed MultiplyDerived",
+          "destroyed Rightmost", "destroyed Base", "destroyed Leftmost"));
 }
 
-TEST_F(SequenceBoundTest, MultiplyDerivedPostToLeftBaseClass) {
-  // Cast and call methods on the left base class.
-  Value value1 = kInitialValue;
-  Value value2 = kInitialValue;
-  auto mderived =
-      SequenceBound<MultiplyDerived>(main_task_runner_, &value1, &value2);
+TEST_F(SequenceBoundTest, MoveAssignmentUpcastsToRightmost) {
+  SequenceBound<MultiplyDerived> multiply_derived(background_task_runner_,
+                                                  std::ref(logger_));
+  SequenceBound<Rightmost> rightmost_base;
 
-  // Cast to Other, the left base.
-  SequenceBound<Other> other(std::move(mderived));
-  other.AsyncCall(&Other::SetValue).WithArgs(kDifferentValue);
+  rightmost_base = std::move(multiply_derived);
+  EXPECT_TRUE(multiply_derived.is_null());
+  EXPECT_FALSE(rightmost_base.is_null());
 
-  RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(value1, kDifferentValue);
-  EXPECT_EQ(value2, kDerivedCtorValue);
-
-  other.Reset();
-  RunLoop().RunUntilIdle();
+  // The original `MultiplyDerived` object is now owned by
+  // `SequencedBound<Rightmost>`; make sure all the expected destructors
+  // still run when it is reset.
+  rightmost_base.Reset();
+  FlushPostedTasks();
+  EXPECT_THAT(
+      logger_.TakeEvents(),
+      ::testing::ElementsAre(
+          "constructed Leftmost", "constructed Base", "constructed Rightmost",
+          "constructed MultiplyDerived", "destroyed MultiplyDerived",
+          "destroyed Rightmost", "destroyed Base", "destroyed Leftmost"));
 }
 
-TEST_F(SequenceBoundTest, MultiplyDerivedPostToRightBaseClass) {
-  // Cast and call methods on the right base class.
-  Value value1 = kInitialValue;
-  Value value2 = kInitialValue;
-  auto mderived =
-      SequenceBound<MultiplyDerived>(main_task_runner_, &value1, &value2);
-
-  SequenceBound<Derived> derived(std::move(mderived));
-  derived.AsyncCall(&Derived::SetValue).WithArgs(kDifferentValue);
-
-  RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(value1, kOtherCtorValue);
-  EXPECT_EQ(value2, kDifferentValue);
-
-  derived.Reset();
-  RunLoop().RunUntilIdle();
+TEST_F(SequenceBoundTest, AsyncCallLeftmost) {
+  SequenceBound<MultiplyDerived> multiply_derived(background_task_runner_,
+                                                  std::ref(logger_));
+  multiply_derived.AsyncCall(&Leftmost::SetValue).WithArgs(3);
+  multiply_derived.FlushPostedTasksForTesting();
+  EXPECT_THAT(logger_.TakeEvents(),
+              ::testing::ElementsAre("constructed Leftmost", "constructed Base",
+                                     "constructed Rightmost",
+                                     "constructed MultiplyDerived",
+                                     "set Leftmost to 3"));
 }
 
-TEST_F(SequenceBoundTest, MoveConstructionFromNullWorks) {
-  // Verify that this doesn't crash.
-  SequenceBound<Derived> derived1;
-  SequenceBound<Derived> derived2(std::move(derived1));
+TEST_F(SequenceBoundTest, AsyncCallRightmost) {
+  SequenceBound<MultiplyDerived> multiply_derived(background_task_runner_,
+                                                  std::ref(logger_));
+  multiply_derived.AsyncCall(&Rightmost::SetValue).WithArgs(3);
+  multiply_derived.FlushPostedTasksForTesting();
+  EXPECT_THAT(logger_.TakeEvents(),
+              ::testing::ElementsAre("constructed Leftmost", "constructed Base",
+                                     "constructed Rightmost",
+                                     "constructed MultiplyDerived",
+                                     "set Rightmost to 3"));
 }
 
-TEST_F(SequenceBoundTest, MoveAssignmentFromNullWorks) {
-  // Verify that this doesn't crash.
-  SequenceBound<Derived> derived1;
-  SequenceBound<Derived> derived2;
-  derived2 = std::move(derived1);
+TEST_F(SequenceBoundTest, MoveConstructionFromNull) {
+  SequenceBound<BoxedValue> value1;
+  // Should not crash.
+  SequenceBound<BoxedValue> value2(std::move(value1));
 }
 
-TEST_F(SequenceBoundTest, ResetOnNullObjectWorks) {
-  // Verify that this doesn't crash.
-  SequenceBound<Derived> derived;
-  derived.Reset();
+TEST_F(SequenceBoundTest, MoveAssignmentFromNull) {
+  SequenceBound<BoxedValue> value1;
+  SequenceBound<BoxedValue> value2;
+  // Should not crash.
+  value2 = std::move(value1);
 }
 
-TEST_F(SequenceBoundTest, LvalueConstructionParameter) {
-  // Note here that |value_ptr| is an lvalue, while |&value| would be an rvalue.
-  Value value = kInitialValue;
-  Value* value_ptr = &value;
-  SequenceBound<Derived> derived(background_task_runner_, value_ptr);
-  {
-    derived.AsyncCall(&Derived::SetValue).WithArgs(kDifferentValue);
-    RunLoop run_loop;
-    background_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
-    EXPECT_EQ(value, kDifferentValue);
-  }
-  {
-    derived.Reset();
-    RunLoop run_loop;
-    background_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
-    EXPECT_EQ(value, kDerivedDtorValue);
-  }
+TEST_F(SequenceBoundTest, MoveAssignmentFromSelf) {
+  SequenceBound<BoxedValue> value;
+  // Cheat to avoid clang self-move warning.
+  auto& value2 = value;
+  // Should not crash.
+  value2 = std::move(value);
+}
+
+TEST_F(SequenceBoundTest, ResetNullSequenceBound) {
+  SequenceBound<BoxedValue> value;
+  // Should not crash.
+  value.Reset();
+}
+
+TEST_F(SequenceBoundTest, ConstructWithLvalue) {
+  int lvalue = 99;
+  SequenceBound<BoxedValue> value(background_task_runner_, lvalue, &logger_);
+  value.FlushPostedTasksForTesting();
+  EXPECT_THAT(logger_.TakeEvents(),
+              ::testing::ElementsAre("constructed BoxedValue = 99"));
 }
 
 TEST_F(SequenceBoundTest, PostTaskWithThisObject) {
   constexpr int kTestValue1 = 42;
   constexpr int kTestValue2 = 42;
   SequenceBound<BoxedValue> value(background_task_runner_, kTestValue1);
-  RunLoop loop;
   value.PostTaskWithThisObject(BindLambdaForTesting(
       [&](const BoxedValue& v) { EXPECT_EQ(kTestValue1, v.value()); }));
   value.PostTaskWithThisObject(
       BindLambdaForTesting([&](BoxedValue* v) { v->set_value(kTestValue2); }));
-  value.PostTaskWithThisObject(BindLambdaForTesting([&](const BoxedValue& v) {
-    EXPECT_EQ(kTestValue2, v.value());
-    loop.Quit();
-  }));
-  loop.Run();
+  value.PostTaskWithThisObject(BindLambdaForTesting(
+      [&](const BoxedValue& v) { EXPECT_EQ(kTestValue2, v.value()); }));
+  value.FlushPostedTasksForTesting();
 }
 
 TEST_F(SequenceBoundTest, SynchronouslyResetForTest) {
@@ -493,26 +547,20 @@ TEST_F(SequenceBoundTest, Emplace) {
   SequenceBound<BoxedValue> value;
   EXPECT_TRUE(value.is_null());
   value.emplace(background_task_runner_, 8);
-  RunLoop run_loop;
   value.AsyncCall(&BoxedValue::value)
-      .Then(BindLambdaForTesting([&](int actual_value) {
-        EXPECT_EQ(8, actual_value);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+      .Then(BindLambdaForTesting(
+          [&](int actual_value) { EXPECT_EQ(8, actual_value); }));
+  value.FlushPostedTasksForTesting();
 }
 
 TEST_F(SequenceBoundTest, EmplaceOverExisting) {
   SequenceBound<BoxedValue> value(background_task_runner_, 8, &logger_);
   EXPECT_FALSE(value.is_null());
   value.emplace(background_task_runner_, 9, &logger_);
-  RunLoop run_loop;
   value.AsyncCall(&BoxedValue::value)
-      .Then(BindLambdaForTesting([&](int actual_value) {
-        EXPECT_EQ(9, actual_value);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+      .Then(BindLambdaForTesting(
+          [&](int actual_value) { EXPECT_EQ(9, actual_value); }));
+  value.FlushPostedTasksForTesting();
   // Both the replaced `BoxedValue` and the current `BoxedValue` should
   // live on the same sequence: make sure the replaced `BoxedValue` was
   // destroyed before the current `BoxedValue` was constructed.
@@ -532,16 +580,14 @@ TEST_F(SequenceBoundTest, EmplaceOverExistingWithTaskRunnerSwap) {
   EXPECT_FALSE(value.is_null());
   value.emplace(background_task_runner_, 9);
   {
-    RunLoop run_loop;
     value.PostTaskWithThisObject(BindLambdaForTesting(
-        [another_task_runner, background_task_runner = background_task_runner_,
-         &run_loop](const BoxedValue& boxed_value) {
+        [another_task_runner, background_task_runner = background_task_runner_](
+            const BoxedValue& boxed_value) {
           EXPECT_FALSE(another_task_runner->RunsTasksInCurrentSequence());
           EXPECT_TRUE(background_task_runner->RunsTasksInCurrentSequence());
           EXPECT_EQ(9, boxed_value.value());
-          run_loop.Quit();
         }));
-    run_loop.Run();
+    value.FlushPostedTasksForTesting();
   }
 }
 
