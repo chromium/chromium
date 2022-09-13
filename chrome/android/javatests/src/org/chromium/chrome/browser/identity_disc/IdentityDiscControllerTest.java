@@ -30,6 +30,7 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -85,6 +86,7 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1363220")
     public void testIdentityDiscWithSignin() {
         // When user is signed out, Identity Disc should not be visible on the NTP.
         onView(withId(R.id.optional_toolbar_button)).check((view, noViewException) -> {
@@ -112,6 +114,7 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1363220")
     public void testIdentityDiscWithSigninAndEnableSync() {
         // When user is signed out, Identity Disc should not be visible on the NTP.
         onView(withId(R.id.optional_toolbar_button)).check((view, noViewException) -> {
