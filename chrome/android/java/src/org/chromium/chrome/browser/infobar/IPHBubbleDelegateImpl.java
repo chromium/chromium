@@ -64,7 +64,7 @@ class IPHBubbleDelegateImpl implements IPHInfoBarSupport.IPHBubbleDelegate {
         switch (infoBarId) {
             case InfoBarIdentifier.DOWNLOAD_PROGRESS_INFOBAR_ANDROID:
                 return null;
-            case InfoBarIdentifier.GROUPED_PERMISSION_INFOBAR_DELEGATE_ANDROID:
+            case InfoBarIdentifier.PERMISSION_INFOBAR_DELEGATE_ANDROID:
                 if (PermissionSettingsBridge.shouldShowNotificationsPromo(mTab.getWebContents())) {
                     PermissionSettingsBridge.didShowNotificationsPromo();
                     return new IPHInfoBarSupport.TrackerParameters(

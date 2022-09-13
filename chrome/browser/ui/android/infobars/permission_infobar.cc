@@ -1,8 +1,8 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/android/infobars/grouped_permission_infobar.h"
+#include "chrome/browser/ui/android/infobars/permission_infobar.h"
 
 #include <vector>
 
@@ -13,7 +13,7 @@
 #include "chrome/android/chrome_jni_headers/PermissionInfoBar_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/permissions/grouped_permission_infobar_delegate_android.h"
+#include "chrome/browser/permissions/permission_infobar_delegate_android.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
@@ -63,17 +63,17 @@ ScopedJavaLocalRef<jobject> CreateRenderInfoBarHelper(
 
 }  // namespace
 
-GroupedPermissionInfoBar::GroupedPermissionInfoBar(
-    std::unique_ptr<GroupedPermissionInfoBarDelegate> delegate)
+PermissionInfoBar::PermissionInfoBar(
+    std::unique_ptr<PermissionInfoBarDelegate> delegate)
     : infobars::ConfirmInfoBar(std::move(delegate)) {}
 
-GroupedPermissionInfoBar::~GroupedPermissionInfoBar() {}
+PermissionInfoBar::~PermissionInfoBar() {}
 
 base::android::ScopedJavaLocalRef<jobject>
-GroupedPermissionInfoBar::CreateRenderInfoBar(
+PermissionInfoBar::CreateRenderInfoBar(
     JNIEnv* env,
     const ResourceIdMapper& resource_id_mapper) {
-  GroupedPermissionInfoBarDelegate* delegate = GetDelegate();
+  PermissionInfoBarDelegate* delegate = GetDelegate();
 
   std::u16string compact_message_text = delegate->GetCompactMessageText();
   std::u16string compact_link_text = delegate->GetCompactLinkText();
@@ -111,6 +111,6 @@ GroupedPermissionInfoBar::CreateRenderInfoBar(
       secondary_button_should_open_settings, content_settings_types);
 }
 
-GroupedPermissionInfoBarDelegate* GroupedPermissionInfoBar::GetDelegate() {
-  return static_cast<GroupedPermissionInfoBarDelegate*>(delegate());
+PermissionInfoBarDelegate* PermissionInfoBar::GetDelegate() {
+  return static_cast<PermissionInfoBarDelegate*>(delegate());
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/permissions/android/permission_prompt/permission_infobar.h"
+#include "components/permissions/android/permission_prompt/permission_prompt_infobar.h"
 
 #include "base/memory/ptr_util.h"
 #include "components/infobars/core/infobar.h"
@@ -12,59 +12,62 @@
 
 namespace permissions {
 
-PermissionInfobar::PermissionInfobar(content::WebContents* web_contents,
-                                     Delegate* delegate)
+PermissionPromptInfoBar::PermissionPromptInfoBar(
+    content::WebContents* web_contents,
+    Delegate* delegate)
     : PermissionPromptAndroid(web_contents, delegate) {
   auto* permission_client = PermissionsClient::Get();
-  permission_infobar_ = permission_client->MaybeCreateInfoBar(
+  permission_prompt_infobar_ = permission_client->MaybeCreateInfoBar(
       web_contents, GetContentSettingType(0u /* position */),
       weak_factory_.GetWeakPtr());
-  if (permission_infobar_)
+  if (permission_prompt_infobar_)
     permission_client->GetInfoBarManager(web_contents)->AddObserver(this);
 }
 
-PermissionInfobar::~PermissionInfobar() {
+PermissionPromptInfoBar::~PermissionPromptInfoBar() {
   infobars::InfoBarManager* infobar_manager =
       PermissionsClient::Get()->GetInfoBarManager(web_contents());
   if (!infobar_manager)
     return;
   // RemoveObserver before RemoveInfoBar to not get notified about the removal
-  // of the `permission_infobar_` infobar.
+  // of the `permission_prompt_infobar_` infobar.
   infobar_manager->RemoveObserver(this);
-  if (permission_infobar_) {
-    infobar_manager->RemoveInfoBar(permission_infobar_);
+  if (permission_prompt_infobar_) {
+    infobar_manager->RemoveInfoBar(permission_prompt_infobar_);
   }
 }
 
 // static
-std::unique_ptr<PermissionInfobar> PermissionInfobar::Create(
+std::unique_ptr<PermissionPromptInfoBar> PermissionPromptInfoBar::Create(
     content::WebContents* web_contents,
     Delegate* delegate) {
-  auto prompt = base::WrapUnique(new PermissionInfobar(web_contents, delegate));
-  if (prompt->permission_infobar_)
+  auto prompt =
+      base::WrapUnique(new PermissionPromptInfoBar(web_contents, delegate));
+  if (prompt->permission_prompt_infobar_)
     return prompt;
   return nullptr;
 }
 
-void PermissionInfobar::OnInfoBarRemoved(infobars::InfoBar* infobar,
-                                         bool animate) {
-  if (infobar != permission_infobar_)
+void PermissionPromptInfoBar::OnInfoBarRemoved(infobars::InfoBar* infobar,
+                                               bool animate) {
+  if (infobar != permission_prompt_infobar_)
     return;
 
-  permission_infobar_ = nullptr;
+  permission_prompt_infobar_ = nullptr;
   infobars::InfoBarManager* infobar_manager =
       PermissionsClient::Get()->GetInfoBarManager(web_contents());
   if (infobar_manager)
     infobar_manager->RemoveObserver(this);
 }
 
-void PermissionInfobar::OnManagerShuttingDown(
+void PermissionPromptInfoBar::OnManagerShuttingDown(
     infobars::InfoBarManager* manager) {
-  permission_infobar_ = nullptr;
+  permission_prompt_infobar_ = nullptr;
   manager->RemoveObserver(this);
 }
 
-PermissionPromptDisposition PermissionInfobar::GetPromptDisposition() const {
+PermissionPromptDisposition PermissionPromptInfoBar::GetPromptDisposition()
+    const {
   return PermissionPromptDisposition::MINI_INFOBAR;
 }
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERMISSIONS_ANDROID_PERMISSION_PROMPT_PERMISSION_INFOBAR_H_
-#define COMPONENTS_PERMISSIONS_ANDROID_PERMISSION_PROMPT_PERMISSION_INFOBAR_H_
+#ifndef COMPONENTS_PERMISSIONS_ANDROID_PERMISSION_PROMPT_PERMISSION_PROMPT_INFOBAR_H_
+#define COMPONENTS_PERMISSIONS_ANDROID_PERMISSION_PROMPT_PERMISSION_PROMPT_INFOBAR_H_
 
 #include <memory>
 
@@ -17,16 +17,16 @@ class WebContents;
 
 namespace permissions {
 
-class PermissionInfobar : public PermissionPromptAndroid,
-                          public infobars::InfoBarManager::Observer {
+class PermissionPromptInfoBar : public PermissionPromptAndroid,
+                                public infobars::InfoBarManager::Observer {
  public:
-  PermissionInfobar(const PermissionInfobar&) = delete;
-  PermissionInfobar& operator=(const PermissionInfobar&) = delete;
-  ~PermissionInfobar() override;
+  PermissionPromptInfoBar(const PermissionPromptInfoBar&) = delete;
+  PermissionPromptInfoBar& operator=(const PermissionPromptInfoBar&) = delete;
+  ~PermissionPromptInfoBar() override;
 
   PermissionPromptDisposition GetPromptDisposition() const override;
 
-  static std::unique_ptr<PermissionInfobar> Create(
+  static std::unique_ptr<PermissionPromptInfoBar> Create(
       content::WebContents* web_contents,
       Delegate* delegate);
 
@@ -35,15 +35,16 @@ class PermissionInfobar : public PermissionPromptAndroid,
   void OnManagerShuttingDown(infobars::InfoBarManager* manager) override;
 
  private:
-  PermissionInfobar(content::WebContents* web_contents, Delegate* delegate);
+  PermissionPromptInfoBar(content::WebContents* web_contents,
+                          Delegate* delegate);
 
   // The infobar used to display the permission request. Never assume that this
   // pointer is currently alive.
-  raw_ptr<infobars::InfoBar> permission_infobar_;
+  raw_ptr<infobars::InfoBar> permission_prompt_infobar_;
 
-  base::WeakPtrFactory<PermissionInfobar> weak_factory_{this};
+  base::WeakPtrFactory<PermissionPromptInfoBar> weak_factory_{this};
 };
 
 }  // namespace permissions
 
-#endif  // COMPONENTS_PERMISSIONS_ANDROID_PERMISSION_PROMPT_PERMISSION_INFOBAR_H_
+#endif  // COMPONENTS_PERMISSIONS_ANDROID_PERMISSION_PROMPT_PERMISSION_PROMPT_INFOBAR_H_

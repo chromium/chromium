@@ -53,8 +53,8 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
-#include "chrome/browser/permissions/grouped_permission_infobar_delegate_android.h"
 #include "chrome/browser/permissions/notification_blocked_message_delegate_android.h"
+#include "chrome/browser/permissions/permission_infobar_delegate_android.h"
 #include "chrome/browser/permissions/permission_update_infobar_delegate_android.h"
 #include "chrome/browser/permissions/permission_update_message_controller_android.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -465,8 +465,8 @@ infobars::InfoBar* ChromePermissionsClient::MaybeCreateInfoBar(
   infobars::ContentInfoBarManager* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(web_contents);
   if (infobar_manager && ShouldUseQuietUI(web_contents, type)) {
-    return GroupedPermissionInfoBarDelegate::Create(std::move(prompt),
-                                                    infobar_manager);
+    return PermissionInfoBarDelegate::Create(std::move(prompt),
+                                             infobar_manager);
   }
   return nullptr;
 }

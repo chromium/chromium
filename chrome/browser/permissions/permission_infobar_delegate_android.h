@@ -1,9 +1,9 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERMISSIONS_GROUPED_PERMISSION_INFOBAR_DELEGATE_ANDROID_H_
-#define CHROME_BROWSER_PERMISSIONS_GROUPED_PERMISSION_INFOBAR_DELEGATE_ANDROID_H_
+#ifndef CHROME_BROWSER_PERMISSIONS_PERMISSION_INFOBAR_DELEGATE_ANDROID_H_
+#define CHROME_BROWSER_PERMISSIONS_PERMISSION_INFOBAR_DELEGATE_ANDROID_H_
 
 #include <memory>
 
@@ -22,18 +22,14 @@ class PermissionPromptAndroid;
 }
 
 // An InfoBar that displays a permission request.
-//
-// TODO(crbug.com/986737): This class is only used for displaying notification
-// permission requests and has nothing to do with grouped permissions anymore.
-class GroupedPermissionInfoBarDelegate : public ConfirmInfoBarDelegate {
+class PermissionInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
-  GroupedPermissionInfoBarDelegate(const GroupedPermissionInfoBarDelegate&) =
+  PermissionInfoBarDelegate(const PermissionInfoBarDelegate&) = delete;
+  PermissionInfoBarDelegate& operator=(const PermissionInfoBarDelegate&) =
       delete;
-  GroupedPermissionInfoBarDelegate& operator=(
-      const GroupedPermissionInfoBarDelegate&) = delete;
 
-  // Public so we can have std::unique_ptr<GroupedPermissionInfoBarDelegate>.
-  ~GroupedPermissionInfoBarDelegate() override;
+  // Public so we can have std::unique_ptr<PermissionInfoBarDelegate>.
+  ~PermissionInfoBarDelegate() override;
 
   static infobars::InfoBar* Create(
       const base::WeakPtr<permissions::PermissionPromptAndroid>&
@@ -67,7 +63,7 @@ class GroupedPermissionInfoBarDelegate : public ConfirmInfoBarDelegate {
   bool Cancel() override;
 
  private:
-  GroupedPermissionInfoBarDelegate(
+  PermissionInfoBarDelegate(
       const base::WeakPtr<permissions::PermissionPromptAndroid>&
           permission_prompt,
       infobars::ContentInfoBarManager* infobar_manager);
@@ -87,4 +83,4 @@ class GroupedPermissionInfoBarDelegate : public ConfirmInfoBarDelegate {
   QuietPermissionPromptModelAndroid prompt_model_;
 };
 
-#endif  // CHROME_BROWSER_PERMISSIONS_GROUPED_PERMISSION_INFOBAR_DELEGATE_ANDROID_H_
+#endif  // CHROME_BROWSER_PERMISSIONS_PERMISSION_INFOBAR_DELEGATE_ANDROID_H_

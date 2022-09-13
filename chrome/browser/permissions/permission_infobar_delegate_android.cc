@@ -1,14 +1,14 @@
-// Copyright 2016 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/permissions/grouped_permission_infobar_delegate_android.h"
+#include "chrome/browser/permissions/permission_infobar_delegate_android.h"
 
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
-#include "chrome/browser/ui/android/infobars/grouped_permission_infobar.h"
+#include "chrome/browser/ui/android/infobars/permission_infobar.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
@@ -31,37 +31,37 @@ using SecondaryButtonBehavior =
 
 }  // namespace
 
-GroupedPermissionInfoBarDelegate::~GroupedPermissionInfoBarDelegate() {
+PermissionInfoBarDelegate::~PermissionInfoBarDelegate() {
   permissions::PermissionUmaUtil::RecordInfobarDetailsExpanded(
       details_expanded_);
 }
 
 // static
-infobars::InfoBar* GroupedPermissionInfoBarDelegate::Create(
+infobars::InfoBar* PermissionInfoBarDelegate::Create(
     const base::WeakPtr<permissions::PermissionPromptAndroid>&
         permission_prompt,
     infobars::ContentInfoBarManager* infobar_manager) {
   // WrapUnique needs to be used because the constructor is private.
-  return infobar_manager->AddInfoBar(std::make_unique<GroupedPermissionInfoBar>(
-      base::WrapUnique(new GroupedPermissionInfoBarDelegate(permission_prompt,
-                                                            infobar_manager))));
+  return infobar_manager->AddInfoBar(
+      std::make_unique<PermissionInfoBar>(base::WrapUnique(
+          new PermissionInfoBarDelegate(permission_prompt, infobar_manager))));
 }
 
-size_t GroupedPermissionInfoBarDelegate::PermissionCount() const {
+size_t PermissionInfoBarDelegate::PermissionCount() const {
   return permission_prompt_->PermissionCount();
 }
 
-ContentSettingsType GroupedPermissionInfoBarDelegate::GetContentSettingType(
+ContentSettingsType PermissionInfoBarDelegate::GetContentSettingType(
     size_t position) const {
   return permission_prompt_->GetContentSettingType(position);
 }
 
-std::u16string GroupedPermissionInfoBarDelegate::GetCompactMessageText() const {
+std::u16string PermissionInfoBarDelegate::GetCompactMessageText() const {
   return l10n_util::GetStringUTF16(
       IDS_NOTIFICATION_QUIET_PERMISSION_MINI_INFOBAR_MESSAGE);
 }
 
-std::u16string GroupedPermissionInfoBarDelegate::GetCompactLinkText() const {
+std::u16string PermissionInfoBarDelegate::GetCompactLinkText() const {
   switch (QuietNotificationPermissionUiConfig::GetMiniInfobarExpandLinkText()) {
     case QuietNotificationPermissionUiConfig::InfobarLinkTextVariation::kManage:
       return l10n_util::GetStringUTF16(IDS_NOTIFICATION_BUTTON_MANAGE);
@@ -77,31 +77,29 @@ std::u16string GroupedPermissionInfoBarDelegate::GetCompactLinkText() const {
 
 // TODO(crbug.com/1082737): Many methods of this class switches on the quiet UI
 // reason. Refactor this into separate subclasses instead.
-std::u16string GroupedPermissionInfoBarDelegate::GetDescriptionText() const {
+std::u16string PermissionInfoBarDelegate::GetDescriptionText() const {
   return prompt_model_.description;
 }
 
-bool GroupedPermissionInfoBarDelegate::ShouldSecondaryButtonOpenSettings()
-    const {
+bool PermissionInfoBarDelegate::ShouldSecondaryButtonOpenSettings() const {
   return prompt_model_.secondary_button_behavior ==
          SecondaryButtonBehavior::kShowSettings;
 }
 
-int GroupedPermissionInfoBarDelegate::GetIconId() const {
+int PermissionInfoBarDelegate::GetIconId() const {
   return IDR_ANDROID_INFOBAR_NOTIFICATIONS_OFF;
 }
 
-std::u16string GroupedPermissionInfoBarDelegate::GetLinkText() const {
+std::u16string PermissionInfoBarDelegate::GetLinkText() const {
   // This will be used as the text of the link in the expanded state.
   return prompt_model_.learn_more_text;
 }
 
-GURL GroupedPermissionInfoBarDelegate::GetLinkURL() const {
+GURL PermissionInfoBarDelegate::GetLinkURL() const {
   return GetNotificationBlockedLearnMoreUrl();
 }
 
-bool GroupedPermissionInfoBarDelegate::LinkClicked(
-    WindowOpenDisposition disposition) {
+bool PermissionInfoBarDelegate::LinkClicked(WindowOpenDisposition disposition) {
   // The link shown in the compact state should expand the infobar, and do
   // nothing more. This is handled entirely in PermissionInfoBar.java.
   if (!details_expanded_) {
@@ -115,16 +113,16 @@ bool GroupedPermissionInfoBarDelegate::LinkClicked(
   return ConfirmInfoBarDelegate::LinkClicked(disposition);
 }
 
-void GroupedPermissionInfoBarDelegate::InfoBarDismissed() {
+void PermissionInfoBarDelegate::InfoBarDismissed() {
   if (permission_prompt_)
     permission_prompt_->Closing();
 }
 
-std::u16string GroupedPermissionInfoBarDelegate::GetMessageText() const {
+std::u16string PermissionInfoBarDelegate::GetMessageText() const {
   return prompt_model_.title;
 }
 
-bool GroupedPermissionInfoBarDelegate::Accept() {
+bool PermissionInfoBarDelegate::Accept() {
   if (!permission_prompt_)
     return true;
 
@@ -139,7 +137,7 @@ bool GroupedPermissionInfoBarDelegate::Accept() {
   return true;
 }
 
-bool GroupedPermissionInfoBarDelegate::Cancel() {
+bool PermissionInfoBarDelegate::Cancel() {
   if (!permission_prompt_)
     return true;
   switch (prompt_model_.secondary_button_behavior) {
@@ -155,7 +153,7 @@ bool GroupedPermissionInfoBarDelegate::Cancel() {
   return true;
 }
 
-GroupedPermissionInfoBarDelegate::GroupedPermissionInfoBarDelegate(
+PermissionInfoBarDelegate::PermissionInfoBarDelegate(
     const base::WeakPtr<permissions::PermissionPromptAndroid>&
         permission_prompt,
     infobars::ContentInfoBarManager* infobar_manager)
@@ -179,21 +177,21 @@ GroupedPermissionInfoBarDelegate::GroupedPermissionInfoBarDelegate(
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier
-GroupedPermissionInfoBarDelegate::GetIdentifier() const {
-  return GROUPED_PERMISSION_INFOBAR_DELEGATE_ANDROID;
+PermissionInfoBarDelegate::GetIdentifier() const {
+  return PERMISSION_INFOBAR_DELEGATE_ANDROID;
 }
 
-int GroupedPermissionInfoBarDelegate::GetButtons() const {
+int PermissionInfoBarDelegate::GetButtons() const {
   return BUTTON_OK | BUTTON_CANCEL;
 }
 
-std::u16string GroupedPermissionInfoBarDelegate::GetButtonLabel(
+std::u16string PermissionInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   return (button == BUTTON_OK) ? prompt_model_.primary_button_label
                                : prompt_model_.secondary_button_label;
 }
 
-bool GroupedPermissionInfoBarDelegate::EqualsDelegate(
+bool PermissionInfoBarDelegate::EqualsDelegate(
     infobars::InfoBarDelegate* delegate) const {
   // The PermissionRequestManager doesn't create duplicate infobars so a pointer
   // equality check is sufficient.
