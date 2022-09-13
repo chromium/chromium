@@ -66,7 +66,11 @@ source_set("settings_icons") {
     "settings_icon.h",
     "settings_icon.mm",
   ]
-  deps = [ ":symbols" ]
+  deps = [
+    ":symbols",
+    "//ios/chrome/browser/ui/icons/resources:arrow_triangle_slash_circlepath",
+    "//ios/chrome/browser/ui/icons/resources:checkerboard_shield",
+  ]
   frameworks = [ "UIKit.framework" ]
 }
 
@@ -80,7 +84,6 @@ source_set("symbols") {
     "//base",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/icons/resources:arrow_clockwise",
-    "//ios/chrome/browser/ui/icons/resources:arrow_triangle_slash_circlepath",
     "//ios/chrome/browser/ui/icons/resources:camera",
     "//ios/chrome/browser/ui/icons/resources:camera_fill",
     "//ios/chrome/browser/ui/icons/resources:incognito",

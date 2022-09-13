@@ -34,12 +34,10 @@
       [TableViewSwitchCell defaultTextColorForState:cell.switchView.state];
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
-  // Update the icon image, if one is present.
-  UIImage* iconImage = nil;
-  if ([self.iconImageName length]) {
-    iconImage = [UIImage imageNamed:self.iconImageName];
-  }
-  [cell setIconImage:iconImage];
+  [cell setIconImage:self.iconImage
+            tintColor:self.iconTintColor
+      backgroundColor:self.iconBackgroundColor
+         cornerRadius:self.iconCornerRadius];
 }
 
 @end

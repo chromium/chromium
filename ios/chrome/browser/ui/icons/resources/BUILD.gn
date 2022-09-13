@@ -11,6 +11,13 @@ symbolset("arrow_clockwise") {
   ]
 }
 
+symbolset("checkerboard_shield") {
+  sources = [
+    "cherckerboard_shield.symbolset/Contents.json",
+    "cherckerboard_shield.symbolset/checkerboard.shield.cr.svg",
+  ]
+}
+
 symbolset("incognito") {
   sources = [
     "incognito.symbolset/Contents.json",

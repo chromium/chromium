@@ -33,15 +33,19 @@
   self.indicatorHidden ? [cell hideActivityIndicator]
                        : [cell showActivityIndicator];
   if (self.enabled) {
-    [cell setLeadingImage:self.leadingImage
-            withTintColor:self.leadingImageTintColor];
+    [cell setLeadingIconImage:self.leadingIcon
+                    tintColor:self.leadingIconTintColor
+              backgroundColor:self.leadingIconBackgroundColor
+                 cornerRadius:self.leadingIconCornerRadius];
     [cell setTrailingImage:self.trailingImage
              withTintColor:self.trailingImageTintColor];
     cell.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     cell.accessibilityTraits &= ~UIAccessibilityTraitNotEnabled;
   } else {
-    [cell setLeadingImage:self.leadingImage
-            withTintColor:[UIColor colorNamed:kTextSecondaryColor]];
+    [cell setLeadingIconImage:self.leadingIcon
+                    tintColor:[UIColor colorNamed:kTextSecondaryColor]
+              backgroundColor:self.leadingIconBackgroundColor
+                 cornerRadius:self.leadingIconCornerRadius];
     [cell setTrailingImage:self.trailingImage
              withTintColor:[UIColor colorNamed:kTextSecondaryColor]];
     cell.textLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];

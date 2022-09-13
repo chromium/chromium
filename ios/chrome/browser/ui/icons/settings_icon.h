@@ -9,6 +9,7 @@
 
 // Custom symbol names.
 extern NSString* const kSyncDisabledSymbol;
+extern NSString* const kSafetyCheckSymbol;
 
 // Default symbol names.
 extern NSString* const kSyncErrorSymbol;

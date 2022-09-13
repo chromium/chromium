@@ -244,8 +244,8 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
                                                  kLeadingSymbolImagePointSize)
             : [[UIImage imageNamed:@"settings_info"]
                   imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    _updateCheckItem.leadingImage = updateCheckIcon;
-    _updateCheckItem.leadingImageTintColor = [UIColor colorNamed:kGrey400Color];
+    _updateCheckItem.leadingIcon = updateCheckIcon;
+    _updateCheckItem.leadingIconTintColor = [UIColor colorNamed:kGrey400Color];
     _updateCheckItem.enabled = YES;
     _updateCheckItem.indicatorHidden = YES;
     _updateCheckItem.infoButtonHidden = YES;
@@ -271,8 +271,8 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
             : @"legacy_password_key";
     UIImage* passwordCheckIcon = [[UIImage imageNamed:imageName]
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    _passwordCheckItem.leadingImage = passwordCheckIcon;
-    _passwordCheckItem.leadingImageTintColor =
+    _passwordCheckItem.leadingIcon = passwordCheckIcon;
+    _passwordCheckItem.leadingIconTintColor =
         [UIColor colorNamed:kGrey400Color];
     _passwordCheckItem.enabled = YES;
     _passwordCheckItem.indicatorHidden = YES;
@@ -297,8 +297,8 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
     UIImage* safeBrowsingCheckIcon =
         [[UIImage imageNamed:@"settings_safe_browsing"]
             imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    _safeBrowsingCheckItem.leadingImage = safeBrowsingCheckIcon;
-    _safeBrowsingCheckItem.leadingImageTintColor =
+    _safeBrowsingCheckItem.leadingIcon = safeBrowsingCheckIcon;
+    _safeBrowsingCheckItem.leadingIconTintColor =
         [UIColor colorNamed:kGrey400Color];
     _safeBrowsingCheckItem.enabled = YES;
     _safeBrowsingCheckItem.indicatorHidden = YES;

@@ -710,20 +710,32 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 }
 
 - (TableViewItem*)signinDisabledByPolicyTextItem {
-  TableViewInfoButtonItem* signinDisabledItem = [[TableViewInfoButtonItem alloc]
-      initWithType:SettingsItemTypeSigninDisabled];
-  signinDisabledItem.text =
-      l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_TITLE);
-  signinDisabledItem.statusText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-  signinDisabledItem.accessibilityHint =
-      l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
-  signinDisabledItem.iconTintColor = [UIColor colorNamed:kGrey300Color];
-  signinDisabledItem.accessibilityIdentifier = kSettingsSignInDisabledCellId;
+  TableViewInfoButtonItem* signinDisabledItem =
+      [self infoButtonWithType:SettingsItemTypeSigninDisabled
+                             text:l10n_util::GetNSString(
+                                      IDS_IOS_SIGN_IN_TO_CHROME_SETTING_TITLE)
+                           status:l10n_util::GetNSString(IDS_IOS_SETTING_OFF)
+                            image:nil
+                  imageBackground:nil
+                accessibilityHint:
+                    l10n_util::GetNSString(
+                        IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT)
+          accessibilityIdentifier:kSettingsSignInDisabledCellId];
   signinDisabledItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
   return signinDisabledItem;
 }
 
 - (TableViewItem*)googleServicesCellItem {
+  if (UseSymbols()) {
+    // TODO(crbug.com/1315544): The icon should be updated.
+    return [self detailItemWithType:SettingsItemTypeGoogleServices
+                               text:l10n_util::GetNSString(
+                                        IDS_IOS_GOOGLE_SERVICES_SETTINGS_TITLE)
+                         detailText:nil
+                             symbol:nil
+              symbolBackgroundColor:UIColor.clearColor
+            accessibilityIdentifier:kSettingsGoogleServicesCellId];
+  }
   return [self detailItemWithType:SettingsItemTypeGoogleServices
                              text:l10n_util::GetNSString(
                                       IDS_IOS_GOOGLE_SERVICES_SETTINGS_TITLE)
@@ -733,19 +745,24 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 }
 
 - (TableViewItem*)syncDisabledByPolicyItem {
-  TableViewInfoButtonItem* syncItem =
-      [[TableViewInfoButtonItem alloc] initWithType:SettingsItemTypeGoogleSync];
-  syncItem.text = l10n_util::GetNSString(IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE);
-  syncItem.statusText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-  syncItem.accessibilityHint =
-      l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
-  syncItem.accessibilityIdentifier = kSettingsGoogleSyncAndServicesCellId;
+  UIImage* image = nil;
+  UIColor* backgroundColor = nil;
   if (UseSymbols()) {
-    // TODO(crbug.com/1315544): Add icon.
+    image = CustomSettingsRootSymbol(kSyncDisabledSymbol);
+    backgroundColor = [UIColor colorNamed:kGrey400Color];
   } else {
-    syncItem.iconImage = [UIImage imageNamed:kSyncOffImageName];
+    image = [UIImage imageNamed:kSyncOffImageName];
   }
-  return syncItem;
+  return [self infoButtonWithType:SettingsItemTypeGoogleSync
+                             text:l10n_util::GetNSString(
+                                      IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE)
+                           status:l10n_util::GetNSString(IDS_IOS_SETTING_OFF)
+                            image:image
+                  imageBackground:backgroundColor
+                accessibilityHint:
+                    l10n_util::GetNSString(
+                        IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT)
+          accessibilityIdentifier:kSettingsGoogleSyncAndServicesCellId];
 }
 
 - (TableViewItem*)syncItem {
@@ -825,23 +842,27 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 }
 
 - (TableViewInfoButtonItem*)managedSearchEngineItem {
-  _managedSearchEngineItem = [[TableViewInfoButtonItem alloc]
-      initWithType:SettingsItemTypeManagedDefaultSearchEngine];
-  _managedSearchEngineItem.text =
-      l10n_util::GetNSString(IDS_IOS_SEARCH_ENGINE_SETTING_TITLE);
+  UIImage* image = nil;
+  UIColor* backgroundColor = nil;
   if (UseSymbols()) {
-    // TODO(crbug.com/1315544): Add icon.
+    image = DefaultSettingsRootSymbol(kSearchSymbol);
+    backgroundColor = [UIColor colorNamed:kPurple500Color];
   } else {
-    _managedSearchEngineItem.iconImage =
-        [UIImage imageNamed:kSettingsSearchEngineImageName];
+    image = [UIImage imageNamed:kSettingsSearchEngineImageName];
   }
-  _managedSearchEngineItem.accessibilityHint =
-      l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
 
-  _managedSearchEngineItem.statusText = [self managedSearchEngineDetailText];
+  _managedSearchEngineItem =
+      [self infoButtonWithType:SettingsItemTypeManagedDefaultSearchEngine
+                             text:l10n_util::GetNSString(
+                                      IDS_IOS_SEARCH_ENGINE_SETTING_TITLE)
+                           status:[self managedSearchEngineDetailText]
+                            image:image
+                  imageBackground:backgroundColor
+                accessibilityHint:
+                    l10n_util::GetNSString(
+                        IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT)
+          accessibilityIdentifier:kSettingsManagedSearchEngineCellId];
 
-  _managedSearchEngineItem.accessibilityIdentifier =
-      kSettingsManagedSearchEngineCellId;
   return _managedSearchEngineItem;
 }
 
@@ -861,12 +882,11 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
           : l10n_util::GetNSString(IDS_IOS_PASSWORDS);
 
   if (UseSymbols()) {
-    // TODO(crbug.com/1315544): Update this placeholder symbol.
     _passwordsDetailItem =
         [self detailItemWithType:SettingsItemTypePasswords
                                text:passwordsSectionTitle
                          detailText:passwordsDetail
-                             symbol:DefaultSettingsRootSymbol(@"key.fill")
+                             symbol:CustomSettingsRootSymbol(kPasswordSymbol)
               symbolBackgroundColor:[UIColor colorNamed:kYellow500Color]
             accessibilityIdentifier:kSettingsPasswordsCellId];
   } else {
@@ -984,11 +1004,18 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   _safetyCheckItem.trailingImage = nil;
   _safetyCheckItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   if (UseSymbols()) {
-    // TODO(crbug.com/1315544): Use symbol.
+    // TODO(crbug.com/1315544): This is probably not the right icon (same as the
+    // default one).
+    _safetyCheckItem.leadingIcon = CustomSettingsRootSymbol(kSafetyCheckSymbol);
+    _safetyCheckItem.leadingIconBackgroundColor =
+        [UIColor colorNamed:kBlue500Color];
+    _safetyCheckItem.leadingIconTintColor = UIColor.whiteColor;
+    _safetyCheckItem.leadingIconCornerRadius =
+        kColorfulBackgroundSymbolCornerRadius;
   } else {
     UIImage* safetyCheckIcon =
         [UIImage imageNamed:kSettingsSafetyCheckImageName];
-    _safetyCheckItem.leadingImage = safetyCheckIcon;
+    _safetyCheckItem.leadingIcon = safetyCheckIcon;
   }
   // Check if an issue state should be shown for updates.
   if (!IsAppUpToDate() && PreviousSafetyCheckIssueFound()) {
@@ -1024,6 +1051,56 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
                        detailText:nil
                     iconImageName:kSettingsPrivacyImageName
           accessibilityIdentifier:kSettingsPrivacyCellId];
+}
+
+- (TableViewSwitchItem*)feedSettingsItem {
+  if (!_feedSettingsItem) {
+    NSString* settingTitle = [self feedItemTitle];
+
+    if (UseSymbols()) {
+      _feedSettingsItem =
+          [self switchItemWithType:SettingsItemTypeArticlesForYou
+                                title:settingTitle
+                               symbol:DefaultSettingsRootSymbol(kDiscoverSymbol)
+                symbolBackgroundColor:[UIColor colorNamed:kOrange500Color]
+              accessibilityIdentifier:kSettingsArticleSuggestionsCellId];
+    } else {
+      _feedSettingsItem =
+          [self switchItemWithType:SettingsItemTypeArticlesForYou
+                                title:settingTitle
+                        iconImageName:kSettingsArticleSuggestionsImageName
+              accessibilityIdentifier:kSettingsArticleSuggestionsCellId];
+    }
+    _feedSettingsItem.on = [_articlesEnabled value];
+  }
+  return _feedSettingsItem;
+}
+
+- (TableViewInfoButtonItem*)managedFeedSettingsItem {
+  if (!_managedFeedSettingsItem) {
+    UIImage* image = nil;
+    UIColor* backgroundColor = nil;
+    if (UseSymbols()) {
+      image = DefaultSettingsRootSymbol(kDiscoverSymbol);
+      backgroundColor = [UIColor colorNamed:kOrange500Color];
+    } else {
+      _managedFeedSettingsItem.iconImage =
+          [UIImage imageNamed:kSettingsArticleSuggestionsImageName];
+    }
+
+    _managedFeedSettingsItem =
+        [self infoButtonWithType:SettingsItemTypeManagedArticlesForYou
+                               text:[self feedItemTitle]
+                             status:l10n_util::GetNSString(IDS_IOS_SETTING_OFF)
+                              image:image
+                    imageBackground:backgroundColor
+                  accessibilityHint:
+                      l10n_util::GetNSString(
+                          IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT)
+            accessibilityIdentifier:kSettingsArticleSuggestionsCellId];
+  }
+
+  return _managedFeedSettingsItem;
 }
 
 - (TableViewItem*)languageSettingsDetailItem {
@@ -1101,74 +1178,58 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 }
 
 - (TableViewSwitchItem*)showMemoryDebugSwitchItem {
-  TableViewSwitchItem* showMemoryDebugSwitchItem =
-      [self switchItemWithType:SettingsItemTypeMemoryDebugging
-                            title:@"Show memory debug tools"
-                    iconImageName:kSettingsDebugImageName
-                  withDefaultsKey:nil
-          accessibilityIdentifier:nil];
+  TableViewSwitchItem* showMemoryDebugSwitchItem;
+  if (UseSymbols()) {
+    showMemoryDebugSwitchItem =
+        [self switchItemWithType:SettingsItemTypeMemoryDebugging
+                              title:@"Show memory debug tools"
+                             symbol:DefaultSettingsRootSymbol(@"memorychip")
+              symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
+            accessibilityIdentifier:nil];
+  } else {
+    showMemoryDebugSwitchItem =
+        [self switchItemWithType:SettingsItemTypeMemoryDebugging
+                              title:@"Show memory debug tools"
+                      iconImageName:kSettingsDebugImageName
+            accessibilityIdentifier:nil];
+  }
   showMemoryDebugSwitchItem.on = [_showMemoryDebugToolsEnabled value];
 
   return showMemoryDebugSwitchItem;
 }
 
-- (TableViewSwitchItem*)feedSettingsItem {
-  if (!_feedSettingsItem) {
-    NSString* settingTitle = [self feedItemTitle];
-
-    _feedSettingsItem =
-        [self switchItemWithType:SettingsItemTypeArticlesForYou
-                              title:settingTitle
-                      iconImageName:kSettingsArticleSuggestionsImageName
-                    withDefaultsKey:nil
-            accessibilityIdentifier:kSettingsArticleSuggestionsCellId];
-    _feedSettingsItem.on = [_articlesEnabled value];
-  }
-  return _feedSettingsItem;
-}
-
-- (TableViewInfoButtonItem*)managedFeedSettingsItem {
-  if (!_managedFeedSettingsItem) {
-    NSString* settingTitle = [self feedItemTitle];
-
-    _managedFeedSettingsItem = [[TableViewInfoButtonItem alloc]
-        initWithType:SettingsItemTypeManagedArticlesForYou];
-    _managedFeedSettingsItem.text = settingTitle;
-    _managedFeedSettingsItem.statusText =
-        l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-    _managedFeedSettingsItem.accessibilityIdentifier =
-        kSettingsArticleSuggestionsCellId;
-    _managedFeedSettingsItem.accessibilityHint = l10n_util::GetNSString(
-        IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
-
-    if (UseSymbols()) {
-      _managedFeedSettingsItem.iconImage =
-          DefaultSettingsRootSymbol(kDiscoverSymbol);
-      _managedFeedSettingsItem.iconTintColor =
-          [UIColor colorNamed:kOrange500Color];
-      _managedFeedSettingsItem.iconTintColor = UIColor.whiteColor;
-      _managedFeedSettingsItem.iconCornerRadius =
-          kColorfulBackgroundSymbolCornerRadius;
-    } else {
-      _managedFeedSettingsItem.iconImage =
-          [UIImage imageNamed:kSettingsArticleSuggestionsImageName];
-    }
-  }
-
-  return _managedFeedSettingsItem;
-}
-
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
 
 - (TableViewSwitchItem*)viewSourceSwitchItem {
-  return [self switchItemWithType:SettingsItemTypeViewSource
-                            title:@"View source menu"
-                    iconImageName:kSettingsDebugImageName
-                  withDefaultsKey:kDevViewSourceKey
-          accessibilityIdentifier:nil];
+  TableViewSwitchItem* viewSourceItem = nil;
+  if (UseSymbols()) {
+    viewSourceItem = [self
+             switchItemWithType:SettingsItemTypeViewSource
+                          title:@"View source menu"
+                         symbol:DefaultSettingsRootSymbol(@"keyboard.badge.eye")
+          symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
+        accessibilityIdentifier:nil];
+
+  } else {
+    viewSourceItem = [self switchItemWithType:SettingsItemTypeViewSource
+                                        title:@"View source menu"
+                                iconImageName:kSettingsDebugImageName
+                      accessibilityIdentifier:nil];
+  }
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  viewSourceItem.on = [defaults boolForKey:kDevViewSourceKey];
+  return viewSourceItem;
 }
 
 - (TableViewDetailIconItem*)tableViewCatalogDetailItem {
+  if (UseSymbols()) {
+    return [self detailItemWithType:SettingsItemTypeTableCellCatalog
+                               text:@"TableView Cell Catalog"
+                         detailText:nil
+                             symbol:DefaultSettingsRootSymbol(@"cart")
+              symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
+            accessibilityIdentifier:nil];
+  }
   return [self detailItemWithType:SettingsItemTypeTableCellCatalog
                              text:@"TableView Cell Catalog"
                        detailText:nil
@@ -1185,6 +1246,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
                                  iconImageName:(NSString*)iconImageName
                        accessibilityIdentifier:
                            (NSString*)accessibilityIdentifier {
+  DCHECK(!UseSymbols());
   TableViewDetailIconItem* detailItem =
       [[TableViewDetailIconItem alloc] initWithType:type];
   detailItem.text = text;
@@ -1204,6 +1266,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
                          symbolBackgroundColor:(UIColor*)backgroundColor
                        accessibilityIdentifier:
                            (NSString*)accessibilityIdentifier {
+  DCHECK(UseSymbols());
   TableViewDetailIconItem* detailItem =
       [[TableViewDetailIconItem alloc] initWithType:type];
   detailItem.text = text;
@@ -1221,20 +1284,58 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 - (TableViewSwitchItem*)switchItemWithType:(NSInteger)type
                                      title:(NSString*)title
                              iconImageName:(NSString*)iconImageName
-                           withDefaultsKey:(NSString*)key
                    accessibilityIdentifier:(NSString*)accessibilityIdentifier {
+  DCHECK(!UseSymbols());
   TableViewSwitchItem* switchItem =
       [[TableViewSwitchItem alloc] initWithType:type];
   switchItem.text = title;
-  switchItem.iconImageName = iconImageName;
+  switchItem.iconImage = [UIImage imageNamed:iconImageName];
   switchItem.accessibilityIdentifier = accessibilityIdentifier;
 
-  if (key) {
-    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-    switchItem.on = [defaults boolForKey:key];
-  }
+  return switchItem;
+}
+
+- (TableViewSwitchItem*)switchItemWithType:(NSInteger)type
+                                     title:(NSString*)title
+                                    symbol:(UIImage*)symbol
+                     symbolBackgroundColor:(UIColor*)backgroundColor
+                   accessibilityIdentifier:(NSString*)accessibilityIdentifier {
+  DCHECK(UseSymbols());
+  TableViewSwitchItem* switchItem =
+      [[TableViewSwitchItem alloc] initWithType:type];
+  switchItem.text = title;
+  switchItem.iconImage = symbol;
+  switchItem.iconTintColor = UIColor.whiteColor;
+  switchItem.iconBackgroundColor = backgroundColor;
+  switchItem.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
+  switchItem.accessibilityIdentifier = accessibilityIdentifier;
 
   return switchItem;
+}
+
+- (TableViewInfoButtonItem*)infoButtonWithType:(NSInteger)type
+                                          text:(NSString*)text
+                                        status:(NSString*)status
+                                         image:(UIImage*)image
+                               imageBackground:(UIColor*)imageBackground
+                             accessibilityHint:(NSString*)accessibilityHint
+                       accessibilityIdentifier:
+                           (NSString*)accessibilityIdentifier {
+  TableViewInfoButtonItem* infoButton =
+      [[TableViewInfoButtonItem alloc] initWithType:type];
+  infoButton.text = text;
+  infoButton.statusText = status;
+  if (image)
+    infoButton.iconImage = image;
+  if (UseSymbols()) {
+    DCHECK(imageBackground);
+    infoButton.iconBackgroundColor = imageBackground;
+    infoButton.iconTintColor = UIColor.whiteColor;
+    infoButton.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
+  }
+  infoButton.accessibilityHint = accessibilityHint;
+  infoButton.accessibilityIdentifier = accessibilityIdentifier;
+  return infoButton;
 }
 
 #pragma mark - UITableViewDataSource
@@ -1762,7 +1863,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       if (UseSymbols()) {
         googleSyncItem.iconImage =
             CustomSettingsRootSymbol(kSyncDisabledSymbol);
-        googleSyncItem.iconBackgroundColor = [UIColor colorNamed:kGrey500Color];
+        googleSyncItem.iconBackgroundColor = [UIColor colorNamed:kGrey400Color];
         googleSyncItem.iconTintColor = UIColor.whiteColor;
         googleSyncItem.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
 

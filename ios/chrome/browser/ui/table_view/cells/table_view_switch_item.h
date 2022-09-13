@@ -11,8 +11,18 @@
 
 // TableViewSwitchItem is a model class that uses TableViewSwitchCell.
 @interface TableViewSwitchItem : TableViewItem
-// The filename for the leading icon.  If empty, no icon will be shown.
-@property(nonatomic, copy) NSString* iconImageName;
+
+// The leading icon.  If empty, no icon will be shown.
+@property(nonatomic, copy) UIImage* iconImage;
+
+// The background color of the icon.
+@property(nonatomic, strong) UIColor* iconBackgroundColor;
+
+// The corner radius of the UIImage view.
+@property(nonatomic, assign) CGFloat iconCornerRadius;
+
+// The tint color of the icon.
+@property(nonatomic, strong) UIColor* iconTintColor;
 
 // The text to display.
 @property(nonatomic, copy) NSString* text;

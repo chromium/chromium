@@ -14,6 +14,7 @@ const CGFloat kSettingsRootSymbolImagePointSize = 18;
 
 // Custom symbol names.
 NSString* const kSyncDisabledSymbol = @"arrow_triangle_slash_circlepath";
+NSString* const kSafetyCheckSymbol = @"checkerboard_shield";
 
 // Default symbol names.
 NSString* const kSyncErrorSymbol =

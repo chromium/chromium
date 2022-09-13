@@ -475,7 +475,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   checkFinishedWithLeadingImage.detailText =
       @"This is very long description of check item. Another line of "
       @"description.";
-  checkFinishedWithLeadingImage.leadingImage = [[ChromeIcon infoIcon]
+  checkFinishedWithLeadingImage.leadingIcon = [[ChromeIcon infoIcon]
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   checkFinishedWithLeadingImage.enabled = YES;
   checkFinishedWithLeadingImage.indicatorHidden = YES;
@@ -500,7 +500,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   checkDisabledWithLeadingImage.detailText =
       @"This is very long description of check item. Another line of "
       @"description.";
-  checkDisabledWithLeadingImage.leadingImage = [[ChromeIcon infoIcon]
+  checkDisabledWithLeadingImage.leadingIcon = [[ChromeIcon infoIcon]
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   checkDisabledWithLeadingImage.enabled = NO;
   [model addItem:checkDisabledWithLeadingImage

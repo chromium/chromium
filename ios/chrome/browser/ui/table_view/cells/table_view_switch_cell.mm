@@ -53,6 +53,7 @@ const CGFloat kSwitchTrailingPadding = 22;
 
     _iconImageView = [[UIImageView alloc] init];
     _iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    _iconImageView.contentMode = UIViewContentModeCenter;
     _iconImageView.hidden = YES;
     [self.contentView addSubview:_iconImageView];
 
@@ -174,11 +175,15 @@ const CGFloat kSwitchTrailingPadding = 22;
              : [UIColor colorNamed:kTextPrimaryColor];
 }
 
-- (void)setIconImage:(UIImage*)image {
+- (void)setIconImage:(UIImage*)image
+           tintColor:(UIColor*)tintColor
+     backgroundColor:(UIColor*)backgroundColor
+        cornerRadius:(CGFloat)cornerRadius {
   BOOL hidden = (image == nil);
-  if (hidden == self.iconImageView.hidden) {
-    return;
-  }
+
+  self.iconImageView.tintColor = tintColor;
+  self.iconImageView.backgroundColor = backgroundColor;
+  self.iconImageView.layer.cornerRadius = cornerRadius;
 
   self.iconImageView.image = image;
   self.iconImageView.hidden = hidden;
@@ -218,7 +223,7 @@ const CGFloat kSwitchTrailingPadding = 22;
 
   self.textLabel.text = nil;
   self.detailTextLabel.text = nil;
-  [self setIconImage:nil];
+  [self setIconImage:nil tintColor:nil backgroundColor:nil cornerRadius:0];
   [_switchView removeTarget:nil
                      action:nil
            forControlEvents:[_switchView allControlEvents]];
