@@ -101,6 +101,7 @@ struct OverflowMenuDestinationList: View {
             }
           }
         }
+        .animation(nil)
         .background(uiConfiguration.highlightDestinationsRow ? Color.blueHalo : Color.clear)
         .animation(.linear(duration: kMaterialDuration3))
         .coordinateSpace(name: Constants.coordinateSpaceName)
