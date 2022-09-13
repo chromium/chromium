@@ -192,10 +192,12 @@ class PrintContextFrameTest : public PrintContextTest {
 
 #define EXPECT_SKRECT_EQ(expectedX, expectedY, expectedWidth, expectedHeight, \
                          actualRect)                                          \
-  EXPECT_EQ(expectedX, actualRect.x());                                       \
-  EXPECT_EQ(expectedY, actualRect.y());                                       \
-  EXPECT_EQ(expectedWidth, actualRect.width());                               \
-  EXPECT_EQ(expectedHeight, actualRect.height());
+  do {                                                                        \
+    EXPECT_EQ(expectedX, actualRect.x());                                     \
+    EXPECT_EQ(expectedY, actualRect.y());                                     \
+    EXPECT_EQ(expectedWidth, actualRect.width());                             \
+    EXPECT_EQ(expectedHeight, actualRect.height());                           \
+  } while (false)
 
 INSTANTIATE_PAINT_TEST_SUITE_P(PrintContextTest);
 
@@ -237,19 +239,22 @@ TEST_P(PrintContextTest, LinkTargetUnderAnonymousBlockBeforeBlock) {
 }
 
 TEST_P(PrintContextTest, LinkTargetContainingABlock) {
-  GetDocument().SetCompatibilityMode(Document::kQuirksMode);
   MockPageContextCanvas canvas;
   SetBodyInnerHTML(
-      "<div style='padding-top: 50px'>" +
+      "<div style='padding-top: 50px; width:555px;'>" +
       InlineHtmlForLink("http://www.google2.com",
-                        "<div style='width:133; height: 30'>BLOCK</div>") +
+                        "<div style='width:133px; height: 30px'>BLOCK</div>") +
       "</div>");
   PrintSinglePage(canvas);
   const Vector<MockPageContextCanvas::Operation>& operations =
       canvas.RecordedOperations();
   ASSERT_EQ(1u, operations.size());
   EXPECT_EQ(MockPageContextCanvas::kDrawRect, operations[0].type);
-  EXPECT_SKRECT_EQ(0, 50, 133, 30, operations[0].rect);
+  // Block-in-inline behaves differently in LayoutNG.
+  if (RuntimeEnabledFeatures::LayoutNGPrintingEnabled())
+    EXPECT_SKRECT_EQ(0, 50, 555, 30, operations[0].rect);
+  else
+    EXPECT_SKRECT_EQ(0, 50, 133, 30, operations[0].rect);
 }
 
 TEST_P(PrintContextTest, LinkTargetUnderInInlines) {
