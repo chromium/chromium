@@ -43,6 +43,7 @@ class LayoutSVGFilterPrimitive final : public LayoutObject {
     return false;
   }
 
+  void WillBeDestroyed() override;
   void StyleDidChange(StyleDifference, const ComputedStyle*) override;
   void UpdateLayout() override;
 
