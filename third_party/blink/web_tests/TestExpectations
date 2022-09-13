@@ -1659,7 +1659,6 @@ crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-headers-a
 crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-headers-and-footers-larger-than-page.html [ Crash Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-overflow-scroll.html [ Crash Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/flexbox-with-overflow-in-bottom-aligned-fixedpos.html [ Crash Failure ]
-crbug.com/1121942 virtual/layout_ng_printing/printing/forced-break-tree-dump-only.html [ Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/multi-page-background.html [ Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/single-line-must-not-be-split-into-two-pages.html [ Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/webgl-oversized-printing.html [ Skip ]
