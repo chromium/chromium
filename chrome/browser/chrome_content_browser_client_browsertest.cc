@@ -107,6 +107,68 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientBrowserTest,
   EXPECT_EQ(url, entry->GetVirtualURL());
 }
 
+class TopChromeChromeContentBrowserClientTest
+    : public ChromeContentBrowserClientBrowserTest {
+ public:
+  TopChromeChromeContentBrowserClientTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kTopChromeWebUIUsesSpareRenderer);
+  }
+
+  // ChromeContentBrowserClientBrowserTest:
+  void SetUpOnMainThread() override {
+    ChromeContentBrowserClientBrowserTest::SetUpOnMainThread();
+    client_ = static_cast<ChromeContentBrowserClient*>(
+        content::SetBrowserClientForTesting(nullptr));
+    content::SetBrowserClientForTesting(client_);
+  }
+
+  ChromeContentBrowserClient* client() { return client_; }
+
+ private:
+  raw_ptr<ChromeContentBrowserClient> client_ = nullptr;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TopChromeChromeContentBrowserClientTest,
+                       ShouldUseSpareRendererWhenNoTopChromePagesPresent) {
+  const GURL top_chrome_url(chrome::kChromeUITabSearchURL);
+  const GURL non_top_chrome_url(chrome::kChromeUINewTabPageURL);
+
+  const auto navigate_browser = [&](const GURL& url) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    content::NavigationEntry* entry = browser()
+                                          ->tab_strip_model()
+                                          ->GetWebContentsAt(0)
+                                          ->GetController()
+                                          .GetLastCommittedEntry();
+    ASSERT_NE(nullptr, entry);
+    EXPECT_EQ(url, entry->GetURL());
+    EXPECT_EQ(url, entry->GetVirtualURL());
+  };
+
+  // Initially there will be no top chrome pages and the client should return
+  // true for using the spare renderer.
+  EXPECT_TRUE(client()->ShouldUseSpareRenderProcessHost(browser()->profile(),
+                                                        top_chrome_url));
+
+  // Navigate to a top chrome URL.
+  navigate_browser(top_chrome_url);
+
+  // The browser now hosts a top chrome page and the client should return false
+  // for using the spare renderer.
+  EXPECT_FALSE(client()->ShouldUseSpareRenderProcessHost(browser()->profile(),
+                                                         top_chrome_url));
+
+  // Navigate away from the top chrome page.
+  navigate_browser(non_top_chrome_url);
+
+  // There will no longer be any top chrome pages hosted by the browser and the
+  // client should return true for using the spare renderer.
+  EXPECT_TRUE(client()->ShouldUseSpareRenderProcessHost(browser()->profile(),
+                                                        top_chrome_url));
+}
+
 // Helper class to mark "https://ntp.com/" as an isolated origin.
 class IsolatedOriginNTPBrowserTest : public InProcessBrowserTest,
                                      public InstantTestBase {

@@ -178,6 +178,8 @@ extern const base::Feature kTabSearchUseMetricsReporter;
 // Works on Android 10+.
 extern const base::Feature kToolbarUseHardwareBitmapDraw;
 
+extern const base::Feature kTopChromeWebUIUsesSpareRenderer;
+
 extern const base::Feature kUnifiedSidePanel;
 
 extern const base::Feature kWebUIBubblePerProfilePersistence;

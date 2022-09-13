@@ -256,6 +256,11 @@ const base::Feature kTabSearchUseMetricsReporter{
 const base::Feature kToolbarUseHardwareBitmapDraw{
     "ToolbarUseHardwareBitmapDraw", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether top chrome pages will use the spare renderer if no top
+// chrome renderers are present.
+const base::Feature kTopChromeWebUIUsesSpareRenderer{
+    "TopChromeWebUIUsesSpareRenderer", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kUnifiedSidePanel{"UnifiedSidePanel",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
