@@ -30,6 +30,8 @@ extern const char kApplicationLocale[];
 
 #if BUILDFLAG(IS_ANDROID)
 extern const char kAppLanguagePromptShown[];
+
+extern const char kULPLanguages[];
 #endif
 
 }  // namespace prefs

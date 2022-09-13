@@ -52,6 +52,7 @@ void LanguagePrefs::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       language::prefs::kAppLanguagePromptShown, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterListPref(language::prefs::kULPLanguages);
 #endif
 }
 
@@ -136,6 +137,26 @@ void LanguagePrefs::UpdateAcceptLanguagesPref() {
                       deduplicated_languages_string);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+std::vector<std::string> LanguagePrefs::GetULPLanguages() {
+  std::vector<std::string> ulp_languages;
+  for (const auto& language : prefs_->GetList(language::prefs::kULPLanguages)) {
+    ulp_languages.push_back(language.GetString());
+  }
+  return ulp_languages;
+}
+
+void LanguagePrefs::SetULPLanguages(std::vector<std::string> ulp_languages) {
+  ListPrefUpdate update(prefs_, language::prefs::kULPLanguages);
+  base::Value::List& ulp_pref_list = update->GetList();
+  ulp_pref_list.clear();
+  ulp_pref_list.reserve(ulp_languages.size());
+  for (const auto& language : ulp_languages) {
+    ulp_pref_list.Append(language);
+  }
+}
+#endif
+
 bool LanguagePrefs::IsForcedLanguage(const std::string& language) {
   return forced_languages_set_.find(language) != forced_languages_set_.end();
 }
@@ -155,6 +176,9 @@ void ResetLanguagePrefs(PrefService* prefs) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   prefs->ClearPref(language::prefs::kPreferredLanguages);
   prefs->ClearPref(language::prefs::kPreferredLanguagesSyncable);
+#endif
+#if BUILDFLAG(IS_ANDROID)
+  prefs->ClearPref(language::prefs::kULPLanguages);
 #endif
 }
 

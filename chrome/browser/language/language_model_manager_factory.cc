@@ -39,13 +39,12 @@ namespace {
 
 #if BUILDFLAG(IS_ANDROID)
 // Records per-initialization ULP-related metrics.
-void RecordULPInitMetrics(Profile* profile,
+void RecordULPInitMetrics(PrefService* pref_service,
                           const std::vector<std::string>& ulp_languages) {
   language::ULPMetricsLogger logger;
 
   logger.RecordInitiationLanguageCount(ulp_languages.size());
 
-  PrefService* pref_service = profile->GetPrefs();
   const std::string app_locale = g_browser_process->GetApplicationLocale();
   logger.RecordInitiationUILanguageInULP(
       ULPMetricsLogger::DetermineLanguageStatus(app_locale, ulp_languages));
@@ -84,7 +83,9 @@ void RecordULPInitMetrics(Profile* profile,
 
 void CreateAndAddULPLanguageModel(Profile* profile,
                                   std::vector<std::string> languages) {
-  RecordULPInitMetrics(profile, languages);
+  PrefService* pref_service = profile->GetPrefs();
+  RecordULPInitMetrics(pref_service, languages);
+  language::LanguagePrefs(pref_service).SetULPLanguages(languages);
 
   std::unique_ptr<language::ULPLanguageModel> ulp_model =
       std::make_unique<language::ULPLanguageModel>();

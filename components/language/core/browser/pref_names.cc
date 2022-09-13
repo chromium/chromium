@@ -35,6 +35,8 @@ const char kApplicationLocale[] = "intl.app_locale";
 
 #if BUILDFLAG(IS_ANDROID)
 const char kAppLanguagePromptShown[] = "language.app_language_prompt_shown";
+
+const char kULPLanguages[] = "language.ulp_languages";
 #endif
 
 }  // namespace prefs
