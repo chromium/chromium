@@ -13,6 +13,8 @@
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "ui/events/event_utils.h"
+#include "ui/views/test/button_test_api.h"
 
 class DiscardMockNavigationHandle : public content::MockNavigationHandle {
  public:
@@ -85,6 +87,36 @@ TEST_F(HighEfficiencyChipViewTest, ShouldNotShowForRegularPage) {
 
   PageActionIconView* view = GetPageActionIconView();
   EXPECT_FALSE(view->GetVisible());
+}
+
+// When the page action chip is clicked, the dialog should open.
+TEST_F(HighEfficiencyChipViewTest, ShouldOpenDialogOnClick) {
+  SetTabDiscardState(true);
+
+  PageActionIconView* view = GetPageActionIconView();
+  EXPECT_EQ(view->GetBubble(), nullptr);
+
+  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                   ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi test_api(view);
+  test_api.NotifyClick(e);
+
+  EXPECT_NE(view->GetBubble(), nullptr);
+}
+
+// A link should be rendered within the dialog.
+TEST_F(HighEfficiencyChipViewTest, ShouldRenderLinkInDialog) {
+  SetTabDiscardState(true);
+
+  PageActionIconView* view = GetPageActionIconView();
+
+  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                   ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi test_api(view);
+  test_api.NotifyClick(e);
+
+  views::View* extra_view = view->GetBubble()->GetExtraView();
+  ASSERT_EQ(std::string(extra_view->GetClassName()), "Link");
 }
 
 // When the previous page was not previously discarded, the icon should not be

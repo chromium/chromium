@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/tab_discard_tab_helper.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/performance_controls/high_efficiency_bubble_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
@@ -43,6 +44,15 @@ HighEfficiencyChipView::HighEfficiencyChipView(
 
 HighEfficiencyChipView::~HighEfficiencyChipView() = default;
 
+void HighEfficiencyChipView::OnBubbleShown() {
+  PauseAnimation();
+}
+
+void HighEfficiencyChipView::OnBubbleHidden() {
+  UnpauseAnimation();
+  bubble_ = nullptr;
+}
+
 void HighEfficiencyChipView::UpdateImpl() {
   content::WebContents* const web_contents = GetWebContents();
   if (!web_contents) {
@@ -74,10 +84,8 @@ void HighEfficiencyChipView::UpdateImpl() {
 }
 
 void HighEfficiencyChipView::OnExecuting(
-    PageActionIconView::ExecuteSource execute_source) {}
-
-bool HighEfficiencyChipView::IsBubbleShowing() const {
-  return false;
+    PageActionIconView::ExecuteSource execute_source) {
+  bubble_ = HighEfficiencyBubbleView::ShowBubble(browser_, this, this);
 }
 
 const gfx::VectorIcon& HighEfficiencyChipView::GetVectorIcon() const {
@@ -85,7 +93,7 @@ const gfx::VectorIcon& HighEfficiencyChipView::GetVectorIcon() const {
 }
 
 views::BubbleDialogDelegate* HighEfficiencyChipView::GetBubble() const {
-  return nullptr;
+  return bubble_;
 }
 
 std::u16string HighEfficiencyChipView::GetTextForTooltipAndAccessibleName()
