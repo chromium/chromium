@@ -383,6 +383,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   plural_string_handler->AddLocalizedString(
       "importPasswordsSuccessSummaryAccount",
       IDS_SETTINGS_PASSWORDS_IMPORT_SUCCESS_SUMMARY_ACCOUNT);
+  plural_string_handler->AddLocalizedString(
+      "importPasswordsBadRowsFormat",
+      IDS_SETTINGS_PASSWORDS_IMPORT_BAD_ROWS_FORMAT);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
 
   // Add the metrics handler to write uma stats.

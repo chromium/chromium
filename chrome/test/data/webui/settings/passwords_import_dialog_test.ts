@@ -226,6 +226,21 @@ suite('PasswordsImportDialog', function() {
         importDialog.i18n('importPasswordsLimitExceeded', 3000));
   });
 
+  test('hasCorrectFileSizeExceededState', async function() {
+    const importDialog = elementFactory.createPasswordsImportDialog();
+    assertEquals(ImportDialogState.START, importDialog.dialogState);
+    passwordManager.setImportResults({
+      status: chrome.passwordsPrivate.ImportResultsStatus.MAX_FILE_SIZE,
+      numberImported: 0,
+      failedImports: [],
+      fileName: 'test.csv',
+    });
+
+    await assertErrorStateAndClose(
+        importDialog, passwordManager,
+        importDialog.i18n('importPasswordsFileSizeExceeded'));
+  });
+
   test('hasCorrectSuccessStateWithFailures', async function() {
     const importDialog = elementFactory.createPasswordsImportDialog();
     assertEquals(ImportDialogState.START, importDialog.dialogState);
@@ -234,9 +249,54 @@ suite('PasswordsImportDialog', function() {
       numberImported: 42,
       failedImports: [
         {
+          status: chrome.passwordsPrivate.ImportEntryStatus.MISSING_PASSWORD,
+          username: 'username',
+          url: 'https://google.com',
+        },
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.MISSING_URL,
+          username: 'username',
+          url: '',
+        },
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.INVALID_URL,
+          username: 'username',
+          url: 'http/google.com',
+        },
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.LONG_URL,
+          username: 'username',
+          url: 'https://morethan2048chars.com',
+        },
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.NON_ASCII_URL,
+          username: 'username',
+          url: 'https://أهلا.com',
+        },
+        {
           status: chrome.passwordsPrivate.ImportEntryStatus.LONG_PASSWORD,
           username: 'username',
           url: 'https://google.com',
+        },
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.LONG_USERNAME,
+          username: 'morethan1000chars',
+          url: 'https://google.com',
+        },
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.CONFLICT_PROFILE,
+          username: 'username',
+          url: 'https://google.com',
+        },
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.CONFLICT_ACCOUNT,
+          username: 'username',
+          url: 'https://google.com',
+        },
+        {
+          status: chrome.passwordsPrivate.ImportEntryStatus.UNKNOWN_ERROR,
+          username: '',
+          url: '',
         },
       ],
       fileName: 'test.csv',
@@ -257,7 +317,7 @@ suite('PasswordsImportDialog', function() {
     assertTrue(!!failuresSummary);
 
     assertEquals(
-        importDialog.i18n('importPasswordsFailuresSummary', 1),
+        importDialog.i18n('importPasswordsFailuresSummary', 10),
         failuresSummary.textContent!.trim());
 
     const done = importDialog.shadowRoot!.querySelector<HTMLElement>('#done');

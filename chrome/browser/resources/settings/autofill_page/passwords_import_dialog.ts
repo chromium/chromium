@@ -79,6 +79,14 @@ export class PasswordsImportDialogElement extends
       },
 
       results_: Object,
+      failedImportsWithKnownErrors_: Array,
+
+      rowsWithUnknownErrorsSummary_: String,
+
+      showRowsWithUnknownErrorsSummary_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -87,6 +95,9 @@ export class PasswordsImportDialogElement extends
   isAccountStoreUser: boolean;
   accountEmail: string;
   private results_: chrome.passwordsPrivate.ImportResults|null;
+  private failedImportsWithKnownErrors_: chrome.passwordsPrivate.ImportEntry[];
+  private rowsWithUnknownErrorsSummary_: string;
+  private showRowsWithUnknownErrorsSummary_: boolean;
   // Refers both to syncing users with sync enabled for passwords and account
   // store users who choose to import passwords to their account.
   private passwordsSavedToAccount_: boolean;
@@ -162,13 +173,16 @@ export class PasswordsImportDialogElement extends
     this.results_ =
         await this.passwordManager_.importPasswords(destinationStore);
     this.inProgress_ = false;
-    // TODO(crbug/1325290): set appropriate string for MAX_FILE_SIZE.
     switch (this.results_.status) {
       case chrome.passwordsPrivate.ImportResultsStatus.SUCCESS:
         this.handleSuccess_();
         break;
-      case chrome.passwordsPrivate.ImportResultsStatus.IO_ERROR:
       case chrome.passwordsPrivate.ImportResultsStatus.MAX_FILE_SIZE:
+        this.$.descriptionText.textContent =
+            this.i18n('importPasswordsFileSizeExceeded');
+        this.dialogState = ImportDialogState.ERROR;
+        break;
+      case chrome.passwordsPrivate.ImportResultsStatus.IO_ERROR:
       case chrome.passwordsPrivate.ImportResultsStatus.UNKNOWN_ERROR:
         this.$.descriptionText.textContent =
             this.i18n('importPasswordsUnknownError');
@@ -203,6 +217,22 @@ export class PasswordsImportDialogElement extends
     assert(this.results_);
     if (!this.results_.failedImports.length) {
       this.setSuccessTip_();
+    } else {
+      const rowsWithUnknownErrorCount =
+          this.results_.failedImports
+              .filter(
+                  (entry) => entry.status ===
+                      chrome.passwordsPrivate.ImportEntryStatus.UNKNOWN_ERROR)
+              .length;
+      this.failedImportsWithKnownErrors_ = this.results_.failedImports.filter(
+          (entry) => entry.status !==
+              chrome.passwordsPrivate.ImportEntryStatus.UNKNOWN_ERROR);
+      if (rowsWithUnknownErrorCount) {
+        this.rowsWithUnknownErrorsSummary_ =
+            await PluralStringProxyImpl.getInstance().getPluralString(
+                'importPasswordsBadRowsFormat', rowsWithUnknownErrorCount);
+        this.showRowsWithUnknownErrorsSummary_ = true;
+      }
     }
     if (this.passwordsSavedToAccount_) {
       const descriptionText =
@@ -245,17 +275,17 @@ export class PasswordsImportDialogElement extends
 
   private getFailedEntryError_(
       status: chrome.passwordsPrivate.ImportEntryStatus): string {
-    // TODO(crbug/1325290): return appropriate strings for LONG_URL,
-    // NON_ASCII_URL, UNKNOWN_ERROR.
     switch (status) {
       case chrome.passwordsPrivate.ImportEntryStatus.MISSING_PASSWORD:
         return this.i18n('importPasswordsMissingPassword');
       case chrome.passwordsPrivate.ImportEntryStatus.MISSING_URL:
         return this.i18n('importPasswordsMissingURL');
       case chrome.passwordsPrivate.ImportEntryStatus.INVALID_URL:
-      case chrome.passwordsPrivate.ImportEntryStatus.LONG_URL:
-      case chrome.passwordsPrivate.ImportEntryStatus.NON_ASCII_URL:
         return this.i18n('importPasswordsInvalidURL');
+      case chrome.passwordsPrivate.ImportEntryStatus.LONG_URL:
+        return this.i18n('importPasswordsLongURL');
+      case chrome.passwordsPrivate.ImportEntryStatus.NON_ASCII_URL:
+        return this.i18n('importPasswordsNonASCIIURL');
       case chrome.passwordsPrivate.ImportEntryStatus.LONG_PASSWORD:
         return this.i18n('importPasswordsLongPassword');
       case chrome.passwordsPrivate.ImportEntryStatus.LONG_USERNAME:
@@ -268,7 +298,6 @@ export class PasswordsImportDialogElement extends
       case chrome.passwordsPrivate.ImportEntryStatus.CONFLICT_ACCOUNT:
         return this.i18n('importPasswordsConflictAccount', this.accountEmail);
       case chrome.passwordsPrivate.ImportEntryStatus.UNKNOWN_ERROR:
-        return '';
       default:
         assertNotReached();
     }

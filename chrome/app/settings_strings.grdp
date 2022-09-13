@@ -831,6 +831,9 @@
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_ERROR_BAD_FORMAT" desc="Message is shown on the dialog for importing passwords if no passwords were imported because file is not formated correctly">
     Can't import passwords. Check <ph name="FILENAME">&lt;b&gt;&lt;/b&gt;<ex>&lt;b&gt;filename.csv&lt;/b&gt;</ex></ph> and make sure it's formatted correctly.
   </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_FILE_SIZE_EXCEEDED" desc="Message is shown on the dialog for importing passwords if no passwords were imported because file size exceeds 150 KB.">
+    Can't import passwords. The file size should be less than 150 KB.
+  </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_ERROR_LIMIT_EXCEEDED" desc="Message is shown on the dialog for importing passwords if no passwords were imported because user tried to import more than `NUMBER` passwords from a single file.">
     Can't import passwords. You can only import up to <ph name="COUNT"><ex>3000</ex>$1</ph> passwords at a time.
   </message>
@@ -842,6 +845,17 @@
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_INVALID_URL" desc="An error message for a row that wasn't imported, because the URL is in an unacceptable format. It is shown on the dialog for importing passwords if some passwords weren't imported.">
     URL format should be https://www.example.com
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_NON_ASCII_URL" desc="An error message for a row that wasn't imported, because provided URL contains non-ASCII characters. It is shown on the dialog for importing passwords if some passwords weren't imported.">
+    URL can only contain ASCII characters
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_BAD_ROWS_FORMAT" desc="An error message for which summarizes all rows that weren't imported, because we weren't able to read them completely due to incorrect formatting. It is shown on the dialog for importing passwords if some passwords weren't imported.">
+    {NUM_PASSWORDS, plural,
+     =1 {1 other password wasn't imported because it's formatted incorrectly}
+     other {{NUM_PASSWORDS} other passwords weren't imported because they're formatted incorrectly}}
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_LONG_URL" desc="An error message for a row that wasn't imported, because the provided URL exceeds the length limit. It is shown on the dialog for importing passwords if some passwords weren't imported.">
+    URL is more than 2048 characters
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_LONG_USERNAME" desc="An error message for a row that wasn't imported, because the provided username exceeds the length limit. It is shown on the dialog for importing passwords if some passwords weren't imported.">
     Username is more than 1000 characters
