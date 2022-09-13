@@ -204,7 +204,8 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, OpenProjectorApp) {
 // This test covers launching the Projector app with files when the app is
 // already open. The launch event should recycle the existing window and should
 // not open a new window.
-IN_PROC_BROWSER_TEST_F(ProjectorClientTest, SendFilesToProjectorApp) {
+// TODO(crbug.com/1360322) Disabled due to flake.
+IN_PROC_BROWSER_TEST_F(ProjectorClientTest, DISABLED_SendFilesToProjectorApp) {
   const size_t starting_browser_count = chrome::GetTotalBrowserCount();
 
   auto* profile = browser()->profile();
