@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/version.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/browser/first_party_sets/local_set_declaration.h"
 #include "content/public/browser/first_party_sets_handler.h"
@@ -248,7 +249,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
       R"("associatedSites": ["https://associatedsite.test"]})";
   ASSERT_TRUE(base::JSONReader::Read(input));
   FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
-      WritePublicSetsFile(input));
+      base::Version(), WritePublicSetsFile(input));
 
   FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
                                                  LocalSetDeclaration());
@@ -291,7 +292,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
       R"("associatedSites": ["https://associatedsite.test"]})";
   ASSERT_TRUE(base::JSONReader::Read(input));
   FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
-      WritePublicSetsFile(input));
+      base::Version(), WritePublicSetsFile(input));
 
   FirstPartySetsHandlerImpl::GetInstance()->Init(
       /*user_data_dir=*/{}, LocalSetDeclaration());
@@ -326,7 +327,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
       R"("associatedSites": ["https://associatedsite.test"]})";
   ASSERT_TRUE(base::JSONReader::Read(input));
   FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
-      WritePublicSetsFile(input));
+      base::Version(), WritePublicSetsFile(input));
 
   FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
                                                  LocalSetDeclaration());
@@ -375,7 +376,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
       R"("associatedSites": ["https://associatedsite.test"]})";
   ASSERT_TRUE(base::JSONReader::Read(input));
   FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
-      WritePublicSetsFile(input));
+      base::Version(), WritePublicSetsFile(input));
 
   EXPECT_THAT(future.Get(),
               PublicSetsAre(UnorderedElementsAre(
@@ -429,7 +430,7 @@ class FirstPartySetsHandlerGetCustomizationForPolicyTest
         R"("associatedSites": ["https://associatedsite1.test", "https://associatedsite2.test"]})";
     ASSERT_TRUE(base::JSONReader::Read(input));
     FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
-        WritePublicSetsFile(input));
+        base::Version(), WritePublicSetsFile(input));
 
     FirstPartySetsHandlerImpl::FlattenedSets public_sets =
         MakeFlattenedSetsFromMap({{"https://primary1.test",

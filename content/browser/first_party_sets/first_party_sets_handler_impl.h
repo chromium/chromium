@@ -19,6 +19,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/browser/first_party_sets/first_party_sets_handler_database_helper.h"
 #include "content/browser/first_party_sets/first_party_sets_loader.h"
@@ -83,7 +84,8 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
 
   // FirstPartySetsHandler
   bool IsEnabled() const override;
-  void SetPublicFirstPartySets(base::File sets_file) override;
+  void SetPublicFirstPartySets(const base::Version& version,
+                               base::File sets_file) override;
   void ResetForTesting() override;
   void GetCustomizationForPolicy(
       const base::Value::Dict& policy,
@@ -152,6 +154,10 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // This is nullopt until all of the required inputs have been received.
   absl::optional<net::PublicSets> public_sets_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The version of the public First-Party Sets. This is nullopt until the
+  // `SetPublicFirstPartySets()` is called.
+  absl::optional<base::Version> version_;
 
   bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_);
   bool embedder_will_provide_public_sets_ GUARDED_BY_CONTEXT(sequence_checker_);

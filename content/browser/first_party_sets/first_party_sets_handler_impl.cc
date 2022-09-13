@@ -353,10 +353,16 @@ bool FirstPartySetsHandlerImpl::IsEnabled() const {
   return enabled_;
 }
 
-void FirstPartySetsHandlerImpl::SetPublicFirstPartySets(base::File sets_file) {
+void FirstPartySetsHandlerImpl::SetPublicFirstPartySets(
+    const base::Version& version,
+    base::File sets_file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(enabled_);
   DCHECK(embedder_will_provide_public_sets_);
+
+  // TODO(crbug.com/1219656): Use this value to compute sets diff and then
+  // persisting to DB if valid.
+  version_ = version;
   sets_loader_->SetComponentSets(std::move(sets_file));
 }
 

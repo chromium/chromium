@@ -16,6 +16,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "components/component_updater/component_installer.h"
 
 namespace base {
@@ -28,7 +29,8 @@ class ComponentUpdateService;
 
 class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
-  using SetsReadyOnceCallback = base::OnceCallback<void(base::File)>;
+  using SetsReadyOnceCallback =
+      base::OnceCallback<void(base::Version, base::File)>;
 
   // |on_sets_ready| will be called on the UI thread when the sets are ready. It
   // is exposed here for testing.
