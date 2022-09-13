@@ -19,8 +19,6 @@ source_set("browser") {
     "chrome_browser_provider_observer_bridge.mm",
     "chrome_constants.cc",
     "chrome_constants.h",
-    "chrome_root_coordinator.h",
-    "chrome_root_coordinator.mm",
     "chrome_url_util.h",
     "chrome_url_util.mm",
     "installation_notifier.h",

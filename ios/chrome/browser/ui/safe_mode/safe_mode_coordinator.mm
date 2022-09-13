@@ -19,15 +19,21 @@ const int kStartupCrashLoopThreshold = 2;
 }
 
 @interface SafeModeCoordinator ()<SafeModeViewControllerDelegate>
+@property(weak, nonatomic, readonly) UIWindow* window;
 @end
 
-@implementation SafeModeCoordinator {
-  __weak UIWindow* _window;
-}
+@implementation SafeModeCoordinator
 
 @synthesize delegate = _delegate;
 
 #pragma mark - Public class methods
+
+- (instancetype)initWithWindow:(UIWindow*)window {
+  if ((self = [super initWithBaseViewController:nil browser:nullptr])) {
+    _window = window;
+  }
+  return self;
+}
 
 + (BOOL)shouldStart {
   // Check whether there appears to be a startup crash loop. If not, don't look

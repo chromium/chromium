@@ -143,6 +143,8 @@
 @property(nonatomic, strong)
     GridContextMenuHelper* incognitoTabsGridContextMenuHelper;
 
+@property(weak, nonatomic, readonly) UIWindow* window;
+
 @end
 
 @implementation TabGridCoordinator
@@ -158,7 +160,8 @@
         (id<BrowsingDataCommands>)browsingDataCommandEndpoint
                  regularBrowser:(Browser*)regularBrowser
                incognitoBrowser:(Browser*)incognitoBrowser {
-  if ((self = [super initWithWindow:window])) {
+  if ((self = [super initWithBaseViewController:nil browser:nullptr])) {
+    _window = window;
     _dispatcher = [[CommandDispatcher alloc] init];
     [_dispatcher startDispatchingToTarget:applicationCommandEndpoint
                               forProtocol:@protocol(ApplicationCommands)];

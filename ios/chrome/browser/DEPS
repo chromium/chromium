@@ -187,9 +187,6 @@ specific_include_rules = {
   "^browser_about_rewriter.cc": [
     "+ios/chrome/browser/ui/ui_feature_flags.h",
   ],
-  "^chrome_root_coordinator.h": [
-    "+ios/chrome/browser/ui/coordinators/chrome_coordinator.h",
-  ],
   "^ios_chrome_field_trials.mm": [
     "+ios/chrome/browser/ui/first_run/fre_field_trial.h",
     "+ios/chrome/browser/ui/first_run/trending_queries_field_trial.h",

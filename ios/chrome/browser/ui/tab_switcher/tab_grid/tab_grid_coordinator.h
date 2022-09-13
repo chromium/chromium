@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/ios/block_types.h"
-#import "ios/chrome/browser/chrome_root_coordinator.h"
+#import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 
@@ -17,7 +17,7 @@ class Browser;
 @protocol BrowsingDataCommands;
 @protocol TabGridCoordinatorDelegate;
 
-@interface TabGridCoordinator : ChromeRootCoordinator
+@interface TabGridCoordinator : ChromeCoordinator
 
 - (instancetype)initWithWindow:(UIWindow*)window
      applicationCommandEndpoint:
@@ -28,7 +28,8 @@ class Browser;
                incognitoBrowser:(Browser*)incognitoBrowser
     NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithWindow:(UIWindow*)window NS_UNAVAILABLE;
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
 
 @property(nonatomic, weak) id<TabGridCoordinatorDelegate> delegate;
 
