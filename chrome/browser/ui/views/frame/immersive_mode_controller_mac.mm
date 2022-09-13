@@ -277,9 +277,11 @@ void ImmersiveModeControllerMac::OnDidChangeFocus(views::View* focused_before,
 
 void ImmersiveModeControllerMac::OnViewBoundsChanged(
     views::View* observed_view) {
-  browser_view_->overlay_widget()->SetBounds(observed_view->bounds());
-  ns_window_mojo_->OnTopContainerViewBoundsChanged(observed_view->bounds());
-  UpdateToolbarVisibility();
+  if (!observed_view->bounds().IsEmpty()) {
+    browser_view_->overlay_widget()->SetBounds(observed_view->bounds());
+    ns_window_mojo_->OnTopContainerViewBoundsChanged(observed_view->bounds());
+    UpdateToolbarVisibility();
+  }
 }
 
 void ImmersiveModeControllerMac::OnWidgetDestroying(views::Widget* widget) {

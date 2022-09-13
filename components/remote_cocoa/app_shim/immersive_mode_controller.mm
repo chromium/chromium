@@ -150,7 +150,8 @@ ImmersiveModeController::~ImmersiveModeController() {
 }
 
 void ImmersiveModeController::OnTopViewBoundsChanged(const gfx::Rect& bounds) {
-  immersive_mode_titlebar_view_controller_.get().view.frame = bounds.ToCGRect();
+  [immersive_mode_titlebar_view_controller_.get().view
+      setFrameSize:bounds.size().ToCGSize()];
 }
 
 void ImmersiveModeController::UpdateToolbarVisibility(bool always_show) {
