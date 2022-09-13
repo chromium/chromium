@@ -87,6 +87,7 @@
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "components/viz/service/display_embedder/skia_output_device_vulkan.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
+#include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "gpu/vulkan/vulkan_util.h"
@@ -1939,14 +1940,27 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
   overlay_pass_accesses_.clear();
 
 #if BUILDFLAG(ENABLE_VULKAN)
+  std::vector<VkSemaphore> semaphores;
+  semaphores.reserve(pending_release_fence_cbs_.size());
+
   while (!pending_release_fence_cbs_.empty()) {
     auto& item = pending_release_fence_cbs_.front();
     auto release_fence = CreateReleaseFenceForVulkan(item.first);
     if (release_fence.is_null())
       LOG(ERROR) << "Unable to create a release fence for Vulkan.";
+    else
+      semaphores.emplace_back(item.first.vkSemaphore());
     PostTaskToClientThread(
         base::BindOnce(std::move(item.second), std::move(release_fence)));
     pending_release_fence_cbs_.pop_front();
+  }
+
+  if (!semaphores.empty()) {
+    gpu::VulkanFenceHelper* fence_helper = context_state_->vk_context_provider()
+                                               ->GetDeviceQueue()
+                                               ->GetFenceHelper();
+    fence_helper->EnqueueSemaphoresCleanupForSubmittedWork(
+        std::move(semaphores));
   }
 #else
   DCHECK(pending_release_fence_cbs_.empty());
