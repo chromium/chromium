@@ -801,11 +801,20 @@ if (is_fuchsia) {
   group("fuchsia_telemetry_test_data") {
     testonly = true
     data = [ "//content/test/gpu/fuchsia_util.py" ]
-    data_deps = [
-      "//chrome/app:chrome_fuchsia",
-      "//fuchsia_web/shell",
-      "//fuchsia_web/webengine:web_engine_with_webui_installer",
-    ]
+    if (fuchsia_browser_type == "web_engine_shell") {
+      data += [
+        "$root_gen_dir/package_metadata/cast_streaming_shell.meta",
+        "$root_gen_dir/package_metadata/web_engine_shell.meta",
+        "$root_gen_dir/package_metadata/web_engine_with_webui.meta",
+      ]
+      data_deps = [
+        "//fuchsia_web/shell",
+        "//fuchsia_web/webengine:web_engine_with_webui_installer",
+      ]
+    } else {
+      data += [ "$root_gen_dir/package_metadata/chrome.meta" ]
+      data_deps = [ "//chrome/app:chrome_fuchsia" ]
+    }
   }
 }
 
