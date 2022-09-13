@@ -307,21 +307,40 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
     shill_service_client_test_->ClearServices();
   }
 
+  // Sets `device_onc_policy_blob` as DeviceOpenNetworkConfiguration device
+  // policy. If `wait_applied` is true, waits for a
+  // NetworkPolicyObserver::PoliciesApplied observer call for the device-wide
+  // network profile.
   void SetDeviceOpenNetworkConfiguration(
-      const std::string& device_onc_policy_blob) {
+      const std::string& device_onc_policy_blob,
+      bool wait_applied) {
+    ScopedNetworkPolicyApplicationObserver network_policy_application_observer;
     current_policy_.Set(key::kDeviceOpenNetworkConfiguration,
                         POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
                         POLICY_SOURCE_CLOUD,
                         base::Value(device_onc_policy_blob), nullptr);
     policy_provider_.UpdateChromePolicy(current_policy_);
+    if (wait_applied) {
+      network_policy_application_observer.WaitPoliciesApplied(
+          /*userhash=*/std::string());
+    }
   }
 
-  void SetUserOpenNetworkConfiguration(
-      const std::string& user_onc_policy_blob) {
+  // Sets `user_onc_policy_blob` as OpenNetworkConfiguration user policy using
+  // `policy_provider_`. If `wait_applied` is true, waits for a
+  // NetworkPolicyObserver::PoliciesApplied observer call for the network
+  // profile for `user_hash`.
+  void SetUserOpenNetworkConfiguration(const std::string& user_hash,
+                                       const std::string& user_onc_policy_blob,
+                                       bool wait_applied) {
+    ScopedNetworkPolicyApplicationObserver network_policy_application_observer;
     current_policy_.Set(key::kOpenNetworkConfiguration, POLICY_LEVEL_MANDATORY,
                         POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                         base::Value(user_onc_policy_blob), nullptr);
     policy_provider_.UpdateChromePolicy(current_policy_);
+    if (wait_applied) {
+      network_policy_application_observer.WaitPoliciesApplied(user_hash);
+    }
   }
 
   void OnConnectToServiceFailed(base::OnceClosure run_loop_quit_closure,
@@ -533,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
   ServiceConnectedWaiter wifi_one_connected_waiter(shill_service_client_test_,
                                                    kServiceWifi1);
   shill_manager_client_test_->SetBestServiceToConnect(kServiceWifi1);
-  SetDeviceOpenNetworkConfiguration(kDeviceONC);
+  SetDeviceOpenNetworkConfiguration(kDeviceONC, /*wait_applied=*/true);
   wifi_one_connected_waiter.Wait();
 
   EXPECT_THAT(
@@ -606,7 +625,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
         }
       ]
     })";
-  SetUserOpenNetworkConfiguration(kUserONC);
+  SetUserOpenNetworkConfiguration(user_hash, kUserONC, /*wait_applied=*/false);
   base::RunLoop().RunUntilIdle();
 
   // Expect that the policies have not been signalled as applied yet because
@@ -716,7 +735,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
         }
       ]
     })";
-  SetDeviceOpenNetworkConfiguration(kDeviceONC1);
+  SetDeviceOpenNetworkConfiguration(kDeviceONC1, /*wait_applied=*/true);
 
   {
     const base::Value* wifi_service_properties =
@@ -745,7 +764,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
         }
       ]
     })";
-  SetDeviceOpenNetworkConfiguration(kDeviceONC2);
+  SetDeviceOpenNetworkConfiguration(kDeviceONC2, /*wait_applied=*/true);
   {
     const base::Value* wifi_service_properties =
         shill_service_client_test_->GetServiceProperties(kServiceWifi2);
@@ -818,12 +837,8 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, DoesNotWipeCertSettings) {
   std::string device_onc_with_identity_2 = base::StringPrintf(
       kDeviceONCTemplate, "identity_2", kCertIssuerCommonName);
 
-  {
-    ScopedNetworkPolicyApplicationObserver network_policy_application_observer;
-    SetDeviceOpenNetworkConfiguration(device_onc_with_identity_1);
-    network_policy_application_observer.WaitPoliciesApplied(
-        /*userhash=*/std::string());
-  }
+  SetDeviceOpenNetworkConfiguration(device_onc_with_identity_1,
+                                    /*wait_applied=*/true);
 
   // Verify that the EAP.CertId and EAP.KeyId properties are present and not
   // empty, i.e. that a client certificate has been selected.
@@ -836,13 +851,8 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, DoesNotWipeCertSettings) {
 
   EXPECT_THAT(eap_identity_watcher.GetValues(), ElementsAre("identity_1"));
 
-  // Apply a policy that changes "EAP.Identity".
-  {
-    ScopedNetworkPolicyApplicationObserver network_policy_application_observer;
-    SetDeviceOpenNetworkConfiguration(device_onc_with_identity_2);
-    network_policy_application_observer.WaitPoliciesApplied(
-        /*userhash=*/std::string());
-  }
+  SetDeviceOpenNetworkConfiguration(device_onc_with_identity_2,
+                                    /*wait_applied=*/true);
 
   // Verify that the EAP.CertId and EAP.KeyId properties have not been changed
   // to anything else (also not an empty string).
@@ -897,12 +907,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
         }
       ]
     })";
-  {
-    ScopedNetworkPolicyApplicationObserver network_policy_application_observer;
-    SetDeviceOpenNetworkConfiguration(kDeviceONC1);
-    network_policy_application_observer.WaitPoliciesApplied(
-        /*userhash=*/std::string());
-  }
+  SetDeviceOpenNetworkConfiguration(kDeviceONC1, /*wait_applied=*/true);
 
   {
     const base::Value* wifi_service_properties =
@@ -973,12 +978,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
       ]
     })",
                          kIdentityPolicyValue, kCertIssuerCommonName);
-  {
-    ScopedNetworkPolicyApplicationObserver network_policy_application_observer;
-    SetDeviceOpenNetworkConfiguration(kDeviceONC1);
-    network_policy_application_observer.WaitPoliciesApplied(
-        /*userhash=*/std::string());
-  }
+  SetDeviceOpenNetworkConfiguration(kDeviceONC1, /*wait_applied=*/true);
 
   {
     const base::Value* wifi_service_properties =
@@ -1041,11 +1041,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
         }
       ]
     })";
-  {
-    ScopedNetworkPolicyApplicationObserver network_policy_application_observer;
-    SetUserOpenNetworkConfiguration(kUserONC1);
-    network_policy_application_observer.WaitPoliciesApplied(user_hash);
-  }
+  SetUserOpenNetworkConfiguration(user_hash, kUserONC1, /*wait_applied=*/true);
 
   {
     const base::Value* wifi_service_properties =
@@ -1087,12 +1083,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, RetainEthernetIPAddr) {
       ]
     })",
                                                kEthernetGuid);
-  {
-    ScopedNetworkPolicyApplicationObserver network_policy_application_observer;
-    SetDeviceOpenNetworkConfiguration(kDeviceONC1);
-    network_policy_application_observer.WaitPoliciesApplied(
-        /*userhash=*/std::string());
-  }
+  SetDeviceOpenNetworkConfiguration(kDeviceONC1, /*wait_applied=*/true);
 
   {
     const base::Value* eth_service_properties =
@@ -1102,6 +1093,9 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, RetainEthernetIPAddr) {
         *eth_service_properties,
         DictionaryHasValue(shill::kGuidProperty, base::Value(kEthernetGuid)));
   }
+
+  // TOOD(pmarko): check that IP address is modifiable and policy-recommended
+  // in follow-up CL.
 
   // Simulate setting an IP addr through the UI.
   {
@@ -1156,12 +1150,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, RetainEthernetIPAddr) {
       ]
     })",
                                                kEthernetGuid);
-  {
-    ScopedNetworkPolicyApplicationObserver network_policy_application_observer;
-    SetDeviceOpenNetworkConfiguration(kDeviceONC2);
-    network_policy_application_observer.WaitPoliciesApplied(
-        /*userhash=*/std::string());
-  }
+  SetDeviceOpenNetworkConfiguration(kDeviceONC2, /*wait_applied=*/true);
 
   // Verify that the Static IP is still active, and the custom name server has
   // been applied.
@@ -1182,6 +1171,47 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, RetainEthernetIPAddr) {
     ASSERT_TRUE(nameservers);
     EXPECT_THAT(*nameservers,
                 ElementsAre("8.8.3.1", "8.8.2.1", "0.0.0.0", "0.0.0.0"));
+  }
+
+  // Modify the policy: Force DHCP ip address
+  const char kDeviceONC3[] = R"(
+    {
+      "NetworkConfigurations": [
+        {
+          "GUID": "{EthernetGuid}",
+          "Name": "EthernetName",
+          "Type": "Ethernet",
+          "Ethernet": {
+             "Authentication": "None"
+          },
+          "StaticIPConfig": {
+             "Recommended": []
+          }
+        }
+      ]
+    })";
+  SetDeviceOpenNetworkConfiguration(kDeviceONC3, /*wait_applied=*/true);
+
+  // Check that IP address is not modifiable.
+  {
+    auto properties = CrosNetworkConfigGetManagedProperties("{EthernetGuid}");
+    ASSERT_TRUE(properties);
+    EXPECT_EQ(properties->ip_address_config_type->policy_source,
+              network_mojom::PolicySource::kDevicePolicyEnforced);
+  }
+
+  // Verify that the Static IP is gone.
+  {
+    const base::Value* eth_service_properties =
+        shill_service_client_test_->GetServiceProperties(kServiceEth);
+    ASSERT_TRUE(eth_service_properties);
+    const base::Value::Dict* static_ip_config =
+        eth_service_properties->GetDict().FindDict(
+            shill::kStaticIPConfigProperty);
+    ASSERT_TRUE(static_ip_config);
+    const std::string* address =
+        static_ip_config->FindString(shill::kAddressProperty);
+    EXPECT_FALSE(address);
   }
 }
 
@@ -1211,12 +1241,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, FixEthernetUIDataGUID) {
       ]
     })",
                                                kEthernetGuid);
-  {
-    ScopedNetworkPolicyApplicationObserver network_policy_application_observer;
-    SetDeviceOpenNetworkConfiguration(kDeviceONC1);
-    network_policy_application_observer.WaitPoliciesApplied(
-        /*userhash=*/std::string());
-  }
+  SetDeviceOpenNetworkConfiguration(kDeviceONC1, /*wait_applied=*/true);
 
   // Set GUID in the "user_settings" part of the UIData dictionary to a
   // inconsistent value.
@@ -1257,12 +1282,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, FixEthernetUIDataGUID) {
       ]
     })",
                                                kEthernetGuid);
-  {
-    ScopedNetworkPolicyApplicationObserver network_policy_application_observer;
-    SetDeviceOpenNetworkConfiguration(kDeviceONC2);
-    network_policy_application_observer.WaitPoliciesApplied(
-        /*userhash=*/std::string());
-  }
+  SetDeviceOpenNetworkConfiguration(kDeviceONC2, /*wait_applied=*/true);
 
   // Check that GUID in the UIData dictionary has been fixed.
   {
