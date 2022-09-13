@@ -7,11 +7,14 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
+
+class Profile;
 
 namespace content {
 class BrowserContext;
@@ -48,6 +51,7 @@ class IsolatedWebAppURLLoaderFactory
  private:
   IsolatedWebAppURLLoaderFactory(
       int frame_tree_node_id,
+      Profile* profile,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
 
   void LogErrorAndFail(
@@ -66,6 +70,7 @@ class IsolatedWebAppURLLoaderFactory
       override;
 
   const int frame_tree_node_id_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace web_app

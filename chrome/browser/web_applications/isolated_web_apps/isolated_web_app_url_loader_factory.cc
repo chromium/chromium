@@ -4,21 +4,62 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_loader_factory.h"
 
+#include "base/strings/strcat.h"
+#include "base/types/expected.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolation_data.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/url_constants.h"
+#include "components/web_package/mojom/web_bundle_parser.mojom.h"
+#include "components/web_package/web_bundle_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "services/network/public/mojom/url_loader_completion_status.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 
 namespace web_app {
 
 namespace {
+
+void CompleteWith404(
+    mojo::Remote<network::mojom::URLLoaderClient> loader_client) {
+  auto generated_response = web_package::mojom::BundleResponse::New();
+  generated_response->response_code = net::HTTP_NOT_FOUND;
+  // Setting the Content-Type header makes Chrome return a nicer error page
+  // that shows the actual error code ("HTTP ERROR 404") instead of just
+  // "ERR_INVALID_RESPONSE".
+  generated_response->response_headers["Content-Type"] =
+      "text/html;charset=utf-8";
+  auto response_head = web_package::CreateResourceResponse(generated_response);
+
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+
+  auto result = mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle);
+  if (result != MOJO_RESULT_OK) {
+    loader_client->OnComplete(
+        network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
+    return;
+  }
+  producer_handle.reset();  // The response is empty.
+
+  loader_client->OnReceiveResponse(std::move(response_head),
+                                   std::move(consumer_handle), absl::nullopt);
+
+  loader_client->OnComplete(network::URLLoaderCompletionStatus(net::OK));
+}
 
 void LogErrorMessageToConsole(int frame_tree_node_id,
                               const std::string& error_message) {
@@ -47,13 +88,40 @@ void LogErrorMessageToConsole(int frame_tree_node_id,
       });
 }
 
+base::expected<std::reference_wrapper<const WebApp>, std::string>
+FindIsolatedWebAppWithUrl(Profile* profile, const GURL& url) {
+  // TODO(b/242738845): Defer navigation in IsolatedAppThrottle until
+  // WebAppProvider is ready to ensure we never fail this DCHECK.
+  auto* web_app_provider = WebAppProvider::GetForWebApps(profile);
+  DCHECK(web_app_provider->is_registry_ready());
+  const WebAppRegistrar& registrar = web_app_provider->registrar();
+
+  AppId expected_app_id =
+      GenerateAppId(/*manifest_id=*/"/", url.GetWithEmptyPath());
+  const WebApp* iwa = registrar.GetAppById(expected_app_id);
+
+  if (iwa == nullptr || !iwa->is_locally_installed()) {
+    return base::unexpected(base::StrCat(
+        {"Isolated Web App not installed: ", url.GetWithEmptyPath().spec()}));
+  }
+
+  if (!iwa->isolation_data().has_value()) {
+    return base::unexpected(base::StrCat(
+        {"App is not an Isolated Web App: ", url.GetWithEmptyPath().spec()}));
+  }
+
+  return *iwa;
+}
+
 }  // namespace
 
 IsolatedWebAppURLLoaderFactory::IsolatedWebAppURLLoaderFactory(
     int frame_tree_node_id,
+    Profile* profile,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
     : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)),
-      frame_tree_node_id_(frame_tree_node_id) {}
+      frame_tree_node_id_(frame_tree_node_id),
+      profile_(profile) {}
 
 IsolatedWebAppURLLoaderFactory::~IsolatedWebAppURLLoaderFactory() = default;
 
@@ -67,6 +135,21 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(resource_request.url.SchemeIs(chrome::kIsolatedAppScheme));
   DCHECK(resource_request.url.IsStandard());
+
+  base::expected<std::reference_wrapper<const WebApp>, std::string> iwa =
+      FindIsolatedWebAppWithUrl(profile_, resource_request.url);
+  if (!iwa.has_value()) {
+    LogErrorAndFail(iwa.error(), std::move(loader_client));
+    return;
+  }
+
+  IsolationData isolation_data = iwa->get().isolation_data().value();
+  if (absl::holds_alternative<IsolationData::DevModeProxy>(
+          isolation_data.content)) {
+    CompleteWith404(mojo::Remote<network::mojom::URLLoaderClient>(
+        std::move(loader_client)));
+    return;
+  }
 
   LogErrorAndFail("IsolatedWebAppURLLoaderFactory not implemented",
                   std::move(loader_client));
@@ -95,7 +178,8 @@ IsolatedWebAppURLLoaderFactory::Create(
   // more receivers - see the
   // network::SelfDeletingURLLoaderFactory::OnDisconnect method.
   new IsolatedWebAppURLLoaderFactory(
-      frame_tree_node_id, pending_remote.InitWithNewPipeAndPassReceiver());
+      frame_tree_node_id, Profile::FromBrowserContext(browser_context),
+      pending_remote.InitWithNewPipeAndPassReceiver());
 
   return pending_remote;
 }

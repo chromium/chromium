@@ -260,10 +260,12 @@ void FakeWebAppProvider::CheckNotStarted() const {
 }
 
 void FakeWebAppProvider::StartImpl() {
-  if (run_subsystem_startup_tasks_)
+  if (run_subsystem_startup_tasks_) {
     WebAppProvider::StartImpl();
-  else
+  } else {
     on_registry_ready_.Signal();
+    is_registry_ready_ = true;
+  }
 }
 
 FakeWebAppProviderCreator::FakeWebAppProviderCreator(
