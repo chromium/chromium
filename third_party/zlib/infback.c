@@ -455,11 +455,11 @@ void FAR *out_desc;
             }
 
             /* build code tables -- note: do not change the lenbits or distbits
-               values here (9 and 6) without reading the comments in inftrees.h
+               values here (10 and 9) without reading the comments in inftrees.h
                concerning the ENOUGH constants, which depend on those values */
             state->next = state->codes;
             state->lencode = (code const FAR *)(state->next);
-            state->lenbits = 9;
+            state->lenbits = 10;
             ret = inflate_table(LENS, state->lens, state->nlen, &(state->next),
                                 &(state->lenbits), state->work);
             if (ret) {
@@ -468,7 +468,7 @@ void FAR *out_desc;
                 break;
             }
             state->distcode = (code const FAR *)(state->next);
-            state->distbits = 6;
+            state->distbits = 9;
             ret = inflate_table(DISTS, state->lens + state->nlen, state->ndist,
                             &(state->next), &(state->distbits), state->work);
             if (ret) {
