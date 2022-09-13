@@ -124,8 +124,6 @@ ProtoEnum::BackForwardCacheNotRestoredReason NotRestoredReasonToTraceEnum(
       return ProtoEnum::RENDERER_PROCESS_KILLED;
     case Reason::kRendererProcessCrashed:
       return ProtoEnum::RENDERER_PROCESS_CRASHED;
-    case Reason::kSchedulerTrackedFeatureUsed:
-      return ProtoEnum::SCHEDULER_TRACKED_FEATURE_USED;
     case Reason::kConflictingBrowsingInstance:
       return ProtoEnum::CONFLICTING_BROWSING_INSTANCE;
     case Reason::kCacheFlushed:
@@ -362,8 +360,6 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "renderer process is killed";
     case Reason::kRendererProcessCrashed:
       return "renderer process crashed";
-    case Reason::kSchedulerTrackedFeatureUsed:
-      return "scheduler tracked feature is used";
     case Reason::kConflictingBrowsingInstance:
       return "conflicting BrowsingInstance";
     case Reason::kCacheFlushed:
@@ -531,8 +527,6 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
     case Reason::kIgnoreEventAndEvict:
     case Reason::kRendererProcessKilled:
     case Reason::kRendererProcessCrashed:
-    // This is being removed.
-    case Reason::kSchedulerTrackedFeatureUsed:
     case Reason::kTimeoutPuttingInCache:
     case Reason::kUnknown:
       return "Internal error";

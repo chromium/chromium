@@ -1309,9 +1309,6 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
     case Reason::kRendererProcessCrashed:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           RendererProcessCrashed;
-    case Reason::kSchedulerTrackedFeatureUsed:
-      return Page::BackForwardCacheNotRestoredReasonEnum::
-          SchedulerTrackedFeatureUsed;
     case Reason::kConflictingBrowsingInstance:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           ConflictingBrowsingInstance;
@@ -1720,7 +1717,6 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kJavaScriptExecution:
     case Reason::kRendererProcessKilled:
     case Reason::kRendererProcessCrashed:
-    case Reason::kSchedulerTrackedFeatureUsed:
     case Reason::kConflictingBrowsingInstance:
     case Reason::kCacheFlushed:
     case Reason::kServiceWorkerVersionActivation:

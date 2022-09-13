@@ -72,7 +72,7 @@ class BackForwardCacheMetrics
     kRendererProcessCrashed = 16,
     // 17: Dialogs are no longer a reason to exclude from BackForwardCache
     // 18: GrantedMediaStreamAccess is no longer blocking.
-    kSchedulerTrackedFeatureUsed = 19,
+    // 19: kSchedulerTrackedFeatureUsed is no longer used.
     kConflictingBrowsingInstance = 20,
     kCacheFlushed = 21,
     kServiceWorkerVersionActivation = 22,
