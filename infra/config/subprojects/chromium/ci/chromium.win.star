@@ -23,6 +23,9 @@ ci.defaults.set(
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     sheriff_rotations = sheriff_rotations.CHROMIUM,
     tree_closing = True,
+    experiments = {
+        "luci.buildbucket.omit_python2": 100,
+    },
 )
 
 consoles.console_view(
@@ -87,9 +90,6 @@ ci.builder(
     ),
     cores = 32,
     os = os.WINDOWS_ANY,
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
 )
 
 ci.builder(
@@ -115,9 +115,6 @@ ci.builder(
     ),
     cores = 32,
     os = os.WINDOWS_ANY,
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
 )
 
 ci.builder(
@@ -253,9 +250,6 @@ ci.builder(
     cores = 32,
     cq_mirrors_console_view = "mirrors",
     os = os.WINDOWS_ANY,
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
 )
 
 ci.builder(
@@ -286,9 +280,6 @@ ci.builder(
     cores = 32,
     cq_mirrors_console_view = "mirrors",
     os = os.WINDOWS_ANY,
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
 )
 
 ci.builder(
@@ -360,4 +351,8 @@ ci.builder(
     ),
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 12 * time.hour,
+    # TODO(https://crbug.com/1362440): remove this and use default value.
+    experiments = {
+        "luci.buildbucket.omit_python2": 0,
+    },
 )
