@@ -36,7 +36,7 @@ enum AlternateProtocolUsage {
   ALTERNATE_PROTOCOL_USAGE_BROKEN = 4,
   // HTTPS DNS protocol upgrade job was used without racing with a normal
   // connection and an Alternate Protocol job.
-  ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_WITOUT_RACE = 5,
+  ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_WITHOUT_RACE = 5,
   // HTTPS DNS protocol upgrade job won a race with a normal connection and
   // an Alternate Protocol job.
   ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_RACE = 6,

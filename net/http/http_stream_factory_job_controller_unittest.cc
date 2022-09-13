@@ -4633,7 +4633,7 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
   }
   histogram_tester.ExpectUniqueSample(
       "Net.AlternateProtocolUsage",
-      ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_WITOUT_RACE, 1);
+      ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_WITHOUT_RACE, 1);
   CheckJobsStatus(/*main_job_exists=*/false, /*alternative_job_exists=*/false,
                   /*dns_alpn_h3_job_exists=*/true,
                   "DNS alpn H3 job must exist.");
@@ -4678,7 +4678,7 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
   }
   histogram_tester.ExpectUniqueSample(
       "Net.AlternateProtocolUsage",
-      ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_WITOUT_RACE, 1);
+      ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_WITHOUT_RACE, 1);
 
   CheckJobsStatus(/*main_job_exists=*/false, /*alternative_job_exists=*/false,
                   /*dns_alpn_h3_job_exists=*/true,
