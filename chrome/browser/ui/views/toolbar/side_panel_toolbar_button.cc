@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/side_panel/read_later_side_panel_web_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -37,7 +38,15 @@ SidePanelToolbarButton::SidePanelToolbarButton(Browser* browser)
           std::make_unique<DotBoundsUpdater>(dot_indicator_, image())),
       reading_list_model_(
           ReadingListModelFactory::GetForBrowserContext(browser_->profile())) {
-  SetVectorIcons(kSidePanelIcon, kSidePanelTouchIcon);
+  if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
+    pref_change_registrar_.Init(browser_->profile()->GetPrefs());
+
+    pref_change_registrar_.Add(
+        prefs::kSidePanelHorizontalAlignment,
+        base::BindRepeating(&SidePanelToolbarButton::UpdateToolbarButtonIcon,
+                            base::Unretained(this)));
+  }
+  UpdateToolbarButtonIcon();
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kMenu);
@@ -140,6 +149,15 @@ void SidePanelToolbarButton::HideSidePanel() {
     side_panel_webview_ = nullptr;
     browser_view->RightAlignedSidePanelWasClosed();
   }
+}
+
+void SidePanelToolbarButton::UpdateToolbarButtonIcon() {
+  const bool is_right_aligned = browser_->profile()->GetPrefs()->GetBoolean(
+      prefs::kSidePanelHorizontalAlignment);
+  if (is_right_aligned)
+    SetVectorIcons(kSidePanelIcon, kSidePanelTouchIcon);
+  else
+    SetVectorIcons(kSidePanelLeftIcon, kSidePanelLeftTouchIcon);
 }
 
 bool SidePanelToolbarButton::ShouldShowInkdropAfterIphInteraction() {

@@ -114,6 +114,8 @@ aggregate_vector_icons("chrome_vector_icons") {
     "security.icon",
     "sharing_hub_screenshot.icon",
     "side_panel.icon",
+    "side_panel_left.icon",
+    "side_panel_left_touch.icon",
     "side_panel_touch.icon",
     "sign_out.icon",
     "signin_button_drop_down_arrow.icon",

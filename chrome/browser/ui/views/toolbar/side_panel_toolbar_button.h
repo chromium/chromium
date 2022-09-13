@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
 #include "ui/views/controls/dot_indicator.h"
@@ -39,6 +40,9 @@ class SidePanelToolbarButton : public ToolbarButton,
   }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(SidePanelToolbarButtonTest, SetCorrectIconInLTR);
+  FRIEND_TEST_ALL_PREFIXES(SidePanelToolbarButtonTest, SetCorrectIconInRTL);
+
   class DotBoundsUpdater : public views::ViewObserver {
    public:
     DotBoundsUpdater(views::DotIndicator* dot_indicator,
@@ -64,6 +68,12 @@ class SidePanelToolbarButton : public ToolbarButton,
 
   void ButtonPressed();
 
+  // Updates the vector icon used when the PrefChangeRegistrar listens to a
+  // change. When the side panel should open to the right side of the browser
+  // the default vector icon is used. When the side panel should open to the
+  // left side of the browser the flipped vector icon is used.
+  void UpdateToolbarButtonIcon();
+
   const raw_ptr<Browser> browser_;
 
   raw_ptr<views::DotIndicator> dot_indicator_;
@@ -74,6 +84,9 @@ class SidePanelToolbarButton : public ToolbarButton,
       reading_list_model_scoped_observation_{this};
 
   raw_ptr<views::View> side_panel_webview_ = nullptr;
+
+  // Observes and listens to side panel alignment changes.
+  PrefChangeRegistrar pref_change_registrar_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_SIDE_PANEL_TOOLBAR_BUTTON_H_
