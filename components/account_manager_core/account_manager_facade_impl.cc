@@ -587,7 +587,9 @@ void AccountManagerFacadeImpl::OnAuthErrorChanged(
 }
 
 void AccountManagerFacadeImpl::OnSigninDialogClosed() {
-  NOTIMPLEMENTED();
+  for (auto& observer : observer_list_) {
+    observer.OnSigninDialogClosed();
+  }
 }
 
 void AccountManagerFacadeImpl::GetAccountsInternal(

@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -897,6 +898,22 @@ TEST_F(AccountManagerFacadeImplTest, ReportAuthError) {
   EXPECT_CALL(observer, OnAuthErrorChanged(account.key, error))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   account_manager_facade->ReportAuthError(account.key, error);
+  run_loop.Run();
+}
+
+TEST_F(AccountManagerFacadeImplTest,
+       SigninDialogClosureNotificationsAreReported) {
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
+      CreateFacade();
+  testing::StrictMock<MockAccountManagerFacadeObserver> observer;
+  base::ScopedObservation<AccountManagerFacade, AccountManagerFacade::Observer>
+      observation{&observer};
+  observation.Observe(account_manager_facade.get());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnSigninDialogClosed)
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  account_manager_facade->OnSigninDialogClosed();
   run_loop.Run();
 }
 

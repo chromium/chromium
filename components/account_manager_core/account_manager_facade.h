@@ -46,6 +46,10 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
     // Invoked when the error state associated with an account changes.
     virtual void OnAuthErrorChanged(const AccountKey& account,
                                     const GoogleServiceAuthError& error) = 0;
+    // Invoked when the account signin dialog is closed on the OS side. Check
+    // `AccountManagerObserver::OnSigninDialogClosed()` Mojo API in
+    // account_manager.mojom for details.
+    virtual void OnSigninDialogClosed();
   };
 
   // The source UI surface used for launching the account addition /

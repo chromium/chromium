@@ -30,6 +30,7 @@ class MockAccountManagerFacadeObserver
               (const account_manager::AccountKey&,
                const GoogleServiceAuthError&),
               (override));
+  MOCK_METHOD(void, OnSigninDialogClosed, (), (override));
 };
 
 class MockAccountManagerFacade : public account_manager::AccountManagerFacade {
