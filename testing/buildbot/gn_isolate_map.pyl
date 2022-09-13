@@ -1807,10 +1807,6 @@
     "label": "//build/rust/tests/test_serde_json_lenient:test_serde_json_lenient",
     "type": "console_test_launcher",
   },
-  "third_party/openscreen/src/cast/cast_core/api": {
-    "label": "//third_party/openscreen/src/cast/cast_core/api:api",
-    "type": "additional_compile_target",
-  },
   # TODO(crbug.com/1080749): Re-add this once the test is fixed and re-enabled.
   # "test_buildbucket_api_gpu_use_cases": {
   #   "label": "//content/test:test_buildbucket_api_gpu_use_cases",
