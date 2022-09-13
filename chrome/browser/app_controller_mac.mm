@@ -1105,7 +1105,11 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
     [self setLastProfile:last_used_profile];
   }
 
-  _profileBookmarkMenuBridgeMap.erase(profilePath);
+  auto it = _profileBookmarkMenuBridgeMap.find(profilePath);
+  if (!base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose) ||
+      (it != _profileBookmarkMenuBridgeMap.end() && it->second->GetProfile())) {
+    _profileBookmarkMenuBridgeMap.erase(profilePath);
+  }
 }
 
 // Returns true if there is a modal window (either window- or application-
@@ -1741,17 +1745,21 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
   _profilePrefRegistrar.reset();
 
-  // Rebuild the menus with the new profile. The bookmarks submenu is cached to
-  // avoid slowdowns when switching between profiles with large numbers of
-  // bookmarks. Before caching, store whether it is hidden, make the menu item
-  // visible, and restore its original hidden state after resetting the submenu.
-  // This works around an apparent AppKit bug where setting a *different* NSMenu
-  // submenu on a *hidden* menu item forces the item to become visible.
-  // See https://crbug.com/497813 for more details.
   NSMenuItem* bookmarkItem = [[NSApp mainMenu] itemWithTag:IDC_BOOKMARKS_MENU];
   BOOL hidden = [bookmarkItem isHidden];
-  [bookmarkItem setHidden:NO];
-  _bookmarkMenuBridge = nullptr;
+  if (profile != nullptr) {
+    // Rebuild the menus with the new profile. The bookmarks submenu is cached
+    // to avoid slowdowns when switching between profiles with large numbers of
+    // bookmarks. Before caching, store whether it is hidden, make the menu item
+    // visible, and restore its original hidden state after resetting the
+    // submenu. This works around an apparent AppKit bug where setting a
+    // *different* NSMenu submenu on a *hidden* menu item forces the item to
+    // become visible. See https://crbug.com/497813 for more details.
+    [bookmarkItem setHidden:NO];
+    _bookmarkMenuBridge = nullptr;
+  } else if (_bookmarkMenuBridge && !_isShuttingDown) {
+    _bookmarkMenuBridge->OnProfileWillBeDestroyed();
+  }
 
   _lastProfile = profile;
 
@@ -1759,7 +1767,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
     return;
 
   auto& entry = _profileBookmarkMenuBridgeMap[profile->GetPath()];
-  if (!entry) {
+  if (!entry || !entry->GetProfile()) {
     // This creates a deep copy, but only the first 3 items in the root menu
     // are really wanted. This can probably be optimized, but lazy-loading of
     // the menu should reduce the impact in most flows.

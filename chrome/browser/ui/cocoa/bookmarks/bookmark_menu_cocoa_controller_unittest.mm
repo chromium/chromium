@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_cocoa_controller.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 
 #include <string>
 
+#include "base/containers/span.h"
 #import "base/mac/scoped_nsobject.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
@@ -41,14 +44,21 @@ using bookmarks::BookmarkNode;
   return self;
 }
 
-- (const BookmarkNode*)nodeForIdentifier:(int)identifier {
+- (base::GUID)guidForIdentifier:(int)identifier {
   if ((identifier < 0) || (identifier >= 2))
-    return NULL;
-  return _nodes[identifier];
+    return base::GUID();
+  DCHECK(_nodes[identifier]);
+  return _nodes[identifier]->guid();
 }
 
-- (void)openURLForNode:(const BookmarkNode*)node {
-  std::string url = node->url().possibly_invalid_spec();
+- (void)openURLForGUID:(base::GUID)guid {
+  base::span<const BookmarkNode*> nodes = base::make_span(_nodes);
+  auto it = base::ranges::find_if(nodes, [&guid](const BookmarkNode* node) {
+    return node->guid() == guid;
+  });
+  ASSERT_NE(it, nodes.end());
+
+  std::string url = (*it)->url().possibly_invalid_spec();
   if (url.find("http://0.com") != std::string::npos)
     _opened[0] = YES;
   if (url.find("http://1.com") != std::string::npos)
