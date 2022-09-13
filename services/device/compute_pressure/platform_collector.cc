@@ -64,17 +64,19 @@ void PlatformCollector::EnsureStarted() {
   // not be reported, thanks to the accounting done by `got_probe_baseline_`.
   UpdateProbe();
 
-  // base::Unretained usage is safe here because base::RepeatingTimer guarantees
-  // that its callback will not be called after it goes out of scope.
   timer_.Start(FROM_HERE, sampling_interval_,
                base::BindRepeating(&PlatformCollector::UpdateProbe,
-                                   base::Unretained(this)));
+                                   weak_factory_.GetWeakPtr()));
 }
 
 void PlatformCollector::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   timer_.AbandonAndStop();
+  // There are still a number of calls to DidUpdateProbe() queued via
+  // PostTaskAndReplyWithResult() in UpdateProbe(). This can make sure
+  // all pending posted tasks will not run because of the invalid WeakPtrs.
+  weak_factory_.InvalidateWeakPtrs();
   got_probe_baseline_ = false;
 }
 
@@ -99,10 +101,7 @@ void PlatformCollector::UpdateProbe() {
 
 void PlatformCollector::DidUpdateProbe(PressureSample sample) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Don't report the update result if Stop() was called.
-  if (!timer_.IsRunning())
-    return;
+  DCHECK(timer_.IsRunning());
 
   // Don't report the first update result.
   if (!got_probe_baseline_) {
