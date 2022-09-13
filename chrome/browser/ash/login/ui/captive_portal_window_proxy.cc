@@ -9,7 +9,8 @@
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -136,9 +137,7 @@ void CaptivePortalWindowProxy::OnRedirected() {
   if (GetState() == STATE_WAITING_FOR_REDIRECTION) {
     Show();
   }
-  NetworkPortalDetector* detector = network_portal_detector::GetInstance();
-  if (detector)
-    detector->StartPortalDetection();
+  NetworkHandler::Get()->network_state_handler()->RequestPortalDetection();
 }
 
 void CaptivePortalWindowProxy::OnOriginalURLLoaded() {

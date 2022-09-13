@@ -66,7 +66,6 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   CaptivePortalStatus GetCaptivePortalStatus() override;
   bool IsEnabled() override;
   void Enable() override;
-  void StartPortalDetection() override;
 
  private:
   friend class NetworkPortalDetectorImplTest;
@@ -80,9 +79,6 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
     // Portal check is in progress.
     STATE_CHECKING_FOR_PORTAL,
   };
-
-  // Starts detection process.
-  void StartDetection();
 
   // Stops whole detection process.
   void StopDetection();
@@ -122,6 +118,8 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   // Returns true if attempt timeout callback isn't fired or
   // cancelled.
   bool AttemptTimeoutIsCancelledForTesting() const;
+
+  void StartDetectionForTesting();
 
   State state() const { return state_; }
 

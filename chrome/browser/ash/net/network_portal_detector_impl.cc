@@ -84,7 +84,6 @@ NetworkPortalDetectorImpl::NetworkPortalDetectorImpl(
 
   network_state_handler_observer_.Observe(
       NetworkHandler::Get()->network_state_handler());
-  StartPortalDetection();
 }
 
 NetworkPortalDetectorImpl::~NetworkPortalDetectorImpl() {
@@ -115,24 +114,12 @@ void NetworkPortalDetectorImpl::Enable() {
   if (!network)
     return;
   SetNetworkPortalState(network, NetworkState::PortalState::kUnknown);
-  StartDetection();
 }
 
 NetworkPortalDetector::CaptivePortalStatus
 NetworkPortalDetectorImpl::GetCaptivePortalStatus() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return default_portal_status_;
-}
-
-void NetworkPortalDetectorImpl::StartPortalDetection() {
-  if (!is_idle())
-    return;
-  const NetworkState* network = DefaultNetwork();
-  if (!network) {
-    NET_LOG(ERROR) << "StartPortalDetection called with no default network.";
-    return;
-  }
-  StartDetection();
 }
 
 void NetworkPortalDetectorImpl::PortalStateChanged(
@@ -201,14 +188,6 @@ void NetworkPortalDetectorImpl::OnShuttingDown() {
 
 ////////////////////////////////////////////////////////////////////////////////
 // NetworkPortalDetectorImpl, private:
-
-void NetworkPortalDetectorImpl::StartDetection() {
-  NET_LOG(EVENT) << "StartDetection";
-
-  ResetCountersAndSendMetrics();
-  default_portal_status_ = CAPTIVE_PORTAL_STATUS_UNKNOWN;
-  ScheduleAttempt();
-}
 
 void NetworkPortalDetectorImpl::StopDetection() {
   if (is_idle())
@@ -443,6 +422,11 @@ void NetworkPortalDetectorImpl::ResetCountersAndSendMetrics() {
 
 bool NetworkPortalDetectorImpl::AttemptTimeoutIsCancelledForTesting() const {
   return attempt_timeout_task_.IsCancelled();
+}
+
+void NetworkPortalDetectorImpl::StartDetectionForTesting() {
+  default_portal_status_ = CAPTIVE_PORTAL_STATUS_UNKNOWN;
+  ScheduleAttempt();
 }
 
 }  // namespace ash

@@ -42,8 +42,6 @@ class CaptivePortalWindowTest : public InProcessBrowserTest {
     bool actual_is_shown = (CaptivePortalWindowProxy::STATE_DISPLAYED ==
                             captive_portal_window_proxy_->GetState());
     ASSERT_EQ(is_shown, actual_is_shown);
-    ASSERT_EQ(in_progress,
-              network_portal_detector_->portal_detection_in_progress());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

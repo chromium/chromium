@@ -25,7 +25,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkPortalDetectorStub
   CaptivePortalStatus GetCaptivePortalStatus() override;
   bool IsEnabled() override;
   void Enable() override;
-  void StartPortalDetection() override;
 };
 
 }  // namespace ash

@@ -39,16 +39,10 @@ class NetworkPortalDetectorTestImpl : public NetworkPortalDetector {
   CaptivePortalStatus GetCaptivePortalStatus() override;
   bool IsEnabled() override;
   void Enable() override;
-  void StartPortalDetection() override;
-
-  bool portal_detection_in_progress() const {
-    return portal_detection_in_progress_;
-  }
 
  private:
   std::unique_ptr<NetworkState> default_network_;
   std::map<std::string, CaptivePortalStatus> portal_status_map_;
-  bool portal_detection_in_progress_ = false;
 };
 
 }  // namespace ash

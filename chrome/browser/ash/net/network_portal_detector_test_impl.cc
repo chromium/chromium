@@ -60,8 +60,4 @@ bool NetworkPortalDetectorTestImpl::IsEnabled() {
 
 void NetworkPortalDetectorTestImpl::Enable() {}
 
-void NetworkPortalDetectorTestImpl::StartPortalDetection() {
-  portal_detection_in_progress_ = true;
-}
-
 }  // namespace ash

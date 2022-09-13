@@ -24,7 +24,6 @@ class MockNetworkPortalDetector : public NetworkPortalDetector {
                NetworkPortalDetector::CaptivePortalStatus());
   MOCK_METHOD0(IsEnabled, bool());
   MOCK_METHOD0(Enable, void());
-  MOCK_METHOD0(StartPortalDetection, void());
 };
 
 }  // namespace ash

@@ -43,11 +43,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkPortalDetector {
   // portal detection for the default network will be handled.
   virtual void Enable() = 0;
 
-  // Starts or restarts portal detection for the default network. If not
-  // currently in the idle state, does nothing. Returns true if a new portal
-  // detection attempt was started.
-  virtual void StartPortalDetection() = 0;
-
   // Returns non-localized string representation of |status|.
   static std::string CaptivePortalStatusString(CaptivePortalStatus status);
 

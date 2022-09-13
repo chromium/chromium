@@ -191,12 +191,6 @@ class NetworkPortalDetectorImplBrowserTest
     network_portal_notification_controller_.reset();
   }
 
-  void RestartDetection() {
-    network_portal_detector_->StopDetection();
-    network_portal_detector_->StartDetection();
-    base::RunLoop().RunUntilIdle();
-  }
-
   void SetIgnoreNoNetworkForTesting() {
     network_portal_notification_controller_->SetIgnoreNoNetworkForTesting();
   }

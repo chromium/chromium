@@ -210,6 +210,10 @@ class NetworkPortalDetectorImplTest
                               retry_delay);
   }
 
+  void StartDetection() {
+    network_portal_detector_->StartDetectionForTesting();
+  }
+
  private:
   void AddService(const std::string& network_id, const std::string& type) {
     network_handler_test_helper_->service_test()->AddService(
@@ -492,8 +496,8 @@ TEST_F(NetworkPortalDetectorImplTest, FirstAttemptFailed) {
   histogram_tester.ExpectUniqueSample("Network.NetworkPortalDetectorRunCount",
                                       2, 1);
 
-  // Call StartPortalDetection to start a new probe.
-  network_portal_detector()->StartPortalDetection();
+  // Start a new probe.
+  StartDetection();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
 
@@ -548,8 +552,8 @@ TEST_F(NetworkPortalDetectorImplTest, AllAttemptsFailed) {
   histogram_tester.ExpectUniqueSample("Network.NetworkPortalDetectorRunCount",
                                       3, 1);
 
-  // Call StartPortalDetection to start a new probe that succeeds.
-  network_portal_detector()->StartPortalDetection();
+  // Start a new probe that succeeds.
+  StartDetection();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
 

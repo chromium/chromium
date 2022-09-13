@@ -20,7 +20,6 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 
 namespace ash {
 
@@ -53,8 +52,7 @@ AutoEnrollmentCheckScreen::~AutoEnrollmentCheckScreen() {
 void AutoEnrollmentCheckScreen::ClearState() {
   auto_enrollment_progress_subscription_ = {};
   connect_request_subscription_ = {};
-  if (NetworkHandler::IsInitialized())
-    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
+  NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
 
   auto_enrollment_state_ = policy::AUTO_ENROLLMENT_STATE_IDLE;
   captive_portal_state_ = NetworkState::PortalState::kUnknown;
@@ -80,15 +78,14 @@ void AutoEnrollmentCheckScreen::ShowImpl() {
   NetworkState::PortalState new_captive_portal_state =
       NetworkState::PortalState::kUnknown;
 
-  if (NetworkHandler::IsInitialized()) {
-    NetworkStateHandler* handler =
-        NetworkHandler::Get()->network_state_handler();
-    handler->AddObserver(this);
-    const NetworkState* default_network = handler->DefaultNetwork();
-    new_captive_portal_state = default_network
-                                   ? default_network->GetPortalState()
-                                   : NetworkState::PortalState::kUnknown;
-  }
+  NetworkStateHandler* network_state_handler =
+      NetworkHandler::Get()->network_state_handler();
+  network_state_handler->AddObserver(this);
+  const NetworkState* default_network = network_state_handler->DefaultNetwork();
+  new_captive_portal_state = default_network
+                                 ? default_network->GetPortalState()
+                                 : NetworkState::PortalState::kUnknown;
+  network_state_handler->RequestPortalDetection();
 
   // Perform an initial UI update.
   policy::AutoEnrollmentState new_auto_enrollment_state =
@@ -116,7 +113,6 @@ void AutoEnrollmentCheckScreen::ShowImpl() {
   } else {
     auto_enrollment_controller_->Start();
   }
-  network_portal_detector::GetInstance()->StartPortalDetection();
 }
 
 void AutoEnrollmentCheckScreen::HideImpl() {
