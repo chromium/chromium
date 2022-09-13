@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import './strings.m.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import './parent_access_ui.mojom-lite.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebviewManager} from 'chrome://resources/js/webview_manager.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ParentAccessController} from './parent_access_controller.js';
+import {GetOAuthTokenStatus, ParentAccessServerMessageType, ParentAccessUIHandler} from './parent_access_ui.mojom-webui.js';
 
-const parentAccessUIHandler =
-    parentAccessUi.mojom.ParentAccessUIHandler.getRemote();
+const parentAccessUIHandler = ParentAccessUIHandler.getRemote();
 
 /**
  * List of URL hosts that can be requested by the webview. The
@@ -98,8 +96,7 @@ class ParentAccessUi extends PolymerElement {
     const eventOriginFilter = loadTimeData.getString('eventOriginFilter');
 
     const oauthFetchResult = await parentAccessUIHandler.getOAuthToken();
-    if (oauthFetchResult.status !=
-        parentAccessUi.mojom.GetOAuthTokenStatus.kSuccess) {
+    if (oauthFetchResult.status != GetOAuthTokenStatus.kSuccess) {
       // TODO(b/200187536): show error page.
       return;
     }
@@ -132,11 +129,9 @@ class ParentAccessUi extends PolymerElement {
     // encoded proto messages are passed to c++ handler for proto decoding
     // before they are handled. When the following while loop terminates, the
     // flow will either proceed to the next steps, or show a terminal error.
-    let lastServerMessageType =
-        parentAccessUi.mojom.ParentAccessServerMessageType.kIgnore;
+    let lastServerMessageType = ParentAccessServerMessageType.kIgnore;
 
-    while (lastServerMessageType ===
-           parentAccessUi.mojom.ParentAccessServerMessageType.kIgnore) {
+    while (lastServerMessageType === ParentAccessServerMessageType.kIgnore) {
       const parentAccessCallback = await Promise.race([
         this.server.whenParentAccessCallbackReceived(),
         this.server.whenInitializationError(),
@@ -160,18 +155,18 @@ class ParentAccessUi extends PolymerElement {
       lastServerMessageType = parentAccessServerMessage.message.type;
 
       switch (lastServerMessageType) {
-        case parentAccessUi.mojom.ParentAccessServerMessageType.kParentVerified:
+        case ParentAccessServerMessageType.kParentVerified:
           this.dispatchEvent(new CustomEvent('show-after', {
             bubbles: true,
             composed: true,
           }));
           break;
 
-        case parentAccessUi.mojom.ParentAccessServerMessageType.kError:
+        case ParentAccessServerMessageType.kError:
           // TODO(b/200187536): show error page
           break;
 
-        case parentAccessUi.mojom.ParentAccessServerMessageType.kIgnore:
+        case ParentAccessServerMessageType.kIgnore:
           continue;
 
         default:

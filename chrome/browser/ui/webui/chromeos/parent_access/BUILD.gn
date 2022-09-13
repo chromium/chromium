@@ -11,4 +11,5 @@ proto_library("proto") {
 
 mojom("mojo_bindings") {
   sources = [ "parent_access_ui.mojom" ]
+  webui_module_path = "/"
 }

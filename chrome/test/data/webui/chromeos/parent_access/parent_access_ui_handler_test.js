@@ -3,10 +3,8 @@
 // found in the LICENSE file.
 
 import '../../mojo_webui_test_support.js';
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://parent-access/parent_access_ui.mojom-lite.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {ParentAccessServerMessageType, ParentAccessUIHandler} from 'chrome://parent-access/parent_access_ui.mojom-webui.js';
 
 window.parent_access_ui_handler_tests = {};
 parent_access_ui_handler_tests.suiteName = 'ParentAccessUIHandlerTest';
@@ -18,8 +16,7 @@ parent_access_ui_handler_tests.TestNames = {
 };
 
 suite(parent_access_ui_handler_tests.suiteName, function() {
-  const parentAccessUIHandler =
-      parentAccessUi.mojom.ParentAccessUIHandler.getRemote();
+  const parentAccessUIHandler = ParentAccessUIHandler.getRemote();
   test(
       parent_access_ui_handler_tests.TestNames
           .TestOnParentAccessCallbackReceived,
@@ -27,9 +24,7 @@ suite(parent_access_ui_handler_tests.suiteName, function() {
         // Test with an unparsable/invalid result.
         let result = await parentAccessUIHandler.onParentAccessCallbackReceived(
             'INVALID_PARENT_ACCESS_RESULT');
-        assertEquals(
-            parentAccessUi.mojom.ParentAccessServerMessageType.kError,
-            result.message.type);
+        assertEquals(ParentAccessServerMessageType.kError, result.message.type);
 
         // Decodes to a valid parent_access_callback with OnParentVerified.
         const on_verified_parent_access_callback =
@@ -39,8 +34,7 @@ suite(parent_access_ui_handler_tests.suiteName, function() {
             on_verified_parent_access_callback);
 
         assertEquals(
-            parentAccessUi.mojom.ParentAccessServerMessageType.kParentVerified,
-            result.message.type);
+            ParentAccessServerMessageType.kParentVerified, result.message.type);
 
         // Decodes to ignore OnConsentDeclined.
         const on_consent_declined_parent_access_callback = 'EgA=';
@@ -49,7 +43,6 @@ suite(parent_access_ui_handler_tests.suiteName, function() {
             on_consent_declined_parent_access_callback);
 
         assertEquals(
-            parentAccessUi.mojom.ParentAccessServerMessageType.kIgnore,
-            result.message.type);
+            ParentAccessServerMessageType.kIgnore, result.message.type);
       });
 });
