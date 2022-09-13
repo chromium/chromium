@@ -79,6 +79,12 @@ constexpr const wchar_t* const kMediaFoundationVideoEncoderDLLs[] = {
     L"mfplat.dll",
 };
 
+static const CLSID kIntelAV1HybridEncoderCLSID = {
+    0x62c053ce,
+    0x5357,
+    0x4794,
+    {0x8c, 0x5a, 0xfb, 0xef, 0xfe, 0xff, 0xb8, 0x2d}};
+
 eAVEncH264VProfile GetH264VProfile(VideoCodecProfile profile,
                                    bool is_constrained_h264) {
   switch (profile) {
@@ -662,6 +668,16 @@ bool MediaFoundationVideoEncodeAccelerator::ActivateAsyncEncoder(
   // Try to create the encoder with priority according to merit value.
   HRESULT hr = E_FAIL;
   for (UINT32 i = 0; i < encoder_count; i++) {
+    // Skip flawky Intel hybrid AV1 encoder.
+    if (codec_ == VideoCodec::kAV1) {
+      // Get the CLSID GUID of the HMFT.
+      GUID mft_guid = {0};
+      pp_activate[i]->GetGUID(MFT_TRANSFORM_CLSID_Attribute, &mft_guid);
+      if (mft_guid == kIntelAV1HybridEncoderCLSID) {
+        DLOG(WARNING) << "Skipped Intel hybrid AV1 encoder MFT.";
+        continue;
+      }
+    }
     if (FAILED(hr)) {
       DCHECK(!encoder_);
       DCHECK(!activate_);
