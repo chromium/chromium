@@ -15,17 +15,34 @@ import re
 import subprocess
 import sys
 
+# Max number of commits to show when given a range and no -n parameter.
 _COMMIT_LIMIT = 200
-_LOG_RE = re.compile(
+
+# Commit ranges where size bot was giving invalid results.
+_BAD_COMMIT_RANGES = [
+    range(1045024, 1045552),  # https://crbug.com/1361952
+]
+
+_COMMIT_RE = re.compile(r'^commit (?:(?!^commit).)*', re.DOTALL | re.MULTILINE)
+
+_MAIN_FIELDS_RE = re.compile(
     r'^commit (\S+).*?'
     r'^Date:\s+(.*?)$.*?'
-    r'^    (\S.*?)$.*?'
-    r'^    Reviewed-on: (\S+).*?'
-    r'^(?!commit)    Cr-Commit-Position:.*?(\d+)', re.DOTALL | re.MULTILINE)
+    r'^    (\S.*?)$', re.DOTALL | re.MULTILINE)
 
+_REVIEW_RE = re.compile(r'^    Reviewed-on: (\S+)', re.MULTILINE)
+_CRREV_RE = re.compile(r'^    Cr-Commit-Position:.*?(\d+)', re.MULTILINE)
+_GERRIT_RE = re.compile(r'https://([^/]+)/c/(.*?)/\+/(\d+)')
 
 _CommitInfo = collections.namedtuple(
     '_CommitInfo', 'git_hash date subject review_url cr_position')
+
+
+def _parse_commit(text):
+  git_hash, date, subject = _MAIN_FIELDS_RE.match(text).groups()
+  review_url = ([''] + _REVIEW_RE.findall(text))[-1]
+  cr_position = int((['0'] + _CRREV_RE.findall(text))[-1])
+  return _CommitInfo(git_hash, date, subject, review_url, cr_position)
 
 
 def _git_log(git_log_args):
@@ -41,7 +58,7 @@ def _git_log(git_log_args):
   cmd += git_log_args
 
   log_output = subprocess.check_output(cmd, encoding='utf8')
-  ret = [_CommitInfo(*x) for x in _LOG_RE.findall(log_output)]
+  ret = [_parse_commit(x) for x in _COMMIT_RE.findall(log_output)]
 
   if len(ret) == _COMMIT_LIMIT:
     sys.stderr.write(
@@ -50,7 +67,12 @@ def _git_log(git_log_args):
 
 
 def _query_size(review_url, internal):
-  change_num = posixpath.basename(review_url)
+  if not review_url:
+    return '<missing>'
+  m = _GERRIT_RE.match(review_url)
+  if not m:
+    return '<bad URL>'
+  host, project, change_num = m.groups()
   if internal:
     project = 'chrome'
     builder = 'android-internal-binary-size'
@@ -66,9 +88,9 @@ def _query_size(review_url, internal):
         """{
 "builder":{"project":"%s","bucket":"try","builder":"%s"},
 "gerrit_changes":[{
-    "host":"chromium-review.googlesource.com","project":"chromium/src",
+    "host":"%s","project":"%s",
     "change":"%s","patchset":"%d"}
-]}""" % (project, builder, change_num, patchset)
+]}""" % (project, builder, host, project, change_num, patchset)
     ]
   result = subprocess.run(cmd,
                           check=False,
@@ -119,18 +141,24 @@ def main():
   if args.csv:
     print_func = csv.writer(sys.stdout).writerow
   else:
-    print_func = lambda v: print('{:12}{:14}{:12}{:32}{}'.format(*v))
+    print_func = lambda v: print('{:<12}{:14}{:12}{:32}{}'.format(*v))
 
   print_func(('Commit #', 'Git Hash', 'Size', 'Date', 'Subject'))
+  num_bad_commits = 0
   with concurrent.futures.ThreadPoolExecutor(max_workers=20) as pool:
     sizes = [
         pool.submit(_query_size, info.review_url, args.internal)
         for info in commit_infos
     ]
     for info, size in zip(commit_infos, sizes):
+      if any(info.cr_position in r for r in _BAD_COMMIT_RANGES):
+        num_bad_commits += 1
       size_str = size.result().replace(' bytes', '').lstrip('+')
-      print_func((info.cr_position, info.git_hash[:12], size_str, info.date,
-                  info.subject))
+      crrev_str = info.cr_position or ''
+      print_func(
+          (crrev_str, info.git_hash[:12], size_str, info.date, info.subject))
+  if num_bad_commits:
+    print(f'Includes {num_bad_commits} commits from known bad revision range.')
 
 
 if __name__ == '__main__':
