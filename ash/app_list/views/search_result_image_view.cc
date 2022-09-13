@@ -5,6 +5,7 @@
 #include "ash/app_list/views/search_result_image_view.h"
 
 #include "ash/app_list/model/search/search_result.h"
+#include "ash/app_list/views/search_result_image_view_delegate.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -36,6 +37,9 @@ SearchResultImageView::SearchResultImageView(std::string dummy_result_id) {
   dummy_result_ptr = std::make_unique<SearchResult>();
   dummy_result_ptr->set_id(dummy_result_id);
   SetResult(dummy_result_ptr.get());
+
+  set_context_menu_controller(SearchResultImageViewDelegate::Get());
+  set_drag_controller(SearchResultImageViewDelegate::Get());
 }
 
 void SearchResultImageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -53,6 +57,18 @@ void SearchResultImageView::OnThemeChanged() {
       vector_icons::kGoogleColorIcon, kIconSize,
       AppListColorProvider::Get()->GetSearchBoxIconColor(
           SkColorSetARGB(0xDE, 0x00, 0x00, 0x00), GetWidget())));
+}
+
+void SearchResultImageView::OnGestureEvent(ui::GestureEvent* event) {
+  SearchResultImageViewDelegate::Get()->HandleSearchResultImageViewGestureEvent(
+      this, *event);
+  SearchResultBaseView::OnGestureEvent(event);
+}
+
+void SearchResultImageView::OnMouseEvent(ui::MouseEvent* event) {
+  SearchResultImageViewDelegate::Get()->HandleSearchResultImageViewMouseEvent(
+      this, *event);
+  SearchResultBaseView::OnMouseEvent(event);
 }
 
 SearchResultImageView::~SearchResultImageView() = default;

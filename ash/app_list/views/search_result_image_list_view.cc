@@ -93,6 +93,11 @@ SearchResultImageListView::ScheduleResultAnimations(
   return absl::nullopt;
 }
 
+std::vector<SearchResultImageView*>
+SearchResultImageListView::GetSearchResultImageViews() {
+  return image_views_;
+}
+
 void SearchResultImageListView::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kListBox;

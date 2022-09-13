@@ -33,6 +33,8 @@ class ASH_EXPORT SearchResultImageView : public SearchResultBaseView {
   // Overridden from views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
+  void OnMouseEvent(ui::MouseEvent* event) override;
 
  private:
   base::raw_ptr<views::ImageView> result_image_ =

@@ -143,6 +143,8 @@ source_set("app_list") {
     "views/search_result_image_list_view.h",
     "views/search_result_image_view.cc",
     "views/search_result_image_view.h",
+    "views/search_result_image_view_delegate.cc",
+    "views/search_result_image_view_delegate.h",
     "views/search_result_inline_icon_view.cc",
     "views/search_result_inline_icon_view.h",
     "views/search_result_list_view.cc",

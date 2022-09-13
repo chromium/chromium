@@ -15,6 +15,8 @@
 #include "ash/app_list/views/app_list_bubble_search_page.h"
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_box_view.h"
+#include "ash/app_list/views/search_result_image_list_view.h"
+#include "ash/app_list/views/search_result_image_view_delegate.h"
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/constants/ash_features.h"
@@ -35,6 +37,7 @@
 namespace {
 
 int kDefaultSearchItems = 3;
+const uint64_t kSearchResultImageViewResultCount = 4;
 const int kResultContainersCount = static_cast<int>(
     ash::SearchResultListView::SearchResultListType::kMaxValue);
 
@@ -50,7 +53,7 @@ class ProductivityLauncherSearchViewTest
  public:
   ProductivityLauncherSearchViewTest()
       : AshTestBase((base::test::TaskEnvironment::TimeSource::MOCK_TIME)),
-        tablet_mode_(GetParam()) {
+        test_under_tablet_(GetParam()) {
     scoped_feature_list_.InitAndEnableFeature(features::kProductivityLauncher);
   }
   ProductivityLauncherSearchViewTest(
@@ -62,9 +65,11 @@ class ProductivityLauncherSearchViewTest
   void SetUp() override {
     AshTestBase::SetUp();
 
-    if (tablet_mode_)
+    if (test_under_tablet_)
       Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   }
+
+  bool tablet_mode() const { return test_under_tablet_; }
 
   void SetUpSearchResults(SearchModel::SearchResults* results,
                           int init_id,
@@ -120,7 +125,7 @@ class ProductivityLauncherSearchViewTest
   }
 
   ProductivityLauncherSearchView* GetProductivityLauncherSearchView() {
-    if (tablet_mode_) {
+    if (tablet_mode()) {
       return GetAppListTestHelper()
           ->GetFullscreenSearchResultPageView()
           ->productivity_launcher_search_view_for_test();
@@ -129,7 +134,7 @@ class ProductivityLauncherSearchViewTest
   }
 
   bool IsSearchResultPageVisible() {
-    if (tablet_mode_) {
+    if (tablet_mode()) {
       return GetAppListTestHelper()
           ->GetFullscreenSearchResultPageView()
           ->GetVisible();
@@ -149,13 +154,13 @@ class ProductivityLauncherSearchViewTest
   }
 
   SearchBoxView* GetSearchBoxView() {
-    if (tablet_mode_)
+    if (tablet_mode())
       return GetAppListTestHelper()->GetSearchBoxView();
     return GetAppListTestHelper()->GetBubbleSearchBoxView();
   }
 
  private:
-  const bool tablet_mode_;
+  const bool test_under_tablet_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -195,10 +200,53 @@ TEST_P(SearchResultImageViewTest, ImageListViewVisible) {
   ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
   // Answer card container should be visible.
   EXPECT_TRUE(result_containers[0]->GetVisible());
-  // Best Match container should be visible.
+  // Best Match container should not be visible.
   EXPECT_FALSE(result_containers[1]->GetVisible());
   // SearchResultImageListView container should be visible.
   EXPECT_TRUE(result_containers[2]->GetVisible());
+
+  std::vector<SearchResultImageView*> search_result_image_views =
+      static_cast<SearchResultImageListView*>(result_containers[2])
+          ->GetSearchResultImageViews();
+
+  // The SearchResultImageListView should have four visible result views.
+  EXPECT_EQ(kSearchResultImageViewResultCount,
+            search_result_image_views.size());
+  for (auto* search_result_image_view : search_result_image_views) {
+    EXPECT_TRUE(search_result_image_view->GetVisible());
+  }
+}
+
+TEST_P(SearchResultImageViewTest, ShowContextMenu) {
+  GetAppListTestHelper()->ShowAppList();
+
+  // Press a key to start a search.
+  PressAndReleaseKey(ui::VKEY_A);
+  GetProductivityLauncherSearchView()->OnSearchResultContainerResultsChanged();
+
+  // Check result container visibility.
+  std::vector<SearchResultContainerView*> result_containers =
+      GetProductivityLauncherSearchView()->result_container_views_for_test();
+  ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
+
+  // SearchResultImageListView container should be visible.
+  ASSERT_TRUE(result_containers[2]->GetVisible());
+  auto* search_result_image_view =
+      static_cast<SearchResultImageListView*>(result_containers[2])
+          ->GetResultViewAt(2);
+  ASSERT_TRUE(search_result_image_view->GetVisible());
+
+  // Perform a long tap on `search_result_image_view`.
+  auto image_view_center_point =
+      search_result_image_view->GetBoundsInScreen().CenterPoint();
+  auto* event_generator = GetEventGenerator();
+  ui::GestureEvent long_tap(image_view_center_point.x(),
+                            image_view_center_point.y(), 0, base::TimeTicks(),
+                            ui::GestureEventDetails(ui::ET_GESTURE_LONG_TAP));
+  event_generator->Dispatch(&long_tap);
+
+  // The `SearchResultImageViewDelegate` should be showing a context menu.
+  EXPECT_TRUE(SearchResultImageViewDelegate::Get()->HasActiveContextMenu());
 }
 
 TEST_P(ProductivityLauncherSearchViewTest, AnimateSearchResultView) {

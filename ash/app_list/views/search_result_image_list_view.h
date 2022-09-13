@@ -9,6 +9,7 @@
 
 #include "ash/app_list/views/search_result_container_view.h"
 #include "ash/app_list/views/search_result_image_view.h"
+#include "ash/app_list/views/search_result_image_view_delegate.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -38,6 +39,9 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
   absl::optional<ResultsAnimationInfo> ScheduleResultAnimations(
       const ResultsAnimationInfo& aggregate_animation_info) override;
 
+  // Returns all search result image views children of this view.
+  std::vector<SearchResultImageView*> GetSearchResultImageViews();
+
  private:
   // Overridden from views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -46,6 +50,11 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
   // Overridden from SearchResultContainerView:
   void OnSelectedResultChanged() override;
   int DoUpdate() override;
+
+  // The singleton delegate for search result image views that implements
+  // support for context menu and drag-and-drop operations. This delegate needs
+  // to be a singleton to support multi-selection which requires a shared state.
+  SearchResultImageViewDelegate delegate_;
 
   // Owned by views hierarchy.
   base::raw_ptr<views::Label> title_label_ = nullptr;
