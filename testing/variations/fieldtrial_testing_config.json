@@ -3637,6 +3637,25 @@
             ]
         }
     ],
+    "DesktopViewsWidgetLayering": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows",
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WidgetLayering"
+                    ]
+                }
+            ]
+        }
+    ],
     "DestroySystemProfiles": [
         {
             "platforms": [
