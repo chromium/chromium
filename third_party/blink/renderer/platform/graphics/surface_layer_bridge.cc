@@ -89,6 +89,11 @@ void SurfaceLayerBridge::EmbedSurface(const viz::SurfaceId& surface_id) {
 
 void SurfaceLayerBridge::BindSurfaceEmbedder(
     mojo::PendingReceiver<mojom::blink::SurfaceEmbedder> receiver) {
+  if (surface_embedder_receiver_.is_bound()) {
+    // After recovering from a GPU context loss we have to re-bind to a new
+    // surface embedder.
+    std::ignore = surface_embedder_receiver_.Unbind();
+  }
   surface_embedder_receiver_.Bind(std::move(receiver));
 }
 

@@ -169,8 +169,8 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
               'webgl-domain-not-blocked.html'),
              ('GpuNormalTermination_NewWebGLNotBlocked',
               'webgl-domain-not-blocked.html'),
-             ('ContextLost_WorkerRAFAfterGPUCrash',
-              'worker-raf-after-gpu-crash.html'),
+             ('ContextLost_WorkerWebGLRAFAfterGPUCrash',
+              'worker-webgl-raf-after-gpu-crash.html'),
              ('ContextLost_WebGL2Blocked', 'webgl2-context-blocked.html'),
              ('ContextLost_WebGL2UnpackImageHeight',
               'webgl2-unpack-image-height.html'),
@@ -500,7 +500,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self._WaitForTabAndCheckCompletion()
     self._RestartBrowser('must restart after tests that kill the GPU process')
 
-  def _ContextLost_WorkerRAFAfterGPUCrash(self, test_path: str) -> None:
+  def _ContextLost_WorkerWebGLRAFAfterGPUCrash(self, test_path: str) -> None:
     self.RestartBrowserIfNecessaryWithArgs([])
     self._NavigateAndWaitForLoad(test_path)
     self._KillGPUProcess(1, False)

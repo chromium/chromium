@@ -7156,13 +7156,19 @@ void WebGLRenderingContextBase::LoseContextImpl(
 
   RemoveAllCompressedTextureFormats();
 
-  // If the DrawingBuffer is destroyed during a real lost context event it
-  // causes the CommandBufferProxy that the DrawingBuffer owns, which is what
-  // issued the lost context event in the first place, to be destroyed before
-  // the event is done being handled. This causes a crash when an outstanding
-  // AutoLock goes out of scope. To avoid this, we create a no-op task to hold
-  // a reference to the DrawingBuffer until this function is done executing.
   if (mode == kRealLostContext) {
+    // If it is a real context loss, the signal needs to be propagated to the
+    // context host so that it knows all resources are dropped.  Otherwise,
+    // OffscreenCanvases on Workers would wait indefinitely for reources to be
+    // returned by the compositor, which would stall requestAnimationFrame.
+    Host()->NotifyGpuContextLost();
+
+    // If the DrawingBuffer is destroyed during a real lost context event it
+    // causes the CommandBufferProxy that the DrawingBuffer owns, which is what
+    // issued the lost context event in the first place, to be destroyed before
+    // the event is done being handled. This causes a crash when an outstanding
+    // AutoLock goes out of scope. To avoid this, we create a no-op task to hold
+    // a reference to the DrawingBuffer until this function is done executing.
     task_runner_->PostTask(
         FROM_HERE,
         WTF::Bind(&WebGLRenderingContextBase::HoldReferenceToDrawingBuffer,

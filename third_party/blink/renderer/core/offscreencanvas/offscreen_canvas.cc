@@ -555,8 +555,18 @@ UkmParameters OffscreenCanvas::GetUkmParameters() {
 }
 
 void OffscreenCanvas::NotifyGpuContextLost() {
-  if (context_)
+  if (context_ && !context_->isContextLost()) {
+    // This code path is used only by 2D canvas, because NotifyGpuContextLost
+    // is called by Canvas2DLayerBridge rather than the rendering context
+    DCHECK(context_->IsRenderingContext2D());
     context_->LoseContext(CanvasRenderingContext::kRealLostContext);
+  }
+  if (frame_dispatcher_) {
+    // We'll need to recreate a new frame dispatcher once the context is
+    // restored in order to reestablish the compositor frame sink mojo
+    // channel.
+    frame_dispatcher_ = nullptr;
+  }
 }
 
 FontSelector* OffscreenCanvas::GetFontSelector() {

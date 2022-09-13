@@ -158,7 +158,7 @@ crbug.com/1284424 [ linux ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [
 # Flaking on Nexus 5X
 crbug.com/965268 [ android android-nexus-5x ] ContextLost_WebGLBlockedAfterJSNavigation [ Failure ]
 crbug.com/965268 [ android android-nexus-5x ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Failure ]
-crbug.com/1210594 [ android android-nexus-5x ] ContextLost_WorkerRAFAfterGPUCrash [ Failure ]
+crbug.com/1210594 [ android android-nexus-5x ] ContextLost_WorkerWebGLRAFAfterGPUCrash [ Failure ]
 crbug.com/1064853 [ android android-nexus-5x ] ContextLost_WebGLContextLostFromSelectElement [ Failure ]
 crbug.com/1218559 [ android android-nexus-5x no-passthrough ] ContextLost_WebGLContextLostFromGPUProcessExit [ Failure ]
 crbug.com/1218559 [ android android-nexus-5x no-passthrough ] GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash [ Failure ]

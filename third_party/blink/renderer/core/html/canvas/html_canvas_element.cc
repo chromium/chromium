@@ -1305,6 +1305,10 @@ void HTMLCanvasElement::SetCanvas2DLayerBridgeInternal(
 void HTMLCanvasElement::NotifyGpuContextLost() {
   if (IsRenderingContext2D())
     context_->LoseContext(CanvasRenderingContext::kRealLostContext);
+
+  // TODO(juonv): Do we need to do anything about frame_dispatcher_ here?
+  // Desynchronized canvases seem to continue to work after recovering from a
+  // GPU context loss, so maybe the status quo is fine.
 }
 
 void HTMLCanvasElement::Trace(Visitor* visitor) const {

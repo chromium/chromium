@@ -1,0 +1,121 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+<title>Worker requestAnimationFrame with WebGLcontext after GPU crash</title>
+
+<script id="worker" type="text/worker">
+self.onmessage = msg => {
+  const canvas = msg.data.canvas;
+  const gl = canvas.getContext('webgl');
+  let restored = false;
+  canvas.addEventListener('webglcontextlost', evt => {
+    self.postMessage("context lost");
+    // To allow restore event to be fired:
+    evt.preventDefault();
+  });
+  canvas.addEventListener('webglcontextrestored', evt => {
+    restored = true;
+    self.postMessage("context restored");
+  });
+  self.postMessage("setup complete");
+
+  function animate() {
+    if (restored) {
+      gl.clearColor(0, 1, 0, 1);
+    } else {
+      gl.clearColor(1, 0, 0, 1)
+    }
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    self.postMessage("animation frame");
+    requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
+}
+</script>
+
+<script>
+// Test that a WebGL rAF loop keeps running after recovering from a context loss.
+// Test will timeout if animation fails to resume.
+
+function UnexpectedMessage(state, msg) {
+  console.log(`Unexpected message '${msg}' received while in state '${state}'`);
+  window.domAutomationController.send('FAILED');
+}
+
+window.onload = () => {
+  const worker_blob = new Blob([document.getElementById("worker").textContent]);
+  const worker = new Worker(URL.createObjectURL(worker_blob));
+  let state = "init";
+  let frames_after_restore = 0;
+
+  worker.onmessage = evt => {
+    // Expected sequence (state: expected message):
+    //
+    // "init": expect to receive "setup complete" once
+    // "ready": expect to receive "animation frame" x1 -> request gpu crash
+    // "expecting crash": receive "animation frame" (any count), then "context lost" once
+    // "expecting restore": receive "animation frame" (any count), then "context restored" once
+    // "recover": receive 5+ "animation frame".
+
+    switch(state) {
+      case "init":
+        if (evt.data == "setup complete") {
+          state = "ready";
+        } else {
+          UnexpectedMessage(state, evt.data);
+        }
+        break;
+      case "ready":
+        if (evt.data == "animation frame") {
+          state = "expecting crash";
+          // send message that test is ready for GPU process crash
+          window.domAutomationController.send('LOADED');
+        } else {
+          UnexpectedMessage(state, evt.data);
+        }
+        break;
+      case "expecting crash":
+        if (evt.data == "animation frame") {
+          break;
+        }
+        if (evt.data == "context lost") {
+          state = "expecting restore";
+        } else {
+          UnexpectedMessage(state, evt.data);
+        }
+        break;
+      case "expecting restore":
+        if (evt.data == "animation frame") {
+          break;
+        }
+        if (evt.data == "context restored") {
+          state = "recover";
+        } else {
+          UnexpectedMessage(state, evt.data);
+        }
+        break;
+      case "recover":
+        if (evt.data == "animation frame") {
+          // Wait for enough frames to pass to ensure the pipeline
+          // is not stalled.
+          if (++frames_after_restore == 5)
+            window.domAutomationController.send('SUCCESS');
+        } else {
+          UnexpectedMessage(state, evt.data);
+        }
+        break;
+    }
+  }
+  let offscreen = document.getElementById('c').transferControlToOffscreen();
+  worker.postMessage({
+      canvas: offscreen
+  }, [offscreen]);
+}
+</script>
+
+</head>
+<body>
+<canvas id="c" width="300" height="300" class="nomargin" style="position:absolute; top:0px; left:0px;"></canvas>
+</body>
+</html>
