@@ -102,11 +102,6 @@ bool SharedImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
   return false;
 }
 
-bool SharedImageBacking::ReadbackToMemory(SkPixmap& pixmap) {
-  NOTREACHED();
-  return false;
-}
-
 bool SharedImageBacking::PresentSwapChain() {
   return false;
 }

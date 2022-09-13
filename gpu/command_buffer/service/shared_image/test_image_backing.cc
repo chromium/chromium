@@ -224,10 +224,6 @@ bool TestImageBacking::GetUploadFromMemoryCalledAndReset() {
   return std::exchange(upload_from_memory_called_, false);
 }
 
-bool TestImageBacking::GetReadbackToMemoryCalledAndReset() {
-  return std::exchange(readback_to_memory_called_, false);
-}
-
 SharedImageBackingType TestImageBacking::GetType() const {
   return SharedImageBackingType::kTest;
 }
@@ -242,11 +238,6 @@ void TestImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
 
 bool TestImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
   upload_from_memory_called_ = true;
-  return true;
-}
-
-bool TestImageBacking::ReadbackToMemory(SkPixmap& pixmap) {
-  readback_to_memory_called_ = true;
   return true;
 }
 
