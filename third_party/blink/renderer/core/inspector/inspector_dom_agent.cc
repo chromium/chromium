@@ -819,10 +819,12 @@ Response InspectorDOMAgent::getTopLayerElements(
     return Response::ServerError("DOM agent hasn't been enabled");
 
   *result = std::make_unique<protocol::Array<int>>();
-  for (auto element : document_->TopLayerElements()) {
-    int node_id = PushNodePathToFrontend(element);
-    if (node_id)
-      (*result)->emplace_back(node_id);
+  for (auto document : Documents()) {
+    for (auto element : document->TopLayerElements()) {
+      int node_id = PushNodePathToFrontend(element);
+      if (node_id)
+        (*result)->emplace_back(node_id);
+    }
   }
 
   return Response::Success();
