@@ -18,6 +18,33 @@ namespace permissions {
 class PermissionRequestID;
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class RequestOutcome {
+  // The request was granted because the requesting site and the top level site
+  // were in the same First-Party Set.
+  kGrantedByFirstPartySet = 0,
+  // The request was granted because the requesting site had not yet used up its
+  // allowance of implicit grants (`kStorageAccessAPIImplicitGrantLimit`).
+  kGrantedByAllowance = 1,
+  // The request was granted by the user.
+  kGrantedByUser = 2,
+  // The request was denied because the requesting site and the top level site
+  // were not in the same First-Party Set.
+  kDeniedByFirstPartySet = 3,
+  // The request was denied by the user.
+  kDeniedByUser = 4,
+  // The request was denied because it lacked user gesture, or one of the
+  // domains was invalid, or the feature was disabled.
+  kDeniedByPrerequisites = 5,
+  // The request was dismissed by the user.
+  kDismissedByUser = 6,
+  // The user has already been asked and made a choice (and was not asked
+  // again).
+  kReusedPreviousDecision = 7,
+  kMaxValue = kReusedPreviousDecision,
+};
+
 class StorageAccessGrantPermissionContext
     : public permissions::PermissionContextBase {
  public:
@@ -64,8 +91,7 @@ class StorageAccessGrantPermissionContext
                             ContentSetting content_setting,
                             bool is_one_time) override;
 
-  // Internal implementation for NotifyPermissionSet. Allows for differentiation
-  // of implicit and explicit grants using |implicit_result|.
+  // Internal implementation for NotifyPermissionSet.
   void NotifyPermissionSetInternal(
       const permissions::PermissionRequestID& id,
       const GURL& requesting_origin,
@@ -73,7 +99,7 @@ class StorageAccessGrantPermissionContext
       permissions::BrowserPermissionCallback callback,
       bool persist,
       ContentSetting content_setting,
-      bool implicit_result);
+      RequestOutcome outcome);
 
   // Checks First-Party Sets metadata to determine if auto-grants or
   // auto-denials are applicable. If no autogrant or autodenial is applicable,

@@ -54,6 +54,7 @@ constexpr char kHostC[] = "c.test";
 constexpr char kHostD[] = "d.test";
 
 constexpr char kUseCounterHistogram[] = "Blink.UseCounter.Features";
+constexpr char kRequestOutcomeHistogram[] = "API.StorageAccess.RequestOutcome";
 
 enum class TestType { kFrame, kWorker };
 
@@ -860,6 +861,7 @@ class StorageAccessAPIWithFirstPartySetsBrowserTest
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
                        Permission_AutograntedWithinFirstPartySet) {
+  base::HistogramTester histogram_tester;
   // Note: kHostA and kHostB are considered same-party due to the use of
   // `network::switches::kUseFirstPartySet`.
   SetBlockThirdPartyCookies(true);
@@ -885,10 +887,18 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
   EXPECT_EQ(GetFrameContent(), "cross-site=b.test");
   EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "cross-site=b.test");
   EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  content::FetchHistogramsFromChildProcesses();
+
+  EXPECT_THAT(histogram_tester.GetBucketCount(
+                  kRequestOutcomeHistogram,
+                  0 /*RequestOutcome::kGrantedByFirstPartySet*/),
+              Gt(0));
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
                        Permission_AutodeniedOutsideFirstPartySet) {
+  base::HistogramTester histogram_tester;
   // Note: kHostA and kHostC are considered cross-party, since kHostA's set does
   // not include kHostC.
   SetBlockThirdPartyCookies(true);
@@ -911,6 +921,13 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
   EXPECT_EQ(GetFrameContent(), "None");
   EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "");
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  content::FetchHistogramsFromChildProcesses();
+
+  EXPECT_THAT(histogram_tester.GetBucketCount(
+                  kRequestOutcomeHistogram,
+                  3 /*RequestOutcome::kDeniedByFirstPartySet*/),
+              Gt(0));
 }
 
 class StorageAccessAPIWithFirstPartySetsAndImplicitGrantsBrowserTest

@@ -21,6 +21,7 @@ namespace {
 constexpr char kGrantIsImplicitHistogram[] =
     "API.StorageAccess.GrantIsImplicit";
 constexpr char kPromptResultHistogram[] = "Permissions.Action.StorageAccess";
+constexpr char kRequestOutcomeHistogram[] = "API.StorageAccess.RequestOutcome";
 
 GURL GetTopLevelURL() {
   return GURL("https://embedder.example.com");
@@ -155,6 +156,11 @@ class StorageAccessGrantPermissionContextAPIEnabledTest
  public:
   StorageAccessGrantPermissionContextAPIEnabledTest()
       : StorageAccessGrantPermissionContextTest(true) {}
+
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
+ private:
+  base::HistogramTester histogram_tester_;
 };
 
 // When the Storage Access API feature is enabled and we have a user gesture we
@@ -186,6 +192,9 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest, PermissionDecided) {
   manager->Dismiss();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(CONTENT_SETTING_ASK, result);
+  EXPECT_EQ(histogram_tester().GetBucketCount(kRequestOutcomeHistogram,
+                                              RequestOutcome::kDismissedByUser),
+            1);
 }
 
 // No user gesture should force a permission rejection.
@@ -199,6 +208,10 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
       fake_id, GetRequesterURL(), GetTopLevelURL(),
       /*user_gesture=*/false, base::BindOnce(&SaveResult, &result));
   EXPECT_EQ(CONTENT_SETTING_BLOCK, result);
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(kRequestOutcomeHistogram,
+                                        RequestOutcome::kDeniedByPrerequisites),
+      1);
 }
 
 TEST_F(StorageAccessGrantPermissionContextAPIDisabledTest,
@@ -227,16 +240,18 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
 // the limit for one origin is exhausted it should not affect another.
 TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
        ImplicitGrantLimitPerRequestingOrigin) {
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount(kGrantIsImplicitHistogram, 0);
+  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 0);
 
   StorageAccessGrantPermissionContext permission_context(profile());
   permissions::PermissionRequestID fake_id = CreateFakeID();
 
   ExhaustImplicitGrants(GetRequesterURL(), permission_context);
-  histogram_tester.ExpectTotalCount(kGrantIsImplicitHistogram, 5);
-  histogram_tester.ExpectBucketCount(kGrantIsImplicitHistogram,
-                                     /*sample=*/true, 5);
+  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 5);
+  histogram_tester().ExpectBucketCount(kGrantIsImplicitHistogram,
+                                       /*sample=*/true, 5);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kRequestOutcomeHistogram, RequestOutcome::kGrantedByAllowance),
+            5);
 
   ContentSetting result = CONTENT_SETTING_DEFAULT;
   permission_context.DecidePermissionForTesting(
@@ -254,12 +269,15 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
   manager->Dismiss();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(CONTENT_SETTING_ASK, result);
+  EXPECT_EQ(histogram_tester().GetBucketCount(kRequestOutcomeHistogram,
+                                              RequestOutcome::kDismissedByUser),
+            1);
 
-  histogram_tester.ExpectTotalCount(kGrantIsImplicitHistogram, 5);
-  histogram_tester.ExpectBucketCount(kGrantIsImplicitHistogram,
-                                     /*sample=*/true, 5);
-  histogram_tester.ExpectTotalCount(kPromptResultHistogram, 1);
-  histogram_tester.ExpectBucketCount(
+  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 5);
+  histogram_tester().ExpectBucketCount(kGrantIsImplicitHistogram,
+                                       /*sample=*/true, 5);
+  histogram_tester().ExpectTotalCount(kPromptResultHistogram, 1);
+  histogram_tester().ExpectBucketCount(
       kPromptResultHistogram,
       /*sample=*/permissions::PermissionAction::DISMISSED, 1);
 
@@ -276,27 +294,29 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
   // We should have no prompts still and our latest result should be an allow.
   EXPECT_FALSE(manager->IsRequestInProgress());
   EXPECT_EQ(CONTENT_SETTING_ALLOW, result);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kRequestOutcomeHistogram, RequestOutcome::kGrantedByAllowance),
+            6);
 
-  histogram_tester.ExpectTotalCount(kGrantIsImplicitHistogram, 6);
-  histogram_tester.ExpectBucketCount(kGrantIsImplicitHistogram,
-                                     /*sample=*/true, 6);
-  histogram_tester.ExpectBucketCount(
+  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 6);
+  histogram_tester().ExpectBucketCount(kGrantIsImplicitHistogram,
+                                       /*sample=*/true, 6);
+  histogram_tester().ExpectBucketCount(
       kPromptResultHistogram,
       /*sample=*/permissions::PermissionAction::DISMISSED, 1);
 }
 
 TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest, ExplicitGrantDenial) {
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount(kGrantIsImplicitHistogram, 0);
-  histogram_tester.ExpectTotalCount(kPromptResultHistogram, 0);
+  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 0);
+  histogram_tester().ExpectTotalCount(kPromptResultHistogram, 0);
 
   StorageAccessGrantPermissionContext permission_context(profile());
   permissions::PermissionRequestID fake_id = CreateFakeID();
 
   ExhaustImplicitGrants(GetRequesterURL(), permission_context);
-  histogram_tester.ExpectTotalCount(kGrantIsImplicitHistogram, 5);
-  histogram_tester.ExpectBucketCount(kGrantIsImplicitHistogram,
-                                     /*sample=*/true, 5);
+  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 5);
+  histogram_tester().ExpectBucketCount(kGrantIsImplicitHistogram,
+                                       /*sample=*/true, 5);
 
   ContentSetting result = CONTENT_SETTING_DEFAULT;
   permission_context.DecidePermissionForTesting(
@@ -315,27 +335,29 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest, ExplicitGrantDenial) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(CONTENT_SETTING_BLOCK, result);
 
-  histogram_tester.ExpectTotalCount(kGrantIsImplicitHistogram, 5);
-  histogram_tester.ExpectBucketCount(kGrantIsImplicitHistogram,
-                                     /*sample=*/true, 5);
-  histogram_tester.ExpectTotalCount(kPromptResultHistogram, 1);
-  histogram_tester.ExpectBucketCount(
+  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 5);
+  histogram_tester().ExpectBucketCount(kGrantIsImplicitHistogram,
+                                       /*sample=*/true, 5);
+  histogram_tester().ExpectTotalCount(kPromptResultHistogram, 1);
+  histogram_tester().ExpectBucketCount(
       kPromptResultHistogram,
       /*sample=*/permissions::PermissionAction::DENIED, 1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(kRequestOutcomeHistogram,
+                                              RequestOutcome::kDeniedByUser),
+            1);
 }
 
 TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest, ExplicitGrantAccept) {
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount(kGrantIsImplicitHistogram, 0);
-  histogram_tester.ExpectTotalCount(kPromptResultHistogram, 0);
+  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 0);
+  histogram_tester().ExpectTotalCount(kPromptResultHistogram, 0);
 
   StorageAccessGrantPermissionContext permission_context(profile());
   permissions::PermissionRequestID fake_id = CreateFakeID();
 
   ExhaustImplicitGrants(GetRequesterURL(), permission_context);
-  histogram_tester.ExpectTotalCount(kGrantIsImplicitHistogram, 5);
-  histogram_tester.ExpectBucketCount(kGrantIsImplicitHistogram,
-                                     /*sample=*/true, 5);
+  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 5);
+  histogram_tester().ExpectBucketCount(kGrantIsImplicitHistogram,
+                                       /*sample=*/true, 5);
 
   ContentSetting result = CONTENT_SETTING_DEFAULT;
   permission_context.DecidePermissionForTesting(
@@ -354,13 +376,16 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest, ExplicitGrantAccept) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(CONTENT_SETTING_ALLOW, result);
 
-  histogram_tester.ExpectTotalCount(kGrantIsImplicitHistogram, 6);
-  histogram_tester.ExpectBucketCount(kGrantIsImplicitHistogram,
-                                     /*sample=*/true, 5);
-  histogram_tester.ExpectBucketCount(kGrantIsImplicitHistogram,
-                                     /*sample=*/false, 1);
-  histogram_tester.ExpectTotalCount(kPromptResultHistogram, 1);
-  histogram_tester.ExpectBucketCount(
+  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 6);
+  histogram_tester().ExpectBucketCount(kGrantIsImplicitHistogram,
+                                       /*sample=*/true, 5);
+  histogram_tester().ExpectBucketCount(kGrantIsImplicitHistogram,
+                                       /*sample=*/false, 1);
+  histogram_tester().ExpectTotalCount(kPromptResultHistogram, 1);
+  histogram_tester().ExpectBucketCount(
       kPromptResultHistogram,
       /*sample=*/permissions::PermissionAction::GRANTED, 1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(kRequestOutcomeHistogram,
+                                              RequestOutcome::kGrantedByUser),
+            1);
 }

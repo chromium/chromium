@@ -14,6 +14,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/permission_request_id.h"
@@ -36,6 +37,38 @@ constexpr base::TimeDelta kExplicitGrantDuration = base::Days(30);
 
 int GetImplicitGrantLimit() {
   return net::features::kStorageAccessAPIImplicitGrantLimit.Get();
+}
+
+// Returns true iff the request was answered implicitly (assuming it met some
+// other baseline prerequisites).
+bool IsImplicitOutcome(RequestOutcome outcome) {
+  return outcome == RequestOutcome::kGrantedByAllowance ||
+         outcome == RequestOutcome::kGrantedByFirstPartySet ||
+         outcome == RequestOutcome::kDeniedByFirstPartySet;
+}
+
+// Converts a ContentSetting to the corresponding RequestOutcome. This assumes
+// that the request was not answered implicitly; i.e., that a prompt was shown
+// to the user (at some point - not necessarily for this request).
+RequestOutcome RequestOutcomeFromPrompt(ContentSetting content_setting,
+                                        bool persist) {
+  switch (content_setting) {
+    case CONTENT_SETTING_DEFAULT:
+      return RequestOutcome::kDismissedByUser;
+    case CONTENT_SETTING_ALLOW:
+      return persist ? RequestOutcome::kGrantedByUser
+                     : RequestOutcome::kReusedPreviousDecision;
+    case CONTENT_SETTING_BLOCK:
+      return persist ? RequestOutcome::kDeniedByUser
+                     : RequestOutcome::kReusedPreviousDecision;
+    default:
+      NOTREACHED();
+      return RequestOutcome::kDeniedByUser;
+  }
+}
+
+void RecordOutcomeSample(RequestOutcome outcome) {
+  base::UmaHistogramEnumeration("API.StorageAccess.RequestOutcome", outcome);
 }
 
 }  // namespace
@@ -76,6 +109,7 @@ void StorageAccessGrantPermissionContext::DecidePermission(
   if (!user_gesture ||
       !base::FeatureList::IsEnabled(net::features::kStorageAccessAPI) ||
       !requesting_origin.is_valid() || !embedding_origin.is_valid()) {
+    RecordOutcomeSample(RequestOutcome::kDeniedByPrerequisites);
     std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
   }
@@ -115,9 +149,10 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
   switch (metadata.context().context_type()) {
     case net::SamePartyContext::Type::kCrossParty:
       if (net::features::kStorageAccessAPIAutoDenyOutsideFPS.Get()) {
-        NotifyPermissionSetInternal(
-            id, requesting_origin, embedding_origin, std::move(callback),
-            /*persist=*/true, CONTENT_SETTING_BLOCK, /*implicit_result=*/true);
+        NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
+                                    std::move(callback),
+                                    /*persist=*/true, CONTENT_SETTING_BLOCK,
+                                    RequestOutcome::kDeniedByFirstPartySet);
         return;
       }
       // Not autodenying; fall back to implicit grants or prompt.
@@ -126,9 +161,10 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
       if (net::features::kStorageAccessAPIAutoGrantInFPS.Get()) {
         // Since the sites are in the same First-Party Set, risk of abuse due to
         // allowing access is considered to be low.
-        NotifyPermissionSetInternal(
-            id, requesting_origin, embedding_origin, std::move(callback),
-            /*persist=*/true, CONTENT_SETTING_ALLOW, /*implicit_result=*/true);
+        NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
+                                    std::move(callback),
+                                    /*persist=*/true, CONTENT_SETTING_ALLOW,
+                                    RequestOutcome::kGrantedByFirstPartySet);
         return;
       }
       // Not autogranting; fall back to implicit grants or prompt.
@@ -168,7 +204,7 @@ void StorageAccessGrantPermissionContext::UseImplicitGrantOrPrompt(
     NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
                                 std::move(callback),
                                 /*persist=*/true, CONTENT_SETTING_ALLOW,
-                                /*implicit_result=*/true);
+                                RequestOutcome::kGrantedByAllowance);
     return;
   }
 
@@ -200,9 +236,9 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSet(
     bool is_one_time) {
   DCHECK(!is_one_time);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
-                              std::move(callback), persist, content_setting,
-                              /*implicit_result=*/false);
+  NotifyPermissionSetInternal(
+      id, requesting_origin, embedding_origin, std::move(callback), persist,
+      content_setting, RequestOutcomeFromPrompt(content_setting, persist));
 }
 
 void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
@@ -212,12 +248,14 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
     permissions::BrowserPermissionCallback callback,
     bool persist,
     ContentSetting content_setting,
-    bool implicit_result) {
+    RequestOutcome outcome) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!base::FeatureList::IsEnabled(net::features::kStorageAccessAPI)) {
     return;
   }
+
+  RecordOutcomeSample(outcome);
 
   const bool permission_allowed = (content_setting == CONTENT_SETTING_ALLOW);
   UpdateTabContext(id, requesting_origin, permission_allowed);
@@ -234,6 +272,7 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
   // Our failure cases are tracked by the prompt outcomes in the
   // `Permissions.Action.StorageAccess` histogram. We'll only log when a grant
   // is actually generated.
+  bool implicit_result = IsImplicitOutcome(outcome);
   base::UmaHistogramBoolean("API.StorageAccess.GrantIsImplicit",
                             implicit_result);
 
