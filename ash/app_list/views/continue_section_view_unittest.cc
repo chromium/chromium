@@ -32,7 +32,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/layer_animation_stopped_waiter.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -41,6 +40,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/animation/ink_drop.h"
@@ -78,7 +78,7 @@ void WaitForAllChildrenAnimationsToComplete(views::View* view) {
     bool found_animation = false;
     for (views::View* child : view->children()) {
       if (child->layer() && child->layer()->GetAnimator()->is_animating()) {
-        LayerAnimationStoppedWaiter waiter;
+        ui::LayerAnimationStoppedWaiter waiter;
         waiter.Wait(child->layer());
         found_animation = true;
         break;
@@ -2104,7 +2104,7 @@ TEST_F(ContinueSectionViewClamshellModeTest, AnimatesOutAfterRemovingResults) {
   EXPECT_EQ(0.0f, privacy_notice->layer()->GetTargetOpacity());
   EXPECT_TRUE(privacy_notice->layer()->GetAnimator()->is_animating());
 
-  LayerAnimationStoppedWaiter waiter;
+  ui::LayerAnimationStoppedWaiter waiter;
   waiter.Wait(privacy_notice->layer());
 
   VerifyResultViewsUpdated();
@@ -2132,7 +2132,7 @@ TEST_P(ContinueSectionViewTest, AnimatesPrivacyNoticeAccept) {
   EXPECT_EQ(0.0f, privacy_notice->layer()->GetTargetOpacity());
   EXPECT_TRUE(privacy_notice->layer()->GetAnimator()->is_animating());
 
-  LayerAnimationStoppedWaiter waiter;
+  ui::LayerAnimationStoppedWaiter waiter;
   waiter.Wait(privacy_notice->layer());
 
   ContinueTaskContainerView* container_view =
@@ -2169,7 +2169,7 @@ TEST_F(ContinueSectionViewClamshellModeTest,
   EXPECT_EQ(0.0f, privacy_notice->layer()->GetTargetOpacity());
   EXPECT_TRUE(privacy_notice->layer()->GetAnimator()->is_animating());
 
-  LayerAnimationStoppedWaiter waiter;
+  ui::LayerAnimationStoppedWaiter waiter;
   waiter.Wait(privacy_notice->layer());
 
   WaitForAllChildrenAnimationsToComplete(

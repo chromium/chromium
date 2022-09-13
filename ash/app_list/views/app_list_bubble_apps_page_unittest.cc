@@ -24,7 +24,6 @@
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/layer_animation_stopped_waiter.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -32,6 +31,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -149,7 +149,8 @@ TEST_F(AppListBubbleAppsPageTest, AppsPageVisibleAfterQuicklyClearingSearch) {
   // Before the animation completes, delete the search. This should abort
   // animations, animate back to the apps page, and leave the apps page visible.
   PressAndReleaseKey(ui::VKEY_BACK);
-  LayerAnimationStoppedWaiter().Wait(apps_page->GetPageAnimationLayerForTest());
+  ui::LayerAnimationStoppedWaiter().Wait(
+      apps_page->GetPageAnimationLayerForTest());
   EXPECT_TRUE(apps_page->GetVisible());
   EXPECT_EQ(1.0f, apps_page->scroll_view()->contents()->layer()->opacity());
 }
@@ -180,7 +181,8 @@ TEST_F(AppListBubbleAppsPageTest,
   helper->GetBubbleView()->StartShowAnimation(/*is_side_shelf=*/false);
   apps_page->AbortAllAnimations();
 
-  LayerAnimationStoppedWaiter().Wait(apps_page->GetPageAnimationLayerForTest());
+  ui::LayerAnimationStoppedWaiter().Wait(
+      apps_page->GetPageAnimationLayerForTest());
 
   EXPECT_TRUE(apps_page->GetVisible());
   EXPECT_EQ(1.0f, apps_page->scroll_view()->contents()->layer()->opacity());
@@ -207,7 +209,7 @@ TEST_F(AppListBubbleAppsPageTest, AnimateHidePage) {
   // Type a key to trigger the animation to transition to the search page.
   PressAndReleaseKey(ui::VKEY_A);
   ui::Layer* layer = apps_page->GetPageAnimationLayerForTest();
-  LayerAnimationStoppedWaiter().Wait(layer);
+  ui::LayerAnimationStoppedWaiter().Wait(layer);
 
   // Ensure there is one more frame presented after animation finishes to allow
   // animation throughput data to be passed from cc to ui.
@@ -246,7 +248,7 @@ TEST_F(AppListBubbleAppsPageTest, AnimateShowPage) {
   // Press escape to trigger animation back to the apps page.
   PressAndReleaseKey(ui::VKEY_ESCAPE);
   ui::Layer* layer = apps_page->GetPageAnimationLayerForTest();
-  LayerAnimationStoppedWaiter().Wait(layer);
+  ui::LayerAnimationStoppedWaiter().Wait(layer);
 
   // Ensure there is one more frame presented after animation finishes to allow
   // animation throughput data to be passed from cc to ui.
@@ -706,7 +708,8 @@ TEST_F(AppListBubbleAppsPageTest, CloseReorderToast) {
 
   // Wait for the toast to finish fade out animation.
   EXPECT_EQ(toast_container->toast_view()->layer()->GetTargetOpacity(), 0.0f);
-  LayerAnimationStoppedWaiter().Wait(toast_container->toast_view()->layer());
+  ui::LayerAnimationStoppedWaiter().Wait(
+      toast_container->toast_view()->layer());
 
   EXPECT_FALSE(toast_container->IsToastVisible());
 }

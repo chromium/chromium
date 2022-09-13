@@ -25,13 +25,13 @@
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/layer_animation_stopped_waiter.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/bounds_animator.h"
@@ -121,7 +121,7 @@ class PagedAppsGridViewTestBase : public AshTestBase {
   }
 
   void WaitForItemLayerAnimations() {
-    LayerAnimationStoppedWaiter animation_waiter;
+    ui::LayerAnimationStoppedWaiter animation_waiter;
     const views::ViewModelT<AppListItemView>* view_model =
         GetPagedAppsGridView()->view_model();
 
@@ -699,7 +699,8 @@ TEST_F(PagedAppsGridViewTest, CloseReorderToast) {
 
   // Wait for the toast to finish fade out animation.
   EXPECT_EQ(toast_container->toast_view()->layer()->GetTargetOpacity(), 0.0f);
-  LayerAnimationStoppedWaiter().Wait(toast_container->toast_view()->layer());
+  ui::LayerAnimationStoppedWaiter().Wait(
+      toast_container->toast_view()->layer());
 
   const views::ViewModelT<AppListItemView>* view_model =
       GetPagedAppsGridView()->view_model();

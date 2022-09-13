@@ -36,13 +36,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/shell.h"
-#include "ash/test/layer_animation_stopped_waiter.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
@@ -393,7 +393,7 @@ void AppListTestApi::WaitForAppListShowAnimation(bool is_bubble_window) {
   // Wait for the app list window animation.
   aura::Window* app_list_window = controller->GetWindow();
   DCHECK(app_list_window);
-  LayerAnimationStoppedWaiter().Wait(app_list_window->layer());
+  ui::LayerAnimationStoppedWaiter().Wait(app_list_window->layer());
 
   if (!is_bubble_window)
     return;
@@ -407,17 +407,17 @@ void AppListTestApi::WaitForAppListShowAnimation(bool is_bubble_window) {
     return;
 
   // Wait for the animation to show the bubble view.
-  LayerAnimationStoppedWaiter().Wait(GetAppListBubbleView()->layer());
+  ui::LayerAnimationStoppedWaiter().Wait(GetAppListBubbleView()->layer());
 
   // Wait for the animation to show the apps page.
-  LayerAnimationStoppedWaiter().Wait(GetAppListBubbleView()
-                                         ->apps_page_for_test()
-                                         ->scroll_view()
-                                         ->contents()
-                                         ->layer());
+  ui::LayerAnimationStoppedWaiter().Wait(GetAppListBubbleView()
+                                             ->apps_page_for_test()
+                                             ->scroll_view()
+                                             ->contents()
+                                             ->layer());
 
   // Wait for the apps grid slide animation.
-  LayerAnimationStoppedWaiter().Wait(scrollable_apps_grid_view->layer());
+  ui::LayerAnimationStoppedWaiter().Wait(scrollable_apps_grid_view->layer());
 }
 
 bool AppListTestApi::HasApp(const std::string& app_id) {
@@ -786,7 +786,7 @@ void AppListTestApi::ClickOnCloseButtonAndWaitForToastAnimation(
   event_generator->ClickLeftButton();
 
   // Wait until the toast fade out animation ends.
-  LayerAnimationStoppedWaiter animation_waiter;
+  ui::LayerAnimationStoppedWaiter animation_waiter;
   animation_waiter.Wait(toast_container->toast_view()->layer());
 }
 

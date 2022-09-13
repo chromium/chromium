@@ -44,7 +44,6 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/layer_animation_stopped_waiter.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
@@ -58,6 +57,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/views/message_popup_view.h"
@@ -1359,7 +1359,7 @@ TEST_P(AppListControllerWithAssistantTest,
           app_list_controller->bubble_presenter_for_test()
               ->bubble_view_for_test();
       ToggleAssistantUiWithAccelerator();
-      LayerAnimationStoppedWaiter().Wait(bubble_view->layer());
+      ui::LayerAnimationStoppedWaiter().Wait(bubble_view->layer());
     } else {
       views::WidgetAnimationWaiter waiter(GetAppListView()->GetWidget());
       ToggleAssistantUiWithAccelerator();
@@ -1407,7 +1407,7 @@ TEST_P(AppListControllerWithAssistantTest, TriggerSearchKeyWhenAppListClosing) {
         app_list_controller->bubble_presenter_for_test()
             ->bubble_view_for_test();
     PressAndReleaseKey(ui::KeyboardCode::VKEY_COMMAND);
-    LayerAnimationStoppedWaiter().Wait(bubble_view->layer());
+    ui::LayerAnimationStoppedWaiter().Wait(bubble_view->layer());
   } else {
     views::WidgetAnimationWaiter waiter(GetAppListView()->GetWidget());
     PressAndReleaseKey(ui::KeyboardCode::VKEY_COMMAND);

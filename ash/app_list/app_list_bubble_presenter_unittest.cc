@@ -25,7 +25,6 @@
 #include "ash/shell.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/layer_animation_stopped_waiter.h"
 #include "ash/test/test_widget_builder.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -35,6 +34,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/display/display.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -410,7 +410,7 @@ TEST_F(AppListBubblePresenterTest, DismissWhileWaitingForZeroStateSearch) {
 
   // Toggle one last time should Dismiss() and hide the widget.
   presenter->Toggle(GetPrimaryDisplay().id());
-  LayerAnimationStoppedWaiter().Wait(
+  ui::LayerAnimationStoppedWaiter().Wait(
       presenter->bubble_view_for_test()->layer());
   EXPECT_FALSE(presenter->IsShowing());
   EXPECT_FALSE(presenter->bubble_widget_for_test()->IsVisible());
@@ -644,7 +644,7 @@ TEST_F(AppListBubblePresenterTest, CanOpenBubbleThenOpenSystemTray) {
   LeftClickOn(GetPrimaryUnifiedSystemTray());
 
   // Wait for launcher animations to end.
-  LayerAnimationStoppedWaiter().Wait(
+  ui::LayerAnimationStoppedWaiter().Wait(
       presenter->bubble_view_for_test()->layer());
 
   // Launcher is closed and system tray is open.
@@ -1062,7 +1062,7 @@ TEST_F(AppListBubblePresenterTest, ContextMenuStaysOpenAfterDismissAppList) {
   ASSERT_TRUE(rwc->IsContextMenuShown());
 
   // Wait for bubble to animate closed.
-  LayerAnimationStoppedWaiter().Wait(
+  ui::LayerAnimationStoppedWaiter().Wait(
       presenter->bubble_view_for_test()->layer());
   ASSERT_FALSE(presenter->IsShowing());
 

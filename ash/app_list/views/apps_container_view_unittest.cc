@@ -15,11 +15,11 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/layer_animation_stopped_waiter.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -185,7 +185,7 @@ TEST_F(AppsContainerViewTest, HideContinueSectionPlaysAnimation) {
 
   // Wait for the last item's animation to complete.
   AppListItemView* last_item = apps_grid_view->GetItemViewAt(item_count - 1);
-  LayerAnimationStoppedWaiter().Wait(last_item->layer());
+  ui::LayerAnimationStoppedWaiter().Wait(last_item->layer());
 
   // Animation status is updated.
   EXPECT_EQ(apps_grid_view->grid_animation_status_for_test(),

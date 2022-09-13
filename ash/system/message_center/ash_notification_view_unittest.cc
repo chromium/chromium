@@ -18,7 +18,6 @@
 #include "ash/system/message_center/unified_message_list_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/layer_animation_stopped_waiter.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -26,6 +25,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/events/test/test_event.h"
 #include "ui/gfx/color_utils.h"
@@ -209,7 +209,7 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
                                int data_point_count = 1) {
     ui::Compositor* compositor = view->layer()->GetCompositor();
 
-    LayerAnimationStoppedWaiter animation_waiter;
+    ui::LayerAnimationStoppedWaiter animation_waiter;
     animation_waiter.Wait(view->layer());
 
     // Force a frame then wait, ensuring there is one more frame presented after

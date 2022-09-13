@@ -9,10 +9,10 @@
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/layer_animation_stopped_waiter.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -327,7 +327,7 @@ TEST_F(NotificationGroupingControllerTest,
   message_center->RemoveNotification(id1, true);
 
   // Wait for the animation to end to ensure there is no crash
-  LayerAnimationStoppedWaiter waiter;
+  ui::LayerAnimationStoppedWaiter waiter;
   waiter.Wait(GetPopupView(id0)->message_view()->layer());
 }
 
@@ -348,7 +348,7 @@ TEST_F(NotificationGroupingControllerTest,
   message_center->RemoveNotification(id0, true);
 
   // Wait for the animation to end to ensure there is no crash
-  LayerAnimationStoppedWaiter waiter;
+  ui::LayerAnimationStoppedWaiter waiter;
   waiter.Wait(GetPopupView(id0)->message_view()->layer());
 
   // Make sure the second notification is still there.

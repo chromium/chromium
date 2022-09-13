@@ -38,7 +38,6 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/layer_animation_stopped_waiter.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -47,6 +46,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -379,7 +379,7 @@ TEST_F(AppListBubbleViewTest, ShowAnimationCreatesAndDestroysLayers) {
   EXPECT_TRUE(apps_grid_view->layer());
 
   // Finish the animation.
-  LayerAnimationStoppedWaiter().Wait(apps_grid_view->layer());
+  ui::LayerAnimationStoppedWaiter().Wait(apps_grid_view->layer());
 
   // Temporary layers are cleaned up.
   EXPECT_FALSE(continue_section->layer());
@@ -405,7 +405,7 @@ TEST_F(AppListBubbleViewTest, ShowAnimationDestroysAndRestoresShadow) {
 
   // Finish the animation.
   auto* apps_grid_view = GetAppsGridView();
-  LayerAnimationStoppedWaiter().Wait(apps_grid_view->layer());
+  ui::LayerAnimationStoppedWaiter().Wait(apps_grid_view->layer());
 
   // Shadow is restored.
   EXPECT_TRUE(app_list_bubble_view->view_shadow_for_test());
@@ -424,7 +424,7 @@ TEST_F(AppListBubbleViewTest, ShowAnimationRecordsSmoothnessHistogram) {
 
   // Wait for the animation to finish.
   ui::Layer* layer = GetAppsGridView()->layer();
-  LayerAnimationStoppedWaiter().Wait(layer);
+  ui::LayerAnimationStoppedWaiter().Wait(layer);
 
   // Ensure there is one more frame presented after animation finishes to allow
   // animation throughput data to be passed from cc to ui.
@@ -454,7 +454,7 @@ TEST_F(AppListBubbleViewTest, HideAnimationsRecordsSmoothnessHistogram) {
 
   // Run the hide animation and wait for it to finish.
   view->StartHideAnimation(/*is_side_shelf=*/false, base::DoNothing());
-  LayerAnimationStoppedWaiter().Wait(layer);
+  ui::LayerAnimationStoppedWaiter().Wait(layer);
 
   // Ensure there is one more frame presented after animation finishes to allow
   // animation throughput data to be passed from cc to ui.
@@ -507,7 +507,7 @@ TEST_F(AppListBubbleViewTest, ShutdownDuringHideAnimationDoesNotCrash) {
   // Show the app list and wait for the show animation to finish.
   AddAppItems(5);
   ShowAppList();
-  LayerAnimationStoppedWaiter().Wait(GetAppsGridView()->layer());
+  ui::LayerAnimationStoppedWaiter().Wait(GetAppsGridView()->layer());
 
   // Dismiss the app list, but don't wait for the animation to finish.
   GetAppListTestHelper()->Dismiss();
@@ -611,7 +611,7 @@ TEST_F(AppListBubbleViewTest, CanOpenMessageCenterWithKeyboardShortcut) {
 
   // Wait for the app list hide animation to finish.
   AppListBubbleView* view = GetBubblePresenter()->bubble_view_for_test();
-  LayerAnimationStoppedWaiter().Wait(view->layer());
+  ui::LayerAnimationStoppedWaiter().Wait(view->layer());
 
   // Search box did not steal focus.
   EXPECT_FALSE(search_box_input->HasFocus());

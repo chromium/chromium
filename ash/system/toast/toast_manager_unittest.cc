@@ -17,7 +17,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/layer_animation_stopped_waiter.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/run_loop.h"
@@ -31,6 +30,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/views/controls/button/label_button.h"
@@ -55,7 +55,7 @@ constexpr char kToastDismissedAfter7s[] =
 
 // Wait for the layer animation to be completed.
 void WaitForAnimationEnded(ui::Layer* layer) {
-  ash::LayerAnimationStoppedWaiter animation_waiter;
+  ui::LayerAnimationStoppedWaiter animation_waiter;
   animation_waiter.Wait(layer);
 
   // Force a frame then wait, ensuring there is one more frame presented after

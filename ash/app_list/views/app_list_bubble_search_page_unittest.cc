@@ -8,12 +8,12 @@
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/layer_animation_stopped_waiter.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
@@ -90,7 +90,7 @@ TEST_F(AppListBubbleSearchPageTest, AnimateHidePage) {
       ui::LayerAnimationElement::AnimatableProperty::TRANSFORM));
 
   // Search page visibility updates at the end of the animation.
-  LayerAnimationStoppedWaiter().Wait(layer);
+  ui::LayerAnimationStoppedWaiter().Wait(layer);
   EXPECT_FALSE(search_page->GetVisible());
 }
 
@@ -126,7 +126,7 @@ TEST_F(AppListBubbleSearchPageTest,
   PressAndReleaseKey(ui::VKEY_A);
   ASSERT_TRUE(layer->GetAnimator()->is_animating());
 
-  LayerAnimationStoppedWaiter().Wait(layer);
+  ui::LayerAnimationStoppedWaiter().Wait(layer);
 
   EXPECT_FALSE(apps_page->GetVisible());
   EXPECT_TRUE(search_page->GetVisible());

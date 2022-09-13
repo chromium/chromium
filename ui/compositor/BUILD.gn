@@ -138,6 +138,8 @@ static_library("test_support") {
     "test/in_process_context_provider.h",
     "test/layer_animation_observer_test_api.cc",
     "test/layer_animation_observer_test_api.h",
+    "test/layer_animation_stopped_waiter.cc",
+    "test/layer_animation_stopped_waiter.h",
     "test/layer_animator_test_controller.cc",
     "test/layer_animator_test_controller.h",
     "test/multi_layer_animator_test_controller.cc",

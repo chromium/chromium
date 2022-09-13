@@ -20,12 +20,12 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/layer_animation_stopped_waiter.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/controls/button/label_button.h"
@@ -233,9 +233,9 @@ TEST_P(ProductivityLauncherSearchViewTest, AnimateSearchResultView) {
   EXPECT_LT(result_containers[2]->GetResultViewAt(0)->layer()->opacity(), 1.0f);
   EXPECT_TRUE(result_containers[3]->GetVisible());
   EXPECT_LT(result_containers[3]->GetResultViewAt(0)->layer()->opacity(), 1.0f);
-  LayerAnimationStoppedWaiter().Wait(
+  ui::LayerAnimationStoppedWaiter().Wait(
       result_containers[2]->GetResultViewAt(0)->layer());
-  LayerAnimationStoppedWaiter().Wait(
+  ui::LayerAnimationStoppedWaiter().Wait(
       result_containers[3]->GetResultViewAt(0)->layer());
   EXPECT_EQ(result_containers[3]->GetResultViewAt(0)->layer()->opacity(), 1.0f);
   EXPECT_EQ(result_containers[3]->GetResultViewAt(0)->layer()->opacity(), 1.0f);

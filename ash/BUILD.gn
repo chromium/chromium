@@ -3447,8 +3447,6 @@ static_library("test_support") {
     "system/geolocation/test_geolocation_url_loader_factory.h",
     "system/tray/system_nudge_label.cc",
     "system/tray/system_nudge_label.h",
-    "test/layer_animation_stopped_waiter.cc",
-    "test/layer_animation_stopped_waiter.h",
     "utility/haptics_tracking_test_input_controller.cc",
     "utility/haptics_tracking_test_input_controller.h",
 

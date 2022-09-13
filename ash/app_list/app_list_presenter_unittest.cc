@@ -63,7 +63,6 @@
 #include "ash/shell.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/layer_animation_stopped_waiter.h"
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -83,6 +82,7 @@
 #include "ui/aura/window_targeter.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
@@ -967,7 +967,7 @@ TEST_P(ProductivityLauncherTest,
 
   // Wait for the folder item to fade out.
   if (folder_item_view->layer()) {
-    LayerAnimationStoppedWaiter animation_waiter;
+    ui::LayerAnimationStoppedWaiter animation_waiter;
     animation_waiter.Wait(folder_item_view->layer());
   }
 
@@ -975,7 +975,7 @@ TEST_P(ProductivityLauncherTest,
 
   // Make sure the folder item view fade in animation is done.
   if (folder_item_view->layer()) {
-    LayerAnimationStoppedWaiter animation_waiter;
+    ui::LayerAnimationStoppedWaiter animation_waiter;
     animation_waiter.Wait(folder_item_view->layer());
   }
 
@@ -1082,7 +1082,7 @@ TEST_P(ProductivityLauncherTest,
 
   // Wait for the folder item to fade out.
   if (folder_item_view->layer()) {
-    LayerAnimationStoppedWaiter animation_waiter;
+    ui::LayerAnimationStoppedWaiter animation_waiter;
     animation_waiter.Wait(folder_item_view->layer());
   }
 
@@ -1090,7 +1090,7 @@ TEST_P(ProductivityLauncherTest,
 
   // Make sure the folder item view fade in animation is done.
   if (folder_item_view->layer()) {
-    LayerAnimationStoppedWaiter animation_waiter;
+    ui::LayerAnimationStoppedWaiter animation_waiter;
     animation_waiter.Wait(folder_item_view->layer());
   }
 
@@ -1201,7 +1201,7 @@ TEST_P(ProductivityLauncherTest,
 
   // Wait for the folder item to fade out.
   if (folder_item_view->layer()) {
-    LayerAnimationStoppedWaiter animation_waiter;
+    ui::LayerAnimationStoppedWaiter animation_waiter;
     animation_waiter.Wait(folder_item_view->layer());
   }
 
@@ -1209,7 +1209,7 @@ TEST_P(ProductivityLauncherTest,
 
   // Make sure the folder item view fade in animation is done.
   if (folder_item_view->layer()) {
-    LayerAnimationStoppedWaiter animation_waiter;
+    ui::LayerAnimationStoppedWaiter animation_waiter;
     animation_waiter.Wait(folder_item_view->layer());
   }
 
@@ -1482,7 +1482,7 @@ TEST_P(ProductivityLauncherTest,
 
   // Wait for the folder item to fade out.
   if (folder_item_view->layer()) {
-    LayerAnimationStoppedWaiter animation_waiter;
+    ui::LayerAnimationStoppedWaiter animation_waiter;
     animation_waiter.Wait(folder_item_view->layer());
   }
 
@@ -2599,7 +2599,7 @@ TEST_P(PopulatedAppListTest,
   }
 
   // Wait for each item's layer animation to complete.
-  LayerAnimationStoppedWaiter animation_waiter;
+  ui::LayerAnimationStoppedWaiter animation_waiter;
   for (size_t i = 0; i < apps_grid_view_->view_model()->view_size(); i++) {
     if (apps_grid_view_->view_model()->view_at(i)->layer())
       animation_waiter.Wait(apps_grid_view_->view_model()->view_at(i)->layer());

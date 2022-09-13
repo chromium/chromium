@@ -33,7 +33,6 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
-#include "ash/test/layer_animation_stopped_waiter.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_item.h"
@@ -48,6 +47,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -1973,7 +1973,7 @@ TEST_F(HoldingSpaceTrayTest, DISABLED_EnterAndExitAnimations) {
 
   // The entry animation should be the bounce in animation in which the tray
   // translates in vertically with scaling (since it previously scaled out).
-  LayerAnimationStoppedWaiter().Wait(tray->layer());
+  ui::LayerAnimationStoppedWaiter().Wait(tray->layer());
   EXPECT_FALSE(tray->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(transform_recorder.DidAnimate());
   EXPECT_TRUE(transform_recorder.ScaledFrom({0.5f, 0.5f}, {1.f, 1.f}));
