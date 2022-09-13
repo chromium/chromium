@@ -4730,7 +4730,7 @@ def ChecksCommon(input_api, output_api):
             non_inclusive_terms=_NON_INCLUSIVE_TERMS))
 
     presubmit_py_filter = lambda f: input_api.FilterSourceFile(
-        f, files_to_check=[r'PRESUBMIT\.py$'])
+        f, files_to_check=[r'.*PRESUBMIT\.py$'])
     for f in input_api.AffectedFiles(include_deletes=False,
                                      file_filter=presubmit_py_filter):
         full_path = input_api.os_path.dirname(f.AbsoluteLocalPath())
