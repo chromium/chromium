@@ -634,17 +634,10 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
-// Fails flakily with compared ID differences. TODO(crbug.com/1121099): Re-nable
+// Fails flakily with compared ID differences. TODO(crbug.com/1121099): Re-enable
 // this test.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_CachingAsyncHitTest_WithPinchZoom \
-  DISABLED_CachingAsyncHitTest_WithPinchZoom
-#else
-#define MAYBE_CachingAsyncHitTest_WithPinchZoom \
-  CachingAsyncHitTest_WithPinchZoom
-#endif
 IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
-                       MAYBE_CachingAsyncHitTest_WithPinchZoom) {
+                       DISABLED_CachingAsyncHitTest_WithPinchZoom) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
