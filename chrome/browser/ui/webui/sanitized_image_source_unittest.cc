@@ -10,7 +10,6 @@
 #include "base/test/mock_callback.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/image_fetcher/core/image_decoder.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/http/http_status_code.h"
@@ -23,13 +22,21 @@
 #include "ui/gfx/image/image.h"
 #include "url/url_util.h"
 
+using data_decoder::mojom::AnimationFramePtr;
+
 namespace {
 
-gfx::Image MakeImage(SkColor color) {
+AnimationFramePtr MakeImageFrame(SkColor color) {
+  auto frame = data_decoder::mojom::AnimationFrame::New();
+
   SkBitmap bitmap;
   bitmap.allocN32Pixels(5, 5);
   bitmap.eraseColor(color);
-  return gfx::Image::CreateFrom1xBitmap(bitmap);
+
+  frame->bitmap = bitmap;
+  frame->duration = base::TimeDelta();
+
+  return frame;
 }
 
 }  // namespace
@@ -38,26 +45,25 @@ MATCHER_P(MemoryEq, other, "Eq matcher for base::RefCountedMemory contents") {
   return arg->Equals(other);
 }
 
-class MockImageDecoder : public image_fetcher::ImageDecoder {
+class MockDataDecoderDelegate
+    : public SanitizedImageSource::DataDecoderDelegate {
  public:
-  MOCK_METHOD4(DecodeImage,
-               void(const std::string&,
-                    const gfx::Size&,
-                    data_decoder::DataDecoder*,
-                    image_fetcher::ImageDecodedCallback));
+  MOCK_METHOD2(DecodeAnimation,
+               void(const std::string& data,
+                    SanitizedImageSource::DecodeAnimationCallback callback));
 };
 
 class SanitizedImageSourceTest : public testing::Test {
  public:
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
-    auto image_decoder = std::make_unique<MockImageDecoder>();
-    mock_image_decoder_ = image_decoder.get();
+    auto data_decoder_delegate = std::make_unique<MockDataDecoderDelegate>();
+    mock_data_decoder_delegate_ = data_decoder_delegate.get();
     sanitized_image_source_ = std::make_unique<SanitizedImageSource>(
         profile_.get(),
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
-        std::move(image_decoder));
+        std::move(data_decoder_delegate));
   }
 
   void TearDown() override {
@@ -70,7 +76,7 @@ class SanitizedImageSourceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  raw_ptr<MockImageDecoder> mock_image_decoder_;
+  raw_ptr<MockDataDecoderDelegate> mock_data_decoder_delegate_;
   std::unique_ptr<SanitizedImageSource> sanitized_image_source_;
 };
 
@@ -88,16 +94,17 @@ TEST_F(SanitizedImageSourceTest, MultiRequest) {
     std::string url;
     std::string body;
     std::tie(color, url, body) = datum;
-    EXPECT_CALL(*mock_image_decoder_,
-                DecodeImage(body, gfx::Size(), nullptr, testing::_))
+    EXPECT_CALL(*mock_data_decoder_delegate_, DecodeAnimation(body, testing::_))
         .Times(1)
-        .WillOnce([color](const std::string&, const gfx::Size&,
-                          data_decoder::DataDecoder*,
-                          image_fetcher::ImageDecodedCallback callback) {
-          std::move(callback).Run(MakeImage(color));
-        });
-    EXPECT_CALL(callback, Run(MemoryEq(MakeImage(color).As1xPNGBytes())))
-        .Times(1);
+        .WillOnce(
+            [color](const std::string&,
+                    SanitizedImageSource::DecodeAnimationCallback callback) {
+              std::vector<AnimationFramePtr> frames;
+              frames.push_back(MakeImageFrame(color));
+              std::move(callback).Run(std::move(frames));
+            });
+    auto image = gfx::Image::CreateFrom1xBitmap(MakeImageFrame(color)->bitmap);
+    EXPECT_CALL(callback, Run(MemoryEq(image.As1xPNGBytes()))).Times(1);
   }
 
   // Issue requests.
@@ -133,8 +140,8 @@ TEST_F(SanitizedImageSourceTest, FailedLoad) {
 
   // Set up expectations and mock data.
   test_url_loader_factory_.AddResponse(kImageUrl, "", net::HTTP_NOT_FOUND);
-  EXPECT_CALL(*mock_image_decoder_,
-              DecodeImage(testing::_, testing::_, testing::_, testing::_))
+  EXPECT_CALL(*mock_data_decoder_delegate_,
+              DecodeAnimation(testing::_, testing::_))
       .Times(0);
   base::MockCallback<content::URLDataSource::GotDataCallback> callback;
   EXPECT_CALL(callback,
@@ -151,8 +158,8 @@ TEST_F(SanitizedImageSourceTest, FailedLoad) {
 // Verifies that the image source ignores requests with a wrong URL.
 TEST_F(SanitizedImageSourceTest, WrongUrl) {
   // Set up expectations and mock data.
-  EXPECT_CALL(*mock_image_decoder_,
-              DecodeImage(testing::_, testing::_, testing::_, testing::_))
+  EXPECT_CALL(*mock_data_decoder_delegate_,
+              DecodeAnimation(testing::_, testing::_))
       .Times(0);
   base::MockCallback<content::URLDataSource::GotDataCallback> callback;
   EXPECT_CALL(callback,
