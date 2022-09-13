@@ -180,10 +180,8 @@ include `incrementer_service.mojom-test-utils.h` and then do:
 
 ```c++
 int32_t Increment(Incrementer* incrementer, int32_t value) {
-  int32_t result;
   mojom::IncrementerAsyncWaiter sync_incrementer(incrementer);
-  sync_incrementer.Increment(value, &result);
-  return result;
+  return sync_incrementer.Increment(value);
 }
 ```
 
