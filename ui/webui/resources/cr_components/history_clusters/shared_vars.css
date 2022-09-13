@@ -16,6 +16,7 @@ html {
   --grey-fill-color: var(--google-grey-100);
   --icon-color: var(--google-grey-600);
   --url-color: var(--google-blue-600);
+  --side-panel-url-color: var(--google-grey-700);
 }
 
 @media (prefers-color-scheme: dark) {

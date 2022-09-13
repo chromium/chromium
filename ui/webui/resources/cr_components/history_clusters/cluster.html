@@ -8,7 +8,7 @@
   }
 
   :host([in-side-panel]) {
-    padding-bottom: 0;
+    padding-bottom: 8px;
   }
 
   :host-context(.focus-outline-visible):host(:focus) #container {
@@ -23,6 +23,10 @@
 
   :host([in-side-panel]) #container {
     border-bottom: 3px solid var(--cr-separator-color);
+  }
+
+  :host([in-side-panel]) #container url-visit:last-of-type {
+    padding-bottom: 8px;
   }
 
   /* We need an inner container div to apply spacing between clusters. This is
@@ -45,6 +49,10 @@
     user-select: none;
   }
 
+  :host([in-side-panel]) .label-row {
+    padding-inline-start: 16px;
+  }
+
   .label {
     color: var(--cr-primary-text-color);
     font-size: 1rem;  /* 16px */
@@ -56,11 +64,9 @@
   }
 
   #label-and-timestamp {
-    align-items: center;
     display: flex;
     flex-direction: column;
-    flex-shrink: 0;
-    row-gap: 6px;
+    row-gap: 2px;
   }
 
   #related-searches {

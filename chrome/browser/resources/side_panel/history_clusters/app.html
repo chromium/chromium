@@ -1,13 +1,14 @@
 <style>
   :host {
-    --cr-toolbar-field-max-width: calc(100% - 8px);
+    --cr-toolbar-field-max-width: calc(100% - 32px);
   }
 
   #searchbox {
-    margin: 4px auto;
+    margin: 16px auto 4px;
   }
 </style>
-<cr-toolbar-search-field id="searchbox" on-search-changed="onSearchChanged_">
+<cr-toolbar-search-field id="searchbox" on-search-changed="onSearchChanged_"
+                         label="$i18n{searchPrompt}">
 </cr-toolbar-search-field>
 <history-clusters id="history-clusters"
     query="[[query]]"

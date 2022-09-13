@@ -32,6 +32,10 @@
     user-select: none;
   }
 
+  :host([in-side-panel]) #header {
+    padding-inline-start: 8px;
+  }
+
   a {
     color: inherit;
     text-decoration: none;
@@ -85,6 +89,10 @@
   #url {
     color: var(--url-color);
     line-height: 1.5;  /* 24px */
+  }
+
+  :host([in-side-panel]) #url {
+    color: var(--side-panel-url-color);
   }
 
   #debug-info {

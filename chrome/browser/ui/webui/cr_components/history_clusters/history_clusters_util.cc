@@ -50,6 +50,7 @@ void HistoryClustersUtil::PopulateSource(content::WebUIDataSource* source,
       {"removeFromHistory", IDS_HISTORY_CLUSTERS_REMOVE_PAGE},
       {"removeFromHistoryToast", IDS_HISTORY_CLUSTERS_REMOVE_ITEM_TOAST},
       {"savedInTabGroup", IDS_HISTORY_CLUSTERS_SAVED_IN_TABGROUP_LABEL},
+      {"searchPrompt", IDS_HISTORY_CLUSTERS_SEARCH_PROMPT},
       {"toggleButtonLabelLess", IDS_HISTORY_CLUSTERS_SHOW_LESS_BUTTON_LABEL},
       {"toggleButtonLabelMore", IDS_HISTORY_CLUSTERS_SHOW_MORE_BUTTON_LABEL},
   };

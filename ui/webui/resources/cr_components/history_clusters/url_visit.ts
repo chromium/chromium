@@ -98,6 +98,15 @@ class VisitRowElement extends ClusterMenuElementBase {
       },
 
       /**
+       * Whether the cluster is in the side panel.
+       */
+      inSidePanel: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('inSidePanel'),
+        reflectToAttribute: true,
+      },
+
+      /**
        * Page title for the visit. This property is actually unused. The side
        * effect of the compute function is used to insert the HTML elements for
        * highlighting into this.$.title element.

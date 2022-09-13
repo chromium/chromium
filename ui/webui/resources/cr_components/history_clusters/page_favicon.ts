@@ -8,6 +8,7 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getFaviconForPageURL} from '../../js/icon.js';
+import {loadTimeData} from '../../js/load_time_data.m.js';
 
 import {getTemplate} from './page_favicon.html.js';
 
@@ -32,6 +33,15 @@ class PageFavicon extends PolymerElement {
 
   static get properties() {
     return {
+      /**
+       * Whether the cluster is in the side panel.
+       */
+      inSidePanel: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('inSidePanel'),
+        reflectToAttribute: true,
+      },
+
       /**
        * The element's style attribute.
        */
