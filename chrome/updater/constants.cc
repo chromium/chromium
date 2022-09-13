@@ -73,6 +73,7 @@ const char kEnterpriseSwitch[] = "enterprise";  // backward-compatibility.
 const char kSilentSwitch[] = "silent";          // backward-compatibility.
 const char kHandoffSwitch[] = "handoff";        // backward-compatibility.
 const char kOfflineDirSwitch[] = "offlinedir";  // backward-compatibility.
+const char kAppArgsSwitch[] = "appargs";        // backward-compatibility.
 
 const char kCmdLineExpectElevated[] = "expect-elevated";
 

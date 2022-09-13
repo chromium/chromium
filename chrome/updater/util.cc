@@ -177,23 +177,27 @@ TagParsingResult GetTagArgsForCommandLine(
   std::string tag = command_line.HasSwitch(kTagSwitch)
                         ? command_line.GetSwitchValueASCII(kTagSwitch)
                         : command_line.GetSwitchValueASCII(kHandoffSwitch);
-#if BUILDFLAG(IS_WIN)
-    if (tag.empty())
-      tag = GetSwitchValueInLegacyFormat(command_line.GetCommandLineString(),
-                                         base::ASCIIToWide(kHandoffSwitch));
-#endif
-    if (tag.empty())
-      return {};
-    tagging::TagArgs tag_args;
-    const tagging::ErrorCode error =
-        tagging::Parse(tag, absl::nullopt, &tag_args);
-    VLOG_IF(1, error != tagging::ErrorCode::kSuccess)
-        << "Tag parsing returned " << error << ".";
-    return {tag_args, error};
+  if (tag.empty())
+    return {};
+
+  tagging::TagArgs tag_args;
+  const tagging::ErrorCode error = tagging::Parse(
+      tag, command_line.GetSwitchValueASCII(kAppArgsSwitch), &tag_args);
+  VLOG_IF(1, error != tagging::ErrorCode::kSuccess)
+      << "Tag parsing returned " << error << ".";
+  return {tag_args, error};
 }
 
 TagParsingResult GetTagArgs() {
+#if BUILDFLAG(IS_WIN)
+  TagParsingResult result =
+      GetTagArgsForCommandLine(*base::CommandLine::ForCurrentProcess());
+
+  return result.tag_args ? result
+                         : GetTagArgsFromLegacyCommandLine(::GetCommandLine());
+#else
   return GetTagArgsForCommandLine(*base::CommandLine::ForCurrentProcess());
+#endif
 }
 
 absl::optional<tagging::AppArgs> GetAppArgs(const std::string& app_id) {

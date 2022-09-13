@@ -47,6 +47,25 @@ std::string GetSwitchValueInLegacyFormat(const std::wstring& command_line,
   return std::string();
 }
 
+TagParsingResult GetTagArgsFromLegacyCommandLine(
+    const std::wstring& command_line) {
+  std::string tag = GetSwitchValueInLegacyFormat(
+      command_line, base::ASCIIToWide(kHandoffSwitch));
+
+  if (tag.empty())
+    return {};
+
+  tagging::TagArgs tag_args;
+  const tagging::ErrorCode error =
+      tagging::Parse(tag,
+                     GetSwitchValueInLegacyFormat(
+                         command_line, base::ASCIIToWide(kAppArgsSwitch)),
+                     &tag_args);
+  VLOG_IF(1, error != tagging::ErrorCode::kSuccess)
+      << "Legacy tag parsing returned " << error << ".";
+  return {tag_args, error};
+}
+
 absl::optional<base::FilePath> GetBaseInstallDirectory(UpdaterScope scope) {
   base::FilePath app_data_dir;
   if (!base::PathService::Get(scope == UpdaterScope::kSystem

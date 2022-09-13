@@ -59,4 +59,23 @@ TEST(Util, WriteInstallerDataToTempFile) {
   EXPECT_TRUE(base::DeleteFile(*installer_data_file));
 }
 
+TEST(Util, GetTagArgsForCommandLine) {
+  base::CommandLine command_line(base::FilePath(FILE_PATH_LITERAL("my.exe")));
+  command_line.AppendSwitchASCII(kHandoffSwitch,
+                                 "appguid={8a69}&appname=Chrome");
+  command_line.AppendSwitchASCII(kAppArgsSwitch,
+                                 "&appguid={8a69}&installerdata=%7B%22homepage%"
+                                 "22%3A%22http%3A%2F%2Fwww.google.com%");
+  command_line.AppendSwitch(kSilentSwitch);
+  command_line.AppendSwitchASCII(kSessionIdSwitch, "{123-456}");
+
+  TagParsingResult result = GetTagArgsForCommandLine(command_line);
+  EXPECT_EQ(result.error, tagging::ErrorCode::kSuccess);
+  EXPECT_EQ(result.tag_args->apps.size(), size_t{1});
+  EXPECT_EQ(result.tag_args->apps[0].app_id, "{8a69}");
+  EXPECT_EQ(result.tag_args->apps[0].app_name, "Chrome");
+  EXPECT_EQ(result.tag_args->apps[0].encoded_installer_data,
+            "%7B%22homepage%22%3A%22http%3A%2F%2Fwww.google.com%");
+}
+
 }  // namespace updater

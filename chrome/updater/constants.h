@@ -172,6 +172,13 @@ extern const char kHandoffSwitch[];
 // contains offline installer and the manifest file.
 extern const char kOfflineDirSwitch[];
 
+// Specifies extra app args. The switch must be in the following format:
+//     --appargs="appguid=<appid>&installerdata=<URL-encoded-installer-data>"
+// On Windows, the request may be from legacy updaters which pass the argument
+// in the format of `/appargs <value>`. Manual argument parsing is needed for
+// that scenario.
+extern const char kAppArgsSwitch[];
+
 // The "expect-elevated" switch indicates that updater setup should be running
 // elevated (at high integrity). This switch is needed to avoid running into a
 // loop trying (but failing repeatedly) to elevate updater setup when attempting

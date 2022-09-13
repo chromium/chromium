@@ -111,6 +111,15 @@ struct TagParsingResult {
 };
 TagParsingResult GetTagArgsForCommandLine(
     const base::CommandLine& command_line);
+
+#if BUILDFLAG(IS_WIN)
+// Gets tag value from command line in legacy format. This is for handoff
+// requests from legacy updaters.
+// The function must take a raw command line string because `base::CommandLine`
+// re-orders the switches and loses the positional information.
+TagParsingResult GetTagArgsFromLegacyCommandLine(const std::wstring& cmd_line);
+#endif
+
 TagParsingResult GetTagArgs();
 
 // Returns the arguments corresponding to `app_id` from the command line tag.
