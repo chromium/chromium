@@ -16,6 +16,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
@@ -376,6 +377,12 @@ public class PowerBookmarkUtils {
         if (subscriptionsManager == null || bookmarkBridge == null) return;
 
         Runnable updater = () -> {
+            // At this point native should be ready since the bookmark model has loaded.
+            if (!ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SHOPPING_LIST_ENABLE_DESYNC_RESOLUTION)) {
+                return;
+            }
+
             subscriptionsManager.getSubscriptions(
                     CommerceSubscriptionType.PRICE_TRACK, true, (subscriptions) -> {
                         doBookmarkedSubscriptionValidation(

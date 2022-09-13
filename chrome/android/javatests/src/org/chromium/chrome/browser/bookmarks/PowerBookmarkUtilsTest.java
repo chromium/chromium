@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.primitives.UnsignedLongs;
 
 import org.junit.Assert;
@@ -27,8 +28,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -69,6 +72,8 @@ public class PowerBookmarkUtilsTest {
     @Test
     @SmallTest
     public void testNotTrackedLocally() {
+        FeatureList.setTestFeatures(
+                ImmutableMap.of(ChromeFeatureList.SHOPPING_LIST_ENABLE_DESYNC_RESOLUTION, true));
         ArrayList<BookmarkId> searchIds = new ArrayList<>();
         BookmarkId bookmark = setUpBookmarkWithMetaInModel(0, "1234", false);
         searchIds.add(bookmark);
@@ -104,6 +109,8 @@ public class PowerBookmarkUtilsTest {
     @Test
     @SmallTest
     public void testNoBookmarks() {
+        FeatureList.setTestFeatures(
+                ImmutableMap.of(ChromeFeatureList.SHOPPING_LIST_ENABLE_DESYNC_RESOLUTION, true));
         ArrayList<BookmarkId> searchIds = new ArrayList<>();
 
         when(mMockBookmarkModel.searchBookmarks(
@@ -135,6 +142,8 @@ public class PowerBookmarkUtilsTest {
     @Test
     @SmallTest
     public void testNoSubscriptionForBookmark() {
+        FeatureList.setTestFeatures(
+                ImmutableMap.of(ChromeFeatureList.SHOPPING_LIST_ENABLE_DESYNC_RESOLUTION, true));
         ArrayList<BookmarkId> searchIds = new ArrayList<>();
         BookmarkId bookmark = setUpBookmarkWithMetaInModel(0, "1234", true);
         searchIds.add(bookmark);
@@ -164,6 +173,8 @@ public class PowerBookmarkUtilsTest {
     @Test
     @SmallTest
     public void testBookmarksAndSubscriptionsAligned() {
+        FeatureList.setTestFeatures(
+                ImmutableMap.of(ChromeFeatureList.SHOPPING_LIST_ENABLE_DESYNC_RESOLUTION, true));
         ArrayList<BookmarkId> searchIds = new ArrayList<>();
         BookmarkId bookmark1 = setUpBookmarkWithMetaInModel(0, "1234", true);
         searchIds.add(bookmark1);

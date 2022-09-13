@@ -96,6 +96,9 @@ const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory{
 const base::Feature kShoppingList{"ShoppingList",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kShoppingListEnableDesyncResolution{
+    "ShoppingListEnableDesyncResolution", base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::Feature kShoppingPDPMetrics{"ShoppingPDPMetrics",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 

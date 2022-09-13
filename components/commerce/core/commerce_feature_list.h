@@ -76,6 +76,7 @@ extern const base::Feature kCommerceCoupons;
 extern const base::Feature kCommerceMerchantViewer;
 extern const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory;
 extern const base::Feature kShoppingList;
+extern const base::Feature kShoppingListEnableDesyncResolution;
 extern const base::Feature kShoppingPDPMetrics;
 extern const base::Feature kRetailCoupons;
 extern const base::Feature kCommerceDeveloper;
