@@ -122,15 +122,18 @@ struct Config {
   // contain pedals. Does nothing if `omnibox_action` is disabled.
   bool omnibox_action_with_pedals = false;
 
+  // If `omnibox_action_on_navigation_intents` is false, this threshold
+  // helps determine when the user is intending to perform a navigation.
+  int omnibox_action_navigation_intent_score_threshold = 1300;
+
   // If enabled, allows the Omnibox Action chip to appear when it's likely the
   // user is intending to perform a navigation. This does not affect which
   // suggestions are allowed to display the chip. Does nothing if
   // `omnibox_action` is disabled.
   bool omnibox_action_on_navigation_intents = false;
 
-  // If `omnibox_action_on_navigation_intents` is false, this threshold
-  // helps determine when the user is intending to perform a navigation.
-  int omnibox_action_navigation_intent_score_threshold = 1300;
+  // If enabled, allowed the acting chip to appear on search entity suggestions.
+  bool omnibox_action_on_entities = false;
 
   // The `kOmniboxHistoryClusterProvider` feature and child params.
 

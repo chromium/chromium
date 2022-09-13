@@ -321,4 +321,12 @@ TEST_F(HistoryClustersActionTest, AttachHistoryClustersActions) {
   }
 }
 
+TEST_F(HistoryClustersActionTest, AttachHistoryClustersActions_AllowEntities) {
+  search_actions_config_.omnibox_action_on_entities = true;
+  SetUpWithConfig(search_actions_config_);
+  TestAttachHistoryClustersActions(
+      {{.type = AutocompleteMatchType::Type::SEARCH_SUGGEST_ENTITY,
+        .expect_history_clusters_action = true}});
+}
+
 }  // namespace history_clusters

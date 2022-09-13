@@ -130,6 +130,10 @@ Config::Config() {
             internal::kOmniboxAction,
             "omnibox_action_on_navigation_intent_score_threshold",
             omnibox_action_navigation_intent_score_threshold);
+
+    omnibox_action_on_entities = base::GetFieldTrialParamByFeatureAsBool(
+        internal::kOmniboxAction, "omnibox_action_on_entities",
+        omnibox_action_on_entities);
   }
 
   // The `kOmniboxHistoryClusterProvider` feature and child params.

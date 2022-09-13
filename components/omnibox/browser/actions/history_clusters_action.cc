@@ -228,9 +228,16 @@ void AttachHistoryClustersActions(
 
   for (auto& match : result) {
     // Skip incompatible matches (like entities) or ones with existing actions.
-    // TODO(tommycli): Deduplicate this code with Pedals.
-    if (match.action ||
-        !AutocompleteMatch::IsActionCompatibleType(match.type)) {
+    // TODO(manukh): We don't use `AutocompleteMatch::IsActionCompatibleType()`
+    //  because we're not sure if we want to show on entities or not. Once we
+    //  decide, either share `IsActionCompatibleType()` or inline it to its
+    //  remaining callsite.
+    if (match.action)
+      continue;
+    if (match.type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL)
+      continue;
+    if (!GetConfig().omnibox_action_on_entities &&
+        match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
       continue;
     }
 
