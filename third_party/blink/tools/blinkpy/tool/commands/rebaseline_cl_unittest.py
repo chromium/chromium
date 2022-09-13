@@ -510,9 +510,9 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'INFO:   BUILDER              NUMBER  STATUS    BUCKET\n',
             'INFO:   MOCK Try Linux       6000    SCHEDULED try   \n',
             'INFO:   MOCK Try Mac         4000    STARTED   try   \n',
-            'INFO: There are some builders with no results:\n',
-            'INFO:   MOCK Try Linux\n',
-            'INFO:   MOCK Try Mac\n',
+            'WARNING: There are some builders with no results:\n',
+            'WARNING:   MOCK Try Linux\n',
+            'WARNING:   MOCK Try Mac\n',
             'INFO: Would you like to continue?\n',
             'INFO: Aborting.\n',
         ])
@@ -531,8 +531,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         self.assertEqual(exit_code, 1)
         self.assertLog([
             'INFO: All builds finished.\n',
-            'INFO: There are some builders with no results:\n',
-            'INFO:   MOCK Try Linux\n',
+            'WARNING: There are some builders with no results:\n',
+            'WARNING:   MOCK Try Linux\n',
             'INFO: Would you like to continue?\n',
             'INFO: Aborting.\n',
         ])
@@ -574,8 +574,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'INFO:   BUILDER              NUMBER  STATUS    BUCKET\n',
             'INFO:   MOCK Try Mac         4000    FAILURE   try   \n',
             'INFO:   MOCK Try Win         5000    FAILURE   try   \n',
-            'INFO: There are some builders with no results:\n',
-            'INFO:   MOCK Try Linux\n',
+            'WARNING: There are some builders with no results:\n',
+            'WARNING:   MOCK Try Linux\n',
             'INFO: Would you like to continue?\n',
             'INFO: Aborting.\n',
         ])
@@ -766,10 +766,36 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             ('WARNING: Results URL: https://test-results.appspot.com/data/layout_results/'
              'MOCK_Try_Win/5000/blink_web_tests%20%28with%20patch%29/layout-test-results/results.html\n'
              ),
-            'INFO: There are some builders with no results:\n',
-            'INFO:   MOCK Try Win\n',
+            'WARNING: There are some builders with no results:\n',
+            'WARNING:   MOCK Try Win\n',
             'INFO: Would you like to continue?\n',
             'INFO: Aborting.\n',
+        ])
+
+    def test_execute_interrupted_results_with_fill_missing(self):
+        self.tool.results_fetcher.set_results(
+            Build('MOCK Try Win', 5000, 'Build-1'),
+            WebTestResults(self.raw_web_test_results,
+                           interrupted=True,
+                           step_name='blink_web_tests (with patch)'))
+        self.tool.user.set_canned_responses(['y', 'n'])
+        exit_code = self.command.execute(self.command_options(),
+                                         ['one/flaky-fail.html'], self.tool)
+        self.assertEqual(exit_code, 0)
+        self.assertLog([
+            'INFO: All builds finished.\n',
+            'WARNING: There are some builders that were interrupted.\n',
+            'WARNING: Some shards may have timed out or exited early due to '
+            'excessive unexpected failures:\n',
+            'WARNING:   MOCK Try Win\n',
+            'INFO: Would you like to continue?\n',
+            'INFO: Would you like to try to fill in missing results '
+            'with available results?\n'
+            'Note: This is generally not suggested unless the results '
+            'are platform agnostic.\n',
+            'INFO: Please rebaseline again for builders '
+            'with incomplete results later.\n',
+            'INFO: Rebaselining one/flaky-fail.html\n',
         ])
 
     def test_execute_missing_results_with_fill_missing_continues(self):
@@ -785,8 +811,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'WARNING: Failed to fetch some results for "MOCK Try Win".\n',
             ('WARNING: Results URL: https://test-results.appspot.com/data/layout_results/'
              'MOCK_Try_Win/5000/blink_web_tests%20%28with%20patch%29/layout-test-results/results.html\n'
-             ), 'INFO: There are some builders with no results:\n',
-            'INFO:   MOCK Try Win\n', 'INFO: For one/flaky-fail.html:\n',
+             ), 'WARNING: There are some builders with no results:\n',
+            'WARNING:   MOCK Try Win\n', 'INFO: For one/flaky-fail.html:\n',
             'INFO: Using "MOCK Try Linux" build 6000 for test-win-win7.\n',
             'INFO: Rebaselining one/flaky-fail.html\n'
         ])

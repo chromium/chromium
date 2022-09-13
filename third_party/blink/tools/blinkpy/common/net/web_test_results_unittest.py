@@ -209,12 +209,10 @@ class WebTestResultsTest(unittest.TestCase):
     def test_was_interrupted(self):
         self.assertTrue(
             WebTestResults.results_from_string(
-                b'ADD_RESULTS({"tests":{},"interrupted":true});').
-            run_was_interrupted())
+                b'ADD_RESULTS({"tests":{},"interrupted":true});').interrupted)
         self.assertFalse(
             WebTestResults.results_from_string(
-                b'ADD_RESULTS({"tests":{},"interrupted":false});').
-            run_was_interrupted())
+                b'ADD_RESULTS({"tests":{},"interrupted":false});').interrupted)
 
     def test_chromium_revision(self):
         self.assertEqual(
