@@ -1097,6 +1097,24 @@ ci.builder(
 )
 
 ci.builder(
+    name = "Comparison Mac arm64 on arm64 (reclient)",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "mac",
+        short_name = "cmp",
+    ),
+    goma_jobs = 250,
+    executable = "recipe:reclient_goma_comparison",
+    execution_timeout = 10 * time.hour,
+    reclient_cache_silo = "Comparison Mac - cache siloed",
+    reclient_instance = reclient.instance.TEST_TRUSTED,
+    reclient_jobs = 250,
+    os = os.MAC_DEFAULT,
+    cores = None,
+    cpu = cpu.ARM64,
+)
+
+ci.builder(
     name = "Comparison Windows (8 cores) (reclient)",
     builderless = True,
     console_view_entry = consoles.console_view_entry(
