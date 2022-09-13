@@ -99,6 +99,8 @@ generated_dictionary_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_blob_property_bag.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_canvas_high_dynamic_range_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_canvas_high_dynamic_range_options.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_canvas_smpte_st_2086_metadata.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_canvas_smpte_st_2086_metadata.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_character_bounds_update_event_init.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_character_bounds_update_event_init.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_check_visibility_options.cc",
