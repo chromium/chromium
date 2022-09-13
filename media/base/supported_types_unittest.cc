@@ -52,9 +52,6 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeBasics) {
   EXPECT_FALSE(
       IsSupportedVideoType({VideoCodec::kMPEG2, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, kColorSpace}));
-  EXPECT_FALSE(
-      IsSupportedVideoType({VideoCodec::kHEVC, VIDEO_CODEC_PROFILE_UNKNOWN,
-                            kUnspecifiedLevel, kColorSpace}));
 
   // Expect conditional support for the following.
   EXPECT_EQ(kPropCodecsEnabled,
@@ -64,6 +61,16 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeBasics) {
       kMpeg4Supported,
       IsSupportedVideoType({VideoCodec::kMPEG4, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, kColorSpace}));
+
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(IS_ANDROID)
+  EXPECT_TRUE(
+      IsSupportedVideoType({VideoCodec::kHEVC, VIDEO_CODEC_PROFILE_UNKNOWN,
+                            kUnspecifiedLevel, kColorSpace}));
+#else
+  EXPECT_FALSE(
+      IsSupportedVideoType({VideoCodec::kHEVC, VIDEO_CODEC_PROFILE_UNKNOWN,
+                            kUnspecifiedLevel, kColorSpace}));
+#endif
 }
 
 TEST(SupportedTypesTest, IsSupportedVideoType_VP9TransferFunctions) {

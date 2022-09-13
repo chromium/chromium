@@ -271,7 +271,7 @@ const base::Feature kPictureInPicture{"PictureInPicture",
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 // Enables HEVC hardware accelerated decoding.
 const base::Feature kPlatformHEVCDecoderSupport{
-    "PlatformHEVCDecoderSupport", base::FEATURE_DISABLED_BY_DEFAULT};
+    "PlatformHEVCDecoderSupport", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 
 // Only decode preload=metadata elements upon visibility.

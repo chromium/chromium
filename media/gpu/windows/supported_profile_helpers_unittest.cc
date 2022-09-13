@@ -332,19 +332,8 @@ TEST_F(SupportedResolutionResolverTest, AV1ProfileProSupports8k) {
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 TEST_F(SupportedResolutionResolverTest, H265Supports8kIfEnabled) {
   DONT_RUN_ON_WIN_7();
-
   EnableDecoders({D3D11_DECODER_PROFILE_HEVC_VLD_MAIN});
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  // Test the supported resolutions before enabling the feature:
-  const auto no_feature_resolutions = GetSupportedD3D11VideoDecoderResolutions(
-      mock_d3d11_device_, gpu_workarounds_);
-  // Should only have the three h264 default resolutions.
-  ASSERT_EQ(3u, no_feature_resolutions.size());
-
-  // enable the feature and try again
   SetMaxResolution(D3D11_DECODER_PROFILE_HEVC_VLD_MAIN, kSquare8k);
-  scoped_feature_list.InitAndEnableFeature(kPlatformHEVCDecoderSupport);
   const auto resolutions_for_feature = GetSupportedD3D11VideoDecoderResolutions(
       mock_d3d11_device_, gpu_workarounds_);
   ASSERT_EQ(4u, resolutions_for_feature.size());
