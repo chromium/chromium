@@ -4,9 +4,10 @@
 
 #include "components/navigation_metrics/navigation_metrics.h"
 
+#include <iterator>
+
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/metrics/user_metrics.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -65,10 +66,10 @@ std::u16string GetEtldPlusOne16(const std::u16string& hostname16) {
       net::registry_controlled_domains::GetDomainAndRegistry(
           hostname,
           net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
-  if (etld_plus_one.empty())
+  if (etld_plus_one.empty()) {
     etld_plus_one = hostname;
+  }
 
-  std::u16string etld_plus_one16;
   if (hostname == etld_plus_one) {
     return hostname16;
   }
@@ -78,11 +79,13 @@ std::u16string GetEtldPlusOne16(const std::u16string& hostname16) {
   // hostname16 using the same number of domain labels as etld_plus_one.
   size_t label_count =
       base::ranges::count(etld_plus_one.begin(), etld_plus_one.end(), '.') + 1;
-  std::vector<std::u16string> labels16 = base::SplitString(
-      hostname16, u".", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  DCHECK_LE(label_count, labels16.size());
 
+  // Keeping empty labels is necessary if there is a trailing dot, to make sure
+  // `label_count` matches the `labels16` vector. See crbug.com/1362507.
+  std::vector<std::u16string> labels16 = base::SplitString(
+      hostname16, u".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   size_t extra_label_count = labels16.size() - label_count;
+  DCHECK_LE(extra_label_count, labels16.size());
   labels16.erase(labels16.begin(), labels16.begin() + extra_label_count);
   return base::JoinString(labels16, u".");
 }

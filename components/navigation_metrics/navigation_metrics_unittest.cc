@@ -166,4 +166,34 @@ TEST(NavigationMetrics, RecordIDNA2008Metrics) {
   histograms.ExpectBucketCount(kHistogram, true, 2);
 }
 
+// Regression test for crbug.com/1362507. Tests that the IDNA2008 metrics code
+// correctly handles hostnames with trailing dots.
+TEST(NavigationMetrics, RecordIDNA2008MetricsTrailingDots) {
+  static constexpr char kHistogram[] =
+      "Navigation.HostnameHasDeviationCharacters";
+  base::HistogramTester histograms;
+
+  // This would previously trigger the DCHECK in GetEtldPlusOne16(), or cause
+  // a crash in the std::vector::erase() call later in that function, because
+  // the canonicalized hostname has two dots and so the logic would calculate
+  // this as having three labels, but the noncanonicalized labels vector would
+  // only have two elements due to dropping the final empty string after the
+  // trailing dot.
+  RecordIDNA2008Metrics(u"googlé.com.");
+  histograms.ExpectTotalCount(kHistogram, 1);
+
+  // GetDomainAndRegistry() should return the empty string for this hostname,
+  // so no metrics will be recorded.
+  RecordIDNA2008Metrics(u"googlé.com..");
+  histograms.ExpectTotalCount(kHistogram, 1);
+
+  // Should be treated the same as the "googlé.com" case.
+  RecordIDNA2008Metrics(u".googlé.com");
+  histograms.ExpectTotalCount(kHistogram, 2);
+
+  // Should be treated the same as the "googlé.com." case.
+  RecordIDNA2008Metrics(u".googlé.com.");
+  histograms.ExpectTotalCount(kHistogram, 3);
+}
+
 }  // namespace navigation_metrics
