@@ -64,6 +64,10 @@ declare_args() {
       enable_dangling_raw_ptr_checks_default && enable_backup_ref_ptr_support
 }
 
+declare_args() {
+  enable_shadow_metadata = false
+}
+
 # put_ref_count_in_previous_slot can only be used if
 # enable_backup_ref_ptr_support is true.
 assert(

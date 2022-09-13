@@ -252,4 +252,15 @@ constexpr bool kUseLazyCommit = false;
 #endif  // BUILDFLAG(ENABLE_MTE_CHECKED_PTR_SUPPORT) &&
         // defined(PA_HAS_64_BITS_POINTERS) && !defined(PA_HAS_MEMORY_TAGGING)
 
+// Enable shadow metadata.
+//
+// With this flag, a shadow GigaCage will be mapped, on which writable shadow
+// metadatas are placed, and the real metadatas are set to read-only instead.
+// This feature is only enabled with 64-bits CPUs because GigaCage does not
+// exist with 32-bits CPUs.
+#if BUILDFLAG(ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS) && \
+    defined(PA_HAS_64_BITS_POINTERS)
+#define PA_ENABLE_SHADOW_METADATA
+#endif
+
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONFIG_H_
