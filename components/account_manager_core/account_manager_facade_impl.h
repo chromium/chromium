@@ -81,6 +81,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   void OnAuthErrorChanged(
       crosapi::mojom::AccountKeyPtr account,
       crosapi::mojom::GoogleServiceAuthErrorPtr error) override;
+  void OnSigninDialogClosed() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,

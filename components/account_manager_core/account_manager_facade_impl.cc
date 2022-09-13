@@ -586,6 +586,10 @@ void AccountManagerFacadeImpl::OnAuthErrorChanged(
   }
 }
 
+void AccountManagerFacadeImpl::OnSigninDialogClosed() {
+  NOTIMPLEMENTED();
+}
+
 void AccountManagerFacadeImpl::GetAccountsInternal(
     base::OnceCallback<void(const std::vector<Account>&)> callback) {
   account_manager_remote_->GetAccounts(

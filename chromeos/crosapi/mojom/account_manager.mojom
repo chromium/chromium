@@ -7,7 +7,7 @@
 // versioning. Bump this value before making a change to any of the following
 // interfaces / enums.
 //
-// Next MinVersion: 12
+// Next MinVersion: 13
 
 module crosapi.mojom;
 
@@ -160,7 +160,7 @@ union AccessTokenResult {
 // This interface is implemented by lacros-chrome, and is used by ash-chrome to
 // send account update notifications.
 //
-// Next id: 3
+// Next id: 4
 [Stable, Uuid="f75c4963-497b-411f-97ab-c53c7f6b46ed"]
 interface AccountManagerObserver {
   // Called when the token for `account` is updated/inserted.
@@ -188,6 +188,13 @@ interface AccountManagerObserver {
   // `account` - if the `state` of `error` is `kNone`.
   [MinVersion = 1]
   OnAuthErrorChanged@2(AccountKey account, GoogleServiceAuthError error);
+
+  // Called when Ash's signin dialog is closed, regardless of the reason, e.g.:
+  // - For account additions as well as re-authentication.
+  // - For successful completion of the flow, as well as cancellation by the
+  //   user. etc.
+  [MinVersion = 12]
+  OnSigninDialogClosed@3();
 };
 
 // Interface for Chrome OS Account Manager.
