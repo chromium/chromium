@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """code generator for gpu workaround definitions"""
@@ -9,7 +9,7 @@ import os
 import sys
 import typing
 
-_LICENSE = """// Copyright 2018 The Chromium Authors. All rights reserved.
+_LICENSE = """// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 

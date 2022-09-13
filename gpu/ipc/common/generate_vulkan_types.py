@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -232,7 +232,7 @@ def WriteMojomTypes(types: typing.Iterable[str], mojom_file: typing.IO) -> None:
 
 def GenerateMojom(mojom_file: typing.IO) -> None:
   mojom_file.write(
-'''// Copyright 2019 The Chromium Authors. All rights reserved.
+'''// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -422,7 +422,7 @@ struct EnumTraits<gpu::mojom::%s, %s> {
 def GenerateTraitsFile(traits_header_file: typing.IO,
                        traits_source_file: typing.IO) -> None:
   traits_header_file.write(
-"""// Copyright 2019 The Chromium Authors. All rights reserved.
+"""// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -444,7 +444,7 @@ namespace mojo {
 """)
 
   traits_source_file.write(
-"""// Copyright 2019 The Chromium Authors. All rights reserved.
+"""// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -478,7 +478,7 @@ namespace mojo {
 
 def GenerateTypemapFile(typemap_file: typing.IO) -> None:
   typemap_file.write(
-"""# Copyright 2019 The Chromium Authors. All rights reserved.
+"""# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 

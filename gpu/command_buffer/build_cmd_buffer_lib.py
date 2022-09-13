@@ -1,4 +1,4 @@
-# Copyright (c) 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Common code generator for command buffers."""
@@ -15,7 +15,7 @@ _SIZE_OF_UINT32 = 4
 _SIZE_OF_COMMAND_HEADER = 4
 _FIRST_SPECIFIC_COMMAND_ID = 256
 
-_LICENSE = """// Copyright %s The Chromium Authors. All rights reserved.
+_LICENSE = """// Copyright %s The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
