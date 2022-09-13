@@ -29,8 +29,9 @@ TEST(ThreadDelegatePosixTest, MAYBE_CurrentThreadBase) {
   EXPECT_LE(base, ClampAdd(stack_addr, 4 * 1024 * 1024));
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-
+#if BUILDFLAG(IS_ANDROID)
+// On ChromeOS, this functionality is tested by
+// GetThreadStackBaseAddressTest.MainThread.
 TEST(ThreadDelegatePosixTest, MainThreadStackBase) {
   // The delegate does not use pthread id for main thread.
   auto delegate = ThreadDelegatePosix::Create(

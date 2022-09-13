@@ -1035,6 +1035,8 @@ mixed_component("base") {
 
     if (!is_nacl && !is_apple) {
       sources += [
+        "profiler/stack_base_address_posix.cc",
+        "profiler/stack_base_address_posix.h",
         "profiler/stack_copier_signal.cc",
         "profiler/stack_copier_signal.h",
         "profiler/stack_sampler_posix.cc",
@@ -3613,6 +3615,7 @@ test("base_unittests") {
     ]
     if (!is_nacl && !is_apple) {
       sources += [
+        "profiler/stack_base_address_posix_unittest.cc",
         "profiler/stack_copier_signal_unittest.cc",
         "profiler/thread_delegate_posix_unittest.cc",
       ]
