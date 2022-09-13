@@ -104,7 +104,9 @@ class CastStreamingTestSender::SenderObserver final
 
 CastStreamingTestSender::CastStreamingTestSender()
     : task_runner_(base::SequencedTaskRunnerHandle::Get()),
-      environment_(&openscreen::Clock::now, &task_runner_) {}
+      environment_(&openscreen::Clock::now,
+                   &task_runner_,
+                   openscreen::IPEndpoint::kAnyV6()) {}
 
 CastStreamingTestSender::~CastStreamingTestSender() = default;
 
