@@ -12,7 +12,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -28,6 +27,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurface.StateObserver;
+import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageQueueDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -47,7 +47,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
     private MessageContainerCoordinator mContainerCoordinator;
     private BrowserControlsManager mBrowserControlsManager;
     private int mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
-    private final BrowserControlsObserver mBrowserControlsObserver;
+    private BrowserControlsObserver mBrowserControlsObserver;
     @Nullable
     private LayoutStateProvider mLayoutStateProvider;
     @Nullable
@@ -58,53 +58,30 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
     private final CallbackController mCallbackController = new CallbackController();
     private int mUrlFocusToken = TokenHolder.INVALID_TOKEN;
     private Handler mQueueHandler;
-    private final Supplier<StartSurface> mStartSurfaceSupplier;
+    @Nullable
+    private StartSurface mStartSurface;
 
-    private final LayoutStateObserver mLayoutStateObserver = new LayoutStateObserver() {
-        private int mToken = TokenHolder.INVALID_TOKEN;
-        // This observer only handles the cases switching between Start surface homepage and grid
-        // tab switcher surface.
-        private final StartSurface.StateObserver mStateObserver = new StateObserver() {
-            @Override
-            public void onStateChanged(
-                    int startSurfaceState, boolean shouldShowTabSwitcherToolbar) {
-                if (mLayoutStateProvider.getActiveLayoutType() != LayoutType.TAB_SWITCHER) return;
-                if (isStartSurfaceShowing() && mToken != TokenHolder.INVALID_TOKEN) {
-                    resumeQueue(mToken);
-                    mToken = TokenHolder.INVALID_TOKEN;
-                } else if (!isStartSurfaceShowing() && mToken == TokenHolder.INVALID_TOKEN) {
-                    mToken = suspendQueue();
-                }
-            }
-        };
-
+    // Token shared by start surface observer and layout state observer.
+    private int mTokenOfLayoutChange = TokenHolder.INVALID_TOKEN;
+    private StartSurface.StateObserver mStateObserver = new StateObserver() {
         @Override
-        public void onFinishedShowing(int layoutType) {
-            if (isTokenValid(mToken) && layoutType == LayoutType.BROWSING) {
-                resumeQueue(mToken);
-                mToken = TokenHolder.INVALID_TOKEN;
-            }
-            if (layoutType != LayoutType.TAB_SWITCHER && mStartSurfaceSupplier.hasValue()) {
-                mStartSurfaceSupplier.get().removeStateChangeObserver(mStateObserver);
+        public void onStateChanged(int startSurfaceState, boolean shouldShowTabSwitcherToolbar) {
+            // TODO(https://crbug.com/1315679, https://crbug.com/1346777): replace with
+            //  LayoutStateObserver after StartSurface is decoupled from "LayoutType.TabSwitcher".
+            if (mTokenOfLayoutChange == TokenHolder.INVALID_TOKEN
+                    && startSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER) {
+                mTokenOfLayoutChange = suspendQueue();
             }
         }
-        // Suspend the queue until browsing mode is visible.
+    };
+
+    private LayoutStateObserver mLayoutStateObserver = new LayoutStateObserver() {
         @Override
-        public void onStartedShowing(@LayoutType int layoutType, boolean showToolbar) {
-            // TODO(https://crbug.com/1315679): remove #isStartSurfaceShowing and use
-            //  `layoutType != LayoutType.StartSurface` after StartSurface is
-            //  decoupled from "LayoutType.TabSwitcher".
-            if (!isTokenValid(mToken) && layoutType != LayoutType.BROWSING) {
-                if (layoutType == LayoutType.TAB_SWITCHER) { // This might be start surface.
-                    if (!isStartSurfaceShowing()) {
-                        mToken = suspendQueue();
-                    }
-                    if (mStartSurfaceSupplier.hasValue()) {
-                        mStartSurfaceSupplier.get().addStateChangeObserver(mStateObserver);
-                    }
-                } else {
-                    mToken = suspendQueue();
-                }
+        public void onFinishedShowing(int layoutType) {
+            if (mTokenOfLayoutChange != TokenHolder.INVALID_TOKEN
+                    && layoutType == LayoutType.BROWSING) {
+                resumeQueue(mTokenOfLayoutChange);
+                mTokenOfLayoutChange = TokenHolder.INVALID_TOKEN;
             }
         }
     };
@@ -115,14 +92,14 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
 
                 @Override
                 public void onDialogAdded(PropertyModel model) {
-                    if (!isTokenValid(mToken)) {
+                    if (mToken == TokenHolder.INVALID_TOKEN) {
                         mToken = suspendQueue();
                     }
                 }
 
                 @Override
                 public void onLastDialogDismissed() {
-                    if (isTokenValid(mToken)) {
+                    if (mToken != TokenHolder.INVALID_TOKEN) {
                         resumeQueue(mToken);
                         mToken = TokenHolder.INVALID_TOKEN;
                     }
@@ -135,14 +112,14 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
 
                 @Override
                 public void onPauseWithNative() {
-                    if (!isTokenValid(mToken)) {
+                    if (mToken == TokenHolder.INVALID_TOKEN) {
                         mToken = suspendQueue();
                     }
                 }
 
                 @Override
                 public void onResumeWithNative() {
-                    if (isTokenValid(mToken)) {
+                    if (mToken != TokenHolder.INVALID_TOKEN) {
                         resumeQueue(mToken);
                         mToken = TokenHolder.INVALID_TOKEN;
                     }
@@ -172,9 +149,9 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
         mContainerCoordinator = messageContainerCoordinator;
         mQueueController = messageDispatcher;
         mActivityTabProvider = activityTabProvider;
-        mStartSurfaceSupplier = startSurfaceSupplier;
         mBrowserControlsObserver = new BrowserControlsObserver();
         mBrowserControlsManager.addObserver(mBrowserControlsObserver);
+        startSurfaceSupplier.onAvailable(this::setStartSurface);
         layoutStateProviderOneShotSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::setLayoutStateProvider));
         modalDialogManagerSupplier.addObserver(this::setModalDialogManager);
@@ -189,7 +166,9 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
         mCallbackController.destroy();
         mBrowserControlsManager.removeObserver(mBrowserControlsObserver);
         setLayoutStateProvider(null);
+        setStartSurface(null);
         setModalDialogManager(null);
+        mStartSurface = null;
         mActivityTabProvider = null;
         mQueueController = null;
         mContainerCoordinator = null;
@@ -261,6 +240,15 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
         mLayoutStateProvider.addObserver(mLayoutStateObserver);
     }
 
+    private void setStartSurface(StartSurface startSurface) {
+        if (mStartSurface != null) {
+            mStartSurface.removeStateChangeObserver(mStateObserver);
+        }
+        mStartSurface = startSurface;
+        if (mStartSurface == null) return;
+        mStartSurface.addStateChangeObserver(mStateObserver);
+    }
+
     private void setModalDialogManager(ModalDialogManager modalDialogManager) {
         if (mModalDialogManager != null) {
             mModalDialogManager.removeObserver(mModalDialogManagerObserver);
@@ -270,19 +258,10 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
         mModalDialogManager.addObserver(mModalDialogManagerObserver);
     }
 
-    private boolean isStartSurfaceShowing() {
-        return mStartSurfaceSupplier.hasValue()
-                && mStartSurfaceSupplier.get().isShowingStartSurfaceHomepage();
-    }
-
-    private boolean isTokenValid(int token) {
-        return token != TokenHolder.INVALID_TOKEN;
-    }
-
     @Override
     public void onUrlFocusChange(boolean hasFocus) {
         if (hasFocus) {
-            if (!isTokenValid(mUrlFocusToken)) {
+            if (mUrlFocusToken == TokenHolder.INVALID_TOKEN) {
                 mUrlFocusToken = suspendQueue();
             }
             mQueueHandler.removeCallbacksAndMessages(null);
