@@ -122,7 +122,7 @@ const base::Feature kMdnsResponderGeneratedNameListing{
 //
 // Implementing ORB in Chromium is tracked in https://crbug.com/1178928
 const base::Feature kOpaqueResponseBlockingV01{
-    "OpaqueResponseBlockingV01", base::FEATURE_ENABLED_BY_DEFAULT};
+    "OpaqueResponseBlockingV01", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables preprocessing requests with the Trust Tokens API Fetch flags set,
 // and handling their responses, according to the protocol.
