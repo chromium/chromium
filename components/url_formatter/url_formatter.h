@@ -221,9 +221,9 @@ TopDomainEntry LookupSkeletonInTopDomains(
 // input string.
 std::u16string MaybeRemoveDiacritics(const std::u16string& host);
 
-// Returns true if `host` contains at least one IDNA 2008 deviation character.
+// Returns the first IDNA 2008 deviation character in the `hostname`, if any.
 // See idn_spoof_checker.h for details about deviation characters.
-bool HasDeviationCharacters(base::StringPiece16 url_text);
+IDNA2008DeviationCharacter GetDeviationCharacter(base::StringPiece16 hostname);
 
 }  // namespace url_formatter
 

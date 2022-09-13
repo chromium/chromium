@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "components/url_formatter/spoof_checks/idna_metrics.h"
+
 class GURL;
 
 namespace profile_metrics {
@@ -64,7 +66,8 @@ void RecordOmniboxURLNavigation(const GURL& url);
 
 // Records metrics about deviation characters in `hostname`. `hostname` can
 // be punycode or unicode and can have subdomains.
-void RecordIDNA2008Metrics(const std::u16string& hostname);
+IDNA2008DeviationCharacter RecordIDNA2008Metrics(
+    const std::u16string& hostname);
 
 }  // namespace navigation_metrics
 

@@ -12675,6 +12675,24 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Navigation.IDNA2008Transition" singular="True">
+  <owner>meacer@google.com</owner>
+  <owner>chrome-trusty-transport@google.com</owner>
+  <summary>
+    Recorded upon main frame navigations to hostnames that contain characters
+    that are treated differently between IDNA 2003 and IDNA 2008, aka deviation
+    characters. Ignores reload navigations.
+  </summary>
+  <metric name="Character" enum="IDNA2008DeviationCharacter">
+    <summary>
+      The deviation character in the URLs eTLD+1. Chrome's URL parsing code
+      normalizes deviation characters so the characters don't appear in the
+      recorded URL. This is recorded to make the deviation character
+      identification simpler.
+    </summary>
+  </metric>
+</event>
+
 <event name="Navigation.ReceivedResponse">
   <owner>miketaylr@chromium.org</owner>
   <owner>potassium-katabolism@google.com</owner>

@@ -963,6 +963,9 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
                                now - last_omnibox_focus_);
   }
 
+  IDNA2008DeviationCharacter deviation_char_in_hostname =
+      IDNA2008DeviationCharacter::kNone;
+
   TemplateURLService* service = client_->GetTemplateURLService();
   TemplateURL* template_url = match.GetTemplateURL(service, false);
   if (template_url) {
@@ -1029,7 +1032,8 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
         }
         std::u16string hostname(input_.text(), hostname_begin,
                                 static_cast<size_t>(input_.parts().host.len));
-        navigation_metrics::RecordIDNA2008Metrics(hostname);
+        deviation_char_in_hostname =
+            navigation_metrics::RecordIDNA2008Metrics(hostname);
       }
     }
   }
@@ -1065,7 +1069,8 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
         VerbatimMatchForInput(
             autocomplete_controller()->history_url_provider(),
             autocomplete_controller()->autocomplete_provider_client(),
-            alternate_input, alternate_nav_url, false));
+            alternate_input, alternate_nav_url, false),
+        deviation_char_in_hostname);
   }
 
   BookmarkModel* bookmark_model = client_->GetBookmarkModel();

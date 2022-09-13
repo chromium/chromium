@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
+#include "components/url_formatter/spoof_checks/idna_metrics.h"
 #include "components/url_formatter/spoof_checks/skeleton_generator.h"
 #include "net/extras/preload_data/decoder.h"
 
@@ -155,16 +156,18 @@ class IDNSpoofChecker {
   // input string.
   std::u16string MaybeRemoveDiacritics(const std::u16string& hostname);
 
-  // Returns true if `hostname` contains any deviation characters. Deviation
-  // characters are four characters that are treated differently between IDNA
-  // 2003 and IDNA 2008: ß, ς, ZERO WIDTH JOINER, ZERO WIDTH NON-JOINER.
+  // Returns the first IDNA 2008 deviation character if `hostname` contains any.
+  // Deviation characters are four characters that are treated differently
+  // between IDNA 2003 and IDNA 2008: ß, ς, ZERO WIDTH JOINER, ZERO WIDTH
+  // NON-JOINER.
   // As a result, a domain containing deviation characters can map to a
   // different IP address between user agents that implement different IDNA
   // versions.
   // See
   // https://www.unicode.org/reports/tr46/tr46-27.html#Table_Deviation_Characters
   // for details.
-  bool HasDeviationCharacters(base::StringPiece16 hostname) const;
+  IDNA2008DeviationCharacter GetDeviationCharacter(
+      base::StringPiece16 hostname) const;
 
   // Used for unit tests.
   static void SetTrieParamsForTesting(const HuffmanTrieParams& trie_params);

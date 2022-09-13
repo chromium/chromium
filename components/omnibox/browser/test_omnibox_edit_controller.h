@@ -30,7 +30,9 @@ class TestOmniboxEditController : public OmniboxEditController {
       bool destination_url_entered_without_scheme,
       const std::u16string& text,
       const AutocompleteMatch& match,
-      const AutocompleteMatch& alternative_nav_match) override;
+      const AutocompleteMatch& alternative_nav_match,
+      IDNA2008DeviationCharacter deviation_char_in_hostname =
+          IDNA2008DeviationCharacter::kNone) override;
 
   const AutocompleteMatch& alternate_nav_match() const {
     return alternate_nav_match_;

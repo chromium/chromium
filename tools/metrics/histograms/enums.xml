@@ -50166,6 +50166,14 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="5" label="IdleTaskNotSupported"/>
 </enum>
 
+<enum name="IDNA2008DeviationCharacter">
+  <int value="0" label="None"/>
+  <int value="1" label="Eszett"/>
+  <int value="2" label="Greek Final Sigma"/>
+  <int value="3" label="Zero Width Joiner"/>
+  <int value="4" label="Zero Width Non-Joiner"/>
+</enum>
+
 <enum name="IE7LookupResultStatus">
   <obsolete>
     Deprecated as of 07/2018. The corresponding metric was deleted in

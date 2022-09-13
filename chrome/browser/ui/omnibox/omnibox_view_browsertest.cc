@@ -52,11 +52,14 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/dns/mock_host_resolver.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/events/event_constants.h"
@@ -1421,6 +1424,7 @@ class NavigationMetricsRecorderIDNABrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
+    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
 
  protected:
@@ -1459,10 +1463,16 @@ class NavigationMetricsRecorderIDNABrowserTest : public InProcessBrowserTest {
             browser()));
     navigation_observer.Wait();
   }
+  ukm::TestUkmRecorder* test_ukm_recorder() { return test_ukm_recorder_.get(); }
+
+ private:
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 };
 
 IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderIDNABrowserTest,
                        IDNA2008Metrics) {
+  using UkmEntry = ukm::builders::Navigation_IDNA2008Transition;
+
   base::HistogramTester histograms;
 
   auto url_loader_interceptor =
@@ -1487,6 +1497,9 @@ IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderIDNABrowserTest,
   histograms.ExpectBucketCount(kHistogram, false, 1);
   histograms.ExpectBucketCount(kHistogram, true, 0);
 
+  EXPECT_TRUE(
+      test_ukm_recorder()->GetEntriesByName(UkmEntry::kEntryName).empty());
+
   // Type a hostname with a deviation character.
   // Do this in a new tab otherwise omnibox will treat the navigation as a
   // reload.
@@ -1496,11 +1509,34 @@ IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderIDNABrowserTest,
   histograms.ExpectBucketCount(kHistogram, false, 1);
   histograms.ExpectBucketCount(kHistogram, true, 1);
 
+  // Should have a new UKM entry.
+  auto entries = test_ukm_recorder()->GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  test_ukm_recorder()->ExpectEntrySourceHasUrl(entries[0],
+                                               GURL("https://fass.de"));
+  test_ukm_recorder()->ExpectEntryMetric(
+      entries[0], "Character",
+      static_cast<int>(IDNA2008DeviationCharacter::kEszett));
+
   // Should also work with full URLs.
   TypeTextAndNavigate("http://faß.de/test_url");
   histograms.ExpectTotalCount(kHistogram, 3);
   histograms.ExpectBucketCount(kHistogram, false, 1);
   histograms.ExpectBucketCount(kHistogram, true, 2);
+
+  // Should have a new UKM entry.
+  entries = test_ukm_recorder()->GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(2u, entries.size());
+  test_ukm_recorder()->ExpectEntrySourceHasUrl(entries[0],
+                                               GURL("https://fass.de"));
+  test_ukm_recorder()->ExpectEntrySourceHasUrl(entries[1],
+                                               GURL("http://faß.de/test_url"));
+  test_ukm_recorder()->ExpectEntryMetric(
+      entries[0], "Character",
+      static_cast<int>(IDNA2008DeviationCharacter::kEszett));
+  test_ukm_recorder()->ExpectEntryMetric(
+      entries[1], "Character",
+      static_cast<int>(IDNA2008DeviationCharacter::kEszett));
 
   // Reload. Shouldn't record additional metrics since we only care about first
   // time navigations.
@@ -1522,4 +1558,8 @@ IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderIDNABrowserTest,
   histograms.ExpectTotalCount(kHistogram, 4);
   histograms.ExpectBucketCount(kHistogram, false, 2);
   histograms.ExpectBucketCount(kHistogram, true, 2);
+
+  // Shouldn't have any new UKM entries.
+  entries = test_ukm_recorder()->GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(2u, entries.size());
 }

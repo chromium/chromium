@@ -665,7 +665,8 @@ void RealboxHandler::OpenURL(const GURL& destination_url,
                              bool destination_url_entered_without_scheme,
                              const std::u16string&,
                              const AutocompleteMatch&,
-                             const AutocompleteMatch&) {
+                             const AutocompleteMatch&,
+                             IDNA2008DeviationCharacter) {
   web_contents_->OpenURL(content::OpenURLParams(
       destination_url, content::Referrer(), disposition, transition, false));
 }

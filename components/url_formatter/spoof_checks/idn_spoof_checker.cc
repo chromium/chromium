@@ -611,12 +611,21 @@ std::u16string IDNSpoofChecker::MaybeRemoveDiacritics(
              : hostname;
 }
 
-bool IDNSpoofChecker::HasDeviationCharacters(
+IDNA2008DeviationCharacter IDNSpoofChecker::GetDeviationCharacter(
     base::StringPiece16 hostname) const {
-  icu::UnicodeString hostname_string(
-      /*isTerminated=*/false, hostname.data(),
-      base::checked_cast<int32_t>(hostname.size()));
-  return deviation_characters_.containsSome(hostname_string);
+  if (hostname.find(u"\u00df") != base::StringPiece16::npos) {
+    return IDNA2008DeviationCharacter::kEszett;
+  }
+  if (hostname.find(u"\u03c2") != base::StringPiece16::npos) {
+    return IDNA2008DeviationCharacter::kGreekFinalSigma;
+  }
+  if (hostname.find(u"\u200d") != base::StringPiece16::npos) {
+    return IDNA2008DeviationCharacter::kZeroWidthJoiner;
+  }
+  if (hostname.find(u"\u200c") != base::StringPiece16::npos) {
+    return IDNA2008DeviationCharacter::kZeroWidthNonJoiner;
+  }
+  return IDNA2008DeviationCharacter::kNone;
 }
 
 void IDNSpoofChecker::SetAllowedUnicodeSet(UErrorCode* status) {
