@@ -98,10 +98,6 @@ void CopyRequiredCellularProperies(const base::Value& old_shill_properties,
                 shill::kEidProperty);
 }
 
-// Special service name in shill remembering settings across ethernet services.
-// Chrome should not attempt to configure / delete this.
-const char kEthernetAnyService[] = "ethernet_any";
-
 }  // namespace
 
 PolicyApplicator::PolicyApplicator(
@@ -150,12 +146,6 @@ void PolicyApplicator::GetProfilePropertiesCallback(
       continue;
 
     std::string entry_identifier = it.GetString();
-
-    // Skip "ethernet_any", as this is used by shill internally to persist
-    // ethernet settings and the policy application logic should not mess with
-    // it.
-    if (entry_identifier == kEthernetAnyService)
-      continue;
 
     pending_get_entry_calls_.insert(entry_identifier);
     ShillProfileClient::Get()->GetEntry(

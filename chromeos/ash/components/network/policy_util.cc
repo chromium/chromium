@@ -197,6 +197,31 @@ base::Value CreateManagedONC(const base::Value* global_policy,
   return augmented_onc_network;
 }
 
+// Ensures that |user_settings| contains a GUID `guid` for Ethernet
+// policy-managed networks.
+// Background:
+// In Chrome OS M-105 and older, it was possible to end up in a state that has
+// a different GUID in policy data and in the service's UIData dictionary.
+// This leads to issues in the UI layer, so fix up the GUID in UIData if it is
+// encountered.
+void FixupEthernetUIDataGUID(const base::Value::Dict& new_policy,
+                             const std::string& guid,
+                             base::Value* user_settings) {
+  DCHECK(user_settings);
+  const std::string* type = new_policy.FindString(::onc::network_config::kType);
+  if (!type || *type != ::onc::network_type::kEthernet)
+    return;
+
+  std::string* ui_data_guid =
+      user_settings->GetDict().FindString(::onc::network_config::kGUID);
+  if (!ui_data_guid)
+    return;
+  if (*ui_data_guid != guid) {
+    LOG(ERROR) << "Fixing Ethernet UIData GUID";
+    *ui_data_guid = guid;
+  }
+}
+
 void SetShillPropertiesForGlobalPolicy(
     const base::Value& shill_dictionary,
     const base::Value& global_network_policy,
@@ -323,6 +348,12 @@ base::Value CreateShillConfiguration(const NetworkProfile& profile,
     base::Value sanitized_user_settings = onc::MaskCredentialsInOncObject(
         chromeos::onc::kNetworkConfigurationSignature, *user_settings,
         credential_mask);
+
+    if (network_policy) {
+      FixupEthernetUIDataGUID(network_policy->GetDict(), guid,
+                              &sanitized_user_settings);
+    }
+
     ui_data->SetUserSettingsDictionary(std::move(sanitized_user_settings));
   }
 

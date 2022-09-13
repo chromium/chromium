@@ -4263,6 +4263,7 @@ if (!is_android) {
         "//chromeos/login/login_state:test_support",
         "//chromeos/process_proxy",
         "//chromeos/services/machine_learning/public/cpp:stub",
+        "//chromeos/services/network_config:network_config",
         "//chromeos/services/tts",
         "//chromeos/system",
         "//chromeos/ui/base",
