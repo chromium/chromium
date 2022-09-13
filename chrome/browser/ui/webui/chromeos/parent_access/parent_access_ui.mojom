@@ -4,6 +4,9 @@
 
 module parent_access_ui.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
+import "url/mojom/url.mojom";
+
 enum GetOAuthTokenStatus {
   kSuccess,
   kError,
@@ -31,6 +34,34 @@ struct ParentAccessServerMessage {
   ParentAccessServerMessageType type;
 };
 
+// Struct containing pertinent information that is used to render the parent
+// access dialog.
+struct ParentAccessParams {
+  enum FlowType {
+    kWebsiteAccess,
+  };
+
+  // Defines the type of flow to invoke in the dialog.
+  FlowType flow_type;
+  FlowTypeParams? flow_type_params;
+};
+
+// Parameters for local web approvals feature.
+struct WebApprovalsParams {
+  // The URL access is being requested for.
+  url.mojom.Url url;
+
+  // The child's name to be displayed to the parent.
+  mojo_base.mojom.String16 child_display_name;
+
+  // The PNG representation of the URL's favicon.
+  array<uint8> favicon_png_bytes;
+};
+
+union FlowTypeParams {
+  WebApprovalsParams web_approvals_params;
+};
+
 // Interface that supports integration between the ParentAccess WebUI and
 // ChromeOS.
 interface ParentAccessUIHandler {
@@ -41,4 +72,7 @@ interface ParentAccessUIHandler {
   // Returns a ParentAccessServerMessage parsed from the encoded proto string.
   OnParentAccessCallbackReceived(string encoded_parent_access_callback_proto) =>
      (ParentAccessServerMessage message);
+
+  // Returns the FlowTypeParams pertinent to the current parent access flow.
+  GetParentAccessParams() => (ParentAccessParams params);
 };

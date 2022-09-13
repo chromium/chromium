@@ -48,6 +48,7 @@ class ParentAccessUIHandlerImpl
   void OnParentAccessCallbackReceived(
       const std::string& encoded_parent_access_callback_proto,
       OnParentAccessCallbackReceivedCallback callback) override;
+  void GetParentAccessParams(GetParentAccessParamsCallback callback) override;
 
  private:
   void OnAccessTokenFetchComplete(GetOAuthTokenCallback callback,

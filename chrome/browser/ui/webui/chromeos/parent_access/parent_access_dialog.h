@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_PARENT_ACCESS_PARENT_ACCESS_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_PARENT_ACCESS_PARENT_ACCESS_DIALOG_H_
 
+#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 
 namespace chromeos {
@@ -18,8 +19,7 @@ class ParentAccessDialog : public SystemWebDialogDelegate {
 
   // Shows the dialog; if the dialog is already displayed, this returns an
   // error.
-  // TODO(b/200853161): Add parameter which is passed over the the Mojo bridge.
-  static ShowError Show();
+  static ShowError Show(parent_access_ui::mojom::ParentAccessParamsPtr params);
 
   static ParentAccessDialog* GetInstance();
 
@@ -31,10 +31,20 @@ class ParentAccessDialog : public SystemWebDialogDelegate {
   void GetDialogSize(gfx::Size* size) const override;
   bool ShouldCloseDialogOnEscape() const override;
 
+  // Makes a copy of the ParentAccessParams. The ParentAccessDialog should
+  // maintain one copy of the parent_access_params_ object, which is why a clone
+  // is made, instead of transferring ownership to the caller.
+  parent_access_ui::mojom::ParentAccessParamsPtr CloneParentAccessParams();
+
+  parent_access_ui::mojom::ParentAccessParams* GetParentAccessParamsForTest();
+
  protected:
-  // TODO(b/200853161): Add parameter which is passed over the the Mojo bridge.
-  ParentAccessDialog();
+  explicit ParentAccessDialog(
+      parent_access_ui::mojom::ParentAccessParamsPtr params);
   ~ParentAccessDialog() override;
+
+ private:
+  parent_access_ui::mojom::ParentAccessParamsPtr parent_access_params_;
 };
 
 }  // namespace chromeos

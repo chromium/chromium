@@ -10,6 +10,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -25,7 +26,8 @@ constexpr int kDialogWidthDp = 600;
 }  // namespace
 
 // static
-ParentAccessDialog::ShowError ParentAccessDialog::Show() {
+ParentAccessDialog::ShowError ParentAccessDialog::Show(
+    parent_access_ui::mojom::ParentAccessParamsPtr params) {
   ParentAccessDialog* current_instance = GetInstance();
   if (current_instance) {
     return ShowError::kDialogAlreadyVisible;
@@ -37,7 +39,7 @@ ParentAccessDialog::ShowError ParentAccessDialog::Show() {
 
   // Note:  |current_instance|'s memory is freed when
   // SystemWebDialogDelegate::OnDialogClosed() is called.
-  current_instance = new ParentAccessDialog();
+  current_instance = new ParentAccessDialog(std::move(params));
   current_instance->ShowSystemDialogForBrowserContext(profile);
   return ShowError::kNone;
 }
@@ -60,9 +62,21 @@ bool ParentAccessDialog::ShouldCloseDialogOnEscape() const {
   return true;
 }
 
-ParentAccessDialog::ParentAccessDialog()
+parent_access_ui::mojom::ParentAccessParamsPtr
+ParentAccessDialog::CloneParentAccessParams() {
+  return parent_access_params_->Clone();
+}
+
+parent_access_ui::mojom::ParentAccessParams*
+ParentAccessDialog::GetParentAccessParamsForTest() {
+  return parent_access_params_.get();
+}
+
+ParentAccessDialog::ParentAccessDialog(
+    parent_access_ui::mojom::ParentAccessParamsPtr params)
     : SystemWebDialogDelegate(GURL(chrome::kChromeUIParentAccessURL),
-                              /*title=*/std::u16string()) {}
+                              /*title=*/std::u16string()),
+      parent_access_params_(std::move(params)) {}
 
 ParentAccessDialog::~ParentAccessDialog() = default;
 

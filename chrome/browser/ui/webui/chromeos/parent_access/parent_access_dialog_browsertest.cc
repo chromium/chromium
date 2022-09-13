@@ -7,6 +7,7 @@
 #include "ash/shell.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_browsertest_base.h"
+#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -24,19 +25,26 @@ using ParentAccessDialogBrowserTest = ParentAccessChildUserBrowserTestBase;
 // Verify that the dialog is shown and correctly configured.
 IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, ShowDialog) {
   // Show the dialog.
-  ParentAccessDialog::ShowError error = chromeos::ParentAccessDialog::Show();
+  ParentAccessDialog::ShowError error =
+      ParentAccessDialog::Show(parent_access_ui::mojom::ParentAccessParams::New(
+          parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
+          parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
+              parent_access_ui::mojom::WebApprovalsParams::New())));
 
   // Verify it is showing.
   ASSERT_EQ(error, ParentAccessDialog::ShowError::kNone);
-  ASSERT_NE(chromeos::ParentAccessDialog::GetInstance(), nullptr);
+  ASSERT_NE(ParentAccessDialog::GetInstance(), nullptr);
+  parent_access_ui::mojom::ParentAccessParams* params =
+      ParentAccessDialog::GetInstance()->GetParentAccessParamsForTest();
+  EXPECT_EQ(
+      params->flow_type,
+      parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess);
 
   // Verify that it is correctly configured.
-  EXPECT_EQ(
-      chromeos::ParentAccessDialog::GetInstance()->GetDialogContentURL().spec(),
-      chrome::kChromeUIParentAccessURL);
-  EXPECT_TRUE(
-      chromeos::ParentAccessDialog::GetInstance()->ShouldShowCloseButton());
-  EXPECT_EQ(chromeos::ParentAccessDialog::GetInstance()->GetDialogModalType(),
+  EXPECT_EQ(ParentAccessDialog::GetInstance()->GetDialogContentURL().spec(),
+            chrome::kChromeUIParentAccessURL);
+  EXPECT_TRUE(ParentAccessDialog::GetInstance()->ShouldShowCloseButton());
+  EXPECT_EQ(ParentAccessDialog::GetInstance()->GetDialogModalType(),
             ui::ModalType::MODAL_TYPE_SYSTEM);
 
   // Send ESCAPE keypress.  EventGenerator requires the root window, which has
@@ -45,23 +53,36 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, ShowDialog) {
   generator.PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
 
   // The dialog instance should be gone after ESC is pressed.
-  EXPECT_EQ(chromeos::ParentAccessDialog::GetInstance(), nullptr);
+  EXPECT_EQ(ParentAccessDialog::GetInstance(), nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest,
                        ErrorOnDialogAlreadyVisible) {
   // Show the dialog.
-  ParentAccessDialog::ShowError error = chromeos::ParentAccessDialog::Show();
+  ParentAccessDialog::ShowError error =
+      ParentAccessDialog::Show(parent_access_ui::mojom::ParentAccessParams::New(
+          parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
+          parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
+              parent_access_ui::mojom::WebApprovalsParams::New())));
 
   // Verify it is showing.
   ASSERT_EQ(error, ParentAccessDialog::ShowError::kNone);
-  ASSERT_NE(chromeos::ParentAccessDialog::GetInstance(), nullptr);
+  ASSERT_NE(ParentAccessDialog::GetInstance(), nullptr);
+  parent_access_ui::mojom::ParentAccessParams* params =
+      ParentAccessDialog::GetInstance()->GetParentAccessParamsForTest();
+  EXPECT_EQ(
+      params->flow_type,
+      parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess);
 
-  error = chromeos::ParentAccessDialog::Show();
+  error =
+      ParentAccessDialog::Show(parent_access_ui::mojom::ParentAccessParams::New(
+          parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
+          parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
+              parent_access_ui::mojom::WebApprovalsParams::New())));
 
   // Verify an error was returned indicating it can't be shown again.
   EXPECT_EQ(error, ParentAccessDialog::ShowError::kDialogAlreadyVisible);
-  EXPECT_NE(chromeos::ParentAccessDialog::GetInstance(), nullptr);
+  EXPECT_NE(ParentAccessDialog::GetInstance(), nullptr);
 }
 
 using ParentAccessDialogRegularUserBrowserTest =
@@ -71,11 +92,15 @@ using ParentAccessDialogRegularUserBrowserTest =
 IN_PROC_BROWSER_TEST_F(ParentAccessDialogRegularUserBrowserTest,
                        ErrorForNonChildUser) {
   // Show the dialog.
-  ParentAccessDialog::ShowError error = chromeos::ParentAccessDialog::Show();
+  ParentAccessDialog::ShowError error =
+      ParentAccessDialog::Show(parent_access_ui::mojom::ParentAccessParams::New(
+          parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
+          parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
+              parent_access_ui::mojom::WebApprovalsParams::New())));
 
   // Verify it is not showing.
   EXPECT_EQ(error, ParentAccessDialog::ShowError::kNotAChildUser);
-  EXPECT_EQ(chromeos::ParentAccessDialog::GetInstance(), nullptr);
+  EXPECT_EQ(ParentAccessDialog::GetInstance(), nullptr);
 }
 
 }  // namespace chromeos
