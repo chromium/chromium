@@ -14,6 +14,24 @@ guidelines](docs/testing/web_tests_tips.md) and [web-platform-tests
 guidelines](/docs/testing/web_platform_tests.md). This document describes
 how to use the specific fenced frame testing infrastructure.
 
+## How to run tests
+Fenced frames feature needs to be enabled to run tests. A convenient way to
+do this is to define the following variables for fenced frames [virtual test
+suites](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_tests.md#virtual-test-suites)
+directories.
+```bash
+# Fenced frame MPArch implementation
+export MPTEST=virtual/fenced-frame-mparch/wpt_internal/fenced_frame
+# Fenced frame ShadowDOM implementation
+export SDTEST=virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame
+```
+
+Then run tests under the virtual test suite. This will include necessary
+fenced frame flags.
+```bash
+third_party/blink/tools/run_web_tests.py -t Default $MPTEST/test-name.https.html
+```
+
 ## How to write tests
 
 The `<fencedframe>` element has a strict requirement that it cannot directly
