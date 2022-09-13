@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/version_info/channel.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
@@ -94,6 +95,7 @@ ChannelIndicatorView::ChannelIndicatorView(Shelf* shelf,
 ChannelIndicatorView::~ChannelIndicatorView() = default;
 
 void ChannelIndicatorView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  node_data->role = ax::mojom::Role::kLabelText;
   node_data->SetName(accessible_name_);
 }
 
@@ -208,6 +210,8 @@ void ChannelIndicatorView::SetImageOrText() {
       channel_indicator_utils::GetChannelNameStringResourceID(
           channel_,
           /*append_channel=*/false)));
+  label()->SetFontList(
+      gfx::FontList().DeriveWithWeight(gfx::Font::Weight::MEDIUM));
   PreferredSizeChanged();
 }
 

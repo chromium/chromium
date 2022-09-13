@@ -78,7 +78,8 @@ constexpr gfx::RoundedCornersF kStandaloneVersionButtonInkDropCorners(
     kVersionButtonLargeCornerRadius,
     kVersionButtonLargeCornerRadius);
 
-constexpr int kSubmitFeedbackButtonMarginVertical = 4;
+constexpr int kSubmitFeedbackButtonMarginTop = 5;
+constexpr int kSubmitFeedbackButtonMarginBottom = 3;
 constexpr int kSubmitFeedbackButtonMarginLeft = 6;
 constexpr int kSubmitFeedbackButtonMarginRight = 8;
 
@@ -189,6 +190,7 @@ class VersionButton : public views::LabelButton {
     cc::PaintFlags flags;
     flags.setColor(channel_indicator_utils::GetBgColor(channel_));
     flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setAntiAlias(true);
     canvas->DrawPath(
         SkPath().addRoundRect(gfx::RectToSkRect(GetLocalBounds()),
                               content_corners_, SkPathDirection::kCW),
@@ -239,9 +241,8 @@ class SubmitFeedbackButton : public IconButton {
     std::copy(content_corners, content_corners + kNumVersionButtonCornerRadii,
               content_corners_);
     SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-        kSubmitFeedbackButtonMarginVertical, kSubmitFeedbackButtonMarginLeft,
-        kSubmitFeedbackButtonMarginVertical,
-        kSubmitFeedbackButtonMarginRight)));
+        kSubmitFeedbackButtonMarginTop, kSubmitFeedbackButtonMarginLeft,
+        kSubmitFeedbackButtonMarginBottom, kSubmitFeedbackButtonMarginRight)));
     SetIconColor(channel_indicator_utils::GetFgColor(channel_));
     SetIconSize(kSubmitFeedbackButtonIconSize);
     SetPreferredSize(
@@ -261,6 +262,7 @@ class SubmitFeedbackButton : public IconButton {
     cc::PaintFlags flags;
     flags.setColor(channel_indicator_utils::GetBgColor(channel_));
     flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setAntiAlias(true);
     canvas->DrawPath(
         SkPath().addRoundRect(gfx::RectToSkRect(GetLocalBounds()),
                               content_corners_, SkPathDirection::kCW),
