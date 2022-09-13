@@ -226,6 +226,70 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Camera.AutoFraming.AverageDetectionLatency"
+    units="microseconds" expires_after="2023-03-01">
+  <owner>kamesan@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the average latency in running the detector during an Auto Framing
+    enabled camera session. Emitted when the camera session is closed.
+
+    This metric is reported on ChromeOS devices with Auto Framing enabled.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.AutoFraming.DetectionHitRate" units="%"
+    expires_after="2023-03-01">
+  <owner>kamesan@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the rate that the detector successfully detects a subject in the
+    scene during an Auto Framing enabled camera session. Emitted when the camera
+    session is closed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.AutoFraming.EnabledCount" units="times"
+    expires_after="2023-03-01">
+  <owner>kamesan@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the number of times that Auto Framing is toggled from off to on by
+    the user during a camera session. Emitted when the camera session is closed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.AutoFraming.EnabledTime" units="%"
+    expires_after="2023-03-01">
+  <owner>kamesan@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the percentage of time that Auto Framing is turned on during a
+    camera session. Emitted when the camera session is closed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.AutoFraming.Error" enum="AutoFramingError"
+    expires_after="2023-03-01">
+  <owner>kamesan@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records errors in Auto Framing that can break camera functionality or cause
+    frame drops. Emitted at most once for each error when the camera session is
+    closed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.AutoFraming.MedianZoomRatio" units="tenths"
+    expires_after="2023-03-01">
+  <owner>kamesan@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the median of sampled zoom ratios when Auto Framing zooms in camera
+    frames to the subject during a camera session.
+  </summary>
+</histogram>
+
 <histogram base="true"
     name="ChromeOS.Camera.ConfigureStreams.Output.Resolution" units="pixels"
     expires_after="2022-10-01">

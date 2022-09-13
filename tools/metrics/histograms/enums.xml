@@ -9743,6 +9743,17 @@ others/histograms.xml -->
   <int value="2" label="Declined after accepting"/>
 </enum>
 
+<enum name="AutoFramingError">
+  <int value="0" label="No error"/>
+  <int value="1" label="Initialization error"/>
+  <int value="2" label="Configuration error"/>
+  <int value="3" label="Processing capture request error"/>
+  <int value="4" label="Processing capture result error"/>
+  <int value="5" label="Auto Framing pipeline initialization error"/>
+  <int value="6" label="Auto Framing pipeline input error"/>
+  <int value="7" label="Auto Framing pipeline output error"/>
+</enum>
+
 <enum name="AutoLaunchState">
   <int value="0" label="AUTO_LAUNCH_NONE"/>
   <int value="1" label="AUTO_LAUNCH_BACKGROUND"/>
