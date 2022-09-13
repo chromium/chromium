@@ -24,7 +24,10 @@ paths of allocation and deallocation require very few (reasonably predictable)
 branches. The number of operations in the fast paths is minimal, leading to the
 possibility of inlining.
 
-![general architecture](./dot/layers.png)
+![The central allocator manages slots and spans. It is locked on a
+  per-partition basis. Separately, the thread cache consumes slots
+  from the central allocator, allowing it to hand out memory
+  quickly to individual threads.](./dot/layers.png)
 
 However, even the fast path isn't the fastest, because it requires taking
 a per-partition lock. Although we optimized the lock, there was still room for
@@ -93,7 +96,10 @@ The first and the last partition page are permanently inaccessible and serve
 as guard pages, with the exception of one system page in the middle of the first
 partition page that holds metadata (32B struct per partition page).
 
-![anatomy of a super page](./dot/super-page.png)
+![A super page is shown full of slot spans. The slot spans are logically
+  strung together to form buckets. At both extremes of the super page
+  are guard pages. PartitionAlloc metadata is hidden inside the
+  guard pages at the "front."](./dot/super-page.png)
 
 * The slot span numbers provide a visual hint of their size (in partition
   pages).
