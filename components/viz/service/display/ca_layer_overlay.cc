@@ -45,37 +45,8 @@ const int kTooManyRenderPassDrawQuads = 30;
 // or equal to this number.
 const int kMaxNumVideos = 5;
 
-void RecordCALayerHistogram(gfx::CALayerResult result,
-                            bool odd_width,
-                            bool odd_height,
-                            bool odd_x,
-                            bool odd_y) {
+void RecordCALayerHistogram(gfx::CALayerResult result) {
   UMA_HISTOGRAM_ENUMERATION("Compositing.Renderer.CALayerResult", result);
-
-  // Record any odd sized and odd offset videos in the current frame.
-  gfx::OddSize size_enum;
-  if (odd_width && odd_height)
-    size_enum = gfx::OddSize::kOddWidthAndHeight;
-  else if (odd_width)
-    size_enum = gfx::OddSize::kOddWidthOnly;
-  else if (odd_height)
-    size_enum = gfx::OddSize::kOddHeightOnly;
-  else
-    size_enum = gfx::OddSize::kEvenWidthAndHeight;
-  UMA_HISTOGRAM_ENUMERATION("Compositing.Renderer.CALayer.OddSizedVideo",
-                            size_enum);
-
-  gfx::OddOffset offset_enum;
-  if (odd_x && odd_y)
-    offset_enum = gfx::OddOffset::kOddXAndY;
-  else if (odd_x)
-    offset_enum = gfx::OddOffset::kOddXOnly;
-  else if (odd_y)
-    offset_enum = gfx::OddOffset::kOddYOnly;
-  else
-    offset_enum = gfx::OddOffset::kEvenXAndY;
-  UMA_HISTOGRAM_ENUMERATION("Compositing.Renderer.CALayer.OddOffsetVideo",
-                            offset_enum);
 }
 
 bool FilterOperationSupported(const cc::FilterOperation& operation) {
@@ -531,7 +502,7 @@ bool CALayerOverlayProcessor::ProcessForCALayerOverlays(
   }
 
   if (result != gfx::kCALayerSuccess) {
-    RecordCALayerHistogram(result, false, false, false, false);
+    RecordCALayerHistogram(result);
     SaveCALayerResult(result);
     return false;
   }
@@ -584,10 +555,7 @@ bool CALayerOverlayProcessor::ProcessForCALayerOverlays(
     result = gfx::kCALayerFailedTooManyQuads;
   }
 
-  RecordCALayerHistogram(result, processor.video_with_odd_width(),
-                         processor.video_with_odd_height(),
-                         processor.video_with_odd_x(),
-                         processor.video_with_odd_y());
+  RecordCALayerHistogram(result);
   SaveCALayerResult(result);
 
   if (result != gfx::kCALayerSuccess) {
