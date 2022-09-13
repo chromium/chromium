@@ -24,6 +24,7 @@ VkResult CreateAllocator(VkPhysicalDevice physical_device,
                          VkDevice device,
                          VkInstance instance,
                          const VkDeviceSize* heap_size_limit,
+                         const bool is_thread_safe,
                          VmaAllocator* allocator);
 
 COMPONENT_EXPORT(VULKAN) void DestroyAllocator(VmaAllocator allocator);

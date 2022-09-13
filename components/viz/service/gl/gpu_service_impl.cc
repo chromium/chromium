@@ -369,11 +369,15 @@ GpuServiceImpl::GpuServiceImpl(
     // initialized, so the vendor_id is 0.
     bool is_native_gl =
         gpu_info_.gpu.vendor_id != 0xffff && gpu_info_.gpu.vendor_id != 0;
+
+    const bool is_thread_safe =
+        features::IsDrDcEnabled() &&
+        !gpu_channel_manager_->gpu_driver_bug_workarounds().disable_drdc;
     // If GL is using a real GPU, the gpu_info will be passed in and vulkan will
     // use the same GPU.
     vulkan_context_provider_ = VulkanInProcessContextProvider::Create(
         vulkan_implementation_, gpu_preferences_.vulkan_heap_memory_limit,
-        gpu_preferences_.vulkan_sync_cpu_memory_limit,
+        gpu_preferences_.vulkan_sync_cpu_memory_limit, is_thread_safe,
         (is_native_vulkan && is_native_gl) ? &gpu_info : nullptr);
     if (!vulkan_context_provider_) {
       DLOG(ERROR) << "Failed to create Vulkan context provider.";

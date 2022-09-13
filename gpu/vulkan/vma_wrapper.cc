@@ -16,6 +16,7 @@ VkResult CreateAllocator(VkPhysicalDevice physical_device,
                          VkDevice device,
                          VkInstance instance,
                          const VkDeviceSize* heap_size_limit,
+                         const bool is_thread_safe,
                          VmaAllocator* pAllocator) {
   auto* function_pointers = gpu::GetVulkanFunctionPointers();
   VmaVulkanFunctions functions = {
@@ -45,7 +46,6 @@ VkResult CreateAllocator(VkPhysicalDevice physical_device,
 
   static_assert(kVulkanRequiredApiVersion >= VK_API_VERSION_1_1, "");
   VmaAllocatorCreateInfo allocator_info = {
-      .flags = VMA_ALLOCATOR_CREATE_EXTERNALLY_SYNCHRONIZED_BIT,
       .physicalDevice = physical_device,
       .device = device,
       // 4MB was picked for the size here by looking at memory usage of Android
@@ -60,6 +60,13 @@ VkResult CreateAllocator(VkPhysicalDevice physical_device,
       .vulkanApiVersion = kVulkanRequiredApiVersion,
   };
 
+  // If DrDc is not enabled, use below flag which improves performance since
+  // internal mutex will not be used.
+  // TODO(vikassoni) : Analyze the perf impact of not using this flag and hence
+  // enabling internal mutex which will be use for every vma access with DrDc.
+  if (!is_thread_safe) {
+    allocator_info.flags = VMA_ALLOCATOR_CREATE_EXTERNALLY_SYNCHRONIZED_BIT;
+  }
   return vmaCreateAllocator(&allocator_info, pAllocator);
 }
 
