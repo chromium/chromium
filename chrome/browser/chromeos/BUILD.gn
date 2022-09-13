@@ -2944,6 +2944,7 @@ if (use_libfuzzer) {
     deps = [
       "//base",
       "//chrome/browser",
+      "//chrome/browser/ash:ash",
       "//chrome/browser/chromeos",
       "//components/exo/wayland:weston_test",
     ]
