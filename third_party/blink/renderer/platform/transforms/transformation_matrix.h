@@ -465,7 +465,7 @@ class PLATFORM_EXPORT TransformationMatrix {
   bool InternalInverse(TransformationMatrix* result) const;
 
   static float ClampToFloat(double value) {
-    return UNLIKELY(std::isnan(value)) ? 0 : ClampTo<float>(value);
+    return ClampToWithNaNTo0<float>(value);
   }
 
   using Double4 = gfx::Double4;

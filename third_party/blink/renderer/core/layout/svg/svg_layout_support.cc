@@ -375,22 +375,16 @@ bool SVGLayoutSupport::IsIsolationRequired(const LayoutObject* object) {
          object->HasNonIsolatedBlendingDescendants();
 }
 
-AffineTransform::Transform
-    SubtreeContentTransformScope::current_content_transformation_ =
-        IDENTITY_TRANSFORM;
+AffineTransform SubtreeContentTransformScope::current_content_transformation_;
 
 SubtreeContentTransformScope::SubtreeContentTransformScope(
     const AffineTransform& subtree_content_transformation)
     : saved_content_transformation_(current_content_transformation_) {
-  AffineTransform content_transformation =
-      subtree_content_transformation *
-      AffineTransform(current_content_transformation_);
-  content_transformation.CopyTransformTo(current_content_transformation_);
+  current_content_transformation_.PreMultiply(subtree_content_transformation);
 }
 
 SubtreeContentTransformScope::~SubtreeContentTransformScope() {
-  saved_content_transformation_.CopyTransformTo(
-      current_content_transformation_);
+  current_content_transformation_ = saved_content_transformation_;
 }
 
 AffineTransform SVGLayoutSupport::DeprecatedCalculateTransformToLayer(

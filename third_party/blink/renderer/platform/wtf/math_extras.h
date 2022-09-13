@@ -318,6 +318,17 @@ constexpr LimitType ClampTo(
   return ClampToHelper<LimitType, ValueType>::ClampTo(value, min, max);
 }
 
+template <typename LimitType, typename ValueType>
+constexpr LimitType ClampToWithNaNTo0(
+    ValueType value,
+    LimitType min = DefaultMinimumForClamp<LimitType>(),
+    LimitType max = DefaultMaximumForClamp<LimitType>()) {
+  static_assert(std::numeric_limits<ValueType>::has_quiet_NaN);
+  if (UNLIKELY(std::isnan(value)))
+    return 0;
+  return ClampTo<LimitType, ValueType>(value);
+}
+
 constexpr bool IsWithinIntRange(float x) {
   return x > static_cast<float>(std::numeric_limits<int>::min()) &&
          x < static_cast<float>(std::numeric_limits<int>::max());
