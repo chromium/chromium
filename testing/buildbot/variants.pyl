@@ -197,6 +197,30 @@
       'ios_runtime_cache_14_5',
     ],
   },
+  'SIM_IPAD_PRO_3RD_GEN_16_0': {
+    'args': [
+      '--platform',
+      'iPad Pro (12.9-inch) (3rd generation)',
+      '--version',
+      '16.0',
+    ],
+    'identifier': 'iPad Pro (12.9-inch) (3rd generation) 16.0',
+    'mixins': [
+      'ios_runtime_cache_16_0',
+    ],
+  },
+  'SIM_IPAD_PRO_3RD_GEN_15_5': {
+    'args': [
+      '--platform',
+      'iPad Pro (12.9-inch) (3rd generation)',
+      '--version',
+      '15.5',
+    ],
+    'identifier': 'iPad Pro (12.9-inch) (3rd generation) 15.5',
+    'mixins': [
+      'ios_runtime_cache_15_5',
+    ],
+  },
   'SIM_IPAD_6_GEN_16_0': {
     'args': [
       '--platform',

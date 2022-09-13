@@ -6471,6 +6471,7 @@
           'SIM_IPHONE_8_16_0',
           'SIM_IPAD_AIR_3RD_GEN_16_0',
           'SIM_IPAD_6_GEN_16_0',
+          'SIM_IPAD_PRO_3RD_GEN_16_0',
         ]
       },
       'ios_eg2_cq_tests': {
@@ -6479,6 +6480,7 @@
           'SIM_IPHONE_8_16_0',
           'SIM_IPHONE_X_16_0',
           'SIM_IPAD_6_GEN_16_0',
+          'SIM_IPAD_PRO_3RD_GEN_16_0',
         ]
       },
       'ios_screen_size_dependent_tests': {
@@ -6486,6 +6488,7 @@
           'SIM_IPHONE_8_PLUS_16_0',
           'SIM_IPHONE_X_16_0',
           'SIM_IPAD_AIR_3RD_GEN_16_0',
+          'SIM_IPAD_PRO_3RD_GEN_16_0',
         ],
       },
       'ios_crash_xcuitests': {
@@ -6524,6 +6527,8 @@
           'SIM_IPHONE_7_14_4',
           'SIM_IPAD_AIR_2_14_4',
           'SIM_IPHONE_X_14_4',
+          'SIM_IPAD_PRO_3RD_GEN_15_5',
+          'SIM_IPAD_PRO_3RD_GEN_16_0',
         ]
       },
       'ios_eg2_cq_tests': {
@@ -6538,6 +6543,8 @@
           'SIM_IPHONE_7_14_4',
           'SIM_IPAD_AIR_2_14_4',
           'SIM_IPHONE_X_14_4',
+          'SIM_IPAD_PRO_3RD_GEN_15_5',
+          'SIM_IPAD_PRO_3RD_GEN_16_0',
         ]
       },
       'ios_screen_size_dependent_tests': {
@@ -6546,6 +6553,7 @@
           'SIM_IPHONE_8_16_0',
           'SIM_IPHONE_SE_3RD_GEN_16_0',
           'SIM_IPAD_AIR_3RD_GEN_16_0',
+          'SIM_IPAD_PRO_3RD_GEN_16_0',
         ],
       },
     },
@@ -6599,6 +6607,8 @@
           'SIM_IPHONE_8_16_0',
           'SIM_IPHONE_X_16_0',
           'SIM_IPAD_AIR_3RD_GEN_16_0',
+          'SIM_IPAD_PRO_3RD_GEN_15_5',
+          'SIM_IPAD_PRO_3RD_GEN_16_0',
         ],
       },
       'ios_eg2_tests': {
@@ -6610,6 +6620,8 @@
           'SIM_IPHONE_8_16_0',
           'SIM_IPAD_AIR_3RD_GEN_16_0',
           'SIM_IPHONE_X_16_0',
+          'SIM_IPAD_PRO_3RD_GEN_15_5',
+          'SIM_IPAD_PRO_3RD_GEN_16_0',
         ],
       },
       'ios_screen_size_dependent_tests': {
@@ -6622,6 +6634,8 @@
           'SIM_IPHONE_8_16_0',
           'SIM_IPHONE_SE_3RD_GEN_16_0',
           'SIM_IPAD_AIR_3RD_GEN_16_0',
+          'SIM_IPAD_PRO_3RD_GEN_15_5',
+          'SIM_IPAD_PRO_3RD_GEN_16_0',
         ],
       },
     },
@@ -6686,6 +6700,8 @@
           'SIM_IPHONE_8_16_0',
           'SIM_IPHONE_X_16_0',
           'SIM_IPAD_AIR_3RD_GEN_16_0',
+          'SIM_IPAD_PRO_3RD_GEN_15_5',
+          'SIM_IPAD_PRO_3RD_GEN_16_0',
         ]
       },
       'ios_eg2_cq_tests': {
@@ -6696,6 +6712,8 @@
           'SIM_IPAD_AIR_2_15_5',
           'SIM_IPHONE_8_16_0',
           'SIM_IPAD_AIR_3RD_GEN_16_0',
+          'SIM_IPAD_PRO_3RD_GEN_15_5',
+          'SIM_IPAD_PRO_3RD_GEN_16_0',
         ]
       },
       'ios_screen_size_dependent_tests': {
@@ -6704,6 +6722,7 @@
           'SIM_IPHONE_6S_15_5',
           'SIM_IPHONE_SE_1ST_GEN_15_5',
           'SIM_IPAD_AIR_2_15_5',
+          'SIM_IPAD_PRO_3RD_GEN_15_5',
         ]
       }
     },
@@ -6794,6 +6813,7 @@
           'SIM_IPHONE_X_16_0',
           'SIM_IPAD_AIR_3RD_GEN_16_0',
           'SIM_IPHONE_SE_3RD_GEN_16_0',
+          'SIM_IPAD_PRO_3RD_GEN_16_0',
         ]
       }
     },
