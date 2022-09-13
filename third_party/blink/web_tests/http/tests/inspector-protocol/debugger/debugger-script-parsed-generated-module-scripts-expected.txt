@@ -1,0 +1,54 @@
+Tests that dynamically created module scripts don't have a sourceURL and embedderName.
+{
+    method : Debugger.scriptParsed
+    params : {
+        embedderName : https://devtools.test:8443/inspector-protocol/resources/dynamic-module-script.html
+        endColumn : 4
+        endLine : 15
+        executionContextAuxData : {
+            frameId : <string>
+            isDefault : true
+            type : default
+        }
+        executionContextId : <number>
+        hasSourceURL : false
+        hash : d208ab3db6a3bcaec7f233c8e93d2cb5ff8e228955d05fb77fd7e4a394127658
+        isLiveEdit : false
+        isModule : true
+        length : 312
+        scriptId : <string>
+        scriptLanguage : JavaScript
+        sourceMapURL : 
+        startColumn : 26
+        startLine : 7
+        url : https://devtools.test:8443/inspector-protocol/resources/dynamic-module-script.html
+    }
+    sessionId : <string>
+}
+{
+    method : Debugger.scriptParsed
+    params : {
+        embedderName : 
+        endColumn : 6
+        endLine : 3
+        executionContextAuxData : {
+            frameId : <string>
+            isDefault : true
+            type : default
+        }
+        executionContextId : <number>
+        hasSourceURL : false
+        hash : 48981f45443cd2a1f86a1c797d54033a24d502fc223852467d94505718237f96
+        isLiveEdit : false
+        isModule : true
+        length : 104
+        scriptId : <string>
+        scriptLanguage : JavaScript
+        sourceMapURL : 
+        startColumn : 0
+        startLine : 0
+        url : 
+    }
+    sessionId : <string>
+}
+

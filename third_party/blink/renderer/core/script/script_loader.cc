@@ -877,6 +877,17 @@ PendingScript* ScriptLoader::PrepareScript(
     // URL.</spec>
     KURL base_url = element_document.BaseURL();
 
+    // Don't report source_url to DevTools for dynamically created module or
+    // classic scripts.
+    // If we report a source_url here, the dynamic script would look like
+    // an inline script of the current document to DevTools, which leads to
+    // a confusing debugging experience. The dynamic scripts' source is not
+    // present in the document, so stepping in the document as we would for
+    // an inline script doesn't make any sense.
+    KURL source_url = (!is_in_document_write && parser_inserted_)
+                          ? element_document.Url()
+                          : KURL();
+
     // <spec step="30.2">Switch on el's type:</spec>
 
     switch (GetScriptType()) {
@@ -979,9 +990,6 @@ PendingScript* ScriptLoader::PrepareScript(
           script_location_type =
               ScriptSourceLocationType::kInlineInsideDocumentWrite;
         }
-        KURL source_url = (!is_in_document_write && parser_inserted_)
-                              ? element_document.Url()
-                              : KURL();
 
         prepared_pending_script_ = ClassicPendingScript::CreateInline(
             element_, position, source_url, base_url, source_text,
@@ -1002,7 +1010,7 @@ PendingScript* ScriptLoader::PrepareScript(
         //
         // <specdef label="fetch-an-inline-module-script-graph"
         // href="https://html.spec.whatwg.org/C/#fetch-an-inline-module-script-graph">
-        KURL source_url = element_document.Url();
+
         // Strip any fragment identifiers from the source URL reported to
         // DevTools, so that breakpoints hit reliably for inline module
         // scripts, see crbug.com/1338257 for more details.

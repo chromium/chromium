@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script type="module">
+      const newScriptTag = document.createElement('script')
+      newScriptTag.setAttribute('type', 'module')
+      newScriptTag.textContent = `
+        debugger
+        console.log("you should see this code in DevTools>Sources when paused")
+      `
+      document.head.append(newScriptTag.cloneNode(true))
+    </script>
+  </head>
+  <body></body>
+</html>

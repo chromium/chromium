@@ -7,13 +7,13 @@ v8.compileModule Properties:
         lineNumber : 1
         notStreamedReason : "already disabled streaming"
         streamed : <boolean>
-        url : .../devtools/resources/inspected-page.html
+        url : 
     }
     endTime : <number>
     startTime : <number>
     type : "v8.compileModule"
 }
-Text details for v8.compileModule: inspected-page.html
+Text details for v8.compileModule: 
 v8.evaluateModule Properties:
 {
     data : {
