@@ -690,12 +690,12 @@
   },
   {
     "name": "bluetooth-fix-a2dp-packet-size",
-    "owners": [ "michaelfsun", "chromeos-bluetooth@google.com" ],
+    "owners": [ "michaelfsun", "chromeos-bt-champs@google.com" ],
     "expiry_milestone": 86
   },
   {
     "name": "bluetooth-quality-report",
-    "owners": [ "josephsih", "chromeos-bluetooth@google.com" ],
+    "owners": [ "josephsih", "chromeos-bt-champs@google.com" ],
     "expiry_milestone": 111
   },
   {
@@ -705,17 +705,17 @@
   },
   {
     "name": "bluetooth-sessionized-metrics",
-    "owners": [ "yudiliu", "chromeos-bluetooth@google.com" ],
+    "owners": [ "yudiliu", "chromeos-bt-champs@google.com" ],
     "expiry_milestone": 100
   },
   {
     "name": "bluetooth-use-floss",
-    "owners": ["sonnysasaka", "abhishekpandit", "chromeos-bluetooth@google.com"],
+    "owners": ["sonnysasaka", "abhishekpandit", "chromeos-bt-champs@google.com"],
     "expiry_milestone": 111
   },
   {
     "name": "bluetooth-use-llprivacy",
-    "owners": ["jiangzp", "chromeos-bluetooth@google.com"],
+    "owners": ["jiangzp", "chromeos-bt-champs@google.com"],
     "expiry_milestone": 111
   },
   {
