@@ -14,7 +14,6 @@ component("views") {
     "accelerator_table.cc",
     "accelerator_table.h",
     "chrome_views_export.h",
-    "chrome_widget_sublevel.h",
     "event_utils.cc",
     "event_utils.h",
     "tab_icon_view_model.h",

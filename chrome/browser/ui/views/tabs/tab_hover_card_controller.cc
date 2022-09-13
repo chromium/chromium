@@ -15,7 +15,6 @@
 #include "chrome/browser/metrics/tab_count_metrics.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_contents_view.h"
@@ -35,7 +34,6 @@
 #include "ui/events/types/event_type.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/view.h"
-#include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -74,11 +72,6 @@ GetMemoryPressureOverride() {
 // Fetches the Omnibox drop-down widget, or returns null if the drop-down is
 // not visible.
 void FixWidgetStackOrder(views::Widget* widget, const Browser* browser) {
-  if (base::FeatureList::IsEnabled(views::features::kWidgetLayering)) {
-    widget->SetZOrderSublevel(ChromeWidgetSublevel::kSublevelHoverable);
-    return;
-  }
-
 #if BUILDFLAG(IS_LINUX)
   // Ensure the hover card Widget assumes the highest z-order to avoid occlusion
   // by other secondary UI Widgets (such as the omnibox Widget, see
