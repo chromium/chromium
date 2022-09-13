@@ -179,10 +179,6 @@ const gpu::MailboxHolder& GetVideoFrameMailboxHolder(VideoFrame* video_frame) {
       << "Format: " << VideoPixelFormatToString(video_frame->format());
 
   const gpu::MailboxHolder& mailbox_holder = video_frame->mailbox_holder(0);
-  DCHECK(mailbox_holder.texture_target == GL_TEXTURE_2D ||
-         mailbox_holder.texture_target == GL_TEXTURE_RECTANGLE_ARB ||
-         mailbox_holder.texture_target == GL_TEXTURE_EXTERNAL_OES)
-      << mailbox_holder.texture_target;
   return mailbox_holder;
 }
 
@@ -1476,6 +1472,10 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
 
     const gpu::MailboxHolder& mailbox_holder =
         GetVideoFrameMailboxHolder(video_frame.get());
+    DCHECK(mailbox_holder.texture_target == GL_TEXTURE_2D ||
+           mailbox_holder.texture_target == GL_TEXTURE_RECTANGLE_ARB ||
+           mailbox_holder.texture_target == GL_TEXTURE_EXTERNAL_OES)
+        << mailbox_holder.texture_target;
     CopyMailboxToTexture(
         destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
         mailbox_holder.mailbox, mailbox_holder.sync_token, target, texture,
@@ -1883,7 +1883,12 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
     bool wraps_video_frame_texture = false;
     gpu::Mailbox mailbox;
 
-    if (allow_wrap_texture && video_frame->NumTextures() == 1) {
+    // `texture_target` is set only when the image backing the frame is
+    // compatible with GL.
+    bool can_wrap_texture = video_frame->NumTextures() == 1 &&
+                            video_frame->mailbox_holder(0).texture_target != 0;
+
+    if (allow_wrap_texture && can_wrap_texture) {
       cache_.emplace(video_frame->unique_id());
       const gpu::MailboxHolder& holder =
           GetVideoFrameMailboxHolder(video_frame.get());
