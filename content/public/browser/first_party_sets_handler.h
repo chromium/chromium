@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_BROWSER_FIRST_PARTY_SETS_HANDLER_H_
 #define CONTENT_PUBLIC_BROWSER_FIRST_PARTY_SETS_HANDLER_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/values.h"
@@ -17,6 +19,8 @@ class FirstPartySetEntry;
 }
 
 namespace content {
+
+class BrowserContext;
 
 // The FirstPartySetsHandler class allows an embedder to provide
 // First-Party Sets inputs from custom sources.
@@ -104,6 +108,24 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   virtual void GetCustomizationForPolicy(
       const base::Value::Dict& policy,
       base::OnceCallback<void(PolicyCustomization)> callback) = 0;
+
+  // Clear site state of sites that have a FPS membership change for the browser
+  // context represented by `browser_context_id`. Sites joining FPSs for the
+  // first time will not be cleared.
+  //
+  // `browser_context_getter` is needed to get a BrowsingDataRemover to handle
+  // the clearing work. `policy_customization` should be the return value from
+  // `GetCustomizationForPolicy` if an Overrides enterprise policy is provided,
+  // or null if one is not provided. `callback` will be invoked once the
+  // clearing is done. If non-null, `policy_customization` must live until
+  // callback is called.
+  //
+  // Embedder must call this before First-Party Sets queries can be answered.
+  virtual void ClearSiteDataOnChangedSetsForContext(
+      base::RepeatingCallback<BrowserContext*()> browser_context_getter,
+      const std::string& browser_context_id,
+      const PolicyCustomization* policy_customization,
+      base::OnceClosure callback) = 0;
 };
 
 }  // namespace content

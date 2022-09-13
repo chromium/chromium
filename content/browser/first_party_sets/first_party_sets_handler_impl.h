@@ -32,6 +32,8 @@
 
 namespace content {
 
+class BrowserContext;
+
 // Class FirstPartySetsHandlerImpl is a singleton, it allows an embedder to
 // provide First-Party Sets inputs from custom sources, then parses/merges the
 // inputs to form the current First-Party Sets data, compares them with the
@@ -86,6 +88,12 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   void GetCustomizationForPolicy(
       const base::Value::Dict& policy,
       base::OnceCallback<void(PolicyCustomization)> callback) override;
+  // TODO(shuuran@chromium.org): Implement the code to clear site state.
+  void ClearSiteDataOnChangedSetsForContext(
+      base::RepeatingCallback<BrowserContext*()> browser_context_getter,
+      const std::string& browser_context_id,
+      const PolicyCustomization* policy_customization,
+      base::OnceClosure callback) override;
 
   // Sets whether FPS is enabled (for testing).
   void SetEnabledForTesting(bool enabled) {
@@ -99,8 +107,8 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   }
 
   void GetPersistedPublicSetsForTesting(
-      base::OnceCallback<void(FirstPartySetsHandlerImpl::FlattenedSets)>
-          callback);
+      base::OnceCallback<void(
+          absl::optional<FirstPartySetsHandlerImpl::FlattenedSets>)> callback);
 
   // Computes information needed by the FirstPartySetsAccessDelegate in order
   // to update the browser's list of First-Party Sets to respect a profile's
@@ -130,9 +138,6 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   //
   // Must be called after the list has been initialized.
   net::PublicSets GetSetsSync() const;
-
-  // TODO(shuuran@chromium.org): Implement the code to clear site state.
-  void ClearSiteDataOnChangedSets() const;
 
   // Parses the policy and computes the PolicyCustomization that represents the
   // changes needed to apply `policy` to `sets_`.

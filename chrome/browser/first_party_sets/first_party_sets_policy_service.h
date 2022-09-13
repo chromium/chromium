@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_POLICY_SERVICE_H_
 #define CHROME_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_POLICY_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -44,15 +45,29 @@ class FirstPartySetsPolicyService : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
+  content::BrowserContext* browser_context() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return browser_context_;
+  }
+
  private:
   // Triggers changes that occur once the customizations are ready for the
   // profile that created this service.
   void OnCustomizationsReady(PolicyCustomization customizations);
 
+  // Triggers changes that occur once the sets transition clearing is done for
+  // the profile that created this service.
+  void OnSiteDataCleared();
+
   // The remote delegates associated with the profile that created this
   // service.
   mojo::RemoteSet<network::mojom::FirstPartySetsAccessDelegate>
       access_delegates_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The BrowserContext with which this service is associated. Set to nullptr in
+  // `Shutdown()`.
+  raw_ptr<content::BrowserContext> browser_context_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The FirstPartySetsOverrides enterprise policy value for the profile
   // that created this service.

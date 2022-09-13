@@ -4,6 +4,9 @@
 
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 
+#include "base/stl_util.h"
+#include "base/types/optional_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "services/network/public/mojom/first_party_sets_access_delegate.mojom.h"
 
@@ -21,8 +24,9 @@ network::mojom::FirstPartySetsReadyEventPtr MakeReadyEvent(
 }  // namespace
 
 FirstPartySetsPolicyService::FirstPartySetsPolicyService(
-    content::BrowserContext* context,
-    const base::Value::Dict& policy) {
+    content::BrowserContext* browser_context,
+    const base::Value::Dict& policy)
+    : browser_context_(browser_context) {
   policy_ = policy.Clone();
   // Immediately send `policy` to the FirstPartySetsHandler to retrieve its
   // associated "ProfileCustomization". We can do this since the value of the
@@ -54,6 +58,7 @@ void FirstPartySetsPolicyService::AddRemoteAccessDelegate(
 void FirstPartySetsPolicyService::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   access_delegates_.Clear();
+  browser_context_ = nullptr;
   weak_factory_.InvalidateWeakPtrs();
 }
 
@@ -61,6 +66,30 @@ void FirstPartySetsPolicyService::OnCustomizationsReady(
     PolicyCustomization customizations) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   customizations_ = customizations;
+
+  // Representation of the current profile to be persisted on disk.
+  const std::string browser_context_id =
+      Profile::FromBrowserContext(browser_context_)
+          ->GetBaseName()
+          .AsUTF8Unsafe();
+
+  base::RepeatingCallback<content::BrowserContext*()> browser_context_getter =
+      base::BindRepeating(
+          [](base::WeakPtr<FirstPartySetsPolicyService> weak_ptr) {
+            return weak_ptr ? weak_ptr->browser_context() : nullptr;
+          },
+          weak_factory_.GetWeakPtr());
+
+  content::FirstPartySetsHandler::GetInstance()
+      ->ClearSiteDataOnChangedSetsForContext(
+          browser_context_getter, browser_context_id,
+          base::OptionalToPtr(customizations_),
+          base::BindOnce(&FirstPartySetsPolicyService::OnSiteDataCleared,
+                         weak_factory_.GetWeakPtr()));
+}
+
+void FirstPartySetsPolicyService::OnSiteDataCleared() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& delegate : access_delegates_) {
     delegate->NotifyReady(MakeReadyEvent(customizations_.value()));
   }
