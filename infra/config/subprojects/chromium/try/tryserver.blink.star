@@ -36,6 +36,22 @@ def blink_mac_builder(*, name, **kwargs):
 
 try_.builder(
     name = "linux-blink-optional-highdpi-rel",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+    ),
+    try_settings = builder_config.try_settings(
+        retry_failed_shards = False,
+    ),
     goma_backend = goma.backend.RBE_PROD,
     os = os.LINUX_DEFAULT,
 )
@@ -182,6 +198,22 @@ blink_mac_builder(
 
 blink_mac_builder(
     name = "mac11.0-blink-rel",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+    ),
+    try_settings = builder_config.try_settings(
+        retry_failed_shards = False,
+    ),
     builderless = False,
 )
 

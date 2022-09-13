@@ -1,4 +1,42 @@
 {
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "try",
+              "builder": "mac11.0-blink-rel",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "tryserver.blink",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "try",
+          "builder": "mac11.0-blink-rel",
+          "project": "chromium"
+        }
+      ],
+      "retry_failed_shards": false
+    }
+  },
   "$build/goma": {
     "rpc_extra_params": "?prod",
     "server_host": "goma.chromium.org",
