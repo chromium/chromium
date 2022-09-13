@@ -196,7 +196,10 @@ component("services") {
 
     public_deps += [ "//media/mojo/mojom/stable:stable_video_decoder" ]
 
-    deps += [ "//media/gpu/chromeos" ]
+    deps += [
+      "//media/gpu/chromeos",
+      "//ui/ozone:ozone_switches",
+    ]
   }
 }
 

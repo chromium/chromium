@@ -171,6 +171,9 @@ specific_include_rules = {
     "+content/browser/renderer_host/render_process_host_impl.h",
     "+content/browser/renderer_host/agent_scheduling_group_host.h",
   ],
+  "stable_video_decoder_factory\.cc" : [
+    "+ui/ozone/public/ozone_switches.h",
+  ],
   "storage_partition_impl_unittest\.cc": [
     "+services/network/cookie_manager.h",
     "+third_party/leveldatabase",

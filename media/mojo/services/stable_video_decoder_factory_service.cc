@@ -4,17 +4,26 @@
 
 #include "media/mojo/services/stable_video_decoder_factory_service.h"
 
+#include "base/command_line.h"
+#include "base/task/thread_pool.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "gpu/config/gpu_preferences.h"
 #include "media/base/media_log.h"
 #include "media/base/media_util.h"
 #include "media/gpu/buildflags.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/chromeos/video_frame_converter.h"
+#include "media/gpu/gpu_video_accelerator_util.h"
+#include "media/gpu/gpu_video_decode_accelerator_factory.h"
+#include "media/gpu/gpu_video_decode_accelerator_helpers.h"
+#include "media/gpu/ipc/service/vda_video_decoder.h"
 #include "media/mojo/services/mojo_media_client.h"
 #include "media/mojo/services/mojo_video_decoder_service.h"
 #include "media/mojo/services/stable_video_decoder_service.h"
+#include "media/video/video_decode_accelerator.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "ui/ozone/public/ozone_switches.h"
 
 namespace media {
 
@@ -34,15 +43,38 @@ class MojoMediaClientImpl : public MojoMediaClient {
   // MojoMediaClient implementation.
   std::vector<SupportedVideoDecoderConfig> GetSupportedVideoDecoderConfigs()
       final {
-    // TODO(b/195769334): we should pass a meaningful
+    // TODO(b/195769334): we should pass meaningful gpu::GpuPreferences and
     // gpu::GpuDriverBugWorkarounds so that we can restrict the supported
     // configurations using that facility.
-    absl::optional<std::vector<SupportedVideoDecoderConfig>> configs =
-        VideoDecoderPipeline::GetSupportedConfigs(
+    absl::optional<std::vector<SupportedVideoDecoderConfig>> configs;
+    switch (GetDecoderImplementationType()) {
+      case VideoDecoderType::kVaapi:
+      case VideoDecoderType::kV4L2:
+        configs = VideoDecoderPipeline::GetSupportedConfigs(
             gpu::GpuDriverBugWorkarounds());
+        break;
+      case VideoDecoderType::kVda: {
+        VideoDecodeAccelerator::Capabilities capabilities =
+            GpuVideoAcceleratorUtil::ConvertGpuToMediaDecodeCapabilities(
+                GpuVideoDecodeAcceleratorFactory::GetDecoderCapabilities(
+                    gpu::GpuPreferences(), gpu::GpuDriverBugWorkarounds()));
+        configs = ConvertFromSupportedProfiles(
+            capabilities.supported_profiles,
+            capabilities.flags & VideoDecodeAccelerator::Capabilities::
+                                     SUPPORTS_ENCRYPTED_STREAMS);
+        break;
+      }
+      default:
+        NOTREACHED();
+    }
     return configs.value_or(std::vector<SupportedVideoDecoderConfig>{});
   }
   VideoDecoderType GetDecoderImplementationType() final {
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kPlatformDisallowsChromeOSDirectVideoDecoder)) {
+      return VideoDecoderType::kVda;
+    }
+
     // TODO(b/195769334): how can we keep this in sync with
     // VideoDecoderPipeline::GetDecoderType()?
 #if BUILDFLAG(USE_VAAPI)
@@ -62,10 +94,6 @@ class MojoMediaClientImpl : public MojoMediaClient {
       const gfx::ColorSpace& target_color_space,
       mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder)
       final {
-    // TODO(b/195769334): some platforms do not support the
-    // VideoDecoderPipeline so we need to handle those (and the rest of the
-    // methods of MojoMediaClientImpl are affected as well).
-
     // For out-of-process video decoding, |command_buffer_id| is not used and
     // should not be supplied.
     DCHECK(!command_buffer_id);
@@ -75,12 +103,42 @@ class MojoMediaClientImpl : public MojoMediaClient {
     std::unique_ptr<MediaLog> log =
         media_log ? media_log->Clone()
                   : std::make_unique<media::NullMediaLog>();
-    return VideoDecoderPipeline::Create(
-        /*client_task_runner=*/std::move(task_runner),
-        std::make_unique<PlatformVideoFramePool>(),
-        std::make_unique<media::VideoFrameConverter>(), std::move(log),
-        /*oop_video_decoder=*/{});
+
+    if (GetDecoderImplementationType() == VideoDecoderType::kVda) {
+      if (!gpu_task_runner_) {
+        gpu_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
+            {}, base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+      }
+      // TODO(b/195769334): we should pass meaningful gpu::Preferences and
+      // gpu::GpuDriverBugWorkarounds so that we can restrict the supported
+      // configurations using that facility.
+      return VdaVideoDecoder::Create(
+          /*parent_task_runner=*/std::move(task_runner), gpu_task_runner_,
+          std::move(log), target_color_space, gpu::GpuPreferences(),
+          gpu::GpuDriverBugWorkarounds(),
+          /*get_stub_cb=*/base::NullCallback());
+    } else {
+      return VideoDecoderPipeline::Create(
+          /*client_task_runner=*/std::move(task_runner),
+          std::make_unique<PlatformVideoFramePool>(),
+          std::make_unique<media::VideoFrameConverter>(), std::move(log),
+          /*oop_video_decoder=*/{});
+    }
   }
+
+ private:
+  // A "GPU" thread. With traditional hardware video decoding that runs in the
+  // GPU process, this would be the thread needed to access specific GPU
+  // functionality. For out-of-process video decoding, this isn't really the
+  // "GPU" thread, but we use the terminology of the VdaVideoDecoder::Create()
+  // (as such this member is only used when using the VdaVideoDecoder).
+  //
+  // TODO(b/195769334): could we get rid of this and just use the same task
+  // runner for the |parent_task_runner| and |gpu_task_runner| parameters of
+  // VdaVideoDecoder::Create(). For now, we've made it a dedicated thread in
+  // case the VdaVideoDecoder or any of the underlying components rely on a
+  // separate GPU thread.
+  scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
 };
 
 }  // namespace
