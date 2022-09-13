@@ -631,8 +631,8 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         } else if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
             resource = WebsitePreferenceBridge.isCategoryEnabled(
                                browserContextHandle, ContentSettingsType.REQUEST_DESKTOP_SITE)
-                    ? R.string.website_settings_add_site_description_desktop_site_block
-                    : R.string.website_settings_add_site_description_desktop_site_allow;
+                    ? R.string.website_settings_blocked_group_heading_request_desktop_site
+                    : R.string.website_settings_allowed_group_heading_request_desktop_site;
         }
         assert resource > 0;
         return getString(resource);
