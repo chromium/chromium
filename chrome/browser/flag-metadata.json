@@ -5109,7 +5109,7 @@
   {
     "name": "overlay-scrollbars",
     "owners": [ "chaopeng", "bokan", "input-dev" ],
-    "expiry_milestone": 107
+    "expiry_milestone": 114
   },
   {
     "name": "overlay-strategies",
