@@ -29,10 +29,10 @@ function testPasses() {
  */
 function runAsync(name) {
   // Strip |name| from arguments.
-  var testArguments = Array.prototype.slice.call(arguments, 1);
+  const testArguments = Array.prototype.slice.call(arguments, 1);
 
   // call async function.
-  var result = runTestFunction(name, this[name], testArguments);
+  const result = runTestFunction(name, this[name], testArguments);
 
   // Pass on success; bail on errors.
   if (result[0]) {

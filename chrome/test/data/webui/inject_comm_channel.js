@@ -5,13 +5,13 @@
 var embedder = null;
 
 function reportConnected() {
-  var msg = ['connected'];
+  const msg = ['connected'];
   embedder.postMessage(JSON.stringify(msg), '*');
 }
 
 window.addEventListener('message', function(e) {
   embedder = e.source;
-  var data = JSON.parse(e.data);
+  const data = JSON.parse(e.data);
   switch (data[0]) {
     case 'connect': {
       reportConnected();

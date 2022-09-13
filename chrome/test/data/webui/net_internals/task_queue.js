@@ -62,7 +62,7 @@ export class TaskQueue {
     assertEquals(null, NetInternalsTest.callback);
 
     if (this.tasks_.length > 0) {
-      var nextTask = this.tasks_.shift();
+      const nextTask = this.tasks_.shift();
       nextTask.start.apply(nextTask, argArray);
     } else {
       this.whenDonePromise_.resolve();
@@ -126,7 +126,7 @@ export class Task {
     this.isDone_ = true;
 
     // Function to run the next task in the queue.
-    var runNextTask = this.taskQueue_.runNextTask.bind(
+    const runNextTask = this.taskQueue_.runNextTask.bind(
         this.taskQueue_, Array.prototype.slice.call(arguments));
 
     // If we need to start the next task asynchronously, we need to wrap

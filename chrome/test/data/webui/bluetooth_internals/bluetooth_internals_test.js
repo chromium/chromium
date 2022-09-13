@@ -77,7 +77,7 @@ suite('bluetooth_internals', function() {
         fakeAdapterInfo());
 
     for (const pageName of pageManager.registeredPages.keys()) {
-      var page = pageManager.registeredPages.get(pageName);
+      const page = pageManager.registeredPages.get(pageName);
 
       if (pageNames.indexOf(pageName) < 0) {
         page.pageDiv.parentNode.removeChild(page.pageDiv);
@@ -91,13 +91,13 @@ suite('bluetooth_internals', function() {
    * @param {!DeviceInfo} deviceInfo
    */
   function changeDevice(deviceInfo) {
-    var deviceRow = deviceTable.querySelector(
+    const deviceRow = deviceTable.querySelector(
         '#' + escapeDeviceAddress(deviceInfo.address));
-    var nameForDisplayColumn = deviceRow.children[0];
-    var addressColumn = deviceRow.children[1];
-    var rssiColumn = deviceRow.children[2];
-    var serviceUuidsColumn = deviceRow.children[3];
-    var manufacturerDataColumn = deviceRow.children[4];
+    const nameForDisplayColumn = deviceRow.children[0];
+    const addressColumn = deviceRow.children[1];
+    const rssiColumn = deviceRow.children[2];
+    const serviceUuidsColumn = deviceRow.children[3];
+    const manufacturerDataColumn = deviceRow.children[4];
 
     assertTrue(!!nameForDisplayColumn);
     assertTrue(!!addressColumn);
@@ -169,7 +169,7 @@ suite('bluetooth_internals', function() {
    * @param {boolean} expectRemoved
    */
   function expectDeviceRemoved(address, expectRemoved) {
-    var removedRow =
+    const removedRow =
         deviceTable.querySelector('#' + escapeDeviceAddress(address));
 
     assertEquals(expectRemoved, removedRow.classList.contains('removed'));
@@ -179,11 +179,11 @@ suite('bluetooth_internals', function() {
    * Tests whether a device is added successfully and not duplicated.
    */
   test('DeviceAdded', function() {
-    var devices = deviceTable.querySelectorAll('tbody tr');
+    let devices = deviceTable.querySelectorAll('tbody tr');
     assertEquals(EXPECTED_DEVICES, devices.length);
 
     // Copy device info because device collection will not copy this object.
-    var infoCopy = fakeDeviceInfo3();
+    const infoCopy = fakeDeviceInfo3();
     adapterBroker.deviceAdded(infoCopy);
 
     // Same device shouldn't appear twice.
@@ -197,10 +197,10 @@ suite('bluetooth_internals', function() {
    * Tests whether a device is marked properly as removed.
    */
   test('DeviceSetToRemoved', function() {
-    var devices = deviceTable.querySelectorAll('tbody tr');
+    let devices = deviceTable.querySelectorAll('tbody tr');
     assertEquals(EXPECTED_DEVICES, devices.length);
 
-    var fakeDevice = fakeDeviceInfo2();
+    const fakeDevice = fakeDeviceInfo2();
     adapterBroker.deviceRemoved(fakeDevice);
 
     // The number of rows shouldn't change.
@@ -214,11 +214,11 @@ suite('bluetooth_internals', function() {
    * Tests whether a changed device updates the device table properly.
    */
   test('DeviceChanged', function() {
-    var devices = deviceTable.querySelectorAll('tbody tr');
+    const devices = deviceTable.querySelectorAll('tbody tr');
     assertEquals(EXPECTED_DEVICES, devices.length);
 
     // Copy device info because device collection will not copy this object.
-    var newDeviceInfo = fakeDeviceInfo1();
+    const newDeviceInfo = fakeDeviceInfo1();
     newDeviceInfo.nameForDisplay = 'DDDD';
     newDeviceInfo.rssi = {value: -20};
     newDeviceInfo.serviceUuids = [
@@ -233,14 +233,14 @@ suite('bluetooth_internals', function() {
    * Tests the entire device cycle, added -> updated -> removed -> re-added.
    */
   test('DeviceUpdateCycle', function() {
-    var devices = deviceTable.querySelectorAll('tbody tr');
+    const devices = deviceTable.querySelectorAll('tbody tr');
     assertEquals(EXPECTED_DEVICES, devices.length);
 
     // Copy device info because device collection will not copy this object.
-    var originalDeviceInfo = fakeDeviceInfo3();
+    const originalDeviceInfo = fakeDeviceInfo3();
     adapterBroker.deviceAdded(originalDeviceInfo);
 
-    var newDeviceInfo = fakeDeviceInfo3();
+    const newDeviceInfo = fakeDeviceInfo3();
     newDeviceInfo.nameForDisplay = 'DDDD';
     newDeviceInfo.rssi = {value: -20};
     newDeviceInfo.serviceUuids = [
@@ -259,30 +259,30 @@ suite('bluetooth_internals', function() {
   });
 
   test('DeviceAddedRssiCheck', function() {
-    var devices = deviceTable.querySelectorAll('tbody tr');
+    const devices = deviceTable.querySelectorAll('tbody tr');
     assertEquals(EXPECTED_DEVICES, devices.length);
 
     // Copy device info because device collection will not copy this object.
-    var newDeviceInfo = fakeDeviceInfo3();
+    const newDeviceInfo = fakeDeviceInfo3();
     adapterBroker.deviceAdded(newDeviceInfo);
 
-    var deviceRow = deviceTable.querySelector(
+    const deviceRow = deviceTable.querySelector(
         '#' + escapeDeviceAddress(newDeviceInfo.address));
-    var rssiColumn = deviceRow.children[2];
+    const rssiColumn = deviceRow.children[2];
     assertEquals('Unknown', rssiColumn.textContent);
 
-    var newDeviceInfo1 = fakeDeviceInfo3();
+    const newDeviceInfo1 = fakeDeviceInfo3();
     newDeviceInfo1.rssi = {value: -42};
     adapterBroker.deviceChanged(newDeviceInfo1);
     assertEquals('-42', rssiColumn.textContent);
 
     // Device table should keep last valid rssi value.
-    var newDeviceInfo2 = fakeDeviceInfo3();
+    const newDeviceInfo2 = fakeDeviceInfo3();
     newDeviceInfo2.rssi = null;
     adapterBroker.deviceChanged(newDeviceInfo2);
     assertEquals('-42', rssiColumn.textContent);
 
-    var newDeviceInfo3 = fakeDeviceInfo3();
+    const newDeviceInfo3 = fakeDeviceInfo3();
     newDeviceInfo3.rssi = {value: -17};
     adapterBroker.deviceChanged(newDeviceInfo3);
     assertEquals('-17', rssiColumn.textContent);
@@ -290,7 +290,7 @@ suite('bluetooth_internals', function() {
 
   /* Sidebar Tests */
   test('Sidebar_Setup', function() {
-    var sidebarItems =
+    const sidebarItems =
         Array.from(sidebarNode.querySelectorAll('.sidebar-content li'));
 
     pageNames.forEach(function(pageName) {
@@ -361,7 +361,7 @@ suite('bluetooth_internals', function() {
   }
 
   test('Snackbar_ShowTimeout', function(done) {
-    var snackbar1 = Snackbar.show('Message 1');
+    const snackbar1 = Snackbar.show('Message 1');
     assertEquals(1, $('snackbar-container').children.length);
 
     snackbar1.addEventListener('dismissed', function() {
@@ -370,7 +370,7 @@ suite('bluetooth_internals', function() {
   });
 
   test('Snackbar_ShowDismiss', function() {
-    var snackbar1 = Snackbar.show('Message 1');
+    const snackbar1 = Snackbar.show('Message 1');
     assertEquals(1, $('snackbar-container').children.length);
 
     return whenSnackbarShows(snackbar1)
@@ -381,12 +381,12 @@ suite('bluetooth_internals', function() {
   });
 
   test('Snackbar_QueueThreeDismiss', function() {
-    var expectedCalls = 3;
-    var actualCalls = 0;
+    const expectedCalls = 3;
+    let actualCalls = 0;
 
-    var snackbar1 = Snackbar.show('Message 1');
-    var snackbar2 = Snackbar.show('Message 2');
-    var snackbar3 = Snackbar.show('Message 3');
+    const snackbar1 = Snackbar.show('Message 1');
+    const snackbar2 = Snackbar.show('Message 2');
+    const snackbar3 = Snackbar.show('Message 3');
 
     assertEquals(1, $('snackbar-container').children.length);
     assertEquals(2, Snackbar.queue_.length);
@@ -407,12 +407,12 @@ suite('bluetooth_internals', function() {
   });
 
   test('Snackbar_QueueThreeDismissAll', function() {
-    var expectedCalls = 1;
-    var actualCalls = 0;
+    const expectedCalls = 1;
+    const actualCalls = 0;
 
-    var snackbar1 = Snackbar.show('Message 1');
-    var snackbar2 = Snackbar.show('Message 2');
-    var snackbar3 = Snackbar.show('Message 3');
+    const snackbar1 = Snackbar.show('Message 1');
+    const snackbar2 = Snackbar.show('Message 2');
+    const snackbar3 = Snackbar.show('Message 3');
 
     assertEquals(1, $('snackbar-container').children.length);
     assertEquals(2, Snackbar.queue_.length);
@@ -439,10 +439,10 @@ suite('bluetooth_internals', function() {
 
   /* AdapterPage Tests */
   function checkAdapterFieldSet(adapterInfo) {
-    for (var propName in adapterInfo) {
-      var valueCell =
+    for (const propName in adapterInfo) {
+      const valueCell =
           adapterFieldSet.querySelector('[data-field="' + propName + '"]');
-      var value = adapterInfo[propName];
+      const value = adapterInfo[propName];
 
       if (typeof (value) === 'boolean') {
         assertEquals(value, valueCell.classList.contains('checked'));
@@ -459,7 +459,7 @@ suite('bluetooth_internals', function() {
   });
 
   test('AdapterPage_AdapterChanged', function() {
-    var adapterInfo = adapterFieldSet.value;
+    const adapterInfo = adapterFieldSet.value;
 
     adapterInfo.present = !adapterInfo.present;
     adapterBroker.presentChanged(adapterInfo.present);
@@ -471,7 +471,7 @@ suite('bluetooth_internals', function() {
   });
 
   test('AdapterPage_AdapterChanged_RepeatTwice', function() {
-    var adapterInfo = adapterFieldSet.value;
+    const adapterInfo = adapterFieldSet.value;
 
     adapterInfo.present = !adapterInfo.present;
     adapterBroker.presentChanged(adapterInfo.present);
@@ -501,14 +501,14 @@ suite('bluetooth_internals', function() {
      'serviceUuids',
      'manufacturerDataMap',
     ].forEach(function(propName) {
-      var valueCell =
+      const valueCell =
           detailsPage.querySelector('fieldset [data-field="' + propName + '"]');
 
-      var parts = propName.split('.');
-      var value = deviceInfo;
+      const parts = propName.split('.');
+      let value = deviceInfo;
 
       while (value != null && parts.length > 0) {
-        var part = parts.shift();
+        const part = parts.shift();
         value = value[part];
       }
 
@@ -531,17 +531,17 @@ suite('bluetooth_internals', function() {
   }
 
   test('DeviceDetailsPage_NewDelete', function() {
-    var device = devices.item(0);
+    const device = devices.item(0);
 
-    var deviceInspectLink =
+    const deviceInspectLink =
         $(device.address).querySelector('[is="action-link"]');
 
-    var deviceDetailsPageId = 'devices/' + device.address.toLowerCase();
+    const deviceDetailsPageId = 'devices/' + device.address.toLowerCase();
 
     deviceInspectLink.click();
     assertEquals('#' + deviceDetailsPageId, window.location.hash);
 
-    var detailsPage = $(deviceDetailsPageId);
+    let detailsPage = $(deviceDetailsPageId);
     assertTrue(!!detailsPage);
 
     return internalsHandler.adapter.deviceImplMap.get(device.address)
@@ -558,16 +558,17 @@ suite('bluetooth_internals', function() {
   });
 
   test('DeviceDetailsPage_NewDelete_FromDevicesPage', function() {
-    var device = devices.item(0);
-    var deviceDetailsPageId = 'devices/' + device.address.toLowerCase();
+    const device = devices.item(0);
+    const deviceDetailsPageId = 'devices/' + device.address.toLowerCase();
 
-    var deviceLinks = $(device.address).querySelectorAll('[is="action-link"]');
+    const deviceLinks =
+        $(device.address).querySelectorAll('[is="action-link"]');
 
     // First link is 'Inspect'.
     deviceLinks[0].click();
     assertEquals('#' + deviceDetailsPageId, window.location.hash);
 
-    var detailsPage = $(deviceDetailsPageId);
+    let detailsPage = $(deviceDetailsPageId);
     assertTrue(!!detailsPage);
 
     return internalsHandler.adapter.deviceImplMap.get(device.address)
@@ -587,14 +588,14 @@ suite('bluetooth_internals', function() {
 
 suite('BluetoothInternalsUnitTests', function() {
   /* Value Control Unit Tests */
-  var aCode = 'a'.charCodeAt(0);
-  var bCode = 'b'.charCodeAt(0);
-  var cCode = 'c'.charCodeAt(0);
+  const aCode = 'a'.charCodeAt(0);
+  const bCode = 'b'.charCodeAt(0);
+  const cCode = 'c'.charCodeAt(0);
 
-  var device1 = fakeDeviceInfo1();
-  var service1 = fakeServiceInfo1();
-  var characteristic1 = fakeCharacteristicInfo1();
-  var valueControl = null;
+  const device1 = fakeDeviceInfo1();
+  const service1 = fakeServiceInfo1();
+  const characteristic1 = fakeCharacteristicInfo1();
+  let valueControl = null;
 
   setup(function() {
     valueControl = new ValueControl();

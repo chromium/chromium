@@ -184,7 +184,7 @@ suite(dns_view_test.suiteName, function() {
    */
   test(dns_view_test.TestNames.ClearCache, function() {
     switchToView('dns');
-    var taskQueue = new TaskQueue(true);
+    const taskQueue = new TaskQueue(true);
 
     // Perform an initial local lookup to make sure somewhere.com isn't cached.
     taskQueue.addTask(new DnsLookupTask('somewhere.com', true));

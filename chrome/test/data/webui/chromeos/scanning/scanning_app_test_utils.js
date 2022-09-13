@@ -52,7 +52,7 @@ export function createScannerSource(
  */
 function strToMojoString16(str) {
   const arr = [];
-  for (var i = 0; i < str.length; i++) {
+  for (let i = 0; i < str.length; i++) {
     arr[i] = str.charCodeAt(i);
   }
 

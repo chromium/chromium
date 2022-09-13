@@ -10,9 +10,9 @@
 class MockMethod {
   constructor() {
     /** @type {MockMethod|Function} */
-    var fn = function() {
-      var args = Array.prototype.slice.call(arguments);
-      var callbacks = args.filter(function(arg) {
+    const fn = function() {
+      const args = Array.prototype.slice.call(arguments);
+      const callbacks = args.filter(function(arg) {
         return (typeof arg === 'function');
       });
 
@@ -22,7 +22,7 @@ class MockMethod {
         return;
       }
 
-      var fnAsMethod = /** @type {!MockMethod} */ (fn);
+      const fnAsMethod = /** @type {!MockMethod} */ (fn);
       fnAsMethod.recordCall(args);
       if (callbacks.length === 1) {
         callbacks[0].apply(undefined, fnAsMethod.callbackData);
@@ -63,7 +63,7 @@ class MockMethod {
      */
     this.functionName = null;
 
-    var fnAsMethod = /** @type {!MockMethod} */ (fn);
+    const fnAsMethod = /** @type {!MockMethod} */ (fn);
     Object.assign(fnAsMethod, this);
     Object.setPrototypeOf(fnAsMethod, MockMethod.prototype);
     return fnAsMethod;
@@ -90,12 +90,12 @@ class MockMethod {
    * the correct signature for each call.
    */
   verifyMock() {
-    var errorMessage = 'Number of method calls did not match expectation.';
+    let errorMessage = 'Number of method calls did not match expectation.';
     if (this.functionName) {
       errorMessage = 'Error in ' + this.functionName + ':\n' + errorMessage;
     }
     assertEquals(this.expectations_.length, this.calls_.length, errorMessage);
-    for (var i = 0; i < this.expectations_.length; i++) {
+    for (let i = 0; i < this.expectations_.length; i++) {
       this.validateCall(i, this.expectations_[i], this.calls_[i]);
     }
   }
@@ -154,7 +154,7 @@ class MockMethod {
    *     reset.
    */
   createFunctionMock(opt_parent, opt_functionName) {
-    var fn = new MockMethod();
+    const fn = new MockMethod();
 
     // Register mock.
     if (opt_parent && opt_functionName) {
@@ -176,7 +176,7 @@ class MockMethod {
    * expected and actual calls to a mocked function to not align.
    */
   verifyMocks() {
-    for (var i = 0; i < this.mocks_.length; i++) {
+    for (let i = 0; i < this.mocks_.length; i++) {
       this.mocks_[i].verifyMock();
     }
   }
@@ -185,8 +185,8 @@ class MockMethod {
    * Discard mocks reestoring default behavior.
    */
   reset() {
-    for (var i = 0; i < this.overrides_.length; i++) {
-      var override = this.overrides_[i];
+    for (let i = 0; i < this.overrides_.length; i++) {
+      const override = this.overrides_[i];
       override.parent[override.functionName] = override.originalFunction;
     }
   }

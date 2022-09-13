@@ -12,8 +12,8 @@ WebUIAssertionsTest.prototype = {
 };
 
 TEST_F('WebUIAssertionsTest', 'testConstructedMessage', function() {
-  var message = 'myErrorMessage';
-  var result = runTestFunction('testConstructMessage', function() {
+  const message = 'myErrorMessage';
+  const result = runTestFunction('testConstructMessage', function() {
     assertTrue(false, message);
   }, []);
   resetTestState();

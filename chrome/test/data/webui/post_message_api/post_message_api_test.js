@@ -115,13 +115,13 @@ suite('PostMessageAPIModuleTest', function() {
   });
 
   test('PostMessageCommTest', async function() {
-    var server = new TestPostMessageAPIServer(this.innerFrame);
+    const server = new TestPostMessageAPIServer(this.innerFrame);
     let success = await server.getTestFinalized();
     assertTrue(success);
 
     //  Bootstraps a duplex communication channel between this server and the
     //  client handler in the iframe.
-    var client = new TestClient(this.innerFrame);
+    const client = new TestClient(this.innerFrame);
 
     // Test non-rejected request.
     success = await client.rejectedPromiseTest(/*reject=*/ false);

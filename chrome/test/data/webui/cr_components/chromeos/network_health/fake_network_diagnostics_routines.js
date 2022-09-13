@@ -13,7 +13,7 @@ import {createResult} from './network_health_test_utils.js';
  *            result: !RoutineResult,
  *          }}
  */
-var RunRoutineResponse;
+let RunRoutineResponse;
 
 /**
  * @implements {NetworkDiagnosticsRoutinesInterface}
