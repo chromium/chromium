@@ -183,10 +183,18 @@ action("symbol_data") {
 
   outputs = [ "$target_gen_dir/symbol_ordering.json" ]
 
+  deps = [
+    ":emoji_data",
+    ":emoji_data_remaining"
+  ]
+
   args = [
     "--output",
     rebase_path(outputs[0], root_build_dir),
   ]
+  args += ["--filter-data-paths"] +
+    rebase_path(get_target_outputs(":emoji_data"), root_build_dir) +
+    rebase_path(get_target_outputs(":emoji_data_remaining"), root_build_dir)
 }
 
 copy("symbol_test_data") {

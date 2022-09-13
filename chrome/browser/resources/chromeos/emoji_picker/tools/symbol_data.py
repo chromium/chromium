@@ -10,7 +10,7 @@ import logging
 import os
 import sys
 import unicodedata
-from typing import Any, Dict, Generator, List, Sequence, Tuple
+from typing import Any, Dict, Generator, List, Optional, Sequence, Set, Tuple
 
 # Add extra dependencies to the python path.
 _SCRIPT_DIR = os.path.realpath(os.path.dirname(__file__))
@@ -148,6 +148,28 @@ def _emoji_data_dict_factory(
     }
 
 
+def _load_emoji_characters_from_files(data_paths: List[str]) -> Set[str]:
+    """Loads a set of emoji characters from a list of data file paths.
+
+    Args:
+        data_paths: A list of emoji data files.
+
+    Returns:
+        The set of emoji unicode characters read from the data.
+    """
+    emoji_character_set = set()
+    for data_path in data_paths:
+        with open(data_path, 'r') as data_file:
+            emoji_groups = json.load(data_file)
+            file_character_set = {
+                emoji['base']['string']
+                for emoji_group in emoji_groups
+                for emoji in emoji_group['emoji']
+            }
+            emoji_character_set.update(file_character_set)
+    return emoji_character_set
+
+
 def _convert_unicode_ranges_to_emoji_chars(
         unicode_ranges: List[Tuple[int, int]],
         ignore_errors: bool = True) -> Generator[EmojiPickerChar, None, None]:
@@ -215,8 +237,8 @@ def _convert_unicode_ranges_to_emoji_chars(
 
 def get_symbols_groups(
         group_unicode_ranges: Dict[str, List[Tuple[int, int]]],
-        search_only: bool = False,
-        ignore_errors: bool = True) -> List[EmojiPickerGroup]:
+        search_only: bool = False, ignore_errors: bool = True,
+        filter_set: Optional[Set[str]] = None) -> List[EmojiPickerGroup]:
     """Creates symbols data from predefined groups and their unicode ranges.
 
     Args:
@@ -224,12 +246,13 @@ def get_symbols_groups(
         search_only: If True, the group is considered search-only.
         ignore_errors: If True, any exceptions raised during processing
             unicode characters is silently ignored.
+        filter_set: If not None, the characters that exist in this set are
+            excluded from output symbol groups.
 
     Raises:
         ValueError: If a unicode character does not exist in the data source
             and `ignore_errors` is true, the exception is raised.
     """
-    # TODO(b/232160008): Exclude symbols that are in emoji/emoticon lists.
 
     emoji_groups = list()
     for (group_name, unicode_ranges) in group_unicode_ranges.items():
@@ -238,7 +261,8 @@ def get_symbols_groups(
             unicode_ranges, ignore_errors=ignore_errors)
         emoji = [
             EmojiPickerEmoji(base=emoji_char)
-            for emoji_char in emoji_chars]
+            for emoji_char in emoji_chars
+            if filter_set is None or emoji_char.string not in filter_set]
 
         emoji_group = EmojiPickerGroup(
             group=group_name, emoji=emoji, search_only=search_only)
@@ -255,20 +279,36 @@ def main(argv: List[str]) -> None:
         '--verbose', required=False, default=False,
         action='store_true',
         help="Set the logging level to Debug.")
+    parser.add_argument(
+        '--filter-data-paths', action='append', nargs='+')
+
     args = parser.parse_args(argv)
 
     if args.verbose:
         LOGGER.setLevel(level=logging.DEBUG)
 
+    # Flatten list of data paths if any.
+    filter_data_paths = list()
+    if args.filter_data_paths is not None:
+        for data_path_element in args.filter_data_paths:
+            filter_data_paths.extend(data_path_element)
+
+    # Loads a list of other emoji characters that must be
+    # excluded from symbols.
+    filter_set = _load_emoji_characters_from_files(
+        data_paths=filter_data_paths)
+
     # Add symbol groups.
     symbols_groups = get_symbols_groups(
         group_unicode_ranges=SYMBOLS_GROUPS,
+        filter_set=filter_set,
         search_only=False)
 
     # Add search-only symbol groups.
     symbols_groups.extend(
         get_symbols_groups(
             group_unicode_ranges=SEARCH_ONLY_SYMBOLS_GROUPS,
+            filter_set=filter_set,
             search_only=True)
     )
 
