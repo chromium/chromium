@@ -107,6 +107,8 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       blink::PermissionType permission,
       const url::Origin& requesting_origin,
       const url::Origin& embedding_origin) override;
+  // WARNING: Permission requests order is not guaranteed.
+  // TODO(crbug.com/1363094): Migrate to `std::set`.
   void RequestPermissions(
       const std::vector<blink::PermissionType>& permissions,
       RenderFrameHost* render_frame_host,
@@ -120,6 +122,8 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       bool user_gesture,
       base::OnceCallback<void(blink::mojom::PermissionStatus)> callback)
       override;
+  // WARNING: Permission requests order is not guaranteed.
+  // TODO(crbug.com/1363094): Migrate to `std::set`.
   void RequestPermissionsFromCurrentDocument(
       const std::vector<PermissionType>& permissions,
       RenderFrameHost* render_frame_host,
