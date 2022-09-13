@@ -139,6 +139,16 @@ GetImplicitTriggeringDebugParametersFromCommandLine() {
   return proto;
 }
 
+bool NavigatedToTargetDomain(const GURL& url,
+                             const TriggerContext& trigger_context) {
+  const GURL& url_for_intent =
+      StartupUtil().ChooseStartupUrlForIntent(trigger_context).value_or(GURL());
+  bool navigated_to_target_domain =
+      url_utils::IsSamePublicSuffixDomain(url_for_intent, url) &&
+      url_utils::IsAllowedSchemaTransition(url_for_intent, url);
+  return navigated_to_target_domain;
+}
+
 }  // namespace
 
 Starter::Starter(content::WebContents* web_contents,
@@ -177,14 +187,7 @@ void Starter::PrimaryPageChanged(content::Page& page) {
   content::RenderFrameHost& rfh = page.GetMainDocument();
   const GURL& gurl = rfh.GetLastCommittedURL();
   if (IsStartupPending() && !trigger_script_coordinator_) {
-    const GURL& url_for_intent =
-        StartupUtil()
-            .ChooseStartupUrlForIntent(*GetPendingTriggerContext())
-            .value_or(GURL());
-    bool navigated_to_target_domain =
-        url_utils::IsSamePublicSuffixDomain(url_for_intent, gurl) &&
-        url_utils::IsAllowedSchemaTransition(url_for_intent, gurl);
-    if (navigated_to_target_domain) {
+    if (NavigatedToTargetDomain(gurl, *GetPendingTriggerContext())) {
       current_ukm_source_id_ = page.GetMainDocument().GetPageUkmSourceId();
       if (waiting_for_deeplink_navigation_) {
         Start(std::move(pending_trigger_context_));
@@ -192,39 +195,39 @@ void Starter::PrimaryPageChanged(content::Page& page) {
       // Ignore; navigations to the target domain during startup are allowed.
       return;
     }
-
-    if (waiting_for_deeplink_navigation_) {
-      if (navigated_to_target_domain) {
-        Start(std::move(pending_trigger_context_));
-        return;
-      }
-      // Note: this will record for the current domain, not the target domain.
-      // There seems to be no way to avoid this.
-      Metrics::RecordTriggerScriptStarted(
-          ukm_recorder_, page.GetMainDocument().GetPageUkmSourceId(),
-          rfh.IsErrorDocument()
-              ? Metrics::TriggerScriptStarted::NAVIGATION_ERROR
-              : Metrics::TriggerScriptStarted::NAVIGATED_AWAY);
-      CancelPendingStartup(absl::nullopt);
-    } else {
-      // Regular startup was interrupted (most likely during the onboarding).
-      Metrics::RecordDropOut(waiting_for_onboarding_
-                                 ? Metrics::DropOutReason::ONBOARDING_NAVIGATION
-                                 : Metrics::DropOutReason::NAVIGATION,
-                             GetPendingTriggerContext()
-                                 ->GetScriptParameters()
-                                 .GetIntent()
-                                 .value_or(std::string()));
-      CancelPendingStartup(absl::nullopt);
-    }
+    RecordNavigatedAwayMetrics(page, rfh.GetPageUkmSourceId(),
+                               rfh.IsErrorDocument());
     // Note: do not early-return here. While the previous startup has failed, we
     // may have navigated to a new supported domain and may need to start
     // implicitly.
+    CancelPendingStartup(absl::nullopt);
   }
 
   if (!rfh.IsErrorDocument()) {
     current_ukm_source_id_ = page.GetMainDocument().GetPageUkmSourceId();
     MaybeStartImplicitlyForUrl(gurl, current_ukm_source_id_);
+  }
+}
+
+void Starter::RecordNavigatedAwayMetrics(content::Page& page,
+                                         ukm::SourceId source_id,
+                                         bool is_error_document) const {
+  if (GetPendingTriggerContext()
+          ->GetScriptParameters()
+          .GetRequestsTriggerScript()) {
+    // Note: this will record for the current domain, not the target domain.
+    // There seems to be no way to avoid this.
+    Metrics::RecordTriggerScriptStarted(
+        ukm_recorder_, source_id,
+        is_error_document ? Metrics::TriggerScriptStarted::NAVIGATION_ERROR
+                          : Metrics::TriggerScriptStarted::NAVIGATED_AWAY);
+  } else {
+    // Regular startup was interrupted (most likely during the onboarding).
+    Metrics::RecordDropOut(
+        waiting_for_onboarding_ ? Metrics::DropOutReason::ONBOARDING_NAVIGATION
+                                : Metrics::DropOutReason::NAVIGATION,
+        GetPendingTriggerContext()->GetScriptParameters().GetIntent().value_or(
+            std::string()));
   }
 }
 

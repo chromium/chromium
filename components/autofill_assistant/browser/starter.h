@@ -27,6 +27,7 @@
 #include "components/autofill_assistant/browser/starter_platform_delegate.h"
 #include "components/autofill_assistant/browser/startup_util.h"
 #include "components/autofill_assistant/browser/trigger_scripts/trigger_script_coordinator.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -170,6 +171,10 @@ class Starter : public content::WebContentsObserver,
   // Calls |preconditions_checked_callback_| to notify whether the checks were
   // successful.
   void ReportPreconditionsChecked(bool start_script);
+
+  void RecordNavigatedAwayMetrics(content::Page& page,
+                                  ukm::SourceId source_id,
+                                  bool is_error_document) const;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
