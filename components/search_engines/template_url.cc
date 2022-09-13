@@ -1707,6 +1707,10 @@ bool TemplateURL::IsSideSearchSupported() const {
   return !side_search_param().empty();
 }
 
+bool TemplateURL::IsSideImageSearchSupported() const {
+  return !side_image_search_param().empty();
+}
+
 GURL TemplateURL::GenerateSideSearchURL(
     const GURL& search_url,
     const std::string& version,
@@ -1714,6 +1718,31 @@ GURL TemplateURL::GenerateSideSearchURL(
   DCHECK(IsSideSearchSupported());
   DCHECK(IsSearchURL(search_url, search_terms_data));
   return net::AppendQueryParameter(search_url, side_search_param(), version);
+}
+
+GURL TemplateURL::GenerateSideImageSearchURL(const GURL& image_search_url,
+                                             const std::string& version) const {
+  DCHECK(IsSideImageSearchSupported());
+  std::string value;
+  if (net::GetValueForKeyInQuery(image_search_url, side_image_search_param(),
+                                 &value) &&
+      value == version)
+    return image_search_url;
+
+  return net::AppendOrReplaceQueryParameter(image_search_url,
+                                            side_image_search_param(), version);
+}
+
+GURL TemplateURL::RemoveSideImageSearchParamFromURL(
+    const GURL& image_search_url) const {
+  if (!IsSideImageSearchSupported())
+    return image_search_url;
+  std::string value;
+  if (!net::GetValueForKeyInQuery(image_search_url, side_image_search_param(),
+                                  &value))
+    return image_search_url;
+  return net::AppendOrReplaceQueryParameter(image_search_url,
+                                            side_image_search_param(), "");
 }
 
 void TemplateURL::CopyFrom(const TemplateURL& other) {

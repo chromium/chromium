@@ -113,6 +113,11 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
   if (side_search_param) {
     result->side_search_param = *side_search_param;
   }
+  const std::string* side_image_search_param =
+      dict.FindString(DefaultSearchManager::kSideImageSearchParam);
+  if (side_image_search_param) {
+    result->side_image_search_param = *side_image_search_param;
+  }
   absl::optional<bool> safe_for_autoreplace =
       dict.FindBool(DefaultSearchManager::kSafeForAutoReplace);
   if (safe_for_autoreplace) {
@@ -224,6 +229,8 @@ std::unique_ptr<base::DictionaryValue> TemplateURLDataToDictionary(
                          data.image_url_post_params);
   url_dict->SetStringKey(DefaultSearchManager::kSideSearchParam,
                          data.side_search_param);
+  url_dict->SetStringKey(DefaultSearchManager::kSideImageSearchParam,
+                         data.side_image_search_param);
 
   url_dict->SetBoolKey(DefaultSearchManager::kSafeForAutoReplace,
                        data.safe_for_autoreplace);
@@ -282,6 +289,7 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromPrepopulatedEngine(
       ToStringPiece(engine.suggest_url_post_params),
       ToStringPiece(engine.image_url_post_params),
       ToStringPiece(engine.side_search_param),
+      ToStringPiece(engine.side_image_search_param),
       ToStringPiece(engine.favicon_url), ToStringPiece(engine.encoding),
       alternate_urls,
       ToStringPiece(engine.preconnect_to_search_url) == "ALLOWED",
@@ -340,6 +348,7 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
     std::string suggest_url_post_params;
     std::string image_url_post_params;
     std::string side_search_param;
+    std::string side_image_search_param;
     std::string preconnect_to_search_url;
     std::string prefetch_likely_navigations;
 
@@ -383,6 +392,10 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
     if (string_value) {
       side_search_param = *string_value;
     }
+    string_value = engine.FindStringKey("side_image_search_param");
+    if (string_value) {
+      side_image_search_param = *string_value;
+    }
     string_value = engine.FindStringKey("preconnect_to_search_url");
     if (string_value) {
       preconnect_to_search_url = *string_value;
@@ -396,7 +409,7 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
         name, keyword, search_url, suggest_url, image_url, new_tab_url,
         contextual_search_url, logo_url, doodle_url, search_url_post_params,
         suggest_url_post_params, image_url_post_params, side_search_param,
-        favicon_url, encoding, *alternate_urls,
+        side_image_search_param, favicon_url, encoding, *alternate_urls,
         preconnect_to_search_url.compare("ALLOWED") == 0,
         prefetch_likely_navigations.compare("ALLOWED") == 0, *id);
   }

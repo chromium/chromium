@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/views/layout/flex_layout_view.h"
 
@@ -55,6 +56,10 @@ class LensUnifiedSidePanelView : public views::FlexLayoutView,
 
  private:
   void CreateAndInstallFooter();
+
+  TemplateURLService* GetTemplateURLService();
+
+  bool IsDefaultSearchProviderGoogle();
 
   // Shows / hides the lens results and the loading view to avoid showing
   // loading artifacts. If the visible bool is false, show loading view else
