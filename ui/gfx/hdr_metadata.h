@@ -5,6 +5,8 @@
 #ifndef UI_GFX_HDR_METADATA_H_
 #define UI_GFX_HDR_METADATA_H_
 
+#include <string>
+
 #include "ui/gfx/color_space_export.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -23,6 +25,8 @@ struct COLOR_SPACE_EXPORT ColorVolumeMetadata {
   ColorVolumeMetadata();
   ColorVolumeMetadata(const ColorVolumeMetadata& rhs);
   ColorVolumeMetadata& operator=(const ColorVolumeMetadata& rhs);
+
+  std::string ToString() const;
 
   bool operator==(const ColorVolumeMetadata& rhs) const {
     return ((primary_r == rhs.primary_r) && (primary_g == rhs.primary_g) &&
@@ -51,6 +55,8 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
              (max_frame_average_light_level == 0) &&
              (color_volume_metadata == ColorVolumeMetadata()));
   }
+
+  std::string ToString() const;
 
   bool operator==(const HDRMetadata& rhs) const {
     return (
