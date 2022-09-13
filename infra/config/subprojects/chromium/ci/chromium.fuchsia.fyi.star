@@ -44,13 +44,13 @@ ci.builder(
     console_view_entry = [
         consoles.console_view_entry(
             category = "release",
-            short_name = "arm64-cast",
+            short_name = "arm64-cast-ng",
         ),
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
             category = "fuchsia ci",
-            short_name = "arm64-cast",
+            short_name = "a64-cast-ng",
         ),
     ],
     builder_spec = builder_config.builder_spec(
@@ -85,13 +85,13 @@ ci.builder(
     console_view_entry = [
         consoles.console_view_entry(
             category = "release",
-            short_name = "arm64",
+            short_name = "arm64-ng",
         ),
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
             category = "fuchsia ci",
-            short_name = "arm64",
+            short_name = "a64-ng",
         ),
     ],
     builder_spec = builder_config.builder_spec(
@@ -242,13 +242,13 @@ ci.builder(
     console_view_entry = [
         consoles.console_view_entry(
             category = "release",
-            short_name = "x64-cast",
+            short_name = "x64-cast-ng",
         ),
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
             category = "fuchsia ci",
-            short_name = "x64-cast",
+            short_name = "x64-cast-ng",
         ),
     ],
     builder_spec = builder_config.builder_spec(
@@ -280,13 +280,13 @@ ci.builder(
     console_view_entry = [
         consoles.console_view_entry(
             category = "release",
-            short_name = "x64",
+            short_name = "x64-ng",
         ),
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
             category = "fuchsia ci",
-            short_name = "x64",
+            short_name = "x64-ng",
         ),
     ],
     builder_spec = builder_config.builder_spec(
