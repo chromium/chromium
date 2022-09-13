@@ -23,6 +23,9 @@ extern const base::Feature kJourneys;
 // Enables labelling of Journeys in UI.
 extern const base::Feature kJourneysLabels;
 
+// Enables persisting and using persisted clusters.
+extern const base::Feature kPersistedClusters;
+
 // Enables the Journeys Omnibox Action chip. `kJourneys` must also be enabled
 // for this to take effect.
 extern const base::Feature kOmniboxAction;
@@ -41,10 +44,6 @@ extern const base::Feature kNonUserVisibleDebug;
 // Does nothing if `kJourneys` is disabled.
 extern const base::Feature kUserVisibleDebug;
 
-// Enables persisting context annotations in the History DB. They are always
-// calculated anyways. This just enables storing them. This is expected to be
-// enabled for all users shortly. This just provides a killswitch.
-
 // This flag is to enable us to turn on persisting context annotations WITHOUT
 // exposing the Journeys UI in general. If EITHER this flag or `kJourneys` is
 // enabled, users will have context annotations persisted into their History DB.
@@ -58,6 +57,8 @@ extern const base::Feature kHistoryClustersUseContinueOnShutdown;
 
 // Enables use of additional keyword filtering operations on clusters.
 extern const base::Feature kHistoryClustersKeywordFiltering;
+
+// Order consistently with config.h.
 
 }  // namespace internal
 
