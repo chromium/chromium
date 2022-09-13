@@ -23,6 +23,6 @@ void HidServiceFuchsia::Connect(const std::string& device_id,
 
 base::WeakPtr<HidService> HidServiceFuchsia::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
-};
+}
 
 }  // namespace device
