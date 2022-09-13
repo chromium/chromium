@@ -420,6 +420,8 @@ mixed_component("base") {
     "memory/ptr_util.h",
     "memory/raw_ptr.cc",
     "memory/raw_ptr.h",
+    "memory/raw_ptr_asan_bound_arg_tracker.cc",
+    "memory/raw_ptr_asan_bound_arg_tracker.h",
     "memory/raw_ptr_asan_service.cc",
     "memory/raw_ptr_asan_service.h",
     "memory/raw_ptr_exclusion.h",

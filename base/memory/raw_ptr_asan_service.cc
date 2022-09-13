@@ -12,7 +12,10 @@
 
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr_asan_bound_arg_tracker.h"
+#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/thread_local.h"
 
 namespace base {
 
@@ -134,6 +137,7 @@ void RawPtrAsanService::ErrorReportCallback(const char* report) {
 
   auto& pending_report = GetPendingReport();
   uintptr_t ptr = reinterpret_cast<uintptr_t>(__asan_get_report_address());
+  uintptr_t bound_arg_ptr = RawPtrAsanBoundArgTracker::GetProtectedArgPtr(ptr);
   if (pending_report.allocation_base <= ptr &&
       ptr < pending_report.allocation_base + pending_report.allocation_size) {
     bool is_supported_allocation =
@@ -156,7 +160,15 @@ void RawPtrAsanService::ErrorReportCallback(const char* report) {
         break;
       }
       case ReportType::kExtraction: {
-        if (is_supported_allocation) {
+        if (is_supported_allocation && bound_arg_ptr) {
+          status_body =
+              "PROTECTED\n"
+              "The crash occurred inside a callback where a raw_ptr<T> "
+              "pointing to the same region was\n"
+              "bound to one of the arguments.\n"
+              "MiraclePtr should make this crash non-exploitable in regular "
+              "builds.";
+        } else if (is_supported_allocation) {
           status_body =
               "MANUAL ANALYSIS REQUIRED\n"
               "A pointer to the same region was extracted from a raw_ptr<T> "
@@ -164,8 +176,7 @@ void RawPtrAsanService::ErrorReportCallback(const char* report) {
               "To determine the protection status, enable extraction warnings "
               "and check whether the raw_ptr<T>\n"
               "object can be destroyed or overwritten between the extraction "
-              "and "
-              "use.";
+              "and use.";
         } else {
           status_body =
               "NOT PROTECTED\n"
@@ -180,6 +191,22 @@ void RawPtrAsanService::ErrorReportCallback(const char* report) {
             "object, which may lead to memory\n"
             "corruption.";
       }
+    }
+  } else if (bound_arg_ptr) {
+    // Note - this branch comes second to avoid hiding invalid instantiations,
+    // as we still consider it to be an error to instantiate a raw_ptr<T> from
+    // an invalid T* even if that T* is guaranteed to be quarantined.
+    bool is_supported_allocation =
+        RawPtrAsanService::GetInstance().IsSupportedAllocation(
+            reinterpret_cast<void*>(bound_arg_ptr));
+    if (is_supported_allocation) {
+      status_body =
+          "PROTECTED\n"
+          "The crash occurred inside a callback where a raw_ptr<T> "
+          "pointing to the same region was\n"
+          "bound to one of the arguments.\n"
+          "MiraclePtr should make this crash non-exploitable in regular "
+          "builds.";
     }
   } else {
     status_body =
@@ -196,8 +223,18 @@ void RawPtrAsanService::ErrorReportCallback(const char* report) {
 
 // static
 RawPtrAsanService::PendingReport& RawPtrAsanService::GetPendingReport() {
-  static thread_local PendingReport report;
-  return report;
+  // Intentionally use thread-local-storage here. Making this sequence-local
+  // doesn't prevent sharing of PendingReport contents between unrelated
+  // tasks, so we keep this at a lower-level and avoid introducing additional
+  // assumptions about Chrome's sequence model.
+  static NoDestructor<ThreadLocalOwnedPointer<PendingReport>> pending_report;
+  PendingReport* raw_pending_report = pending_report->Get();
+  if (UNLIKELY(!raw_pending_report)) {
+    auto new_pending_report = std::make_unique<PendingReport>();
+    raw_pending_report = new_pending_report.get();
+    pending_report->Set(std::move(new_pending_report));
+  }
+  return *raw_pending_report;
 }
 
 }  // namespace base

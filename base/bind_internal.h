@@ -19,6 +19,8 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_asan_bound_arg_tracker.h"
+#include "base/memory/raw_ptr_asan_service.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/raw_scoped_refptr_mismatch_checker.h"
 #include "base/memory/weak_ptr.h"
@@ -150,7 +152,14 @@ template <typename T>
 class UnretainedRefWrapper<T, true> {
  public:
   explicit UnretainedRefWrapper(T& o) : ref_(o) {}
-  T& get() const { return *ref_; }
+  T& get() const {
+    // We can't use operator* here, we need to use raw_ptr's GetForExtraction
+    // instead of GetForDereference. If we did use GetForDereference then we'd
+    // crash in ASAN builds on calling a bound callback with a dangling
+    // reference parameter even if that parameter is not used. This could hide a
+    // later unprotected issue that would be reached in release builds.
+    return ref_.get();
+  }
 
  private:
   const raw_ref<T, DanglingUntriaged> ref_;
@@ -162,7 +171,14 @@ class UnretainedRefWrapper<raw_ref<T, I>, b> {
  public:
   explicit UnretainedRefWrapper(const raw_ref<T, I>& ref) : ref_(ref) {}
   explicit UnretainedRefWrapper(raw_ref<T, I>&& ref) : ref_(std::move(ref)) {}
-  T& get() const { return *ref_; }
+  T& get() const {
+    // We can't use operator* here, we need to use raw_ptr's GetForExtraction
+    // instead of GetForDereference. If we did use GetForDereference then we'd
+    // crash in ASAN builds on calling a bound callback with a dangling
+    // reference parameter even if that parameter is not used. This could hide a
+    // later unprotected issue that would be reached in release builds.
+    return ref_.get();
+  }
 
  private:
   const raw_ref<T, I> ref_;
@@ -748,6 +764,14 @@ struct StorageTraits<T*> {
   using Type = UnretainedWrapper<T>;
 };
 
+// For raw_ptr<T>, store as UnretainedWrapper<T> for safety. This may seem
+// contradictory, but this ensures guaranteed protection for the pointer even
+// during execution of callbacks with parameters of type raw_ptr<T>.
+template <typename T, typename I>
+struct StorageTraits<raw_ptr<T, I>> {
+  using Type = UnretainedWrapper<T>;
+};
+
 // Unwrap std::reference_wrapper and store it in a custom wrapper so that
 // references are also protected with raw_ptr<T>.
 template <typename T>
@@ -843,6 +867,14 @@ struct Invoker<StorageType, R(UnboundArgs...)> {
     static constexpr bool is_method = MakeFunctorTraits<Functor>::is_method;
 
     using DecayedArgsTuple = std::decay_t<BoundArgsTuple>;
+
+#if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+    RawPtrAsanBoundArgTracker raw_ptr_asan_bound_arg_tracker;
+    raw_ptr_asan_bound_arg_tracker.AddArgs(
+        std::get<indices>(std::forward<BoundArgsTuple>(bound))...,
+        std::forward<UnboundArgs>(unbound_args)...);
+#endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+
     static constexpr bool is_weak_call =
         IsWeakMethod<is_method,
                      std::tuple_element_t<indices, DecayedArgsTuple>...>();
@@ -1181,6 +1213,8 @@ struct BindArgument {
   struct ForwardedAs {
     template <typename FunctorParamType>
     struct ToParamWithType {
+      static constexpr bool kNotARawPtr = !IsRawPtrV<FunctorParamType>;
+
       static constexpr bool kCanBeForwardedToBoundFunctor =
           std::is_constructible_v<FunctorParamType, ForwardingType>;
 
@@ -1271,6 +1305,12 @@ struct AssertConstructible {
       BindArgument<i>::template ForwardedAs<Unwrapped>::
           template ToParamWithType<Param>::kCanBeForwardedToBoundFunctor,
       "Type mismatch between bound argument and bound functor's parameter.");
+  static_assert(
+      BindArgument<i>::template ForwardedAs<
+          Unwrapped>::template ToParamWithType<Param>::kNotARawPtr,
+      "base::Bind() target functor has a parameter of type raw_ptr<T>."
+      "raw_ptr<T> should not be used for function parameters, please use T* or "
+      "T& instead.");
 
   static_assert(BindArgument<i>::template BoundAs<Arg>::template StoredAs<
                     Storage>::kMoveOnlyTypeMustUseStdMove,

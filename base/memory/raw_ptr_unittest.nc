@@ -9,6 +9,8 @@
 #include <tuple>  // for std::ignore
 #include <type_traits>  // for std::remove_pointer_t
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 
 namespace {
@@ -108,6 +110,19 @@ void WontCompile() {
 
 void WontCompile() {
   [[maybe_unused]] raw_ptr<int> ptr = std::make_unique<int>(2).get();
+}
+
+#elif defined(NCTEST_BINDING_RAW_PTR_PARAMETER) // [r"base::Bind\(\) target functor has a parameter of type raw_ptr<T>."]
+
+void WontCompile() {
+  raw_ptr<int> ptr = new int(3);
+
+  // Make sure that we are not allowed to bind a function with a raw_ptr<T>
+  // parameter type.
+  auto callback = base::BindOnce(
+      [](raw_ptr<int> ptr) {
+      },
+      ptr);
 }
 
 #endif

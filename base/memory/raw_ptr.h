@@ -1295,6 +1295,15 @@ ALWAYS_INLINE bool operator>=(const raw_ptr<U, I>& lhs,
   return lhs.GetForComparison() >= rhs.GetForComparison();
 }
 
+template <typename T>
+struct IsRawPtr : std::false_type {};
+
+template <typename T, typename I>
+struct IsRawPtr<raw_ptr<T, I>> : std::true_type {};
+
+template <typename T>
+inline constexpr bool IsRawPtrV = IsRawPtr<T>::value;
+
 // Template helpers for working with T* or raw_ptr<T>.
 template <typename T>
 struct IsPointer : std::false_type {};

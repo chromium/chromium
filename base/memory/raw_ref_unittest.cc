@@ -9,6 +9,9 @@
 
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+#include "base/memory/raw_ptr_asan_service.h"
+#endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
 namespace {
 
@@ -768,5 +771,34 @@ TEST(RawRef, StdLess) {
     EXPECT_EQ(2, RawPtrCountingImpl::wrapped_ptr_less_cnt);
   }
 }
+
+#if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+
+TEST(AsanBackupRefPtrImpl, RawRefGet) {
+  if (base::RawPtrAsanService::GetInstance().mode() !=
+      base::RawPtrAsanService::Mode::kEnabled) {
+    base::RawPtrAsanService::GetInstance().Configure(
+        base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),
+        base::EnableInstantiationCheck(true));
+  } else {
+    ASSERT_TRUE(
+        base::RawPtrAsanService::GetInstance().is_dereference_check_enabled());
+    ASSERT_TRUE(
+        base::RawPtrAsanService::GetInstance().is_extraction_check_enabled());
+    ASSERT_TRUE(base::RawPtrAsanService::GetInstance()
+                    .is_instantiation_check_enabled());
+  }
+
+  auto ptr = ::std::make_unique<int>();
+  raw_ref<int> safe_ref(*ptr);
+  ptr.reset();
+
+  // This test is specifically to ensure that raw_ref.get() does not cause a
+  // dereference of the memory referred to by the reference. If there is a
+  // dereference, then this test will crash.
+  [[maybe_unused]] volatile int& ref = safe_ref.get();
+}
+
+#endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
 }  // namespace

@@ -139,6 +139,16 @@ class TRIVIAL_ABI GSL_POINTER raw_ref {
     CHECK(inner_.get());  // Catch use-after-move.
     return inner_.operator*();
   }
+
+  // This is an equivalent to operator*() that provides GetForExtraction rather
+  // rather than GetForDereference semantics (see raw_ptr.h). This should be
+  // used in place of operator*() when the memory referred to by the reference
+  // is not immediately going to be accessed.
+  ALWAYS_INLINE T& get() const {
+    CHECK(inner_.get());  // Catch use-after-move.
+    return *inner_.get();
+  }
+
   ALWAYS_INLINE T* operator->() const ABSL_ATTRIBUTE_RETURNS_NONNULL {
     CHECK(inner_.get());  // Catch use-after-move.
     return inner_.operator->();
