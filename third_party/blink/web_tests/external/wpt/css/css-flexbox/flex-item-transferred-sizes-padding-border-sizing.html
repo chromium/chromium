@@ -6,7 +6,7 @@
     <link rel="help" href="https://drafts.csswg.org/css-sizing-3/#min-width" />
     <link rel="help" href="https://drafts.csswg.org/css-sizing/#box-sizing" />
     <link rel="help" href="https://bugs.webkit.org/show_bug.cgi?id=243887" />
-    <link rel="match" href="../reference/ref-filled-green-100px-square.xht" />
+    <link rel="match" href="../reference/ref-filled-green-100px-square-only.html" />
   </head>
   <!-- The box should be a 100px x 100px green square. The initial width should
        be 90px due to the  transferred min-width constraint from the specified
@@ -29,8 +29,10 @@
     }
   </style>
   <body>
+    <p>Test passes if there is a filled green square.</p>
     <div class="flexContainer">
       <div class="item" style="min-height:100px; aspect-ratio: 1/1;"></div>
     </div>
   </body>
 </html>
+
