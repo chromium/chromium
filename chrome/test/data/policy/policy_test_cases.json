@@ -14283,6 +14283,7 @@
     "policy_pref_mapping_tests": [
       {
         "note": "Checking default value (no policies set).",
+        "policies": {},
         "prefs": {
           "autofill_assistant.enabled": {
             "default_value": true
