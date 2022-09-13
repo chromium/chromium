@@ -210,8 +210,30 @@ absl::optional<std::string> GetDisableReason(
     WebAppRegistrar* registrar,
     bool preinstalled_apps_enabled_in_prefs,
     bool is_new_user,
-    const std::string& user_type) {
+    const std::string& user_type,
+    size_t& corrupt_user_uninstall_prefs_count) {
   DCHECK(registrar);
+
+  // In certain crash-related scenarios the web app DB loads incorrectly and
+  // all preinstalled web apps get added to
+  // UserUninstalledPreinstalledWebAppPrefs (https://crbug.com/1359205).
+  // Ignore this pref if the app is still installed by kDefault to avoid
+  // erroneously uninstalling it in SynchronizeInstalledApps() with the false
+  // impression that the user has already uninstalled it.
+  bool in_user_uninstalled_prefs =
+      UserUninstalledPreinstalledWebAppPrefs(profile->GetPrefs())
+          .LookUpAppIdByInstallUrl(options.install_url)
+          .has_value();
+  bool ignore_user_uninstalled_prefs = [&]() {
+    absl::optional<AppId> app_id =
+        registrar->LookupExternalAppId(options.install_url);
+    return app_id.has_value() &&
+           registrar->IsInstalledByDefaultManagement(app_id.value());
+  }();
+  if (in_user_uninstalled_prefs && ignore_user_uninstalled_prefs)
+    ++corrupt_user_uninstall_prefs_count;
+  bool was_previously_uninstalled_by_user =
+      in_user_uninstalled_prefs && !ignore_user_uninstalled_prefs;
 
   if (!preinstalled_apps_enabled_in_prefs) {
     base::UmaHistogramEnumeration(kHistogramMigrationDisabledReason,
@@ -246,10 +268,8 @@ absl::optional<std::string> GetDisableReason(
     // it was previously preinstalled, but no longer installed.
     absl::optional<AppId> app_id_from_registry =
         registrar->LookupExternalAppId(options.install_url);
-    absl::optional<AppId> app_id_uninstalled =
-        UserUninstalledPreinstalledWebAppPrefs(profile->GetPrefs())
-            .LookUpAppIdByInstallUrl(options.install_url);
-    if (!app_id_from_registry.has_value() && !app_id_uninstalled.has_value()) {
+    if (!app_id_from_registry.has_value() &&
+        !was_previously_uninstalled_by_user) {
       base::UmaHistogramEnumeration(
           kHistogramMigrationDisabledReason,
           DisabledReason::kGatedFeatureNotEnabledAndAppNotInstalled);
@@ -279,9 +299,7 @@ absl::optional<std::string> GetDisableReason(
   // installed previously.
   if (options.only_for_new_users && !is_new_user) {
     bool was_previously_installed =
-        UserUninstalledPreinstalledWebAppPrefs(profile->GetPrefs())
-            .LookUpAppIdByInstallUrl(options.install_url)
-            .has_value() ||
+        was_previously_uninstalled_by_user ||
         registrar->LookupExternalAppId(options.install_url).has_value();
     if (!was_previously_installed) {
       base::UmaHistogramEnumeration(
@@ -418,9 +436,7 @@ absl::optional<std::string> GetDisableReason(
   // Remove from install configs of preinstalled_apps
   // if it was uninstalled by user and if |override_previous_user_uninstall| is
   // false.
-  if (UserUninstalledPreinstalledWebAppPrefs(profile->GetPrefs())
-          .LookUpAppIdByInstallUrl(options.install_url)
-          .has_value() &&
+  if (was_previously_uninstalled_by_user &&
       !options.override_previous_user_uninstall) {
     return options.install_url.spec() +
            " is not being installed because it was previously uninstalled "
@@ -438,6 +454,9 @@ const char* PreinstalledWebAppManager::kHistogramDisabledCount =
     "WebApp.Preinstalled.DisabledCount";
 const char* PreinstalledWebAppManager::kHistogramConfigErrorCount =
     "WebApp.Preinstalled.ConfigErrorCount";
+const char*
+    PreinstalledWebAppManager::kHistogramCorruptUserUninstallPrefsCount =
+        "WebApp.Preinstalled.CorruptUserUninstallPrefsCount";
 const char* PreinstalledWebAppManager::kHistogramInstallResult =
     "Webapp.InstallResult.Default";
 const char* PreinstalledWebAppManager::kHistogramUninstallAndReplaceCount =
@@ -665,11 +684,12 @@ void PreinstalledWebAppManager::PostProcessConfigs(
   bool is_new_user = IsNewUser();
   std::string user_type = apps::DetermineUserType(profile_);
   size_t disabled_count = 0;
+  size_t corrupt_user_uninstall_prefs_count = 0;
   base::EraseIf(
       parsed_configs.options_list, [&](const ExternalInstallOptions& options) {
         absl::optional<std::string> disable_reason = GetDisableReason(
             options, profile_, registrar_, preinstalled_apps_enabled_in_prefs,
-            is_new_user, user_type);
+            is_new_user, user_type, corrupt_user_uninstall_prefs_count);
         if (disable_reason) {
           VLOG(1) << *disable_reason;
           ++disabled_count;
@@ -702,6 +722,8 @@ void PreinstalledWebAppManager::PostProcessConfigs(
   base::UmaHistogramCounts100(kHistogramDisabledCount, disabled_count);
   base::UmaHistogramCounts100(kHistogramConfigErrorCount,
                               parsed_configs.errors.size());
+  base::UmaHistogramCounts100(kHistogramCorruptUserUninstallPrefsCount,
+                              corrupt_user_uninstall_prefs_count);
 
   std::move(callback).Run(parsed_configs.options_list);
 }
