@@ -10525,6 +10525,30 @@
             ]
         }
     ],
+    "V8DelayMemoryReducer": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "delay": "30s"
+                    },
+                    "enable_features": [
+                        "V8DelayMemoryReducer"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8FlushBaselineCode": [
         {
             "platforms": [
