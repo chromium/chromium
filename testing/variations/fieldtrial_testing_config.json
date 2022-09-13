@@ -3233,7 +3233,7 @@
             ]
         }
     ],
-    "CustomTabBrandTransparency": [
+    "CustomTabEngagementBranding": [
         {
             "platforms": [
                 "android"
@@ -3242,7 +3242,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "CCTBrandTransparency"
+                        "CCTBrandTransparency",
+                        "CCTRealTimeEngagementSignals"
                     ]
                 }
             ]
