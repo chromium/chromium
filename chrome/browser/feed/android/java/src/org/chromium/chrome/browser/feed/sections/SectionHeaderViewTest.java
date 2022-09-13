@@ -10,11 +10,9 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
-import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
-import com.google.android.material.tabs.TabLayout;
 
 import org.junit.After;
 import org.junit.Before;
@@ -41,8 +39,6 @@ public final class SectionHeaderViewTest {
     private static final String TAG = "SectionHeaderViewTst";
     private SectionHeaderView mSectionHeaderView;
     private Activity mActivity;
-    private TextView mTitleView;
-    private TabLayout mTabLayout;
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();
