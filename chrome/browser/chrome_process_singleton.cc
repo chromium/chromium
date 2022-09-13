@@ -138,9 +138,12 @@ void ChromeProcessSingleton::SetupEarlySingletonFeature(
 }
 
 void ChromeProcessSingleton::RegisterEarlySingletonFeature() {
+  // The synthetic trial needs to use kCurrentLog to ensure that UMA report will
+  // be generated from the metrics log that is open at the time of registration.
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       "EarlyProcessSingleton",
-      g_is_early_singleton_feature_ ? "Enabled" : "Disabled");
+      g_is_early_singleton_feature_ ? "Enabled" : "Disabled",
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
 // static
