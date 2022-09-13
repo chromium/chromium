@@ -323,12 +323,19 @@ void SystemClipboard::CopyToFindPboard(const String& text) {
 void SystemClipboard::ReadAvailableCustomAndStandardFormats(
     mojom::blink::ClipboardHost::ReadAvailableCustomAndStandardFormatsCallback
         callback) {
+  if (!clipboard_.is_bound())
+    return;
   clipboard_->ReadAvailableCustomAndStandardFormats(std::move(callback));
 }
 
 void SystemClipboard::ReadUnsanitizedCustomFormat(
     const String& type,
     mojom::blink::ClipboardHost::ReadUnsanitizedCustomFormatCallback callback) {
+  // TODO(ansollan): Add test coverage for all functions with this check in
+  // |SystemClipboard| and consider if it's appropriate to throw exceptions or
+  // reject promises if the context is detached.
+  if (!clipboard_.is_bound())
+    return;
   // The format size restriction is added in `ClipboardWriter::IsValidType`.
   DCHECK_LT(type.length(), mojom::blink::ClipboardHost::kMaxFormatSize);
   clipboard_->ReadUnsanitizedCustomFormat(type, std::move(callback));
@@ -336,8 +343,10 @@ void SystemClipboard::ReadUnsanitizedCustomFormat(
 
 void SystemClipboard::WriteUnsanitizedCustomFormat(const String& type,
                                                    mojo_base::BigBuffer data) {
-  if (data.size() >= mojom::blink::ClipboardHost::kMaxDataSize)
+  if (!clipboard_.is_bound() ||
+      data.size() >= mojom::blink::ClipboardHost::kMaxDataSize) {
     return;
+  }
   // The format size restriction is added in `ClipboardWriter::IsValidType`.
   DCHECK_LT(type.length(), mojom::blink::ClipboardHost::kMaxFormatSize);
   clipboard_->WriteUnsanitizedCustomFormat(type, std::move(data));
