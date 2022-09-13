@@ -48,7 +48,7 @@ _PARAM_TEMPLATE = '{TYPE} {NAME}'
 _METHOD_TEMPLATE = ('{MODIFIERS} {RETURN_TYPE} {NAME} ({PARAMS}) '
                     '{{ return {RETURN_VAL}; }}')
 _FILE_TEMPLATE = '''\
-// Copyright {YEAR} The Chromium Authors. All rights reserved.
+// Copyright {YEAR} The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
