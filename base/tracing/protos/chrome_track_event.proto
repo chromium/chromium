@@ -203,6 +203,7 @@ message ChromeSqlDiagnostics {
 
   optional bool has_valid_header = 8;
   optional bool has_valid_schema = 9;
+  optional string error_message = 10;
 }
 
 message ChromeWebAppBadNavigate {

@@ -359,7 +359,8 @@ constexpr int kAndroidIPCIndices[] = {1, 2, -1};
 constexpr MessageInfo kAndroidIPC = {kAndroidIPCIndices, nullptr};
 
 // Proto Message: ChromeSqlDiagnostics
-constexpr int kChromeSqlDiagnosticsIndices[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, -1};
+constexpr int kChromeSqlDiagnosticsIndices[] = {1, 2, 3, 4,  5, 6,
+                                                7, 8, 9, 10, -1};
 constexpr MessageInfo kChromeSqlDiagnostics = {kChromeSqlDiagnosticsIndices,
                                                nullptr};
 

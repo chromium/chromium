@@ -297,6 +297,7 @@ void DatabaseDiagnostics::WriteIntoTrace(
   }
   context->set_has_valid_header(has_valid_header);
   context->set_has_valid_schema(has_valid_schema);
+  context->set_error_message(error_message);
 }
 
 // DatabaseOptions::explicit_locking needs to be set to false for historical
@@ -567,6 +568,7 @@ std::string Database::CollectErrorInfo(int sqlite_error_code,
                       GetErrorMessage());
   if (diagnostics) {
     diagnostics->error_code = error_code;
+    diagnostics->error_message = GetErrorMessage();
   }
 
   // TODO(shess): |error| and |GetErrorCode()| should always be the same, but

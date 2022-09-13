@@ -1644,6 +1644,29 @@ TEST_P(SQLDatabaseTest, CollectDiagnosticInfo) {
     ASSERT_EQ(diagnostics.schema_other_row_names.size(), 1U);
     EXPECT_EQ(diagnostics.schema_other_row_names[0], "sqlite_autoindex_meta_1");
   }
+
+  // Test that an error message is included in the diagnostics.
+  {
+    sql::test::ScopedErrorExpecter error_expecter;
+    error_expecter.ExpectError(SQLITE_ERROR);
+    EXPECT_FALSE(
+        db_->Execute("INSERT INTO volcano VALUES ('bound_value1', 42, 1234)"));
+    EXPECT_TRUE(error_expecter.SawExpectedErrors());
+
+    DatabaseDiagnostics diagnostics;
+    const std::string error_info =
+        db_->CollectErrorInfo(SQLITE_ERROR, &s, &diagnostics);
+    // Expect that the error message contains the table name and a column error.
+    EXPECT_NE(diagnostics.error_message.find("table"), std::string::npos);
+    EXPECT_NE(diagnostics.error_message.find("volcano"), std::string::npos);
+    EXPECT_NE(diagnostics.error_message.find("column"), std::string::npos);
+
+    // Expect that bound values are not present.
+    EXPECT_EQ(diagnostics.error_message.find("bound_value1"),
+              std::string::npos);
+    EXPECT_EQ(diagnostics.error_message.find("42"), std::string::npos);
+    EXPECT_EQ(diagnostics.error_message.find("1234"), std::string::npos);
+  }
 }
 
 // Test that a fresh database has mmap enabled by default, if mmap'ed I/O is

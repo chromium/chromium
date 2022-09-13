@@ -244,6 +244,9 @@ struct COMPONENT_EXPORT(SQL) DatabaseDiagnostics {
   // Sanity checks used for all errors.
   bool has_valid_header = false;
   bool has_valid_schema = false;
+
+  // Corresponds to `Database::GetErrorMessage()`.
+  std::string error_message;
 };
 
 // Handle to an open SQLite database.
