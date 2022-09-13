@@ -231,8 +231,9 @@ def get_deps(ninja_path, build_dir, target):
       shutil.move(build_dir, fixed_build_dir)
 
   try:
-    out = subprocess.check_output([ninja_path, '-C', fixed_build_dir,
-                                   '-t', 'graph', target])
+    out = subprocess.check_output(
+        [ninja_path, '-C', fixed_build_dir, '-t', 'graph', target],
+        universal_newlines=True)
   except subprocess.CalledProcessError as e:
     print('error to get graph for %s: %s' % (target, e), file=sys.stderr)
     return []
