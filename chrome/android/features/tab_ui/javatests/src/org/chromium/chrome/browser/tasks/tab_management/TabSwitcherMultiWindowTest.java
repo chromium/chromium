@@ -36,6 +36,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -244,6 +245,7 @@ public class TabSwitcherMultiWindowTest {
     @Test
     @MediumTest
     @RequiresApi(Build.VERSION_CODES.N)
+    @DisabledTest(message = "https://crbug.com/1363248")
     // clang-format off
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
         ChromeFeatureList.TAB_REPARENTING})
