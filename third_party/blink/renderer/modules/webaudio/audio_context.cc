@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_context_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_timestamp.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_audiocontextlatencycategory_double.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
@@ -111,6 +110,8 @@ bool IsAudible(const AudioBus* rendered_data) {
 
   return energy > 0;
 }
+
+using blink::SetSinkIdResolver;
 
 }  // namespace
 
@@ -293,6 +294,7 @@ void AudioContext::Trace(Visitor* visitor) const {
   visitor->Trace(audio_context_manager_);
   visitor->Trace(permission_service_);
   visitor->Trace(permission_receiver_);
+  visitor->Trace(set_sink_id_resolvers_);
   BaseAudioContext::Trace(visitor);
 }
 
@@ -450,6 +452,14 @@ void AudioContext::DidClose() {
   if (close_resolver_) {
     close_resolver_->Resolve();
   }
+
+  // Reject all pending resolvers for setSinkId() before closing AudioContext.
+  for (auto& set_sink_id_resolver : set_sink_id_resolvers_) {
+    set_sink_id_resolver->RejectWithDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Cannot resolve pending promise from setSinkId(), AudioContext is "
+        "going away");
+  }
 }
 
 bool AudioContext::IsContextCleared() const {
@@ -508,6 +518,31 @@ double AudioContext::outputLatency() const {
 
   double factor = GetOutputLatencyQuantizingFactor();
   return std::round(output_position_.hardware_output_latency / factor) * factor;
+}
+
+ScriptPromise AudioContext::setSinkId(ScriptState* script_state,
+                                      const String& sink_id,
+                                      ExceptionState& exception_state) {
+  DCHECK(IsMainThread());
+
+  SetSinkIdResolver* resolver =
+      SetSinkIdResolver::Create(script_state, *this, sink_id);
+  ScriptPromise promise = resolver->Promise();
+
+  if (ContextState() == kClosed) {
+    resolver->Reject();
+    return promise;
+  }
+
+  // When the queue is empty, we start resolver immediately because it is the
+  // only item in the queue.
+  if (set_sink_id_resolvers_.IsEmpty()) {
+    resolver->Start();
+  }
+
+  set_sink_id_resolvers_.push_back(resolver);
+
+  return promise;
 }
 
 MediaElementAudioSourceNode* AudioContext::createMediaElementSource(
@@ -883,33 +918,8 @@ double AudioContext::GetOutputLatencyQuantizingFactor() const {
       : kOutputLatencyQuatizingFactor;
 }
 
-String AudioContext::sinkId() const {
-  DCHECK(IsMainThread());
-
-  return sink_id_;
-}
-
-ScriptPromise AudioContext::setSinkId(ScriptState* script_state,
-                                      const String& sink_id,
-                                      ExceptionState& exception_state) {
-  DCHECK(IsMainThread());
-
-  ScriptPromise promise = ScriptPromise();
-
-  if (ContextState() == kClosed) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Cannot invoke setSinkId() on a closed AudioContext.");
-    return promise;
-  }
-
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "setSinkId is not supported.");
-
-  return promise;
-}
-
-void AudioContext::NotifySetSinkIdIsDone() {
+void AudioContext::NotifySetSinkIdIsDone(const String& sink_id) {
+  sink_id_ = sink_id;
   DispatchEvent(*Event::Create(event_type_names::kSinkchange));
 }
 

@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_DESTINATION_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_DESTINATION_NODE_H_
 
+#include "media/base/output_device_info.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_destination_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 
@@ -54,6 +55,10 @@ class AudioDestinationNode : public AudioNode {
   // so these methods are invoked by the parent context.
   void ReportDidCreate() final;
   void ReportWillBeDestroyed() final;
+
+  // This will invoke 'RendererWebAudioDeviceImpl::SwitchOutputDevice()' and
+  // pass 'sink_id' and callback used for returning the result status.
+  void SetSinkId(const String& sink_id, media::OutputDeviceStatusCB callback);
 
  protected:
   explicit AudioDestinationNode(BaseAudioContext&);

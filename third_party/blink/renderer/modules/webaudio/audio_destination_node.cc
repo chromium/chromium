@@ -50,4 +50,23 @@ void AudioDestinationNode::ReportWillBeDestroyed() {
   GraphTracer().WillDestroyAudioNode(this);
 }
 
+void AudioDestinationNode::SetSinkId(const String& sink_id,
+                                     media::OutputDeviceStatusCB callback) {
+  // TODO: Here is just temporary code for testing, we will bridge it to
+  // RendererWebAudioDeviceImpl::SwitchOutputDevice once that change is finished
+
+  if (sink_id == "1") {
+    std::move(callback).Run(
+        media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_FOUND);
+  } else if (sink_id == "2") {
+    std::move(callback).Run(
+        media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED);
+  } else if (sink_id == "3") {
+    std::move(callback).Run(
+        media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_TIMED_OUT);
+  } else {
+    std::move(callback).Run(media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK);
+  }
+}
+
 }  // namespace blink

@@ -180,6 +180,8 @@ blink_modules_sources("webaudio") {
     "script_processor_node.h",
     "semi_realtime_audio_worklet_thread.cc",
     "semi_realtime_audio_worklet_thread.h",
+    "setsinkid_resolver.cc",
+    "setsinkid_resolver.h",
     "stereo_panner_handler.cc",
     "stereo_panner_handler.h",
     "stereo_panner_node.cc",
