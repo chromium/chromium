@@ -18,7 +18,7 @@ const char kOmniboxPasteButtonParameterBlueIconCapsule[] = "SuggestionIcon";
 const char kOmniboxPasteButtonParameterBlueFullCapsule[] = "SuggestionTextIcon";
 
 const base::Feature kOmniboxKeyboardPasteButton{
-    "OmniboxKeyboardPasteButton", base::FEATURE_ENABLED_BY_DEFAULT};
+    "OmniboxKeyboardPasteButton", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsOmniboxActionsEnabled() {
   return base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI);
