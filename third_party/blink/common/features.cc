@@ -347,6 +347,9 @@ const base::Feature kSameSiteCrossOriginForSpeculationRulesPrerender{
     "SameSiteCrossOriginForSpeculationRulesPrerender",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kPrerender2SequentialPrerendering{
+    "Prerender2SequentialPrerendering", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const char kPrerender2MaxNumOfRunningSpeculationRules[] =
     "max_num_of_running_speculation_rules";
 
