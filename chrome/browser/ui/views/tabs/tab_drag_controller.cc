@@ -17,6 +17,7 @@
 #include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_auto_reset.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -455,6 +456,10 @@ TabDragController::~TabDragController() {
     capture_context->GetWidget()->ReleaseCapture();
   }
   CHECK(!IsInObserverList());
+
+  DCHECK(!expect_stay_alive_)
+      << "TabDragController was destroyed when it shouldn't have been. Check "
+         "up the stack for reentrancy.";
 }
 
 void TabDragController::Init(TabDragContext* source_context,
@@ -1448,21 +1453,37 @@ void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
   OffsetX(GetAttachedDragPoint(point_in_screen).x(), &drag_bounds);
 
   gfx::Vector2d drag_offset;
-  Browser* browser = CreateBrowserForDrag(attached_context_, point_in_screen,
-                                          &drag_offset, &drag_bounds);
+  Browser* const browser = CreateBrowserForDrag(
+      attached_context_, point_in_screen, &drag_offset, &drag_bounds);
 
-  BrowserView* dragged_browser_view =
+  BrowserView* const dragged_browser_view =
       BrowserView::GetBrowserViewForBrowser(browser);
-  views::Widget* dragged_widget = dragged_browser_view->GetWidget();
+  views::Widget* const dragged_widget = dragged_browser_view->GetWidget();
 
 #if defined(USE_AURA)
   // Only Aura windows are gesture consumers.
-  views::Widget* attached_widget = attached_context_->GetWidget();
-  // Unlike DragBrowserToNewTabStrip, this does not have to special-handle
-  // IsUsingWindowServices(), since DesktopWIndowTreeHostMus takes care of it.
-  attached_widget->GetGestureRecognizer()->TransferEventsTo(
-      attached_widget->GetNativeView(), dragged_widget->GetNativeView(),
-      ui::TransferTouchesBehavior::kDontCancel);
+  {
+    auto ref = weak_factory_.GetWeakPtr();
+    base::WeakAutoReset<TabDragController, bool> reentrant_destruction_guard(
+        ref, &TabDragController::expect_stay_alive_, true);
+
+    views::Widget* const attached_widget = attached_context_->GetWidget();
+    // Unlike DragBrowserToNewTabStrip, this does not have to special-handle
+    // IsUsingWindowServices(), since DesktopWIndowTreeHostMus takes care of it.
+    attached_widget->GetGestureRecognizer()->TransferEventsTo(
+        attached_widget->GetNativeView(), dragged_widget->GetNativeView(),
+        ui::TransferTouchesBehavior::kDontCancel);
+
+    // If `attached_context_` received a gesture end event, it will have ended
+    // the drag, destroying `this`. This shouldn't ever happen (preventing this
+    // scenario is why we pass kDontCancel above), but on Lacros it apparently
+    // sometimes can. See https://crbug.com/1350564.
+    if (!ref) {
+      NOTREACHED() << "Drag session was ended as part of transferring events "
+                      "to the new browser. This should not happen.";
+      return;
+    }
+  }
 #endif
 
   dragged_widget->SetCanAppearInExistingFullscreenSpaces(true);
