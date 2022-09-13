@@ -98,7 +98,10 @@ luci.notifier(
 luci.notifier(
     name = "metadata-mapping",
     on_new_status = ["FAILURE"],
-    notify_emails = ["chromium-component-mapping@google.com"],
+    notify_emails = [
+        "chromium-component-mapping@google.com",
+        "chanli@google.com",
+    ],
 )
 
 luci.notifier(
