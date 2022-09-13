@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/elements/extended_touch_target_button.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_container_view.h"
@@ -32,6 +33,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/gfx/ios/NSString+CrStringDrawing.h"
 #import "ui/gfx/ios/uikit_util.h"
@@ -53,8 +55,18 @@ const CGFloat kFakeboxHighlightAlpha = 0.06;
 
 // Height margin of the fake location bar.
 const CGFloat kFakeLocationBarHeightMargin = 2;
-const CGFloat kVoiceSearchButtonFakeboxTrailingSpace = 12.0;
-const CGFloat kVoiceSearchButtonOmniboxTrailingSpace = 7.0;
+
+// The constants for the constraints affecting the end button; either Lens or
+// Voice Search, depending on if Lens is enabled.
+const CGFloat kEndButtonFakeboxTrailingSpace = 12.0;
+const CGFloat kEndButtonOmniboxTrailingSpace = 7.0;
+
+// The constants for the constraints affecting the vertical separator that
+// appears between the Lens and Voice Search buttons.
+const CGFloat kLensButtonSeparatorWidth = 1;
+const CGFloat kLensButtonSeparatorHeight = 12;
+const CGFloat kLensButtonSeparatorLeftMargin = 8;
+const CGFloat kLensButtonSeparatorRightMargin = 13;
 
 // Returns the height of the toolbar based on the preferred content size of the
 // application.
@@ -69,6 +81,12 @@ CGFloat ToolbarHeight() {
 
 @interface ContentSuggestionsHeaderView ()
 
+// The Lens button. May be null if Lens is not available.
+@property(nonatomic, strong, readwrite) ExtendedTouchTargetButton* lensButton;
+// The view that seperates the Lens and voice search buttons. May be null if
+// Lens is not available.
+@property(nonatomic, strong) UIView* lensButtonSeparator;
+
 @property(nonatomic, strong, readwrite)
     ExtendedTouchTargetButton* voiceSearchButton;
 
@@ -80,14 +98,14 @@ CGFloat ToolbarHeight() {
     NSLayoutConstraint* fakeLocationBarHeightConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* fakeToolbarTopConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* hintLabelLeadingConstraint;
-// The voice search button should always be at least inside the fake omnibox.
+// The end button should always be at least inside the fake omnibox.
 // When the fake omnibox is shrunk, the position from the trailing side of
 // the search field should yield.
 @property(nonatomic, strong)
-    NSLayoutConstraint* voiceSearchTrailingMarginConstraint;
-// Constraint for positioning the voice search button away from the fake box
-// rounded rectangle.
-@property(nonatomic, strong) NSLayoutConstraint* voiceSearchTrailingConstraint;
+    NSLayoutConstraint* endButtonTrailingMarginConstraint;
+// Constraint for positioning the end button away from the fake box rounded
+// rectangle.
+@property(nonatomic, strong) NSLayoutConstraint* endButtonTrailingConstraint;
 // Layout constraint for the invisible button that is where the omnibox should
 // be and that focuses the omnibox when tapped.
 @property(nonatomic, strong) NSLayoutConstraint* invisibleOmniboxConstraint;
@@ -223,6 +241,24 @@ CGFloat ToolbarHeight() {
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
   content_suggestions::configureVoiceSearchButton(self.voiceSearchButton,
                                                   searchField);
+  UIButton* endButton = self.voiceSearchButton;
+
+  // Lens.
+  const BOOL lensEnabled = ios::provider::IsLensSupported() &&
+                           base::FeatureList::IsEnabled(kEnableLensInNTP);
+  const BOOL useLens = lensEnabled && self.isGoogleDefaultSearchEngine;
+  if (useLens) {
+    self.lensButton =
+        [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+    content_suggestions::ConfigureLensButton(self.lensButton, searchField);
+    endButton = self.lensButton;
+
+    self.lensButtonSeparator = [[UIView alloc] init];
+    self.lensButtonSeparator.backgroundColor =
+        [UIColor colorNamed:kToolbarShadowColor];
+    self.lensButtonSeparator.translatesAutoresizingMaskIntoConstraints = NO;
+    [searchField addSubview:self.lensButtonSeparator];
+  }
 
   // Constraints.
   self.fakeToolbarTopConstraint = [self.fakeToolbar.topAnchor
@@ -252,23 +288,48 @@ CGFloat ToolbarHeight() {
     self.fakeLocationBarHeightConstraint,
   ]];
 
-  self.voiceSearchTrailingMarginConstraint =
-      [self.voiceSearchButton.trailingAnchor
-          constraintEqualToAnchor:[searchField trailingAnchor]];
-  self.voiceSearchTrailingMarginConstraint.priority =
+  // If the Lens button was created, layout the header with the Lens button on
+  // the end.
+  if (self.lensButton) {
+    [NSLayoutConstraint activateConstraints:@[
+      // Separator constraints.
+      [self.lensButtonSeparator.leadingAnchor
+          constraintEqualToAnchor:self.voiceSearchButton.trailingAnchor
+                         constant:kLensButtonSeparatorLeftMargin],
+      [self.lensButtonSeparator.trailingAnchor
+          constraintEqualToAnchor:self.lensButton.leadingAnchor
+                         constant:-kLensButtonSeparatorRightMargin],
+      [self.lensButtonSeparator.centerYAnchor
+          constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
+      [self.lensButtonSeparator.widthAnchor
+          constraintEqualToConstant:ui::AlignValueToUpperPixel(
+                                        kLensButtonSeparatorWidth)],
+      [self.lensButtonSeparator.heightAnchor
+          constraintEqualToConstant:ui::AlignValueToUpperPixel(
+                                        kLensButtonSeparatorHeight)],
+      // Lens button constraints.
+      [self.lensButton.centerYAnchor
+          constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
+    ]];
+  }
+
+  self.endButtonTrailingMarginConstraint = [endButton.trailingAnchor
+      constraintEqualToAnchor:[searchField trailingAnchor]];
+  self.endButtonTrailingMarginConstraint.priority =
       UILayoutPriorityDefaultHigh + 1;
-  self.voiceSearchTrailingConstraint = [self.voiceSearchButton.trailingAnchor
+  self.endButtonTrailingConstraint = [endButton.trailingAnchor
       constraintLessThanOrEqualToAnchor:self.fakeLocationBar.trailingAnchor
-                               constant:-
-                                        kVoiceSearchButtonFakeboxTrailingSpace];
+                               constant:-kEndButtonFakeboxTrailingSpace];
 
   [NSLayoutConstraint activateConstraints:@[
     [self.voiceSearchButton.centerYAnchor
         constraintEqualToAnchor:self.fakeLocationBar.centerYAnchor],
+    // The voice search button is always on the left, even if the Lens button is
+    // visible.
     [self.searchHintLabel.trailingAnchor
         constraintLessThanOrEqualToAnchor:self.voiceSearchButton.leadingAnchor],
-    self.voiceSearchTrailingMarginConstraint,
-    self.voiceSearchTrailingConstraint,
+    self.endButtonTrailingMarginConstraint,
+    self.endButtonTrailingConstraint,
   ]];
 }
 
@@ -370,7 +431,7 @@ CGFloat ToolbarHeight() {
 
     self.hintLabelLeadingConstraint.constant =
         ntp_header::kHintLabelSidePadding;
-    self.voiceSearchTrailingMarginConstraint.constant = 0;
+    self.endButtonTrailingMarginConstraint.constant = 0;
 
     self.separator.alpha = 0;
 
@@ -424,14 +485,13 @@ CGFloat ToolbarHeight() {
   // Adjust the position of the search field's subviews by adjusting their
   // constraint constant value.
   CGFloat subviewsDiff = -maxXInset * percent;
-  self.voiceSearchTrailingMarginConstraint.constant = -subviewsDiff;
+  self.endButtonTrailingMarginConstraint.constant = -subviewsDiff;
   // The trailing space wanted is a linear scale between the two states of the
   // fakebox: 1) when centered in the NTP and 2) when pinned to the top,
   // emulating the the omnibox.
-  self.voiceSearchTrailingConstraint.constant =
-      -kVoiceSearchButtonFakeboxTrailingSpace +
-      (kVoiceSearchButtonFakeboxTrailingSpace -
-       kVoiceSearchButtonOmniboxTrailingSpace) *
+  self.endButtonTrailingConstraint.constant =
+      -kEndButtonFakeboxTrailingSpace +
+      (kEndButtonFakeboxTrailingSpace - kEndButtonOmniboxTrailingSpace) *
           percent;
   self.hintLabelLeadingConstraint.constant =
       subviewsDiff + ntp_header::kHintLabelSidePadding;

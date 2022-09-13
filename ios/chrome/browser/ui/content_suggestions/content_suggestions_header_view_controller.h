@@ -20,6 +20,7 @@
 @protocol FakeboxFocuser;
 @protocol NewTabPageControllerDelegate;
 @protocol OmniboxCommands;
+@protocol LensCommands;
 @class PrimaryToolbarViewController;
 class ReadingListModel;
 
@@ -36,9 +37,12 @@ class ReadingListModel;
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
-@property(nonatomic, weak)
-    id<ApplicationCommands, BrowserCommands, OmniboxCommands, FakeboxFocuser>
-        dispatcher;
+@property(nonatomic, weak) id<ApplicationCommands,
+                              BrowserCommands,
+                              OmniboxCommands,
+                              FakeboxFocuser,
+                              LensCommands>
+    dispatcher;
 @property(nonatomic, weak) id<ContentSuggestionsHeaderViewControllerDelegate>
     delegate;
 @property(nonatomic, weak) id<ContentSuggestionsHeaderCommands> commandHandler;
@@ -51,6 +55,9 @@ class ReadingListModel;
 // `YES` if the omnibox should be focused on when the view appears for voice
 // over.
 @property(nonatomic, assign) BOOL focusOmniboxWhenViewAppears;
+
+// `YES` if Google is the default search engine.
+@property(nonatomic, assign) BOOL isGoogleDefaultSearchEngine;
 
 // The base view controller from which to present UI.
 @property(nonatomic, weak) UIViewController* baseViewController;

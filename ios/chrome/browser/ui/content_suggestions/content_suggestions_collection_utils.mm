@@ -197,6 +197,34 @@ void configureVoiceSearchButton(UIButton* voiceSearchButton,
       CreateLiftEffectCirclePointerStyleProvider();
 }
 
+void ConfigureLensButton(UIButton* lens_button, UIView* search_tap_target) {
+  lens_button.translatesAutoresizingMaskIntoConstraints = NO;
+  [search_tap_target addSubview:lens_button];
+
+  if (@available(iOS 16, *)) {
+  } else {
+    // Set adjustsImageWhenHighlighted on ios 15 and lower.
+    lens_button.adjustsImageWhenHighlighted = NO;
+  }
+
+  UIImage* camera_image =
+      UseSymbols() ? CustomSymbolWithPointSize(
+                         kCameraLensSymbol, kSymbolContentSuggestionsPointSize)
+                   : [UIImage imageNamed:@"location_bar_camera_lens"];
+  camera_image =
+      [camera_image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+
+  [lens_button setImage:camera_image forState:UIControlStateNormal];
+  lens_button.tintColor = [UIColor colorNamed:kGrey500Color];
+  lens_button.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ACCNAME_LENS);
+  lens_button.accessibilityIdentifier = @"Lens";
+
+  lens_button.pointerInteractionEnabled = YES;
+  // Make the pointer shape fit the location bar's semi-circle end shape.
+  lens_button.pointerStyleProvider =
+      CreateLiftEffectCirclePointerStyleProvider();
+}
+
 UIView* nearestAncestor(UIView* view, Class aClass) {
   if (!view) {
     return nil;

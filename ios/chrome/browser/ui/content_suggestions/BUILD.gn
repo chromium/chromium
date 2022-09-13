@@ -199,6 +199,7 @@ source_set("content_suggestions_ui") {
     "//ios/chrome/browser/ui/content_suggestions/cells:constants",
     "//ios/chrome/browser/ui/content_suggestions/identifier",
     "//ios/chrome/browser/ui/elements",
+    "//ios/chrome/browser/ui/lens:lens_entrypoint",
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/ntp:logo",
@@ -217,6 +218,7 @@ source_set("content_suggestions_ui") {
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ios/web/common",
     "//ui/base",
   ]

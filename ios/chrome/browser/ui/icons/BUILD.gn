@@ -86,6 +86,7 @@ source_set("symbols") {
     "//ios/chrome/browser/ui/icons/resources:arrow_clockwise",
     "//ios/chrome/browser/ui/icons/resources:camera",
     "//ios/chrome/browser/ui/icons/resources:camera_fill",
+    "//ios/chrome/browser/ui/icons/resources:camera_lens",
     "//ios/chrome/browser/ui/icons/resources:incognito",
     "//ios/chrome/browser/ui/icons/resources:incognito_circle_fill",
     "//ios/chrome/browser/ui/icons/resources:language",

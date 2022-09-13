@@ -121,3 +121,10 @@ symbolset("language") {
     "language.symbolset/language.cr.svg",
   ]
 }
+
+symbolset("camera_lens") {
+  sources = [
+    "camera_lens.symbolset/Contents.json",
+    "camera_lens.symbolset/camera.lens.cr.svg",
+  ]
+}

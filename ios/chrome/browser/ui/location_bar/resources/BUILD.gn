@@ -20,6 +20,14 @@ imageset("location_bar_voice") {
   ]
 }
 
+imageset("location_bar_camera_lens") {
+  sources = [
+    "location_bar_camera_lens.imageset/Contents.json",
+    "location_bar_camera_lens.imageset/location_bar_camera_lens@2x.png",
+    "location_bar_camera_lens.imageset/location_bar_camera_lens@3x.png",
+  ]
+}
+
 imageset("location_bar_connection_offline") {
   sources = [
     "location_bar_connection_offline.imageset/Contents.json",
