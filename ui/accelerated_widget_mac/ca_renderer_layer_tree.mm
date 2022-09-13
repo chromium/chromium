@@ -18,12 +18,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/metal_util/hdr_copier_layer.h"
-#include "media/base/mac/color_space_util_mac.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cocoa/animation_utils.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/hdr_metadata.h"
+#include "ui/gfx/hdr_metadata_mac.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 #include "ui/gl/gl_image_io_surface.h"
 
@@ -189,14 +189,14 @@ bool AVSampleBufferDisplayLayerEnqueueIOSurface(
               gfx::ColorVolumeMetadata())) {
           CVBufferSetAttachment(
               cv_pixel_buffer, kCVImageBufferMasteringDisplayColorVolumeKey,
-              media::GenerateMasteringDisplayColorVolume(*hdr_metadata),
+              gfx::GenerateMasteringDisplayColorVolume(*hdr_metadata),
               kCVAttachmentMode_ShouldPropagate);
         }
         if (hdr_metadata->max_content_light_level ||
             hdr_metadata->max_frame_average_light_level) {
           CVBufferSetAttachment(
               cv_pixel_buffer, kCVImageBufferContentLightLevelInfoKey,
-              media::GenerateContentLightLevelInfo(*hdr_metadata),
+              gfx::GenerateContentLightLevelInfo(*hdr_metadata),
               kCVAttachmentMode_ShouldPropagate);
         }
       }
@@ -1217,7 +1217,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
     case CALayerType::kHDRCopier:
       if (update_contents) {
         metal::UpdateHDRCopierLayer(ca_layer_.get(), io_surface_.get(),
-                                    io_surface_color_space_);
+                                    io_surface_color_space_, hdr_metadata_);
       }
       break;
     case CALayerType::kVideo:

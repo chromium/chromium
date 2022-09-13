@@ -8,6 +8,7 @@
 
 #include "base/mac/foundation_util.h"
 #include "media/base/mac/color_space_util_mac.h"
+#include "ui/gfx/hdr_metadata_mac.h"
 
 namespace {
 
@@ -137,10 +138,9 @@ CFStringRef GetMatrix(media::VideoColorSpace::MatrixID matrix_id) {
 
 void SetContentLightLevelInfo(const gfx::HDRMetadata& hdr_metadata,
                               NSMutableDictionary<NSString*, id>* extensions) {
-  SetDictionaryValue(extensions,
-                     kCMFormatDescriptionExtension_ContentLightLevelInfo,
-                     base::mac::CFToNSCast(
-                         media::GenerateContentLightLevelInfo(hdr_metadata)));
+  SetDictionaryValue(
+      extensions, kCMFormatDescriptionExtension_ContentLightLevelInfo,
+      base::mac::CFToNSCast(gfx::GenerateContentLightLevelInfo(hdr_metadata)));
 }
 
 void SetColorVolumeMetadata(const gfx::HDRMetadata& hdr_metadata,
@@ -148,7 +148,7 @@ void SetColorVolumeMetadata(const gfx::HDRMetadata& hdr_metadata,
   SetDictionaryValue(
       extensions, kCMFormatDescriptionExtension_MasteringDisplayColorVolume,
       base::mac::CFToNSCast(
-          media::GenerateMasteringDisplayColorVolume(hdr_metadata)));
+          gfx::GenerateMasteringDisplayColorVolume(hdr_metadata)));
 }
 
 void SetVp9CodecConfigurationBox(

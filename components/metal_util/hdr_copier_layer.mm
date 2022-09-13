@@ -16,6 +16,8 @@
 #include "components/metal_util/device.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/hdr_metadata.h"
+#include "ui/gfx/hdr_metadata_mac.h"
 
 namespace {
 
@@ -232,10 +234,12 @@ API_AVAILABLE(macos(10.15))
 @interface HDRCopierLayer : CAMetalLayer {
   base::scoped_nsprotocol<id<MTLRenderPipelineState>> _render_pipeline_state;
   gfx::ColorSpace _color_space;
+  absl::optional<gfx::HDRMetadata> _hdr_metadata;
 }
 - (id)init;
 - (void)setHDRContents:(IOSurfaceRef)buffer
-        withColorSpace:(gfx::ColorSpace)color_space;
+        withColorSpace:(gfx::ColorSpace)color_space
+          withMetadata:(absl::optional<gfx::HDRMetadata>)hdr_metadata;
 @end
 
 @implementation HDRCopierLayer
@@ -254,7 +258,8 @@ API_AVAILABLE(macos(10.15))
 }
 
 - (void)setHDRContents:(IOSurfaceRef)buffer
-        withColorSpace:(gfx::ColorSpace)color_space {
+        withColorSpace:(gfx::ColorSpace)color_space
+          withMetadata:(absl::optional<gfx::HDRMetadata>)hdr_metadata {
   // Retrieve information about the IOSurface.
   size_t width = IOSurfaceGetWidth(buffer);
   size_t height = IOSurfaceGetHeight(buffer);
@@ -265,14 +270,23 @@ API_AVAILABLE(macos(10.15))
   }
 
   // Set metadata for tone mapping.
-  if (_color_space != color_space) {
+  if (_color_space != color_space || _hdr_metadata != hdr_metadata) {
     CAEDRMetadata* edr_metadata = nil;
     switch (color_space.GetTransferID()) {
-      case gfx::ColorSpace::TransferID::PQ:
-        edr_metadata = [CAEDRMetadata HDR10MetadataWithMinLuminance:0
-                                                       maxLuminance:10000
-                                                 opticalOutputScale:100];
+      case gfx::ColorSpace::TransferID::PQ: {
+        base::ScopedCFTypeRef<CFDataRef> display_info;
+        base::ScopedCFTypeRef<CFDataRef> content_info;
+        if (hdr_metadata) {
+          display_info =
+              gfx::GenerateMasteringDisplayColorVolume(*hdr_metadata);
+          content_info = gfx::GenerateContentLightLevelInfo(*hdr_metadata);
+        }
+        edr_metadata = [CAEDRMetadata
+            HDR10MetadataWithDisplayInfo:base::mac::CFToNSCast(display_info)
+                             contentInfo:base::mac::CFToNSCast(content_info)
+                      opticalOutputScale:100];
         break;
+      }
       case gfx::ColorSpace::TransferID::HLG:
         edr_metadata = [CAEDRMetadata HLGMetadata];
         break;
@@ -407,12 +421,16 @@ CALayer* CreateHDRCopierLayer() {
   return nil;
 }
 
-void UpdateHDRCopierLayer(CALayer* layer,
-                          IOSurfaceRef buffer,
-                          const gfx::ColorSpace& color_space) {
+void UpdateHDRCopierLayer(
+    CALayer* layer,
+    IOSurfaceRef buffer,
+    const gfx::ColorSpace& color_space,
+    const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
   if (@available(macos 10.15, *)) {
     if (auto* hdr_copier_layer = base::mac::ObjCCast<HDRCopierLayer>(layer)) {
-      [hdr_copier_layer setHDRContents:buffer withColorSpace:color_space];
+      [hdr_copier_layer setHDRContents:buffer
+                        withColorSpace:color_space
+                          withMetadata:hdr_metadata];
       return;
     }
   }

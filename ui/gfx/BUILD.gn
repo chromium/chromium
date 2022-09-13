@@ -448,6 +448,8 @@ component("color_space") {
   ]
   if (is_mac) {
     sources += [
+      "hdr_metadata_mac.h",
+      "hdr_metadata_mac.mm",
       "mac/display_icc_profiles.cc",
       "mac/display_icc_profiles.h",
     ]
