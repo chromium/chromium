@@ -209,6 +209,8 @@ void AddInputMethodOptionsStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_PREDICTIVE_WRITING},
       {"inputMethodOptionsDiacriticsOnPhysicalKeyboardLongpress",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_DIACRITICS_ON_PHYSICAL_KEYBOARD_LONGPRESS},
+      {"inputMethodOptionsDiacriticsOnPhysicalKeyboardLongpressSubtitle",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_DIACRITICS_ON_PHYSICAL_KEYBOARD_LONGPRESS_SUBTITLE},
       {"inputMethodOptionsXkbLayout",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_XKB_LAYOUT},
       {"inputMethodOptionsZhuyinKeyboardLayout",

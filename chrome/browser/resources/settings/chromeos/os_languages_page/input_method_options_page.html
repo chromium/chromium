@@ -6,6 +6,10 @@
   .dependent {
     padding-inline-start: var(--cr-section-indent-padding);
   }
+
+  .subtitle {
+    white-space: nowrap;
+  }
 </style>
 
 <div route-path="default">
@@ -16,6 +20,11 @@
         <div class="list-item">
           <div class="start" id="option-label" aria-hidden="true">
             [[option.label]]
+            <template is="dom-if" if="[[option.subtitle)]]">
+              <span class="secondary label subtitle">
+                [[option.subtitle]]
+              </span>
+            </template>
           </div>
           <template is="dom-if" if="[[isToggleButton_(option.uiType)]]">
             <cr-toggle checked="{{option.value}}"

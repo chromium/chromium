@@ -572,6 +572,21 @@ export function getOptionLabelName(option) {
       assertNotReached();
   }
 }
+
+/**
+ * @param {!OptionType} option The option type.
+ * @return {string} The name of the string for the subtitle of |option|. Returns
+ * empty string if no subtitle.
+ */
+export function getOptionSubtitleName(option) {
+  switch (option) {
+    case OptionType.PHYSICAL_KEYBOARD_ENABLE_DIACRITICS_ON_LONGPRESS:
+      return 'inputMethodOptionsDiacriticsOnPhysicalKeyboardLongpressSubtitle';
+    default:
+      return '';
+  }
+}
+
 export function getUntranslatedOptionLabelName(option) {
   switch (option) {
     case OptionType.PINYIN_AN_ANG:

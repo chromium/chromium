@@ -21,7 +21,7 @@ import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {getTemplate} from './input_method_options_page.html.js';
-import {generateOptions, getFirstPartyInputMethodEngineId, getOptionLabelName, getOptionMenuItems, getOptionUiType, getOptionUrl, getUntranslatedOptionLabelName, hasOptionsPageInSettings, isNumberValue, isOptionLabelTranslated, OPTION_DEFAULT, OptionType, UiType} from './input_method_util.js';
+import {generateOptions, getFirstPartyInputMethodEngineId, getOptionLabelName, getOptionMenuItems, getOptionSubtitleName, getOptionUiType, getOptionUrl, getUntranslatedOptionLabelName, hasOptionsPageInSettings, isNumberValue, isOptionLabelTranslated, OPTION_DEFAULT, OptionType, UiType} from './input_method_util.js';
 import {LanguageHelper} from './languages_types.js';
 
 /**
@@ -157,11 +157,15 @@ class SettingsInputMethodOptionsPageElement extends
       const label = isOptionLabelTranslated(name) ?
           this.i18n(getOptionLabelName(name)) :
           getUntranslatedOptionLabelName(name);
+
+      const subtitleStringName = getOptionSubtitleName(name);
+      const subtitle = subtitleStringName && this.i18n(subtitleStringName);
       return {
         name: name,
         uiType: uiType,
         value: value,
         label: label,
+        subtitle: subtitle,
         menuItems: this.getMenuItems(name, value),
         url: getOptionUrl(name),
         dependentOptions: option.dependentOptions ?
