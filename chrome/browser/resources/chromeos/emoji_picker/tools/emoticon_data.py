@@ -30,9 +30,7 @@ def process_emoticon_data(metadata):
             "base": {
                 "string": emoticon["value"],
                 "name": emoticon["description"],
-                "keywords": []
             },
-            "alternates": []
         } for emoticon in group["emoticon"]]
     } for group in metadata]
 

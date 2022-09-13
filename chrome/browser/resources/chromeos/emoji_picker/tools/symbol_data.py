@@ -10,7 +10,7 @@ import logging
 import os
 import sys
 import unicodedata
-from typing import Generator, List, Tuple
+from typing import Any, Dict, Generator, List, Sequence, Tuple
 
 # Add extra dependencies to the python path.
 _SCRIPT_DIR = os.path.realpath(os.path.dirname(__file__))
@@ -94,6 +94,24 @@ class EmojiPickerGroup:
     group: str
     # List of the emojis in the group.
     emoji: List[EmojiPickerEmoji]
+
+
+def _skip_empty_list_dict_factory(
+        data: Sequence[Tuple[str, Any]]) -> Dict[str, Any]:
+    """Implements a dictionary factory that skips keys with empty lists.
+
+    Args:
+        data: A sequence of (key, value) pairs
+
+    Returns:
+        A dictionary created from the input sequence where keys with an empty
+            list value are ignored.
+    """
+    return {
+        key: value
+        for (key, value) in data
+        if not isinstance(value, list) or value
+    }
 
 
 def _convert_unicode_ranges_to_emoji_chars(
@@ -204,9 +222,12 @@ def main(argv: List[str]) -> None:
     symbols_groups = get_symbols_groups()
 
     # Create the data and convert them to dict.
-    symbols_groups_dicts = [
-        dataclasses.asdict(symbol_group)
-        for symbol_group in symbols_groups]
+    symbols_groups_dicts = []
+    for symbol_group in symbols_groups:
+        symbol_group_dict = dataclasses.asdict(
+            symbol_group,
+            dict_factory=_skip_empty_list_dict_factory)
+        symbols_groups_dicts.append(symbol_group_dict)
 
     # Write the result to output path as json file.
     with build_utils.AtomicOutput(args.output) as tmp_file:
