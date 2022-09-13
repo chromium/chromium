@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_manual_fallback_icon_view.h"
 #include "chrome/browser/ui/views/autofill/save_update_address_profile_icon_view.h"
+#include "chrome/browser/ui/views/commerce/price_tracking_icon_view.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/find_bar_icon.h"
@@ -139,6 +140,11 @@ void PageActionIconController::Init(const PageActionIconParams& params,
         break;
       case PageActionIconType::kFileSystemAccess:
         add_page_action_icon(type, std::make_unique<FileSystemAccessIconView>(
+                                       params.icon_label_bubble_delegate,
+                                       params.page_action_icon_delegate));
+        break;
+      case PageActionIconType::kPriceTracking:
+        add_page_action_icon(type, std::make_unique<PriceTrackingIconView>(
                                        params.icon_label_bubble_delegate,
                                        params.page_action_icon_delegate));
         break;

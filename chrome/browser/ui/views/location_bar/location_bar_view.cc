@@ -76,6 +76,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/favicon/content/content_favicon_driver.h"
@@ -298,6 +299,11 @@ void LocationBarView::Init() {
     // first so that they appear on the left side of the icon container.
     // TODO(crbug.com/1318890): Improve the ordering heuristics for page action
     // icons and determine a way to handle simultaneous icon animations.
+    // TODO(crbug.com/1346612): Confirm the ordering for |kPriceTracking| and
+    // |kSideSearch| with UX.
+    if (base::FeatureList::IsEnabled(commerce::kShoppingList)) {
+      params.types_enabled.push_back(PageActionIconType::kPriceTracking);
+    }
     if (side_search::IsDSESupportEnabled(profile_) &&
         side_search::IsEnabledForBrowser(browser_)) {
       params.types_enabled.push_back(PageActionIconType::kSideSearch);
