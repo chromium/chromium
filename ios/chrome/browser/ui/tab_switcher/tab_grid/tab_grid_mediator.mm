@@ -419,7 +419,14 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
                          }];
   }
 
-  LogPriceDropMetrics(itemWebStateList->GetWebStateAt(index));
+  web::WebState* selectedWebState = itemWebStateList->GetWebStateAt(index);
+  LogPriceDropMetrics(selectedWebState);
+
+  base::TimeDelta timeSinceLastActivation =
+      base::Time::Now() - selectedWebState->GetLastActiveTime();
+  base::UmaHistogramCustomTimes(
+      "IOS.TabGrid.TabSelected.TimeSinceLastActivation",
+      timeSinceLastActivation, base::Minutes(1), base::Days(24), 50);
 
   // Don't attempt a no-op activation. Normally this is not an issue, but it's
   // possible that this method (-selectItemWithID:) is being called as part of

@@ -1767,6 +1767,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.TabGrid.TabSelected.TimeSinceLastActivation" units="ms"
+    expires_after="2023-08-31">
+  <owner>gambard@chromium.org</owner>
+  <owner>lpromero@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Recorded when a tab is selected from the TabGrid. Time spent since the last
+    time this tab was made active.
+  </summary>
+</histogram>
+
 <histogram name="IOS.TabSwitcher.PageChangeInteraction"
     enum="IOSTabSwitcherPageChangeInteraction" expires_after="2023-02-26">
   <owner>marq@chromium.org</owner>
