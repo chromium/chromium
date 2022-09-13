@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -24,11 +25,15 @@
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/ash/printing/history/print_job_info.pb.h"
+#include "chrome/browser/ash/printing/oauth2/authorization_zones_manager.h"
+#include "chrome/browser/ash/printing/oauth2/authorization_zones_manager_factory.h"
+#include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "chrome/browser/ash/printing/ppd_provider_factory.h"
 #include "chrome/browser/ash/printing/print_management/printing_manager.h"
 #include "chrome/browser/ash/printing/print_management/printing_manager_factory.h"
 #include "chrome/browser/ash/printing/print_server.h"
 #include "chrome/browser/ash/printing/print_servers_manager.h"
+#include "chrome/browser/ash/printing/printer_authenticator.h"
 #include "chrome/browser/ash/printing/printer_configurer.h"
 #include "chrome/browser/ash/printing/printer_setup_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -88,6 +93,34 @@ mojom::CapabilitiesResponsePtr OnSetUpPrinter(
       printing::mojom::ColorModeRestriction::kUnset,   // deprecated
       printing::mojom::DuplexModeRestriction::kUnset,  // deprecated
       printing::mojom::PinModeRestriction::kUnset);    // deprecated
+}
+
+// This function is called when user's rights to access the printer were
+// verified. The user can use the printer <=> `status` == StatusCode::kOK.
+// Other values of `status` mean that the access was denied or an error
+// occurred. The function is supposed to set-up the printer <=> the access was
+// granted. The first parameter is used only for keep the pointer alive until
+// this callback is executed.
+void OnPrinterAuthenticated(
+    std::unique_ptr<ash::printing::PrinterAuthenticator> /* authenticator */,
+    std::unique_ptr<ash::PrinterConfigurer> printer_configurer,
+    Profile* profile,
+    ash::CupsPrintersManager* printers_manager,
+    const chromeos::Printer& printer,
+    mojom::LocalPrinter::GetCapabilityCallback callback,
+    ash::printing::oauth2::StatusCode status,
+    const std::string& /* access_token */) {
+  if (status != ash::printing::oauth2::StatusCode::kOK) {
+    // An error occurred.
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  ash::PrinterConfigurer* ptr = printer_configurer.get();
+  ash::printing::SetUpPrinter(
+      printers_manager, ptr, printer,
+      base::BindOnce(OnSetUpPrinter, std::move(printer_configurer),
+                     profile->GetPrefs(), printer)
+          .Then(std::move(callback)));
 }
 
 }  // namespace
@@ -266,6 +299,7 @@ void LocalPrinterAsh::GetCapability(const std::string& printer_id,
   DCHECK(profile);
   ash::CupsPrintersManager* printers_manager =
       ash::CupsPrintersManagerFactory::GetForBrowserContext(profile);
+  DCHECK(printers_manager);
   absl::optional<chromeos::Printer> printer =
       printers_manager->GetPrinter(printer_id);
   if (!printer) {
@@ -275,12 +309,25 @@ void LocalPrinterAsh::GetCapability(const std::string& printer_id,
   }
   std::unique_ptr<ash::PrinterConfigurer> printer_configurer =
       CreatePrinterConfigurer(profile);
-  ash::PrinterConfigurer* ptr = printer_configurer.get();
-  ash::printing::SetUpPrinter(
-      printers_manager, ptr, *printer,
-      base::BindOnce(OnSetUpPrinter, std::move(printer_configurer),
-                     profile->GetPrefs(), *printer)
-          .Then(std::move(callback)));
+
+  if (chromeos::features::IsOAuthIppEnabled()) {
+    ash::printing::oauth2::AuthorizationZonesManager* auth_manager =
+        ash::printing::oauth2::AuthorizationZonesManagerFactory::
+            GetForBrowserContext(profile);
+    DCHECK(auth_manager);
+    auto authenticator = std::make_unique<ash::printing::PrinterAuthenticator>(
+        printers_manager, auth_manager, *printer);
+    ash::printing::PrinterAuthenticator* authenticator_ptr =
+        authenticator.get();
+    authenticator_ptr->ObtainAccessTokenIfNeeded(
+        base::BindOnce(OnPrinterAuthenticated, std::move(authenticator),
+                       std::move(printer_configurer), profile, printers_manager,
+                       *printer, std::move(callback)));
+  } else {
+    OnPrinterAuthenticated(nullptr, std::move(printer_configurer), profile,
+                           printers_manager, *printer, std::move(callback),
+                           ash::printing::oauth2::StatusCode::kOK, "");
+  }
 }
 
 void LocalPrinterAsh::GetEulaUrl(const std::string& printer_id,
