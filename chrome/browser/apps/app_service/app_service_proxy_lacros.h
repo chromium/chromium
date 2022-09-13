@@ -359,6 +359,12 @@ class AppServiceProxyLacros : public KeyedService,
   void OnPreferredAppsChanged(PreferredAppChangesPtr changes) override;
   void InitializePreferredApps(PreferredApps preferred_apps) override;
 
+  // This wraps a call to remote_crosapi_app_service_proxy_->Launch(). It exists
+  // to provide a common code path to deal with the special case of extensions
+  // that are run in both ash and lacros. This is a transient state but requires
+  // special handling.
+  void ProxyLaunch(crosapi::mojom::LaunchParamsPtr params);
+
   apps::AppRegistryCache app_registry_cache_;
   apps::AppCapabilityAccessCache app_capability_access_cache_;
 
