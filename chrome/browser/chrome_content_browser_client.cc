@@ -517,6 +517,11 @@
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
 #endif
 
+#if defined(TOOLKIT_VIEWS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/ui/lens/lens_side_panel_navigation_helper.h"
+#include "components/lens/lens_features.h"
+#endif
+
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -4717,6 +4722,17 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   if (profile && IsSideSearchEnabled(profile)) {
     MaybeAddThrottle(
         SideSearchSideContentsHelper::MaybeCreateThrottleFor(handle),
+        &throttles);
+  }
+#endif
+
+// Only include Lens on Chrome branded Desktop clients. TOOLKIT_VIEWS is used
+// for rendering UI on Windows, Mac, Linux, and ChromeOS. Therefore, if
+// TOOLKIT_VIEWS is defined, we are on one of those platforms.
+#if defined(TOOLKIT_VIEWS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (lens::features::IsLensSidePanelEnabled()) {
+    MaybeAddThrottle(
+        lens::LensSidePanelNavigationHelper::MaybeCreateThrottleFor(handle),
         &throttles);
   }
 #endif

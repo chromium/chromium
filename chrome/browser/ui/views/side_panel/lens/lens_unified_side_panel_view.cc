@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/lens/lens_side_panel_helper.h"
+#include "chrome/browser/ui/lens/lens_side_panel_navigation_helper.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -87,6 +88,18 @@ LensUnifiedSidePanelView::LensUnifiedSidePanelView(BrowserView* browser_view) {
   auto* web_contents = web_view_->GetWebContents();
   web_contents->SetDelegate(this);
   Observe(web_contents);
+
+  // Setup NavigationThrottler to stop navigation outside of current domain
+  TemplateURLService* service =
+      TemplateURLServiceFactory::GetForProfile(browser_view->GetProfile());
+  const TemplateURL* const provider = service->GetDefaultSearchProvider();
+  bool is_lens_enabled =
+      base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
+      search::DefaultSearchProviderIsGoogle(browser_view->GetProfile());
+  lens::LensSidePanelNavigationHelper::CreateForWebContents(
+      web_contents, browser_view->browser(),
+      is_lens_enabled ? lens::features::GetHomepageURLForLens()
+                      : provider->image_url());
 }
 
 content::WebContents* LensUnifiedSidePanelView::GetWebContents() {

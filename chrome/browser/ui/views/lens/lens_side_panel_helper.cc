@@ -101,10 +101,10 @@ void CreateLensUnifiedSidePanelEntryForTesting(Browser* browser) {
   auto* lens_side_panel_coordinator =
       LensSidePanelCoordinator::GetOrCreateForBrowser(browser);
   DCHECK(lens_side_panel_coordinator);
-  lens_side_panel_coordinator->RegisterEntryAndShow(
-      content::OpenURLParams(GURL("http://foo.com"), content::Referrer(),
-                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                             ui::PAGE_TRANSITION_LINK, false));
+  lens_side_panel_coordinator->RegisterEntryAndShow(content::OpenURLParams(
+      GURL(lens::features::GetHomepageURLForLens()), content::Referrer(),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+      false));
   DCHECK(lens_side_panel_coordinator->GetViewWebContentsForTesting());
 }
 
