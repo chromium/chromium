@@ -89,6 +89,44 @@ absl::optional<absl::uint128> ConvertBigIntToUint128(
   return absl::MakeUint128(words[1], words[0]);
 }
 
+// In case of failure, will return `absl::nullopt` and output an error to
+// `error_out`.
+absl::optional<uint64_t> ParseDebugKey(gin::Dictionary dict,
+                                       v8::Local<v8::Context>& context,
+                                       std::string* error_out) {
+  v8::Local<v8::Value> js_debug_key;
+
+  if (!dict.Get("debug_key", &js_debug_key) || js_debug_key.IsEmpty() ||
+      js_debug_key->IsNullOrUndefined()) {
+    return absl::nullopt;
+  }
+
+  if (js_debug_key->IsUint32()) {
+    v8::Maybe<uint32_t> maybe_debug_key = js_debug_key->Uint32Value(context);
+    if (maybe_debug_key.IsNothing()) {
+      *error_out = "Failed to interpret value as integer";
+    }
+    return maybe_debug_key.ToChecked();
+  }
+
+  if (js_debug_key->IsBigInt()) {
+    absl::optional<absl::uint128> maybe_debug_key =
+        ConvertBigIntToUint128(js_debug_key->ToBigInt(context), error_out);
+    if (!maybe_debug_key.has_value()) {
+      return absl::nullopt;
+    }
+    if (absl::Uint128High64(maybe_debug_key.value()) != 0) {
+      *error_out = "BigInt is too large";
+      return absl::nullopt;
+    }
+    return absl::Uint128Low64(maybe_debug_key.value());
+  }
+
+  *error_out =
+      "debug_key must be either a non-negative integer Number or BigInt";
+  return absl::nullopt;
+}
+
 }  // namespace
 
 PrivateAggregation::PrivateAggregation(
@@ -104,7 +142,8 @@ gin::ObjectTemplateBuilder PrivateAggregation::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return Wrappable<PrivateAggregation>::GetObjectTemplateBuilder(isolate)
       .SetMethod("sendHistogramReport",
-                 &PrivateAggregation::SendHistogramReport);
+                 &PrivateAggregation::SendHistogramReport)
+      .SetMethod("enableDebugMode", &PrivateAggregation::EnableDebugMode);
 }
 
 const char* PrivateAggregation::GetTypeName() {
@@ -112,19 +151,15 @@ const char* PrivateAggregation::GetTypeName() {
 }
 
 void PrivateAggregation::SendHistogramReport(gin::Arguments* args) {
-  if (!has_recorded_use_counters_) {
-    has_recorded_use_counters_ = true;
-    client_->RecordUseCounters(
-        {blink::mojom::WebFeature::kPrivateAggregationApiAll,
-         blink::mojom::WebFeature::kPrivateAggregationApiSharedStorage});
-  }
+  EnsureUseCountersAreRecorded();
 
   v8::Isolate* isolate = args->isolate();
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
 
   std::vector<v8::Local<v8::Value>> argument_list = args->GetAll();
 
-  if (argument_list.size() != 1 || argument_list[0].IsEmpty() ||
+  // Any additional arguments are ignored.
+  if (argument_list.size() == 0 || argument_list[0].IsEmpty() ||
       !argument_list[0]->IsObject()) {
     isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
         isolate, "sendHistogramReport requires 1 object parameter")));
@@ -217,7 +252,58 @@ void PrivateAggregation::SendHistogramReport(gin::Arguments* args) {
   private_aggregation_host_->SendHistogramReport(
       std::move(contributions),
       // TODO(alexmt): consider allowing this to be set
-      content::mojom::AggregationServiceMode::kDefault);
+      content::mojom::AggregationServiceMode::kDefault,
+      debug_mode_details_.Clone());
+}
+
+void PrivateAggregation::EnableDebugMode(gin::Arguments* args) {
+  EnsureUseCountersAreRecorded();
+
+  v8::Isolate* isolate = args->isolate();
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+
+  std::vector<v8::Local<v8::Value>> argument_list = args->GetAll();
+
+  if (debug_mode_details_.is_enabled) {
+    isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
+        isolate, "enableDebugMode may be called at most once")));
+    return;
+  }
+
+  // If no arguments are provided, no debug key is set.
+  if (argument_list.size() >= 1 && !argument_list[0].IsEmpty()) {
+    gin::Dictionary dict(isolate);
+
+    if (!gin::ConvertFromV8(isolate, argument_list[0], &dict)) {
+      isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
+          isolate, "Invalid argument in enableDebugMode")));
+      return;
+    }
+
+    std::string error;
+    absl::optional<uint64_t> maybe_debug_key =
+        ParseDebugKey(dict, context, &error);
+    if (!maybe_debug_key.has_value()) {
+      DCHECK(base::IsStringUTF8(error));
+      isolate->ThrowException(v8::Exception::TypeError(
+          CreateUtf8String(isolate, error).ToLocalChecked()));
+      return;
+    }
+
+    debug_mode_details_.debug_key =
+        content::mojom::DebugKey::New(maybe_debug_key.value());
+  }
+
+  debug_mode_details_.is_enabled = true;
+}
+
+void PrivateAggregation::EnsureUseCountersAreRecorded() {
+  if (!has_recorded_use_counters_) {
+    has_recorded_use_counters_ = true;
+    client_->RecordUseCounters(
+        {blink::mojom::WebFeature::kPrivateAggregationApiAll,
+         blink::mojom::WebFeature::kPrivateAggregationApiSharedStorage});
+  }
 }
 
 }  // namespace shared_storage_worklet

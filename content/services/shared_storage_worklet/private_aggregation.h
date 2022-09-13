@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "content/common/private_aggregation_host.mojom-forward.h"
+#include "content/common/private_aggregation_host.mojom.h"
 #include "content/common/shared_storage_worklet_service.mojom.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
@@ -35,11 +35,17 @@ class PrivateAggregation final : public gin::Wrappable<PrivateAggregation> {
 
  private:
   void SendHistogramReport(gin::Arguments* args);
+  void EnableDebugMode(gin::Arguments* args);
+
+  void EnsureUseCountersAreRecorded();
 
   raw_ref<mojom::SharedStorageWorkletServiceClient> client_;
   raw_ref<content::mojom::PrivateAggregationHost> private_aggregation_host_;
 
   bool has_recorded_use_counters_ = false;
+
+  // Defaults to debug mode being disabled.
+  content::mojom::DebugModeDetails debug_mode_details_;
 
   base::WeakPtrFactory<PrivateAggregation> weak_ptr_factory_{this};
 };

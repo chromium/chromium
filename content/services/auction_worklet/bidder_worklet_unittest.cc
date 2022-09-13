@@ -4123,13 +4123,15 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
           content::mojom::AggregatableReportHistogramContribution::New(
               /*bucket=*/123,
               /*value=*/45),
-          content::mojom::AggregationServiceMode::kDefault);
+          content::mojom::AggregationServiceMode::kDefault,
+          content::mojom::DebugModeDetails::New());
   auction_worklet::mojom::PrivateAggregationRequestPtr kExpectedRequest2 =
       auction_worklet::mojom::PrivateAggregationRequest::New(
           content::mojom::AggregatableReportHistogramContribution::New(
               /*bucket=*/absl::MakeInt128(/*high=*/1, /*low=*/0),
               /*value=*/1),
-          content::mojom::AggregationServiceMode::kDefault);
+          content::mojom::AggregationServiceMode::kDefault,
+          content::mojom::DebugModeDetails::New());
 
   {
     PrivateAggregationRequests expected_pa_requests;
@@ -4247,6 +4249,93 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
         /*expected_set_priority=*/absl::nullopt,
         std::move(expected_pa_requests));
   }
+
+  // Debug mode enabled with debug key
+  {
+    PrivateAggregationRequests expected_pa_requests;
+    expected_pa_requests.push_back(
+        auction_worklet::mojom::PrivateAggregationRequest::New(
+            kExpectedRequest1->contribution->Clone(),
+            content::mojom::AggregationServiceMode::kDefault,
+            content::mojom::DebugModeDetails::New(
+                /*is_enabled=*/true, content::mojom::DebugKey::New(1234u))));
+
+    RunGenerateBidWithJavascriptExpectingResult(
+        CreateGenerateBidScript(
+            R"({ad: "ad", bid:1, render:"https://response.test/" })",
+            /*extra_code=*/R"(
+            privateAggregation.enableDebugMode({debug_key: 1234});
+            privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+          )"),
+        /*expected_bid=*/
+        mojom::BidderWorkletBid::New(
+            "\"ad\"", 1, GURL("https://response.test/"),
+            /*ad_components=*/absl::nullopt, base::TimeDelta()),
+        /*expected_data_version=*/absl::nullopt,
+        /*expected_errors=*/{},
+        /*expected_debug_loss_report_url=*/absl::nullopt,
+        /*expected_debug_win_report_url=*/absl::nullopt,
+        /*expected_set_priority=*/absl::nullopt,
+        std::move(expected_pa_requests));
+  }
+
+  // Debug mode enabled without debug key, but with multiple requests
+  {
+    PrivateAggregationRequests expected_pa_requests;
+    expected_pa_requests.push_back(
+        auction_worklet::mojom::PrivateAggregationRequest::New(
+            kExpectedRequest1->contribution->Clone(),
+            content::mojom::AggregationServiceMode::kDefault,
+            content::mojom::DebugModeDetails::New(
+                /*is_enabled=*/true, /*debug_key=*/nullptr)));
+    expected_pa_requests.push_back(
+        auction_worklet::mojom::PrivateAggregationRequest::New(
+            kExpectedRequest2->contribution->Clone(),
+            content::mojom::AggregationServiceMode::kDefault,
+            content::mojom::DebugModeDetails::New(
+                /*is_enabled=*/true, /*debug_key=*/nullptr)));
+
+    RunGenerateBidWithJavascriptExpectingResult(
+        CreateGenerateBidScript(
+            R"({ad: "ad", bid:1, render:"https://response.test/" })",
+            /*extra_code=*/R"(
+            privateAggregation.enableDebugMode();
+            privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+            privateAggregation.sendHistogramReport(
+                {bucket: 18446744073709551616n, value: 1});
+          )"),
+        /*expected_bid=*/
+        mojom::BidderWorkletBid::New(
+            "\"ad\"", 1, GURL("https://response.test/"),
+            /*ad_components=*/absl::nullopt, base::TimeDelta()),
+        /*expected_data_version=*/absl::nullopt,
+        /*expected_errors=*/{},
+        /*expected_debug_loss_report_url=*/absl::nullopt,
+        /*expected_debug_win_report_url=*/absl::nullopt,
+        /*expected_set_priority=*/absl::nullopt,
+        std::move(expected_pa_requests));
+  }
+
+  // Debug mode enabled twice
+  {
+    RunGenerateBidWithJavascriptExpectingResult(
+        CreateGenerateBidScript(
+            R"({ad: "ad", bid:1, render:"https://response.test/" })",
+            /*extra_code=*/R"(
+            privateAggregation.enableDebugMode();
+            privateAggregation.enableDebugMode();
+          )"),
+        /*expected_bid=*/
+        mojom::BidderWorkletBidPtr(),
+        /*expected_data_version=*/absl::nullopt,
+        /*expected_errors=*/
+        {"https://url.test/:6 Uncaught TypeError: enableDebugMode may be "
+         "called at most once."},
+        /*expected_debug_loss_report_url=*/absl::nullopt,
+        /*expected_debug_win_report_url=*/absl::nullopt,
+        /*expected_set_priority=*/absl::nullopt,
+        /*expected_pa_requests=*/{});
+  }
 }
 
 TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
@@ -4255,13 +4344,15 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
           content::mojom::AggregatableReportHistogramContribution::New(
               /*bucket=*/123,
               /*value=*/45),
-          content::mojom::AggregationServiceMode::kDefault);
+          content::mojom::AggregationServiceMode::kDefault,
+          content::mojom::DebugModeDetails::New());
   auction_worklet::mojom::PrivateAggregationRequestPtr kExpectedRequest2 =
       auction_worklet::mojom::PrivateAggregationRequest::New(
           content::mojom::AggregatableReportHistogramContribution::New(
               /*bucket=*/absl::MakeInt128(/*high=*/1, /*low=*/0),
               /*value=*/1),
-          content::mojom::AggregationServiceMode::kDefault);
+          content::mojom::AggregationServiceMode::kDefault,
+          content::mojom::DebugModeDetails::New());
 
   {
     PrivateAggregationRequests expected_pa_requests;
@@ -4337,6 +4428,54 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
         /*expected_errors=*/
         {"https://url.test/:12 Uncaught ReferenceError: error is not "
          "defined."});
+  }
+
+  // Debug mode enabled with debug key
+  {
+    PrivateAggregationRequests expected_pa_requests;
+    expected_pa_requests.push_back(
+        auction_worklet::mojom::PrivateAggregationRequest::New(
+            kExpectedRequest1->contribution->Clone(),
+            content::mojom::AggregationServiceMode::kDefault,
+            content::mojom::DebugModeDetails::New(
+                /*is_enabled=*/true, content::mojom::DebugKey::New(1234u))));
+
+    RunReportWinWithFunctionBodyExpectingResult(
+        R"(
+            privateAggregation.enableDebugMode({debug_key: 1234});
+            privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+        )",
+        /*expected_report_url=*/absl::nullopt,
+        /*expected_ad_beacon_map=*/{}, std::move(expected_pa_requests),
+        /*expected_errors=*/{});
+  }
+
+  // Debug mode enabled without debug key, but with multiple requests
+  {
+    PrivateAggregationRequests expected_pa_requests;
+    expected_pa_requests.push_back(
+        auction_worklet::mojom::PrivateAggregationRequest::New(
+            kExpectedRequest1->contribution->Clone(),
+            content::mojom::AggregationServiceMode::kDefault,
+            content::mojom::DebugModeDetails::New(
+                /*is_enabled=*/true, /*debug_key=*/nullptr)));
+    expected_pa_requests.push_back(
+        auction_worklet::mojom::PrivateAggregationRequest::New(
+            kExpectedRequest2->contribution->Clone(),
+            content::mojom::AggregationServiceMode::kDefault,
+            content::mojom::DebugModeDetails::New(
+                /*is_enabled=*/true, /*debug_key=*/nullptr)));
+
+    RunReportWinWithFunctionBodyExpectingResult(
+        R"(
+            privateAggregation.enableDebugMode();
+            privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+            privateAggregation.sendHistogramReport(
+                {bucket: 18446744073709551616n, value: 1});
+        )",
+        /*expected_report_url=*/absl::nullopt,
+        /*expected_ad_beacon_map=*/{}, std::move(expected_pa_requests),
+        /*expected_errors=*/{});
   }
 }
 

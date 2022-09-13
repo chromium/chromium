@@ -14,6 +14,7 @@
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/common/aggregatable_report.mojom-forward.h"
+#include "content/common/private_aggregation_host.mojom-forward.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/test_content_browser_client.h"
@@ -69,7 +70,8 @@ class MockPrivateAggregationHost : public PrivateAggregationHost {
   MOCK_METHOD(void,
               SendHistogramReport,
               (std::vector<mojom::AggregatableReportHistogramContributionPtr>,
-               mojom::AggregationServiceMode),
+               mojom::AggregationServiceMode,
+               mojom::DebugModeDetailsPtr),
               (override));
 
  private:

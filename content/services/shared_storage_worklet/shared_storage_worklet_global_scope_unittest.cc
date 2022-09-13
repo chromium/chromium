@@ -249,7 +249,8 @@ class MockMojomPrivateAggregationHost
       void,
       SendHistogramReport,
       (std::vector<content::mojom::AggregatableReportHistogramContributionPtr>,
-       content::mojom::AggregationServiceMode),
+       content::mojom::AggregationServiceMode,
+       content::mojom::DebugModeDetailsPtr),
       (override));
 };
 
@@ -1430,12 +1431,15 @@ TEST_F(SharedStorageRunOperationTest,
           [](std::vector<
                  content::mojom::AggregatableReportHistogramContributionPtr>
                  contributions,
-             content::mojom::AggregationServiceMode aggregation_mode) {
+             content::mojom::AggregationServiceMode aggregation_mode,
+             content::mojom::DebugModeDetailsPtr debug_mode_details) {
             ASSERT_EQ(contributions.size(), 1u);
             EXPECT_EQ(contributions[0]->bucket, 1);
             EXPECT_EQ(contributions[0]->value, 2);
             EXPECT_EQ(aggregation_mode,
                       content::mojom::AggregationServiceMode::kDefault);
+            ASSERT_FALSE(debug_mode_details.is_null());
+            EXPECT_EQ(*debug_mode_details, content::mojom::DebugModeDetails());
           }));
 
   SimulateAddModule(R"(
@@ -2207,20 +2211,25 @@ class SharedStoragePrivateAggregationTest
     EXPECT_TRUE(error_message.empty());
   }
 
-  void ExecuteScriptAndValidateContribution(const std::string& script_body,
-                                            absl::uint128 expected_bucket,
-                                            int expected_value) {
+  void ExecuteScriptAndValidateContribution(
+      const std::string& script_body,
+      absl::uint128 expected_bucket,
+      int expected_value,
+      content::mojom::DebugModeDetailsPtr expected_debug_mode_details =
+          content::mojom::DebugModeDetails::New()) {
     EXPECT_CALL(*mock_private_aggregation_host(), SendHistogramReport)
         .WillOnce(testing::Invoke(
-            [=](std::vector<
+            [&](std::vector<
                     content::mojom::AggregatableReportHistogramContributionPtr>
                     contributions,
-                content::mojom::AggregationServiceMode aggregation_mode) {
+                content::mojom::AggregationServiceMode aggregation_mode,
+                content::mojom::DebugModeDetailsPtr debug_mode_details) {
               ASSERT_EQ(contributions.size(), 1u);
               EXPECT_EQ(contributions[0]->bucket, expected_bucket);
               EXPECT_EQ(contributions[0]->value, expected_value);
               EXPECT_EQ(aggregation_mode,
                         content::mojom::AggregationServiceMode::kDefault);
+              EXPECT_TRUE(debug_mode_details == expected_debug_mode_details);
             }));
 
     ExecuteScriptExpectNoError(script_body);
@@ -2367,27 +2376,192 @@ TEST_F(SharedStoragePrivateAggregationTest, MultipleRequests) {
           [](std::vector<
                  content::mojom::AggregatableReportHistogramContributionPtr>
                  contributions,
-             content::mojom::AggregationServiceMode aggregation_mode) {
+             content::mojom::AggregationServiceMode aggregation_mode,
+             content::mojom::DebugModeDetailsPtr debug_mode_details) {
             ASSERT_EQ(contributions.size(), 1u);
             EXPECT_EQ(contributions[0]->bucket, 1);
             EXPECT_EQ(contributions[0]->value, 2);
             EXPECT_EQ(aggregation_mode,
                       content::mojom::AggregationServiceMode::kDefault);
+            ASSERT_FALSE(debug_mode_details.is_null());
+            EXPECT_EQ(*debug_mode_details, content::mojom::DebugModeDetails());
           }))
       .WillOnce(testing::Invoke(
           [](std::vector<
                  content::mojom::AggregatableReportHistogramContributionPtr>
                  contributions,
-             content::mojom::AggregationServiceMode aggregation_mode) {
+             content::mojom::AggregationServiceMode aggregation_mode,
+             content::mojom::DebugModeDetailsPtr debug_mode_details) {
             ASSERT_EQ(contributions.size(), 1u);
             EXPECT_EQ(contributions[0]->bucket, 3);
             EXPECT_EQ(contributions[0]->value, 4);
             EXPECT_EQ(aggregation_mode,
                       content::mojom::AggregationServiceMode::kDefault);
+            ASSERT_FALSE(debug_mode_details.is_null());
+            EXPECT_EQ(*debug_mode_details, content::mojom::DebugModeDetails());
           }));
 
   ExecuteScriptExpectNoError(
       R"(
+        privateAggregation.sendHistogramReport({bucket: 1, value: 2});
+        privateAggregation.sendHistogramReport({bucket: 3, value: 4});
+      )");
+}
+
+TEST_F(SharedStoragePrivateAggregationTest, DebugModeWithNoDebugKey) {
+  ExecuteScriptAndValidateContribution(
+      R"(
+        privateAggregation.enableDebugMode();
+        privateAggregation.sendHistogramReport({bucket: 1, value: 2});
+      )",
+      /*expected_bucket=*/1,
+      /*expected_value=*/2,
+      /*expected_debug_mode_details=*/
+      content::mojom::DebugModeDetails::New(/*is_enabled=*/true,
+                                            /*debug_key=*/nullptr));
+}
+
+TEST_F(SharedStoragePrivateAggregationTest, DebugModeWithDebugKey) {
+  ExecuteScriptAndValidateContribution(
+      R"(
+        privateAggregation.enableDebugMode({debug_key: 1234});
+        privateAggregation.sendHistogramReport({bucket: 1, value: 2});
+      )",
+      /*expected_bucket=*/1,
+      /*expected_value=*/2,
+      /*expected_debug_mode_details=*/
+      content::mojom::DebugModeDetails::New(
+          /*is_enabled=*/true,
+          /*debug_key=*/content::mojom::DebugKey::New(1234u)));
+}
+
+TEST_F(SharedStoragePrivateAggregationTest, DebugModeWithBigIntDebugKey) {
+  ExecuteScriptAndValidateContribution(
+      R"(
+        privateAggregation.enableDebugMode({debug_key: 1234n});
+        privateAggregation.sendHistogramReport({bucket: 1, value: 2});
+      )",
+      /*expected_bucket=*/1,
+      /*expected_value=*/2,
+      /*expected_debug_mode_details=*/
+      content::mojom::DebugModeDetails::New(
+          /*is_enabled=*/true,
+          /*debug_key=*/content::mojom::DebugKey::New(1234u)));
+}
+
+TEST_F(SharedStoragePrivateAggregationTest, NegativeDebugKey_Rejected) {
+  std::string error_str = ExecuteScriptReturningError(
+      "privateAggregation.enableDebugMode({debug_key: -1});");
+
+  EXPECT_EQ(error_str,
+            "https://example.test/:1 Uncaught TypeError: debug_key must be "
+            "either a non-negative integer Number or BigInt.");
+}
+
+TEST_F(SharedStoragePrivateAggregationTest, NonIntegerDebugKey_Rejected) {
+  std::string error_str = ExecuteScriptReturningError(
+      "privateAggregation.enableDebugMode({debug_key: 1.5});");
+
+  EXPECT_EQ(error_str,
+            "https://example.test/:1 Uncaught TypeError: debug_key must be "
+            "either a non-negative integer Number or BigInt.");
+}
+
+TEST_F(SharedStoragePrivateAggregationTest, TooLargeDebugKey_Rejected) {
+  std::string error_str = ExecuteScriptReturningError(
+      "privateAggregation.enableDebugMode({debug_key: "
+      "18446744073709551616n});");
+
+  EXPECT_EQ(error_str,
+            "https://example.test/:1 Uncaught TypeError: BigInt is too large.");
+}
+
+TEST_F(SharedStoragePrivateAggregationTest,
+       InvalidEnableDebugModeArgument_Rejected) {
+  // The debug key is not wrapped in a dictionary.
+  std::string error_str =
+      ExecuteScriptReturningError("privateAggregation.enableDebugMode(1234);");
+
+  EXPECT_EQ(error_str,
+            "https://example.test/:1 Uncaught TypeError: Invalid argument in "
+            "enableDebugMode.");
+}
+
+TEST_F(SharedStoragePrivateAggregationTest,
+       EnableDebugModeCalledTwice_SecondCallFails) {
+  std::string error_str = ExecuteScriptReturningError(
+      R"(
+        privateAggregation.enableDebugMode({debug_key: 1234n});
+        privateAggregation.enableDebugMode();
+      )");
+
+  EXPECT_EQ(error_str,
+            "https://example.test/:3 Uncaught TypeError: enableDebugMode may "
+            "be called at most once.");
+
+  // Note that the first call still applies to future requests.
+  ExecuteScriptAndValidateContribution(
+      "privateAggregation.sendHistogramReport({bucket: 1, value: 2});",
+      /*expected_bucket=*/1,
+      /*expected_value=*/2,
+      /*expected_debug_mode_details=*/
+      content::mojom::DebugModeDetails::New(
+          /*is_enabled=*/true,
+          /*debug_key=*/content::mojom::DebugKey::New(1234u)));
+}
+
+// Note that FLEDGE worklets have different behavior in this case.
+TEST_F(SharedStoragePrivateAggregationTest,
+       EnableDebugModeCalledAfterRequest_DoesntApply) {
+  ExecuteScriptAndValidateContribution(
+      "privateAggregation.sendHistogramReport({bucket: 1, value: 2});",
+      /*expected_bucket=*/1,
+      /*expected_value=*/2,
+      /*expected_debug_mode_details=*/
+      content::mojom::DebugModeDetails::New());
+
+  ExecuteScriptExpectNoError(
+      "privateAggregation.enableDebugMode({debug_key: 1234n});");
+}
+
+TEST_F(SharedStoragePrivateAggregationTest, MultipleDebugModeRequests) {
+  EXPECT_CALL(*mock_private_aggregation_host(), SendHistogramReport)
+      .WillOnce(testing::Invoke(
+          [](std::vector<
+                 content::mojom::AggregatableReportHistogramContributionPtr>
+                 contributions,
+             content::mojom::AggregationServiceMode aggregation_mode,
+             content::mojom::DebugModeDetailsPtr debug_mode_details) {
+            ASSERT_EQ(contributions.size(), 1u);
+            EXPECT_EQ(contributions[0]->bucket, 1);
+            EXPECT_EQ(contributions[0]->value, 2);
+            EXPECT_EQ(aggregation_mode,
+                      content::mojom::AggregationServiceMode::kDefault);
+            EXPECT_EQ(debug_mode_details,
+                      content::mojom::DebugModeDetails::New(
+                          /*is_enabled=*/true,
+                          /*debug_key=*/content::mojom::DebugKey::New(1234u)));
+          }))
+      .WillOnce(testing::Invoke(
+          [](std::vector<
+                 content::mojom::AggregatableReportHistogramContributionPtr>
+                 contributions,
+             content::mojom::AggregationServiceMode aggregation_mode,
+             content::mojom::DebugModeDetailsPtr debug_mode_details) {
+            ASSERT_EQ(contributions.size(), 1u);
+            EXPECT_EQ(contributions[0]->bucket, 3);
+            EXPECT_EQ(contributions[0]->value, 4);
+            EXPECT_EQ(aggregation_mode,
+                      content::mojom::AggregationServiceMode::kDefault);
+            EXPECT_EQ(debug_mode_details,
+                      content::mojom::DebugModeDetails::New(
+                          /*is_enabled=*/true,
+                          /*debug_key=*/content::mojom::DebugKey::New(1234u)));
+          }));
+
+  ExecuteScriptExpectNoError(
+      R"(
+        privateAggregation.enableDebugMode({debug_key: 1234n});
         privateAggregation.sendHistogramReport({bucket: 1, value: 2});
         privateAggregation.sendHistogramReport({bucket: 3, value: 4});
       )");

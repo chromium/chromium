@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
+#include "content/common/private_aggregation_host.mojom.h"
 #include "content/services/auction_worklet/context_recycler.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
 #include "v8/include/v8-forward.h"
@@ -40,11 +41,15 @@ class CONTENT_EXPORT PrivateAggregationBindings : public Bindings {
  private:
   static void SendHistogramReport(
       const v8::FunctionCallbackInfo<v8::Value>& args);
+  static void EnableDebugMode(const v8::FunctionCallbackInfo<v8::Value>& args);
 
   const raw_ptr<AuctionV8Helper> v8_helper_;
 
-  std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
-      private_aggregation_requests_;
+  // Defaults to debug mode being disabled.
+  content::mojom::DebugModeDetails debug_mode_details_;
+
+  std::vector<content::mojom::AggregatableReportHistogramContributionPtr>
+      private_aggregation_contributions_;
 };
 
 }  // namespace auction_worklet
