@@ -996,8 +996,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   //   with its parent.
   // * The native widget may change a widget's parent.
   // * The native view's parent might or might not be the parent's native view.
-  Widget* parent() { return parent_; }
-  const Widget* parent() const { return parent_; }
+  // * For a desktop widget with a non-desktop parent, this value might be
+  //   nullptr during shutdown.
+  Widget* parent() { return parent_.get(); }
+  const Widget* parent() const { return parent_.get(); }
 
   // True if the widget is considered top level widget. Top level widget
   // is a widget of TYPE_WINDOW, TYPE_PANEL, TYPE_WINDOW_FRAMELESS, BUBBLE,
@@ -1235,7 +1237,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // The parent of this widget. This is the widget that associates with
   // the |params.parent| supplied to Init(). If no parent is given or the native
   // view parent has no associating Widget, this value will be nullptr.
-  raw_ptr<Widget> parent_ = nullptr;
+  // For a desktop widget with a non-desktop parent, this value might be nullptr
+  // during shutdown.
+  base::WeakPtr<Widget> parent_ = nullptr;
 
   // The root of the View hierarchy attached to this window.
   // WARNING: see warning in tooltip_manager_ for ordering dependencies with

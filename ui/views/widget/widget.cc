@@ -329,7 +329,8 @@ void Widget::Init(InitParams params) {
       params.name = params.delegate->GetContentsView()->GetClassName();
   }
 
-  parent_ = params.parent ? GetWidgetForNativeView(params.parent) : nullptr;
+  if (params.parent && GetWidgetForNativeView(params.parent))
+    parent_ = GetWidgetForNativeView(params.parent)->GetWeakPtr();
 
   // Subscripbe to parent's paint-as-active change.
   if (parent_) {
@@ -1927,11 +1928,11 @@ void Widget::SetInitialBoundsForFramelessWindow(const gfx::Rect& bounds) {
 }
 
 void Widget::SetParent(Widget* parent) {
-  if (parent == parent_)
+  if (parent == parent_.get())
     return;
 
-  Widget* old_parent = parent_;
-  parent_ = parent;
+  Widget* old_parent = parent_.get();
+  parent_ = parent ? parent->GetWeakPtr() : nullptr;
 
   // Release the paint-as-active lock on the old parent.
   bool has_lock_on_parent = !!parent_paint_as_active_lock_;

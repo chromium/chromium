@@ -56,13 +56,20 @@
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/views/window/native_frame_view.h"
 
-#if BUILDFLAG(IS_WIN)
+#if defined(USE_AURA)
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/view_prop.h"
-#include "ui/base/win/window_event_target.h"
 #include "ui/views/test/test_platform_native_widget.h"
-#include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
+#include "ui/views/widget/native_widget_aura.h"
+#include "ui/wm/core/base_focus_rules.h"
+#include "ui/wm/core/focus_controller.h"
+#include "ui/wm/core/shadow_controller.h"
+#include "ui/wm/core/shadow_controller_delegate.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "ui/base/win/window_event_target.h"
 #include "ui/views/win/hwnd_util.h"
 #endif
 
@@ -70,11 +77,8 @@
 #include "base/mac/mac_util.h"
 #endif
 
-#if defined(USE_AURA) && !BUILDFLAG(ENABLE_DESKTOP_AURA)
-#include "ui/wm/core/base_focus_rules.h"
-#include "ui/wm/core/focus_controller.h"
-#include "ui/wm/core/shadow_controller.h"
-#include "ui/wm/core/shadow_controller_delegate.h"
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+#include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #endif
 
 #if defined(USE_OZONE)
@@ -1482,6 +1486,39 @@ TEST_F(DesktopWidgetTest, MinimumSizeConstraints) {
   widget->SetSize(smaller_size);
   EXPECT_EQ(minimum_size, widget->GetClientAreaBoundsInScreen().size());
 }
+
+// When a non-desktop widget has a desktop child widget, due to the
+// async nature of desktop widget shutdown, the parent can be destroyed before
+// its child. Make sure that parent() returns nullptr at this time.
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+TEST_F(DesktopWidgetTest, GetPossiblyDestroyedParent) {
+  WidgetAutoclosePtr root(CreateTopLevelNativeWidget());
+
+  const auto create_widget = [](Widget* parent, bool is_desktop) {
+    Widget* widget = new Widget;
+    Widget::InitParams init_params(Widget::InitParams::TYPE_WINDOW);
+    init_params.parent = parent->GetNativeView();
+    init_params.context = parent->GetNativeView();
+    if (is_desktop) {
+      init_params.native_widget =
+          new test::TestPlatformNativeWidget<DesktopNativeWidgetAura>(
+              widget, false, nullptr);
+    } else {
+      init_params.native_widget =
+          new test::TestPlatformNativeWidget<NativeWidgetAura>(widget, false,
+                                                               nullptr);
+    }
+    widget->Init(std::move(init_params));
+    return widget;
+  };
+
+  WidgetAutoclosePtr child(create_widget(root.get(), /* non-desktop */ false));
+  WidgetAutoclosePtr grandchild(create_widget(child.get(), /* desktop */ true));
+
+  child.reset();
+  EXPECT_EQ(grandchild->parent(), nullptr);
+}
+#endif  // BUILDFLAG(ENABLE_DESKTOP_AURA)
 
 // Tests that SetBounds() and GetWindowBoundsInScreen() is symmetric when the
 // widget is visible and not maximized or fullscreen.
