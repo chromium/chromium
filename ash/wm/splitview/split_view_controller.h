@@ -75,6 +75,9 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
     // Splitview is being ended due to a change in Virtual Desks, such as
     // switching desks or removing a desk.
     kDesksChange,
+    // Splitview is being ended due to the `root_window_` is destroyed and the
+    // SplitViewController is being destroyed.
+    kRootWindowDestroyed,
   };
 
   // The behaviors of split view are very different when in tablet mode and in
