@@ -949,6 +949,11 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.msan.browser_tests.oobe_negative.filter',
         ],
       },
+      'Linux MSan Tests': {
+        'swarming': {
+          'shards': 12,
+        },
+      },
       'Linux Tests': {
         'swarming': {
           'quickrun_shards': 15,
