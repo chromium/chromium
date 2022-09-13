@@ -13,25 +13,32 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 
 grd_prefix = "gaia_auth_host"
-manifest_file = "gaia_auth_host_manifest.json"
+manifest_existing_files = "gaia_auth_host_existing_manifest.json"
+manifest_generated_files = "gaia_auth_host_generated_manifest.json"
 
 generate_grd("build_grd") {
   out_grd = "$target_gen_dir/resources.grd"
-  deps = [ ":preprocess_gen_js_files" ]
+  deps = [
+    ":preprocess_gen",
+    ":preprocess_src",
+  ]
 
   # Resources are expected to be registered with paths like:
   # gaia_auth_host/resource_name.js
   resource_path_prefix = "gaia_auth_host"
 
-  manifest_files = [ "$target_gen_dir/$manifest_file" ]
+  manifest_files = [
+    "$target_gen_dir/$manifest_existing_files",
+    "$target_gen_dir/$manifest_generated_files",
+  ]
 }
 
-preprocess_if_expr("preprocess_gen_js_files") {
+preprocess_if_expr("preprocess_gen") {
   defines = chrome_grit_defines
   deps = [ ":modulize" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/gaia_auth_host_preprocessed"
-  out_manifest = "$target_gen_dir/$manifest_file"
+  out_manifest = "$target_gen_dir/$manifest_generated_files"
 
   in_files = [
     "authenticator.m.js",
@@ -44,6 +51,13 @@ preprocess_if_expr("preprocess_gen_js_files") {
     "saml_username_autofill.m.js",
     "webview_event_manager.m.js",
   ]
+}
+
+# Preprocess existing files.
+preprocess_if_expr("preprocess_src") {
+  out_folder = "$target_gen_dir/gaia_auth_host_preprocessed"
+  out_manifest = "$target_gen_dir/$manifest_existing_files"
+  in_files = [ "okta_detect_success_injected.js" ]
 }
 
 grit("resources") {

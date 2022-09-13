@@ -85,7 +85,6 @@
         <include name="IDR_INLINE_LOGIN_APP_HTML_JS" file="${root_gen_dir}\chrome\browser\resources\inline_login\preprocessed\inline_login_app.html.js" use_base_dir="false" type ="BINDATA" />
         <include name="IDR_INLINE_LOGIN_BROWSER_PROXY_JS" file="${root_gen_dir}\chrome\browser\resources\inline_login\preprocessed\inline_login_browser_proxy.js" use_base_dir="false" type ="BINDATA"/>
         <include name="IDR_GAIA_AUTH_WEBVIEW_SAML_INJECTED_JS" file="resources\gaia_auth_host\webview_saml_injected.js" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_GAIA_AUTH_OKTA_DETECT_SUCCESS_INJECTED_JS" file="resources\gaia_auth_host\okta_detect_success_injected.js" type="BINDATA" />
       </if>
 
       <if expr="is_chromeos">
@@ -157,15 +156,14 @@
           <include name="IDR_ACCOUNT_MANAGER_WELCOME_GOOGLE_LOGO_SVG" file="resources\chromeos\googleg.svg" type="BINDATA" />
         </if>
 
-        <include name="IDR_PASSWORD_CHANGE_HTML" file="resources\chromeos\password_change\password_change.html" type="BINDATA" />
-        <include name="IDR_PASSWORD_CHANGE_JS" file="resources\chromeos\password_change\password_change.js" type="BINDATA" />
-        <include name="IDR_PASSWORD_CHANGE_AUTHENTICATOR_JS" file="resources\gaia_auth_host\password_change_authenticator.js" flattenhtml="true" type="BINDATA" />
+        <include name="IDR_PASSWORD_CHANGE_APP_HTML" file="resources\chromeos\password_change\password_change_app.html" type="BINDATA" />
+        <include name="IDR_PASSWORD_CHANGE_APP_JS" file="resources\chromeos\password_change\password_change_app.js" type="BINDATA" />
+        <include name="IDR_PASSWORD_CHANGE_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\password_change\password_change.js" type="BINDATA" use_base_dir="false"/>
         <include name="IDR_PASSWORD_CHANGE_EVENT_TARGET_JS" file="resources\gaia_auth_host\event_target.js" type="BINDATA" />
         <include name="IDR_CONFIRM_PASSWORD_CHANGE_HTML" file="resources\chromeos\password_change\confirm_password_change.html" type="chrome_html" />
         <include name="IDR_CONFIRM_PASSWORD_CHANGE_JS" file="resources\chromeos\password_change\confirm_password_change.js" type="chrome_html" />
         <include name="IDR_URGENT_PASSWORD_EXPIRY_NOTIFICATION_HTML" file="resources\chromeos\password_change\urgent_password_expiry_notification.html" type="chrome_html" />
         <include name="IDR_URGENT_PASSWORD_EXPIRY_NOTIFICATION_APP_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\password_change\urgent_password_expiry_notification_app.js" type="chrome_html" use_base_dir="false" />
-        <include name="IDR_GAIA_AUTH_AUTHENTICATOR_JS" file="resources\gaia_auth_host\authenticator.js" flattenhtml="true" type="BINDATA" />
         <include name="IDR_LOCK_SCREEN_REAUTH_APP_HTML" file="resources\chromeos\password_change\lock_screen_reauth_app.html" flattenhtml="true" type="BINDATA" />
         <include name="IDR_LOCK_SCREEN_REAUTH_HTML" file="resources\chromeos\password_change\lock_screen_reauth.html" flattenhtml="true" type="BINDATA" />
         <include name="IDR_LOCK_SCREEN_REAUTH_APP_JS" file="resources\chromeos\password_change\lock_screen_reauth_app.js" type="BINDATA" />

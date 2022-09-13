@@ -35,10 +35,17 @@ cr.define('cr.samlPasswordChange', function() {
    * The script to inject into Okta user settings page.
    * @type {string}
    */
-  const oktaInjectedJsFile = 'okta_detect_success_injected.js';
+  const oktaInjectedJsFile = 'gaia_auth_host/okta_detect_success_injected.js';
 
   const BLANK_PAGE_URL = 'about:blank';
 
+  /**
+   * @typedef {{
+   *   old_passwords: Array<string>,
+   *   new_passwords: Array<string>,
+   * }}
+   */
+  /* #export */ let PasswordChangeEventData;
 
   /**
    * @param {string} extensionId The ID of the extension to send the message to.
@@ -152,7 +159,7 @@ cr.define('cr.samlPasswordChange', function() {
   /**
    * Initializes the authenticator component.
    */
-  class Authenticator extends cr.EventTarget {
+  /* #export */ class PasswordChangeAuthenticator extends cr.EventTarget {
     /**
      * @param {!WebView|string} webview The webview element or its ID to host
      *     IdP web pages.
@@ -422,7 +429,7 @@ cr.define('cr.samlPasswordChange', function() {
 
   // #cr_define_end
   return {
-    Authenticator: Authenticator,
+    PasswordChangeAuthenticator: PasswordChangeAuthenticator,
     detectPasswordChangeSuccess: detectPasswordChangeSuccess,
   };
 });

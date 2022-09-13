@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
+#include "chrome/grit/gaia_auth_host_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/login/auth/public/saml_password_attributes.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -94,17 +95,15 @@ PasswordChangeUI::PasswordChangeUI(content::WebUI* web_ui)
   source->AddString("hostedHeader", GetHostedHeaderText(password_change_url));
   source->UseStringsJs();
 
-  source->SetDefaultResource(IDR_PASSWORD_CHANGE_HTML);
-
-  source->AddResourcePath("event_target.js",
-                          IDR_PASSWORD_CHANGE_EVENT_TARGET_JS);
-  source->AddResourcePath("password_change_authenticator.js",
-                          IDR_PASSWORD_CHANGE_AUTHENTICATOR_JS);
+  source->SetDefaultResource(IDR_PASSWORD_CHANGE_APP_HTML);
+  source->AddResourcePath("password_change_app.js", IDR_PASSWORD_CHANGE_APP_JS);
   source->AddResourcePath("webview_saml_injected.js",
                           IDR_GAIA_AUTH_WEBVIEW_SAML_INJECTED_JS);
-  source->AddResourcePath("okta_detect_success_injected.js",
-                          IDR_GAIA_AUTH_OKTA_DETECT_SUCCESS_INJECTED_JS);
   source->AddResourcePath("password_change.js", IDR_PASSWORD_CHANGE_JS);
+
+  // Add Gaia Authenticator resources
+  source->AddResourcePaths(
+      base::make_span(kGaiaAuthHostResources, kGaiaAuthHostResourcesSize));
 
   content::WebUIDataSource::Add(profile, source);
 }
