@@ -22,6 +22,7 @@
 #include "media/base/video_frame_pool.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
@@ -33,6 +34,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_copy_to_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_pixel_format.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
@@ -104,7 +106,8 @@ media::VideoPixelFormat ToOpaqueMediaPixelFormat(media::VideoPixelFormat fmt) {
 }
 
 class CachedVideoFramePool : public GarbageCollected<CachedVideoFramePool>,
-                             public Supplement<ExecutionContext> {
+                             public Supplement<ExecutionContext>,
+                             public ExecutionContextLifecycleStateObserver {
  public:
   static const char kSupplementName[];
 
@@ -120,8 +123,10 @@ class CachedVideoFramePool : public GarbageCollected<CachedVideoFramePool>,
 
   explicit CachedVideoFramePool(ExecutionContext& context)
       : Supplement<ExecutionContext>(context),
-        task_runner_(Thread::Current()->GetDeprecatedTaskRunner()) {}
-  virtual ~CachedVideoFramePool() = default;
+        ExecutionContextLifecycleStateObserver(&context) {
+    UpdateStateIfNeeded();
+  }
+  ~CachedVideoFramePool() override = default;
 
   // Disallow copy and assign.
   CachedVideoFramePool& operator=(const CachedVideoFramePool&) = delete;
@@ -142,7 +147,18 @@ class CachedVideoFramePool : public GarbageCollected<CachedVideoFramePool>,
 
   void Trace(Visitor* visitor) const override {
     Supplement<ExecutionContext>::Trace(visitor);
+    ExecutionContextLifecycleStateObserver::Trace(visitor);
   }
+
+  void ContextLifecycleStateChanged(
+      mojom::blink::FrameLifecycleState state) override {
+    if (state == mojom::blink::FrameLifecycleState::kRunning)
+      return;
+    // Reset `frame_pool_` because the task runner for purging will get paused.
+    frame_pool_.reset();
+  }
+
+  void ContextDestroyed() override { frame_pool_.reset(); }
 
  private:
   static const base::TimeDelta kIdleTimeout;
@@ -150,7 +166,8 @@ class CachedVideoFramePool : public GarbageCollected<CachedVideoFramePool>,
   void PostMonitoringTask() {
     DCHECK(!task_handle_.IsActive());
     task_handle_ = PostDelayedCancellableTask(
-        *task_runner_, FROM_HERE,
+        *GetSupplementable()->GetTaskRunner(TaskType::kInternalMedia),
+        FROM_HERE,
         WTF::Bind(&CachedVideoFramePool::PurgeIdleFramePool,
                   WrapWeakPersistent(this)),
         kIdleTimeout);
@@ -172,7 +189,6 @@ class CachedVideoFramePool : public GarbageCollected<CachedVideoFramePool>,
     PostMonitoringTask();
   }
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<media::VideoFramePool> frame_pool_;
   base::TimeTicks last_frame_creation_;
   TaskHandle task_handle_;
@@ -184,7 +200,8 @@ const base::TimeDelta CachedVideoFramePool::kIdleTimeout = base::Seconds(10);
 
 class CanvasResourceProviderCache
     : public GarbageCollected<CanvasResourceProviderCache>,
-      public Supplement<ExecutionContext> {
+      public Supplement<ExecutionContext>,
+      public ExecutionContextLifecycleStateObserver {
  public:
   static const char kSupplementName[];
 
@@ -201,8 +218,10 @@ class CanvasResourceProviderCache
 
   explicit CanvasResourceProviderCache(ExecutionContext& context)
       : Supplement<ExecutionContext>(context),
-        task_runner_(Thread::Current()->GetDeprecatedTaskRunner()) {}
-  virtual ~CanvasResourceProviderCache() = default;
+        ExecutionContextLifecycleStateObserver(&context) {
+    UpdateStateIfNeeded();
+  }
+  ~CanvasResourceProviderCache() override = default;
 
   // Disallow copy and assign.
   CanvasResourceProviderCache& operator=(const CanvasResourceProviderCache&) =
@@ -234,7 +253,19 @@ class CanvasResourceProviderCache
 
   void Trace(Visitor* visitor) const override {
     Supplement<ExecutionContext>::Trace(visitor);
+    ExecutionContextLifecycleStateObserver::Trace(visitor);
   }
+
+  void ContextLifecycleStateChanged(
+      mojom::blink::FrameLifecycleState state) override {
+    if (state == mojom::blink::FrameLifecycleState::kRunning)
+      return;
+    // Reset `info_to_provider_` because the task runner for purging will get
+    // paused.
+    info_to_provider_.clear();
+  }
+
+  void ContextDestroyed() override { info_to_provider_.clear(); }
 
  private:
   static constexpr int kMaxSize = 50;
@@ -243,7 +274,8 @@ class CanvasResourceProviderCache
   void PostMonitoringTask() {
     DCHECK(!task_handle_.IsActive());
     task_handle_ = PostDelayedCancellableTask(
-        *task_runner_, FROM_HERE,
+        *GetSupplementable()->GetTaskRunner(TaskType::kInternalMedia),
+        FROM_HERE,
         WTF::Bind(&CanvasResourceProviderCache::PurgeIdleFramePool,
                   WrapWeakPersistent(this)),
         kIdleTimeout);
@@ -257,7 +289,6 @@ class CanvasResourceProviderCache
     PostMonitoringTask();
   }
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HashMap<SkImageInfo, std::unique_ptr<CanvasResourceProvider>>
       info_to_provider_;
   base::TimeTicks last_access_time_;
