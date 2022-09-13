@@ -24,6 +24,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/security_state/core/security_state.h"
@@ -42,6 +43,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
+#include "extensions/browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h"
 #include "extensions/common/constants.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -1339,23 +1341,13 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractivePDFTest,
                          pdf_url.spec())));
 
   // Verify the pdf has loaded.
-  auto* guest_web_contents =
-      test_guest_view_manager()->DeprecatedWaitForSingleGuestCreated();
-  ASSERT_TRUE(guest_web_contents);
-  EXPECT_NE(embedder_web_contents, guest_web_contents);
+  auto* guest_view = test_guest_view_manager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(guest_view);
+  EXPECT_NE(embedder_web_contents->GetPrimaryMainFrame(),
+            guest_view->GetGuestMainFrame());
 
-  // Make sure the load has started, before waiting for it to stop.
-  // This is a little hacky, but will unjank the test for now.
-  // TODO(wjmaclean): Make this less hacky.
-  while (!guest_web_contents->IsLoading() &&
-         !guest_web_contents->GetController().GetLastCommittedEntry()) {
-    base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
-
-  EXPECT_TRUE(content::WaitForLoadStop(guest_web_contents));
+  extensions::TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(
+      guest_view);
 
   // Make sure the text area still has focus.
   ASSERT_TRUE(
