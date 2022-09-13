@@ -253,10 +253,7 @@ void OnFormsSeenWithExpectations(MockAutofillManager& manager,
 
 class AutofillManagerTest : public testing::Test {
  public:
-  AutofillManagerTest() {
-    scoped_feature_list_async_parse_form_.InitWithFeatureState(
-        features::kAutofillParseAsync, true);
-  }
+  AutofillManagerTest() = default;
 
   void SetUp() override {
     client_.SetPrefs(test::PrefServiceForTesting());
@@ -270,7 +267,7 @@ class AutofillManagerTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_async_parse_form_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   test::AutofillEnvironment autofill_environment_;
   NiceMock<MockAutofillClient> client_;
