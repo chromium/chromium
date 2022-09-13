@@ -588,7 +588,9 @@ WebContentsImpl* EmulationHandler::GetWebContents() {
 }
 
 void EmulationHandler::UpdateTouchEventEmulationState() {
-  DCHECK(host_);
+  if (!host_)
+    return;
+
   // We only have a single TouchEmulator for all frames, so let the main frame's
   // EmulationHandler enable/disable it.
   DCHECK(!host_->GetParentOrOuterDocument());
@@ -608,7 +610,9 @@ void EmulationHandler::UpdateTouchEventEmulationState() {
 }
 
 void EmulationHandler::UpdateDeviceEmulationState() {
-  DCHECK(host_);
+  if (!host_)
+    return;
+
   // Device emulation only happens on the outermost main frame.
   DCHECK(!host_->GetParentOrOuterDocument());
 
