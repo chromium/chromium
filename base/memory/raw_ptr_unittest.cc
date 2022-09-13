@@ -1359,15 +1359,23 @@ static constexpr partition_alloc::PartitionOptions kOpts = {
     partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
 };
 
-TEST(BackupRefPtrImpl, Basic) {
-  // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
-  // new/delete once PartitionAlloc Everywhere is fully enabled.
+class BackupRefPtrTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
+    // new/delete once PartitionAlloc Everywhere is fully enabled.
+    partition_alloc::PartitionAllocGlobalInit(HandleOOM);
+    allocator_.init(kOpts);
+  }
+
+  partition_alloc::PartitionAllocator allocator_;
+};
+
+TEST_F(BackupRefPtrTest, Basic) {
   base::CPU cpu;
-  partition_alloc::PartitionAllocGlobalInit(HandleOOM);
-  partition_alloc::PartitionAllocator allocator;
-  allocator.init(kOpts);
+
   int* raw_ptr1 =
-      reinterpret_cast<int*>(allocator.root()->Alloc(sizeof(int), ""));
+      reinterpret_cast<int*>(allocator_.root()->Alloc(sizeof(int), ""));
   // Use the actual raw_ptr implementation, not a test substitute, to
   // exercise real PartitionAlloc paths.
   raw_ptr<int> wrapped_ptr1 = raw_ptr1;
@@ -1375,7 +1383,7 @@ TEST(BackupRefPtrImpl, Basic) {
   *raw_ptr1 = 42;
   EXPECT_EQ(*raw_ptr1, *wrapped_ptr1);
 
-  allocator.root()->Free(raw_ptr1);
+  allocator_.root()->Free(raw_ptr1);
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   // In debug builds, the use-after-free should be caught immediately.
   EXPECT_DEATH_IF_SUPPORTED(g_volatile_int_to_ignore = *wrapped_ptr1, "");
@@ -1389,104 +1397,97 @@ TEST(BackupRefPtrImpl, Basic) {
   }
 
   // The allocator should not be able to reuse the slot at this point.
-  void* raw_ptr2 = allocator.root()->Alloc(sizeof(int), "");
+  void* raw_ptr2 = allocator_.root()->Alloc(sizeof(int), "");
   EXPECT_NE(partition_alloc::UntagPtr(raw_ptr1),
             partition_alloc::UntagPtr(raw_ptr2));
-  allocator.root()->Free(raw_ptr2);
+  allocator_.root()->Free(raw_ptr2);
 
   // When the last reference is released, the slot should become reusable.
   wrapped_ptr1 = nullptr;
-  void* raw_ptr3 = allocator.root()->Alloc(sizeof(int), "");
+  void* raw_ptr3 = allocator_.root()->Alloc(sizeof(int), "");
   EXPECT_EQ(partition_alloc::UntagPtr(raw_ptr1),
             partition_alloc::UntagPtr(raw_ptr3));
-  allocator.root()->Free(raw_ptr3);
+  allocator_.root()->Free(raw_ptr3);
 #endif  // DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 }
 
-TEST(BackupRefPtrImpl, ZeroSized) {
-  // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
-  // new/delete once PartitionAlloc Everywhere is fully enabled.
-  partition_alloc::PartitionAllocGlobalInit(HandleOOM);
-  partition_alloc::PartitionAllocator allocator;
-  allocator.init(kOpts);
-
+TEST_F(BackupRefPtrTest, ZeroSized) {
   std::vector<raw_ptr<void>> ptrs;
   // Use a reasonable number of elements to fill up the slot span.
   for (int i = 0; i < 128 * 1024; ++i) {
     // Constructing a raw_ptr instance from a zero-sized allocation should
     // not result in a crash.
-    ptrs.emplace_back(allocator.root()->Alloc(0, ""));
+    ptrs.emplace_back(allocator_.root()->Alloc(0, ""));
   }
 }
 
-TEST(BackupRefPtrImpl, EndPointer) {
+TEST_F(BackupRefPtrTest, EndPointer) {
   // This test requires a fresh partition with an empty free list.
-  partition_alloc::PartitionAllocGlobalInit(HandleOOM);
-  partition_alloc::PartitionAllocator allocator;
-  allocator.init(kOpts);
-
   // Check multiple size buckets and levels of slot filling.
   for (int size = 0; size < 1024; size += sizeof(void*)) {
     // Creating a raw_ptr from an address right past the end of an allocation
     // should not result in a crash or corrupt the free list.
-    char* raw_ptr1 = reinterpret_cast<char*>(allocator.root()->Alloc(size, ""));
+    char* raw_ptr1 =
+        reinterpret_cast<char*>(allocator_.root()->Alloc(size, ""));
     raw_ptr<char> wrapped_ptr = raw_ptr1 + size;
     wrapped_ptr = nullptr;
     // We need to make two more allocations to turn the possible free list
     // corruption into an observable crash.
-    char* raw_ptr2 = reinterpret_cast<char*>(allocator.root()->Alloc(size, ""));
-    char* raw_ptr3 = reinterpret_cast<char*>(allocator.root()->Alloc(size, ""));
+    char* raw_ptr2 =
+        reinterpret_cast<char*>(allocator_.root()->Alloc(size, ""));
+    char* raw_ptr3 =
+        reinterpret_cast<char*>(allocator_.root()->Alloc(size, ""));
 
     // Similarly for operator+=.
-    char* raw_ptr4 = reinterpret_cast<char*>(allocator.root()->Alloc(size, ""));
+    char* raw_ptr4 =
+        reinterpret_cast<char*>(allocator_.root()->Alloc(size, ""));
     wrapped_ptr = raw_ptr4;
     wrapped_ptr += size;
     wrapped_ptr = nullptr;
-    char* raw_ptr5 = reinterpret_cast<char*>(allocator.root()->Alloc(size, ""));
-    char* raw_ptr6 = reinterpret_cast<char*>(allocator.root()->Alloc(size, ""));
+    char* raw_ptr5 =
+        reinterpret_cast<char*>(allocator_.root()->Alloc(size, ""));
+    char* raw_ptr6 =
+        reinterpret_cast<char*>(allocator_.root()->Alloc(size, ""));
 
-    allocator.root()->Free(raw_ptr1);
-    allocator.root()->Free(raw_ptr2);
-    allocator.root()->Free(raw_ptr3);
-    allocator.root()->Free(raw_ptr4);
-    allocator.root()->Free(raw_ptr5);
-    allocator.root()->Free(raw_ptr6);
+    allocator_.root()->Free(raw_ptr1);
+    allocator_.root()->Free(raw_ptr2);
+    allocator_.root()->Free(raw_ptr3);
+    allocator_.root()->Free(raw_ptr4);
+    allocator_.root()->Free(raw_ptr5);
+    allocator_.root()->Free(raw_ptr6);
   }
 }
 
-TEST(BackupRefPtrImpl, QuarantinedBytes) {
-  partition_alloc::PartitionAllocGlobalInit(HandleOOM);
-  partition_alloc::PartitionAllocator allocator;
-  allocator.init(kOpts);
+TEST_F(BackupRefPtrTest, QuarantinedBytes) {
   uint64_t* raw_ptr1 = reinterpret_cast<uint64_t*>(
-      allocator.root()->Alloc(sizeof(uint64_t), ""));
+      allocator_.root()->Alloc(sizeof(uint64_t), ""));
   raw_ptr<uint64_t> wrapped_ptr1 = raw_ptr1;
-  EXPECT_EQ(allocator.root()->total_size_of_brp_quarantined_bytes.load(
+  EXPECT_EQ(allocator_.root()->total_size_of_brp_quarantined_bytes.load(
                 std::memory_order_relaxed),
             0U);
-  EXPECT_EQ(allocator.root()->total_count_of_brp_quarantined_slots.load(
+  EXPECT_EQ(allocator_.root()->total_count_of_brp_quarantined_slots.load(
                 std::memory_order_relaxed),
             0U);
 
   // Memory should get quarantined.
-  allocator.root()->Free(raw_ptr1);
-  EXPECT_GT(allocator.root()->total_size_of_brp_quarantined_bytes.load(
+  allocator_.root()->Free(raw_ptr1);
+  EXPECT_GT(allocator_.root()->total_size_of_brp_quarantined_bytes.load(
                 std::memory_order_relaxed),
             0U);
-  EXPECT_EQ(allocator.root()->total_count_of_brp_quarantined_slots.load(
+  EXPECT_EQ(allocator_.root()->total_count_of_brp_quarantined_slots.load(
                 std::memory_order_relaxed),
             1U);
 
   // Non quarantined free should not effect total_size_of_brp_quarantined_bytes
-  void* raw_ptr2 = allocator.root()->Alloc(sizeof(uint64_t), "");
-  allocator.root()->Free(raw_ptr2);
+  void* raw_ptr2 = allocator_.root()->Alloc(sizeof(uint64_t), "");
+  allocator_.root()->Free(raw_ptr2);
 
   // Freeing quarantined memory should bring the size back down to zero.
   wrapped_ptr1 = nullptr;
-  EXPECT_EQ(allocator.root()->total_size_of_brp_quarantined_bytes.load(
+  EXPECT_EQ(allocator_.root()->total_size_of_brp_quarantined_bytes.load(
                 std::memory_order_relaxed),
             0U);
-  EXPECT_EQ(allocator.root()->total_count_of_brp_quarantined_slots.load(
+  EXPECT_EQ(allocator_.root()->total_count_of_brp_quarantined_slots.load(
                 std::memory_order_relaxed),
             0U);
 }
@@ -1521,13 +1522,7 @@ void RunBackupRefPtrImplAdvanceTest(
   allocator.root()->Free(ptr);
 }
 
-TEST(BackupRefPtrImpl, Advance) {
-  // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
-  // new/delete once PartitionAlloc Everywhere is fully enabled.
-  partition_alloc::PartitionAllocGlobalInit(HandleOOM);
-  partition_alloc::PartitionAllocator allocator;
-  allocator.init(kOpts);
-
+TEST_F(BackupRefPtrTest, Advance) {
   // This requires some internal PartitionAlloc knowledge, but for the test to
   // work well the allocation + extras have to fill out the entire slot. That's
   // because PartitionAlloc doesn't know exact allocation size and bases the
@@ -1536,38 +1531,32 @@ TEST(BackupRefPtrImpl, Advance) {
   // A power of two is a safe choice for a slot size, then adjust it for extras.
   size_t slot_size = 512;
   size_t requested_size =
-      allocator.root()->AdjustSizeForExtrasSubtract(slot_size);
+      allocator_.root()->AdjustSizeForExtrasSubtract(slot_size);
   // Verify that we're indeed fillin up the slot.
   ASSERT_EQ(
       requested_size,
-      allocator.root()->AllocationCapacityFromRequestedSize(requested_size));
-  RunBackupRefPtrImplAdvanceTest(allocator, requested_size);
+      allocator_.root()->AllocationCapacityFromRequestedSize(requested_size));
+  RunBackupRefPtrImplAdvanceTest(allocator_, requested_size);
 
   // We don't have the same worry for single-slot spans, as PartitionAlloc knows
   // exactly where the allocation ends.
   size_t raw_size = 300003;
   ASSERT_GT(raw_size, partition_alloc::internal::MaxRegularSlotSpanSize());
   ASSERT_LE(raw_size, partition_alloc::internal::kMaxBucketed);
-  requested_size = allocator.root()->AdjustSizeForExtrasSubtract(slot_size);
-  RunBackupRefPtrImplAdvanceTest(allocator, requested_size);
+  requested_size = allocator_.root()->AdjustSizeForExtrasSubtract(slot_size);
+  RunBackupRefPtrImplAdvanceTest(allocator_, requested_size);
 
   // Same for direct map.
   raw_size = 1001001;
   ASSERT_GT(raw_size, partition_alloc::internal::kMaxBucketed);
-  requested_size = allocator.root()->AdjustSizeForExtrasSubtract(slot_size);
-  RunBackupRefPtrImplAdvanceTest(allocator, requested_size);
+  requested_size = allocator_.root()->AdjustSizeForExtrasSubtract(slot_size);
+  RunBackupRefPtrImplAdvanceTest(allocator_, requested_size);
 }
 
-TEST(BackupRefPtrImpl, GetDeltaElems) {
-  // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
-  // new/delete once PartitionAlloc Everywhere is fully enabled.
-  partition_alloc::PartitionAllocGlobalInit(HandleOOM);
-  partition_alloc::PartitionAllocator allocator;
-  allocator.init(kOpts);
-
-  size_t requested_size = allocator.root()->AdjustSizeForExtrasSubtract(512);
-  char* ptr1 = static_cast<char*>(allocator.root()->Alloc(requested_size, ""));
-  char* ptr2 = static_cast<char*>(allocator.root()->Alloc(requested_size, ""));
+TEST_F(BackupRefPtrTest, GetDeltaElems) {
+  size_t requested_size = allocator_.root()->AdjustSizeForExtrasSubtract(512);
+  char* ptr1 = static_cast<char*>(allocator_.root()->Alloc(requested_size, ""));
+  char* ptr2 = static_cast<char*>(allocator_.root()->Alloc(requested_size, ""));
   ASSERT_LT(ptr1, ptr2);  // There should be a ref-count between slots.
   raw_ptr<char> protected_ptr1 = ptr1;
   raw_ptr<char> protected_ptr1_2 = ptr1 + 1;
@@ -1597,8 +1586,8 @@ TEST(BackupRefPtrImpl, GetDeltaElems) {
   EXPECT_EQ(protected_ptr2_2 - protected_ptr2, 1);
   EXPECT_EQ(protected_ptr2 - protected_ptr2_2, -1);
 
-  allocator.root()->Free(ptr1);
-  allocator.root()->Free(ptr2);
+  allocator_.root()->Free(ptr1);
+  allocator_.root()->Free(ptr2);
 }
 
 bool IsQuarantineEmpty(partition_alloc::PartitionAllocator& allocator) {
@@ -1640,39 +1629,29 @@ struct BoundRawPtrTestHelper {
 
 // Check that bound callback arguments remain protected by BRP for the
 // entire duration of a callback invocation.
-TEST(BackupRefPtrImpl, Bind) {
+TEST_F(BackupRefPtrTest, Bind) {
   // This test requires a separate partition; otherwise, unrelated allocations
   // might interfere with `IsQuarantineEmpty`.
-  partition_alloc::PartitionAllocGlobalInit(HandleOOM);
-  partition_alloc::PartitionAllocator allocator;
-  allocator.init(kOpts);
-
-  auto* object_for_once_callback1 = BoundRawPtrTestHelper::Create(allocator);
+  auto* object_for_once_callback1 = BoundRawPtrTestHelper::Create(allocator_);
   std::move(object_for_once_callback1->once_callback).Run();
-  EXPECT_TRUE(IsQuarantineEmpty(allocator));
+  EXPECT_TRUE(IsQuarantineEmpty(allocator_));
 
   auto* object_for_repeating_callback1 =
-      BoundRawPtrTestHelper::Create(allocator);
+      BoundRawPtrTestHelper::Create(allocator_);
   std::move(object_for_repeating_callback1->repeating_callback).Run();
-  EXPECT_TRUE(IsQuarantineEmpty(allocator));
+  EXPECT_TRUE(IsQuarantineEmpty(allocator_));
 
   // `RepeatingCallback` has both lvalue and rvalue versions of `Run`.
   auto* object_for_repeating_callback2 =
-      BoundRawPtrTestHelper::Create(allocator);
+      BoundRawPtrTestHelper::Create(allocator_);
   object_for_repeating_callback2->repeating_callback.Run();
-  EXPECT_TRUE(IsQuarantineEmpty(allocator));
+  EXPECT_TRUE(IsQuarantineEmpty(allocator_));
 }
 
 #if defined(PA_REF_COUNT_CHECK_COOKIE)
-TEST(BackupRefPtrImpl, ReinterpretCast) {
-  // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
-  // new/delete once PartitionAlloc Everywhere is fully enabled.
-  partition_alloc::PartitionAllocGlobalInit(HandleOOM);
-  partition_alloc::PartitionAllocator allocator;
-  allocator.init(kOpts);
-
-  void* ptr = allocator.root()->Alloc(16, "");
-  allocator.root()->Free(ptr);
+TEST_F(BackupRefPtrTest, ReinterpretCast) {
+  void* ptr = allocator_.root()->Alloc(16, "");
+  allocator_.root()->Free(ptr);
 
   raw_ptr<void>* wrapped_ptr = reinterpret_cast<raw_ptr<void>*>(&ptr);
   // The reference count cookie check should detect that the allocation has
@@ -1707,34 +1686,24 @@ class ScopedInstallDanglingRawPtrChecks {
 
 }  // namespace
 
-TEST(BackupRefPtrImpl, RawPtrMayDangle) {
-  // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
-  // new/delete once PartitionAlloc Everywhere is fully enabled.
-  partition_alloc::PartitionAllocGlobalInit(HandleOOM);
-  partition_alloc::PartitionAllocator allocator;
-  allocator.init(kOpts);
+TEST_F(BackupRefPtrTest, RawPtrMayDangle) {
   ScopedInstallDanglingRawPtrChecks enable_dangling_raw_ptr_checks;
 
-  void* ptr = allocator.root()->Alloc(16, "");
+  void* ptr = allocator_.root()->Alloc(16, "");
   raw_ptr<void, DisableDanglingPtrDetection> dangling_ptr = ptr;
-  allocator.root()->Free(ptr);  // No dangling raw_ptr reported.
+  allocator_.root()->Free(ptr);  // No dangling raw_ptr reported.
   dangling_ptr = nullptr;       // No dangling raw_ptr reported.
 }
 
-TEST(BackupRefPtrImpl, RawPtrNotDangling) {
-  // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
-  // new/delete once PartitionAlloc Everywhere is fully enabled.
-  partition_alloc::PartitionAllocGlobalInit(HandleOOM);
-  partition_alloc::PartitionAllocator allocator;
-  allocator.init(kOpts);
+TEST_F(BackupRefPtrTest, RawPtrNotDangling) {
   ScopedInstallDanglingRawPtrChecks enable_dangling_raw_ptr_checks;
 
-  void* ptr = allocator.root()->Alloc(16, "");
+  void* ptr = allocator_.root()->Alloc(16, "");
   raw_ptr<void> dangling_ptr = ptr;
 #if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
   EXPECT_DEATH_IF_SUPPORTED(
       {
-        allocator.root()->Free(ptr);  // Dangling raw_ptr detected.
+        allocator_.root()->Free(ptr);  // Dangling raw_ptr detected.
         dangling_ptr = nullptr;       // Dangling raw_ptr released.
       },
       AllOf(HasSubstr("Detected dangling raw_ptr"),
@@ -1745,16 +1714,11 @@ TEST(BackupRefPtrImpl, RawPtrNotDangling) {
 
 // Check the comparator operators work, even across raw_ptr with different
 // dangling policies.
-TEST(BackupRefPtrImpl, DanglingPtrComparison) {
-  // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
-  // new/delete once PartitionAlloc Everywhere is fully enabled.
-  partition_alloc::PartitionAllocGlobalInit(HandleOOM);
-  partition_alloc::PartitionAllocator allocator;
-  allocator.init(kOpts);
+TEST_F(BackupRefPtrTest, DanglingPtrComparison) {
   ScopedInstallDanglingRawPtrChecks enable_dangling_raw_ptr_checks;
 
-  void* ptr_1 = allocator.root()->Alloc(16, "");
-  void* ptr_2 = allocator.root()->Alloc(16, "");
+  void* ptr_1 = allocator_.root()->Alloc(16, "");
+  void* ptr_2 = allocator_.root()->Alloc(16, "");
 
   if (ptr_1 > ptr_2)
     std::swap(ptr_1, ptr_2);
@@ -1776,21 +1740,16 @@ TEST(BackupRefPtrImpl, DanglingPtrComparison) {
   not_dangling_ptr_1 = nullptr;
   not_dangling_ptr_2 = nullptr;
 
-  allocator.root()->Free(ptr_1);
-  allocator.root()->Free(ptr_2);
+  allocator_.root()->Free(ptr_1);
+  allocator_.root()->Free(ptr_2);
 }
 
 // Check the assignment operator works, even across raw_ptr with different
 // dangling policies.
-TEST(BackupRefPtrImpl, DanglingPtrAssignment) {
-  // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
-  // new/delete once PartitionAlloc Everywhere is fully enabled.
-  partition_alloc::PartitionAllocGlobalInit(HandleOOM);
-  partition_alloc::PartitionAllocator allocator;
-  allocator.init(kOpts);
+TEST_F(BackupRefPtrTest, DanglingPtrAssignment) {
   ScopedInstallDanglingRawPtrChecks enable_dangling_raw_ptr_checks;
 
-  void* ptr = allocator.root()->Alloc(16, "");
+  void* ptr = allocator_.root()->Alloc(16, "");
 
   raw_ptr<void, DisableDanglingPtrDetection> dangling_ptr_1;
   raw_ptr<void, DisableDanglingPtrDetection> dangling_ptr_2;
@@ -1804,7 +1763,7 @@ TEST(BackupRefPtrImpl, DanglingPtrAssignment) {
   dangling_ptr_2 = not_dangling_ptr;
   not_dangling_ptr = nullptr;
 
-  allocator.root()->Free(ptr);
+  allocator_.root()->Free(ptr);
 
   dangling_ptr_1 = dangling_ptr_2;
   dangling_ptr_2 = nullptr;
@@ -1815,15 +1774,10 @@ TEST(BackupRefPtrImpl, DanglingPtrAssignment) {
 
 // Check the copy constructor works, even across raw_ptr with different dangling
 // policies.
-TEST(BackupRefPtrImpl, DanglingPtrCopyContructor) {
-  // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
-  // new/delete once PartitionAlloc Everywhere is fully enabled.
-  partition_alloc::PartitionAllocGlobalInit(HandleOOM);
-  partition_alloc::PartitionAllocator allocator;
-  allocator.init(kOpts);
+TEST_F(BackupRefPtrTest, DanglingPtrCopyContructor) {
   ScopedInstallDanglingRawPtrChecks enable_dangling_raw_ptr_checks;
 
-  void* ptr = allocator.root()->Alloc(16, "");
+  void* ptr = allocator_.root()->Alloc(16, "");
 
   raw_ptr<void, DisableDanglingPtrDetection> dangling_ptr_1(ptr);
   raw_ptr<void> not_dangling_ptr_1(ptr);
@@ -1834,38 +1788,28 @@ TEST(BackupRefPtrImpl, DanglingPtrCopyContructor) {
   not_dangling_ptr_1 = nullptr;
   not_dangling_ptr_2 = nullptr;
 
-  allocator.root()->Free(ptr);
+  allocator_.root()->Free(ptr);
 }
 
-TEST(BackupRefPtrImpl, RawPtrExtractAsDangling) {
-  // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
-  // new/delete once PartitionAlloc Everywhere is fully enabled.
-  partition_alloc::PartitionAllocGlobalInit(HandleOOM);
-  partition_alloc::PartitionAllocator allocator;
-  allocator.init(kOpts);
+TEST_F(BackupRefPtrTest, RawPtrExtractAsDangling) {
   ScopedInstallDanglingRawPtrChecks enable_dangling_raw_ptr_checks;
 
   raw_ptr<int> ptr =
-      static_cast<int*>(allocator.root()->Alloc(sizeof(int), ""));
-  allocator.root()->Free(
+      static_cast<int*>(allocator_.root()->Alloc(sizeof(int), ""));
+  allocator_.root()->Free(
       ptr.ExtractAsDangling());  // No dangling raw_ptr reported.
   EXPECT_EQ(ptr, nullptr);
 }
 
-TEST(BackupRefPtrImpl, RawPtrDeleteWithoutExtractAsDangling) {
-  // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
-  // new/delete once PartitionAlloc Everywhere is fully enabled.
-  partition_alloc::PartitionAllocGlobalInit(HandleOOM);
-  partition_alloc::PartitionAllocator allocator;
-  allocator.init(kOpts);
+TEST_F(BackupRefPtrTest, RawPtrDeleteWithoutExtractAsDangling) {
   ScopedInstallDanglingRawPtrChecks enable_dangling_raw_ptr_checks;
 
   raw_ptr<int> ptr =
-      static_cast<int*>(allocator.root()->Alloc(sizeof(int), ""));
+      static_cast<int*>(allocator_.root()->Alloc(sizeof(int), ""));
 #if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
   EXPECT_DEATH_IF_SUPPORTED(
       {
-        allocator.root()->Free(ptr.get());  // Dangling raw_ptr detected.
+        allocator_.root()->Free(ptr.get());  // Dangling raw_ptr detected.
         ptr = nullptr;                      // Dangling raw_ptr released.
       },
       AllOf(HasSubstr("Detected dangling raw_ptr"),
@@ -1908,17 +1852,32 @@ const char kAsanBrpNotProtected_NoRawPtrAccess[] =
 #undef ASAN_BRP_MANUAL_ANALYSIS
 #undef ASAN_BRP_NOT_PROTECTED
 
-TEST(AsanBackupRefPtrImpl, Dereference) {
-  if (RawPtrAsanService::GetInstance().mode() !=
-      RawPtrAsanService::Mode::kEnabled) {
-    base::RawPtrAsanService::GetInstance().Configure(
-        base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),
-        base::EnableInstantiationCheck(true));
-  } else {
-    ASSERT_TRUE(
-        base::RawPtrAsanService::GetInstance().is_dereference_check_enabled());
+class AsanBackupRefPtrTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    if (RawPtrAsanService::GetInstance().mode() !=
+        RawPtrAsanService::Mode::kEnabled) {
+      base::RawPtrAsanService::GetInstance().Configure(
+          base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),
+          base::EnableInstantiationCheck(true));
+    } else {
+      ASSERT_TRUE(base::RawPtrAsanService::GetInstance()
+                      .is_dereference_check_enabled());
+      ASSERT_TRUE(
+          base::RawPtrAsanService::GetInstance().is_extraction_check_enabled());
+      ASSERT_TRUE(base::RawPtrAsanService::GetInstance()
+                      .is_instantiation_check_enabled());
+    }
   }
 
+  static void SetUpTestSuite() { early_allocation_ptr_ = new AsanStruct; }
+  static void TearDownTestSuite() { delete early_allocation_ptr_; }
+  static raw_ptr<AsanStruct> early_allocation_ptr_;
+};
+
+raw_ptr<AsanStruct> AsanBackupRefPtrTest::early_allocation_ptr_ = nullptr;
+
+TEST_F(AsanBackupRefPtrTest, Dereference) {
   raw_ptr<AsanStruct> protected_ptr = new AsanStruct;
 
   // The four statements below should succeed.
@@ -1943,17 +1902,7 @@ TEST(AsanBackupRefPtrImpl, Dereference) {
   [[maybe_unused]] AsanStruct* ptr = protected_ptr;
 }
 
-TEST(AsanBackupRefPtrImpl, Extraction) {
-  if (RawPtrAsanService::GetInstance().mode() !=
-      RawPtrAsanService::Mode::kEnabled) {
-    base::RawPtrAsanService::GetInstance().Configure(
-        base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),
-        base::EnableInstantiationCheck(true));
-  } else {
-    ASSERT_TRUE(
-        base::RawPtrAsanService::GetInstance().is_extraction_check_enabled());
-  }
-
+TEST_F(AsanBackupRefPtrTest, Extraction) {
   raw_ptr<AsanStruct> protected_ptr = new AsanStruct;
 
   AsanStruct* ptr1 = protected_ptr;  // Shouldn't crash.
@@ -1969,17 +1918,7 @@ TEST(AsanBackupRefPtrImpl, Extraction) {
       kAsanBrpMaybeProtected_Extraction);
 }
 
-TEST(AsanBackupRefPtrImpl, Instantiation) {
-  if (RawPtrAsanService::GetInstance().mode() !=
-      RawPtrAsanService::Mode::kEnabled) {
-    base::RawPtrAsanService::GetInstance().Configure(
-        base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),
-        base::EnableInstantiationCheck(true));
-  } else {
-    ASSERT_TRUE(base::RawPtrAsanService::GetInstance()
-                    .is_instantiation_check_enabled());
-  }
-
+TEST_F(AsanBackupRefPtrTest, Instantiation) {
   AsanStruct* ptr = new AsanStruct;
 
   raw_ptr<AsanStruct> protected_ptr1 = ptr;  // Shouldn't crash.
@@ -1992,17 +1931,7 @@ TEST(AsanBackupRefPtrImpl, Instantiation) {
       kAsanBrpNotProtected_Instantiation);
 }
 
-TEST(AsanBackupRefPtrImpl, InstantiationInvalidPointer) {
-  if (RawPtrAsanService::GetInstance().mode() !=
-      RawPtrAsanService::Mode::kEnabled) {
-    base::RawPtrAsanService::GetInstance().Configure(
-        base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),
-        base::EnableInstantiationCheck(true));
-  } else {
-    ASSERT_TRUE(base::RawPtrAsanService::GetInstance()
-                    .is_instantiation_check_enabled());
-  }
-
+TEST_F(AsanBackupRefPtrTest, InstantiationInvalidPointer) {
   void* ptr1 = reinterpret_cast<void*>(0xfefefefefefefefe);
 
   [[maybe_unused]] raw_ptr<void> protected_ptr1 = ptr1;  // Shouldn't crash.
@@ -2013,17 +1942,7 @@ TEST(AsanBackupRefPtrImpl, InstantiationInvalidPointer) {
       reinterpret_cast<void*>(shadow_offset);  // Shouldn't crash.
 }
 
-TEST(AsanBackupRefPtrImpl, UserPoisoned) {
-  if (RawPtrAsanService::GetInstance().mode() !=
-      RawPtrAsanService::Mode::kEnabled) {
-    base::RawPtrAsanService::GetInstance().Configure(
-        base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),
-        base::EnableInstantiationCheck(true));
-  } else {
-    ASSERT_TRUE(
-        base::RawPtrAsanService::GetInstance().is_dereference_check_enabled());
-  }
-
+TEST_F(AsanBackupRefPtrTest, UserPoisoned) {
   AsanStruct* ptr = new AsanStruct;
   __asan_poison_memory_region(ptr, sizeof(AsanStruct));
 
@@ -2036,56 +1955,35 @@ TEST(AsanBackupRefPtrImpl, UserPoisoned) {
       kAsanBrpNotProtected_Instantiation);
 }
 
-TEST(AsanBackupRefPtrImpl, EarlyAllocationDetection) {
-  if (RawPtrAsanService::GetInstance().mode() ==
-      RawPtrAsanService::Mode::kEnabled) {
-    // There's no way to reset sanitizer allocator hooks and, consequently, to
-    // reset BRP-ASan to the pre-startup state. Hence, exit early.
+TEST_F(AsanBackupRefPtrTest, EarlyAllocationDetection) {
+  if (!early_allocation_ptr_) {
+    // We can't run this test if we don't have a pre-BRP-ASan-initialization
+    // allocation.
     return;
   }
+  raw_ptr<AsanStruct> late_allocation_ptr = new AsanStruct;
+  EXPECT_FALSE(RawPtrAsanService::GetInstance().IsSupportedAllocation(
+      early_allocation_ptr_.get()));
+  EXPECT_TRUE(RawPtrAsanService::GetInstance().IsSupportedAllocation(
+      late_allocation_ptr.get()));
 
-  raw_ptr<AsanStruct> unsafe_ptr = new AsanStruct;
+  delete late_allocation_ptr.get();
+  delete early_allocation_ptr_.get();
 
-  base::RawPtrAsanService::GetInstance().Configure(
-      base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),
-      base::EnableInstantiationCheck(true));
+  EXPECT_FALSE(RawPtrAsanService::GetInstance().IsSupportedAllocation(
+      early_allocation_ptr_.get()));
+  EXPECT_TRUE(RawPtrAsanService::GetInstance().IsSupportedAllocation(
+      late_allocation_ptr.get()));
 
-  raw_ptr<AsanStruct> safe_ptr = new AsanStruct;
-
-  EXPECT_FALSE(
-      RawPtrAsanService::GetInstance().IsSupportedAllocation(unsafe_ptr.get()));
-  EXPECT_TRUE(
-      RawPtrAsanService::GetInstance().IsSupportedAllocation(safe_ptr.get()));
-
-  delete safe_ptr.get();
-  delete unsafe_ptr.get();
-
-  EXPECT_FALSE(
-      RawPtrAsanService::GetInstance().IsSupportedAllocation(unsafe_ptr.get()));
-  EXPECT_TRUE(
-      RawPtrAsanService::GetInstance().IsSupportedAllocation(safe_ptr.get()));
-
-  EXPECT_DEATH_IF_SUPPORTED({ unsafe_ptr->func(); },
+  EXPECT_DEATH_IF_SUPPORTED({ early_allocation_ptr_->func(); },
                             kAsanBrpNotProtected_EarlyAllocation);
-  EXPECT_DEATH_IF_SUPPORTED({ safe_ptr->func(); },
+  EXPECT_DEATH_IF_SUPPORTED({ late_allocation_ptr->func(); },
                             kAsanBrpProtected_Dereference);
+
+  early_allocation_ptr_ = nullptr;
 }
 
-TEST(AsanBackupRefPtrImpl, BoundRawPtr) {
-  if (RawPtrAsanService::GetInstance().mode() !=
-      RawPtrAsanService::Mode::kEnabled) {
-    base::RawPtrAsanService::GetInstance().Configure(
-        base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),
-        base::EnableInstantiationCheck(true));
-  } else {
-    ASSERT_TRUE(
-        base::RawPtrAsanService::GetInstance().is_dereference_check_enabled());
-    ASSERT_TRUE(
-        base::RawPtrAsanService::GetInstance().is_extraction_check_enabled());
-    ASSERT_TRUE(base::RawPtrAsanService::GetInstance()
-                    .is_instantiation_check_enabled());
-  }
-
+TEST_F(AsanBackupRefPtrTest, BoundRawPtr) {
   // This test is for the handling of raw_ptr<T> type objects being passed
   // directly to Bind.
 
@@ -2113,21 +2011,7 @@ TEST(AsanBackupRefPtrImpl, BoundRawPtr) {
                             kAsanBrpProtected_Callback);
 }
 
-TEST(AsanBackupRefPtrImpl, BoundArgumentsProtected) {
-  if (RawPtrAsanService::GetInstance().mode() !=
-      RawPtrAsanService::Mode::kEnabled) {
-    base::RawPtrAsanService::GetInstance().Configure(
-        base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),
-        base::EnableInstantiationCheck(true));
-  } else {
-    ASSERT_TRUE(
-        base::RawPtrAsanService::GetInstance().is_dereference_check_enabled());
-    ASSERT_TRUE(
-        base::RawPtrAsanService::GetInstance().is_extraction_check_enabled());
-    ASSERT_TRUE(base::RawPtrAsanService::GetInstance()
-                    .is_instantiation_check_enabled());
-  }
-
+TEST_F(AsanBackupRefPtrTest, BoundArgumentsProtected) {
   raw_ptr<AsanStruct> protected_ptr = new AsanStruct;
   raw_ptr<AsanStruct> protected_ptr2 = new AsanStruct;
 
@@ -2192,21 +2076,7 @@ TEST(AsanBackupRefPtrImpl, BoundArgumentsProtected) {
                             kAsanBrpProtected_Callback);
 }
 
-TEST(AsanBackupRefPtrImpl, BoundArgumentsNotProtected) {
-  if (RawPtrAsanService::GetInstance().mode() !=
-      RawPtrAsanService::Mode::kEnabled) {
-    base::RawPtrAsanService::GetInstance().Configure(
-        base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),
-        base::EnableInstantiationCheck(true));
-  } else {
-    ASSERT_TRUE(
-        base::RawPtrAsanService::GetInstance().is_dereference_check_enabled());
-    ASSERT_TRUE(
-        base::RawPtrAsanService::GetInstance().is_extraction_check_enabled());
-    ASSERT_TRUE(base::RawPtrAsanService::GetInstance()
-                    .is_instantiation_check_enabled());
-  }
-
+TEST_F(AsanBackupRefPtrTest, BoundArgumentsNotProtected) {
   raw_ptr<AsanStruct> protected_ptr = new AsanStruct;
 
   // First create our test callbacks while `*protected_ptr` is still valid, and
@@ -2276,21 +2146,7 @@ TEST(AsanBackupRefPtrImpl, BoundArgumentsNotProtected) {
                             kAsanBrpMaybeProtected_Extraction);
 }
 
-TEST(AsanBackupRefPtrImpl, BoundArgumentsInstantiation) {
-  if (RawPtrAsanService::GetInstance().mode() !=
-      RawPtrAsanService::Mode::kEnabled) {
-    base::RawPtrAsanService::GetInstance().Configure(
-        base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),
-        base::EnableInstantiationCheck(true));
-  } else {
-    ASSERT_TRUE(
-        base::RawPtrAsanService::GetInstance().is_dereference_check_enabled());
-    ASSERT_TRUE(
-        base::RawPtrAsanService::GetInstance().is_extraction_check_enabled());
-    ASSERT_TRUE(base::RawPtrAsanService::GetInstance()
-                    .is_instantiation_check_enabled());
-  }
-
+TEST_F(AsanBackupRefPtrTest, BoundArgumentsInstantiation) {
   // This test is ensuring that instantiations of `raw_ptr` inside callbacks are
   // handled correctly.
 
@@ -2317,21 +2173,7 @@ TEST(AsanBackupRefPtrImpl, BoundArgumentsInstantiation) {
                             kAsanBrpNotProtected_Instantiation);
 }
 
-TEST(AsanBackupRefPtrImpl, BoundReferences) {
-  if (RawPtrAsanService::GetInstance().mode() !=
-      RawPtrAsanService::Mode::kEnabled) {
-    base::RawPtrAsanService::GetInstance().Configure(
-        base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),
-        base::EnableInstantiationCheck(true));
-  } else {
-    ASSERT_TRUE(
-        base::RawPtrAsanService::GetInstance().is_dereference_check_enabled());
-    ASSERT_TRUE(
-        base::RawPtrAsanService::GetInstance().is_extraction_check_enabled());
-    ASSERT_TRUE(base::RawPtrAsanService::GetInstance()
-                    .is_instantiation_check_enabled());
-  }
-
+TEST_F(AsanBackupRefPtrTest, BoundReferences) {
   auto ptr = ::std::make_unique<AsanStruct>();
 
   // This test is ensuring that reference parameters inside callbacks are
