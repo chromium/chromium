@@ -181,6 +181,9 @@ class Surface final : public ui::PropertyHandler {
   void SetRoundedCorners(const gfx::RRectF& rounded_corners_bounds);
   void SetOverlayPriorityHint(OverlayPriority hint);
 
+  // Sets the surface's clip rectangle.
+  void SetClipRect(const absl::optional<gfx::RectF>& clip_rect);
+
   // Sets the background color that shall be associated with the next buffer
   // commit.
   void SetBackgroundColor(absl::optional<SkColor4f> background_color);
@@ -532,6 +535,10 @@ class Surface final : public ui::PropertyHandler {
     // The hint for overlay prioritization
     // Persisted between commits.
     OverlayPriority overlay_priority_hint = OverlayPriority::REGULAR;
+    // The clip rect for this surface, in the parent's coordinate space. This
+    // should only be set for subsurfaces.
+    // Persisted between commits.
+    absl::optional<gfx::RectF> clip_rect;
   };
 
   friend class subtle::PropertyHelper;

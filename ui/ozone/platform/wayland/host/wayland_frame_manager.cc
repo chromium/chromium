@@ -236,7 +236,7 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
       }
     } else {
       subsurface->ConfigureAndShowSurface(
-          config.bounds_rect, root_config.bounds_rect,
+          config.bounds_rect, root_config.bounds_rect, config.clip_rect,
           root_config.surface_scale_factor, nullptr, reference_above);
       ApplySurfaceConfigure(frame.get(), surface, config, true);
       // A fatal error happened. Must stop the playback and terminate the gpu

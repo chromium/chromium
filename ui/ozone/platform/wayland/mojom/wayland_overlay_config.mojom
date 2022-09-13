@@ -69,4 +69,7 @@ struct WaylandOverlayConfig {
 
   // Optional: background color of this overlay plane.
   skia.mojom.SkColor4f? background_color;
+
+  // Optional: clip rect for this overlay.
+  gfx.mojom.Rect? clip_rect;
 };

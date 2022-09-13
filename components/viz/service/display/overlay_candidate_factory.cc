@@ -173,13 +173,15 @@ OverlayCandidateFactory::OverlayCandidateFactory(
     const SurfaceDamageRectList* surface_damage_rect_list,
     const SkM44* output_color_matrix,
     const gfx::RectF primary_rect,
-    bool is_delegated_context)
+    bool is_delegated_context,
+    bool supports_clip_rect)
     : render_pass_(render_pass),
       resource_provider_(resource_provider),
       surface_damage_rect_list_(surface_damage_rect_list),
       output_color_matrix_(output_color_matrix),
       primary_rect_(primary_rect),
-      is_delegated_context_(is_delegated_context) {
+      is_delegated_context_(is_delegated_context),
+      supports_clip_rect_(supports_clip_rect) {
   // TODO(crbug.com/1323002): Replace this set with a simple ordered linear
   // search when this bug is resolved.
   base::flat_set<size_t> indices_with_quad_damage;
@@ -339,25 +341,31 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
         resource_provider_->GetSurfaceId(resource_id).frame_sink_id();
   }
 
-  // Delegated compositing does not yet support |clip_rect| so it is applied
-  // here to the |display_rect| and |uv_rect| directly.
-
   if (is_delegated_context_) {
-    if (candidate.clip_rect.has_value())
-      OverlayCandidate::ApplyClip(candidate, gfx::RectF(*candidate.clip_rect));
+    // The delegate might not support specifying |clip_rect| so if not, apply it
+    // to the |display_rect| and |uv_rect| directly.
+    if (!supports_clip_rect_) {
+      if (candidate.clip_rect.has_value())
+        OverlayCandidate::ApplyClip(candidate,
+                                    gfx::RectF(*candidate.clip_rect));
 
-    if (quad->visible_rect != quad->rect) {
-      auto visible_rect = gfx::RectF(quad->visible_rect);
-      transform.TransformRect(&visible_rect);
-      OverlayCandidate::ApplyClip(candidate, gfx::RectF(visible_rect));
+      // TODO(rivr): Apply the same |visible_rect| and |display_rect| clip logic
+      // when delegating |clip_rect|.
+      if (quad->visible_rect != quad->rect) {
+        auto visible_rect = gfx::RectF(quad->visible_rect);
+        transform.TransformRect(&visible_rect);
+        OverlayCandidate::ApplyClip(candidate, gfx::RectF(visible_rect));
+      }
+      // TODO(https://crbug.com/1300552) : Tile quads can overlay other quads
+      // and the window by one pixel. Exo does not yet clip these quads so we
+      // need to clip here with the |primary_rect|.
+      OverlayCandidate::ApplyClip(candidate, primary_rect_);
+
+      if (candidate.display_rect.IsEmpty())
+        return CandidateStatus::kFailVisible;
+
+      candidate.clip_rect = absl::nullopt;
     }
-    // TODO(https://crbug.com/1300552) : Tile quads can overlay other quads and
-    // the window by one pixel. Exo does not yet clip these quads so we need to
-    // clip here with the |primary_rect|.
-    OverlayCandidate::ApplyClip(candidate, primary_rect_);
-
-    if (candidate.display_rect.IsEmpty())
-      return CandidateStatus::kFailVisible;
   }
 
   candidate.tracking_id = base::Hash(&track_data, sizeof(track_data));

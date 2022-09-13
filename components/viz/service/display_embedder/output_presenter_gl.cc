@@ -444,7 +444,8 @@ void OutputPresenterGL::ScheduleOverlayPlane(
             overlay_plane_candidate.rounded_corners,
             overlay_plane_candidate.color_space,
             overlay_plane_candidate.hdr_metadata, overlay_plane_candidate.color,
-            overlay_plane_candidate.is_solid_color));
+            overlay_plane_candidate.is_solid_color,
+            overlay_plane_candidate.clip_rect));
   }
 #elif BUILDFLAG(IS_APPLE)
   gl_surface_->ScheduleCALayer(ui::CARendererLayerParams(

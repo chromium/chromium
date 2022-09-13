@@ -100,6 +100,14 @@ bool WaylandOverlayManager::CanHandleCandidate(
     return false;
   }
 
+  // If clipping isn't supported, reject candidates with a clip rect, unless
+  // that clip wouldn't have any effect.
+  if (!manager_gpu_->supports_clip_rect() && candidate.clip_rect &&
+      !candidate.clip_rect->Contains(
+          gfx::ToNearestRect(candidate.display_rect))) {
+    return false;
+  }
+
   if (is_delegated_context_) {
     // Support for subpixel accurate position could be checked in ctor, but the
     // WaylandBufferManagerGpu is not initialized when |this| is created. Thus,
@@ -113,11 +121,6 @@ bool WaylandOverlayManager::CanHandleCandidate(
   // Reject candidates that don't fall on a pixel boundary.
   if (!gfx::IsNearestRectWithinDistance(candidate.display_rect, 0.01f))
     return false;
-
-  if (candidate.clip_rect && !candidate.clip_rect->Contains(
-                                 gfx::ToNearestRect(candidate.display_rect))) {
-    return false;
-  }
 
   return true;
 }

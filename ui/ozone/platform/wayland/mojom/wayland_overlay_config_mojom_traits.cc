@@ -63,6 +63,8 @@ bool StructTraits<wl::mojom::WaylandOverlayConfigDataView,
     return false;
   if (!data.ReadBackgroundColor(&out->background_color))
     return false;
+  if (!data.ReadClipRect(&out->clip_rect))
+    return false;
 
   return true;
 }

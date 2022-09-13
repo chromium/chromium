@@ -10,9 +10,11 @@
 #include "base/observer_list.h"
 #include "components/exo/surface_delegate.h"
 #include "components/exo/surface_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/class_property.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace base {
@@ -42,6 +44,9 @@ class SubSurface : public SurfaceDelegate,
   // moved so, that its origin (top-left corner pixel) will be at the |position|
   // of the parent surface coordinate system.
   void SetPosition(const gfx::PointF& position);
+
+  // This schedules a clip rect to be applied when drawing this sub-surface.
+  void SetClipRect(const absl::optional<gfx::RectF>& clip_rect);
 
   // This removes sub-surface from the stack, and puts it back just above the
   // reference surface, changing the z-order of the sub-surfaces. The reference

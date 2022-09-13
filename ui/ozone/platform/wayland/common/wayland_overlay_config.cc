@@ -32,7 +32,8 @@ WaylandOverlayConfig::WaylandOverlayConfig(const gfx::OverlayPlaneData& data,
       rounded_clip_bounds(data.rounded_corners),
       // Solid color quads are created as wl_buffers. Though, some overlays may
       // have background data passed.
-      background_color(data.is_solid_color ? absl::nullopt : data.color) {}
+      background_color(data.is_solid_color ? absl::nullopt : data.color),
+      clip_rect(data.clip_rect) {}
 
 WaylandOverlayConfig& WaylandOverlayConfig::operator=(
     WaylandOverlayConfig&& other) = default;

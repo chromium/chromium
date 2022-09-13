@@ -351,6 +351,7 @@ class OzonePlatformWayland : public OzonePlatform,
           buffer_manager_->supports_viewporter();
       properties.supports_native_pixmaps =
           surface_factory_->SupportsNativePixmaps();
+      properties.supports_clip_rect = buffer_manager_->supports_clip_rect();
     }
     return properties;
   }

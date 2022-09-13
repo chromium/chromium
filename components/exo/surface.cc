@@ -542,6 +542,16 @@ void Surface::SetOverlayPriorityHint(OverlayPriority hint) {
   pending_state_.overlay_priority_hint = hint;
 }
 
+void Surface::SetClipRect(const absl::optional<gfx::RectF>& clip_rect) {
+  TRACE_EVENT1("exo", "Surface::SetClipRect", "clip_rect",
+               (clip_rect ? clip_rect->ToString() : "nullopt"));
+
+  if (pending_state_.clip_rect == clip_rect) {
+    return;
+  }
+  pending_state_.clip_rect = clip_rect;
+}
+
 void Surface::SetBackgroundColor(absl::optional<SkColor4f> background_color) {
   TRACE_EVENT0("exo", "Surface::SetBackgroundColor");
   pending_state_.basic_state.background_color = background_color;
@@ -799,6 +809,7 @@ void Surface::Commit() {
   }
   cached_state_.rounded_corners_bounds = pending_state_.rounded_corners_bounds;
   cached_state_.overlay_priority_hint = pending_state_.overlay_priority_hint;
+  cached_state_.clip_rect = pending_state_.clip_rect;
   cached_state_.acquire_fence = std::move(pending_state_.acquire_fence);
   cached_state_.per_commit_explicit_release_callback_ =
       std::move(pending_state_.per_commit_explicit_release_callback_);
@@ -939,6 +950,7 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
       }
       state_.rounded_corners_bounds = cached_state_.rounded_corners_bounds;
       state_.overlay_priority_hint = cached_state_.overlay_priority_hint;
+      state_.clip_rect = cached_state_.clip_rect;
       state_.acquire_fence = std::move(cached_state_.acquire_fence);
       state_.per_commit_explicit_release_callback_ =
           std::move(cached_state_.per_commit_explicit_release_callback_);
@@ -1330,6 +1342,15 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
     }
   }
 
+  absl::optional<gfx::Rect> quad_clip_rect;
+  if (state_.clip_rect) {
+    // The clip rect will later be rescaled by 1/device_scale_factor, and the
+    // enclosing rect used. Take the enclosed rect here to mitigate error.
+    gfx::RectF clip_rect_px(*state_.clip_rect);
+    clip_rect_px.Scale(device_scale_factor);
+    quad_clip_rect = gfx::ToEnclosedRect(clip_rect_px);
+  }
+
   state_.damage.Clear();
 
   gfx::PointF scale(content_size_.width(), content_size_.height());
@@ -1413,8 +1434,8 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
   viz::SharedQuadState* quad_state =
       render_pass->CreateAndAppendSharedQuadState();
   quad_state->SetAll(/*quad_layer_rect=*/quad_to_target_transform, quad_rect,
-                     /*visible_quad_layer_rect=*/quad_rect,
-                     /*mask_filter_info=*/msk, /*clip_rect=*/absl::nullopt,
+                     /*visible_layer_rect=*/quad_rect,
+                     /*filter_info=*/msk, /*clip=*/quad_clip_rect,
                      /*contents_opaque=*/are_contents_opaque,
                      /*opacity=*/state_.basic_state.alpha,
                      /*blend_mode=*/SkBlendMode::kSrcOver,

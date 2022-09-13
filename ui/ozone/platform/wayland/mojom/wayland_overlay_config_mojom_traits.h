@@ -81,6 +81,11 @@ struct StructTraits<wl::mojom::WaylandOverlayConfigDataView,
     return input.background_color;
   }
 
+  static const absl::optional<gfx::Rect>& clip_rect(
+      const wl::WaylandOverlayConfig& input) {
+    return input.clip_rect;
+  }
+
   static bool Read(wl::mojom::WaylandOverlayConfigDataView data,
                    wl::WaylandOverlayConfig* out);
 };

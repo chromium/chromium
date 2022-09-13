@@ -107,6 +107,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
       std::vector<gfx::Rect>* content_bounds);
 
   DelegationStatus delegated_status_ = DelegationStatus::kCompositedOther;
+  bool supports_clip_rect_ = false;
 };
 }  // namespace viz
 

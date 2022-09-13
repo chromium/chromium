@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="surface_augmenter" version="3">
+  <interface name="surface_augmenter" version="4">
     <description summary="surface composition delegation">
       The global interface exposing surface delegated composition
       capabilities is used to instantiate an interface extension for a
@@ -172,13 +172,13 @@
     </request>
   </interface>
 
-  <interface name="augmented_sub_surface" version="1">
-  <description summary="delegate composition of a wl_subsurface">
+  <interface name="augmented_sub_surface" version="4">
+    <description summary="delegate composition of a wl_subsurface">
       An additional interface to a wl_subsurface object, which allows the
       client to specify the delegated composition of the surface
       contents.
     </description>
-  <request name="destroy" type="destructor">
+    <request name="destroy" type="destructor">
       <description summary="remove delegated composition of the surface">
 	The associated wl_surface's augmenter is removed.
 	The change is applied on the next wl_surface.commit.
@@ -206,6 +206,23 @@
       </description>
       <arg name="x" type="fixed" summary="x coordinate in the parent surface"/>
       <arg name="y" type="fixed" summary="y coordinate in the parent surface"/>
+    </request>
+    <request name="set_clip_rect" since="4">
+      <description summary="sets a subsurface clip rect with subpixel accuracy">
+  This schedules a clip rect to be applied when drawing this sub-surface.
+  The clip will be placed with its origin (top left corner pixel) at the
+  location x, y of the parent surface coordinate system. The coordinates are not
+  restricted to the parent surface area. Negative x and y values are allowed.
+
+  If all of x, y, width and height are -1.0, the clip rect is unset instead.
+
+  Initially, surfaces have no clip set.
+  This state is double-buffered, and is applied on the next wl_surface.commit.
+      </description>
+      <arg name="x" type="fixed" summary="x coordinate in the parent surface"/>
+      <arg name="y" type="fixed" summary="y coordinate in the parent surface"/>
+      <arg name="width" type="fixed" summary="width of the clip rect"/>
+      <arg name="height" type="fixed" summary="height of the clip rect"/>
     </request>
   </interface>
 

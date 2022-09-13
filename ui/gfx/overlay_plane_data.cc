@@ -21,7 +21,8 @@ OverlayPlaneData::OverlayPlaneData(
     const gfx::ColorSpace& color_space,
     const absl::optional<HDRMetadata>& hdr_metadata,
     absl::optional<SkColor4f> color,
-    bool is_solid_color)
+    bool is_solid_color,
+    absl::optional<Rect> clip_rect)
     : z_order(z_order),
       plane_transform(plane_transform),
       display_bounds(display_bounds),
@@ -34,7 +35,8 @@ OverlayPlaneData::OverlayPlaneData(
       color_space(color_space),
       hdr_metadata(hdr_metadata),
       color(color),
-      is_solid_color(is_solid_color) {}
+      is_solid_color(is_solid_color),
+      clip_rect(clip_rect) {}
 
 OverlayPlaneData::~OverlayPlaneData() = default;
 

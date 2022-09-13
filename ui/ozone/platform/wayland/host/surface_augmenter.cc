@@ -15,7 +15,7 @@ namespace ui {
 
 namespace {
 constexpr uint32_t kMinVersion = 1;
-constexpr uint32_t kMaxVersion = 3;
+constexpr uint32_t kMaxVersion = 4;
 }
 
 // static
@@ -53,6 +53,11 @@ SurfaceAugmenter::~SurfaceAugmenter() = default;
 bool SurfaceAugmenter::SupportsSubpixelAccuratePosition() const {
   return GetSurfaceAugmentorVersion() >=
          SURFACE_AUGMENTER_GET_AUGMENTED_SUBSURFACE_SINCE_VERSION;
+}
+
+bool SurfaceAugmenter::SupportsClipRect() const {
+  return GetSurfaceAugmentorVersion() >=
+         AUGMENTED_SUB_SURFACE_SET_CLIP_RECT_SINCE_VERSION;
 }
 
 uint32_t SurfaceAugmenter::GetSurfaceAugmentorVersion() const {

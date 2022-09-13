@@ -84,6 +84,9 @@ struct WaylandOverlayConfig {
 
   // Optional: background color of this overlay plane.
   absl::optional<SkColor4f> background_color;
+
+  // Optional: clip rect for this overlay.
+  absl::optional<gfx::Rect> clip_rect;
 };
 
 }  // namespace wl

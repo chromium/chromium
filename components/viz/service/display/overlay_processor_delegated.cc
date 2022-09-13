@@ -96,6 +96,9 @@ OverlayProcessorDelegated::OverlayProcessorDelegated(
     ui::OzonePlatform::GetInstance()
         ->GetOverlayManager()
         ->SetContextDelegated();
+  supports_clip_rect_ = ui::OzonePlatform::GetInstance()
+                            ->GetPlatformRuntimeProperties()
+                            .supports_clip_rect;
 }
 
 OverlayProcessorDelegated::~OverlayProcessorDelegated() = default;
@@ -110,6 +113,9 @@ bool OverlayProcessorDelegated::DisableSplittingQuads() const {
 constexpr size_t kTooManyQuads = 64;
 
 DBG_FLAG_FBOOL("delegated.disable.delegation", disable_delegation)
+
+// TODO(rivr): Enable clip_rect delegation by default.
+DBG_FLAG_FBOOL("candidate.enable.clip_rect", enable_clip_rect)
 
 bool OverlayProcessorDelegated::AttemptWithStrategies(
     const SkM44& output_color_matrix,
@@ -150,7 +156,7 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,
       &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane),
-      is_delegated_context);
+      is_delegated_context, supports_clip_rect_ && enable_clip_rect());
 
   std::vector<QuadList::Iterator> candidate_quads;
   int num_quads_skipped = 0;

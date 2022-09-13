@@ -195,6 +195,10 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // Wayland only: determines whether BufferQueue needs a background image to
     // be stacked below an AcceleratedWidget to make a widget opaque.
     bool needs_background_image = false;
+
+    // Wayland only: determines whether clip rects can be delegated via the
+    // wayland protocol.
+    bool supports_clip_rect = false;
   };
 
   // Corresponds to chrome_browser_main_extra_parts.h.

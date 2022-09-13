@@ -51,7 +51,8 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
                           const SurfaceDamageRectList* surface_damage_rect_list,
                           const SkM44* output_color_matrix,
                           const gfx::RectF primary_rect,
-                          bool is_delegated_context = false);
+                          bool is_delegated_context = false,
+                          bool supports_clip_rect = false);
 
   OverlayCandidateFactory(const OverlayCandidateFactory&) = delete;
   OverlayCandidateFactory& operator=(const OverlayCandidateFactory&) = delete;
@@ -120,7 +121,8 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
   raw_ptr<const SurfaceDamageRectList> surface_damage_rect_list_;
   raw_ptr<const SkM44> output_color_matrix_;
   const gfx::RectF primary_rect_;
-  bool is_delegated_context_;
+  const bool is_delegated_context_;
+  const bool supports_clip_rect_;
 
   // The union of all surface damages that are not specifically assigned to a
   // draw quad.
