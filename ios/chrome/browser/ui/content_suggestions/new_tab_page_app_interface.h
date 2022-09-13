@@ -41,12 +41,6 @@
 // `defaultSearchEngine` should be its short name.
 + (void)resetSearchEngineTo:(NSString*)defaultSearchEngine;
 
-// Sets the what's new promo to "Move to Dock".
-+ (void)setWhatsNewPromoToMoveToDock;
-
-// Resets the what's new promo.
-+ (void)resetWhatsNewPromo;
-
 // Returns the width the search field is supposed to have when the collection
 // has `collectionWidth`. `traitCollection` is the trait collection of the view
 // displaying the omnibox, its Size Class is used in the computation.

@@ -13,9 +13,6 @@ CGFloat ReturnToRecentTabHeight();
 // Default size of the Return To Recent Tab tile.
 extern const CGSize kReturnToRecentTabSize;
 
-// Accessibility Identifier for the NTP Promo view.
-extern NSString* const kContentSuggestionsWhatsNewIdentifier;
-
 // Accessibility Identifier for QuerySuggestionView.
 extern NSString* const kQuerySuggestionViewA11yIdentifierPrefix;
 

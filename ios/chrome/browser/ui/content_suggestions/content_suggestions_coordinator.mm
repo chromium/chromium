@@ -56,7 +56,6 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
-#import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
@@ -208,12 +207,6 @@
 
 #pragma mark - ContentSuggestionsViewControllerAudience
 
-- (void)promoShown {
-  NotificationPromoWhatsNew* notificationPromo =
-      [self.contentSuggestionsMediator notificationPromo];
-  notificationPromo->HandleViewed();
-}
-
 - (void)viewDidDisappear {
   if (IsStartSurfaceSplashStartupEnabled()) {
     NewTabPageTabHelper::FromWebState(self.webState)
@@ -266,10 +259,6 @@
 
 - (void)locationBarDidResignFirstResponder {
   [self.ntpMediator locationBarDidResignFirstResponder];
-}
-
-- (NotificationPromoWhatsNew*)notificationPromo {
-  return [self.contentSuggestionsMediator notificationPromo];
 }
 
 #pragma mark - ContentSuggestionsMenuProvider

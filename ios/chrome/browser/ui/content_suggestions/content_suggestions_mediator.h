@@ -34,7 +34,6 @@ class Browser;
 @protocol FeedDelegate;
 class GURL;
 class LargeIconCache;
-class NotificationPromoWhatsNew;
 class ReadingListModel;
 @protocol SnackbarCommands;
 class WebStateList;
@@ -96,9 +95,6 @@ class WebStateList;
 // Trigger a refresh of the Content Suggestions Most Visited tiles.
 - (void)refreshMostVisitedTiles;
 
-// The notification promo owned by this mediator.
-- (NotificationPromoWhatsNew*)notificationPromo;
-
 // Block `URL` from Most Visited sites.
 - (void)blockMostVisitedURL:(GURL)URL;
 
@@ -118,9 +114,6 @@ class WebStateList;
 
 // Indicates that the "Return to Recent Tab" tile should be hidden.
 - (void)hideRecentTabTile;
-
-// Indicates that the NTP promo should be hidden.
-- (void)hidePromo;
 
 @end
 

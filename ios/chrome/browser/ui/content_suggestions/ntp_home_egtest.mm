@@ -480,31 +480,6 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
                  @"NTP scroll position not saved properly.");
 }
 
-// Tests that the promo is correctly displayed and removed once tapped.
-- (void)testPromoTap {
-  [NewTabPageAppInterface setWhatsNewPromoToMoveToDock];
-
-  // Open a new tab to have the promo.
-  // Need to close all NTPs to ensure NotificationPromo is reset when
-  // kSingleNtp is enabled.
-  [ChromeEarlGrey closeCurrentTab];
-  [ChromeEarlGrey openNewTab];
-
-  // Tap the promo.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kContentSuggestionsWhatsNewIdentifier)]
-      performAction:grey_tap()];
-
-  // Promo dismissed.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kContentSuggestionsWhatsNewIdentifier)]
-      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
-
-  [NewTabPageAppInterface resetWhatsNewPromo];
-}
-
 // Tests that the trending queries module header is visible and all four
 // trending queries are interactable.
 - (void)testTrendingQueries {

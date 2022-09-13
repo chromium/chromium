@@ -63,7 +63,6 @@
 #import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/memory/memory_debugger_manager.h"
 #import "ios/chrome/browser/metrics/ios_chrome_metrics_service_client.h"
-#import "ios/chrome/browser/notification_promo.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/prerender/prerender_pref.h"
@@ -115,6 +114,9 @@ const char kAccountIdMigrationState[] = "account_id_migration_state";
 // Deprecated 09/2022.
 const char kDataSaverEnabled[] = "spdy_proxy.enabled";
 
+// Deprecated 09/2022.
+const char kPrefPromoObject[] = "ios.ntppromo";
+
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -123,7 +125,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   signin::IdentityManager::RegisterLocalStatePrefs(registry);
   IOSChromeMetricsServiceClient::RegisterPrefs(registry);
   network_time::NetworkTimeTracker::RegisterPrefs(registry);
-  ios::NotificationPromo::RegisterPrefs(registry);
   policy::BrowserPolicyConnector::RegisterPrefs(registry);
   policy::PolicyStatisticsCollector::RegisterPrefs(registry);
   PrefProxyConfigTrackerImpl::RegisterPrefs(registry);
@@ -184,6 +185,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kFRETrialGroupPrefName, 0);
 
   registry->RegisterIntegerPref(kTrialGroupV3PrefName, 0);
+
+  registry->RegisterDictionaryPref(kPrefPromoObject);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -195,7 +198,6 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   HostContentSettingsMap::RegisterProfilePrefs(registry);
   invalidation::InvalidatorRegistrarWithMemory::RegisterProfilePrefs(registry);
   invalidation::PerUserTopicSubscriptionManager::RegisterProfilePrefs(registry);
-  ios::NotificationPromo::RegisterProfilePrefs(registry);
   language::LanguagePrefs::RegisterProfilePrefs(registry);
   metrics::RegisterDemographicsProfilePrefs(registry);
   ntp_snippets::ClickBasedCategoryRanker::RegisterProfilePrefs(registry);
@@ -302,6 +304,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                 PrefRegistry::LOSSY_PREF);
   registry->RegisterTimePref(prefs::kIosShareChromeLastShare, base::Time(),
                              PrefRegistry::LOSSY_PREF);
+
+  registry->RegisterDictionaryPref(kPrefPromoObject);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -317,6 +321,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 
   // Added 05/2022
   prefs->ClearPref(kTrialGroupV3PrefName);
+
+  // Added 09/2022
+  prefs->ClearPref(kPrefPromoObject);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -340,6 +347,9 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
 
   // Added 05/2022
   prefs->ClearPref(kAccountIdMigrationState);
+
+  // Added 09/2022
+  prefs->ClearPref(kPrefPromoObject);
 
   // Added 06/2022.
   syncer::MigrateSyncRequestedPrefPostMice(prefs);

@@ -8,9 +8,6 @@
 // Audience for the ContentSuggestions, getting informations from it.
 @protocol ContentSuggestionsViewControllerAudience
 
-// Notifies the audience that the promo has been shown.
-- (void)promoShown;
-
 // Notifies the audience of the UIKit viewDidDisappear: callback.
 - (void)viewDidDisappear;
 

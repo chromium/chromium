@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/flags/system_flags.h"
-#import "ios/chrome/browser/notification_promo.h"
 #import "ios/chrome/browser/ntp_snippets/ios_chrome_content_suggestions_service_factory.h"
 #import "ios/chrome/browser/ntp_snippets/ios_chrome_content_suggestions_service_factory_util.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
@@ -159,22 +158,6 @@ ContentSuggestion CreateSuggestion(Category category,
       service->SetUserSelectedDefaultSearchProvider(*iter);
     }
   }
-}
-
-+ (void)setWhatsNewPromoToMoveToDock {
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  [defaults setInteger:experimental_flags::WHATS_NEW_MOVE_TO_DOCK_TIP
-                forKey:@"WhatsNewPromoStatus"];
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  ios::NotificationPromo::MigrateUserPrefs(local_state);
-}
-
-+ (void)resetWhatsNewPromo {
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  [defaults setInteger:experimental_flags::WHATS_NEW_DEFAULT
-                forKey:@"WhatsNewPromoStatus"];
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  ios::NotificationPromo::MigrateUserPrefs(local_state);
 }
 
 + (CGFloat)searchFieldWidthForCollectionWidth:(CGFloat)collectionWidth

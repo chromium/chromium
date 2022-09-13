@@ -25,8 +25,6 @@ source_set("browser") {
     "installation_notifier.mm",
     "ios_chrome_io_thread.h",
     "ios_chrome_io_thread.mm",
-    "notification_promo.cc",
-    "notification_promo.h",
   ]
 
   deps = [
@@ -249,7 +247,6 @@ source_set("unit_tests") {
     "chrome_browser_provider_observer_bridge_unittest.mm",
     "chrome_url_util_unittest.mm",
     "installation_notifier_unittest.mm",
-    "notification_promo_unittest.cc",
   ]
   deps = [
     ":browser",

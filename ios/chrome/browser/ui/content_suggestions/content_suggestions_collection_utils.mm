@@ -33,6 +33,8 @@ const CGFloat kSearchFieldSmall = 343;
 const CGFloat kSearchFieldSmallMin = 304;
 const CGFloat kSearchFieldMinMargin = 8;
 
+const CGFloat kTopSpacingMaterial = 24;
+
 // Top margin for the doodle.
 const CGFloat kDoodleTopMarginRegularXRegular = 162;
 const CGFloat kDoodleTopMarginOther = 48;
@@ -48,8 +50,6 @@ const CGFloat kShrunkLogoSearchFieldTopMargin = 22;
 // Bottom margin for the search field.
 const CGFloat kNTPSearchFieldBottomPadding = 18;
 const CGFloat kNTPShrunkLogoSearchFieldBottomPadding = 20;
-
-const CGFloat kTopSpacingMaterial = 24;
 
 // Height for the logo and doodle frame.
 const CGFloat kGoogleSearchDoodleHeight = 120;
@@ -92,9 +92,7 @@ CGFloat doodleHeight(BOOL logoIsShowing,
   return kGoogleSearchDoodleHeight;
 }
 
-CGFloat doodleTopMargin(BOOL toolbarPresent,
-                        CGFloat topInset,
-                        UITraitCollection* traitCollection) {
+CGFloat doodleTopMargin(CGFloat topInset, UITraitCollection* traitCollection) {
   if (IsRegularXRegularSizeClass(traitCollection))
     return kDoodleTopMarginRegularXRegular;
   if (IsCompactHeight(traitCollection) && !ShouldShrinkLogoForStartSurface())
@@ -129,12 +127,10 @@ CGFloat searchFieldWidth(CGFloat superviewWidth,
 
 CGFloat heightForLogoHeader(BOOL logoIsShowing,
                             BOOL doodleIsShowing,
-                            BOOL promoCanShow,
-                            BOOL toolbarPresent,
                             CGFloat topInset,
                             UITraitCollection* traitCollection) {
   CGFloat headerHeight =
-      doodleTopMargin(toolbarPresent, topInset, traitCollection) +
+      doodleTopMargin(topInset, traitCollection) +
       doodleHeight(logoIsShowing, doodleIsShowing, traitCollection) +
       searchFieldTopMargin() +
       ToolbarExpandedHeight(
@@ -149,9 +145,8 @@ CGFloat heightForLogoHeader(BOOL logoIsShowing,
     return ntp_home::kIdentityAvatarDimension +
            2 * ntp_home::kIdentityAvatarMargin;
   }
-  if (!promoCanShow) {
-    headerHeight += kTopSpacingMaterial;
-  }
+
+  headerHeight += kTopSpacingMaterial;
 
   return headerHeight;
 }

@@ -71011,7 +71011,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="8" label="Opened a Reading List entry"/>
   <int value="9" label="Opened a suggestion"/>
   <int value="10" label="Opened the Learn More link"/>
-  <int value="11" label="Opened the Promo"/>
+  <int value="11" label="Opened the Promo">
+    <obsolete>
+      Deprecated as of 09/2022.
+    </obsolete>
+  </int>
   <int value="12" label="Opened a history entry"/>
   <int value="13" label="Searched using voice"/>
 </enum>

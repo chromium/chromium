@@ -140,8 +140,6 @@ source_set("ntp_internal") {
     "new_tab_page_url_loader_delegate.h",
     "new_tab_page_view_controller.h",
     "new_tab_page_view_controller.mm",
-    "notification_promo_whats_new.h",
-    "notification_promo_whats_new.mm",
     "ntp_tile_saver.h",
     "ntp_tile_saver.mm",
     "revamped_incognito_view.h",
@@ -243,7 +241,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "new_tab_page_coordinator_unittest.mm",
-    "notification_promo_whats_new_unittest.mm",
     "ntp_tile_saver_unittest.mm",
   ]
   deps = [

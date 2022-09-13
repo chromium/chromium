@@ -73,7 +73,6 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_follow_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
-#import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -345,9 +344,6 @@ namespace {
 
   self.contentSuggestionsCoordinator =
       [self createContentSuggestionsCoordinator];
-
-  self.headerController.promoCanShow =
-      [self.contentSuggestionsCoordinator notificationPromo]->CanShow();
 
   // Fetches feed header and conditionally fetches feed. Feed can only be
   // visible if feed header is visible.

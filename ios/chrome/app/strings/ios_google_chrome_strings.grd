@@ -389,9 +389,6 @@ Things to consider:
       <message name="IDS_IOS_MANAGED_SYNC_WITH_USER_POLICY_SUBTITLE" desc="The subtitle of the Sync with a managed account dialog when User Policy is enabled (alternative to IDS_IOS_MANAGED_SIGNIN_SUBTITLE). [300em][iOS only]">
         Your organization <ph name="DOMAIN">$1<ex>doe.com</ex></ph> will have access to your Chrome data, bookmarks, history, passwords and other settings you store in this account. When you sign out, your data will be cleared from this device.  However, your data will remain stored in your managed Google Account and be available to your organization. Your organization can also set user policies specific to that account that can change the behavior of Chrome.
       </message>
-      <message name="IDS_IOS_MOVE_TO_DOCK_TIP" desc="Text displayed on the New Tab Page for the move Chrome to the dock promo. [iOS only]">
-        Tip: <ph name="BEGIN_LINK"><ex>BEGIN_LINK</ex>BEGIN_LINK</ph>Move Chrome to your dock<ph name="END_LINK"><ex>END_LINK</ex>END_LINK</ph>
-      </message>
       <message name="IDS_IOS_OPTIONS_IMPORT_DATA_HEADER" desc="The header for the Import Data settings screen. [400em]">
         <ph name="USER_EMAIL1">$1<ex>johndoe@gmail.com</ex></ph> was using Chrome and left bookmarks, passwords, and other settings on this device.
       </message>

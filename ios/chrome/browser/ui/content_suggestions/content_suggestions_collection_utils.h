@@ -24,12 +24,7 @@ CGFloat doodleHeight(BOOL logoIsShowing,
                      BOOL doodleIsShowing,
                      UITraitCollection* traitCollection);
 // Returns the proper margin to the top of the header for the doodle.
-// If `toolbarPresent` is true, the top margin include a space to display the
-// toolbar.  Adds `topInset` to non-RxR displays. The SizeClass of the
-// `traitCollection` of the view displaying the doodle is used.
-CGFloat doodleTopMargin(BOOL toolbarPresent,
-                        CGFloat topInset,
-                        UITraitCollection* traitCollection);
+CGFloat doodleTopMargin(CGFloat topInset, UITraitCollection* traitCollection);
 // Returns the proper margin to the bottom of the doodle for the search field.
 CGFloat searchFieldTopMargin();
 // Returns the proper width for the search field inside a view with a `width`.
@@ -37,18 +32,10 @@ CGFloat searchFieldTopMargin();
 // field is used in the computation.
 CGFloat searchFieldWidth(CGFloat superviewWidth,
                          UITraitCollection* traitCollection);
-// TODO(crbug.com/761817): Remove `toolbarPresent` once the transition to the
-// new architecture is completed.
 // Returns the expected height of the header. `logoIsShowing` is YES if showing
 // the Google logo. `doodleIsShowing` is YES if the doodle is being shown.
-// `promoCanShow` represents whether a what's new promo can be displayed.
-// `toolbarPresent` represent whether the height should take into account a
-// space to show the toolbar. The SizeClass of the `traitCollection` of the view
-// displaying the logo is used in the computation.
 CGFloat heightForLogoHeader(BOOL logoIsShowing,
                             BOOL doodleIsShowing,
-                            BOOL promoCanShow,
-                            BOOL toolbarPresent,
                             CGFloat topInset,
                             UITraitCollection* traitCollection);
 // Returns the bottom padding for the header. This represents the spacing

@@ -48,9 +48,6 @@ class ReadingListModel;
 // Whether the Google logo or doodle is being shown.
 @property(nonatomic, assign) BOOL logoIsShowing;
 
-// `YES` if a what's new promo can be displayed.
-@property(nonatomic, assign) BOOL promoCanShow;
-
 // `YES` if the omnibox should be focused on when the view appears for voice
 // over.
 @property(nonatomic, assign) BOOL focusOmniboxWhenViewAppears;

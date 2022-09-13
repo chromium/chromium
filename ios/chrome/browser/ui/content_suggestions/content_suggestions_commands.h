@@ -17,8 +17,6 @@
 // Handles the actions tapping the "Return to Recent Tab" item that returns the
 // user to the last opened tab.
 - (void)openMostRecentTab;
-// Handles the actions following a tap on the promo.
-- (void)handlePromoTapped;
 // Handles the actions following a tap on a trending query.
 - (void)loadSuggestedQuery:(QuerySuggestionConfig*)config;
 

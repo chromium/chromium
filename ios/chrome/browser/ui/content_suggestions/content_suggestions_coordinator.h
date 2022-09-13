@@ -15,7 +15,6 @@ class WebState;
 @protocol FeedDelegate;
 @protocol NewTabPageControllerDelegate;
 @protocol NewTabPageDelegate;
-class NotificationPromoWhatsNew;
 @class NTPHomeMediator;
 @protocol ThumbStripSupporting;
 @class ViewRevealingVerticalPanHandler;
@@ -64,8 +63,6 @@ class NotificationPromoWhatsNew;
 // Configure Content Suggestions if showing the Start Surface.
 - (void)configureStartSurfaceIfNeeded;
 
-// The notification promo.
-- (NotificationPromoWhatsNew*)notificationPromo;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_COORDINATOR_H_

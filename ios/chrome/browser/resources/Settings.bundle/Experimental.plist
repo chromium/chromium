@@ -100,32 +100,6 @@
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
-			<string>Force What&apos;s New Promo</string>
-			<key>Key</key>
-			<string>WhatsNewPromoStatus</string>
-			<key>DefaultValue</key>
-			<integer>0</integer>
-			<key>Values</key>
-			<array>
-				<integer>0</integer>
-				<integer>1</integer>
-				<integer>2</integer>
-				<integer>3</integer>
-				<integer>4</integer>
-			</array>
-			<key>Titles</key>
-			<array>
-				<string>Default</string>
-				<string>Tip Command Test</string>
-				<string>Tip Move to Dock Promo</string>
-				<string>Tip Review Updated ToS</string>
-				<string>Set Default Browser Promo</string>
-			</array>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
 			<string>Force Language</string>
 			<key>Key</key>
 			<string>UILanguageOverride</string>

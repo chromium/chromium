@@ -15,12 +15,6 @@
 // UIViewController.
 @protocol ContentSuggestionsConsumer
 
-// Indicates to the consumer to present the WhatsNew tile with `config`.
-- (void)showWhatsNewViewWithConfig:(ContentSuggestionsWhatsNewItem*)config;
-
-// Indicates to the consumer to hide the WhatsNew tile.
-- (void)hideWhatsNewView;
-
 // Indicates to the consumer to present the Return to Recent Tab tile with
 // `config`.
 - (void)showReturnToRecentTabTileWithConfig:

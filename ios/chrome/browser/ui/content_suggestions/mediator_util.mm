@@ -50,10 +50,6 @@ ContentSuggestionsSectionInformation* ReturnToRecentTabSectionInformation() {
   return EmptySectionInfo(ContentSuggestionsSectionReturnToRecentTab);
 }
 
-ContentSuggestionsSectionInformation* PromoSectionInformation() {
-  return EmptySectionInfo(ContentSuggestionsSectionPromo);
-}
-
 ContentSuggestionsSectionInformation* MostVisitedSectionInformation() {
   return EmptySectionInfo(ContentSuggestionsSectionMostVisited);
 }

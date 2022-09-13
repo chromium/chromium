@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_selection_actions.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_whats_new_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
@@ -81,9 +80,6 @@ CGFloat ModuleVerticalSpacing() {
 
 @property(nonatomic, strong) URLDragDropHandler* dragDropHandler;
 
-// Whether an item of type ItemTypePromo has already been added to the model.
-@property(nonatomic, assign) BOOL promoAdded;
-
 // StackView holding all subviews.
 @property(nonatomic, strong) UIStackView* verticalStackView;
 
@@ -93,8 +89,6 @@ CGFloat ModuleVerticalSpacing() {
 // The UITapGestureRecognizer for the Return To Recent Tab tile.
 @property(nonatomic, strong)
     UITapGestureRecognizer* returnToRecentTabTapRecognizer;
-// The UITapGestureRecognizer for the NTP promo view.
-@property(nonatomic, strong) UITapGestureRecognizer* promoTapRecognizer;
 
 // The Return To Recent Tab view.
 @property(nonatomic, strong)
@@ -102,8 +96,6 @@ CGFloat ModuleVerticalSpacing() {
 // Module container of `returnToRecentTabTile`.
 @property(nonatomic, strong)
     ContentSuggestionsModuleContainer* returnToRecentTabContainer;
-// The WhatsNew view.
-@property(nonatomic, strong) ContentSuggestionsWhatsNewView* whatsNewView;
 // StackView holding all of `mostVisitedViews`.
 @property(nonatomic, strong) UIStackView* mostVisitedStackView;
 // Module Container for the Most Visited Tiles.
@@ -219,17 +211,6 @@ CGFloat ModuleVerticalSpacing() {
     [NSLayoutConstraint
         activateConstraints:@[ [parentView.widthAnchor
                                 constraintEqualToConstant:cardWidth] ]];
-  }
-  if (self.whatsNewView) {
-    [self addUIElement:self.whatsNewView withCustomBottomSpacing:0];
-    CGFloat width =
-        MostVisitedTilesContentHorizontalSpace(self.traitCollection);
-    CGSize size =
-        MostVisitedCellSize(self.traitCollection.preferredContentSizeCategory);
-    [NSLayoutConstraint activateConstraints:@[
-      [self.whatsNewView.widthAnchor constraintEqualToConstant:width],
-      [self.whatsNewView.heightAnchor constraintEqualToConstant:size.height]
-    ]];
   }
   if (IsContentSuggestionsUIModuleRefreshEnabled() ||
       [self.mostVisitedViews count] > 0) {
@@ -483,21 +464,6 @@ CGFloat ModuleVerticalSpacing() {
   }
 }
 
-- (void)showWhatsNewViewWithConfig:(ContentSuggestionsWhatsNewItem*)config {
-  self.whatsNewView =
-      [[ContentSuggestionsWhatsNewView alloc] initWithConfiguration:config];
-  self.promoTapRecognizer = [[UITapGestureRecognizer alloc]
-      initWithTarget:self
-              action:@selector(contentSuggestionsElementTapped:)];
-  [self.whatsNewView addGestureRecognizer:self.promoTapRecognizer];
-  self.promoTapRecognizer.enabled = YES;
-}
-
-- (void)hideWhatsNewView {
-  [self.whatsNewView removeFromSuperview];
-  self.whatsNewView = nil;
-}
-
 - (void)setMostVisitedTilesWithConfigs:
     (NSArray<ContentSuggestionsMostVisitedItem*>*)configs {
   if (!configs) {
@@ -652,11 +618,6 @@ CGFloat ModuleVerticalSpacing() {
   if (self.returnToRecentTabTile) {
     height += (ReturnToRecentTabHeight() + ModuleVerticalSpacing());
   }
-  if (self.whatsNewView) {
-    height += MostVisitedCellSize(
-                  UIApplication.sharedApplication.preferredContentSizeCategory)
-                  .height;
-  }
   return height;
 }
 
@@ -716,9 +677,6 @@ CGFloat ModuleVerticalSpacing() {
       }
       [self.suggestionCommandHandler openMostRecentTab];
     }
-  } else if ([sender.view
-                 isKindOfClass:[ContentSuggestionsWhatsNewView class]]) {
-    [self.suggestionCommandHandler handlePromoTapped];
   } else if ([sender.view isKindOfClass:[QuerySuggestionView class]]) {
     QuerySuggestionView* querySuggestionView =
         static_cast<QuerySuggestionView*>(sender.view);
@@ -752,9 +710,6 @@ CGFloat ModuleVerticalSpacing() {
     // Find correct insertion position in the stack.
     int insertionIndex = 0;
     if (self.returnToRecentTabTile) {
-      insertionIndex++;
-    }
-    if (self.whatsNewView) {
       insertionIndex++;
     }
     [self.verticalStackView insertArrangedSubview:self.mostVisitedStackView

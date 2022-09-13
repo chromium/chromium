@@ -58,7 +58,7 @@ class ContentSuggestionsCollectionUtilsTest : public PlatformTest {
 TEST_F(ContentSuggestionsCollectionUtilsTest, doodleFrameIPad) {
   // Action.
   CGFloat height = doodleHeight(YES, YES, IPadTraitCollection());
-  CGFloat topMargin = doodleTopMargin(YES, kTopInset, IPadTraitCollection());
+  CGFloat topMargin = doodleTopMargin(kTopInset, IPadTraitCollection());
 
   // Test.
   EXPECT_EQ(68, height);
@@ -70,7 +70,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, doodleFrameIPhonePortrait) {
   CGFloat heightLogo = doodleHeight(YES, YES, IPhonePortraitTraitCollection());
   CGFloat heightNoLogo = doodleHeight(NO, NO, IPhonePortraitTraitCollection());
   CGFloat topMargin =
-      doodleTopMargin(YES, kTopInset, IPhonePortraitTraitCollection());
+      doodleTopMargin(kTopInset, IPhonePortraitTraitCollection());
 
   // Test.
   EXPECT_EQ(68, heightLogo);
@@ -83,7 +83,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, doodleFrameIPhoneLandscape) {
   CGFloat heightLogo = doodleHeight(YES, YES, IPhoneLandscapeTraitCollection());
   CGFloat heightNoLogo = doodleHeight(NO, NO, IPhoneLandscapeTraitCollection());
   CGFloat topMargin =
-      doodleTopMargin(YES, kTopInset, IPhoneLandscapeTraitCollection());
+      doodleTopMargin(kTopInset, IPhoneLandscapeTraitCollection());
 
   // Test.
   EXPECT_EQ(68, heightLogo);
@@ -138,26 +138,13 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, searchFieldFrameIPhoneLandscape) {
 
 TEST_F(ContentSuggestionsCollectionUtilsTest, heightForLogoHeaderIPad) {
   // Action, tests.
-  EXPECT_EQ(322,
-            heightForLogoHeader(YES, YES, YES, YES, 0, IPadTraitCollection()));
-  EXPECT_EQ(346,
-            heightForLogoHeader(YES, YES, NO, YES, 0, IPadTraitCollection()));
-  EXPECT_EQ(322,
-            heightForLogoHeader(YES, YES, YES, NO, 0, IPadTraitCollection()));
-  EXPECT_EQ(346,
-            heightForLogoHeader(YES, YES, NO, NO, 0, IPadTraitCollection()));
+  EXPECT_EQ(346, heightForLogoHeader(YES, YES, 0, IPadTraitCollection()));
 }
 
 TEST_F(ContentSuggestionsCollectionUtilsTest, heightForLogoHeaderIPhone) {
   // Action, tests.
-  EXPECT_EQ(235, heightForLogoHeader(YES, YES, YES, YES, 0,
-                                     IPhonePortraitTraitCollection()));
-  EXPECT_EQ(235, heightForLogoHeader(YES, YES, NO, YES, 0,
-                                     IPhonePortraitTraitCollection()));
-  EXPECT_EQ(235, heightForLogoHeader(YES, YES, YES, NO, 0,
-                                     IPhonePortraitTraitCollection()));
-  EXPECT_EQ(235, heightForLogoHeader(YES, YES, NO, NO, 0,
-                                     IPhonePortraitTraitCollection()));
+  EXPECT_EQ(235,
+            heightForLogoHeader(YES, YES, 0, IPhonePortraitTraitCollection()));
 }
 
 TEST_F(ContentSuggestionsCollectionUtilsTest, NearestAncestor) {
@@ -188,7 +175,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, shrunkDoodleFrameIPhone) {
   CGFloat heightNoLogoLandscape =
       doodleHeight(NO, NO, IPhoneLandscapeTraitCollection());
   CGFloat topMarginLandscape =
-      doodleTopMargin(YES, kTopInset, IPhoneLandscapeTraitCollection());
+      doodleTopMargin(kTopInset, IPhoneLandscapeTraitCollection());
   EXPECT_EQ(68, heightLogoLandscape);
   EXPECT_EQ(kDoodleHeightNoLogo, heightNoLogoLandscape);
   EXPECT_EQ(78, topMarginLandscape);
@@ -199,7 +186,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, shrunkDoodleFrameIPhone) {
   CGFloat heightNoLogoPortrait =
       doodleHeight(NO, NO, IPhonePortraitTraitCollection());
   CGFloat topMarginPortrait =
-      doodleTopMargin(YES, kTopInset, IPhonePortraitTraitCollection());
+      doodleTopMargin(kTopInset, IPhonePortraitTraitCollection());
   EXPECT_EQ(68, heightLogoPortrait);
   EXPECT_EQ(kDoodleHeightNoLogo, heightNoLogoPortrait);
   EXPECT_EQ(95, topMarginPortrait);
