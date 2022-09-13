@@ -225,7 +225,8 @@ const OncFieldSignature ipconfig_fields[] = {
     {::onc::ipconfig::kSearchDomains, &kStringListSignature},
     {::onc::ipconfig::kIncludedRoutes, &kStringListSignature},
     {::onc::ipconfig::kExcludedRoutes, &kStringListSignature},
-    {::onc::ipconfig::kType, &kStringSignature},
+    {::onc::ipconfig::kType, &kStringSignature,
+     []() { return base::Value(::onc::ipconfig::kIPv4); }},
     {::onc::ipconfig::kWebProxyAutoDiscoveryUrl, &kStringSignature},
     {nullptr}};
 

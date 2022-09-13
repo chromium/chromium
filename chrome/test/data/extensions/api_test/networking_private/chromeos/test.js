@@ -656,6 +656,7 @@ var availableTests = [
           Type: NetworkType.WI_FI,
           WiFi: {
             AutoConnect: {
+              Effective: 'UserPolicy',
               UserEditable: true,
               UserPolicy: false
             },

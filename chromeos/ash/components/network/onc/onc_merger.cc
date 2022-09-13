@@ -86,6 +86,16 @@ base::Value GetEditableFlags(const base::Value& policy) {
   return result;
 }
 
+// If `dict` doesn't have key `key` yet, set it to `value`.
+template <typename ValueType>
+void SetIfNotSet(base::Value::Dict& dict,
+                 base::StringPiece key,
+                 ValueType value) {
+  if (dict.Find(key))
+    return;
+  dict.Set(key, std::move(value));
+}
+
 // This is the base class for merging a list of Values in parallel. See
 // MergeDictionaries function.
 class MergeListOfDictionaries {
@@ -452,10 +462,11 @@ class MergeToAugmented : public MergeToEffective {
       // Ensure that a property that is editable and has a user policy (which
       // indicates that the policy recommends a value) always has the
       // appropriate default user policy value provided.
-      if (!augmented_value_dict.Find(::onc::kAugmentationUserPolicy)) {
-        augmented_value_dict.Set(::onc::kAugmentationUserPolicy,
-                                 GetDefaultValue(field));
-      }
+      // TODO(b/245885527): Come up with a better handling for ONC defaults.
+      SetIfNotSet(augmented_value_dict, ::onc::kAugmentationUserPolicy,
+                  GetDefaultValue(field));
+      SetIfNotSet(augmented_value_dict, ::onc::kAugmentationEffectiveSetting,
+                  ::onc::kAugmentationUserPolicy);
     }
     if (HasDevicePolicy() && values.device_editable) {
       augmented_value.SetKey(::onc::kAugmentationDeviceEditable,
@@ -464,10 +475,11 @@ class MergeToAugmented : public MergeToEffective {
       // Ensure that a property that is editable and has a device policy (which
       // indicates that the policy recommends a value) always has the
       // appropriate default device policy value provided.
-      if (!augmented_value_dict.Find(::onc::kAugmentationDevicePolicy)) {
-        augmented_value_dict.Set(::onc::kAugmentationDevicePolicy,
-                                 GetDefaultValue(field));
-      }
+      // TODO(b/245885527): Come up with a better handling for ONC defaults.
+      SetIfNotSet(augmented_value_dict, ::onc::kAugmentationDevicePolicy,
+                  GetDefaultValue(field));
+      SetIfNotSet(augmented_value_dict, ::onc::kAugmentationEffectiveSetting,
+                  ::onc::kAugmentationDevicePolicy);
     }
     if (!augmented_value.DictEmpty())
       return augmented_value;

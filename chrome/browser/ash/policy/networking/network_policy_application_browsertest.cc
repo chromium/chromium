@@ -1094,8 +1094,13 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, RetainEthernetIPAddr) {
         DictionaryHasValue(shill::kGuidProperty, base::Value(kEthernetGuid)));
   }
 
-  // TOOD(pmarko): check that IP address is modifiable and policy-recommended
-  // in follow-up CL.
+  // Check that IP address is modifiable and policy-recommended.
+  {
+    auto properties = CrosNetworkConfigGetManagedProperties("{EthernetGuid}");
+    ASSERT_TRUE(properties);
+    EXPECT_EQ(properties->ip_address_config_type->policy_source,
+              network_mojom::PolicySource::kDevicePolicyRecommended);
+  }
 
   // Simulate setting an IP addr through the UI.
   {

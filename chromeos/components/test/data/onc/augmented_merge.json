@@ -23,6 +23,7 @@
    "NameServersConfigType": {
       "DeviceEditable": true,
       "DevicePolicy": "DHCP",
+      "Effective": "UserPolicy",
       "UserEditable": true,
       "UserPolicy": "DHCP"
    },
@@ -95,6 +96,7 @@
             "EnrollmentURI": {
                "DeviceEditable": true,
                "DevicePolicy": [  ],
+               "Effective": "UserPolicy",
                "UserEditable": true,
                "UserPolicy": [  ]
             },
