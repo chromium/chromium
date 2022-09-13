@@ -2402,8 +2402,8 @@
   },
   {
     "name": "enable-immersive-fullscreen-toolbar",
-    "owners": [ "lgrey" ],
-    "expiry_milestone": 95
+    "owners": [ "bur", "chrome-mac-dev@google.com" ],
+    "expiry_milestone": 119
   },
   {
     "name": "enable-input-event-logging",
