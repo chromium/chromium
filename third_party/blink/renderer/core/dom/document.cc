@@ -6282,6 +6282,8 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
                     resolver->Resolve();
                     break;
                   case mojom::blink::PermissionStatus::DENIED:
+                    LocalFrame::ConsumeTransientUserActivation(
+                        document->GetFrame());
                     document->expressly_denied_storage_access_ = true;
                     [[fallthrough]];
                   case mojom::blink::PermissionStatus::ASK:
