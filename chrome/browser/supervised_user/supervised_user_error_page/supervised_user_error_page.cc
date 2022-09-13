@@ -125,6 +125,8 @@ std::string BuildHtml(bool allow_access_requests,
                                         reason, second_custodian.empty())));
   strings.Set("blockReasonHeader",
               l10n_util::GetStringUTF8(IDS_SUPERVISED_USER_BLOCK_HEADER));
+  strings.Set("siteBlockHeader",
+              l10n_util::GetStringUTF8(IDS_GENERIC_SITE_BLOCK_HEADER));
 
   strings.Set("showFeedbackLink", is_automatically_blocked);
   strings.Set("feedbackLink",

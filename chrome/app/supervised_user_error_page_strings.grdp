@@ -79,6 +79,9 @@
       <message name="IDS_BLOCK_INTERSTITIAL_HIDE_DETAILS" desc="The text for the link to hide details about the interstitial.">
         Hide details
       </message>
+      <message name="IDS_GENERIC_SITE_BLOCK_HEADER" desc="Generic header to be shown with a more specific message about why a site is blocked.">
+        This site is blocked
+      </message>
       <message name="IDS_SUPERVISED_USER_BLOCK_HEADER" desc="Header for the message to be shown when a site was blocked.">
         This site is blocked because it may have mature content
       </message>
