@@ -1,6 +1,29 @@
 // Copyright (c) 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+//
+// Provides a pre-defined browser test fixture for browser tests that run
+// directly on top of `content_shell` (e.g. no functionality from //chrome, et
+// cetera is needed), which is often the case for web platform features.
+//
+// Intended to be used in conjunction with //content/public/test/browser_test.h
+// and one of the `IN_PROC_BROWSER_TEST_*` macros defined in that header; please
+// see that header for more info about using those macros.
+//
+// Commonly overridden methods:
+//
+// - void SetUpCommandLine(base::CommandLine* command_line), e.g. to add
+//   command-line flags to enable / configure the feature being tested.
+//
+// - void SetUpOnMainThread(), to run test set-up steps on the browser main
+//   thread, e.g. installing hooks in the browser process for testing. Note that
+//   this method cannot be used to configure renderer-side hooks, as renderers
+//   spawn in separate processes. Most often, renderers are configured via
+//   pre-existing IPCs or via command-line flags.
+//
+// As a hack, it *is* possible to use `--single-process`, which runs the
+// renderer in the same process, but on a different thread. This is very
+// strongly discouraged. :)
 
 #ifndef CONTENT_PUBLIC_TEST_CONTENT_BROWSER_TEST_H_
 #define CONTENT_PUBLIC_TEST_CONTENT_BROWSER_TEST_H_

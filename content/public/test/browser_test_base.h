@@ -1,6 +1,17 @@
 // Copyright (c) 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+//
+// If you are looking to write a new browser test, you are probably looking for
+// one of the already-implemented subclasses, e.g. `content::ContentBrowserTest`
+// for tests that can run directly on top of content_shell,
+// `InProcessBrowserTest` for tests that require `//chrome`-layer functionality,
+// et cetera. See `//content/public/test/browser_test.h` for more information.
+//
+// `content::BrowserTestBase` is a base class that provides shared functionality
+// across various types of browser tests. It is not intended for direct use in
+// tests, as it does not actually define how to launch a browser, nor how to run
+// a test in said browser.
 
 #ifndef CONTENT_PUBLIC_TEST_BROWSER_TEST_BASE_H_
 #define CONTENT_PUBLIC_TEST_BROWSER_TEST_BASE_H_
