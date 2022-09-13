@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 348 tests; 309 PASS, 39 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 378 tests; 339 PASS, 39 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["delete",""],["inserttext","a"]] "foo<font color=#0000FF>[bar</font>baz]" queryCommandIndeterm("inserttext") before
 PASS [["delete",""],["inserttext","a"]] "foo<font color=#0000FF>[bar</font>baz]" queryCommandState("inserttext") before
 PASS [["delete",""],["inserttext","a"]] "foo<font color=#0000FF>[bar</font>baz]" queryCommandValue("inserttext") before
@@ -348,5 +348,35 @@ FAIL [["styleWithCSS","false"],["bold",""],["inserttext","d"]] "<div><b><i>abc[]
 PASS [["styleWithCSS","false"],["bold",""],["inserttext","d"]] "<div><b><i>abc[]<br></i><br></b></div>" queryCommandIndeterm("bold") after
 PASS [["styleWithCSS","false"],["bold",""],["inserttext","d"]] "<div><b><i>abc[]<br></i><br></b></div>" queryCommandState("bold") after
 FAIL [["styleWithCSS","false"],["bold",""],["inserttext","d"]] "<div><b><i>abc[]<br></i><br></b></div>" queryCommandValue("bold") after assert_equals: Wrong result returned expected "" but got "false"
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc<b>[def</b>]ghi": execCommand("insertparagraph", false, "") return value
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc<b>[def</b>]ghi": execCommand("inserttext", false, "d") return value
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc<b>[def</b>]ghi": execCommand("inserttext", false, "e") return value
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc<b>[def</b>]ghi": execCommand("inserttext", false, "f") return value
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc<b>[def</b>]ghi" checks for modifications to non-editable content
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc<b>[def</b>]ghi" compare innerHTML
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc[<b>def]</b>ghi": execCommand("insertparagraph", false, "") return value
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc[<b>def]</b>ghi": execCommand("inserttext", false, "d") return value
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc[<b>def]</b>ghi": execCommand("inserttext", false, "e") return value
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc[<b>def]</b>ghi": execCommand("inserttext", false, "f") return value
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc[<b>def]</b>ghi" checks for modifications to non-editable content
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc[<b>def]</b>ghi" compare innerHTML
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc<b>[def]</b>ghi": execCommand("insertparagraph", false, "") return value
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc<b>[def]</b>ghi": execCommand("inserttext", false, "d") return value
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc<b>[def]</b>ghi": execCommand("inserttext", false, "e") return value
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc<b>[def]</b>ghi": execCommand("inserttext", false, "f") return value
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc<b>[def]</b>ghi" checks for modifications to non-editable content
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc<b>[def]</b>ghi" compare innerHTML
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc<b>{def}</b>ghi": execCommand("insertparagraph", false, "") return value
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc<b>{def}</b>ghi": execCommand("inserttext", false, "d") return value
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc<b>{def}</b>ghi": execCommand("inserttext", false, "e") return value
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc<b>{def}</b>ghi": execCommand("inserttext", false, "f") return value
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc<b>{def}</b>ghi" checks for modifications to non-editable content
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc<b>{def}</b>ghi" compare innerHTML
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc{<b>def</b>}ghi": execCommand("insertparagraph", false, "") return value
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc{<b>def</b>}ghi": execCommand("inserttext", false, "d") return value
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc{<b>def</b>}ghi": execCommand("inserttext", false, "e") return value
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc{<b>def</b>}ghi": execCommand("inserttext", false, "f") return value
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc{<b>def</b>}ghi" checks for modifications to non-editable content
+PASS [["insertparagraph",""],["inserttext","d"],["inserttext","e"],["inserttext","f"]] "abc{<b>def</b>}ghi" compare innerHTML
 Harness: the test ran to completion.
 

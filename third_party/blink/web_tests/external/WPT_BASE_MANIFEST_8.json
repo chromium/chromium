@@ -305451,7 +305451,7 @@
       []
      ],
      "multitest.js": [
-      "157a9c71f4574c9116439d305e909a616416f860",
+      "b872b0df029cafb34de93dd418fab8eb5786b891",
       []
      ],
      "outdent.js": [
@@ -306281,7 +306281,7 @@
       []
      ],
      "multitest_9001-last-expected.txt": [
-      "9504454894d3eedcd42b29dcf312dbd043d4c457",
+      "b79c1a5d65b8bd3e0e6cc07ca3409739e4091ec4",
       []
      ],
      "outdent-expected.txt": [
@@ -311609,6 +311609,10 @@
     ],
     "README.md": [
      "8b99a0140dbfcc1293c19105437d37577fd373db",
+     []
+    ],
+    "opaque-origin.https.window-expected.txt": [
+     "a4f8b49db924c9948f821ab077cf58f3dcb0348b",
      []
     ],
     "resources": {
