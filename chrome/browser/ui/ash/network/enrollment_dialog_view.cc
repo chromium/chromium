@@ -29,7 +29,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
-namespace ash::enrollment {
+namespace chromeos {
 
 namespace {
 
@@ -96,7 +96,7 @@ EnrollmentDialogView::EnrollmentDialogView(const std::string& network_name,
   label->SetAllowCharacterBreak(true);
 }
 
-EnrollmentDialogView::~EnrollmentDialogView() = default;
+EnrollmentDialogView::~EnrollmentDialogView() {}
 
 // static
 void EnrollmentDialogView::ShowDialog(const std::string& network_name,
@@ -169,7 +169,7 @@ DialogEnrollmentDelegate::DialogEnrollmentDelegate(
       network_name_(network_name),
       profile_(profile) {}
 
-DialogEnrollmentDelegate::~DialogEnrollmentDelegate() = default;
+DialogEnrollmentDelegate::~DialogEnrollmentDelegate() {}
 
 bool DialogEnrollmentDelegate::Enroll(
     const std::vector<std::string>& uri_list) {
@@ -235,6 +235,8 @@ bool EnrollmentDialogAllowed(Profile* profile) {
 ////////////////////////////////////////////////////////////////////////////////
 // Factory function.
 
+namespace enrollment {
+
 bool CreateEnrollmentDialog(const std::string& network_id) {
   const NetworkState* network =
       NetworkHandler::Get()->network_state_handler()->GetNetworkStateFromGuid(
@@ -258,7 +260,7 @@ bool CreateEnrollmentDialog(const std::string& network_id) {
   if (!policy)
     return false;
 
-  client_cert::ClientCertConfig cert_config;
+  ash::client_cert::ClientCertConfig cert_config;
   OncToClientCertConfig(onc_source, policy->GetDict(), &cert_config);
 
   if (cert_config.client_cert_type != onc::client_cert::kPattern)
@@ -280,4 +282,6 @@ bool CreateEnrollmentDialog(const std::string& network_id) {
   return enrollment->Enroll(cert_config.pattern.enrollment_uri_list());
 }
 
-}  // namespace ash::enrollment
+}  // namespace enrollment
+
+}  // namespace chromeos

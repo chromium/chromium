@@ -12,10 +12,13 @@
 #include "chrome/common/buildflags.h"
 
 namespace ash {
-class NetworkPortalNotificationController;
 class NewWindowDelegateProvider;
 class NightLightClient;
 }  // namespace ash
+
+namespace chromeos {
+class NetworkPortalNotificationController;
+}
 
 namespace game_mode {
 class GameModeController;
@@ -39,7 +42,7 @@ class InSessionAuthDialogClient;
 class LoginScreenClientImpl;
 class MediaClientImpl;
 class MobileDataNotifications;
-class NetworkConnectDelegate;
+class NetworkConnectDelegateChromeOS;
 class NightLightClient;
 class ProjectorAppClientImpl;
 class ProjectorClientImpl;
@@ -86,7 +89,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<UserProfileLoadedObserver> user_profile_loaded_observer_;
 
   // Initialized in PreProfileInit in all configs before Shell init:
-  std::unique_ptr<NetworkConnectDelegate> network_connect_delegate_;
+  std::unique_ptr<NetworkConnectDelegateChromeOS> network_connect_delegate_;
   std::unique_ptr<CastConfigControllerMediaRouter>
       cast_config_controller_media_router_;
 
@@ -115,7 +118,9 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<ProjectorAppClientImpl> projector_app_client_;
   std::unique_ptr<QuickAnswersController> quick_answers_controller_;
   std::unique_ptr<game_mode::GameModeController> game_mode_controller_;
-  std::unique_ptr<ash::NetworkPortalNotificationController>
+  // TODO(stevenjb): Move NetworkPortalNotificationController to c/b/ui/ash and
+  // elim chromeos:: namespace. https://crbug.com/798569.
+  std::unique_ptr<chromeos::NetworkPortalNotificationController>
       network_portal_notification_controller_;
 
   std::unique_ptr<internal::ChromeShelfControllerInitializer>

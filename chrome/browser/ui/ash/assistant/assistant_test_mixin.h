@@ -19,10 +19,13 @@ class PrefService;
 
 namespace ash {
 class AssistantTestApi;
-class LoggedInUserMixin;
 }  // namespace ash
 
-namespace ash::assistant {
+namespace chromeos {
+namespace assistant {
+
+class FakeS3Server;
+class LoggedInUserMixin;
 
 // Default wait time before we conclude the wait actions have timed out.
 constexpr base::TimeDelta kDefaultWaitTimeout = base::Seconds(10);
@@ -35,9 +38,9 @@ constexpr base::TimeDelta kDefaultWaitTimeout = base::Seconds(10);
 //     - Enabling the Assistant service.
 //     - Disabling all Assistant animations.
 //
-// See definition of `FakeS3Server` for an explanation of the different modes
-// the fake S3 server can run in (specified by passing `FakeS3Mode` into the
-// constructor).
+// See definition of |chromeos::assistant::FakeS3Server| for an explanation of
+// the different modes the fake S3 server can run in (specified by passing
+// |FakeS3Mode| into the constructor).
 class AssistantTestMixin : public InProcessBrowserTestMixin {
  public:
   AssistantTestMixin(InProcessBrowserTestMixinHost* host,
@@ -135,10 +138,11 @@ class AssistantTestMixin : public InProcessBrowserTestMixin {
 
   FakeS3Server fake_s3_server_;
   FakeS3Mode mode_;
-  std::unique_ptr<AssistantTestApi> test_api_;
+  std::unique_ptr<ash::AssistantTestApi> test_api_;
   std::unique_ptr<LoggedInUserMixin> user_mixin_;
 };
 
-}  // namespace ash::assistant
+}  // namespace assistant
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_TEST_MIXIN_H_

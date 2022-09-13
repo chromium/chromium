@@ -21,11 +21,11 @@
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "content/public/test/browser_test.h"
 
-namespace ash::assistant {
-
+namespace chromeos {
+namespace assistant {
 namespace {
 
-using test::ExpectResult;
+using ::ash::CrasAudioHandler;
 
 // Please remember to set auth token when running in |kProxy| mode.
 constexpr auto kMode = FakeS3Mode::kReplay;
@@ -51,12 +51,16 @@ inline constexpr char kDlcLoadStatusHistogram[] =
 
 }  // namespace
 
+using ::ash::assistant::test::ExpectResult;
+
 class AssistantBrowserTest : public MixinBasedInProcessBrowserTest,
                              public testing::WithParamInterface<bool> {
  public:
   AssistantBrowserTest() {
-    if (GetParam())
-      feature_list_.InitAndEnableFeature(features::kEnableLibAssistantDlc);
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          chromeos::assistant::features::kEnableLibAssistantDlc);
+    }
 
     // Do not log to file in test. Otherwise multiple tests may create/delete
     // the log file at the same time. See http://crbug.com/1307868.
@@ -77,8 +81,8 @@ class AssistantBrowserTest : public MixinBasedInProcessBrowserTest,
 
     // Make sure that the app list bubble finished showing when productivity
     // launcher is enabled.
-    if (features::IsProductivityLauncherEnabled()) {
-      AppListTestApi().WaitForBubbleWindow(
+    if (ash::features::IsProductivityLauncherEnabled()) {
+      ash::AppListTestApi().WaitForBubbleWindow(
           /*wait_for_opening_animation=*/false);
     }
   }
@@ -159,13 +163,13 @@ IN_PROC_BROWSER_TEST_P(AssistantBrowserTest,
   // Make sure that the app list bubble finished showing when productivity
   // launcher is enabled (the app list view gets created asynchronously for
   // productivity launcher).
-  if (features::IsProductivityLauncherEnabled()) {
-    AppListTestApi().WaitForBubbleWindow(
+  if (ash::features::IsProductivityLauncherEnabled()) {
+    ash::AppListTestApi().WaitForBubbleWindow(
         /*wait_for_opening_animation=*/false);
   }
 
   EXPECT_TRUE(tester()->IsVisible());
-  if (features::IsLibAssistantDlcEnabled()) {
+  if (chromeos::assistant::features::IsLibAssistantDlcEnabled()) {
     histogram_tester()->ExpectTotalCount(kDlcInstallResultHistogram, 1);
     histogram_tester()->ExpectTotalCount(kDlcLoadStatusHistogram, 1);
   }
@@ -330,4 +334,5 @@ INSTANTIATE_TEST_SUITE_P(/* no label */,
                          AssistantBrowserTest,
                          /*values=*/testing::Bool());
 
-}  // namespace ash::assistant
+}  // namespace assistant
+}  // namespace chromeos

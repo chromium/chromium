@@ -10,7 +10,8 @@
 
 #include "base/process/process.h"
 
-namespace ash::assistant {
+namespace chromeos {
+namespace assistant {
 
 class PortSelector;
 
@@ -76,6 +77,7 @@ class FakeS3Server {
   base::Process fake_s3_server_;
 };
 
-}  // namespace ash::assistant
+}  // namespace assistant
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_UI_ASH_ASSISTANT_TEST_SUPPORT_FAKE_S3_SERVER_H_

@@ -17,11 +17,15 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/network/network_connect.h"
 
-namespace ash::tether {
+namespace {
+const int kTestNetworkSignalStrength = 50;
+}  // namespace
+
+namespace chromeos {
+
+namespace tether {
 
 namespace {
-
-const int kTestNetworkSignalStrength = 50;
 
 const char kTetherSettingsSubpage[] = "networks?type=Tether";
 
@@ -38,7 +42,7 @@ class TetherNotificationPresenterTest : public BrowserWithTestWindowTest {
 
     // NetworkConnect:
     void DisconnectFromNetworkId(const std::string& network_id) override {}
-    void SetTechnologyEnabled(const NetworkTypePattern& technology,
+    void SetTechnologyEnabled(const ash::NetworkTypePattern& technology,
                               bool enabled_state) override {}
     void ShowMobileSetup(const std::string& network_id) override {}
     void ShowCarrierAccountDetail(const std::string& network_id) override {}
@@ -519,4 +523,6 @@ TEST_F(TetherNotificationPresenterTest,
       1u /* num_expected_button_tapped_single_host_nearby */);
 }
 
-}  // namespace ash::tether
+}  // namespace tether
+
+}  // namespace chromeos
