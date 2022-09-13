@@ -26,6 +26,10 @@ class GuestView : public GuestViewBase {
     return AsDerivedGuest(GuestViewBase::FromWebContents(contents));
   }
 
+  static T* FromGuestViewBase(GuestViewBase* guest_view_base) {
+    return AsDerivedGuest(guest_view_base);
+  }
+
   static T* FromFrameID(int render_process_id, int render_frame_id) {
     auto* render_frame_host =
         content::RenderFrameHost::FromID(render_process_id, render_frame_id);

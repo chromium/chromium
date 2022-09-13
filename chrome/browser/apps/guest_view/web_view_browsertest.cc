@@ -4272,9 +4272,9 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, DISABLED_WebViewInBackgroundPage) {
 IN_PROC_BROWSER_TEST_P(WebViewTest, AllowTransparencyAndAllowScalingPropagate) {
   LoadAppWithGuest("web_view/simple");
 
-  ASSERT_TRUE(GetGuestWebContents());
+  ASSERT_TRUE(GetGuestView());
   extensions::WebViewGuest* guest =
-      extensions::WebViewGuest::FromWebContents(GetGuestWebContents());
+      extensions::WebViewGuest::FromGuestViewBase(GetGuestView());
   ASSERT_TRUE(guest->allow_transparency());
   ASSERT_TRUE(guest->allow_scaling());
 }
