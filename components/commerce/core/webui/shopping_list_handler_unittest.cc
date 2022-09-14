@@ -33,7 +33,8 @@ class MockPage : public shopping_list::mojom::Page {
   }
   mojo::Receiver<shopping_list::mojom::Page> receiver_{this};
 
-  MOCK_METHOD1(PriceTrackedForBookmark, void(int64_t bookmark_id));
+  MOCK_METHOD1(PriceTrackedForBookmark,
+               void(shopping_list::mojom::BookmarkProductInfoPtr product));
   MOCK_METHOD1(PriceUntrackedForBookmark, void(int64_t bookmark_id));
 };
 
@@ -88,7 +89,7 @@ TEST_F(ShoppingListHandlerTest, TestTrackProdcutSuccess) {
   EXPECT_FALSE(IsBookmarkPriceTracked(bookmark_model_.get(), product));
 
   EXPECT_CALL(page_, PriceUntrackedForBookmark(product->id())).Times(1);
-  EXPECT_CALL(page_, PriceTrackedForBookmark(product->id())).Times(1);
+  EXPECT_CALL(page_, PriceTrackedForBookmark(testing::_)).Times(1);
   handler_->TrackPriceForBookmark(product->id());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(IsBookmarkPriceTracked(bookmark_model_.get(), product));
@@ -100,7 +101,7 @@ TEST_F(ShoppingListHandlerTest, TestUntrackProductSuccess) {
       true, 1230000, "usd");
   EXPECT_TRUE(IsBookmarkPriceTracked(bookmark_model_.get(), product));
 
-  EXPECT_CALL(page_, PriceTrackedForBookmark(product->id())).Times(1);
+  EXPECT_CALL(page_, PriceTrackedForBookmark(testing::_)).Times(1);
   EXPECT_CALL(page_, PriceUntrackedForBookmark(product->id())).Times(1);
   handler_->UntrackPriceForBookmark(product->id());
   task_environment_.RunUntilIdle();
@@ -118,7 +119,7 @@ TEST_F(ShoppingListHandlerTest, TestTrackProdcutFailure) {
   shopping_service_->SetUnsubscribeCallbackValue(false);
 
   EXPECT_CALL(page_, PriceUntrackedForBookmark(product->id())).Times(2);
-  EXPECT_CALL(page_, PriceTrackedForBookmark(product->id())).Times(0);
+  EXPECT_CALL(page_, PriceTrackedForBookmark(testing::_)).Times(0);
   handler_->TrackPriceForBookmark(product->id());
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(IsBookmarkPriceTracked(bookmark_model_.get(), product));
@@ -134,7 +135,7 @@ TEST_F(ShoppingListHandlerTest, TestUntrackProductFailure) {
   shopping_service_->SetSubscribeCallbackValue(false);
   shopping_service_->SetUnsubscribeCallbackValue(false);
 
-  EXPECT_CALL(page_, PriceTrackedForBookmark(product->id())).Times(2);
+  EXPECT_CALL(page_, PriceTrackedForBookmark(testing::_)).Times(2);
   EXPECT_CALL(page_, PriceUntrackedForBookmark(product->id())).Times(0);
   handler_->UntrackPriceForBookmark(product->id());
   task_environment_.RunUntilIdle();
@@ -167,7 +168,7 @@ TEST_F(ShoppingListHandlerTest, PageNotUpdateForIrrelevantChange) {
                                  GURL("http://example.com/1"));
   EXPECT_FALSE(IsBookmarkPriceTracked(bookmark_model_.get(), node));
 
-  EXPECT_CALL(page_, PriceTrackedForBookmark(node->id())).Times(0);
+  EXPECT_CALL(page_, PriceTrackedForBookmark(testing::_)).Times(0);
   EXPECT_CALL(page_, PriceUntrackedForBookmark(node->id())).Times(0);
   bookmark_model_->SetNodeMetaInfo(node, "test_key", "test_value");
 }

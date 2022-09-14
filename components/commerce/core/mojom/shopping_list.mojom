@@ -66,9 +66,9 @@ interface ShoppingListHandler {
 
 // WebUI-side handler for requests from the browser.
 interface Page {
-  // Callback when a bookmark with `bookmark_id` is observed to start being
-  // price tracked.
-  PriceTrackedForBookmark(int64 bookmark_id);
+  // Callback when a bookmark is observed to start being price tracked and
+  // pass along the `BookmarkProductInfo` constructed from it.
+  PriceTrackedForBookmark(BookmarkProductInfo bookmark_product);
 
   // Callback when a bookmark with `bookmark_id` is observed to stop being
   // price tracked.

@@ -56,7 +56,9 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
       const std::string& locale);
 
  private:
-  void onPriceTrackResult(int64_t bookmark_id, bool success);
+  void onPriceTrackResult(int64_t bookmark_id,
+                          bookmarks::BookmarkModel* model,
+                          bool success);
 
   mojo::Remote<shopping_list::mojom::Page> remote_page_;
   mojo::Receiver<shopping_list::mojom::ShoppingListHandler> receiver_;

@@ -65,7 +65,8 @@ export class ShoppingListElement extends PolymerElement {
     const callbackRouter = this.shoppingListApi_.getCallbackRouter();
     this.listenerIds_.push(
         callbackRouter.priceTrackedForBookmark.addListener(
-            (bookmarkId: bigint) => this.onBookmarkPriceTracked(bookmarkId)),
+            (product: BookmarkProductInfo) =>
+                this.onBookmarkPriceTracked(product)),
         callbackRouter.priceUntrackedForBookmark.addListener(
             (bookmarkId: bigint) => this.onBookmarkPriceUntracked(bookmarkId)),
     );
@@ -167,15 +168,21 @@ export class ShoppingListElement extends PolymerElement {
         loadTimeData.getString('shoppingListUntrackPriceButtonDescription');
   }
 
-  private onBookmarkPriceTracked(bookmarkId: bigint) {
-    this.untrackedItems_ =
-        this.untrackedItems_.filter(item => item.bookmarkId !== bookmarkId);
+  private onBookmarkPriceTracked(product: BookmarkProductInfo) {
+    const productItem =
+        this.productInfos.find(item => item.bookmarkId === product.bookmarkId);
+    if (productItem == null) {
+      this.push('productInfos', product);
+      return;
+    }
+    this.untrackedItems_ = this.untrackedItems_.filter(
+        item => item.bookmarkId !== product.bookmarkId);
   }
 
   private onBookmarkPriceUntracked(bookmarkId: bigint) {
     const untrackedItem =
         this.productInfos.find(item => item.bookmarkId === bookmarkId);
-    if (untrackedItem === undefined) {
+    if (untrackedItem == null) {
       return;
     }
     if (!this.untrackedItems_.includes(untrackedItem)) {

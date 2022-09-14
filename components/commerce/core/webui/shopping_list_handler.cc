@@ -21,6 +21,46 @@
 #include "url/gurl.h"
 
 namespace commerce {
+namespace {
+shopping_list::mojom::BookmarkProductInfoPtr BookmarkNodeToMojoProduct(
+    bookmarks::BookmarkModel& model,
+    const bookmarks::BookmarkNode* node,
+    const std::string& locale) {
+  auto bookmark_info = shopping_list::mojom::BookmarkProductInfo::New();
+  bookmark_info->bookmark_id = node->id();
+
+  std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+      power_bookmarks::GetNodePowerBookmarkMeta(&model, node);
+  const power_bookmarks::ShoppingSpecifics specifics =
+      meta->shopping_specifics();
+
+  bookmark_info->info = shopping_list::mojom::ProductInfo::New();
+  bookmark_info->info->title = specifics.title();
+  bookmark_info->info->domain = base::UTF16ToUTF8(
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          GURL(node->url())));
+
+  bookmark_info->info->product_url = node->url();
+  bookmark_info->info->image_url = GURL(meta->lead_image().url());
+
+  const power_bookmarks::ProductPrice price = specifics.current_price();
+  std::string current_code = price.currency_code();
+
+  std::unique_ptr<payments::CurrencyFormatter> formatter =
+      std::make_unique<payments::CurrencyFormatter>(current_code, locale);
+  formatter->SetMaxFractionalDigits(2);
+
+  bookmark_info->info->current_price =
+      base::UTF16ToUTF8(formatter->Format(base::NumberToString(
+          static_cast<float>(price.amount_micros()) / kToMicroCurrency)));
+
+  // TODO(1346620): Hook up previous price. We might need to fetch new
+  //                information when the UI is loaded to handle both
+  //                previous and current price.
+
+  return bookmark_info;
+}
+}  // namespace
 
 using shopping_list::mojom::BookmarkProductInfo;
 using shopping_list::mojom::BookmarkProductInfoPtr;
@@ -61,7 +101,8 @@ void ShoppingListHandler::TrackPriceForBookmark(int64_t bookmark_id) {
       shopping_service_, bookmark_model_,
       bookmarks::GetBookmarkNodeByID(bookmark_model_, bookmark_id), true,
       base::BindOnce(&ShoppingListHandler::onPriceTrackResult,
-                     weak_ptr_factory_.GetWeakPtr(), bookmark_id));
+                     weak_ptr_factory_.GetWeakPtr(), bookmark_id,
+                     bookmark_model_));
 }
 
 void ShoppingListHandler::UntrackPriceForBookmark(int64_t bookmark_id) {
@@ -69,7 +110,8 @@ void ShoppingListHandler::UntrackPriceForBookmark(int64_t bookmark_id) {
       shopping_service_, bookmark_model_,
       bookmarks::GetBookmarkNodeByID(bookmark_model_, bookmark_id), false,
       base::BindOnce(&ShoppingListHandler::onPriceTrackResult,
-                     weak_ptr_factory_.GetWeakPtr(), bookmark_id));
+                     weak_ptr_factory_.GetWeakPtr(), bookmark_id,
+                     bookmark_model_));
 }
 
 void ShoppingListHandler::BookmarkModelChanged() {}
@@ -83,7 +125,8 @@ void ShoppingListHandler::BookmarkMetaInfoChanged(
     return;
 
   if (commerce::IsBookmarkPriceTracked(model, node)) {
-    remote_page_->PriceTrackedForBookmark(node->id());
+    remote_page_->PriceTrackedForBookmark(
+        BookmarkNodeToMojoProduct(*model, node, locale_));
   } else {
     remote_page_->PriceUntrackedForBookmark(node->id());
   }
@@ -95,60 +138,22 @@ std::vector<BookmarkProductInfoPtr> ShoppingListHandler::BookmarkListToMojoList(
     const std::string& locale) {
   std::vector<BookmarkProductInfoPtr> info_list;
 
-  // Maintain a single currency formatter and the currency code it was made
-  // with in case we have products with multiple currencies.
-  std::unique_ptr<payments::CurrencyFormatter> formatter;
-  std::string formatter_code = "";
-
   for (const bookmarks::BookmarkNode* node : bookmarks) {
-    auto bookmark_info = BookmarkProductInfo::New();
-    bookmark_info->bookmark_id = node->id();
-
-    std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
-        power_bookmarks::GetNodePowerBookmarkMeta(&model, node);
-    const power_bookmarks::ShoppingSpecifics specifics =
-        meta->shopping_specifics();
-
-    bookmark_info->info = shopping_list::mojom::ProductInfo::New();
-    bookmark_info->info->title = specifics.title();
-    bookmark_info->info->domain = base::UTF16ToUTF8(
-        url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-            GURL(node->url())));
-
-    bookmark_info->info->product_url = node->url();
-    bookmark_info->info->image_url = GURL(meta->lead_image().url());
-
-    const power_bookmarks::ProductPrice price = specifics.current_price();
-    std::string current_code = price.currency_code();
-
-    if (!formatter || formatter_code != current_code) {
-      formatter =
-          std::make_unique<payments::CurrencyFormatter>(current_code, locale);
-      formatter->SetMaxFractionalDigits(2);
-      formatter_code = current_code;
-    }
-
-    bookmark_info->info->current_price =
-        base::UTF16ToUTF8(formatter->Format(base::NumberToString(
-            static_cast<float>(price.amount_micros()) / kToMicroCurrency)));
-
-    // TODO(1346620): Hook up previous price. We might need to fetch new
-    //                information when the UI is loaded to handle both
-    //                previous and current price.
-
-    info_list.push_back(std::move(bookmark_info));
+    info_list.push_back(BookmarkNodeToMojoProduct(model, node, locale));
   }
 
   return info_list;
 }
 
 void ShoppingListHandler::onPriceTrackResult(int64_t bookmark_id,
+                                             bookmarks::BookmarkModel* model,
                                              bool success) {
   if (success)
     return;
   auto* node = bookmarks::GetBookmarkNodeByID(bookmark_model_, bookmark_id);
   if (commerce::IsBookmarkPriceTracked(bookmark_model_, node)) {
-    remote_page_->PriceTrackedForBookmark(bookmark_id);
+    remote_page_->PriceTrackedForBookmark(
+        BookmarkNodeToMojoProduct(*model, node, locale_));
   } else {
     remote_page_->PriceUntrackedForBookmark(bookmark_id);
   }
