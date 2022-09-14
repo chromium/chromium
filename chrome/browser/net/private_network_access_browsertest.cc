@@ -1504,8 +1504,8 @@ class PrivateNetworkAccessAutoReloadBrowserTest
 // load due to a transient network error, it is auto-reloaded a short while
 // later and that fetch is not blocked as a private network request.
 //
-// TODO(crbug.com/1326341): Flaky on Linux MSAN.
-#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+// TODO(crbug.com/1326341): Flaky on Linux ChromiumOS MSAN.
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_AutoReloadWorks DISABLED_AutoReloadWorks
 #else
 #define MAYBE_AutoReloadWorks AutoReloadWorks
