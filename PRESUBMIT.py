@@ -5089,7 +5089,7 @@ def CheckForIncludeGuards(input_api, output_api):
                     # don't match the chromium style guide, but new files should
                     # get it right.
                     if guard_name != expected_guard:
-                        if not f.OldContents():
+                        if f.Action() == 'A':  # If file was just 'A'dded
                             errors.append(
                                 output_api.PresubmitPromptWarning(
                                     'Header using the wrong include guard name %s'

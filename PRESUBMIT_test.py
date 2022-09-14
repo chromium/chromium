@@ -799,7 +799,7 @@ class IncludeGuardTest(unittest.TestCase):
           '#ifndef CHROME_ODL_H_',
           '#define CHROME_ODL_H_',
           '#endif  // CHROME_ODL_H_',
-        ]),
+        ], action='M'),
         # Using a Blink style include guard outside Blink is wrong.
         MockAffectedFile('content/NotInBlink.h', [
           '#ifndef NotInBlink_h',
@@ -821,8 +821,9 @@ class IncludeGuardTest(unittest.TestCase):
           'struct McBoatFace;',
           '#endif  // WrongInBlink_h',
         ]),
-        # Using a bad include guard in Blink is not accepted even if
-        # it's an old file.
+        # Using a bad include guard in Blink is not supposed to be accepted even
+        # if it's an old file. However the current presubmit has accepted this
+        # for a while.
         MockAffectedFile('third_party/blink/StillInBlink.h', [
           '// New contents',
           '#ifndef AcceptedInBlink_h',
@@ -835,7 +836,7 @@ class IncludeGuardTest(unittest.TestCase):
           '#define AcceptedInBlink_h',
           'struct McBoatFace;',
           '#endif  // AcceptedInBlink_h',
-        ]),
+        ], action='M'),
         # Using a non-Chromium include guard in third_party
         # (outside blink) is accepted.
         MockAffectedFile('third_party/foo/some_file.h', [
