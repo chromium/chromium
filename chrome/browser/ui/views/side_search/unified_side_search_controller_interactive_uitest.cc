@@ -34,7 +34,7 @@ class SideSearchV2Test : public SideSearchBrowserTest {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kSideSearch, features::kSideSearchDSESupport,
-         features::kUnifiedSidePanel},
+         features::kUnifiedSidePanel, features::kSearchWebInSidePanel},
         {});
     SideSearchBrowserTest::SetUp();
   }
@@ -127,6 +127,52 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SideSearchNotAvailableInOTR) {
   NavigateActiveTab(browser2, GetNonMatchingUrl());
 
   EXPECT_EQ(nullptr, GetSidePanelButtonFor(browser2));
+}
+
+IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
+                       SearchWebInSidePanelNotAvailableInOTR) {
+  Browser* browser2 = CreateIncognitoBrowser();
+  EXPECT_TRUE(browser2->profile()->IsOffTheRecord());
+  auto* tab_contents_helper = SideSearchTabContentsHelper::FromWebContents(
+      browser2->tab_strip_model()->GetActiveWebContents());
+  EXPECT_EQ(nullptr, tab_contents_helper);
+}
+
+IN_PROC_BROWSER_TEST_F(SideSearchV2Test, MenuEntryPointNotAvailableOnSRP) {
+  NavigateActiveTab(browser(), GetMatchingSearchUrl());
+  auto* tab_contents_helper = SideSearchTabContentsHelper::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_FALSE(tab_contents_helper->CanShowSidePanelFromContextMenuSearch());
+}
+
+IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
+                       MenuEntryPointAvailableOnPageWithoutSRP) {
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
+  auto* tab_contents_helper = SideSearchTabContentsHelper::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_TRUE(tab_contents_helper->CanShowSidePanelFromContextMenuSearch());
+}
+
+IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
+                       MenuEntryPointDisplayAndUpdateSidePanel) {
+  // Initially side panel does not exist.
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+  auto* helper = SideSearchTabContentsHelper::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  GURL matchingURL_1 = GetMatchingSearchUrl();
+  helper->OpenSidePanelFromContextMenuSearch(matchingURL_1);
+
+  // Clicking menu entrypoint displays search results in side panel.
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+  EXPECT_EQ(matchingURL_1,
+            GetActiveSidePanelWebContents(browser())->GetVisibleURL());
+
+  // Clicking menu entrypoint with a newly-generated search URL updates the
+  // existing side panel.
+  GURL matchingURL_2 = GetMatchingSearchUrl();
+  helper->OpenSidePanelFromContextMenuSearch(matchingURL_2);
+  EXPECT_EQ(matchingURL_2,
+            GetActiveSidePanelWebContents(browser())->GetVisibleURL());
 }
 
 IN_PROC_BROWSER_TEST_F(SideSearchV2Test,

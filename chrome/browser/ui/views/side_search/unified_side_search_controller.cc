@@ -196,6 +196,7 @@ std::u16string UnifiedSideSearchController::GetSideSearchName() const {
 }
 
 void UnifiedSideSearchController::OpenSidePanel() {
+  UpdateSidePanel();
   auto* browser_view = GetBrowserView();
   if (browser_view) {
     browser_view->side_panel_coordinator()->Show(

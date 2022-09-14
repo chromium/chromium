@@ -129,6 +129,14 @@ class SideSearchTabContentsHelper
 
   const absl::optional<GURL>& last_search_url() { return last_search_url_; }
 
+  // Takes the search URL passed from context menu and opens search results in
+  // side panel.
+  void OpenSidePanelFromContextMenuSearch(const GURL& url);
+
+  // Returns true when the side panel can be actually opened from context menu
+  // option.
+  bool CanShowSidePanelFromContextMenuSearch();
+
  private:
   friend class content::WebContentsUserData<SideSearchTabContentsHelper>;
   explicit SideSearchTabContentsHelper(content::WebContents* web_contents);

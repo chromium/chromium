@@ -279,6 +279,7 @@ class RenderViewContextMenu
   bool IsAddANoteEnabled() const;
 
   // Command execution functions.
+  void ExecSearchWebInSidePanel(const GURL& url);
   void ExecOpenWebApp();
   void ExecProtocolHandler(int event_flags, int handler_index);
   void ExecOpenLinkInProfile(int profile_index);
