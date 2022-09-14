@@ -5681,6 +5681,10 @@ const char kEnableHardwareMirrorModeName[] = "Enable Hardware Mirror Mode";
 const char kEnableHardwareMirrorModeDescription[] =
     "Enables hardware support when multiple displays are set to mirror mode.";
 
+const char kHindiInscriptLayoutName[] = "Hindi Inscript Layout on CrOS";
+const char kHindiInscriptLayoutDescription[] =
+    "Enables Hindi Inscript Layout on ChromeOS.";
+
 const char kLockScreenNotificationName[] = "Lock screen notification";
 const char kLockScreenNotificationDescription[] =
     "Enable notifications on the lock screen.";

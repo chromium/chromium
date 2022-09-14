@@ -4887,6 +4887,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          chromeos::features::kDiacriticsOnPhysicalKeyboardLongpress)},
+    {"enable-cros-hindi-inscript-layout",
+     flag_descriptions::kHindiInscriptLayoutName,
+     flag_descriptions::kHindiInscriptLayoutDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kHindiInscriptLayout)},
     {"enable-cros-ime-assist-emoji-enhanced",
      flag_descriptions::kImeAssistEmojiEnhancedName,
      flag_descriptions::kImeAssistEmojiEnhancedDescription, kOsCrOS,

@@ -561,6 +561,9 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
       base::FeatureList::IsEnabled(
           chromeos::features::kHandwritingLegacyRecognitionAllLang)));
   features.Append(GenerateFeatureFlag(
+      "hindiinscriptlayout",
+      base::FeatureList::IsEnabled(chromeos::features::kHindiInscriptLayout)));
+  features.Append(GenerateFeatureFlag(
       "multiword", chromeos::features::IsAssistiveMultiWordEnabled()));
   features.Append(GenerateFeatureFlag(
       "stylushandwriting",

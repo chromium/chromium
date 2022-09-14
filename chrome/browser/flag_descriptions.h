@@ -3185,6 +3185,9 @@ extern const char kVirtualKeyboardNewHeaderDescription[];
 extern const char kCrosLanguageSettingsImeOptionsInSettingsName[];
 extern const char kCrosLanguageSettingsImeOptionsInSettingsDescription[];
 
+extern const char kHindiInscriptLayoutName[];
+extern const char kHindiInscriptLayoutDescription[];
+
 extern const char kImeSystemEmojiPickerName[];
 extern const char kImeSystemEmojiPickerDescription[];
 

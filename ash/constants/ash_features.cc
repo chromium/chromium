@@ -894,6 +894,10 @@ const base::Feature kHideArcMediaNotifications{
 const base::Feature kHideShelfControlsInTabletMode{
     "HideShelfControlsInTabletMode", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// If enabled, add Hindi Inscript keyboard layout.
+const base::Feature kHindiInscriptLayout{"HindiInscriptLayout",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables in-progress downloads notification suppression with the productivity
 // feature that aims to reduce context switching by enabling users to collect
 // content and transfer or access it later.

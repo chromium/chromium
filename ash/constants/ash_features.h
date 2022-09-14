@@ -376,6 +376,8 @@ extern const base::Feature kHideArcMediaNotifications;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHideShelfControlsInTabletMode;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kHindiInscriptLayout;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature
     kHoldingSpaceInProgressDownloadsNotificationSuppression;
 COMPONENT_EXPORT(ASH_CONSTANTS)
