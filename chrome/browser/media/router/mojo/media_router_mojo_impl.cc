@@ -130,6 +130,11 @@ void MediaRouterMojoImpl::OnIssue(const IssueInfo& issue) {
   GetIssueManager()->AddIssue(issue);
 }
 
+void MediaRouterMojoImpl::ClearTopIssueForSink(const MediaSink::Id& sink_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  GetIssueManager()->ClearTopIssueForSink(sink_id);
+}
+
 void MediaRouterMojoImpl::OnSinksReceived(
     mojom::MediaRouteProviderId provider_id,
     const std::string& media_source,

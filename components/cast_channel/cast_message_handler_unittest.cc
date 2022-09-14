@@ -136,7 +136,8 @@ class CastMessageHandlerTest : public testing::Test {
                     GetAppAvailabilityResult result));
 
   void ExpectSessionLaunchResult(LaunchSessionResponse::Result expected_result,
-                                 LaunchSessionResponse response) {
+                                 LaunchSessionResponse response,
+                                 LaunchSessionCallbackWrapper* out_callback) {
     if (run_loop_)
       run_loop_->Quit();
     ++session_launch_response_count_;
@@ -205,6 +206,28 @@ class CastMessageHandlerTest : public testing::Test {
         "requestId": )" + base::NumberToString(request_id) + R"(,
         "type": "RECEIVER_STATUS",
         "status": {"foo": "bar"},
+      })"));
+  }
+
+  void HandleLaunchStatusResponse(int request_id, std::string message_status) {
+    handler_.HandleCastInternalMessage(
+        channel_id_,
+        kSourceId, kDestinationId, "theNamespace", ParseJsonLikeDataDecoder(R"(
+      {
+        "launchRequestId": )" + base::NumberToString(request_id) + R"(,
+        "type": "LAUNCH_STATUS",
+        "status": ")" + message_status + R"(",
+      })"));
+  }
+
+  void HandleLaunchErrorResponse(int request_id, std::string extended_error) {
+    handler_.HandleCastInternalMessage(channel_id_, kSourceId, kDestinationId,
+                                       "theNamespace",
+                                       ParseJsonLikeDataDecoder(R"(
+      {
+        "requestId": )" + base::NumberToString(request_id) + R"(,
+        "type": "LAUNCH_ERROR",
+        "extendedError": ")" + extended_error + R"(",
       })"));
   }
 
@@ -596,11 +619,11 @@ TEST_F(CastMessageHandlerTest, PendingRequestsDestructor) {
   CreatePendingRequests();
 
   // Set up expanctions for pending request callbacks.
-  EXPECT_CALL(launch_session_callback_, Run(_))
-      .WillOnce([&](LaunchSessionResponse response) {
+  EXPECT_CALL(launch_session_callback_, Run(_, _))
+      .WillOnce(WithArg<0>([&](LaunchSessionResponse response) {
         EXPECT_EQ(LaunchSessionResponse::kError, response.result);
         EXPECT_EQ(absl::nullopt, response.receiver_status);
-      });
+      }));
   EXPECT_CALL(get_app_availability_callback_,
               Run(kAppId1, GetAppAvailabilityResult::kUnknown))
       .Times(2);
@@ -618,12 +641,12 @@ TEST_F(CastMessageHandlerTest, HandlePendingRequest) {
   CreatePendingRequests();
 
   // Set up expanctions for pending request callbacks.
-  EXPECT_CALL(launch_session_callback_, Run(_))
-      .WillOnce([&](LaunchSessionResponse response) {
+  EXPECT_CALL(launch_session_callback_, Run(_, _))
+      .WillOnce(WithArg<0>([&](LaunchSessionResponse response) {
         EXPECT_EQ(LaunchSessionResponse::kOk, response.result);
         EXPECT_THAT(response.receiver_status,
                     testing::Optional(IsJson(R"({"foo": "bar"})")));
-      });
+      }));
   EXPECT_CALL(get_app_availability_callback_,
               Run(kAppId1, GetAppAvailabilityResult::kAvailable))
       .Times(2);
@@ -664,11 +687,11 @@ TEST_F(CastMessageHandlerTest, SendMultipleLaunchRequests) {
   base::MockCallback<LaunchSessionCallback> expect_success_callback;
   base::MockCallback<LaunchSessionCallback> expect_failure_callback;
 
-  EXPECT_CALL(expect_success_callback, Run(_))
+  EXPECT_CALL(expect_success_callback, Run(_, _))
       .WillOnce(WithArg<0>([](LaunchSessionResponse response) {
         EXPECT_EQ(LaunchSessionResponse::Result::kOk, response.result);
       }));
-  EXPECT_CALL(expect_failure_callback, Run(_))
+  EXPECT_CALL(expect_failure_callback, Run(_, _))
       .WillOnce(WithArg<0>([](LaunchSessionResponse response) {
         EXPECT_EQ(LaunchSessionResponse::Result::kError, response.result);
       }));
@@ -694,6 +717,10 @@ TEST_F(CastMessageHandlerTest, SendMultipleStopRequests) {
   handler_.LaunchSession(channel_id_, kAppId1, base::TimeDelta::Max(), {"WEB"},
                          /* appParams */ absl::nullopt,
                          launch_session_callback_.Get());
+  EXPECT_CALL(launch_session_callback_, Run(_, _))
+      .WillOnce(WithArg<0>([&](LaunchSessionResponse response) {
+        EXPECT_EQ(LaunchSessionResponse::kOk, response.result);
+      }));
   HandlePendingLaunchSessionRequest(next_request_id++);
 
   EXPECT_CALL(expect_success_callback, Run(Result::kOk));
@@ -706,6 +733,85 @@ TEST_F(CastMessageHandlerTest, SendMultipleStopRequests) {
                        expect_failure_callback.Get());
   // This resolves the first stop request.
   HandlePendingGeneralRequest(next_request_id++);
+}
+
+TEST_F(CastMessageHandlerTest, LaunchSessionWithPromptUserAllowed) {
+  int request_id = 1;
+
+  base::MockCallback<LaunchSessionCallback> expect_user_prompt_callback;
+  base::MockCallback<LaunchSessionCallback> expect_user_allowed_callback;
+
+  EXPECT_CALL(expect_user_prompt_callback, Run(_, _))
+      .WillOnce([&](LaunchSessionResponse response,
+                    LaunchSessionCallbackWrapper* out_callback) {
+        EXPECT_EQ(LaunchSessionResponse::Result::kPendingUserAuth,
+                  response.result);
+        out_callback->callback = expect_user_allowed_callback.Get();
+      });
+  EXPECT_CALL(expect_user_allowed_callback, Run(_, _))
+      .WillOnce([&](LaunchSessionResponse response,
+                    LaunchSessionCallbackWrapper* out_callback) {
+        EXPECT_EQ(LaunchSessionResponse::Result::kUserAllowed, response.result);
+        out_callback->callback = launch_session_callback_.Get();
+      });
+  EXPECT_CALL(launch_session_callback_, Run(_, _))
+      .WillOnce(WithArg<0>([](LaunchSessionResponse response) {
+        EXPECT_EQ(LaunchSessionResponse::Result::kOk, response.result);
+      }));
+
+  EXPECT_CALL(*transport_, SendMessage_(_, _)).Times(AnyNumber());
+  handler_.LaunchSession(channel_id_, kAppId1, base::TimeDelta::Max(), {"WEB"},
+                         /* appParams */ absl::nullopt,
+                         expect_user_prompt_callback.Get());
+
+  HandleLaunchStatusResponse(request_id, kWaitingUserResponse);
+  HandleLaunchStatusResponse(request_id, kUserAllowedStatus);
+  HandlePendingLaunchSessionRequest(request_id);
+}
+
+TEST_F(CastMessageHandlerTest, LaunchSessionWithPromptUserNotAllowed) {
+  int request_id = 1;
+
+  base::MockCallback<LaunchSessionCallback> expect_user_prompt_callback;
+
+  EXPECT_CALL(expect_user_prompt_callback, Run(_, _))
+      .WillOnce([&](LaunchSessionResponse response,
+                    LaunchSessionCallbackWrapper* out_callback) {
+        EXPECT_EQ(LaunchSessionResponse::Result::kPendingUserAuth,
+                  response.result);
+        out_callback->callback = launch_session_callback_.Get();
+      });
+  EXPECT_CALL(launch_session_callback_, Run(_, _))
+      .WillOnce(WithArg<0>([](LaunchSessionResponse response) {
+        EXPECT_EQ(LaunchSessionResponse::Result::kUserNotAllowed,
+                  response.result);
+      }));
+
+  EXPECT_CALL(*transport_, SendMessage_(_, _)).Times(AnyNumber());
+  handler_.LaunchSession(channel_id_, kAppId1, base::TimeDelta::Max(), {"WEB"},
+                         /* appParams */ absl::nullopt,
+                         expect_user_prompt_callback.Get());
+
+  HandleLaunchStatusResponse(request_id, kWaitingUserResponse);
+  HandleLaunchErrorResponse(request_id, kUserNotAllowedError);
+}
+
+TEST_F(CastMessageHandlerTest,
+       LaunchSessionWithPromptUserNotificationDisabled) {
+  int request_id = 1;
+
+  EXPECT_CALL(launch_session_callback_, Run(_, _))
+      .WillOnce(WithArg<0>([](LaunchSessionResponse response) {
+        EXPECT_EQ(LaunchSessionResponse::Result::kNotificationDisabled,
+                  response.result);
+      }));
+
+  EXPECT_CALL(*transport_, SendMessage_(_, _)).Times(AnyNumber());
+  handler_.LaunchSession(channel_id_, kAppId1, base::TimeDelta::Max(), {"WEB"},
+                         /* appParams */ absl::nullopt,
+                         launch_session_callback_.Get());
+
+  HandleLaunchErrorResponse(request_id, kNotificationDisabledError);
 }
 
 }  // namespace cast_channel

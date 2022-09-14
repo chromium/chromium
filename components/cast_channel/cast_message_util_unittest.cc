@@ -65,11 +65,98 @@ TEST(CastMessageUtilTest, GetLaunchSessionResponseOk) {
   EXPECT_EQ(ParseJson(status), response.receiver_status);
 }
 
+TEST(CastMessageUtilTest, GetLaunchSessionResponseLaunchStatusPendingUserAuth) {
+  std::string payload = base::StrCat({R"(
+    {
+      "type": "LAUNCH_STATUS",
+      "launchRequestId": 123,
+      "status" : ")",
+                                      kWaitingUserResponse, R"("})"});
+
+  LaunchSessionResponse response =
+      GetLaunchSessionResponse(ParseJsonDict(payload));
+  EXPECT_EQ(LaunchSessionResponse::Result::kPendingUserAuth, response.result);
+  EXPECT_FALSE(response.receiver_status);
+}
+
+TEST(CastMessageUtilTest, GetLaunchSessionResponseLaunchStatusUserAllowed) {
+  std::string payload = base::StrCat({R"(
+    {
+      "type": "LAUNCH_STATUS",
+      "launchRequestId": 123,
+      "status" : ")",
+                                      kUserAllowedStatus, R"("})"});
+
+  LaunchSessionResponse response =
+      GetLaunchSessionResponse(ParseJsonDict(payload));
+  EXPECT_EQ(LaunchSessionResponse::Result::kUserAllowed, response.result);
+  EXPECT_FALSE(response.receiver_status);
+}
+
+TEST(CastMessageUtilTest, GetLaunchSessionResponseLaunchStatusStatusUnknown) {
+  std::string payload = R"(
+    {
+      "type": "LAUNCH_STATUS",
+      "launchRequestId": 123,
+      "status" : "JARGIN"
+    }
+  )";
+
+  LaunchSessionResponse response =
+      GetLaunchSessionResponse(ParseJsonDict(payload));
+  EXPECT_EQ(LaunchSessionResponse::Result::kUnknown, response.result);
+  EXPECT_FALSE(response.receiver_status);
+}
+
 TEST(CastMessageUtilTest, GetLaunchSessionResponseError) {
   std::string payload = R"(
     {
       "type": "LAUNCH_ERROR",
       "requestId": 123
+    }
+  )";
+
+  LaunchSessionResponse response =
+      GetLaunchSessionResponse(ParseJsonDict(payload));
+  EXPECT_EQ(LaunchSessionResponse::Result::kError, response.result);
+  EXPECT_FALSE(response.receiver_status);
+}
+
+TEST(CastMessageUtilTest, GetLaunchSessionResponseErrorUserNotAllowed) {
+  std::string payload = base::StrCat({R"(
+    {
+      "type": "LAUNCH_ERROR",
+      "requestId": 123,
+      "extendedError": ")",
+                                      kUserNotAllowedError, R"("})"});
+
+  LaunchSessionResponse response =
+      GetLaunchSessionResponse(ParseJsonDict(payload));
+  EXPECT_EQ(LaunchSessionResponse::Result::kUserNotAllowed, response.result);
+  EXPECT_FALSE(response.receiver_status);
+}
+
+TEST(CastMessageUtilTest, GetLaunchSessionResponseErrorNotificationDisabled) {
+  std::string payload = base::StrCat({R"(
+    {
+      "type": "LAUNCH_ERROR",
+      "requestId": 123,
+      "extendedError": ")",
+                                      kNotificationDisabledError, R"("})"});
+
+  LaunchSessionResponse response =
+      GetLaunchSessionResponse(ParseJsonDict(payload));
+  EXPECT_EQ(LaunchSessionResponse::Result::kNotificationDisabled,
+            response.result);
+  EXPECT_FALSE(response.receiver_status);
+}
+
+TEST(CastMessageUtilTest, GetLaunchSessionResponseErrorExtendedErrorUnknown) {
+  std::string payload = R"(
+    {
+      "type": "LAUNCH_ERROR",
+      "requestId": 123,
+      "extendedError": " JARGIN "
     }
   )";
 

@@ -309,7 +309,7 @@ class CastActivityManagerTest : public testing::Test,
     SetSessionForTest(sink_.id(),
                       CastSession::From(sink_, *response.receiver_status));
 
-    std::move(launch_session_callback_).Run(std::move(response));
+    std::move(launch_session_callback_).Run(std::move(response), nullptr);
     RunUntilIdle();
   }
 
@@ -517,6 +517,37 @@ TEST_F(CastActivityManagerTest, LaunchAppSessionWithAppParams) {
   EXPECT_EQ(RouteControllerType::kGeneric, route_->controller_type());
 }
 
+TEST_F(CastActivityManagerTest, LaunchSessionSuccessWhenUserAllowed) {
+  CallLaunchSessionSuccess();
+
+  cast_channel::LaunchSessionCallbackWrapper out_callback;
+
+  cast_channel::LaunchSessionResponse response;
+  response.result =
+      cast_channel::LaunchSessionResponse::Result::kPendingUserAuth;
+  std::move(launch_session_callback_).Run(std::move(response), &out_callback);
+
+  EXPECT_FALSE(out_callback.callback.is_null());
+
+  cast_channel::LaunchSessionResponse response2;
+  response2.result = cast_channel::LaunchSessionResponse::Result::kUserAllowed;
+  std::move(out_callback.callback).Run(std::move(response2), &out_callback);
+
+  EXPECT_FALSE(out_callback.callback.is_null());
+
+  cast_channel::LaunchSessionResponse response3;
+  response3.result = cast_channel::LaunchSessionResponse::Result::kOk;
+  response3.receiver_status = MakeReceiverStatus(kAppId1);
+
+  std::move(out_callback.callback).Run(std::move(response3), &out_callback);
+
+  EXPECT_TRUE(out_callback.callback.is_null());
+
+  RunUntilIdle();
+
+  EXPECT_EQ(RouteControllerType::kGeneric, route_->controller_type());
+}
+
 TEST_F(CastActivityManagerTest, LaunchMirroringSession) {
   LaunchNonSdkMirroringSession();
   EXPECT_EQ(RouteControllerType::kMirroring, route_->controller_type());
@@ -563,7 +594,48 @@ TEST_F(CastActivityManagerTest, LaunchSessionFails) {
 
   cast_channel::LaunchSessionResponse response;
   response.result = cast_channel::LaunchSessionResponse::Result::kError;
-  std::move(launch_session_callback_).Run(std::move(response));
+  std::move(launch_session_callback_).Run(std::move(response), nullptr);
+  RunUntilIdle();
+}
+
+TEST_F(CastActivityManagerTest, LaunchSessionFailsWhenUserNotAllowed) {
+  CallLaunchSessionFailure();
+
+  cast_channel::LaunchSessionCallbackWrapper out_callback;
+  cast_channel::LaunchSessionResponse response;
+  response.result =
+      cast_channel::LaunchSessionResponse::Result::kPendingUserAuth;
+  std::move(launch_session_callback_).Run(std::move(response), &out_callback);
+
+  EXPECT_FALSE(out_callback.callback.is_null());
+
+  EXPECT_CALL(
+      *app_activity_,
+      ClosePresentationConnections(
+          blink::mojom::PresentationConnectionCloseReason::CONNECTION_ERROR));
+  ExpectEmptyRouteUpdate();
+
+  cast_channel::LaunchSessionResponse response2;
+  response2.result =
+      cast_channel::LaunchSessionResponse::Result::kUserNotAllowed;
+  std::move(out_callback.callback).Run(std::move(response2), &out_callback);
+  EXPECT_TRUE(out_callback.callback.is_null());
+}
+
+TEST_F(CastActivityManagerTest,
+       LaunchSessionFailsWhenNotificationsAreDisabledOnReceiver) {
+  CallLaunchSessionFailure();
+
+  EXPECT_CALL(
+      *app_activity_,
+      ClosePresentationConnections(
+          blink::mojom::PresentationConnectionCloseReason::CONNECTION_ERROR));
+  ExpectEmptyRouteUpdate();
+
+  cast_channel::LaunchSessionResponse response;
+  response.result =
+      cast_channel::LaunchSessionResponse::Result::kNotificationDisabled;
+  std::move(launch_session_callback_).Run(std::move(response), nullptr);
   RunUntilIdle();
 }
 
@@ -576,7 +648,7 @@ TEST_F(CastActivityManagerTest, LaunchSessionFailsWhenSessionIsRemoved) {
   EXPECT_CALL(*this, LaunchSessionFailed());
   cast_channel::LaunchSessionResponse response;
   response.result = cast_channel::LaunchSessionResponse::Result::kError;
-  std::move(launch_session_callback_).Run(std::move(response));
+  std::move(launch_session_callback_).Run(std::move(response), nullptr);
 }
 
 TEST_F(CastActivityManagerTest, LaunchAppSessionFailsWithAppParams) {

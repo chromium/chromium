@@ -63,10 +63,33 @@ struct GetAppAvailabilityRequest
   std::string app_id;
 };
 
+struct LaunchSessionCallbackWrapper;
+
 // Represents an app launch request to a Cast sink.
+// The callback sets `out_callback` if launch handling is not done and we're
+// expecting another launch response from the receiver that we'd need to handle.
+// `out_callback` is not set if the caller is certain that no more launch
+// response handling is needed (alternatively we could guarantee that it's not
+// null, but that'd require more boilerplate code).
+// We need to use an output parameter instead of a return value because we
+// cannot bind a weak_ptr to a function with a return value.
+// We need a wrapper struct because LaunchSessionCallback's definition cannot
+// depend on itself.
 using LaunchSessionCallback =
-    base::OnceCallback<void(LaunchSessionResponse response)>;
+    base::OnceCallback<void(LaunchSessionResponse response,
+                            LaunchSessionCallbackWrapper* out_callback)>;
 using LaunchSessionRequest = PendingRequest<LaunchSessionCallback>;
+
+struct LaunchSessionCallbackWrapper {
+  LaunchSessionCallbackWrapper();
+  LaunchSessionCallbackWrapper(const LaunchSessionCallbackWrapper& other) =
+      delete;
+  LaunchSessionCallbackWrapper& operator=(
+      const LaunchSessionCallbackWrapper& other) = delete;
+  ~LaunchSessionCallbackWrapper();
+
+  LaunchSessionCallback callback;
+};
 
 enum class Result { kOk, kFailed };
 using ResultCallback = base::OnceCallback<void(Result result)>;

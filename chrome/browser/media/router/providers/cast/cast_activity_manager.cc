@@ -15,18 +15,22 @@
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/media/router/data_decoder_util.h"
 #include "chrome/browser/media/router/providers/cast/app_activity.h"
 #include "chrome/browser/media/router/providers/cast/cast_media_route_provider_metrics.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_client.h"
 #include "chrome/browser/media/router/providers/cast/mirroring_activity.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/cast_channel/cast_message_util.h"
 #include "components/cast_channel/enum_table.h"
 #include "components/media_router/browser/logger_impl.h"
+#include "components/media_router/browser/media_router_metrics.h"
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "components/media_router/common/route_request_result.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
 using blink::mojom::PresentationConnectionCloseReason;
@@ -744,12 +748,19 @@ void CastActivityManager::NotifyAllOnRoutesUpdated() {
 
 void CastActivityManager::HandleLaunchSessionResponse(
     DoLaunchSessionParams params,
-    cast_channel::LaunchSessionResponse response) {
+    cast_channel::LaunchSessionResponse response,
+    cast_channel::LaunchSessionCallbackWrapper* out_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const MediaRoute& route = params.route;
   const MediaRoute::Id& route_id = route.media_route_id();
   const MediaSinkInternal& sink = params.sink;
   const CastMediaSource& cast_source = params.cast_source;
+
+  // Make copies so that they outlive params, which gets moved before they are
+  // used.
+  const std::string sink_name = sink.sink().name();
+  const MediaSink::Id sink_id = sink.sink().id();
+  const base::Time request_creation_time = params.creation_time;
 
   auto activity_it = activities_.find(route_id);
   if (activity_it == activities_.end()) {
@@ -766,6 +777,38 @@ void CastActivityManager::HandleLaunchSessionResponse(
 
   if (response.result != cast_channel::LaunchSessionResponse::Result::kOk) {
     switch (response.result) {
+      case cast_channel::LaunchSessionResponse::Result::kPendingUserAuth:
+        HandleLaunchSessionResponseMiddleStages(
+            std::move(params),
+            "Pending user authentication for the cast request", out_callback);
+        SendPendingUserAuthNotification(sink_name, sink_id);
+        MediaRouterMetrics::RecordMediaRouterPendingUserAuthLatency(
+            base::Time::Now() - request_creation_time);
+        MediaRouterMetrics::RecordMediaRouterUserPromptWhenLaunchingCast(
+            MediaRouterUserPromptWhenLaunchingCast::kPendingUserAuth);
+        break;
+      case cast_channel::LaunchSessionResponse::Result::kUserAllowed:
+        HandleLaunchSessionResponseMiddleStages(
+            std::move(params), "The user accepted the cast request",
+            out_callback);
+        media_router_->ClearTopIssueForSink(sink_id);
+        break;
+      case cast_channel::LaunchSessionResponse::Result::kUserNotAllowed:
+        HandleLaunchSessionResponseFailures(
+            activity_it, std::move(params),
+            "Failed to launch session as the user declined the cast request.",
+            mojom::RouteRequestResultCode::USER_NOT_ALLOWED);
+        MediaRouterMetrics::RecordMediaRouterUserPromptWhenLaunchingCast(
+            MediaRouterUserPromptWhenLaunchingCast::kUserNotAllowed);
+        media_router_->ClearTopIssueForSink(sink_id);
+        break;
+      case cast_channel::LaunchSessionResponse::Result::kNotificationDisabled:
+        HandleLaunchSessionResponseFailures(
+            activity_it, std::move(params),
+            "Failed to launch session as the notifications are disabled on the "
+            "receiver device.",
+            mojom::RouteRequestResultCode::NOTIFICATION_DISABLED);
+        break;
       case cast_channel::LaunchSessionResponse::Result::kTimedOut:
         HandleLaunchSessionResponseFailures(
             activity_it, std::move(params),
@@ -902,7 +945,24 @@ void CastActivityManager::HandleLaunchSessionResponseFailures(
   std::move(params.callback).Run(absl::nullopt, nullptr, message, result_code);
   RemoveActivity(activity_it, PresentationConnectionState::CLOSED,
                  PresentationConnectionCloseReason::CONNECTION_ERROR);
-  SendFailedToCastIssue(params.sink.id(), params.route.media_route_id());
+
+  if (result_code != mojom::RouteRequestResultCode::USER_NOT_ALLOWED &&
+      result_code != mojom::RouteRequestResultCode::NOTIFICATION_DISABLED)
+    SendFailedToCastIssue(params.sink.id(), params.route.media_route_id());
+}
+
+void CastActivityManager::HandleLaunchSessionResponseMiddleStages(
+    DoLaunchSessionParams params,
+    const std::string& message,
+    cast_channel::LaunchSessionCallbackWrapper* out_callback) {
+  DCHECK(out_callback);
+  logger_->LogInfo(mojom::LogCategory::kRoute, kLoggerComponent, message,
+                   params.sink.id(), params.cast_source.source_id(),
+                   MediaRoute::GetPresentationIdFromMediaRouteId(
+                       params.route.media_route_id()));
+  out_callback->callback =
+      base::BindOnce(&CastActivityManager::HandleLaunchSessionResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(params));
 }
 
 void CastActivityManager::EnsureConnection(const std::string& client_id,
@@ -927,11 +987,26 @@ void CastActivityManager::EnsureConnection(const std::string& client_id,
 void CastActivityManager::SendFailedToCastIssue(
     const MediaSink::Id& sink_id,
     const MediaRoute::Id& route_id) {
-  // TODO(crbug.com/989237): i18n-ize the title string.
-  IssueInfo info("Failed to cast. Please try again.",
-                 IssueInfo::Action::DISMISS, IssueInfo::Severity::WARNING);
+  std::string issue_title =
+      l10n_util::GetStringUTF8(IDS_MEDIA_ROUTER_ISSUE_FAILED_TO_CAST);
+  IssueInfo info(issue_title, IssueInfo::Action::DISMISS,
+                 IssueInfo::Severity::WARNING);
+
   info.sink_id = sink_id;
   info.route_id = route_id;
+  media_router_->OnIssue(info);
+}
+
+void CastActivityManager::SendPendingUserAuthNotification(
+    const std::string& sink_name,
+    const MediaSink::Id& sink_id) {
+  std::string issue_title = l10n_util::GetStringFUTF8(
+      IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_USER_PENDING_AUTHORIZATION,
+      base::UTF8ToUTF16(sink_name));
+
+  IssueInfo info(issue_title, IssueInfo::Action::DISMISS,
+                 IssueInfo::Severity::NOTIFICATION);
+  info.sink_id = sink_id;
   media_router_->OnIssue(info);
 }
 
@@ -995,6 +1070,7 @@ CastActivityManager::DoLaunchSessionParams::DoLaunchSessionParams(
       sink(sink),
       origin(origin),
       frame_tree_node_id(frame_tree_node_id),
+      creation_time(base::Time::Now()),
       callback(std::move(callback)) {
   if (app_params)
     this->app_params = app_params->Clone();

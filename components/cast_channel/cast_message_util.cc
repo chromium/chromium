@@ -44,6 +44,7 @@ const EnumTable<CastMessageType>& EnumTable<CastMessageType>::GetInstance() {
           {CastMessageType::kStop, "STOP"},
           {CastMessageType::kReceiverStatus, "RECEIVER_STATUS"},
           {CastMessageType::kMediaStatus, "MEDIA_STATUS"},
+          {CastMessageType::kLaunchStatus, "LAUNCH_STATUS"},
           {CastMessageType::kLaunchError, "LAUNCH_ERROR"},
           {CastMessageType::kOffer, "OFFER"},
           {CastMessageType::kAnswer, "ANSWER"},
@@ -577,7 +578,8 @@ const char* ToString(GetAppAvailabilityResult result) {
 }
 
 absl::optional<int> GetRequestIdFromResponse(const Value::Dict& payload) {
-  return payload.FindInt("requestId");
+  absl::optional<int> request_id = payload.FindInt("requestId");
+  return request_id ? request_id : payload.FindInt("launchRequestId");
 }
 
 GetAppAvailabilityResult GetAppAvailabilityResultFromResponse(
@@ -616,13 +618,37 @@ LaunchSessionResponse GetLaunchSessionResponse(
 
   const auto type = CastMessageTypeFromString(*type_string);
   if (type != CastMessageType::kReceiverStatus &&
-      type != CastMessageType::kLaunchError) {
+      type != CastMessageType::kLaunchError &&
+      type != CastMessageType::kLaunchStatus) {
     return LaunchSessionResponse();
   }
 
   LaunchSessionResponse response;
+
   if (type == CastMessageType::kLaunchError) {
-    response.result = LaunchSessionResponse::Result::kError;
+    const std::string* extended_error = payload.FindString("extendedError");
+
+    if (extended_error && *extended_error == kUserNotAllowedError) {
+      response.result = LaunchSessionResponse::Result::kUserNotAllowed;
+    } else if (extended_error &&
+               *extended_error == kNotificationDisabledError) {
+      response.result = LaunchSessionResponse::Result::kNotificationDisabled;
+    } else {
+      response.result = LaunchSessionResponse::Result::kError;
+      const std::string* error_msg = payload.FindString("error");
+      response.error_msg = (error_msg ? *error_msg : "");
+    }
+    return response;
+  }
+
+  if (type == CastMessageType::kLaunchStatus) {
+    const std::string* launch_status = payload.FindString("status");
+
+    if (launch_status && *launch_status == kUserAllowedStatus) {
+      response.result = LaunchSessionResponse::Result::kUserAllowed;
+    } else if (launch_status && *launch_status == kWaitingUserResponse) {
+      response.result = LaunchSessionResponse::Result::kPendingUserAuth;
+    }
     return response;
   }
 

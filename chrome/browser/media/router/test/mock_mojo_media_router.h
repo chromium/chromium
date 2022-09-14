@@ -31,6 +31,7 @@ class MockMojoMediaRouter : public MockMediaRouter, public mojom::MediaRouter {
       void(mojom::MediaRouteProviderId provider_id,
            mojo::PendingRemote<mojom::MediaRouteProvider>& provider_remote));
   MOCK_METHOD1(OnIssue, void(const IssueInfo& issue));
+  MOCK_METHOD1(ClearTopIssueForSink, void(const std::string& sink_id));
   MOCK_METHOD4(OnSinksReceived,
                void(mojom::MediaRouteProviderId provider_id,
                     const std::string& media_source,

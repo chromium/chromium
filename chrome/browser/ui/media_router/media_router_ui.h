@@ -210,6 +210,8 @@ class MediaRouterUI : public CastDialogController,
   // Called to update the dialog with the current list of of enabled sinks.
   void UpdateSinks();
 
+  std::u16string GetSinkFriendlyNameFromId(const MediaSink::Id& sink_id);
+
   // Creates and sends an issue if route creation timed out.
   void SendIssueForRouteTimeout(
       MediaCastMode cast_mode,
@@ -228,6 +230,14 @@ class MediaRouterUI : public CastDialogController,
   // Creates and sends an issue for notifying the user that the tab audio cannot
   // be mirrored from their device.
   void SendIssueForTabAudioNotSupported(const MediaSink::Id& sink_id);
+
+  // Creates and sends an issue when the user rejects the Cast request on the
+  // receiver device.
+  void SendIssueForUserNotAllowed(const MediaSink::Id& sink_id);
+
+  // Creates and send an issue when casting did not start because notifications
+  // are disabled on the receiver device.
+  void SendIssueForNotificationDisabled(const MediaSink::Id& sink_id);
 
   // Returns the IssueManager associated with |router_|.
   IssueManager* GetIssueManager();

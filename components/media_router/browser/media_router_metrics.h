@@ -144,6 +144,17 @@ enum class MediaRouterAndroidDialogAction {
   kMaxValue = kStartRoute,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class MediaRouterUserPromptWhenLaunchingCast {
+  kPendingUserAuth = 0,
+  kUserNotAllowed = 1,
+
+  // Add new types only immediately above this line. Remember to also update
+  // tools/metrics/histograms/enums.xml.
+  kMaxValue = kUserNotAllowed,
+};
+
 class MediaRouterMetrics {
  public:
   MediaRouterMetrics();
@@ -170,6 +181,8 @@ class MediaRouterMetrics {
   static const char kHistogramUiIconStateAtInit[];
   static const char kHistogramUiAndroidDialogType[];
   static const char kHistogramUiAndroidDialogAction[];
+  static const char kHistogramUserPromptWhenLaunchingCast[];
+  static const char kHistogramPendingUserAuthLatency[];
 
   // When recording the number of devices shown in UI we record after a delay
   // because discovering devices can take some time after the UI is shown.
@@ -286,6 +299,16 @@ class MediaRouterMetrics {
   // Records the action taken on the MediaRouter dialog. Android only.
   static void RecordMediaRouterAndroidDialogAction(
       MediaRouterAndroidDialogAction action);
+
+  // Records the number of times the user was asked to allow casting and the
+  // number of times the user didn't allow it
+  static void RecordMediaRouterUserPromptWhenLaunchingCast(
+      MediaRouterUserPromptWhenLaunchingCast user_prompt);
+
+  // Records the duration it takes between sending cast request and receiving a
+  // response of UserPendingAuthorization
+  static void RecordMediaRouterPendingUserAuthLatency(
+      const base::TimeDelta& delta);
 };
 
 }  // namespace media_router

@@ -34,6 +34,13 @@ static constexpr char kMediaNamespace[] = "urn:x-cast:com.google.cast.media";
 static constexpr char kPlatformSenderId[] = "sender-0";
 static constexpr char kPlatformReceiverId[] = "receiver-0";
 
+// User prompts messages to approve/disapprove casting
+static constexpr char kWaitingUserResponse[] = "USER_PENDING_AUTHORIZATION";
+static constexpr char kUserAllowedStatus[] = "USER_ALLOWED";
+static constexpr char kUserNotAllowedError[] = "USER_NOT_ALLOWED";
+static constexpr char kNotificationDisabledError[] =
+    "USER_NOTIFICATIONS_DISABLED";
+
 // Cast application protocol message types.
 enum class CastMessageType {
   // Heartbeat messages.
@@ -64,6 +71,9 @@ enum class CastMessageType {
 
   kReceiverStatus,
   kMediaStatus,
+
+  // Session launch status from receiver
+  kLaunchStatus,
 
   // error from receiver
   kLaunchError,
@@ -304,7 +314,22 @@ GetAppAvailabilityResult GetAppAvailabilityResultFromResponse(
 
 // Result of a session launch.
 struct LaunchSessionResponse {
-  enum Result { kOk, kError, kTimedOut, kUnknown, kMaxValue = kUnknown };
+  enum Result {
+    kOk,
+    kError,
+    kTimedOut,
+    kPendingUserAuth,  // Indicates waiting for the user response to allow or
+                       // reject a cast request.
+    kUserAllowed,  // Indicates that casting will start as the user allowed the
+                   // cast request.
+    kUserNotAllowed,  // Indicates that casting didn't start because the user
+                      // rejected the cast request.
+    kNotificationDisabled,  // Indicates that casting didn't start because
+                            // notifications are disabled on the receiver
+                            // device.
+    kUnknown,
+    kMaxValue = kUnknown
+  };
 
   LaunchSessionResponse();
   LaunchSessionResponse(const LaunchSessionResponse& other) = delete;

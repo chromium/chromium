@@ -93,6 +93,14 @@ void IssueManager::ClearNonBlockingIssues() {
   MaybeUpdateTopIssue();
 }
 
+void IssueManager::ClearTopIssueForSink(const MediaSink::Id& sink_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!top_issue_ || top_issue_->info().sink_id != sink_id)
+    return;
+
+  ClearIssue(top_issue_->id());
+}
+
 void IssueManager::RegisterObserver(IssuesObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(observer);

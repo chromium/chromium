@@ -194,6 +194,10 @@ class CastActivityManager : public CastActivityManagerBase,
     // Mirroring and auto-join.
     int frame_tree_node_id;
 
+    // Time launch session parameters were created. Used to compute time passed
+    // till the receiver device responds
+    base::Time creation_time;
+
     // The JSON object sent from the Cast SDK.
     absl::optional<base::Value> app_params;
 
@@ -221,9 +225,12 @@ class CastActivityManager : public CastActivityManagerBase,
       blink::mojom::PresentationConnectionState state,
       blink::mojom::PresentationConnectionCloseReason close_reason);
 
+  // Populates `out_callback` if it expects more launch responses that will
+  // need to be handled.
   void HandleLaunchSessionResponse(
       DoLaunchSessionParams params,
-      cast_channel::LaunchSessionResponse response);
+      cast_channel::LaunchSessionResponse response,
+      cast_channel::LaunchSessionCallbackWrapper* out_callback);
   void HandleStopSessionResponse(
       const MediaRoute::Id& route_id,
       mojom::MediaRouteProvider::TerminateRouteCallback callback,
@@ -233,6 +240,10 @@ class CastActivityManager : public CastActivityManagerBase,
       DoLaunchSessionParams params,
       const std::string& message,
       mojom::RouteRequestResultCode result_code);
+  void HandleLaunchSessionResponseMiddleStages(
+      DoLaunchSessionParams params,
+      const std::string& message,
+      cast_channel::LaunchSessionCallbackWrapper* out_callback);
   void EnsureConnection(const std::string& client_id,
                         int channel_id,
                         const std::string& destination_id,
@@ -254,6 +265,9 @@ class CastActivityManager : public CastActivityManagerBase,
 
   void SendFailedToCastIssue(const MediaSink::Id& sink_id,
                              const MediaRoute::Id& route_id);
+
+  void SendPendingUserAuthNotification(const std::string& sink_name,
+                                       const MediaSink::Id& sink_id);
 
   // These methods return |activities_.end()| when nothing is found.
   ActivityMap::iterator FindActivityByChannelId(int channel_id);

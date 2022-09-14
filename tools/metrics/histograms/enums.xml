@@ -65546,6 +65546,8 @@ Called by update_use_counter_css.py.-->
   <int value="10" label="DesktopPickerFailed"/>
   <int value="11" label="RouteAlreadyTerminated"/>
   <int value="12" label="RedundantRequest"/>
+  <int value="13" label="UserNotAllowed"/>
+  <int value="14" label="NotificationDisabled"/>
 </enum>
 
 <enum name="MediaRouteProviderVersion">
@@ -65745,6 +65747,11 @@ Called by update_use_counter_css.py.-->
   <int value="4" label="Status Remote"/>
   <int value="5" label="Replace Local Route"/>
   <int value="6" label="Stop Remote Route"/>
+</enum>
+
+<enum name="MediaRouterUserPromptWhenLaunchingCast">
+  <int value="0" label="Total prompts"/>
+  <int value="1" label="User rejects cast request"/>
 </enum>
 
 <enum name="MediaRouteType">

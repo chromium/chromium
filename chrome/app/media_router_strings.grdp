@@ -66,6 +66,19 @@
       Unable to cast your screen. Check the Screen Recording permission in System Preferences.
     </message>
   </if>
+  <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_USER_PENDING_AUTHORIZATION" desc="Title of a notification shown while waiting for the user to accept or reject the cast request.">
+      Accept Cast request on your <ph name="DEVICE_NAME">$1</ph>.
+  </message>
+  <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_USER_NOT_ALLOWED" desc="Title of an issue shown when the user rejects the cast request.">
+      Make sure to accept the Cast request on your <ph name="DEVICE_NAME">$1</ph>.
+  </message>
+  <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_NOTIFICATION_DISABLED" desc="Title of an issue shown when the notifications on the reciever device is disabled.">
+      Make sure notifications are turned on on your <ph name="DEVICE_NAME">$1</ph>.
+  </message>
+  <message name="IDS_MEDIA_ROUTER_ISSUE_FAILED_TO_CAST" desc="Title of an issue shown when cast intialization failed with no clear reason">
+      Failed to cast. Please try again.
+  </message>
+
 
 <!-- Sink List -->
   <message name="IDS_MEDIA_ROUTER_STATUS_LOOKING_FOR_DEVICES" desc="Status text temporarily shown while searching for Cast devices but none have been found.">

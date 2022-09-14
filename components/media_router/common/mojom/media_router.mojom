@@ -414,6 +414,9 @@ interface MediaRouter {
   // Called when issues are reported for media routes.
   OnIssue(Issue issue);
 
+  // Clears the top Issue if it belongs to the given sink_id.
+  ClearTopIssueForSink(string sink_id);
+
   // Called when list of routes for a MediaRouteProvider has been updated.
   OnRoutesUpdated(MediaRouteProviderId provider_id,
                   array<MediaRoute> routes);

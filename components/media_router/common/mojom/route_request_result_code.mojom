@@ -5,7 +5,7 @@
 module media_router.mojom;
 
 // Keep in sync with MediaRouteProviderResult enum in
-// tools/metrics/histograms.xml.
+// tools/metrics/histograms/enums.xml
 enum RouteRequestResultCode {
   UNKNOWN_ERROR,
   OK,
@@ -20,5 +20,7 @@ enum RouteRequestResultCode {
   DESKTOP_PICKER_FAILED,
   ROUTE_ALREADY_TERMINATED,
   REDUNDANT_REQUEST,
-// New values must be added here.
+  USER_NOT_ALLOWED,
+  NOTIFICATION_DISABLED,
+  // New values must be added here.
 };

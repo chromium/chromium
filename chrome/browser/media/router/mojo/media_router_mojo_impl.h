@@ -310,6 +310,7 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
 
   // mojom::MediaRouter implementation.
   void OnIssue(const IssueInfo& issue) override;
+  void ClearTopIssueForSink(const MediaSink::Id& sink_id) override;
   void OnRoutesUpdated(mojom::MediaRouteProviderId provider_id,
                        const std::vector<MediaRoute>& routes) override;
   void OnPresentationConnectionStateChanged(

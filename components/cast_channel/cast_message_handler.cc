@@ -44,6 +44,9 @@ GetAppAvailabilityRequest::GetAppAvailabilityRequest(
 
 GetAppAvailabilityRequest::~GetAppAvailabilityRequest() = default;
 
+LaunchSessionCallbackWrapper::LaunchSessionCallbackWrapper() = default;
+LaunchSessionCallbackWrapper::~LaunchSessionCallbackWrapper() = default;
+
 VirtualConnection::VirtualConnection(int channel_id,
                                      const std::string& source_id,
                                      const std::string& destination_id)
@@ -216,8 +219,9 @@ void CastMessageHandler::LaunchSession(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CastSocket* socket = socket_service_->GetSocket(channel_id);
   if (!socket) {
-    std::move(callback).Run(GetLaunchSessionResponseError(
-        base::StringPrintf("Socket not found: %d.", channel_id)));
+    std::move(callback).Run(GetLaunchSessionResponseError(base::StringPrintf(
+                                "Socket not found: %d.", channel_id)),
+                            nullptr);
     return;
   }
 
@@ -230,8 +234,10 @@ void CastMessageHandler::LaunchSession(
   CastMessage message = CreateLaunchRequest(
       source_id_, request_id, app_id, locale_, supported_app_types, app_params);
   if (message.ByteSizeLong() > kMaxCastMessagePayload) {
-    std::move(callback).Run(GetLaunchSessionResponseError(
-        "Message size exceeds maximum cast channel message payload."));
+    std::move(callback).Run(
+        GetLaunchSessionResponseError(
+            "Message size exceeds maximum cast channel message payload."),
+        nullptr);
     return;
   }
   if (requests->AddLaunchRequest(std::make_unique<LaunchSessionRequest>(
@@ -495,7 +501,7 @@ CastMessageHandler::PendingRequests::~PendingRequests() {
     LaunchSessionResponse response;
     response.result = LaunchSessionResponse::kError;
     std::move(pending_launch_session_request_->callback)
-        .Run(std::move(response));
+        .Run(std::move(response), nullptr);
   }
 
   if (pending_stop_session_request_)
@@ -528,7 +534,8 @@ bool CastMessageHandler::PendingRequests::AddLaunchRequest(
   if (pending_launch_session_request_) {
     std::move(request->callback)
         .Run(cast_channel::GetLaunchSessionResponseError(
-            "There already exists a launch request for the channel"));
+                 "There already exists a launch request for the channel"),
+             nullptr);
     return false;
   }
 
@@ -594,9 +601,18 @@ void CastMessageHandler::PendingRequests::HandlePendingRequest(
 
   if (pending_launch_session_request_ &&
       pending_launch_session_request_->request_id == request_id) {
+    LaunchSessionCallbackWrapper wrapper_callback;
+
     std::move(pending_launch_session_request_->callback)
-        .Run(GetLaunchSessionResponse(response));
-    pending_launch_session_request_.reset();
+        .Run(GetLaunchSessionResponse(response), &wrapper_callback);
+
+    if (wrapper_callback.callback) {
+      pending_launch_session_request_->callback =
+          std::move(wrapper_callback.callback);
+    } else {
+      pending_launch_session_request_.reset();
+    }
+
     return;
   }
 
@@ -636,7 +652,8 @@ void CastMessageHandler::PendingRequests::LaunchSessionTimedOut(
 
   LaunchSessionResponse response;
   response.result = LaunchSessionResponse::kTimedOut;
-  std::move(pending_launch_session_request_->callback).Run(std::move(response));
+  std::move(pending_launch_session_request_->callback)
+      .Run(std::move(response), nullptr);
   pending_launch_session_request_.reset();
 }
 

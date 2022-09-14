@@ -413,6 +413,37 @@ void MediaRouterUI::SendIssueForRouteTimeout(
   AddIssue(issue_info);
 }
 
+std::u16string MediaRouterUI::GetSinkFriendlyNameFromId(
+    const MediaSink::Id& sink_id) {
+  for (const MediaSinkWithCastModes& sink : GetEnabledSinks()) {
+    if (sink.sink.id() == sink_id) {
+      return GetSinkFriendlyName(sink.sink);
+    }
+  }
+  return std::u16string(u"Device");
+}
+
+void MediaRouterUI::SendIssueForUserNotAllowed(const MediaSink::Id& sink_id) {
+  std::string issue_title = l10n_util::GetStringFUTF8(
+      IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_USER_NOT_ALLOWED,
+      GetSinkFriendlyNameFromId(sink_id));
+  IssueInfo issue_info(issue_title, IssueInfo::Action::DISMISS,
+                       IssueInfo::Severity::WARNING);
+  issue_info.sink_id = sink_id;
+  AddIssue(issue_info);
+}
+
+void MediaRouterUI::SendIssueForNotificationDisabled(
+    const MediaSink::Id& sink_id) {
+  std::string issue_title = l10n_util::GetStringFUTF8(
+      IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_NOTIFICATION_DISABLED,
+      GetSinkFriendlyNameFromId(sink_id));
+  IssueInfo issue_info(issue_title, IssueInfo::Action::DISMISS,
+                       IssueInfo::Severity::WARNING);
+  issue_info.sink_id = sink_id;
+  AddIssue(issue_info);
+}
+
 void MediaRouterUI::SendIssueForScreenPermission(const MediaSink::Id& sink_id) {
 #if BUILDFLAG(IS_MAC)
   std::string issue_title = l10n_util::GetStringUTF8(
@@ -536,6 +567,12 @@ void MediaRouterUI::OnRouteResponseReceived(
   } else if (result.result_code() == mojom::RouteRequestResultCode::TIMED_OUT) {
     SendIssueForRouteTimeout(cast_mode, sink_id,
                              presentation_request_source_name);
+  } else if (result.result_code() ==
+             mojom::RouteRequestResultCode::USER_NOT_ALLOWED) {
+    SendIssueForUserNotAllowed(sink_id);
+  } else if (result.result_code() ==
+             mojom::RouteRequestResultCode::NOTIFICATION_DISABLED) {
+    SendIssueForNotificationDisabled(sink_id);
   }
 }
 

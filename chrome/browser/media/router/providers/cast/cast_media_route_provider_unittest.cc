@@ -139,14 +139,14 @@ class CastMediaRouteProviderTest : public testing::Test {
     cast_channel::LaunchSessionResponse response;
     response.result = cast_channel::LaunchSessionResponse::Result::kOk;
     response.receiver_status = MakeReceiverStatus();
-    std::move(launch_session_callback_).Run(std::move(response));
+    std::move(launch_session_callback_).Run(std::move(response), nullptr);
     base::RunLoop().RunUntilIdle();
   }
 
   void SendLaunchSessionResponseFailure() {
     cast_channel::LaunchSessionResponse response;
     response.result = cast_channel::LaunchSessionResponse::Result::kError;
-    std::move(launch_session_callback_).Run(std::move(response));
+    std::move(launch_session_callback_).Run(std::move(response), nullptr);
     base::RunLoop().RunUntilIdle();
   }
 

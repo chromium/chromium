@@ -49,6 +49,9 @@ class IssueManager {
   // Clears all non-blocking issues.
   void ClearNonBlockingIssues();
 
+  // Clears the top issue if it belongs to the given sink_id.
+  void ClearTopIssueForSink(const MediaSink::Id& sink_id);
+
   // Registers an issue observer |observer|. The observer will be triggered
   // when the highest priority issue changes.
   // If there is already an observer registered with this instance, do nothing.
@@ -92,6 +95,8 @@ class IssueManager {
   // notified of the new top issue.
   void MaybeUpdateTopIssue();
 
+  // TODO(crbug.com/1352864): Blocking issues are no longer used and can be
+  // removed.
   base::small_map<std::map<Issue::Id, std::unique_ptr<Entry>>> blocking_issues_;
   base::small_map<std::map<Issue::Id, std::unique_ptr<Entry>>>
       non_blocking_issues_;
