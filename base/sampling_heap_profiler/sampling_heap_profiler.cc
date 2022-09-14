@@ -11,7 +11,9 @@
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #include "base/bind.h"
+#include "base/compiler_specific.h"
 #include "base/debug/stack_trace.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -45,6 +47,12 @@ constexpr uint32_t kMaxStackEntries = 256;
 namespace {
 
 using StackUnwinder = SamplingHeapProfiler::StackUnwinder;
+
+#if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
+constexpr base::Feature kAvoidFramePointerUnwinding CONSTINIT{
+    "HeapProfilerAvoidFramePointerUnwinding",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
 
 // If a thread name has been set from ThreadIdNameManager, use that. Otherwise,
 // gets the thread name from kernel if available or returns a string with id.
@@ -107,6 +115,8 @@ StackUnwinder ChooseStackUnwinder() {
   }
   return CheckForDefaultUnwindTables();
 #elif BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
+  if (base::FeatureList::IsEnabled(kAvoidFramePointerUnwinding))
+    return CheckForDefaultUnwindTables();
   return StackUnwinder::kFramePointers;
 #elif BUILDFLAG(IS_ANDROID)
   // Default unwind tables aren't always present on Android.
