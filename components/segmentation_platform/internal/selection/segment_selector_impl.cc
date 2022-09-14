@@ -300,17 +300,20 @@ std::pair<SegmentId, float> SegmentSelectorImpl::FindBestSegment(
 void SegmentSelectorImpl::UpdateSelectedSegment(SegmentId new_selection,
                                                 float rank) {
   VLOG(1) << __func__
-          << ": Updating selected segment=" << SegmentId_Name(new_selection);
+          << ": Updating selected segment=" << SegmentId_Name(new_selection)
+          << " rank=" << rank;
   const auto& previous_selection =
       result_prefs_->ReadSegmentationResultFromPref(config_->segmentation_key);
 
   // Auto-extend the results, if
-  // (1) segment selection hasn't changed.
+  // (1) segment selection and rank hasn't changed.
   // (2) or, UNKNOWN selection TTL = 0 and the new segment is UNKNOWN, and the
   //     previous one was a valid one.
   bool skip_updating_prefs = false;
   if (previous_selection.has_value()) {
-    skip_updating_prefs = new_selection == previous_selection->segment_id;
+    skip_updating_prefs =
+        new_selection == previous_selection->segment_id &&
+        (previous_selection->rank && rank == *previous_selection->rank);
     skip_updating_prefs |=
         config_->unknown_selection_ttl == base::TimeDelta() &&
         new_selection == SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
@@ -323,7 +326,8 @@ void SegmentSelectorImpl::UpdateSelectedSegment(SegmentId new_selection,
           ? absl::make_optional(previous_selection->segment_id)
           : absl::nullopt);
 
-  VLOG(1) << __func__ << ": skip_updating_prefs=" << skip_updating_prefs;
+  VLOG(1) << __func__ << " Key=" << config_->segmentation_key
+          << " : skip_updating_prefs=" << skip_updating_prefs;
   if (skip_updating_prefs)
     return;
 
