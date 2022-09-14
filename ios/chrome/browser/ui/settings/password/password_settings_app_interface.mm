@@ -6,6 +6,7 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
+#import "base/mac/foundation_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -27,9 +28,11 @@
 #error "This file requires ARC support."
 #endif
 
-using password_manager::PasswordForm;
 using chrome_test_util::SetUpAndReturnMockReauthenticationModule;
 using chrome_test_util::SetUpAndReturnMockReauthenticationModuleForExport;
+using chrome_test_util::
+    SetUpAndReturnMockReauthenticationModuleForExportFromSettings;
+using password_manager::PasswordForm;
 
 namespace {
 
@@ -147,6 +150,8 @@ bool ClearPasswordStore() {
 @implementation PasswordSettingsAppInterface
 
 static MockReauthenticationModule* _mockReauthenticationModule;
+static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
+    _scopedReauthOverride;
 
 + (void)setUpMockReauthenticationModule {
   _mockReauthenticationModule = SetUpAndReturnMockReauthenticationModule();
@@ -159,11 +164,28 @@ static MockReauthenticationModule* _mockReauthenticationModule;
 
 + (void)mockReauthenticationModuleExpectedResult:
     (ReauthenticationResult)expectedResult {
-  _mockReauthenticationModule.expectedResult = expectedResult;
+  if (_mockReauthenticationModule) {
+    _mockReauthenticationModule.expectedResult = expectedResult;
+  }
+  if (_scopedReauthOverride) {
+    MockReauthenticationModule* mockModule =
+        base::mac::ObjCCastStrict<MockReauthenticationModule>(
+            _scopedReauthOverride->module);
+    mockModule.expectedResult = expectedResult;
+  }
 }
 
 + (void)mockReauthenticationModuleCanAttempt:(BOOL)canAttempt {
   _mockReauthenticationModule.canAttempt = canAttempt;
+}
+
++ (void)setUpMockReauthenticationModuleForExportFromSettings {
+  _scopedReauthOverride =
+      SetUpAndReturnMockReauthenticationModuleForExportFromSettings();
+}
+
++ (void)removeMockReauthenticationModuleForExportFromSettings {
+  _scopedReauthOverride = nullptr;
 }
 
 + (void)dismissSnackBar {

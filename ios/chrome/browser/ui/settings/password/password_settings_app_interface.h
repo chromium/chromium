@@ -22,6 +22,10 @@
     (ReauthenticationResult)expectedResult;
 + (void)mockReauthenticationModuleCanAttempt:(BOOL)canAttempt;
 
+// Similar to the methods above, but with a companion to remove the override.
++ (void)setUpMockReauthenticationModuleForExportFromSettings;
++ (void)removeMockReauthenticationModuleForExportFromSettings;
+
 // Dismisses snack bar.  Used before next test.
 + (void)dismissSnackBar;
 

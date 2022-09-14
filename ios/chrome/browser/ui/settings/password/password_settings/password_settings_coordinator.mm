@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings/scoped_password_settings_reauth_module_override.h"
 #import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
@@ -109,7 +110,10 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  self.reauthModule = [[ReauthenticationModule alloc] init];
+  self.reauthModule =
+      ScopedPasswordSettingsReauthModuleOverride::instance
+          ? ScopedPasswordSettingsReauthModuleOverride::instance->module
+          : [[ReauthenticationModule alloc] init];
 
   _savedPasswordsPresenter =
       std::make_unique<password_manager::SavedPasswordsPresenter>(

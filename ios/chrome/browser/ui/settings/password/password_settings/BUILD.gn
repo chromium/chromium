@@ -13,6 +13,7 @@ source_set("password_settings") {
     "password_settings_mediator.mm",
   ]
   deps = [
+    ":common",
     ":password_settings_constants",
     ":password_settings_ui",
     "//components/keyed_service/core",
@@ -60,4 +61,16 @@ source_set("password_settings_constants") {
     "password_settings_constants.mm",
   ]
   deps = [ "//ios/chrome/browser/ui/list_model" ]
+}
+
+source_set("common") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "scoped_password_settings_reauth_module_override.h",
+    "scoped_password_settings_reauth_module_override.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/common/ui/reauthentication",
+  ]
 }

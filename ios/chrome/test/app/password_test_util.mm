@@ -61,7 +61,7 @@ MockReauthenticationModule* SetUpAndReturnMockReauthenticationModule() {
   return mock_reauthentication_module;
 }
 
-// Replace the reauthentication module in
+// Replace the reauthentication module in Password Manager's
 // PasswordExporter with a fake one to avoid being
 // blocked with a reauth prompt, and return the fake reauthentication module.
 MockReauthenticationModule*
@@ -78,6 +78,17 @@ SetUpAndReturnMockReauthenticationModuleForExport() {
   password_manager_view_controller.reauthenticationModule =
       mock_reauthentication_module;
   return mock_reauthentication_module;
+}
+
+// Replace the reauthentication module in Password Settings'
+// PasswordExporter with a fake one to avoid being
+// blocked with a reauth prompt, and return the fake reauthentication module.
+std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
+SetUpAndReturnMockReauthenticationModuleForExportFromSettings() {
+  MockReauthenticationModule* mock_reauthentication_module =
+      [[MockReauthenticationModule alloc] init];
+  return ScopedPasswordSettingsReauthModuleOverride::MakeAndArmForTesting(
+      mock_reauthentication_module);
 }
 
 }  // namespace

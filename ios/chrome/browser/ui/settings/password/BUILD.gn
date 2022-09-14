@@ -276,6 +276,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings:settings_root_constants",
     "//ios/chrome/browser/ui/settings/google_services:constants",
+    "//ios/chrome/browser/ui/settings/password/password_settings:password_settings_constants",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/common/ui/table_view:cells_constants",

@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
@@ -122,7 +123,7 @@ GREYElementInteraction* GetInteractionForPasswordsExportConfirmAlert(
     id<GREYMatcher> matcher) {
   return [[EarlGrey
       selectElementWithMatcher:grey_allOf(matcher, grey_interactable(), nil)]
-      inRoot:grey_accessibilityID(kPasswordsExportConfirmViewId)];
+      inRoot:grey_accessibilityID(kPasswordSettingsExportConfirmViewId)];
 }
 
 GREYElementInteraction* GetPasswordDetailTextFieldWithID(int detail_id) {
@@ -1258,9 +1259,13 @@ id<GREYMatcher> EditDoneButton() {
 
   OpenPasswordManager();
 
-  [PasswordSettingsAppInterface setUpMockReauthenticationModuleForExport];
+  [PasswordSettingsAppInterface
+      setUpMockReauthenticationModuleForExportFromSettings];
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
+
+  [[EarlGrey selectElementWithMatcher:ToolbarSettingsSubmenuButton()]
+      performAction:grey_tap()];
 
   [[[EarlGrey selectElementWithMatcher:
                   grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
