@@ -210,19 +210,29 @@ SavedPasswordsPresenter::GetExpectedAddResult(
                entry.IsUsingAccountStore();
       };
 
-  bool existing_password_profile = base::ranges::any_of(
+  bool existing_credential_profile = base::ranges::any_of(
       passwords_, have_equal_username_and_realm_in_profile_store);
-  bool existing_password_account = base::ranges::any_of(
+  bool existing_credential_account = base::ranges::any_of(
       passwords_, have_equal_username_and_realm_in_account_store);
 
-  if (!existing_password_profile && !existing_password_account)
+  if (!existing_credential_profile && !existing_credential_account)
     return AddResult::kSuccess;
-  if (existing_password_profile && !existing_password_account)
-    return AddResult::kExistsInProfileStore;
-  if (existing_password_account && !existing_password_profile)
-    return AddResult::kExistsInAccountStore;
 
-  return AddResult::kExistsInProfileAndAccountStore;
+  auto have_exact_match =
+      [&credential, &have_equal_username_and_realm](const PasswordForm& entry) {
+        return have_equal_username_and_realm(entry) &&
+               credential.password == entry.password_value;
+      };
+
+  if (base::ranges::any_of(passwords_, have_exact_match))
+    return AddResult::kExactMatch;
+
+  if (!existing_credential_profile)
+    return AddResult::kConflictInAccountStore;
+  if (!existing_credential_account)
+    return AddResult::kConflictInProfileStore;
+
+  return AddResult::kConflictInProfileAndAccountStore;
 }
 
 void SavedPasswordsPresenter::AddCredentialAsync(

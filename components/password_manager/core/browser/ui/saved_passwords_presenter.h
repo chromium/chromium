@@ -79,13 +79,19 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
     kSuccess,
     // Credential is invalid.
     kInvalid,
-    // Credential already exists in the profile store.
-    kExistsInProfileStore,
-    // Credential already exists in the account store.
-    kExistsInAccountStore,
-    // Credential already exists in the profile and account store.
-    kExistsInProfileAndAccountStore,
-    kMaxValue = kExistsInProfileAndAccountStore,
+    // Credential (with the same username, realm, and password) already exists
+    // in the profile or/and account store.
+    kExactMatch,
+    // Credential with the same username and realm already exists in the profile
+    // store.
+    kConflictInProfileStore,
+    // Credential with the same username and realm already exists in the account
+    // store.
+    kConflictInAccountStore,
+    // Credential with the same username and realm already exists in both
+    // profile and account stores.
+    kConflictInProfileAndAccountStore,
+    kMaxValue = kConflictInProfileAndAccountStore,
   };
 
   using AddCredentialsCallback =

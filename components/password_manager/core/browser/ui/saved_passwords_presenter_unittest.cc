@@ -966,10 +966,101 @@ TEST_F(SavedPasswordsPresenterTest, AddCredentialsListOnePassword) {
   presenter().RemoveObserver(&observer);
 }
 
+// Tests whether adding 2 credentials with 1 that has same username and realm in
+// the profile store fails with the correct response.
+TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
+       AddCredentialsListTwoPasswordOneConflictsProfileStore) {
+  PasswordForm existing_profile_form =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, /*index=*/0);
+  PasswordForm new_profile_form =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, /*index=*/1);
+
+  profile_store().AddLogin(existing_profile_form);
+  RunUntilIdle();
+
+  PasswordForm conflicting_profile_form = existing_profile_form;
+  conflicting_profile_form.password_value = u"abc";
+
+  base::MockCallback<SavedPasswordsPresenter::AddCredentialsCallback>
+      completion_callback;
+
+  presenter().AddCredentials({CredentialUIEntry(conflicting_profile_form),
+                              CredentialUIEntry(new_profile_form)},
+                             password_manager::PasswordForm::Type::kImported,
+                             completion_callback.Get());
+  EXPECT_CALL(completion_callback,
+              Run(std::vector<SavedPasswordsPresenter::AddResult>{
+                  SavedPasswordsPresenter::AddResult::kConflictInProfileStore,
+                  SavedPasswordsPresenter::AddResult::kSuccess}));
+  RunUntilIdle();
+}
+
+// Tests whether adding whether adding 2 credentials with 1 that has same
+// username and realm in the account store fails with the correct response.
+TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
+       AddCredentialsListTwoPasswordOneConflictsAccountStore) {
+  PasswordForm existing_account_form =
+      CreateTestPasswordForm(PasswordForm::Store::kAccountStore, /*index=*/0);
+  PasswordForm new_account_form =
+      CreateTestPasswordForm(PasswordForm::Store::kAccountStore, /*index=*/1);
+
+  account_store().AddLogin(existing_account_form);
+  RunUntilIdle();
+
+  PasswordForm conflicting_account_form = existing_account_form;
+  conflicting_account_form.password_value = u"abc";
+
+  base::MockCallback<SavedPasswordsPresenter::AddCredentialsCallback>
+      completion_callback;
+  presenter().AddCredentials({CredentialUIEntry(conflicting_account_form),
+                              CredentialUIEntry(new_account_form)},
+                             password_manager::PasswordForm::Type::kImported,
+                             completion_callback.Get());
+  EXPECT_CALL(completion_callback,
+              Run(std::vector<SavedPasswordsPresenter::AddResult>{
+                  SavedPasswordsPresenter::AddResult::kConflictInAccountStore,
+                  SavedPasswordsPresenter::AddResult::kSuccess}));
+  RunUntilIdle();
+}
+
+// Tests whether adding 2 credentials with 1 that has same username and realm in
+// both profile and account store fails with the correct response.
+TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
+       AddCredentialsListTwoPasswordOneConflictsProfileAndAccountStore) {
+  PasswordForm existing_profile_form =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, /*index=*/0);
+
+  PasswordForm existing_account_form =
+      CreateTestPasswordForm(PasswordForm::Store::kAccountStore, /*index=*/0);
+
+  PasswordForm new_profile_form =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, /*index=*/1);
+
+  profile_store().AddLogin(existing_profile_form);
+  account_store().AddLogin(existing_account_form);
+  RunUntilIdle();
+
+  PasswordForm conflicting_profile_form = existing_profile_form;
+  conflicting_profile_form.password_value = u"abc";
+
+  base::MockCallback<SavedPasswordsPresenter::AddCredentialsCallback>
+      completion_callback;
+  presenter().AddCredentials({CredentialUIEntry(conflicting_profile_form),
+                              CredentialUIEntry(new_profile_form)},
+                             password_manager::PasswordForm::Type::kImported,
+                             completion_callback.Get());
+  EXPECT_CALL(
+      completion_callback,
+      Run(std::vector<SavedPasswordsPresenter::AddResult>{
+          SavedPasswordsPresenter::AddResult::kConflictInProfileAndAccountStore,
+          SavedPasswordsPresenter::AddResult::kSuccess}));
+  RunUntilIdle();
+}
+
 // Tests whether adding 2 passwords with 1 that already exists in the profile
 // store fails with the correct response.
 TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
-       AddCredentialsListTwoPasswordOneConflictsProfileStore) {
+       AddCredentialsListTwoPasswordOneExactMatchProfileStore) {
   PasswordForm existing_profile_form =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore, /*index=*/0);
   PasswordForm new_profile_form =
@@ -987,7 +1078,7 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
                              completion_callback.Get());
   EXPECT_CALL(completion_callback,
               Run(std::vector<SavedPasswordsPresenter::AddResult>{
-                  SavedPasswordsPresenter::AddResult::kExistsInProfileStore,
+                  SavedPasswordsPresenter::AddResult::kExactMatch,
                   SavedPasswordsPresenter::AddResult::kSuccess}));
   RunUntilIdle();
 }
@@ -995,7 +1086,7 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
 // Tests whether adding whether adding 2 passwords with 1 that already exists in
 // the account store fails with the correct response.
 TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
-       AddCredentialsListTwoPasswordOneConflictsAccountStore) {
+       AddCredentialsListTwoPasswordOneExactMatchAccountStore) {
   PasswordForm existing_account_form =
       CreateTestPasswordForm(PasswordForm::Store::kAccountStore, /*index=*/0);
   PasswordForm new_account_form =
@@ -1012,7 +1103,7 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
                              completion_callback.Get());
   EXPECT_CALL(completion_callback,
               Run(std::vector<SavedPasswordsPresenter::AddResult>{
-                  SavedPasswordsPresenter::AddResult::kExistsInAccountStore,
+                  SavedPasswordsPresenter::AddResult::kExactMatch,
                   SavedPasswordsPresenter::AddResult::kSuccess}));
   RunUntilIdle();
 }
@@ -1020,7 +1111,7 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
 // Tests whether adding 2 passwords with 1 that already exists in both profile
 // and account store fails with the correct response.
 TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
-       AddCredentialsListTwoPasswordOneConflictsProfileAndAccountStore) {
+       AddCredentialsListTwoPasswordOneExactMatchProfileAndAccountStore) {
   PasswordForm existing_profile_form =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore, /*index=*/0);
   PasswordForm existing_account_form =
@@ -1039,11 +1130,10 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
                               CredentialUIEntry(new_profile_form)},
                              password_manager::PasswordForm::Type::kImported,
                              completion_callback.Get());
-  EXPECT_CALL(
-      completion_callback,
-      Run(std::vector<SavedPasswordsPresenter::AddResult>{
-          SavedPasswordsPresenter::AddResult::kExistsInProfileAndAccountStore,
-          SavedPasswordsPresenter::AddResult::kSuccess}));
+  EXPECT_CALL(completion_callback,
+              Run(std::vector<SavedPasswordsPresenter::AddResult>{
+                  SavedPasswordsPresenter::AddResult::kExactMatch,
+                  SavedPasswordsPresenter::AddResult::kSuccess}));
   RunUntilIdle();
 }
 
@@ -1549,7 +1639,6 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, EditPasswordBothStores) {
   expected_profile_store_form.password_issues.clear();
   PasswordForm expected_account_store_form = expected_profile_store_form;
   expected_account_store_form.in_store = PasswordForm::Store::kAccountStore;
-
 
   EXPECT_THAT(profile_store().stored_passwords(),
               ElementsAre(Pair(profile_store_form.signon_realm,

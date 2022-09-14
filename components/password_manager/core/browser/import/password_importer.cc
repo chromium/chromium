@@ -54,12 +54,12 @@ base::expected<std::string, ImportResults::Status> ReadFileToString(
 ImportEntry::Status ToImportEntryStatus(
     SavedPasswordsPresenter::AddResult add_result) {
   switch (add_result) {
-    case SavedPasswordsPresenter::AddResult::kExistsInProfileStore:
+    case SavedPasswordsPresenter::AddResult::kConflictInProfileStore:
       return ImportEntry::Status::CONFLICT_PROFILE;
 
-    case SavedPasswordsPresenter::AddResult::kExistsInAccountStore:
+    case SavedPasswordsPresenter::AddResult::kConflictInAccountStore:
     // We report a double collision for now as a collision in account store.
-    case SavedPasswordsPresenter::AddResult::kExistsInProfileAndAccountStore:
+    case SavedPasswordsPresenter::AddResult::kConflictInProfileAndAccountStore:
       return ImportEntry::Status::CONFLICT_ACCOUNT;
 
     case SavedPasswordsPresenter::AddResult::kInvalid:
@@ -72,10 +72,15 @@ ImportEntry::Status ToImportEntryStatus(
   return ImportEntry::Status::UNKNOWN_ERROR;
 }
 
+bool IsSuccessOrExactMatch(const SavedPasswordsPresenter::AddResult& status) {
+  return status == SavedPasswordsPresenter::AddResult::kSuccess ||
+         status == SavedPasswordsPresenter::AddResult::kExactMatch;
+}
+
 ImportEntry CreateFailedImportEntry(
     SavedPasswordsPresenter::AddResult add_result,
     const CredentialUIEntry& credential) {
-  DCHECK_NE(add_result, SavedPasswordsPresenter::AddResult::kSuccess);
+  DCHECK(!IsSuccessOrExactMatch(add_result));
   ImportEntry result;
   result.url = credential.url.possibly_invalid_spec();
   result.username = base::UTF16ToUTF8(credential.username);
@@ -140,9 +145,9 @@ void AddCredentialsCallback(
     const std::vector<SavedPasswordsPresenter::AddResult>& add_results) {
   import_results.number_imported = 0;
   for (size_t i = 0; i < add_results.size(); i++) {
-    if (add_results[i] == SavedPasswordsPresenter::AddResult::kSuccess)
+    if (IsSuccessOrExactMatch(add_results[i])) {
       import_results.number_imported++;
-    else {
+    } else {
       import_results.failed_imports.emplace_back(
           CreateFailedImportEntry(add_results[i], credentials[i]));
     }
