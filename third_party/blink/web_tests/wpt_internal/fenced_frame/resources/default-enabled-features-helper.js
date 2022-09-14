@@ -7,7 +7,7 @@
 // <script src="resources/utils.js"></script>
 // <script src="/common/get-host-info.sub.js"></script>
 
-async function runAttributionReportingTest(t, should_load, fenced_origin) {
+async function runDefaultEnabledFeaturesTest(t, should_load, fenced_origin) {
   const fencedframe = attachFencedFrameContext({
       attributes: [["mode", "opaque-ads"]],
       origin: fenced_origin});
@@ -26,6 +26,10 @@ async function runAttributionReportingTest(t, should_load, fenced_origin) {
     assert_true(
         document.featurePolicy.allowsFeature('attribution-reporting'),
         "Attribution reporting should be allowed if the fenced " +
-        " frame loaded.");
+        "frame loaded.");
+    assert_true(
+          document.featurePolicy.allowsFeature('shared-storage'),
+          "Shared storage should be allowed if the fenced " +
+          "frame loaded.");
   });
 }

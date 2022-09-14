@@ -1983,11 +1983,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
                                      1);
 }
 
-// Currently, Shared Storage is not allowed in Fenced Frames as Fenced Frames
-// disallow all permissions policies. This may change in the future.
-// https://github.com/WICG/fenced-frame/issues/44
 IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
-                       SharedStorageNotAllowedInFencedFrame) {
+                       SelectURLNotAllowedInFencedFrame) {
   GURL main_frame_url = https_server()->GetURL("a.test", kSimplePagePath);
 
   EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
@@ -1997,17 +1994,22 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
 
   FrameTreeNode* fenced_frame_node = CreateFencedFrame(fenced_frame_url);
 
-  EvalJsResult result = EvalJs(fenced_frame_node, R"(
+  EXPECT_TRUE(ExecJs(fenced_frame_node, R"(
       sharedStorage.worklet.addModule('/shared_storage/simple_module.js');
+    )"));
+
+  EXPECT_EQ(1u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
+  EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
+
+  EvalJsResult result = EvalJs(fenced_frame_node, R"(
+      sharedStorage.selectURL(
+          'test-url-selection-operation',
+          [{url: "fenced_frames/title0.html"}], {data: {'mockResult': 0}});
     )");
 
-  EXPECT_THAT(
-      result.error,
-      testing::HasSubstr("The \"shared-storage\" Permissions Policy denied the "
-                         "method on window.sharedStorage."));
-
-  EXPECT_EQ(0u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
-  EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
+  EXPECT_THAT(result.error,
+              testing::HasSubstr(
+                  "sharedStorage.selectURL() is not allowed in fenced frame"));
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,

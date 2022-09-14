@@ -41,6 +41,8 @@ class PermissionsPolicyTest : public testing::Test {
              {mojom::PermissionsPolicyFeature::kClientHintDPR,
               PermissionsPolicyFeatureDefault::EnableForSelf},
              {mojom::PermissionsPolicyFeature::kAttributionReporting,
+              PermissionsPolicyFeatureDefault::EnableForSelf},
+             {mojom::PermissionsPolicyFeature::kSharedStorage,
               PermissionsPolicyFeatureDefault::EnableForSelf}}) {}
 
   ~PermissionsPolicyTest() override = default;
@@ -1667,6 +1669,8 @@ TEST_F(PermissionsPolicyTest, CreateForDefaultFencedFrame) {
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
   EXPECT_FALSE(policy->IsFeatureEnabled(
       mojom::PermissionsPolicyFeature::kAttributionReporting));
+  EXPECT_FALSE(policy->IsFeatureEnabled(
+      mojom::PermissionsPolicyFeature::kSharedStorage));
 }
 
 TEST_F(PermissionsPolicyTest, CreateForOpaqueFencedFrame) {
@@ -1676,6 +1680,8 @@ TEST_F(PermissionsPolicyTest, CreateForOpaqueFencedFrame) {
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
   EXPECT_TRUE(policy->IsFeatureEnabled(
       mojom::PermissionsPolicyFeature::kAttributionReporting));
+  EXPECT_TRUE(policy->IsFeatureEnabled(
+      mojom::PermissionsPolicyFeature::kSharedStorage));
 }
 
 TEST_F(PermissionsPolicyTest, CreateFromParsedPolicy) {
