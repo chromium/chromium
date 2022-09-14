@@ -400,11 +400,11 @@ TEST_F(AppDeduplicationServiceTest, AppPromisioningDataManagerUpdate) {
   TestingProfile profile;
 
   auto* proxy = AppServiceProxyFactory::GetForProfile(&profile);
-  std::string test_arc_app = "test_arc_app_id";
-  std::string test_web_app = "test_web_app_id";
-  UpdateAppReadiness(proxy, "app1", test_arc_app, apps::AppType::kArc,
+  std::string skype_arc_app_id = "com.skype.raider";
+  std::string skype_web_app_id = "https://web.skype.com/";
+  UpdateAppReadiness(proxy, "app1", skype_arc_app_id, apps::AppType::kArc,
                      Readiness::kReady);
-  UpdateAppReadiness(proxy, "app2", test_web_app, apps::AppType::kWeb,
+  UpdateAppReadiness(proxy, "app2", skype_web_app_id, apps::AppType::kWeb,
                      Readiness::kReady);
 
   ASSERT_TRUE(AppDeduplicationServiceFactory::
@@ -412,25 +412,32 @@ TEST_F(AppDeduplicationServiceTest, AppPromisioningDataManagerUpdate) {
   auto* service = AppDeduplicationServiceFactory::GetForProfile(&profile);
   EXPECT_NE(nullptr, service);
 
-  std::string binary_pb = "";
+  std::string app_with_locale_pb = "";
   base::FilePath install_dir("/");
-  // TODO(b/238394602): Move the fake data population to test only when real
-  // data feeds in.
+  base::FilePath path;
+  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &path));
+  path = path.AppendASCII("app_deduplication_service/binary_test_data.pb");
+  std::string dedupe_pb;
+  ASSERT_TRUE(base::ReadFileToString(path, &dedupe_pb));
+
+  ComponentFileContents component_files = {app_with_locale_pb, dedupe_pb};
   apps::AppProvisioningDataManager::Get()->PopulateFromDynamicUpdate(
-      binary_pb, install_dir);
+      component_files, install_dir);
 
-  EntryId arc_entry_id("test_arc_app_id", apps::AppType::kArc);
-  EntryId web_entry_id("test_web_app_id", apps::AppType::kWeb);
+  EntryId skype_arc_entry_id(skype_arc_app_id, apps::AppType::kArc);
+  EntryId skype_web_entry_id(skype_web_app_id, apps::AppType::kWeb);
+  EntryId skype_phonehub_entry_id("com.skype.raider");
 
-  EXPECT_THAT(service->GetDuplicates(arc_entry_id),
-              ElementsAre(Entry(arc_entry_id), Entry(web_entry_id)));
-  EXPECT_THAT(service->GetDuplicates(web_entry_id),
-              ElementsAre(Entry(arc_entry_id), Entry(web_entry_id)));
-  EXPECT_TRUE(service->AreDuplicates(arc_entry_id, web_entry_id));
+  EXPECT_THAT(
+      service->GetDuplicates(skype_arc_entry_id),
+      ElementsAre(Entry(skype_phonehub_entry_id), Entry(skype_arc_entry_id),
+                  Entry(skype_web_entry_id)));
+  EXPECT_TRUE(service->AreDuplicates(skype_arc_entry_id, skype_web_entry_id));
 
   EntryId not_duplicate_app_id("not_duplicate_app_id", apps::AppType::kWeb);
   EXPECT_TRUE(service->GetDuplicates(not_duplicate_app_id).empty());
-  EXPECT_FALSE(service->AreDuplicates(not_duplicate_app_id, web_entry_id));
+  EXPECT_FALSE(
+      service->AreDuplicates(not_duplicate_app_id, skype_web_entry_id));
 }
 
 }  // namespace apps::deduplication

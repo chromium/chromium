@@ -14,22 +14,20 @@
 namespace apps {
 
 namespace {
-// TODO(b/238394602): Use fake data for now. Update to generate from real data
-// when real data is ready.
-std::unique_ptr<proto::DuplicatedGroupList> PopulateDuplicatedGroupList() {
+std::unique_ptr<proto::DuplicatedGroupList> PopulateDuplicatedGroupList(
+    const std::string& binary_pb) {
+  // Parse the proto and do some validation on it.
+  if (binary_pb.empty()) {
+    LOG(ERROR) << "Binary is empty";
+    return nullptr;
+  }
+
   std::unique_ptr<proto::DuplicatedGroupList> duplicated_group_list =
       std::make_unique<proto::DuplicatedGroupList>();
-  auto* add_group = duplicated_group_list->add_duplicate_group();
-  proto::DuplicateGroup duplicate_group;
-  auto* arc_app = duplicate_group.add_app();
-  arc_app->set_app_id_for_platform("test_arc_app_id");
-  arc_app->set_source_name("arc");
-
-  auto* web_app = duplicate_group.add_app();
-  web_app->set_app_id_for_platform("test_web_app_id");
-  web_app->set_source_name("web");
-
-  *add_group = duplicate_group;
+  if (!duplicated_group_list->ParseFromString(binary_pb)) {
+    LOG(ERROR) << "Failed to parse protobuf";
+    return nullptr;
+  }
   return duplicated_group_list;
 }
 
@@ -63,12 +61,14 @@ AppProvisioningDataManager::AppProvisioningDataManager() = default;
 AppProvisioningDataManager::~AppProvisioningDataManager() = default;
 
 void AppProvisioningDataManager::PopulateFromDynamicUpdate(
-    const std::string& binary_pb,
+    const ComponentFileContents& component_files,
     const base::FilePath& install_dir) {
   // TODO(melzhang) : Add check that version of |app_with_locale_list| is newer.
-  app_with_locale_list_ = PopulateAppWithLocaleList(binary_pb);
+  app_with_locale_list_ =
+      PopulateAppWithLocaleList(component_files.app_with_locale_pb);
   if (base::FeatureList::IsEnabled(features::kAppDeduplicationService)) {
-    duplicated_group_list_ = PopulateDuplicatedGroupList();
+    duplicated_group_list_ =
+        PopulateDuplicatedGroupList(component_files.deduplication_pb);
   }
   data_dir_ = install_dir;
   OnAppDataUpdated();

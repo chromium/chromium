@@ -15,6 +15,11 @@
 
 namespace apps {
 
+struct ComponentFileContents {
+  std::string app_with_locale_pb;
+  std::string deduplication_pb;
+};
+
 // The AppProvisioningDataManager parses the updates received from the Component
 // Updater and forwards the data in the desired format to the relevant service.
 // E.g. Component Updater sends through new discovery app data, after parsing
@@ -41,11 +46,12 @@ class AppProvisioningDataManager {
 
   static AppProvisioningDataManager* GetInstance();  // Singleton
 
-  // Update the internal list from a binary proto fetched from the network.
+  // Update the internal list from the binary proto files fetched from the
+  // network.
   // Same integrity checks apply. This can be called multiple times with new
   // protos.
-  void PopulateFromDynamicUpdate(const std::string& binary_pb,
-                                 const base::FilePath& data_dir);
+  void PopulateFromDynamicUpdate(const ComponentFileContents& component_files,
+                                 const base::FilePath& install_dir);
 
   const base::FilePath& GetDataFilePath();
 
