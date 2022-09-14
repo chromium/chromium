@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ namespace net::tld_cleanup {
 bool WriteRules(const RuleMap& rules, const base::FilePath& outfile) {
   std::string data;
   data.append("%{\n"
-              "// Copyright 2012 The Chromium Authors. All rights reserved.\n"
+              "// Copyright 2012 The Chromium Authors\n"
               "// Use of this source code is governed by a BSD-style license "
               "that can be\n"
               "// found in the LICENSE file.\n\n"

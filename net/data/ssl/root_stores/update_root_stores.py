@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -23,7 +23,7 @@ ROOT_CERT_LIST_PATH = 'net/cert/root_cert_list_generated.h'
 ROOT_STORE_FILE_PATH = 'net/data/ssl/root_stores/root_stores.json'
 
 LICENSE_AND_HEADER = b"""\
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
