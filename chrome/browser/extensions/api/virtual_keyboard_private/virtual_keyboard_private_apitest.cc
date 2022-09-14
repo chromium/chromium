@@ -11,6 +11,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 void CopyTextItem() {
   {
@@ -23,9 +24,7 @@ void CopyTextItem() {
 void CopyBitmapItem() {
   {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    SkBitmap input_bitmap;
-    input_bitmap.allocN32Pixels(3, 2);
-    input_bitmap.eraseARGB(255, 0, 255, 0);
+    SkBitmap input_bitmap = gfx::test::CreateBitmap(3, 2);
     scw.WriteImage(input_bitmap);
   }
   base::RunLoop().RunUntilIdle();
