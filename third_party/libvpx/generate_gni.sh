@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 #
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -17,6 +17,8 @@
 #                  configuration headers are generated).
 # --disable-vp9-highbitdepth : Revert x86[_64] builds to low-bit-depth only.
 
+set -e
+
 export LC_ALL=C
 BASE_DIR=$(pwd)
 LIBVPX_SRC_DIR="source/libvpx"
@@ -27,34 +29,33 @@ HIGHBD="--enable-vp9-highbitdepth"
 # Only disable avx512 if it is an option.
 grep -q avx512 source/libvpx/configure || unset DISABLE_AVX512
 
-for i in "$@"
-do
-case $i in
-  --enable-avx512)
-  unset DISABLE_AVX512
-  shift
-  ;;
-  --only-configs)
-  ONLY_CONFIGS=true
-  shift
-  ;;
-  --enable-vp9-highbitdepth)
-  shift
-  ;;
-  --disable-vp9-highbitdepth)
-  unset HIGHBD
-  shift
-  ;;
-  *)
-  echo "Unknown option: $i"
-  exit 1
-  ;;
-esac
+for i in "$@"; do
+  case $i in
+    --enable-avx512)
+      unset DISABLE_AVX512
+      shift
+      ;;
+    --only-configs)
+      ONLY_CONFIGS=true
+      shift
+      ;;
+    --enable-vp9-highbitdepth)
+      shift
+      ;;
+    --disable-vp9-highbitdepth)
+      unset HIGHBD
+      shift
+      ;;
+    *)
+      echo "Unknown option: $i"
+      exit 1
+      ;;
+  esac
 done
 
 # Print license header.
 # $1 - Output base name
-function write_license {
+function write_license() {
   echo "# This file is generated. Do not edit." >> $1
   echo "" >> $1
 }
@@ -63,7 +64,7 @@ function write_license {
 # build can support such files but only when they are built into disparate
 # modules. Configuring such modules for both gyp and gn are tricky so avoid the
 # issue at least until gyp is removed.
-function find_duplicates {
+function find_duplicates() {
   local readonly duplicate_file_names=$(find \
     $BASE_DIR/$LIBVPX_SRC_DIR/vp8 \
     $BASE_DIR/$LIBVPX_SRC_DIR/vp9 \
@@ -71,7 +72,7 @@ function find_duplicates {
     -type f -name \*.c  | xargs -I {} basename {} | sort | uniq -d \
   )
 
-  if [ -n "${duplicate_file_names}" ]; then
+  if [[ -n "${duplicate_file_names}" ]]; then
     echo "WARNING: DUPLICATE FILES FOUND"
     for file in  ${duplicate_file_names}; do
       find \
@@ -89,7 +90,7 @@ function find_duplicates {
 #      regenerate the array locally.
 # $2 - GN variable name.
 # $3 - Output file.
-function write_gni {
+function write_gni() {
   # Convert the first argument back in to an array.
   declare -a file_list=("${!1}")
 
@@ -103,7 +104,7 @@ function write_gni {
 
 # Convert a list of source files into gni files.
 # $1 - Input file.
-function convert_srcs_to_project_files {
+function convert_srcs_to_project_files() {
   # Do the following here:
   # 1. Filter .c, .h, .s, .S and .asm files.
   # 2. Move certain files to a separate lists to allow applying different
@@ -131,17 +132,17 @@ function convert_srcs_to_project_files {
   source_list=$(echo "$source_list" | sed s/\.asm\.s$/.asm/)
 
   # Select all x86 files ending with .c
-  local intrinsic_list=$(echo "$source_list" | \
-    egrep '(mmx|sse2|sse3|ssse3|sse4|avx|avx2|avx512).c$')
+  local intrinsic_list=$(echo "$source_list" \
+    | egrep '(mmx|sse2|sse3|ssse3|sse4|avx|avx2|avx512).c$')
 
   # Select all neon files ending in C but only when building in RTCD mode
-  if [ "libvpx_srcs_arm_neon_cpu_detect" == "$2" ]; then
+  if [[ "libvpx_srcs_arm_neon_cpu_detect" == "$2" ]]; then
     # Select all arm neon files ending in _neon.c and all asm files.
     # The asm files need to be included in the intrinsics target because
     # they need the -mfpu=neon flag.
     # the pattern may need to be updated if vpx_scale gets intrinsics
-    local intrinsic_list=$(echo "$source_list" | \
-      egrep 'neon.*(\.c|\.asm)$')
+    local intrinsic_list=$(echo "$source_list" \
+      | egrep 'neon.*(\.c|\.asm)$')
   fi
 
   # Remove these files from the main list.
@@ -150,7 +151,7 @@ function convert_srcs_to_project_files {
   local x86_list=$(echo "$source_list" | egrep '/x86/')
 
   # Write a single .gni file that includes all source files for all archs.
-  if [ 0 -ne ${#x86_list} ]; then
+  if [[ ${#x86_list} -ne 0 ]]; then
     local c_sources=$(echo "$source_list" | egrep '\.c$')
     local c_headers=$(echo "$source_list" | egrep '\.h$')
     local assembly_sources=$(echo "$source_list" | egrep '\.asm$')
@@ -177,27 +178,27 @@ function convert_srcs_to_project_files {
   else
     local c_sources=$(echo "$source_list" | egrep '\.c$')
     local c_headers=$(echo "$source_list" | egrep '\.h$')
-    local assembly_sources=$(echo -e "$source_list\n$intrinsic_list" | \
-      egrep '\.asm$')
+    local assembly_sources=$(echo -e "$source_list\n$intrinsic_list" \
+      | egrep '\.asm$')
     local neon_sources=$(echo "$intrinsic_list" | grep '_neon\.c$')
     write_gni c_sources $2 "$BASE_DIR/libvpx_srcs.gni"
     write_gni c_headers $2_headers "$BASE_DIR/libvpx_srcs.gni"
     write_gni assembly_sources $2_assembly "$BASE_DIR/libvpx_srcs.gni"
-    if [ 0 -ne ${#neon_sources} ]; then
+    if [[ ${#neon_sources} -ne 0 ]]; then
       write_gni neon_sources $2_neon "$BASE_DIR/libvpx_srcs.gni"
     fi
   fi
 }
 
 # Clean files from previous make.
-function make_clean {
+function make_clean() {
   make clean > /dev/null
   rm -f libvpx_srcs.txt
 }
 
 # Lint a pair of vpx_config.h and vpx_config.asm to make sure they match.
 # $1 - Header file directory.
-function lint_config {
+function lint_config() {
   # mips and native client do not contain any assembly so the headers do not
   # need to be compared to the asm.
   if [[ "$1" != *mipsel && "$1" != *mips64el && "$1" != nacl ]]; then
@@ -209,7 +210,7 @@ function lint_config {
 
 # Print the configuration.
 # $1 - Header file directory.
-function print_config {
+function print_config() {
   $BASE_DIR/lint_config.sh -p \
     -h $BASE_DIR/$LIBVPX_CONFIG_DIR/$1/vpx_config.h \
     -a $BASE_DIR/$LIBVPX_CONFIG_DIR/$1/vpx_config.asm
@@ -219,7 +220,7 @@ function print_config {
 # This function is an abridged version of print_config which does not use
 # lint_config and it does not require existence of vpx_config.asm.
 # $1 - Header file directory.
-function print_config_basic {
+function print_config_basic() {
   combined_config="$(cat $BASE_DIR/$LIBVPX_CONFIG_DIR/$1/vpx_config.h \
                    | grep -E ' +[01] *$')"
   combined_config="$(echo "$combined_config" | grep -v DO1STROUNDING)"
@@ -234,7 +235,7 @@ function print_config_basic {
 # $1 - Header file directory.
 # $2 - Architecture.
 # $3 - Optional - any additional arguments to pass through.
-function gen_rtcd_header {
+function gen_rtcd_header() {
   echo "Generate $LIBVPX_CONFIG_DIR/$1/*_rtcd.h files."
   format="clang-format -i -style=Chromium"
 
@@ -291,7 +292,7 @@ function gen_rtcd_header {
 # detection of capabilities on specific targets.
 # $1 - Header file directory.
 # $2 - Config command line.
-function gen_config_files {
+function gen_config_files() {
   ./configure $2 > /dev/null
 
   # Disable HAVE_UNISTD_H as it causes vp8 to try to detect how many cpus
@@ -299,7 +300,8 @@ function gen_config_files {
   sed -i.bak -e 's/\(HAVE_UNISTD_H[[:space:]]*\)1/\10/' vpx_config.h
   # Maintain old ARCH_ defines to avoid build errors because assembly file
   # dependencies are incorrect.
-  sed -i.bak -e 's/\(#define \)VPX_\(ARCH_[_0-9A-Z]\+ [01]\)/&\n\1\2/' vpx_config.h
+  sed -i.bak -e 's/\(#define \)VPX_\(ARCH_[_0-9A-Z]\+ [01]\)/&\n\1\2/' \
+    vpx_config.h
 
   rm vpx_config.h.bak
 
@@ -313,9 +315,12 @@ function gen_config_files {
   # Generate vpx_config.asm. Do not create one for mips or native client.
   if [[ "$1" != *mipsel && "$1" != *mips64el && "$1" != nacl ]]; then
     if [[ "$1" == *x64* ]] || [[ "$1" == *ia32* ]]; then
-      egrep "#define [A-Z0-9_]+ [01]" vpx_config.h | awk '{print "%define " $2 " " $3}' > vpx_config.asm
+      egrep "#define [A-Z0-9_]+ [01]" vpx_config.h \
+        | awk '{print "%define " $2 " " $3}' > vpx_config.asm
     else
-      egrep "#define [A-Z0-9_]+ [01]" vpx_config.h | awk '{print $2 " EQU " $3}' | perl $BASE_DIR/$LIBVPX_SRC_DIR/build/make/$ASM_CONV > vpx_config.asm
+      egrep "#define [A-Z0-9_]+ [01]" vpx_config.h \
+        | awk '{print $2 " EQU " $3}' \
+        | perl $BASE_DIR/$LIBVPX_SRC_DIR/build/make/$ASM_CONV > vpx_config.asm
     fi
   fi
 
@@ -325,7 +330,7 @@ function gen_config_files {
   rm -rf vpx_config.*
 }
 
-function update_readme {
+function update_readme() {
   local IFS=$'\n'
   # Split git log output '<date>\n<commit hash>' on the newline to produce 2
   # array entries.
@@ -364,23 +369,34 @@ all_platforms+=" --enable-realtime-only"
 all_platforms+=" --disable-install-docs"
 all_platforms+=" --disable-libyuv"
 x86_platforms="--enable-pic --as=yasm $DISABLE_AVX512 $HIGHBD"
-gen_config_files linux/ia32 "--target=x86-linux-gcc ${all_platforms} ${x86_platforms}"
-gen_config_files linux/x64 "--target=x86_64-linux-gcc ${all_platforms} ${x86_platforms}"
-gen_config_files linux/arm "--target=armv7-linux-gcc --disable-neon ${all_platforms}"
+gen_config_files linux/ia32 \
+  "--target=x86-linux-gcc ${all_platforms} ${x86_platforms}"
+gen_config_files linux/x64 \
+  "--target=x86_64-linux-gcc ${all_platforms} ${x86_platforms}"
+gen_config_files linux/arm \
+  "--target=armv7-linux-gcc --disable-neon ${all_platforms}"
 gen_config_files linux/arm-neon "--target=armv7-linux-gcc ${all_platforms}"
-gen_config_files linux/arm-neon-cpu-detect "--target=armv7-linux-gcc --enable-runtime-cpu-detect ${all_platforms}"
+gen_config_files linux/arm-neon-cpu-detect \
+  "--target=armv7-linux-gcc --enable-runtime-cpu-detect ${all_platforms}"
 gen_config_files linux/arm64 "--target=armv8-linux-gcc ${all_platforms}"
-gen_config_files linux/arm-neon-highbd "--target=armv7-linux-gcc ${all_platforms} ${HIGHBD}"
-gen_config_files linux/arm64-highbd "--target=armv8-linux-gcc ${all_platforms} ${HIGHBD}"
+gen_config_files linux/arm-neon-highbd \
+  "--target=armv7-linux-gcc ${all_platforms} ${HIGHBD}"
+gen_config_files linux/arm64-highbd \
+  "--target=armv8-linux-gcc ${all_platforms} ${HIGHBD}"
 gen_config_files linux/mipsel "--target=mips32-linux-gcc ${all_platforms}"
 gen_config_files linux/mips64el "--target=mips64-linux-gcc ${all_platforms}"
 gen_config_files linux/ppc64 "--target=ppc64le-linux-gcc ${all_platforms}"
 gen_config_files linux/generic "--target=generic-gnu $HIGHBD ${all_platforms}"
-gen_config_files win/arm64 "--target=arm64-win64-vs15 ${all_platforms} ${HIGHBD}"
-gen_config_files win/ia32 "--target=x86-win32-vs14 ${all_platforms} ${x86_platforms}"
-gen_config_files win/x64 "--target=x86_64-win64-vs14 ${all_platforms} ${x86_platforms}"
-gen_config_files mac/ia32 "--target=x86-darwin9-gcc ${all_platforms} ${x86_platforms}"
-gen_config_files mac/x64 "--target=x86_64-darwin9-gcc ${all_platforms} ${x86_platforms}"
+gen_config_files win/arm64 \
+  "--target=arm64-win64-vs15 ${all_platforms} ${HIGHBD}"
+gen_config_files win/ia32 \
+  "--target=x86-win32-vs14 ${all_platforms} ${x86_platforms}"
+gen_config_files win/x64 \
+  "--target=x86_64-win64-vs14 ${all_platforms} ${x86_platforms}"
+gen_config_files mac/ia32 \
+  "--target=x86-darwin9-gcc ${all_platforms} ${x86_platforms}"
+gen_config_files mac/x64 \
+  "--target=x86_64-darwin9-gcc ${all_platforms} ${x86_platforms}"
 gen_config_files ios/arm-neon "--target=armv7-linux-gcc ${all_platforms}"
 gen_config_files ios/arm64 "--target=armv8-linux-gcc ${all_platforms}"
 gen_config_files nacl "--target=generic-gnu $HIGHBD ${all_platforms}"
@@ -445,7 +461,7 @@ echo "Prepare Makefile."
 ./configure --target=generic-gnu > /dev/null
 make_clean
 
-if [ -z $ONLY_CONFIGS ]; then
+if [[ -z $ONLY_CONFIGS ]]; then
   # Remove existing .gni file.
   rm -rf $BASE_DIR/libvpx_srcs.gni
   write_license $BASE_DIR/libvpx_srcs.gni
@@ -506,7 +522,8 @@ if [ -z $ONLY_CONFIGS ]; then
   make libvpx_srcs.txt target=libs $config > /dev/null
   convert_srcs_to_project_files libvpx_srcs.txt libvpx_srcs_arm64_highbd
 
-  echo "ARM64 Windows and Mac use the ARM64 Linux HighBD source list. No need to generate it."
+  echo "ARM64 Windows and Mac use the ARM64 Linux HighBD source list." \
+       "No need to generate it."
 
   echo "Generate MIPS source list."
   config=$(print_config_basic linux/mipsel)
@@ -514,7 +531,8 @@ if [ -z $ONLY_CONFIGS ]; then
   make libvpx_srcs.txt target=libs $config > /dev/null
   convert_srcs_to_project_files libvpx_srcs.txt libvpx_srcs_mips
 
-  echo "MIPS64 source list is identical to MIPS source list. No need to generate it."
+  echo "MIPS64 source list is identical to MIPS source list." \
+       "No need to generate it."
 
   echo "Generate ppc64 source list."
   config=$(print_config_basic linux/ppc64)

@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 #
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -19,39 +19,38 @@
 # # Compare the two configuration files and output the final results.
 # ./lint_config.sh -h aom_config.h -a aom_config.asm -o libaom.config -p
 
+set -e
+
 export LC_ALL=C
 print_final="no"
 
-while getopts "h:a:o:p" flag
-do
-  if [ "$flag" = "h" ]; then
+while getopts "h:a:o:p" flag; do
+  if [[ "$flag" == "h" ]]; then
     header_file=$OPTARG
-  elif [ "$flag" = "a" ]; then
+  elif [[ "$flag" == "a" ]]; then
     asm_file=$OPTARG
-  elif [ "$flag" = "o" ]; then
+  elif [[ "$flag" == "o" ]]; then
     out_file=$OPTARG
-  elif [ "$flag" = "p" ]; then
+  elif [[ "$flag" == "p" ]]; then
     print_final="yes"
   fi
 done
 
-if [ -z "$header_file" ]; then
+if [[ -z "$header_file" ]]; then
   echo "Header file not specified."
-  false
-  exit
+  exit 1
 fi
 
-if [ -z "$asm_file" ]; then
+if [[ -z "$asm_file" ]]; then
   echo "ASM file not specified."
-  false
-  exit
+  exit 1
 fi
 
 # Concat header file and assembly file and select those ended with 0 or 1.
 combined_config="$(cat $header_file $asm_file | grep -E ' +[01] *$')"
 
 # Extra filtering for known exceptions.
-# TODO(johannkoenig): Shoule be able to remove a lot of these
+# TODO(johannkoenig): Should be able to remove a lot of these
 combined_config="$(echo "$combined_config" | grep -v WIDE_REFERENCE)"
 combined_config="$(echo "$combined_config" | grep -v ARCHITECTURE)"
 combined_config="$(echo "$combined_config" | grep -v DO1STROUNDING)"
@@ -92,12 +91,11 @@ for var in $odd_vars; do
   echo ""
 done
 
-if [ -n "$odd_vars" ]; then
-  false
-  exit
+if [[ -n "$odd_vars" ]]; then
+  exit 1
 fi
 
-if [ "$print_final" = "no" ]; then
+if [[ "$print_final" == "no" ]]; then
   exit
 fi
 
@@ -106,7 +104,7 @@ combined_config="$(echo "$combined_config" | grep -v ARCH_X86=no)"
 combined_config="$(echo "$combined_config" | grep -v ARCH_X86_64=no)"
 
 # Print out the unique configurations.
-if [ -n "$out_file" ]; then
+if [[ -n "$out_file" ]]; then
   echo "$combined_config" | sort | uniq > $out_file
 else
   echo "$combined_config" | sort | uniq
