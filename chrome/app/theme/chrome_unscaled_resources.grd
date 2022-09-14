@@ -17,18 +17,39 @@
       <if expr="_google_chrome">
         <then>
           <include name="IDR_ASSISTANT_LOGO_MONOCHROME" file="google_chrome/google_assistant.svg" type="BINDATA" />
-          <if expr="is_linux">
+          <if expr="_google_chrome_for_testing">
             <then>
-              <include name="IDR_PRODUCT_LOGO_64" file="google_chrome/linux/product_logo_64.png" type="BINDATA" />
-              <include name="IDR_PRODUCT_LOGO_128" file="google_chrome/linux/product_logo_128.png" type="BINDATA" />
-              <include name="IDR_PRODUCT_LOGO_128_BETA" file="google_chrome/linux/product_logo_128_beta.png" type="BINDATA" />
-              <include name="IDR_PRODUCT_LOGO_128_DEV" file="google_chrome/linux/product_logo_128_dev.png" type="BINDATA" />
-              <include name="IDR_PRODUCT_LOGO_256" file="google_chrome/linux/product_logo_256.png" type="BINDATA" />
+              <if expr="is_linux">
+                <then>
+                  <include name="IDR_PRODUCT_LOGO_64" file="google_chrome/google_chrome_for_testing/linux/product_logo_64.png" type="BINDATA" />
+                  <include name="IDR_PRODUCT_LOGO_128" file="google_chrome/google_chrome_for_testing/linux/product_logo_128.png" type="BINDATA" />
+                  <!-- Beta and Dev use the same logo as stable because channels are not a relevant concept for CfT. -->
+                  <include name="IDR_PRODUCT_LOGO_128_BETA" file="google_chrome/google_chrome_for_testing/linux/product_logo_128.png" type="BINDATA" />
+                  <include name="IDR_PRODUCT_LOGO_128_DEV" file="google_chrome/google_chrome_for_testing/linux/product_logo_128.png" type="BINDATA" />
+                  <include name="IDR_PRODUCT_LOGO_256" file="google_chrome/google_chrome_for_testing/linux/product_logo_256.png" type="BINDATA" />
+                </then>
+                <else>
+                  <include name="IDR_PRODUCT_LOGO_64" file="google_chrome/google_chrome_for_testing/product_logo_64.png" type="BINDATA" />
+                  <include name="IDR_PRODUCT_LOGO_128" file="google_chrome/google_chrome_for_testing/product_logo_128.png" type="BINDATA" />
+                  <include name="IDR_PRODUCT_LOGO_256" file="google_chrome/google_chrome_for_testing/product_logo_256.png" type="BINDATA" />
+                </else>
+              </if>
             </then>
-            <else>
-              <include name="IDR_PRODUCT_LOGO_64" file="google_chrome/product_logo_64.png" type="BINDATA" />
-              <include name="IDR_PRODUCT_LOGO_128" file="google_chrome/product_logo_128.png" type="BINDATA" />
-              <include name="IDR_PRODUCT_LOGO_256" file="google_chrome/product_logo_256.png" type="BINDATA" />
+            <else>  <!-- not _google_chrome_for_testing -->
+              <if expr="is_linux">
+                <then>
+                  <include name="IDR_PRODUCT_LOGO_64" file="google_chrome/linux/product_logo_64.png" type="BINDATA" />
+                  <include name="IDR_PRODUCT_LOGO_128" file="google_chrome/linux/product_logo_128.png" type="BINDATA" />
+                  <include name="IDR_PRODUCT_LOGO_128_BETA" file="google_chrome/linux/product_logo_128_beta.png" type="BINDATA" />
+                  <include name="IDR_PRODUCT_LOGO_128_DEV" file="google_chrome/linux/product_logo_128_dev.png" type="BINDATA" />
+                  <include name="IDR_PRODUCT_LOGO_256" file="google_chrome/linux/product_logo_256.png" type="BINDATA" />
+                </then>
+                <else>
+                  <include name="IDR_PRODUCT_LOGO_64" file="google_chrome/product_logo_64.png" type="BINDATA" />
+                  <include name="IDR_PRODUCT_LOGO_128" file="google_chrome/product_logo_128.png" type="BINDATA" />
+                  <include name="IDR_PRODUCT_LOGO_256" file="google_chrome/product_logo_256.png" type="BINDATA" />
+                </else>
+              </if>
             </else>
           </if>
           <include name="IDR_PRODUCT_LOGO_24PX_1X" file="google_chrome/chrome_24px_1x.svg" type="BINDATA" />
