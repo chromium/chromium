@@ -28,7 +28,6 @@ namespace content {
 RateLimitTable::RateLimitTable(const AttributionStorageDelegate* delegate)
     : delegate_(delegate) {
   DCHECK(delegate_);
-  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 RateLimitTable::~RateLimitTable() {

@@ -440,7 +440,6 @@ AttributionStorageSql::AttributionStorageSql(
       delegate_(std::move(delegate)),
       rate_limit_table_(delegate_.get()) {
   DCHECK(delegate_);
-  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 AttributionStorageSql::~AttributionStorageSql() {
