@@ -45,6 +45,9 @@ class ProfileCustomizationUI
                      customize_themes::mojom::CustomizeThemesHandlerFactory>
                          pending_receiver);
 
+  // Allows tests to trigger page events.
+  ProfileCustomizationHandler* GetProfileCustomizationHandlerForTesting();
+
  private:
   // customize_themes::mojom::CustomizeThemesHandlerFactory:
   void CreateCustomizeThemesHandler(
@@ -56,6 +59,9 @@ class ProfileCustomizationUI
   std::unique_ptr<ChromeCustomizeThemesHandler> customize_themes_handler_;
   mojo::Receiver<customize_themes::mojom::CustomizeThemesHandlerFactory>
       customize_themes_factory_receiver_;
+
+  // Stored for tests.
+  raw_ptr<ProfileCustomizationHandler> profile_customization_handler_ = nullptr;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

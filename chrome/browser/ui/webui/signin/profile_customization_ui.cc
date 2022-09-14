@@ -120,8 +120,11 @@ ProfileCustomizationUI::~ProfileCustomizationUI() = default;
 void ProfileCustomizationUI::Initialize(
     base::OnceCallback<void(ProfileCustomizationHandler::CustomizationResult)>
         completion_callback) {
-  web_ui()->AddMessageHandler(std::make_unique<ProfileCustomizationHandler>(
-      Profile::FromWebUI(web_ui()), std::move(completion_callback)));
+  std::unique_ptr<ProfileCustomizationHandler> handler =
+      std::make_unique<ProfileCustomizationHandler>(
+          Profile::FromWebUI(web_ui()), std::move(completion_callback));
+  profile_customization_handler_ = handler.get();
+  web_ui()->AddMessageHandler(std::move(handler));
 }
 
 void ProfileCustomizationUI::BindInterface(
@@ -131,6 +134,11 @@ void ProfileCustomizationUI::BindInterface(
   if (customize_themes_factory_receiver_.is_bound())
     customize_themes_factory_receiver_.reset();
   customize_themes_factory_receiver_.Bind(std::move(pending_receiver));
+}
+
+ProfileCustomizationHandler*
+ProfileCustomizationUI::GetProfileCustomizationHandlerForTesting() {
+  return profile_customization_handler_;
 }
 
 void ProfileCustomizationUI::CreateCustomizeThemesHandler(
