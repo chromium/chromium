@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(OverlayPopupAdViolationBrowserTest,
 
 // TODO(https://crbug.com/1350894): Flaky on Linux MSAN.
 #if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define OverlayPopupAd_AdInterventionTriggered \
+#define MAYBE_OverlayPopupAd_AdInterventionTriggered \
   DISABLED_OverlayPopupAd_AdInterventionTriggered
 #else
 #define MAYBE_OverlayPopupAd_AdInterventionTriggered \
