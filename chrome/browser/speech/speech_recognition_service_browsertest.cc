@@ -487,7 +487,8 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, CreateAudioSourceFetcher) {
   // TestStreamFactory::stream_, to test end-to-end.
   std::string device_id = media::AudioDeviceDescription::kDefaultDeviceId;
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                media::CHANNEL_LAYOUT_STEREO, 10000, 1000);
+                                media::ChannelLayoutConfig::Stereo(), 10000,
+                                1000);
 
   // Create a fake stream factory.
   std::unique_ptr<StrictMock<TestStreamFactory>> stream_factory =
