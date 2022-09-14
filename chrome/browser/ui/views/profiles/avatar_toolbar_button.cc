@@ -223,15 +223,21 @@ void AvatarToolbarButton::NotifyHighlightAnimationFinished() {
 }
 
 void AvatarToolbarButton::MaybeShowProfileSwitchIPH() {
-  // If the tracker is already initialized, the callback is called immediately.
-  auto* const promo_controller =
-      BrowserFeaturePromoController::GetForView(this);
-  if (promo_controller) {
-    promo_controller->feature_engagement_tracker()->AddOnInitializedCallback(
-        base::BindOnce(
-            &AvatarToolbarButton::MaybeShowProfileSwitchIPHInitialized,
-            weak_ptr_factory_.GetWeakPtr()));
+  // Prevent showing the promo right when the browser was created. Wait a small
+  // delay for a smoother animation.
+  base::TimeDelta time_since_creation = base::TimeTicks::Now() - creation_time_;
+  if (time_since_creation < g_iph_min_delay_after_creation) {
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&AvatarToolbarButton::MaybeShowProfileSwitchIPH,
+                       weak_ptr_factory_.GetWeakPtr()),
+        g_iph_min_delay_after_creation - time_since_creation);
+    return;
   }
+
+  // This will show the promo only after the IPH system is properly initialized.
+  browser_->window()->MaybeShowStartupFeaturePromo(
+      feature_engagement::kIPHProfileSwitchFeature);
 }
 
 void AvatarToolbarButton::OnMouseExited(const ui::MouseEvent& event) {
@@ -336,30 +342,6 @@ void AvatarToolbarButton::SetInsets() {
   gfx::Insets layout_insets(
       touch_ui ? 0 : (kDefaultIconSize - kIconSizeForNonTouchUi) / 2);
   SetLayoutInsetDelta(layout_insets);
-}
-
-void AvatarToolbarButton::MaybeShowProfileSwitchIPHInitialized(bool success) {
-  if (!success)
-    return;  // IPH system initialization failed.
-
-  // Prevent showing the promo right when the browser was created. Wait a small
-  // delay for a smoother animation.
-  base::TimeDelta time_since_creation = base::TimeTicks::Now() - creation_time_;
-  if (time_since_creation < g_iph_min_delay_after_creation) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &AvatarToolbarButton::MaybeShowProfileSwitchIPHInitialized,
-            weak_ptr_factory_.GetWeakPtr(), /*success=*/true),
-        g_iph_min_delay_after_creation - time_since_creation);
-    return;
-  }
-
-  auto* const promo_controller =
-      BrowserFeaturePromoController::GetForView(this);
-  DCHECK(promo_controller->feature_engagement_tracker()->IsInitialized());
-  promo_controller->MaybeShowPromo(
-      feature_engagement::kIPHProfileSwitchFeature);
 }
 
 BEGIN_METADATA(AvatarToolbarButton, ToolbarButton)

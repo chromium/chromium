@@ -1660,10 +1660,7 @@ void BrowserView::OnTabRestored(int command_id) {
   if (command_id != AppMenuModel::kMinRecentTabsCommandId &&
       command_id != IDC_RESTORE_TAB)
     return;
-  if (feature_promo_controller_) {
-    feature_promo_controller_->EndPromo(
-        feature_engagement::kIPHReopenTabFeature);
-  }
+  CloseFeaturePromo(feature_engagement::kIPHReopenTabFeature);
 }
 
 void BrowserView::ZoomChangedForActiveTab(bool can_show_bubble) {
@@ -2377,35 +2374,16 @@ void BrowserView::TouchModeChanged() {
   MaybeShowWebUITabStripIPH();
 }
 
-void BrowserView::OnFeatureEngagementTrackerInitialized(bool initialized) {
-  if (!initialized)
-    return;
-  MaybeShowWebUITabStripIPH();
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&BrowserView::MaybeShowReadingListInSidePanelIPH,
-                     GetAsWeakPtr()),
-      base::Minutes(5));
-}
-
 void BrowserView::MaybeShowWebUITabStripIPH() {
-  if (!webui_tab_strip_ || !feature_promo_controller_)
+  if (!webui_tab_strip_)
     return;
-
-  feature_promo_controller_->MaybeShowPromo(
-      feature_engagement::kIPHWebUITabStripFeature);
+  MaybeShowStartupFeaturePromo(feature_engagement::kIPHWebUITabStripFeature);
 }
 
 void BrowserView::MaybeShowReadingListInSidePanelIPH() {
-  if (!feature_promo_controller_)
-    return;
-
-  if (!(browser_->window()->IsActive() ||
-        BrowserFeaturePromoController::
-            active_window_check_blocked_for_testing()))
-    return;
-
-  PrefService* pref_service = browser()->profile()->GetPrefs();
+  // TODO(dfried): This promo is potentially superfluous since the pref is never
+  // set; remove.
+  const PrefService* const pref_service = browser()->profile()->GetPrefs();
   if (pref_service &&
       pref_service->GetBoolean(
           reading_list::prefs::kReadingListDesktopFirstUseExperienceShown)) {
@@ -3906,13 +3884,14 @@ void BrowserView::AddedToWidget() {
   using_native_frame_ = frame_->ShouldUseNativeFrame();
 
   MaybeInitializeWebUITabStrip();
+  MaybeShowWebUITabStripIPH();
 
-  if (feature_promo_controller_) {
-    feature_promo_controller_->feature_engagement_tracker()
-        ->AddOnInitializedCallback(
-            base::BindOnce(&BrowserView::OnFeatureEngagementTrackerInitialized,
-                           weak_ptr_factory_.GetWeakPtr()));
-  }
+  // Want to show this promo, but not right at startup.
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&BrowserView::MaybeShowReadingListInSidePanelIPH,
+                     GetAsWeakPtr()),
+      base::Minutes(5));
 
   initialized_ = true;
 }

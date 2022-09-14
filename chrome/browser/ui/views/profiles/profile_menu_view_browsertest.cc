@@ -48,7 +48,6 @@
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -70,6 +69,7 @@
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/test/fake_server_network_resources.h"
 #include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/test/feature_promo_test_util.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -321,29 +321,20 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseIPH) {
   // Display the IPH.
   auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
-  BrowserFeaturePromoController* const promo_controller =
-      static_cast<BrowserFeaturePromoController*>(
-          browser()->window()->GetFeaturePromoController());
-  feature_engagement::Tracker* tracker =
-      promo_controller->feature_engagement_tracker();
-  base::RunLoop loop;
-  tracker->AddOnInitializedCallback(
-      base::BindLambdaForTesting([&loop](bool success) {
-        DCHECK(success);
-        loop.Quit();
-      }));
-  loop.Run();
-  ASSERT_TRUE(tracker->IsInitialized());
-  EXPECT_TRUE(promo_controller->MaybeShowPromo(
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser());
+  ASSERT_TRUE(user_education::test::WaitForFeatureEngagementReady(
+      browser_view->GetFeaturePromoController()));
+  EXPECT_TRUE(browser_view->MaybeShowFeaturePromo(
       feature_engagement::kIPHProfileSwitchFeature));
-  EXPECT_TRUE(promo_controller->IsPromoActive(
+  EXPECT_TRUE(browser_view->IsFeaturePromoActive(
       feature_engagement::kIPHProfileSwitchFeature));
 
   // Open the menu.
   ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
 
   // Check the IPH is no longer showing.
-  EXPECT_FALSE(promo_controller->IsPromoActive(
+  EXPECT_FALSE(browser_view->IsFeaturePromoActive(
       feature_engagement::kIPHProfileSwitchFeature));
 }
 

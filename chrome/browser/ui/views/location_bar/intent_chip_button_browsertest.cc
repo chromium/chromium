@@ -29,6 +29,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/test_tracker.h"
+#include "components/user_education/test/feature_promo_test_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -385,19 +386,10 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonIPHBubbleBrowserTest, ShowAndCloseIPH) {
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
 
   auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
-  BrowserFeaturePromoController* const promo_controller =
-      static_cast<BrowserFeaturePromoController*>(
-          browser()->window()->GetFeaturePromoController());
-  feature_engagement::Tracker* tracker =
-      promo_controller->feature_engagement_tracker();
-  base::RunLoop init_loop;
-  tracker->AddOnInitializedCallback(
-      base::BindLambdaForTesting([&init_loop](bool success) {
-        DCHECK(success);
-        init_loop.Quit();
-      }));
-  init_loop.Run();
-  ASSERT_TRUE(tracker->IsInitialized());
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser());
+  ASSERT_TRUE(user_education::test::WaitForFeatureEngagementReady(
+      browser_view->GetFeaturePromoController()));
 
   NavigateToLaunchingPage(browser());
   content::WebContents* web_contents =
@@ -414,14 +406,14 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonIPHBubbleBrowserTest, ShowAndCloseIPH) {
   chip_loop.Run();
 
   // Check if the IPH bubble is showing.
-  EXPECT_TRUE(promo_controller->IsPromoActive(
+  EXPECT_TRUE(browser_view->IsFeaturePromoActive(
       feature_engagement::kIPHIntentChipFeature));
 
   // When we click on the intent chip, the IPH should disappear.
   ClickIntentChip();
 
   // Check the IPH is no longer showing.
-  EXPECT_FALSE(promo_controller->IsPromoActive(
+  EXPECT_FALSE(browser_view->IsFeaturePromoActive(
       feature_engagement::kIPHIntentChipFeature));
 }
 

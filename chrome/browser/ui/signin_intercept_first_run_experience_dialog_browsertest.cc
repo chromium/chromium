@@ -40,6 +40,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/test/feature_promo_test_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -156,22 +157,10 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
 
   // Returns true if the profile switch IPH has been shown.
   bool ProfileSwitchPromoHasBeenShown() {
-    feature_engagement::Tracker* tracker =
+    return user_education::test::WaitForStartupPromo(
         feature_engagement::TrackerFactory::GetForBrowserContext(
-            browser()->profile());
-
-    base::RunLoop loop;
-    tracker->AddOnInitializedCallback(
-        base::BindLambdaForTesting([&loop](bool success) {
-          DCHECK(success);
-          loop.Quit();
-        }));
-    loop.Run();
-
-    EXPECT_TRUE(tracker->IsInitialized());
-    return tracker->GetTriggerState(
-               feature_engagement::kIPHProfileSwitchFeature) ==
-           feature_engagement::Tracker::TriggerState::HAS_BEEN_DISPLAYED;
+            browser()->profile()),
+        feature_engagement::kIPHProfileSwitchFeature);
   }
 
   void UpdateChromePolicy(const policy::PolicyMap& policy) {

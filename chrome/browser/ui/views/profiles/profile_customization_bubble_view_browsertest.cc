@@ -28,6 +28,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/feature_engagement/test/test_tracker.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/user_education/test/feature_promo_test_util.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -121,15 +122,7 @@ IN_PROC_BROWSER_TEST_F(ProfileCustomizationBubbleBrowserTest, IPH) {
   bubble->OnCompletionButtonClicked(
       ProfileCustomizationHandler::CustomizationResult::kDone);
 
-  base::RunLoop loop;
-  tracker->AddOnInitializedCallback(
-      base::BindLambdaForTesting([&loop](bool success) {
-        DCHECK(success);
-        loop.Quit();
-      }));
-  loop.Run();
-
-  ASSERT_TRUE(tracker->IsInitialized());
+  ASSERT_TRUE(user_education::test::WaitForFeatureEngagementReady(tracker));
   EXPECT_EQ(
       tracker->GetTriggerState(feature_engagement::kIPHProfileSwitchFeature),
       feature_engagement::Tracker::TriggerState::HAS_BEEN_DISPLAYED);
@@ -162,15 +155,7 @@ IN_PROC_BROWSER_TEST_F(ProfileCustomizationDialogBrowserTest, IPH) {
   ASSERT_TRUE(
       login_ui_test_utils::CompleteProfileCustomizationDialog(browser()));
 
-  base::RunLoop loop;
-  tracker->AddOnInitializedCallback(
-      base::BindLambdaForTesting([&loop](bool success) {
-        DCHECK(success);
-        loop.Quit();
-      }));
-  loop.Run();
-
-  ASSERT_TRUE(tracker->IsInitialized());
+  ASSERT_TRUE(user_education::test::WaitForFeatureEngagementReady(tracker));
   EXPECT_EQ(
       tracker->GetTriggerState(feature_engagement::kIPHProfileSwitchFeature),
       feature_engagement::Tracker::TriggerState::HAS_BEEN_DISPLAYED);

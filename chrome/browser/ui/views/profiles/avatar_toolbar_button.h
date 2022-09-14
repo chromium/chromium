@@ -92,11 +92,6 @@ class AvatarToolbarButton : public ToolbarButton,
 
   void SetInsets();
 
-  // Attempts to show the in-product help for profile switching. This function
-  // should only be called after the backend is initialized. Otherwise prefer
-  // calling MaybeShowProfileSwitchIPH().
-  void MaybeShowProfileSwitchIPHInitialized(bool success);
-
   std::unique_ptr<AvatarToolbarButtonDelegate> delegate_;
 
   const raw_ptr<Browser> browser_;

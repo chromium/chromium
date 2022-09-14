@@ -936,9 +936,6 @@ class BrowserView : public BrowserWindow,
   // Called when ui::TouchUiController changes the current touch mode.
   void TouchModeChanged();
 
-  // Called when the in-product help backend is initialized.
-  void OnFeatureEngagementTrackerInitialized(bool initialized);
-
   // Attempts to show in-product help for the WebUI tab strip. Should be
   // called when the IPH backend is initialized or whenever the touch
   // mode changes.

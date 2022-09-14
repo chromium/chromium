@@ -85,6 +85,7 @@
 #include "components/sync/base/pref_names.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
+#include "components/user_education/test/feature_promo_test_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -543,22 +544,10 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
 
   // Returns true if the profile switch IPH has been shown.
   bool ProfileSwitchPromoHasBeenShown(Browser* browser) {
-    feature_engagement::Tracker* tracker =
+    return user_education::test::WaitForStartupPromo(
         feature_engagement::TrackerFactory::GetForBrowserContext(
-            browser->profile());
-
-    base::RunLoop loop;
-    tracker->AddOnInitializedCallback(
-        base::BindLambdaForTesting([&loop](bool success) {
-          DCHECK(success);
-          loop.Quit();
-        }));
-    loop.Run();
-
-    EXPECT_TRUE(tracker->IsInitialized());
-    return tracker->GetTriggerState(
-               feature_engagement::kIPHProfileSwitchFeature) ==
-           feature_engagement::Tracker::TriggerState::HAS_BEEN_DISPLAYED;
+            browser->profile()),
+        feature_engagement::kIPHProfileSwitchFeature);
   }
 
   // Simulates a click on a profile card. The profile picker must be already
