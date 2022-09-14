@@ -127,7 +127,7 @@ void GuestViewManager::AttachGuest(int embedder_process_id,
                                    int guest_instance_id,
                                    const base::Value::Dict& attach_params) {
   auto* guest_view =
-      GuestViewBase::From(embedder_process_id, guest_instance_id);
+      GuestViewBase::FromInstanceID(embedder_process_id, guest_instance_id);
   if (!guest_view)
     return;
 

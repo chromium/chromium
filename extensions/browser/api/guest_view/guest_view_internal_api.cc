@@ -87,7 +87,7 @@ ExtensionFunction::ResponseAction GuestViewInternalSetSizeFunction::Run() {
       guest_view_internal::SetSize::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
   GuestViewBase* guest =
-      GuestViewBase::From(source_process_id(), params->instance_id);
+      GuestViewBase::FromInstanceID(source_process_id(), params->instance_id);
   if (!guest)
     return RespondNow(Error(kUnknownErrorDoNotUse));
 

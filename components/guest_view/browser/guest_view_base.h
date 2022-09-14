@@ -15,6 +15,7 @@
 #include "components/guest_view/common/guest_view_constants.h"
 #include "components/zoom/zoom_observer.h"
 #include "content/public/browser/browser_plugin_guest_delegate.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -54,10 +55,15 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
                       public content::WebContentsObserver,
                       public zoom::ZoomObserver {
  public:
+  static GuestViewBase* FromInstanceID(int owner_process_id, int instance_id);
+
+  // Prefer using FromRenderFrameHost. See https://crbug.com/1362569.
   static GuestViewBase* FromWebContents(
       const content::WebContents* web_contents);
 
-  static GuestViewBase* From(int owner_process_id, int instance_id);
+  static GuestViewBase* FromRenderFrameHost(content::RenderFrameHost* rfh);
+  static GuestViewBase* FromRenderFrameHostId(
+      const content::GlobalRenderFrameHostId& rfh_id);
 
   GuestViewBase(const GuestViewBase&) = delete;
   GuestViewBase& operator=(const GuestViewBase&) = delete;
@@ -69,6 +75,8 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
       content::WebContents* web_contents);
 
   static bool IsGuest(content::WebContents* web_contents);
+  static bool IsGuest(content::RenderFrameHost* rfh);
+  static bool IsGuest(const content::GlobalRenderFrameHostId& rfh_id);
 
   // Returns the name of the derived type of this GuestView.
   virtual const char* GetViewType() const = 0;

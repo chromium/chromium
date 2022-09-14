@@ -40,11 +40,8 @@ void CallbackWrapper(base::OnceCallback<void(bool)> callback,
 void ChromeWebViewPermissionHelperDelegate::BindPluginAuthHost(
     mojo::PendingAssociatedReceiver<chrome::mojom::PluginAuthHost> receiver,
     content::RenderFrameHost* rfh) {
-  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
-  if (!web_contents)
-    return;
   auto* permission_helper =
-      extensions::WebViewPermissionHelper::FromWebContents(web_contents);
+      extensions::WebViewPermissionHelper::FromRenderFrameHost(rfh);
   if (!permission_helper)
     return;
   WebViewPermissionHelperDelegate* delegate = permission_helper->delegate();

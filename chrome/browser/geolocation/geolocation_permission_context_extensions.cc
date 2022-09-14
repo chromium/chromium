@@ -66,7 +66,7 @@ bool GeolocationPermissionContextExtensions::DecidePermission(
   GURL requesting_frame_origin = requesting_frame.DeprecatedGetOriginAsURL();
 
   extensions::WebViewPermissionHelper* web_view_permission_helper =
-      extensions::WebViewPermissionHelper::FromWebContents(web_contents);
+      extensions::WebViewPermissionHelper::FromRenderFrameHost(rfh);
   if (web_view_permission_helper) {
     web_view_permission_helper->RequestGeolocationPermission(
         requesting_frame, user_gesture,

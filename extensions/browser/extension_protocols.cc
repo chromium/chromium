@@ -1081,11 +1081,10 @@ CreateExtensionURLLoaderFactory(int render_process_id, int render_frame_id) {
   content::RenderProcessHost* process_host =
       content::RenderProcessHost::FromID(render_process_id);
   content::BrowserContext* browser_context = process_host->GetBrowserContext();
-  bool is_web_view_request =
-      WebViewGuest::FromFrameID(render_process_id, render_frame_id) != nullptr;
-
   content::RenderFrameHost* rfh =
       content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+  bool is_web_view_request = WebViewGuest::FromRenderFrameHost(rfh) != nullptr;
+
   ukm::SourceIdObj ukm_source_id = ukm::kInvalidSourceIdObj;
   if (rfh)
     ukm_source_id = ukm::SourceIdObj::FromInt64(rfh->GetPageUkmSourceId());

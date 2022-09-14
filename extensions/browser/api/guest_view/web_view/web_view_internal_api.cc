@@ -288,7 +288,7 @@ bool WebViewInternalExtensionFunction::PreRunValidation(std::string* error) {
   // TODO(780728): Remove crash key once the cause of the kill is known.
   static crash_reporter::CrashKeyString<128> name_key("webview-function");
   crash_reporter::ScopedCrashKeyString name_key_scope(&name_key, name());
-  guest_ = WebViewGuest::From(source_process_id(), instance_id);
+  guest_ = WebViewGuest::FromInstanceID(source_process_id(), instance_id);
   if (!guest_) {
     *error = "Could not find guest";
     return false;
@@ -489,7 +489,7 @@ bool WebViewInternalExecuteCodeFunction::CanExecuteScriptOnPage(
 extensions::ScriptExecutor*
 WebViewInternalExecuteCodeFunction::GetScriptExecutor(std::string* error) {
   WebViewGuest* guest =
-      WebViewGuest::From(source_process_id(), guest_instance_id_);
+      WebViewGuest::FromInstanceID(source_process_id(), guest_instance_id_);
   if (!guest)
     return nullptr;
 
@@ -508,7 +508,7 @@ bool WebViewInternalExecuteCodeFunction::LoadFileForWebUI(
     const std::string& file_src,
     WebUIURLFetcher::WebUILoadFileCallback callback) {
   WebViewGuest* guest =
-      WebViewGuest::From(source_process_id(), guest_instance_id_);
+      WebViewGuest::FromInstanceID(source_process_id(), guest_instance_id_);
   if (!guest || host_id().type != mojom::HostID::HostType::kWebUi)
     return false;
 

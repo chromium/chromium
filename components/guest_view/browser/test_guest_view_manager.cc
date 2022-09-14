@@ -186,7 +186,7 @@ void TestGuestViewManager::AttachGuest(int embedder_process_id,
 
   if (waiting_for_attach_ &&
       (waiting_for_attach_ ==
-       GuestViewBase::From(embedder_process_id, guest_instance_id))) {
+       GuestViewBase::FromInstanceID(embedder_process_id, guest_instance_id))) {
     attached_run_loop_->Quit();
     waiting_for_attach_ = nullptr;
   }

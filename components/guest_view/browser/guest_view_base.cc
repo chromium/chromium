@@ -315,8 +315,20 @@ GuestViewBase* GuestViewBase::FromWebContents(const WebContents* web_contents) {
 }
 
 // static
-GuestViewBase* GuestViewBase::From(int owner_process_id,
-                                   int guest_instance_id) {
+GuestViewBase* GuestViewBase::FromRenderFrameHost(
+    content::RenderFrameHost* rfh) {
+  return FromWebContents(content::WebContents::FromRenderFrameHost(rfh));
+}
+
+// static
+GuestViewBase* GuestViewBase::FromRenderFrameHostId(
+    const content::GlobalRenderFrameHostId& rfh_id) {
+  return FromRenderFrameHost(content::RenderFrameHost::FromID(rfh_id));
+}
+
+// static
+GuestViewBase* GuestViewBase::FromInstanceID(int owner_process_id,
+                                             int guest_instance_id) {
   auto* host = content::RenderProcessHost::FromID(owner_process_id);
   if (!host)
     return nullptr;
@@ -334,7 +346,17 @@ WebContents* GuestViewBase::GetTopLevelWebContents(WebContents* web_contents) {
 
 // static
 bool GuestViewBase::IsGuest(WebContents* web_contents) {
-  return !!GuestViewBase::FromWebContents(web_contents);
+  return !!FromWebContents(web_contents);
+}
+
+// static
+bool GuestViewBase::IsGuest(content::RenderFrameHost* rfh) {
+  return !!FromRenderFrameHost(rfh);
+}
+
+// static
+bool GuestViewBase::IsGuest(const content::GlobalRenderFrameHostId& rfh_id) {
+  return !!FromRenderFrameHostId(rfh_id);
 }
 
 bool GuestViewBase::IsAutoSizeSupported() const {
