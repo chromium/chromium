@@ -114,6 +114,14 @@ message NetworkTelemetry {
   optional int32 signal_strength_dbm = 15;
 }
 
+// Message describing the NETWORK_CONNECTION_STATE_CHANGE event.
+message NetworkConnectionStateChangeEventData {
+  // Unique identifier of the network.
+  optional string guid = 1;
+  // New connection state of the network.
+  optional NetworkConnectionState connection_state = 2;
+}
+
 // Configured networks telemetry data.
 message NetworksTelemetry {
   // List of each network telemetry.
@@ -122,6 +130,10 @@ message NetworksTelemetry {
   optional HttpsLatencyRoutineData https_latency_data = 2;
   // Observed bandwidth data for active connection
   optional BandwidthData bandwidth_data = 3;
+  // Network connection data describing the NETWORK_CONNECTION_STATE_CHANGE
+  // event.
+  optional NetworkConnectionStateChangeEventData
+      network_connection_change_event_data = 4;
 }
 
 // Security level of the thunderbolt bus.
