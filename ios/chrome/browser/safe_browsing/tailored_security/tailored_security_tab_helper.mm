@@ -90,15 +90,15 @@ void TailoredSecurityTabHelper::DidFinishNavigation(
   if (!sameDocumentNavigation) {
     UpdateFocusAndURL(true, navigation_context->GetUrl());
   }
-};
+}
 
 void TailoredSecurityTabHelper::WasShown(web::WebState* web_state) {
   UpdateFocusAndURL(true, last_url_);
-};
+}
 
 void TailoredSecurityTabHelper::WasHidden(web::WebState* web_state) {
   UpdateFocusAndURL(false, last_url_);
-};
+}
 
 void TailoredSecurityTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state->RemoveObserver(this);

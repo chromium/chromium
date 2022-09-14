@@ -41,7 +41,7 @@ namespace {
 // Mock of ImageDataFetcher class.
 class MockImageDataFetcher : public image_fetcher::ImageDataFetcher {
  public:
-  MockImageDataFetcher() : image_fetcher::ImageDataFetcher(nullptr){};
+  MockImageDataFetcher() : image_fetcher::ImageDataFetcher(nullptr) {}
 };
 
 // Mock of OmniboxPopupMediatorDelegate.

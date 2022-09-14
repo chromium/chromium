@@ -15,7 +15,7 @@ bool FakeHttpsUpgradeService::IsHttpAllowedForHost(
 
 void FakeHttpsUpgradeService::AllowHttpForHost(const std::string& host) {
   allowed_http_hosts_.insert(host);
-};
+}
 
 void FakeHttpsUpgradeService::ClearAllowlist(base::Time delete_begin,
                                              base::Time delete_end) {

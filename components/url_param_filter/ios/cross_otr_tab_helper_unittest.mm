@@ -61,9 +61,9 @@ class CrossOtrTabHelperTest
   }
 
  protected:
-  web::FakeWebState* web_state() { return web_state_; };
-  CrossOtrTabHelper* observer() { return observer_; };
-  web::FakeNavigationContext* context() { return &context_; };
+  web::FakeWebState* web_state() { return web_state_; }
+  CrossOtrTabHelper* observer() { return observer_; }
+  web::FakeNavigationContext* context() { return &context_; }
   bool IsExperimental() {
     return GetParam() == ClassificationExperimentStatus::EXPERIMENTAL;
   }

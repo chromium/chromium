@@ -74,6 +74,6 @@ void CommerceTabHelper::WebStateDestroyed(web::WebState* web_state) {
   scoped_observation_.Reset();
 }
 
-WEB_STATE_USER_DATA_KEY_IMPL(CommerceTabHelper);
+WEB_STATE_USER_DATA_KEY_IMPL(CommerceTabHelper)
 
 }  // namespace commerce

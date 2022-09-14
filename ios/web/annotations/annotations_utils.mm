@@ -118,7 +118,7 @@ base::Value::Dict ConvertMatchToAnnotation(NSString* source,
   dict.Set(kAnnotationsTypeKey, base::Value(base::SysNSStringToUTF8(type)));
   dict.Set(kAnnotationsDataKey, base::Value(base::SysNSStringToUTF8(data)));
   return dict;
-};
+}
 
 }  // namespace annotations
 }  // namespace web

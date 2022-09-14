@@ -62,7 +62,7 @@ OptimizationGuideInternalsUI::OptimizationGuideInternalsUI(
 OptimizationGuideInternalsUI::~OptimizationGuideInternalsUI() {
   web_ui()->GetWebState()->GetInterfaceBinderForMainFrame()->RemoveInterface(
       "optimization_guide_internals.mojom.PageHandlerFactory");
-};
+}
 
 void OptimizationGuideInternalsUI::BindInterface(
     mojo::PendingReceiver<

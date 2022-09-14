@@ -17,7 +17,7 @@
 
 namespace {
 NSString* const kMessageHandlerCommandName = @"messageHandlerCommand";
-};
+}
 
 namespace ios_web_view {
 

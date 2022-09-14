@@ -1681,7 +1681,7 @@ config("chromium_code") {
     }
 
     # TODO(https://crbug.com/1355871): Enable on more platforms.
-    if (!is_ios && !is_chromecast) {
+    if (!is_chromecast) {
       cflags += [ "-Wextra-semi" ]
     }
   }

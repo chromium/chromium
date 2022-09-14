@@ -27,7 +27,7 @@ bool WebViewPasswordFeatureManager::
     AreRequirementsForAutomatedPasswordChangeFulfilled() const {
   // This is only a stub while APC is not implemented on iOS.
   return false;
-};
+}
 
 bool WebViewPasswordFeatureManager::IsOptedInForAccountStorage() const {
   // Although ios/web_view will only write to the account store, this should

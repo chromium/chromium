@@ -45,7 +45,7 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService() {
   return prefs;
 }
 
-};  // anonymous namespace
+}  // anonymous namespace
 
 class PrivacySafeBrowsingMediatorTest : public PlatformTest {
  public:
