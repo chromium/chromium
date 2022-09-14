@@ -5312,16 +5312,6 @@ const char kDeprecateAssistantStylusFeaturesDescription[] =
     "Deprecates the stylus features associated with the Assistant \"what's on "
     "my screen\" feature which is already deprecated.";
 
-const char kDisableQuickAnswersV2TranslationName[] =
-    "Disable Quick Answers Translation";
-const char kDisableQuickAnswersV2TranslationDescription[] =
-    "Disable translation services of the Quick Answers.";
-
-const char kQuickAnswersForMoreLocalesName[] =
-    "Enable Quick Answers for more locales";
-const char kQuickAnswersForMoreLocalesDescription[] =
-    "Enable Quick Answers for more locales.";
-
 const char kEapGtcWifiAuthenticationName[] = "EAP-GTC WiFi Authentication";
 const char kEapGtcWifiAuthenticationDescription[] =
     "Allows configuration of WiFi networks using EAP-GTC authentication";
@@ -6281,6 +6271,16 @@ const char kOneGroupPerRendererName[] =
     "Use one cgroup for each foreground renderer";
 const char kOneGroupPerRendererDescription[] =
     "Places each Chrome foreground renderer into its own cgroup";
+
+const char kDisableQuickAnswersV2TranslationName[] =
+    "Disable Quick Answers Translation";
+const char kDisableQuickAnswersV2TranslationDescription[] =
+    "Disable translation services of the Quick Answers.";
+
+const char kQuickAnswersForMoreLocalesName[] =
+    "Enable Quick Answers for more locales";
+const char kQuickAnswersForMoreLocalesDescription[] =
+    "Enable Quick Answers for more locales.";
 
 const char kSyncChromeOSExplicitPassphraseSharingName[] =
     "Sync passphrase sharing";

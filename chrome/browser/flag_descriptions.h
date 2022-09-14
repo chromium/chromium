@@ -3025,12 +3025,6 @@ extern const char kEnableZramWritebackDescription[];
 extern const char kDeprecateAssistantStylusFeaturesName[];
 extern const char kDeprecateAssistantStylusFeaturesDescription[];
 
-extern const char kDisableQuickAnswersV2TranslationName[];
-extern const char kDisableQuickAnswersV2TranslationDescription[];
-
-extern const char kQuickAnswersForMoreLocalesName[];
-extern const char kQuickAnswersForMoreLocalesDescription[];
-
 extern const char kEapGtcWifiAuthenticationName[];
 extern const char kEapGtcWifiAuthenticationDescription[];
 
@@ -3598,6 +3592,12 @@ extern const char kMessagesPreinstallDescription[];
 
 extern const char kOneGroupPerRendererName[];
 extern const char kOneGroupPerRendererDescription[];
+
+extern const char kDisableQuickAnswersV2TranslationName[];
+extern const char kDisableQuickAnswersV2TranslationDescription[];
+
+extern const char kQuickAnswersForMoreLocalesName[];
+extern const char kQuickAnswersForMoreLocalesDescription[];
 
 extern const char kSyncChromeOSExplicitPassphraseSharingName[];
 extern const char kSyncChromeOSExplicitPassphraseSharingDescription[];

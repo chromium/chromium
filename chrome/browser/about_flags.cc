@@ -6396,17 +6396,21 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDeprecateAssistantStylusFeaturesName,
      flag_descriptions::kDeprecateAssistantStylusFeaturesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kDeprecateAssistantStylusFeatures)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS)
     {"disable-quick-answers-v2-translation",
      flag_descriptions::kDisableQuickAnswersV2TranslationName,
-     flag_descriptions::kDisableQuickAnswersV2TranslationDescription, kOsCrOS,
+     flag_descriptions::kDisableQuickAnswersV2TranslationDescription,
+     kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(chromeos::features::kDisableQuickAnswersV2Translation)},
 
     {"quick-answers-for-more-locales",
      flag_descriptions::kQuickAnswersForMoreLocalesName,
-     flag_descriptions::kQuickAnswersForMoreLocalesDescription, kOsCrOS,
+     flag_descriptions::kQuickAnswersForMoreLocalesDescription,
+     kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(chromeos::features::kQuickAnswersForMoreLocales)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
     {"ntp-tiles-title-wrap-around",
