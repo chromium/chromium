@@ -874,81 +874,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Memory.Experimental.OomIntervention.ReducedBlinkUsageAfter10secs2"
-    units="MB" expires_after="2019-7-31">
-  <owner>yuzus@chromium.org</owner>
-  <owner>keishi@chromium.org</owner>
-  <summary>
-    Reduced amount of blink usage after 10 seconds of intervention. This reports
-    positive numbers when reduced.
-  </summary>
-</histogram>
-
-<histogram
-    name="Memory.Experimental.OomIntervention.ReducedBlinkUsageAfter20secs2"
-    units="MB" expires_after="2019-7-31">
-  <owner>yuzus@chromium.org</owner>
-  <owner>keishi@chromium.org</owner>
-  <summary>
-    Reduced amount of blink usage after 20 seconds of intervention. This reports
-    positive numbers when reduced.
-  </summary>
-</histogram>
-
-<histogram
-    name="Memory.Experimental.OomIntervention.ReducedBlinkUsageAfter30secs2"
-    units="MB" expires_after="2019-7-31">
-  <owner>yuzus@chromium.org</owner>
-  <owner>keishi@chromium.org</owner>
-  <summary>
-    Reduced amount of blink usage after 30 seconds of intervention. This reports
-    positive numbers when reduced.
-  </summary>
-</histogram>
-
-<histogram
-    name="Memory.Experimental.OomIntervention.ReducedRendererPMFAfter10secs2"
-    units="MB" expires_after="2019-7-31">
-  <owner>yuzus@chromium.org</owner>
-  <owner>keishi@chromium.org</owner>
-  <summary>
-    Reduced amount of renderer pmf after 10 seconds of intervention. This
-    reports positive numbers when reduced.
-  </summary>
-</histogram>
-
-<histogram
-    name="Memory.Experimental.OomIntervention.ReducedRendererPMFAfter20secs2"
-    units="MB" expires_after="2019-7-31">
-  <owner>yuzus@chromium.org</owner>
-  <owner>keishi@chromium.org</owner>
-  <summary>
-    Reduced amount of renderer pmf after 20 seconds of intervention. This
-    reports positive numbers when reduced.
-  </summary>
-</histogram>
-
-<histogram
-    name="Memory.Experimental.OomIntervention.ReducedRendererPMFAfter30secs2"
-    units="MB" expires_after="2019-7-31">
-  <owner>yuzus@chromium.org</owner>
-  <owner>keishi@chromium.org</owner>
-  <summary>
-    Reduced amount of renderer pmf after 30 seconds of intervention. This
-    reports positive numbers when reduced.
-  </summary>
-</histogram>
-
-<histogram name="Memory.Experimental.OomIntervention.RendererBlinkUsage"
-    units="MB" expires_after="M85">
-  <owner>yuzus@chromium.org</owner>
-  <summary>
-    The renderer process's memory usage reported every second when OOM
-    intervention is enabled.
-  </summary>
-</histogram>
-
 <histogram name="Memory.Experimental.OomIntervention.RendererBlinkUsageAtOOM"
     units="MB" expires_after="M77">
   <owner>ssid@chromium.org</owner>
@@ -956,16 +881,6 @@ chromium-metrics-reviews@google.com.
     The renderer process' Blink memory usage, as sum of V8, PartitionAlloc and
     BlinkGC allocations, when a foreground OOM occurs. This was last recorded
     metric by renderer a few seconds before getting killed.
-  </summary>
-</histogram>
-
-<histogram
-    name="Memory.Experimental.OomIntervention.RendererPrivateMemoryFootprint"
-    units="MB" expires_after="2020-06-07">
-  <owner>yuzus@chromium.org</owner>
-  <summary>
-    The renderer process's PMF size reported every second when OOM intervention
-    is enabled.
   </summary>
 </histogram>
 
@@ -978,15 +893,6 @@ chromium-metrics-reviews@google.com.
     The renderer process' private memory footprint when a foreground OOM occurs.
     This was last recorded metric by renderer a few seconds before getting
     killed.
-  </summary>
-</histogram>
-
-<histogram name="Memory.Experimental.OomIntervention.RendererSwapFootPrint"
-    units="MB" expires_after="M85">
-  <owner>yuzus@chromium.org</owner>
-  <summary>
-    The renderer process's swap size reported every second when OOM intervention
-    is enabled.
   </summary>
 </histogram>
 
@@ -1036,15 +942,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.Experimental.OomIntervention.RendererVMSize" units="MB"
-    expires_after="M85">
-  <owner>yuzus@chromium.org</owner>
-  <summary>
-    The renderer process's virtual memory usage reported every second when OOM
-    intervention is enabled.
-  </summary>
-</histogram>
-
 <histogram name="Memory.Experimental.OomIntervention.RendererVmSizeAtOOMLarge"
     units="MB" expires_after="M85">
   <owner>ssid@chromium.org</owner>
@@ -1054,34 +951,6 @@ chromium-metrics-reviews@google.com.
     This was last recorded metric by renderer a few seconds before getting
     killed.
   </summary>
-</histogram>
-
-<histogram name="Memory.Experimental.OomIntervention.V8UsageAfter10secs"
-    units="MB" expires_after="M85">
-  <owner>keishi@chromium.org</owner>
-  <owner>yuzus@chromium.org</owner>
-  <summary>V8 memory usage 10 seconds after intervention.</summary>
-</histogram>
-
-<histogram name="Memory.Experimental.OomIntervention.V8UsageAfter20secs"
-    units="MB" expires_after="M85">
-  <owner>keishi@chromium.org</owner>
-  <owner>yuzus@chromium.org</owner>
-  <summary>V8 memory usage 20 seconds after intervention.</summary>
-</histogram>
-
-<histogram name="Memory.Experimental.OomIntervention.V8UsageAfter30secs"
-    units="MB" expires_after="2020-02-02">
-  <owner>keishi@chromium.org</owner>
-  <owner>yuzus@chromium.org</owner>
-  <summary>V8 memory usage 30 seconds after intervention.</summary>
-</histogram>
-
-<histogram name="Memory.Experimental.OomIntervention.V8UsageBefore" units="MB"
-    expires_after="M85">
-  <owner>keishi@chromium.org</owner>
-  <owner>yuzus@chromium.org</owner>
-  <summary>V8 memory usage right before intervention.</summary>
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Renderer" units="MB"
