@@ -828,9 +828,50 @@ message SequenceManagerTask {
   optional Priority priority = 1;
 }
 
+message AndroidToolbar {
+  enum BlockCaptureReason {
+    BLOCKED_UNKNOWN = 0;
+    BLOCKED_TOOLBAR_OR_RESULT_NULL = 1;
+    BLOCKED_VIEW_NOT_DIRTY = 2;
+    BLOCKED_SNAPSHOT_SAME = 3;
+    BLOCKED_URL_BAR_HAS_FOCUS = 4;
+    BLOCKED_URL_BAR_FOCUS_IN_PROGRESS = 5;
+    BLOCKED_OPTIONAL_BUTTON_ANIMATION_IN_PROGRESS = 6;
+    BLOCKED_STATUS_ICON_ANIMATION_IN_PROGRESS = 7;
+    BLOCKED_SCROLL_ABLATION = 8;
+    BLOCKED_BROWSER_CONTROLS_LOCKED = 9;
+    // TODO(https://crbug.com/1324678): SCROLL_IN_PROGRESS.
+    // TODO(https://crbug.com/1324678): NATIVE_PAGE.
+  }
+  enum AllowCaptureReason {
+    ALLOWED_UNKNOWN = 0;
+    ALLOWED_FORCE_CAPTURE = 1;
+    ALLOWED_SNAPSHOT_DIFFERENCE = 2;
+  }
+  enum SnapshotDifference {
+    DIFF_NONE = 0;
+    DIFF_NULL = 1;
+    DIFF_TINT = 2;
+    DIFF_TAB_COUNT = 3;
+    DIFF_OPTIONAL_BUTTON_DATA = 4;
+    DIFF_VISUAL_STATE = 5;
+    DIFF_SECURITY_ICON = 6;
+    DIFF_SHOWING_UPDATE_BADGE = 7;
+    DIFF_PAINT_PREVIEW = 8;
+    DIFF_PROGRESS = 9;
+    DIFF_LOCATION_BAR_WIDTH = 10;
+    DIFF_URL_TEXT = 11;
+    DIFF_HOME_BUTTON_COLOR = 12;
+  }
+
+  optional BlockCaptureReason block_capture_reason = 1;
+  optional AllowCaptureReason allow_capture_reason = 2;
+  optional SnapshotDifference snapshot_difference = 3;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1041
+  // Next ID: 1042
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -918,5 +959,7 @@ message ChromeTrackEvent {
     optional ChromeSqlDiagnostics sql_diagnostics = 1039;
 
     optional SequenceManagerTask sequence_manager_task = 1040;
+
+    optional AndroidToolbar android_toolbar = 1041;
   }
 }

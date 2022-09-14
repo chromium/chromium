@@ -25,7 +25,8 @@ import java.util.Objects;
 class ToolbarSnapshotState {
     /**
      * Reasons that two snapshots are different. Treat this list as append only and keep it in sync
-     * with ToolbarSnapshotDifference in enums.xml.
+     * with ToolbarSnapshotDifference in enums.xml, as well as the proto in
+     * chrome_track_event.proto.
      **/
     @IntDef({ToolbarSnapshotDifference.NONE, ToolbarSnapshotDifference.NULL,
             ToolbarSnapshotDifference.TINT, ToolbarSnapshotDifference.TAB_COUNT,

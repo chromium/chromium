@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotState.ToolbarSnapshotDifference;
 
@@ -21,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 class CaptureReadinessResult {
     /**
      * Reasons to allow toolbar captures. Treat this list as append only and keep it in sync with
-     * TopToolbarAllowCaptureReason in enums.xml.
+     * TopToolbarAllowCaptureReason in enums.xml, as well as the proto in chrome_track_event.proto.
      **/
     @IntDef({TopToolbarAllowCaptureReason.UNKNOWN, TopToolbarAllowCaptureReason.FORCE_CAPTURE,
             TopToolbarAllowCaptureReason.SNAPSHOT_DIFFERENCE,
@@ -36,7 +37,7 @@ class CaptureReadinessResult {
 
     /**
      * Reasons to block toolbar captures. Treat this list as append only and keep it in sync with
-     * TopToolbarBlockCaptureReason in enums.xml.
+     * TopToolbarBlockCaptureReason in enums.xml, as well as the proto in chrome_track_event.proto.
      **/
     @IntDef({TopToolbarBlockCaptureReason.UNKNOWN,
             TopToolbarBlockCaptureReason.TOOLBAR_OR_RESULT_NULL,
@@ -87,28 +88,42 @@ class CaptureReadinessResult {
                 TopToolbarBlockCaptureReason.UNKNOWN, ToolbarSnapshotDifference.NONE);
     }
 
-    public static void logAllowCaptureReason(@TopToolbarAllowCaptureReason int reason) {
+    private static void logAllowCaptureReason(@TopToolbarAllowCaptureReason int reason) {
         RecordHistogram.recordEnumeratedHistogram("Android.TopToolbar.AllowCaptureReason", reason,
                 TopToolbarAllowCaptureReason.NUM_ENTRIES);
     }
 
-    public static void logBlockCaptureReason(@TopToolbarBlockCaptureReason int reason) {
+    private static void logBlockCaptureReason(@TopToolbarBlockCaptureReason int reason) {
         RecordHistogram.recordEnumeratedHistogram("Android.TopToolbar.BlockCaptureReason", reason,
                 TopToolbarBlockCaptureReason.NUM_ENTRIES);
     }
 
     public static void logCaptureReasonFromResult(CaptureReadinessResult result) {
+        // The Java -> C++ layer makes passing enums tricky so we store the integer value and then
+        // convert it to a proto enum on the C++ side. If we pass a -1 we will not set that
+        // corresponding field.
+        int blockReason = -1;
+        int allowReason = -1;
+        int snapshotDiff = -1;
+
+        // Log the reason to UMA and update our trace event values.
         if (result == null) {
-            logBlockCaptureReason(TopToolbarBlockCaptureReason.TOOLBAR_OR_RESULT_NULL);
+            blockReason = TopToolbarBlockCaptureReason.TOOLBAR_OR_RESULT_NULL;
+            logBlockCaptureReason(blockReason);
         } else if (result.isReady) {
-            logAllowCaptureReason(result.allowReason);
+            allowReason = result.allowReason;
+            logAllowCaptureReason(allowReason);
             if (result.allowReason == TopToolbarAllowCaptureReason.SNAPSHOT_DIFFERENCE) {
+                snapshotDiff = result.snapshotDifference;
                 RecordHistogram.recordEnumeratedHistogram("Android.TopToolbar.SnapshotDifference",
-                        result.snapshotDifference, ToolbarSnapshotDifference.NUM_ENTRIES);
+                        snapshotDiff, ToolbarSnapshotDifference.NUM_ENTRIES);
             }
         } else {
-            logBlockCaptureReason(result.blockReason);
+            blockReason = result.blockReason;
+            logBlockCaptureReason(blockReason);
         }
+        // Emit our trace event that will tell use why this capture occurred.
+        TraceEvent.instantAndroidToolbar(blockReason, allowReason, snapshotDiff);
     }
 
     public final boolean isReady;

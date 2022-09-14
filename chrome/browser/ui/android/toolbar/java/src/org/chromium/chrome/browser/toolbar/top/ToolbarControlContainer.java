@@ -255,8 +255,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
         @Override
         public boolean isDirty() {
             if (!super.isDirty()) {
-                CaptureReadinessResult.logBlockCaptureReason(
-                        TopToolbarBlockCaptureReason.VIEW_NOT_DIRTY);
+                CaptureReadinessResult.logCaptureReasonFromResult(CaptureReadinessResult.notReady(
+                        TopToolbarBlockCaptureReason.VIEW_NOT_DIRTY));
                 return false;
             }
 
@@ -271,8 +271,9 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
                 boolean isNativePage = tab == null || tab.isNativePage();
                 if (!isNativePage && mConstraintsObserver.areControlsLocked()) {
                     mConstraintsObserver.scheduleRequestResourceOnUnlock();
-                    CaptureReadinessResult.logBlockCaptureReason(
-                            TopToolbarBlockCaptureReason.BROWSER_CONTROLS_LOCKED);
+                    CaptureReadinessResult.logCaptureReasonFromResult(
+                            CaptureReadinessResult.notReady(
+                                    TopToolbarBlockCaptureReason.BROWSER_CONTROLS_LOCKED));
                     return false;
                 }
             }

@@ -237,6 +237,31 @@ static void JNI_TraceEvent_InstantAndroidIPC(JNIEnv* env,
       });
 }
 
+static void JNI_TraceEvent_InstantAndroidToolbar(JNIEnv* env,
+                                                 jint block_reason,
+                                                 jint allow_reason,
+                                                 jint snapshot_diff) {
+  using AndroidToolbar = perfetto::protos::pbzero::AndroidToolbar;
+  TRACE_EVENT_INSTANT(
+      internal::kJavaTraceCategory, "AndroidToolbar",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* android_toolbar = event->set_android_toolbar();
+        if (block_reason >= 0) {
+          android_toolbar->set_block_capture_reason(
+              static_cast<AndroidToolbar::BlockCaptureReason>(block_reason));
+        }
+        if (allow_reason >= 0) {
+          android_toolbar->set_allow_capture_reason(
+              static_cast<AndroidToolbar::AllowCaptureReason>(allow_reason));
+        }
+        if (snapshot_diff >= 0) {
+          android_toolbar->set_snapshot_difference(
+              static_cast<AndroidToolbar::SnapshotDifference>(snapshot_diff));
+        }
+      });
+}
+
 static void JNI_TraceEvent_Begin(JNIEnv* env,
                                  const JavaParamRef<jstring>& jname,
                                  const JavaParamRef<jstring>& jarg) {
