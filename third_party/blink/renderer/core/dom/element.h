@@ -623,13 +623,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // Only called by the parser immediately after element construction.
   void ParserSetAttributes(const Vector<Attribute, kAttributePrealloc>&);
-  void ParserSetAttributes(ElementData* element_data);
 
   // Remove attributes that might introduce scripting from the vector leaving
   // the element unchanged.
   void StripScriptingAttributes(Vector<Attribute, kAttributePrealloc>&) const;
-  ShareableElementData* StripScriptingAttributes(
-      ShareableElementData* element_data) const;
 
   bool SharesSameElementData(const Element& other) const {
     return GetElementData() == other.GetElementData();

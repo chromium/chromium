@@ -64,26 +64,10 @@ ElementDataCache::CachedShareableElementDataWithAttributes(
   return it->value.Get();
 }
 
-ShareableElementData* ElementDataCache::GetCachedDataByString(
-    const AtomicString& string) {
-  auto it = shareable_element_data_cache_by_string_.find(string);
-  return it == shareable_element_data_cache_by_string_.end() ? nullptr
-                                                             : it->value;
-}
-
-void ElementDataCache::AddDataForString(const AtomicString& string,
-                                        ShareableElementData& data) {
-  // This function should only be called if the key wasn't added.
-  DCHECK(!GetCachedDataByString(string));
-
-  shareable_element_data_cache_by_string_.insert(string, &data);
-}
-
 ElementDataCache::ElementDataCache() = default;
 
 void ElementDataCache::Trace(Visitor* visitor) const {
   visitor->Trace(shareable_element_data_cache_);
-  visitor->Trace(shareable_element_data_cache_by_string_);
 }
 
 }  // namespace blink

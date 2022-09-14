@@ -34,16 +34,22 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
-#include "third_party/blink/renderer/core/dom/element_data.h"
-#include "third_party/blink/renderer/core/dom/element_data_cache.h"
-#include "third_party/blink/renderer/core/html/parser/html_attribute_buffer.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
 #include "third_party/blink/renderer/core/html_element_lookup_trie.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
+// TODO(https://crbug.com/1338583): enable on android.
+#if !BUILDFLAG(IS_ANDROID)
+#include "third_party/blink/renderer/core/html_element_attribute_name_lookup_trie.h"  // nogncheck
+#endif
+
 namespace blink {
+
+// Controls whether attribute name lookup uses LookupHTMLAttributeName().
+CORE_EXPORT extern bool g_use_html_attribute_name_lookup;
 
 class AtomicHTMLToken;
 
@@ -153,24 +159,21 @@ class CORE_EXPORT AtomicHTMLToken {
     return self_closing_;
   }
 
-  bool HasDuplicateAttribute() const {
-    return element_data_ && element_data_->has_duplicate_attribute_;
+  bool HasDuplicateAttribute() const { return duplicate_attribute_; }
+
+  Attribute* GetAttributeItem(const QualifiedName& attribute_name) {
+    DCHECK(UsesAttributes());
+    return FindAttributeInVector(attributes_, attribute_name);
   }
 
-  const Attribute* GetAttributeItem(const QualifiedName& attribute_name) {
+  Vector<Attribute, kAttributePrealloc>& Attributes() {
     DCHECK(UsesAttributes());
-    return element_data_ ? element_data_->Attributes().Find(attribute_name)
-                         : nullptr;
+    return attributes_;
   }
 
-  void SetElementData(ShareableElementData* data) {
+  const Vector<Attribute, kAttributePrealloc>& Attributes() const {
     DCHECK(UsesAttributes());
-    element_data_ = data;
-  }
-
-  ShareableElementData* GetElementData() {
-    DCHECK(UsesAttributes());
-    return element_data_;
+    return attributes_;
   }
 
   const String& Characters() const {
@@ -195,7 +198,7 @@ class CORE_EXPORT AtomicHTMLToken {
     return doctype_data_->system_identifier_;
   }
 
-  AtomicHTMLToken(HTMLToken& token, ElementDataCache* cache)
+  explicit AtomicHTMLToken(HTMLToken& token)
       : type_(token.GetType()), name_(HTMLTokenNameFromToken(token)) {
     switch (type_) {
       case HTMLToken::kUninitialized:
@@ -209,36 +212,17 @@ class CORE_EXPORT AtomicHTMLToken {
       case HTMLToken::kStartTag:
       case HTMLToken::kEndTag: {
         self_closing_ = token.SelfClosing();
-        const auto& attribute_buffer = token.AttributeBuffer();
-        const wtf_size_t num_attributes = attribute_buffer.NumberOfAttributes();
-
-        if (!num_attributes)
-          return;
-
-        absl::optional<AtomicString> all_attributes_and_values_string;
-        if (cache) {
-          all_attributes_and_values_string =
-              attribute_buffer.StringWithAllAttributesAndValues();
-          element_data_ =
-              cache->GetCachedDataByString(*all_attributes_and_values_string);
-          if (element_data_)
-            return;
-        }
+        const HTMLToken::AttributeList& attributes = token.Attributes();
 
         // This limit is set fairly arbitrarily; the main point is to avoid
         // DDoS opportunities or similar with O(n²) behavior by setting lots
         // of attributes.
         const int kMinimumNumAttributesToDedupWithHash = 10;
-        if (num_attributes >= kMinimumNumAttributesToDedupWithHash) {
-          CreateElementDataFromAttributeBuffer</*DedupWithHash=*/true>(
-              attribute_buffer, num_attributes);
-        } else if (num_attributes) {
-          CreateElementDataFromAttributeBuffer</*DedupWithHash=*/false>(
-              attribute_buffer, num_attributes);
-        }
-        if (cache) {
-          cache->AddDataForString(*all_attributes_and_values_string,
-                                  *element_data_);
+
+        if (attributes.size() >= kMinimumNumAttributesToDedupWithHash) {
+          InitializeAttributes</*DedupWithHash=*/true>(token.Attributes());
+        } else if (attributes.size()) {
+          InitializeAttributes</*DedupWithHash=*/false>(token.Attributes());
         }
         break;
       }
@@ -252,17 +236,20 @@ class CORE_EXPORT AtomicHTMLToken {
     }
   }
 
+  explicit AtomicHTMLToken(HTMLToken::TokenType type)
+      : type_(type), name_(html_names::HTMLTag::kUnknown) {}
+
   AtomicHTMLToken(HTMLToken::TokenType type,
                   html_names::HTMLTag tag,
-                  ShareableElementData* element_data = nullptr)
-      : type_(type), name_(tag), element_data_(element_data) {
+                  const Vector<Attribute>& attributes = Vector<Attribute>())
+      : type_(type), name_(tag), attributes_(attributes) {
     DCHECK(UsesName());
   }
 
   AtomicHTMLToken(HTMLToken::TokenType type,
                   const HTMLTokenName& name,
-                  ShareableElementData* element_data = nullptr)
-      : type_(type), name_(name), element_data_(element_data) {
+                  const Vector<Attribute>& attributes = Vector<Attribute>())
+      : type_(type), name_(name), attributes_(attributes) {
     DCHECK(UsesName());
   }
 
@@ -294,8 +281,7 @@ class CORE_EXPORT AtomicHTMLToken {
     }
   }
 
-  // Creates and sets `element_data_`. If `attribute_buffer` contains duplicate
-  // attributes only the first value is kept.
+  // Sets up and deduplicates attributes.
   //
   // We can deduplicate attributes in two ways; using a hash table
   // (DedupWithHash=true) or by simple linear scanning (DedupWithHash=false).
@@ -304,9 +290,8 @@ class CORE_EXPORT AtomicHTMLToken {
   // complexity is higher. Thus, we use the hash table only if the caller
   // expects a lot of attributes.
   template <bool DedupWithHash>
-  ALWAYS_INLINE void CreateElementDataFromAttributeBuffer(
-      const HTMLAttributeBuffer& attribute_buffer,
-      wtf_size_t num_attributes);
+  ALWAYS_INLINE void InitializeAttributes(
+      const HTMLToken::AttributeList& attributes);
 
   bool UsesName() const;
 
@@ -326,49 +311,69 @@ class CORE_EXPORT AtomicHTMLToken {
   // For StartTag and EndTag
   bool self_closing_ = false;
 
-  ShareableElementData* element_data_ = nullptr;
+  bool duplicate_attribute_ = false;
+
+  Vector<Attribute, kAttributePrealloc> attributes_;
 };
 
 template <bool DedupWithHash>
-void AtomicHTMLToken::CreateElementDataFromAttributeBuffer(
-    const HTMLAttributeBuffer& attribute_buffer,
-    wtf_size_t num_attributes) {
+void AtomicHTMLToken::InitializeAttributes(
+    const HTMLToken::AttributeList& attributes) {
+  wtf_size_t size = attributes.size();
+
   // Track which attributes have already been inserted to avoid N^2
   // behavior with repeated linear searches when populating `attributes_`.
   std::conditional_t<DedupWithHash, HashSet<AtomicString>, int>
       added_attributes;
   if constexpr (DedupWithHash) {
-    added_attributes.ReserveCapacityForSize(num_attributes);
+    added_attributes.ReserveCapacityForSize(size);
   }
 
-  // This is only called once, so `element_data_` should be empty.
-  DCHECK(!element_data_);
-  Vector<Attribute, kAttributePrealloc> attributes;
-  attributes.ReserveInitialCapacity(num_attributes);
-  bool duplicate_attribute = false;
-  for (HTMLAttributeBufferIterator iter(attribute_buffer); !iter.AtEnd();
-       iter.Next()) {
-    if (iter.IsNameEmpty())
+  // This is only called once, so `attributes_` should be empty.
+  DCHECK(attributes_.IsEmpty());
+  attributes_.ReserveInitialCapacity(size);
+  for (const auto& attribute : attributes) {
+    if (attribute.NameIsEmpty())
       continue;
 
-    QualifiedName name = iter.NameAsQualifiedName();
+#if DCHECK_IS_ON()
+    attribute.NameRange().CheckValid();
+    attribute.ValueRange().CheckValid();
+#endif
+
+    QualifiedName name = g_null_name;
+#if !BUILDFLAG(IS_ANDROID)
+    if (g_use_html_attribute_name_lookup) {
+      name = LookupHTMLAttributeName(attribute.NameBuffer().data(),
+                                     attribute.NameBuffer().size());
+    }
+#endif
+    if (name == g_null_name) {
+      name = QualifiedName(g_null_atom, attribute.GetName(), g_null_atom);
+    }
+
     if constexpr (DedupWithHash) {
       if (!added_attributes.insert(name.LocalName()).is_new_entry) {
-        duplicate_attribute = true;
+        duplicate_attribute_ = true;
         continue;
       }
     } else {
-      if (base::Contains(attributes, name.LocalName(), &Attribute::LocalName)) {
-        duplicate_attribute = true;
+      if (base::Contains(attributes_, name.LocalName(),
+                         &Attribute::LocalName)) {
+        duplicate_attribute_ = true;
         continue;
       }
     }
 
-    attributes.UncheckedAppend(
-        Attribute(std::move(name), iter.ValueAsAtomicString()));
+    // The string pointer in |value| is null for attributes with no values, but
+    // the null atom is used to represent absence of attributes; attributes with
+    // no values have the value set to an empty atom instead.
+    AtomicString value(attribute.GetValue());
+    if (value.IsNull()) {
+      value = g_empty_atom;
+    }
+    attributes_.UncheckedAppend(Attribute(std::move(name), std::move(value)));
   }
-  element_data_ = ShareableElementData::CreateWithAttributes(
-      attributes, duplicate_attribute);
 }
 
 }  // namespace blink

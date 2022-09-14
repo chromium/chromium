@@ -185,10 +185,9 @@ void HTMLViewSourceDocument::ProcessTagToken(const String& source,
   AtomicString tag_name = token.GetName().AsAtomicString();
 
   unsigned index = 0;
-  HTMLToken::AttributeList attributes = token.CreateAttributeList();
-  auto* iter = attributes.begin();
+  HTMLToken::AttributeList::const_iterator iter = token.Attributes().begin();
   while (index < source.length()) {
-    if (iter == attributes.end()) {
+    if (iter == token.Attributes().end()) {
       // We want to show the remaining characters in the token.
       index = AddRange(source, index, source.length(), g_empty_atom);
       DCHECK_EQ(index, source.length());

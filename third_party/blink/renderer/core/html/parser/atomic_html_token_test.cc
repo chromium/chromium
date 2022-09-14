@@ -22,7 +22,7 @@ TEST(AtomicHTMLTokenTest, EmptyAttributeValueFromHTMLToken) {
   token.BeginAttributeValue(8);
   token.EndAttributeValue(8);
 
-  AtomicHTMLToken atoken(token, nullptr);
+  AtomicHTMLToken atoken(token);
 
   const blink::Attribute* attribute_b = atoken.GetAttributeItem(
       QualifiedName(AtomicString(), "b", AtomicString()));

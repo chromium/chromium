@@ -70,6 +70,11 @@ class Attribute {
 
   void SetValue(const AtomicString& value) { value_ = value; }
 
+  // Note: This API is only for HTMLTreeBuilder.  It is not safe to change the
+  // name of an attribute once parseAttribute has been called as DOM
+  // elements may have placed the Attribute in a hash by name.
+  void ParserSetName(const QualifiedName& name) { name_ = name; }
+
 #if defined(COMPILER_MSVC)
   // NOTE: This constructor is not actually implemented, it's just defined so
   // MSVC will let us use a zero-length array of Attributes.

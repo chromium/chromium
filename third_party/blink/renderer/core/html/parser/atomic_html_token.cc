@@ -6,6 +6,8 @@
 
 namespace blink {
 
+bool g_use_html_attribute_name_lookup = true;
+
 bool AtomicHTMLToken::UsesName() const {
   return type_ == HTMLToken::kStartTag || type_ == HTMLToken::kEndTag ||
          type_ == HTMLToken::DOCTYPE;

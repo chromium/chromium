@@ -123,16 +123,14 @@ void ElementData::TraceAfterDispatch(blink::Visitor* visitor) const {
 }
 
 ShareableElementData::ShareableElementData(
-    const Vector<Attribute, kAttributePrealloc>& attributes,
-    bool has_duplicate_attribute)
-    : ElementData(attributes.size()),
-      has_duplicate_attribute_(has_duplicate_attribute) {
-  for (unsigned i = 0; i < NumberOfAttributes(); ++i)
+    const Vector<Attribute, kAttributePrealloc>& attributes)
+    : ElementData(attributes.size()) {
+  for (unsigned i = 0; i < bit_field_.get<ArraySize>(); ++i)
     new (&attribute_array_[i]) Attribute(attributes[i]);
 }
 
 ShareableElementData::~ShareableElementData() {
-  for (unsigned i = 0; i < NumberOfAttributes(); ++i)
+  for (unsigned i = 0; i < bit_field_.get<ArraySize>(); ++i)
     attribute_array_[i].~Attribute();
 }
 
@@ -144,17 +142,16 @@ ShareableElementData::ShareableElementData(const UniqueElementData& other)
     inline_style_ = other.inline_style_->ImmutableCopyIfNeeded();
   }
 
-  for (unsigned i = 0; i < NumberOfAttributes(); ++i)
+  for (unsigned i = 0; i < bit_field_.get<ArraySize>(); ++i)
     new (&attribute_array_[i]) Attribute(other.attribute_vector_.at(i));
 }
 
 ShareableElementData* ShareableElementData::CreateWithAttributes(
-    const Vector<Attribute, kAttributePrealloc>& attributes,
-    bool has_duplicate_attribute) {
+    const Vector<Attribute, kAttributePrealloc>& attributes) {
   return MakeGarbageCollected<ShareableElementData>(
       AdditionalBytesForShareableElementDataWithAttributeCount(
           attributes.size()),
-      attributes, has_duplicate_attribute);
+      attributes);
 }
 
 UniqueElementData::UniqueElementData() = default;

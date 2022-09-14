@@ -3306,62 +3306,31 @@ void Element::StripScriptingAttributes(
   attribute_vector.Shrink(destination);
 }
 
-ShareableElementData* Element::StripScriptingAttributes(
-    ShareableElementData* element_data) const {
-  DCHECK(element_data);
-  absl::optional<Vector<Attribute, kAttributePrealloc>> updated_attributes;
-  const AttributeCollection attributes = element_data->Attributes();
-  const unsigned num_attributes = attributes.size();
-  for (unsigned i = 0; i < num_attributes; ++i) {
-    const auto& attr = attributes[i];
-    if (IsScriptingAttribute(attr)) {
-      if (!updated_attributes) {
-        updated_attributes.emplace();
-        for (unsigned j = 0; j < i; ++j)
-          updated_attributes->push_back(attributes[j]);
-      }
-    } else if (updated_attributes) {
-      updated_attributes->push_back(attr);
-    }
-  }
-  if (!updated_attributes)
-    return element_data;
-  return updated_attributes->IsEmpty()
-             ? nullptr
-             : ShareableElementData::CreateWithAttributes(*updated_attributes);
-}
-
 void Element::ParserSetAttributes(
     const Vector<Attribute, kAttributePrealloc>& attribute_vector) {
-  ElementData* element_data = nullptr;
-  if (!attribute_vector.IsEmpty()) {
-    if (auto* cache = GetDocument().GetElementDataCache()) {
-      element_data =
-          cache->CachedShareableElementDataWithAttributes(attribute_vector);
-    } else {
-      element_data =
-          ShareableElementData::CreateWithAttributes(attribute_vector);
-    }
-  }
-
-  ParserSetAttributes(element_data);
-}
-
-void Element::ParserSetAttributes(ElementData* element_data) {
   DCHECK(!isConnected());
   DCHECK(!parentNode());
   DCHECK(!element_data_);
 
-  element_data_ = element_data;
+  if (!attribute_vector.IsEmpty()) {
+    if (GetDocument().GetElementDataCache())
+      element_data_ =
+          GetDocument()
+              .GetElementDataCache()
+              ->CachedShareableElementDataWithAttributes(attribute_vector);
+    else
+      element_data_ =
+          ShareableElementData::CreateWithAttributes(attribute_vector);
+  }
 
   ParserDidSetAttributes();
 
-  if (element_data) {
-    for (const auto& attribute : element_data->Attributes()) {
-      AttributeChanged(AttributeModificationParams(
-          attribute.GetName(), g_null_atom, attribute.Value(),
-          AttributeModificationReason::kByParser));
-    }
+  // Use attribute_vector instead of element_data_ because AttributeChanged
+  // might modify element_data_.
+  for (const auto& attribute : attribute_vector) {
+    AttributeChanged(AttributeModificationParams(
+        attribute.GetName(), g_null_atom, attribute.Value(),
+        AttributeModificationReason::kByParser));
   }
 }
 

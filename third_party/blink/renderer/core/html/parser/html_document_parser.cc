@@ -840,7 +840,6 @@ bool HTMLDocumentParser::PumpTokenizer() {
   unsigned tokens_parsed = 0;
   base::TimeDelta time_executing_script;
   base::TimeDelta time_in_next_token;
-  auto* element_data_cache = GetDocument()->GetElementDataCache();
   while (!should_yield) {
     if (task_runner_state_->ShouldProcessPreloads())
       FlushPendingPreloads();
@@ -876,7 +875,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
       budget--;
       tokens_parsed++;
     }
-    AtomicHTMLToken atomic_html_token(*token, element_data_cache);
+    AtomicHTMLToken atomic_html_token(*token);
     // Clear the HTMLToken in case ConstructTree() synchronously re-enters the
     // parser. This has to happen after creating AtomicHTMLToken as it needs
     // state in the HTMLToken.

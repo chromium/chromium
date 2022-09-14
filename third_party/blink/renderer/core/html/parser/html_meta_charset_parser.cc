@@ -44,8 +44,7 @@ HTMLMetaCharsetParser::HTMLMetaCharsetParser()
 HTMLMetaCharsetParser::~HTMLMetaCharsetParser() = default;
 
 bool HTMLMetaCharsetParser::ProcessMeta() {
-  const HTMLToken::AttributeList& token_attributes =
-      token_.CreateAttributeList();
+  const HTMLToken::AttributeList& token_attributes = token_.Attributes();
   HTMLAttributeList attributes;
   for (const HTMLToken::Attribute& token_attribute : token_attributes) {
     String attribute_name = token_attribute.NameAttemptStaticStringCreation();
