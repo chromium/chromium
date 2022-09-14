@@ -126,7 +126,7 @@
     // Specify how the flag value is updated from the base::Feature value. This
     // field is used only if base_feature is not empty.
     //
-    // * "enabeldOrOverridden"
+    // * "enabeld_or_overridden"
     // - If the base::Feature default is overridden by field trial or command
     //   line, set Blink feature to the state of the base::Feature;
     // - Otherwise if the base::Feature is enabled, enable the Blink feature.
@@ -149,8 +149,8 @@
     //   to this.
     copied_from_base_feature_if: {
       valid_type: "str",
-      valid_values: ["enabledOrOverridden", "overridden"],
-      default: "enabledOrOverridden",
+      valid_values: ["enabled_or_overridden", "overridden"],
+      default: "enabled_or_overridden",
     },
   },
 
