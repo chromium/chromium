@@ -73,6 +73,14 @@ void CustomProperty::ApplyInitial(StyleResolverState& state) const {
     return;
   }
 
+  // TODO(crbug.com/831568): The ComputedStyle of elements outside the flat
+  // tree is not guaranteed to be up-to-date. This means that the
+  // StyleInitialData may also be missing. We just disable initial values in
+  // this case, since we shouldn't really be returning a style for those
+  // elements anyway.
+  if (state.StyleRef().IsEnsuredOutsideFlatTree())
+    return;
+
   const StyleInitialData* initial_data = state.StyleRef().InitialData().get();
   DCHECK(initial_data);
   CSSVariableData* initial_variable_data = initial_data->GetVariableData(name_);
