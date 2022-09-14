@@ -18,6 +18,10 @@ extern const base::Feature kTranslateSubFrames;
 // Controls whether the TFLite-based language detection is enabled.
 extern const base::Feature kTFLiteLanguageDetectionEnabled;
 
+// Controls whether the TFLite-based language detection is computed, but ignored
+// and the CLD3 version is used instead.
+extern const base::Feature kTFLiteLanguageDetectionIgnoreEnabled;
+
 // Controls whether the Partial Translate function is available.
 extern const base::Feature kDesktopPartialTranslate;
 // The maximum number of characters allowed for a text selection in Partial
@@ -41,6 +45,10 @@ bool IsSubFrameLanguageDetectionEnabled();
 
 // Return whether TFLite-based language detection is enabled.
 bool IsTFLiteLanguageDetectionEnabled();
+
+// Return whether TFLite-based language detection is enabled, but the result is
+// ignored.
+bool IsTFLiteLanguageDetectionIgnoreEnabled();
 
 // Return the threshold used to determine if TFLite language detection model's
 // prediction is reliable.

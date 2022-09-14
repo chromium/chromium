@@ -1255,6 +1255,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"most-visited-tiles", flag_descriptions::kMostVisitedTilesName,
      flag_descriptions::kMostVisitedTilesDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(omnibox::kMostVisitedTiles)},
+    {"enable-tflite-language-detection-ignore",
+     flag_descriptions::kTFLiteLanguageDetectionIgnoreName,
+     flag_descriptions::kTFLiteLanguageDetectionIgnoreDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(translate::kTFLiteLanguageDetectionIgnoreEnabled)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -41,6 +41,9 @@ const base::Feature kTFLiteLanguageDetectionEnabled {
 #endif
 };
 
+const base::Feature kTFLiteLanguageDetectionIgnoreEnabled{
+    "TFLiteLanguageDetectionIgnoreEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kDesktopPartialTranslate{"DesktopPartialTranslate",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 const base::FeatureParam<int>
@@ -70,6 +73,10 @@ bool IsSubFrameLanguageDetectionEnabled() {
 
 bool IsTFLiteLanguageDetectionEnabled() {
   return base::FeatureList::IsEnabled(kTFLiteLanguageDetectionEnabled);
+}
+
+bool IsTFLiteLanguageDetectionIgnoreEnabled() {
+  return base::FeatureList::IsEnabled(kTFLiteLanguageDetectionIgnoreEnabled);
 }
 
 float GetTFLiteLanguageDetectionThreshold() {

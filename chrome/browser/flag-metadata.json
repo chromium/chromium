@@ -3020,6 +3020,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "enable-tflite-language-detection-ignore",
+    "owners": [ "mcrouse", "chrome-intelligence-core@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-throttle-display-none-and-visibility-hidden-cross-origin-iframes",
     "owners": [ "wjmaclean@chromium.org", "alexmos@chromium.org", "creis@chromium.org" ],
     "expiry_milestone": 110

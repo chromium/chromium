@@ -653,6 +653,11 @@ extern const char kSyncInvalidationsWalletAndOfferDescription[];
 extern const char kTFLiteLanguageDetectionName[];
 extern const char kTFLiteLanguageDetectionDescription[];
 
+// Title and description for the flag to compute both TFLite and CLD3 detection
+// and ignore TFLite one.
+extern const char kTFLiteLanguageDetectionIgnoreName[];
+extern const char kTFLiteLanguageDetectionIgnoreDescription[];
+
 // Title and description for the flag to enable the toolbar container
 // implementation.
 extern const char kToolbarContainerName[];

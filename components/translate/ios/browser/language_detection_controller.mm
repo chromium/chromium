@@ -18,6 +18,7 @@
 #include "components/prefs/pref_member.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/common/language_detection_details.h"
+#include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/translate/core/language_detection/language_detection_model.h"
 #include "components/translate/core/language_detection/language_detection_util.h"
@@ -50,11 +51,55 @@ const char kCLDModelVersion[] = "CLD3";
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class LanguageDetectionMethod {
-  kTFLiteModelUsed,
-  kTFLiteModelUnavailable,
-  kTFLiteModelDisabled,
-  kMaxValue = kTFLiteModelDisabled
+  kTFLiteModelUsed = 0,
+  kTFLiteModelUnavailable = 1,
+  kTFLiteModelDisabled = 2,
+  kTFLiteModelIgnored = 3,
+  kMaxValue = kTFLiteModelIgnored
 };
+
+enum class LanguageDetectionComparison {
+  kTFLiteModelOnly = 0,
+  kCLD3ModelOnly = 1,
+  kBothModelFailed = 2,
+  kBothModelAgree = 3,
+  kBothModelDisagree = 4,
+  kMaxValue = kBothModelDisagree
+};
+
+void ComparePageLanguageDetection(const std::string& tflite_language,
+                                  const std::string& cld3_language) {
+  bool tflite_failed = tflite_language.empty() ||
+                       tflite_language == translate::kUnknownLanguageCode;
+  bool cld3_failed =
+      cld3_language.empty() || cld3_language == translate::kUnknownLanguageCode;
+
+  if (tflite_failed) {
+    if (cld3_failed) {
+      base::UmaHistogramEnumeration(
+          "IOS.Translate.PageLoad.LanguageDetectionComparison",
+          LanguageDetectionComparison::kBothModelFailed);
+    } else {
+      base::UmaHistogramEnumeration(
+          "IOS.Translate.PageLoad.LanguageDetectionComparison",
+          LanguageDetectionComparison::kCLD3ModelOnly);
+    }
+  } else {
+    if (cld3_failed) {
+      base::UmaHistogramEnumeration(
+          "IOS.Translate.PageLoad.LanguageDetectionComparison",
+          LanguageDetectionComparison::kTFLiteModelOnly);
+    } else if (cld3_language == tflite_language) {
+      base::UmaHistogramEnumeration(
+          "IOS.Translate.PageLoad.LanguageDetectionComparison",
+          LanguageDetectionComparison::kBothModelAgree);
+    } else {
+      base::UmaHistogramEnumeration(
+          "IOS.Translate.PageLoad.LanguageDetectionComparison",
+          LanguageDetectionComparison::kBothModelDisagree);
+    }
+  }
+}
 }
 
 // Note: This should stay in sync with the constant in language_detection.js.
@@ -142,6 +187,59 @@ void LanguageDetectionController::OnTextCaptured(const base::Value& command,
       base::Milliseconds(web::kJavaScriptFunctionCallDefaultTimeout));
 }
 
+// Select the correct DeterminePageLanguage to call based on the feature flags.
+std::string LanguageDetectionController::DeterminePageLanguage(
+    const std::string& code,
+    const std::string& html_lang,
+    const std::u16string& contents,
+    std::string* model_detected_language,
+    bool* is_model_reliable,
+    float& model_reliability_score,
+    std::string* detection_model_version) {
+  if (IsTFLiteLanguageDetectionEnabled() && language_detection_model_ &&
+      language_detection_model_->IsAvailable()) {
+    base::ElapsedTimer timer;
+    std::string tflite_language =
+        language_detection_model_->DeterminePageLanguage(
+            code, html_lang, contents, model_detected_language,
+            is_model_reliable, model_reliability_score);
+    base::UmaHistogramTimes(
+        kTranslateLanguageDetectionTFLiteModelEvaluationDuration,
+        timer.Elapsed());
+
+    if (!IsTFLiteLanguageDetectionIgnoreEnabled()) {
+      *detection_model_version = language_detection_model_->GetModelVersion();
+      base::UmaHistogramEnumeration(
+          "IOS.Translate.PageLoad.LanguageDetectionMethod",
+          LanguageDetectionMethod::kTFLiteModelUsed);
+      return tflite_language;
+    }
+
+    base::UmaHistogramEnumeration(
+        "IOS.Translate.PageLoad.LanguageDetectionMethod",
+        LanguageDetectionMethod::kTFLiteModelIgnored);
+    std::string cld3_language = ::translate::DeterminePageLanguage(
+        code, html_lang, contents, model_detected_language, is_model_reliable,
+        model_reliability_score);
+
+    ComparePageLanguageDetection(tflite_language, cld3_language);
+    return cld3_language;
+  }
+
+  if (IsTFLiteLanguageDetectionEnabled()) {
+    base::UmaHistogramEnumeration(
+        "IOS.Translate.PageLoad.LanguageDetectionMethod",
+        LanguageDetectionMethod::kTFLiteModelUnavailable);
+  } else {
+    base::UmaHistogramEnumeration(
+        "IOS.Translate.PageLoad.LanguageDetectionMethod",
+        LanguageDetectionMethod::kTFLiteModelDisabled);
+  }
+  return ::translate::DeterminePageLanguage(
+      code, html_lang, contents, model_detected_language, is_model_reliable,
+      model_reliability_score);
+}
+
 void LanguageDetectionController::OnTextRetrieved(
     const bool has_notranslate,
     const std::string& http_content_language,
@@ -154,38 +252,15 @@ void LanguageDetectionController::OnTextRetrieved(
   std::u16string text = text_content && text_content->is_string()
                             ? base::UTF8ToUTF16(text_content->GetString())
                             : std::u16string();
-  std::string language;
+
   std::string detection_model_version = kCLDModelVersion;
 
-  if (IsTFLiteLanguageDetectionEnabled() && language_detection_model_ &&
-      language_detection_model_->IsAvailable()) {
-    base::UmaHistogramEnumeration(
-        "IOS.Translate.PageLoad.LanguageDetectionMethod",
-        LanguageDetectionMethod::kTFLiteModelUsed);
-    base::ElapsedTimer timer;
-    language = language_detection_model_->DeterminePageLanguage(
-        http_content_language, html_lang,
-        GetStringByClippingLastWord(text, kMaxIndexChars),
-        &model_detected_language, &is_model_reliable, model_reliability_score);
-    base::UmaHistogramTimes(
-        kTranslateLanguageDetectionTFLiteModelEvaluationDuration,
-        timer.Elapsed());
-    detection_model_version = language_detection_model_->GetModelVersion();
-  } else {
-    if (IsTFLiteLanguageDetectionEnabled()) {
-      base::UmaHistogramEnumeration(
-          "IOS.Translate.PageLoad.LanguageDetectionMethod",
-          LanguageDetectionMethod::kTFLiteModelUnavailable);
-    } else {
-      base::UmaHistogramEnumeration(
-          "IOS.Translate.PageLoad.LanguageDetectionMethod",
-          LanguageDetectionMethod::kTFLiteModelDisabled);
-    }
-    language = DeterminePageLanguage(
-        http_content_language, html_lang,
-        GetStringByClippingLastWord(text, kMaxIndexChars),
-        &model_detected_language, &is_model_reliable, model_reliability_score);
-  }
+  std::string language =
+      DeterminePageLanguage(http_content_language, html_lang,
+                            GetStringByClippingLastWord(text, kMaxIndexChars),
+                            &model_detected_language, &is_model_reliable,
+                            model_reliability_score, &detection_model_version);
+
   if (language.empty())
     return;  // No language detected.
 
