@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_controller.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "content/public/browser/page_user_data.h"
 
 namespace autofill {
 
@@ -16,11 +16,11 @@ class WebauthnDialogModel;
 class WebauthnDialogView;
 enum class WebauthnDialogState;
 
-// Implementation of the per-tab controller to control the
+// Implementation of the per-outermost primary page controller to control the
 // WebauthnDialogView. Lazily initialized when used.
 class WebauthnDialogControllerImpl
     : public WebauthnDialogController,
-      public content::WebContentsUserData<WebauthnDialogControllerImpl> {
+      public content::PageUserData<WebauthnDialogControllerImpl> {
  public:
   WebauthnDialogControllerImpl(const WebauthnDialogControllerImpl&) = delete;
   WebauthnDialogControllerImpl& operator=(const WebauthnDialogControllerImpl&) =
@@ -43,10 +43,10 @@ class WebauthnDialogControllerImpl
   WebauthnDialogView* dialog_view() { return dialog_view_; }
 
  protected:
-  explicit WebauthnDialogControllerImpl(content::WebContents* web_contents);
+  explicit WebauthnDialogControllerImpl(content::Page& page);
 
  private:
-  friend class content::WebContentsUserData<WebauthnDialogControllerImpl>;
+  friend class content::PageUserData<WebauthnDialogControllerImpl>;
 
   // Clicking either the OK button or the cancel button in the dialog
   // will invoke this repeating callback. Note this repeating callback can
@@ -57,7 +57,7 @@ class WebauthnDialogControllerImpl
   raw_ptr<WebauthnDialogModel> dialog_model_ = nullptr;
   raw_ptr<WebauthnDialogView> dialog_view_ = nullptr;
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  PAGE_USER_DATA_KEY_DECL();
 };
 
 }  // namespace autofill

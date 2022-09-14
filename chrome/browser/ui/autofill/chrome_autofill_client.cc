@@ -502,28 +502,30 @@ void ChromeAutofillClient::ShowLocalCardMigrationResults(
 
 void ChromeAutofillClient::ShowWebauthnOfferDialog(
     WebauthnDialogCallback offer_dialog_callback) {
-  WebauthnDialogControllerImpl::CreateForWebContents(web_contents());
-  WebauthnDialogControllerImpl::FromWebContents(web_contents())
+  WebauthnDialogControllerImpl::GetOrCreateForPage(
+      web_contents()->GetPrimaryPage())
       ->ShowOfferDialog(std::move(offer_dialog_callback));
 }
 
 void ChromeAutofillClient::ShowWebauthnVerifyPendingDialog(
     WebauthnDialogCallback verify_pending_dialog_callback) {
-  WebauthnDialogControllerImpl::CreateForWebContents(web_contents());
-  WebauthnDialogControllerImpl::FromWebContents(web_contents())
+  WebauthnDialogControllerImpl::GetOrCreateForPage(
+      web_contents()->GetPrimaryPage())
       ->ShowVerifyPendingDialog(std::move(verify_pending_dialog_callback));
 }
 
 void ChromeAutofillClient::UpdateWebauthnOfferDialogWithError() {
   WebauthnDialogControllerImpl* controller =
-      WebauthnDialogControllerImpl::FromWebContents(web_contents());
+      WebauthnDialogControllerImpl::GetForPage(
+          web_contents()->GetPrimaryPage());
   if (controller)
     controller->UpdateDialog(WebauthnDialogState::kOfferError);
 }
 
 bool ChromeAutofillClient::CloseWebauthnDialog() {
   WebauthnDialogControllerImpl* controller =
-      WebauthnDialogControllerImpl::FromWebContents(web_contents());
+      WebauthnDialogControllerImpl::GetForPage(
+          web_contents()->GetPrimaryPage());
   if (controller)
     return controller->CloseDialog();
 
