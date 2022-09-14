@@ -506,8 +506,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest,
 // Test that a fenced-frame does not perform any of the Android main-frame
 // viewport behaviors like zoom-out-to-fit-content or parsing the viewport
 // <meta>.
-// Flaky on Mac https://crbug.com/1349900 and Android (crbug.com/1363234)
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+// Flaky on Mac https://crbug.com/1349900
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ViewportSettings DISABLED_ViewportSettings
 #else
 #define MAYBE_ViewportSettings ViewportSettings
