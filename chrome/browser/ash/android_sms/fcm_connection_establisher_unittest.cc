@@ -35,10 +35,11 @@ class FcmConnectionEstablisherTest : public testing::Test {
       const char* expected,
       const content::FakeServiceWorkerContext::
           StartServiceWorkerAndDispatchMessageArgs& call_args) {
-    auto payload = blink::DecodeToWebMessagePayload(
-        std::get<blink::TransferableMessage>(call_args));
-    EXPECT_EQ(base::UTF8ToUTF16(expected),
-              absl::get<std::u16string>(payload.value()));
+    std::u16string message_string;
+    blink::DecodeStringMessage(
+        std::get<blink::TransferableMessage>(call_args).owned_encoded_message,
+        &message_string);
+    EXPECT_EQ(base::UTF8ToUTF16(expected), message_string);
   }
 
  private:
