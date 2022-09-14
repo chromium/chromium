@@ -51,14 +51,13 @@ class WebUIBubbleManagerBrowserTest : public InProcessBrowserTest {
             browser()->profile(), GURL("chrome://test"), 1);
   }
   void TearDownOnMainThread() override {
-    auto* widget = bubble_manager_->GetBubbleWidget();
-    if (widget)
-      widget->CloseNow();
-    bubble_manager()->ResetContentsWrapperForTesting();
+    bubble_manager_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
   WebUIBubbleManager* bubble_manager() { return bubble_manager_.get(); }
+
+  void DestroyBubbleManager() { bubble_manager_.reset(); }
 
  private:
   std::unique_ptr<WebUIBubbleManager> bubble_manager_;
@@ -87,4 +86,24 @@ IN_PROC_BROWSER_TEST_F(WebUIBubbleManagerBrowserTest,
 
   bubble_manager()->CloseBubble();
   EXPECT_TRUE(bubble_manager()->GetBubbleWidget()->IsClosed());
+}
+
+// Ensures that the WebUI bubble is destroyed synchronously with the manager.
+// This guards against a potential UAF crash (see crbug.com/1345546).
+IN_PROC_BROWSER_TEST_F(WebUIBubbleManagerBrowserTest,
+                       ManagerDestructionClosesBubble) {
+  EXPECT_EQ(nullptr, bubble_manager()->GetBubbleWidget());
+  bubble_manager()->ShowBubble();
+  EXPECT_NE(nullptr, bubble_manager()->GetBubbleWidget());
+
+  base::WeakPtr<WebUIBubbleDialogView> bubble_view =
+      bubble_manager()->bubble_view_for_testing();
+  EXPECT_TRUE(bubble_view);
+  bubble_view->ShowUI();
+  EXPECT_TRUE(bubble_manager()->GetBubbleWidget()->IsVisible());
+
+  // Destroy the bubble manager without explicitly destroying the bubble. Ensure
+  // the bubble is closed synchronously.
+  DestroyBubbleManager();
+  EXPECT_FALSE(bubble_view);
 }
