@@ -76,6 +76,7 @@
 #include "ui/events/event_handler.h"
 #include "ui/events/gesture_event_details.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -1770,10 +1771,21 @@ void ShelfLayoutManager::CalculateTargetBoundsAndUpdateWorkArea() {
 
   gfx::Insets in_session_shelf_insets = shelf_insets;
 
-  if (!state_.IsActiveSessionState()) {
-    ShelfAlignment in_session_alignment = shelf_->stored_alignment();
-    in_session_shelf_insets = CalculateShelfInsets(
-        in_session_alignment, state_.in_session_visibility_state);
+  // Shelf alignment will be updated after session state change, therefore we
+  // need to check if it's `kBottomLocked` here. See bugs:
+  //   https://crbug.com/173127
+  //   https://crbug.com/1177572
+  //   https://crbug.com/1344702
+  //   https://crbug.com/1344718
+  if (shelf_->alignment() == ShelfAlignment::kBottomLocked) {
+    // If shelf is set to auto-hide, use empty insets so that application window
+    // could use the right work area.
+    if (shelf_->auto_hide_behavior() == ShelfAutoHideBehavior::kAlways) {
+      in_session_shelf_insets = gfx::Insets();
+    } else {
+      in_session_shelf_insets = CalculateShelfInsets(
+          shelf_->stored_alignment(), state_.in_session_visibility_state);
+    }
   }
 
   // In tablet mode, only use the in-app shelf bounds when calculating the work

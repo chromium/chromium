@@ -24,7 +24,6 @@
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_util.h"
-#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -469,8 +468,6 @@ void SessionControllerImpl::SetIsDemoSession() {
 void SessionControllerImpl::SetSessionState(SessionState state) {
   if (state_ == state)
     return;
-
-  base::AutoReset<bool> in_progress(&session_state_change_in_progress_, true);
 
   const bool was_user_session_blocked = IsUserSessionBlocked();
   const bool was_locked = state_ == SessionState::LOCKED;

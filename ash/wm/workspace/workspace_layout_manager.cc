@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -17,12 +16,10 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
-#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/wm/always_on_top_controller.h"
-#include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/fullscreen_window_finder.h"
@@ -34,15 +31,12 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/workspace/backdrop_controller.h"
-#include "base/command_line.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_tracker.h"
-#include "ui/base/ui_base_switches.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/wm/core/coordinate_conversion.h"
-#include "ui/wm/core/window_properties.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace ash {
@@ -515,15 +509,6 @@ void WorkspaceLayoutManager::AdjustAllWindowsBoundsForWorkAreaChange(
          event->type() == WM_EVENT_WORKAREA_BOUNDS_CHANGED);
 
   work_area_in_parent_ = screen_util::GetDisplayWorkAreaBoundsInParent(window_);
-
-  // Do not do any adjustments when session state is being changed. This would
-  // ensure window bounds not being incorrectly set by shelf alignment change to
-  // kBottomLocked.
-  // See bugs: https://crbug.com/173127 & https://crbug.com/1177572.
-  if (event->type() == WM_EVENT_WORKAREA_BOUNDS_CHANGED &&
-      Shell::Get()->session_controller()->session_state_change_in_progress()) {
-    return;
-  }
 
   // The PIP avoids the accessibility bubbles, so here we update the
   // accessibility position before sending the WMEvent, so that if the PIP is
