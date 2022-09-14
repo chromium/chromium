@@ -108,7 +108,7 @@ void CountAtRule(const CSSParserContext* context, CSSAtRuleID rule_id) {
       break;
     case kCSSAtRuleContainer:
       feature = WebFeature::kCSSAtRuleContainer;
-      return;
+      break;
     case kCSSAtRuleCounterStyle:
       feature = WebFeature::kCSSAtRuleCounterStyle;
       break;

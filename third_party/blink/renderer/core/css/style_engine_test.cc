@@ -4447,6 +4447,26 @@ TEST_F(StyleEngineTest, AtCounterStyleUseCounter) {
   EXPECT_TRUE(IsUseCounted(WebFeature::kCSSAtRuleCounterStyle));
 }
 
+TEST_F(StyleEngineTest, AtContainerUseCount) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      body { --x: No @container rule here; }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kCSSAtRuleContainer));
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @container (width > 0px) {
+        body { --x: Hello world; }
+      }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCSSAtRuleContainer));
+}
+
 TEST_F(StyleEngineTest, SystemFontsObeyDefaultFontSize) {
   // <input> get assigned "font: -webkit-small-control" in the UA sheet.
   Element* body = GetDocument().body();
