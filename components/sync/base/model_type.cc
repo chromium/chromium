@@ -443,9 +443,10 @@ ModelTypeSet EncryptableUserTypes() {
   encryptable_user_types.Remove(CONTACT_INFO);
   // Commit-only types are never encrypted since they are consumed server-side.
   encryptable_user_types.RemoveAll(CommitOnlyTypes());
-  // Other types that are never encrypted because consumed server-side.
+  // History Sync is disabled if encryption is enabled.
   encryptable_user_types.Remove(HISTORY);
   encryptable_user_types.Remove(HISTORY_DELETE_DIRECTIVES);
+  // Never encrypted because consumed server-side.
   encryptable_user_types.Remove(DEVICE_INFO);
   // Never encrypted because also written server-side.
   encryptable_user_types.Remove(PRIORITY_PREFERENCES);
