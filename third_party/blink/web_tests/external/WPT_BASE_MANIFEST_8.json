@@ -308617,14 +308617,6 @@
       "response-null-body.any.worker-expected.txt": [
        "fa818f443d303b3903069f46bc8824dd2bf8bb27",
        []
-      ],
-      "scheme-blob.sub.any-expected.txt": [
-       "b99890373923e26223f91cbc5f9b6a7aab2a82c0",
-       []
-      ],
-      "scheme-blob.sub.any.worker-expected.txt": [
-       "b99890373923e26223f91cbc5f9b6a7aab2a82c0",
-       []
       ]
      },
      "body": {
@@ -440251,7 +440243,7 @@
        ]
       ],
       "scheme-blob.sub.any.js": [
-       "cfa99506af6f0dbe3375c25fcbe96996e11703f3",
+       "eaf01ebdf296296e6e40b6d8757a426ccfc38207",
        [
         "fetch/api/basic/scheme-blob.sub.any.html",
         {
