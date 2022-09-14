@@ -8,7 +8,7 @@
 import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ImportDialogState, PasswordsImportDialogElement} from 'chrome://settings/lazy_load.js';
+import {IMPORT_HELP_LANDING_PAGE, ImportDialogState, PasswordsImportDialogElement} from 'chrome://settings/lazy_load.js';
 import {PasswordManagerImpl, SettingsPluralStringProxyImpl, CrButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
@@ -80,7 +80,7 @@ async function assertErrorStateAndClose(
   assertEquals(ImportDialogState.ERROR, importDialog.dialogState);
 
   assertEquals(
-      expectedDescription, importDialog.$.descriptionText.textContent!.trim());
+      expectedDescription, importDialog.$.descriptionText.innerHTML!.trim());
 
   assertFalse(isVisible(
       importDialog.shadowRoot!.querySelector<HTMLElement>('#tipBox')));
@@ -191,8 +191,12 @@ suite('PasswordsImportDialog', function() {
 
     await assertErrorStateAndClose(
         importDialog, passwordManager,
-        importDialog.i18nAdvanced('importPasswordsBadFormatError')
-            .replace('<b></b>', 'test.csv'));
+        importDialog
+            .i18nAdvanced(
+                'importPasswordsBadFormatError',
+                {substitutions: [IMPORT_HELP_LANDING_PAGE]},
+                )
+            .replace('<b></b>', '<b>test.csv</b>'));
   });
 
   test('hasCorrectUnknownErrorState', async function() {

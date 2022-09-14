@@ -102,7 +102,7 @@ export {PasswordRemoveDialogElement} from './autofill_page/password_remove_dialo
 export {PasswordViewElement} from './autofill_page/password_view.js';
 export {PasswordsDeviceSectionElement} from './autofill_page/passwords_device_section.js';
 export {PasswordsExportDialogElement} from './autofill_page/passwords_export_dialog.js';
-export {ImportDialogState, PasswordsImportDialogElement} from './autofill_page/passwords_import_dialog.js';
+export {IMPORT_HELP_LANDING_PAGE, ImportDialogState, PasswordsImportDialogElement} from './autofill_page/passwords_import_dialog.js';
 export {PasswordsSectionElement} from './autofill_page/passwords_section.js';
 export {PaymentsManagerImpl, PaymentsManagerProxy} from './autofill_page/payments_manager_proxy.js';
 export {SettingsPaymentsSectionElement} from './autofill_page/payments_section.js';

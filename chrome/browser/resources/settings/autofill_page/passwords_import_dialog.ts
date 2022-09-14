@@ -35,6 +35,9 @@ export interface PasswordsImportDialogElement {
 
 const PasswordsImportDialogElementBase = I18nMixin(PolymerElement);
 
+export const IMPORT_HELP_LANDING_PAGE: string =
+    'https://support.google.com/chrome/?p=import-passwords-desktop';
+
 export enum ImportDialogState {
   START,
   ERROR,
@@ -194,8 +197,9 @@ export class PasswordsImportDialogElement extends
         this.dialogState = ImportDialogState.ERROR;
         break;
       case chrome.passwordsPrivate.ImportResultsStatus.BAD_FORMAT:
-        this.$.descriptionText.innerHTML =
-            this.i18nAdvanced('importPasswordsBadFormatError');
+        this.$.descriptionText.innerHTML = this.i18nAdvanced(
+            'importPasswordsBadFormatError',
+            {substitutions: [IMPORT_HELP_LANDING_PAGE]});
         this.$.descriptionText.querySelector('b')!.textContent =
             this.results_.fileName;
         this.dialogState = ImportDialogState.ERROR;
