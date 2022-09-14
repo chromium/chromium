@@ -223,7 +223,6 @@
     "externs/background/drive_sync_handler.js",
     "externs/background/file_operation_manager.js",
     "externs/background/progress_center.js",
-    "foreground/elements/files_icon_button.js",
     "foreground/elements/files_ripple.js",
     "foreground/elements/files_toast.js",
     "foreground/elements/files_toggle_ripple.js",

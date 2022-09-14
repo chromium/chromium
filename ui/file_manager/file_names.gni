@@ -296,7 +296,6 @@ generated_js_files = [
 
   # Elements:
   "file_manager/foreground/elements/files_format_dialog.js",
-  "file_manager/foreground/elements/files_icon_button.js",
   "file_manager/foreground/elements/files_metadata_box.js",
   "file_manager/foreground/elements/files_metadata_entry.js",
   "file_manager/foreground/elements/files_password_dialog.js",

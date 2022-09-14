@@ -4,7 +4,6 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './files_icon_button.js';
 import './files_metadata_box.js';
 import './files_safe_media.js';
 import './files_tooltip.js';
