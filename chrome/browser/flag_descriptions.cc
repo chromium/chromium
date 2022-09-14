@@ -4998,6 +4998,11 @@ const char kCameraAppDocScanDlcDescription[] =
     "Enables this flag to allow downloading document scanning feature via DLC "
     "and use it in the camera app";
 
+const char kCameraAppMultiPageDocScanName[] = "Camera App Multi-Page Doc Scan";
+const char kCameraAppMultiPageDocScanDescription[] =
+    "Enables this flag to show multi-page UI for document scanning featrue in "
+    "the camera app";
+
 const char kCompactBubbleLauncherName[] = "Make bubble launcher more compact";
 
 const char kCompactBubbleLauncherDescription[] =

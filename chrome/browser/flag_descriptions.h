@@ -2861,6 +2861,9 @@ extern const char kBruschettaAlphaMigrateDescription[];
 extern const char kCameraAppDocScanDlcName[];
 extern const char kCameraAppDocScanDlcDescription[];
 
+extern const char kCameraAppMultiPageDocScanName[];
+extern const char kCameraAppMultiPageDocScanDescription[];
+
 extern const char kCompactBubbleLauncherName[];
 extern const char kCompactBubbleLauncherDescription[];
 

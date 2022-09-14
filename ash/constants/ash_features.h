@@ -137,6 +137,8 @@ extern const base::Feature kCalendarModelDebugMode;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCameraAppDocScanDlc;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kCameraAppMultiPageDocScan;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCameraPrivacySwitchNotifications;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCaptivePortalUI2022;

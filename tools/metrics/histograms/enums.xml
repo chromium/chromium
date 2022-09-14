@@ -57686,6 +57686,7 @@ from previous Chrome versions.
   <int value="-1252978870" label="TextFragmentColorChange:disabled"/>
   <int value="-1252976780" label="ShillSandboxing:disabled"/>
   <int value="-1252706530" label="AutoFetchOnNetErrorPage:disabled"/>
+  <int value="-1251926380" label="CameraAppMultiPageDocScan:enabled"/>
   <int value="-1251411236" label="disable-new-md-input-view"/>
   <int value="-1251359563" label="SharingRenameDevices:disabled"/>
   <int value="-1250965985" label="MediaFeeds:enabled"/>
@@ -59456,6 +59457,7 @@ from previous Chrome versions.
   <int value="-152632720" label="RuntimeHostPermissions:enabled"/>
   <int value="-152596707" label="NearbySharingSelfShare:enabled"/>
   <int value="-152439608" label="download-later-debug-on-wifi"/>
+  <int value="-152349324" label="CameraAppMultiPageDocScan:disabled"/>
   <int value="-150820109" label="ProjectorAppDebug:disabled"/>
   <int value="-150077791" label="FontAccessChooser:disabled"/>
   <int value="-148356419" label="PdfViewerPresentationMode:disabled"/>

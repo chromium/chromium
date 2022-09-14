@@ -312,6 +312,11 @@ const base::Feature kCalendarModelDebugMode{"CalendarModelDebugMode",
 const base::Feature kCameraAppDocScanDlc{"CameraAppDocScanDlc",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables to show multi-page UI when for document scanning feature in the
+// camera app.
+const base::Feature kCameraAppMultiPageDocScan{
+    "CameraAppMultiPageDocScan", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether the camera privacy switch toasts and notification should be
 // displayed.
 const base::Feature kCameraPrivacySwitchNotifications{
