@@ -1119,11 +1119,6 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
   while (descendants->size() > 0) {
     ComputeInlineContainingBlocksForFragmentainer(*descendants);
 
-    // Update anchor queries for the CSS Anchor Positioning.
-    stitched_anchor_queries.Update(container_builder_->Children(), *descendants,
-                                   *container_builder_->Node().GetLayoutBox(),
-                                   container_builder_->GetWritingDirection());
-
     // When there are anchor queries, each containing block should be laid out
     // separately. This loop chunks |descendants| by their containing blocks, if
     // they have anchor queries.
@@ -1136,6 +1131,12 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
       // by the CSS containing block.
       const LayoutObject* last_css_containing_block = nullptr;
       const NGLogicalAnchorQuery* stitched_anchor_query = nullptr;
+
+      // Update anchor queries for the CSS Anchor Positioning.
+      stitched_anchor_queries.Update(container_builder_->Children(),
+                                     descendants_span,
+                                     *container_builder_->Node().GetLayoutBox(),
+                                     container_builder_->GetWritingDirection());
 
       // Sort the descendants by fragmentainer index in |descendants_to_layout|.
       // This will ensure that the descendants are laid out in the correct
@@ -1168,7 +1169,7 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
         //
         // Note |descendant.containing_block.fragment| is |ContainingBlock|, not
         // the CSS containing block.
-        if (!stitched_anchor_queries.IsEmpty()) {
+        if (stitched_anchor_queries.ShouldLayoutByContainingBlock()) {
           const LayoutObject* css_containing_block =
               descendant.box->Container();
           DCHECK(css_containing_block);
@@ -1176,7 +1177,9 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
             // Chunking the layout of OOFs by the containing blocks is done only
             // if it has anchor query, for the performance reasons to minimize
             // the number of rebuilding fragmentainer fragments.
-            if (last_css_containing_block && stitched_anchor_query) {
+            if (last_css_containing_block &&
+                (stitched_anchor_query ||
+                 stitched_anchor_queries.HasAnchorsOnOutOfFlowObjects())) {
               has_new_descendants_span = true;
               descendants_span = descendants_span.subspan(
                   &descendant - descendants_span.data());

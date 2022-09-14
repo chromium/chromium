@@ -142,7 +142,10 @@ class CORE_EXPORT NGLogicalAnchorQueryForFragmentation {
   STACK_ALLOCATED();
 
  public:
-  bool IsEmpty() const { return queries_.IsEmpty(); }
+  bool HasAnchorsOnOutOfFlowObjects() const { return has_anchors_on_oofs_; }
+  bool ShouldLayoutByContainingBlock() const {
+    return !queries_.IsEmpty() || has_anchors_on_oofs_;
+  }
 
   // Get |NGLogicalAnchorQuery| in the stitched coordinate system for the given
   // containing block.
@@ -159,6 +162,7 @@ class CORE_EXPORT NGLogicalAnchorQueryForFragmentation {
 
  private:
   HeapHashMap<const LayoutObject*, Member<NGLogicalAnchorQuery>> queries_;
+  bool has_anchors_on_oofs_ = false;
 };
 
 class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {

@@ -137,11 +137,12 @@ struct NGStitchedAnchorQueries {
   STACK_ALLOCATED();
 
  public:
-  explicit NGStitchedAnchorQueries(
-      const HeapHashSet<Member<const LayoutObject>>&
-          anchored_oof_containers_and_ancestors)
+  NGStitchedAnchorQueries(const LayoutBox& root,
+                          const HeapHashSet<Member<const LayoutObject>>&
+                              anchored_oof_containers_and_ancestors)
       : anchored_oof_containers_and_ancestors_(
-            anchored_oof_containers_and_ancestors) {}
+            anchored_oof_containers_and_ancestors),
+        root_(root) {}
 
   void AddFragmentainerChildren(base::span<const NGLogicalLink> children,
                                 WritingDirectionMode writing_direction) {
@@ -173,8 +174,12 @@ struct NGStitchedAnchorQueries {
   void AddBoxChild(const NGPhysicalBoxFragment& fragment,
                    const PhysicalOffset& offset_from_fragmentainer,
                    const FragmentainerContext& fragmentainer) {
-    // TODO(kojii): Anchors on OOF boxes is not supported yet.
     // TODO(kojii): nested multicol is not supported yet.
+
+    if (fragment.IsOutOfFlowPositioned()) {
+      AddOutOfFlowChild(fragment, offset_from_fragmentainer, fragmentainer);
+      return;
+    }
 
     // Return early if the |fragment| doesn't have any anchors. No need to
     // traverse descendants.
@@ -215,6 +220,41 @@ struct NGStitchedAnchorQueries {
     }
   }
 
+  void AddOutOfFlowChild(const NGPhysicalBoxFragment& fragment,
+                         const PhysicalOffset& offset_from_fragmentainer,
+                         const FragmentainerContext& fragmentainer) {
+    DCHECK(fragment.IsOutOfFlowPositioned());
+    const AtomicString anchor_name = fragment.Style().AnchorName();
+    if (anchor_name.IsNull() && !fragment.AnchorQuery())
+      return;
+
+    // OOF fragments in block-fragmentation context are children of the
+    // fragmentainers, but they should be added to anchor queries of their
+    // containing block chain. Traverse the containing block chain and add
+    // references to all |LayoutObject|, up to the |root_|.
+    const LayoutObject* layout_object = fragment.GetLayoutObject();
+    DCHECK(layout_object);
+    LayoutObject::AncestorSkipInfo skip_info(&root_);
+    const LayoutObject* containing_block = layout_object->Container(&skip_info);
+    // If the OOF is to be laid out in the fragmentation context, its containing
+    // block should be a descendant of the |root_|.
+    DCHECK(containing_block);
+    DCHECK_NE(containing_block, &root_);
+    DCHECK(!skip_info.AncestorSkipped());
+    do {
+      NGStitchedAnchorQuery& query =
+          EnsureStitchedAnchorQuery(*containing_block);
+      if (!anchor_name.IsNull()) {
+        query.AddAnchorReference(anchor_name, fragment,
+                                 {offset_from_fragmentainer, fragment.Size()},
+                                 fragmentainer);
+      }
+      query.AddChild(fragment, offset_from_fragmentainer, fragmentainer);
+      containing_block = containing_block->Container(&skip_info);
+    } while (containing_block && containing_block != root_ &&
+             !skip_info.AncestorSkipped());
+  }
+
   NGStitchedAnchorQuery& EnsureStitchedAnchorQuery(
       const LayoutObject& containing_block) {
     const auto result = anchor_queries_.insert(
@@ -229,6 +269,7 @@ struct NGStitchedAnchorQueries {
   // in this set are skipped.
   const HeapHashSet<Member<const LayoutObject>>&
       anchored_oof_containers_and_ancestors_;
+  const LayoutBox& root_;
 };
 
 }  // namespace
@@ -403,6 +444,16 @@ void NGLogicalAnchorQueryForFragmentation::Update(
     WritingDirectionMode writing_direction) {
   DCHECK(&root);
 
+  has_anchors_on_oofs_ = false;
+  for (const NGLogicalOOFNodeForFragmentation& oof_node : oof_nodes) {
+    // TODO(crbug.com/1309178): Anchors on in-flow boxes inside of OOFs is not
+    // supported yet.
+    if (!oof_node.box->Style()->AnchorName().IsNull()) {
+      has_anchors_on_oofs_ = true;
+      break;
+    }
+  }
+
   // Early return before expensive work if there are no anchor queries.
   bool has_anchor_queries = false;
   for (const NGLogicalLink& child : children) {
@@ -435,7 +486,7 @@ void NGLogicalAnchorQueryForFragmentation::Update(
 
   // Traverse descendants and collect anchor queries for each containing block.
   NGStitchedAnchorQueries stitched_anchor_queries(
-      anchored_oof_containers_and_ancestors);
+      root, anchored_oof_containers_and_ancestors);
   stitched_anchor_queries.AddFragmentainerChildren(children, writing_direction);
 
   // TODO(kojii): Currently this clears and rebuilds all anchor queries on
