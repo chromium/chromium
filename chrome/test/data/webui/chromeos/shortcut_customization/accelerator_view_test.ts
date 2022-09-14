@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://shortcut-customization/accelerator_view.js';
+import 'chrome://shortcut-customization/js/accelerator_view.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AcceleratorLookupManager} from 'chrome://shortcut-customization/accelerator_lookup_manager.js';
-import {AcceleratorViewElement, ViewState} from 'chrome://shortcut-customization/accelerator_view.js';
-import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/fake_data.js';
-import {InputKeyElement, KeyInputState} from 'chrome://shortcut-customization/input_key.js';
-import {AcceleratorSource, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
+import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
+import {AcceleratorViewElement, ViewState} from 'chrome://shortcut-customization/js/accelerator_view.js';
+import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
+import {InputKeyElement, KeyInputState} from 'chrome://shortcut-customization/js/input_key.js';
+import {AcceleratorSource, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createDefaultAccelerator, createUserAccelerator} from './shortcut_customization_test_util.js';

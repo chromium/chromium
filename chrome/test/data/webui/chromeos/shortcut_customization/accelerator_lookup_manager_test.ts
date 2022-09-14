@@ -4,10 +4,10 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {AcceleratorLookupManager} from 'chrome://shortcut-customization/accelerator_lookup_manager.js';
-import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/fake_data.js';
-import {FakeShortcutProvider} from 'chrome://shortcut-customization/fake_shortcut_provider.js';
-import {AcceleratorInfo, AcceleratorKeys, AcceleratorSource, AcceleratorState, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
+import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
+import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
+import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
+import {AcceleratorInfo, AcceleratorKeys, AcceleratorSource, AcceleratorState, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('acceleratorLookupManagerTest', function() {

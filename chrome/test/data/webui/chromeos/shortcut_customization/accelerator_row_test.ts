@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://shortcut-customization/accelerator_row.js';
+import 'chrome://shortcut-customization/js/accelerator_row.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AcceleratorRowElement} from 'chrome://shortcut-customization/accelerator_row.js';
-import {InputKeyElement} from 'chrome://shortcut-customization/input_key.js';
-import {AcceleratorSource, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
+import {AcceleratorRowElement} from 'chrome://shortcut-customization/js/accelerator_row.js';
+import {InputKeyElement} from 'chrome://shortcut-customization/js/input_key.js';
+import {AcceleratorSource, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 

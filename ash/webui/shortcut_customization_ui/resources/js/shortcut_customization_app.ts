@@ -5,7 +5,7 @@
 import './accelerator_edit_dialog.js';
 import './shortcut_input.js';
 import './shortcuts_page.js';
-import './shortcut_customization_fonts.css.js';
+import '../css/shortcut_customization_fonts.css.js';
 import 'chrome://resources/ash/common/navigation_view_panel.js';
 import 'chrome://resources/ash/common/page_toolbar.js';
 

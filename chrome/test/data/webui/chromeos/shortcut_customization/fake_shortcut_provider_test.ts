@@ -4,9 +4,9 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/fake_data.js';
-import {FakeShortcutProvider} from 'chrome://shortcut-customization/fake_shortcut_provider.js';
-import {AcceleratorConfigResult, AcceleratorSource, LayoutInfoList} from 'chrome://shortcut-customization/shortcut_types.js';
+import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
+import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
+import {AcceleratorConfigResult, AcceleratorSource, LayoutInfoList} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('fakeShortcutProviderTest', function() {

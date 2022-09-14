@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://shortcut-customization/accelerator_edit_dialog.js';
+import 'chrome://shortcut-customization/js/accelerator_edit_dialog.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
-import 'chrome://shortcut-customization/accelerator_edit_dialog.js';
+import 'chrome://shortcut-customization/js/accelerator_edit_dialog.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AcceleratorEditDialogElement} from 'chrome://shortcut-customization/accelerator_edit_dialog.js';
-import {AcceleratorEditViewElement} from 'chrome://shortcut-customization/accelerator_edit_view.js';
-import {AcceleratorInfo, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
+import {AcceleratorEditDialogElement} from 'chrome://shortcut-customization/js/accelerator_edit_dialog.js';
+import {AcceleratorEditViewElement} from 'chrome://shortcut-customization/js/accelerator_edit_view.js';
+import {AcceleratorInfo, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createUserAccelerator} from './shortcut_customization_test_util.js';

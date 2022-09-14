@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './accelerator_view.js';
-import './shortcut_customization_shared.css.js';
+import '../css/shortcut_customization_shared.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 

@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://shortcut-customization/shortcut_customization_app.js';
+import 'chrome://shortcut-customization/js/shortcut_customization_app.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {AcceleratorEditViewElement} from 'chrome://shortcut-customization/accelerator_edit_view.js';
-import {AcceleratorLookupManager} from 'chrome://shortcut-customization/accelerator_lookup_manager.js';
-import {AcceleratorRowElement} from 'chrome://shortcut-customization/accelerator_row.js';
-import {AcceleratorSubsectionElement} from 'chrome://shortcut-customization/accelerator_subsection.js';
-import {AcceleratorViewElement} from 'chrome://shortcut-customization/accelerator_view.js';
-import {fakeSubCategories} from 'chrome://shortcut-customization/fake_data.js';
-import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/shortcut_customization_app.js';
-import {AcceleratorInfo, AcceleratorKeys, LayoutInfoList, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
+import {AcceleratorEditViewElement} from 'chrome://shortcut-customization/js/accelerator_edit_view.js';
+import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
+import {AcceleratorRowElement} from 'chrome://shortcut-customization/js/accelerator_row.js';
+import {AcceleratorSubsectionElement} from 'chrome://shortcut-customization/js/accelerator_subsection.js';
+import {AcceleratorViewElement} from 'chrome://shortcut-customization/js/accelerator_view.js';
+import {fakeSubCategories} from 'chrome://shortcut-customization/js/fake_data.js';
+import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/js/shortcut_customization_app.js';
+import {AcceleratorInfo, AcceleratorKeys, LayoutInfoList, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 

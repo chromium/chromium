@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './accelerator_edit_view.js';
-import './shortcut_customization_shared.css.js';
+import '../css/shortcut_customization_shared.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';

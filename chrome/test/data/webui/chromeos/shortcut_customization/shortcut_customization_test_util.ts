@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AcceleratorInfo, AcceleratorState, AcceleratorType} from 'chrome://shortcut-customization/shortcut_types.js';
+import {AcceleratorInfo, AcceleratorState, AcceleratorType} from 'chrome://shortcut-customization/js/shortcut_types.js';
 
 export function createDefaultAccelerator(
     modifier: number, keycode: number, keyDisplay: string,
