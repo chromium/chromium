@@ -431,7 +431,7 @@ TEST_F(FirstPartySetsHandlerDatabaseHelperTest,
        UpdateAndGetSitesToClearForContext) {
   const std::string& browser_context_id = "b";
 
-  FirstPartySetsHandlerDatabaseHelper::FlattenedSets old_sets = {
+  db_helper_->PersistPublicSets(/*old_sets=*/{
       {net::SchemefulSite(GURL("https://example.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://example.test")),
                                net::SiteType::kPrimary, absl::nullopt)},
@@ -446,7 +446,7 @@ TEST_F(FirstPartySetsHandlerDatabaseHelperTest,
                                net::SiteType::kPrimary, absl::nullopt)},
       {net::SchemefulSite(GURL("https://member2.test")),
        net::FirstPartySetEntry(net::SchemefulSite(GURL("https://foo.test")),
-                               net::SiteType::kAssociated, 0)}};
+                               net::SiteType::kAssociated, 0)}});
 
   FirstPartySetsHandlerDatabaseHelper::FlattenedSets current_sets = {
       {net::SchemefulSite(GURL("https://example.test")),
@@ -457,8 +457,9 @@ TEST_F(FirstPartySetsHandlerDatabaseHelperTest,
                                net::SiteType::kAssociated, 0)}};
 
   std::vector<net::SchemefulSite> res =
-      db_helper_->UpdateAndGetSitesToClearForContext(
-          "b", old_sets, current_sets, /*current_policy=*/{});
+      db_helper_->UpdateAndGetSitesToClearForContext(browser_context_id,
+                                                     current_sets,
+                                                     /*current_policy=*/{});
 
   // Expected diff: "https://foo.test", "https://member2.test" and
   // "https://member3.test" left FPSs.

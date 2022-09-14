@@ -66,14 +66,13 @@ class CONTENT_EXPORT FirstPartySetsHandlerDatabaseHelper {
       const PolicyCustomization& current_policy);
 
   // Gets the list of sites to clear for the `browser_context_id`. This method
-  // wraps a few DB operations: reads the old policy customization from DB, call
-  // `ComputeSetsDiff` with required inputs to compute the list of sites to
-  // clear, stores the sites into DB, then reads the final list of sites to be
-  // cleared from DB, which can include sites stored during previous browser
-  // runs that did not have state cleared.
+  // wraps a few DB operations: reads the old public sets and policy
+  // customization from DB, call `ComputeSetsDiff` with required inputs to
+  // compute the list of sites to clear, stores the sites into DB, then reads
+  // the final list of sites to be cleared from DB, which can include sites
+  // stored during previous browser runs that did not have state cleared.
   std::vector<net::SchemefulSite> UpdateAndGetSitesToClearForContext(
       const std::string& browser_context_id,
-      const FlattenedSets& old_sets,
       const FlattenedSets& current_sets,
       const PolicyCustomization& current_policy);
 

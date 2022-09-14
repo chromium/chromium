@@ -90,14 +90,13 @@ FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
 std::vector<net::SchemefulSite>
 FirstPartySetsHandlerDatabaseHelper::UpdateAndGetSitesToClearForContext(
     const std::string& browser_context_id,
-    const FlattenedSets& old_sets,
     const FlattenedSets& current_sets,
     const PolicyCustomization& current_policy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::flat_set<net::SchemefulSite> diff = ComputeSetsDiff(
-      old_sets, db_->FetchPolicyModifications(browser_context_id), current_sets,
-      current_policy);
+      db_->GetPublicSets(), db_->FetchPolicyModifications(browser_context_id),
+      current_sets, current_policy);
 
   if (!db_->InsertSitesToClear(browser_context_id, diff)) {
     DVLOG(1) << "Failed to update the sites to clear for browser_context_id="
