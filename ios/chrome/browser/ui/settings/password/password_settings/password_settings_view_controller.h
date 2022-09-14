@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_consumer.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_delegate.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
 // Delegate for the PasswordSettingsViewController to talk to its coordinator.
@@ -20,6 +21,11 @@
 // Method invoked when the user requests an export of their saved passwords.
 - (void)startExportFlow;
 
+// Method invoked when more information about a managed setting was requested.
+// The `sourceView` button will be disabled and should be re-enabled once the
+// requested info is dismissed.
+- (void)showManagedPrefInfoForSourceView:(UIButton*)sourceView;
+
 @end
 
 // ViewController used to present settings and infrequently-used actions
@@ -27,6 +33,9 @@
 // Password Manager itself.
 @interface PasswordSettingsViewController
     : ChromeTableViewController <PasswordSettingsConsumer>
+
+// Delegate for communicating with the mediator.
+@property(nonatomic, weak) id<PasswordSettingsDelegate> delegate;
 
 // Delegate for communicating with the coordinator.
 @property(nonatomic, weak) id<PasswordSettingsPresentationDelegate>

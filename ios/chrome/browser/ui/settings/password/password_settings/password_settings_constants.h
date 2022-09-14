@@ -12,4 +12,9 @@
 // passwords.
 extern NSString* const kPasswordSettingsExportConfirmViewId;
 
+// Accessibility ID for the switch controlling the "Offer to Save Passwords"
+// setting.
+extern NSString* const kPasswordSettingsSavePasswordSwitchTableViewId;
+extern NSString* const kPasswordSettingsManagedSavePasswordSwitchTableViewId;
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SETTINGS_PASSWORD_SETTINGS_CONSTANTS_H_

@@ -24,6 +24,7 @@ source_set("password_settings") {
     "//ios/chrome/browser/passwords:store_factory",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/settings/elements:enterprise_info_popover_view_controller",
     "//ios/chrome/browser/ui/settings/password:common",
     "//ios/chrome/browser/ui/settings/password:password_ui",
     "//ios/chrome/browser/ui/settings/utils",
@@ -37,6 +38,7 @@ source_set("password_settings_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "password_settings_consumer.h",
+    "password_settings_delegate.h",
     "password_settings_view_controller.h",
     "password_settings_view_controller.mm",
   ]

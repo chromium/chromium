@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_export_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_coordinator_delegate.h"
@@ -22,6 +24,7 @@
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "net/base/mac/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -71,10 +74,10 @@
 
 @end
 
-@interface PasswordSettingsCoordinator () <
-    ExportActivityViewControllerDelegate,
-    PasswordExportHandler,
-    PasswordSettingsPresentationDelegate> {
+@interface PasswordSettingsCoordinator () <ExportActivityViewControllerDelegate,
+                                           PasswordExportHandler,
+                                           PasswordSettingsPresentationDelegate,
+                                           PopoverLabelViewControllerDelegate> {
   // Service which gives us a view on users' saved passwords.
   std::unique_ptr<password_manager::SavedPasswordsPresenter>
       _savedPasswordsPresenter;
@@ -192,6 +195,36 @@
   [self.passwordSettingsViewController presentViewController:exportConfirmation
                                                     animated:YES
                                                   completion:nil];
+}
+
+- (void)showManagedPrefInfoForSourceView:(UIButton*)sourceView {
+  // EnterpriseInfoPopoverViewController automatically handles reenabling the
+  // `sourceView`, so we don't need to add any dismiss handlers or delegation,
+  // just present the bubble.
+  EnterpriseInfoPopoverViewController* bubbleViewController =
+      [[EnterpriseInfoPopoverViewController alloc] initWithEnterpriseName:nil];
+  bubbleViewController.delegate = self;
+
+  // Set the anchor and arrow direction of the bubble.
+  bubbleViewController.popoverPresentationController.sourceView = sourceView;
+  bubbleViewController.popoverPresentationController.sourceRect =
+      sourceView.bounds;
+  bubbleViewController.popoverPresentationController.permittedArrowDirections =
+      UIPopoverArrowDirectionAny;
+
+  [self.passwordSettingsViewController
+      presentViewController:bubbleViewController
+                   animated:YES
+                 completion:nil];
+}
+
+#pragma mark - PopoverLabelViewControllerDelegate
+
+- (void)didTapLinkURL:(NSURL*)URL {
+  [self.dispatcher
+      openURLInNewTab:[OpenNewTabCommand
+                          commandWithURLFromChrome:net::GURLWithNSURL(URL)
+                                       inIncognito:NO]];
 }
 
 #pragma mark - PasswordExportHandler

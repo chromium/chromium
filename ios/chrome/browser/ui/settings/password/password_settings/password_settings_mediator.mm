@@ -71,6 +71,11 @@
   // will not behave correctly on load.
   self.exporterIsReady = self.passwordExporter.exportState == ExportState::IDLE;
   [self savedPasswordsDidChanged:_savedPasswordsPresenter->GetSavedPasswords()];
+
+  // TODO(crbug.com/1335156): Replace placeholder data with actual data piped
+  // from observing pref and enterprise policy.
+  [self.consumer setSavePasswordsEnabled:YES];
+  [self.consumer setManagedByPolicy:NO];
 }
 
 - (void)userDidStartExportFlow {

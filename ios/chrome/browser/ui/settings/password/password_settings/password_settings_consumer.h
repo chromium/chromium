@@ -13,6 +13,13 @@
 // export is already in progress, and YES when idle.
 - (void)setCanExportPasswords:(BOOL)canExportPasswords;
 
+// Indicates whether or not the Password Manager is managed by enterprise
+// policy.
+- (void)setManagedByPolicy:(BOOL)managedByPolicy;
+
+// Indicates whether or not the "Offer to Save Passwords" feature is enabled.
+- (void)setSavePasswordsEnabled:(BOOL)enabled;
+
 // Enables/disables the "Export Passwords..." button based on the current state.
 - (void)updateExportPasswordsButton;
 

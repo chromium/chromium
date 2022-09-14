@@ -10,3 +10,9 @@
 
 NSString* const kPasswordSettingsExportConfirmViewId =
     @"PasswordSettingsExportConfirmViewId";
+
+NSString* const kPasswordSettingsSavePasswordSwitchTableViewId =
+    @"PasswordSettingsSavePasswordSwitchTableViewId";
+
+NSString* const kPasswordSettingsManagedSavePasswordSwitchTableViewId =
+    @"PasswordSettingsManagedSavePasswordSwitchTableViewId";
