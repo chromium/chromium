@@ -173,10 +173,6 @@ Config::Config() {
       max_entity_aliases_in_keywords = SIZE_MAX;
     }
 
-    keyword_filter_on_categories = GetFieldTrialParamByFeatureAsBool(
-        history_clusters::features::kOnDeviceClusteringKeywordFiltering,
-        "keyword_filter_on_categories", keyword_filter_on_categories);
-
     keyword_filter_on_noisy_visits = GetFieldTrialParamByFeatureAsBool(
         history_clusters::features::kOnDeviceClusteringKeywordFiltering,
         "keyword_filter_on_noisy_visits", keyword_filter_on_noisy_visits);
@@ -188,10 +184,6 @@ Config::Config() {
     keyword_filter_on_visit_hosts = GetFieldTrialParamByFeatureAsBool(
         history_clusters::features::kOnDeviceClusteringKeywordFiltering,
         "keyword_filter_on_visit_hosts", keyword_filter_on_visit_hosts);
-
-    category_keyword_score_weight = GetFieldTrialParamByFeatureAsDouble(
-        features::kOnDeviceClusteringKeywordFiltering,
-        "category_keyword_score_weight", category_keyword_score_weight);
 
     max_num_keywords_per_cluster = GetFieldTrialParamByFeatureAsInt(
         features::kOnDeviceClusteringKeywordFiltering,

@@ -179,10 +179,6 @@ struct Config {
   // 0, all aliases will be included.
   size_t max_entity_aliases_in_keywords = 0;
 
-  // If enabled, adds the keywords of categories for detected entities to a
-  // cluster.
-  bool keyword_filter_on_categories = false;
-
   // If enabled, adds the keywords of detected entities from noisy visits to a
   // cluster.
   bool keyword_filter_on_noisy_visits = false;
@@ -193,9 +189,6 @@ struct Config {
   // If enabled, adds the keywords of detected entities that may be for
   // the visit's host.
   bool keyword_filter_on_visit_hosts = true;
-
-  // The weight for category keyword scores per cluster.
-  float category_keyword_score_weight = 1.0;
 
   // Maximum number of keywords to keep per cluster.
   size_t max_num_keywords_per_cluster = 20;

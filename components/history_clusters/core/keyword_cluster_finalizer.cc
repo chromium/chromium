@@ -202,32 +202,6 @@ void KeywordClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
         }
       }
     }
-    if (GetConfig().keyword_filter_on_categories) {
-      for (const auto& category : visit.annotated_visit.content_annotations
-                                      .model_annotations.categories) {
-        std::u16string category_u16string = base::UTF8ToUTF16(category.id);
-        if (!GetConfig().keyword_filter_on_visit_hosts &&
-            IsKeywordSimilarToVisitHost(lowercase_host_parts,
-                                        category_u16string)) {
-          continue;
-        }
-        // Add a discounted keyword score for categories.
-        const float category_score = ComputeKeywordScorePerClusterVisit(
-            category.weight, visit.score,
-            GetConfig().category_keyword_score_weight);
-        auto category_it = keyword_to_data_map.find(category_u16string);
-        if (category_it == keyword_to_data_map.end()) {
-          keyword_to_data_map[category_u16string] = history::ClusterKeywordData(
-              history::ClusterKeywordData::kEntityCategory, category_score,
-              /*entity_collections=*/{});
-        } else {
-          // Accumulate category scores if there are multiple.
-          category_it->second.score += category_score;
-          category_it->second.MaybeUpdateKeywordType(
-              history::ClusterKeywordData::kEntityCategory);
-        }
-      }
-    }
 
     if (GetConfig().keyword_filter_on_search_terms &&
         !visit.annotated_visit.content_annotations.search_terms.empty()) {
