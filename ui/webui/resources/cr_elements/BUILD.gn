@@ -177,18 +177,4 @@ if (include_polymer) {
     in_files = css_files
     minify = optimize_webui
   }
-
-  # TODO(crbug.com/1184053): Remove aliases when all references to the old
-  # names have been updated.
-  copy("copy_cr_shared_vars_alias") {
-    deps = [ ":css_wrapper_files" ]
-    sources = [ "$preprocess_folder/cr_shared_vars.css.ts" ]
-    outputs = [ "$preprocess_folder/shared_vars_css.m.ts" ]
-  }
-
-  copy("copy_icons_alias") {
-    deps = [ ":html_wrapper_files" ]
-    sources = [ "$preprocess_folder/icons.html.ts" ]
-    outputs = [ "$preprocess_folder/icons.m.ts" ]
-  }
 }

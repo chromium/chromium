@@ -167,6 +167,11 @@ class Dependency:
           .replace(r'ui/webui/resources/html/', 'ui/webui/resources/js/')
           .replace(r'.html', extension))
 
+    # TODO(crbug.com/1184053): Remove when remaining OOBE files have been
+    # checked in as Polymer3.
+    if self.html_path_normalized == 'ui/webui/resources/cr_elements/icons.html':
+      return 'ui/webui/resources/cr_elements/icons.html.js'
+
     return self.html_path_normalized.replace(r'.html', extension)
 
   def _to_js(self):

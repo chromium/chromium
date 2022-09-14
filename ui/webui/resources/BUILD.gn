@@ -309,19 +309,6 @@ ts_library("library") {
       "js/search_highlight_utils.ts",
       "js/web_ui_listener_mixin.ts",
     ]
-
-    # Adding a few aliases to make it easier to check-in the Polymer3 version of
-    # the code.
-    # TODO(crbug.com/1184053): Remove aliases when all references to the old
-    # names have been updated.
-    in_files += [
-      "cr_elements/icons.m.ts",
-      "cr_elements/shared_vars_css.m.ts",
-    ]
-    extra_deps += [
-      "cr_elements:copy_cr_shared_vars_alias",
-      "cr_elements:copy_icons_alias",
-    ]
   }
 
   definitions = [
