@@ -164,11 +164,11 @@ class CORE_EXPORT ScriptValue final {
 
 namespace WTF {
 
+// VectorTraits for ScriptValue depend entirely on
+// WorldSafeV8Reference<v8::Value>.
 template <>
-struct VectorTraits<blink::ScriptValue> : VectorTraitsBase<blink::ScriptValue> {
-  STATIC_ONLY(VectorTraits);
-  static constexpr bool kCanClearUnusedSlotsWithMemset = true;
-};
+struct VectorTraits<blink::ScriptValue>
+    : VectorTraits<blink::WorldSafeV8Reference<v8::Value>> {};
 
 }  // namespace WTF
 
