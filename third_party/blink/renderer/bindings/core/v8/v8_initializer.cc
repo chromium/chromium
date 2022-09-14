@@ -149,7 +149,7 @@ const size_t kWasmWireBytesLimit = 1 << 12;
 void V8Initializer::MessageHandlerInMainThread(v8::Local<v8::Message> message,
                                                v8::Local<v8::Value> data) {
   DCHECK(IsMainThread());
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::Isolate* isolate = message->GetIsolate();
 
   if (isolate->GetEnteredOrMicrotaskContext().IsEmpty())
     return;
@@ -192,7 +192,7 @@ void V8Initializer::MessageHandlerInMainThread(v8::Local<v8::Message> message,
 
 void V8Initializer::MessageHandlerInWorker(v8::Local<v8::Message> message,
                                            v8::Local<v8::Value> data) {
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::Isolate* isolate = message->GetIsolate();
 
   // During the frame teardown, there may not be a valid context.
   ScriptState* script_state = ScriptState::Current(isolate);
@@ -354,7 +354,7 @@ static void FailedAccessCheckCallbackInMainThread(v8::Local<v8::Object> holder,
                                                   v8::Local<v8::Value> data) {
   // FIXME: We should modify V8 to pass in more contextual information (context,
   // property, and object).
-  BindingSecurity::FailedAccessCheckFor(v8::Isolate::GetCurrent(),
+  BindingSecurity::FailedAccessCheckFor(holder->GetIsolate(),
                                         WrapperTypeInfo::Unwrap(data), holder);
 }
 
