@@ -112,13 +112,6 @@ CONTENT_EXPORT void CreateNetworkContextInNetworkService(
     mojo::PendingReceiver<network::mojom::NetworkContext> context,
     network::mojom::NetworkContextParamsPtr params);
 
-#if BUILDFLAG(IS_WIN)
-// Set the network service process to be the current process for testing. This
-// is useful when there is no network service process e.g. in unit_tests. Must
-// be called on the UI thread.
-CONTENT_EXPORT void SetNetworkServiceTrackerToCurrentProcessForTesting();
-#endif  // BUILDFLAG(IS_WIN)
-
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_NETWORK_SERVICE_INSTANCE_H_

@@ -6,7 +6,6 @@
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/address_family.h"
@@ -30,14 +29,6 @@ void DidCompleteCreateTest(base::RunLoop* run_loop,
 
 TEST(SocketBrokerImplTest, TestCanOpenSocket) {
   content::BrowserTaskEnvironment task_environment;
-
-  // On Windows, calling the broker requires knowledge of the network service
-  // process in order to correctly duplicate the socket. Since there is no
-  // network service in unit_tests, there is no process to duplicate the handle
-  // to, so make it current process for testing.
-#if BUILDFLAG(IS_WIN)
-  content::SetNetworkServiceTrackerToCurrentProcessForTesting();
-#endif
 
   SocketBrokerImpl socket_broker_impl;
   base::RunLoop run_loop;

@@ -10,19 +10,10 @@
 
 namespace content {
 
-// Obtains a handle to the running network service. This might return an invalid
-// base::Process if the network service does not exist. Must  be called on the
-// UI thread.
+// Obtains a base::Process representing the current running network service.
+// This might return an invalid base::Process if the network service does not
+// exist. Must be called on the UI thread.
 CONTENT_EXPORT base::Process GetNetworkServiceProcess();
-
-namespace internal {
-
-// Set the network service process to be the current process for testing. This
-// is useful when there is no network service process e.g. in unit_tests. Must
-// be called on the UI thread.
-CONTENT_EXPORT void SetNetworkServiceTrackerToCurrentProcessForTesting();
-
-}  // namespace internal
 
 }  // namespace content
 

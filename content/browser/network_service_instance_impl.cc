@@ -927,12 +927,4 @@ void CreateNetworkContextInNetworkService(
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-#if BUILDFLAG(IS_WIN)
-
-void SetNetworkServiceTrackerToCurrentProcessForTesting() {
-  internal::SetNetworkServiceTrackerToCurrentProcessForTesting();
-}
-
-#endif  // BUILDFLAG(IS_WIN)
-
 }  // namespace content

@@ -7,7 +7,9 @@
 #include <windows.h>
 
 #include "base/process/process_handle.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/network_service_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
@@ -48,9 +50,18 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceProcessTrackerTest,
   ASSERT_NE(first_process.Handle(), second_process.Handle());
 }
 
-IN_PROC_BROWSER_TEST_F(NetworkServiceProcessTrackerTest, SetToCurrentProcess) {
-  internal::SetNetworkServiceTrackerToCurrentProcessForTesting();
+class NetworkServiceSingleProcessTrackerTest : public ContentBrowserTest {
+ public:
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(features::kNetworkServiceInProcess);
+    ContentBrowserTest::SetUp();
+  }
 
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(NetworkServiceSingleProcessTrackerTest, GetProcess) {
   base::Process process = GetNetworkServiceProcess();
   ASSERT_EQ(process.Pid(), ::GetCurrentProcessId());
 }

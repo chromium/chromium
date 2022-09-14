@@ -10,13 +10,12 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_info.h"
+#include "content/public/common/network_service_util.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
 namespace content {
 
 namespace {
-
-bool g_process_return_current_process = false;
 
 class NetworkServiceListener : public ServiceProcessHost::Observer {
  public:
@@ -96,18 +95,9 @@ void NetworkServiceListener::OnServiceProcessCrashed(
 
 base::Process GetNetworkServiceProcess() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (g_process_return_current_process)
+  if (IsInProcessNetworkService())
     return base::Process::Current().Duplicate();
   return GetInstance().GetNetworkServiceProcess().Duplicate();
 }
-
-namespace internal {
-
-void SetNetworkServiceTrackerToCurrentProcessForTesting() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  g_process_return_current_process = true;
-}
-
-}  // namespace internal
 
 }  // namespace content
