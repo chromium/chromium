@@ -4,6 +4,7 @@
 
 #include "chromeos/utils/pdf_conversion.h"
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "printing/units.h"
@@ -113,27 +114,27 @@ bool ConvertJpgImagesToPdf(const std::vector<std::string>& jpg_images,
   return true;
 }
 
-bool ConvertJpgImageToPdf(const std::vector<uint8_t>& jpg_image,
-                          std::vector<uint8_t>* output) {
+bool ConvertJpgImagesToPdf(const std::vector<std::vector<uint8_t>>& jpg_images,
+                           std::vector<uint8_t>* output) {
   gfx::BufferWStream output_stream;
   sk_sp<SkDocument> pdf_doc = SkPDF::MakeDocument(&output_stream);
   DCHECK(pdf_doc);
 
-  SkDynamicMemoryWStream img_stream;
-  if (!img_stream.write(jpg_image.data(), jpg_image.size())) {
-    LOG(ERROR) << "Unable to write image to dynamic memory stream.";
-    return false;
-  }
+  for (const auto& jpg_image : jpg_images) {
+    SkDynamicMemoryWStream img_stream;
+    bool result = img_stream.write(jpg_image.data(), jpg_image.size());
+    CHECK(result);
 
-  const sk_sp<SkData> img_data = img_stream.detachAsData();
-  if (img_data->isEmpty()) {
-    LOG(ERROR) << "Stream data is empty.";
-    return false;
-  }
+    const sk_sp<SkData> img_data = img_stream.detachAsData();
+    if (img_data->isEmpty()) {
+      LOG(ERROR) << "Stream data is empty.";
+      return false;
+    }
 
-  if (!AddPdfPage(pdf_doc, img_data, false, absl::nullopt)) {
-    LOG(ERROR) << "Unable to add new PDF page.";
-    return false;
+    if (!AddPdfPage(pdf_doc, img_data, false, absl::nullopt)) {
+      LOG(ERROR) << "Unable to add new PDF page.";
+      return false;
+    }
   }
 
   pdf_doc->close();

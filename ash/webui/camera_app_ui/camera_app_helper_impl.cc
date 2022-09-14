@@ -220,7 +220,7 @@ void CameraAppHelperImpl::OnConvertedToDocument(
       return;
     case DocumentOutputFormat::PDF: {
       std::vector<uint8_t> pdf_data;
-      if (!chromeos::ConvertJpgImageToPdf(processed_jpeg_image, &pdf_data)) {
+      if (!chromeos::ConvertJpgImagesToPdf({processed_jpeg_image}, &pdf_data)) {
         LOG(ERROR) << "Failed to convert jpeg image to PDF format";
         std::move(callback).Run({});
         return;
@@ -370,10 +370,11 @@ void CameraAppHelperImpl::ConvertToDocument(
                      std::move(callback)));
 }
 
-void CameraAppHelperImpl::ConvertToPdf(const std::vector<uint8_t>& jpeg_data,
-                                       ConvertToPdfCallback callback) {
+void CameraAppHelperImpl::ConvertToPdf(
+    const std::vector<std::vector<uint8_t>>& jpegs_data,
+    ConvertToPdfCallback callback) {
   std::vector<uint8_t> pdf_data;
-  if (!chromeos::ConvertJpgImageToPdf(jpeg_data, &pdf_data)) {
+  if (!chromeos::ConvertJpgImagesToPdf(jpegs_data, &pdf_data)) {
     LOG(ERROR) << "Failed to convert jpeg image to PDF format";
     std::move(callback).Run({});
     return;

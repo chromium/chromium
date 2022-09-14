@@ -220,6 +220,10 @@ body.tablet-landscape .actions-group {
   flex-direction: column-reverse;
 }
 
+body.doc-mode-reviewing #mode-selector {
+  visibility: hidden;
+}
+
 #mode-selector {
   --fade-padding: 24px;
   --scrollbar-height: 4px;
@@ -279,12 +283,7 @@ body.snapshotting #video-snapshot {
   width: auto;
 }
 
-body.taking.video #gallery-enter,
-body.taking.video #modes-group {
-  display: none;
-}
-
-body.should-handle-intent-result #modes-group {
+body:is(.taking.video, .should-handle-intent-result) #modes-group {
   display: none;
 }
 
@@ -569,6 +568,10 @@ body.mode-switching:not(.streaming) #camera-mode {
   }
 }
 
+body.doc-mode-reviewing #gallery-enter {
+  visibility: hidden;
+}
+
 #gallery-enter {
   background-color: rgba(24, 24, 24, 1);
   height: var(--big-icon);
@@ -586,7 +589,7 @@ body.mode-switching:not(.streaming) #camera-mode {
   pointer-events: none;
 }
 
-body.should-handle-intent-result #gallery-enter {
+body:is(.taking.video, .should-handle-intent-result) #gallery-enter {
   display: none;
 }
 
@@ -689,9 +692,14 @@ body.should-handle-intent-result #open-settings {
   display: none;
 }
 
+body.doc-mode-reviewing #open-settings {
+  visibility: hidden;
+}
+
 #view-camera,
 #view-crop-document,
 #view-document-mode-dialog,
+#view-document-review,
 #view-option-panel,
 #view-ptz-panel,
 #view-review,
@@ -720,6 +728,7 @@ body.should-handle-intent-result #open-settings {
 body.view-camera #view-camera,
 body.view-crop-document #view-crop-document,
 body.view-document-mode-dialog #view-document-mode-dialog,
+body.view-document-review #view-document-review,
 body.view-option-panel #view-option-panel,
 body.view-ptz-panel #view-ptz-panel,
 body.view-review #view-review,

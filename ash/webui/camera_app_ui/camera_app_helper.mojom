@@ -218,8 +218,8 @@ interface CameraAppHelper {
                     DocumentOutputFormat output_format)
       => (array<uint8> doc_data);
 
-  // Converts the given |jpeg_data| to PDF format.
-  ConvertToPdf(array<uint8> jpeg_data) => (array<uint8> pdf_data);
+  // Converts the given |jpegs_data| to PDF format.
+  ConvertToPdf(array<array<uint8>> jpegs_data) => (array<uint8> pdf_data);
 
   // Triggers HaTS survey for the camera app if all the conditions match:
   // 1. The camera app session is longer than 15 seconds

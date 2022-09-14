@@ -15,6 +15,7 @@ const struct {
   const char* name;
   int id;
 } kStringResourceMap[] = {
+    {"add_new_page_button", IDS_ADD_NEW_PAGE_BUTTON},
     {"aria_aspect_ratio_16_to_9", IDS_ARIA_ASPECT_RATIO_16_TO_9},
     {"aria_aspect_ratio_4_to_3", IDS_ARIA_ASPECT_RATIO_4_TO_3},
     {"aria_camera_mode_group", IDS_ARIA_CAMERA_MODE_GROUP},
@@ -41,6 +42,7 @@ const struct {
     {"delete_button", IDS_DELETE_BUTTON},
     {"delete_confirmation_msg", IDS_DELETE_CONFIRMATION_MSG},
     {"delete_multi_confirmation_msg", IDS_DELETE_MULTI_CONFIRMATION_MSG},
+    {"delete_page_button", IDS_DELETE_PAGE_BUTTON},
     {"description", IDS_DESCRIPTION},
     {"dialog_cancel_button", IDS_DIALOG_CANCEL_BUTTON},
     {"dialog_ok_button", IDS_DIALOG_OK_BUTTON},
@@ -148,6 +150,7 @@ const struct {
     {"new_control_navigation", IDS_NEW_CONTROL_NAVIGATION},
     {"new_control_toast", IDS_NEW_CONTROL_TOAST},
     {"new_document_scan_toast", IDS_NEW_DOCUMENT_SCAN_TOAST},
+    {"next_page_count", IDS_NEXT_PAGE_COUNT},
     {"no_document_guide_msg", IDS_NO_DOCUMENT_GUIDE_MSG},
     {"open_grid_panel_button", IDS_OPEN_GRID_PANEL_BUTTON},
     {"open_mirror_panel_button", IDS_OPEN_MIRROR_PANEL_BUTTON},
@@ -171,6 +174,7 @@ const struct {
     {"rotate_counterclockwise_button", IDS_ROTATE_COUNTERCLOCKWISE_BUTTON},
     {"scan_document_option", IDS_SCAN_DOCUMENT_OPTION},
     {"scan_qrcode_option", IDS_SCAN_QRCODE_OPTION},
+    {"select_page_button", IDS_SELECT_PAGE_BUTTON},
     {"settings_button", IDS_SETTINGS_BUTTON},
     {"snackbar_link_copied", IDS_SNACKBAR_LINK_COPIED},
     {"snackbar_text_copied", IDS_SNACKBAR_TEXT_COPIED},

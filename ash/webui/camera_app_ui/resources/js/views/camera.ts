@@ -25,6 +25,7 @@ import {Point} from '../geometry.js';
 import {I18nString} from '../i18n_string.js';
 import * as metrics from '../metrics.js';
 import {Filenamer} from '../models/file_namer.js';
+import {getI18nMessage} from '../models/load_time_data.js';
 import {ResultSaver} from '../models/result_saver.js';
 import {VideoSaver} from '../models/video_saver.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
@@ -59,6 +60,7 @@ import * as timertick from './camera/timertick.js';
 import {VideoEncoderOptions} from './camera/video_encoder_options.js';
 import {CropDocument} from './crop_document.js';
 import {Dialog} from './dialog.js';
+import {DocumentReview} from './document_review.js';
 import {OptionPanel} from './option_panel.js';
 import {PTZPanel} from './ptz_panel.js';
 import * as review from './review.js';
@@ -71,6 +73,8 @@ import {WarningType} from './warning.js';
  */
 export class Camera extends View implements CameraViewUI {
   private readonly cropDocument = new CropDocument();
+
+  private readonly documentReview: DocumentReview;
 
   private readonly docModeDialogView =
       new Dialog(ViewName.DOCUMENT_MODE_DIALOG);
@@ -123,13 +127,14 @@ export class Camera extends View implements CameraViewUI {
       readonly perfLogger: PerfLogger,
   ) {
     super(ViewName.CAMERA);
-
+    this.documentReview = new DocumentReview(resultSaver);
     this.subViews = [
       new PrimarySettings(this.cameraManager),
       new OptionPanel(),
       new PTZPanel(),
       this.review,
       this.cropDocument,
+      this.documentReview,
       this.docModeDialogView,
       new View(ViewName.FLASH),
     ];
@@ -256,6 +261,13 @@ export class Camera extends View implements CameraViewUI {
         }
       });
     }
+    dom.get('#back-to-review-document', HTMLButtonElement)
+        .addEventListener(
+            'click',
+            () => {
+              this.reviewMultiPageDocument();
+            },
+        );
   }
 
   /**
@@ -589,6 +601,7 @@ export class Camera extends View implements CameraViewUI {
 
   async onDocumentCaptureDone(pendingPhotoResult: Promise<PhotoResult>):
       Promise<void> {
+    // TODO(b/223089758): Add flag here to call `onMultiPageDocumentCaptureDone`
     const {blob: rawBlob, resolution, timestamp, metadata} =
         await this.checkPhotoResult(pendingPhotoResult);
     const helper = ChromeHelper.getInstance();
@@ -601,7 +614,7 @@ export class Camera extends View implements CameraViewUI {
     const {docBlob, mimeType} = reviewResult;
     let blob = docBlob;
     if (mimeType === MimeType.PDF) {
-      blob = await helper.convertToPdf(blob);
+      blob = await helper.convertToPdf([blob]);
     }
     try {
       const name = (new Filenamer(timestamp)).newDocumentName(mimeType);
@@ -611,6 +624,31 @@ export class Camera extends View implements CameraViewUI {
       throw e;
     }
     ChromeHelper.getInstance().maybeTriggerSurvey();
+  }
+
+  async onMultiPageDocumentCaptureDone(
+      pendingPhotoResult: Promise<PhotoResult>): Promise<void> {
+    nav.open(ViewName.FLASH);
+    let enterInFixMode = false;
+    try {
+      const {blob, resolution} =
+          await this.checkPhotoResult(pendingPhotoResult);
+      const helper = ChromeHelper.getInstance();
+      let corners = await helper.scanDocumentCorners(blob);
+      if (corners === null) {
+        corners = getDefaultScanCorners(resolution);
+        enterInFixMode = true;
+      }
+      await this.documentReview.addPage({
+        blob,
+        corners,
+        rotation: Rotation.ANGLE_0,
+        resolution,
+      });
+    } finally {
+      nav.close(ViewName.FLASH);
+    }
+    await this.reviewMultiPageDocument(enterInFixMode);
   }
 
   /**
@@ -764,6 +802,15 @@ export class Camera extends View implements CameraViewUI {
       nav.close(ViewName.FLASH);
     }
     return result;
+  }
+
+  private async reviewMultiPageDocument(enterInFixMode = false): Promise<void> {
+    await this.prepareReview(async () => {
+      const pageCount = await this.documentReview.open({fix: enterInFixMode});
+      dom.get('#document-page-count', HTMLDivElement).textContent =
+          getI18nMessage(I18nString.NEXT_PAGE_COUNT, pageCount + 1);
+      state.set(state.State.DOC_MODE_REVIEWING, pageCount > 0);
+    });
   }
 
   createVideoSaver(): Promise<VideoSaver> {

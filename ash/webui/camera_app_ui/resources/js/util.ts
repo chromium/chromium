@@ -381,3 +381,35 @@ export function toAspectRatioSet(resolution: Resolution|null): AspectRatioSet {
       return AspectRatioSet.RATIO_OTHER;
   }
 }
+
+/**
+ * Extract first url from CSS background-image value if exist.
+ */
+export function extractBackgroundImageValueUrl(element: HTMLElement): string|
+    null {
+  const style = element.attributeStyleMap;
+  const imageValue = style.get('background-image');
+  // attributeStyleMap.get() returns null instead of undefined if the property
+  // does not exist. Check undefined for type narrowing.
+  if (imageValue === null || imageValue === undefined) {
+    return null;
+  }
+  const match = imageValue.toString().match(/url\(['"](.*)['"]\)/);
+  return match?.[1] ?? null;
+}
+
+/**
+ * Load the image element with given blob.
+ */
+export async function loadImage(
+    image: HTMLImageElement, data: Blob|string): Promise<void> {
+  const src = typeof data === 'string' ? data : URL.createObjectURL(data);
+  return new Promise((resolve, reject) => {
+    image.onload = () => resolve();
+    image.onerror = (e) => {
+      reject(new Error(`Failed to load image: ${e}`));
+      URL.revokeObjectURL(image.src);
+    };
+    image.src = src;
+  });
+}

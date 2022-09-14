@@ -701,6 +701,18 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Toast message notifying user about the document scanner feature is currently downloading" name="IDS_DOWNLOADING_DOCUMENT_SCANNING_FEATURE">
         Downloading updates for document scanning
       </message>
+      <message desc="Label for the button of adding a new document page." name="IDS_ADD_NEW_PAGE_BUTTON">
+        Scan additional pages
+      </message>
+      <message desc="Label for the button of selecting the document page." name="IDS_SELECT_PAGE_BUTTON">
+        Select page
+      </message>
+      <message desc="Label for the button of deleting the document page." name="IDS_DELETE_PAGE_BUTTON">
+        Delete page
+      </message>
+      <message desc="Message for the next page count of document scanning mode." name="IDS_NEXT_PAGE_COUNT">
+        Scanning page <ph name="count">$1<ex>2</ex></ph>
+      </message>
     </messages>
   </release>
 </grit>

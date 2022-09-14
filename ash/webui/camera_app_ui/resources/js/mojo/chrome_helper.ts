@@ -367,9 +367,12 @@ export class ChromeHelper {
    * @param jpegBlob Blob in JPEG format.
    * @return Blob in PDF format.
    */
-  async convertToPdf(jpegBlob: Blob): Promise<Blob> {
-    const buffer = new Uint8Array(await jpegBlob.arrayBuffer());
-    const {pdfData} = await this.remote.convertToPdf(castToNumberArray(buffer));
+  async convertToPdf(jpegBlobs: Blob[]): Promise<Blob> {
+    const numArrays = await Promise.all(jpegBlobs.map(async (blob) => {
+      const buffer = new Uint8Array(await blob.arrayBuffer());
+      return castToNumberArray(buffer);
+    }));
+    const {pdfData} = await this.remote.convertToPdf(numArrays);
     return new Blob([new Uint8Array(pdfData)], {type: MimeType.PDF});
   }
 

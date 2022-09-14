@@ -91,7 +91,7 @@ class CameraAppHelperImpl : public TabletModeObserver,
                          chromeos::machine_learning::mojom::Rotation rotation,
                          camera_app::mojom::DocumentOutputFormat output_format,
                          ConvertToDocumentCallback callback) override;
-  void ConvertToPdf(const std::vector<uint8_t>& jpeg_data,
+  void ConvertToPdf(const std::vector<std::vector<uint8_t>>& jpegs_data,
                     ConvertToPdfCallback callback) override;
   void MaybeTriggerSurvey() override;
 

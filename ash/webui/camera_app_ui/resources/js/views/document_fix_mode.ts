@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,8 @@ import * as dom from '../dom.js';
 import {Box, Line, Point, Size, Vector, vectorFromPoints} from '../geometry.js';
 import {I18nString} from '../i18n_string.js';
 import {speak} from '../spoken_msg.js';
-import {Rotation, ViewName} from '../type.js';
+import {Rotation} from '../type.js';
 import * as util from '../util.js';
-
-import {
-  ButtonGroupTemplate,
-  Option,
-  OptionGroup,
-  Review,
-} from './review.js';
 
 /**
  * Delay for movement announcer gathering user pressed key to announce first
@@ -120,53 +113,109 @@ interface Corner {
   pointerId: number|null;
 }
 
-/**
- * View controller for review document crop area page.
- */
-export class CropDocument extends Review<boolean> {
-  private readonly imageFrame: HTMLDivElement;
+export class DocumentFixMode {
+  private readonly templateSelector = '#document-fix-mode';
 
-  /**
-   * Size of image frame.
-   */
-  private frameSize = new Size(0, 0);
+  private readonly root: HTMLElement;
 
   /**
    * The original size of the image to be cropped.
    */
-  private imageOriginalSize: Size|null = null;
+  private rawImageSize = new Size(0, 0);
+
+  private readonly imageElement: HTMLImageElement;
 
   /**
-   * Space size coordinates in |this.corners_|. Will change when image client
-   * area resized.
+   * The frame to show the image and corners.
    */
-  private cornerSpaceSize: Size|null = null;
+  private readonly previewArea: HTMLDivElement;
+
+  /**
+   * The available size for showing the image. Will be synced with the rendered
+   * size of previewArea.
+   */
+  private previewAreaSize = new Size(0, 0);
 
   private readonly cropAreaContainer: SVGElement;
 
+  /**
+   * The area framed by the corners.
+   */
   private readonly cropArea: SVGPolygonElement;
 
   /**
-   * Index of |ROTATION| as current photo rotation.
+   * Contains the corners and the image elements.
+   */
+  private readonly imageContainer: HTMLDivElement;
+
+  /**
+   * The display size of the image and the available space for the corners.
+   * Will change when `this.previewArea` resizes.
+   */
+  private imageContainerSize: Size|null = null;
+
+  /**
+   * Index of `ROTATIONS` as current photo rotation.
    */
   private rotation = 0;
 
+  /**
+   * Used to update `this.corners` when manually update the corners by
+   * `this.update`.
+   */
   private initialCorners: Point[] = [];
 
   private readonly corners: Corner[];
 
-  constructor() {
-    super(ViewName.CROP_DOCUMENT);
+  /**
+   * The observer to call `this.layout` when `this.previewArea` resizes.
+   */
+  private readonly resizeObserver: ResizeObserver;
 
-    this.imageFrame = dom.getFrom(this.root, '.review-frame', HTMLDivElement);
+  /**
+   * The target element to append the root element of fix mode.
+   */
+  private readonly target: HTMLElement;
 
+  constructor({target, onExit, onUpdatePage}: {
+    target: HTMLElement,
+    onExit: () => void,
+    onUpdatePage:
+        ({corners, rotation}:
+             {corners: Point[], rotation: typeof ROTATIONS[number]}) => void,
+  }) {
+    this.target = target;
+    const fragment = util.instantiateTemplate(this.templateSelector);
+    this.root = dom.getFrom(fragment, '.document-fix-mode', HTMLElement);
+    this.previewArea = dom.getFrom(this.root, '.preview-area', HTMLDivElement);
+    this.imageElement = dom.getFrom(this.root, '.image', HTMLImageElement);
     this.cropAreaContainer =
         dom.getFrom(this.root, '.crop-area-container', SVGElement);
+    this.cropArea = dom.getFrom(this.root, '.crop-area', SVGPolygonElement);
+    this.imageContainer =
+        dom.getFrom(this.root, '.image-container', HTMLDivElement);
 
-    this.cropArea = dom.getFrom(this.image, '.crop-area', SVGPolygonElement);
+    this.resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.target !== this.previewArea) {
+          continue;
+        }
+        // There should be exactly one size for `this.previewArea`, see
+        // https://www.w3.org/TR/resize-observer/#resize-observer-entry-interface
+        const {inlineSize, blockSize} = entry.contentBoxSize[0];
+        this.previewAreaSize = new Size(inlineSize, blockSize);
+        this.setupImageAndCorners();
+        // Clear all dragging corners.
+        for (const corner of this.corners) {
+          if (corner.pointerId !== null) {
+            this.clearDragging(corner.pointerId);
+          }
+        }
+      }
+    });
 
     /**
-     * Coordinates of document with respect to |this.cornerSpaceSize_|.
+     * Coordinates of document with respect to `this.imageContainerSize`.
      */
     this.corners = (() => {
       const ret = [];
@@ -177,37 +226,38 @@ export class CropDocument extends Review<boolean> {
           pt: new Point(0, 0),
           pointerId: null,
         });
-        this.image.appendChild(tpl);
+        this.imageContainer.appendChild(tpl);
       }
       return ret;
     })();
 
-    const updateRotation = (rotation: number) => {
-      this.rotation = rotation;
-      this.updateImage();
-      this.updateCornerElAriaLabel();
+    const onChangeCornerOrRotation = () => {
+      const corners = this.corners.map(({pt: {x, y}}) => {
+        assert(this.imageContainerSize !== null);
+        return new Point(
+            x / this.imageContainerSize.width,
+            y / this.imageContainerSize.height);
+      });
+      const rotation = ROTATIONS[this.rotation];
+      onUpdatePage({corners, rotation});
     };
 
     const clockwiseBtn = dom.getFrom(
         this.root, 'button[i18n-aria=rotate_clockwise_button]',
         HTMLButtonElement);
     clockwiseBtn.addEventListener('click', () => {
-      updateRotation((this.rotation + 1) % ROTATIONS.length);
+      this.updateRotation((this.rotation + 1) % ROTATIONS.length);
+      onChangeCornerOrRotation();
     });
 
     const counterclockwiseBtn = dom.getFrom(
         this.root, 'button[i18n-aria=rotate_counterclockwise_button]',
         HTMLButtonElement);
     counterclockwiseBtn.addEventListener('click', () => {
-      updateRotation((this.rotation + ROTATIONS.length - 1) % ROTATIONS.length);
+      this.updateRotation(
+          (this.rotation + ROTATIONS.length - 1) % ROTATIONS.length);
+      onChangeCornerOrRotation();
     });
-
-    const cornerSize = (() => {
-      const style = this.corners[0].el.computedStyleMap();
-      const width = util.getStyleValueInPx(style, 'width');
-      const height = util.getStyleValueInPx(style, 'height');
-      return new Size(width, height);
-    })();
 
     for (const corner of this.corners) {
       // Start dragging on one corner.
@@ -292,25 +342,34 @@ export class CropDocument extends Review<boolean> {
         if (pressedKeyIndices.size === 0) {
           clearKeydown();
         }
+        onChangeCornerOrRotation();
       });
     }
 
     // Stop dragging.
     for (const eventName of ['pointerup', 'pointerleave', 'pointercancel']) {
-      this.image.addEventListener(eventName, (e) => {
+      this.imageContainer.addEventListener(eventName, (e) => {
         e.preventDefault();
         this.clearDragging(assertInstanceof(e, PointerEvent).pointerId);
+        onChangeCornerOrRotation();
       });
     }
 
+    // Cache corner size to avoid layout thrashing. Assume that all corners have
+    // same sizes and sizes never change.
+    let cornerSize: Size|undefined;
     // Move drag corner.
-    this.image.addEventListener('pointermove', (e) => {
+    this.imageContainer.addEventListener('pointermove', (e) => {
       e.preventDefault();
 
       const pointerId = assertInstanceof(e, PointerEvent).pointerId;
       const corner = this.findDragging(pointerId);
       if (corner === null) {
         return;
+      }
+      if (cornerSize === undefined) {
+        const {width, height} = corner.el.getBoundingClientRect();
+        cornerSize = new Size(width, height);
       }
       assert(corner.el.classList.contains('dragging'));
 
@@ -334,36 +393,16 @@ export class CropDocument extends Review<boolean> {
     });
 
     // Prevent contextmenu popup triggered by long touch.
-    this.image.addEventListener('contextmenu', (e) => {
+    this.imageContainer.addEventListener('contextmenu', (e) => {
       // Chrome use PointerEvent instead of MouseEvent for contextmenu event:
       // https://chromestatus.com/feature/5670732015075328.
       if (assertInstanceof(e, PointerEvent).pointerType === 'touch') {
         e.preventDefault();
       }
     });
-    this.image.hidden = false;
-  }
-
-  /**
-   * @param corners Initial guess from corner detector.
-   * @return Returns new selected corners to be cropped and its rotation.
-   */
-  async reviewCropArea(corners: Point[]):
-      Promise<{corners: Point[], rotation: Rotation}> {
-    this.initialCorners = corners;
-    this.cornerSpaceSize = null;
-    await super.startReview(new OptionGroup({
-      template: ButtonGroupTemplate.POSITIVE,
-      options: [new Option(
-          {text: I18nString.LABEL_CROP_DONE, primary: true},
-          {exitValue: true})],
-    }));
-    const newCorners = this.corners.map(({pt: {x, y}}) => {
-      assert(this.cornerSpaceSize !== null);
-      return new Point(
-          x / this.cornerSpaceSize.width, y / this.cornerSpaceSize.height);
-    });
-    return {corners: newCorners, rotation: ROTATIONS[this.rotation]};
+    dom.getFrom(
+           this.root, 'button[i18n-text=label_crop_done]', HTMLButtonElement)
+        .addEventListener('click', onExit);
   }
 
   private setDragging(corner: Corner, pointerId: number) {
@@ -385,10 +424,10 @@ export class CropDocument extends Review<boolean> {
   }
 
   private mapToValidArea(corner: Corner, pt: Point): Point|null {
-    assert(this.cornerSpaceSize !== null);
+    assert(this.imageContainerSize !== null);
     pt = new Point(
-        Math.max(Math.min(pt.x, this.cornerSpaceSize.width), 0),
-        Math.max(Math.min(pt.y, this.cornerSpaceSize.height), 0));
+        Math.max(Math.min(pt.x, this.imageContainerSize.width), 0),
+        Math.max(Math.min(pt.y, this.imageContainerSize.height), 0));
 
     const idx = this.corners.findIndex((c) => c === corner);
     assert(idx !== -1);
@@ -396,7 +435,8 @@ export class CropDocument extends Review<boolean> {
     const nextPt = this.corners[(idx + 1) % 4].pt;
     const restPt = this.corners[(idx + 2) % 4].pt;
     const closestDist =
-        Math.min(this.cornerSpaceSize.width, this.cornerSpaceSize.height) *
+        Math.min(
+            this.imageContainerSize.width, this.imageContainerSize.height) *
         CLOSEST_DISTANCE_RATIO;
     const prevDir = vectorFromPoints(restPt, prevPt).direction();
     const prevBorder = (new Line(prevPt, prevDir)).moveParallel(closestDist);
@@ -420,7 +460,7 @@ export class CropDocument extends Review<boolean> {
       // May completely overlapped.
       return null;
     }
-    const box = new Box(assertInstanceof(this.cornerSpaceSize, Size));
+    const box = new Box(assertInstanceof(this.imageContainerSize, Size));
 
     // Find boundary points of valid area by cases of whether |prevBorderPt| and
     // |nextBorderPt| are inside/outside the box.
@@ -517,15 +557,15 @@ export class CropDocument extends Review<boolean> {
   }
 
   /**
-   * Updates image position/size with respect to |this.rotation_|,
-   * |this.frameSize_| and |this.imageOriginalSize_|.
+   * Updates image and corners position/size with respect to `this.rotation`,
+   * `this.previewAreaSize` and `this.rawImageSize`.
    */
-  private updateImage() {
-    const {width: frameW, height: frameH} = this.frameSize;
-    assert(this.imageOriginalSize !== null);
-    const {width: rawImageW, height: rawImageH} = this.imageOriginalSize;
-    const style = this.image.attributeStyleMap;
-
+  private setupImageAndCorners() {
+    const {width: frameW, height: frameH} = this.previewAreaSize;
+    const {width: rawImageW, height: rawImageH} = this.rawImageSize;
+    if (frameW === 0 || frameH === 0 || rawImageW === 0 || rawImageH === 0) {
+      return;
+    }
     let rotatedW = rawImageW;
     let rotatedH = rawImageH;
     if (ROTATIONS[this.rotation] === Rotation.ANGLE_90 ||
@@ -535,28 +575,27 @@ export class CropDocument extends Review<boolean> {
     const scale = Math.min(1, frameW / rotatedW, frameH / rotatedH);
     const newImageW = scale * rawImageW;
     const newImageH = scale * rawImageH;
-    style.set('width', CSS.px(newImageW));
-    style.set('height', CSS.px(newImageH));
-    this.cropAreaContainer.setAttribute(
-        'viewBox', `0 0 ${newImageW} ${newImageH}`);
-
     // Update corner space.
-    if (this.cornerSpaceSize === null) {
+    if (this.imageContainerSize === null) {
       for (const [idx, {x, y}] of this.initialCorners.entries()) {
         this.corners[idx].pt = new Point(x * newImageW, y * newImageH);
       }
       this.initialCorners = [];
     } else {
-      const oldImageW = this.cornerSpaceSize.width;
-      const oldImageH = this.cornerSpaceSize.height;
+      const oldImageW = this.imageContainerSize.width;
+      const oldImageH = this.imageContainerSize.height;
       for (const corner of this.corners) {
         corner.pt = new Point(
             corner.pt.x / oldImageW * newImageW,
             corner.pt.y / oldImageH * newImageH);
       }
     }
-    this.cornerSpaceSize = new Size(newImageW, newImageH);
-
+    const style = this.imageContainer.attributeStyleMap;
+    this.cropAreaContainer.setAttribute(
+        'viewBox', `0 0 ${newImageW} ${newImageH}`);
+    style.set('width', CSS.px(newImageW));
+    style.set('height', CSS.px(newImageH));
+    this.imageContainerSize = new Size(newImageW, newImageH);
     const originX =
         frameW / 2 + rotatedW * scale / 2 * [-1, 1, 1, -1][this.rotation];
     const originY =
@@ -571,31 +610,47 @@ export class CropDocument extends Review<boolean> {
     this.updateCornerEl();
   }
 
-  override async setReviewPhoto(blob: Blob): Promise<void> {
+  async update({corners, rotation, blob}: {
+    corners: Point[],
+    rotation: typeof ROTATIONS[number],
+    blob: Blob,
+  }): Promise<void> {
+    this.initialCorners = corners;
+    this.imageContainerSize = null;
     const image = new Image();
-    await this.loadImage(image, blob);
-    this.imageOriginalSize = new Size(image.width, image.height);
-    const oldUrl = util.extractBackgroundImageValueUrl(this.image);
-    if (oldUrl !== null) {
-      URL.revokeObjectURL(oldUrl);
-    }
-    this.image.attributeStyleMap.set('background-image', `url('${image.src}')`);
+    await util.loadImage(image, blob);
+    this.rawImageSize = new Size(image.width, image.height);
+    this.imageElement.src = image.src;
+    URL.revokeObjectURL(image.src);
+    this.updateRotation(ROTATIONS.indexOf(rotation));
+  }
 
-    this.rotation = 0;
+  updateRotation(rotation: number): void {
+    this.rotation = rotation;
+    this.setupImageAndCorners();
     this.updateCornerElAriaLabel();
   }
 
-  override layout(): void {
-    super.layout();
-
-    const rect = this.imageFrame.getBoundingClientRect();
-    this.frameSize = new Size(rect.width, rect.height);
-    this.updateImage();
+  layout(): void {
+    const previewAreaRect = this.previewArea.getBoundingClientRect();
+    this.previewAreaSize =
+        new Size(previewAreaRect.width, previewAreaRect.height);
+    this.setupImageAndCorners();
     // Clear all dragging corners.
     for (const corner of this.corners) {
       if (corner.pointerId !== null) {
         this.clearDragging(corner.pointerId);
       }
     }
+  }
+
+  show(): void {
+    this.target.append(this.root);
+    this.resizeObserver.observe(this.previewArea);
+  }
+
+  hide(): void {
+    this.resizeObserver.disconnect();
+    this.root.remove();
   }
 }
