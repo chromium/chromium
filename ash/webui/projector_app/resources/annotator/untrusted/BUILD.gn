@@ -11,9 +11,9 @@ assert(is_chromeos_ash, "Projector Annotator is ChromeOS only")
 js_library("untrusted_annotator_library") {
   sources = [ "untrusted_annotator_comm_factory.js" ]
   deps = [
+    "//ash/webui/common/resources/post_message_api:post_message_api_client",
+    "//ash/webui/common/resources/post_message_api:post_message_api_request_handler",
     "//ash/webui/projector_app/resources/common:message_types",
-    "//ui/webui/resources/js:post_message_api_client.m",
-    "//ui/webui/resources/js:post_message_api_request_handler.m",
   ]
   externs_list = [ "../../common/projector_app.externs.js" ]
 }

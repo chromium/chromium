@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PostMessageAPIServer} from 'chrome://resources/js/post_message_api_server.m.js';
+import {PostMessageAPIServer} from 'chrome://resources/ash/common/post_message_api/post_message_api_server.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
 /**

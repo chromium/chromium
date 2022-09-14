@@ -15,12 +15,7 @@ PostMessageAPIModuleTest.prototype = {
 
   /** @override */
   browsePreload:
-      'chrome://chrome-signin/test_loader.html?module=post_message_api/post_message_api_test.js&host=test',
-
-  extraLibraries: [
-    '//third_party/mocha/mocha.js',
-    '//chrome/test/data/webui/mocha_adapter.js',
-  ],
+      'chrome://chrome-signin/test_loader.html?module=chromeos/ash_common/post_message_api/post_message_api_test.js&host=test',
 
   isAsync: true,
 };
