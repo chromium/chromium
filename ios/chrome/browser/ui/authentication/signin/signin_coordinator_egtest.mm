@@ -1083,6 +1083,14 @@ void ExpectSyncConsentHistogram(
   config.features_enabled.push_back(switches::kEnableCbdSignOut);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
+  // Remove closed tab history to make sure the sign-in promo is always visible
+  // in recent tabs.
+  [ChromeEarlGrey clearBrowsingHistory];
+  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [ChromeEarlGrey clearBookmarks];
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
+
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [self signInOpenCBDAndClearDataWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
@@ -1104,6 +1112,14 @@ void ExpectSyncConsentHistogram(
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
   config.features_disabled.push_back(switches::kEnableCbdSignOut);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Remove closed tab history to make sure the sign-in promo is always visible
+  // in recent tabs.
+  [ChromeEarlGrey clearBrowsingHistory];
+  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [ChromeEarlGrey clearBookmarks];
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
 
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [self signInOpenCBDAndClearDataWithFakeIdentity:fakeIdentity];
