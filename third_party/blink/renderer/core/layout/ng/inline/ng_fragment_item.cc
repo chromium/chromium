@@ -207,6 +207,9 @@ NGFragmentItem::NGFragmentItem(const NGFragmentItem& source)
       is_dirty_(source.is_dirty_),
       is_last_for_node_(source.is_last_for_node_) {
   switch (Type()) {
+    case kInvalid:
+      CHECK(false) << "Cannot construct invalid value";
+      break;
     case kText:
       new (&text_) TextItem(source.text_);
       break;
@@ -250,6 +253,9 @@ NGFragmentItem::NGFragmentItem(NGFragmentItem&& source)
       is_dirty_(source.is_dirty_),
       is_last_for_node_(source.is_last_for_node_) {
   switch (Type()) {
+    case kInvalid:
+      CHECK(false) << "Cannot construct invalid value";
+      break;
     case kText:
       new (&text_) TextItem(std::move(source.text_));
       break;
@@ -271,6 +277,9 @@ NGFragmentItem::NGFragmentItem(NGFragmentItem&& source)
 
 NGFragmentItem::~NGFragmentItem() {
   switch (Type()) {
+    case kInvalid:
+      // Slot can be zeroed, do nothing.
+      return;
     case kText:
       text_.~TextItem();
       break;
@@ -316,6 +325,9 @@ bool NGFragmentItem::IsBlockInInline() const {
     case kLine:
       if (auto* line_box = LineBoxFragment())
         return line_box->IsBlockInInline();
+      return false;
+    case kInvalid:
+      NOTREACHED();
       return false;
     default:
       return false;
@@ -1168,6 +1180,9 @@ std::ostream& operator<<(std::ostream& ostream, const NGFragmentItem& item) {
         ostream << " AtomicInline"
                 << (IsLtr(item.ResolvedDirection()) ? "LTR" : "RTL");
       }
+      break;
+    case NGFragmentItem::kInvalid:
+      NOTREACHED();
       break;
   }
   ostream << " ";

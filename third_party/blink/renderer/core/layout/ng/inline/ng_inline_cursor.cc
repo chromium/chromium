@@ -107,6 +107,7 @@ bool ShouldIgnoreForPositionForPoint(const NGFragmentItem& item) {
       // All/LayoutViewHitTestTest.PseudoElementAfter* needs this.
       return item.IsGeneratedText();
     case NGFragmentItem::kLine:
+    case NGFragmentItem::kInvalid:
       NOTREACHED();
       break;
   }
@@ -846,6 +847,7 @@ PositionWithAffinity NGInlineCursor::PositionForPointInChild(
       DCHECK(child_item.GetLayoutObject()->IsLayoutInline()) << child_item;
       break;
     case NGFragmentItem::kLine:
+    case NGFragmentItem::kInvalid:
       NOTREACHED();
       break;
   }
