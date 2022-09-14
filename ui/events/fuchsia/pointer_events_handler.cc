@@ -271,9 +271,11 @@ std::unique_ptr<MouseEvent> CreateMouseEventDraft(
         location, root_location, timestamp, pressed_buttons_flags,
         changed_buttons_flags, gfx::Vector2d(tick_x_120ths, tick_y_120ths));
   }
-  return std::make_unique<MouseEvent>(event_type, location, root_location,
-                                      timestamp, pressed_buttons_flags,
-                                      changed_buttons_flags, pointer_details);
+  auto mouse_event = std::make_unique<MouseEvent>(
+      event_type, location, root_location, timestamp, pressed_buttons_flags,
+      changed_buttons_flags, pointer_details);
+  mouse_event->InitializeNative();
+  return mouse_event;
 }
 
 }  // namespace

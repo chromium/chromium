@@ -277,6 +277,65 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventFlagCombo) {
   mouse_events.clear();
 }
 
+TEST_F(PointerEventsHandlerTest, ChromeMouseEventDoubleClick) {
+  std::vector<MouseEvent> mouse_events;
+  pointer_handler_->StartWatching(
+      base::BindLambdaForTesting([&mouse_events](Event* event) {
+        mouse_events.push_back(*event->AsMouseEvent());
+      }));
+  RunLoopUntilIdle();  // Server gets watch call.
+
+  std::vector<fup::MouseEvent> events;
+  // Press
+  events.push_back(MouseEventBuilder()
+                       .AddTime(1111789u)
+                       .AddViewParameters(kRect, kRect, kIdentity)
+                       .AddSample(kMouseDeviceId, {10.f, 10.f}, {0},
+                                  kNoScrollDelta, kNoScrollInPhysicalPixelDelta,
+                                  kNotPrecisionScroll)
+                       .AddMouseDeviceInfo(kMouseDeviceId, {0, 1, 2})
+                       .Build());
+  // Release
+  events.push_back(MouseEventBuilder()
+                       .AddTime(2111789u)
+                       .AddViewParameters(kRect, kRect, kIdentity)
+                       .AddSample(kMouseDeviceId, {10.f, 10.f}, {},
+                                  kNoScrollDelta, kNoScrollInPhysicalPixelDelta,
+                                  kNotPrecisionScroll)
+                       .AddMouseDeviceInfo(kMouseDeviceId, {0, 1, 2})
+                       .Build());
+  // Press
+  events.push_back(MouseEventBuilder()
+                       .AddTime(3111789u)
+                       .AddViewParameters(kRect, kRect, kIdentity)
+                       .AddSample(kMouseDeviceId, {10.f, 10.f}, {0},
+                                  kNoScrollDelta, kNoScrollInPhysicalPixelDelta,
+                                  kNotPrecisionScroll)
+                       .AddMouseDeviceInfo(kMouseDeviceId, {0, 1, 2})
+                       .Build());
+  // Release
+  events.push_back(MouseEventBuilder()
+                       .AddTime(4111789u)
+                       .AddViewParameters(kRect, kRect, kIdentity)
+                       .AddSample(kMouseDeviceId, {10.f, 10.f}, {},
+                                  kNoScrollDelta, kNoScrollInPhysicalPixelDelta,
+                                  kNotPrecisionScroll)
+                       .AddMouseDeviceInfo(kMouseDeviceId, {0, 1, 2})
+                       .Build());
+  mouse_source_->ScheduleCallback(std::move(events));
+  RunLoopUntilIdle();
+
+  ASSERT_EQ(mouse_events.size(), 4u);
+  EXPECT_EQ(mouse_events[0].type(), ET_MOUSE_PRESSED);
+  EXPECT_EQ(mouse_events[0].flags(), EF_LEFT_MOUSE_BUTTON);
+  EXPECT_EQ(mouse_events[1].type(), ET_MOUSE_RELEASED);
+  EXPECT_EQ(mouse_events[1].flags(), EF_LEFT_MOUSE_BUTTON);
+  EXPECT_EQ(mouse_events[2].type(), ET_MOUSE_PRESSED);
+  EXPECT_EQ(mouse_events[2].flags(), EF_LEFT_MOUSE_BUTTON | EF_IS_DOUBLE_CLICK);
+  EXPECT_EQ(mouse_events[3].type(), ET_MOUSE_RELEASED);
+  EXPECT_EQ(mouse_events[3].flags(), EF_LEFT_MOUSE_BUTTON | EF_IS_DOUBLE_CLICK);
+}
+
 TEST_F(PointerEventsHandlerTest, MouseMultiButtonDrag) {
   std::vector<MouseEvent> mouse_events;
   pointer_handler_->StartWatching(
