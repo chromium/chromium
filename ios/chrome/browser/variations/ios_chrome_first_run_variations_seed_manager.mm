@@ -27,10 +27,10 @@ const base::TimeDelta kRequestTimeout = base::Seconds(3);
 // Whether a current request for variations seed is being made; this variable
 // exists that only one instance of the manager updates the global seed at one
 // time.
-static BOOL _seedFetchingInProcess = NO;
+static BOOL g_seed_fetching_in_progress = NO;
 
 // The source of truth of the entire app for the stored seed.
-static IOSChromeSeedResponse* _sharedSeed = nil;
+static IOSChromeSeedResponse* g_shared_seed = nil;
 
 }  // namespace
 
@@ -52,6 +52,9 @@ static IOSChromeSeedResponse* _sharedSeed = nil;
 // The timestamp when the current seed request starts. This is used for metric
 // reporting, and will be reset to `nil` when the request finishes.
 @property(nonatomic, strong) NSDate* startTimeOfOngoingSeedRequest;
+
+// The fetched seed response.
+@property(nonatomic, readonly) IOSChromeSeedResponse* seed;
 
 @end
 
@@ -94,14 +97,16 @@ static IOSChromeSeedResponse* _sharedSeed = nil;
   });
 }
 
-- (void)clearSeed {
+- (IOSChromeSeedResponse*)popSeed {
+  IOSChromeSeedResponse* seed = self.seed;
   [self updateSharedSeed:nil];
+  return seed;
 }
 
 #pragma mark - Accessors
 
 - (IOSChromeSeedResponse*)seed {
-  return _sharedSeed;
+  return g_shared_seed;
 }
 
 - (NSURL*)variationsUrl {
@@ -147,7 +152,7 @@ static IOSChromeSeedResponse* _sharedSeed = nil;
 // Helper method for `startSeedFetch` that initiates an HTTPS request to the
 // Finch server in the static serial queue.
 - (void)startSeedFetchHelper {
-  DCHECK(_seedFetchingInProcess)
+  DCHECK(g_seed_fetching_in_progress)
       << "SeedFetch started while already in progress";
 
   // Stops executing if seed fetching is disabled.
@@ -157,7 +162,7 @@ static IOSChromeSeedResponse* _sharedSeed = nil;
     return;
   }
 
-  _seedFetchingInProcess = YES;
+  g_seed_fetching_in_progress = YES;
   NSMutableURLRequest* request = [NSMutableURLRequest
        requestWithURL:self.variationsUrl
           cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
@@ -199,7 +204,7 @@ static IOSChromeSeedResponse* _sharedSeed = nil;
   }
   [self recordSeedFetchResult];
   self.startTimeOfOngoingSeedRequest = nil;
-  _seedFetchingInProcess = NO;
+  g_seed_fetching_in_progress = NO;
 
   [self notifyDelegateSeedFetchResult:success];
 }
@@ -245,7 +250,7 @@ static IOSChromeSeedResponse* _sharedSeed = nil;
 // Updates the shared seed response. This method is extracted out for testing
 // purposes.
 - (void)updateSharedSeed:(IOSChromeSeedResponse*)seed {
-  _sharedSeed = seed;
+  g_shared_seed = seed;
 }
 
 // Notifies the delegate of the seed fetching result. Since the seed fetch

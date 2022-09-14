@@ -29,6 +29,10 @@
 #include "components/variations/metrics.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_IOS)
+#include "components/variations/metrics.h"
+#endif  // BUILDFLAG(IS_IOS)
+
 namespace variations {
 namespace {
 
@@ -135,10 +139,10 @@ VariationsSeedStore::VariationsSeedStore(
     : local_state_(local_state),
       signature_verification_enabled_(signature_verification_enabled),
       use_first_run_prefs_(use_first_run_prefs) {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   if (initial_seed)
     ImportInitialSeed(std::move(initial_seed));
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 VariationsSeedStore::~VariationsSeedStore() = default;
@@ -365,7 +369,7 @@ void VariationsSeedStore::ClearPrefs(SeedType seed_type) {
   local_state_->ClearPref(prefs::kVariationsSafeSeedSignature);
 }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void VariationsSeedStore::ImportInitialSeed(
     std::unique_ptr<SeedResponse> initial_seed) {
   if (initial_seed->data.empty()) {
@@ -392,7 +396,7 @@ void VariationsSeedStore::ImportInitialSeed(
   }
   RecordFirstRunSeedImportResult(FirstRunSeedImportResult::SUCCESS);
 }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 LoadSeedResult VariationsSeedStore::LoadSeedImpl(
     SeedType seed_type,

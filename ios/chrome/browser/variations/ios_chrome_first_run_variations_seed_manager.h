@@ -29,15 +29,12 @@
 @property(nonatomic, weak) id<IOSChromeFirstRunVariationsSeedManagerDelegate>
     delegate;
 
-// The fetched seed response.
-@property(nonatomic, readonly) IOSChromeSeedResponse* seed;
-
 // Starts fetching the initial seed from the variations server.
 - (void)startSeedFetch;
 
-// Resets the seed response; called by the variations service after the seed is
-// imported into Chrome Prefs.
-- (void)clearSeed;
+// Returns the seed response and resets it; called by the variations service to
+// import the seed into Chrome Prefs.
+- (IOSChromeSeedResponse*)popSeed;
 
 @end
 

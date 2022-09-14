@@ -11,7 +11,9 @@ source_set("variations") {
     "ios_chrome_variations_service_client.mm",
   ]
   deps = [
+    ":first_run",
     "//base",
+    "//components/variations",
     "//components/variations/service",
     "//components/version_info",
     "//ios/chrome/browser",

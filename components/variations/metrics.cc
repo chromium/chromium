@@ -17,6 +17,13 @@ void RecordFirstRunSeedImportResult(FirstRunSeedImportResult result) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_IOS)
+void RecordFirstRunSeedImportResult(FirstRunSeedImportResult result) {
+  // TODO(crbug.com/1353937): Merge with Android implementation after first run
+  // seed import on iOS is fully implemented.
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 void RecordLoadSeedResult(LoadSeedResult state) {
   base::UmaHistogramEnumeration("Variations.SeedLoadResult", state);
 }
