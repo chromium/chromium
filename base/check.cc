@@ -26,23 +26,18 @@ namespace {
 // DCHECK_IS_CONFIGURABLE and ENABLE_LOG_ERROR_NOT_REACHED are both interested
 // in non-FATAL DCHECK()/NOTREACHED() reports.
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE) || BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
-void DCheckDumpOnceWithoutCrashing(LogMessage* log_message) {
+void DumpOnceWithoutCrashing(LogMessage* log_message) {
   // Best-effort gate to prevent multiple DCHECKs from being dumped. This will
   // race if multiple threads DCHECK at the same time, but we'll eventually stop
   // reporting and at most report once per thread.
   static std::atomic<bool> has_dumped = false;
   if (!has_dumped.load(std::memory_order_relaxed)) {
-    const std::string str = log_message->BuildCrashString();
     // Copy the LogMessage message to stack memory to make sure it can be
     // recovered in crash dumps.
-    // TODO(pbos): Surface DCHECK_MESSAGE well in crash reporting to make this
-    // redundant, then remove it.
-    DEBUG_ALIAS_FOR_CSTR(log_message_str, str.c_str(), 1024);
-
-#if !BUILDFLAG(IS_NACL)
-    // Report the log message as DCHECK_MESSAGE in the dump we're about to do.
-    SCOPED_CRASH_KEY_STRING1024("Logging", "DCHECK_MESSAGE", str);
-#endif  // !BUILDFLAG(IS_NACL)
+    // TODO(pbos): Do we need this for NACL builds or is the crash key set in
+    // the caller sufficient?
+    DEBUG_ALIAS_FOR_CSTR(log_message_str,
+                         log_message->BuildCrashString().c_str(), 1024);
 
     // Note that dumping may fail if the crash handler hasn't been set yet. In
     // that case we want to try again on the next failing DCHECK.
@@ -50,13 +45,28 @@ void DCheckDumpOnceWithoutCrashing(LogMessage* log_message) {
       has_dumped.store(true, std::memory_order_relaxed);
   }
 }
+void DCheckDumpOnceWithoutCrashing(LogMessage* log_message) {
+#if !BUILDFLAG(IS_NACL)
+  SCOPED_CRASH_KEY_STRING1024("Logging", "DCHECK_MESSAGE",
+                              log_message->BuildCrashString());
+#endif  // !BUILDFLAG(IS_NACL)
+  DumpOnceWithoutCrashing(log_message);
+}
+
+void NotReachedDumpOnceWithoutCrashing(LogMessage* log_message) {
+#if !BUILDFLAG(IS_NACL)
+  SCOPED_CRASH_KEY_STRING1024("Logging", "NOTREACHED_MESSAGE",
+                              log_message->BuildCrashString());
+#endif  // !BUILDFLAG(IS_NACL)
+  DumpOnceWithoutCrashing(log_message);
+}
 
 class NotReachedLogMessage : public LogMessage {
  public:
   using LogMessage::LogMessage;
   ~NotReachedLogMessage() override {
     if (severity() != logging::LOGGING_FATAL)
-      DCheckDumpOnceWithoutCrashing(this);
+      NotReachedDumpOnceWithoutCrashing(this);
   }
 };
 #else
