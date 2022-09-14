@@ -56433,7 +56433,6 @@ from previous Chrome versions.
   <int value="-1988127107" label="UseNotificationCompatBuilder:enabled"/>
   <int value="-1987939098"
       label="AutofillEnablePasswordInfoBarAccountIndicationFooter:enabled"/>
-  <int value="-1987881259" label="ArcRightClickLongPress:enabled"/>
   <int value="-1985452239" label="SmartDim20190221:disabled"/>
   <int value="-1985239289" label="AutofillRichMetadataQueries:enabled"/>
   <int value="-1985025593" label="file-manager-enable-new-gallery"/>
@@ -62807,7 +62806,6 @@ from previous Chrome versions.
   <int value="1925627218" label="FullscreenToolbarReveal:disabled"/>
   <int value="1926334447" label="AccessibilityService:enabled"/>
   <int value="1926524951" label="SystemWebApps:disabled"/>
-  <int value="1926548060" label="ArcRightClickLongPress:disabled"/>
   <int value="1927218315" label="ShelfNewUi:disabled"/>
   <int value="1927254377" label="MediaAppHandlesAudio:enabled"/>
   <int value="1927259098" label="TranslateLanguageByULP:enabled"/>

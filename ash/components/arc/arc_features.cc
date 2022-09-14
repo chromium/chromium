@@ -143,10 +143,6 @@ const base::Feature kOutOfProcessVideoDecoding{
 const base::Feature kPictureInPictureFeature{"ArcPictureInPicture",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls ARC right click long press compatibility feature.
-const base::Feature kRightClickLongPress{"ArcRightClickLongPress",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls ARCVM real time vcpu feature on a device with 2 logical cores
 // online.
 // When you change the default, you also need to change the chromeExtraAgas

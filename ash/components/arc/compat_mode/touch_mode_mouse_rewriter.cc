@@ -6,7 +6,6 @@
 
 #include <tuple>
 
-#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/compat_mode/metrics.h"
 #include "ash/shell.h"
 #include "base/bind.h"
@@ -109,14 +108,6 @@ ui::EventDispatchDetails TouchModeMouseRewriter::RewriteEvent(
 
   const ui::MouseEvent& mouse_event = *event.AsMouseEvent();
   if (mouse_event.IsRightMouseButton() || mouse_event.IsLeftMouseButton()) {
-    if (!base::FeatureList::IsEnabled(arc::kRightClickLongPress)) {
-      if (mouse_event.IsRightMouseButton()) {
-        RecordRightClickConversionResultHistogram(
-            RightClickConversionResultHistogramResult::kDisabled);
-      }
-      return SendEvent(continuation, &event);
-    }
-
     if (!in_resize_locked) {
       if (mouse_event.IsRightMouseButton()) {
         RecordRightClickConversionResultHistogram(

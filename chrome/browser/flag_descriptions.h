@@ -2684,9 +2684,6 @@ extern const char kArcKeyboardShortcutHelperIntegrationDescription[];
 extern const char kArcNativeBridgeToggleName[];
 extern const char kArcNativeBridgeToggleDescription[];
 
-extern const char kArcRightClickLongPressName[];
-extern const char kArcRightClickLongPressDescription[];
-
 extern const char kArcRtVcpuDualCoreName[];
 extern const char kArcRtVcpuDualCoreDesc[];
 

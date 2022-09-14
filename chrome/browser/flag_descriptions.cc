@@ -4692,12 +4692,6 @@ const char kArcNativeBridgeToggleName[] =
 const char kArcNativeBridgeToggleDescription[] =
     "Toggle between native bridge implementations for ARC.";
 
-const char kArcRightClickLongPressName[] =
-    "Enable ARC right click long press compatibility feature.";
-const char kArcRightClickLongPressDescription[] =
-    "Right click will be converted to simulated long press in phone-optimized "
-    "Android apps.";
-
 const char kArcRtVcpuDualCoreName[] =
     "Enable ARC real time vcpu on a device with 2 logical cores online.";
 const char kArcRtVcpuDualCoreDesc[] =

@@ -245,11 +245,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "arc-right-click-long-press",
-    "owners": [ "yhanada", "mduggan" ],
-    "expiry_milestone": 102
-  },
-  {
     "name": "arc-rt-vcpu-dual-core",
     "owners": [ "kansho" ],
     "expiry_milestone": 100
