@@ -1,0 +1,196 @@
+This is a testharness.js-based test.
+Found 192 tests; 120 PASS, 72 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS CSS Transitions: property <color> from neutral to [green] at (-0.3) should be [rgb(255, 255, 0)]
+PASS CSS Transitions: property <color> from neutral to [green] at (0) should be [rgb(255, 255, 0)]
+PASS CSS Transitions: property <color> from neutral to [green] at (0.3) should be [rgb(179, 217, 0)]
+PASS CSS Transitions: property <color> from neutral to [green] at (0.6) should be [rgb(102, 179, 0)]
+PASS CSS Transitions: property <color> from neutral to [green] at (1) should be [rgb(0, 128, 0)]
+PASS CSS Transitions: property <color> from neutral to [green] at (1.5) should be [rgb(0, 65, 0)]
+PASS CSS Transitions with transition: all: property <color> from neutral to [green] at (-0.3) should be [rgb(255, 255, 0)]
+PASS CSS Transitions with transition: all: property <color> from neutral to [green] at (0) should be [rgb(255, 255, 0)]
+PASS CSS Transitions with transition: all: property <color> from neutral to [green] at (0.3) should be [rgb(179, 217, 0)]
+PASS CSS Transitions with transition: all: property <color> from neutral to [green] at (0.6) should be [rgb(102, 179, 0)]
+PASS CSS Transitions with transition: all: property <color> from neutral to [green] at (1) should be [rgb(0, 128, 0)]
+PASS CSS Transitions with transition: all: property <color> from neutral to [green] at (1.5) should be [rgb(0, 65, 0)]
+PASS CSS Animations: property <color> from neutral to [green] at (-0.3) should be [rgb(255, 255, 0)]
+PASS CSS Animations: property <color> from neutral to [green] at (0) should be [rgb(255, 255, 0)]
+PASS CSS Animations: property <color> from neutral to [green] at (0.3) should be [rgb(179, 217, 0)]
+PASS CSS Animations: property <color> from neutral to [green] at (0.6) should be [rgb(102, 179, 0)]
+PASS CSS Animations: property <color> from neutral to [green] at (1) should be [rgb(0, 128, 0)]
+PASS CSS Animations: property <color> from neutral to [green] at (1.5) should be [rgb(0, 65, 0)]
+PASS Web Animations: property <color> from neutral to [green] at (-0.3) should be [rgb(255, 255, 0)]
+PASS Web Animations: property <color> from neutral to [green] at (0) should be [rgb(255, 255, 0)]
+PASS Web Animations: property <color> from neutral to [green] at (0.3) should be [rgb(179, 217, 0)]
+PASS Web Animations: property <color> from neutral to [green] at (0.6) should be [rgb(102, 179, 0)]
+PASS Web Animations: property <color> from neutral to [green] at (1) should be [rgb(0, 128, 0)]
+PASS Web Animations: property <color> from neutral to [green] at (1.5) should be [rgb(0, 65, 0)]
+PASS CSS Transitions: property <color> from [initial] to [green] at (-0.3) should be [rgb(0, 0, 0)]
+PASS CSS Transitions: property <color> from [initial] to [green] at (0) should be [rgb(0, 0, 0)]
+PASS CSS Transitions: property <color> from [initial] to [green] at (0.3) should be [rgb(0, 38, 0)]
+PASS CSS Transitions: property <color> from [initial] to [green] at (0.6) should be [rgb(0, 77, 0)]
+PASS CSS Transitions: property <color> from [initial] to [green] at (1) should be [rgb(0, 128, 0)]
+PASS CSS Transitions: property <color> from [initial] to [green] at (1.5) should be [rgb(0, 192, 0)]
+PASS CSS Transitions with transition: all: property <color> from [initial] to [green] at (-0.3) should be [rgb(0, 0, 0)]
+PASS CSS Transitions with transition: all: property <color> from [initial] to [green] at (0) should be [rgb(0, 0, 0)]
+PASS CSS Transitions with transition: all: property <color> from [initial] to [green] at (0.3) should be [rgb(0, 38, 0)]
+PASS CSS Transitions with transition: all: property <color> from [initial] to [green] at (0.6) should be [rgb(0, 77, 0)]
+PASS CSS Transitions with transition: all: property <color> from [initial] to [green] at (1) should be [rgb(0, 128, 0)]
+PASS CSS Transitions with transition: all: property <color> from [initial] to [green] at (1.5) should be [rgb(0, 192, 0)]
+PASS CSS Animations: property <color> from [initial] to [green] at (-0.3) should be [rgb(0, 0, 0)]
+PASS CSS Animations: property <color> from [initial] to [green] at (0) should be [rgb(0, 0, 0)]
+PASS CSS Animations: property <color> from [initial] to [green] at (0.3) should be [rgb(0, 38, 0)]
+PASS CSS Animations: property <color> from [initial] to [green] at (0.6) should be [rgb(0, 77, 0)]
+PASS CSS Animations: property <color> from [initial] to [green] at (1) should be [rgb(0, 128, 0)]
+PASS CSS Animations: property <color> from [initial] to [green] at (1.5) should be [rgb(0, 192, 0)]
+PASS Web Animations: property <color> from [initial] to [green] at (-0.3) should be [rgb(0, 0, 0)]
+PASS Web Animations: property <color> from [initial] to [green] at (0) should be [rgb(0, 0, 0)]
+PASS Web Animations: property <color> from [initial] to [green] at (0.3) should be [rgb(0, 38, 0)]
+PASS Web Animations: property <color> from [initial] to [green] at (0.6) should be [rgb(0, 77, 0)]
+PASS Web Animations: property <color> from [initial] to [green] at (1) should be [rgb(0, 128, 0)]
+PASS Web Animations: property <color> from [initial] to [green] at (1.5) should be [rgb(0, 192, 0)]
+PASS CSS Transitions: property <color> from [inherit] to [green] at (-0.3) should be [rgb(0, 0, 255)]
+PASS CSS Transitions: property <color> from [inherit] to [green] at (0) should be [rgb(0, 0, 255)]
+PASS CSS Transitions: property <color> from [inherit] to [green] at (0.3) should be [rgb(0, 38, 179)]
+PASS CSS Transitions: property <color> from [inherit] to [green] at (0.6) should be [rgb(0, 77, 102)]
+PASS CSS Transitions: property <color> from [inherit] to [green] at (1) should be [rgb(0, 128, 0)]
+PASS CSS Transitions: property <color> from [inherit] to [green] at (1.5) should be [rgb(0, 192, 0)]
+PASS CSS Transitions with transition: all: property <color> from [inherit] to [green] at (-0.3) should be [rgb(0, 0, 255)]
+PASS CSS Transitions with transition: all: property <color> from [inherit] to [green] at (0) should be [rgb(0, 0, 255)]
+PASS CSS Transitions with transition: all: property <color> from [inherit] to [green] at (0.3) should be [rgb(0, 38, 179)]
+PASS CSS Transitions with transition: all: property <color> from [inherit] to [green] at (0.6) should be [rgb(0, 77, 102)]
+PASS CSS Transitions with transition: all: property <color> from [inherit] to [green] at (1) should be [rgb(0, 128, 0)]
+PASS CSS Transitions with transition: all: property <color> from [inherit] to [green] at (1.5) should be [rgb(0, 192, 0)]
+PASS CSS Animations: property <color> from [inherit] to [green] at (-0.3) should be [rgb(0, 0, 255)]
+PASS CSS Animations: property <color> from [inherit] to [green] at (0) should be [rgb(0, 0, 255)]
+PASS CSS Animations: property <color> from [inherit] to [green] at (0.3) should be [rgb(0, 38, 179)]
+PASS CSS Animations: property <color> from [inherit] to [green] at (0.6) should be [rgb(0, 77, 102)]
+PASS CSS Animations: property <color> from [inherit] to [green] at (1) should be [rgb(0, 128, 0)]
+PASS CSS Animations: property <color> from [inherit] to [green] at (1.5) should be [rgb(0, 192, 0)]
+PASS Web Animations: property <color> from [inherit] to [green] at (-0.3) should be [rgb(0, 0, 255)]
+PASS Web Animations: property <color> from [inherit] to [green] at (0) should be [rgb(0, 0, 255)]
+PASS Web Animations: property <color> from [inherit] to [green] at (0.3) should be [rgb(0, 38, 179)]
+PASS Web Animations: property <color> from [inherit] to [green] at (0.6) should be [rgb(0, 77, 102)]
+PASS Web Animations: property <color> from [inherit] to [green] at (1) should be [rgb(0, 128, 0)]
+PASS Web Animations: property <color> from [inherit] to [green] at (1.5) should be [rgb(0, 192, 0)]
+PASS CSS Transitions: property <color> from [unset] to [green] at (-0.3) should be [rgb(0, 0, 255)]
+PASS CSS Transitions: property <color> from [unset] to [green] at (0) should be [rgb(0, 0, 255)]
+PASS CSS Transitions: property <color> from [unset] to [green] at (0.3) should be [rgb(0, 38, 179)]
+PASS CSS Transitions: property <color> from [unset] to [green] at (0.6) should be [rgb(0, 77, 102)]
+PASS CSS Transitions: property <color> from [unset] to [green] at (1) should be [rgb(0, 128, 0)]
+PASS CSS Transitions: property <color> from [unset] to [green] at (1.5) should be [rgb(0, 192, 0)]
+PASS CSS Transitions with transition: all: property <color> from [unset] to [green] at (-0.3) should be [rgb(0, 0, 255)]
+PASS CSS Transitions with transition: all: property <color> from [unset] to [green] at (0) should be [rgb(0, 0, 255)]
+PASS CSS Transitions with transition: all: property <color> from [unset] to [green] at (0.3) should be [rgb(0, 38, 179)]
+PASS CSS Transitions with transition: all: property <color> from [unset] to [green] at (0.6) should be [rgb(0, 77, 102)]
+PASS CSS Transitions with transition: all: property <color> from [unset] to [green] at (1) should be [rgb(0, 128, 0)]
+PASS CSS Transitions with transition: all: property <color> from [unset] to [green] at (1.5) should be [rgb(0, 192, 0)]
+PASS CSS Animations: property <color> from [unset] to [green] at (-0.3) should be [rgb(0, 0, 255)]
+PASS CSS Animations: property <color> from [unset] to [green] at (0) should be [rgb(0, 0, 255)]
+PASS CSS Animations: property <color> from [unset] to [green] at (0.3) should be [rgb(0, 38, 179)]
+PASS CSS Animations: property <color> from [unset] to [green] at (0.6) should be [rgb(0, 77, 102)]
+PASS CSS Animations: property <color> from [unset] to [green] at (1) should be [rgb(0, 128, 0)]
+PASS CSS Animations: property <color> from [unset] to [green] at (1.5) should be [rgb(0, 192, 0)]
+PASS Web Animations: property <color> from [unset] to [green] at (-0.3) should be [rgb(0, 0, 255)]
+PASS Web Animations: property <color> from [unset] to [green] at (0) should be [rgb(0, 0, 255)]
+PASS Web Animations: property <color> from [unset] to [green] at (0.3) should be [rgb(0, 38, 179)]
+PASS Web Animations: property <color> from [unset] to [green] at (0.6) should be [rgb(0, 77, 102)]
+PASS Web Animations: property <color> from [unset] to [green] at (1) should be [rgb(0, 128, 0)]
+PASS Web Animations: property <color> from [unset] to [green] at (1.5) should be [rgb(0, 192, 0)]
+PASS CSS Transitions: property <color> from [black] to [orange] at (-0.3) should be [rgb(0, 0, 0)]
+PASS CSS Transitions: property <color> from [black] to [orange] at (0) should be [rgb(0, 0, 0)]
+PASS CSS Transitions: property <color> from [black] to [orange] at (0.3) should be [rgb(77, 50, 0)]
+PASS CSS Transitions: property <color> from [black] to [orange] at (0.6) should be [rgb(153, 99, 0)]
+PASS CSS Transitions: property <color> from [black] to [orange] at (1) should be [rgb(255, 165, 0)]
+PASS CSS Transitions: property <color> from [black] to [orange] at (1.5) should be [rgb(255, 248, 0)]
+PASS CSS Transitions with transition: all: property <color> from [black] to [orange] at (-0.3) should be [rgb(0, 0, 0)]
+PASS CSS Transitions with transition: all: property <color> from [black] to [orange] at (0) should be [rgb(0, 0, 0)]
+PASS CSS Transitions with transition: all: property <color> from [black] to [orange] at (0.3) should be [rgb(77, 50, 0)]
+PASS CSS Transitions with transition: all: property <color> from [black] to [orange] at (0.6) should be [rgb(153, 99, 0)]
+PASS CSS Transitions with transition: all: property <color> from [black] to [orange] at (1) should be [rgb(255, 165, 0)]
+PASS CSS Transitions with transition: all: property <color> from [black] to [orange] at (1.5) should be [rgb(255, 248, 0)]
+PASS CSS Animations: property <color> from [black] to [orange] at (-0.3) should be [rgb(0, 0, 0)]
+PASS CSS Animations: property <color> from [black] to [orange] at (0) should be [rgb(0, 0, 0)]
+PASS CSS Animations: property <color> from [black] to [orange] at (0.3) should be [rgb(77, 50, 0)]
+PASS CSS Animations: property <color> from [black] to [orange] at (0.6) should be [rgb(153, 99, 0)]
+PASS CSS Animations: property <color> from [black] to [orange] at (1) should be [rgb(255, 165, 0)]
+PASS CSS Animations: property <color> from [black] to [orange] at (1.5) should be [rgb(255, 248, 0)]
+PASS Web Animations: property <color> from [black] to [orange] at (-0.3) should be [rgb(0, 0, 0)]
+PASS Web Animations: property <color> from [black] to [orange] at (0) should be [rgb(0, 0, 0)]
+PASS Web Animations: property <color> from [black] to [orange] at (0.3) should be [rgb(77, 50, 0)]
+PASS Web Animations: property <color> from [black] to [orange] at (0.6) should be [rgb(153, 99, 0)]
+PASS Web Animations: property <color> from [black] to [orange] at (1) should be [rgb(255, 165, 0)]
+PASS Web Animations: property <color> from [black] to [orange] at (1.5) should be [rgb(255, 248, 0)]
+FAIL CSS Transitions: property <color> from [rgb(0 0 0)] to [color(srgb 1 1 1)] at (-0.3) should be [oklab(0 0 0)] assert_equals: expected "oklab ( 0 % 0 0 ) " but got "rgb ( 0 , 0 , 0 ) "
+FAIL CSS Transitions: property <color> from [rgb(0 0 0)] to [color(srgb 1 1 1)] at (0) should be [oklab(0 0 0)] assert_equals: expected "oklab ( 0 % 0 0 ) " but got "rgb ( 0 , 0 , 0 ) "
+FAIL CSS Transitions: property <color> from [rgb(0 0 0)] to [color(srgb 1 1 1)] at (0.3) should be [oklab(0.3 0 0)] assert_equals: expected "oklab ( 0.3 % 0 0 ) " but got "rgb ( 77 , 77 , 77 ) "
+FAIL CSS Transitions: property <color> from [rgb(0 0 0)] to [color(srgb 1 1 1)] at (0.6) should be [oklab(0.6 0 0)] assert_equals: expected "oklab ( 0.6 % 0 0 ) " but got "rgb ( 153 , 153 , 153 ) "
+FAIL CSS Transitions: property <color> from [rgb(0 0 0)] to [color(srgb 1 1 1)] at (1) should be [oklab(1 0 0)] assert_equals: expected "oklab ( 1 % 0 0 ) " but got "rgb ( 255 , 255 , 255 ) "
+FAIL CSS Transitions: property <color> from [rgb(0 0 0)] to [color(srgb 1 1 1)] at (1.5) should be [oklab(1.5 0 0)] assert_equals: expected "oklab ( 1.5 % 0 0 ) " but got "rgb ( 255 , 255 , 255 ) "
+FAIL CSS Transitions with transition: all: property <color> from [rgb(0 0 0)] to [color(srgb 1 1 1)] at (-0.3) should be [oklab(0 0 0)] assert_equals: expected "oklab ( 0 % 0 0 ) " but got "rgb ( 0 , 0 , 0 ) "
+FAIL CSS Transitions with transition: all: property <color> from [rgb(0 0 0)] to [color(srgb 1 1 1)] at (0) should be [oklab(0 0 0)] assert_equals: expected "oklab ( 0 % 0 0 ) " but got "rgb ( 0 , 0 , 0 ) "
+FAIL CSS Transitions with transition: all: property <color> from [rgb(0 0 0)] to [color(srgb 1 1 1)] at (0.3) should be [oklab(0.3 0 0)] assert_equals: expected "oklab ( 0.3 % 0 0 ) " but got "rgb ( 77 , 77 , 77 ) "
+FAIL CSS Transitions with transition: all: property <color> from [rgb(0 0 0)] to [color(srgb 1 1 1)] at (0.6) should be [oklab(0.6 0 0)] assert_equals: expected "oklab ( 0.6 % 0 0 ) " but got "rgb ( 153 , 153 , 153 ) "
+FAIL CSS Transitions with transition: all: property <color> from [rgb(0 0 0)] to [color(srgb 1 1 1)] at (1) should be [oklab(1 0 0)] assert_equals: expected "oklab ( 1 % 0 0 ) " but got "rgb ( 255 , 255 , 255 ) "
+FAIL CSS Transitions with transition: all: property <color> from [rgb(0 0 0)] to [color(srgb 1 1 1)] at (1.5) should be [oklab(1.5 0 0)] assert_equals: expected "oklab ( 1.5 % 0 0 ) " but got "rgb ( 255 , 255 , 255 ) "
+FAIL CSS Animations: property <color> from [rgb(0 0 0)] to [color(srgb 1 1 1)] at (-0.3) should be [oklab(0 0 0)] assert_equals: expected "oklab ( 0 % 0 0 ) " but got "rgb ( 0 , 0 , 0 ) "
+FAIL CSS Animations: property <color> from [rgb(0 0 0)] to [color(srgb 1 1 1)] at (0) should be [oklab(0 0 0)] assert_equals: expected "oklab ( 0 % 0 0 ) " but got "rgb ( 0 , 0 , 0 ) "
+FAIL CSS Animations: property <color> from [rgb(0 0 0)] to [color(srgb 1 1 1)] at (0.3) should be [oklab(0.3 0 0)] assert_equals: expected "oklab ( 0.3 % 0 0 ) " but got "rgb ( 77 , 77 , 77 ) "
+FAIL CSS Animations: property <color> from [rgb(0 0 0)] to [color(srgb 1 1 1)] at (0.6) should be [oklab(0.6 0 0)] assert_equals: expected "oklab ( 0.6 % 0 0 ) " but got "rgb ( 153 , 153 , 153 ) "
+FAIL CSS Animations: property <color> from [rgb(0 0 0)] to [color(srgb 1 1 1)] at (1) should be [oklab(1 0 0)] assert_equals: expected "oklab ( 1 % 0 0 ) " but got "rgb ( 255 , 255 , 255 ) "
+FAIL CSS Animations: property <color> from [rgb(0 0 0)] to [color(srgb 1 1 1)] at (1.5) should be [oklab(1.5 0 0)] assert_equals: expected "oklab ( 1.5 % 0 0 ) " but got "rgb ( 255 , 255 , 255 ) "
+FAIL Web Animations: property <color> from [rgb(0 0 0)] to [color(srgb 1 1 1)] at (-0.3) should be [oklab(0 0 0)] assert_equals: expected "oklab ( 0 % 0 0 ) " but got "rgb ( 0 , 0 , 0 ) "
+FAIL Web Animations: property <color> from [rgb(0 0 0)] to [color(srgb 1 1 1)] at (0) should be [oklab(0 0 0)] assert_equals: expected "oklab ( 0 % 0 0 ) " but got "rgb ( 0 , 0 , 0 ) "
+FAIL Web Animations: property <color> from [rgb(0 0 0)] to [color(srgb 1 1 1)] at (0.3) should be [oklab(0.3 0 0)] assert_equals: expected "oklab ( 0.3 % 0 0 ) " but got "rgb ( 77 , 77 , 77 ) "
+FAIL Web Animations: property <color> from [rgb(0 0 0)] to [color(srgb 1 1 1)] at (0.6) should be [oklab(0.6 0 0)] assert_equals: expected "oklab ( 0.6 % 0 0 ) " but got "rgb ( 153 , 153 , 153 ) "
+FAIL Web Animations: property <color> from [rgb(0 0 0)] to [color(srgb 1 1 1)] at (1) should be [oklab(1 0 0)] assert_equals: expected "oklab ( 1 % 0 0 ) " but got "rgb ( 255 , 255 , 255 ) "
+FAIL Web Animations: property <color> from [rgb(0 0 0)] to [color(srgb 1 1 1)] at (1.5) should be [oklab(1.5 0 0)] assert_equals: expected "oklab ( 1.5 % 0 0 ) " but got "rgb ( 255 , 255 , 255 ) "
+FAIL CSS Transitions: property <color> from [color(srgb 0 0 0)] to [rgb(255 255 255)] at (-0.3) should be [oklab(0 0 0)] assert_equals: expected "oklab ( 0 % 0 0 ) " but got "rgb ( 0 , 0 , 0 ) "
+FAIL CSS Transitions: property <color> from [color(srgb 0 0 0)] to [rgb(255 255 255)] at (0) should be [oklab(0 0 0)] assert_equals: expected "oklab ( 0 % 0 0 ) " but got "rgb ( 0 , 0 , 0 ) "
+FAIL CSS Transitions: property <color> from [color(srgb 0 0 0)] to [rgb(255 255 255)] at (0.3) should be [oklab(0.3 0 0)] assert_equals: expected "oklab ( 0.3 % 0 0 ) " but got "rgb ( 77 , 77 , 77 ) "
+FAIL CSS Transitions: property <color> from [color(srgb 0 0 0)] to [rgb(255 255 255)] at (0.6) should be [oklab(0.6 0 0)] assert_equals: expected "oklab ( 0.6 % 0 0 ) " but got "rgb ( 153 , 153 , 153 ) "
+FAIL CSS Transitions: property <color> from [color(srgb 0 0 0)] to [rgb(255 255 255)] at (1) should be [oklab(1 0 0)] assert_equals: expected "oklab ( 1 % 0 0 ) " but got "rgb ( 255 , 255 , 255 ) "
+FAIL CSS Transitions: property <color> from [color(srgb 0 0 0)] to [rgb(255 255 255)] at (1.5) should be [oklab(1.5 0 0)] assert_equals: expected "oklab ( 1.5 % 0 0 ) " but got "rgb ( 255 , 255 , 255 ) "
+FAIL CSS Transitions with transition: all: property <color> from [color(srgb 0 0 0)] to [rgb(255 255 255)] at (-0.3) should be [oklab(0 0 0)] assert_equals: expected "oklab ( 0 % 0 0 ) " but got "rgb ( 0 , 0 , 0 ) "
+FAIL CSS Transitions with transition: all: property <color> from [color(srgb 0 0 0)] to [rgb(255 255 255)] at (0) should be [oklab(0 0 0)] assert_equals: expected "oklab ( 0 % 0 0 ) " but got "rgb ( 0 , 0 , 0 ) "
+FAIL CSS Transitions with transition: all: property <color> from [color(srgb 0 0 0)] to [rgb(255 255 255)] at (0.3) should be [oklab(0.3 0 0)] assert_equals: expected "oklab ( 0.3 % 0 0 ) " but got "rgb ( 77 , 77 , 77 ) "
+FAIL CSS Transitions with transition: all: property <color> from [color(srgb 0 0 0)] to [rgb(255 255 255)] at (0.6) should be [oklab(0.6 0 0)] assert_equals: expected "oklab ( 0.6 % 0 0 ) " but got "rgb ( 153 , 153 , 153 ) "
+FAIL CSS Transitions with transition: all: property <color> from [color(srgb 0 0 0)] to [rgb(255 255 255)] at (1) should be [oklab(1 0 0)] assert_equals: expected "oklab ( 1 % 0 0 ) " but got "rgb ( 255 , 255 , 255 ) "
+FAIL CSS Transitions with transition: all: property <color> from [color(srgb 0 0 0)] to [rgb(255 255 255)] at (1.5) should be [oklab(1.5 0 0)] assert_equals: expected "oklab ( 1.5 % 0 0 ) " but got "rgb ( 255 , 255 , 255 ) "
+FAIL CSS Animations: property <color> from [color(srgb 0 0 0)] to [rgb(255 255 255)] at (-0.3) should be [oklab(0 0 0)] assert_equals: expected "oklab ( 0 % 0 0 ) " but got "rgb ( 0 , 0 , 0 ) "
+FAIL CSS Animations: property <color> from [color(srgb 0 0 0)] to [rgb(255 255 255)] at (0) should be [oklab(0 0 0)] assert_equals: expected "oklab ( 0 % 0 0 ) " but got "rgb ( 0 , 0 , 0 ) "
+FAIL CSS Animations: property <color> from [color(srgb 0 0 0)] to [rgb(255 255 255)] at (0.3) should be [oklab(0.3 0 0)] assert_equals: expected "oklab ( 0.3 % 0 0 ) " but got "rgb ( 77 , 77 , 77 ) "
+FAIL CSS Animations: property <color> from [color(srgb 0 0 0)] to [rgb(255 255 255)] at (0.6) should be [oklab(0.6 0 0)] assert_equals: expected "oklab ( 0.6 % 0 0 ) " but got "rgb ( 153 , 153 , 153 ) "
+FAIL CSS Animations: property <color> from [color(srgb 0 0 0)] to [rgb(255 255 255)] at (1) should be [oklab(1 0 0)] assert_equals: expected "oklab ( 1 % 0 0 ) " but got "rgb ( 255 , 255 , 255 ) "
+FAIL CSS Animations: property <color> from [color(srgb 0 0 0)] to [rgb(255 255 255)] at (1.5) should be [oklab(1.5 0 0)] assert_equals: expected "oklab ( 1.5 % 0 0 ) " but got "rgb ( 255 , 255 , 255 ) "
+FAIL Web Animations: property <color> from [color(srgb 0 0 0)] to [rgb(255 255 255)] at (-0.3) should be [oklab(0 0 0)] assert_equals: expected "oklab ( 0 % 0 0 ) " but got "rgb ( 0 , 0 , 0 ) "
+FAIL Web Animations: property <color> from [color(srgb 0 0 0)] to [rgb(255 255 255)] at (0) should be [oklab(0 0 0)] assert_equals: expected "oklab ( 0 % 0 0 ) " but got "rgb ( 0 , 0 , 0 ) "
+FAIL Web Animations: property <color> from [color(srgb 0 0 0)] to [rgb(255 255 255)] at (0.3) should be [oklab(0.3 0 0)] assert_equals: expected "oklab ( 0.3 % 0 0 ) " but got "rgb ( 77 , 77 , 77 ) "
+FAIL Web Animations: property <color> from [color(srgb 0 0 0)] to [rgb(255 255 255)] at (0.6) should be [oklab(0.6 0 0)] assert_equals: expected "oklab ( 0.6 % 0 0 ) " but got "rgb ( 153 , 153 , 153 ) "
+FAIL Web Animations: property <color> from [color(srgb 0 0 0)] to [rgb(255 255 255)] at (1) should be [oklab(1 0 0)] assert_equals: expected "oklab ( 1 % 0 0 ) " but got "rgb ( 255 , 255 , 255 ) "
+FAIL Web Animations: property <color> from [color(srgb 0 0 0)] to [rgb(255 255 255)] at (1.5) should be [oklab(1.5 0 0)] assert_equals: expected "oklab ( 1.5 % 0 0 ) " but got "rgb ( 255 , 255 , 255 ) "
+FAIL CSS Transitions: property <color> from [color(srgb 0 0 0)] to [color(srgb 1 1 1)] at (-0.3) should be [oklab(0 0 0)] assert_equals: expected "oklab ( 0 % 0 0 ) " but got "rgb ( 0 , 0 , 0 ) "
+FAIL CSS Transitions: property <color> from [color(srgb 0 0 0)] to [color(srgb 1 1 1)] at (0) should be [oklab(0 0 0)] assert_equals: expected "oklab ( 0 % 0 0 ) " but got "rgb ( 0 , 0 , 0 ) "
+FAIL CSS Transitions: property <color> from [color(srgb 0 0 0)] to [color(srgb 1 1 1)] at (0.3) should be [oklab(0.3 0 0)] assert_equals: expected "oklab ( 0.3 % 0 0 ) " but got "rgb ( 77 , 77 , 77 ) "
+FAIL CSS Transitions: property <color> from [color(srgb 0 0 0)] to [color(srgb 1 1 1)] at (0.6) should be [oklab(0.6 0 0)] assert_equals: expected "oklab ( 0.6 % 0 0 ) " but got "rgb ( 153 , 153 , 153 ) "
+FAIL CSS Transitions: property <color> from [color(srgb 0 0 0)] to [color(srgb 1 1 1)] at (1) should be [oklab(1 0 0)] assert_equals: expected "oklab ( 1 % 0 0 ) " but got "rgb ( 255 , 255 , 255 ) "
+FAIL CSS Transitions: property <color> from [color(srgb 0 0 0)] to [color(srgb 1 1 1)] at (1.5) should be [oklab(1.5 0 0)] assert_equals: expected "oklab ( 1.5 % 0 0 ) " but got "rgb ( 255 , 255 , 255 ) "
+FAIL CSS Transitions with transition: all: property <color> from [color(srgb 0 0 0)] to [color(srgb 1 1 1)] at (-0.3) should be [oklab(0 0 0)] assert_equals: expected "oklab ( 0 % 0 0 ) " but got "rgb ( 0 , 0 , 0 ) "
+FAIL CSS Transitions with transition: all: property <color> from [color(srgb 0 0 0)] to [color(srgb 1 1 1)] at (0) should be [oklab(0 0 0)] assert_equals: expected "oklab ( 0 % 0 0 ) " but got "rgb ( 0 , 0 , 0 ) "
+FAIL CSS Transitions with transition: all: property <color> from [color(srgb 0 0 0)] to [color(srgb 1 1 1)] at (0.3) should be [oklab(0.3 0 0)] assert_equals: expected "oklab ( 0.3 % 0 0 ) " but got "rgb ( 77 , 77 , 77 ) "
+FAIL CSS Transitions with transition: all: property <color> from [color(srgb 0 0 0)] to [color(srgb 1 1 1)] at (0.6) should be [oklab(0.6 0 0)] assert_equals: expected "oklab ( 0.6 % 0 0 ) " but got "rgb ( 153 , 153 , 153 ) "
+FAIL CSS Transitions with transition: all: property <color> from [color(srgb 0 0 0)] to [color(srgb 1 1 1)] at (1) should be [oklab(1 0 0)] assert_equals: expected "oklab ( 1 % 0 0 ) " but got "rgb ( 255 , 255 , 255 ) "
+FAIL CSS Transitions with transition: all: property <color> from [color(srgb 0 0 0)] to [color(srgb 1 1 1)] at (1.5) should be [oklab(1.5 0 0)] assert_equals: expected "oklab ( 1.5 % 0 0 ) " but got "rgb ( 255 , 255 , 255 ) "
+FAIL CSS Animations: property <color> from [color(srgb 0 0 0)] to [color(srgb 1 1 1)] at (-0.3) should be [oklab(0 0 0)] assert_equals: expected "oklab ( 0 % 0 0 ) " but got "rgb ( 0 , 0 , 0 ) "
+FAIL CSS Animations: property <color> from [color(srgb 0 0 0)] to [color(srgb 1 1 1)] at (0) should be [oklab(0 0 0)] assert_equals: expected "oklab ( 0 % 0 0 ) " but got "rgb ( 0 , 0 , 0 ) "
+FAIL CSS Animations: property <color> from [color(srgb 0 0 0)] to [color(srgb 1 1 1)] at (0.3) should be [oklab(0.3 0 0)] assert_equals: expected "oklab ( 0.3 % 0 0 ) " but got "rgb ( 77 , 77 , 77 ) "
+FAIL CSS Animations: property <color> from [color(srgb 0 0 0)] to [color(srgb 1 1 1)] at (0.6) should be [oklab(0.6 0 0)] assert_equals: expected "oklab ( 0.6 % 0 0 ) " but got "rgb ( 153 , 153 , 153 ) "
+FAIL CSS Animations: property <color> from [color(srgb 0 0 0)] to [color(srgb 1 1 1)] at (1) should be [oklab(1 0 0)] assert_equals: expected "oklab ( 1 % 0 0 ) " but got "rgb ( 255 , 255 , 255 ) "
+FAIL CSS Animations: property <color> from [color(srgb 0 0 0)] to [color(srgb 1 1 1)] at (1.5) should be [oklab(1.5 0 0)] assert_equals: expected "oklab ( 1.5 % 0 0 ) " but got "rgb ( 255 , 255 , 255 ) "
+FAIL Web Animations: property <color> from [color(srgb 0 0 0)] to [color(srgb 1 1 1)] at (-0.3) should be [oklab(0 0 0)] assert_equals: expected "oklab ( 0 % 0 0 ) " but got "rgb ( 0 , 0 , 0 ) "
+FAIL Web Animations: property <color> from [color(srgb 0 0 0)] to [color(srgb 1 1 1)] at (0) should be [oklab(0 0 0)] assert_equals: expected "oklab ( 0 % 0 0 ) " but got "rgb ( 0 , 0 , 0 ) "
+FAIL Web Animations: property <color> from [color(srgb 0 0 0)] to [color(srgb 1 1 1)] at (0.3) should be [oklab(0.3 0 0)] assert_equals: expected "oklab ( 0.3 % 0 0 ) " but got "rgb ( 77 , 77 , 77 ) "
+FAIL Web Animations: property <color> from [color(srgb 0 0 0)] to [color(srgb 1 1 1)] at (0.6) should be [oklab(0.6 0 0)] assert_equals: expected "oklab ( 0.6 % 0 0 ) " but got "rgb ( 153 , 153 , 153 ) "
+FAIL Web Animations: property <color> from [color(srgb 0 0 0)] to [color(srgb 1 1 1)] at (1) should be [oklab(1 0 0)] assert_equals: expected "oklab ( 1 % 0 0 ) " but got "rgb ( 255 , 255 , 255 ) "
+FAIL Web Animations: property <color> from [color(srgb 0 0 0)] to [color(srgb 1 1 1)] at (1.5) should be [oklab(1.5 0 0)] assert_equals: expected "oklab ( 1.5 % 0 0 ) " but got "rgb ( 255 , 255 , 255 ) "
+Harness: the test ran to completion.
+
