@@ -219,7 +219,8 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @CalledByNative
-    private static WebContentsImpl create(
+    @VisibleForTesting
+    static WebContentsImpl create(
             long nativeWebContentsAndroid, NavigationController navigationController) {
         return new WebContentsImpl(nativeWebContentsAndroid, navigationController);
     }
@@ -287,7 +288,8 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @CalledByNative
-    private void clearNativePtr() {
+    @VisibleForTesting
+    void clearNativePtr() {
         mNativeDestroyThrowable = new RuntimeException("clearNativePtr");
         mNativeWebContentsAndroid = 0;
         mNavigationController = null;
