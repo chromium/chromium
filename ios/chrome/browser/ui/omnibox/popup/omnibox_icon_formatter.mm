@@ -7,6 +7,7 @@
 #import "base/notreached.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "url/gurl.h"
 
@@ -66,6 +67,7 @@ OmniboxSuggestionIconType IconTypeFromMatchAndAnswerType(
     case AutocompleteMatchType::TAB_SEARCH_DEPRECATED:
     case AutocompleteMatchType::OPEN_TAB:
     case AutocompleteMatchType::HISTORY_CLUSTER:
+    case AutocompleteMatchType::TILE_NAVSUGGEST:
       return DEFAULT_FAVICON;
     case AutocompleteMatchType::CONTACT_DEPRECATED:
     case AutocompleteMatchType::SEARCH_OTHER_ENGINE:
@@ -85,7 +87,6 @@ OmniboxSuggestionIconType IconTypeFromMatchAndAnswerType(
       return CALCULATOR;
     case AutocompleteMatchType::EXTENSION_APP_DEPRECATED:
     case AutocompleteMatchType::TILE_SUGGESTION:
-    case AutocompleteMatchType::TILE_NAVSUGGEST:
     case AutocompleteMatchType::NULL_RESULT_MESSAGE:
     case AutocompleteMatchType::NUM_TYPES:
       NOTREACHED();

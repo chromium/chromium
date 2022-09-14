@@ -8,6 +8,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/omnibox/browser/autocomplete_input.h"
 #import "components/omnibox/browser/autocomplete_match.h"
@@ -42,6 +43,9 @@ const CGFloat kOmniboxIconSize = 16;
 // List of suggestions without the pedal group. Used to debouce pedals.
 @property(nonatomic, strong)
     NSArray<id<AutocompleteSuggestionGroup>>* nonPedalSuggestions;
+// Index of the group containing AutocompleteSuggestion, first group to be
+// highlighted on down arrow key.
+@property(nonatomic, assign) NSInteger preselectedGroupIndex;
 
 @end
 
@@ -73,6 +77,7 @@ const CGFloat kOmniboxIconSize = 16;
     _open = NO;
     _pedalSectionExtractor = [[PedalSectionExtractor alloc] init];
     _pedalSectionExtractor.delegate = self;
+    _preselectedGroupIndex = 0;
   }
   return self;
 }
@@ -124,15 +129,8 @@ const CGFloat kOmniboxIconSize = 16;
 
   NSArray<id<AutocompleteSuggestionGroup>>* groups = [self wrappedMatches];
 
-  // When pressing down arrow with pedal, skip the pedal to select search
-  // suggestions first.
-  NSUInteger preselectedGroupIndex = 0;
-  if (groups.count > 1) {
-    preselectedGroupIndex = 1;
-  }
-
   [self.consumer updateMatches:groups
-      preselectedMatchGroupIndex:preselectedGroupIndex];
+      preselectedMatchGroupIndex:self.preselectedGroupIndex];
 
   [self loadModelImages];
 }
@@ -289,22 +287,43 @@ const CGFloat kOmniboxIconSize = 16;
 
 #pragma mark - Private methods
 
+// Wraps `match` with AutocompleteMatchFormatter.
+- (id<AutocompleteSuggestion>)wrapMatch:(const AutocompleteMatch&)match {
+  AutocompleteMatchFormatter* formatter =
+      [AutocompleteMatchFormatter formatterWithMatch:match];
+  formatter.starred = _delegate->IsStarredMatch(match);
+  formatter.incognito = _incognito;
+  formatter.defaultSearchEngineIsGoogle = self.defaultSearchEngineIsGoogle;
+  formatter.pedalData = [self.pedalAnnotator pedalForMatch:match
+                                                 incognito:_incognito];
+  return formatter;
+}
+
+// Unpacks AutocompleteMatch into wrapped AutocompleteSuggestion and
+// AutocompleteSuggestionGroup. Sets `preselectedGroupIndex`.
 - (NSArray<id<AutocompleteSuggestionGroup>>*)wrappedMatches {
   NSMutableArray<id<AutocompleteSuggestion>>* wrappedSuggestions =
+      [[NSMutableArray alloc] init];
+  NSMutableArray<id<AutocompleteSuggestion>>* wrappedTiles =
       [[NSMutableArray alloc] init];
 
   size_t size = _currentResult.size();
   for (size_t i = 0; i < size; i++) {
     const AutocompleteMatch& match =
         ((const AutocompleteResult&)_currentResult).match_at((NSUInteger)i);
-    AutocompleteMatchFormatter* formatter =
-        [AutocompleteMatchFormatter formatterWithMatch:match];
-    formatter.starred = _delegate->IsStarredMatch(match);
-    formatter.incognito = _incognito;
-    formatter.defaultSearchEngineIsGoogle = self.defaultSearchEngineIsGoogle;
-    formatter.pedalData = [self.pedalAnnotator pedalForMatch:match
-                                                   incognito:_incognito];
-    [wrappedSuggestions addObject:formatter];
+    if (match.type == AutocompleteMatchType::TILE_NAVSUGGEST) {
+      DCHECK(base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles));
+      for (const AutocompleteMatch::SuggestTile& tile : match.suggest_tiles) {
+        AutocompleteMatch tileMatch = AutocompleteMatch(match);
+        // TODO(crbug.com/1363546): replace with a new wrapper.
+        tileMatch.destination_url = tile.url;
+        tileMatch.fill_into_edit = base::UTF8ToUTF16(tile.url.spec());
+        tileMatch.description = tile.title;
+        [wrappedTiles addObject:[self wrapMatch:tileMatch]];
+      }
+    } else {
+      [wrappedSuggestions addObject:[self wrapMatch:match]];
+    }
   }
 
   id<AutocompleteSuggestionGroup> pedalGroup =
@@ -313,13 +332,28 @@ const CGFloat kOmniboxIconSize = 16;
       [[AutocompleteSuggestionGroupImpl alloc]
           initWithTitle:nil
             suggestions:wrappedSuggestions];
+  id<AutocompleteSuggestionGroup> tileGroup =
+      [[AutocompleteSuggestionGroupImpl alloc] initWithTitle:nil
+                                                 suggestions:wrappedTiles];
 
-  self.nonPedalSuggestions = @[ suggestionGroup ];
-  if (pedalGroup) {
-    return @[ pedalGroup, suggestionGroup ];
-  } else {
-    return self.nonPedalSuggestions;
+  NSMutableArray<id<AutocompleteSuggestionGroup>>* nonPedalGroups =
+      [[NSMutableArray alloc] init];
+
+  [nonPedalGroups addObject:suggestionGroup];
+  if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
+    if (tileGroup.suggestions.count > 0) {
+      [nonPedalGroups addObject:tileGroup];
+    }
   }
+  self.nonPedalSuggestions = nonPedalGroups;
+  NSArray<id<AutocompleteSuggestionGroup>>* groups;
+  if (pedalGroup) {
+    groups = [@[ pedalGroup ] arrayByAddingObjectsFromArray:nonPedalGroups];
+  } else {
+    groups = nonPedalGroups;
+  }
+  self.preselectedGroupIndex = [groups indexOfObject:suggestionGroup];
+  return groups;
 }
 
 - (void)groupCurrentSuggestionsFrom:(NSUInteger)begin to:(NSUInteger)end {
