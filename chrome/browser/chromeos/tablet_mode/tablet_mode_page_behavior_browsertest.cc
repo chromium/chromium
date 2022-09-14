@@ -37,13 +37,24 @@ namespace {
 // Runs the specified callback when a change to tablet state is detected.
 class TabletModeWatcher : public display::DisplayObserver {
  public:
-  explicit TabletModeWatcher(base::RepeatingClosure cb) : cb_(cb) {}
+  explicit TabletModeWatcher(base::RepeatingClosure cb,
+                             display::TabletState current_tablet_state)
+      : cb_(cb), current_tablet_state_(current_tablet_state) {}
   void OnDisplayTabletStateChanged(display::TabletState state) override {
+    // Skip if the notified TabletState is same as the current state.
+    // This required since it may notify the current tablet state when the
+    // observer is added (e.g. WaylandScreen::AddObserver()). In such cases, we
+    // need to ignore the initial notification so that we can only catch
+    // meeningful notifications for testing.
+    if (current_tablet_state_ == state)
+      return;
+
     cb_.Run();
   }
 
  private:
   base::RepeatingClosure cb_;
+  display::TabletState current_tablet_state_;
 };
 #endif
 
@@ -85,7 +96,8 @@ class TabletModePageBehaviorTest : public InProcessBrowserTest {
     ash::ShellTestApi().SetTabletModeEnabledForTest(enable);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
     base::RunLoop run_loop;
-    TabletModeWatcher watcher(run_loop.QuitClosure());
+    TabletModeWatcher watcher(run_loop.QuitClosure(),
+                              chromeos::TabletState::Get()->state());
     display::Screen::GetScreen()->AddObserver(&watcher);
     crosapi::mojom::TestControllerAsyncWaiter controller(
         chromeos::LacrosService::Get()
