@@ -487,17 +487,6 @@ namespace {
 const char kDiceMigrationCompletePref[] = "signin.DiceMigrationComplete";
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Deprecated 07/2022.
-// The name of a boolean pref that determines whether we can show the folder
-// selection user nudge for the screen capture tool. When this pref is false, it
-// means that we showed the nudge at some point and the user interacted with the
-// capture mode session UI in such a way that the nudge no longer needs to be
-// displayed again.
-constexpr char kCanShowFolderSelectionNudge[] =
-    "ash.capture_mode.can_show_folder_selection_nudge";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if !BUILDFLAG(IS_ANDROID)
 // Deprecated 09/2021.
 const char kNtpSearchSuggestionsBlocklist[] =
@@ -747,6 +736,13 @@ const char kExtensionToolbar[] = "extensions.toolbar";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Deprecated 07/2022.
+// The name of a boolean pref that determines whether we can show the folder
+// selection user nudge for the screen capture tool. When this pref is false, it
+// means that we showed the nudge at some point and the user interacted with the
+// capture mode session UI in such a way that the nudge no longer needs to be
+// displayed again.
+constexpr char kCanShowFolderSelectionNudge[] =
+    "ash.capture_mode.can_show_folder_selection_nudge";
 const char kSettingsShowOSBanner[] = "settings.cros.show_os_banner";
 #endif
 
@@ -764,6 +760,8 @@ const char kProfileAvatarTutorialShown[] =
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Deprecated 09/2022.
+constexpr char kClipboardHistoryNewFeatureBadgeCount[] =
+    "ash.clipboard.multipaste_nudges.new_feature_shown_count";
 constexpr char kUsersLastInputMethod[] = "UsersLRUInputMethod";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1018,6 +1016,10 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 09/2022
   registry->RegisterBooleanPref(kPrivacySandboxFirstPartySetsDataAccessAllowed,
                                 true);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterIntegerPref(kClipboardHistoryNewFeatureBadgeCount, 0);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -1768,11 +1770,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   feed::MigrateObsoleteProfilePrefsJune_2021(profile_prefs);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 07/2022.
-  profile_prefs->ClearPref(kCanShowFolderSelectionNudge);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if !BUILDFLAG(IS_ANDROID)
   // Added 09/2021.
   profile_prefs->ClearPref(kNtpSearchSuggestionsBlocklist);
@@ -1966,6 +1963,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Added 07/2022.
+  profile_prefs->ClearPref(kCanShowFolderSelectionNudge);
   profile_prefs->ClearPref(kSettingsShowOSBanner);
 #endif
 
@@ -1994,6 +1992,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 09/2022.
   profile_prefs->ClearPref(kPrivacySandboxFirstPartySetsDataAccessAllowed);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 09/2022.
+  profile_prefs->ClearPref(kClipboardHistoryNewFeatureBadgeCount);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

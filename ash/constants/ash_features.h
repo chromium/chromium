@@ -153,8 +153,6 @@ extern const base::Feature kCellularUseSecondEuicc;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCheckPasswordsAgainstCryptohomeHelper;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kClipboardHistoryContextMenuNudge;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kClipboardHistoryNudgeSessionReset;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kClipboardHistoryReorder;
@@ -745,8 +743,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptivePortalUI2022Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherItemColorSyncEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsClipboardHistoryContextMenuNudgeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsClipboardHistoryNudgeSessionResetEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryReorderEnabled();

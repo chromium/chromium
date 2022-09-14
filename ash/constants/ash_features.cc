@@ -346,11 +346,6 @@ const base::Feature kCellularUseSecondEuicc{"CellularUseSecondEuicc",
 const base::Feature kCheckPasswordsAgainstCryptohomeHelper{
     "CheckPasswordsAgainstCryptohomeHelper", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, a blue new nudge will show on the context menu option for
-// clipboard history.
-const base::Feature kClipboardHistoryContextMenuNudge{
-    "ClipboardHistoryContextMenuNudge", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // If enabled, the clipboard nudge shown prefs will be reset at the start of
 // each new user session.
 const base::Feature kClipboardHistoryNudgeSessionReset{
@@ -1918,10 +1913,6 @@ bool IsCaptivePortalUI2022Enabled() {
 
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled() {
   return base::FeatureList::IsEnabled(kCheckPasswordsAgainstCryptohomeHelper);
-}
-
-bool IsClipboardHistoryContextMenuNudgeEnabled() {
-  return base::FeatureList::IsEnabled(kClipboardHistoryContextMenuNudge);
 }
 
 bool IsClipboardHistoryNudgeSessionResetEnabled() {

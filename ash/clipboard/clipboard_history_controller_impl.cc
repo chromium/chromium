@@ -359,7 +359,7 @@ void ClipboardHistoryControllerImpl::ShowMenu(
           weak_ptr_factory_.GetWeakPtr()));
 
   for (auto& observer : observers_)
-    observer.OnClipboardHistoryMenuShown(show_source);
+    observer.OnClipboardHistoryMenuShown();
 }
 
 gfx::Rect ClipboardHistoryControllerImpl::GetMenuBoundsInScreenForTest() const {
@@ -380,15 +380,6 @@ void ClipboardHistoryControllerImpl::BlockGetHistoryValuesForTest() {
 void ClipboardHistoryControllerImpl::ResumeGetHistoryValuesForTest() {
   DCHECK(get_history_values_blocker_for_test_);
   get_history_values_blocker_for_test_->Signal();
-}
-
-bool ClipboardHistoryControllerImpl::ShouldShowNewFeatureBadge() const {
-  return chromeos::features::IsClipboardHistoryContextMenuNudgeEnabled() &&
-         nudge_controller_->ShouldShowNewFeatureBadge();
-}
-
-void ClipboardHistoryControllerImpl::MarkNewFeatureBadgeShown() {
-  nudge_controller_->MarkNewFeatureBadgeShown();
 }
 
 void ClipboardHistoryControllerImpl::OnScreenshotNotificationCreated() {

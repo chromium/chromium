@@ -195,7 +195,6 @@ chromium-metrics-reviews@google.com.
     ToFeaturePasteTime and ToFeatureOpenTime histograms.
   </summary>
   <token key="NudgeType">
-    <variant name="NewFeatureBadge" summary="new feature badge"/>
     <variant name="OnboardingNudge" summary="onboarding nudge"/>
     <variant name="ScreenshotNotificationNudge"
         summary="screenshot notification nudge"/>
@@ -213,7 +212,6 @@ chromium-metrics-reviews@google.com.
     used to measure the conversion rate by comparing it to ShownCount histogram
   </summary>
   <token key="NudgeType">
-    <variant name="NewFeatureBadge" summary="new feature badge"/>
     <variant name="OnboardingNudge" summary="onboarding nudge"/>
     <variant name="ScreenshotNotificationNudge"
         summary="screenshot notification nudge"/>

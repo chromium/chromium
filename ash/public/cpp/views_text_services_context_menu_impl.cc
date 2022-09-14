@@ -94,10 +94,6 @@ void ViewsTextServicesContextMenuImpl::AddClipboardHistoryMenuOption(
   const size_t target_index = index_of_paste.value() + 1;
   menu->InsertItemAt(target_index, IDS_APP_SHOW_CLIPBOARD_HISTORY,
                      l10n_util::GetStringUTF16(IDS_APP_SHOW_CLIPBOARD_HISTORY));
-  if (ClipboardHistoryController::Get()->ShouldShowNewFeatureBadge()) {
-    menu->SetIsNewFeatureAt(target_index, true);
-    ClipboardHistoryController::Get()->MarkNewFeatureBadgeShown();
-  }
 }
 
 }  // namespace ash

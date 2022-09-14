@@ -24,7 +24,6 @@ namespace {
 // Keys for tooltip sub-preferences for shown count and last time shown.
 constexpr char kShownCount[] = "shown_count";
 constexpr char kLastTimeShown[] = "last_time_shown";
-constexpr char kNewFeatureBadgeCount[] = "new_feature_shown_count";
 
 // The maximum number of 1 second buckets used to record the time between
 // showing the nudge and recording the feature being opened/used.
@@ -116,25 +115,6 @@ void ClipboardNudgeController::OnClipboardHistoryItemAdded(
   }
 }
 
-void ClipboardNudgeController::MarkNewFeatureBadgeShown() {
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  if (!prefs)
-    return;
-  const int shown_count = GetNewFeatureBadgeShownCount(prefs);
-  DictionaryPrefUpdate update(prefs, prefs::kMultipasteNudges);
-  update->SetIntPath(kNewFeatureBadgeCount, shown_count + 1);
-  base::UmaHistogramBoolean(kNewBadge_ShowCount, true);
-  if (new_feature_last_shown_time_.ShouldLogFeatureOpenTime()) {
-    base::UmaHistogramExactLinear(kNewBadge_OpenTime, kMaxSeconds, kMaxSeconds);
-  }
-  if (new_feature_last_shown_time_.ShouldLogFeatureUsedTime()) {
-    base::UmaHistogramExactLinear(kNewBadge_PasteTime, kMaxSeconds,
-                                  kMaxSeconds);
-  }
-  new_feature_last_shown_time_.ResetTime();
-}
-
 void ClipboardNudgeController::MarkScreenshotNotificationShown() {
   base::UmaHistogramBoolean(kScreenshotNotification_ShowCount, true);
   if (screenshot_notification_last_shown_time_.ShouldLogFeatureOpenTime()) {
@@ -146,16 +126,6 @@ void ClipboardNudgeController::MarkScreenshotNotificationShown() {
                                   kMaxSeconds, kMaxSeconds);
   }
   screenshot_notification_last_shown_time_.ResetTime();
-}
-
-bool ClipboardNudgeController::ShouldShowNewFeatureBadge() {
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  if (!prefs)
-    return false;
-  int badge_shown_count = GetNewFeatureBadgeShownCount(prefs);
-  // We should not show more nudges after hitting the limit.
-  return badge_shown_count < kContextMenuBadgeShowLimit;
 }
 
 void ClipboardNudgeController::OnClipboardDataRead() {
@@ -197,12 +167,9 @@ void ClipboardNudgeController::OnActiveUserPrefServiceChanged(
   DictionaryPrefUpdate update(prefs, prefs::kMultipasteNudges);
   update->SetIntPath(kShownCount, 0);
   update->SetPath(kLastTimeShown, base::TimeToValue(base::Time()));
-  update->SetIntPath(kNewFeatureBadgeCount, 0);
 }
 
 void ClipboardNudgeController::ShowNudge(ClipboardNudgeType nudge_type) {
-  DCHECK_NE(nudge_type, ClipboardNudgeType::kNewFeatureBadge);
-
   current_nudge_type_ = nudge_type;
   SystemNudgeController::ShowNudge();
 
@@ -251,22 +218,9 @@ void ClipboardNudgeController::HandleNudgeShown() {
   update->SetPath(kLastTimeShown, base::TimeToValue(GetTime()));
 }
 
-void ClipboardNudgeController::OnClipboardHistoryMenuShown(
-    crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {
+void ClipboardNudgeController::OnClipboardHistoryMenuShown() {
   if (LogFeatureOpenTime(last_shown_time_, kOnboardingNudge_OpenTime))
     last_shown_time_.set_was_logged_as_opened();
-  switch (show_source) {
-    case crosapi::mojom::ClipboardHistoryControllerShowSource::kAccelerator:
-    case crosapi::mojom::ClipboardHistoryControllerShowSource::kVirtualKeyboard:
-    case crosapi::mojom::ClipboardHistoryControllerShowSource::kUnknown:
-      break;
-    case crosapi::mojom::ClipboardHistoryControllerShowSource::
-        kRenderViewContextMenu:
-    case crosapi::mojom::ClipboardHistoryControllerShowSource::
-        kTextfieldContextMenu:
-      if (LogFeatureOpenTime(new_feature_last_shown_time_, kNewBadge_OpenTime))
-        new_feature_last_shown_time_.set_was_logged_as_opened();
-  }
   if (LogFeatureOpenTime(zero_state_last_shown_time_, kZeroStateNudge_OpenTime))
     zero_state_last_shown_time_.set_was_logged_as_opened();
   if (LogFeatureOpenTime(screenshot_notification_last_shown_time_,
@@ -278,8 +232,6 @@ void ClipboardNudgeController::OnClipboardHistoryMenuShown(
 void ClipboardNudgeController::OnClipboardHistoryPasted() {
   if (LogFeatureUsedTime(last_shown_time_, kOnboardingNudge_PasteTime))
     last_shown_time_.set_was_logged_as_used();
-  if (LogFeatureUsedTime(new_feature_last_shown_time_, kNewBadge_PasteTime))
-    new_feature_last_shown_time_.set_was_logged_as_used();
   if (LogFeatureUsedTime(zero_state_last_shown_time_,
                          kZeroStateNudge_PasteTime)) {
     zero_state_last_shown_time_.set_was_logged_as_used();
@@ -313,12 +265,6 @@ int ClipboardNudgeController::GetShownCount(PrefService* prefs) {
   const base::Value::Dict& dictionary =
       prefs->GetDict(prefs::kMultipasteNudges);
   return dictionary.FindInt(kShownCount).value_or(0);
-}
-
-int ClipboardNudgeController::GetNewFeatureBadgeShownCount(PrefService* prefs) {
-  const base::Value::Dict& dictionary =
-      prefs->GetDict(prefs::kMultipasteNudges);
-  return dictionary.FindInt(kNewFeatureBadgeCount).value_or(0);
 }
 
 base::Time ClipboardNudgeController::GetLastShownTime(PrefService* prefs) {

@@ -36,8 +36,7 @@ class ASH_PUBLIC_EXPORT ClipboardHistoryController {
   class Observer : public base::CheckedObserver {
    public:
     // Called when the clipboard history menu is shown.
-    virtual void OnClipboardHistoryMenuShown(
-        crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {}
+    virtual void OnClipboardHistoryMenuShown() {}
     // Called when the user pastes from the clipboard history menu.
     virtual void OnClipboardHistoryPasted() {}
     // Called when the clipboard history changes.
@@ -63,11 +62,6 @@ class ASH_PUBLIC_EXPORT ClipboardHistoryController {
       const gfx::Rect& anchor_rect,
       ui::MenuSourceType source_type,
       crosapi::mojom::ClipboardHistoryControllerShowSource show_source) = 0;
-
-  // Whether 'new' feature badge should be applied to clipboard menu.
-  virtual bool ShouldShowNewFeatureBadge() const = 0;
-  // Increment the 'new' feature badge shown count.
-  virtual void MarkNewFeatureBadgeShown() = 0;
 
   // Notify the clipboard history that a screenshot notification was created.
   virtual void OnScreenshotNotificationCreated() = 0;

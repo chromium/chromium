@@ -2021,16 +2021,6 @@ void RenderViewContextMenu::AppendOtherEditableItems() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   menu_model_.AddItemWithStringId(IDC_CONTENT_CLIPBOARD_HISTORY_MENU,
                                   IDS_CONTEXT_MENU_SHOW_CLIPBOARD_HISTORY_MENU);
-  ash::ClipboardHistoryController* clipboard_history_controller =
-      ash::ClipboardHistoryController::Get();
-  if (clipboard_history_controller &&
-      clipboard_history_controller->ShouldShowNewFeatureBadge()) {
-    menu_model_.SetIsNewFeatureAt(
-        menu_model_.GetIndexOfCommandId(IDC_CONTENT_CLIPBOARD_HISTORY_MENU)
-            .value(),
-        true);
-    clipboard_history_controller->MarkNewFeatureBadgeShown();
-  }
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
