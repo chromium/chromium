@@ -325,8 +325,10 @@ group("gn_all") {
     deps += [
       "//ui/ozone",
       "//ui/ozone:unittests",
-      "//ui/ozone/demo",
     ]
+    if (!is_fuchsia) {
+      deps += [ "//ui/ozone/demo" ]
+    }
   }
 
   if (is_win) {
