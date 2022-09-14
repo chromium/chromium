@@ -166,7 +166,7 @@ const std::vector<SearchConcept>& GetAboutReportIssueSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kReportAnIssue},
        {IDS_OS_SETTINGS_TAG_ABOUT_REPORT_ISSUE_ALT1,
-        SearchConcept::kAltTagEnd}},
+        IDS_SETTINGS_ABOUT_PAGE_SEND_FEEDBACK, SearchConcept::kAltTagEnd}},
   });
   return *tags;
 }
