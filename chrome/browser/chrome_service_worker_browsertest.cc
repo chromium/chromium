@@ -187,6 +187,7 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
 
   void TestStartServiceWorkerAndDispatchMessage(const char* test_script) {
     base::RunLoop run_loop;
+    blink::TransferableMessage msg;
     const std::u16string message_data = u"testMessage";
 
     WriteFile(FILE_PATH_LITERAL("sw.js"), "self.onfetch = function(e) {};");
@@ -194,8 +195,8 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
 
     InitializeServer();
     NavigateToPageAndWaitForReadyTitle("/test.html");
-    blink::TransferableMessage msg =
-        blink::EncodeWebMessagePayload(message_data);
+    msg.owned_encoded_message = blink::EncodeStringMessage(message_data);
+    msg.encoded_message = msg.owned_encoded_message;
 
     GURL url = embedded_test_server()->GetURL("/scope/");
     GetServiceWorkerContext()->StartServiceWorkerAndDispatchMessage(

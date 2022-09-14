@@ -8,31 +8,17 @@
 
 #include "base/containers/buffer_iterator.h"
 #include "base/logging.h"
-#include "base/notreached.h"
-#include "mojo/public/cpp/base/big_buffer.h"
-#include "third_party/blink/public/mojom/array_buffer/array_buffer_contents.mojom.h"
 
 namespace blink {
 namespace {
-
-// Template helpers for visiting std::variant.
-template <class... Ts>
-struct overloaded : Ts... {
-  using Ts::operator()...;
-};
-template <class... Ts>
-overloaded(Ts...) -> overloaded<Ts...>;
 
 const uint32_t kVarIntShift = 7;
 const uint32_t kVarIntMask = (1 << kVarIntShift) - 1;
 
 const uint8_t kVersionTag = 0xFF;
 const uint8_t kPaddingTag = '\0';
-// serialization_tag, see v8/src/objects/value-serializer.cc
 const uint8_t kOneByteStringTag = '"';
 const uint8_t kTwoByteStringTag = 'c';
-const uint8_t kArrayBuffer = 'B';
-const uint8_t kArrayBufferTransferTag = 't';
 
 const uint32_t kVersion = 10;
 
@@ -98,51 +84,31 @@ bool ContainsOnlyLatin1(const std::u16string& data) {
 
 }  // namespace
 
-TransferableMessage EncodeWebMessagePayload(const WebMessagePayload& payload) {
-  TransferableMessage message;
+std::vector<uint8_t> EncodeStringMessage(const std::u16string& data) {
   std::vector<uint8_t> buffer;
   WriteUint8(kVersionTag, &buffer);
   WriteUint32(kVersion, &buffer);
 
-  absl::visit(
-      overloaded{
-          [&](const std::u16string& str) {
-            if (ContainsOnlyLatin1(str)) {
-              std::string data_latin1(str.cbegin(), str.cend());
-              WriteUint8(kOneByteStringTag, &buffer);
-              WriteUint32(data_latin1.size(), &buffer);
-              WriteBytes(data_latin1.c_str(), data_latin1.size(), &buffer);
-            } else {
-              size_t num_bytes = str.size() * sizeof(char16_t);
-              if ((buffer.size() + 1 + BytesNeededForUint32(num_bytes)) & 1)
-                WriteUint8(kPaddingTag, &buffer);
-              WriteUint8(kTwoByteStringTag, &buffer);
-              WriteUint32(num_bytes, &buffer);
-              WriteBytes(reinterpret_cast<const char*>(str.data()), num_bytes,
-                         &buffer);
-            }
-          },
-          [&](const std::vector<uint8_t>& array_buffer) {
-            WriteUint8(kArrayBufferTransferTag, &buffer);
-            // Write at the first slot.
-            WriteUint32(0, &buffer);
+  if (ContainsOnlyLatin1(data)) {
+    std::string data_latin1(data.begin(), data.end());
+    WriteUint8(kOneByteStringTag, &buffer);
+    WriteUint32(data_latin1.size(), &buffer);
+    WriteBytes(data_latin1.c_str(), data_latin1.size(), &buffer);
+  } else {
+    size_t num_bytes = data.size() * sizeof(char16_t);
+    if ((buffer.size() + 1 + BytesNeededForUint32(num_bytes)) & 1)
+      WriteUint8(kPaddingTag, &buffer);
+    WriteUint8(kTwoByteStringTag, &buffer);
+    WriteUint32(num_bytes, &buffer);
+    WriteBytes(reinterpret_cast<const char*>(data.data()), num_bytes, &buffer);
+  }
 
-            mojo_base::BigBuffer big_buffer(array_buffer);
-            message.array_buffer_contents_array.push_back(
-                mojom::SerializedArrayBufferContents::New(
-                    std::move(big_buffer)));
-          }},
-      payload);
-
-  message.owned_encoded_message = std::move(buffer);
-  message.encoded_message = message.owned_encoded_message;
-
-  return message;
+  return buffer;
 }
 
-absl::optional<WebMessagePayload> DecodeToWebMessagePayload(
-    const TransferableMessage& message) {
-  base::BufferIterator<const uint8_t> iter(message.encoded_message);
+bool DecodeStringMessage(base::span<const uint8_t> encoded_data,
+                         std::u16string* result) {
+  base::BufferIterator<const uint8_t> iter(encoded_data);
   uint8_t tag;
 
   // Discard any leading version and padding tags.
@@ -150,10 +116,10 @@ absl::optional<WebMessagePayload> DecodeToWebMessagePayload(
   // version tags.
   do {
     if (!ReadUint8(iter, &tag))
-      return absl::nullopt;
+      return false;
     uint32_t version;
     if (tag == kVersionTag && !ReadUint32(iter, &version))
-      return absl::nullopt;
+      return false;
   } while (tag == kVersionTag || tag == kPaddingTag);
 
   switch (tag) {
@@ -162,51 +128,23 @@ absl::optional<WebMessagePayload> DecodeToWebMessagePayload(
       // characters are zero-extended rather than sign-extended
       uint32_t num_bytes;
       if (!ReadUint32(iter, &num_bytes))
-        return absl::nullopt;
+        return false;
       auto span = iter.Span<unsigned char>(num_bytes / sizeof(unsigned char));
-      std::u16string str(span.begin(), span.end());
-      return span.size_bytes() == num_bytes
-                 ? absl::make_optional(WebMessagePayload(std::move(str)))
-                 : absl::nullopt;
+      result->assign(span.begin(), span.end());
+      return span.size_bytes() == num_bytes;
     }
     case kTwoByteStringTag: {
       uint32_t num_bytes;
       if (!ReadUint32(iter, &num_bytes))
-        return absl::nullopt;
+        return false;
       auto span = iter.Span<char16_t>(num_bytes / sizeof(char16_t));
-      std::u16string str(span.begin(), span.end());
-      return span.size_bytes() == num_bytes
-                 ? absl::make_optional(WebMessagePayload(std::move(str)))
-                 : absl::nullopt;
-    }
-    case kArrayBuffer: {
-      uint32_t num_bytes;
-      if (!ReadUint32(iter, &num_bytes))
-        return absl::nullopt;
-      auto span = iter.Span<uint8_t>(num_bytes);
-      return span.size_bytes() == num_bytes
-                 ? absl::make_optional(
-                       WebMessagePayload(std::vector(span.begin(), span.end())))
-                 : absl::nullopt;
-    }
-    case kArrayBufferTransferTag: {
-      uint32_t array_buffer_index;
-      if (!ReadUint32(iter, &array_buffer_index))
-        return absl::nullopt;
-      // We only support transfer ArrayBuffer at the first index.
-      if (array_buffer_index != 0)
-        return absl::nullopt;
-      if (message.array_buffer_contents_array.size() != 1)
-        return absl::nullopt;
-      const auto& big_buffer = message.array_buffer_contents_array[0]->contents;
-      // Data is from renderer process, copy it first before use.
-      return std::vector(big_buffer.data(),
-                         big_buffer.data() + big_buffer.size());
+      result->assign(span.begin(), span.end());
+      return span.size_bytes() == num_bytes;
     }
   }
 
   DLOG(WARNING) << "Unexpected tag: " << tag;
-  return absl::nullopt;
+  return false;
 }
 
 }  // namespace blink
