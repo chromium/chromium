@@ -54,10 +54,9 @@ DesktopMediaPickerController::Params MakeDesktopPickerParams(
   DesktopMediaPickerController::Params params;
   // Value of |web_contents| comes from the UI, and typically corresponds to
   // the active tab.
-  if (web_contents) {
-    params.web_contents = web_contents->GetWeakPtr();
+  params.web_contents = web_contents;
+  if (web_contents)
     params.context = web_contents->GetTopLevelNativeWindow();
-  }
   params.app_name = l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME);
   params.target_name = params.app_name;
   params.select_only_screen = true;

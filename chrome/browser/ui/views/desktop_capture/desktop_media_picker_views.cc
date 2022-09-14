@@ -308,7 +308,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
     const DesktopMediaPicker::Params& params,
     DesktopMediaPickerViews* parent,
     std::vector<std::unique_ptr<DesktopMediaList>> source_lists)
-    : is_get_display_media_call_(params.is_get_display_media_call),
+    : web_contents_(params.web_contents),
+      is_get_display_media_call_(params.is_get_display_media_call),
       audio_requested_(params.request_audio),
       suppress_local_audio_playback_(params.suppress_local_audio_playback),
       capturer_global_id_(
@@ -316,7 +317,6 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
               ? params.web_contents->GetPrimaryMainFrame()->GetGlobalId()
               : content::GlobalRenderFrameHostId()),
       parent_(parent) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!params.force_audio_checkboxes_to_default_checked ||
          !params.exclude_system_audio);
 
@@ -531,10 +531,10 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
   views::Widget* widget = nullptr;
   bool modal_dialog = params.web_contents &&
                       !params.web_contents->GetDelegate()->IsNeverComposited(
-                          params.web_contents.get());
+                          params.web_contents);
   if (modal_dialog) {
-    widget = constrained_window::ShowWebModalDialogViews(
-        this, params.web_contents.get());
+    widget =
+        constrained_window::ShowWebModalDialogViews(this, params.web_contents);
   } else {
 #if BUILDFLAG(IS_MAC)
     // On Mac, MODAL_TYPE_CHILD with a null parent isn't allowed - fall back to

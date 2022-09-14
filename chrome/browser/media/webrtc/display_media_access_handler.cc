@@ -351,7 +351,7 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
       base::BindOnce(&DisplayMediaAccessHandler::OnDisplaySurfaceSelected,
                      base::Unretained(this), web_contents->GetWeakPtr());
   DesktopMediaPicker::Params picker_params;
-  picker_params.web_contents = web_contents->GetWeakPtr();
+  picker_params.web_contents = web_contents;
   gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
   picker_params.context = parent_window;
   picker_params.parent = parent_window;

@@ -38,8 +38,6 @@ class DesktopMediaPickerViewsBrowserTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     picker_ = std::make_unique<DesktopMediaPickerViews>();
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-    DCHECK(web_contents);
-
     gfx::NativeWindow native_window = browser()->window()->GetNativeWindow();
 
     std::vector<std::unique_ptr<DesktopMediaList>> sources;
@@ -55,7 +53,7 @@ class DesktopMediaPickerViewsBrowserTest : public DialogBrowserTest {
       source_lists.push_back(static_cast<FakeDesktopMediaList*>(source.get()));
 
     DesktopMediaPicker::Params picker_params;
-    picker_params.web_contents = web_contents->GetWeakPtr();
+    picker_params.web_contents = web_contents;
     picker_params.context = native_window;
     picker_params.app_name = u"app_name";
     picker_params.target_name = u"target_name";

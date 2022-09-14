@@ -12,10 +12,6 @@
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory_impl.h"
-#include "chrome/test/base/testing_profile.h"
-#include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_renderer_host.h"
-#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -79,14 +75,9 @@ class MockDesktopMediaPickerFactory : public DesktopMediaPickerFactory {
 class DesktopMediaPickerControllerTest : public testing::Test {
  public:
   void SetUp() override {
-    web_contents_ = content::WebContentsTester::CreateTestWebContents(
-        &testing_profile_, nullptr);
-    picker_params_.web_contents = web_contents_->GetWeakPtr();
-
     ON_CALL(factory_, CreatePicker).WillByDefault([this]() {
       return std::unique_ptr<DesktopMediaPicker>(std::move(picker_));
     });
-
     ON_CALL(factory_, CreateMediaList)
         .WillByDefault([this](const auto& types,
                               content::WebContents* web_contents,
@@ -99,10 +90,6 @@ class DesktopMediaPickerControllerTest : public testing::Test {
   }
 
  protected:
-  content::BrowserTaskEnvironment task_environment_;
-  content::RenderViewHostTestEnabler render_view_host_test_enabler_;
-  TestingProfile testing_profile_;
-  std::unique_ptr<content::WebContents> web_contents_;
   DesktopMediaPickerController::Params picker_params_;
   base::MockCallback<DesktopMediaPickerController::DoneCallback> done_;
   std::vector<DesktopMediaList::Type> source_types_{
@@ -119,8 +106,7 @@ class DesktopMediaPickerControllerTest : public testing::Test {
 TEST_F(DesktopMediaPickerControllerTest, ShowPicker) {
   auto filter = GetDefaultFilter();
   EXPECT_CALL(factory_, CreatePicker());
-  EXPECT_CALL(factory_,
-              CreateMediaList(source_types_, web_contents_.get(), filter));
+  EXPECT_CALL(factory_, CreateMediaList(source_types_, nullptr, filter));
   EXPECT_CALL(done_, Run("", media_id_));
   EXPECT_CALL(*picker_, Show)
       .WillOnce(WithArg<2>([&](DesktopMediaPicker::DoneCallback cb) {
@@ -136,8 +122,7 @@ TEST_F(DesktopMediaPickerControllerTest, ShowPicker) {
 TEST_F(DesktopMediaPickerControllerTest, WebContentsDestroyed) {
   auto filter = GetDefaultFilter();
   EXPECT_CALL(factory_, CreatePicker());
-  EXPECT_CALL(factory_,
-              CreateMediaList(source_types_, web_contents_.get(), filter));
+  EXPECT_CALL(factory_, CreateMediaList(source_types_, nullptr, filter));
   EXPECT_CALL(done_, Run("", content::DesktopMediaID()));
   EXPECT_CALL(*picker_, Show);
 
@@ -156,8 +141,7 @@ TEST_F(DesktopMediaPickerControllerTest, ShowSingleScreen) {
   source.name = u"fake name";
 
   EXPECT_CALL(factory_, CreatePicker()).Times(0);
-  EXPECT_CALL(factory_,
-              CreateMediaList(source_types_, web_contents_.get(), filter));
+  EXPECT_CALL(factory_, CreateMediaList(source_types_, nullptr, filter));
   EXPECT_CALL(done_, Run("", source.id));
   EXPECT_CALL(*picker_, Show).Times(0);
   EXPECT_CALL(*media_list_, Update)

@@ -38,8 +38,8 @@ class DesktopMediaPicker {
     Params& operator=(const Params&);
     ~Params();
 
-    // WebContents this picker is relative to.
-    base::WeakPtr<content::WebContents> web_contents;
+    // WebContents this picker is relative to, can be null.
+    raw_ptr<content::WebContents> web_contents = nullptr;
     // The context whose root window is used for dialog placement, cannot be
     // null for Aura.
     gfx::NativeWindow context = nullptr;
