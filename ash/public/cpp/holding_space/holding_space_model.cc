@@ -4,6 +4,11 @@
 
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 
+#include <numeric>
+
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "base/bind.h"
@@ -13,6 +18,23 @@
 #include "base/ranges/algorithm.h"
 
 namespace ash {
+
+namespace {
+
+// Helpers ---------------------------------------------------------------------
+
+// Maps a `HoldingSpaceItem::Type` to a `HoldingSpaceModel::Section`.
+HoldingSpaceModel::Section ToSection(HoldingSpaceItem::Type type) {
+  if (holding_space_util::IsDownloadType(type))
+    return HoldingSpaceModel::Section::kDownload;
+
+  if (holding_space_util::IsScreenCaptureType(type))
+    return HoldingSpaceModel::Section::kScreenCapture;
+
+  return HoldingSpaceModel::Section::kNone;
+}
+
+}  // namespace
 
 // HoldingSpaceModel::ScopedItemUpdate -----------------------------------------
 
@@ -183,8 +205,12 @@ void HoldingSpaceModel::AddItems(
     item_ptrs.push_back(item.get());
     items_.push_back(std::move(item));
   }
+
   for (auto& observer : observers_)
     observer.OnHoldingSpaceItemsAdded(item_ptrs);
+
+  if (features::IsHoldingSpacePredictabilityEnabled())
+    TrimToMaxItemsPerSection();
 }
 
 void HoldingSpaceModel::RemoveItem(const std::string& id) {
@@ -314,6 +340,24 @@ void HoldingSpaceModel::AddObserver(HoldingSpaceModelObserver* observer) {
 
 void HoldingSpaceModel::RemoveObserver(HoldingSpaceModelObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+// Removes any items that exceed the `kMaxItemsPerSection` of that
+// `HoldingSpaceItem::Type`. Types are bucketed into screen_captures and
+// downloads. For example if `kMaxItemsPerSection` is 10 and after adding 2
+// new download items the user has a total of 12 items in the downloads
+// bucket, then we remove the 2 oldest (i.e. first we find in the vector)
+// downloads from holding space `items_`, leaving the 10 newest remaining.
+// If it's not a download or screen capture then no limit is applied.
+void HoldingSpaceModel::TrimToMaxItemsPerSection() {
+  RemoveIf(base::BindRepeating(
+      [](std::map<Section, size_t>& items_per_section,
+         const HoldingSpaceItem* item) {
+        auto section = ToSection(item->type());
+        return ++items_per_section[section] > kMaxItemsPerSection &&
+               section != HoldingSpaceModel::Section::kNone;
+      },
+      base::OwnedRef(std::map<Section, size_t>())));
 }
 
 }  // namespace ash

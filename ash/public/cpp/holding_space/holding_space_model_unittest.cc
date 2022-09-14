@@ -7,6 +7,8 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
@@ -14,6 +16,8 @@
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "base/bind.h"
 #include "base/scoped_observation.h"
+#include "base/test/scoped_feature_list.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -35,7 +39,7 @@ HoldingSpaceItem::InProgressCommand CreateInProgressCommand(
 std::vector<HoldingSpaceItem::Type> GetHoldingSpaceItemTypes() {
   std::vector<HoldingSpaceItem::Type> types;
   for (int i = 0; i <= static_cast<int>(HoldingSpaceItem::Type::kMaxValue); ++i)
-    types.push_back(static_cast<HoldingSpaceItem::Type>(i));
+    types.emplace_back(static_cast<HoldingSpaceItem::Type>(i));
   return types;
 }
 
@@ -45,6 +49,13 @@ std::unique_ptr<HoldingSpaceImage> CreateFakeHoldingSpaceImage(
   return std::make_unique<HoldingSpaceImage>(
       holding_space_util::GetMaxImageSizeForType(type), file_path,
       /*async_bitmap_resolver=*/base::DoNothing());
+}
+
+std::unique_ptr<HoldingSpaceItem> CreateItem(HoldingSpaceItem::Type type) {
+  return HoldingSpaceItem::CreateFileBackedItem(
+      /*type=*/type, base::FilePath("file_path"),
+      GURL("filesystem::file_system_url"),
+      /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
 }
 
 // ScopedModelObservation ------------------------------------------------------
@@ -85,6 +96,14 @@ class ScopedModelObservation : public HoldingSpaceModelObserver {
     return result;
   }
 
+  // Returns the id's of `HoldingSpaceItem`s for which
+  // `OnHoldingSpaceItemRemoved()` was called. Also clears the cached values.
+  std::vector<std::string> TakeRemovedItems() {
+    std::vector<std::string> result;
+    result.swap(removed_item_ids_);
+    return result;
+  }
+
  private:
   // HoldingSpaceModel::Observer:
   void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item,
@@ -92,6 +111,12 @@ class ScopedModelObservation : public HoldingSpaceModelObserver {
     last_updated_item_ = item;
     last_updated_fields_ = updated_fields;
     ++updated_item_count_;
+  }
+
+  void OnHoldingSpaceItemsRemoved(
+      const std::vector<const HoldingSpaceItem*>& items) override {
+    for (const HoldingSpaceItem* item : items)
+      removed_item_ids_.push_back(item->id());
   }
 
   // The last `HoldingSpaceItem` for which `OnHoldingSpaceItemUpdated()` was
@@ -108,29 +133,54 @@ class ScopedModelObservation : public HoldingSpaceModelObserver {
   // be reset following a call to `TakeUpdatedItemCount()`.
   int updated_item_count_ = 0;
 
+  // A vector of item id's that have been removed.
+  std::vector<std::string> removed_item_ids_;
+
   base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
       observation_{this};
 };
 
 }  // namespace
 
+// Print out the `HoldingSpaceItem::Type` in the test output.
+std::ostream& operator<<(std::ostream& os, const HoldingSpaceItem::Type type) {
+  return os << holding_space_util::ToString(type);
+}
+
 // HoldingSpaceModelTest -------------------------------------------------------
 
 // Base class for `HoldingSpaceModel` tests, parameterized by the set of all
 // holding space item types.
 class HoldingSpaceModelTest
-    : public testing::TestWithParam<HoldingSpaceItem::Type> {
+    : public testing::TestWithParam<std::tuple<HoldingSpaceItem::Type, bool>> {
  public:
+  HoldingSpaceModelTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kHoldingSpacePredictability,
+        IsHoldingSpacePredictabilityEnabled());
+  }
+
   // Returns the `HoldingSpaceModel` under test.
   HoldingSpaceModel& model() { return model_; }
 
+  bool IsHoldingSpacePredictabilityEnabled() const {
+    return std::get<1>(GetParam());
+  }
+
+  HoldingSpaceItem::Type GetHoldingSpaceItemType() {
+    return std::get<0>(GetParam());
+  }
+
  private:
   HoldingSpaceModel model_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         HoldingSpaceModelTest,
-                         testing::ValuesIn(GetHoldingSpaceItemTypes()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HoldingSpaceModelTest,
+    testing::Combine(testing::ValuesIn(GetHoldingSpaceItemTypes()),
+                     testing::Bool()));
 
 // Tests -----------------------------------------------------------------------
 
@@ -143,7 +193,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_AccessibleName) {
 
   // Create a holding space `item`.
   auto item = HoldingSpaceItem::CreateFileBackedItem(
-      /*type=*/GetParam(), base::FilePath("file_path"),
+      /*type=*/GetHoldingSpaceItemType(), base::FilePath("file_path"),
       GURL("filesystem::file_system_url"),
       HoldingSpaceProgress(/*current_bytes=*/0, /*total_bytes=*/100),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
@@ -220,7 +270,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
 
   // Create a holding space `item`.
   auto item = HoldingSpaceItem::CreateFileBackedItem(
-      /*type=*/GetParam(), base::FilePath("file_path"),
+      /*type=*/GetHoldingSpaceItemType(), base::FilePath("file_path"),
       GURL("filesystem::file_system_url"),
       HoldingSpaceProgress(/*current_bytes=*/0, /*total_bytes=*/100),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
@@ -340,7 +390,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Noop) {
 
   // Create a holding space `item`.
   auto item = HoldingSpaceItem::CreateFileBackedItem(
-      /*type=*/GetParam(), base::FilePath("file_path"),
+      /*type=*/GetHoldingSpaceItemType(), base::FilePath("file_path"),
       GURL("filesystem::file_system_url"), HoldingSpaceProgress(),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
   auto* item_ptr = item.get();
@@ -376,7 +426,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_InProgressCommands) {
 
   // Create an in-progress holding space `item`.
   auto item = HoldingSpaceItem::CreateFileBackedItem(
-      /*type=*/GetParam(), base::FilePath("file_path"),
+      /*type=*/GetHoldingSpaceItemType(), base::FilePath("file_path"),
       GURL("filesystem::file_system_url"),
       HoldingSpaceProgress(/*current_bytes=*/0, /*total_bytes=*/100),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
@@ -452,7 +502,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Progress) {
 
   // Create a holding space `item`.
   auto item = HoldingSpaceItem::CreateFileBackedItem(
-      /*type=*/GetParam(), base::FilePath("file_path"),
+      /*type=*/GetHoldingSpaceItemType(), base::FilePath("file_path"),
       GURL("filesystem::file_system_url"),
       HoldingSpaceProgress(/*current_bytes=*/absl::nullopt,
                            /*total_bytes=*/100),
@@ -512,6 +562,56 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Progress) {
   EXPECT_FALSE(observation.TakeLastUpdatedItem());
   EXPECT_EQ(observation.TakeLastUpdatedFields(), 0u);
   EXPECT_TRUE(item_ptr->progress().IsComplete());
+}
+
+TEST_P(HoldingSpaceModelTest,
+       AddingItemsPushesOutOldestItemsWhenMaxItemsPerSectionReached) {
+  ScopedModelObservation observation(&model());
+
+  // Verify the `model()` is initially empty.
+  EXPECT_EQ(model().items().size(), 0u);
+
+  // Add 2 items and store their id's to assert that they were deleted later.
+  auto first_item = CreateItem(GetHoldingSpaceItemType());
+  std::string first_item_id = first_item.get()->id();
+  model().AddItem(std::move(first_item));
+  auto second_item = CreateItem(GetHoldingSpaceItemType());
+  std::string second_item_id = second_item.get()->id();
+  model().AddItem(std::move(second_item));
+
+  // Starting at index 2, add more items up to `kMaxItemsPerSection`.
+  for (size_t i = 2; i < kMaxItemsPerSection; ++i) {
+    // Add `item` to the `model()`.
+    model().AddItem(CreateItem(GetHoldingSpaceItemType()));
+  }
+  // Verify we've reached the limit of `items` in the model.
+  EXPECT_EQ(model().items().size(), kMaxItemsPerSection);
+
+  // Add 2 more `item`s which takes us to `kMaxItemsPerSection` + 2.
+  constexpr int kExtraItems = 2;
+  for (int i = 0; i < kExtraItems; ++i)
+    model().AddItem(CreateItem(GetHoldingSpaceItemType()));
+
+  // If the `type` is contained inside the screen capture or downloads
+  // sections and the feature flag is enabled, then assert that we have no more
+  // than the `kMaxItemsPerSection` and that the oldest item(s) were deleted.
+  if (IsHoldingSpacePredictabilityEnabled() &&
+      (holding_space_util::IsDownloadType(GetHoldingSpaceItemType()) ||
+       holding_space_util::IsScreenCaptureType(GetHoldingSpaceItemType()))) {
+    EXPECT_EQ(model().items().size(), kMaxItemsPerSection);
+    EXPECT_EQ(model().GetItem(first_item_id), nullptr);
+    EXPECT_EQ(model().GetItem(second_item_id), nullptr);
+    EXPECT_THAT(observation.TakeRemovedItems(),
+                testing::ElementsAre(first_item_id, second_item_id));
+  } else {
+    // If the `type` is not contained inside the screen capture or downloads
+    // section buckets or the feature flag is disabled then we expect to exceed
+    // the `kMaxItemsPerSection` and not delete anything.
+    EXPECT_EQ(model().items().size(), kMaxItemsPerSection + kExtraItems);
+    EXPECT_TRUE(model().GetItem(first_item_id));
+    EXPECT_TRUE(model().GetItem(second_item_id));
+    EXPECT_TRUE(observation.TakeRemovedItems().empty());
+  }
 }
 
 }  // namespace ash

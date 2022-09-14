@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/system/holding_space/holding_space_item_views_section.h"
 
 namespace ash {

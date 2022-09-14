@@ -5,6 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_UTIL_H_
 #define ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_UTIL_H_
 
+#include <set>
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
@@ -38,6 +39,15 @@ ASH_PUBLIC_EXPORT bool ExecuteInProgressCommand(
 
 // Returns the string representation of the specified holding space item `type`.
 ASH_PUBLIC_EXPORT std::string ToString(HoldingSpaceItem::Type type);
+
+ASH_PUBLIC_EXPORT std::set<HoldingSpaceItem::Type> DownloadSupportedTypes();
+
+ASH_PUBLIC_EXPORT std::set<HoldingSpaceItem::Type>
+ScreenCaptureSupportedTypes();
+
+ASH_PUBLIC_EXPORT bool IsDownloadType(HoldingSpaceItem::Type item_type);
+
+ASH_PUBLIC_EXPORT bool IsScreenCaptureType(HoldingSpaceItem::Type item_type);
 
 }  // namespace holding_space_util
 }  // namespace ash

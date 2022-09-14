@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
@@ -167,8 +168,10 @@ void HoldingSpaceFileSystemDelegate::OnConnectionReady() {
       continue;
 
     holding_space_util::ValidityRequirement requirements;
-    if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
-      requirements.must_be_newer_than = kMaxFileAge;
+    if (!features::IsHoldingSpacePredictabilityEnabled()) {
+      if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
+        requirements.must_be_newer_than = kMaxFileAge;
+    }
     ScheduleFilePathValidityCheck({item->file_path(), requirements});
   }
 }
@@ -324,9 +327,10 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsAdded(
       continue;
 
     holding_space_util::ValidityRequirement requirements;
-    if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
-      requirements.must_be_newer_than = kMaxFileAge;
-
+    if (!features::IsHoldingSpacePredictabilityEnabled()) {
+      if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
+        requirements.must_be_newer_than = kMaxFileAge;
+    }
     ScheduleFilePathValidityCheck({item->file_path(), requirements});
   }
 }
@@ -369,8 +373,10 @@ void HoldingSpaceFileSystemDelegate::OnVolumeMounted(
       continue;
 
     holding_space_util::ValidityRequirement requirements;
-    if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
-      requirements.must_be_newer_than = kMaxFileAge;
+    if (!features::IsHoldingSpacePredictabilityEnabled()) {
+      if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
+        requirements.must_be_newer_than = kMaxFileAge;
+    }
     ScheduleFilePathValidityCheck({item->file_path(), requirements});
   }
 }

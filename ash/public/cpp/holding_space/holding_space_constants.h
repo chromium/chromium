@@ -93,6 +93,10 @@ constexpr size_t kMaxScreenCaptures = 3u;
 // The maximum allowed number of suggestions to display in holding space UI.
 constexpr size_t kMaxSuggestions = 4u;
 
+// The maximum number of items to store in the `HoldingSpaceModel` for screen
+// captures and downloads.
+constexpr size_t kMaxItemsPerSection = 50;
+
 // Mime type with wildcard which matches all image types.
 constexpr char kMimeTypeImage[] = "image/*";
 

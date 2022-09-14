@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_controller_observer.h"
@@ -497,7 +498,25 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
   arc::ArcServiceManager arc_service_manager_;
 };
 
-TEST_F(HoldingSpaceKeyedServiceTest, GuestUserProfile) {
+class HoldingSpaceKeyedServiceWithPredictabilityFeatureTest
+    : public HoldingSpaceKeyedServiceTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  HoldingSpaceKeyedServiceWithPredictabilityFeatureTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kHoldingSpacePredictability, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+                         ::testing::Bool());
+
+TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+       GuestUserProfile) {
   // Construct a guest session profile.
   TestingProfile::Builder guest_profile_builder;
   guest_profile_builder.SetGuestSession();
@@ -552,7 +571,8 @@ TEST_F(HoldingSpaceKeyedServiceTest, GuestUserProfile) {
             secondary_otr_guest_profile_service);
 }
 
-TEST_F(HoldingSpaceKeyedServiceTest, OffTheRecordProfile) {
+TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+       OffTheRecordProfile) {
   // Service instances should be created for on the record profiles.
   HoldingSpaceKeyedService* const primary_profile_service =
       HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(GetProfile());
@@ -575,7 +595,8 @@ TEST_F(HoldingSpaceKeyedServiceTest, OffTheRecordProfile) {
   ASSERT_FALSE(incognito_primary_profile_service);
 }
 
-TEST_F(HoldingSpaceKeyedServiceTest, SecondaryUserProfile) {
+TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+       SecondaryUserProfile) {
   HoldingSpaceKeyedService* const primary_holding_space_service =
       HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(GetProfile());
 
@@ -600,7 +621,8 @@ TEST_F(HoldingSpaceKeyedServiceTest, SecondaryUserProfile) {
 }
 
 // Verifies that updates to the holding space model are persisted.
-TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorage) {
+TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+       UpdatePersistentStorage) {
   // Create a file system mount point.
   std::unique_ptr<ScopedTestMountPoint> downloads_mount =
       ScopedTestMountPoint::CreateAndMountDownloads(GetProfile());
@@ -652,7 +674,8 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorage) {
 // Verifies that only finalized holding space items are persisted and that,
 // once finalized, previously in progress holding space items are persisted at
 // the appropriate index.
-TEST_F(HoldingSpaceKeyedServiceTest, PersistenceOfInProgressItems) {
+TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+       PersistenceOfInProgressItems) {
   // Create a file system mount point.
   std::unique_ptr<ScopedTestMountPoint> downloads_mount =
       ScopedTestMountPoint::CreateAndMountDownloads(GetProfile());
@@ -779,7 +802,8 @@ TEST_F(HoldingSpaceKeyedServiceTest, PersistenceOfInProgressItems) {
 
 // Verifies that when a file backing a holding space item is moved, the holding
 // space item is updated in place and persistence storage is updated.
-TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorageAfterMove) {
+TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+       UpdatePersistentStorageAfterMove) {
   // Create a file system mount point.
   std::unique_ptr<ScopedTestMountPoint> downloads_mount =
       ScopedTestMountPoint::CreateAndMountDownloads(GetProfile());
@@ -905,7 +929,8 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorageAfterMove) {
 // backing file is changed using move operation. Furthermore, verifies that
 // conflicts caused by moving a holding space item file to another path present
 // in the holding space get resolved.
-TEST_F(HoldingSpaceKeyedServiceTest, UpdateItemsOverwrittenByMove) {
+TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+       UpdateItemsOverwrittenByMove) {
   // Create a file system mount point.
   std::unique_ptr<ScopedTestMountPoint> downloads_mount =
       ScopedTestMountPoint::CreateAndMountDownloads(GetProfile());
@@ -1049,7 +1074,8 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdateItemsOverwrittenByMove) {
 // Verifies that the holding space model is restored from persistence. Note that
 // when restoring from persistence, existence of backing files is verified and
 // any stale holding space items are removed.
-TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
+TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+       RestorePersistentStorage) {
   // Verify expected histograms.
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount("HoldingSpace.Item.TotalCount.All", 0);
@@ -1167,7 +1193,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
 
 // Verifies that items from volumes that are not immediately mounted during
 // startup get restored into the holding space.
-TEST_F(HoldingSpaceKeyedServiceTest,
+TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
        RestorePersistentStorageForDelayedVolumeMount) {
   // Create file system mount point.
   std::unique_ptr<ScopedTestMountPoint> downloads_mount =
@@ -1324,7 +1350,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
 // startup get restored into the holding space - same as
 // RestorePersistentStorageForDelayedVolumeMount, but the volume gets mounted
 // while item restoration is in progress.
-TEST_F(HoldingSpaceKeyedServiceTest,
+TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
        RestorePersistentStorageForDelayedVolumeMountDuringRestoration) {
   // Create file system mount point.
   std::unique_ptr<ScopedTestMountPoint> downloads_mount =
@@ -1449,7 +1475,7 @@ TEST_F(HoldingSpaceKeyedServiceTest,
 
 // Verifies that mounting volumes that contain no holding space items does not
 // interfere with holding space restoration.
-TEST_F(HoldingSpaceKeyedServiceTest,
+TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
        RestorePersistentStorageWithUnrelatedVolumeMounts) {
   // Create file system mount point.
   std::unique_ptr<ScopedTestMountPoint> downloads_mount =
@@ -1567,7 +1593,8 @@ TEST_F(HoldingSpaceKeyedServiceTest,
 }
 
 // Tests that items from an unmounted volume get removed from the holding space.
-TEST_F(HoldingSpaceKeyedServiceTest, RemoveItemsFromUnmountedVolumes) {
+TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+       RemoveItemsFromUnmountedVolumes) {
   auto test_mount_1 = std::make_unique<ScopedTestMountPoint>(
       "test_mount_1", storage::kFileSystemTypeLocal,
       file_manager::VOLUME_TYPE_TESTING);
@@ -1613,8 +1640,11 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveItemsFromUnmountedVolumes) {
 }
 
 // Verifies that files restored from persistence are not older than
-// `kMaxFileAge`.
-TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistence) {
+// `kMaxFileAge`, when the predictability feature is off.
+// Verifies that files restored from persistence are restored, regardless of
+// `kMaxFileAge`, when the predictability feature is on.
+TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+       RemoveOlderFilesFromPersistence) {
   // Create file system mount point.
   std::unique_ptr<ScopedTestMountPoint> downloads_mount =
       ScopedTestMountPoint::CreateAndMountDownloads(GetProfile());
@@ -1651,7 +1681,8 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistence) {
           // expect all holding space items of other types to be removed from
           // persistence during restoration due to being older than
           // `kMaxFileAge`.
-          if (type == HoldingSpaceItem::Type::kPinnedFile) {
+          if (features::IsHoldingSpacePredictabilityEnabled() ||
+              type == HoldingSpaceItem::Type::kPinnedFile) {
             persisted_holding_space_items_after_restoration.Append(
                 fresh_holding_space_item->Serialize());
             restored_holding_space_items.push_back(
@@ -1707,7 +1738,8 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistence) {
             persisted_holding_space_items_after_restoration);
 }
 
-TEST_F(HoldingSpaceKeyedServiceTest, AddArcDownloadItem) {
+TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+       AddArcDownloadItem) {
   // Wait for the holding space model to attach.
   TestingProfile* profile = GetProfile();
   HoldingSpaceModelAttachedWaiter(profile).Wait();
@@ -1743,7 +1775,8 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddArcDownloadItem) {
                 base::FilePath("Download.png")));
 }
 
-TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
+TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+       AddInProgressDownloadItem) {
   // Wait for the holding space model to attach.
   TestingProfile* profile = GetProfile();
   HoldingSpaceModelAttachedWaiter(profile).Wait();
@@ -2010,7 +2043,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
   EXPECT_TRUE(BitmapsAreEqual(actual_image, expected_image));
 }
 
-TEST_F(HoldingSpaceKeyedServiceTest, RemoveAll) {
+TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest, RemoveAll) {
   // Wait for the holding space model to attach.
   TestingProfile* profile = GetProfile();
   HoldingSpaceModelAttachedWaiter(profile).Wait();
@@ -2046,7 +2079,8 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveAll) {
   EXPECT_EQ(0u, model->items().size());
 }
 
-TEST_F(HoldingSpaceKeyedServiceTest, CreateInterruptedDownloadItem) {
+TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+       CreateInterruptedDownloadItem) {
   // Wait for the holding space model to attach.
   TestingProfile* profile = GetProfile();
   HoldingSpaceModelAttachedWaiter(profile).Wait();
@@ -2121,7 +2155,8 @@ TEST_F(HoldingSpaceKeyedServiceTest, CreateInterruptedDownloadItem) {
   EXPECT_TRUE(model->items()[0]->progress().IsComplete());
 }
 
-TEST_F(HoldingSpaceKeyedServiceTest, InterruptAndResumeDownload) {
+TEST_P(HoldingSpaceKeyedServiceWithPredictabilityFeatureTest,
+       InterruptAndResumeDownload) {
   // Wait for the holding space model to attach.
   TestingProfile* profile = GetProfile();
   HoldingSpaceModelAttachedWaiter(profile).Wait();
