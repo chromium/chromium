@@ -484,15 +484,19 @@ blink_python_runner("runtime_features_for_public") {
   inputs =
       scripts_for_json5_files + [
         runtime_enabled_features_json5,
+        "../renderer/build/scripts/templates/features_generated.h.tmpl",
         "../renderer/build/scripts/templates/web_runtime_features_base.h.tmpl",
       ]
 
-  outputs = [ "$blink_public_output_dir/platform/web_runtime_features_base.h" ]
+  outputs = [
+    "$blink_public_output_dir/common/features_generated.h",
+    "$blink_public_output_dir/platform/web_runtime_features_base.h",
+  ]
 
   args = [
     rebase_path(runtime_enabled_features_json5, root_build_dir),
     "--output_dir",
-    rebase_path("$blink_public_output_dir/platform", root_build_dir),
+    rebase_path(blink_public_output_dir, root_build_dir),
   ]
 }
 

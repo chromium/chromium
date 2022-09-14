@@ -115,11 +115,32 @@
     feature_policy: {
     },
 
-    // base::Feature variable name without "blink::features::k".
+    // The string name of a base::Feature. The C++ variable name in
+    // blink::features is built with this string by prepending 'k'.
+    // If this field is specified, the base::Feature is automatically generated
+    // in features_generated.{h,cc}.
+    //
+    // The default value of the base::Feature instance is:
+    //  base::FEATURE_ENABELD_BY_DEFAULT if 'status' field is 'stable", and
+    //  base::FEATURE_DISABLED_BY_DEFAULT otheriwse.
+    // It can be overridden by 'base_feature_status' field.
+    //
     // If the flag should be associated with a feature not in blink::features,
     // we need to map them in content/child/runtime_features.cc.
-    base_feature : {
+    base_feature: {
       valid_type: "str",
+      default: "",
+    },
+
+    // Specifiy the default value of the base::Feature instance. This field
+    // works only if base_feature is not empty.
+    // If the field is missing or "", the default value depends on the 'status'
+    // field.  See the comment above.
+    // "disabled" sets base::FEATURE_DISABLED_BY_DEFAULT, and "enabled" sets
+    // base::FEATURE_ENABLED_BY_DEFAULT.
+    base_feature_status: {
+      valid_type: "str",
+      valid_values: ["", "disabled", "enabled"],
       default: "",
     },
 
@@ -212,6 +233,7 @@
       implied_by: ["CorsRFC1918"],
     },
     {
+      // Interest Group JS API/runtimeflag.
       name: "AdInterestGroupAPI",
       origin_trial_feature_name: "AdInterestGroupAPI",
       implied_by: ["Fledge", "Parakeet"],
@@ -282,6 +304,8 @@
       base_feature: "AutoExpandDetailsElement",
     },
     {
+      // Makes autofill look across shadow boundaries when collecting form
+      // controls to fill.
       name: "AutofillShadowDOM",
       status: "experimental",
       base_feature: "AutofillShadowDOM",
@@ -447,6 +471,8 @@
       base_feature: "ClientHintThirdPartyDelegation",
     },
     {
+      // Allows read/write of custom formats with unsanitized clipboard content.
+      // See crbug.com/106449.
       name: "ClipboardCustomFormats",
       status: "stable",
       base_feature: "ClipboardCustomFormats",
@@ -464,7 +490,7 @@
     },
     {
       name: "CLSScrollAnchoring",
-      status: "experimental",
+      status: "stable",
       base_feature: "CLSScrollAnchoring",
     },
     {
@@ -498,6 +524,7 @@
       origin_trial_feature_name: "ComputePressure",
       status: "experimental",
       base_feature: "ComputePressure",
+      base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
     },
     {
@@ -878,7 +905,7 @@
       name: "DeferredShaping",
       depends_on: ["LayoutNG"],
       status: "test",
-      base_feature: "DeferredFontShaping",
+      base_feature: "DeferredShaping",
     },
     {
       name: "DeflateRawCompressionFormat",
@@ -1031,6 +1058,8 @@
       status: "stable",
     },
     {
+      // If enabled, allows web pages to use the experimental EditContext API to
+      // better control text input. See crbug.com/999184.
       name: "EditContext",
       status: "experimental",
       base_feature: "EditContext",
@@ -1146,7 +1175,7 @@
       // on the command line (or via chrome://flags).
       name: "FileHandling",
       depends_on: ["FileSystemAccessLocal"],
-      status: {"Android": "test", "default": "experimental"},
+      status: {"Android": "test", "default": "stable"},
       origin_trial_feature_name: "FileHandling",
       origin_trial_os: ["win", "mac", "linux", "fuchsia", "chromeos"],
       base_feature: "FileHandlingAPI",
@@ -1210,10 +1239,8 @@
     },
     {
       name: "FontAccess",
-      // No status because this blink runtime feature doesn't work by itself.
-      // It's controlled by the corresponding Chromium feature which needs to
-      // be enabled to make the whole feature work.
       base_feature: "FontAccess",
+      status: {"Android": "", "default": "stable"},
     },
     {
       name: "FontPalette",
@@ -1343,6 +1370,7 @@
       base_feature: "HTMLParamElementUrlSupport",
     },
     {
+      // TODO(crbug.com/1307772): Enables the Pop-up API.
       name: "HTMLPopupAttribute",
       status: "experimental",
       origin_trial_feature_name: "HTMLPopupAttribute",
@@ -1856,6 +1884,7 @@
       settable_from_internals: true,
     },
     {
+      // PARAKEET ad serving runtime flag/JS API.
       name: "Parakeet",
       origin_trial_feature_name: "Parakeet",
       base_feature: "Parakeet",
@@ -2012,6 +2041,7 @@
       public: true,
       status: "stable",
       base_feature: "PrefixedStorageInfo",
+      base_feature_status: "disabled",
     },
     // This feature is deprecated and we are evangelizing affected sites.
     // See https://crbug.com/346236 for current status.
@@ -2020,6 +2050,7 @@
       status: "stable",
     },
     {
+      // https://crbug.com/1126305
       name: "Prerender2",
       status: {"Android": "stable"},
       base_feature: "Prerender2",
@@ -2081,6 +2112,7 @@
       name: "QuotaChange",
       status: "experimental",
     },
+    // If enabled, the minor version of the User-Agent string will be reduced.
     // This User-Agent Reduction feature has been enabled starting from M101,
     // but we still keep this flag for future phase tests.
     {
@@ -2089,6 +2121,8 @@
       base_feature: "ReduceUserAgentMinorVersion",
     },
     {
+      // If enabled, the platform and oscpu of the User-Agent string will be
+      // reduced.
       name: "ReduceUserAgentPlatformOsCpu",
       depends_on: ["ReduceUserAgentMinorVersion"],
       status: "experimental",
@@ -2231,8 +2265,10 @@
       status: "stable",
     },
     {
+      // Whether to enable scroll update optimizations. See crbug.com/1346789.
       name: "ScrollUpdateOptimizations",
       base_feature: "ScrollUpdateOptimizations",
+      status: "stable",
     },
     {
       name: "SecureContextFixForSharedWorkers",
@@ -2240,7 +2276,7 @@
     },
     {
       name: "SecureContextFixForWorkers",
-      status: "experimental",
+      status: "stable",
       base_feature: "SecureContextFixForWorkers",
     },
     // SecurePaymentConfirmation has shipped on some platforms, but its
@@ -2349,9 +2385,16 @@
       status: "experimental",
     },
     {
+      // Skips the browser touch event filter, ensuring that events that reach
+      // the queue and would otherwise be filtered out will instead be passed
+      // onto the renderer compositor process as long as the page hasn't timed
+      // out. If skip_filtering_process is browser_and_renderer, also skip the
+      // renderer cc touch event filter, ensuring that events will be passed
+      // onto the renderer main thread.
       name: "SkipTouchEventFilter",
       settable_from_internals: true,
       base_feature: "SkipTouchEventFilter",
+      status: "stable",
     },
     {
       name: "SoftNavigationHeuristics",
@@ -2498,6 +2541,8 @@
       status: {"Android": "stable"},
     },
     {
+      // Forces same-process display:none cross-origin iframes to be throttled
+      // in the same manner that OOPIFs are.
       name: "ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes",
       status: "experimental",
       base_feature: "ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes",
@@ -2720,7 +2765,7 @@
       // Also enabled when blink::features::kWebAppEnableManifestId is
       // overridden on the command line (or via chrome://flags).
       name: "WebAppManifestId",
-      status: "experimental",
+      status: "stable",
       base_feature: "WebAppEnableManifestId",
     },
     {
@@ -3051,6 +3096,8 @@
       base_feature: "WindowPlacementFullscreenOnScreensChange",
     },
     {
+      // If enabled, the `getDisplayMedia()` family of APIs will ask for NV12
+      // frames, which should trigger a zero-copy path in the tab capture code.
       name: "ZeroCopyTabCapture",
       base_feature: "ZeroCopyTabCapture",
     },

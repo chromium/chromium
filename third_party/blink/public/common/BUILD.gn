@@ -301,6 +301,7 @@ source_set("headers") {
     "//services/network/public/cpp:cpp",
     "//skia",
     "//skia/public/mojom:shared_typemap_traits",
+    "//third_party/blink/public:runtime_features_for_public",
     "//third_party/blink/public/common/privacy_budget",
     "//third_party/blink/public/common/tokens:tokens_headers",
     "//third_party/blink/public/mojom:mobile_metrics_shared_cpp_sources",
@@ -369,8 +370,12 @@ if (is_android) {
   java_cpp_features("java_features_srcjar") {
     # External code should depend on ":common_java" instead.
     visibility = [ ":*" ]
-    sources = [ "//third_party/blink/common/features.cc" ]
+    sources = [
+      "$root_gen_dir/third_party/blink/common/features_generated.cc",
+      "//third_party/blink/common/features.cc",
+    ]
     template = "//third_party/blink/public/common/android/java_templates/BlinkFeatures.java.tmpl"
+    deps = [ "//third_party/blink/common:make_generated_features" ]
   }
 
   android_library("common_java") {

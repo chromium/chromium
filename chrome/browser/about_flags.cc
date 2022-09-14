@@ -7863,7 +7863,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"deferred-font-shaping", flag_descriptions::kDeferredFontShapingName,
      flag_descriptions::kDeferredFontShapingDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kDeferredFontShaping)},
+     FEATURE_VALUE_TYPE(blink::features::kDeferredShaping)},
 
     {"permission-predictions", flag_descriptions::kPermissionPredictionsName,
      flag_descriptions::kPermissionPredictionsDescription, kOsAll,
