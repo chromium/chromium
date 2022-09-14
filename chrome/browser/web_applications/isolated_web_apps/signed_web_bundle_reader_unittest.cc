@@ -19,6 +19,19 @@
 
 namespace web_app {
 
+namespace {
+
+constexpr uint8_t kEd25519PublicKey[32] = {0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0,
+                                           0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0,
+                                           0, 0, 0, 0, 2, 2, 2, 0, 0, 0};
+
+constexpr uint8_t kEd25519Signature[64] = {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 7, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0};
+
+}  // namespace
+
 class SignedWebBundleReaderTest : public testing::Test {
  protected:
   void SetUp() override {
@@ -40,10 +53,17 @@ class SignedWebBundleReaderTest : public testing::Test {
     metadata_->primary_url = primary_url;
     metadata_->requests = std::move(items);
 
+    web_package::mojom::BundleIntegrityBlockSignatureStackEntryPtr
+        signature_stack_entry =
+            web_package::mojom::BundleIntegrityBlockSignatureStackEntry::New();
+    signature_stack_entry->public_key =
+        std::vector(std::begin(kEd25519PublicKey), std::end(kEd25519PublicKey));
+    signature_stack_entry->signature =
+        std::vector(std::begin(kEd25519Signature), std::end(kEd25519Signature));
+
     std::vector<web_package::mojom::BundleIntegrityBlockSignatureStackEntryPtr>
         signature_stack;
-    signature_stack.push_back(
-        web_package::mojom::BundleIntegrityBlockSignatureStackEntry::New());
+    signature_stack.push_back(std::move(signature_stack_entry));
 
     integrity_block_ = web_package::mojom::BundleIntegrityBlock::New();
     // TODO(crbug.com/1315947): Provide proper integrity block data here once
@@ -61,10 +81,34 @@ class SignedWebBundleReaderTest : public testing::Test {
   std::unique_ptr<SignedWebBundleReader> CreateReaderAndInitialize(
       SignedWebBundleReader::ReadErrorCallback callback,
       const std::string test_file_data = kResponseBody) {
-    // Provide a buffer that contains the contents of just a single response.
-    // We do not need to provide an integrity block or metadata here, since
-    // reading them is completely mocked. Only response bodies are read from an
-    // actual (temporary) file.
+    return CreateReaderAndInitialize(
+        std::move(callback),
+        base::BindOnce(
+            [](const std::vector<web_package::Ed25519PublicKey>&
+                   public_key_stack,
+               base::OnceCallback<void(
+                   SignedWebBundleReader::IntegrityVerificationAction)>
+                   callback) {
+              EXPECT_EQ(public_key_stack.size(), 1ul);
+              EXPECT_TRUE(base::ranges::equal(public_key_stack[0].bytes(),
+                                              kEd25519PublicKey));
+
+              std::move(callback).Run(
+                  SignedWebBundleReader::IntegrityVerificationAction::
+                      kContinueAndVerifyIntegrity);
+            }),
+        test_file_data);
+  }
+
+  std::unique_ptr<SignedWebBundleReader> CreateReaderAndInitialize(
+      SignedWebBundleReader::ReadErrorCallback callback,
+      SignedWebBundleReader::IntegrityBlockReadResultCallback
+          integrity_block_callback,
+      const std::string test_file_data = kResponseBody) {
+    // Provide a buffer that contains the contents of just a single
+    // response. We do not need to provide an integrity block or metadata
+    // here, since reading them is completely mocked. Only response bodies
+    // are read from an actual (temporary) file.
     base::FilePath temp_file_path;
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     EXPECT_TRUE(CreateTemporaryFileInDir(temp_dir_.GetPath(), &temp_file_path));
@@ -78,16 +122,7 @@ class SignedWebBundleReaderTest : public testing::Test {
             base::Unretained(parser_factory_.get())));
 
     return SignedWebBundleReader::CreateAndStartReading(
-        temp_file_path,
-        base::BindOnce(
-            [](base::OnceCallback<void(
-                   SignedWebBundleReader::IntegrityVerificationAction)>
-                   callback) {
-              // TODO(crbug.com/1315947): Test integrity block verification.
-              std::move(callback).Run(
-                  SignedWebBundleReader::IntegrityVerificationAction::
-                      kContinueAndVerifyIntegrity);
-            }),
+        temp_file_path, std::move(integrity_block_callback),
         std::move(callback));
   }
 
@@ -199,6 +234,36 @@ TEST_F(SignedWebBundleReaderTest, ReadIntegrityBlockWithParserCrash) {
                 ->type,
             web_package::mojom::BundleParseErrorType::kParserInternalError);
 }
+
+TEST_F(SignedWebBundleReaderTest, ReadIntegrityBlockAndAbort) {
+  base::test::TestFuture<absl::optional<SignedWebBundleReader::ReadError>>
+      parse_error_future;
+  base::test::TestFuture<
+      const std::vector<web_package::Ed25519PublicKey>&,
+      base::OnceCallback<void(
+          SignedWebBundleReader::IntegrityVerificationAction)>>
+      parse_integrity_block_future;
+  auto reader =
+      CreateReaderAndInitialize(parse_error_future.GetCallback(),
+                                parse_integrity_block_future.GetCallback());
+
+  parser_factory_->RunIntegrityBlockCallback(integrity_block_.Clone());
+
+  auto [public_key_stack, callback] = parse_integrity_block_future.Take();
+  EXPECT_EQ(public_key_stack.size(), 1ul);
+  EXPECT_TRUE(
+      base::ranges::equal(public_key_stack[0].bytes(), kEd25519PublicKey));
+  std::move(callback).Run(
+      SignedWebBundleReader::IntegrityVerificationAction::kAbort);
+
+  // This callback will never run because the parsing is aborted above.
+  EXPECT_FALSE(parse_error_future.IsReady());
+  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kError);
+}
+
+// TODO(crbug.com/1315947): Test integrity block signature verification.
+// TODO(crbug.com/1315947): Test skipping of  signature verification on
+// ChromeOS.
 
 TEST_F(SignedWebBundleReaderTest, ReadMetadataError) {
   base::test::TestFuture<absl::optional<SignedWebBundleReader::ReadError>>

@@ -14,7 +14,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -27,6 +26,36 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {
+
+namespace {
+
+constexpr uint8_t kEd25519PublicKey[32] = {0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0,
+                                           0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0,
+                                           0, 0, 0, 0, 2, 2, 2, 0, 0, 0};
+
+constexpr uint8_t kEd25519Signature[64] = {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 7, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0};
+
+class FakeIsolatedWebAppValidator : public IsolatedWebAppValidator {
+ public:
+  explicit FakeIsolatedWebAppValidator(
+      absl::optional<std::string> integrity_block_error)
+      : integrity_block_error_(integrity_block_error) {}
+
+  [[nodiscard]] absl::optional<std::string> ValidateIntegrityBlock(
+      web_package::SignedWebBundleId web_bundle_id,
+      const std::vector<web_package::Ed25519PublicKey>& public_key_stack)
+      override {
+    return integrity_block_error_;
+  }
+
+ private:
+  absl::optional<std::string> integrity_block_error_;
+};
+
+}  // namespace
 
 class IsolatedWebAppReaderRegistryTest : public WebAppTest {
  protected:
@@ -54,11 +83,24 @@ class IsolatedWebAppReaderRegistryTest : public WebAppTest {
     metadata_->primary_url = kPrimaryUrl;
     metadata_->requests = std::move(requests);
 
+    web_package::mojom::BundleIntegrityBlockSignatureStackEntryPtr
+        signature_stack_entry =
+            web_package::mojom::BundleIntegrityBlockSignatureStackEntry::New();
+    signature_stack_entry->public_key =
+        std::vector(std::begin(kEd25519PublicKey), std::end(kEd25519PublicKey));
+    signature_stack_entry->signature =
+        std::vector(std::begin(kEd25519Signature), std::end(kEd25519Signature));
+
+    std::vector<web_package::mojom::BundleIntegrityBlockSignatureStackEntryPtr>
+        signature_stack;
+    signature_stack.push_back(std::move(signature_stack_entry));
+
     integrity_block_ = web_package::mojom::BundleIntegrityBlock::New();
     integrity_block_->size = 42;
+    integrity_block_->signature_stack = std::move(signature_stack);
 
-    registry_ = IsolatedWebAppReaderRegistryFactory::GetForProfile(profile());
-    ASSERT_TRUE(registry_);
+    registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
+        std::make_unique<IsolatedWebAppValidator>());
 
     std::string test_file_data = kResponseBody;
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -73,6 +115,11 @@ class IsolatedWebAppReaderRegistryTest : public WebAppTest {
         .SetWebBundleParserFactoryBinderForTesting(base::BindRepeating(
             &web_package::MockWebBundleParserFactory::AddReceiver,
             base::Unretained(parser_factory_.get())));
+  }
+
+  void TearDown() override {
+    registry_.reset();
+    WebAppTest::TearDown();
   }
 
   void FulfillIntegrityBlock() {
@@ -105,7 +152,7 @@ class IsolatedWebAppReaderRegistryTest : public WebAppTest {
 
   constexpr static char kInvalidIsolatedAppUrl[] = "isolated-app://foo/";
 
-  base::raw_ptr<IsolatedWebAppReaderRegistry> registry_;
+  std::unique_ptr<IsolatedWebAppReaderRegistry> registry_;
   std::unique_ptr<web_package::MockWebBundleParserFactory> parser_factory_;
   web_package::mojom::BundleIntegrityBlockPtr integrity_block_;
   web_package::mojom::BundleMetadataPtr metadata_;
@@ -143,12 +190,9 @@ TEST_F(IsolatedWebAppReaderRegistryTest,
   network::ResourceRequest resource_request;
   resource_request.url = kPrimaryUrl;
 
-  auto registry =
-      std::make_unique<IsolatedWebAppReaderRegistry>(IsolatedWebAppValidator());
-
   base::test::TestFuture<Result> read_response_future;
-  registry->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
-                         read_response_future.GetCallback());
+  registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
+                          read_response_future.GetCallback());
 
   FulfillIntegrityBlock();
   FulfillMetadata();
@@ -161,7 +205,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest,
   // Delete the registry so that the `SignedWebBundleReader`, which `result`
   // holds onto weakly, is deleted, which should make `result->ReadBody()`
   // fail with `net::ERR_FAILED`.
-  registry.reset();
+  registry_.reset();
 
   base::test::TestFuture<net::Error> error_future;
   ReadResponseBody(
@@ -187,6 +231,24 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidIntegrityBlock) {
   Result result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), "Failed to parse integrity block: test error");
+}
+
+TEST_F(IsolatedWebAppReaderRegistryTest, TestUntrustedPublicKeys) {
+  network::ResourceRequest resource_request;
+  resource_request.url = kPrimaryUrl;
+
+  registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
+      std::make_unique<FakeIsolatedWebAppValidator>("test error"));
+
+  base::test::TestFuture<Result> read_response_future;
+  registry_->ReadResponse(web_bundle_path_, kWebBundleId, resource_request,
+                          read_response_future.GetCallback());
+
+  FulfillIntegrityBlock();
+
+  Result result = read_response_future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "test error");
 }
 
 // TODO(crbug.com/1315947): Add a test that checks the behavior when the

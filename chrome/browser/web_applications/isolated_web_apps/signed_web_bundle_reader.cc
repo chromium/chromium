@@ -13,9 +13,11 @@
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_integrity_block.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "net/base/url_util.h"
@@ -118,7 +120,7 @@ void SignedWebBundleReader::OnFileDuplicated(
 void SignedWebBundleReader::OnIntegrityBlockParsed(
     IntegrityBlockReadResultCallback integrity_block_result_callback,
     ReadErrorCallback read_error_callback,
-    web_package::mojom::BundleIntegrityBlockPtr integrity_block,
+    web_package::mojom::BundleIntegrityBlockPtr raw_integrity_block,
     web_package::mojom::BundleIntegrityBlockParseErrorPtr error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitializing);
@@ -128,19 +130,26 @@ void SignedWebBundleReader::OnIntegrityBlockParsed(
     return;
   }
 
-  if (integrity_block->size == 0) {
-    FulfillWithError(std::move(read_error_callback),
-                     web_package::mojom::BundleIntegrityBlockParseError::New(
-                         web_package::mojom::BundleParseErrorType::kFormatError,
-                         "The Web Bundle must contain an integrity block."));
+  auto integrity_block =
+      SignedWebBundleIntegrityBlock::Create(std::move(raw_integrity_block));
+  if (!integrity_block.has_value()) {
+    FulfillWithError(
+        std::move(read_error_callback),
+        web_package::mojom::BundleIntegrityBlockParseError::New(
+            web_package::mojom::BundleParseErrorType::kFormatError,
+            base::StringPrintf("Error while parsing the Signed Web Bundle's "
+                               "integrity block: %s",
+                               integrity_block.error().c_str())));
     return;
   }
+  integrity_block_ = std::move(*integrity_block);
 
-  integrity_block_size_ = integrity_block->size;
   std::move(integrity_block_result_callback)
-      .Run(base::BindOnce(
-          &SignedWebBundleReader::OnShouldContinueParsingAfterIntegrityBlock,
-          weak_ptr_factory_.GetWeakPtr(), std::move(read_error_callback)));
+      .Run(integrity_block_->GetPublicKeyStack(),
+           base::BindOnce(&SignedWebBundleReader::
+                              OnShouldContinueParsingAfterIntegrityBlock,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          std::move(read_error_callback)));
 }
 
 void SignedWebBundleReader::OnShouldContinueParsingAfterIntegrityBlock(
@@ -151,6 +160,7 @@ void SignedWebBundleReader::OnShouldContinueParsingAfterIntegrityBlock(
 
   switch (action) {
     case IntegrityVerificationAction::kAbort:
+      state_ = State::kError;
       return;
     case IntegrityVerificationAction::kContinueAndVerifyIntegrity:
       VerifyIntegrity(std::move(callback));
@@ -186,7 +196,7 @@ void SignedWebBundleReader::ReadMetadata(ReadErrorCallback callback) {
   CHECK_EQ(state_, State::kInitializing);
 
   parser_->ParseMetadata(
-      /*offset=*/base::checked_cast<int64_t>(integrity_block_size_),
+      /*offset=*/base::checked_cast<int64_t>(integrity_block_->size_in_bytes()),
       base::BindOnce(&SignedWebBundleReader::OnMetadataParsed,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

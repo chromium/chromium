@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
+#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_integrity_block.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/web_package/shared_file.h"
 #include "net/base/net_errors.h"
@@ -19,6 +20,10 @@
 
 namespace network {
 struct ResourceRequest;
+}
+
+namespace web_package {
+class Ed25519PublicKey;
 }
 
 namespace web_app {
@@ -56,13 +61,8 @@ class SignedWebBundleReader {
 #endif
   };
 
-  // TODO(crbug.com/1315947): This is where information about the integrity
-  // block should be passed back to the caller, e.g. which public keys it
-  // contains, so that the caller can make a decision on whether they want to
-  // continue with integrity verification and metadata parsing, or just want to
-  // abort.
   using IntegrityBlockReadResultCallback = base::OnceCallback<void(
-      /* TODO(crbug.com/1315947): pass information about integrity block here */
+      const std::vector<web_package::Ed25519PublicKey>& public_key_stack,
       base::OnceCallback<void(IntegrityVerificationAction)> callback)>;
 
   using ReadError =
@@ -75,9 +75,9 @@ class SignedWebBundleReader {
 
   // Create a new instance of this class and start reading the Signed Web
   // Bundle. This will invoke `integrity_block_result_callback` after reading
-  // the integrity block, which must then, based on the information contained in
-  // the integrity block, determine whether reading should continue with
-  // integrity verification and metadata reading, or abort altogether.
+  // the integrity block, which must then, based on the public keys contained in
+  // the integrity block, determine whether this class should continue with
+  // signature verification and metadata reading, or abort altogether.
   static std::unique_ptr<SignedWebBundleReader> CreateAndStartReading(
       const base::FilePath& web_bundle_path,
       IntegrityBlockReadResultCallback integrity_block_result_callback,
@@ -209,9 +209,7 @@ class SignedWebBundleReader {
   scoped_refptr<web_package::SharedFile> file_;
 
   // Integrity Block
-  uint64_t integrity_block_size_;
-  //  TODO(crbug.com/1315947): More properties from the integrity block will
-  //  follow here once we support verification of the integrity.
+  absl::optional<SignedWebBundleIntegrityBlock> integrity_block_;
 
   // Metadata
   GURL primary_url_;

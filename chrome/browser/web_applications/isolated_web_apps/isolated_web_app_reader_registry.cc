@@ -27,8 +27,8 @@ inline constexpr bool always_false_v __attribute__((unused)) = false;
 }  // namespace
 
 IsolatedWebAppReaderRegistry::IsolatedWebAppReaderRegistry(
-    const IsolatedWebAppValidator& validator)
-    : validator_(validator) {}
+    std::unique_ptr<IsolatedWebAppValidator> validator)
+    : validator_(std::move(validator)) {}
 
 IsolatedWebAppReaderRegistry::~IsolatedWebAppReaderRegistry() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -82,12 +82,11 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
 void IsolatedWebAppReaderRegistry::OnIntegrityBlockRead(
     const base::FilePath& web_bundle_path,
     const web_package::SignedWebBundleId& web_bundle_id,
-    // TODO(crbug.com/1315947): Add information about the integrity block here
+    const std::vector<web_package::Ed25519PublicKey>& public_key_stack,
     base::OnceCallback<void(SignedWebBundleReader::IntegrityVerificationAction)>
         integrity_callback) {
-  // TODO(crbug.com/1315947): Pass information about the Integrity Block to
-  // `ValidateIntegrityBlock`.
-  if (auto error = validator_.ValidateIntegrityBlock(web_bundle_id);
+  if (auto error =
+          validator_->ValidateIntegrityBlock(web_bundle_id, public_key_stack);
       error.has_value()) {
     auto cache_entry_it = reader_cache_.find(web_bundle_path);
     DCHECK(cache_entry_it != reader_cache_.end());
@@ -162,7 +161,7 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockAndMetadataRead(
     return;
   }
 
-  if (auto error = validator_.ValidateMetadata(
+  if (auto error = validator_->ValidateMetadata(
           web_bundle_id, cache_entry_it->second.reader->GetPrimaryURL(),
           cache_entry_it->second.reader->GetEntries());
       error.has_value()) {

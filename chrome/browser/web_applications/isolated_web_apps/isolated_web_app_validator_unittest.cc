@@ -6,8 +6,10 @@
 
 #include <tuple>
 
+#include "base/containers/span.h"
 #include "base/strings/string_util.h"
 #include "chrome/common/url_constants.h"
+#include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -32,17 +34,37 @@ const std::string kUrlFromAnotherIsolatedWebApp =
     std::string(chrome::kIsolatedAppScheme) + url::kStandardSchemeSeparator +
     kAnotherSignedWebBundleId;
 
+constexpr std::array<uint8_t, 32> kEd25519PublicKey = {
+    0x01, 0x23, 0x43, 0x43, 0x33, 0x42, 0x7A, 0x14, 0x42, 0x14, 0xa2,
+    0xb6, 0xc2, 0xd9, 0xf2, 0x02, 0x03, 0x42, 0x18, 0x10, 0x12, 0x26,
+    0x62, 0x88, 0xf6, 0xa3, 0xa5, 0x47, 0x14, 0x69, 0x00, 0x73};
+
 }  // namespace
 
-TEST(IsolatedWebAppValidatorTest, ValidateIntegrityBlock) {
+// TODO(crbug.com/1315947): Extend this test once we have implemented a
+// mechanism that provides the trusted public keys.
+TEST(IsolatedWebAppValidatorIntegrityBlockTest, OnePublicKey) {
   auto web_bundle_id =
       web_package::SignedWebBundleId::Create(kSignedWebBundleId);
   ASSERT_TRUE(web_bundle_id.has_value()) << web_bundle_id.error();
 
-  // TODO(crbug.com/1315947): Extend this test once we support signature
-  // verification; currently the result will always be `absl::nullopt`.
+  std::vector<web_package::Ed25519PublicKey> public_key_stack = {
+      web_package::Ed25519PublicKey::Create(
+          base::make_span(kEd25519PublicKey))};
+
   IsolatedWebAppValidator validator;
-  EXPECT_EQ(validator.ValidateIntegrityBlock(*web_bundle_id), absl::nullopt);
+  EXPECT_EQ(validator.ValidateIntegrityBlock(*web_bundle_id, public_key_stack),
+            absl::nullopt);
+}
+
+TEST(IsolatedWebAppValidatorIntegrityBlockTest, EmptyPublicKeyStack) {
+  auto web_bundle_id =
+      web_package::SignedWebBundleId::Create(kSignedWebBundleId);
+  ASSERT_TRUE(web_bundle_id.has_value()) << web_bundle_id.error();
+
+  IsolatedWebAppValidator validator;
+  EXPECT_EQ(validator.ValidateIntegrityBlock(*web_bundle_id, {}),
+            "The Isolated Web App must have at least one signature.");
 }
 
 class IsolatedWebAppValidatorMetadataTest

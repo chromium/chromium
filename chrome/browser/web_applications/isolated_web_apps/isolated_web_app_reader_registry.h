@@ -36,7 +36,7 @@ namespace web_app {
 class IsolatedWebAppReaderRegistry : public KeyedService {
  public:
   explicit IsolatedWebAppReaderRegistry(
-      const IsolatedWebAppValidator& validator);
+      std::unique_ptr<IsolatedWebAppValidator> validator);
   ~IsolatedWebAppReaderRegistry() override;
 
   IsolatedWebAppReaderRegistry(const IsolatedWebAppReaderRegistry&) = delete;
@@ -88,7 +88,7 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
   void OnIntegrityBlockRead(
       const base::FilePath& web_bundle_path,
       const web_package::SignedWebBundleId& web_bundle_id,
-      // TODO(crbug.com/1315947): Add information about the integrity block here
+      const std::vector<web_package::Ed25519PublicKey>& public_key_stack,
       base::OnceCallback<
           void(SignedWebBundleReader::IntegrityVerificationAction)> callback);
 
@@ -131,7 +131,8 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
   };
 
   base::flat_map<base::FilePath, CacheEntry> reader_cache_;
-  IsolatedWebAppValidator validator_;
+
+  std::unique_ptr<IsolatedWebAppValidator> validator_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

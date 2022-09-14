@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry_factory.h"
 
+#include <memory>
+
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
@@ -37,7 +39,8 @@ IsolatedWebAppReaderRegistryFactory::~IsolatedWebAppReaderRegistryFactory() =
 
 KeyedService* IsolatedWebAppReaderRegistryFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new IsolatedWebAppReaderRegistry(IsolatedWebAppValidator());
+  return new IsolatedWebAppReaderRegistry(
+      std::make_unique<IsolatedWebAppValidator>());
 }
 
 content::BrowserContext*

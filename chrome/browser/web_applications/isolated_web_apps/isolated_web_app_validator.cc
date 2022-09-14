@@ -13,10 +13,13 @@
 
 namespace web_app {
 
-// TODO(crbug.com/1315947): Pass information about the integrity block to this
-// function.
 absl::optional<std::string> IsolatedWebAppValidator::ValidateIntegrityBlock(
-    web_package::SignedWebBundleId web_bundle_id) {
+    web_package::SignedWebBundleId web_bundle_id,
+    const std::vector<web_package::Ed25519PublicKey>& public_key_stack) {
+  if (public_key_stack.empty()) {
+    return "The Isolated Web App must have at least one signature.";
+  }
+
   // TODO: Check whether we trust the public keys contained in the integrity
   // block here.
   return absl::nullopt;
