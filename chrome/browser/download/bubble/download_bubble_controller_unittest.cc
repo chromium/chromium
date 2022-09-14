@@ -111,7 +111,13 @@ class DownloadBubbleUIControllerTest : public testing::Test {
     display_controller_ =
         std::make_unique<NiceMock<MockDownloadDisplayController>>(
             browser_.get(), controller_.get());
+    second_controller_ =
+        std::make_unique<DownloadBubbleUIController>(browser_.get());
+    second_display_controller_ =
+        std::make_unique<NiceMock<MockDownloadDisplayController>>(
+            browser_.get(), second_controller_.get());
     controller_->set_manager_for_testing(manager_);
+    second_controller_->set_manager_for_testing(manager_);
   }
 
   void TearDown() override {
@@ -119,11 +125,15 @@ class DownloadBubbleUIControllerTest : public testing::Test {
         ->SetDownloadManagerDelegateForTesting(nullptr);
     for (auto& item : items_) {
       item->RemoveObserver(&controller_->get_download_notifier_for_testing());
+      item->RemoveObserver(
+          &second_controller_->get_download_notifier_for_testing());
     }
     // The controller needs to be reset before download manager, because the
     // download_notifier_ will unregister itself from the manager.
     controller_.reset();
+    second_controller_.reset();
     display_controller_.reset();
+    second_display_controller_.reset();
   }
 
  protected:
@@ -136,6 +146,9 @@ class DownloadBubbleUIControllerTest : public testing::Test {
     return *display_controller_;
   }
   DownloadBubbleUIController& controller() { return *controller_; }
+  DownloadBubbleUIController& second_controller() {
+    return *second_controller_;
+  }
   TestingProfile* profile() { return profile_; }
   NiceMock<offline_items_collection::MockOfflineContentProvider>&
   content_provider() {
@@ -223,7 +236,10 @@ class DownloadBubbleUIControllerTest : public testing::Test {
 
  private:
   std::unique_ptr<DownloadBubbleUIController> controller_;
+  std::unique_ptr<DownloadBubbleUIController> second_controller_;
   std::unique_ptr<NiceMock<MockDownloadDisplayController>> display_controller_;
+  std::unique_ptr<NiceMock<MockDownloadDisplayController>>
+      second_display_controller_;
   std::vector<std::unique_ptr<StrictMockDownloadItem>> items_;
   OfflineItemList offline_items_;
   raw_ptr<NiceMock<content::MockDownloadManager>> manager_;
@@ -352,13 +368,13 @@ TEST_F(DownloadBubbleUIControllerTest,
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS, ids[0]);
   InitOfflineItem(OfflineItemState::IN_PROGRESS, ids[1]);
-  std::vector<DownloadUIModelPtr> partial_view = controller().GetPartialView();
-  EXPECT_EQ(partial_view.size(), 2ul);
-  std::vector<DownloadUIModelPtr> main_view = controller().GetMainView();
-  EXPECT_EQ(main_view.size(), 2ul);
-  std::vector<DownloadUIModelPtr> partial_view_empty =
-      controller().GetPartialView();
-  EXPECT_EQ(partial_view_empty.size(), 0ul);
+
+  EXPECT_EQ(controller().GetPartialView().size(), 2ul);
+  EXPECT_EQ(second_controller().GetPartialView().size(), 2ul);
+
+  EXPECT_EQ(controller().GetMainView().size(), 2ul);
+  EXPECT_EQ(controller().GetPartialView().size(), 0ul);
+  EXPECT_EQ(second_controller().GetPartialView().size(), 0ul);
 }
 
 class DownloadBubbleUIControllerIncognitoTest

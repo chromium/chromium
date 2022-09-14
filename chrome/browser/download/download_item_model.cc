@@ -113,6 +113,9 @@ class DownloadItemModelData : public base::SupportsUserData::Data {
   // then as all in-progress downloads are.
   absl::optional<base::Time> ephemeral_warning_ui_shown_time_;
 
+  // Was the UI actioned on.
+  bool actioned_on_ = false;
+
  private:
   DownloadItemModelData();
 
@@ -410,6 +413,16 @@ bool DownloadItemModel::WasUINotified() const {
 void DownloadItemModel::SetWasUINotified(bool was_ui_notified) {
   DownloadItemModelData* data = DownloadItemModelData::GetOrCreate(download_);
   data->was_ui_notified_ = was_ui_notified;
+}
+
+bool DownloadItemModel::WasActionedOn() const {
+  const DownloadItemModelData* data = DownloadItemModelData::Get(download_);
+  return data && data->actioned_on_;
+}
+
+void DownloadItemModel::SetActionedOn(bool actioned_on) {
+  DownloadItemModelData* data = DownloadItemModelData::GetOrCreate(download_);
+  data->actioned_on_ = actioned_on;
 }
 
 bool DownloadItemModel::WasUIWarningShown() const {

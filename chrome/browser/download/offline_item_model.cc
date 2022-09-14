@@ -104,6 +104,18 @@ void OfflineItemModel::SetWasUINotified(bool was_ui_notified) {
   data->was_ui_notified_ = was_ui_notified;
 }
 
+bool OfflineItemModel::WasActionedOn() const {
+  const OfflineItemModelData* data =
+      manager_->GetOrCreateOfflineItemModelData(offline_item_->id);
+  return data->actioned_on_;
+}
+
+void OfflineItemModel::SetActionedOn(bool actioned_on) {
+  OfflineItemModelData* data =
+      manager_->GetOrCreateOfflineItemModelData(offline_item_->id);
+  data->actioned_on_ = actioned_on;
+}
+
 base::FilePath OfflineItemModel::GetFileNameToReportUser() const {
   return offline_item_ ? base::FilePath::FromUTF8Unsafe(offline_item_->title)
                        : base::FilePath();

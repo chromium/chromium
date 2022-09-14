@@ -663,7 +663,7 @@ void DownloadBubbleRowView::OnDownloadUpdated() {
 }
 
 void DownloadBubbleRowView::OnDownloadOpened() {
-  bubble_controller_->RemoveContentIdFromPartialView(model_->GetContentId());
+  model_->SetActionedOn(true);
 }
 
 void DownloadBubbleRowView::OnDownloadDestroyed(const ContentId& id) {

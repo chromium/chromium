@@ -437,6 +437,12 @@ bool DownloadUIModel::WasUINotified() const {
 
 void DownloadUIModel::SetWasUINotified(bool should_notify) {}
 
+bool DownloadUIModel::WasActionedOn() const {
+  return false;
+}
+
+void DownloadUIModel::SetActionedOn(bool actioned_on) {}
+
 bool DownloadUIModel::WasUIWarningShown() const {
   return false;
 }

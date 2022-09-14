@@ -136,13 +136,14 @@ bool DownloadBubbleUIController::MaybeAddOfflineItem(const OfflineItem& item,
   if (item.id.name_space == ContentIndexProviderImpl::kProviderNamespace)
     return false;
 
-  if (!std::make_unique<OfflineItemModel>(offline_manager_, item)
-           ->ShouldShowInBubble())
+  std::unique_ptr<DownloadUIModel> model(
+      std::make_unique<OfflineItemModel>(offline_manager_, item));
+  if (!model->ShouldShowInBubble())
     return false;
 
   offline_items_.push_back(item);
   if (is_new) {
-    partial_view_ids_.insert(item.id);
+    model->SetActionedOn(false);
   }
   return true;
 }
@@ -213,7 +214,7 @@ void DownloadBubbleUIController::OnItemsAdded(
 
 void DownloadBubbleUIController::OnNewItem(download::DownloadItem* item,
                                            bool show_details) {
-  partial_view_ids_.insert(OfflineItemUtils::GetContentIdForDownload(item));
+  std::make_unique<DownloadItemModel>(item)->SetActionedOn(false);
   display_controller_->OnNewItem(
       (item->GetState() == download::DownloadItem::IN_PROGRESS) &&
       show_details);
@@ -226,21 +227,23 @@ bool DownloadBubbleUIController::ShouldShowIncognitoIcon(
 }
 
 void DownloadBubbleUIController::OnItemRemoved(const ContentId& id) {
+  if (OfflineItemUtils::IsDownload(id))
+    return;
   offline_items_.erase(
       std::remove_if(offline_items_.begin(), offline_items_.end(),
                      [&id](const OfflineItem& candidate) {
                        return FindOfflineItemByContentId(id, candidate);
                      }),
       offline_items_.end());
-  partial_view_ids_.erase(id);
+  offline_manager_->RemoveOfflineItemModelData(id);
   display_controller_->OnRemovedItem(id);
 }
 
 void DownloadBubbleUIController::OnDownloadRemoved(
     content::DownloadManager* manager,
     download::DownloadItem* item) {
+  std::make_unique<DownloadItemModel>(item)->SetActionedOn(true);
   const ContentId& id = OfflineItemUtils::GetContentIdForDownload(item);
-  partial_view_ids_.erase(id);
   display_controller_->OnRemovedItem(id);
 }
 
@@ -277,11 +280,6 @@ void DownloadBubbleUIController::OnDownloadUpdated(
   display_controller_->OnUpdatedItem(item->IsDone(), show_details_if_done);
 }
 
-void DownloadBubbleUIController::RemoveContentIdFromPartialView(
-    const ContentId& id) {
-  partial_view_ids_.erase(id);
-}
-
 void DownloadBubbleUIController::PruneOfflineItems() {
   base::Time cutoff_time =
       base::Time::Now() - base::Days(kShowDownloadsInBubbleForNumDays);
@@ -291,7 +289,7 @@ void DownloadBubbleUIController::PruneOfflineItems() {
     std::unique_ptr<DownloadUIModel> offline_model =
         std::make_unique<OfflineItemModel>(offline_manager_, *item_iter);
     if (!DownloadUIModelIsRecent(offline_model.get(), cutoff_time)) {
-      partial_view_ids_.erase(item_iter->id);
+      offline_model->SetActionedOn(true);
       item_iter = offline_items_.erase(item_iter);
     } else {
       item_iter++;
@@ -341,12 +339,10 @@ std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetDownloadUIModels(
   DownloadUIModelPtrList filtered_models_list;
   SortedDownloadUIModelSet sorted_ui_model_iters;
   for (auto& model : models_aggregate) {
-    // Partial view consists of only the entries in partial_view_ids_, which are
-    // also removed if viewed on the main view.
-    if (is_main_view || partial_view_ids_.find(model->GetContentId()) !=
-                            partial_view_ids_.end()) {
+    // Partial view entries are removed if viewed on the main view.
+    if (is_main_view || !model->WasActionedOn()) {
       if (is_main_view) {
-        partial_view_ids_.erase(model->GetContentId());
+        model->SetActionedOn(true);
       }
       filtered_models_list.push_front(std::move(model));
       sorted_ui_model_iters.insert(filtered_models_list.begin());
@@ -411,7 +407,7 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
       RetryDownload(model, command);
       break;
     case DownloadCommands::CANCEL:
-      RemoveContentIdFromPartialView(model->GetContentId());
+      model->SetActionedOn(true);
       [[fallthrough]];
     case DownloadCommands::DEEP_SCAN:
     case DownloadCommands::BYPASS_DEEP_SCANNING:

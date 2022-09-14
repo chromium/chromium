@@ -10,6 +10,9 @@
 struct OfflineItemModelData {
   // Whether the UI has been notified about this offline item.
   bool was_ui_notified_ = false;
+
+  // Was the UI actioned on.
+  bool actioned_on_ = false;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_OFFLINE_ITEM_MODEL_DATA_H_

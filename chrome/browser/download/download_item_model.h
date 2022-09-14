@@ -65,6 +65,8 @@ class DownloadItemModel : public DownloadUIModel,
   bool ShouldNotifyUI() const override;
   bool WasUINotified() const override;
   void SetWasUINotified(bool should_notify) override;
+  bool WasActionedOn() const override;
+  void SetActionedOn(bool actioned_on) override;
   bool WasUIWarningShown() const override;
   void SetWasUIWarningShown(bool should_notify) override;
   absl::optional<base::Time> GetEphemeralWarningUiShownTime() const override;

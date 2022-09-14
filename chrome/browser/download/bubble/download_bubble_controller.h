@@ -64,9 +64,6 @@ class DownloadBubbleUIController
   virtual void InitOfflineItems(DownloadDisplayController* display_controller,
                                 base::OnceCallback<void()> callback);
 
-  // Remove the entry from Partial view candidates.
-  void RemoveContentIdFromPartialView(const ContentId& id);
-
   // Submits download to download feedback service if the user has approved and
   // the download is suitable for submission, then applies |command|.
   // If user hasn't seen SBER opt-in text before, show SBER opt-in dialog first.
@@ -181,9 +178,6 @@ class DownloadBubbleUIController
 
   // Pruned list of offline items.
   OfflineItemList offline_items_;
-
-  // set of ids to be shown in partial_view.
-  std::set<ContentId> partial_view_ids_;
 
   absl::optional<base::Time> last_partial_view_shown_time_ = absl::nullopt;
 
