@@ -13,7 +13,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -24,6 +23,7 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/sync/base/features.h"
 #include "components/sync/driver/trusted_vault_histograms.h"
+#include "components/sync/protocol/local_trusted_vault.pb.h"
 #include "components/sync/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/sync/trusted_vault/securebox.h"
 #include "components/sync/trusted_vault/trusted_vault_connection.h"
@@ -658,6 +658,61 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterDevice) {
           base::make_span(registration_info.private_key_material())));
   EXPECT_THAT(key_pair->public_key().ExportToBytes(),
               Eq(serialized_public_device_key));
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldHandleLocalDataObsoleteAndPersistState) {
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const std::vector<uint8_t> kVaultKey = {1, 2, 3};
+  const int kLastKeyVersion = 1;
+
+  backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
+
+  TrustedVaultConnection::RegisterAuthenticationFactorCallback
+      device_registration_callback;
+  EXPECT_CALL(*connection(),
+              RegisterAuthenticationFactor(
+                  Eq(account_info), ElementsAre(kVaultKey), kLastKeyVersion, _,
+                  AuthenticationFactorType::kPhysicalDevice,
+                  /*authentication_factor_type_hint=*/Eq(absl::nullopt), _))
+      .WillOnce([&](const CoreAccountInfo&,
+                    const std::vector<std::vector<uint8_t>>&, int,
+                    const SecureBoxPublicKey& device_public_key,
+                    AuthenticationFactorType, absl::optional<int>,
+                    TrustedVaultConnection::RegisterAuthenticationFactorCallback
+                        callback) {
+        device_registration_callback = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  // Setting the primary account will trigger device registration.
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
+  ASSERT_FALSE(device_registration_callback.is_null());
+
+  // Pretend that the registration failed with kLocalDataObsolete.
+  std::move(device_registration_callback)
+      .Run(TrustedVaultRegistrationStatus::kLocalDataObsolete);
+
+  // Verify persisted file state.
+  std::string ciphertext;
+  std::string decrypted_content;
+  sync_pb::LocalTrustedVault proto;
+  EXPECT_TRUE(base::ReadFileToString(file_path(), &ciphertext));
+  EXPECT_THAT(ciphertext, Ne(""));
+  EXPECT_TRUE(OSCrypt::DecryptString(ciphertext, &decrypted_content));
+  EXPECT_TRUE(proto.ParseFromString(decrypted_content));
+  ASSERT_THAT(proto.user_size(), Eq(1));
+  // Ensure that keys are marked as stale, regression test for
+  // crbug.com/1358015.
+  EXPECT_TRUE(proto.user(0).keys_are_stale());
+  // Additionally ensure that |local_device_registration_info| has correct
+  // state.
+  EXPECT_FALSE(
+      proto.user(0).local_device_registration_info().device_registered());
+  EXPECT_TRUE(proto.user(0)
+                  .local_device_registration_info()
+                  .has_private_key_material());
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,

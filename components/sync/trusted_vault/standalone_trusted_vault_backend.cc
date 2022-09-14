@@ -791,6 +791,7 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
       return;
     case TrustedVaultRegistrationStatus::kLocalDataObsolete:
       per_user_vault->set_keys_are_stale(true);
+      WriteToDisk(data_, file_path_);
       return;
     case TrustedVaultRegistrationStatus::kAccessTokenFetchingFailure:
       // Request wasn't sent to the server, so there is no need for throttling.
