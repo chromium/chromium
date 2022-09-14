@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_log.h"
@@ -144,55 +145,142 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
 
 }  // namespace
 
+class VideoEncodeAcceleratorAdapter::GpuMemoryBufferVideoFramePool
+    : public base::RefCountedThreadSafe<GpuMemoryBufferVideoFramePool> {
+ public:
+  GpuMemoryBufferVideoFramePool(GpuVideoAcceleratorFactories* gpu_factories,
+                                const gfx::Size& size)
+      : gpu_factories_(gpu_factories), size_(size) {}
+  GpuMemoryBufferVideoFramePool(const GpuMemoryBufferVideoFramePool&) = delete;
+  GpuMemoryBufferVideoFramePool& operator=(
+      const GpuMemoryBufferVideoFramePool&) = delete;
+
+  scoped_refptr<VideoFrame> MaybeCreateVideoFrame(const gfx::Size& size) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (size_ != size)
+      return nullptr;
+
+    if (available_gmbs_.empty()) {
+      constexpr auto kBufferFormat = gfx::BufferFormat::YUV_420_BIPLANAR;
+      constexpr auto kBufferUsage =
+          gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
+      auto gmb = gpu_factories_->CreateGpuMemoryBuffer(size_, kBufferFormat,
+                                                       kBufferUsage);
+      if (!gmb)
+        return nullptr;
+
+      available_gmbs_.push_back(std::move(gmb));
+    }
+
+    auto gmb = std::move(available_gmbs_.back());
+    available_gmbs_.pop_back();
+
+    VideoFrame::ReleaseMailboxAndGpuMemoryBufferCB reuse_cb = BindToCurrentLoop(
+        base::BindOnce(&GpuMemoryBufferVideoFramePool::ReuseFrame, this));
+    const gpu::MailboxHolder kEmptyMailBoxes[media::VideoFrame::kMaxPlanes] =
+        {};
+    return VideoFrame::WrapExternalGpuMemoryBuffer(
+        gfx::Rect(size_), size_, std::move(gmb), kEmptyMailBoxes,
+        std::move(reuse_cb), base::TimeDelta());
+  }
+
+ private:
+  friend class RefCountedThreadSafe<GpuMemoryBufferVideoFramePool>;
+  ~GpuMemoryBufferVideoFramePool() = default;
+
+  void ReuseFrame(const gpu::SyncToken& token,
+                  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    constexpr size_t kMaxPooledFrames = 5;
+    if (available_gmbs_.size() < kMaxPooledFrames)
+      available_gmbs_.push_back(std::move(gpu_memory_buffer));
+  }
+
+  const raw_ptr<GpuVideoAcceleratorFactories> gpu_factories_;
+  const gfx::Size size_;
+
+  std::vector<std::unique_ptr<gfx::GpuMemoryBuffer>> available_gmbs_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
 class VideoEncodeAcceleratorAdapter::ReadOnlyRegionPool
     : public base::RefCountedThreadSafe<ReadOnlyRegionPool> {
  public:
   struct Handle {
-    ~Handle() {
-      if (recycle_cb)
-        std::move(recycle_cb).Run();
+    using ReuseBufferCallback =
+        base::OnceCallback<void(std::unique_ptr<base::MappedReadOnlyRegion>)>;
+    Handle(std::unique_ptr<base::MappedReadOnlyRegion> mapped_region,
+           ReuseBufferCallback reuse_buffer_cb)
+        : owned_mapped_region(std::move(mapped_region)),
+          reuse_buffer_cb(std::move(reuse_buffer_cb)) {
+      DCHECK(owned_mapped_region);
     }
-    bool IsValid() const { return region && mapping; }
-    base::ReadOnlySharedMemoryRegion* region = nullptr;
-    base::WritableSharedMemoryMapping* mapping = nullptr;
-    base::OnceClosure recycle_cb;
+
+    ~Handle() {
+      if (reuse_buffer_cb) {
+        DCHECK(owned_mapped_region);
+        std::move(reuse_buffer_cb).Run(std::move(owned_mapped_region));
+      }
+    }
+
+    Handle(const Handle&) = delete;
+    Handle& operator=(const Handle&) = delete;
+
+    bool IsValid() const {
+      return owned_mapped_region && owned_mapped_region->IsValid();
+    }
+    const base::ReadOnlySharedMemoryRegion* region() const {
+      DCHECK(IsValid());
+      return &owned_mapped_region->region;
+    }
+    const base::WritableSharedMemoryMapping* mapping() const {
+      DCHECK(IsValid());
+      return &owned_mapped_region->mapping;
+    }
+
+   private:
+    std::unique_ptr<base::MappedReadOnlyRegion> owned_mapped_region;
+    ReuseBufferCallback reuse_buffer_cb;
   };
 
   explicit ReadOnlyRegionPool(size_t buffer_size) : buffer_size_(buffer_size) {}
+  ReadOnlyRegionPool(const ReadOnlyRegionPool&) = delete;
+  ReadOnlyRegionPool& operator=(const ReadOnlyRegionPool&) = delete;
 
-  Handle MaybeAllocateBuffer() {
+  std::unique_ptr<Handle> MaybeAllocateBuffer() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (available_buffer_indices_.empty()) {
-      buffers_.push_back(
-          base::ReadOnlySharedMemoryRegion::Create(buffer_size_));
-      if (!buffers_.back().IsValid()) {
-        buffers_.pop_back();
-        return Handle();
+    if (available_buffers_.empty()) {
+      available_buffers_.push_back(std::make_unique<base::MappedReadOnlyRegion>(
+          base::ReadOnlySharedMemoryRegion::Create(buffer_size_)));
+      if (!available_buffers_.back()->IsValid()) {
+        available_buffers_.pop_back();
+        return nullptr;
       }
-      available_buffer_indices_.push_back(buffers_.size() - 1);
     }
-    const size_t index = available_buffer_indices_.back();
-    available_buffer_indices_.pop_back();
-    auto& mapped_region = buffers_[index];
-    DCHECK(mapped_region.IsValid());
-    base::OnceClosure recycle_cb = BindToCurrentLoop(
-        base::BindOnce(&ReadOnlyRegionPool::ReuseBuffer, this, index));
-    return Handle{&mapped_region.region, &mapped_region.mapping,
-                  std::move(recycle_cb)};
+
+    auto mapped_region = std::move(available_buffers_.back());
+    available_buffers_.pop_back();
+    DCHECK(mapped_region->IsValid());
+
+    return std::make_unique<Handle>(
+        std::move(mapped_region), BindToCurrentLoop(base::BindOnce(
+                                      &ReadOnlyRegionPool::ReuseBuffer, this)));
   }
 
  private:
   friend class RefCountedThreadSafe<ReadOnlyRegionPool>;
   ~ReadOnlyRegionPool() = default;
 
-  void ReuseBuffer(size_t index) {
+  void ReuseBuffer(std::unique_ptr<base::MappedReadOnlyRegion> region) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    available_buffer_indices_.push_back(index);
+    constexpr size_t kMaxPooledBuffers = 5;
+    if (available_buffers_.size() < kMaxPooledBuffers)
+      available_buffers_.push_back(std::move(region));
   }
 
   const size_t buffer_size_;
-  std::vector<base::MappedReadOnlyRegion> buffers_;
-  std::vector<size_t> available_buffer_indices_;
+  std::vector<std::unique_ptr<base::MappedReadOnlyRegion>> available_buffers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -572,11 +660,8 @@ void VideoEncodeAcceleratorAdapter::RequireBitstreamBuffers(
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
 
   input_coded_size_ = input_coded_size;
-  size_t input_buffer_size =
-      VideoFrame::AllocationSize(PIXEL_FORMAT_I420, input_coded_size);
-  input_pool_ = base::MakeRefCounted<ReadOnlyRegionPool>(input_buffer_size);
-  output_handle_holder_ = output_pool_->MaybeAllocateBuffer(output_buffer_size);
 
+  output_handle_holder_ = output_pool_->MaybeAllocateBuffer(output_buffer_size);
   if (!output_handle_holder_) {
     InitCompleted(EncoderStatus::Codes::kEncoderInitializationError);
     return;
@@ -786,11 +871,19 @@ VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
     const gfx::Size& size,
     scoped_refptr<VideoFrame> src_frame) {
   TRACE_EVENT0("media", "VideoEncodeAcceleratorAdapter::PrepareCpuFrame");
-  ReadOnlyRegionPool::Handle handle = input_pool_->MaybeAllocateBuffer();
-  if (!handle.IsValid())
+
+  if (!input_pool_) {
+    const size_t input_buffer_size =
+        VideoFrame::AllocationSize(PIXEL_FORMAT_I420, size);
+    input_pool_ = base::MakeRefCounted<ReadOnlyRegionPool>(input_buffer_size);
+  }
+
+  std::unique_ptr<ReadOnlyRegionPool::Handle> handle =
+      input_pool_->MaybeAllocateBuffer();
+  if (!handle || !handle->IsValid())
     return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode);
 
-  base::WritableSharedMemoryMapping* mapping = handle.mapping;
+  const base::WritableSharedMemoryMapping* mapping = handle->mapping();
   auto mapped_src_frame = src_frame->HasGpuMemoryBuffer()
                               ? ConvertToMemoryMappedFrame(src_frame)
                               : src_frame;
@@ -808,8 +901,10 @@ VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
     return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode)
         .AddCause(std::move(status));
 
-  shared_frame->BackWithSharedMemory(handle.region);
-  shared_frame->AddDestructionObserver(std::move(handle.recycle_cb));
+  shared_frame->BackWithSharedMemory(handle->region());
+  shared_frame->AddDestructionObserver(
+      base::BindOnce([](std::unique_ptr<ReadOnlyRegionPool::Handle> handle) {},
+                     std::move(handle)));
   return shared_frame;
 }
 
@@ -829,19 +924,17 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
     return src_frame;
   }
 
-  auto gmb = gpu_factories_->CreateGpuMemoryBuffer(
-      size, gfx::BufferFormat::YUV_420_BIPLANAR,
-      gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
+  if (!gmb_frame_pool_) {
+    gmb_frame_pool_ = base::MakeRefCounted<GpuMemoryBufferVideoFramePool>(
+        gpu_factories_, size);
+  }
 
-  if (!gmb)
+  auto gpu_frame = gmb_frame_pool_->MaybeCreateVideoFrame(size);
+  if (!gpu_frame)
     return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode);
-  gmb->SetColorSpace(src_frame->ColorSpace());
-
-  gpu::MailboxHolder empty_mailboxes[media::VideoFrame::kMaxPlanes];
-  auto gpu_frame = VideoFrame::WrapExternalGpuMemoryBuffer(
-      gfx::Rect(size), size, std::move(gmb), empty_mailboxes,
-      base::NullCallback(), src_frame->timestamp());
+  gpu_frame->GetGpuMemoryBuffer()->SetColorSpace(src_frame->ColorSpace());
   gpu_frame->set_color_space(src_frame->ColorSpace());
+  gpu_frame->set_timestamp(src_frame->timestamp());
   gpu_frame->metadata().MergeMetadataFrom(src_frame->metadata());
 
   // Don't be scared. ConvertToMemoryMappedFrame() doesn't copy pixel data

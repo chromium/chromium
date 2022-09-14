@@ -80,6 +80,7 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   static void DestroyAsync(std::unique_ptr<VideoEncodeAcceleratorAdapter> self);
 
  private:
+  class GpuMemoryBufferVideoFramePool;
   class ReadOnlyRegionPool;
   enum class State {
     kNotInitialized,
@@ -121,9 +122,10 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
       const gfx::Size& size,
       scoped_refptr<VideoFrame> src_frame);
 
-  scoped_refptr<base::UnsafeSharedMemoryPool> output_pool_;
   scoped_refptr<ReadOnlyRegionPool> input_pool_;
+  scoped_refptr<base::UnsafeSharedMemoryPool> output_pool_;
   std::unique_ptr<base::UnsafeSharedMemoryPool::Handle> output_handle_holder_;
+  scoped_refptr<GpuMemoryBufferVideoFramePool> gmb_frame_pool_;
 
   std::unique_ptr<VideoEncodeAccelerator> accelerator_;
   raw_ptr<GpuVideoAcceleratorFactories> gpu_factories_;
