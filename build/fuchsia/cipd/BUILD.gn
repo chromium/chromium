@@ -284,6 +284,7 @@ cipd_test_archive("tests") {
     "//fuchsia_web/runners:cast_runner_integration_tests_pkg",
     "//fuchsia_web/runners:web_runner_integration_tests_pkg",
     "//fuchsia_web/webengine:web_engine_integration_tests_cfv1_pkg",
+    "//fuchsia_web/webengine:web_engine_integration_tests_pkg",
     "//ipc:ipc_tests_pkg",
     "//media:media_unittests_pkg",
     "//mojo:mojo_unittests_pkg",
@@ -297,6 +298,7 @@ cipd_test_archive("tests") {
       far_sources = [
         "${root_gen_dir}/base/base_unittests/base_unittests.far",
         "${root_gen_dir}/fuchsia_web/runners/cast_runner_integration_tests/cast_runner_integration_tests.far",
+        "${root_gen_dir}/fuchsia_web/webengine/web_engine_integration_tests/web_engine_integration_tests.far",
         "${root_gen_dir}/ipc/ipc_tests/ipc_tests.far",
         "${root_gen_dir}/media/media_unittests/media_unittests.far",
         "${root_gen_dir}/mojo/mojo_unittests/mojo_unittests.far",
@@ -322,6 +324,7 @@ cipd_test_archive("tests") {
     },
     {
       manifest_path = "${target_gen_dir}/web_engine_tests_manifest.json"
+      far_sources = [ "${root_gen_dir}/fuchsia_web/webengine/web_engine_integration_tests/web_engine_integration_tests.far" ]
       cfv1_far_sources = [
         "${root_gen_dir}/fuchsia_web/runners/web_runner_integration_tests/web_runner_integration_tests.far",
         "${root_gen_dir}/fuchsia_web/webengine/web_engine_integration_tests_cfv1/web_engine_integration_tests_cfv1.far",
