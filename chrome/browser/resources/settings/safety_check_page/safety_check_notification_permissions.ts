@@ -40,7 +40,7 @@ export class SettingsSafetyCheckNotificationPermissionsElement extends
       iconStatus_: {
         type: SafetyCheckIconStatus,
         value() {
-          return SafetyCheckIconStatus.WARNING;
+          return SafetyCheckIconStatus.NOTIFICATION_PERMISSIONS;
         },
       },
     };

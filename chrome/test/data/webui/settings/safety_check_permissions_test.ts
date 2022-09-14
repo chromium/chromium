@@ -29,7 +29,7 @@ suite('SafetyCheckUnusedSitePermissionsUiTests', function() {
     // Ensure the elements are correct.
     assertSafetyCheckChild({
       page: page,
-      iconStatus: SafetyCheckIconStatus.WARNING,
+      iconStatus: SafetyCheckIconStatus.UNUSED_SITE_PERMISSIONS,
       label: 'Permissions removed from unused websites',
       buttonLabel: 'Review',
       buttonAriaLabel: 'Review',
@@ -63,7 +63,7 @@ suite('SafetyCheckNotificationPermissionsUiTests', function() {
     // Ensure the elements are correct.
     assertSafetyCheckChild({
       page: page,
-      iconStatus: SafetyCheckIconStatus.WARNING,
+      iconStatus: SafetyCheckIconStatus.NOTIFICATION_PERMISSIONS,
       label: 'Review sites that recently sent a lot of notifications',
       buttonLabel: 'Review',
       buttonAriaLabel: 'Review',

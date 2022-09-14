@@ -40,7 +40,7 @@ export class SettingsSafetyCheckUnusedSitePermissionsElement extends
       iconStatus_: {
         type: SafetyCheckIconStatus,
         value() {
-          return SafetyCheckIconStatus.WARNING;
+          return SafetyCheckIconStatus.UNUSED_SITE_PERMISSIONS;
         },
       },
     };

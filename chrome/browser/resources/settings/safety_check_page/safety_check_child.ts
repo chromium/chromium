@@ -6,7 +6,7 @@
  * @fileoverview
  * 'settings-safety-check-element' bundles functionality safety check elements
  * have in common. It is used by all safety check elements: parent, updates,
- * passwors, etc.
+ * passwords, etc.
  */
 import 'chrome://resources/cr_elements/cr_actionable_row_style.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -30,6 +30,8 @@ export enum SafetyCheckIconStatus {
   SAFE = 1,
   INFO = 2,
   WARNING = 3,
+  NOTIFICATION_PERMISSIONS = 4,
+  UNUSED_SITE_PERMISSIONS = 5,
 }
 
 const SettingsSafetyCheckChildElementBase = I18nMixin(PolymerElement);
@@ -115,6 +117,10 @@ export class SettingsSafetyCheckChildElement extends
         return 'cr:info';
       case SafetyCheckIconStatus.WARNING:
         return 'cr:warning';
+      case SafetyCheckIconStatus.NOTIFICATION_PERMISSIONS:
+        return 'settings:notifications-none';
+      case SafetyCheckIconStatus.UNUSED_SITE_PERMISSIONS:
+        return 'cr:info-outline';
       default:
         assertNotReached();
     }
@@ -142,7 +148,7 @@ export class SettingsSafetyCheckChildElement extends
   }
 
   /** @return The left hand icon aria label for an icon status. */
-  private getStatusIconAriaLabel_(): string {
+  private getStatusIconAriaLabel_(): string|undefined {
     switch (this.iconStatus) {
       case SafetyCheckIconStatus.RUNNING:
         return this.i18n('safetyCheckIconRunningAriaLabel');
@@ -152,6 +158,9 @@ export class SettingsSafetyCheckChildElement extends
         return this.i18n('safetyCheckIconInfoAriaLabel');
       case SafetyCheckIconStatus.WARNING:
         return this.i18n('safetyCheckIconWarningAriaLabel');
+      case SafetyCheckIconStatus.NOTIFICATION_PERMISSIONS:
+      case SafetyCheckIconStatus.UNUSED_SITE_PERMISSIONS:
+        return undefined;
       default:
         assertNotReached();
     }
