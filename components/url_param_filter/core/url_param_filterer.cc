@@ -195,6 +195,18 @@ FilterResult FilterUrl(const GURL& source_url, const GURL& destination_url) {
 
 FilterResult FilterUrl(const GURL& source_url,
                        const GURL& destination_url,
+                       NestedFilterOption filter_nested_urls) {
+  if (!base::FeatureList::IsEnabled(features::kIncognitoParamFilterEnabled)) {
+    return FilterResult{destination_url, 0};
+  }
+  return FilterUrl(source_url, destination_url,
+                   ClassificationsLoader::GetInstance()->GetClassifications(),
+                   filter_nested_urls == NestedFilterOption::kFilterNested,
+                   FilterClassification::USE_CASE_UNKNOWN);
+}
+
+FilterResult FilterUrl(const GURL& source_url,
+                       const GURL& destination_url,
                        const FilterClassification::UseCase use_case) {
   if (!base::FeatureList::IsEnabled(features::kIncognitoParamFilterEnabled)) {
     return FilterResult{destination_url, 0,

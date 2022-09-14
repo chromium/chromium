@@ -81,7 +81,8 @@ void UrlParamFilterThrottle::WillStartRequest(network::ResourceRequest* request,
                                               bool* defer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  FilterResult result = FilterUrl(last_hop_initiator_, request->url);
+  FilterResult result = FilterUrl(last_hop_initiator_, request->url,
+                                  NestedFilterOption::kNoFilterNested);
 
   if (should_filter_) {
     request->url = result.filtered_url;
@@ -102,7 +103,8 @@ void UrlParamFilterThrottle::WillRedirectRequest(
     net::HttpRequestHeaders* modified_request_headers,
     net::HttpRequestHeaders* modified_cors_exempt_request_headers) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  FilterResult result = FilterUrl(last_hop_initiator_, redirect_info->new_url);
+  FilterResult result = FilterUrl(last_hop_initiator_, redirect_info->new_url,
+                                  NestedFilterOption::kNoFilterNested);
 
   if (should_filter_) {
     redirect_info->new_url = result.filtered_url;

@@ -489,6 +489,10 @@ TEST_F(UrlParamFiltererTest, FeatureDeactivated) {
   GURL result = FilterUrl(source, expected).filtered_url;
 
   ASSERT_EQ(result, expected);
+
+  result = FilterUrl(source, expected, NestedFilterOption::kNoFilterNested)
+               .filtered_url;
+  ASSERT_EQ(result, expected);
 }
 
 TEST_F(UrlParamFiltererTest, FeatureDeactivatedUseCaseVariant) {
@@ -572,6 +576,66 @@ TEST_F(UrlParamFiltererTest, FeatureActivatedSourceAndDestinationRemoval) {
 
   ASSERT_EQ(result.filtered_url, expected);
   ASSERT_EQ(result.filtered_param_count, 2);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
+}
+
+TEST_F(UrlParamFiltererTest, FeatureActivatedNestingOptedOut) {
+  GURL source = GURL{"http://source.xyz"};
+  GURL destination = GURL{
+      "https://"
+      "destination.xyz?plzblock=1&plzblock1=2&nochange=asdf&url=https%3A%2F%"
+      "2Fdestination."
+      "xyz%2F%3Fplzblock1%3D1"};
+
+  std::string encoded_classification =
+      CreateBase64EncodedFilterParamClassificationForTesting(
+          {{"source.xyz", {"plzblock"}}}, {{"destination.xyz", {"plzblock1"}}});
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  // With the flag set, the URL should be filtered.
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIncognitoParamFilterEnabled,
+      {{"classifications", encoded_classification}});
+
+  GURL expected = GURL{
+      "https://destination.xyz?nochange=asdf&url=https%3A%2F%2Fdestination."
+      "xyz%2F%3Fplzblock1%3D1"};
+  FilterResult result =
+      FilterUrl(source, destination, NestedFilterOption::kNoFilterNested);
+
+  ASSERT_EQ(result.filtered_url, expected);
+  ASSERT_EQ(result.filtered_param_count, 2);
+  ASSERT_EQ(result.experimental_status,
+            ClassificationExperimentStatus::NON_EXPERIMENTAL);
+}
+
+TEST_F(UrlParamFiltererTest, FeatureActivatedNestingOptedIn) {
+  GURL source = GURL{"http://source.xyz"};
+  GURL destination = GURL{
+      "https://"
+      "destination.xyz?plzblock=1&plzblock1=2&nochange=asdf&url=https%3A%2F%"
+      "2Fdestination."
+      "xyz%2F%3Fplzblock1%3D1"};
+
+  std::string encoded_classification =
+      CreateBase64EncodedFilterParamClassificationForTesting(
+          {{"source.xyz", {"plzblock"}}}, {{"destination.xyz", {"plzblock1"}}});
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  // With the flag set, the URL should be filtered.
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIncognitoParamFilterEnabled,
+      {{"classifications", encoded_classification}});
+
+  GURL expected = GURL{
+      "https://destination.xyz?nochange=asdf&url=https%3A%2F%2Fdestination."
+      "xyz%2F"};
+  FilterResult result =
+      FilterUrl(source, destination, NestedFilterOption::kFilterNested);
+
+  ASSERT_EQ(result.filtered_url, expected);
+  ASSERT_EQ(result.filtered_param_count, 3);
   ASSERT_EQ(result.experimental_status,
             ClassificationExperimentStatus::NON_EXPERIMENTAL);
 }
