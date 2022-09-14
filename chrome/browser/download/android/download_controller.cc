@@ -388,8 +388,8 @@ void DownloadController::StartAndroidDownloadInternal(
       ConvertUTF8ToJavaString(env, info.original_mime_type);
   ScopedJavaLocalRef<jstring> jcookie =
       ConvertUTF8ToJavaString(env, info.cookie);
-  ScopedJavaLocalRef<jstring> jreferer =
-      ConvertUTF8ToJavaString(env, info.referer);
+  ScopedJavaLocalRef<jobject> jreferer =
+      url::GURLAndroid::FromNativeGURL(env, info.referer);
   ScopedJavaLocalRef<jstring> jfile_name =
       base::android::ConvertUTF16ToJavaString(env, file_name);
   Java_DownloadController_enqueueAndroidDownloadManagerRequest(
