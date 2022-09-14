@@ -980,6 +980,7 @@ TEST_P(DlpFilesWarningDialogContentTest,
   }
   DlpWarnDialog::DlpWarnDialogOptions expected_dialog_options(
       DlpWarnDialog::Restriction::kFiles, expected_contents,
+      DlpRulesManager::Component::kUsb, /*destination_pattern=*/"",
       transfer_info.files_action);
 
   EXPECT_CALL(*rules_manager_,

@@ -822,6 +822,9 @@ Additional details:
   <message name="IDS_POLICY_DLP_FILES_TRANSFER_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before action on files.">
     Transfer anyway
   </message>
+  <message name="IDS_POLICY_DLP_FILES_DESTINATION_REMOVABLE_STORAGE" desc="A label for the 'Removable storage' files transfer destination.">
+    Removable storage
+  </message>
   <message name="IDS_POLICY_DLP_WARN_CANCEL_BUTTON" desc="Cancel dialog button label for warning.">
     Cancel
   </message>

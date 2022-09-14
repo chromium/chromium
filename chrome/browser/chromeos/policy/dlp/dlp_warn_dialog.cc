@@ -11,11 +11,13 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
@@ -80,6 +82,29 @@ constexpr int kConfidentialContentLineHeight = 20;
 // This can hold seven rows.
 constexpr int kConfidentialContentListMaxHeight = 240;
 
+// Returns the destination name for |dst_component|
+const std::u16string GetDestinationForFiles(
+    DlpRulesManager::Component dst_component) {
+  switch (dst_component) {
+    case DlpRulesManager::Component::kArc:
+      return l10n_util::GetStringUTF16(
+          IDS_FILE_BROWSER_ANDROID_FILES_ROOT_LABEL);
+    case DlpRulesManager::Component::kCrostini:
+      return l10n_util::GetStringUTF16(IDS_FILE_BROWSER_LINUX_FILES_ROOT_LABEL);
+    case DlpRulesManager::Component::kPluginVm:
+      return l10n_util::GetStringUTF16(
+          IDS_FILE_BROWSER_PLUGIN_VM_DIRECTORY_LABEL);
+    case DlpRulesManager::Component::kUsb:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_DESTINATION_REMOVABLE_STORAGE);
+    case DlpRulesManager::Component::kDrive:
+      return l10n_util::GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
+    case DlpRulesManager::Component::kUnknownComponent:
+      NOTREACHED();
+      return u"";
+  }
+}
+
 // Returns the OK button label for |files_action|.
 const std::u16string GetDialogButtonOkLabelForFiles(
     DlpFilesController::FileAction files_action) {
@@ -116,26 +141,33 @@ const std::u16string GetTitleForFiles(
 
 // Returns the message for |files_action|.
 const std::u16string GetMessageForFiles(
-    DlpFilesController::FileAction files_action,
-    int files_number) {
-  switch (files_action) {
+    const DlpWarnDialog::DlpWarnDialogOptions& options) {
+  DCHECK(options.files_action.has_value());
+  switch (options.files_action.value()) {
     case DlpFilesController::FileAction::kDownload:
       return base::ReplaceStringPlaceholders(
           l10n_util::GetPluralStringFUTF16(
               // Download action is only allowed for one file.
               IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_MESSAGE, 1),
-          // TODO(crbug.com/1350978) Change to the actual destination string.
-          u"External storage",
+          GetDestinationForFiles(options.destination_component.value()),
           /*offset=*/nullptr);
     case DlpFilesController::FileAction::kTransfer:
     case DlpFilesController::FileAction::kUnknown:  // TODO(crbug.com/1361900)
                                                     // Set proper text when file
                                                     // action is unknown
+      std::u16string destination;
+      if (options.destination_component.has_value()) {
+        destination =
+            GetDestinationForFiles(options.destination_component.value());
+      } else {
+        DCHECK(!options.destination_pattern->empty());
+        destination = base::UTF8ToUTF16(options.destination_pattern.value());
+      }
       return base::ReplaceStringPlaceholders(
           l10n_util::GetPluralStringFUTF16(
-              IDS_POLICY_DLP_FILES_TRANSFER_WARN_MESSAGE, files_number),
-          // TODO(crbug.com/1350978) Change to the actual destination string.
-          u"External storage",
+              IDS_POLICY_DLP_FILES_TRANSFER_WARN_MESSAGE,
+              options.confidential_contents.GetContents().size()),
+          destination,
           /*offset=*/nullptr);
   }
 }
@@ -215,9 +247,7 @@ const std::u16string GetMessage(DlpWarnDialog::DlpWarnDialogOptions options) {
           options.application_title.value());
     case DlpWarnDialog::Restriction::kFiles:
       DCHECK(options.files_action.has_value());
-      return GetMessageForFiles(
-          options.files_action.value(),
-          options.confidential_contents.GetContents().size());
+      return GetMessageForFiles(options);
   }
 }
 
@@ -381,9 +411,13 @@ DlpWarnDialog::DlpWarnDialogOptions::DlpWarnDialogOptions(
 DlpWarnDialog::DlpWarnDialogOptions::DlpWarnDialogOptions(
     Restriction restriction,
     DlpConfidentialContents confidential_contents,
+    absl::optional<DlpRulesManager::Component> dst_component,
+    const std::string& destination_pattern,
     DlpFilesController::FileAction files_action)
     : restriction(restriction),
       confidential_contents(confidential_contents),
+      destination_component(dst_component),
+      destination_pattern(destination_pattern),
       files_action(files_action) {}
 
 DlpWarnDialog::DlpWarnDialogOptions::DlpWarnDialogOptions(

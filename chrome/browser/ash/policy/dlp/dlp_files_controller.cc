@@ -326,12 +326,13 @@ void DlpFilesController::IsFilesTransferRestricted(
   std::vector<FileDaemonInfo> restricted_files;
   std::vector<FileDaemonInfo> warned_files;
   DlpConfidentialContents dialog_files;
+  std::string source_pattern, destination_pattern;
   for (const auto& file : transferred_files) {
     DlpRulesManager::Level level;
     if (dst_component.has_value()) {
       level = rules_manager_.IsRestrictedComponent(
           GURL(file.source_url), dst_component.value(),
-          DlpRulesManager::Restriction::kFiles, nullptr);
+          DlpRulesManager::Restriction::kFiles, &source_pattern);
       MaybeReportEvent(file.source_url.spec(),
                        DlpFileDestination((dst_component.value())), level);
     } else {
@@ -340,7 +341,8 @@ void DlpFilesController::IsFilesTransferRestricted(
       DCHECK(destination.url_or_path.has_value());
       level = rules_manager_.IsRestrictedDestination(
           GURL(file.source_url), GURL(*destination.url_or_path),
-          DlpRulesManager::Restriction::kFiles, nullptr, nullptr);
+          DlpRulesManager::Restriction::kFiles, &source_pattern,
+          &destination_pattern);
       MaybeReportEvent(file.source_url.spec(),
                        DlpFileDestination(*destination.url_or_path), level);
     }
@@ -370,7 +372,8 @@ void DlpFilesController::IsFilesTransferRestricted(
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(restricted_files), std::move(warned_files),
                      files_action, std::move(result_callback)),
-      std::move(dialog_files), files_action);
+      std::move(dialog_files), dst_component, destination_pattern,
+      files_action);
 }
 
 std::vector<DlpFilesController::DlpFileRestrictionDetails>

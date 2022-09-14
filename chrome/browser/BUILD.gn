@@ -5656,6 +5656,7 @@ static_library("browser") {
       "//components/arc/common",
       "//components/reporting/metrics:metrics_data_collection",
       "//extensions/browser/updater",
+      "//ui/chromeos/strings:strings_grit",
       "//ui/chromeos/styles:cros_styles_views",
       "//ui/platform_window",
     ]
