@@ -38,7 +38,6 @@ import android.os.Build;
 import android.provider.Settings;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
-import android.widget.ListView;
 
 import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.intent.Intents;
@@ -286,17 +285,12 @@ public class DeveloperUiTest {
     }
 
     private void checkFlagSpinnersEnabledState(boolean shouldBeEnabled) {
-        // Check that all spinners are enabled
         // Test assumes that the first element in the list is the text.
-        ListView flagsList = mRule.getActivity().findViewById(R.id.flags_list);
-        int flagCount = flagsList.getCount();
         DataInteraction flags = onData(anything()).inAdapterView(withId(R.id.flags_list));
-
         Matcher<View> criteria = shouldBeEnabled ? isEnabled() : not(isEnabled());
-
-        for (int i = 1; i < flagCount; i++) {
-            flags.atPosition(i).onChildView(withId(R.id.flag_toggle)).check(matches(criteria));
-        }
+        // Check the first actual flag, and assume the rest have the same state.
+        // This avoids a lengthy UI scroll through the flag list.
+        flags.atPosition(1).onChildView(withId(R.id.flag_toggle)).check(matches(criteria));
     }
 
     @Test
