@@ -12,12 +12,6 @@ import {HelpBubbleArrowPosition, HelpBubbleButtonParams} from 'chrome://resource
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
-interface WaitForSuccessParams {
-  retryIntervalMs: number;
-  totalMs: number;
-  assertionFn: () => void;
-}
-
 suite('CrComponentsHelpBubbleTest', () => {
   let helpBubble: HelpBubbleElement;
 
@@ -63,47 +57,9 @@ suite('CrComponentsHelpBubbleTest', () => {
    * Create a promise that resolves after a given amount of time
    */
   async function sleep(milliseconds: number) {
-    return new Promise((res) => {
-      setTimeout(res, milliseconds);
+    return new Promise((resolve) => {
+      setTimeout(resolve, milliseconds);
     });
-  }
-
-  /**
-   * Returns the current timestamp in milliseconds since UNIX epoch
-   */
-  function now() {
-    return +new Date();
-  }
-
-  /**
-   * Try/catch a function for some time, retrying after failures
-   *
-   * If the callback function succeeds, return early with the total time
-   * If the callback always fails, throw the error after the last run
-   */
-  async function waitForSuccess(params: WaitForSuccessParams):
-      Promise<number|null> {
-    const startMs = now();
-    let lastAttemptMs = startMs;
-    let lastError: Error|null = null;
-    let attempts = 0;
-    while (now() - startMs < params.totalMs) {
-      await sleep(params.retryIntervalMs);
-      lastAttemptMs = now();
-      try {
-        params.assertionFn();
-        return lastAttemptMs - startMs;
-      } catch (e) {
-        lastError = e as Error;
-      }
-      attempts++;
-    }
-    if (lastError !== null) {
-      lastError.message = `[Attempts: ${attempts}, Total time: ${
-          lastAttemptMs - startMs}ms]: ${lastError.message}`;
-      throw lastError;
-    }
-    return Infinity;
   }
 
   setup(() => {
@@ -287,7 +243,7 @@ suite('CrComponentsHelpBubbleTest', () => {
     assertEquals(1, clicked, 'close button should be clicked once');
   });
 
-  test('help bubble with timeout does not immediately emit event', async () => {
+  test('help bubble timeout generates event', async () => {
     let timedOut: number = 0;
     const callback = (e: HelpBubbleTimedOutEvent) => {
       assertEquals(
@@ -298,36 +254,12 @@ suite('CrComponentsHelpBubbleTest', () => {
     helpBubble.anchorId = 'title';
     helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
     helpBubble.bodyText = HELP_BUBBLE_BODY;
-    helpBubble.timeoutMs = 10 * 1000;  // 10s
+    helpBubble.timeoutMs = 250;  // 250ms
     helpBubble.show();
-    await waitAfterNextRender(helpBubble);
     assertEquals(0, timedOut, 'timeout should not be triggered');
-  });
-
-  test('help bubble with timeout generates event', async () => {
-    const timeoutMs: number = 100;
-    let timedOut: number = 0;
-    const callback = (e: HelpBubbleTimedOutEvent) => {
-      assertEquals(
-          'title', e.detail.anchorId, 'timeout event anchorId should match');
-      ++timedOut;
-    };
-    helpBubble.addEventListener(HELP_BUBBLE_TIMED_OUT_EVENT, callback);
-    helpBubble.anchorId = 'title';
-    helpBubble.position = HelpBubbleArrowPosition.TOP_CENTER;
-    helpBubble.bodyText = HELP_BUBBLE_BODY;
-    helpBubble.timeoutMs = timeoutMs;  // 100ms
-    helpBubble.show();
     await waitAfterNextRender(helpBubble);
-    const timeUntilSuccess = await waitForSuccess({
-                               retryIntervalMs: 50,
-                               totalMs: 1500,
-                               assertionFn: () => assertEquals(
-                                   1, timedOut, 'timeout should emit event'),
-                             }) as number;
-    assertTrue(
-        timeUntilSuccess >= timeoutMs,
-        'timeout should happen in reasonable amount of time');
+    await sleep(500);  // 500ms
+    assertEquals(1, timedOut, 'timeout should only emit event once');
   });
 
   test('help bubble without timeout does not generate event', async () => {
@@ -344,7 +276,7 @@ suite('CrComponentsHelpBubbleTest', () => {
     helpBubble.show();
     assertEquals(0, timedOut, 'timeout should not be triggered');
     await waitAfterNextRender(helpBubble);
-    await sleep(100);  // 100ms
+    await sleep(500);  // 500ms
     assertEquals(0, timedOut, 'timeout is never triggered');
   });
 
