@@ -381,6 +381,8 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
   }
 
  protected:
+  // TODO(crbug.com/1360501): Delete this method after deleting all tests with
+  // productivity launcher disabled.
   void AnimateFolderViewPageFlip(int target_page) {
     // Folders are only paged without productivity launcher enabled.
     DCHECK(!features::IsProductivityLauncherEnabled());
@@ -751,14 +753,6 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
   std::unique_ptr<HapticsTrackingTestInputController> haptics_tracker_;
 };
 
-// Tests that only run with ProductivityLauncher disabled, which disables the
-// bubble launcher. These can be deleted when ProductivityLauncher is the
-// default.
-class AppsGridViewNonBubbleTest : public AppsGridViewTest {
- public:
-  AppsGridViewNonBubbleTest() { is_productivity_launcher_enabled_ = false; }
-};
-
 class AppsGridViewBubbleTest : public AppsGridViewTest {
  public:
   AppsGridViewBubbleTest() { is_productivity_launcher_enabled_ = true; }
@@ -923,32 +917,6 @@ TEST_P(AppsGridViewClamshellTest, RemoveSelectedLastApp) {
   AppListItemView* view = GetItemViewInTopLevelGrid(0);
   apps_grid_view_->SetSelectedView(view);
   EXPECT_TRUE(apps_grid_view_->IsSelectedView(view));
-}
-
-// Tests that UMA is properly collected when either a suggested or normal app is
-// launched. Bubble launcher uses different metric names and does not use
-// suggestion chips.
-TEST_F(AppsGridViewNonBubbleTest, UMATestForLaunchingApps) {
-  base::HistogramTester histogram_tester;
-  model_->PopulateApps(5);
-  UpdateLayout();
-
-  // Select the first app in grid and launch it.
-  LeftClickOn(GetItemViewInTopLevelGrid(0));
-
-  // Test that histogram recorded app launch from grid.
-  histogram_tester.ExpectBucketCount(
-      "Apps.AppListAppLaunchedV2.FullscreenAllApps", 1 /* kAppListItem */,
-      1 /* Times kAppListItem launched */);
-
-  // Launch a suggested app.
-  suggestions_container_->children().front()->OnKeyPressed(
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_RETURN, ui::EF_NONE));
-
-  // Test that histogram recorded app launched from suggestion chip.
-  histogram_tester.ExpectBucketCount(
-      "Apps.AppListAppLaunchedV2.FullscreenAllApps", 2 /* kSuggestionChip */,
-      1 /* Times kSuggestionChip Launched */);
 }
 
 // Tests that the item list changed without user operations; this happens on
@@ -1154,19 +1122,6 @@ TEST_P(AppsGridViewTabletTest, BetweenRowsAnimationReversal) {
   EXPECT_EQ(0, GetNumberOfRowChangeLayersForTest());
 }
 
-// Tests that control + arrow while a suggested chip is focused does not crash.
-// Productivity launcher does not use suggestion chips.
-TEST_F(AppsGridViewNonBubbleTest, ControlArrowOnSuggestedChip) {
-  model_->PopulateApps(5);
-  UpdateLayout();
-  suggestions_container_->children().front()->RequestFocus();
-
-  SimulateKeyPress(ui::VKEY_UP, ui::EF_CONTROL_DOWN);
-
-  EXPECT_EQ(suggestions_container_->children().front(),
-            apps_grid_view_->GetFocusManager()->GetFocusedView());
-}
-
 TEST_P(AppsGridViewClamshellTest, ItemTooltip) {
   std::string title("a");
   AppListItem* item = model_->CreateAndAddItem(title);
@@ -1244,34 +1199,6 @@ TEST_F(AppsGridViewTest, TapsBetweenAppsWontCloseAppList) {
   // the app_list
   ui::GestureEvent tap_outside = SimulateTap(empty_space);
   EXPECT_FALSE(tap_outside.handled());
-}
-
-// The bubble launcher uses scrollable folders, so this test disables
-// ProductivityLauncher.
-TEST_F(AppsGridViewNonBubbleTest, PageResetAfterOpenFolder) {
-  model_->CreateAndPopulateFolderWithApps(kMaxItemsInFolder);
-  EXPECT_EQ(1u, model_->top_level_item_list()->item_count());
-  EXPECT_EQ(AppListFolderItem::kItemType,
-            model_->top_level_item_list()->item_at(0)->GetItemType());
-
-  // Open the folder. It should be at page 0.
-  test_api_->PressItemAt(0);
-  ASSERT_FALSE(features::IsProductivityLauncherEnabled());
-  PaginationModel* pagination_model =
-      static_cast<PagedAppsGridView*>(folder_apps_grid_view())
-          ->pagination_model();
-  EXPECT_EQ(3, pagination_model->total_pages());
-  EXPECT_EQ(0, pagination_model->selected_page());
-
-  // Select page 2.
-  pagination_model->SelectPage(2, false /* animate */);
-  EXPECT_EQ(2, pagination_model->selected_page());
-
-  // Close the folder and reopen it. It should be at page 0.
-  app_list_folder_view()->CloseFolderPage();
-  test_api_->PressItemAt(0);
-  EXPECT_EQ(3, pagination_model->total_pages());
-  EXPECT_EQ(0, pagination_model->selected_page());
 }
 
 TEST_P(AppsGridViewClamshellTest, FolderColsAndRows) {
@@ -2121,25 +2048,6 @@ TEST_P(AppsGridViewDragTest, DragIconAnimatesAfterReorderDrag) {
   ui::Layer* drag_icon_layer = test_api_->GetDragIconLayer();
   ASSERT_TRUE(drag_icon_layer);
   EXPECT_TRUE(drag_icon_layer->GetAnimator()->is_animating());
-}
-
-TEST_F(AppsGridViewNonBubbleTest, SwitchPageFolderItem) {
-  // ProductivityLauncher does not use paged folders.
-  ASSERT_FALSE(features::IsProductivityLauncherEnabled());
-
-  // Creates a folder item with enough views to have a second page.
-  const size_t kTotalItems = kMaxItemsPerFolderPage + 1;
-  model_->CreateAndPopulateFolderWithApps(kTotalItems);
-
-  // Switch to second page and check it's contents.
-  test_api_->Update();
-  test_api_->PressItemAt(0);
-  AnimateFolderViewPageFlip(1);
-
-  EXPECT_EQ(1, GetSelectedPage(folder_apps_grid_view()));
-  EXPECT_EQ(4, folder_apps_grid_view()->cols());
-  EXPECT_EQ(16u, AppsGridViewTestApi(folder_apps_grid_view()).TilesPerPage(0));
-  EXPECT_TRUE(folder_apps_grid_view()->IsInFolder());
 }
 
 TEST_P(AppsGridViewDragNonBubbleTest, MouseDragItemOutOfFolderSecondPage) {
