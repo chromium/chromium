@@ -30,6 +30,7 @@ using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::Optional;
 using ::testing::Pair;
+using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 
 // Some of these tests overlap with FirstPartySetParser unittests, but
@@ -51,13 +52,6 @@ const char* kCctldsField = "ccTLDs";
 MATCHER_P(SerializesTo, want, "") {
   const std::string got = arg.Serialize();
   return testing::ExplainMatchResult(testing::Eq(want), got, result_listener);
-}
-
-MATCHER_P(PublicSetsAre, sets_matcher, "") {
-  const net::PublicSets& public_sets = arg;
-  const base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>& sets =
-      public_sets.entries();
-  return testing::ExplainMatchResult(sets_matcher, sets, result_listener);
 }
 
 BrowserContext* FakeBrowserContextGetter() {
@@ -136,6 +130,20 @@ GetPersistedPublicSetsAndWait() {
   FirstPartySetsHandlerImpl::GetInstance()->GetPersistedPublicSetsForTesting(
       future.GetCallback());
   return future.Get();
+}
+
+base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> FindEntries(
+    const net::PublicSets& public_sets,
+    const base::flat_set<net::SchemefulSite>& sites) {
+  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> results;
+  for (const net::SchemefulSite& site : sites) {
+    if (absl::optional<net::FirstPartySetEntry> entry =
+            public_sets.FindEntry(site, /*config=*/nullptr);
+        entry.has_value()) {
+      results.emplace_back(site, *entry);
+    }
+  }
+  return results;
 }
 
 }  // namespace
@@ -269,6 +277,9 @@ class FirstPartySetsHandlerImplEnabledTest
 };
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest, EmptyDBPath) {
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite associated(GURL("https://associatedsite1.test"));
+
   // Empty `user_data_dir` will fail to load persisted sets, but that will not
   // prevent `on_sets_ready` from being invoked.
   FirstPartySetsHandlerImpl::GetInstance()->Init(
@@ -277,20 +288,20 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, EmptyDBPath) {
           R"({"primary": "https://example.test",)"
           R"("associatedSites": ["https://associatedsite1.test"]})"));
 
-  EXPECT_THAT(GetSetsAndWait(),
-              PublicSetsAre(UnorderedElementsAre(
-                  Pair(SerializesTo("https://example.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite1.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 0)))));
+  EXPECT_THAT(
+      FindEntries(GetSetsAndWait(), {example, associated}),
+      UnorderedElementsAre(
+          Pair(example, net::FirstPartySetEntry(
+                            example, net::SiteType::kPrimary, absl::nullopt)),
+          Pair(associated, net::FirstPartySetEntry(
+                               example, net::SiteType::kAssociated, 0))));
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
        ClearSiteDataOnChangedSetsForContext_Successful) {
+  net::SchemefulSite foo(GURL("https://foo.test"));
+  net::SchemefulSite associated(GURL("https://associatedsite.test"));
+
   FirstPartySetsHandlerImpl::GetInstance()
       ->SetEmbedderWillProvidePublicSetsForTesting(true);
   const std::string input =
@@ -302,16 +313,12 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
 
   FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
                                                  LocalSetDeclaration());
-  ASSERT_THAT(GetSetsAndWait(),
-              PublicSetsAre(UnorderedElementsAre(
-                  Pair(SerializesTo("https://foo.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kAssociated, 0)))));
+  ASSERT_THAT(FindEntries(GetSetsAndWait(), {foo, associated}),
+              UnorderedElementsAre(
+                  Pair(foo, net::FirstPartySetEntry(
+                                foo, net::SiteType::kPrimary, absl::nullopt)),
+                  Pair(associated, net::FirstPartySetEntry(
+                                       foo, net::SiteType::kAssociated, 0))));
 
   FirstPartySetsHandlerImpl::GetInstance()
       ->ClearSiteDataOnChangedSetsForContext(
@@ -322,18 +329,18 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
 
   EXPECT_THAT(GetPersistedPublicSetsAndWait(),
               Optional(UnorderedElementsAre(
-                  Pair(SerializesTo("https://foo.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kAssociated, absl::nullopt)))));
+                  Pair(foo, net::FirstPartySetEntry(
+                                foo, net::SiteType::kPrimary, absl::nullopt)),
+                  Pair(associated,
+                       net::FirstPartySetEntry(foo, net::SiteType::kAssociated,
+                                               absl::nullopt)))));
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
        ClearSiteDataOnChangedSetsForContext_EmptyDBPath) {
+  net::SchemefulSite foo(GURL("https://foo.test"));
+  net::SchemefulSite associated(GURL("https://associatedsite.test"));
+
   FirstPartySetsHandlerImpl::GetInstance()
       ->SetEmbedderWillProvidePublicSetsForTesting(true);
   const std::string input =
@@ -345,16 +352,12 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
 
   FirstPartySetsHandlerImpl::GetInstance()->Init(
       /*user_data_dir=*/{}, LocalSetDeclaration());
-  ASSERT_THAT(GetSetsAndWait(),
-              PublicSetsAre(UnorderedElementsAre(
-                  Pair(SerializesTo("https://foo.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kAssociated, 0)))));
+  ASSERT_THAT(FindEntries(GetSetsAndWait(), {foo, associated}),
+              UnorderedElementsAre(
+                  Pair(foo, net::FirstPartySetEntry(
+                                foo, net::SiteType::kPrimary, absl::nullopt)),
+                  Pair(associated, net::FirstPartySetEntry(
+                                       foo, net::SiteType::kAssociated, 0))));
 
   FirstPartySetsHandlerImpl::GetInstance()
       ->ClearSiteDataOnChangedSetsForContext(
@@ -368,6 +371,9 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
        GetSetsIfEnabledAndReady_AfterSetsReady) {
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite associated(GURL("https://associatedsite.test"));
+
   FirstPartySetsHandlerImpl::GetInstance()
       ->SetEmbedderWillProvidePublicSetsForTesting(true);
 
@@ -380,34 +386,33 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
 
   FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
                                                  LocalSetDeclaration());
-  EXPECT_THAT(GetSetsAndWait(),
-              PublicSetsAre(UnorderedElementsAre(
-                  Pair(SerializesTo("https://example.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 0)))));
+  EXPECT_THAT(
+      FindEntries(GetSetsAndWait(), {example, associated}),
+      UnorderedElementsAre(
+          Pair(example, net::FirstPartySetEntry(
+                            example, net::SiteType::kPrimary, absl::nullopt)),
+          Pair(associated, net::FirstPartySetEntry(
+                               example, net::SiteType::kAssociated, 0))));
 
   env().RunUntilIdle();
 
   EXPECT_THAT(
-      FirstPartySetsHandlerImpl::GetInstance()->GetSets(base::NullCallback()),
-      testing::Optional(PublicSetsAre(UnorderedElementsAre(
-          Pair(SerializesTo("https://example.test"),
-               net::FirstPartySetEntry(
-                   net::SchemefulSite(GURL("https://example.test")),
-                   net::SiteType::kPrimary, absl::nullopt)),
-          Pair(SerializesTo("https://associatedsite.test"),
-               net::FirstPartySetEntry(
-                   net::SchemefulSite(GURL("https://example.test")),
-                   net::SiteType::kAssociated, 0))))));
+      FindEntries(FirstPartySetsHandlerImpl::GetInstance()
+                      ->GetSets(base::NullCallback())
+                      .value(),
+                  {example, associated}),
+      UnorderedElementsAre(
+          Pair(example, net::FirstPartySetEntry(
+                            example, net::SiteType::kPrimary, absl::nullopt)),
+          Pair(associated, net::FirstPartySetEntry(
+                               example, net::SiteType::kAssociated, 0))));
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
        GetSetsIfEnabledAndReady_BeforeSetsReady) {
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite associated(GURL("https://associatedsite.test"));
+
   FirstPartySetsHandlerImpl::GetInstance()
       ->SetEmbedderWillProvidePublicSetsForTesting(true);
 
@@ -427,28 +432,24 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
       base::Version(), WritePublicSetsFile(input));
 
-  EXPECT_THAT(future.Get(),
-              PublicSetsAre(UnorderedElementsAre(
-                  Pair(SerializesTo("https://example.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 0)))));
+  EXPECT_THAT(
+      FindEntries(future.Get(), {example, associated}),
+      UnorderedElementsAre(
+          Pair(example, net::FirstPartySetEntry(
+                            example, net::SiteType::kPrimary, absl::nullopt)),
+          Pair(associated, net::FirstPartySetEntry(
+                               example, net::SiteType::kAssociated, 0))));
 
   EXPECT_THAT(
-      FirstPartySetsHandlerImpl::GetInstance()->GetSets(base::NullCallback()),
-      testing::Optional(PublicSetsAre(UnorderedElementsAre(
-          Pair(SerializesTo("https://example.test"),
-               net::FirstPartySetEntry(
-                   net::SchemefulSite(GURL("https://example.test")),
-                   net::SiteType::kPrimary, absl::nullopt)),
-          Pair(SerializesTo("https://associatedsite.test"),
-               net::FirstPartySetEntry(
-                   net::SchemefulSite(GURL("https://example.test")),
-                   net::SiteType::kAssociated, 0))))));
+      FindEntries(FirstPartySetsHandlerImpl::GetInstance()
+                      ->GetSets(base::NullCallback())
+                      .value(),
+                  {example, associated}),
+      UnorderedElementsAre(
+          Pair(example, net::FirstPartySetEntry(
+                            example, net::SiteType::kPrimary, absl::nullopt)),
+          Pair(associated, net::FirstPartySetEntry(
+                               example, net::SiteType::kAssociated, 0))));
 }
 
 class FirstPartySetsHandlerGetCustomizationForPolicyTest
@@ -474,6 +475,10 @@ class FirstPartySetsHandlerGetCustomizationForPolicyTest
   //   }
   // ]
   void InitPublicFirstPartySets() {
+    net::SchemefulSite primary1(GURL("https://primary1.test"));
+    net::SchemefulSite associated1(GURL("https://associatedsite1.test"));
+    net::SchemefulSite associated2(GURL("https://associatedsite2.test"));
+
     const std::string input =
         R"({"primary": "https://primary1.test", )"
         R"("associatedSites": ["https://associatedsite1.test", "https://associatedsite2.test"]})";
@@ -481,12 +486,9 @@ class FirstPartySetsHandlerGetCustomizationForPolicyTest
     FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
         base::Version(), WritePublicSetsFile(input));
 
-    FirstPartySetsHandlerImpl::FlattenedSets public_sets =
-        MakeFlattenedSetsFromMap({{"https://primary1.test",
-                                   {"https://associatedsite1.test",
-                                    "https://associatedsite2.test"}}});
-
-    ASSERT_THAT(GetSetsAndWait(), PublicSetsAre(public_sets));
+    ASSERT_THAT(
+        FindEntries(GetSetsAndWait(), {primary1, associated1, associated2}),
+        SizeIs(3));
   }
 
  protected:
