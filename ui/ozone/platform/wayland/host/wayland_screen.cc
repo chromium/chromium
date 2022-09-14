@@ -271,9 +271,10 @@ const std::vector<display::Display>& WaylandScreen::GetAllDisplays() const {
 }
 
 display::Display WaylandScreen::GetPrimaryDisplay() const {
-  auto iter = display_list_.GetPrimaryDisplayIterator();
-  DCHECK(iter != display_list_.displays().end());
-  return *iter;
+  DCHECK(display_list_.IsValid());
+  return display_list_.displays().empty()
+             ? display::Display::GetDefaultDisplay()
+             : *display_list_.GetPrimaryDisplayIterator();
 }
 
 display::Display WaylandScreen::GetDisplayForAcceleratedWidget(
