@@ -12,6 +12,10 @@
 class GURL;
 class ProfilePickerForceSigninDialogDelegate;
 
+namespace views {
+class DialogDelegateView;
+}
+
 namespace content {
 class BrowserContext;
 }
@@ -46,6 +50,8 @@ class ProfilePickerForceSigninDialogHost {
   // Getter of the path of profile which is selected in profile picker for force
   // signin.
   base::FilePath GetForceSigninProfilePath() const;
+
+  views::DialogDelegateView* GetDialogDelegateViewForTesting() const;
 
  private:
   friend class ProfilePickerForceSigninDialogDelegate;

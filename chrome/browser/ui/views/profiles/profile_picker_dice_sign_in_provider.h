@@ -68,6 +68,8 @@ class ProfilePickerDiceSignInProvider
   // created).
   bool IsInitialized() const;
 
+  content::WebContents* contents() const { return contents_.get(); }
+
  private:
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
@@ -108,8 +110,6 @@ class ProfilePickerDiceSignInProvider
   void FinishFlow(bool is_saml);
 
   void OnSignInContentsFreedUp();
-
-  content::WebContents* contents() const { return contents_.get(); }
 
   // The host must outlive this object.
   const raw_ptr<ProfilePickerWebContentsHost> host_;

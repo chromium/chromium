@@ -49,3 +49,8 @@ void ProfilePickerForceSigninDialogHost::DisplayErrorMessage() {
   if (delegate_)
     delegate_->DisplayErrorMessage();
 }
+
+views::DialogDelegateView*
+ProfilePickerForceSigninDialogHost::GetDialogDelegateViewForTesting() const {
+  return delegate_;
+}

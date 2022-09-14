@@ -215,7 +215,6 @@ void ProfilePickerDiceSignInProvider::OnProfileInitialized(
   }
   DCHECK(!profile_);
   DCHECK(!contents());
-  std::move(switch_finished_callback).Run(true);
 
   profile_ = new_profile;
   profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
@@ -257,6 +256,7 @@ void ProfilePickerDiceSignInProvider::OnProfileInitialized(
   views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
       contents(), host_->GetPreferredBackgroundColor());
 
+  std::move(switch_finished_callback).Run(true);
   host_->ShowScreen(
       contents(), GetSigninURL(host_->ShouldUseDarkColors()),
       base::BindOnce(&ProfilePickerWebContentsHost::SetNativeToolbarVisible,

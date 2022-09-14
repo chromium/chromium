@@ -3529,6 +3529,8 @@ static_library("ui") {
       "views/profiles/profile_customization_bubble_sync_controller.h",
       "views/profiles/profile_customization_bubble_view.cc",
       "views/profiles/profile_customization_bubble_view.h",
+      "views/profiles/profile_management_step_controller.cc",
+      "views/profiles/profile_management_step_controller.h",
       "views/profiles/profile_menu_view.cc",
       "views/profiles/profile_menu_view.h",
       "views/profiles/profile_picker_force_signin_dialog_delegate.cc",

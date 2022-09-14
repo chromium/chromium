@@ -70,6 +70,10 @@ class ProfilePickerSignedInFlowController
   // switch screen. It uses the system profile for showing the switch screen.
   void SwitchToProfileSwitch(const base::FilePath& profile_path);
 
+  base::WeakPtr<ProfilePickerSignedInFlowController> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   // Getter of the path of profile which is displayed on the profile switch
   // screen. Returns an empty path if no such screen has been displayed.
   base::FilePath switch_profile_path() const { return switch_profile_path_; }

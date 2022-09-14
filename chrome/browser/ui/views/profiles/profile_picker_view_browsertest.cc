@@ -2,27 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/metrics/user_action_tester.h"
-#include "chrome/browser/chrome_browser_main.h"
-#include "chrome/browser/chrome_browser_main_extra_parts.h"
-#include "chrome/browser/enterprise/util/managed_browser_utils.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/policy/profile_policy_connector_builder.h"
-#include "chrome/browser/sync/sync_startup_tracker.h"
-#include "chrome/browser/ui/views/profiles/profile_creation_signed_in_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 
 #include <set>
 
 #include "base/barrier_closure.h"
-#include "base/callback_helpers.h"
 #include "base/cfi_buildflags.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -31,11 +21,16 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chrome_browser_main.h"
+#include "chrome/browser/chrome_browser_main_extra_parts.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/interstitials/chrome_settings_page_helper.h"
 #include "chrome/browser/metrics/first_web_contents_profiler_base.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -45,25 +40,25 @@
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
+#include "chrome/browser/signin/signin_promo.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_encryption_keys_tab_helper.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/sync/sync_startup_tracker.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/profile_ui_test_utils.h"
-#include "chrome/browser/ui/sync/profile_signin_confirmation_helper.h"
 #include "chrome/browser/ui/tab_dialogs.h"
-#include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
+#include "chrome/browser/ui/views/profiles/profile_creation_signed_in_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
+#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_handler.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
-#include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
@@ -84,13 +79,10 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/sync/base/pref_names.h"
-#include "components/sync/base/sync_prefs.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "content/public/browser/web_contents.h"
@@ -102,6 +94,8 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/accelerators/accelerator.h"
+#include "ui/events/event_constants.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
 
@@ -411,28 +405,40 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
       const GURL& target_url,
       const std::string& email,
       const std::string& given_name,
-      const std::string& hosted_domain = kNoHostedDomainFound) {
+      const std::string& hosted_domain = kNoHostedDomainFound,
+      bool start_on_management_page = false) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    return LacrosSignIn(target_url, email, given_name, hosted_domain);
+    return LacrosSignIn(target_url, email, given_name, hosted_domain,
+                        start_on_management_page);
 #else
-    Profile* profile_being_created = StartDiceSignIn();
+    Profile* profile_being_created = StartDiceSignIn(start_on_management_page);
     FinishDiceSignIn(profile_being_created, email, given_name, hosted_domain);
     WaitForLoadStop(target_url);
     return profile_being_created;
 #endif
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  Profile* LacrosSignIn(
-      const GURL& target_url,
-      const std::string& email,
-      const std::string& given_name,
-      const std::string& hosted_domain = kNoHostedDomainFound) {
+  // Returns the initial page.
+  GURL ShowPickerAndWait(bool start_on_management_page = false) {
     ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
-        ProfilePicker::EntryPoint::kProfileMenuAddNewProfile));
+        start_on_management_page
+            ? ProfilePicker::EntryPoint::kProfileMenuManageProfiles
+            : ProfilePicker::EntryPoint::kProfileMenuAddNewProfile));
     // Wait until webUI is fully initialized.
-    const GURL kNewProfileUrl("chrome://profile-picker/new-profile");
-    WaitForLoadStop(kNewProfileUrl);
+    const GURL kInitialPageUrl(start_on_management_page
+                                   ? "chrome://profile-picker"
+                                   : "chrome://profile-picker/new-profile");
+    WaitForLoadStop(kInitialPageUrl);
+    return kInitialPageUrl;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  Profile* LacrosSignIn(const GURL& target_url,
+                        const std::string& email,
+                        const std::string& given_name,
+                        const std::string& hosted_domain = kNoHostedDomainFound,
+                        bool start_on_management_page = false) {
+    const GURL kProfilePickerUrl = ShowPickerAndWait(start_on_management_page);
 
     account_manager::AccountKey kAccountKey{
         kGaiaId, account_manager::AccountType::kGaia};
@@ -444,14 +450,14 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
       args.Append(/*color=*/static_cast<int>(kProfileColor));
       args.Append(/*gaiaid=*/kGaiaId);
       web_contents()->GetWebUI()->ProcessWebUIMessage(
-          kNewProfileUrl, "selectExistingAccountLacros", std::move(args));
+          kProfilePickerUrl, "selectExistingAccountLacros", std::move(args));
     } else {
       // The account needs to be added to the device.
       // Fake clicking the "Use another account" button.
       base::Value::List args;
       args.Append(/*color=*/static_cast<int>(kProfileColor));
       web_contents()->GetWebUI()->ProcessWebUIMessage(
-          kNewProfileUrl, "selectNewAccount", std::move(args));
+          kProfilePickerUrl, "selectNewAccount", std::move(args));
       // Wait for the Ash UI to show up.
       FakeAccountManagerUI* fake_ui = GetFakeAccountManagerUI();
       FakeAccountManagerUIDialogWaiter(
@@ -498,11 +504,8 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
 #else
   // Opens the Gaia signin page in the profile creation flow. Returns the new
   // profile that was created.
-  Profile* StartDiceSignIn() {
-    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
-        ProfilePicker::EntryPoint::kProfileMenuAddNewProfile));
-    // Wait until webUI is fully initialized.
-    WaitForLoadStop(GURL("chrome://profile-picker/new-profile"));
+  Profile* StartDiceSignIn(bool start_on_management_page = false) {
+    ShowPickerAndWait(start_on_management_page);
 
     // Simulate a click on the signin button.
     base::MockCallback<base::OnceCallback<void(bool)>> switch_finished_callback;
@@ -677,6 +680,49 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       CreateForceSignedInProfile) {
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter{true};
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+
+  // Note: Observed some rare flakiness on some bots. Inclusing some logs to
+  // understand it.
+  LOG(WARNING) << "DEBUG - Before showing the picker.";
+
+  // Wait for the picker to open on the profile creation flow.
+  ShowPickerAndWait();
+  auto* profile_picker_view =
+      static_cast<ProfilePickerView*>(ProfilePicker::GetViewForTesting());
+
+  // Wait for the force signin dialog to load.
+  LOG(WARNING)
+      << "DEBUG - Picker shown. Ensuring that the dialog is shown. "
+      << (profile_picker_view->dialog_host_.GetDialogDelegateViewForTesting()
+              ? "We already"
+              : "We don't yet")
+      << " have a dialog delegate view.";
+  GURL force_signin_webui_url = signin::GetEmbeddedPromoURL(
+      signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
+      signin_metrics::Reason::kForcedSigninPrimaryAccount, true);
+  ui_test_utils::UrlLoadObserver url_observer(
+      force_signin_webui_url, content::NotificationService::AllSources());
+  url_observer.Wait();
+  LOG(WARNING) << "DEBUG - Finished waiting for the dialog.";
+
+  // The dialog view should be created.
+  EXPECT_TRUE(
+      profile_picker_view->dialog_host_.GetDialogDelegateViewForTesting());
+
+  // A new profile should have been created for the forced sign-in flow.
+  base::FilePath force_signin_profile_path =
+      profile_picker_view->dialog_host_.GetForceSigninProfilePath();
+  EXPECT_NE(browser()->profile()->GetPath(), force_signin_profile_path);
+  EXPECT_TRUE(g_browser_process->profile_manager()->GetProfileByPath(
+      force_signin_profile_path));
+
+  // The tail end of the flow is handled by inline_login_*
+}
+
 // Regression test for crbug.com/1266415.
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CreateSignedInProfileWithSyncEncryptionKeys) {
@@ -814,6 +860,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CreateSignedInProfileDiceReenter) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   Profile* profile_being_created = StartDiceSignIn();
+
+  // Navigate back from the sign in step.
+  view()->AcceleratorPressed(ui::Accelerator(ui::VKEY_LEFT, ui::EF_ALT_DOWN));
 
   // Simulate the sign-in screen get re-entered with a different color
   // (configured on the local profile screen).
@@ -1525,6 +1574,42 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest, Cancel) {
 
   // As the profile creation flow was opened directly, the window is closed now.
   WaitForPickerClosed();
+  observer.Wait();
+
+  // The profile entry is deleted
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_being_created_path);
+  EXPECT_EQ(entry, nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
+                       CancelFromPicker) {
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+
+  // Simulate a successful sign-in and wait for the sign-in to propagate to the
+  // flow, resulting in enterprise welcome screen getting displayed.
+  // Consumer-looking gmail address avoids code that forces the sync service to
+  // actually start which would add overhead in mocking further stuff.
+  // Enterprise domain needed for this profile being detected as Work.
+  Profile* profile_being_created = SignInForNewProfile(
+      GURL("chrome://enterprise-profile-welcome/"), "joe.enterprise@gmail.com",
+      "Joe", "enterprise.com", /*start_on_management_page=*/true);
+  base::FilePath profile_being_created_path = profile_being_created->GetPath();
+
+  // Wait for the sign-in to propagate to the flow, resulting in enterprise
+  // welcome screen getting displayed.
+  WaitForLoadStop(GURL("chrome://enterprise-profile-welcome/"));
+
+  ProfileDeletionObserver observer;
+  profiles::testing::ExpectPickerWelcomeScreenTypeAndProceed(
+      /*expected_type=*/
+      EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled,
+      /*choice=*/signin::SIGNIN_CHOICE_CANCEL);
+
+  // As the management page was opened, the picker returns to it.
+  WaitForLoadStop(GURL("chrome://profile-picker"));
   observer.Wait();
 
   // The profile entry is deleted

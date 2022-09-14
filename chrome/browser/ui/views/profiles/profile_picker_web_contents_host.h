@@ -46,6 +46,9 @@ class ProfilePickerWebContentsHost
   // Returns whether dark colors should be used (based on native theme).
   virtual bool ShouldUseDarkColors() const = 0;
 
+  // Returns the picker WebContents.
+  virtual content::WebContents* GetPickerContents() const = 0;
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Changes the visibility of the host's native toolbar, which shows a back
   // button.

@@ -24,10 +24,11 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
 #include "chrome/browser/ui/views/profiles/profile_creation_signed_in_flow_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -44,7 +45,6 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/theme_provider.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view.h"
@@ -132,8 +132,10 @@ GURL ProfilePicker::GetOnSelectProfileTargetUrl() {
 
 // static
 base::FilePath ProfilePicker::GetSwitchProfilePath() {
-  if (g_profile_picker_view && g_profile_picker_view->signed_in_flow_) {
-    return g_profile_picker_view->signed_in_flow_->switch_profile_path();
+  if (g_profile_picker_view &&
+      g_profile_picker_view->weak_signed_in_flow_controller_) {
+    return g_profile_picker_view->weak_signed_in_flow_controller_
+        ->switch_profile_path();
   }
   return base::FilePath();
 }
@@ -154,8 +156,9 @@ void ProfilePicker::SwitchToDiceSignIn(
 void ProfilePicker::SwitchToSignedInFlow(absl::optional<SkColor> profile_color,
                                          Profile* signed_in_profile) {
   if (g_profile_picker_view) {
+    g_profile_picker_view->profile_color_ = profile_color;
     g_profile_picker_view->SwitchToSignedInFlow(
-        profile_color, signed_in_profile,
+        signed_in_profile,
         content::WebContents::Create(
             content::WebContents::CreateParams(signed_in_profile)),
         /*is_saml=*/false);
@@ -417,6 +420,10 @@ bool ProfilePickerView::ShouldUseDarkColors() const {
   return GetNativeTheme()->ShouldUseDarkColors();
 }
 
+content::WebContents* ProfilePickerView::GetPickerContents() const {
+  return contents_.get();
+}
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ProfilePickerView::SetNativeToolbarVisible(bool visible) {
   if (!visible) {
@@ -425,8 +432,11 @@ void ProfilePickerView::SetNativeToolbarVisible(bool visible) {
   }
 
   if (toolbar_->children().empty()) {
-    toolbar_->BuildToolbar(base::BindRepeating(&ProfilePickerView::NavigateBack,
-                                               base::Unretained(this)));
+    toolbar_->BuildToolbar(
+        base::BindRepeating(&ProfilePickerView::NavigateBack,
+                            // Binding as Unretained as `this` is the
+                            // `toolbar_`'s parent and outlives it.
+                            base::Unretained(this)));
   }
   toolbar_->SetVisible(true);
 }
@@ -575,6 +585,7 @@ void ProfilePickerView::Init(Profile* picker_profile) {
       views::HWNDForWidget(GetWidget()));
 #endif
 
+  Step initial_step = Step::kUnknown;
   if (params_.entry_point() ==
       ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -584,17 +595,27 @@ void ProfilePickerView::Init(Profile* picker_profile) {
         content::WebContents::Create(
             content::WebContents::CreateParams(picker_profile));
 
-    signed_in_flow_ = std::make_unique<LacrosFirstRunSignedInFlowController>(
-        this, picker_profile, std::move(contents_for_signed_in_flow),
-        base::BindOnce(&ProfilePicker::Params::NotifyFirstRunExited,
-                       base::Unretained(&params_)));
-    signed_in_flow_->Init();
+    initial_step = Step::kPostSignInFlow;
+    initialized_steps_[initial_step] =
+        ProfileManagementStepController::CreateForPostSignInFlow(
+            this,
+            std::make_unique<LacrosFirstRunSignedInFlowController>(
+                this, picker_profile, std::move(contents_for_signed_in_flow),
+                base::BindOnce(&ProfilePicker::Params::NotifyFirstRunExited,
+                               // Unretained ok because the controller is owned
+                               // by this through `initialized_steps_`.
+                               base::Unretained(&params_))));
 #else
     NOTREACHED();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   } else {
-    ShowScreenInPickerContents(params_.GetInitialURL());
+    initial_step = Step::kProfilePicker;
+    initialized_steps_[initial_step] =
+        ProfileManagementStepController::CreateForProfilePickerApp(
+            this, params_.GetInitialURL());
   }
+
+  SwitchToStep(initial_step);
   state_ = kReady;
 
   PrefService* prefs = g_browser_process->local_state();
@@ -617,31 +638,50 @@ void ProfilePickerView::Init(Profile* picker_profile) {
 void ProfilePickerView::SwitchToDiceSignIn(
     absl::optional<SkColor> profile_color,
     base::OnceCallback<void(bool)> switch_finished_callback) {
-  // TODO(crbug.com/1227029): Consider having forced signin as another
-  // implementation of an abstract signin interface to move the code out of
-  // this class.
+  DCHECK_EQ(Step::kProfilePicker, current_step_);
+  profile_color_ = profile_color;
+
+  // TODO(crbug.com/1360774): Consider having forced signin as separate step
+  // controller for `Step::kAccountSelection`.
   if (signin_util::IsForceSigninEnabled()) {
-    size_t icon_index = profiles::GetPlaceholderAvatarIndex();
-    ProfileManager::CreateMultiProfileAsync(
-        g_browser_process->profile_manager()
-            ->GetProfileAttributesStorage()
-            .ChooseNameForNewProfile(icon_index),
-        icon_index, /*is_hidden=*/true,
-        base::BindOnce(&ProfilePickerView::OnProfileForDiceForcedSigninCreated,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(switch_finished_callback)));
+    SwitchToForcedSignIn(std::move(switch_finished_callback));
     return;
   }
 
-  if (!dice_sign_in_provider_) {
-    dice_sign_in_provider_ =
-        std::make_unique<ProfilePickerDiceSignInProvider>(this);
+  if (!initialized_steps_.contains(Step::kAccountSelection)) {
+    initialized_steps_[Step::kAccountSelection] =
+        ProfileManagementStepController::CreateForDiceSignIn(
+            /*host=*/this,
+            std::make_unique<ProfilePickerDiceSignInProvider>(this),
+            base::BindOnce(&ProfilePickerView::SwitchToSignedInFlow,
+                           // Binding as Unretained as `this` outlives the step
+                           // controllers.
+                           base::Unretained(this)));
   }
+  auto pop_closure = base::BindOnce(
+      &ProfilePickerView::SwitchToStep,
+      // Binding as Unretained as `this` outlives the step
+      // controllers.
+      base::Unretained(this), Step::kProfilePicker,
+      /*reset_state=*/false, /*pop_step_callback=*/base::OnceClosure(),
+      /*step_switch_finished_callback=*/base::OnceCallback<void(bool)>());
+  SwitchToStep(Step::kAccountSelection,
+               /*reset_state=*/false, std::move(pop_closure),
+               std::move(switch_finished_callback));
+}
 
-  dice_sign_in_provider_->SwitchToSignIn(
-      std::move(switch_finished_callback),
-      base::BindOnce(&ProfilePickerView::OnDiceSigninFinished,
-                     weak_ptr_factory_.GetWeakPtr(), profile_color));
+void ProfilePickerView::SwitchToForcedSignIn(
+    base::OnceCallback<void(bool)> switch_finished_callback) {
+  DCHECK(signin_util::IsForceSigninEnabled());
+  size_t icon_index = profiles::GetPlaceholderAvatarIndex();
+  ProfileManager::CreateMultiProfileAsync(
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .ChooseNameForNewProfile(icon_index),
+      icon_index, /*is_hidden=*/true,
+      base::BindOnce(&ProfilePickerView::OnProfileForDiceForcedSigninCreated,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(switch_finished_callback)));
 }
 
 void ProfilePickerView::OnProfileForDiceForcedSigninCreated(
@@ -658,34 +698,47 @@ void ProfilePickerView::OnProfileForDiceForcedSigninCreated(
       web_view_->GetWebContents()->GetBrowserContext(), profile->GetPath());
 }
 
-void ProfilePickerView::OnDiceSigninFinished(
-    absl::optional<SkColor> profile_color,
-    Profile* signed_in_profile,
-    std::unique_ptr<content::WebContents> contents,
-    bool is_saml) {
-  SwitchToSignedInFlow(profile_color, signed_in_profile, std::move(contents),
-                       is_saml);
-  // Reset the provider after switching to signed-in flow to make sure there's
-  // always one ScopedProfileKeepAlive.
-  dice_sign_in_provider_.reset();
-}
 #endif
 
 void ProfilePickerView::SwitchToSignedInFlow(
-    absl::optional<SkColor> profile_color,
     Profile* signed_in_profile,
     std::unique_ptr<content::WebContents> contents,
     bool is_saml) {
-  DCHECK(!signed_in_flow_);
-  signed_in_flow_ = std::make_unique<ProfileCreationSignedInFlowController>(
-      this, signed_in_profile, std::move(contents), profile_color, is_saml);
-  signed_in_flow_->Init();
+  DCHECK(!signin_util::IsForceSigninEnabled());
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  DCHECK_EQ(Step::kAccountSelection, current_step_);
+#endif
+  DCHECK(signed_in_profile);
+
+  DCHECK(!initialized_steps_.contains(Step::kPostSignInFlow));
+
+  // TODO(crbug.com/1360055): Split out the SAML flow directly from here instead
+  // of using `ProfileCreationSignedInFlowController` for it.
+  auto signed_in_flow = std::make_unique<ProfileCreationSignedInFlowController>(
+      /*host=*/this, signed_in_profile, std::move(contents), profile_color_,
+      is_saml);
+
+  weak_signed_in_flow_controller_ = signed_in_flow->GetWeakPtr();
+  initialized_steps_[Step::kPostSignInFlow] =
+      ProfileManagementStepController::CreateForPostSignInFlow(
+          this, std::move(signed_in_flow));
+
+  SwitchToStep(Step::kPostSignInFlow);
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // If we need to go back, we should go all the way to the beginning of the
+  // flow and after that, recreate the account selection step to ensure no data
+  // leaks if we select a different account.
+  // We also erase the step after the switch here because it holds a
+  // `ScopedProfileKeepAlive` and we need the next step to register its own
+  // before this the account selection's is released.
+  initialized_steps_.erase(Step::kAccountSelection);
+#endif
 }
 
 void ProfilePickerView::CancelSignedInFlow() {
-  DCHECK(signed_in_flow_);
-
-  signed_in_flow_->Cancel();
+  // Triggered from either entreprise welcome or profile switch.
+  DCHECK_EQ(Step::kPostSignInFlow, current_step_);
 
   switch (params_.entry_point()) {
     case ProfilePicker::EntryPoint::kOnStartup:
@@ -696,22 +749,24 @@ void ProfilePickerView::CancelSignedInFlow() {
     case ProfilePicker::EntryPoint::kUnableToCreateBrowser:
     case ProfilePicker::EntryPoint::kBackgroundModeManager:
     case ProfilePicker::EntryPoint::kProfileIdle: {
-      // Navigate to the very beginning which is guaranteed to be the profile
-      // picker.
-      contents_->GetController().GoToIndex(0);
-      ShowScreenInPickerContents(GURL());
-      // Reset the sign-in flow.
-      signed_in_flow_.reset();
+      SwitchToStep(Step::kProfilePicker, /*reset_state=*/true);
+      initialized_steps_.erase(Step::kPostSignInFlow);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+      initialized_steps_.erase(Step::kAccountSelection);
+#endif
       return;
     }
     case ProfilePicker::EntryPoint::kProfileMenuAddNewProfile: {
-      // This results in destroying `this` incl. `sign_in_`.
+      // This results in destroying `this`.
       Clear();
       return;
     }
     case ProfilePicker::EntryPoint::kLacrosSelectAvailableAccount:
-    case ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun:
       NOTREACHED() << "Signed in flow is not reachable from this entry point";
+      return;
+    case ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun:
+      NOTREACHED() << "Signed in flow is not cancellable";
+      return;
   }
 }
 
@@ -803,13 +858,11 @@ bool ProfilePickerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
     // Always reload bypassing cache.
     case IDC_RELOAD:
     case IDC_RELOAD_BYPASSING_CACHE:
-    case IDC_RELOAD_CLEARING_CACHE: {
-      // Sign-in may fail due to connectivity issues, allow reloading.
-      if (GetDiceSigningIn()) {
-        dice_sign_in_provider_->ReloadSignInPage();
-      }
+    case IDC_RELOAD_CLEARING_CACHE:
+      DCHECK(initialized_steps_.contains(current_step_));
+      initialized_steps_.at(current_step_)->OnReloadRequested();
       break;
-    }
+
 #endif
     default:
       NOTREACHED() << "Unexpected command_id: " << command_id;
@@ -855,31 +908,31 @@ void ProfilePickerView::ShowScreenFinished(
     std::move(navigation_finished_closure).Run();
 }
 
-void ProfilePickerView::NavigateBack() {
-  // Navigating back is not allowed when in the sync-setup phase of profile
-  // creation.
-  if (signed_in_flow_)
-    return;
+void ProfilePickerView::SwitchToStep(
+    Step step,
+    bool reset_state,
+    base::OnceClosure pop_step_callback,
+    base::OnceCallback<void(bool)> step_switch_finished_callback) {
+  DCHECK_NE(Step::kUnknown, step);
+  DCHECK_NE(current_step_, step);
 
-  // Go back in the picker WebContents if it's currently displayed.
-  if (contents_ && web_view_->GetWebContents() == contents_.get() &&
-      web_view_->GetWebContents()->GetController().CanGoBack()) {
-    web_view_->GetWebContents()->GetController().GoBack();
-    return;
+  auto* new_step_controller = initialized_steps_.at(step).get();
+  DCHECK(new_step_controller);
+  new_step_controller->set_pop_step_callback(std::move(pop_step_callback));
+  new_step_controller->Show(std::move(step_switch_finished_callback),
+                            reset_state);
+
+  if (initialized_steps_.contains(current_step_)) {
+    initialized_steps_.at(current_step_)->OnHidden();
   }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (GetDiceSigningIn())
-    dice_sign_in_provider_->NavigateBack();
-#endif
+  current_step_ = step;
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-bool ProfilePickerView::GetDiceSigningIn() const {
-  // We are on the sign-in screen if the sign-in provider exists.
-  return static_cast<bool>(dice_sign_in_provider_);
+void ProfilePickerView::NavigateBack() {
+  DCHECK(initialized_steps_.contains(current_step_));
+  initialized_steps_.at(current_step_)->OnNavigateBackRequested();
 }
-#endif
 
 void ProfilePickerView::ConfigureAccelerators() {
   const std::vector<AcceleratorMapping> accelerator_list(GetAcceleratorList());
@@ -936,8 +989,5 @@ void ProfilePicker::NotifyAccountSelected(const std::string& gaia_id) {
 #endif
 
 BEGIN_METADATA(ProfilePickerView, views::WidgetDelegateView)
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-ADD_READONLY_PROPERTY_METADATA(bool, DiceSigningIn)
-#endif
 ADD_READONLY_PROPERTY_METADATA(base::FilePath, ForceSigninProfilePath)
 END_METADATA
