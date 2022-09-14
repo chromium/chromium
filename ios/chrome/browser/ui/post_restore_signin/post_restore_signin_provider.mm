@@ -8,6 +8,7 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
+#import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -50,9 +51,7 @@
 #pragma mark - StandardPromoViewProvider
 
 - (ConfirmationAlertViewController*)viewController {
-  // TODO(crbug.com/1363283): Construct and return a
-  // ConfirmationAlertViewController.
-  return nil;
+  return [[PostRestoreSignInViewController alloc] init];
 }
 
 #pragma mark - StandardPromoActionHandler

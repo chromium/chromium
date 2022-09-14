@@ -11,9 +11,15 @@ source_set("post_restore_signin") {
   sources = [
     "post_restore_signin_provider.h",
     "post_restore_signin_provider.mm",
+    "post_restore_signin_view_controller.h",
+    "post_restore_signin_view_controller.mm",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
-  public_deps = [ "//ios/chrome/browser/ui/promos_manager:promos" ]
+  public_deps = [
+    "//ios/chrome/browser/ui/promos_manager:promos",
+    "//ios/chrome/common/ui/confirmation_alert",
+  ]
+  frameworks = [ "Foundation.framework" ]
   deps = [
     ":features",
     "//base",
