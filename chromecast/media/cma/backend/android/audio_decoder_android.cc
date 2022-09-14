@@ -133,6 +133,7 @@ bool AudioDecoderAndroid::Start(int64_t start_pts) {
   if (!rate_shifter_) {
     CreateRateShifter(config_);
   }
+  sink_->SetPaused(false);
   return true;
 }
 
