@@ -1181,6 +1181,33 @@ TEST_F(CaptureModeTest, DisplayRemovalWithCountdownVisible) {
   // Test passes if no crash.
 }
 
+// Tests behavior of a capture mode session if the active display is removed,
+// countdown running, fullscreen window, and in overview mode.
+TEST_F(CaptureModeTest,
+       DisplayRemovalWithCountdownVisibleFullscreenWindowAndInOverview) {
+  UpdateDisplay("800x700,801+0-800x700");
+
+  // Start capture mode on the secondary display.
+  auto recorded_window = CreateTestWindow(gfx::Rect(1000, 200, 400, 400));
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
+  GetEventGenerator()->MoveMouseToCenterOf(recorded_window.get());
+  // Make the window fullscreen. This is important as the corner case is
+  // moving a fullscreen window triggers the shelf to occur, which changes
+  // display metrics.
+  recorded_window->SetProperty(aura::client::kShowStateKey,
+                               ui::SHOW_STATE_FULLSCREEN);
+
+  auto* session = controller->capture_mode_session();
+
+  EnterOverview();
+  RemoveSecondaryDisplay();
+
+  ASSERT_EQ(Shell::GetAllRootWindows()[0], session->current_root());
+
+  // Test passes if no crash.
+}
+
 // Tests that using fullscreen or window source, moving the mouse across
 // displays will change the root window of the capture session.
 TEST_F(CaptureModeTest, MultiDisplayFullscreenOrWindowSourceRootWindow) {

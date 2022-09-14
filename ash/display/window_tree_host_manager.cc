@@ -595,6 +595,8 @@ void WindowTreeHostManager::DeleteHost(AshWindowTreeHost* host_to_delete) {
   RootWindowController* controller =
       RootWindowController::ForWindow(root_being_deleted);
   DCHECK(controller);
+  // Some code relies on this being called before MoveWindowsTo().
+  Shell::Get()->OnRootWindowWillShutdown(root_being_deleted);
   aura::Window* primary_root_after_host_deletion =
       GetRootWindowForDisplayId(GetPrimaryDisplayId());
   controller->MoveWindowsTo(primary_root_after_host_deletion);
