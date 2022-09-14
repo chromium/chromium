@@ -220,6 +220,7 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
 #endif  // BUILDFLAG(IS_ANDROID)
   content::SpeechRecognitionManagerDelegate*
   CreateSpeechRecognitionManagerDelegate() override;
+  bool ShouldSandboxNetworkService() override;
 #if BUILDFLAG(ENABLE_ARCORE)
   content::XrIntegrationClient* GetXrIntegrationClient() override;
 #endif  // BUILDFLAG(ENABLE_ARCORE)

@@ -1188,6 +1188,16 @@ ContentBrowserClientImpl::CreateSpeechRecognitionManagerDelegate() {
   return new WebLayerSpeechRecognitionManagerDelegate();
 }
 
+bool ContentBrowserClientImpl::ShouldSandboxNetworkService() {
+#if BUILDFLAG(IS_WIN)
+  // Weblayer ConfigureNetworkContextParams does not support data migration
+  // required for network sandbox to be enabled on Windows.
+  return false;
+#else
+  return ContentBrowserClient::ShouldSandboxNetworkService();
+#endif  // BUILDFLAG(IS_WIN)
+}
+
 #if BUILDFLAG(ENABLE_ARCORE)
 content::XrIntegrationClient*
 ContentBrowserClientImpl::GetXrIntegrationClient() {
