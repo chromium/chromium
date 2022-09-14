@@ -50,6 +50,8 @@ void MediaLog::Stop() {}
 void MediaLog::AddMessage(MediaLogMessageLevel level, std::string message) {
   std::unique_ptr<MediaLogRecord> record(
       CreateRecord(MediaLogRecord::Type::kMessage));
+  if (!base::IsStringUTF8AllowingNoncharacters(message))
+    message = "WARNING: system message could not be rendered!";
   record->params.SetStringPath(MediaLogMessageLevelToString(level),
                                std::move(message));
   AddLogRecord(std::move(record));
