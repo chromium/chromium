@@ -231,6 +231,69 @@ TEST_F(StarterHeuristicTest, PartiallyInvalidFieldTrialsAreCompletelyIgnored) {
               IsEmpty());
 }
 
+TEST_F(StarterHeuristicTest,
+       ConfigsContainingInvalidConditionSetsAreSilentlySkipped) {
+  auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list->InitWithFeaturesAndParameters(
+      {{features::kAutofillAssistantUrlHeuristic1, {{"json_parameters", R"json(
+        {
+          "intent":"NEW_INTENT_A",
+          "heuristics":[
+              {
+                "conditionSet":{
+                  "### INVALID ###":"whatever"
+                }
+              },
+              {
+                "conditionSet":{
+                  "urlContains":"trigger-for-a"
+                }
+              }
+          ],
+          "enabledInCustomTabs":true
+        }
+        )json"}}},
+       {features::kAutofillAssistantUrlHeuristic2, {{"json_parameters", R"json(
+        {
+          "intent":"NEW_INTENT_B",
+          "heuristics":[
+              {
+                "conditionSet":{
+                  "urlContains":"trigger-for-b"
+                }
+              }
+          ],
+          "enabledInCustomTabs":true
+        }
+        )json"}}}},
+      /* disabled_features = */ {});
+
+  FinchStarterHeuristicConfig finch_config_1{base::FeatureParam<std::string>{
+      &features::kAutofillAssistantUrlHeuristic1, "json_parameters", ""}};
+  FinchStarterHeuristicConfig finch_config_2{base::FeatureParam<std::string>{
+      &features::kAutofillAssistantUrlHeuristic2, "json_parameters", ""}};
+  std::vector<const StarterHeuristicConfig*> configs{&finch_config_1,
+                                                     &finch_config_2};
+  auto starter_heuristic = base::MakeRefCounted<StarterHeuristic>();
+  fake_platform_delegate_.is_custom_tab_ = true;
+  fake_platform_delegate_.is_web_layer_ = false;
+  starter_heuristic->InitFromHeuristicConfigs(configs, &fake_platform_delegate_,
+                                              &context_);
+
+  // config for NEW_INTENT_A contains both valid and invalid conditions and
+  // should be skipped entirely.
+  EXPECT_THAT(
+      IsHeuristicMatchForTest(*starter_heuristic,
+                              GURL("https://www.example.com/trigger-for-a")),
+      IsEmpty());
+
+  // config for NEW_INTENT_B is valid and should thus work.
+  EXPECT_THAT(
+      IsHeuristicMatchForTest(*starter_heuristic,
+                              GURL("https://www.example.com/trigger-for-b")),
+      ElementsAre("NEW_INTENT_B"));
+}
+
 TEST_F(StarterHeuristicTest, MultipleUrlHeuristicTrials) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitWithFeaturesAndParameters(

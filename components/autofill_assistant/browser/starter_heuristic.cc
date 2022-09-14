@@ -38,45 +38,61 @@ void StarterHeuristic::InitFromHeuristicConfigs(
   url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
   matcher_id_to_config_map_.clear();
 
-  url_matcher::URLMatcherConditionSet::Vector condition_sets;
+  url_matcher::URLMatcherConditionSet::Vector overall_condition_set;
   base::flat_map<base::MatcherStringPattern::ID, HeuristicConfigEntry> mapping;
   base::MatcherStringPattern::ID next_condition_set_id = 0;
   for (const StarterHeuristicConfig* config : configs) {
+    // Will only be added to |overall_condition_set| if all condition sets of
+    // |config| are valid.
+    url_matcher::URLMatcherConditionSet::Vector temp_condition_set;
     for (const auto& condition_set : config->GetConditionSetsForClientState(
              platform_delegate, browser_context)) {
       if (!condition_set.is_dict()) {
         LOG(ERROR) << "Invalid heuristic config: expected a dictionary for "
                       "each condition set, but got "
                    << base::Value::GetTypeName(condition_set.type());
-        return;
+        break;
       }
       auto* url_conditions = condition_set.FindKeyOfType(
           kHeuristicUrlConditionSetKey, base::Value::Type::DICTIONARY);
       if (!url_conditions) {
-        VLOG(1) << "Condition dict did not contain a value for 'conditionSet'";
-        return;
+        LOG(ERROR)
+            << "Condition dict did not contain a value for 'conditionSet'";
+        break;
       }
 
       std::string error;
-      condition_sets.emplace_back(
+      temp_condition_set.emplace_back(
           url_matcher::URLMatcherFactory::CreateFromURLFilterDictionary(
               url_matcher_->condition_factory(), url_conditions->GetDict(),
               next_condition_set_id, &error));
       if (!error.empty()) {
-        VLOG(1) << "Error parsing url conditions: " << error;
-        return;
+        LOG(ERROR) << "Error parsing url conditions: " << error;
+        break;
       }
       mapping.insert(
           std::make_pair(next_condition_set_id++,
                          HeuristicConfigEntry(config->GetIntent(),
                                               config->GetDenylistedDomains())));
     }
+
+    if (overall_condition_set.size() + temp_condition_set.size() !=
+        mapping.size()) {
+      LOG(ERROR) << "Condition set for " << config->GetIntent()
+                 << " included invalid conditions, skipping";
+      continue;
+    }
+    overall_condition_set.insert(overall_condition_set.end(),
+                                 temp_condition_set.begin(),
+                                 temp_condition_set.end());
   }
 
-  VLOG(2) << "Read " << condition_sets.size() << " condition sets from "
-          << configs.size() << " configs.";
-  url_matcher_->AddConditionSets(condition_sets);
+  url_matcher_->AddConditionSets(overall_condition_set);
+  // Necessary to clean up condition sets that failed to parse.
+  url_matcher_->ClearUnusedConditionSets();
   matcher_id_to_config_map_ = std::move(mapping);
+  VLOG(2) << "Read " << overall_condition_set.size() << " condition sets for "
+          << matcher_id_to_config_map_.size() << " intents";
 }
 
 bool StarterHeuristic::HasConditionSets() const {
