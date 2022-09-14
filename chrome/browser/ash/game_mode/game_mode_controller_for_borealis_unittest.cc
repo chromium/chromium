@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/game_mode/testing/game_mode_controller_test_base.h"
 
 #include "chrome/browser/ash/borealis/borealis_features.h"
-#include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service_fake.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/borealis/testing/widgets.h"
@@ -17,11 +16,9 @@ namespace game_mode {
 namespace {
 
 using borealis::BorealisFeatures;
-using borealis::BorealisGameModeResult;
 using borealis::BorealisServiceFake;
 using borealis::BorealisWindowManager;
 using borealis::CreateFakeWidget;
-using borealis::kBorealisGameModeResultHistogram;
 
 class GameModeControllerForBorealisTest : public GameModeControllerTestBase {
  protected:
@@ -137,28 +134,34 @@ TEST_F(GameModeControllerForBorealisTest, GameModeMetricsRecorded) {
       CreateFakeWidget("org.chromium.borealis.foo", true);
   aura::Window* window = test_widget->GetNativeWindow();
   EXPECT_TRUE(ash::WindowState::Get(window)->IsFullscreen());
-  histogram_tester_->ExpectBucketCount(kBorealisGameModeResultHistogram,
-                                       BorealisGameModeResult::kAttempted, 1);
-  histogram_tester_->ExpectBucketCount(kBorealisGameModeResultHistogram,
-                                       BorealisGameModeResult::kFailed, 0);
+  histogram_tester_->ExpectBucketCount(
+      GameModeResultHistogramName(GameMode::BOREALIS),
+      GameModeResult::kAttempted, 1);
+  histogram_tester_->ExpectBucketCount(
+      GameModeResultHistogramName(GameMode::BOREALIS), GameModeResult::kFailed,
+      0);
 
   // Game mode refreshes
   task_environment()->FastForwardBy(base::Seconds(61));
   EXPECT_EQ(2, fake_resourced_client_->get_enter_game_mode_count());
-  histogram_tester_->ExpectBucketCount(kBorealisGameModeResultHistogram,
-                                       BorealisGameModeResult::kAttempted, 1);
-  histogram_tester_->ExpectBucketCount(kBorealisGameModeResultHistogram,
-                                       BorealisGameModeResult::kFailed, 0);
+  histogram_tester_->ExpectBucketCount(
+      GameModeResultHistogramName(GameMode::BOREALIS),
+      GameModeResult::kAttempted, 1);
+  histogram_tester_->ExpectBucketCount(
+      GameModeResultHistogramName(GameMode::BOREALIS), GameModeResult::kFailed,
+      0);
 
   // Previous game mode timed out/failed followed by refresh.
   fake_resourced_client_->set_set_game_mode_with_timeout_response(
       ash::ResourcedClient::GameMode::OFF);
   task_environment()->FastForwardBy(base::Seconds(61));
   EXPECT_EQ(3, fake_resourced_client_->get_enter_game_mode_count());
-  histogram_tester_->ExpectBucketCount(kBorealisGameModeResultHistogram,
-                                       BorealisGameModeResult::kAttempted, 1);
-  histogram_tester_->ExpectBucketCount(kBorealisGameModeResultHistogram,
-                                       BorealisGameModeResult::kFailed, 1);
+  histogram_tester_->ExpectBucketCount(
+      GameModeResultHistogramName(GameMode::BOREALIS),
+      GameModeResult::kAttempted, 1);
+  histogram_tester_->ExpectBucketCount(
+      GameModeResultHistogramName(GameMode::BOREALIS), GameModeResult::kFailed,
+      1);
 
   // Previous game mode timed out/failed followed by exit.
   // Should not record to histogram as it was already recorded above.
@@ -168,10 +171,12 @@ TEST_F(GameModeControllerForBorealisTest, GameModeMetricsRecorded) {
   EXPECT_FALSE(ash::WindowState::Get(window)->IsFullscreen());
   EXPECT_EQ(1, fake_resourced_client_->get_exit_game_mode_count());
   base::RunLoop().RunUntilIdle();
-  histogram_tester_->ExpectBucketCount(kBorealisGameModeResultHistogram,
-                                       BorealisGameModeResult::kAttempted, 1);
-  histogram_tester_->ExpectBucketCount(kBorealisGameModeResultHistogram,
-                                       BorealisGameModeResult::kFailed, 1);
+  histogram_tester_->ExpectBucketCount(
+      GameModeResultHistogramName(GameMode::BOREALIS),
+      GameModeResult::kAttempted, 1);
+  histogram_tester_->ExpectBucketCount(
+      GameModeResultHistogramName(GameMode::BOREALIS), GameModeResult::kFailed,
+      1);
 
   // Having left game mode, the time spent in game mode should be recorded.
   histogram_tester_->ExpectTimeBucketCount(
@@ -181,10 +186,12 @@ TEST_F(GameModeControllerForBorealisTest, GameModeMetricsRecorded) {
   test_widget->SetFullscreen(true);
   EXPECT_TRUE(ash::WindowState::Get(window)->IsFullscreen());
   EXPECT_EQ(4, fake_resourced_client_->get_enter_game_mode_count());
-  histogram_tester_->ExpectBucketCount(kBorealisGameModeResultHistogram,
-                                       BorealisGameModeResult::kAttempted, 2);
-  histogram_tester_->ExpectBucketCount(kBorealisGameModeResultHistogram,
-                                       BorealisGameModeResult::kFailed, 1);
+  histogram_tester_->ExpectBucketCount(
+      GameModeResultHistogramName(GameMode::BOREALIS),
+      GameModeResult::kAttempted, 2);
+  histogram_tester_->ExpectBucketCount(
+      GameModeResultHistogramName(GameMode::BOREALIS), GameModeResult::kFailed,
+      1);
 }
 
 TEST_F(GameModeControllerForBorealisTest, WindowLosesFocusAndGoesFullscreen) {

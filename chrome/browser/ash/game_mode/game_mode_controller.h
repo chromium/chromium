@@ -25,6 +25,21 @@ inline const char* TimeInGameModeHistogramName(GameMode mode) {
   return "GameMode.TimeInGameMode.Arc";
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class GameModeResult {
+  kAttempted = 0,
+  kFailed = 1,
+  kMaxValue = kFailed,
+};
+
+inline const char* GameModeResultHistogramName(GameMode mode) {
+  if (mode == GameMode::BOREALIS)
+    return "GameMode.Result.Borealis";
+  DCHECK(mode == GameMode::ARC);
+  return "GameMode.Result.Arc";
+}
+
 void AddArcPkgNameForTesting(const std::string& pkg_name);
 void ClearArcPkgNamesForTesting();
 

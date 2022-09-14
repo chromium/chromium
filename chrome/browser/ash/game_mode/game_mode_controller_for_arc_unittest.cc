@@ -165,7 +165,7 @@ TEST_F(GameModeControllerForArcTest, SwitchToBorealisWindowAndBack) {
   EXPECT_EQ(2, fake_resourced_client_->get_enter_game_mode_count());
 
   fake_resourced_client_->set_set_game_mode_response(
-      ash::ResourcedClient::GameMode::BOREALIS);
+      ash::ResourcedClient::GameMode::ARC);
   game_widget->Show();
   EXPECT_EQ(2, fake_resourced_client_->get_exit_game_mode_count());
   EXPECT_EQ(3, fake_resourced_client_->get_enter_game_mode_count());
@@ -205,6 +205,38 @@ TEST_F(GameModeControllerForArcTest, RecordLengthOfGameModeHistogram) {
 
   histogram_tester_->ExpectBucketCount(
       TimeInGameModeHistogramName(GameMode::ARC), 5000.0, 1);
+}
+
+TEST_F(GameModeControllerForArcTest, RecordGameModeResultHistogram) {
+  arc_app_test_.app_instance()->set_app_category_of_pkg(
+      "org.an_awesome.gameedu", arc::mojom::AppCategory::kGame);
+  arc_app_test_.app_instance()->SetTaskInfo(9882, "org.an_awesome.gameedu",
+                                            "activity");
+
+  auto game_widget = CreateArcTaskWidget(9882);
+  game_widget->SetFullscreen(true);
+  histogram_tester_->ExpectBucketCount(
+      GameModeResultHistogramName(GameMode::ARC), GameModeResult::kAttempted,
+      0);
+  histogram_tester_->ExpectBucketCount(
+      GameModeResultHistogramName(GameMode::ARC), GameModeResult::kFailed, 0);
+
+  game_widget->Show();
+  histogram_tester_->ExpectBucketCount(
+      GameModeResultHistogramName(GameMode::ARC), GameModeResult::kAttempted,
+      1);
+  histogram_tester_->ExpectBucketCount(
+      GameModeResultHistogramName(GameMode::ARC), GameModeResult::kFailed, 0);
+
+  // Previous game mode timed out/failed followed by refresh.
+  fake_resourced_client_->set_set_game_mode_with_timeout_response(
+      ash::ResourcedClient::GameMode::OFF);
+  task_environment()->FastForwardBy(base::Seconds(61));
+  histogram_tester_->ExpectBucketCount(
+      GameModeResultHistogramName(GameMode::ARC), GameModeResult::kAttempted,
+      1);
+  histogram_tester_->ExpectBucketCount(
+      GameModeResultHistogramName(GameMode::ARC), GameModeResult::kFailed, 1);
 }
 
 }  // namespace

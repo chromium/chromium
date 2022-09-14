@@ -13432,11 +13432,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Posts at front of queue"/>
 </enum>
 
-<enum name="BorealisGameModeResult">
-  <int value="0" label="Attempted"/>
-  <int value="1" label="Failed"/>
-</enum>
-
 <enum name="BorealisGetDiskInfoResult">
   <int value="0" label="Success"/>
   <int value="1" label="A GetDiskInfo request is already in progress"/>
@@ -44178,6 +44173,11 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="Invalid Request"/>
   <int value="6" label="Server Error"/>
   <int value="7" label="Unknown Error"/>
+</enum>
+
+<enum name="GameModeResult">
+  <int value="0" label="Attempted"/>
+  <int value="1" label="Failed"/>
 </enum>
 
 <enum name="GamepadId">

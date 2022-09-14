@@ -12,7 +12,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
@@ -21,7 +20,6 @@
 
 namespace game_mode {
 
-using borealis::BorealisGameModeResult;
 using borealis::BorealisWindowManager;
 
 namespace {
@@ -242,7 +240,8 @@ GameModeController::GameModeEnabler::GameModeEnabler(GameMode mode,
     return;
 
   GameModeEnabler::should_record_failure = true;
-  RecordBorealisGameModeResultHistogram(BorealisGameModeResult::kAttempted);
+  base::UmaHistogramEnumeration(GameModeResultHistogramName(mode),
+                                GameModeResult::kAttempted);
   if (ash::ResourcedClient::Get()) {
     ash::ResourcedClient::Get()->SetGameModeWithTimeout(
         mode_, kTimeoutSec,
@@ -289,7 +288,8 @@ void GameModeController::GameModeEnabler::OnSetGameMode(
              previous.value() != refresh_of.value()) {
     // If game mode was not on and it was not the initial call,
     // it means the previous call failed/timed out.
-    RecordBorealisGameModeResultHistogram(BorealisGameModeResult::kFailed);
+    base::UmaHistogramEnumeration(GameModeResultHistogramName(*refresh_of),
+                                  GameModeResult::kFailed);
     // Only record failures once per entry into gamemode.
     GameModeEnabler::should_record_failure = false;
   }

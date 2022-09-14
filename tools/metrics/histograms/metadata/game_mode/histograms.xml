@@ -13,6 +13,20 @@ found in the LICENSE file.
   <variant name="Borealis" summary="Borealis app"/>
 </variants>
 
+<histogram name="GameMode.Result.{GameTypes}" enum="GameModeResult"
+    expires_after="2023-09-01">
+  <owner>lqu@google.com</owner>
+  <owner>src/chrome/browser/ash/game_mode/OWNERS</owner>
+  <summary>
+    Records events of two types, when they occur. `Attempted` indicates the game
+    mode of type {GameTypes} is entered. `Failed` indicates the previous attempt
+    to enter game mode timed out or failed. They will only be recorded the first
+    time we detect that game mode is entered/failed for each time that game mode
+    is initially entered.
+  </summary>
+  <token key="GameTypes" variants="GameTypes"/>
+</histogram>
+
 <histogram name="GameMode.TimeInGameMode.{GameTypes}" units="ms"
     expires_after="2023-09-10">
   <owner>matvore@google.com</owner>
