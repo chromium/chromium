@@ -23,12 +23,9 @@ import {DriveSyncHandlerImpl} from './drive_sync_handler.js';
 import {FileOperationHandler} from './file_operation_handler.js';
 import {FileOperationManagerImpl} from './file_operation_manager.js';
 import {fileOperationUtil} from './file_operation_util.js';
-import {FILES_ID_PATTERN, launcher, LaunchType, nextFileManagerWindowID} from './launcher.js';
+import {launcher} from './launcher.js';
 import {ProgressCenterImpl} from './progress_center.js';
 import {volumeManagerFactory} from './volume_manager_factory.js';
-
-/** @typedef {function(!Array<string>):!Promise} */
-let LaunchHandler;
 
 /**
  * Root class of the former background page.
@@ -58,11 +55,6 @@ export class FileManagerBase {
         fulfill(stringData);
       });
     });
-
-    /** @private {?LaunchHandler} */
-    this.launchHandler_ = null;
-
-    this.setLaunchHandler(this.launch_);
 
     /**
      * Progress center of the background page.
@@ -131,14 +123,6 @@ export class FileManagerBase {
   }
 
   /**
-   * Set a handler which is called when an app is launched.
-   * @param {!LaunchHandler} handler Function to be called.
-   */
-  setLaunchHandler(handler) {
-    this.launchHandler_ = handler;
-  }
-
-  /**
    * Register callback to be invoked after initialization.
    * If the initialization is already done, the callback is invoked immediately.
    *
@@ -176,8 +160,7 @@ export class FileManagerBase {
    * Launches a new File Manager window.
    *
    * @param {!FilesAppState=} appState App state.
-   * @return {!Promise<chrome.app.window.AppWindow|string>} Resolved with the
-   *     App ID.
+   * @return {!Promise<void>} Resolved when the new window is opened.
    */
   async launchFileManager(appState = {}) {
     return launcher.launchFileManager(appState);
@@ -313,8 +296,7 @@ export class FileManagerBase {
              */
             directory => {
               launcher.launchFileManager(
-                  {currentDirectoryURL: directory.toURL()},
-                  /* App ID */ undefined, LaunchType.FOCUS_SAME_OR_CREATE);
+                  {currentDirectoryURL: directory.toURL()});
             });
   }
 
@@ -339,61 +321,6 @@ export class FileManagerBase {
   }
 
   /**
-   * Launches the app.
-   * @private
-   * @param {!Array<string>|undefined} urls
-   */
-  launch_(urls) {
-    return this.initializationPromise_.then(() => {
-      if (nextFileManagerWindowID == 0) {
-        // The app just launched. Remove unneeded window state records.
-        xfm.storage.local.get(null, items => {
-          for (const key in items) {
-            if (items.hasOwnProperty(key)) {
-              if (key.match(FILES_ID_PATTERN)) {
-                xfm.storage.local.remove(key);
-              }
-            }
-          }
-        });
-      }
-      const appState = {};
-      let launchType = LaunchType.FOCUS_ANY_OR_CREATE;
-      if (urls) {
-        appState.selectionURL = urls[0];
-        launchType = LaunchType.FOCUS_SAME_OR_CREATE;
-      }
-      launcher.launchFileManager(appState, undefined, launchType).then(() => {
-        metrics.recordInterval('Load.BackgroundLaunch');
-      });
-    });
-  }
-
-  /**
-   * Looks for a focused window.
-   *
-   * @return {!Promise<?string>} Promise fulfilled with a key of the focused
-   *     window, or null if not found.
-   * @private
-   */
-  findFocusedWindow_() {
-    return new Promise((fulfill, reject) => {
-      for (const key in window.appWindows) {
-        try {
-          if (window.appWindows[key].contentWindow.isFocused()) {
-            fulfill(key);
-            return;
-          }
-        } catch (ignore) {
-          // The isFocused method may not be defined during initialization.
-          // Therefore, wrapped with a try-catch block.
-        }
-      }
-      fulfill(null);
-    });
-  }
-
-  /**
    * Handles mounted FSP volumes and fires the Files app. This is a quick fix
    * for crbug.com/456648.
    * @param {!Object} event Event details.
@@ -410,23 +337,15 @@ export class FileManagerBase {
    * @private
    */
   onMountCompletedInternal_(event) {
-    // If there is no focused window, then create a new one opened on the
-    // mounted volume.
-    this.findFocusedWindow_()
-        .then(key => {
-          const statusOK = event.status === 'success' ||
-              event.status === 'error_path_already_mounted';
-          const volumeTypeOK = event.volumeMetadata.volumeType ===
-                  VolumeManagerCommon.VolumeType.PROVIDED &&
-              event.volumeMetadata.source === VolumeManagerCommon.Source.FILE;
-          if (key === null && event.eventType === 'mount' && statusOK &&
-              event.volumeMetadata.mountContext === 'user' && volumeTypeOK) {
-            this.navigateToVolumeWhenReady_(event.volumeMetadata.volumeId);
-          }
-        })
-        .catch(error => {
-          console.warn(error.stack || error);
-        });
+    const statusOK = event.status === 'success' ||
+        event.status === 'error_path_already_mounted';
+    const volumeTypeOK = event.volumeMetadata.volumeType ===
+            VolumeManagerCommon.VolumeType.PROVIDED &&
+        event.volumeMetadata.source === VolumeManagerCommon.Source.FILE;
+    if (event.eventType === 'mount' && statusOK &&
+        event.volumeMetadata.mountContext === 'user' && volumeTypeOK) {
+      this.navigateToVolumeWhenReady_(event.volumeMetadata.volumeId);
+    }
   }
 }
 

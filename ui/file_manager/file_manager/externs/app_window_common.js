@@ -20,18 +20,6 @@ Window.prototype.appInitialURL;
 Window.prototype.reload = function() {};
 
 /**
- *
- * Created by HTML imports polyfill.
- * @type {!Object}
- */
-Window.prototype.HTMLImports;
-
-/**
- * @type {function(function())}
- */
-Window.prototype.HTMLImports.whenReady;
-
-/**
  * True if in test: set by ash/webui/file_manager/resources/init_globals.js.
  *
  * @type {boolean}

@@ -40,7 +40,6 @@ visibility = [ ":*" ]
 js_type_check("closure_compile_jsmodules") {
   deps = [
     ":app_window_wrapper",
-    ":app_windows",
     ":crostini",
     ":drive_sync_handler",
     ":entry_location_impl",
@@ -96,14 +95,10 @@ js_type_check("test_support_modules_type_check") {
 js_library("app_window_wrapper") {
   visibility += related_apps
   deps = [
-    ":app_windows",
     "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:async_util",
     "//ui/file_manager/file_manager/common/js:files_app_state",
   ]
-}
-
-js_library("app_windows") {
 }
 
 js_library("file_manager_base") {
@@ -369,7 +364,6 @@ js_library("runtime_loaded_test_util") {
   visibility += [ "//ui/file_manager/integration_tests:remote_call" ]
 
   deps = [
-    ":app_windows",
     ":file_operation_util",
     ":volume_manager_factory",
     "//ui/file_manager/file_manager/common/js:error_counter",
@@ -379,7 +373,6 @@ js_library("runtime_loaded_test_util") {
     "//ui/file_manager/file_manager/externs/background:file_manager_base",
     "//ui/webui/resources/js:assert.m",
   ]
-  externs_list = [ "$externs_path/webview_tag.js" ]
 }
 
 js_library("volume_info_impl") {

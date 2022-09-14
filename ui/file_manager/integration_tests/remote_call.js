@@ -152,36 +152,6 @@ export class RemoteCall {
   }
 
   /**
-   * Closes a window and waits until the window is closed.
-   *
-   * @param {string} appId App window Id.
-   * @return {Promise} promise Promise to be fulfilled with the result (true:
-   *     success, false: failed).
-   */
-  async closeWindowAndWait(appId) {
-    const caller = getCaller();
-
-    // Closes the window.
-    if (!await this.callRemoteTestUtil('closeWindow', null, [appId])) {
-      // Returns false when the closing is failed.
-      return false;
-    }
-
-    return repeatUntil(async () => {
-      const windows = await this.callRemoteTestUtil('getWindows', null, []);
-      for (const id in windows) {
-        if (id === appId) {
-          // Window is still available. Continues waiting.
-          return pending(
-              caller, 'Window with the prefix %s is not found.', appId);
-        }
-      }
-      // Window is not available. Closing is done successfully.
-      return true;
-    });
-  }
-
-  /**
    * Waits until the window turns to the given size.
    * @param {string} appId App window Id.
    * @param {number} width Requested width in pixels.

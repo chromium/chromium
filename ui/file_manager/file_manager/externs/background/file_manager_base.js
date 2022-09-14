@@ -10,9 +10,6 @@ import {DriveSyncHandler} from './drive_sync_handler.js';
 import {FileOperationManager} from './file_operation_manager.js';
 import {ProgressCenter} from './progress_center.js';
 
-/** @typedef {function(!Array<string>):!Promise} */
-export let LaunchHandler;
-
 /**
  * @interface
  */
@@ -48,12 +45,6 @@ export class FileManagerBaseInterface {
     this.crostini;
   }
 
-  /**
-   * Set a handler which is called when an app is launched.
-   * @param {!LaunchHandler} handler Function to be called.
-   */
-  setLaunchHandler(handler) {}
-
   /** @return {!Promise<!VolumeManager>} */
   getVolumeManager() {}
 
@@ -84,8 +75,7 @@ export class FileManagerBaseInterface {
    * Launches a new File Manager window.
    *
    * @param {!FilesAppState=} appState App state.
-   * @return {!Promise<chrome.app.window.AppWindow|string>} Resolved with the
-   *     App ID.
+   * @return {!Promise<void>} Resolved when the new window is opened.
    */
   async launchFileManager(appState = {}) {}
 }

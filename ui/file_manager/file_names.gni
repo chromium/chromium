@@ -14,7 +14,6 @@ image_loader_static_js_files = [
 static_js_files = [
   # Background:
   "file_manager/background/js/app_window_wrapper.js",
-  "file_manager/background/js/app_windows.js",
   "file_manager/background/js/crostini.js",
   "file_manager/background/js/drive_sync_handler.js",
   "file_manager/background/js/entry_location_impl.js",

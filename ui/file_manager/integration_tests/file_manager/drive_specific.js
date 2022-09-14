@@ -918,9 +918,6 @@ testcase.driveEnableDocsOfflineDialog = async () => {
   // Open the Enable Docs Offline dialog.
   await openAndWaitForEnableDocsOfflineDialog(appId);
 
-  // Close Files App.
-  await remoteCall.closeWindowAndWait(appId);
-
   // Check: the last dialog result should be 3 (dismiss).
   await waitForLastDriveDialogResult('3');
 };

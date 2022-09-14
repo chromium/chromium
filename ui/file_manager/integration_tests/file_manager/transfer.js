@@ -1117,9 +1117,6 @@ testcase.transferInfoIsRemembered = async () => {
   const primaryText = panel.attributes['primary-text'];
   const secondaryText = panel.attributes['secondary-text'];
 
-  // Close the Files app window.
-  await remoteCall.closeWindowAndWait(appId);
-
   // Open a Files app window again.
   appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -1224,9 +1221,6 @@ testcase.transferDismissedErrorIsRemembered = async () => {
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId,
       [['#progress-panel', 'xf-panel-item', 'xf-button#secondary-action']]));
-
-  // Close the Files app window.
-  await remoteCall.closeWindowAndWait(appId);
 
   // Open a Files app window again.
   appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);

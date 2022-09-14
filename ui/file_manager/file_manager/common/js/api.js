@@ -219,19 +219,6 @@ export async function getEntry(directory, filename, isFile, options) {
 }
 
 /**
- * Returns the color to be used by frames of each foreground window.
- * @returns {Promise<!string>}
- */
-export async function getFrameColor() {
-  try {
-    return await promisify(chrome.fileManagerPrivate.getFrameColor);
-  } catch (e) {
-    console.error('Failed to get frame color.', e);
-    return '#ffffff';
-  }
-}
-
-/**
  * Starts an IOTask of `type` and returns a taskId that can be used to cancel
  * or identify the ongoing IO operation.
  * @param {!chrome.fileManagerPrivate.IOTaskType} type

@@ -505,16 +505,12 @@ js_unittest("file_tap_handler_unittest") {
   ]
 }
 
-# TODO(tapted): Move this into //ui/file_manager/base.
-
 js_library("files_alert_dialog") {
   deps = [
     ":dialogs",
     "//ui/file_manager/file_manager/common/js:util",
   ]
 }
-
-# TODO(tapted): Move this into //ui/file_manager/base.
 
 js_library("files_confirm_dialog") {
   deps = [

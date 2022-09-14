@@ -1300,20 +1300,6 @@ void FileManagerPrivateInternalGetRecentFilesFunction::
           *entry_definition_list)));
 }
 
-// TODO(crbug.com/1212768): Remove this once Files app SWA has fully launched.
-ExtensionFunction::ResponseAction
-FileManagerPrivateGetFrameColorFunction::Run() {
-  ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
-  std::string frame_color = SkColorToHexString(SK_ColorWHITE);
-  if (auto* dark_light_mode_controller = ash::DarkLightModeController::Get()) {
-    frame_color = SkColorToHexString(cros_styles::ResolveColor(
-        cros_styles::ColorName::kBgColor,
-        dark_light_mode_controller->IsDarkModeEnabled(),
-        /*use_debug_colors=*/false));
-  }
-  return RespondNow(WithArguments(frame_color));
-}
-
 ExtensionFunction::ResponseAction
 FileManagerPrivateIsTabletModeEnabledFunction::Run() {
   ash::TabletMode* tablet_mode = ash::TabletMode::Get();

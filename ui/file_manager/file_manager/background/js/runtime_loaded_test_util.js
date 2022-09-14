@@ -122,56 +122,11 @@ function extractElementInfo(element, contentWindow, opt_styleNames) {
 }
 
 /**
- * Obtains window information.
- *
- * @return {Object<{innerWidth:number, innerHeight:number}>} Map window
- *     ID and window information.
- */
-test.util.sync.getWindows = () => {
-  const windows = {};
-  for (const id in window.appWindows) {
-    const windowWrapper = window.appWindows[id];
-    windows[id] = {
-      outerWidth: windowWrapper.contentWindow.outerWidth,
-      outerHeight: windowWrapper.contentWindow.outerHeight,
-    };
-  }
-  for (const id in window.background.dialogs) {
-    windows[id] = {
-      outerWidth: window.background.dialogs[id].outerWidth,
-      outerHeight: window.background.dialogs[id].outerHeight,
-    };
-  }
-  return windows;
-};
-
-/**
- * Closes the specified window.
- *
- * @param {string} appId AppId of window to be closed.
- * @return {boolean} Result: True if success, false otherwise.
- */
-test.util.sync.closeWindow = appId => {
-  if (appId in window.appWindows && window.appWindows[appId].contentWindow) {
-    window.appWindows[appId].close();
-    return true;
-  }
-  return false;
-};
-
-/**
  * Gets total Javascript error count from background page and each app window.
  * @return {number} Error count.
  */
 test.util.sync.getErrorCount = () => {
-  let totalCount = window.JSErrorCount;
-  for (const appId in window.appWindows) {
-    const contentWindow = window.appWindows[appId].contentWindow;
-    if (contentWindow.JSErrorCount) {
-      totalCount += contentWindow.JSErrorCount;
-    }
-  }
-  return totalCount;
+  return window.JSErrorCount;
 };
 
 /**
@@ -283,31 +238,6 @@ test.util.sync.deepQuerySelectorAll_ = (root, targetQuery) => {
   }
   return res;
 };
-
-/**
- * Executes a script in the context of the first <webview> element contained in
- * the window, including shadow DOM subtrees if given, and returns the script
- * result via the callback.
- *
- * @param {Window} contentWindow Window to be tested.
- * @param {!Array<string>} targetQuery Query for the <webview> element.
- *   |targetQuery[0]| specifies the first element. |targetQuery[1]| specifies
- *   an element inside the shadow DOM of the first element, etc. The last
- *   targetQuery item must return the <webview> element.
- * @param {string} script Javascript code to be executed within the <webview>.
- * @param {function(*)} callback Callback function to be called with the
- *   result of the |script|.
- */
-test.util.async.deepExecuteScriptInWebView =
-    (contentWindow, targetQuery, script, callback) => {
-      const webviews = test.util.sync.deepQuerySelectorAll_(
-          contentWindow.document, targetQuery);
-      if (!webviews || webviews.length !== 1) {
-        throw new Error('<webview> not found: [' + targetQuery.join(',') + ']');
-      }
-      const webview = /** @type {WebView} */ (webviews[0]);
-      webview.executeScript({code: script}, callback);
-    };
 
 /**
  * Gets the information of the active element.
@@ -1106,16 +1036,8 @@ test.util.executeTestMessage = (request, sendResponse) => {
   if (request.appId) {
     if (request.contentWindow) {
       // request.contentWindow is present if this function was called via
-      // test.swaTestMessageListener, an alternative code path used by the test
-      // harness to send messages directly to Files SWA. Test code uses
-      // request.contentWindow only, thus by setting it, we avoid having to
-      // change the test.utils functions to check for contentWindow || window,
-      // just to support SWA files app.
+      // test.swaTestMessageListener.
       args.unshift(request.contentWindow);
-    } else if (window.appWindows[request.appId]) {
-      args.unshift(window.appWindows[request.appId].contentWindow);
-    } else if (window.background.dialogs[request.appId]) {
-      args.unshift(window.background.dialogs[request.appId]);
     } else {
       console.error('Specified window not found: ' + request.appId);
       return false;

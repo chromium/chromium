@@ -1121,9 +1121,6 @@ callback GetContentMetadataCallback = void(MediaMetadata result);
 // |result| Hash containing the string assets.
 callback GetStringsCallback = void(object result);
 
-// |color| String containing the color of the title bar.
-callback GetFrameColorCallback = void(DOMString color);
-
 // |success| True when file watch is successfully added.
 callback AddFileWatchCallback = void(optional boolean success);
 
@@ -1784,9 +1781,6 @@ interface Functions {
   // the holding space currently contains.
   // |callback| The result callback.
   static void getHoldingSpaceState(HoldingSpaceStateCallback callback);
-
-  // Returns color via `callback` for Files app foreground window frame.
-  static void getFrameColor(GetFrameColorCallback callback);
 
   // Returns true via `callback` if tablet mode is enabled, false otherwise.
   static void isTabletModeEnabled(BooleanCallback callback);

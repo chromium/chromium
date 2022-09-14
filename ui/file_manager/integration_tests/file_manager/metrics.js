@@ -72,7 +72,6 @@ testcase.metricsRecordDirectoryListLoad = async () => {
       await getHistogramSum('FileBrowser.DirectoryListLoad.my_files.10');
   chrome.test.assertTrue(
       tenFilesSum > 0, 'Load time for 10 files must exceed 0');
-  await remoteCall.closeWindowAndWait(appId);
 
   // Open Files app on Downloads with 27 files loaded.
   // Histogram sum is cumulative so given 27 falls outside the buckets (and
@@ -85,7 +84,6 @@ testcase.metricsRecordDirectoryListLoad = async () => {
   chrome.test.assertEq(
       tenFilesSum, histogramSum,
       'Load time for 27 files must equal same load time as previous');
-  await remoteCall.closeWindowAndWait(appId);
 
   // Open Files app on Downloads with 100 files loaded.
   // Expect a non-zero load time in the appropriate histogram.
@@ -94,7 +92,6 @@ testcase.metricsRecordDirectoryListLoad = async () => {
       await getHistogramSum('FileBrowser.DirectoryListLoad.my_files.100');
   chrome.test.assertTrue(
       hundredFilesSum > 0, 'Load time for 100 files must exceed 0');
-  await remoteCall.closeWindowAndWait(appId);
 };
 
 // Test that the UpdateAvailableApps UMA is appropriately recorded.
