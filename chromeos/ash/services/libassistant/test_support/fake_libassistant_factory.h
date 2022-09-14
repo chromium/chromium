@@ -16,8 +16,7 @@ class FakeAssistantManagerInternal;
 }  // namespace assistant
 }  // namespace chromeos
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 // Implementation of |LibassistantFactory| that returns fake
 // instances for all of the member methods. Used during unittests.
@@ -26,8 +25,9 @@ class FakeLibassistantFactory : public LibassistantFactory {
   FakeLibassistantFactory();
   ~FakeLibassistantFactory() override;
 
-  assistant::FakeAssistantManager& assistant_manager();
-  assistant::FakeAssistantManagerInternal& assistant_manager_internal();
+  chromeos::assistant::FakeAssistantManager& assistant_manager();
+  chromeos::assistant::FakeAssistantManagerInternal&
+  assistant_manager_internal();
 
   // LibassistantFactory implementation:
   std::unique_ptr<assistant_client::AssistantManager> CreateAssistantManager(
@@ -38,14 +38,20 @@ class FakeLibassistantFactory : public LibassistantFactory {
   std::string libassistant_config() const { return libassistant_config_; }
 
  private:
-  std::unique_ptr<assistant::FakeAssistantManager> pending_assistant_manager_;
-  assistant::FakeAssistantManager* current_assistant_manager_ = nullptr;
+  std::unique_ptr<chromeos::assistant::FakeAssistantManager>
+      pending_assistant_manager_;
+  chromeos::assistant::FakeAssistantManager* current_assistant_manager_ =
+      nullptr;
 
   // Config passed to LibAssistant when it was started.
   std::string libassistant_config_;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::libassistant {
+using ::ash::libassistant::FakeLibassistantFactory;
+}
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_TEST_SUPPORT_FAKE_LIBASSISTANT_FACTORY_H_

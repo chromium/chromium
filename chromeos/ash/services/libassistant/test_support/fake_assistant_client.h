@@ -9,23 +9,24 @@
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 class FakeAssistantClient : public AssistantClient {
  public:
-  FakeAssistantClient(
-      std::unique_ptr<assistant::FakeAssistantManager> assistant_manager,
-      assistant::FakeAssistantManagerInternal* assistant_manager_internal);
+  FakeAssistantClient(std::unique_ptr<chromeos::assistant::FakeAssistantManager>
+                          assistant_manager,
+                      chromeos::assistant::FakeAssistantManagerInternal*
+                          assistant_manager_internal);
   ~FakeAssistantClient() override;
 
-  // chromeos::libassistant::AssistantClient:
-  assistant::FakeAssistantManager* assistant_manager() {
-    return reinterpret_cast<assistant::FakeAssistantManager*>(
+  // AssistantClient:
+  chromeos::assistant::FakeAssistantManager* assistant_manager() {
+    return reinterpret_cast<chromeos::assistant::FakeAssistantManager*>(
         AssistantClient::assistant_manager());
   }
-  assistant::FakeAssistantManagerInternal* assistant_manager_internal() {
-    return reinterpret_cast<assistant::FakeAssistantManagerInternal*>(
+  chromeos::assistant::FakeAssistantManagerInternal*
+  assistant_manager_internal() {
+    return reinterpret_cast<chromeos::assistant::FakeAssistantManagerInternal*>(
         AssistantClient::assistant_manager_internal());
   }
 
@@ -106,14 +107,18 @@ class FakeAssistantClient : public AssistantClient {
           observer) override;
 
  private:
-  assistant::FakeAlarmTimerManager* fake_alarm_timer_manager();
+  chromeos::assistant::FakeAlarmTimerManager* fake_alarm_timer_manager();
   void GetAndNotifyTimerStatus();
 
   GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>*
       timer_observer_;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::libassistant {
+using ::ash::libassistant::FakeAssistantClient;
+}
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_TEST_SUPPORT_FAKE_ASSISTANT_CLIENT_H_

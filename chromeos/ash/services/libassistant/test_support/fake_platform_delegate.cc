@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/libassistant/test_support/fake_platform_delegate.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 FakePlatformDelegate::FakePlatformDelegate() = default;
 FakePlatformDelegate::~FakePlatformDelegate() = default;
@@ -16,8 +15,7 @@ void FakePlatformDelegate::BindAudioStreamFactory(
 }
 
 void FakePlatformDelegate::BindAudioDecoderFactory(
-    mojo::PendingReceiver<::ash::assistant::mojom::AssistantAudioDecoderFactory>
-        receiver) {
+    mojo::PendingReceiver<mojom::AssistantAudioDecoderFactory> receiver) {
   audio_decoder_factory_receiver_ = std::move(receiver);
 }
 
@@ -26,5 +24,4 @@ void FakePlatformDelegate::BindBatteryMonitor(
   battery_monitor_receiver_ = std::move(receiver);
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

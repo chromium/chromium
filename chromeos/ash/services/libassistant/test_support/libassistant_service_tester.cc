@@ -10,8 +10,10 @@
 #include "chromeos/ash/services/libassistant/test_support/fake_libassistant_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::chromeos::libassistant::mojom;
 
 namespace {
 
@@ -42,12 +44,12 @@ AssistantClient& LibassistantServiceTester::assistant_client() {
   return *(service_->service_controller().assistant_client());
 }
 
-assistant::FakeAssistantManager&
+chromeos::assistant::FakeAssistantManager&
 LibassistantServiceTester::assistant_manager() {
   return libassistant_factory_->assistant_manager();
 }
 
-assistant::FakeAssistantManagerInternal&
+chromeos::assistant::FakeAssistantManagerInternal&
 LibassistantServiceTester::assistant_manager_internal() {
   return libassistant_factory_->assistant_manager_internal();
 }
@@ -116,5 +118,4 @@ void LibassistantServiceTester::FlushForTesting() {
   timer_controller_.FlushForTesting();
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

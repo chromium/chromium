@@ -35,4 +35,9 @@ class LibassistantFactory {
 }  // namespace libassistant
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::libassistant {
+using ::chromeos::libassistant::LibassistantFactory;
+}
+
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_LIBASSISTANT_FACTORY_H_

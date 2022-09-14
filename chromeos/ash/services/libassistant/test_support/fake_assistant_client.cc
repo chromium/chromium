@@ -11,12 +11,13 @@
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
 #include "chromeos/assistant/internal/test_support/fake_alarm_timer_manager.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 FakeAssistantClient::FakeAssistantClient(
-    std::unique_ptr<assistant::FakeAssistantManager> assistant_manager,
-    assistant::FakeAssistantManagerInternal* assistant_manager_internal)
+    std::unique_ptr<chromeos::assistant::FakeAssistantManager>
+        assistant_manager,
+    chromeos::assistant::FakeAssistantManagerInternal*
+        assistant_manager_internal)
     : AssistantClient(std::move(assistant_manager),
                       assistant_manager_internal) {}
 
@@ -161,9 +162,9 @@ void FakeAssistantClient::AddAlarmTimerEventObserver(
       });
 }
 
-assistant::FakeAlarmTimerManager*
+chromeos::assistant::FakeAlarmTimerManager*
 FakeAssistantClient::fake_alarm_timer_manager() {
-  return reinterpret_cast<assistant::FakeAlarmTimerManager*>(
+  return reinterpret_cast<chromeos::assistant::FakeAlarmTimerManager*>(
       assistant_manager_internal()->GetAlarmTimerManager());
 }
 
@@ -175,5 +176,4 @@ void FakeAssistantClient::GetAndNotifyTimerStatus() {
       }));
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant

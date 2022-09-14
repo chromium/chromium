@@ -6,8 +6,6 @@
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_TEST_SUPPORT_LIBASSISTANT_SERVICE_TESTER_H_
 
 #include "base/test/scoped_path_override.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/ash/services/libassistant/libassistant_service.h"
 #include "chromeos/ash/services/libassistant/public/mojom/audio_input_controller.mojom.h"
 #include "chromeos/ash/services/libassistant/public/mojom/audio_output_delegate.mojom-forward.h"
@@ -23,9 +21,9 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
+class AssistantClient;
 class FakeLibassistantFactory;
 
 // Helper class that makes it easier to test |LibassistantService|.
@@ -43,26 +41,30 @@ class LibassistantServiceTester {
   LibassistantService& service() { return *service_; }
 
   AssistantClient& assistant_client();
-  assistant::FakeAssistantManager& assistant_manager();
-  assistant::FakeAssistantManagerInternal& assistant_manager_internal();
+  chromeos::assistant::FakeAssistantManager& assistant_manager();
+  chromeos::assistant::FakeAssistantManagerInternal&
+  assistant_manager_internal();
 
-  mojom::AudioInputController& audio_input_controller() {
+  chromeos::libassistant::mojom::AudioInputController&
+  audio_input_controller() {
     return *audio_input_controller_.get();
   }
-  mojom::ConversationController& conversation_controller() {
+  chromeos::libassistant::mojom::ConversationController&
+  conversation_controller() {
     return *conversation_controller_.get();
   }
-  mojom::DisplayController& display_controller() {
+  chromeos::libassistant::mojom::DisplayController& display_controller() {
     return *display_controller_.get();
   }
-  mojom::ServiceController& service_controller() {
+  chromeos::libassistant::mojom::ServiceController& service_controller() {
     return *service_controller_.get();
   }
-  mojom::SpeakerIdEnrollmentController& speaker_id_enrollment_controller() {
+  chromeos::libassistant::mojom::SpeakerIdEnrollmentController&
+  speaker_id_enrollment_controller() {
     return *speaker_id_enrollment_controller_.get();
   }
 
-  mojo::PendingReceiver<mojom::NotificationDelegate>
+  mojo::PendingReceiver<chromeos::libassistant::mojom::NotificationDelegate>
   GetNotificationDelegatePendingReceiver();
 
   void FlushForTesting();
@@ -70,33 +72,48 @@ class LibassistantServiceTester {
  private:
   void BindControllers();
 
-  mojo::Remote<mojom::AudioInputController> audio_input_controller_;
-  mojo::Remote<mojom::ConversationController> conversation_controller_;
-  mojo::Remote<mojom::DisplayController> display_controller_;
-  mojo::Remote<mojom::MediaController> media_controller_;
-  mojo::Remote<mojom::ServiceController> service_controller_;
-  mojo::Remote<mojom::SettingsController> settings_controller_;
-  mojo::Remote<mojom::SpeakerIdEnrollmentController>
+  mojo::Remote<chromeos::libassistant::mojom::AudioInputController>
+      audio_input_controller_;
+  mojo::Remote<chromeos::libassistant::mojom::ConversationController>
+      conversation_controller_;
+  mojo::Remote<chromeos::libassistant::mojom::DisplayController>
+      display_controller_;
+  mojo::Remote<chromeos::libassistant::mojom::MediaController>
+      media_controller_;
+  mojo::Remote<chromeos::libassistant::mojom::ServiceController>
+      service_controller_;
+  mojo::Remote<chromeos::libassistant::mojom::SettingsController>
+      settings_controller_;
+  mojo::Remote<chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
       speaker_id_enrollment_controller_;
-  mojo::Remote<mojom::TimerController> timer_controller_;
-  mojo::PendingReceiver<mojom::AudioOutputDelegate>
+  mojo::Remote<chromeos::libassistant::mojom::TimerController>
+      timer_controller_;
+  mojo::PendingReceiver<chromeos::libassistant::mojom::AudioOutputDelegate>
       pending_audio_output_delegate_;
-  mojo::PendingReceiver<mojom::DeviceSettingsDelegate>
+  mojo::PendingReceiver<chromeos::libassistant::mojom::DeviceSettingsDelegate>
       pending_device_settings_delegate_;
-  mojo::PendingReceiver<mojom::MediaDelegate> pending_media_delegate_;
-  mojo::PendingReceiver<mojom::NotificationDelegate>
+  mojo::PendingReceiver<chromeos::libassistant::mojom::MediaDelegate>
+      pending_media_delegate_;
+  mojo::PendingReceiver<chromeos::libassistant::mojom::NotificationDelegate>
       pending_notification_delegate_;
-  mojo::PendingReceiver<mojom::PlatformDelegate> pending_platform_delegate_;
-  mojo::PendingReceiver<mojom::TimerDelegate> pending_timer_delegate_;
+  mojo::PendingReceiver<chromeos::libassistant::mojom::PlatformDelegate>
+      pending_platform_delegate_;
+  mojo::PendingReceiver<chromeos::libassistant::mojom::TimerDelegate>
+      pending_timer_delegate_;
 
-  mojo::Remote<mojom::LibassistantService> service_remote_;
+  mojo::Remote<chromeos::libassistant::mojom::LibassistantService>
+      service_remote_;
   // Our file provider requires the home dir to be overridden.
   base::ScopedPathOverride home_dir_override_;
   FakeLibassistantFactory* libassistant_factory_ = nullptr;
   std::unique_ptr<LibassistantService> service_;
 };
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::libassistant {
+using ::ash::libassistant::LibassistantServiceTester;
+}
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_TEST_SUPPORT_LIBASSISTANT_SERVICE_TESTER_H_

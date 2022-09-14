@@ -7,8 +7,7 @@
 
 #include "chromeos/ash/services/libassistant/public/mojom/platform_delegate.mojom.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 class FakePlatformDelegate
     : public chromeos::libassistant::mojom::PlatformDelegate {
@@ -23,8 +22,8 @@ class FakePlatformDelegate
       mojo::PendingReceiver<::media::mojom::AudioStreamFactory> receiver)
       override;
   void BindAudioDecoderFactory(
-      mojo::PendingReceiver<ash::assistant::mojom::AssistantAudioDecoderFactory>
-          receiver) override;
+      mojo::PendingReceiver<mojom::AssistantAudioDecoderFactory> receiver)
+      override;
   void BindBatteryMonitor(
       mojo::PendingReceiver<::device::mojom::BatteryMonitor> receiver) override;
   void BindNetworkConfig(
@@ -43,7 +42,7 @@ class FakePlatformDelegate
     return std::move(stream_factory_receiver_);
   }
 
-  mojo::PendingReceiver<::ash::assistant::mojom::AssistantAudioDecoderFactory>
+  mojo::PendingReceiver<mojom::AssistantAudioDecoderFactory>
   audio_decoder_factory_receiver() {
     return std::move(audio_decoder_factory_receiver_);
   }
@@ -57,13 +56,17 @@ class FakePlatformDelegate
  private:
   mojo::PendingReceiver<::media::mojom::AudioStreamFactory>
       stream_factory_receiver_;
-  mojo::PendingReceiver<::ash::assistant::mojom::AssistantAudioDecoderFactory>
+  mojo::PendingReceiver<mojom::AssistantAudioDecoderFactory>
       audio_decoder_factory_receiver_;
   mojo::PendingReceiver<::device::mojom::BatteryMonitor>
       battery_monitor_receiver_;
 };
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::assistant {
+using ::ash::assistant::FakePlatformDelegate;
+}
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_TEST_SUPPORT_FAKE_PLATFORM_DELEGATE_H_

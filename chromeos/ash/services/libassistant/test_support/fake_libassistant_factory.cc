@@ -7,15 +7,14 @@
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
 
 FakeLibassistantFactory::FakeLibassistantFactory() {
   // We start by creating a pending assistant manager, as our unittests
   // might need to access the assistant manager before it is created through
   // CreateAssistantManager() (for example to set expectations).
   pending_assistant_manager_ =
-      std::make_unique<assistant::FakeAssistantManager>();
+      std::make_unique<chromeos::assistant::FakeAssistantManager>();
 }
 
 FakeLibassistantFactory::~FakeLibassistantFactory() = default;
@@ -26,7 +25,7 @@ FakeLibassistantFactory::CreateAssistantManager(
   auto result = std::move(pending_assistant_manager_);
   if (!result) {
     // We come here if this is not the first call to CreateAssistantManager().
-    result = std::make_unique<assistant::FakeAssistantManager>();
+    result = std::make_unique<chromeos::assistant::FakeAssistantManager>();
   }
 
   // Keep a pointer around so our unittests can still retrieve it.
@@ -43,7 +42,8 @@ FakeLibassistantFactory::UnwrapAssistantManagerInternal(
   return &current_assistant_manager_->assistant_manager_internal();
 }
 
-assistant::FakeAssistantManager& FakeLibassistantFactory::assistant_manager() {
+chromeos::assistant::FakeAssistantManager&
+FakeLibassistantFactory::assistant_manager() {
   if (current_assistant_manager_)
     return *current_assistant_manager_;
 
@@ -54,10 +54,9 @@ assistant::FakeAssistantManager& FakeLibassistantFactory::assistant_manager() {
   return *pending_assistant_manager_;
 }
 
-assistant::FakeAssistantManagerInternal&
+chromeos::assistant::FakeAssistantManagerInternal&
 FakeLibassistantFactory::assistant_manager_internal() {
   return assistant_manager().assistant_manager_internal();
 }
 
-}  // namespace libassistant
-}  // namespace chromeos
+}  // namespace ash::libassistant
