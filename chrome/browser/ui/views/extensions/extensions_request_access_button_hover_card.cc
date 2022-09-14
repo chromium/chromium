@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
@@ -14,6 +15,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/view.h"
+#include "ui/views/views_features.h"
 
 namespace {
 
@@ -68,7 +70,12 @@ void ExtensionsRequestAccessButtonHoverCard::ShowBubble(
   auto* widget = views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
   // Ensure the hover card Widget assumes the highest z-order to avoid occlusion
   // by other secondary UI Widgets
-  widget->StackAtTop();
+  if (base::FeatureList::IsEnabled(views::features::kWidgetLayering)) {
+    widget->SetZOrderSublevel(ChromeWidgetSublevel::kSublevelHoverable);
+  } else {
+    widget->StackAtTop();
+  }
+
   widget->Show();
 }
 
