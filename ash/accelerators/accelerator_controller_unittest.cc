@@ -180,13 +180,13 @@ class DummyBrightnessControlDelegate : public BrightnessControlDelegate {
 
   ~DummyBrightnessControlDelegate() override = default;
 
-  void HandleBrightnessDown(const ui::Accelerator& accelerator) override {
+  void HandleBrightnessDown() override {
     ++handle_brightness_down_count_;
-    last_accelerator_ = accelerator;
+    last_accelerator_ = ui::Accelerator(ui::VKEY_BRIGHTNESS_DOWN, ui::EF_NONE);
   }
-  void HandleBrightnessUp(const ui::Accelerator& accelerator) override {
+  void HandleBrightnessUp() override {
     ++handle_brightness_up_count_;
-    last_accelerator_ = accelerator;
+    last_accelerator_ = ui::Accelerator(ui::VKEY_BRIGHTNESS_UP, ui::EF_NONE);
   }
   void SetBrightnessPercent(double percent, bool gradual) override {}
   void GetBrightnessPercent(
@@ -220,15 +220,16 @@ class DummyKeyboardBrightnessControlDelegate
 
   ~DummyKeyboardBrightnessControlDelegate() override = default;
 
-  void HandleKeyboardBrightnessDown(
-      const ui::Accelerator& accelerator) override {
+  void HandleKeyboardBrightnessDown() override {
     ++handle_keyboard_brightness_down_count_;
-    last_accelerator_ = accelerator;
+    last_accelerator_ =
+        ui::Accelerator(ui::VKEY_BRIGHTNESS_DOWN, ui::EF_ALT_DOWN);
   }
 
-  void HandleKeyboardBrightnessUp(const ui::Accelerator& accelerator) override {
+  void HandleKeyboardBrightnessUp() override {
     ++handle_keyboard_brightness_up_count_;
-    last_accelerator_ = accelerator;
+    last_accelerator_ =
+        ui::Accelerator(ui::VKEY_BRIGHTNESS_UP, ui::EF_ALT_DOWN);
   }
 
   void HandleToggleKeyboardBacklight() override {}

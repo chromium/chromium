@@ -26,6 +26,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/accessibility/floating_accessibility_controller.h"
+#include "ash/system/brightness_control_delegate.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "ash/system/model/system_tray_model.h"
@@ -128,6 +129,20 @@ void EnterImageCaptureMode(CaptureModeSource source,
 
 }  // namespace
 
+void BrightnessDown() {
+  BrightnessControlDelegate* delegate =
+      Shell::Get()->brightness_control_delegate();
+  if (delegate)
+    delegate->HandleBrightnessDown();
+}
+
+void BrightnessUp() {
+  BrightnessControlDelegate* delegate =
+      Shell::Get()->brightness_control_delegate();
+  if (delegate)
+    delegate->HandleBrightnessUp();
+}
+
 void DumpCalendarModel() {
   Shell::Get()->system_tray_model()->calendar_model()->DebugDump();
 }
@@ -174,6 +189,20 @@ void FocusCameraPreview() {
   auto* camera_controller = CaptureModeController::Get()->camera_controller();
   DCHECK(camera_controller);
   camera_controller->PseudoFocusCameraPreview();
+}
+
+void KeyboardBrightnessDown() {
+  KeyboardBrightnessControlDelegate* delegate =
+      Shell::Get()->keyboard_brightness_control_delegate();
+  if (delegate)
+    delegate->HandleKeyboardBrightnessDown();
+}
+
+void KeyboardBrightnessUp() {
+  KeyboardBrightnessControlDelegate* delegate =
+      Shell::Get()->keyboard_brightness_control_delegate();
+  if (delegate)
+    delegate->HandleKeyboardBrightnessUp();
 }
 
 void LaunchAppN(int n) {

@@ -5,12 +5,7 @@
 #include "ash/system/keyboard_brightness/keyboard_brightness_controller.h"
 
 #include "base/logging.h"
-#include "base/metrics/user_metrics.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
-#include "ui/base/accelerators/accelerator.h"
-
-using base::RecordAction;
-using base::UserMetricsAction;
 
 namespace ash {
 
@@ -26,19 +21,11 @@ KeyboardBrightnessController::~KeyboardBrightnessController() {
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
 }
 
-void KeyboardBrightnessController::HandleKeyboardBrightnessDown(
-    const ui::Accelerator& accelerator) {
-  if (accelerator.key_code() == ui::VKEY_BRIGHTNESS_DOWN)
-    RecordAction(UserMetricsAction("Accel_KeyboardBrightnessDown_F6"));
-
+void KeyboardBrightnessController::HandleKeyboardBrightnessDown() {
   chromeos::PowerManagerClient::Get()->DecreaseKeyboardBrightness();
 }
 
-void KeyboardBrightnessController::HandleKeyboardBrightnessUp(
-    const ui::Accelerator& accelerator) {
-  if (accelerator.key_code() == ui::VKEY_BRIGHTNESS_UP)
-    RecordAction(UserMetricsAction("Accel_KeyboardBrightnessUp_F7"));
-
+void KeyboardBrightnessController::HandleKeyboardBrightnessUp() {
   chromeos::PowerManagerClient::Get()->IncreaseKeyboardBrightness();
 }
 

@@ -14,6 +14,12 @@
 namespace ash {
 namespace accelerators {
 
+// Brightness down.
+ASH_EXPORT void BrightnessDown();
+
+// Brightness up.
+ASH_EXPORT void BrightnessUp();
+
 // Logs a dump of CalendarModel internal data.
 ASH_EXPORT void DumpCalendarModel();
 
@@ -34,6 +40,12 @@ ASH_EXPORT void FocusPip();
 
 // Focus the shelf.
 ASH_EXPORT void FocusShelf();
+
+// Dim keyboard.
+ASH_EXPORT void KeyboardBrightnessDown();
+
+// Make keyboard brighter
+ASH_EXPORT void KeyboardBrightnessUp();
 
 // Launch the nth(0-7) app on the shelf.
 ASH_EXPORT void LaunchAppN(int n);

@@ -32,9 +32,8 @@ class ASH_EXPORT KeyboardBrightnessController
 
  private:
   // Overridden from KeyboardBrightnessControlDelegate:
-  void HandleKeyboardBrightnessDown(
-      const ui::Accelerator& accelerator) override;
-  void HandleKeyboardBrightnessUp(const ui::Accelerator& accelerator) override;
+  void HandleKeyboardBrightnessDown() override;
+  void HandleKeyboardBrightnessUp() override;
   void HandleToggleKeyboardBacklight() override;
 
   // Callbacks:

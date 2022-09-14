@@ -5,10 +5,6 @@
 #ifndef ASH_SYSTEM_KEYBOARD_BRIGHTNESS_CONTROL_DELEGATE_H_
 #define ASH_SYSTEM_KEYBOARD_BRIGHTNESS_CONTROL_DELEGATE_H_
 
-namespace ui {
-class Accelerator;
-}  // namespace ui
-
 namespace ash {
 
 // Delegate for controlling the keyboard brightness.
@@ -18,10 +14,8 @@ class KeyboardBrightnessControlDelegate {
 
   // Handles an accelerator-driven request to decrease or increase
   // the keyboard brightness, or toggle the backlight itself on/off.
-  virtual void HandleKeyboardBrightnessDown(
-      const ui::Accelerator& accelerator) = 0;
-  virtual void HandleKeyboardBrightnessUp(
-      const ui::Accelerator& accelerator) = 0;
+  virtual void HandleKeyboardBrightnessDown() = 0;
+  virtual void HandleKeyboardBrightnessUp() = 0;
   virtual void HandleToggleKeyboardBacklight() = 0;
 };
 

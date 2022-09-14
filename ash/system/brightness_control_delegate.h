@@ -8,10 +8,6 @@
 #include "base/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ui {
-class Accelerator;
-}  // namespace ui
-
 namespace ash {
 
 // Delegate for controlling the brightness.
@@ -21,8 +17,8 @@ class BrightnessControlDelegate {
 
   // Handles an accelerator-driven request to decrease or increase the screen
   // brightness.
-  virtual void HandleBrightnessDown(const ui::Accelerator& accelerator) = 0;
-  virtual void HandleBrightnessUp(const ui::Accelerator& accelerator) = 0;
+  virtual void HandleBrightnessDown() = 0;
+  virtual void HandleBrightnessUp() = 0;
 
   // Requests that the brightness be set to |percent|, in the range
   // [0.0, 100.0].  |gradual| specifies whether the transition to the new

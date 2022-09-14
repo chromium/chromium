@@ -1681,17 +1681,13 @@ void AcceleratorControllerImpl::PerformAction(
   // function above.
   switch (action) {
     case BRIGHTNESS_DOWN: {
-      BrightnessControlDelegate* delegate =
-          Shell::Get()->brightness_control_delegate();
-      if (delegate)
-        delegate->HandleBrightnessDown(accelerator);
+      base::RecordAction(UserMetricsAction("Accel_BrightnessDown_F6"));
+      accelerators::BrightnessDown();
       break;
     }
     case BRIGHTNESS_UP: {
-      BrightnessControlDelegate* delegate =
-          Shell::Get()->brightness_control_delegate();
-      if (delegate)
-        delegate->HandleBrightnessUp(accelerator);
+      base::RecordAction(UserMetricsAction("Accel_BrightnessUp_F7"));
+      accelerators::BrightnessUp();
       break;
     }
     case CYCLE_BACKWARD_MRU:
@@ -1805,17 +1801,13 @@ void AcceleratorControllerImpl::PerformAction(
       }
       break;
     case KEYBOARD_BRIGHTNESS_DOWN: {
-      KeyboardBrightnessControlDelegate* delegate =
-          Shell::Get()->keyboard_brightness_control_delegate();
-      if (delegate)
-        delegate->HandleKeyboardBrightnessDown(accelerator);
+      base::RecordAction(UserMetricsAction("Accel_KeyboardBrightnessDown_F6"));
+      accelerators::KeyboardBrightnessDown();
       break;
     }
     case KEYBOARD_BRIGHTNESS_UP: {
-      KeyboardBrightnessControlDelegate* delegate =
-          Shell::Get()->keyboard_brightness_control_delegate();
-      if (delegate)
-        delegate->HandleKeyboardBrightnessUp(accelerator);
+      base::RecordAction(UserMetricsAction("Accel_KeyboardBrightnessUp_F7"));
+      accelerators::KeyboardBrightnessUp();
       break;
     }
     case LAUNCH_APP_0:
