@@ -82,7 +82,6 @@ preprocess_if_expr("preprocess_static") {
 
   deps = [
     "//ui/file_manager/file_manager/background/js:js_modules",
-    "//ui/file_manager/file_manager/background/js:main_background",
     "//ui/file_manager/file_manager/common/js:js_modules",
     "//ui/file_manager/file_manager/foreground/elements:web_components",
     "//ui/file_manager/file_manager/foreground/js:deferred_elements",
@@ -258,9 +257,6 @@ generate_grd("build_grd") {
 
   if (optimize_webui) {
     input_files += [
-      "file_manager/background/js/main_background.rollup.js",
-      "file_manager/background/js/runtime_loaded_test_util.rollup.js",
-      "file_manager/background/js/shared.rollup.js",
       "file_manager/foreground/js/deferred_elements.rollup.js",
       "file_manager/foreground/js/main.rollup.js",
       "file_manager/foreground/js/metadata_dispatcher.rollup.js",
@@ -273,15 +269,12 @@ generate_grd("build_grd") {
     ]
 
     resource_path_rewrites += [
-      "file_manager/background/js/main_background.rollup.js|file_manager/background/js/main_background.js",
-      "file_manager/background/js/runtime_loaded_test_util.rollup.js|file_manager/background/js/runtime_loaded_test_util.js",
       "file_manager/foreground/js/deferred_elements.rollup.js|file_manager/foreground/js/deferred_elements.js",
       "file_manager/foreground/js/main.rollup.js|file_manager/foreground/js/main.js",
       "file_manager/foreground/js/metadata_dispatcher.rollup.js|file_manager/foreground/js/metadata/metadata_dispatcher.js",
     ]
 
     deps += [
-      "//ui/file_manager/file_manager/background/js:build",
       "//ui/file_manager/file_manager/foreground/elements:elements",
       "//ui/file_manager/file_manager/foreground/js:build",
       "//ui/file_manager/file_manager/foreground/js:build_worker",

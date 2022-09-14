@@ -131,21 +131,6 @@ js_library("file_manager_base") {
   ]
 }
 
-js_library("main_background") {
-  visibility = []
-  visibility = [
-    ":*",
-    "//ui/file_manager:preprocess_static",
-  ]
-
-  deps = [
-    ":file_manager_base",
-    ":metrics_start",
-    ":test_util",
-    "//ui/file_manager/file_manager/common/js:error_counter",
-  ]
-}
-
 js_library("crostini") {
   deps = [
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
@@ -534,38 +519,4 @@ js_test_type_check("js_test_type_check") {
         "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
         "hide_warnings_for=third_party/",
       ]
-}
-
-tsc_folder =
-    rebase_path("$target_gen_dir/../../../tsc/file_manager/background/js",
-                root_build_dir)
-
-image_loader_path =
-    rebase_path("$root_gen_dir/ui/file_manager/preprocessed/image_loader",
-                root_build_dir)
-
-optimize_webui("build") {
-  visibility += [ "//ui/file_manager:build_grd" ]
-  host = "file_manager"
-
-  input = tsc_folder
-  js_module_in_files = [
-    "main_background.js",
-    "runtime_loaded_test_util.js",
-  ]
-
-  js_out_files = [
-    "main_background.rollup.js",
-    "runtime_loaded_test_util.rollup.js",
-    "shared.rollup.js",
-  ]
-
-  external_paths = [
-    "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp|$image_loader_path",
-  ]
-
-  deps = [
-    "//ui/file_manager:build_ts",
-    "//ui/webui/resources:preprocess",
-  ]
 }
