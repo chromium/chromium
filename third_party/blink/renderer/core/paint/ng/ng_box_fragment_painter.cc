@@ -651,9 +651,7 @@ void NGBoxFragmentPainter::PaintObject(
     // AddURLRectIfNeeded() for LayoutInline.
     if (paint_info.ShouldAddUrlMetadata()) {
       const auto* layout_object = fragment.GetLayoutObject();
-      if (layout_object &&
-          (!layout_object->IsLayoutInline() ||
-           To<LayoutBoxModelObject>(layout_object)->HasSelfPaintingLayer())) {
+      if (layout_object && !layout_object->IsLayoutInline()) {
         NGFragmentPainter(fragment, GetDisplayItemClient())
             .AddURLRectIfNeeded(paint_info, paint_offset);
       }
@@ -1506,10 +1504,8 @@ void NGBoxFragmentPainter::PaintLineBoxChildren(
     return;
   }
 
-  // The only way an inline could paint like this is if it has a layer.
   const auto* layout_object = box_fragment_.GetLayoutObject();
-  DCHECK(!layout_object || layout_object->IsLayoutBlock() ||
-         (layout_object->IsLayoutInline() && layout_object->HasLayer()));
+  DCHECK(!layout_object || layout_object->IsLayoutBlock());
 
   if (paint_info.phase == PaintPhase::kForeground &&
       paint_info.ShouldAddUrlMetadata()) {

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
 #include "third_party/blink/renderer/core/paint/scoped_svg_paint_state.h"
+#include "third_party/blink/renderer/core/paint/url_metadata_utils.h"
 #include "third_party/blink/renderer/core/style/nine_piece_image.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
@@ -297,6 +298,15 @@ void NGInlineBoxFragmentPainter::PaintAllFragments(
   const LayoutBlockFlow* block_flow = layout_inline.FragmentItemsContainer();
   if (UNLIKELY(block_flow->NeedsLayout()))
     return;
+
+  if (paint_info.phase == PaintPhase::kForeground &&
+      paint_info.ShouldAddUrlMetadata()) {
+    // URLRects for descendants are normally added via NGBoxFragmentPainter::
+    // PaintLineBoxChildren(), but relatively positioned (self-painting) inlines
+    // are omitted. Do it now.
+    AddURLRectsForInlineChildrenRecursively(layout_inline, paint_info,
+                                            paint_offset);
+  }
 
   NGInlinePaintContext inline_context;
   NGInlineCursor cursor(*block_flow);
