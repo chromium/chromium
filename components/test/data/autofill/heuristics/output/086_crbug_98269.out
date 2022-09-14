@@ -1,5 +1,5 @@
 UNKNOWN_TYPE | PaymentMethod | BL | BL | PaymentMethod_1
-PHONE_HOME_CITY_CODE | txtHomePhone1 | * Home Phone: |  | PaymentMethod_1
+PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | txtHomePhone1 | * Home Phone: |  | PaymentMethod_1
 PHONE_HOME_NUMBER_PREFIX | txtHomePhone2 | * Home Phone: |  | PaymentMethod_1
 PHONE_HOME_NUMBER_SUFFIX | txtHomePhone3 | * Home Phone: |  | PaymentMethod_1
 EMAIL_ADDRESS | txtEmail | * Email Address: |  | PaymentMethod_1

@@ -7,7 +7,7 @@ ADDRESS_HOME_LINE2 | BILL_TO_ADDRESS<>address2 | Apt. or Suite #: |  | BILL_TO_A
 ADDRESS_HOME_CITY | BILL_TO_ADDRESS<>city | City: |  | BILL_TO_ADDRESS<>firstName_1
 ADDRESS_HOME_STATE | BILL_TO_ADDRESS<>state_cd | State: |  | BILL_TO_ADDRESS<>firstName_1
 ADDRESS_HOME_ZIP | BILL_TO_ADDRESS<>postal | ZIP Code: |  | BILL_TO_ADDRESS<>firstName_1
-PHONE_HOME_CITY_CODE | BILL_PHONE<>areacode | Area Code |  | BILL_TO_ADDRESS<>firstName_1
+PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | BILL_PHONE<>areacode | Area Code |  | BILL_TO_ADDRESS<>firstName_1
 PHONE_HOME_NUMBER | BILL_PHONE<>exchange | Exchange |  | BILL_TO_ADDRESS<>firstName_1
 PHONE_HOME_EXTENSION | BILL_PHONE<>extension | Extension |  | BILL_TO_ADDRESS<>firstName_1
 PHONE_HOME_WHOLE_NUMBER | bill_phone | Contact Phone: |  | BILL_TO_ADDRESS<>firstName_1
@@ -22,7 +22,7 @@ ADDRESS_HOME_LINE2 | SHIP_TO_ADDRESS<>address2 | Apt. or Suite #: |  | SHIP_TO_A
 ADDRESS_HOME_CITY | SHIP_TO_ADDRESS<>city | City: |  | SHIP_TO_ADDRESS<>firstName_2
 ADDRESS_HOME_STATE | SHIP_TO_ADDRESS<>state_cd | State: |  | SHIP_TO_ADDRESS<>firstName_2
 ADDRESS_HOME_ZIP | SHIP_TO_ADDRESS<>postal | ZIP Code: |  | SHIP_TO_ADDRESS<>firstName_2
-PHONE_HOME_CITY_CODE | SHIP_PHONE<>areacode | Area Code |  | SHIP_TO_ADDRESS<>firstName_2
+PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | SHIP_PHONE<>areacode | Area Code |  | SHIP_TO_ADDRESS<>firstName_2
 PHONE_HOME_NUMBER | SHIP_PHONE<>exchange | Exchange |  | SHIP_TO_ADDRESS<>firstName_2
 PHONE_HOME_EXTENSION | SHIP_PHONE<>extension | Extension |  | SHIP_TO_ADDRESS<>firstName_2
 PHONE_HOME_WHOLE_NUMBER | ship_phone | Contact Phone: |  | SHIP_TO_ADDRESS<>firstName_2

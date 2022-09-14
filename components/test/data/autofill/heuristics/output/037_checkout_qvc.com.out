@@ -11,10 +11,10 @@ ADDRESS_HOME_CITY | BilltoCity | City: |  | EmailAddress_1
 ADDRESS_HOME_STATE | BilltoState | State/Province: | AL | EmailAddress_1
 ADDRESS_HOME_ZIP | BilltoZipCode | * ZIP/Postal Code: |  | EmailAddress_1
 ADDRESS_HOME_COUNTRY | BilltoCountry | * Country: | US | EmailAddress_1
-PHONE_HOME_CITY_CODE | BilltoHpArea | * Home Phone: |  | EmailAddress_1
+PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | BilltoHpArea | * Home Phone: |  | EmailAddress_1
 PHONE_HOME_NUMBER | BilltoHpExchange | * Home Phone: |  | EmailAddress_1
 PHONE_HOME_EXTENSION | BilltoHpExt | * Home Phone: |  | EmailAddress_1
-PHONE_HOME_CITY_CODE | BilltoWpArea | Work Phone: |  | EmailAddress_1
+PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | BilltoWpArea | Work Phone: |  | EmailAddress_1
 PHONE_HOME_NUMBER | BilltoWpExchange | Work Phone: |  | EmailAddress_1
 PHONE_HOME_EXTENSION | BilltoWpExt | Work Phone: |  | EmailAddress_1
 UNKNOWN_TYPE | SameAsBilltoCheckbox | Same as Bill-To: | 1 | EmailAddress_1

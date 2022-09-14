@@ -9,7 +9,7 @@ ADDRESS_HOME_LINE2 | billAddress2 | Street Address 2: |  | billingShippingSame_1
 ADDRESS_HOME_CITY | billCity | *City: |  | billingShippingSame_1
 ADDRESS_HOME_STATE | billState | *State: | AL | billingShippingSame_1
 ADDRESS_HOME_ZIP | billZipCode | *Zip Code: |  | billingShippingSame_1
-PHONE_HOME_CITY_CODE | billDayPhonePart1 | *Day Phone: |  | billingShippingSame_1
+PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | billDayPhonePart1 | *Day Phone: |  | billingShippingSame_1
 PHONE_HOME_NUMBER_PREFIX | billDayPhonePart2 | *Day Phone: |  | billingShippingSame_1
 PHONE_HOME_NUMBER_SUFFIX | billDayPhonePart3 | *Day Phone: |  | billingShippingSame_1
 EMAIL_ADDRESS | billEmail | *Email Address: |  | billingShippingSame_1
@@ -23,10 +23,10 @@ ADDRESS_HOME_LINE2 | shipAddress2 | Street Address 2: |  | shipFirstName_2
 ADDRESS_HOME_CITY | shipCity | *City: |  | shipFirstName_2
 ADDRESS_HOME_STATE | shipState | *State: | AL | shipFirstName_2
 ADDRESS_HOME_ZIP | shipZipCode | *Zip Code: |  | shipFirstName_2
-PHONE_HOME_CITY_CODE | shipDayPhonePart1 | *Day Phone: |  | shipFirstName_2
+PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | shipDayPhonePart1 | *Day Phone: |  | shipFirstName_2
 PHONE_HOME_NUMBER_PREFIX | shipDayPhonePart2 | *Day Phone: |  | shipFirstName_2
 PHONE_HOME_NUMBER_SUFFIX | shipDayPhonePart3 | *Day Phone: |  | shipFirstName_2
-PHONE_HOME_CITY_CODE | shipNightPhonePart1 | Night Phone: |  | shipFirstName_2
+PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | shipNightPhonePart1 | Night Phone: |  | shipFirstName_2
 PHONE_HOME_NUMBER_PREFIX | shipNightPhonePart2 | Night Phone: |  | shipFirstName_2
 PHONE_HOME_NUMBER_SUFFIX | shipNightPhonePart3 | Night Phone: |  | shipFirstName_2
 UNKNOWN_TYPE | zipCode |  |  | zipCode_1

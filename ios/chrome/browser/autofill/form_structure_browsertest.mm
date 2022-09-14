@@ -199,28 +199,34 @@ FormStructureBrowserTest::FormStructureBrowserTest()
   feature_list_.InitWithFeatures(
       // Enabled
       {// TODO(crbug.com/1098943): Remove once experiment is over.
-       autofill::features::kAutofillEnableSupportForMoreStructureInNames,
+       features::kAutofillEnableSupportForMoreStructureInNames,
        // TODO(crbug.com/1125978): Remove once launched.
-       autofill::features::kAutofillEnableSupportForMoreStructureInAddresses,
+       features::kAutofillEnableSupportForMoreStructureInAddresses,
        // TODO(crbug.com/1076175) Remove once launched.
-       autofill::features::kAutofillUseNewSectioningMethod,
+       features::kAutofillUseNewSectioningMethod,
        // TODO(crbug.com/1150890) Remove once launched
-       autofill::features::kAutofillEnableAugmentedPhoneCountryCode,
+       features::kAutofillEnableAugmentedPhoneCountryCode,
        // TODO(crbug.com/1157405) Remove once launched.
-       autofill::features::kAutofillEnableDependentLocalityParsing,
+       features::kAutofillEnableDependentLocalityParsing,
        // TODO(crbug.com/1165780): Remove once shared labels are launched.
-       autofill::features::kAutofillEnableSupportForParsingWithSharedLabels,
+       features::kAutofillEnableSupportForParsingWithSharedLabels,
        // TODO(crbug.com/1150895) Remove once launched.
-       autofill::features::kAutofillParsingPatternProvider,
-       autofill::features::kAutofillPageLanguageDetection,
+       features::kAutofillParsingPatternProvider,
+       features::kAutofillPageLanguageDetection,
        // TODO(crbug.com/1277480): Remove once launched.
-       autofill::features::kAutofillEnableNameSurenameParsing,
+       features::kAutofillEnableNameSurenameParsing,
        // TODO(crbug.com/1190334): Remove once launched.
        autofill::features::kAutofillParseMerchantPromoCodeFields,
        // TODO(crbug.com/1335549): Remove once launched.
-       autofill::features::kAutofillParseIBANFields},
+       features::kAutofillParseIBANFields,
+       // TODO(crbug.com/1311937): Remove once launched.
+       features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
+       features::kAutofillInferCountryCallingCode},
       // Disabled
-      {});
+      // TODO(crbug.com/1311937): Remove once launched.
+      // This feature is part of the AutofillRefinedPhoneNumberTypes rollout. As
+      // it is not supported on iOS yet, it is disabled.
+      {features::kAutofillConsiderPhoneNumberSeparatorsValidLabels});
 }
 
 void FormStructureBrowserTest::SetUp() {
