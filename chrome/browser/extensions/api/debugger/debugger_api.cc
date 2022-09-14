@@ -391,14 +391,14 @@ void ExtensionDevToolsClientHost::SendMessageToBackend(
     DebuggerSendCommandFunction* function,
     const std::string& method,
     SendCommand::Params::CommandParams* command_params) {
-  base::Value protocol_request(base::Value::Type::DICTIONARY);
+  base::Value::Dict protocol_request;
   int request_id = ++last_request_id_;
   pending_requests_[request_id] = function;
-  protocol_request.SetIntKey("id", request_id);
-  protocol_request.SetStringKey("method", method);
+  protocol_request.Set("id", request_id);
+  protocol_request.Set("method", method);
   if (command_params) {
-    protocol_request.SetKey("params",
-                            command_params->additional_properties.Clone());
+    protocol_request.Set("params",
+                         command_params->additional_properties.Clone());
   }
 
   std::string json;
@@ -470,8 +470,7 @@ void ExtensionDevToolsClientHost::DispatchProtocolMessage(
 
     OnEvent::Params params;
     if (base::Value* params_value = dictionary.FindDictKey("params")) {
-      params.additional_properties.Swap(
-          static_cast<base::DictionaryValue*>(params_value));
+      params.additional_properties = std::move(params_value->GetDict());
     }
 
     auto args(OnEvent::Create(debuggee_, *method_name, params));
@@ -750,8 +749,7 @@ void DebuggerSendCommandFunction::SendResponseBody(base::Value response) {
 
   SendCommand::Results::Result result;
   if (base::Value* result_body = response.FindDictKey("result")) {
-    result.additional_properties.Swap(
-        static_cast<base::DictionaryValue*>(result_body));
+    result.additional_properties = std::move(result_body->GetDict());
   }
 
   Respond(ArgumentList(SendCommand::Results::Create(result)));

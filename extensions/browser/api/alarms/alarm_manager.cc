@@ -52,7 +52,7 @@ class DefaultAlarmDelegate : public AlarmManager::Delegate {
 
   void OnAlarm(const std::string& extension_id, const Alarm& alarm) override {
     base::Value::List args;
-    args.Append(base::Value::FromUniquePtrValue(alarm.js_alarm->ToValue()));
+    args.Append(alarm.js_alarm->ToValue());
     auto event = std::make_unique<Event>(events::ALARMS_ON_ALARM,
                                          alarms::OnAlarm::kEventName,
                                          std::move(args), browser_context_);
@@ -101,7 +101,7 @@ base::Value::List AlarmsToValue(
     const std::vector<std::unique_ptr<Alarm>>& alarms) {
   base::Value::List list;
   for (const auto& item : alarms) {
-    base::Value::Dict alarm = std::move(item->js_alarm->ToValue()->GetDict());
+    base::Value::Dict alarm = item->js_alarm->ToValue();
     alarm.Set(kAlarmGranularity, base::TimeDeltaToValue(item->granularity));
     list.Append(std::move(alarm));
   }

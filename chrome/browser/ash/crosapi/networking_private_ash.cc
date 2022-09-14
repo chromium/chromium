@@ -221,7 +221,7 @@ void DeviceStateListCallbackAdapter(
 
   for (size_t i = 0; i < result->size(); ++i) {
     if (result->at(i)) {
-      list->push_back(std::move(*result->at(i)->ToValue()));
+      list->push_back(base::Value(result->at(i)->ToValue()));
     } else {
       list->push_back(base::Value(base::Value::Type::DICTIONARY));
     }

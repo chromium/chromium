@@ -1097,8 +1097,8 @@ void ManagementEventRouter::BroadcastEvent(
   if (event_name == management::OnUninstalled::kEventName) {
     args.Append(extension->id());
   } else {
-    args.Append(base::Value::FromUniquePtrValue(
-        CreateExtensionInfo(nullptr, *extension, browser_context_).ToValue()));
+    args.Append(
+        CreateExtensionInfo(nullptr, *extension, browser_context_).ToValue());
   }
 
   EventRouter::Get(browser_context_)

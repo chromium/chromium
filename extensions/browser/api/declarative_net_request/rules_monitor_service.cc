@@ -670,9 +670,9 @@ void RulesMonitorService::UpdateSessionRulesInternal(
     }
   }
 
-  std::unique_ptr<base::ListValue> new_rules_value = base::ListValue::From(
-      json_schema_compiler::util::CreateValueFromArray(new_rules));
-  DCHECK(new_rules_value);
+  std::unique_ptr<base::ListValue> new_rules_value =
+      base::ListValue::From(base::Value::ToUniquePtrValue(base::Value(
+          json_schema_compiler::util::CreateValueFromArray(new_rules))));
 
   std::string error;
   std::unique_ptr<RulesetMatcher> matcher =

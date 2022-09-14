@@ -42,7 +42,7 @@ namespace api {
 
 namespace file_manager_private {
 
-std::unique_ptr<base::DictionaryValue> MojoMediaMetadataToValue(
+base::Value::Dict MojoMediaMetadataToValue(
     chrome::mojom::MediaMetadataPtr metadata) {
   DCHECK(metadata);
 
@@ -71,9 +71,8 @@ std::unique_ptr<base::DictionaryValue> MojoMediaMetadataToValue(
   for (const chrome::mojom::MediaStreamInfoPtr& info : metadata->raw_tags) {
     file_manager_private::StreamInfo stream_info;
     stream_info.type = std::move(info->type);
-    base::DictionaryValue* value = nullptr;
-    info->additional_properties.GetAsDictionary(&value);
-    stream_info.tags.additional_properties.Swap(value);
+    std::swap(stream_info.tags.additional_properties,
+              info->additional_properties.GetDict());
     media_metadata.raw_tags.push_back(std::move(stream_info));
   }
 

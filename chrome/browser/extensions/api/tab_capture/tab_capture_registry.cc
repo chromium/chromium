@@ -156,7 +156,7 @@ void TabCaptureRegistry::GetCapturedTabs(
       continue;
     tab_capture::CaptureInfo info;
     request->GetCaptureInfo(&info);
-    capture_info_list->Append(base::Value::FromUniquePtrValue(info.ToValue()));
+    capture_info_list->Append(info.ToValue());
   }
 }
 
@@ -295,7 +295,7 @@ void TabCaptureRegistry::DispatchStatusChangeEvent(
   base::Value::List args;
   tab_capture::CaptureInfo info;
   request->GetCaptureInfo(&info);
-  args.Append(base::Value::FromUniquePtrValue(info.ToValue()));
+  args.Append(info.ToValue());
   auto event = std::make_unique<Event>(events::TAB_CAPTURE_ON_STATUS_CHANGED,
                                        tab_capture::OnStatusChanged::kEventName,
                                        std::move(args), browser_context_);

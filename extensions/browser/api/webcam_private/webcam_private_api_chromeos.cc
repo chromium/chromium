@@ -513,7 +513,7 @@ void WebcamPrivateGetFunction::OnGetWebcamParameters(InquiryType type,
     result.tilt = tilt_;
     result.zoom = zoom_;
     result.focus = focus_;
-    Respond(OneArgument(base::Value::FromUniquePtrValue(result.ToValue())));
+    Respond(OneArgument(base::Value(result.ToValue())));
   }
 }
 

@@ -261,8 +261,7 @@ class _Generator(object):
         .Eblock('}'))
 
       if type_.properties or type_.additional_properties is not None:
-        c.Append('const auto* dict = '
-                     'static_cast<const base::DictionaryValue*>(&value);')
+        c.Append('const base::Value::Dict& dict = value.GetDict();')
 
       # TODO(crbug.com/1145154): The generated code here will ignore
       # unrecognized keys, but the parsing code for types passed to APIs in the
@@ -274,10 +273,10 @@ class _Generator(object):
         c.Concat(self._GenerateTypePopulateProperty(prop, 'dict', 'out'))
       if type_.additional_properties is not None:
         if type_.additional_properties.property_type == PropertyType.ANY:
-          c.Append('out->additional_properties.MergeDictionary(dict);')
+          c.Append('out->additional_properties.Merge(dict.Clone());')
         else:
           cpp_type = self._type_helper.GetCppType(type_.additional_properties)
-          (c.Sblock('for (const auto item : dict->GetDict()) {')
+          (c.Sblock('for (const auto item : dict) {')
               .Append('%s tmp;' % cpp_type)
               .Concat(self._GeneratePopulateVariableFromValue(
                   type_.additional_properties,
@@ -303,12 +302,12 @@ class _Generator(object):
   def _GenerateTypePopulateProperty(self, prop, src, dst):
     """Generate the code to populate a single property in a type.
 
-    src: base::DictionaryValue*
+    src: base::Value::Dict*
     dst: Type*
     """
     c = Code()
     value_var = prop.unix_name + '_value'
-    c.Append('const base::Value* %(value_var)s = %(src)s->FindKey("%(key)s");')
+    c.Append('const base::Value* %(value_var)s = %(src)s.Find("%(key)s");')
     if prop.optional:
       (c.Sblock(
           'if (%(value_var)s) {')
@@ -430,7 +429,7 @@ class _Generator(object):
     """Generates definition for ManifestKeys::ParseFromDictionary.
     """
     params = [
-      'const base::DictionaryValue& root_dict',
+      'const base::Value::Dict& root_dict',
       '%(classname)s* out'
     ]
 
@@ -449,7 +448,7 @@ class _Generator(object):
 
     c.Append('std::vector<base::StringPiece> error_path_reversed_vec;')
     c.Append('auto* error_path_reversed = &error_path_reversed_vec;')
-    c.Append('const base::DictionaryValue& dict = root_dict;')
+    c.Append('const base::Value::Dict& dict = root_dict;')
 
     for prop in properties:
       c.Concat(self._InitializePropertyToDefault(prop, 'out'))
@@ -472,7 +471,7 @@ class _Generator(object):
     """Generates T::ParseFromDictionary for a child manifest type.
     """
     params = [
-      'const base::DictionaryValue& root_dict',
+      'const base::Value::Dict& root_dict',
       'base::StringPiece key',
       '%(classname)s* out',
       'std::u16string* error',
@@ -501,8 +500,7 @@ class _Generator(object):
     )
     c.Sblock('if (!value)')
     c.Append('return false;')
-    c.Eblock('const base::DictionaryValue& dict = '
-             'base::Value::AsDictionaryValue(*value);')
+    c.Eblock('const base::Value::Dict& dict = value->GetDict();')
 
     for prop in properties:
       c.Concat(self._InitializePropertyToDefault(prop, 'out'))
@@ -609,13 +607,11 @@ class _Generator(object):
 
   def _GenerateObjectTypeToValue(self, cpp_namespace, type_):
     """Generates a function that serializes an object-representing type
-    into a base::DictionaryValue.
+    into a base::Value::Dict.
     """
     c = Code()
-    (c.Sblock('std::unique_ptr<base::DictionaryValue> %s::ToValue() const {' %
-          cpp_namespace)
-        .Append('auto to_value_result =')
-        .Append('    std::make_unique<base::DictionaryValue>();')
+    (c.Sblock('base::Value::Dict %s::ToValue() const {' % cpp_namespace)
+        .Append('base::Value::Dict to_value_result;')
         .Append()
     )
 
@@ -637,7 +633,7 @@ class _Generator(object):
           c.Sblock('if (%s) {' % prop_var)
 
       c.Cblock(self._CreateValueFromType(
-          'to_value_result->GetDict().Set("%s", std::move(*%%s));' % prop.name,
+          'to_value_result.Set("%s", %%s);' % prop.name,
           prop.name,
           prop.type_,
           prop_var,
@@ -648,11 +644,11 @@ class _Generator(object):
 
     if type_.additional_properties is not None:
       if type_.additional_properties.property_type == PropertyType.ANY:
-        c.Append('to_value_result->MergeDictionary(&additional_properties);')
+        c.Append('to_value_result.Merge(additional_properties.Clone());')
       else:
         (c.Sblock('for (const auto& it : additional_properties) {')
           .Cblock(self._CreateValueFromType(
-              'to_value_result->GetDict().Set(it.first, std::move(*%s));',
+              'to_value_result.Set(it.first, %s);',
               type_.additional_properties.name,
               type_.additional_properties,
               'it.second'))
@@ -668,19 +664,22 @@ class _Generator(object):
     into a base::Value.
     """
     c = Code()
-    c.Sblock('std::unique_ptr<base::Value> %s::ToValue() const {' %
+    c.Sblock('base::Value %s::ToValue() const {' %
                  cpp_namespace)
-    c.Append('std::unique_ptr<base::Value> result;')
+    c.Append('base::Value result;')
     for choice in type_.choices:
       choice_var = 'as_%s' % choice.unix_name
       # Enums cannot be wrapped with scoped_ptr, but the XXX_NONE enum value
       # is equal to 0.
       (c.Sblock('if (%s) {' % choice_var)
-       .Append('DCHECK(!result) << "Cannot set multiple choices for %s";' %
+       .Append('DCHECK(result.is_none()) << "Cannot set multiple choices for '
+               '%s";' %
                type_.unix_name).Cblock(self._CreateValueFromType(
-                   'result = %s;', choice.name, choice, choice_var, True))
+                   'result = base::Value(%s);', choice.name, choice, choice_var,
+                   True))
        .Eblock('}'))
-    (c.Append('DCHECK(result) << "Must set at least one choice for %s";' %
+    (c.Append('DCHECK(!result.is_none()) << "Must set at least one choice for '
+              '%s";' %
               type_.unix_name).Append('return result;').Eblock('}'))
     return c
 
@@ -730,8 +729,7 @@ class _Generator(object):
     return c
 
   def _CreateValueFromType(self, code, prop_name, type_, var, is_ptr=False):
-    """Creates a base::Value given a type. Generated code passes ownership
-    to caller via std::unique_ptr.
+    """Creates a base::Value given a type.
 
     var: variable or variable*
 
@@ -795,17 +793,16 @@ class _Generator(object):
         vardot = '(%s)->' % var
       else:
         vardot = '(%s).' % var
-      return '%sCreateDeepCopy()' % vardot
+      return '%sClone()' % vardot
     elif underlying_type.property_type == PropertyType.ENUM:
       maybe_namespace = ''
       if type_.property_type == PropertyType.REF:
         maybe_namespace = '%s::' % underlying_type.namespace.unix_name
-      return 'std::make_unique<base::Value>(%sToString(%s))' % (
-          maybe_namespace, var)
+      return '%sToString(%s)' % (maybe_namespace, var)
     elif underlying_type.property_type == PropertyType.BINARY:
       if is_ptr:
         var = '*%s' % var
-      return 'std::make_unique<base::Value>(%s)' % var
+      return 'base::Value(%s)' % var
     elif underlying_type.property_type == PropertyType.ARRAY:
       if is_ptr:
         var = '*%s' % var
@@ -814,7 +811,7 @@ class _Generator(object):
               underlying_type.is_serializable_function):
       if is_ptr:
         var = '*%s' % var
-      return 'std::make_unique<base::Value>(%s)' % var
+      return '%s' % var
     else:
       raise NotImplementedError('Conversion of %s to base::Value not '
                                 'implemented' % repr(type_.type_))
@@ -1003,7 +1000,7 @@ class _Generator(object):
       assert not underlying_type.is_serializable_function, \
           'Serializable functions should have been handled above.'
       if is_ptr: # Non-serializable functions are just represented as dicts.
-        c.Append('%(dst_var)s = std::make_unique<base::DictionaryValue>();')
+        c.Append('%(dst_var)s = std::make_unique<base::Value::Dict>();')
     elif underlying_type.property_type == PropertyType.ANY:
       c.Append('%(dst_var)s = %(src_var)s.Clone();')
     elif underlying_type.property_type == PropertyType.ARRAY:
@@ -1250,7 +1247,7 @@ class _Generator(object):
       declaration_list.append(cpp_util.GetParameterDeclaration(
           param, self._type_helper.GetCppType(param.type_)))
       c.Cblock(self._CreateValueFromType(
-          'create_results.Append(base::Value::FromUniquePtrValue(%s));',
+          'create_results.Append(%s);',
           param.name,
           param.type_,
           param.unix_name))

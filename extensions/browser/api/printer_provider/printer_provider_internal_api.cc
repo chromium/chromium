@@ -127,9 +127,8 @@ PrinterProviderInternalReportPrinterCapabilityFunction::Run() {
   if (params->capability) {
     PrinterProviderInternalAPI::GetFactoryInstance()
         ->Get(browser_context())
-        ->NotifyGetCapabilityResult(
-            extension(), params->request_id,
-            params->capability->additional_properties.GetDict());
+        ->NotifyGetCapabilityResult(extension(), params->request_id,
+                                    params->capability->additional_properties);
   } else {
     PrinterProviderInternalAPI::GetFactoryInstance()
         ->Get(browser_context())

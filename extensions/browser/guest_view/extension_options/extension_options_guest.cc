@@ -135,7 +135,8 @@ void ExtensionOptionsGuest::OnPreferredSizeChanged(const gfx::Size& pref_size) {
   options.height = PhysicalPixelsToLogicalPixels(pref_size.height());
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       api::extension_options_internal::OnPreferredSizeChanged::kEventName,
-      options.ToValue()));
+      base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(base::Value(options.ToValue())))));
 }
 
 void ExtensionOptionsGuest::AddNewContents(

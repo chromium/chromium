@@ -90,10 +90,9 @@ absl::optional<base::Value::Dict> ChromeMessagingDelegate::MaybeGetTabInfo(
     // permissions.
     ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior = {
         ExtensionTabUtil::kDontScrubTab, ExtensionTabUtil::kDontScrubTab};
-    return std::move(ExtensionTabUtil::CreateTabObject(
-                         web_contents, scrub_tab_behavior, nullptr)
-                         .ToValue()
-                         ->GetDict());
+    return ExtensionTabUtil::CreateTabObject(web_contents, scrub_tab_behavior,
+                                             nullptr)
+        .ToValue();
   }
   return absl::nullopt;
 }

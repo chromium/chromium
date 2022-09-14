@@ -56,11 +56,11 @@ bool WillDispatchTabUpdatedEvent(
   api::tabs::Tab tab_object = ExtensionTabUtil::CreateTabObject(
       contents, scrub_tab_behavior, extension);
 
-  base::Value tab_value = base::Value::FromUniquePtrValue(tab_object.ToValue());
+  base::Value::Dict tab_value = tab_object.ToValue();
 
   base::Value::Dict changed_properties;
   for (const auto& property : changed_property_names) {
-    if (const base::Value* value = tab_value.FindKey(property))
+    if (const base::Value* value = tab_value.Find(property))
       changed_properties.Set(property, value->Clone());
   }
 
@@ -83,11 +83,11 @@ bool WillDispatchTabCreatedEvent(
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
       ExtensionTabUtil::GetScrubTabBehavior(extension, target_context,
                                             contents);
-  base::Value tab_value = base::Value::FromUniquePtrValue(
+  base::Value::Dict tab_value =
       ExtensionTabUtil::CreateTabObject(contents, scrub_tab_behavior, extension)
-          .ToValue());
-  tab_value.SetBoolKey(tabs_constants::kSelectedKey, active);
-  tab_value.SetBoolKey(tabs_constants::kActiveKey, active);
+          .ToValue();
+  tab_value.Set(tabs_constants::kSelectedKey, active);
+  tab_value.Set(tabs_constants::kActiveKey, active);
 
   *event_args_out = std::make_unique<base::Value::List>();
   (*event_args_out)->Append(std::move(tab_value));

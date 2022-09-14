@@ -170,10 +170,9 @@ void ExtensionKeybindingRegistry::CommandExecuted(
       ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
           ExtensionTabUtil::GetScrubTabBehavior(extension, context_type,
                                                 web_contents);
-      tab_value = base::Value::FromUniquePtrValue(
-          ExtensionTabUtil::CreateTabObject(web_contents, scrub_tab_behavior,
-                                            extension)
-              .ToValue());
+      tab_value = base::Value(ExtensionTabUtil::CreateTabObject(
+                                  web_contents, scrub_tab_behavior, extension)
+                                  .ToValue());
     }
   }
 

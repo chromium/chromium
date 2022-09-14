@@ -739,7 +739,9 @@ AutomationInternalPerformActionFunction::Run() {
   Result result = ConvertToAXActionData(
       ui::AXTreeID::FromString(params->args.tree_id),
       params->args.automation_node_id, params->args.action_type, request_id,
-      params->opt_args.additional_properties, extension_id(), &data);
+      base::Value::AsDictionaryValue(
+          base::Value(std::move(params->opt_args.additional_properties))),
+      extension_id(), &data);
 
   if (!result.validation_success) {
     // This macro has a built in |return|.

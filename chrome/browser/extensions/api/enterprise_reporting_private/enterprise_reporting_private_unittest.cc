@@ -1129,8 +1129,7 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
       api::enterprise_reporting_private::EventType::EVENT_TYPE_USER;
 
   std::unique_ptr<base::ListValue> params = std::make_unique<base::ListValue>();
-  params->Append(
-      base::Value::FromUniquePtrValue(enqueue_record_request.ToValue()));
+  params->Append(base::Value(enqueue_record_request.ToValue()));
 
   // Set up DM token
   const auto dm_token =
@@ -1173,8 +1172,7 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
       api::enterprise_reporting_private::EventType::EVENT_TYPE_USER;
 
   std::unique_ptr<base::ListValue> params = std::make_unique<base::ListValue>();
-  params->Append(
-      base::Value::FromUniquePtrValue(enqueue_record_request.ToValue()));
+  params->Append(base::Value(enqueue_record_request.ToValue()));
 
   policy::SetDMTokenForTesting(
       policy::DMToken::CreateValidTokenForTesting(kTestDMTokenValue));
@@ -1204,8 +1202,7 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
       api::enterprise_reporting_private::EventType::EVENT_TYPE_USER;
 
   std::unique_ptr<base::ListValue> params = std::make_unique<base::ListValue>();
-  params->Append(
-      base::Value::FromUniquePtrValue(enqueue_record_request.ToValue()));
+  params->Append(base::Value(enqueue_record_request.ToValue()));
 
   policy::SetDMTokenForTesting(
       policy::DMToken::CreateValidTokenForTesting(kTestDMTokenValue));
@@ -1232,8 +1229,7 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
       api::enterprise_reporting_private::EventType::EVENT_TYPE_USER;
 
   std::unique_ptr<base::ListValue> params = std::make_unique<base::ListValue>();
-  params->Append(
-      base::Value::FromUniquePtrValue(enqueue_record_request.ToValue()));
+  params->Append(base::Value(enqueue_record_request.ToValue()));
 
   // Set up invalid DM token
   policy::SetDMTokenForTesting(policy::DMToken::CreateInvalidTokenForTesting());
@@ -1268,8 +1264,7 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
 
   // TODO (b/234559917): Use base::Value::List instead
   std::unique_ptr<base::ListValue> params = std::make_unique<base::ListValue>();
-  params->Append(
-      base::Value::FromUniquePtrValue(enqueue_record_request.ToValue()));
+  params->Append(base::Value(enqueue_record_request.ToValue()));
 
   // Set up invalid DM token
   policy::SetDMTokenForTesting(
@@ -1372,8 +1367,8 @@ class EnterpriseReportingPrivateGetFileSystemInfoTest
     enterprise_reporting_private::GetFileSystemInfoRequest request;
     request.user_context = GetFakeUserContext();
     request.options.push_back(GetFakeFileSystemOptionsParam());
-    base::ListValue params;
-    params.Append(base::Value::FromUniquePtrValue(request.ToValue()));
+    base::Value::List params;
+    params.Append(request.ToValue());
     std::string json_value;
     base::JSONWriter::Write(params, &json_value);
     return json_value;
@@ -1540,7 +1535,7 @@ class EnterpriseReportingPrivateGetSettingsTest : public UserContextGatedTest {
     request.user_context = GetFakeUserContext();
     request.options.push_back(GetFakeSettingsOptionsParam());
     base::ListValue params;
-    params.Append(base::Value::FromUniquePtrValue(request.ToValue()));
+    params.Append(request.ToValue());
     std::string json_value;
     base::JSONWriter::Write(params, &json_value);
     return json_value;
@@ -1684,7 +1679,7 @@ TEST_F(EnterpriseReportingPrivateGetSettingsDisabledTest, FlagDisabled_Test) {
 std::string GetFakeUserContextJsonParams() {
   auto user_context = GetFakeUserContext();
   base::ListValue params;
-  params.Append(base::Value::FromUniquePtrValue(user_context.ToValue()));
+  params.Append(base::Value(user_context.ToValue()));
   std::string json_value;
   base::JSONWriter::Write(params, &json_value);
   return json_value;

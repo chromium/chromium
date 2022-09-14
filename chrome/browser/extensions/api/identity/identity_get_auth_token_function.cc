@@ -305,8 +305,7 @@ void IdentityGetAuthTokenFunction::CompleteFunctionWithResult(
   result.token = access_token;
   result.granted_scopes.emplace(granted_scopes.begin(), granted_scopes.end());
 
-  CompleteAsyncRun(
-      WithArguments(base::Value::FromUniquePtrValue(result.ToValue())));
+  CompleteAsyncRun(WithArguments(result.ToValue()));
 }
 
 void IdentityGetAuthTokenFunction::CompleteFunctionWithError(

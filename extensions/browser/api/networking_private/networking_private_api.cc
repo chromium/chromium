@@ -251,7 +251,7 @@ NetworkingPrivateSetPropertiesFunction::Run() {
       private_api::SetProperties::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  base::Value properties_dict(std::move(*params->properties.ToValue()));
+  base::Value properties_dict(params->properties.ToValue());
 
   std::vector<std::string> not_allowed_properties =
       FilterProperties(&properties_dict, PropertiesType::SET, extension(),
@@ -299,7 +299,7 @@ NetworkingPrivateCreateNetworkFunction::Run() {
     return RespondNow(Error(networking_private::kErrorAccessToSharedConfig));
   }
 
-  base::Value properties_dict(std::move(*params->properties.ToValue()));
+  base::Value properties_dict(params->properties.ToValue());
 
   std::vector<std::string> not_allowed_properties =
       FilterProperties(&properties_dict, PropertiesType::SET, extension(),
@@ -520,8 +520,7 @@ void NetworkingPrivateGetDeviceStatesFunction::Result(
 
   base::Value::List device_state_list;
   for (const auto& properties : *device_states)
-    device_state_list.Append(
-        base::Value::FromUniquePtrValue(properties->ToValue()));
+    device_state_list.Append(properties->ToValue());
   return Respond(OneArgument(base::Value(std::move(device_state_list))));
 }
 

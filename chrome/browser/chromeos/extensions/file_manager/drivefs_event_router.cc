@@ -221,16 +221,16 @@ void DriveFsEventRouter::OnFilesChanged(
         event.event_type = extensions::api::file_manager_private::
             FILE_WATCH_EVENT_TYPE_CHANGED;
         event.changed_files.emplace();
-        event.entry.additional_properties.SetStringKey(
+        event.entry.additional_properties.Set(
             "fileSystemRoot", base::StrCat({ConvertDrivePathToFileSystemUrl(
                                                 base::FilePath(), listener_url)
                                                 .spec(),
                                             "/"}));
-        event.entry.additional_properties.SetStringKey(
-            "fileSystemName", GetDriveFileSystemName());
-        event.entry.additional_properties.SetStringKey(
-            "fileFullPath", change.path.DirName().value());
-        event.entry.additional_properties.SetBoolKey("fileIsDirectory", true);
+        event.entry.additional_properties.Set("fileSystemName",
+                                              GetDriveFileSystemName());
+        event.entry.additional_properties.Set("fileFullPath",
+                                              change.path.DirName().value());
+        event.entry.additional_properties.Set("fileIsDirectory", true);
       }
       event.changed_files->emplace_back();
       auto& file_manager_change = event.changed_files->back();

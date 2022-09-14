@@ -86,12 +86,11 @@ ExtensionFunction::ResponseAction SettingsPrivateGetPrefFunction::Run() {
       SettingsPrivateDelegateFactory::GetForBrowserContext(browser_context());
   DCHECK(delegate);
 
-  std::unique_ptr<base::Value> value = delegate->GetPref(parameters->name);
-  if (value->is_none())
+  base::Value value = delegate->GetPref(parameters->name);
+  if (value.is_none())
     return RespondNow(Error("Pref * does not exist", parameters->name));
   else
-    return RespondNow(
-        OneArgument(base::Value::FromUniquePtrValue(std::move(value))));
+    return RespondNow(OneArgument(std::move(value)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

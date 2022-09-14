@@ -135,7 +135,7 @@ void FeedbackDialog::GetWebUIMessageHandlers(
 // chrome.getVariableValue('dialogArguments')
 std::string FeedbackDialog::GetDialogArgs() const {
   std::string data;
-  base::JSONWriter::Write(*feedback_info_, &data);
+  base::JSONWriter::Write(feedback_info_, &data);
   return data;
 }
 

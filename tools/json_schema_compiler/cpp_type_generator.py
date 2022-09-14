@@ -107,9 +107,9 @@ class CppTypeGenerator(object):
         cpp_type = 'std::string'
       else:
         # Non-serializable functions come into the json schema compiler as
-        # empty objects. We can record these as empty DictionaryValues so that
+        # empty objects. We can record these as empty Value::Dict so that
         # we know if the function was passed in or not.
-        cpp_type = 'base::DictionaryValue'
+        cpp_type = 'base::Value::Dict'
     elif type_.property_type == PropertyType.ARRAY:
       item_cpp_type = self.GetCppType(type_.item_type)
       cpp_type = 'std::vector<%s>' % item_cpp_type

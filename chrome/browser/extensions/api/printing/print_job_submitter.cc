@@ -149,8 +149,7 @@ bool PrintJobSubmitter::CheckContentType() const {
 }
 
 bool PrintJobSubmitter::CheckPrintTicket() {
-  settings_ = ParsePrintTicket(
-      base::Value::FromUniquePtrValue(request_.job.ticket.ToValue()));
+  settings_ = ParsePrintTicket(base::Value(request_.job.ticket.ToValue()));
   if (!settings_)
     return false;
   settings_->set_title(base::UTF8ToUTF16(request_.job.title));

@@ -317,7 +317,7 @@ void BrailleControllerImpl::DispatchKeyEvent(std::unique_ptr<KeyEvent> event) {
                                   base::Unretained(this), std::move(event)));
     return;
   }
-  VLOG(1) << "Dispatching key event: " << *event->ToValue();
+  VLOG(1) << "Dispatching key event: " << event->ToValue();
   for (auto& observer : observers_)
     observer.OnBrailleKeyEvent(*event);
 }

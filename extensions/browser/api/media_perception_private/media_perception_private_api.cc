@@ -24,7 +24,7 @@ MediaPerceptionPrivateGetStateFunction::Run() {
 
 void MediaPerceptionPrivateGetStateFunction::GetStateCallback(
     extensions::api::media_perception_private::State state) {
-  Respond(OneArgument(base::Value::FromUniquePtrValue(state.ToValue())));
+  Respond(OneArgument(base::Value(state.ToValue())));
 }
 
 MediaPerceptionPrivateSetStateFunction ::
@@ -95,7 +95,7 @@ MediaPerceptionPrivateSetStateFunction::Run() {
 
 void MediaPerceptionPrivateSetStateFunction::SetStateCallback(
     extensions::api::media_perception_private::State state) {
-  Respond(OneArgument(base::Value::FromUniquePtrValue(state.ToValue())));
+  Respond(OneArgument(base::Value(state.ToValue())));
 }
 
 MediaPerceptionPrivateGetDiagnosticsFunction ::
@@ -116,7 +116,7 @@ MediaPerceptionPrivateGetDiagnosticsFunction::Run() {
 
 void MediaPerceptionPrivateGetDiagnosticsFunction::GetDiagnosticsCallback(
     extensions::api::media_perception_private::Diagnostics diagnostics) {
-  Respond(OneArgument(base::Value::FromUniquePtrValue(diagnostics.ToValue())));
+  Respond(OneArgument(base::Value(diagnostics.ToValue())));
 }
 
 MediaPerceptionPrivateSetAnalyticsComponentFunction::
@@ -147,8 +147,7 @@ void MediaPerceptionPrivateSetAnalyticsComponentFunction::
     OnAnalyticsComponentSet(
         extensions::api::media_perception_private::ComponentState
             component_state) {
-  Respond(
-      OneArgument(base::Value::FromUniquePtrValue(component_state.ToValue())));
+  Respond(OneArgument(base::Value(component_state.ToValue())));
 }
 
 MediaPerceptionPrivateSetComponentProcessStateFunction::
@@ -186,8 +185,7 @@ MediaPerceptionPrivateSetComponentProcessStateFunction::Run() {
 void MediaPerceptionPrivateSetComponentProcessStateFunction::
     OnComponentProcessStateSet(
         extensions::api::media_perception_private::ProcessState process_state) {
-  Respond(
-      OneArgument(base::Value::FromUniquePtrValue(process_state.ToValue())));
+  Respond(OneArgument(base::Value(process_state.ToValue())));
 }
 
 }  // namespace extensions

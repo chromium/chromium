@@ -712,10 +712,10 @@ TEST_F(DriveFsEventRouterTest, OnSyncingStatusUpdate_SuppressNotifications) {
 TEST_F(DriveFsEventRouterTest, OnFilesChanged_Basic) {
   FileWatchEvent event;
   event.event_type = file_manager_private::FILE_WATCH_EVENT_TYPE_CHANGED;
-  event.entry.additional_properties.SetStringKey("fileSystemRoot", "ext:/");
-  event.entry.additional_properties.SetStringKey("fileSystemName", "drivefs");
-  event.entry.additional_properties.SetStringKey("fileFullPath", "/root");
-  event.entry.additional_properties.SetBoolKey("fileIsDirectory", true);
+  event.entry.additional_properties.Set("fileSystemRoot", "ext:/");
+  event.entry.additional_properties.Set("fileSystemName", "drivefs");
+  event.entry.additional_properties.Set("fileFullPath", "/root");
+  event.entry.additional_properties.Set("fileIsDirectory", true);
   event.changed_files.emplace();
   event.changed_files->emplace_back();
   {
@@ -761,10 +761,10 @@ TEST_F(DriveFsEventRouterTest, OnFilesChanged_Basic) {
 TEST_F(DriveFsEventRouterTest, OnFilesChanged_MultipleDirectories) {
   FileWatchEvent event;
   event.event_type = file_manager_private::FILE_WATCH_EVENT_TYPE_CHANGED;
-  event.entry.additional_properties.SetStringKey("fileSystemRoot", "ext:/");
-  event.entry.additional_properties.SetStringKey("fileSystemName", "drivefs");
-  event.entry.additional_properties.SetStringKey("fileFullPath", "/root/a");
-  event.entry.additional_properties.SetBoolKey("fileIsDirectory", true);
+  event.entry.additional_properties.Set("fileSystemRoot", "ext:/");
+  event.entry.additional_properties.Set("fileSystemName", "drivefs");
+  event.entry.additional_properties.Set("fileFullPath", "/root/a");
+  event.entry.additional_properties.Set("fileIsDirectory", true);
   event.changed_files.emplace();
   event.changed_files->emplace_back();
   {
@@ -777,10 +777,10 @@ TEST_F(DriveFsEventRouterTest, OnFilesChanged_MultipleDirectories) {
                           MatchFileWatchEvent(event)));
 
   event.event_type = file_manager_private::FILE_WATCH_EVENT_TYPE_CHANGED;
-  event.entry.additional_properties.SetStringKey("fileSystemRoot", "ext:/");
-  event.entry.additional_properties.SetStringKey("fileSystemName", "drivefs");
-  event.entry.additional_properties.SetStringKey("fileFullPath", "/root/b");
-  event.entry.additional_properties.SetBoolKey("fileIsDirectory", true);
+  event.entry.additional_properties.Set("fileSystemRoot", "ext:/");
+  event.entry.additional_properties.Set("fileSystemName", "drivefs");
+  event.entry.additional_properties.Set("fileFullPath", "/root/b");
+  event.entry.additional_properties.Set("fileIsDirectory", true);
   event.changed_files.emplace();
   event.changed_files->emplace_back();
   {

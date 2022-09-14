@@ -45,7 +45,8 @@ bool CrossOriginIsolationHandler::Parse(Extension* extension,
                                         std::u16string* error) {
   COIManifestKeys manifest_keys;
   if (!COIManifestKeys::ParseFromDictionary(
-          extension->manifest()->available_values(), &manifest_keys, error)) {
+          extension->manifest()->available_values().GetDict(), &manifest_keys,
+          error)) {
     return false;
   }
 

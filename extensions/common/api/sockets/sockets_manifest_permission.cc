@@ -264,7 +264,7 @@ std::unique_ptr<base::Value> SocketsManifestPermission::ToValue() const {
     sockets.tcp_server.reset();
   }
 
-  return std::unique_ptr<base::Value>(sockets.ToValue().release());
+  return base::Value::ToUniquePtrValue(base::Value(sockets.ToValue()));
 }
 
 std::unique_ptr<ManifestPermission> SocketsManifestPermission::Diff(

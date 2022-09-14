@@ -751,7 +751,8 @@ void NetworkingPrivateChromeOS::GetCertificateLists(
           ->client_certificates();
   for (const auto& cert : user_certs)
     result.user_certificates.push_back(GetCertDictionary(cert));
-  std::move(callback).Run(result.ToValue());
+  std::move(callback).Run(
+      base::Value::ToUniquePtrValue(base::Value(result.ToValue())));
 }
 
 void NetworkingPrivateChromeOS::EnableNetworkType(const std::string& type,

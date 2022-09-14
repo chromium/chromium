@@ -180,7 +180,7 @@ void SerialConnectFunction::FinishConnect(
     // Start polling.
     auto* port_manager = SerialPortManager::Get(browser_context());
     port_manager->StartConnectionPolling(extension_->id(), id);
-    Respond(OneArgument(base::Value::FromUniquePtrValue(info->ToValue())));
+    Respond(OneArgument(base::Value(info->ToValue())));
   }
 }
 
@@ -246,7 +246,7 @@ void SerialSendFunction::OnSendComplete(uint32_t bytes_sent,
   serial::SendInfo send_info;
   send_info.bytes_sent = bytes_sent;
   send_info.error = error;
-  Respond(OneArgument(base::Value::FromUniquePtrValue(send_info.ToValue())));
+  Respond(OneArgument(base::Value(send_info.ToValue())));
 }
 
 SerialFlushFunction::SerialFlushFunction() = default;
@@ -308,7 +308,7 @@ void SerialGetInfoFunction::OnGotInfo(
     std::unique_ptr<serial::ConnectionInfo> info) {
   DCHECK(info);
   info->connection_id = connection_id;
-  Respond(OneArgument(base::Value::FromUniquePtrValue(info->ToValue())));
+  Respond(OneArgument(base::Value(info->ToValue())));
 }
 
 SerialGetConnectionsFunction::SerialGetConnectionsFunction() = default;
@@ -371,7 +371,7 @@ void SerialGetControlSignalsFunction::OnGotControlSignals(
   if (!signals) {
     Respond(Error(kErrorGetControlSignalsFailed));
   } else {
-    Respond(OneArgument(base::Value::FromUniquePtrValue(signals->ToValue())));
+    Respond(OneArgument(base::Value(signals->ToValue())));
   }
 }
 

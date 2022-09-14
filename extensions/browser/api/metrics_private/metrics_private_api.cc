@@ -81,14 +81,11 @@ MetricsPrivateGetVariationParamsFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   GetVariationParams::Results::Params result;
-  std::unique_ptr<base::DictionaryValue> dict;
   if (variations::GetVariationParams(params->name,
                                      &result.additional_properties)) {
-    dict = result.ToValue();
+    return RespondNow(OneArgument(base::Value(result.ToValue())));
   }
-  return RespondNow(
-      dict ? OneArgument(base::Value::FromUniquePtrValue(std::move(dict)))
-           : NoArguments());
+  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -320,7 +317,7 @@ MetricsPrivateGetHistogramFunction::GetHistogram(const std::string& name) {
     result.buckets.push_back(std::move(bucket));
   }
 
-  return OneArgument(base::Value::FromUniquePtrValue(result.ToValue()));
+  return OneArgument(base::Value(result.ToValue()));
 }
 
 }  // namespace extensions

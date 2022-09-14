@@ -977,14 +977,14 @@ void EventRouter::DispatchDirectoryChangeEventWithEntryDefinition(
                          ? file_manager_private::FILE_WATCH_EVENT_TYPE_ERROR
                          : file_manager_private::FILE_WATCH_EVENT_TYPE_CHANGED;
 
-  event.entry.additional_properties.SetStringKey(
-      "fileSystemName", entry_definition.file_system_name);
-  event.entry.additional_properties.SetStringKey(
-      "fileSystemRoot", entry_definition.file_system_root_url);
-  event.entry.additional_properties.SetStringKey(
+  event.entry.additional_properties.Set("fileSystemName",
+                                        entry_definition.file_system_name);
+  event.entry.additional_properties.Set("fileSystemRoot",
+                                        entry_definition.file_system_root_url);
+  event.entry.additional_properties.Set(
       "fileFullPath", "/" + entry_definition.full_path.value());
-  event.entry.additional_properties.SetBoolKey("fileIsDirectory",
-                                               entry_definition.is_directory);
+  event.entry.additional_properties.Set("fileIsDirectory",
+                                        entry_definition.is_directory);
 
   BroadcastEvent(profile_,
                  extensions::events::FILE_MANAGER_PRIVATE_ON_DIRECTORY_CHANGED,
@@ -1182,12 +1182,12 @@ void EventRouter::PopulateCrostiniEvent(
   event.event_type = event_type;
   event.vm_name = vm_name;
   file_manager_private::CrostiniEvent::EntriesType entry;
-  entry.additional_properties.SetStringKey(
+  entry.additional_properties.Set(
       "fileSystemRoot",
       storage::GetExternalFileSystemRootURIString(origin.GetURL(), mount_name));
-  entry.additional_properties.SetStringKey("fileSystemName", file_system_name);
-  entry.additional_properties.SetStringKey("fileFullPath", full_path);
-  entry.additional_properties.SetBoolKey("fileIsDirectory", true);
+  entry.additional_properties.Set("fileSystemName", file_system_name);
+  entry.additional_properties.Set("fileFullPath", full_path);
+  entry.additional_properties.Set("fileIsDirectory", true);
   event.entries.emplace_back(std::move(entry));
 }
 
@@ -1442,16 +1442,15 @@ void EventRouter::OnConvertFileDefinitionListToEntryDefinitionList(
       continue;
     }
     OutputsType output_entry;
-    output_entry.additional_properties.SetStringKey("fileSystemName",
-                                                    def.file_system_name);
-    output_entry.additional_properties.SetStringKey("fileSystemRoot",
-                                                    def.file_system_root_url);
+    output_entry.additional_properties.Set("fileSystemName",
+                                           def.file_system_name);
+    output_entry.additional_properties.Set("fileSystemRoot",
+                                           def.file_system_root_url);
     // The `full_path` comes back as relative to the file system root, but the
     // UI requires it as an absolute path.
-    output_entry.additional_properties.SetStringKey(
+    output_entry.additional_properties.Set(
         "fileFullPath", base::FilePath("/").Append(def.full_path).value());
-    output_entry.additional_properties.SetBoolKey("fileIsDirectory",
-                                                  def.is_directory);
+    output_entry.additional_properties.Set("fileIsDirectory", def.is_directory);
     outputs.push_back(std::move(output_entry));
   }
   event_status.outputs = std::move(outputs);

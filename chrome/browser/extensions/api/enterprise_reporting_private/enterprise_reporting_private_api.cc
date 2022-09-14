@@ -424,8 +424,7 @@ EnterpriseReportingPrivateGetDeviceInfoFunction::Run() {
 
 void EnterpriseReportingPrivateGetDeviceInfoFunction::OnDeviceInfoRetrieved(
     const enterprise_signals::DeviceInfo& device_signals) {
-  Respond(WithArguments(
-      base::Value::FromUniquePtrValue(ToDeviceInfo(device_signals).ToValue())));
+  Respond(WithArguments(ToDeviceInfo(device_signals).ToValue()));
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
@@ -456,8 +455,7 @@ EnterpriseReportingPrivateGetContextInfoFunction::Run() {
 
 void EnterpriseReportingPrivateGetContextInfoFunction::OnContextInfoRetrieved(
     enterprise_signals::ContextInfo context_info) {
-  Respond(WithArguments(base::Value::FromUniquePtrValue(
-      ToContextInfo(std::move(context_info)).ToValue())));
+  Respond(WithArguments(ToContextInfo(std::move(context_info)).ToValue()));
 }
 
 // getCertificate
@@ -482,8 +480,7 @@ EnterpriseReportingPrivateGetCertificateFunction::Run() {
     api::enterprise_reporting_private::Certificate ret;
     ret.status = extensions::api::enterprise_reporting_private::
         CERTIFICATE_STATUS_POLICY_UNSET;
-    return RespondNow(
-        WithArguments(base::Value::FromUniquePtrValue(ret.ToValue())));
+    return RespondNow(WithArguments(ret.ToValue()));
   }
 
   client_cert_fetcher_ =
@@ -512,7 +509,7 @@ void EnterpriseReportingPrivateGetCertificateFunction::OnClientCertFetched(
         der_cert.begin(), der_cert.end());
   }
 
-  Respond(WithArguments(base::Value::FromUniquePtrValue(ret.ToValue())));
+  Respond(WithArguments(ret.ToValue()));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

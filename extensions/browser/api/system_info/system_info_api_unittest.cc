@@ -145,7 +145,7 @@ base::Value::List GetStorageAttachedArgs() {
   api::system_storage::StorageUnitInfo unit;
   systeminfo::BuildStorageUnitInfo(GetFakeStorageInfo(), &unit);
   base::Value::List args;
-  args.Append(base::Value::FromUniquePtrValue(unit.ToValue()));
+  args.Append(unit.ToValue());
   return args;
 }
 

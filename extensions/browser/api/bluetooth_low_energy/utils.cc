@@ -32,25 +32,25 @@ base::Value::Dict CharacteristicToValue(Characteristic& from) {
   // dictionary without the properties, to prevent json_schema_compiler from
   // failing.
   std::vector<CharacteristicProperty> properties = std::move(from.properties);
-  base::Value::Dict to = std::move(from.ToValue()->GetDict());
+  base::Value::Dict to = from.ToValue();
   to.Set("properties", CharacteristicPropertiesToValue(properties));
   return to;
 }
 
 base::Value::Dict DescriptorToValue(Descriptor& from) {
   if (!from.characteristic)
-    return std::move(from.ToValue()->GetDict());
+    return from.ToValue();
 
   // Copy the characteristic properties and set them later manually.
   std::vector<CharacteristicProperty> properties =
       std::move(from.characteristic->properties);
   from.characteristic->properties.clear();
-  std::unique_ptr<base::DictionaryValue> to = from.ToValue();
+  base::Value::Dict to = from.ToValue();
 
-  base::Value::Dict* chrc_value = to->GetDict().FindDict("characteristic");
+  base::Value::Dict* chrc_value = to.FindDict("characteristic");
   DCHECK(chrc_value);
   chrc_value->Set("properties", CharacteristicPropertiesToValue(properties));
-  return std::move(to->GetDict());
+  return to;
 }
 
 }  // namespace bluetooth_low_energy

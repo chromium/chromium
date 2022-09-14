@@ -167,7 +167,7 @@ void FileManagerPrivateInternalGetContentMetadataFunction::ParserDone(
   }
 
   DCHECK(metadata);
-  std::unique_ptr<base::DictionaryValue> dictionary =
+  base::Value::Dict dictionary =
       extensions::api::file_manager_private::MojoMediaMetadataToValue(
           std::move(metadata));
 
@@ -191,13 +191,12 @@ void FileManagerPrivateInternalGetContentMetadataFunction::ParserDone(
     media_thumbnail_image.Set("data", std::move(url));
     media_thumbnail_image.Set("type", std::move(image->type));
 
-    base::ListValue* attached_images_list = nullptr;
-    dictionary->GetList("attachedImages", &attached_images_list);
+    base::Value::List* attached_images_list =
+        dictionary.FindList("attachedImages");
     attached_images_list->Append(std::move(media_thumbnail_image));
   }
 
-  Respond(
-      WithArguments(base::Value::FromUniquePtrValue(std::move(dictionary))));
+  Respond(WithArguments(std::move(dictionary)));
 }
 
 }  // namespace extensions

@@ -601,8 +601,7 @@ void ExtensionUserScriptLoader::DynamicScriptsStorageHelper::SetDynamicScripts(
     if (!base::Contains(persistent_dynamic_script_ids, script->id()))
       continue;
 
-    base::Value::Dict value =
-        std::move(CreateContentScriptObject(*script).ToValue()->GetDict());
+    base::Value::Dict value = CreateContentScriptObject(*script).ToValue();
     value.Set(scripting::kId, script->id());
 
     scripts_value.Append(std::move(value));

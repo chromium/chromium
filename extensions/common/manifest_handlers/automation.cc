@@ -287,7 +287,7 @@ std::unique_ptr<AutomationInfo> AutomationInfo::FromValue(
 // static
 std::unique_ptr<base::Value> AutomationInfo::ToValue(
     const AutomationInfo& info) {
-  return AsManifestType(info)->ToValue();
+  return base::Value::ToUniquePtrValue(AsManifestType(info)->ToValue());
 }
 
 // static

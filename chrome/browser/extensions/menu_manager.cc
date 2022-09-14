@@ -704,10 +704,9 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
       // on permissions.
       ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior = {
           ExtensionTabUtil::kDontScrubTab, ExtensionTabUtil::kDontScrubTab};
-      args.Append(base::Value::FromUniquePtrValue(
-          ExtensionTabUtil::CreateTabObject(web_contents, scrub_tab_behavior,
-                                            extension)
-              .ToValue()));
+      args.Append(ExtensionTabUtil::CreateTabObject(
+                      web_contents, scrub_tab_behavior, extension)
+                      .ToValue());
     } else {
       args.Append(base::Value(base::Value::Type::DICTIONARY));
     }

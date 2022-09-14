@@ -40,7 +40,7 @@ void PrintingMetricsForProfileAsh::OnPrintJobFinished(
     const ash::printing::proto::PrintJobInfo& print_job_info) {
   auto dict_value =
       extensions::PrintJobInfoProtoToIdl(print_job_info).ToValue();
-  observer_->OnPrintJobFinished(std::move(*dict_value));
+  observer_->OnPrintJobFinished(base::Value(std::move(dict_value)));
 }
 
 void PrintingMetricsForProfileAsh::OnShutdown() {
@@ -63,7 +63,7 @@ void PrintingMetricsForProfileAsh::OnPrintJobsRetrieved(
   for (const auto& print_job_info : print_job_infos) {
     auto dict_value =
         extensions::PrintJobInfoProtoToIdl(print_job_info).ToValue();
-    print_job_info_values.emplace_back(std::move(*dict_value));
+    print_job_info_values.emplace_back(std::move(dict_value));
   }
 
   std::move(callback).Run(std::move(print_job_info_values));

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "extensions/common/api/feedback_private.h"
 #include "ui/views/widget/widget.h"
@@ -59,7 +60,7 @@ class FeedbackDialog : public ui::WebDialogDelegate {
                                   const GURL& security_origin,
                                   blink::mojom::MediaStreamType type) override;
 
-  std::unique_ptr<base::DictionaryValue> feedback_info_;
+  base::Value::Dict feedback_info_;
   extensions::api::feedback_private::FeedbackFlow feedback_flow_;
   // Widget for the Feedback WebUI.
   raw_ptr<views::Widget> widget_;

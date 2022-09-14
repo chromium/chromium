@@ -44,7 +44,7 @@ ExtensionFunction::ResponseAction SidePanelGetOptionsFunction::RunFunction() {
                     : absl::nullopt;
   const api::side_panel::PanelOptions& options =
       GetService()->GetOptions(*extension(), tab_id);
-  return RespondNow(OneArgument(std::move(*options.ToValue())));
+  return RespondNow(OneArgument(base::Value(options.ToValue())));
 }
 
 ExtensionFunction::ResponseAction SidePanelSetOptionsFunction::RunFunction() {

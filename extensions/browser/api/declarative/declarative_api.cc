@@ -222,7 +222,7 @@ EventsEventAddRulesFunction::RunAsyncOnCorrectThread() {
   base::Value::List rules_value;
   rules_value.reserve(rules_out.size());
   for (const auto* rule : rules_out)
-    rules_value.Append(base::Value::FromUniquePtrValue(rule->ToValue()));
+    rules_value.Append(rule->ToValue());
   return OneArgument(base::Value(std::move(rules_value)));
 }
 
@@ -310,7 +310,7 @@ EventsEventGetRulesFunction::RunAsyncOnCorrectThread() {
   base::Value::List rules_value;
   rules_value.reserve(rules.size());
   for (const auto* rule : rules)
-    rules_value.Append(base::Value::FromUniquePtrValue(rule->ToValue()));
+    rules_value.Append(rule->ToValue());
   return OneArgument(base::Value(std::move(rules_value)));
 }
 

@@ -1785,8 +1785,7 @@ ExtensionFunction::ResponseAction AutotestPrivateGetArcStateFunction::Run() {
                              ? 0
                              : (now_time - (now_ticks - start_time)).ToJsTime();
 
-  return RespondNow(
-      WithArguments(base::Value::FromUniquePtrValue(arc_state.ToValue())));
+  return RespondNow(WithArguments(arc_state.ToValue()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1809,8 +1808,7 @@ AutotestPrivateGetPlayStoreStateFunction::Run() {
     play_store_state.managed =
         arc::IsArcPlayStoreEnabledPreferenceManagedForProfile(profile);
   }
-  return RespondNow(WithArguments(
-      base::Value::FromUniquePtrValue(play_store_state.ToValue())));
+  return RespondNow(WithArguments(play_store_state.ToValue()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2077,7 +2075,7 @@ void AutotestPrivateGetArcAppKillsFunction::OnKillCounts(
   result.pressure_foreground = counts->pressure_foreground;
   result.pressure_perceptible = counts->pressure_perceptible;
   result.pressure_cached = counts->pressure_cached;
-  Respond(WithArguments(base::Value::FromUniquePtrValue(result.ToValue())));
+  Respond(WithArguments(result.ToValue()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2161,8 +2159,7 @@ AutotestPrivateGetCryptohomeRecoveryDataFunction::Run() {
   result.reauth_proof_token = reauth_proof_token;
   result.refresh_token = refresh_token;
 
-  return RespondNow(
-      WithArguments(base::Value::FromUniquePtrValue(result.ToValue())));
+  return RespondNow(WithArguments(result.ToValue()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -5407,8 +5404,7 @@ AutotestPrivateGetScrollableShelfInfoForStateFunction::Run() {
     info.target_main_axis_offset = fetched_info.target_main_axis_offset;
   }
 
-  return RespondNow(
-      WithArguments(base::Value::FromUniquePtrValue(info.ToValue())));
+  return RespondNow(WithArguments(info.ToValue()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -5479,8 +5475,7 @@ AutotestPrivateGetShelfUIInfoForStateFunction::Run() {
     shelf_ui_info.hotseat_info = std::move(hotseat_ui_info);
   }
 
-  return RespondNow(
-      WithArguments(base::Value::FromUniquePtrValue(shelf_ui_info.ToValue())));
+  return RespondNow(WithArguments(shelf_ui_info.ToValue()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -5497,8 +5492,7 @@ namespace {
 base::Value::Dict BuildSetWindowBoundsResult(const gfx::Rect& bounds_in_display,
                                              int64_t display_id) {
   base::Value::Dict result;
-  result.Set("bounds", base::Value::FromUniquePtrValue(
-                           ToBoundsDictionary(bounds_in_display).ToValue()));
+  result.Set("bounds", ToBoundsDictionary(bounds_in_display).ToValue());
   result.Set("displayId", base::NumberToString(display_id));
   return result;
 }

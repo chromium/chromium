@@ -139,9 +139,9 @@ base::Value::List GetUsersList(content::BrowserContext* browser_context) {
     std::string email = maybe_email ? *maybe_email : std::string();
     AccountId account_id = AccountId::FromUserEmail(email);
     const user_manager::User* user = user_manager->FindUser(account_id);
-    user_list.Append(base::Value::FromUniquePtrValue(
+    user_list.Append(
         (user ? CreateApiUser(email, *user) : CreateUnknownApiUser(email))
-            .ToValue()));
+            .ToValue());
   }
 
   if (ash::OwnerSettingsServiceAsh* service =
@@ -273,9 +273,9 @@ UsersPrivateGetCurrentUserFunction::~UsersPrivateGetCurrentUserFunction() =
 ExtensionFunction::ResponseAction UsersPrivateGetCurrentUserFunction::Run() {
   const user_manager::User* user = ash::ProfileHelper::Get()->GetUserByProfile(
       Profile::FromBrowserContext(browser_context()));
-  return user ? RespondNow(WithArguments(base::Value::FromUniquePtrValue(
+  return user ? RespondNow(WithArguments(
                     CreateApiUser(user->GetAccountId().GetUserEmail(), *user)
-                        .ToValue())))
+                        .ToValue()))
               : RespondNow(Error("No Current User"));
 }
 

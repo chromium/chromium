@@ -90,7 +90,8 @@ URLOverridesHandler::~URLOverridesHandler() = default;
 bool URLOverridesHandler::Parse(Extension* extension, std::u16string* error) {
   ChromeUrlOverridesKeys manifest_keys;
   if (!ChromeUrlOverridesKeys::ParseFromDictionary(
-          extension->manifest()->available_values(), &manifest_keys, error)) {
+          extension->manifest()->available_values().GetDict(), &manifest_keys,
+          error)) {
     return false;
   }
 

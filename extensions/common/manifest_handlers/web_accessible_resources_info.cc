@@ -55,7 +55,8 @@ std::unique_ptr<WebAccessibleResourcesInfo> ParseResourceStringList(
     std::u16string* error) {
   WebAccessibleResourcesMv2ManifestKeys manifest_keys;
   if (!WebAccessibleResourcesMv2ManifestKeys::ParseFromDictionary(
-          extension.manifest()->available_values(), &manifest_keys, error)) {
+          extension.manifest()->available_values().GetDict(), &manifest_keys,
+          error)) {
     return nullptr;
   }
 
@@ -92,7 +93,8 @@ std::unique_ptr<WebAccessibleResourcesInfo> ParseEntryList(
 
   WebAccessibleResourcesManifestKeys manifest_keys;
   if (!WebAccessibleResourcesManifestKeys::ParseFromDictionary(
-          extension.manifest()->available_values(), &manifest_keys, error)) {
+          extension.manifest()->available_values().GetDict(), &manifest_keys,
+          error)) {
     return nullptr;
   }
 

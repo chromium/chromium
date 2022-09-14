@@ -38,7 +38,7 @@ void GetManifestParseError(base::StringPiece manifest_json,
   simple_api::ManifestKeys manifest_keys;
   std::u16string error_16;
   bool result = simple_api::ManifestKeys::ParseFromDictionary(
-      base::Value::AsDictionaryValue(*manifest), &manifest_keys, &error_16);
+      manifest->GetDict(), &manifest_keys, &error_16);
 
   ASSERT_FALSE(result);
   *error = base::UTF16ToASCII(error_16);
@@ -51,7 +51,7 @@ void PopulateManifestKeys(base::StringPiece manifest_json,
 
   std::u16string error_16;
   bool result = simple_api::ManifestKeys::ParseFromDictionary(
-      base::Value::AsDictionaryValue(*manifest), manifest_keys, &error_16);
+      manifest->GetDict(), manifest_keys, &error_16);
 
   ASSERT_TRUE(result) << error_16;
   ASSERT_TRUE(error_16.empty()) << error_16;
@@ -160,7 +160,7 @@ TEST(JsonSchemaCompilerSimpleTest, TestTypePopulate) {
     EXPECT_EQ(1.1, test_type->number);
     EXPECT_EQ(4, test_type->integer);
     EXPECT_EQ(true, test_type->boolean);
-    EXPECT_EQ(*value, *test_type->ToValue());
+    EXPECT_EQ(*value, test_type->ToValue());
   }
   {
     auto test_type = std::make_unique<simple_api::TestType>();

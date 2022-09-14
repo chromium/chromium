@@ -23,7 +23,7 @@ VirtualKeyboardRestrictFeaturesFunction::
 
 void VirtualKeyboardRestrictFeaturesFunction::OnRestrictFeatures(
     api::virtual_keyboard::FeatureRestrictions update) {
-  Respond(OneArgument(base::Value::FromUniquePtrValue(update.ToValue())));
+  Respond(OneArgument(base::Value(update.ToValue())));
 }
 
 ExtensionFunction::ResponseAction

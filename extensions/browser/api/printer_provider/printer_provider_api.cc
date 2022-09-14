@@ -68,28 +68,27 @@ bool ParsePrinterId(const std::string& printer_id,
   return true;
 }
 
-void UpdatePrinterWithExtensionInfo(base::DictionaryValue* printer,
+void UpdatePrinterWithExtensionInfo(base::Value::Dict* printer,
                                     const Extension* extension) {
-  std::string* internal_printer_id = printer->FindStringKey("id");
+  std::string* internal_printer_id = printer->FindString("id");
   CHECK(internal_printer_id);
-  printer->SetStringKey(
-      "id", GeneratePrinterId(extension->id(), *internal_printer_id));
-  printer->SetStringKey("extensionId", extension->id());
-  printer->SetStringKey("extensionName", extension->name());
+  printer->Set("id", GeneratePrinterId(extension->id(), *internal_printer_id));
+  printer->Set("extensionId", extension->id());
+  printer->Set("extensionName", extension->name());
 
-  std::string* printer_name = printer->FindStringKey("name");
+  std::string* printer_name = printer->FindString("name");
   if (printer_name) {
     std::u16string u16_printer_name = base::UTF8ToUTF16(*printer_name);
     if (base::i18n::AdjustStringForLocaleDirection(&u16_printer_name))
-      printer->SetStringKey("name", u16_printer_name);
+      printer->Set("name", u16_printer_name);
   }
 
-  std::string* printer_description = printer->FindStringKey("description");
+  std::string* printer_description = printer->FindString("description");
   if (printer_description) {
     std::u16string u16_printer_description =
         base::UTF8ToUTF16(*printer_description);
     if (base::i18n::AdjustStringForLocaleDirection(&u16_printer_description))
-      printer->SetStringKey("description", u16_printer_description);
+      printer->Set("description", u16_printer_description);
   }
 }
 
@@ -636,7 +635,7 @@ void PrinterProviderAPIImpl::DispatchPrintRequested(PrinterProviderPrintJob job,
   // Request id is not part of the public API and it will be massaged out in
   // custom bindings.
   internal_args.Append(request_id);
-  internal_args.Append(base::Value::FromUniquePtrValue(print_job.ToValue()));
+  internal_args.Append(print_job.ToValue());
   auto event = std::make_unique<Event>(
       events::PRINTER_PROVIDER_ON_PRINT_REQUESTED,
       api::printer_provider::OnPrintRequested::kEventName,
@@ -674,7 +673,7 @@ void PrinterProviderAPIImpl::DispatchGetUsbPrinterInfoRequested(
   // Request id is not part of the public API and it will be massaged out in
   // custom bindings.
   internal_args.Append(request_id);
-  internal_args.Append(base::Value::FromUniquePtrValue(api_device.ToValue()));
+  internal_args.Append(api_device.ToValue());
   auto event = std::make_unique<Event>(
       events::PRINTER_PROVIDER_ON_GET_USB_PRINTER_INFO_REQUESTED,
       api::printer_provider::OnGetUsbPrinterInfoRequested::kEventName,
@@ -691,9 +690,9 @@ void PrinterProviderAPIImpl::OnGetPrintersResult(
   // Update some printer description properties to better identify the extension
   // managing the printer.
   for (const api::printer_provider::PrinterInfo& p : result) {
-    std::unique_ptr<base::DictionaryValue> printer(p.ToValue());
-    UpdatePrinterWithExtensionInfo(printer.get(), extension);
-    printer_list.Append(base::Value::FromUniquePtrValue(std::move(printer)));
+    base::Value::Dict printer(p.ToValue());
+    UpdatePrinterWithExtensionInfo(&printer, extension);
+    printer_list.Append(std::move(printer));
   }
 
   pending_get_printers_requests_.CompleteForExtension(
@@ -719,10 +718,11 @@ void PrinterProviderAPIImpl::OnGetUsbPrinterInfoResult(
     int request_id,
     const api::printer_provider::PrinterInfo* result) {
   if (result) {
-    std::unique_ptr<base::DictionaryValue> printer(result->ToValue());
-    UpdatePrinterWithExtensionInfo(printer.get(), extension);
-    pending_usb_printer_info_requests_[extension->id()].Complete(request_id,
-                                                                 *printer);
+    base::Value::Dict printer(result->ToValue());
+    UpdatePrinterWithExtensionInfo(&printer, extension);
+    pending_usb_printer_info_requests_[extension->id()].Complete(
+        request_id, *base::DictionaryValue::From(base::Value::ToUniquePtrValue(
+                        base::Value(std::move(printer)))));
   } else {
     pending_usb_printer_info_requests_[extension->id()].Complete(
         request_id, base::DictionaryValue());

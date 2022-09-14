@@ -269,8 +269,7 @@ FileManagerPrivateGetPreferencesFunction::Run() {
   }
   result.folder_shortcuts = folder_shortcuts;
 
-  return RespondNow(
-      WithArguments(base::Value::FromUniquePtrValue(result.ToValue())));
+  return RespondNow(WithArguments(result.ToValue()));
 }
 
 ExtensionFunction::ResponseAction

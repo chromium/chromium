@@ -65,8 +65,7 @@ ExtensionFunction::ResponseAction IdentityGetProfileUserInfoFunction::Run() {
     profile_user_info.id = account_info.gaia;
   }
 
-  return RespondNow(WithArguments(
-      base::Value::FromUniquePtrValue(profile_user_info.ToValue())));
+  return RespondNow(WithArguments(profile_user_info.ToValue()));
 }
 
 }  // namespace extensions

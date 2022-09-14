@@ -25,7 +25,7 @@ void SetValueOptional(std::string value,
     destination = std::move(value);
 }
 
-std::unique_ptr<base::DictionaryValue> SerializeMediaMetadata(
+base::Value::Dict SerializeMediaMetadata(
     chrome::mojom::MediaMetadataPtr metadata) {
   DCHECK(metadata);
   media_galleries::MediaMetadata extension_metadata;
@@ -51,9 +51,8 @@ std::unique_ptr<base::DictionaryValue> SerializeMediaMetadata(
   for (const chrome::mojom::MediaStreamInfoPtr& info : metadata->raw_tags) {
     media_galleries::StreamInfo stream_info;
     stream_info.type = std::move(info->type);
-    base::DictionaryValue* dict_value;
-    info->additional_properties.GetAsDictionary(&dict_value);
-    stream_info.tags.additional_properties.Swap(dict_value);
+    stream_info.tags.additional_properties =
+        std::move(info->additional_properties.GetDict());
     extension_metadata.raw_tags.push_back(std::move(stream_info));
   }
 

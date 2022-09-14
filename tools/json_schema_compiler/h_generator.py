@@ -259,11 +259,11 @@ class _Generator(object):
       if type_.origin.from_client:
         value_type = ('base::Value'
                       if type_.property_type is PropertyType.CHOICES else
-                      'base::DictionaryValue')
+                      'base::Value::Dict')
         (c.Append()
-          .Comment('Returns a new %s representing the serialized form of this '
+          .Comment('Returns a new %s representing the serialized form of this'
                    '%s object.' % (value_type, classname))
-          .Append('std::unique_ptr<%s> ToValue() const;' % value_type)
+          .Append('%s ToValue() const;' % value_type)
         )
 
       if type_.origin.from_manifest_keys:
@@ -285,9 +285,9 @@ class _Generator(object):
           .Cblock(self._GenerateFields(properties)))
         if type_.additional_properties is not None:
           # Most additionalProperties actually have type "any", which is better
-          # modelled as a DictionaryValue rather than a map of string -> Value.
+          # modelled as a Value::Dict rather than a map of string -> Value.
           if type_.additional_properties.property_type == PropertyType.ANY:
-            c.Append('base::DictionaryValue additional_properties;')
+            c.Append('base::Value::Dict additional_properties;')
           else:
             (c.Cblock(self._GenerateType(type_.additional_properties))
               .Append('std::map<std::string, %s> additional_properties;' %
@@ -382,7 +382,7 @@ class _Generator(object):
     # manifest types.
     if type_.IsRootManifestKeyType():
       params = [
-        'const base::DictionaryValue& root_dict',
+        'const base::Value::Dict& root_dict',
         '%s* out' % classname,
         'std::u16string* error'
       ]
@@ -392,7 +392,7 @@ class _Generator(object):
         '|error| is populated.')
     else:
       params = [
-        'const base::DictionaryValue& root_dict',
+        'const base::Value::Dict& root_dict',
         'base::StringPiece key',
         '%s* out' % classname,
         'std::u16string* error',

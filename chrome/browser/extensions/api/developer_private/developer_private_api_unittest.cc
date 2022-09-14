@@ -1129,8 +1129,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateRequestFileSource) {
   scoped_refptr<ExtensionFunction> function(
       new api::DeveloperPrivateRequestFileSourceFunction());
   base::ListValue file_source_args;
-  file_source_args.Append(
-      base::Value::FromUniquePtrValue(properties.ToValue()));
+  file_source_args.Append(base::Value(properties.ToValue()));
   EXPECT_TRUE(RunFunction(function, file_source_args)) << function->GetError();
 
   const base::Value& response_value = (*function->GetResultList())[0];

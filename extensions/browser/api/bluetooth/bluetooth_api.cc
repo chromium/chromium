@@ -175,8 +175,7 @@ void BluetoothGetDevicesFunction::DoWork(
     bluetooth_api::Device extension_device;
     bluetooth_api::BluetoothDeviceToApiDevice(*device, &extension_device);
 
-    device_list->Append(
-        base::Value::FromUniquePtrValue(extension_device.ToValue()));
+    device_list->Append(base::Value(extension_device.ToValue()));
   }
 
   Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(device_list))));
@@ -199,8 +198,7 @@ void BluetoothGetDeviceFunction::DoWork(
   if (device) {
     bluetooth_api::Device extension_device;
     bluetooth_api::BluetoothDeviceToApiDevice(*device, &extension_device);
-    Respond(OneArgument(
-        base::Value::FromUniquePtrValue(extension_device.ToValue())));
+    Respond(OneArgument(base::Value(extension_device.ToValue())));
   } else {
     Respond(Error(kInvalidDevice));
   }

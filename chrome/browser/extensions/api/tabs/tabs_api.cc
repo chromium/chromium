@@ -1237,10 +1237,9 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
         continue;
       }
 
-      result.Append(base::Value::FromUniquePtrValue(
-          CreateTabObjectHelper(web_contents, extension(),
-                                source_context_type(), tab_strip, i)
-              .ToValue()));
+      result.Append(CreateTabObjectHelper(web_contents, extension(),
+                                          source_context_type(), tab_strip, i)
+                        .ToValue());
     }
   }
 
@@ -1721,11 +1720,10 @@ bool TabsMoveFunction::MoveTab(int tab_id,
       content::WebContents* web_contents =
           tab_strip_model->GetWebContentsAt(inserted_index);
 
-      tab_values->Append(base::Value::FromUniquePtrValue(
-          CreateTabObjectHelper(web_contents, extension(),
-                                source_context_type(), tab_strip_model,
-                                inserted_index)
-              .ToValue()));
+      tab_values->Append(CreateTabObjectHelper(web_contents, extension(),
+                                               source_context_type(),
+                                               tab_strip_model, inserted_index)
+                             .ToValue());
     }
 
     // Insert the tabs one after another.
@@ -1746,10 +1744,10 @@ bool TabsMoveFunction::MoveTab(int tab_id,
         source_tab_strip->MoveWebContentsAt(tab_index, *new_index, false);
 
   if (has_callback()) {
-    tab_values->Append(base::Value::FromUniquePtrValue(
-        CreateTabObjectHelper(contents, extension(), source_context_type(),
-                              source_tab_strip, *new_index)
-            .ToValue()));
+    tab_values->Append(CreateTabObjectHelper(contents, extension(),
+                                             source_context_type(),
+                                             source_tab_strip, *new_index)
+                           .ToValue());
   }
 
   // Insert the tabs one after another.

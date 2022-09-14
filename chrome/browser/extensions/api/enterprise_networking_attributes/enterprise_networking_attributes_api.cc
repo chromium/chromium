@@ -103,8 +103,7 @@ void EnterpriseNetworkingAttributesGetNetworkDetailsFunction::OnResult(
         network_details.ipv6 = ipv6_address->ToString();
       }
 
-      Respond(WithArguments(
-          base::Value::FromUniquePtrValue(network_details.ToValue())));
+      Respond(WithArguments(network_details.ToValue()));
       return;
   }
 }

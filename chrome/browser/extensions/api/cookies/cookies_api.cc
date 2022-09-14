@@ -122,8 +122,7 @@ void CookiesEventRouter::OnCookieChange(bool otr,
           : profile_->GetOriginalProfile();
   api::cookies::Cookie cookie = cookies_helpers::CreateCookie(
       change.cookie, cookies_helpers::GetStoreIdFromProfile(profile));
-  dict.Set(cookies_api_constants::kCookieKey,
-           base::Value::FromUniquePtrValue(cookie.ToValue()));
+  dict.Set(cookies_api_constants::kCookieKey, cookie.ToValue());
 
   // Map the internal cause to an external string.
   std::string cause_dict_entry;

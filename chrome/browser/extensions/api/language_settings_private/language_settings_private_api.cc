@@ -257,7 +257,7 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    language_list_.Append(base::Value::FromUniquePtrValue(language.ToValue()));
+    language_list_.Append(language.ToValue());
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -269,7 +269,7 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
     language.code = ash::extension_ime_util::kArcImeLanguage;
     language.display_name =
         l10n_util::GetStringUTF8(IDS_SETTINGS_LANGUAGES_KEYBOARD_APPS);
-    language_list_.Append(base::Value::FromUniquePtrValue(language.ToValue()));
+    language_list_.Append(base::Value(language.ToValue()));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -771,8 +771,7 @@ LanguageSettingsPrivateGetInputMethodListsFunction::Run() {
         ext_ime_descriptors, &input_method_lists.third_party_extension_imes);
   }
 
-  return RespondNow(WithArguments(
-      base::Value::FromUniquePtrValue(input_method_lists.ToValue())));
+  return RespondNow(WithArguments(input_method_lists.ToValue()));
 #endif
 }
 

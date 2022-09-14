@@ -137,7 +137,7 @@ void SystemStorageGetAvailableCapacityFunction::OnQueryCompleted(
     api::system_storage::StorageAvailableCapacityInfo result;
     result.id = transient_id;
     result.available_capacity = available_capacity;
-    Respond(OneArgument(base::Value::FromUniquePtrValue(result.ToValue())));
+    Respond(OneArgument(base::Value(result.ToValue())));
   } else {
     Respond(Error("Error occurred when querying available capacity."));
   }

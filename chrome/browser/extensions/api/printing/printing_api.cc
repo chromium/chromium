@@ -51,7 +51,7 @@ void PrintingSubmitJobFunction::OnPrintJobSubmitted(
   DCHECK(status.has_value());
   response.status = status.value();
   response.job_id = std::move(job_id);
-  Respond(OneArgument(base::Value::FromUniquePtrValue(response.ToValue())));
+  Respond(OneArgument(base::Value(response.ToValue())));
 }
 
 PrintingCancelJobFunction::~PrintingCancelJobFunction() = default;
@@ -124,12 +124,12 @@ void PrintingGetPrinterInfoFunction::OnPrinterInfoRetrieved(
     CHECK(capabilities_value.is_dict());
     // It's safe just to swap values here as |capabilities_value| stores exactly
     // the same object as |response.capabilities| expects.
-    response.capabilities->additional_properties.Swap(
-        static_cast<base::DictionaryValue*>(&capabilities_value));
+    std::swap(response.capabilities->additional_properties,
+              capabilities_value.GetDict());
   }
   DCHECK(status.has_value());
   response.status = status.value();
-  Respond(OneArgument(base::Value::FromUniquePtrValue(response.ToValue())));
+  Respond(OneArgument(base::Value(response.ToValue())));
 }
 
 }  // namespace extensions

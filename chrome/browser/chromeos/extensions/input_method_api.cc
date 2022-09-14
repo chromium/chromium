@@ -399,7 +399,8 @@ ExtensionFunction::ResponseAction InputMethodPrivateSetSettingsFunction::Run() {
   DictionaryPrefUpdate update(
       Profile::FromBrowserContext(browser_context())->GetPrefs(),
       prefs::kLanguageInputMethodSpecificSettings);
-  update->SetPath(params->engine_id, params->settings.ToValue()->Clone());
+  update->GetDict().SetByDottedPath(params->engine_id,
+                                    params->settings.ToValue());
 
   // The router will only send the event to extensions that are listening.
   extensions::EventRouter* router =

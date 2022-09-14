@@ -44,7 +44,7 @@ base::Value::List RulesToValue(
     const std::vector<const api::events::Rule*>& rules) {
   base::Value::List value;
   for (const auto* rule : rules)
-    value.Append(std::move(*rule->ToValue()));
+    value.Append(rule->ToValue());
   return value;
 }
 

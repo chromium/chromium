@@ -152,8 +152,7 @@ void AppRuntimeEventRouter::DispatchOnLaunchedEvent(
   }
 
   DispatchOnLaunchedEventImpl(extension->id(), source_enum,
-                              std::move(launch_data->ToValue()->GetDict()),
-                              context);
+                              launch_data->ToValue(), context);
 }
 
 // static
@@ -188,8 +187,7 @@ void AppRuntimeEventRouter::DispatchOnLaunchedEventWithFileEntries(
   }
 
   if (action_data)
-    launch_data.Set("actionData",
-                    base::Value::FromUniquePtrValue(action_data->ToValue()));
+    launch_data.Set("actionData", action_data->ToValue());
 
   base::Value::List items;
   DCHECK(file_entries.size() == entries.size());
@@ -228,8 +226,7 @@ void AppRuntimeEventRouter::DispatchOnLaunchedEventWithUrl(
     launch_data.source = source_enum;
   }
   DispatchOnLaunchedEventImpl(extension->id(), source_enum,
-                              std::move(launch_data.ToValue()->GetDict()),
-                              context);
+                              launch_data.ToValue(), context);
 }
 
 }  // namespace extensions

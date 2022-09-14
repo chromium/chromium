@@ -202,7 +202,7 @@ void SystemInfoEventRouter::OnRemovableStorageAttached(
   StorageUnitInfo unit;
   systeminfo::BuildStorageUnitInfo(info, &unit);
   base::Value::List args;
-  args.Append(base::Value::FromUniquePtrValue(unit.ToValue()));
+  args.Append(unit.ToValue());
 
   DispatchEvent(events::SYSTEM_STORAGE_ON_ATTACHED,
                 system_storage::OnAttached::kEventName, std::move(args));

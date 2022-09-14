@@ -142,8 +142,7 @@ ExtensionFunction::ResponseAction EchoPrivateSetOfferInfoFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const std::string& service_id = params->id;
-  base::Value::Dict dict =
-      params->offer_info.additional_properties.GetDict().Clone();
+  base::Value::Dict dict = params->offer_info.additional_properties.Clone();
   chromeos::echo_offer::RemoveEmptyValueDicts(dict);
 
   PrefService* local_state = g_browser_process->local_state();
@@ -172,7 +171,7 @@ ExtensionFunction::ResponseAction EchoPrivateGetOfferInfoFunction::Run() {
   }
 
   echo_api::GetOfferInfo::Results::Result result;
-  result.additional_properties.MergeDictionary(offer_info);
+  result.additional_properties.Merge(offer_info->GetDict().Clone());
   return RespondNow(
       ArgumentList(echo_api::GetOfferInfo::Results::Create(result)));
 }

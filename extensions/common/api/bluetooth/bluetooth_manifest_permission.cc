@@ -148,7 +148,7 @@ bool BluetoothManifestPermission::FromValue(const base::Value* value) {
 std::unique_ptr<base::Value> BluetoothManifestPermission::ToValue() const {
   api::extensions_manifest_types::Bluetooth bluetooth;
   bluetooth.uuids.emplace(uuids_.begin(), uuids_.end());
-  return bluetooth.ToValue();
+  return std::make_unique<base::Value>(bluetooth.ToValue());
 }
 
 std::unique_ptr<ManifestPermission> BluetoothManifestPermission::Diff(

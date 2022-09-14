@@ -219,14 +219,14 @@ const char* ConvertTransferStatusToApi(const UsbTransferStatus status) {
   }
 }
 
-base::Value PopulateConnectionHandle(int handle,
-                                     int vendor_id,
-                                     int product_id) {
+base::Value::Dict PopulateConnectionHandle(int handle,
+                                           int vendor_id,
+                                           int product_id) {
   ConnectionHandle result;
   result.handle = handle;
   result.vendor_id = vendor_id;
   result.product_id = product_id;
-  return base::Value::FromUniquePtrValue(result.ToValue());
+  return result.ToValue();
 }
 
 TransferType ConvertTransferTypeToApi(const UsbTransferType& input) {
@@ -723,7 +723,7 @@ void UsbGetDevicesFunction::OnGetDevicesComplete(
         HasDevicePermission(*device)) {
       Device api_device;
       usb_device_manager()->GetApiDevice(*device, &api_device);
-      result.Append(base::Value::FromUniquePtrValue(api_device.ToValue()));
+      result.Append(api_device.ToValue());
     }
   }
 
@@ -784,7 +784,7 @@ void UsbGetUserSelectedDevicesFunction::OnDevicesChosen(
   for (const auto& device : devices) {
     Device api_device;
     device_manager->GetApiDevice(*device, &api_device);
-    result.Append(base::Value::FromUniquePtrValue(api_device.ToValue()));
+    result.Append(api_device.ToValue());
   }
 
   Respond(OneArgument(base::Value(std::move(result))));
@@ -828,7 +828,7 @@ ExtensionFunction::ResponseAction UsbGetConfigurationsFunction::Run() {
         config->configuration_value == active_config_value) {
       api_config.active = true;
     }
-    configs.Append(base::Value::FromUniquePtrValue(api_config.ToValue()));
+    configs.Append(api_config.ToValue());
   }
   return RespondNow(OneArgument(base::Value(std::move(configs))));
 }
@@ -902,9 +902,9 @@ void UsbOpenDeviceFunction::OnDeviceOpened(
   DCHECK(device_info);
   UsbDeviceResource* resource = new UsbDeviceResource(
       extension_id(), device_info->guid, std::move(device));
-  Respond(OneArgument(PopulateConnectionHandle(manager->Add(resource),
-                                               device_info->vendor_id,
-                                               device_info->product_id)));
+  Respond(OneArgument(base::Value(
+      PopulateConnectionHandle(manager->Add(resource), device_info->vendor_id,
+                               device_info->product_id))));
 }
 
 void UsbOpenDeviceFunction::OnDisconnect() {
@@ -970,8 +970,7 @@ ExtensionFunction::ResponseAction UsbGetConfigurationFunction::Run() {
       DCHECK(config);
       if (config->configuration_value == active_config_value) {
         ConfigDescriptor api_config = ConvertConfigDescriptor(*config);
-        return RespondNow(
-            OneArgument(base::Value::FromUniquePtrValue(api_config.ToValue())));
+        return RespondNow(OneArgument(base::Value(api_config.ToValue())));
       }
     }
   }
@@ -1005,7 +1004,7 @@ ExtensionFunction::ResponseAction UsbListInterfacesFunction::Run() {
       ConfigDescriptor api_config = ConvertConfigDescriptor(*config);
       base::Value::List result;
       for (const auto& interface : api_config.interfaces) {
-        result.Append(base::Value::FromUniquePtrValue(interface.ToValue()));
+        result.Append(interface.ToValue());
       }
       return RespondNow(OneArgument(base::Value(std::move(result))));
     }

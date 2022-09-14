@@ -292,12 +292,10 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
           navigate_params.navigated_or_inserted_contents);
 
   // Return data about the newly created tab.
-  return std::move(ExtensionTabUtil::CreateTabObject(
-                       navigate_params.navigated_or_inserted_contents,
-                       scrub_tab_behavior, function->extension(), tab_strip,
-                       new_index)
-                       .ToValue()
-                       ->GetDict());
+  return ExtensionTabUtil::CreateTabObject(
+             navigate_params.navigated_or_inserted_contents, scrub_tab_behavior,
+             function->extension(), tab_strip, new_index)
+      .ToValue();
 }
 
 Browser* ExtensionTabUtil::GetBrowserFromWindowID(
@@ -473,10 +471,9 @@ base::Value::List ExtensionTabUtil::CreateTabList(const Browser* browser,
     WebContents* web_contents = tab_strip->GetWebContentsAt(i);
     ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
         ExtensionTabUtil::GetScrubTabBehavior(extension, context, web_contents);
-    tab_list.Append(base::Value::FromUniquePtrValue(
-        CreateTabObject(web_contents, scrub_tab_behavior, extension, tab_strip,
-                        i)
-            .ToValue()));
+    tab_list.Append(CreateTabObject(web_contents, scrub_tab_behavior, extension,
+                                    tab_strip, i)
+                        .ToValue());
   }
 
   return tab_list;

@@ -66,12 +66,12 @@ void AsyncApiFunction::AsyncWorkCompleted() {
   }
 }
 
-void AsyncApiFunction::SetResult(std::unique_ptr<base::Value> result) {
-  results_ = std::make_unique<base::ListValue>();
-  results_->Append(base::Value::FromUniquePtrValue(std::move(result)));
+void AsyncApiFunction::SetResult(base::Value result) {
+  results_.emplace();
+  results_->Append(std::move(result));
 }
 
-void AsyncApiFunction::SetResultList(std::unique_ptr<base::ListValue> results) {
+void AsyncApiFunction::SetResultList(base::Value::List results) {
   results_ = std::move(results);
 }
 
@@ -97,7 +97,7 @@ void AsyncApiFunction::SendResponse(bool success) {
   ResponseValue response;
   base::Value::List arguments;
   if (results_) {
-    arguments = std::move(results_->GetList());
+    arguments = std::move(*results_);
     results_.reset();
   }
   if (success) {

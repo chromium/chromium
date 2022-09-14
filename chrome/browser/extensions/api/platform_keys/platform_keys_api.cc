@@ -275,7 +275,7 @@ void PlatformKeysInternalSelectClientCertificatesFunction::
       continue;
     }
     result_match.key_algorithm.additional_properties =
-        std::move(algorithm.value());
+        std::move(algorithm->GetDict());
 
     result_matches.push_back(std::move(result_match));
   }
@@ -330,7 +330,7 @@ void PlatformKeysInternalGetPublicKeyFunction::OnGetPublicKey(
     Respond(Error(kErrorInvalidSigningAlgorithm));
     return;
   }
-  algorithm.additional_properties = std::move(dict.value());
+  algorithm.additional_properties = std::move(dict->GetDict());
   Respond(ArgumentList(api_pki::GetPublicKey::Results::Create(
       result->get_success_result()->public_key, std::move(algorithm))));
 }
@@ -377,7 +377,7 @@ PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
   absl::optional<base::DictionaryValue> algorithm_dictionary =
       chromeos::platform_keys::BuildWebCrypAlgorithmDictionary(key_info);
   DCHECK(algorithm_dictionary);
-  algorithm.additional_properties = std::move(algorithm_dictionary.value());
+  algorithm.additional_properties = std::move(algorithm_dictionary->GetDict());
 
   return RespondNow(ArgumentList(api_pki::GetPublicKeyBySpki::Results::Create(
       public_key_spki_der, algorithm)));

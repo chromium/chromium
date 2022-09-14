@@ -31,7 +31,7 @@ const char kErrorFailedToOpenDevice[] = "Failed to open HID device.";
 const char kErrorConnectionNotFound[] = "Connection not established.";
 const char kErrorTransfer[] = "Transfer failed.";
 
-std::unique_ptr<base::Value> PopulateHidConnection(int connection_id) {
+base::Value::Dict PopulateHidConnection(int connection_id) {
   hid::HidConnectInfo connection_value;
   connection_value.connection_id = connection_id;
   return connection_value.ToValue();
@@ -186,8 +186,7 @@ void HidConnectFunction::OnConnectComplete(
   DCHECK(connection_manager_);
   int connection_id = connection_manager_->Add(
       new HidConnectionResource(extension_id(), std::move(connection)));
-  Respond(OneArgument(
-      base::Value::FromUniquePtrValue(PopulateHidConnection(connection_id))));
+  Respond(OneArgument(base::Value(PopulateHidConnection(connection_id))));
 }
 
 HidDisconnectFunction::HidDisconnectFunction() {}

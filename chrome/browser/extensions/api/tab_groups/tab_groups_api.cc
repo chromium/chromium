@@ -152,8 +152,8 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
         continue;
       }
 
-      result_list.Append(base::Value::FromUniquePtrValue(
-          tab_groups_util::CreateTabGroupObject(id, *visual_data).ToValue()));
+      result_list.Append(
+          tab_groups_util::CreateTabGroupObject(id, *visual_data).ToValue());
     }
   }
 

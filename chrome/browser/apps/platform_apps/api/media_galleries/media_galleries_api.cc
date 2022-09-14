@@ -691,8 +691,7 @@ void MediaGalleriesGetMetadataFunction::GetMetadata(
     metadata.mime_type = mime_type;
 
     base::Value::Dict result_dictionary;
-    result_dictionary.Set(kMetadataKey,
-                          base::Value::FromUniquePtrValue(metadata.ToValue()));
+    result_dictionary.Set(kMetadataKey, metadata.ToValue());
     Respond(WithArguments(std::move(result_dictionary)));
     return;
   }
@@ -732,8 +731,7 @@ void MediaGalleriesGetMetadataFunction::OnSafeMediaMetadataParserDone(
 
   base::Value::Dict result_dictionary;
   result_dictionary.Set(kMetadataKey,
-                        base::Value::FromUniquePtrValue(
-                            SerializeMediaMetadata(std::move(metadata))));
+                        SerializeMediaMetadata(std::move(metadata)));
 
   if (attached_images->empty()) {
     Respond(WithArguments(std::move(result_dictionary)));
@@ -880,10 +878,9 @@ void MediaGalleriesAddGalleryWatchFunction::HandleResponse(
   }
 
   result.success = error.empty();
-  Respond(error.empty()
-              ? WithArguments(base::Value::FromUniquePtrValue(result.ToValue()))
-              : ErrorWithArguments(AddGalleryWatch::Results::Create(result),
-                                   error));
+  Respond(error.empty() ? WithArguments(result.ToValue())
+                        : ErrorWithArguments(
+                              AddGalleryWatch::Results::Create(result), error));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

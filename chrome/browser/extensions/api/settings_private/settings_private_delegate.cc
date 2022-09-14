@@ -30,13 +30,12 @@ SettingsPrivateDelegate::SettingsPrivateDelegate(Profile* profile)
 SettingsPrivateDelegate::~SettingsPrivateDelegate() {
 }
 
-std::unique_ptr<base::Value> SettingsPrivateDelegate::GetPref(
-    const std::string& name) {
+base::Value SettingsPrivateDelegate::GetPref(const std::string& name) {
   std::unique_ptr<api::settings_private::PrefObject> pref =
       prefs_util_->GetPref(name);
   if (!pref)
-    return std::make_unique<base::Value>();
-  return pref->ToValue();
+    return base::Value();
+  return base::Value(pref->ToValue());
 }
 
 std::unique_ptr<base::Value> SettingsPrivateDelegate::GetAllPrefs() {
@@ -44,9 +43,9 @@ std::unique_ptr<base::Value> SettingsPrivateDelegate::GetAllPrefs() {
 
   const TypedPrefMap& keys = prefs_util_->GetAllowlistedKeys();
   for (const auto& it : keys) {
-    std::unique_ptr<base::Value> pref = GetPref(it.first);
-    if (!pref->is_none())
-      prefs->Append(base::Value::FromUniquePtrValue(std::move(pref)));
+    base::Value pref = GetPref(it.first);
+    if (!pref.is_none())
+      prefs->Append(std::move(pref));
   }
 
   return std::move(prefs);

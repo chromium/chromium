@@ -784,7 +784,7 @@ ExtensionFunction::ResponseAction TerminalPrivateSetPrefsFunction::Run() {
       kAllowList{{{guest_os::prefs::kGuestOsTerminalSettings,
                    base::Value::Type::DICTIONARY}}};
 
-  for (const auto item : params->prefs.additional_properties.GetDict()) {
+  for (const auto item : params->prefs.additional_properties) {
     // Write prefs if they are allowed, and match expected type, else ignore.
     auto allow_it = kAllowList->find(item.first);
     if (allow_it == kAllowList->end() ||

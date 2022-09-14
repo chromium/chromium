@@ -55,7 +55,7 @@ TEST(JsonSchemaCompilerArrayTest, BasicArrayType) {
     auto basic_array_type = std::make_unique<arrays::BasicArrayType>();
     ASSERT_TRUE(
         arrays::BasicArrayType::Populate(value, basic_array_type.get()));
-    EXPECT_EQ(value, *basic_array_type->ToValue().get());
+    EXPECT_EQ(value, basic_array_type->ToValue());
   }
 }
 
@@ -82,8 +82,8 @@ TEST(JsonSchemaCompilerArrayTest, EnumArrayReference) {
             enum_array_reference.types);
 
   // Test ToValue.
-  std::unique_ptr<base::Value> as_value(enum_array_reference.ToValue());
-  EXPECT_EQ(value, *as_value);
+  base::Value::Dict as_value(enum_array_reference.ToValue());
+  EXPECT_EQ(value, as_value);
 }
 
 TEST(JsonSchemaCompilerArrayTest, EnumArrayMixed) {
@@ -124,8 +124,8 @@ TEST(JsonSchemaCompilerArrayTest, EnumArrayMixed) {
             enum_array_mixed.external_enums);
 
   // Test ToValue.
-  std::unique_ptr<base::Value> as_value(enum_array_mixed.ToValue());
-  EXPECT_EQ(value, *as_value.get());
+  base::Value::Dict as_value(enum_array_mixed.ToValue());
+  EXPECT_EQ(value, as_value);
 }
 
 TEST(JsonSchemaCompilerArrayTest, OptionalEnumArrayType) {

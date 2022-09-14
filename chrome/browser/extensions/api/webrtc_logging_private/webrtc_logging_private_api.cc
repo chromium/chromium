@@ -229,7 +229,7 @@ void WebrtcLoggingPrivateFunctionWithUploadCallback::FireCallback(
   if (success) {
     api::webrtc_logging_private::UploadResult result;
     result.report_id = report_id;
-    Respond(OneArgument(base::Value::FromUniquePtrValue(result.ToValue())));
+    Respond(OneArgument(base::Value(result.ToValue())));
   } else {
     Respond(Error(error_message));
   }
@@ -250,7 +250,7 @@ void WebrtcLoggingPrivateFunctionWithRecordingDoneCallback::FireCallback(
   result.prefix_path = prefix_path;
   result.did_stop = did_stop;
   result.did_manual_stop = did_manual_stop;
-  Respond(OneArgument(base::Value::FromUniquePtrValue(result.ToValue())));
+  Respond(OneArgument(base::Value(result.ToValue())));
 }
 
 ExtensionFunction::ResponseAction
@@ -570,7 +570,7 @@ void WebrtcLoggingPrivateStartEventLoggingFunction::FireCallback(
     DCHECK(error_message.empty());
     api::webrtc_logging_private::StartEventLoggingResult result;
     result.log_id = log_id;
-    Respond(OneArgument(base::Value::FromUniquePtrValue(result.ToValue())));
+    Respond(OneArgument(base::Value(result.ToValue())));
   } else {
     DCHECK(log_id.empty());
     DCHECK(!error_message.empty());

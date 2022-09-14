@@ -31,8 +31,8 @@ api::side_panel::PanelOptions GetPanelOptionsFromManifest(
 // TODO(crbug.com/1332599): Add a Clone() method for generated types.
 api::side_panel::PanelOptions CloneOptions(
     const api::side_panel::PanelOptions& options) {
-  auto clone = api::side_panel::PanelOptions::FromValue(
-      base::Value(std::move(options.ToValue()->GetDict())));
+  auto clone =
+      api::side_panel::PanelOptions::FromValue(base::Value(options.ToValue()));
   return clone ? std::move(*clone) : api::side_panel::PanelOptions();
 }
 

@@ -160,8 +160,7 @@ void AlarmsGetAllFunction::Callback(const AlarmList* alarms) {
   base::Value::List alarms_value;
   if (alarms) {
     for (const std::unique_ptr<Alarm>& alarm : *alarms)
-      alarms_value.Append(
-          base::Value::FromUniquePtrValue(alarm->js_alarm->ToValue()));
+      alarms_value.Append(alarm->js_alarm->ToValue());
   }
   Respond(OneArgument(base::Value(std::move(alarms_value))));
 }

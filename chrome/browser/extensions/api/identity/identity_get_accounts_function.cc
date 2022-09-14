@@ -56,7 +56,7 @@ ExtensionFunction::ResponseAction IdentityGetAccountsFunction::Run() {
     account_info.id =
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
             .gaia;
-    infos.Append(base::Value::FromUniquePtrValue(account_info.ToValue()));
+    infos.Append(base::Value(account_info.ToValue()));
   }
 
   // If secondary accounts are supported, add all the secondary accounts as
@@ -67,7 +67,7 @@ ExtensionFunction::ResponseAction IdentityGetAccountsFunction::Run() {
           identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync))
         continue;
       account_info.id = account.gaia;
-      infos.Append(base::Value::FromUniquePtrValue(account_info.ToValue()));
+      infos.Append(base::Value(account_info.ToValue()));
     }
   }
 

@@ -145,8 +145,7 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   }
 
   base::Value content_scripts(base::Value::Type::LIST);
-  content_scripts.Append(
-      base::Value::FromUniquePtrValue(content_script.ToValue()));
+  content_scripts.Append(base::Value(content_script.ToValue()));
   root->SetKey(api::content_scripts::ManifestKeys::kContentScripts,
                std::move(content_scripts));
 

@@ -90,7 +90,7 @@ void ActivityLogAPI::StartOrStopListeningForExtensionActivities() {
 void ActivityLogAPI::OnExtensionActivity(scoped_refptr<Action> activity) {
   base::Value::List value;
   ExtensionActivity activity_arg = activity->ConvertToExtensionActivity();
-  value.Append(base::Value::FromUniquePtrValue(activity_arg.ToValue()));
+  value.Append(activity_arg.ToValue());
   auto event = std::make_unique<Event>(
       events::ACTIVITY_LOG_PRIVATE_ON_EXTENSION_ACTIVITY,
       activity_log_private::OnExtensionActivity::kEventName, std::move(value),

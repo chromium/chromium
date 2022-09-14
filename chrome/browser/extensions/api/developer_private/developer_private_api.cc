@@ -653,8 +653,7 @@ void DeveloperPrivateEventRouter::OnExtensionAllowlistWarningStateChanged(
 
 void DeveloperPrivateEventRouter::OnExtensionManagementSettingsChanged() {
   base::Value::List args;
-  args.Append(base::Value::FromUniquePtrValue(
-      DeveloperPrivateAPI::CreateProfileInfo(profile_)->ToValue()));
+  args.Append(DeveloperPrivateAPI::CreateProfileInfo(profile_)->ToValue());
 
   auto event = std::make_unique<Event>(
       events::DEVELOPER_PRIVATE_ON_PROFILE_STATE_CHANGED,
@@ -673,7 +672,7 @@ void DeveloperPrivateEventRouter::OnUserPermissionsSettingsChanged(
   developer::UserSiteSettings user_site_settings =
       ConvertToUserSiteSettings(settings);
   base::Value::List args;
-  args.Append(base::Value::FromUniquePtrValue(user_site_settings.ToValue()));
+  args.Append(user_site_settings.ToValue());
 
   auto event = std::make_unique<Event>(
       events::DEVELOPER_PRIVATE_ON_USER_SITE_SETTINGS_CHANGED,
@@ -691,8 +690,7 @@ void DeveloperPrivateEventRouter::OnExtensionPermissionsUpdated(
 
 void DeveloperPrivateEventRouter::OnProfilePrefChanged() {
   base::Value::List args;
-  args.Append(base::Value::FromUniquePtrValue(
-      DeveloperPrivateAPI::CreateProfileInfo(profile_)->ToValue()));
+  args.Append(DeveloperPrivateAPI::CreateProfileInfo(profile_)->ToValue());
   auto event = std::make_unique<Event>(
       events::DEVELOPER_PRIVATE_ON_PROFILE_STATE_CHANGED,
       developer::OnProfileStateChanged::kEventName, std::move(args));
@@ -746,7 +744,7 @@ void DeveloperPrivateEventRouter::BroadcastItemStateChangedHelper(
   }
 
   base::Value::List args;
-  args.Append(base::Value::FromUniquePtrValue(event_data.ToValue()));
+  args.Append(event_data.ToValue());
   std::unique_ptr<Event> event(
       new Event(events::DEVELOPER_PRIVATE_ON_ITEM_STATE_CHANGED,
                 developer::OnItemStateChanged::kEventName, std::move(args)));
@@ -956,8 +954,7 @@ void DeveloperPrivateGetExtensionInfoFunction::OnInfosGenerated(
     ExtensionInfoGenerator::ExtensionInfoList list) {
   DCHECK_LE(1u, list.size());
   Respond(list.empty() ? Error(kNoSuchExtensionError)
-                       : WithArguments(base::Value::FromUniquePtrValue(
-                             list[0].ToValue())));
+                       : WithArguments(list[0].ToValue()));
 }
 
 DeveloperPrivateGetExtensionSizeFunction::
@@ -1033,8 +1030,7 @@ DeveloperPrivateGetProfileConfigurationFunction::Run() {
   if (source_context_type() == Feature::WEBUI_CONTEXT)
     PerformVerificationCheck(browser_context());
 
-  return RespondNow(
-      WithArguments(base::Value::FromUniquePtrValue(info->ToValue())));
+  return RespondNow(WithArguments(info->ToValue()));
 }
 
 DeveloperPrivateUpdateProfileConfigurationFunction::
@@ -1219,9 +1215,9 @@ void DeveloperPrivateReloadFunction::OnGotManifestError(
   // ExtensionService::ReloadExtension doesn't behave well with an extension
   // that failed to reload, and untangling that mess is quite significant.
   // See https://crbug.com/792277.
-  Respond(WithArguments(base::Value::FromUniquePtrValue(
+  Respond(WithArguments(
       CreateLoadError(file_path, error, line_number, manifest, retry_guid)
-          .ToValue())));
+          .ToValue()));
 }
 
 void DeveloperPrivateReloadFunction::ClearObservers() {
@@ -1371,9 +1367,9 @@ void DeveloperPrivateLoadUnpackedFunction::OnGotManifestError(
     size_t line_number,
     const std::string& manifest) {
   DCHECK(!retry_guid_.empty());
-  Respond(WithArguments(base::Value::FromUniquePtrValue(
+  Respond(WithArguments(
       CreateLoadError(file_path, error, line_number, manifest, retry_guid_)
-          .ToValue())));
+          .ToValue()));
 }
 
 DeveloperPrivateInstallDroppedFileFunction::
@@ -1491,7 +1487,7 @@ void DeveloperPrivatePackDirectoryFunction::OnPackSuccess(
   response.message = base::UTF16ToUTF8(
       PackExtensionJob::StandardSuccessMessage(crx_file, pem_file));
   response.status = developer::PACK_STATUS_SUCCESS;
-  Respond(WithArguments(base::Value::FromUniquePtrValue(response.ToValue())));
+  Respond(WithArguments(response.ToValue()));
   pack_job_.reset();
   Release();  // Balanced in Run().
 }
@@ -1509,7 +1505,7 @@ void DeveloperPrivatePackDirectoryFunction::OnPackFailure(
   } else {
     response.status = developer::PACK_STATUS_ERROR;
   }
-  Respond(WithArguments(base::Value::FromUniquePtrValue(response.ToValue())));
+  Respond(WithArguments(response.ToValue()));
   pack_job_.reset();
   Release();  // Balanced in Run().
 }
@@ -1538,16 +1534,14 @@ ExtensionFunction::ResponseAction DeveloperPrivatePackDirectoryFunction::Run() {
           IDS_EXTENSION_PACK_DIALOG_ERROR_ROOT_INVALID);
 
     response.status = developer::PACK_STATUS_ERROR;
-    return RespondNow(
-        WithArguments(base::Value::FromUniquePtrValue(response.ToValue())));
+    return RespondNow(WithArguments(response.ToValue()));
   }
 
   if (!key_path_str_.empty() && key_file.empty()) {
     response.message = l10n_util::GetStringUTF8(
         IDS_EXTENSION_PACK_DIALOG_ERROR_KEY_INVALID);
     response.status = developer::PACK_STATUS_ERROR;
-    return RespondNow(
-        WithArguments(base::Value::FromUniquePtrValue(response.ToValue())));
+    return RespondNow(WithArguments(response.ToValue()));
   }
 
   AddRef();  // Balanced in OnPackSuccess / OnPackFailure.
@@ -1937,7 +1931,7 @@ void DeveloperPrivateRequestFileSourceFunction::Finish(
   response.highlight = highlighter->GetFeature();
   response.after_highlight = highlighter->GetAfterFeature();
 
-  Respond(WithArguments(base::Value::FromUniquePtrValue(response.ToValue())));
+  Respond(WithArguments(response.ToValue()));
 }
 
 DeveloperPrivateOpenDevToolsFunction::DeveloperPrivateOpenDevToolsFunction() {}
@@ -2287,8 +2281,7 @@ DeveloperPrivateGetUserSiteSettingsFunction::Run() {
   developer::UserSiteSettings user_site_settings = ConvertToUserSiteSettings(
       PermissionsManager::Get(browser_context())->GetUserPermissionsSettings());
 
-  return RespondNow(WithArguments(
-      base::Value::FromUniquePtrValue(user_site_settings.ToValue())));
+  return RespondNow(WithArguments(user_site_settings.ToValue()));
 }
 
 DeveloperPrivateAddUserSpecifiedSitesFunction::

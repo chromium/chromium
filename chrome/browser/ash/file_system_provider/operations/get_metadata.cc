@@ -50,8 +50,8 @@ bool ConvertRequestValueToFileInfo(std::unique_ptr<RequestValue> value,
 
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_MODIFICATION_TIME) {
     const std::string* input_modification_time =
-        params->metadata.modification_time->additional_properties.GetDict()
-            .FindString("value");
+        params->metadata.modification_time->additional_properties.FindString(
+            "value");
 
     if (input_modification_time) {
       // Allow to pass invalid modification time, since there is no way to
@@ -106,8 +106,7 @@ bool ValidateIDLEntryMetadata(
     if (!metadata.modification_time)
       return false;
     const std::string* input_modification_time =
-        metadata.modification_time->additional_properties.GetDict().FindString(
-            "value");
+        metadata.modification_time->additional_properties.FindString("value");
     if (!input_modification_time) {
       return false;
     }

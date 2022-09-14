@@ -251,7 +251,7 @@ TEST(RulesRegistryTest, TwoRulesInManifest) {
       "    \"instanceType\" : \"declarativeContent.PageStateMatcher\""
       "  }]"
       "}");
-  EXPECT_EQ(*expected_rule_0, *get_rules[0]->ToValue());
+  EXPECT_EQ(*expected_rule_0, get_rules[0]->ToValue());
 
   std::unique_ptr<base::DictionaryValue> expected_rule_1 = ParseDictionary(
       "{"
@@ -265,7 +265,7 @@ TEST(RulesRegistryTest, TwoRulesInManifest) {
       "    \"instanceType\" : \"declarativeContent.PageStateMatcher\""
       "  }]"
       "}");
-  EXPECT_EQ(*expected_rule_1, *get_rules[1]->ToValue());
+  EXPECT_EQ(*expected_rule_1, get_rules[1]->ToValue());
 }
 
 // Tests verifies that rules defined in the manifest cannot be deleted but

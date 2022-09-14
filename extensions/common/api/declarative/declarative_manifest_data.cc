@@ -169,9 +169,8 @@ DeclarativeManifestData::RulesForEvent(const std::string& event) {
     // TODO(rdevlin.cronin): It would be nice if we could have the RulesRegistry
     // reference the rules owned here, but the ownership issues are a bit
     // tricky. Revisit this.
-    std::unique_ptr<base::DictionaryValue> rule_value = rule.ToValue();
     std::unique_ptr<DeclarativeManifestData::Rule> rule_copy =
-        DeclarativeManifestData::Rule::FromValue(*rule_value);
+        DeclarativeManifestData::Rule::FromValue(base::Value(rule.ToValue()));
     result.push_back(std::move(*rule_copy));
   }
   return result;

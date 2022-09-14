@@ -264,7 +264,7 @@ void ProcessesEventRouter::OnTasksRefreshedWithBackgroundCalculations(
 
   // Get the data of tasks sharing the same process only once.
   std::set<base::ProcessId> seen_processes;
-  base::DictionaryValue processes_dictionary;
+  base::Value::Dict processes_dictionary;
   for (const auto& task_id : task_ids) {
     // We are not interested in tasks, but rather the processes on which they
     // run.
@@ -305,7 +305,7 @@ void ProcessesEventRouter::OnTasksRefreshedWithBackgroundCalculations(
   DCHECK(has_on_updated_listeners || has_on_updated_with_memory_listeners);
   if (has_on_updated_listeners) {
     api::processes::OnUpdated::Processes processes;
-    processes.additional_properties.MergeDictionary(&processes_dictionary);
+    processes.additional_properties.Merge(processes_dictionary.Clone());
     // NOTE: If there are listeners to the updates with memory as well,
     // listeners to onUpdated (without memory) will also get the memory info
     // of processes as an added bonus.
@@ -316,7 +316,7 @@ void ProcessesEventRouter::OnTasksRefreshedWithBackgroundCalculations(
 
   if (has_on_updated_with_memory_listeners) {
     api::processes::OnUpdatedWithMemory::Processes processes;
-    processes.additional_properties.MergeDictionary(&processes_dictionary);
+    processes.additional_properties.Merge(std::move(processes_dictionary));
     DispatchEvent(events::PROCESSES_ON_UPDATED_WITH_MEMORY,
                   api::processes::OnUpdatedWithMemory::kEventName,
                   api::processes::OnUpdatedWithMemory::Create(processes));

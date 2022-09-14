@@ -620,8 +620,7 @@ void RunDownloadQuery(const downloads::DownloadQuery& query_in,
       return;
   }
 
-  std::unique_ptr<base::DictionaryValue> query_in_value(query_in.ToValue());
-  for (const auto query_json_field : query_in_value->GetDict()) {
+  for (const auto query_json_field : query_in.ToValue()) {
     FilterTypeMap::const_iterator filter_type =
         filter_types.Get().find(query_json_field.first);
     if (filter_type != filter_types.Get().end()) {
