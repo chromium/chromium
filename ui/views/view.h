@@ -1441,6 +1441,16 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   void RemoveObserver(ViewObserver* observer);
   bool HasObserver(const ViewObserver* observer) const;
 
+  // http://crbug.com/1162949 : Instrumentation that indicates if this is alive.
+  // Callers should not depend on this as it is meant to be temporary.
+  enum class LifeCycleState : uint32_t {
+    kAlive = 0x600D600D,
+    kDestroying = 0x90141013,
+    kDestroyed = 0xBAADBAAD,
+  };
+
+  LifeCycleState life_cycle_state() const { return life_cycle_state_; }
+
  protected:
   // Used to track a drag. RootView passes this into
   // ProcessMousePressed/Dragged.
@@ -1701,12 +1711,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   FRIEND_TEST_ALL_PREFIXES(ViewTest, PaintWithMovedViewUsesCache);
   FRIEND_TEST_ALL_PREFIXES(ViewTest, PaintWithMovedViewUsesCacheInRTL);
   FRIEND_TEST_ALL_PREFIXES(ViewTest, PaintWithUnknownInvalidation);
-
-  // http://crbug.com/1162949 : Instrumentation that indicates if this is alive.
-  enum class LifeCycleState : uint32_t {
-    kAlive = 0x600D600D,
-    kDestroyed = 0xBAADBAAD,
-  };
 
   // This is the default view layout. It is a very simple version of FillLayout,
   // which merely sets the bounds of the children to the content bounds. The

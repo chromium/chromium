@@ -227,6 +227,8 @@ View::View() {
 }
 
 View::~View() {
+  life_cycle_state_ = LifeCycleState::kDestroying;
+
   if (parent_)
     parent_->RemoveChildView(this);
 

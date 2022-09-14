@@ -101,15 +101,12 @@ class ViewBlurObserver : public ViewObserver {
     observation_.Observe(view);
   }
 
-  // This is fired while the view is being destroyed, after the cache entry is
-  // removed by the AXWidgetObjWrapper. Re-create the cache entry so we can
-  // test that it will also be removed.
   void OnViewBlurred(View* view) override {
     ASSERT_FALSE(was_called());
     observation_.Reset();
 
-    ASSERT_EQ(cache_->GetID(view), ui::kInvalidAXNodeID);
-    cache_->GetOrCreate(view);
+    // The cache entry gets deleted in
+    // AXViewObjWrapper::OnViewIsDeleting which occurs later in ~View.
   }
 
   bool was_called() { return !observation_.IsObserving(); }

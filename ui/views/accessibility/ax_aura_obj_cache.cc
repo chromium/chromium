@@ -74,6 +74,11 @@ AXAuraObjWrapper* AXAuraObjCache::GetOrCreate(View* view) {
   // Avoid problems with transient focus events. https://crbug.com/729449
   if (!view->GetWidget())
     return nullptr;
+
+  DCHECK(view_to_id_map_.find(view) != view_to_id_map_.end() ||
+         // This is either a new view or we're erroneously here during ~View.
+         view->life_cycle_state() == View::LifeCycleState::kAlive);
+
   return CreateInternal<AXViewObjWrapper>(view, &view_to_id_map_);
 }
 
