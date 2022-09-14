@@ -198,6 +198,7 @@ android_library("content_full_java") {
 
   sources = [
     "java/src/org/chromium/content/browser/AppWebMessagePort.java",
+    "java/src/org/chromium/content/browser/AppWebMessagePortDescriptor.java",
     "java/src/org/chromium/content/browser/AudioFocusDelegate.java",
     "java/src/org/chromium/content/browser/BackgroundSyncNetworkObserver.java",
     "java/src/org/chromium/content/browser/BindingManager.java",
@@ -223,7 +224,6 @@ android_library("content_full_java") {
     "java/src/org/chromium/content/browser/JoystickHandler.java",
     "java/src/org/chromium/content/browser/LauncherThread.java",
     "java/src/org/chromium/content/browser/MediaSessionImpl.java",
-    "java/src/org/chromium/content/browser/MessagePayloadJni.java",
     "java/src/org/chromium/content/browser/MotionEventSynthesizerImpl.java",
     "java/src/org/chromium/content/browser/NfcHost.java",
     "java/src/org/chromium/content/browser/PopupController.java",
@@ -423,6 +423,7 @@ generate_jni("content_jni_headers") {
     "java/src/org/chromium/content/app/ContentChildProcessServiceDelegate.java",
     "java/src/org/chromium/content/app/ContentMain.java",
     "java/src/org/chromium/content/browser/AppWebMessagePort.java",
+    "java/src/org/chromium/content/browser/AppWebMessagePortDescriptor.java",
     "java/src/org/chromium/content/browser/AudioFocusDelegate.java",
     "java/src/org/chromium/content/browser/BackgroundSyncNetworkObserver.java",
     "java/src/org/chromium/content/browser/BrowserContextHandleImpl.java",
@@ -441,7 +442,6 @@ generate_jni("content_jni_headers") {
     "java/src/org/chromium/content/browser/JavascriptInjectorImpl.java",
     "java/src/org/chromium/content/browser/LauncherThread.java",
     "java/src/org/chromium/content/browser/MediaSessionImpl.java",
-    "java/src/org/chromium/content/browser/MessagePayloadJni.java",
     "java/src/org/chromium/content/browser/NfcHost.java",
     "java/src/org/chromium/content/browser/RenderWidgetHostViewImpl.java",
     "java/src/org/chromium/content/browser/ScreenOrientationProviderImpl.java",
@@ -536,6 +536,7 @@ android_library("content_javatests") {
   ]
 
   sources = [
+    "javatests/src/org/chromium/content/browser/AppWebMessagePortDescriptorTest.java",
     "javatests/src/org/chromium/content/browser/BrowserStartupControllerTest.java",
     "javatests/src/org/chromium/content/browser/ChildProcessLauncherHelperTest.java",
     "javatests/src/org/chromium/content/browser/ChildProcessLauncherIntegrationTest.java",
