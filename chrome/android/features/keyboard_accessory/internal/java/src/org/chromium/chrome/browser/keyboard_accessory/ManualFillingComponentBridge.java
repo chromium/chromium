@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
+import static org.chromium.base.ThreadUtils.assertOnUiThread;
+
 import android.app.Activity;
 import android.util.SparseArray;
 
@@ -63,6 +65,7 @@ class ManualFillingComponentBridge {
 
     @CalledByNative
     private void onItemsAvailable(Object objAccessorySheetData) {
+        assertOnUiThread();
         AccessorySheetData accessorySheetData = (AccessorySheetData) objAccessorySheetData;
         PropertyProvider<AccessorySheetData> provider =
                 getOrCreateProvider(accessorySheetData.getSheetType());

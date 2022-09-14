@@ -19,7 +19,7 @@ class MockManualFillingView : public ManualFillingViewInterface {
 
   ~MockManualFillingView() override;
 
-  MOCK_METHOD1(OnItemsAvailable, void(const autofill::AccessorySheetData&));
+  MOCK_METHOD1(OnItemsAvailable, void(autofill::AccessorySheetData));
   MOCK_METHOD1(OnAutomaticGenerationStatusChanged, void(bool));
   MOCK_METHOD0(CloseAccessorySheet, void());
   MOCK_METHOD0(SwapSheetWithKeyboard, void());

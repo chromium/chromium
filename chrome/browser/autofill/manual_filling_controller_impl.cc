@@ -231,7 +231,7 @@ void ManualFillingControllerImpl::OnToggleChanged(
 
 void ManualFillingControllerImpl::RequestAccessorySheet(
     autofill::AccessoryTabType tab_type,
-    base::OnceCallback<void(const autofill::AccessorySheetData&)> callback) {
+    base::OnceCallback<void(autofill::AccessorySheetData)> callback) {
   // TODO(crbug.com/1169167): Consider to execute this async to reduce jank.
   absl::optional<AccessorySheetData> sheet =
       GetControllerForTabType(tab_type)->GetSheetData();

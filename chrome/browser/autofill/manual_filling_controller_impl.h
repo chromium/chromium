@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "chrome/browser/autofill/accessory_controller.h"
@@ -59,8 +58,7 @@ class ManualFillingControllerImpl
                        bool enabled) const override;
   void RequestAccessorySheet(
       autofill::AccessoryTabType tab_type,
-      base::OnceCallback<void(const autofill::AccessorySheetData&)> callback)
-      override;
+      base::OnceCallback<void(autofill::AccessorySheetData)> callback) override;
 
   gfx::NativeView container_view() const override;
 

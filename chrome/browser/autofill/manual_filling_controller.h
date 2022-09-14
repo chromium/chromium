@@ -130,8 +130,7 @@ class ManualFillingController {
   // Called by the UI to explicitly request a new sheet of the given type.
   virtual void RequestAccessorySheet(
       autofill::AccessoryTabType tab_type,
-      base::OnceCallback<void(const autofill::AccessorySheetData&)>
-          callback) = 0;
+      base::OnceCallback<void(autofill::AccessorySheetData)> callback) = 0;
 
   // -----------------
   // Member accessors:

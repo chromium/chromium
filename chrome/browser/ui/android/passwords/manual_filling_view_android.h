@@ -10,6 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/autofill/manual_filling_view_interface.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 
@@ -38,7 +39,7 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
   ~ManualFillingViewAndroid() override;
 
   // ManualFillingViewInterface:
-  void OnItemsAvailable(const autofill::AccessorySheetData& data) override;
+  void OnItemsAvailable(autofill::AccessorySheetData data) override;
   void OnAutomaticGenerationStatusChanged(bool available) override;
   void CloseAccessorySheet() override;
   void SwapSheetWithKeyboard() override;
@@ -77,16 +78,11 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
                       base::android::ScopedJavaGlobalRef<jobject> j_callback,
                       const gfx::Image& image);
 
-  base::android::ScopedJavaLocalRef<jobject>
-  ConvertAccessorySheetDataToJavaObject(
-      JNIEnv* env,
-      const autofill::AccessorySheetData& tab_data);
-
-  autofill::AccessorySheetField ConvertJavaUserInfoField(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& j_field_to_convert);
-
   base::android::ScopedJavaGlobalRef<jobject> GetOrCreateJavaObject();
+
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner_ =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::BEST_EFFORT});
 
   // The controller provides data for this view and owns it.
   raw_ptr<ManualFillingController> controller_;
