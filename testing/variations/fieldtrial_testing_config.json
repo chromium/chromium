@@ -8924,44 +8924,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_MaxContextWords_15",
-                    "params": {
-                        "SharedHighlightingMaxContextWords": "15"
-                    },
-                    "enable_features": [
-                        "SharedHighlightingRefinedMaxContextWords"
-                    ]
-                },
-                {
-                    "name": "Enabled_MaxContextWords_5",
-                    "params": {
-                        "SharedHighlightingMaxContextWords": "5"
-                    },
-                    "enable_features": [
-                        "SharedHighlightingRefinedMaxContextWords"
-                    ]
-                },
-                {
-                    "name": "Enabled_MaxContextWords_10",
+                    "name": "Enabled_MaxContextWords_10_20220913",
                     "params": {
                         "SharedHighlightingMaxContextWords": "10"
                     },
                     "enable_features": [
-                        "SharedHighlightingRefinedMaxContextWords"
-                    ]
-                },
-                {
-                    "name": "Enabled_MaxContextWords_20",
-                    "params": {
-                        "SharedHighlightingMaxContextWords": "20"
-                    },
-                    "enable_features": [
-                        "SharedHighlightingRefinedMaxContextWords"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
                         "SharedHighlightingRefinedMaxContextWords"
                     ]
                 }
