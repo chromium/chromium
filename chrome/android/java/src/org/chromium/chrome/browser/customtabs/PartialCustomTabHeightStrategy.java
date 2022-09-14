@@ -288,8 +288,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     }
 
     private int initialHeightInPortraitMode() {
-        assert !isFullHeight() : "initialHeightInPortraitModie() is used in portrait mode only";
-        return MathUtils.clamp(mUnclampedInitialHeight, mDisplayHeight,
+        assert !isFullHeight() : "initialHeightInPortraitMode() is used in portrait mode only";
+        return MathUtils.clamp(mUnclampedInitialHeight, mDisplayHeight - getStatusBarHeight(),
                 (int) (mDisplayHeight * MINIMAL_HEIGHT_RATIO));
     }
 
@@ -451,7 +451,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             // Resizing by user dragging is not supported in landscape mode; no need to set
             // the status here.
             if (!mWindowAboveNavbar) {
-                height = mDisplayHeight - maxExpandedY;
+                height = mDisplayHeight;
                 mActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
             }
         } else {

@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -25,6 +26,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Insets;
+import android.graphics.Rect;
+import android.os.Build;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
@@ -36,7 +40,9 @@ import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.view.ViewStub;
 import android.view.Window;
+import android.view.WindowInsets;
 import android.view.WindowManager;
+import android.view.WindowMetrics;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -52,6 +58,7 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
@@ -97,6 +104,7 @@ public class PartialCustomTabHeightStrategyTest {
     private static final int INITIAL_HEIGHT = DEVICE_HEIGHT / 2 - NAVBAR_HEIGHT;
     private static final int FULL_HEIGHT = DEVICE_HEIGHT - NAVBAR_HEIGHT;
     private static final int MULTIWINDOW_HEIGHT = FULL_HEIGHT / 2;
+    private static final int STATUS_BAR_HEIGHT = 68;
 
     @Parameters
     public static Collection<Object[]> data() {
@@ -186,6 +194,7 @@ public class PartialCustomTabHeightStrategyTest {
         mAttributes = new WindowManager.LayoutParams();
         when(mWindow.getAttributes()).thenReturn(mAttributes);
         when(mWindow.getDecorView()).thenReturn(mDecorView);
+        when(mWindow.getContext()).thenReturn(mActivity);
         when(mDecorView.getRootView()).thenReturn(mRootView);
         when(mRootView.getLayoutParams()).thenReturn(mAttributes);
         when(mWindowManager.getDefaultDisplay()).thenReturn(mDisplay);
@@ -277,6 +286,58 @@ public class PartialCustomTabHeightStrategyTest {
         assertTabIsFullHeight(mAttributeResults.get(0));
     }
 
+    private void doTestHeightWithStatusBar() {
+        when(mContentFrame.getHeight())
+                .thenReturn(DEVICE_HEIGHT - NAVBAR_HEIGHT - STATUS_BAR_HEIGHT);
+        createPcctAtHeight(DEVICE_HEIGHT + 100);
+        verifyWindowFlagsSet();
+        assertEquals(1, mAttributeResults.size());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void create_maxHeightWithStatusBar_R() {
+        Assume.assumeTrue(
+                "Fix for status bar height only applied in 'window-above-navbar' version.",
+                mWindowAboveNavbar);
+        configureStatusBarHeightForR();
+        doTestHeightWithStatusBar();
+        assertTabBelowStatusBar(mAttributeResults.get(0));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.Q)
+    public void create_maxHeightWithStatusBar_Q() {
+        Assume.assumeTrue(
+                "Fix for status bar height only applied in 'window-above-navbar' version.",
+                mWindowAboveNavbar);
+        configureStatusBarHeightForQ();
+        doTestHeightWithStatusBar();
+        assertTabBelowStatusBar(mAttributeResults.get(0));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void create_maxHeightWithStatusBar_landscape_R() {
+        Assume.assumeTrue("Fix for status bar color only applied in 'window-above-navbar' version.",
+                mWindowAboveNavbar);
+        configureStatusBarHeightForR();
+        configLandscapeMode();
+        doTestHeightWithStatusBar();
+        assertEquals(WindowManager.LayoutParams.MATCH_PARENT, mAttributeResults.get(0).height);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.Q)
+    public void create_maxHeightWithStatusBar_landscape_Q() {
+        Assume.assumeTrue("Fix for status bar color only applied in 'window-above-navbar' version.",
+                mWindowAboveNavbar);
+        configureStatusBarHeightForQ();
+        configLandscapeMode();
+        doTestHeightWithStatusBar();
+        assertEquals(WindowManager.LayoutParams.MATCH_PARENT, mAttributeResults.get(0).height);
+    }
+
     @Test
     public void create_landscapeOrientation() {
         configLandscapeMode();
@@ -350,6 +411,14 @@ public class PartialCustomTabHeightStrategyTest {
         }
     }
 
+    private void assertTabBelowStatusBar(WindowManager.LayoutParams attrs) {
+        if (mWindowAboveNavbar) {
+            assertEquals(FULL_HEIGHT - STATUS_BAR_HEIGHT, attrs.height);
+        } else {
+            assertEquals(STATUS_BAR_HEIGHT, attrs.y);
+        }
+    }
+
     private void disableSpinnerAnimation() {
         // Disable animation for the mock spinner view.
         doAnswer(invocation -> {
@@ -383,6 +452,31 @@ public class PartialCustomTabHeightStrategyTest {
         mRealMetrics.heightPixels = DEVICE_WIDTH;
         when(mContentFrame.getHeight()).thenReturn(DEVICE_WIDTH);
         when(mDisplay.getRotation()).thenReturn(direction);
+    }
+
+    private void configureStatusBarHeightForR() {
+        // Setup for R+
+        WindowMetrics windowMetric = Mockito.mock(WindowMetrics.class);
+        WindowInsets windowInsets = Mockito.mock(WindowInsets.class);
+
+        doReturn(windowMetric).when(mWindowManager).getCurrentWindowMetrics();
+        doReturn(windowInsets).when(windowMetric).getWindowInsets();
+        doReturn(new Rect(0, 0, mRealMetrics.widthPixels, mRealMetrics.heightPixels))
+                .when(windowMetric)
+                .getBounds();
+        doReturn(Insets.of(0, STATUS_BAR_HEIGHT, 0, 0))
+                .when(windowInsets)
+                .getInsets(eq(WindowInsets.Type.statusBars()));
+        doReturn(Insets.of(0, 0, 0, NAVBAR_HEIGHT))
+                .when(windowInsets)
+                .getInsets(eq(WindowInsets.Type.navigationBars()));
+    }
+
+    private void configureStatusBarHeightForQ() {
+        // Setup for Q-
+        int statusBarId = 54321;
+        doReturn(statusBarId).when(mResources).getIdentifier(eq("status_bar_height"), any(), any());
+        doReturn(STATUS_BAR_HEIGHT).when(mResources).getDimensionPixelSize(eq(statusBarId));
     }
 
     private void verifyWindowFlagsSet() {
