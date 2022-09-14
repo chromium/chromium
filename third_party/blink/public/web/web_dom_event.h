@@ -38,7 +38,7 @@ namespace blink {
 
 class Event;
 
-class WebDOMEvent {
+class BLINK_EXPORT WebDOMEvent {
  public:
   ~WebDOMEvent() { Reset(); }
 
@@ -49,14 +49,14 @@ class WebDOMEvent {
     return *this;
   }
 
-  BLINK_EXPORT void Reset();
-  BLINK_EXPORT void Assign(const WebDOMEvent&);
+  void Reset();
+  void Assign(const WebDOMEvent&);
 
   bool IsNull() const { return private_.IsNull(); }
 
 #if INSIDE_BLINK
-  BLINK_EXPORT WebDOMEvent(Event*);
-  BLINK_EXPORT operator Event*() const;
+  WebDOMEvent(Event*);
+  operator Event*() const;
 #endif
 
   template <typename T>

@@ -39,7 +39,7 @@ namespace blink {
 class HTMLLabelElement;
 
 // Provides readonly access to some properties of a DOM label element node.
-class WebLabelElement final : public WebElement {
+class BLINK_EXPORT WebLabelElement final : public WebElement {
  public:
   WebLabelElement() : WebElement() {}
   WebLabelElement(const WebLabelElement& element) = default;
@@ -51,7 +51,7 @@ class WebLabelElement final : public WebElement {
 
   void Assign(const WebLabelElement& element) { WebElement::Assign(element); }
 
-  BLINK_EXPORT WebElement CorrespondingControl();
+  WebElement CorrespondingControl();
 
 #if INSIDE_BLINK
   WebLabelElement(HTMLLabelElement*);

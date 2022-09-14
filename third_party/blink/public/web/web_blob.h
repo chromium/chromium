@@ -48,7 +48,7 @@ namespace blink {
 
 class Blob;
 
-class WebBlob {
+class BLINK_EXPORT WebBlob {
  public:
   ~WebBlob() { Reset(); }
 
@@ -59,22 +59,20 @@ class WebBlob {
     return *this;
   }
 
-  BLINK_EXPORT static WebBlob CreateFromUUID(const WebString& uuid,
-                                             const WebString& type,
-                                             uint64_t size);
-  BLINK_EXPORT static WebBlob CreateFromFile(const WebString& path,
-                                             uint64_t size);
-  BLINK_EXPORT static WebBlob FromV8Value(v8::Local<v8::Value>);
+  static WebBlob CreateFromUUID(const WebString& uuid,
+                                const WebString& type,
+                                uint64_t size);
+  static WebBlob CreateFromFile(const WebString& path, uint64_t size);
+  static WebBlob FromV8Value(v8::Local<v8::Value>);
 
-  BLINK_EXPORT void Reset();
-  BLINK_EXPORT void Assign(const WebBlob&);
-  BLINK_EXPORT WebString Uuid();
+  void Reset();
+  void Assign(const WebBlob&);
+  WebString Uuid();
 
   bool IsNull() const { return private_.IsNull(); }
 
-  BLINK_EXPORT v8::Local<v8::Value> ToV8Value(
-      v8::Local<v8::Object> creation_context,
-      v8::Isolate*);
+  v8::Local<v8::Value> ToV8Value(v8::Local<v8::Object> creation_context,
+                                 v8::Isolate*);
 
 #if INSIDE_BLINK
   WebBlob(Blob*);

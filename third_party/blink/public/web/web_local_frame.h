@@ -117,7 +117,7 @@ enum class TreeScopeType;
 // Interface for interacting with in process frames. This contains methods that
 // require interacting with a frame's document.
 // FIXME: Move lots of methods from WebFrame in here.
-class WebLocalFrame : public WebFrame {
+class BLINK_EXPORT WebLocalFrame : public WebFrame {
  public:
   // Creates a main local frame for the WebView. Can only be invoked when no
   // main frame exists yet. Call Close() to release the returned frame.
@@ -125,7 +125,7 @@ class WebLocalFrame : public WebFrame {
   // TODO(dcheng): The argument order should be more consistent with
   // CreateLocalChild() and CreateRemoteChild() in WebRemoteFrame... but it's so
   // painful...
-  BLINK_EXPORT static WebLocalFrame* CreateMainFrame(
+  static WebLocalFrame* CreateMainFrame(
       WebView*,
       WebLocalFrameClient*,
       blink::InterfaceRegistry*,
@@ -157,13 +157,12 @@ class WebLocalFrame : public WebFrame {
   //
   // Otherwise, if the load should not commit, call Detach() to discard the
   // frame.
-  BLINK_EXPORT static WebLocalFrame* CreateProvisional(
-      WebLocalFrameClient*,
-      InterfaceRegistry*,
-      const LocalFrameToken& frame_token,
-      WebFrame* previous_web_frame,
-      const FramePolicy&,
-      const WebString& name);
+  static WebLocalFrame* CreateProvisional(WebLocalFrameClient*,
+                                          InterfaceRegistry*,
+                                          const LocalFrameToken& frame_token,
+                                          WebFrame* previous_web_frame,
+                                          const FramePolicy&,
+                                          const WebString& name);
 
   // Creates a new local child of this frame. Similar to the other methods that
   // create frames, the returned frame should be freed by calling Close() when
@@ -177,16 +176,15 @@ class WebLocalFrame : public WebFrame {
   // Returns the WebFrame associated with the current V8 context. This
   // function can return 0 if the context is associated with a Document that
   // is not currently being displayed in a Frame.
-  BLINK_EXPORT static WebLocalFrame* FrameForCurrentContext();
+  static WebLocalFrame* FrameForCurrentContext();
 
   // Returns the frame corresponding to the given context. This can return 0
   // if the context is detached from the frame, or if the context doesn't
   // correspond to a frame (e.g., workers).
-  BLINK_EXPORT static WebLocalFrame* FrameForContext(v8::Local<v8::Context>);
+  static WebLocalFrame* FrameForContext(v8::Local<v8::Context>);
 
   // Returns the frame associated with the |frame_token|.
-  BLINK_EXPORT static WebLocalFrame* FromFrameToken(
-      const LocalFrameToken& frame_token);
+  static WebLocalFrame* FromFrameToken(const LocalFrameToken& frame_token);
 
   virtual WebLocalFrameClient* Client() const = 0;
 
@@ -244,7 +242,7 @@ class WebLocalFrame : public WebFrame {
   // Creates and returns an associated FrameWidget for this frame. The frame
   // must be a LocalRoot. The WebLocalFrame maintins ownership of the
   // WebFrameWidget that was created.
-  BLINK_EXPORT WebFrameWidget* InitializeFrameWidget(
+  WebFrameWidget* InitializeFrameWidget(
       CrossVariantMojoAssociatedRemote<mojom::FrameWidgetHostInterfaceBase>
           frame_widget_host,
       CrossVariantMojoAssociatedReceiver<mojom::FrameWidgetInterfaceBase>

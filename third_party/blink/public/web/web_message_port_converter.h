@@ -18,12 +18,12 @@ class Value;
 namespace blink {
 class MessagePortChannel;
 
-class WebMessagePortConverter {
+class BLINK_EXPORT WebMessagePortConverter {
  public:
   // Disentangle and extract a MessagePortChannel from a v8 wrapper of
   // MessagePort. If the wrapper is not MessagePort or the MessagePort is
   // neutered, it will return nullopt.
-  BLINK_EXPORT static absl::optional<MessagePortChannel>
+  static absl::optional<MessagePortChannel>
   DisentangleAndExtractMessagePortChannel(v8::Isolate*, v8::Local<v8::Value>);
 };
 

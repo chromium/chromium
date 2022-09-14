@@ -41,7 +41,7 @@ namespace blink {
 class HTMLSelectElement;
 
 // Provides readonly access to some properties of a DOM select element node.
-class WebSelectElement final : public WebFormControlElement {
+class BLINK_EXPORT WebSelectElement final : public WebFormControlElement {
  public:
   WebSelectElement() : WebFormControlElement() {}
   WebSelectElement(const WebSelectElement& element) = default;
@@ -54,7 +54,7 @@ class WebSelectElement final : public WebFormControlElement {
     WebFormControlElement::Assign(element);
   }
 
-  BLINK_EXPORT WebVector<WebElement> GetListItems() const;
+  WebVector<WebElement> GetListItems() const;
 
 #if INSIDE_BLINK
   WebSelectElement(HTMLSelectElement*);

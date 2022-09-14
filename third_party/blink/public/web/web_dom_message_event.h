@@ -51,9 +51,9 @@ class WebFrame;
 // An interface for posting message events to the target frame. The message
 // events are used for communication between documents and described here:
 // http://www.w3.org/TR/2012/WD-webmessaging-20120313/#terminology
-class WebDOMMessageEvent : public WebDOMEvent {
+class BLINK_EXPORT WebDOMMessageEvent : public WebDOMEvent {
  public:
-  BLINK_EXPORT WebDOMMessageEvent(
+  WebDOMMessageEvent(
       const WebSerializedScriptValue& message_data,
       const WebString& origin = WebString(),
       const WebFrame* source_frame = nullptr,
@@ -61,7 +61,7 @@ class WebDOMMessageEvent : public WebDOMEvent {
       WebVector<MessagePortChannel> ports = WebVector<MessagePortChannel>());
   WebDOMMessageEvent() = default;
 
-  BLINK_EXPORT WebString Origin() const;
+  WebString Origin() const;
 
   absl::optional<base::UnguessableToken> locked_agent_cluster_id() const {
     return locked_agent_cluster_id_;

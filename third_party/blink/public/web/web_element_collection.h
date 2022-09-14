@@ -41,7 +41,7 @@ class HTMLCollection;
 class WebElement;
 
 // Provides readonly access to some properties of a DOM node.
-class WebElementCollection {
+class BLINK_EXPORT WebElementCollection {
  public:
   ~WebElementCollection() { Reset(); }
 
@@ -54,12 +54,12 @@ class WebElementCollection {
 
   bool IsNull() const { return private_.IsNull(); }
 
-  BLINK_EXPORT void Reset();
-  BLINK_EXPORT void Assign(const WebElementCollection&);
+  void Reset();
+  void Assign(const WebElementCollection&);
 
-  BLINK_EXPORT unsigned length() const;
-  BLINK_EXPORT WebElement NextItem() const;
-  BLINK_EXPORT WebElement FirstItem() const;
+  unsigned length() const;
+  WebElement NextItem() const;
+  WebElement FirstItem() const;
 
 #if INSIDE_BLINK
   WebElementCollection(HTMLCollection*);

@@ -61,7 +61,7 @@ class WebString;
 class WebURL;
 
 // A container for passing around a reference to AXObject.
-class WebAXObject {
+class BLINK_EXPORT WebAXObject {
  public:
   ~WebAXObject() { Reset(); }
 
@@ -72,137 +72,135 @@ class WebAXObject {
     return *this;
   }
 
-  BLINK_EXPORT bool operator==(const WebAXObject& other) const;
-  BLINK_EXPORT bool operator!=(const WebAXObject& other) const;
-  BLINK_EXPORT bool operator<(const WebAXObject& other) const;
-  BLINK_EXPORT bool operator<=(const WebAXObject& other) const;
-  BLINK_EXPORT bool operator>(const WebAXObject& other) const;
-  BLINK_EXPORT bool operator>=(const WebAXObject& other) const;
-  BLINK_EXPORT static WebAXObject FromWebNode(const WebNode&);
-  BLINK_EXPORT static WebAXObject FromWebDocument(const WebDocument&);
-  BLINK_EXPORT static WebAXObject FromWebDocumentByID(const WebDocument&, int);
-  BLINK_EXPORT static WebAXObject FromWebDocumentFocused(
+  bool operator==(const WebAXObject& other) const;
+  bool operator!=(const WebAXObject& other) const;
+  bool operator<(const WebAXObject& other) const;
+  bool operator<=(const WebAXObject& other) const;
+  bool operator>(const WebAXObject& other) const;
+  bool operator>=(const WebAXObject& other) const;
+  static WebAXObject FromWebNode(const WebNode&);
+  static WebAXObject FromWebDocument(const WebDocument&);
+  static WebAXObject FromWebDocumentByID(const WebDocument&, int);
+  static WebAXObject FromWebDocumentFocused(
       const WebDocument&,
       bool update_layout_if_necessary = true);
-  BLINK_EXPORT static bool MaybeUpdateLayoutAndCheckValidity(
-      const WebDocument&);
-  BLINK_EXPORT static void UpdateLayout(const WebDocument&);
-  BLINK_EXPORT static bool IsDirty(const WebDocument&);
+  static bool MaybeUpdateLayoutAndCheckValidity(const WebDocument&);
+  static void UpdateLayout(const WebDocument&);
+  static bool IsDirty(const WebDocument&);
   // A Freeze() occurs during a serialization run.
   // Used here as a hint for DCHECKS to enforce the following behavior:
   // objects in the ax hierarchy should not be destroyed during serialization.
-  BLINK_EXPORT static void Freeze(const WebDocument&);
-  BLINK_EXPORT static void Thaw(const WebDocument&);
+  static void Freeze(const WebDocument&);
+  static void Thaw(const WebDocument&);
 
-  BLINK_EXPORT void Reset();
-  BLINK_EXPORT void Assign(const WebAXObject&);
-  BLINK_EXPORT bool Equals(const WebAXObject&) const;
+  void Reset();
+  void Assign(const WebAXObject&);
+  bool Equals(const WebAXObject&) const;
 
   bool IsNull() const { return private_.IsNull(); }
   // isDetached also checks for null, so it's safe to just call isDetached.
-  BLINK_EXPORT bool IsDetached() const;
+  bool IsDetached() const;
 
-  BLINK_EXPORT int AxID() const;
+  int AxID() const;
 
   // Get a new AXID that's not used by any accessibility node in this process,
   // for when the client needs to insert additional nodes into the accessibility
   // tree.
-  BLINK_EXPORT int GenerateAXID() const;
+  int GenerateAXID() const;
 
   // Update layout if necessary on the underlying tree and return true if the
   // object is valid. Note that calling this and other methods can cause other
   // WebAXObjects to become invalid, so always check validity of an object
   // before using it.
-  BLINK_EXPORT bool MaybeUpdateLayoutAndCheckValidity();
+  bool MaybeUpdateLayoutAndCheckValidity();
 
   // Return true if this object is still valid (not detached) and has updated
   // layout.
-  BLINK_EXPORT bool CheckValidity();
+  bool CheckValidity();
 
-  BLINK_EXPORT unsigned ChildCount() const;
+  unsigned ChildCount() const;
 
-  BLINK_EXPORT WebAXObject ChildAt(unsigned) const;
-  BLINK_EXPORT WebAXObject ParentObject() const;
+  WebAXObject ChildAt(unsigned) const;
+  WebAXObject ParentObject() const;
 
   // Serialize the properties of this node into |node_data|.
   //
   // TODO(crbug.com/1068668): AX onion soup - finish migrating
   // BlinkAXTreeSource::SerializeNode into AXObject::Serialize and removing
   // the unneeded WebAXObject interfaces below.
-  BLINK_EXPORT void Serialize(ui::AXNodeData* node_data,
-                              ui::AXMode accessibility_mode) const;
+  void Serialize(ui::AXNodeData* node_data,
+                 ui::AXMode accessibility_mode) const;
 
-  BLINK_EXPORT void SerializerClearedNode(int node_id) const;
+  void SerializerClearedNode(int node_id) const;
 
-  BLINK_EXPORT ax::mojom::CheckedState CheckedState() const;
-  BLINK_EXPORT bool IsCheckable() const;
-  BLINK_EXPORT bool IsClickable() const;
-  BLINK_EXPORT bool IsControl() const;
-  BLINK_EXPORT bool IsFocused() const;
-  BLINK_EXPORT bool IsLineBreakingObject() const;
-  BLINK_EXPORT bool IsLinked() const;
-  BLINK_EXPORT bool IsModal() const;
+  ax::mojom::CheckedState CheckedState() const;
+  bool IsCheckable() const;
+  bool IsClickable() const;
+  bool IsControl() const;
+  bool IsFocused() const;
+  bool IsLineBreakingObject() const;
+  bool IsLinked() const;
+  bool IsModal() const;
   // Returns true if this object is an input element of a text field type, such
   // as type="text" or type="tel", or a textarea.
-  BLINK_EXPORT bool IsAtomicTextField() const;
-  BLINK_EXPORT bool IsOffScreen() const;
-  BLINK_EXPORT bool IsSelectedOptionActive() const;
-  BLINK_EXPORT bool IsVisited() const;
+  bool IsAtomicTextField() const;
+  bool IsOffScreen() const;
+  bool IsSelectedOptionActive() const;
+  bool IsVisited() const;
 
-  BLINK_EXPORT WebString AccessKey() const;
-  BLINK_EXPORT bool CanSetValueAttribute() const;
+  WebString AccessKey() const;
+  bool CanSetValueAttribute() const;
   // Deprecated.
-  BLINK_EXPORT void ColorValue(int& r, int& g, int& b) const;
-  BLINK_EXPORT unsigned ColorValue() const;
-  BLINK_EXPORT WebAXObject AriaActiveDescendant() const;
-  BLINK_EXPORT WebString AutoComplete() const;
-  BLINK_EXPORT ax::mojom::AriaCurrentState AriaCurrentState() const;
-  BLINK_EXPORT bool IsEditable() const;
-  BLINK_EXPORT bool AriaOwns(WebVector<WebAXObject>& owns_elements) const;
-  BLINK_EXPORT bool CanvasHasFallbackContent() const;
-  BLINK_EXPORT WebAXObject ErrorMessage() const;
+  void ColorValue(int& r, int& g, int& b) const;
+  unsigned ColorValue() const;
+  WebAXObject AriaActiveDescendant() const;
+  WebString AutoComplete() const;
+  ax::mojom::AriaCurrentState AriaCurrentState() const;
+  bool IsEditable() const;
+  bool AriaOwns(WebVector<WebAXObject>& owns_elements) const;
+  bool CanvasHasFallbackContent() const;
+  WebAXObject ErrorMessage() const;
   // If this is an image, returns the image (scaled to maxSize) as a data url.
-  BLINK_EXPORT WebString ImageDataUrl(const gfx::Size& max_size) const;
-  BLINK_EXPORT ax::mojom::InvalidState InvalidState() const;
+  WebString ImageDataUrl(const gfx::Size& max_size) const;
+  ax::mojom::InvalidState InvalidState() const;
   // Only used when invalidState() returns WebAXInvalidStateOther.
-  BLINK_EXPORT WebString AriaInvalidValue() const;
-  BLINK_EXPORT int HeadingLevel() const;
-  BLINK_EXPORT int HierarchicalLevel() const;
-  BLINK_EXPORT WebAXObject HitTest(const gfx::Point&) const;
+  WebString AriaInvalidValue() const;
+  int HeadingLevel() const;
+  int HierarchicalLevel() const;
+  WebAXObject HitTest(const gfx::Point&) const;
   // Get the WebAXObject's bounds in frame-relative coordinates as a gfx::Rect.
-  BLINK_EXPORT gfx::Rect GetBoundsInFrameCoordinates() const;
-  BLINK_EXPORT WebString Language() const;
-  BLINK_EXPORT WebAXObject InPageLinkTarget() const;
-  BLINK_EXPORT WebVector<WebAXObject> RadioButtonsInGroup() const;
-  BLINK_EXPORT ax::mojom::Role Role() const;
-  BLINK_EXPORT WebString GetValueForControl() const;
-  BLINK_EXPORT ax::mojom::WritingDirection GetTextDirection() const;
-  BLINK_EXPORT WebURL Url() const;
+  gfx::Rect GetBoundsInFrameCoordinates() const;
+  WebString Language() const;
+  WebAXObject InPageLinkTarget() const;
+  WebVector<WebAXObject> RadioButtonsInGroup() const;
+  ax::mojom::Role Role() const;
+  WebString GetValueForControl() const;
+  ax::mojom::WritingDirection GetTextDirection() const;
+  WebURL Url() const;
 
   // Retrieves the accessible name of the object, an enum indicating where the
   // name was derived from, and a list of related objects that were used to
   // derive the name, if any.
-  BLINK_EXPORT WebString GetName(ax::mojom::NameFrom&,
-                                 WebVector<WebAXObject>& name_objects) const;
+  WebString GetName(ax::mojom::NameFrom&,
+                    WebVector<WebAXObject>& name_objects) const;
   // Simplified version of |name| when nameFrom and nameObjects aren't needed.
-  BLINK_EXPORT WebString GetName() const;
+  WebString GetName() const;
   // Takes the result of nameFrom from calling |name|, above, and retrieves the
   // accessible description of the object, which is secondary to |name|, an enum
   // indicating where the description was derived from, and a list of objects
   // that were used to derive the description, if any.
-  BLINK_EXPORT WebString
-  Description(ax::mojom::NameFrom,
-              ax::mojom::DescriptionFrom&,
-              WebVector<WebAXObject>& description_objects) const;
+  WebString Description(ax::mojom::NameFrom,
+                        ax::mojom::DescriptionFrom&,
+                        WebVector<WebAXObject>& description_objects) const;
   // Takes the result of nameFrom and descriptionFrom from calling |name| and
   // |description|, above, and retrieves the placeholder of the object, if
   // present and if it wasn't already exposed by one of the two functions above.
-  BLINK_EXPORT WebString Placeholder(ax::mojom::NameFrom) const;
+  WebString Placeholder(ax::mojom::NameFrom) const;
 
   // Takes the result of nameFrom and retrieves the HTML Title of the object,
   // if present and if it wasn't already exposed by |GetName| above.
   // HTML Title is typically used as a tooltip.
-  BLINK_EXPORT WebString Title(ax::mojom::NameFrom) const;
+  WebString Title(ax::mojom::NameFrom) const;
 
   //
   // Document-level interfaces.
@@ -210,69 +208,69 @@ class WebAXObject {
   // These are intended to be called on the root WebAXObject.
   //
 
-  BLINK_EXPORT bool IsLoaded() const;
-  BLINK_EXPORT double EstimatedLoadingProgress() const;
+  bool IsLoaded() const;
+  double EstimatedLoadingProgress() const;
 
-  BLINK_EXPORT WebAXObject RootScroller() const;
+  WebAXObject RootScroller() const;
 
   // The following selection functions get or set the global document
   // selection and can be called on any object in the tree.
 
-  BLINK_EXPORT void Selection(bool& is_selection_backward,
-                              WebAXObject& anchor_object,
-                              int& anchor_offset,
-                              ax::mojom::TextAffinity& anchor_affinity,
-                              WebAXObject& focus_object,
-                              int& focus_offset,
-                              ax::mojom::TextAffinity& focus_affinity) const;
+  void Selection(bool& is_selection_backward,
+                 WebAXObject& anchor_object,
+                 int& anchor_offset,
+                 ax::mojom::TextAffinity& anchor_affinity,
+                 WebAXObject& focus_object,
+                 int& focus_offset,
+                 ax::mojom::TextAffinity& focus_affinity) const;
 
   // Live regions.
-  BLINK_EXPORT bool IsInLiveRegion() const;
-  BLINK_EXPORT bool LiveRegionAtomic() const;
-  BLINK_EXPORT WebString LiveRegionRelevant() const;
-  BLINK_EXPORT WebString LiveRegionStatus() const;
-  BLINK_EXPORT WebAXObject LiveRegionRoot() const;
-  BLINK_EXPORT bool ContainerLiveRegionAtomic() const;
-  BLINK_EXPORT bool ContainerLiveRegionBusy() const;
-  BLINK_EXPORT WebString ContainerLiveRegionRelevant() const;
-  BLINK_EXPORT WebString ContainerLiveRegionStatus() const;
+  bool IsInLiveRegion() const;
+  bool LiveRegionAtomic() const;
+  WebString LiveRegionRelevant() const;
+  WebString LiveRegionStatus() const;
+  WebAXObject LiveRegionRoot() const;
+  bool ContainerLiveRegionAtomic() const;
+  bool ContainerLiveRegionBusy() const;
+  WebString ContainerLiveRegionRelevant() const;
+  WebString ContainerLiveRegionStatus() const;
 
-  BLINK_EXPORT bool SupportsRangeValue() const;
-  BLINK_EXPORT bool ValueForRange(float* out_value) const;
-  BLINK_EXPORT bool MaxValueForRange(float* out_value) const;
-  BLINK_EXPORT bool MinValueForRange(float* out_value) const;
-  BLINK_EXPORT bool StepValueForRange(float* out_value) const;
+  bool SupportsRangeValue() const;
+  bool ValueForRange(float* out_value) const;
+  bool MaxValueForRange(float* out_value) const;
+  bool MinValueForRange(float* out_value) const;
+  bool StepValueForRange(float* out_value) const;
 
-  BLINK_EXPORT WebNode GetNode() const;
-  BLINK_EXPORT WebDocument GetDocument() const;
-  BLINK_EXPORT bool AccessibilityIsIgnored() const;
-  BLINK_EXPORT bool AccessibilityIsIncludedInTree() const;
+  WebNode GetNode() const;
+  WebDocument GetDocument() const;
+  bool AccessibilityIsIgnored() const;
+  bool AccessibilityIsIncludedInTree() const;
 
   // Get the verb associated with performing the default action
   // on this object.
-  BLINK_EXPORT ax::mojom::DefaultActionVerb Action() const;
+  ax::mojom::DefaultActionVerb Action() const;
 
   // Perform an action, return true if handled.
   //
   // NEW: we're migrating to have all actions handled via this interface.
-  BLINK_EXPORT bool PerformAction(const ui::AXActionData&) const;
+  bool PerformAction(const ui::AXActionData&) const;
 
   // Actions. Return true if handled.
   //
   // OLD: the od way is that we had separate APIs for every individual
   // action. We're migrating to use PerformAction() for everything.
-  BLINK_EXPORT bool SetSelected(bool) const;
-  BLINK_EXPORT bool SetSelection(const WebAXObject& anchor_object,
-                                 int anchor_offset,
-                                 const WebAXObject& focus_object,
-                                 int focus_offset) const;
+  bool SetSelected(bool) const;
+  bool SetSelection(const WebAXObject& anchor_object,
+                    int anchor_offset,
+                    const WebAXObject& focus_object,
+                    int focus_offset) const;
   // Make this object visible by scrolling as many nested scrollable views as
   // needed.
-  BLINK_EXPORT bool ScrollToMakeVisible() const;
+  bool ScrollToMakeVisible() const;
   // Same, but if the whole object can't be made visible, try for this subrect,
   // in local coordinates. We also allow passing horizontal and vertical scroll
   // alignments. These specify where in the content area to scroll the object.
-  BLINK_EXPORT bool ScrollToMakeVisibleWithSubFocus(
+  bool ScrollToMakeVisibleWithSubFocus(
       const gfx::Rect&,
       ax::mojom::ScrollAlignment horizontal_scroll_alignment =
           ax::mojom::ScrollAlignment::kScrollAlignmentCenter,
@@ -282,54 +280,51 @@ class WebAXObject {
           ax::mojom::ScrollBehavior::kDoNotScrollIfVisible) const;
 
   // For a table
-  BLINK_EXPORT unsigned ColumnCount() const;
-  BLINK_EXPORT unsigned RowCount() const;
-  BLINK_EXPORT WebAXObject CellForColumnAndRow(unsigned column,
-                                               unsigned row) const;
-  BLINK_EXPORT void RowHeaders(WebVector<WebAXObject>&) const;
-  BLINK_EXPORT void ColumnHeaders(WebVector<WebAXObject>&) const;
+  unsigned ColumnCount() const;
+  unsigned RowCount() const;
+  WebAXObject CellForColumnAndRow(unsigned column, unsigned row) const;
+  void RowHeaders(WebVector<WebAXObject>&) const;
+  void ColumnHeaders(WebVector<WebAXObject>&) const;
 
   // For a table row
-  BLINK_EXPORT unsigned RowIndex() const;
-  BLINK_EXPORT WebAXObject RowHeader() const;
+  unsigned RowIndex() const;
+  WebAXObject RowHeader() const;
 
   // For a table column
-  BLINK_EXPORT unsigned ColumnIndex() const;
-  BLINK_EXPORT WebAXObject ColumnHeader() const;
+  unsigned ColumnIndex() const;
+  WebAXObject ColumnHeader() const;
 
   // For a table cell
-  BLINK_EXPORT unsigned CellColumnIndex() const;
-  BLINK_EXPORT unsigned CellColumnSpan() const;
-  BLINK_EXPORT unsigned CellRowIndex() const;
-  BLINK_EXPORT unsigned CellRowSpan() const;
-  BLINK_EXPORT ax::mojom::SortDirection SortDirection() const;
+  unsigned CellColumnIndex() const;
+  unsigned CellColumnSpan() const;
+  unsigned CellRowIndex() const;
+  unsigned CellRowSpan() const;
+  ax::mojom::SortDirection SortDirection() const;
 
   // Load inline text boxes for just this subtree, even if
   // settings->inlineTextBoxAccessibilityEnabled() is false.
-  BLINK_EXPORT void LoadInlineTextBoxes() const;
+  void LoadInlineTextBoxes() const;
 
   // Walk the WebAXObjects on the same line. This is supported on any
   // object type but primarily intended to be used for inline text boxes.
-  BLINK_EXPORT WebAXObject NextOnLine() const;
-  BLINK_EXPORT WebAXObject PreviousOnLine() const;
+  WebAXObject NextOnLine() const;
+  WebAXObject PreviousOnLine() const;
 
   // For an inline text box.
-  BLINK_EXPORT void CharacterOffsets(WebVector<int>&) const;
-  BLINK_EXPORT void GetWordBoundaries(WebVector<int>& starts,
-                                      WebVector<int>& ends) const;
+  void CharacterOffsets(WebVector<int>&) const;
+  void GetWordBoundaries(WebVector<int>& starts, WebVector<int>& ends) const;
 
   // Scrollable containers.
   // Programmatically scrollable.
-  BLINK_EXPORT bool IsScrollableContainer() const;
+  bool IsScrollableContainer() const;
   // Also scrollable by user.
-  BLINK_EXPORT gfx::Point GetScrollOffset() const;
-  BLINK_EXPORT gfx::Point MinimumScrollOffset() const;
-  BLINK_EXPORT gfx::Point MaximumScrollOffset() const;
-  BLINK_EXPORT void SetScrollOffset(const gfx::Point&) const;
+  gfx::Point GetScrollOffset() const;
+  gfx::Point MinimumScrollOffset() const;
+  gfx::Point MaximumScrollOffset() const;
+  void SetScrollOffset(const gfx::Point&) const;
 
   // aria-dropeffect is deprecated in WAI-ARIA 1.1
-  BLINK_EXPORT void Dropeffects(
-      WebVector<ax::mojom::Dropeffect>& dropeffects) const;
+  void Dropeffects(WebVector<ax::mojom::Dropeffect>& dropeffects) const;
 
   // Every object's bounding box is returned relative to a
   // container object (which is guaranteed to be an ancestor) and
@@ -341,32 +336,31 @@ class WebAXObject {
   // container's transform.  Do this until you reach the root of the tree.
   // If the container clips its children, for example with overflow:hidden
   // or similar, set |clips_children| to true.
-  BLINK_EXPORT void GetRelativeBounds(WebAXObject& offset_container,
-                                      gfx::RectF& bounds_in_container,
-                                      gfx::Transform& container_transform,
-                                      bool* clips_children = nullptr) const;
+  void GetRelativeBounds(WebAXObject& offset_container,
+                         gfx::RectF& bounds_in_container,
+                         gfx::Transform& container_transform,
+                         bool* clips_children = nullptr) const;
 
   // Retrieves a vector of all WebAXObjects in this document whose
   // bounding boxes may have changed since the last query. Sends that vector
   // via mojo to the browser process.
-  BLINK_EXPORT void SerializeLocationChanges() const;
+  void SerializeLocationChanges() const;
 
   // Exchanges a WebAXObject with another.
-  BLINK_EXPORT void Swap(WebAXObject& other);
+  void Swap(WebAXObject& other);
 
   // Returns a brief description of the object, suitable for debugging. E.g. its
   // role and name.
-  BLINK_EXPORT WebString ToString(bool verbose = false) const;
+  WebString ToString(bool verbose = false) const;
 
-  BLINK_EXPORT void HandleAutofillStateChanged(
-      const WebAXAutofillState state) const;
+  void HandleAutofillStateChanged(const WebAXAutofillState state) const;
 
   // For testing only, returns whether or not we have the permission to
   // call AOM event listeners.
-  BLINK_EXPORT bool CanCallAOMEventListenersForTesting() const;
+  bool CanCallAOMEventListenersForTesting() const;
 
 #if INSIDE_BLINK
-  BLINK_EXPORT WebAXObject(AXObject*);
+  WebAXObject(AXObject*);
   WebAXObject& operator=(AXObject*);
   operator AXObject*() const;
 #endif

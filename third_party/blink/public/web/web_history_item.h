@@ -48,11 +48,11 @@ class WebVector;
 //
 // Copying a WebHistoryItem is cheap.
 //
-class WebHistoryItem {
+class BLINK_EXPORT WebHistoryItem {
  public:
   ~WebHistoryItem() { Reset(); }
   WebHistoryItem() = default;
-  BLINK_EXPORT explicit WebHistoryItem(const PageState& page_state);
+  explicit WebHistoryItem(const PageState& page_state);
   WebHistoryItem(const WebHistoryItem& h) { Assign(h); }
   WebHistoryItem& operator=(const WebHistoryItem& h) {
     Assign(h);
@@ -61,33 +61,33 @@ class WebHistoryItem {
 
   // The navigation API uses partially-initialized items for non-current
   // entries via this constructor.
-  BLINK_EXPORT WebHistoryItem(const WebString& url,
-                              const WebString& navigation_api_key,
-                              const WebString& navigation_api_id,
-                              int64_t item_sequence_number,
-                              int64_t document_sequence_number,
-                              const WebString& navigation_api_state);
+  WebHistoryItem(const WebString& url,
+                 const WebString& navigation_api_key,
+                 const WebString& navigation_api_id,
+                 int64_t item_sequence_number,
+                 int64_t document_sequence_number,
+                 const WebString& navigation_api_state);
 
-  BLINK_EXPORT PageState ToPageState();
+  PageState ToPageState();
 
   bool IsNull() const { return private_.IsNull(); }
 
-  BLINK_EXPORT void SetTarget(const WebString&);
+  void SetTarget(const WebString&);
 
-  BLINK_EXPORT int64_t ItemSequenceNumber() const;
-  BLINK_EXPORT int64_t DocumentSequenceNumber() const;
-  BLINK_EXPORT WebHTTPBody HttpBody() const;
-  BLINK_EXPORT WebString GetNavigationApiKey() const;
+  int64_t ItemSequenceNumber() const;
+  int64_t DocumentSequenceNumber() const;
+  WebHTTPBody HttpBody() const;
+  WebString GetNavigationApiKey() const;
 
 #if INSIDE_BLINK
-  BLINK_EXPORT WebHistoryItem(HistoryItem*);
-  BLINK_EXPORT WebHistoryItem& operator=(HistoryItem*);
-  BLINK_EXPORT operator HistoryItem*() const;
+  WebHistoryItem(HistoryItem*);
+  WebHistoryItem& operator=(HistoryItem*);
+  operator HistoryItem*() const;
 #endif
 
  private:
-  BLINK_EXPORT void Reset();
-  BLINK_EXPORT void Assign(const WebHistoryItem&);
+  void Reset();
+  void Assign(const WebHistoryItem&);
   WebVector<WebString> GetReferencedFilePaths() const;
 
   WebPrivatePtr<HistoryItem> private_;

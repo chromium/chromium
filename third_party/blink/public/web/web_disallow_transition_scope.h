@@ -16,13 +16,13 @@ namespace blink {
 
 class DocumentLifecycle;
 
-class WebDisallowTransitionScope {
+class BLINK_EXPORT WebDisallowTransitionScope {
   // Causes DCHECKs only, does not actually prevent lifecycle changes.
   // This is useful to prevent certain types of crashes that occur, for example,
   // when updating properties in the accessible object hierarchy.
  public:
-  BLINK_EXPORT explicit WebDisallowTransitionScope(WebDocument* web_document);
-  BLINK_EXPORT ~WebDisallowTransitionScope();
+  explicit WebDisallowTransitionScope(WebDocument* web_document);
+  ~WebDisallowTransitionScope();
 
  private:
   DocumentLifecycle& Lifecycle(WebDocument*) const;

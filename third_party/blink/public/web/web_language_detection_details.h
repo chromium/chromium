@@ -13,19 +13,18 @@ namespace blink {
 
 class WebDocument;
 
-struct WebLanguageDetectionDetails {
+struct BLINK_EXPORT WebLanguageDetectionDetails {
   WebURL url;
   WebString content_language;
   WebString html_language;
   bool has_no_translate_meta = false;
 
-  BLINK_EXPORT static WebLanguageDetectionDetails
-  CollectLanguageDetectionDetails(const WebDocument&);
+  static WebLanguageDetectionDetails CollectLanguageDetectionDetails(
+      const WebDocument&);
 
   // Use to record UMA metrics on the matches between the xml:lang value, html
   // lang value and the Accept-Language request header values.
-  BLINK_EXPORT static void RecordAcceptLanguageAndXmlHtmlLangMetric(
-      const WebDocument&);
+  static void RecordAcceptLanguageAndXmlHtmlLangMetric(const WebDocument&);
 };
 
 }  // namespace blink

@@ -19,18 +19,17 @@ class AXContext;
 
 // An instance of this class, while kept alive, enables accessibility
 // support for the given document.
-class WebAXContext {
+class BLINK_EXPORT WebAXContext {
  public:
-  BLINK_EXPORT explicit WebAXContext(WebDocument document,
-                                     const ui::AXMode& mode);
-  BLINK_EXPORT ~WebAXContext();
+  explicit WebAXContext(WebDocument document, const ui::AXMode& mode);
+  ~WebAXContext();
 
   // Returns the root element of the document's accessibility tree.
-  BLINK_EXPORT WebAXObject Root() const;
+  WebAXObject Root() const;
 
-  BLINK_EXPORT const ui::AXMode& GetAXMode() const;
+  const ui::AXMode& GetAXMode() const;
 
-  BLINK_EXPORT void SetAXMode(const ui::AXMode&);
+  void SetAXMode(const ui::AXMode&);
 
  private:
   std::unique_ptr<AXContext> private_;

@@ -49,7 +49,7 @@ namespace blink {
 
 class DOMFileSystem;
 
-class WebDOMFileSystem {
+class BLINK_EXPORT WebDOMFileSystem {
  public:
   enum SerializableType {
     kSerializableTypeSerializable,
@@ -69,34 +69,32 @@ class WebDOMFileSystem {
     return *this;
   }
 
-  BLINK_EXPORT static WebDOMFileSystem FromV8Value(v8::Local<v8::Value>);
+  static WebDOMFileSystem FromV8Value(v8::Local<v8::Value>);
   // Create file system URL from the given entry.
-  BLINK_EXPORT static WebURL CreateFileSystemURL(v8::Local<v8::Value> entry);
+  static WebURL CreateFileSystemURL(v8::Local<v8::Value> entry);
 
   // FIXME: Deprecate the last argument when all filesystems become
   // serializable.
-  BLINK_EXPORT static WebDOMFileSystem Create(
+  static WebDOMFileSystem Create(
       WebLocalFrame*,
       WebFileSystemType,
       const WebString& name,
       const WebURL& root_url,
       SerializableType = kSerializableTypeNotSerializable);
 
-  BLINK_EXPORT void Reset();
-  BLINK_EXPORT void Assign(const WebDOMFileSystem&);
+  void Reset();
+  void Assign(const WebDOMFileSystem&);
 
-  BLINK_EXPORT WebString GetName() const;
-  BLINK_EXPORT WebFileSystemType GetType() const;
-  BLINK_EXPORT WebURL RootURL() const;
+  WebString GetName() const;
+  WebFileSystemType GetType() const;
+  WebURL RootURL() const;
 
-  BLINK_EXPORT v8::Local<v8::Value> ToV8Value(
-      v8::Local<v8::Object> creation_context,
-      v8::Isolate*);
-  BLINK_EXPORT v8::Local<v8::Value> CreateV8Entry(
-      const WebString& path,
-      EntryType,
-      v8::Local<v8::Object> creation_context,
-      v8::Isolate*);
+  v8::Local<v8::Value> ToV8Value(v8::Local<v8::Object> creation_context,
+                                 v8::Isolate*);
+  v8::Local<v8::Value> CreateV8Entry(const WebString& path,
+                                     EntryType,
+                                     v8::Local<v8::Object> creation_context,
+                                     v8::Isolate*);
 
   bool IsNull() const { return private_.IsNull(); }
 

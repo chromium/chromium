@@ -40,42 +40,37 @@ namespace blink {
 class WebString;
 class WebURL;
 
-class WebSecurityPolicy {
+class BLINK_EXPORT WebSecurityPolicy {
  public:
   // Registers a URL scheme to be treated as display-isolated. This means
   // that pages cannot display these URLs unless they are from the same
   // scheme. For example, pages in other origin cannot create iframes or
   // hyperlinks to URLs with the scheme.
-  BLINK_EXPORT static void RegisterURLSchemeAsDisplayIsolated(const WebString&);
+  static void RegisterURLSchemeAsDisplayIsolated(const WebString&);
 
   // Registers a URL scheme that can register a ServiceWorker.
-  BLINK_EXPORT static void RegisterURLSchemeAsAllowingServiceWorkers(
-      const WebString&);
+  static void RegisterURLSchemeAsAllowingServiceWorkers(const WebString&);
 
   // Registers an URL scheme as allowing the not-yet-standardized 'wasm-eval'
   // CSP source directive.
-  BLINK_EXPORT static void RegisterURLSchemeAsAllowingWasmEvalCSP(
-      const WebString&);
+  static void RegisterURLSchemeAsAllowingWasmEvalCSP(const WebString&);
 
   // Registers an HTTP-like URL scheme that supports the Fetch API.
-  BLINK_EXPORT static void RegisterURLSchemeAsSupportingFetchAPI(
-      const WebString&);
+  static void RegisterURLSchemeAsSupportingFetchAPI(const WebString&);
 
   // Registers a URL scheme which will always be considered the first-party when
   // loaded in a top-level context.
-  BLINK_EXPORT static void RegisterURLSchemeAsFirstPartyWhenTopLevel(
-      const WebString&);
+  static void RegisterURLSchemeAsFirstPartyWhenTopLevel(const WebString&);
 
   // Registers a URL scheme which will be considered first-party when loaded in
   // a top-level context for child contexts which were loaded over secure
   // schemes.
-  BLINK_EXPORT static void
-  RegisterURLSchemeAsFirstPartyWhenTopLevelEmbeddingSecure(const WebString&);
+  static void RegisterURLSchemeAsFirstPartyWhenTopLevelEmbeddingSecure(
+      const WebString&);
 
   // Registers a URL scheme as always allowing access to SharedArrayBuffers.
   // TODO(crbug.com/1184892): Remove once fixed.
-  BLINK_EXPORT static void RegisterURLSchemeAsAllowingSharedArrayBuffers(
-      const WebString&);
+  static void RegisterURLSchemeAsAllowingSharedArrayBuffers(const WebString&);
 
   // Support for managing allow/block access lists to origins beyond the
   // same-origin policy. The block list takes priority over the allow list.
@@ -86,7 +81,7 @@ class WebSecurityPolicy {
   // Callers should use
   // network::mojom::CorsOriginAccessMatchPriority::kDefaultPriority as the
   // default priority unless overriding existing entries is explicitly needed.
-  BLINK_EXPORT static void AddOriginAccessAllowListEntry(
+  static void AddOriginAccessAllowListEntry(
       const WebURL& source_origin,
       const WebString& destination_protocol,
       const WebString& destination_host,
@@ -94,7 +89,7 @@ class WebSecurityPolicy {
       network::mojom::CorsDomainMatchMode domain_match_mode,
       network::mojom::CorsPortMatchMode port_match_mode,
       const network::mojom::CorsOriginAccessMatchPriority priority);
-  BLINK_EXPORT static void AddOriginAccessBlockListEntry(
+  static void AddOriginAccessBlockListEntry(
       const WebURL& source_origin,
       const WebString& destination_protocol,
       const WebString& destination_host,
@@ -102,45 +97,40 @@ class WebSecurityPolicy {
       network::mojom::CorsDomainMatchMode domain_match_mode,
       network::mojom::CorsPortMatchMode port_match_mode,
       const network::mojom::CorsOriginAccessMatchPriority priority);
-  BLINK_EXPORT static void ClearOriginAccessListForOrigin(
-      const WebURL& source_origin);
-  BLINK_EXPORT static void ClearOriginAccessList();
+  static void ClearOriginAccessListForOrigin(const WebURL& source_origin);
+  static void ClearOriginAccessList();
 
   // Add a scheme that is always considered a secure context. The caller is
   // responsible for canonicalizing the input.
-  BLINK_EXPORT static void AddSchemeToSecureContextSafelist(const WebString&);
+  static void AddSchemeToSecureContextSafelist(const WebString&);
 
   // Returns the referrer modified according to the referrer policy for a
   // navigation to a given URL. If the referrer returned is empty, the
   // referrer header should be omitted.
-  BLINK_EXPORT static WebString GenerateReferrerHeader(
-      network::mojom::ReferrerPolicy,
-      const WebURL&,
-      const WebString& referrer);
+  static WebString GenerateReferrerHeader(network::mojom::ReferrerPolicy,
+                                          const WebURL&,
+                                          const WebString& referrer);
 
   // Registers an URL scheme to not allow manipulation of the loaded page
   // by bookmarklets or javascript: URLs typed in the omnibox.
-  BLINK_EXPORT static void RegisterURLSchemeAsNotAllowingJavascriptURLs(
-      const WebString&);
+  static void RegisterURLSchemeAsNotAllowingJavascriptURLs(const WebString&);
 
   // Registers an URL scheme as allowed in referrers.
-  BLINK_EXPORT static void RegisterURLSchemeAsAllowedForReferrer(
-      const WebString&);
+  static void RegisterURLSchemeAsAllowedForReferrer(const WebString&);
 
   // Registers an URL scheme as an error page.
-  BLINK_EXPORT static void RegisterURLSchemeAsError(const WebString&);
+  static void RegisterURLSchemeAsError(const WebString&);
 
   // Registers an URL scheme as a browser extension.
-  BLINK_EXPORT static void RegisterURLSchemeAsExtension(const WebString&);
+  static void RegisterURLSchemeAsExtension(const WebString&);
 
   // Registers an URL scheme as trusted browser UI.
-  BLINK_EXPORT static void RegisterURLSchemeAsWebUI(const WebString&);
+  static void RegisterURLSchemeAsWebUI(const WebString&);
 
   // Registers an URL scheme which can use code caching but must check in the
   // renderer whether the script content has changed rather than relying on a
   // response time match from the network cache.
-  BLINK_EXPORT static void RegisterURLSchemeAsCodeCacheWithHashing(
-      const WebString&);
+  static void RegisterURLSchemeAsCodeCacheWithHashing(const WebString&);
 
  private:
   WebSecurityPolicy() = delete;

@@ -12,7 +12,7 @@ namespace blink {
 
 class HTMLMetaElement;
 
-class WebMetaElement final : public WebElement {
+class BLINK_EXPORT WebMetaElement final : public WebElement {
  public:
   WebMetaElement() : WebElement() {}
   WebMetaElement(const WebMetaElement& element) = default;
@@ -23,7 +23,7 @@ class WebMetaElement final : public WebElement {
   }
   void Assign(const WebMetaElement& element) { WebElement::Assign(element); }
 
-  BLINK_EXPORT WebString ComputeEncoding() const;
+  WebString ComputeEncoding() const;
 
 #if INSIDE_BLINK
   WebMetaElement(HTMLMetaElement*);

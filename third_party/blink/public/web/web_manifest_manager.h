@@ -13,12 +13,11 @@ namespace blink {
 class WebLocalFrame;
 class WebURL;
 
-class WebManifestManager {
+class BLINK_EXPORT WebManifestManager {
  public:
   using Callback = base::OnceCallback<void(const WebURL&)>;
 
-  BLINK_EXPORT static void RequestManifestForTesting(WebLocalFrame*,
-                                                     Callback callback);
+  static void RequestManifestForTesting(WebLocalFrame*, Callback callback);
 };
 
 }  // namespace blink

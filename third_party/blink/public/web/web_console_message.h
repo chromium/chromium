@@ -44,7 +44,7 @@ class Local;
 
 namespace blink {
 
-struct WebConsoleMessage {
+struct BLINK_EXPORT WebConsoleMessage {
   mojom::ConsoleMessageLevel level = mojom::ConsoleMessageLevel::kInfo;
   WebString text;
   WebVector<blink::WebNode> nodes;
@@ -71,9 +71,8 @@ struct WebConsoleMessage {
         column_number(column_number) {}
 
   // Logs the console message for the given v8::Context.
-  BLINK_EXPORT static void LogWebConsoleMessage(
-      v8::Local<v8::Context> context,
-      const WebConsoleMessage& message);
+  static void LogWebConsoleMessage(v8::Local<v8::Context> context,
+                                   const WebConsoleMessage& message);
 };
 
 }  // namespace blink

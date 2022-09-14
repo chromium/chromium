@@ -45,7 +45,7 @@ namespace blink {
 
 class MediaStreamTrack;
 
-class WebDOMMediaStreamTrack {
+class BLINK_EXPORT WebDOMMediaStreamTrack {
  public:
   WebDOMMediaStreamTrack(const WebDOMMediaStreamTrack& b) { Assign(b); }
   ~WebDOMMediaStreamTrack() { Reset(); }
@@ -57,11 +57,11 @@ class WebDOMMediaStreamTrack {
 
   bool IsNull() const { return private_.IsNull(); }
 
-  BLINK_EXPORT static WebDOMMediaStreamTrack FromV8Value(v8::Local<v8::Value>);
+  static WebDOMMediaStreamTrack FromV8Value(v8::Local<v8::Value>);
 
-  BLINK_EXPORT void Reset();
-  BLINK_EXPORT void Assign(const WebDOMMediaStreamTrack&);
-  BLINK_EXPORT WebMediaStreamTrack Component() const;
+  void Reset();
+  void Assign(const WebDOMMediaStreamTrack&);
+  WebMediaStreamTrack Component() const;
 
  private:
 #if INSIDE_BLINK

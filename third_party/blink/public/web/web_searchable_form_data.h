@@ -42,11 +42,11 @@ class WebFormElement;
 
 // SearchableFormData encapsulates a URL and encoding of an INPUT field that
 // corresponds to a searchable form request.
-class WebSearchableFormData {
+class BLINK_EXPORT WebSearchableFormData {
  public:
   // If the provided form is suitable for automated searching, isValid()
   // will return false.
-  BLINK_EXPORT WebSearchableFormData(
+  WebSearchableFormData(
       const WebFormElement&,
       const WebInputElement& selected_input_element = WebInputElement());
 

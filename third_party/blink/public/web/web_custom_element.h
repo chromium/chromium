@@ -37,14 +37,14 @@ namespace blink {
 
 class WebString;
 
-class WebCustomElement {
+class BLINK_EXPORT WebCustomElement {
  public:
   // Adds a name to the set of names embedders can use with
   // window.customElements.define to register their own types. Because Custom
   // Element processing requires the set of valid names to be known ahead of
   // time, this method should be called before an element with this name is
   // created.
-  BLINK_EXPORT static void AddEmbedderCustomElementName(const WebString& name);
+  static void AddEmbedderCustomElementName(const WebString& name);
 
   // Allows the use of names added with |AddEmbedderCustomElementName| during
   // window.customElements.define.

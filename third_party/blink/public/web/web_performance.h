@@ -43,7 +43,7 @@ namespace blink {
 
 class WindowPerformance;
 
-class WebPerformance {
+class BLINK_EXPORT WebPerformance {
  public:
   // The count to record the times on requestAnimationFrame after the page is
   // restored from the back-forward cache.
@@ -73,90 +73,84 @@ class WebPerformance {
     return *this;
   }
 
-  BLINK_EXPORT void Reset();
-  BLINK_EXPORT void Assign(const WebPerformance&);
+  void Reset();
+  void Assign(const WebPerformance&);
 
   // This only returns one of {Other|Reload|BackForward}.
   // Form submits and link clicks all fall under other.
-  BLINK_EXPORT WebNavigationType GetNavigationType() const;
+  WebNavigationType GetNavigationType() const;
 
   // These functions return time in seconds (not milliseconds) since the epoch.
-  BLINK_EXPORT double InputForNavigationStart() const;
-  BLINK_EXPORT double NavigationStart() const;
-  BLINK_EXPORT base::TimeTicks NavigationStartAsMonotonicTime() const;
-  BLINK_EXPORT BackForwardCacheRestoreTimings BackForwardCacheRestore() const;
-  BLINK_EXPORT double UnloadEventEnd() const;
-  BLINK_EXPORT double RedirectStart() const;
-  BLINK_EXPORT double RedirectEnd() const;
-  BLINK_EXPORT uint16_t RedirectCount() const;
-  BLINK_EXPORT double FetchStart() const;
-  BLINK_EXPORT double DomainLookupStart() const;
-  BLINK_EXPORT double DomainLookupEnd() const;
-  BLINK_EXPORT double ConnectStart() const;
-  BLINK_EXPORT double ConnectEnd() const;
-  BLINK_EXPORT double RequestStart() const;
-  BLINK_EXPORT double ResponseStart() const;
-  BLINK_EXPORT double ResponseEnd() const;
-  BLINK_EXPORT double DomLoading() const;
-  BLINK_EXPORT double DomInteractive() const;
-  BLINK_EXPORT double DomContentLoadedEventStart() const;
-  BLINK_EXPORT double DomContentLoadedEventEnd() const;
-  BLINK_EXPORT double DomComplete() const;
-  BLINK_EXPORT double LoadEventStart() const;
-  BLINK_EXPORT double LoadEventEnd() const;
-  BLINK_EXPORT double FirstPaint() const;
-  BLINK_EXPORT double FirstImagePaint() const;
-  BLINK_EXPORT double FirstContentfulPaint() const;
-  BLINK_EXPORT base::TimeTicks FirstContentfulPaintAsMonotonicTime() const;
-  BLINK_EXPORT base::TimeTicks
-  FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime() const;
-  BLINK_EXPORT double FirstMeaningfulPaint() const;
-  BLINK_EXPORT double FirstMeaningfulPaintCandidate() const;
-  BLINK_EXPORT double LargestImagePaint() const;
-  BLINK_EXPORT uint64_t LargestImagePaintSize() const;
-  BLINK_EXPORT double LargestTextPaint() const;
-  BLINK_EXPORT uint64_t LargestTextPaintSize() const;
-  BLINK_EXPORT base::TimeTicks LargestContentfulPaintAsMonotonicTime() const;
-  BLINK_EXPORT double ExperimentalLargestImagePaint() const;
-  BLINK_EXPORT uint64_t ExperimentalLargestImagePaintSize() const;
-  BLINK_EXPORT blink::LargestContentfulPaintType LargestContentfulPaintType()
+  double InputForNavigationStart() const;
+  double NavigationStart() const;
+  base::TimeTicks NavigationStartAsMonotonicTime() const;
+  BackForwardCacheRestoreTimings BackForwardCacheRestore() const;
+  double UnloadEventEnd() const;
+  double RedirectStart() const;
+  double RedirectEnd() const;
+  uint16_t RedirectCount() const;
+  double FetchStart() const;
+  double DomainLookupStart() const;
+  double DomainLookupEnd() const;
+  double ConnectStart() const;
+  double ConnectEnd() const;
+  double RequestStart() const;
+  double ResponseStart() const;
+  double ResponseEnd() const;
+  double DomLoading() const;
+  double DomInteractive() const;
+  double DomContentLoadedEventStart() const;
+  double DomContentLoadedEventEnd() const;
+  double DomComplete() const;
+  double LoadEventStart() const;
+  double LoadEventEnd() const;
+  double FirstPaint() const;
+  double FirstImagePaint() const;
+  double FirstContentfulPaint() const;
+  base::TimeTicks FirstContentfulPaintAsMonotonicTime() const;
+  base::TimeTicks FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
       const;
-  BLINK_EXPORT double LargestContentfulPaintImageBPP() const;
-  BLINK_EXPORT double ExperimentalLargestTextPaint() const;
-  BLINK_EXPORT uint64_t ExperimentalLargestTextPaintSize() const;
-  BLINK_EXPORT double FirstEligibleToPaint() const;
-  BLINK_EXPORT double FirstInputOrScrollNotifiedTimestamp() const;
-  BLINK_EXPORT absl::optional<base::TimeDelta> FirstInputDelay() const;
-  BLINK_EXPORT absl::optional<base::TimeDelta> FirstInputTimestamp() const;
-  BLINK_EXPORT absl::optional<base::TimeTicks>
-  FirstInputTimestampAsMonotonicTime() const;
-  BLINK_EXPORT absl::optional<base::TimeDelta> LongestInputDelay() const;
-  BLINK_EXPORT absl::optional<base::TimeDelta> LongestInputTimestamp() const;
-  BLINK_EXPORT absl::optional<base::TimeDelta> FirstInputProcessingTime() const;
-  BLINK_EXPORT absl::optional<base::TimeDelta> FirstScrollDelay() const;
-  BLINK_EXPORT absl::optional<base::TimeDelta> FirstScrollTimestamp() const;
-  BLINK_EXPORT double ParseStart() const;
-  BLINK_EXPORT double ParseStop() const;
-  BLINK_EXPORT double ParseBlockedOnScriptLoadDuration() const;
-  BLINK_EXPORT double ParseBlockedOnScriptLoadFromDocumentWriteDuration() const;
-  BLINK_EXPORT double ParseBlockedOnScriptExecutionDuration() const;
-  BLINK_EXPORT double ParseBlockedOnScriptExecutionFromDocumentWriteDuration()
-      const;
-  BLINK_EXPORT absl::optional<base::TimeTicks> LastPortalActivatedPaint() const;
-  BLINK_EXPORT absl::optional<base::TimeDelta> PrerenderActivationStart() const;
-  BLINK_EXPORT absl::optional<base::TimeTicks> UnloadStart() const;
-  BLINK_EXPORT absl::optional<base::TimeTicks> UnloadEnd() const;
-  BLINK_EXPORT absl::optional<base::TimeTicks> CommitNavigationEnd() const;
-  BLINK_EXPORT absl::optional<base::TimeDelta> UserTimingMarkFullyLoaded()
-      const;
-  BLINK_EXPORT absl::optional<base::TimeDelta> UserTimingMarkFullyVisible()
-      const;
-  BLINK_EXPORT absl::optional<base::TimeDelta> UserTimingMarkInteractive()
-      const;
+  double FirstMeaningfulPaint() const;
+  double FirstMeaningfulPaintCandidate() const;
+  double LargestImagePaint() const;
+  uint64_t LargestImagePaintSize() const;
+  double LargestTextPaint() const;
+  uint64_t LargestTextPaintSize() const;
+  base::TimeTicks LargestContentfulPaintAsMonotonicTime() const;
+  double ExperimentalLargestImagePaint() const;
+  uint64_t ExperimentalLargestImagePaintSize() const;
+  blink::LargestContentfulPaintType LargestContentfulPaintType() const;
+  double LargestContentfulPaintImageBPP() const;
+  double ExperimentalLargestTextPaint() const;
+  uint64_t ExperimentalLargestTextPaintSize() const;
+  double FirstEligibleToPaint() const;
+  double FirstInputOrScrollNotifiedTimestamp() const;
+  absl::optional<base::TimeDelta> FirstInputDelay() const;
+  absl::optional<base::TimeDelta> FirstInputTimestamp() const;
+  absl::optional<base::TimeTicks> FirstInputTimestampAsMonotonicTime() const;
+  absl::optional<base::TimeDelta> LongestInputDelay() const;
+  absl::optional<base::TimeDelta> LongestInputTimestamp() const;
+  absl::optional<base::TimeDelta> FirstInputProcessingTime() const;
+  absl::optional<base::TimeDelta> FirstScrollDelay() const;
+  absl::optional<base::TimeDelta> FirstScrollTimestamp() const;
+  double ParseStart() const;
+  double ParseStop() const;
+  double ParseBlockedOnScriptLoadDuration() const;
+  double ParseBlockedOnScriptLoadFromDocumentWriteDuration() const;
+  double ParseBlockedOnScriptExecutionDuration() const;
+  double ParseBlockedOnScriptExecutionFromDocumentWriteDuration() const;
+  absl::optional<base::TimeTicks> LastPortalActivatedPaint() const;
+  absl::optional<base::TimeDelta> PrerenderActivationStart() const;
+  absl::optional<base::TimeTicks> UnloadStart() const;
+  absl::optional<base::TimeTicks> UnloadEnd() const;
+  absl::optional<base::TimeTicks> CommitNavigationEnd() const;
+  absl::optional<base::TimeDelta> UserTimingMarkFullyLoaded() const;
+  absl::optional<base::TimeDelta> UserTimingMarkFullyVisible() const;
+  absl::optional<base::TimeDelta> UserTimingMarkInteractive() const;
 
 #if INSIDE_BLINK
-  BLINK_EXPORT WebPerformance(WindowPerformance*);
-  BLINK_EXPORT WebPerformance& operator=(WindowPerformance*);
+  WebPerformance(WindowPerformance*);
+  WebPerformance& operator=(WindowPerformance*);
 #endif
 
  private:

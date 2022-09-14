@@ -40,7 +40,7 @@ class PluginDocument;
 class WebPlugin;
 
 // Wraps a WebDocument for full page plugins.
-class WebPluginDocument final : public WebDocument {
+class BLINK_EXPORT WebPluginDocument final : public WebDocument {
  public:
   WebPluginDocument() = default;
   WebPluginDocument(const WebPluginDocument& e) = default;
@@ -51,7 +51,7 @@ class WebPluginDocument final : public WebDocument {
   }
   void Assign(const WebPluginDocument& d) { WebNode::Assign(d); }
 
-  BLINK_EXPORT WebPlugin* Plugin();
+  WebPlugin* Plugin();
 
 #if INSIDE_BLINK
   WebPluginDocument(PluginDocument*);
