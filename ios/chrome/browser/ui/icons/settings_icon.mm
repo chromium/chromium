@@ -24,24 +24,12 @@ NSString* const kDefaultBrowserSymbol = @"app.badge.checkmark";
 NSString* const kPrivacySecuritySymbol = @"checkerboard.shield";
 NSString* const kDiscoverSymbol = @"flame";
 
-namespace {
-
-// The default configuration with the given `pointSize` for the Settings root
-// screen.
-UIImageSymbolConfiguration* kDefaultSettingsRootSymbolConfiguration =
-    [UIImageSymbolConfiguration
-        configurationWithPointSize:kSettingsRootSymbolImagePointSize
-                            weight:UIImageSymbolWeightMedium
-                             scale:UIImageSymbolScaleMedium];
-
-}  // namespace
-
 UIImage* DefaultSettingsRootSymbol(NSString* symbol_name) {
-  return DefaultSymbolWithConfiguration(
-      symbol_name, kDefaultSettingsRootSymbolConfiguration);
+  return DefaultSymbolWithPointSize(symbol_name,
+                                    kSettingsRootSymbolImagePointSize);
 }
 
 UIImage* CustomSettingsRootSymbol(NSString* symbol_name) {
-  return CustomSymbolWithConfiguration(symbol_name,
-                                       kDefaultSettingsRootSymbolConfiguration);
+  return CustomSymbolWithPointSize(symbol_name,
+                                   kSettingsRootSymbolImagePointSize);
 }
