@@ -23,14 +23,14 @@ declare_args() {
 
   # Should Dawn test binaries (unittests, end2end_tests, perf_tests) be built?
   # Independent of use_dawn, which controls whether Dawn is used in Chromium.
-  build_dawn_tests = is_mac || is_win || is_linux || is_chromeos
+  build_dawn_tests = is_mac || is_win || is_linux || is_chromeos || is_android
 }
 
 declare_args() {
-  enable_swiftshader = (is_win || is_linux || is_chromeos ||
-                        (is_mac && use_egl) || is_chromeos_ash || is_fuchsia) &&
-                       (target_cpu == "x86" || target_cpu == "x64" ||
-                        target_cpu == "arm" || target_cpu == "arm64" ||
-                        target_cpu == "mipsel" || target_cpu == "mips64el" ||
-                        target_cpu == "riscv64")
+  enable_swiftshader =
+      (is_win || is_linux || is_chromeos || (is_mac && use_egl) ||
+       is_chromeos_ash || is_fuchsia) &&
+      (target_cpu == "x86" || target_cpu == "x64" || target_cpu == "arm" ||
+       target_cpu == "arm64" || target_cpu == "mipsel" ||
+       target_cpu == "mips64el" || target_cpu == "riscv64")
 }
