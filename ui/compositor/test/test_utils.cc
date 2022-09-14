@@ -22,7 +22,7 @@ void CheckApproximatelyEqual(const gfx::Transform& lhs,
   unsigned int errors = 0;
   for (int i = 0; i < 4; ++i) {
     for (int j = 0; j < 4; ++j) {
-      EXPECT_FLOAT_EQ(lhs.matrix().rc(i, j), rhs.matrix().rc(i, j))
+      EXPECT_FLOAT_EQ(lhs.rc(i, j), rhs.rc(i, j))
           << "(i, j) = (" << i << ", " << j << "), error count: " << ++errors;
     }
   }

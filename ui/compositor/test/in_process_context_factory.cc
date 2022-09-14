@@ -44,6 +44,7 @@
 #include "ui/compositor/test/in_process_context_provider.h"
 #include "ui/display/display_switches.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/switches.h"
 #include "ui/gl/gl_implementation.h"
@@ -86,7 +87,7 @@ class InProcessContextFactory::PerCompositorData
   }
 #endif
   void SetDisplayColorMatrix(const gfx::Transform& matrix) override {
-    output_color_matrix_ = matrix.GetMatrixAsSkM44();
+    output_color_matrix_ = gfx::TransformToSkM44(matrix);
   }
   void SetDisplayColorSpaces(
       const gfx::DisplayColorSpaces& color_spaces) override {

@@ -207,6 +207,16 @@ bool AVSampleBufferDisplayLayerEnqueueIOSurface(
                                                         cv_pixel_buffer);
 }
 
+CATransform3D ToCATransform3D(const gfx::Transform& t) {
+  CATransform3D result;
+  auto* dst = &result.m11;
+  for (int col = 0; col < 4; col++) {
+    for (int row = 0; row < 4; row++)
+      *dst++ = t.rc(row, col);
+  }
+  return result;
+}
+
 }  // namespace
 
 class CARendererLayerTree::SolidColorContents
@@ -1123,8 +1133,7 @@ void CARendererLayerTree::TransformLayer::CommitToCA(
     post_scale.Scale(tree()->scale_factor_, tree()->scale_factor_);
     gfx::Transform conjugated_transform = pre_scale * transform_ * post_scale;
 
-    CATransform3D ca_transform =
-        conjugated_transform.matrix().ToCATransform3D();
+    CATransform3D ca_transform = ToCATransform3D(conjugated_transform);
     [ca_layer_ setTransform:ca_transform];
   }
 

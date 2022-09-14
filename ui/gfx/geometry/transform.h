@@ -81,6 +81,17 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Resets this transform to the identity transform.
   void MakeIdentity() { matrix_.setIdentity(); }
 
+  // Gets a value at |row|, |col| from the matrix.
+  float rc(int row, int col) const { return matrix_.rc(row, col); }
+
+  // Set a value in the matrix at |row|, |col|.
+  void set_rc(int row, int col, float v) { matrix_.setRC(row, col, v); }
+
+  // TODO(crbug.com/1359528): Add ColMajor()/GetColMajor() with double parameter
+  // when we use double as the type of the components.
+  static Transform ColMajorF(const float a[16]);
+  void GetColMajorF(float a[16]) const;
+
   // Applies the current transformation on a 2d rotation and assigns the result
   // to |this|.
   void Rotate(double degrees) { RotateAboutZAxis(degrees); }
@@ -100,6 +111,7 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Applies a scale to the current transformation and assigns the result to
   // |this|.
   void PostScale(SkScalar x, SkScalar y);
+  void PostScale3d(SkScalar x, SkScalar y, SkScalar z);
 
   // Applies the current transformation on a translation and assigns the result
   // to |this|.
@@ -112,6 +124,8 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // to |this|.
   void PostTranslate(const Vector2dF& offset);
   void PostTranslate(SkScalar x, SkScalar y);
+  void PostTranslate3d(const Vector3dF& offset);
+  void PostTranslate3d(SkScalar x, SkScalar y, SkScalar z);
 
   // Applies the current transformation on a skew and assigns the result
   // to |this|.
@@ -220,9 +234,7 @@ class GEOMETRY_SKIA_EXPORT Transform {
   Vector2dF To2dTranslation() const;
 
   // Returns the x and y scale components of the matrix.
-  gfx::Vector2dF To2dScale() const {
-    return gfx::Vector2dF(matrix_.rc(0, 0), matrix_.rc(1, 1));
-  }
+  Vector2dF To2dScale() const { return gfx::Vector2dF(rc(0, 0), rc(1, 1)); }
 
   // Applies the transformation to the point.
   void TransformPoint(Point3F* point) const;
@@ -237,7 +249,7 @@ class GEOMETRY_SKIA_EXPORT Transform {
   void TransformVector(Vector3dF* vector) const;
 
   // Applies the transformation to the vector.
-  void TransformVector4(SkV4* vector) const;
+  void TransformVector4(float vector[4]) const;
 
   // Applies the reverse transformation on the point. Returns true if the
   // transformation can be inverted.
@@ -284,6 +296,23 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // DecomposedTransform.
   bool Blend(const Transform& from, double progress);
 
+  // Returns a transform that rotates about the specified unit-length axis
+  // vector, by an angle specified by its sin() and cos(). This does not attempt
+  // to verify that axis(x, y, z).length() == 1 or that the sin, cos values are
+  // correct.
+  static Transform RotationUnitSinCos(double x,
+                                      double y,
+                                      double z,
+                                      double sin_angle,
+                                      double cos_angle);
+
+  // Special case for x, y or z axis of the above function.
+  static Transform RotationAboutXAxisSinCos(double sin_angle, double cos_angle);
+  static Transform RotationAboutYAxisSinCos(double sin_angle, double cos_angle);
+  static Transform RotationAboutZAxisSinCos(double sin_angle, double cos_angle);
+
+  double Determinant() const;
+
   void RoundTranslationComponents();
 
   // Returns |this| * |other|.
@@ -298,10 +327,11 @@ class GEOMETRY_SKIA_EXPORT Transform {
   }
 
   // Returns the underlying matrix.
+  // TODO(crbug.com/1359528): Remove these.
   const Matrix44& matrix() const { return matrix_; }
   Matrix44& matrix() { return matrix_; }
 
-  // TODO(crbug.com/1167153) This is to help in moving Matrix44 towards SkM44.
+  // TODO(crbug.com/1359528): Remove this in favor of gfx::TransformToSkM44().
   SkM44 GetMatrixAsSkM44() const;
 
   bool ApproximatelyEqual(const gfx::Transform& transform) const;

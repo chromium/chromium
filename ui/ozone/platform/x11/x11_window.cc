@@ -960,7 +960,8 @@ void X11Window::SetShape(std::unique_ptr<ShapeRects> native_shape,
       SkPath path_in_dip;
       if (native_region.getBoundaryPath(&path_in_dip)) {
         SkPath path_in_pixels;
-        path_in_dip.transform(transform.matrix().asM33(), &path_in_pixels);
+        path_in_dip.transform(gfx::TransformToFlattenedSkMatrix(transform),
+                              &path_in_pixels);
         xregion = x11::CreateRegionFromSkPath(path_in_pixels);
       } else {
         xregion = std::make_unique<std::vector<x11::Rectangle>>();

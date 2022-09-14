@@ -472,7 +472,7 @@ bool Canvas::InitPaintFlagsForTiling(const ImageSkia& image,
 }
 
 void Canvas::Transform(const gfx::Transform& transform) {
-  canvas_->concat(transform.matrix().asM33());
+  canvas_->concat(TransformToFlattenedSkMatrix(transform));
 }
 
 SkBitmap Canvas::GetBitmap() const {

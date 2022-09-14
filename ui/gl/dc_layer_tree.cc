@@ -250,12 +250,11 @@ bool DCLayerTree::VisualSubtree::Update(
     needs_commit = true;
 
     DCHECK(transform_.IsFlat());
-    gfx::Matrix44 transform = transform_.matrix();
     D2D_MATRIX_3X2_F matrix =
         // D2D_MATRIX_3x2_F is row-major.
-        D2D1::Matrix3x2F(transform.rc(0, 0), transform.rc(1, 0),  //
-                         transform.rc(0, 1), transform.rc(1, 1),  //
-                         transform.rc(0, 3), transform.rc(1, 3));
+        D2D1::Matrix3x2F(transform_.rc(0, 0), transform_.rc(1, 0),  //
+                         transform_.rc(0, 1), transform_.rc(1, 1),  //
+                         transform_.rc(0, 3), transform_.rc(1, 3));
     hr = content_visual_->SetTransform(matrix);
     CHECK_EQ(hr, S_OK);
   }

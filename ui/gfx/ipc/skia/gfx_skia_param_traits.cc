@@ -95,32 +95,25 @@ void ParamTraits<SkBitmap>::Log(const SkBitmap& p, std::string* l) {
 }
 
 void ParamTraits<gfx::Transform>::Write(base::Pickle* m, const param_type& p) {
-  SkScalar column_major_data[16];
-  p.matrix().getColMajor(column_major_data);
+  float column_major_data[16];
+  p.GetColMajorF(column_major_data);
   // We do this in a single write for performance reasons.
-  m->WriteBytes(&column_major_data, sizeof(SkScalar) * 16);
+  m->WriteBytes(&column_major_data, sizeof(column_major_data));
 }
 
 bool ParamTraits<gfx::Transform>::Read(const base::Pickle* m,
                                        base::PickleIterator* iter,
                                        param_type* r) {
   const char* column_major_data;
-  if (!iter->ReadBytes(&column_major_data, sizeof(SkScalar) * 16))
+  if (!iter->ReadBytes(&column_major_data, sizeof(float) * 16))
     return false;
-  r->matrix().setColMajor(reinterpret_cast<const SkScalar*>(column_major_data));
+  *r = gfx::Transform::ColMajorF(
+      reinterpret_cast<const float*>(column_major_data));
   return true;
 }
 
 void ParamTraits<gfx::Transform>::Log(const param_type& p, std::string* l) {
-  float row_major_data[16];
-  p.matrix().getRowMajor(row_major_data);
-  l->append("(");
-  for (int i = 0; i < 16; ++i) {
-    if (i > 0)
-      l->append(", ");
-    LogParam(row_major_data[i], l);
-  }
-  l->append(") ");
+  l->append(p.ToString());
 }
 
 }  // namespace IPC

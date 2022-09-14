@@ -556,14 +556,14 @@ bool SwapChainPresenter::AdjustSwapChainToFullScreenSizeIfNeeded(
   }
 
   // Adjust the transform matrix.
-  auto& transform_matrix = transform->matrix();
-  float dx = -clipped_onscreen_rect.x();
-  float dy = -clipped_onscreen_rect.y();
-  transform_matrix.postTranslate(dx, dy, 0);
+  transform->PostTranslate(-clipped_onscreen_rect.OffsetFromOrigin());
 
   float scale_x = monitor_size.width() * 1.0f / swap_chain_size->width();
   float scale_y = monitor_size.height() * 1.0f / swap_chain_size->height();
-  transform_matrix.setScale(scale_x, scale_y, 1);
+  // TODO(this bug): The previous value of the transform is cleared. We need
+  // to clean up the code if this is the expected behavior.
+  transform->MakeIdentity();
+  transform->Scale(scale_x, scale_y);
 
 #if DCHECK_IS_ON()
   // The new transform matrix should transform the swap chain to the monitor
@@ -637,11 +637,10 @@ void SwapChainPresenter::AdjustSwapChainForFullScreenLetterboxing(
       clipped_onscreen_rect.width() * 1.0f / swap_chain_size->width();
   float scale_y =
       clipped_onscreen_rect.height() * 1.0f / swap_chain_size->height();
-  auto& transform_matrix = transform->matrix();
-  transform_matrix.setRC(0, 3, clipped_onscreen_rect.x());
-  transform_matrix.setRC(1, 3, clipped_onscreen_rect.y());
-  transform_matrix.setRC(0, 0, scale_x);
-  transform_matrix.setRC(1, 1, scale_y);
+  transform->set_rc(0, 3, clipped_onscreen_rect.x());
+  transform->set_rc(1, 3, clipped_onscreen_rect.y());
+  transform->set_rc(0, 0, scale_x);
+  transform->set_rc(1, 1, scale_y);
 
 #if DCHECK_IS_ON()
   // The new transform matrix should transform the swap chain correctly

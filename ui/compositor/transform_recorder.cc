@@ -7,6 +7,7 @@
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "ui/compositor/paint_context.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace ui {
@@ -30,7 +31,7 @@ void TransformRecorder::Transform(const gfx::Transform& transform) {
 
   context_.list_->StartPaint();
   context_.list_->push<cc::SaveOp>();
-  context_.list_->push<cc::ConcatOp>(transform.GetMatrixAsSkM44());
+  context_.list_->push<cc::ConcatOp>(gfx::TransformToSkM44(transform));
   context_.list_->EndPaintOfPairedBegin();
 
   transformed_ = true;

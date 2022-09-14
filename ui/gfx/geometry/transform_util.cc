@@ -57,7 +57,7 @@ SkScalar Round(SkScalar n) {
 }
 
 // Returns false if the matrix cannot be normalized.
-bool Normalize(Matrix44& m) {
+bool Normalize(Transform& m) {
   if (m.rc(3, 3) == 0.0)
     // Cannot normalize.
     return false;
@@ -65,42 +65,41 @@ bool Normalize(Matrix44& m) {
   SkScalar scale = SK_Scalar1 / m.rc(3, 3);
   for (int i = 0; i < 4; i++)
     for (int j = 0; j < 4; j++)
-      m.setRC(i, j, m.rc(i, j) * scale);
+      m.set_rc(i, j, m.rc(i, j) * scale);
 
   return true;
 }
 
-Matrix44 BuildPerspectiveMatrix(const DecomposedTransform& decomp) {
-  Matrix44 matrix;
+Transform BuildPerspectiveMatrix(const DecomposedTransform& decomp) {
+  Transform matrix;
 
   for (int i = 0; i < 4; i++)
-    matrix.setRC(3, i, decomp.perspective[i]);
+    matrix.set_rc(3, i, decomp.perspective[i]);
   return matrix;
 }
 
-Matrix44 BuildTranslationMatrix(const DecomposedTransform& decomp) {
-  Matrix44 matrix(Matrix44::kUninitialized_Constructor);
-  // Implicitly calls matrix.setIdentity()
-  matrix.setTranslate(SkDoubleToScalar(decomp.translate[0]),
-                      SkDoubleToScalar(decomp.translate[1]),
-                      SkDoubleToScalar(decomp.translate[2]));
+Transform BuildTranslationMatrix(const DecomposedTransform& decomp) {
+  Transform matrix;
+  matrix.Translate3d(SkDoubleToScalar(decomp.translate[0]),
+                     SkDoubleToScalar(decomp.translate[1]),
+                     SkDoubleToScalar(decomp.translate[2]));
   return matrix;
 }
 
-Matrix44 BuildSnappedTranslationMatrix(DecomposedTransform decomp) {
+Transform BuildSnappedTranslationMatrix(DecomposedTransform decomp) {
   decomp.translate[0] = Round(decomp.translate[0]);
   decomp.translate[1] = Round(decomp.translate[1]);
   decomp.translate[2] = Round(decomp.translate[2]);
   return BuildTranslationMatrix(decomp);
 }
 
-Matrix44 BuildRotationMatrix(const DecomposedTransform& decomp) {
-  return Transform(decomp.quaternion).matrix();
+Transform BuildRotationMatrix(const DecomposedTransform& decomp) {
+  return Transform(decomp.quaternion);
 }
 
-Matrix44 BuildSnappedRotationMatrix(const DecomposedTransform& decomp) {
+Transform BuildSnappedRotationMatrix(const DecomposedTransform& decomp) {
   // Create snapped rotation.
-  Matrix44 rotation_matrix = BuildRotationMatrix(decomp);
+  Transform rotation_matrix = BuildRotationMatrix(decomp);
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
       SkScalar value = rotation_matrix.rc(i, j);
@@ -112,66 +111,64 @@ Matrix44 BuildSnappedRotationMatrix(const DecomposedTransform& decomp) {
       } else {
         value = 0.0f;
       }
-      rotation_matrix.setRC(i, j, value);
+      rotation_matrix.set_rc(i, j, value);
     }
   }
   return rotation_matrix;
 }
 
-Matrix44 BuildSkewMatrix(const DecomposedTransform& decomp) {
-  Matrix44 matrix;
+Transform BuildSkewMatrix(const DecomposedTransform& decomp) {
+  Transform matrix;
 
-  Matrix44 temp;
+  Transform temp;
   if (decomp.skew[2]) {
-    temp.setRC(1, 2, decomp.skew[2]);
-    matrix.preConcat(temp);
+    temp.set_rc(1, 2, decomp.skew[2]);
+    matrix.PreconcatTransform(temp);
   }
 
   if (decomp.skew[1]) {
-    temp.setRC(1, 2, 0);
-    temp.setRC(0, 2, decomp.skew[1]);
-    matrix.preConcat(temp);
+    temp.set_rc(1, 2, 0);
+    temp.set_rc(0, 2, decomp.skew[1]);
+    matrix.PreconcatTransform(temp);
   }
 
   if (decomp.skew[0]) {
-    temp.setRC(0, 2, 0);
-    temp.setRC(0, 1, decomp.skew[0]);
-    matrix.preConcat(temp);
+    temp.set_rc(0, 2, 0);
+    temp.set_rc(0, 1, decomp.skew[0]);
+    matrix.PreconcatTransform(temp);
   }
   return matrix;
 }
 
-Matrix44 BuildScaleMatrix(const DecomposedTransform& decomp) {
-  Matrix44 matrix(Matrix44::kUninitialized_Constructor);
-  matrix.setScale(SkDoubleToScalar(decomp.scale[0]),
-                  SkDoubleToScalar(decomp.scale[1]),
-                  SkDoubleToScalar(decomp.scale[2]));
+Transform BuildScaleMatrix(const DecomposedTransform& decomp) {
+  Transform matrix;
+  matrix.Scale3d(SkDoubleToScalar(decomp.scale[0]),
+                 SkDoubleToScalar(decomp.scale[1]),
+                 SkDoubleToScalar(decomp.scale[2]));
   return matrix;
 }
 
-Matrix44 BuildSnappedScaleMatrix(DecomposedTransform decomp) {
+Transform BuildSnappedScaleMatrix(DecomposedTransform decomp) {
   decomp.scale[0] = Round(decomp.scale[0]);
   decomp.scale[1] = Round(decomp.scale[1]);
   decomp.scale[2] = Round(decomp.scale[2]);
   return BuildScaleMatrix(decomp);
 }
 
-Transform ComposeTransform(const Matrix44& perspective,
-                           const Matrix44& translation,
-                           const Matrix44& rotation,
-                           const Matrix44& skew,
-                           const Matrix44& scale) {
-  Matrix44 matrix;
+Transform ComposeTransform(const Transform& perspective,
+                           const Transform& translation,
+                           const Transform& rotation,
+                           const Transform& skew,
+                           const Transform& scale) {
+  Transform matrix;
 
-  matrix.preConcat(perspective);
-  matrix.preConcat(translation);
-  matrix.preConcat(rotation);
-  matrix.preConcat(skew);
-  matrix.preConcat(scale);
+  matrix.PreconcatTransform(perspective);
+  matrix.PreconcatTransform(translation);
+  matrix.PreconcatTransform(rotation);
+  matrix.PreconcatTransform(skew);
+  matrix.PreconcatTransform(scale);
 
-  Transform to_return;
-  to_return.matrix() = matrix;
-  return to_return;
+  return matrix;
 }
 
 bool CheckViewportPointMapsWithinOnePixel(const Point& point,
@@ -210,13 +207,7 @@ bool CheckTransformsMapsIntViewportWithinOnePixel(const Rect& viewport,
 }
 
 bool Is2dTransform(const Transform& transform) {
-  const Matrix44 matrix = transform.matrix();
-  if (matrix.hasPerspective())
-    return false;
-
-  return matrix.rc(2, 0) == 0 && matrix.rc(2, 1) == 0 && matrix.rc(0, 2) == 0 &&
-         matrix.rc(1, 2) == 0 && matrix.rc(2, 2) == 1 && matrix.rc(3, 2) == 0 &&
-         matrix.rc(2, 3) == 0;
+  return !transform.HasPerspective() && transform.IsFlat();
 }
 
 bool Decompose2DTransform(DecomposedTransform* decomp,
@@ -225,11 +216,10 @@ bool Decompose2DTransform(DecomposedTransform* decomp,
     return false;
   }
 
-  const Matrix44 matrix = transform.matrix();
-  double m11 = matrix.rc(0, 0);
-  double m21 = matrix.rc(0, 1);
-  double m12 = matrix.rc(1, 0);
-  double m22 = matrix.rc(1, 1);
+  double m11 = transform.rc(0, 0);
+  double m21 = transform.rc(0, 1);
+  double m12 = transform.rc(1, 0);
+  double m22 = transform.rc(1, 1);
 
   double determinant = m11 * m22 - m12 * m21;
   // Test for matrix being singular.
@@ -242,8 +232,8 @@ bool Decompose2DTransform(DecomposedTransform* decomp,
   // [m12 m22 0 m42]  = [0 1 0 Ty] [m12 m22 0 0]
   // [ 0   0  1  0 ]    [0 0 1 0 ] [ 0   0  1 0]
   // [ 0   0  0  1 ]    [0 0 0 1 ] [ 0   0  0 1]
-  decomp->translate[0] = matrix.rc(0, 3);
-  decomp->translate[1] = matrix.rc(1, 3);
+  decomp->translate[0] = transform.rc(0, 3);
+  decomp->translate[1] = transform.rc(1, 3);
 
   // For the remainder of the decomposition process, we can focus on the upper
   // 2x2 submatrix
@@ -360,41 +350,41 @@ bool DecomposeTransform(DecomposedTransform* decomp,
   if (Decompose2DTransform(decomp, transform))
     return true;
 
-  // We'll operate on a copy of the matrix.
-  Matrix44 matrix = transform.matrix();
+  // We'll operate on a copy of the transform.
+  Transform matrix = transform;
 
   // If we cannot normalize the matrix, then bail early as we cannot decompose.
   if (!Normalize(matrix))
     return false;
 
-  Matrix44 perspectiveMatrix = matrix;
+  Transform perspective_matrix = matrix;
 
   for (int i = 0; i < 3; ++i)
-    perspectiveMatrix.setRC(3, i, 0.0);
+    perspective_matrix.set_rc(3, i, 0.0);
 
-  perspectiveMatrix.setRC(3, 3, 1.0);
+  perspective_matrix.set_rc(3, 3, 1.0);
 
   // If the perspective matrix is not invertible, we are also unable to
-  // decompose, so we'll bail early. Constant taken from Matrix44::invert.
-  if (std::abs(perspectiveMatrix.determinant()) < 1e-8)
+  // decompose, so we'll bail early.
+  if (!perspective_matrix.IsInvertible())
     return false;
 
-  if (matrix.rc(3, 0) != 0.0 || matrix.rc(3, 1) != 0.0 ||
-      matrix.rc(3, 2) != 0.0) {
+  if (matrix.HasPerspective()) {
     // rhs is the right hand side of the equation.
     SkScalar rhs[4] = {matrix.rc(3, 0), matrix.rc(3, 1), matrix.rc(3, 2),
                        matrix.rc(3, 3)};
 
     // Solve the equation by inverting perspectiveMatrix and multiplying
     // rhs by the inverse.
-    Matrix44 inversePerspectiveMatrix(Matrix44::kUninitialized_Constructor);
-    if (!perspectiveMatrix.invert(&inversePerspectiveMatrix))
+    Transform inverse_perspective_matrix(Transform::kSkipInitialization);
+    if (!perspective_matrix.GetInverse(&inverse_perspective_matrix))
       return false;
 
-    Matrix44 transposedInversePerspectiveMatrix = inversePerspectiveMatrix;
+    Transform transposed_inverse_perspective_matrix =
+        inverse_perspective_matrix;
 
-    transposedInversePerspectiveMatrix.transpose();
-    transposedInversePerspectiveMatrix.mapScalars(rhs);
+    transposed_inverse_perspective_matrix.Transpose();
+    transposed_inverse_perspective_matrix.TransformVector4(rhs);
 
     for (int i = 0; i < 4; ++i)
       decomp->perspective[i] = rhs[i];
@@ -529,11 +519,11 @@ bool DecomposeTransform(DecomposedTransform* decomp,
 
 // Taken from http://www.w3.org/TR/css3-transforms/.
 Transform ComposeTransform(const DecomposedTransform& decomp) {
-  Matrix44 perspective = BuildPerspectiveMatrix(decomp);
-  Matrix44 translation = BuildTranslationMatrix(decomp);
-  Matrix44 rotation = BuildRotationMatrix(decomp);
-  Matrix44 skew = BuildSkewMatrix(decomp);
-  Matrix44 scale = BuildScaleMatrix(decomp);
+  Transform perspective = BuildPerspectiveMatrix(decomp);
+  Transform translation = BuildTranslationMatrix(decomp);
+  Transform rotation = BuildRotationMatrix(decomp);
+  Transform skew = BuildSkewMatrix(decomp);
+  Transform scale = BuildScaleMatrix(decomp);
 
   return ComposeTransform(perspective, translation, rotation, skew, scale);
 }
@@ -544,15 +534,15 @@ bool SnapTransform(Transform* out,
   DecomposedTransform decomp;
   DecomposeTransform(&decomp, transform);
 
-  Matrix44 rotation_matrix = BuildSnappedRotationMatrix(decomp);
-  Matrix44 translation = BuildSnappedTranslationMatrix(decomp);
-  Matrix44 scale = BuildSnappedScaleMatrix(decomp);
+  Transform rotation_matrix = BuildSnappedRotationMatrix(decomp);
+  Transform translation = BuildSnappedTranslationMatrix(decomp);
+  Transform scale = BuildSnappedScaleMatrix(decomp);
 
   // Rebuild matrices for other unchanged components.
-  Matrix44 perspective = BuildPerspectiveMatrix(decomp);
+  Transform perspective = BuildPerspectiveMatrix(decomp);
 
   // Completely ignore the skew.
-  Matrix44 skew;
+  Transform skew;
 
   // Get full transform.
   Transform snapped =
@@ -607,14 +597,14 @@ Transform OrthoProjectionMatrix(float left,
   Transform proj;
   if (!delta_x || !delta_y)
     return proj;
-  proj.matrix().setRC(0, 0, 2.0f / delta_x);
-  proj.matrix().setRC(0, 3, -(right + left) / delta_x);
-  proj.matrix().setRC(1, 1, 2.0f / delta_y);
-  proj.matrix().setRC(1, 3, -(top + bottom) / delta_y);
+  proj.set_rc(0, 0, 2.0f / delta_x);
+  proj.set_rc(0, 3, -(right + left) / delta_x);
+  proj.set_rc(1, 1, 2.0f / delta_y);
+  proj.set_rc(1, 3, -(top + bottom) / delta_y);
 
   // Z component of vertices is always set to zero as we don't use the depth
   // buffer while drawing.
-  proj.matrix().setRC(2, 2, 0);
+  proj.set_rc(2, 2, 0);
 
   return proj;
 }
@@ -651,12 +641,11 @@ static inline float ScaleOnAxis(double a, double b, double c) {
 
 absl::optional<Vector2dF> TryComputeTransform2dScaleComponents(
     const Transform& transform) {
-  const auto& matrix = transform.matrix();
-  if (matrix.rc(3, 0) != 0.0f || matrix.rc(3, 1) != 0.0f) {
+  if (transform.rc(3, 0) != 0.0f || transform.rc(3, 1) != 0.0f) {
     return absl::nullopt;
   }
 
-  float w = matrix.rc(3, 3);
+  float w = transform.rc(3, 3);
   if (!std::isnormal(w)) {
     return absl::nullopt;
   }
@@ -674,9 +663,9 @@ absl::optional<Vector2dF> TryComputeTransform2dScaleComponents(
   // endpoints, which would become problematic for cases like animation
   // from rotateY(-60deg) to rotateY(60deg).
   float x_scale =
-      ScaleOnAxis(matrix.rc(0, 0), matrix.rc(1, 0), matrix.rc(2, 0));
+      ScaleOnAxis(transform.rc(0, 0), transform.rc(1, 0), transform.rc(2, 0));
   float y_scale =
-      ScaleOnAxis(matrix.rc(0, 1), matrix.rc(1, 1), matrix.rc(2, 1));
+      ScaleOnAxis(transform.rc(0, 1), transform.rc(1, 1), transform.rc(2, 1));
   return Vector2dF(x_scale * w_scale, y_scale * w_scale);
 }
 

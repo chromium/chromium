@@ -80,25 +80,47 @@ Size SkISizeToSize(const SkISize& size) {
   return Size(size.width(), size.height());
 }
 
-void TransformToFlattenedSkMatrix(const gfx::Transform& transform,
-                                  SkMatrix* flattened) {
-  // Convert from 4x4 to 3x3 by dropping the third row and column.
-  flattened->set(0, transform.matrix().rc(0, 0));
-  flattened->set(1, transform.matrix().rc(0, 1));
-  flattened->set(2, transform.matrix().rc(0, 3));
-  flattened->set(3, transform.matrix().rc(1, 0));
-  flattened->set(4, transform.matrix().rc(1, 1));
-  flattened->set(5, transform.matrix().rc(1, 3));
-  flattened->set(6, transform.matrix().rc(3, 0));
-  flattened->set(7, transform.matrix().rc(3, 1));
-  flattened->set(8, transform.matrix().rc(3, 3));
-}
-
-void QuadFToSkPoints(const gfx::QuadF& quad, SkPoint points[4]) {
+void QuadFToSkPoints(const QuadF& quad, SkPoint points[4]) {
   points[0] = PointFToSkPoint(quad.p1());
   points[1] = PointFToSkPoint(quad.p2());
   points[2] = PointFToSkPoint(quad.p3());
   points[3] = PointFToSkPoint(quad.p4());
+}
+
+SkM44 TransformToSkM44(const Transform& matrix) {
+  return SkM44(
+      matrix.rc(0, 0), matrix.rc(0, 1), matrix.rc(0, 2), matrix.rc(0, 3),
+      matrix.rc(1, 0), matrix.rc(1, 1), matrix.rc(1, 2), matrix.rc(1, 3),
+      matrix.rc(2, 0), matrix.rc(2, 1), matrix.rc(2, 2), matrix.rc(2, 3),
+      matrix.rc(3, 0), matrix.rc(3, 1), matrix.rc(3, 2), matrix.rc(3, 3));
+}
+
+gfx::Transform SkM44ToTransform(const SkM44& matrix) {
+  return Transform(
+      matrix.rc(0, 0), matrix.rc(0, 1), matrix.rc(0, 2), matrix.rc(0, 3),
+      matrix.rc(1, 0), matrix.rc(1, 1), matrix.rc(1, 2), matrix.rc(1, 3),
+      matrix.rc(2, 0), matrix.rc(2, 1), matrix.rc(2, 2), matrix.rc(2, 3),
+      matrix.rc(3, 0), matrix.rc(3, 1), matrix.rc(3, 2), matrix.rc(3, 3));
+}
+
+// TODO(crbug.com/1359528): Remove this function in favor of the other form.
+void TransformToFlattenedSkMatrix(const gfx::Transform& transform,
+                                  SkMatrix* flattened) {
+  *flattened = TransformToFlattenedSkMatrix(transform);
+}
+
+SkMatrix TransformToFlattenedSkMatrix(const Transform& matrix) {
+  // Convert from 4x4 to 3x3 by dropping row 2 (counted from 0) and column 2.
+  return SkMatrix::MakeAll(matrix.rc(0, 0), matrix.rc(0, 1), matrix.rc(0, 3),
+                           matrix.rc(1, 0), matrix.rc(1, 1), matrix.rc(1, 3),
+                           matrix.rc(3, 0), matrix.rc(3, 1), matrix.rc(3, 3));
+}
+
+Transform SkMatrixToTransform(const SkMatrix& matrix) {
+  return Transform(matrix.rc(0, 0), matrix.rc(0, 1), 0, matrix.rc(0, 2),
+                   matrix.rc(1, 0), matrix.rc(1, 1), 0, matrix.rc(1, 2),  //
+                   0, 0, 1, 0,                                            //
+                   matrix.rc(2, 0), matrix.rc(2, 1), 0, matrix.rc(2, 2));
 }
 
 }  // namespace gfx

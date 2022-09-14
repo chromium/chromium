@@ -1378,12 +1378,12 @@ void TestView::OnDidSchedulePaint(const gfx::Rect& rect) {
 
 namespace {
 
-void RotateCounterclockwise(gfx::Transform* transform) {
-  transform->matrix().setRotateAboutZAxisSinCos(-1, 0);
+gfx::Transform RotationCounterclockwise() {
+  return gfx::Transform::RotationAboutZAxisSinCos(-1, 0);
 }
 
-void RotateClockwise(gfx::Transform* transform) {
-  transform->matrix().setRotateAboutZAxisSinCos(1, 0);
+gfx::Transform RotationClockwise() {
+  return gfx::Transform::RotationAboutZAxisSinCos(1, 0);
 }
 
 }  // namespace
@@ -2572,9 +2572,8 @@ TEST_F(ViewTest, TransformPaint) {
   EXPECT_EQ(gfx::Rect(100, 100, 200, 100), v1->scheduled_paint_rect());
 
   // Rotate |v1| counter-clockwise.
-  gfx::Transform transform;
-  RotateCounterclockwise(&transform);
-  transform.matrix().setRC(1, 3, 500.0);
+  gfx::Transform transform = RotationCounterclockwise();
+  transform.set_rc(1, 3, 500.0);
   v1->SetTransform(transform);
 
   // |v2| now occupies (100, 200) to (200, 400) in |root|.
@@ -2604,9 +2603,8 @@ TEST_F(ViewTest, TransformEvent) {
   // At this moment, |v2| occupies (100, 100) to (300, 200) in |root|.
 
   // Rotate |v1| counter-clockwise.
-  gfx::Transform transform(v1->GetTransform());
-  RotateCounterclockwise(&transform);
-  transform.matrix().setRC(1, 3, 500.0);
+  gfx::Transform transform = RotationCounterclockwise();
+  transform.set_rc(1, 3, 500.0);
   v1->SetTransform(transform);
 
   // |v2| now occupies (100, 200) to (200, 400) in |root|.
@@ -2627,9 +2625,8 @@ TEST_F(ViewTest, TransformEvent) {
   root->OnMouseReleased(released);
 
   // Now rotate |v2| inside |v1| clockwise.
-  transform = v2->GetTransform();
-  RotateClockwise(&transform);
-  transform.matrix().setRC(0, 3, 100.f);
+  transform = RotationClockwise();
+  transform.set_rc(0, 3, 100.f);
   v2->SetTransform(transform);
 
   // Now, |v2| occupies (100, 100) to (200, 300) in |v1|, and (100, 300) to
@@ -2657,15 +2654,14 @@ TEST_F(ViewTest, TransformEvent) {
   TestView* v3 = v2->AddChildView(std::move(view3));
 
   // Rotate |v3| clockwise with respect to |v2|.
-  transform = v1->GetTransform();
-  RotateClockwise(&transform);
-  transform.matrix().setRC(0, 3, 30.f);
+  transform = RotationClockwise();
+  transform.set_rc(0, 3, 30.f);
   v3->SetTransform(transform);
 
   // Scale |v2| with respect to |v1| along both axis.
   transform = v2->GetTransform();
-  transform.matrix().setRC(0, 0, 0.8f);
-  transform.matrix().setRC(1, 1, 0.5f);
+  transform.set_rc(0, 0, 0.8f);
+  transform.set_rc(1, 1, 0.5f);
   v2->SetTransform(transform);
 
   // |v3| occupies (108, 105) to (132, 115) in |root|.
@@ -2694,9 +2690,8 @@ TEST_F(ViewTest, TransformEvent) {
   v3->Reset();
 
   // Rotate |v3| clockwise with respect to |v2|, and scale it along both axis.
-  transform = v3->GetTransform();
-  RotateClockwise(&transform);
-  transform.matrix().setRC(0, 3, 30.f);
+  transform = RotationClockwise();
+  transform.set_rc(0, 3, 30.f);
   // Rotation sets some scaling transformation. Using SetScale would overwrite
   // that and pollute the rotation. So combine the scaling with the existing
   // transforamtion.
@@ -2707,8 +2702,8 @@ TEST_F(ViewTest, TransformEvent) {
 
   // Translate |v2| with respect to |v1|.
   transform = v2->GetTransform();
-  transform.matrix().setRC(0, 3, 10.f);
-  transform.matrix().setRC(1, 3, 10.f);
+  transform.set_rc(0, 3, 10.f);
+  transform.set_rc(1, 3, 10.f);
   v2->SetTransform(transform);
 
   // |v3| now occupies (120, 120) to (144, 130) in |root|.
@@ -2744,9 +2739,8 @@ TEST_F(ViewTest, TransformVisibleBound) {
   EXPECT_EQ(gfx::Rect(0, 0, 50, 10), child->GetVisibleBounds());
 
   // Rotate |child| counter-clockwise
-  gfx::Transform transform;
-  RotateCounterclockwise(&transform);
-  transform.matrix().setRC(1, 3, 50.f);
+  gfx::Transform transform = RotationCounterclockwise();
+  transform.set_rc(1, 3, 50.f);
   child->SetTransform(transform);
   EXPECT_EQ(gfx::Rect(40, 0, 10, 50), child->GetVisibleBounds());
 }
@@ -2930,8 +2924,7 @@ TEST_F(ViewTest, ConversionsWithTransform) {
 
     top_view.AddChildView(child_2);
     child_2->SetBoundsRect(gfx::Rect(700, 725, 100, 100));
-    transform.MakeIdentity();
-    RotateClockwise(&transform);
+    transform = RotationClockwise();
     child_2->SetTransform(transform);
   }
 
@@ -2943,7 +2936,7 @@ TEST_F(ViewTest, ConversionsWithTransform) {
     transform.Translate(1.0, 1.0);
 
     // convert to a 3x3 matrix.
-    SkMatrix matrix = transform.matrix().asM33();
+    SkMatrix matrix = gfx::TransformToFlattenedSkMatrix(transform);
 
     EXPECT_EQ(210, matrix.getTranslateX());
     EXPECT_EQ(-55, matrix.getTranslateY());
@@ -2964,7 +2957,7 @@ TEST_F(ViewTest, ConversionsWithTransform) {
     transform.ConcatTransform(t3);
 
     // convert to a 3x3 matrix
-    SkMatrix matrix = transform.matrix().asM33();
+    SkMatrix matrix = gfx::TransformToFlattenedSkMatrix(transform);
 
     EXPECT_EQ(210, matrix.getTranslateX());
     EXPECT_EQ(-55, matrix.getTranslateY());
@@ -3140,9 +3133,8 @@ TEST_F(ViewTest, ConvertRectWithTransform) {
   EXPECT_EQ(gfx::Rect(35, 35, 15, 40), v2->ConvertRectToWidget(rect));
 
   // Rotate |v2|
-  gfx::Transform t2;
-  RotateCounterclockwise(&t2);
-  t2.matrix().setRC(1, 3, 100.f);
+  gfx::Transform t2 = RotationCounterclockwise();
+  t2.set_rc(1, 3, 100.f);
   v2->SetTransform(t2);
 
   // |v2| now occupies (30, 30) to (230, 130) in |widget|
@@ -4266,13 +4258,13 @@ TEST_F(ViewLayerTest, ToggleVisibilityWithTransform) {
   gfx::Transform transform;
   transform.Scale(2.0, 2.0);
   view->SetTransform(transform);
-  EXPECT_EQ(2.0f, view->GetTransform().matrix().rc(0, 0));
+  EXPECT_EQ(2.0f, view->GetTransform().rc(0, 0));
 
   view->SetVisible(false);
-  EXPECT_EQ(2.0f, view->GetTransform().matrix().rc(0, 0));
+  EXPECT_EQ(2.0f, view->GetTransform().rc(0, 0));
 
   view->SetVisible(true);
-  EXPECT_EQ(2.0f, view->GetTransform().matrix().rc(0, 0));
+  EXPECT_EQ(2.0f, view->GetTransform().rc(0, 0));
 }
 
 // Verifies a transform persists after removing/adding a view with a transform.
@@ -4281,17 +4273,17 @@ TEST_F(ViewLayerTest, ResetTransformOnLayerAfterAdd) {
   gfx::Transform transform;
   transform.Scale(2.0, 2.0);
   view->SetTransform(transform);
-  EXPECT_EQ(2.0f, view->GetTransform().matrix().rc(0, 0));
+  EXPECT_EQ(2.0f, view->GetTransform().rc(0, 0));
   ASSERT_TRUE(view->layer() != nullptr);
-  EXPECT_EQ(2.0f, view->layer()->transform().matrix().rc(0, 0));
+  EXPECT_EQ(2.0f, view->layer()->transform().rc(0, 0));
 
   View* parent = view->parent();
   parent->RemoveChildView(view);
   parent->AddChildView(view);
 
-  EXPECT_EQ(2.0f, view->GetTransform().matrix().rc(0, 0));
+  EXPECT_EQ(2.0f, view->GetTransform().rc(0, 0));
   ASSERT_TRUE(view->layer() != nullptr);
-  EXPECT_EQ(2.0f, view->layer()->transform().matrix().rc(0, 0));
+  EXPECT_EQ(2.0f, view->layer()->transform().rc(0, 0));
 }
 
 // Makes sure that layer visibility is correct after toggling View visibility.

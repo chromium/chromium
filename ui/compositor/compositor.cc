@@ -58,6 +58,7 @@
 #include "ui/compositor/overscroll/scroll_input_handler.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display_switches.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/icc_profile.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/switches.h"
@@ -349,7 +350,7 @@ void Compositor::SetLayerTreeFrameSink(
     display_private_->SetDisplayVisible(host_->IsVisible());
     display_private_->SetDisplayColorSpaces(display_color_spaces_);
     display_private_->SetDisplayColorMatrix(
-        gfx::Transform(display_color_matrix_));
+        gfx::SkM44ToTransform(display_color_matrix_));
     display_private_->SetOutputIsSecure(output_is_secure_);
     if (has_vsync_params_)
       display_private_->SetDisplayVSyncParameters(vsync_timebase_,
@@ -409,7 +410,7 @@ cc::AnimationTimeline* Compositor::GetAnimationTimeline() const {
 void Compositor::SetDisplayColorMatrix(const SkM44& matrix) {
   display_color_matrix_ = matrix;
   if (display_private_)
-    display_private_->SetDisplayColorMatrix(gfx::Transform(matrix));
+    display_private_->SetDisplayColorMatrix(gfx::SkM44ToTransform(matrix));
 }
 
 void Compositor::ScheduleFullRedraw() {

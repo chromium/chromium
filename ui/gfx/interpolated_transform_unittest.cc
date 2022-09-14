@@ -6,19 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
-
-namespace {
-
-void CheckApproximatelyEqual(const gfx::Transform& lhs,
-                             const gfx::Transform& rhs) {
-  for (int i = 0; i < 4; ++i) {
-    for (int j = 0; j < 4; ++j) {
-      EXPECT_FLOAT_EQ(lhs.matrix().rc(i, j), rhs.matrix().rc(i, j));
-    }
-  }
-}
-
-} // namespace
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 TEST(InterpolatedTransformTest, InterpolatedRotation) {
   ui::InterpolatedRotation interpolated_rotation(0, 100);
@@ -29,9 +17,9 @@ TEST(InterpolatedTransformTest, InterpolatedRotation) {
     gfx::Transform rotation;
     rotation.Rotate(i);
     gfx::Transform interpolated = interpolated_rotation.Interpolate(i / 100.0f);
-    CheckApproximatelyEqual(rotation, interpolated);
+    EXPECT_TRANSFORM_EQ(rotation, interpolated);
     interpolated = interpolated_rotation_diff_start_end.Interpolate(i + 100);
-    CheckApproximatelyEqual(rotation, interpolated);
+    EXPECT_TRANSFORM_EQ(rotation, interpolated);
   }
 }
 
@@ -45,9 +33,9 @@ TEST(InterpolatedTransformTest, InterpolatedScale) {
     gfx::Transform scale;
     scale.Scale3d(i, i, i);
     gfx::Transform interpolated = interpolated_scale.Interpolate(i / 100.0f);
-    CheckApproximatelyEqual(scale, interpolated);
+    EXPECT_TRANSFORM_EQ(scale, interpolated);
     interpolated = interpolated_scale_diff_start_end.Interpolate(i + 100);
-    CheckApproximatelyEqual(scale, interpolated);
+    EXPECT_TRANSFORM_EQ(scale, interpolated);
   }
 }
 
@@ -62,9 +50,9 @@ TEST(InterpolatedTransformTest, InterpolatedTranslate) {
     gfx::Transform xform;
     xform.Translate(i, i);
     gfx::Transform interpolated = interpolated_xform.Interpolate(i / 100.0f);
-    CheckApproximatelyEqual(xform, interpolated);
+    EXPECT_TRANSFORM_EQ(xform, interpolated);
     interpolated = interpolated_xform_diff_start_end.Interpolate(i + 100);
-    CheckApproximatelyEqual(xform, interpolated);
+    EXPECT_TRANSFORM_EQ(xform, interpolated);
   }
 }
 
@@ -79,9 +67,9 @@ TEST(InterpolatedTransformTest, InterpolatedTranslate3d) {
     gfx::Transform xform;
     xform.Translate3d(i, i, i);
     gfx::Transform interpolated = interpolated_xform.Interpolate(i / 100.0f);
-    CheckApproximatelyEqual(xform, interpolated);
+    EXPECT_TRANSFORM_EQ(xform, interpolated);
     interpolated = interpolated_xform_diff_start_end.Interpolate(i + 100);
-    CheckApproximatelyEqual(xform, interpolated);
+    EXPECT_TRANSFORM_EQ(xform, interpolated);
   }
 }
 
@@ -92,7 +80,7 @@ TEST(InterpolatedTransformTest, InterpolatedRotationAboutPivot) {
   ui::InterpolatedTransformAboutPivot interpolated_xform(
       pivot, std::make_unique<ui::InterpolatedRotation>(0, 90));
   gfx::Transform result = interpolated_xform.Interpolate(0.0f);
-  CheckApproximatelyEqual(gfx::Transform(), result);
+  EXPECT_TRANSFORM_EQ(gfx::Transform(), result);
   result = interpolated_xform.Interpolate(1.0f);
   gfx::Point expected_result = pivot;
   result.TransformPoint(&pivot);
@@ -109,7 +97,7 @@ TEST(InterpolatedTransformTest, InterpolatedScaleAboutPivot) {
       pivot, std::make_unique<ui::InterpolatedScale>(gfx::Point3F(1, 1, 1),
                                                      gfx::Point3F(2, 2, 2)));
   gfx::Transform result = interpolated_xform.Interpolate(0.0f);
-  CheckApproximatelyEqual(gfx::Transform(), result);
+  EXPECT_TRANSFORM_EQ(gfx::Transform(), result);
   result = interpolated_xform.Interpolate(1.0f);
   gfx::Point expected_result = pivot;
   result.TransformPoint(&pivot);
@@ -179,7 +167,7 @@ TEST(InterpolatedTransformTest, ScreenRotationEndsCleanly) {
       // Upper-left 3x3 matrix should all be 0, 1 or -1.
       for (int row = 0; row < 3; ++row) {
         for (int col = 0; col < 3; ++col) {
-          float entry = interpolated.matrix().rc(row, col);
+          float entry = interpolated.rc(row, col);
           EXPECT_TRUE(entry == 0 || entry == 1 || entry == -1);
         }
       }
@@ -228,7 +216,7 @@ TEST(InterpolatedTransformTest, MaximizeEndsCleanly) {
   // Upper-left 3x3 matrix should all be 0, 1 or -1.
   for (int row = 0; row < 3; ++row) {
     for (int col = 0; col < 3; ++col) {
-      float entry = interpolated.matrix().rc(row, col);
+      float entry = interpolated.rc(row, col);
       EXPECT_TRUE(entry == 0 || entry == 1 || entry == -1);
     }
   }

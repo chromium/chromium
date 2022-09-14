@@ -12,12 +12,11 @@
 
 namespace gfx {
 
-GFX_EXPORT gfx::Transform OverlayTransformToTransform(
-    gfx::OverlayTransform overlay_transform,
-    const gfx::SizeF& viewport_bounds);
+GFX_EXPORT Transform
+OverlayTransformToTransform(OverlayTransform overlay_transform,
+                            const SizeF& viewport_bounds);
 
-GFX_EXPORT gfx::OverlayTransform InvertOverlayTransform(
-    gfx::OverlayTransform transform);
+GFX_EXPORT OverlayTransform InvertOverlayTransform(OverlayTransform transform);
 
 }  // namespace gfx
 

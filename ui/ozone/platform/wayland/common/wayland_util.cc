@@ -344,10 +344,8 @@ std::vector<gfx::Rect> CreateRectsFromSkPath(const SkPath& path) {
 
 SkPath ConvertPathToDIP(const SkPath& path_in_pixels, float scale) {
   SkScalar sk_scale = SkFloatToScalar(1.0f / scale);
-  gfx::Transform transform;
-  transform.Scale(sk_scale, sk_scale);
   SkPath path_in_dips;
-  path_in_pixels.transform(transform.matrix().asM33(), &path_in_dips);
+  path_in_pixels.transform(SkMatrix::Scale(sk_scale, sk_scale), &path_in_dips);
   return path_in_dips;
 }
 

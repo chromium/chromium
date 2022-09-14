@@ -12,22 +12,14 @@
 namespace mojo {
 
 template <>
-struct ArrayTraits<gfx::Matrix44> {
-  using Element = float;
-
-  static bool IsNull(const gfx::Matrix44& input) { return input.isIdentity(); }
-
-  static size_t GetSize(const gfx::Matrix44& input) { return 16; }
-
-  static float GetAt(const gfx::Matrix44& input, size_t index) {
-    return input.rc(static_cast<int>(index % 4), static_cast<int>(index / 4));
-  }
-};
-
-template <>
 struct StructTraits<gfx::mojom::TransformDataView, gfx::Transform> {
-  static const gfx::Matrix44& matrix(const gfx::Transform& transform) {
-    return transform.matrix();
+  static absl::optional<std::array<float, 16>> matrix(
+      const gfx::Transform& transform) {
+    if (transform.IsIdentity())
+      return absl::nullopt;
+    std::array<float, 16> matrix;
+    transform.GetColMajorF(matrix.data());
+    return matrix;
   }
 
   static bool Read(gfx::mojom::TransformDataView data, gfx::Transform* out) {
@@ -37,7 +29,7 @@ struct StructTraits<gfx::mojom::TransformDataView, gfx::Transform> {
       out->MakeIdentity();
       return true;
     }
-    out->matrix().setColMajor(matrix.data());
+    *out = gfx::Transform::ColMajorF(matrix.data());
     return true;
   }
 };
