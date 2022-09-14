@@ -1247,6 +1247,17 @@
       ]
     },
     {
+      "name": "__MSG_keyboard_hindi_inscript__",
+      "id": "vkd_hi_inscript",
+      "indicator": "\u0939\u093f",
+      "language": [
+        "hi"
+      ],
+      "layouts": [
+        "us"
+      ]
+    },
+    {
       "name": "__MSG_keyboard_kannada_phonetic__",
       "id": "vkd_kn_phone",
       "language": [

@@ -12,6 +12,7 @@
 #include "ash/services/ime/public/cpp/rulebased/def/ethi.h"
 #include "ash/services/ime/public/cpp/rulebased/def/fa.h"
 #include "ash/services/ime/public/cpp/rulebased/def/gu_phone.h"
+#include "ash/services/ime/public/cpp/rulebased/def/hi_inscript.h"
 #include "ash/services/ime/public/cpp/rulebased/def/km.h"
 #include "ash/services/ime/public/cpp/rulebased/def/kn_phone.h"
 #include "ash/services/ime/public/cpp/rulebased/def/lo.h"
@@ -87,6 +88,8 @@ const std::map<std::string, RawDataEntry>& GetRawData() {
       {gu_phone::kId,
        RawDataEntry(gu_phone::kKeyMap, gu_phone::kIs102, gu_phone::kTransforms,
                     gu_phone::kTransformsLen, gu_phone::kHistoryPrune)},
+      {hi_inscript::kId,
+       RawDataEntry(hi_inscript::kKeyMap, hi_inscript::kIs102)},
       {km::kId, RawDataEntry(km::kKeyMap, km::kIs102)},
       {kn_phone::kId,
        RawDataEntry(us::kKeyMap, us::kIs102, kn_phone::kTransforms,

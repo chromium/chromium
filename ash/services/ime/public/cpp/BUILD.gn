@@ -31,6 +31,8 @@ source_set("rulebased") {
     "rulebased/def/fa.h",
     "rulebased/def/gu_phone.cc",
     "rulebased/def/gu_phone.h",
+    "rulebased/def/hi_inscript.cc",
+    "rulebased/def/hi_inscript.h",
     "rulebased/def/km.cc",
     "rulebased/def/km.h",
     "rulebased/def/kn_phone.cc",
