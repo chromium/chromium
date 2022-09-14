@@ -18,8 +18,8 @@ namespace ui {
 
 namespace {
 
-// Remove this method when Compositors other than Exo comply with
-// `wl_pointer.frame`.
+// TODO(https://crbug.com/1353873): Remove this method when Compositors other
+// than Exo comply with `wl_pointer.frame`.
 wl::EventDispatchPolicy EventDispatchPolicyForPlatform() {
   return
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -70,7 +70,7 @@ void WaylandPointer::Enter(void* data,
 
   pointer->delegate_->OnPointerFocusChanged(
       window, pointer->connection_->MaybeConvertLocation(location, window),
-      wl::EventDispatchPolicy::kOnFrame);
+      EventDispatchPolicyForPlatform());
 }
 
 // static
