@@ -418,7 +418,8 @@ void V8ContextSnapshotImpl::InstallInterfaceTemplates(v8::Isolate* isolate) {
 
 v8::StartupData V8ContextSnapshotImpl::TakeSnapshot() {
   v8::Isolate* isolate = V8PerIsolateData::MainThreadIsolate();
-  CHECK_EQ(isolate, v8::Isolate::GetCurrent());
+  CHECK(isolate);
+  CHECK(isolate->IsCurrent());
   V8PerIsolateData* per_isolate_data = V8PerIsolateData::From(isolate);
   CHECK_EQ(per_isolate_data->GetV8ContextSnapshotMode(),
            V8PerIsolateData::V8ContextSnapshotMode::kTakeSnapshot);

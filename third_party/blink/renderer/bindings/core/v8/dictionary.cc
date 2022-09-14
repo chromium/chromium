@@ -80,7 +80,7 @@ bool Dictionary::Get(const StringView& key, Dictionary& value) const {
 
   if (v8_value->IsObject()) {
     DCHECK(isolate_);
-    DCHECK_EQ(isolate_, v8::Isolate::GetCurrent());
+    DCHECK(isolate_->IsCurrent());
     // TODO(bashi,yukishiino): Should rethrow the exception.
     // http://crbug.com/666661
     DummyExceptionStateForTesting exception_state;
