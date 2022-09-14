@@ -45,6 +45,25 @@ class AppDeduplicationServiceTest : public testing::Test {
                                      /*should_notify_initialized=*/false);
   }
 
+  absl::optional<proto::DuplicatedGroupList> ReadProtoFromFile() {
+    base::FilePath path;
+    if (!base::PathService::Get(chrome::DIR_TEST_DATA, &path)) {
+      return absl::nullopt;
+    }
+    path = path.AppendASCII("app_deduplication_service/binary_test_data.pb");
+
+    std::string dedupe_pb;
+    if (!base::ReadFileToString(path, &dedupe_pb)) {
+      return absl::nullopt;
+    }
+
+    proto::DuplicatedGroupList duplicated_group_list;
+    if (!duplicated_group_list.ParseFromString(dedupe_pb)) {
+      return absl::nullopt;
+    }
+    return duplicated_group_list;
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -95,24 +114,17 @@ TEST_F(AppDeduplicationServiceTest, ServiceAccessPerProfile) {
 }
 
 TEST_F(AppDeduplicationServiceTest, OnDuplicatedGroupListUpdated) {
-  base::FilePath path;
-  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &path));
-  path = path.AppendASCII("app_deduplication_service/binary_test_data.pb");
+  absl::optional<proto::DuplicatedGroupList> duplicated_group_list =
+      ReadProtoFromFile();
+  ASSERT_TRUE(duplicated_group_list.has_value());
 
-  std::string dedupe_pb;
-  ASSERT_TRUE(base::ReadFileToString(path, &dedupe_pb));
-
-  proto::DuplicatedGroupList duplicated_group_list;
-  ASSERT_TRUE(duplicated_group_list.ParseFromString(dedupe_pb));
-
-  TestingProfile::Builder profile_builder;
-  auto profile = profile_builder.Build();
+  TestingProfile profile;
   ASSERT_TRUE(AppDeduplicationServiceFactory::
-                  IsAppDeduplicationServiceAvailableForProfile(profile.get()));
-  auto* service = AppDeduplicationServiceFactory::GetForProfile(profile.get());
+                  IsAppDeduplicationServiceAvailableForProfile(&profile));
+  auto* service = AppDeduplicationServiceFactory::GetForProfile(&profile);
   EXPECT_NE(nullptr, service);
 
-  service->OnDuplicatedGroupListUpdated(duplicated_group_list);
+  service->OnDuplicatedGroupListUpdated(duplicated_group_list.value());
 
   uint32_t skype_test_index = 1;
   std::string skype_arc_app_id = "com.skype.raider";
@@ -121,7 +133,7 @@ TEST_F(AppDeduplicationServiceTest, OnDuplicatedGroupListUpdated) {
   ASSERT_NE(it, service->entry_to_group_map_.end());
   EXPECT_EQ(skype_test_index, it->second);
 
-  std::string skype_web_app_id = "http://web.skype.com/";
+  std::string skype_web_app_id = "https://web.skype.com/";
   it = service->entry_to_group_map_.find(
       EntryId(skype_web_app_id, AppType::kWeb));
   ASSERT_NE(it, service->entry_to_group_map_.end());
@@ -146,7 +158,7 @@ TEST_F(AppDeduplicationServiceTest, OnDuplicatedGroupListUpdated) {
   ASSERT_NE(it, service->entry_to_group_map_.end());
   EXPECT_EQ(whatsapp_test_index, it->second);
 
-  std::string whatsapp_web_app_id = "http://web.whatsapp.com/";
+  std::string whatsapp_web_app_id = "https://web.whatsapp.com/";
   it = service->entry_to_group_map_.find(
       EntryId(whatsapp_web_app_id, AppType::kWeb));
   ASSERT_NE(it, service->entry_to_group_map_.end());
@@ -168,25 +180,18 @@ TEST_F(AppDeduplicationServiceTest, OnDuplicatedGroupListUpdated) {
 // Test that if all apps in the duplicated group are installed, the full list
 // will be returned.
 TEST_F(AppDeduplicationServiceTest, ExactDuplicateAllInstalled) {
-  base::FilePath path;
-  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &path));
-  path = path.AppendASCII("app_deduplication_service/binary_test_data.pb");
+  absl::optional<proto::DuplicatedGroupList> duplicated_group_list =
+      ReadProtoFromFile();
+  ASSERT_TRUE(duplicated_group_list.has_value());
 
-  std::string dedupe_pb;
-  ASSERT_TRUE(base::ReadFileToString(path, &dedupe_pb));
-
-  proto::DuplicatedGroupList duplicated_group_list;
-  ASSERT_TRUE(duplicated_group_list.ParseFromString(dedupe_pb));
-
-  TestingProfile::Builder profile_builder;
-  auto profile = profile_builder.Build();
+  TestingProfile profile;
 
   // Set up app installed.
-  auto* proxy = AppServiceProxyFactory::GetForProfile(profile.get());
+  auto* proxy = AppServiceProxyFactory::GetForProfile(&profile);
   std::string skype_arc_app_id = "com.skype.raider";
-  std::string skype_web_app_id = "http://web.skype.com/";
+  std::string skype_web_app_id = "https://web.skype.com/";
   std::string whatsapp_arc_app_id = "com.whatsapp";
-  std::string whatsapp_web_app_id = "http://web.whatsapp.com/";
+  std::string whatsapp_web_app_id = "https://web.whatsapp.com/";
 
   UpdateAppReadiness(proxy, "app1", skype_arc_app_id, apps::AppType::kArc,
                      Readiness::kReady);
@@ -198,11 +203,11 @@ TEST_F(AppDeduplicationServiceTest, ExactDuplicateAllInstalled) {
                      Readiness::kReady);
 
   ASSERT_TRUE(AppDeduplicationServiceFactory::
-                  IsAppDeduplicationServiceAvailableForProfile(profile.get()));
-  auto* service = AppDeduplicationServiceFactory::GetForProfile(profile.get());
+                  IsAppDeduplicationServiceAvailableForProfile(&profile));
+  auto* service = AppDeduplicationServiceFactory::GetForProfile(&profile);
   EXPECT_NE(nullptr, service);
 
-  service->OnDuplicatedGroupListUpdated(duplicated_group_list);
+  service->OnDuplicatedGroupListUpdated(duplicated_group_list.value());
 
   EntryId skype_arc_entry_id(skype_arc_app_id, apps::AppType::kArc);
   EntryId skype_web_entry_id(skype_web_app_id, apps::AppType::kWeb);
@@ -284,32 +289,25 @@ TEST_F(AppDeduplicationServiceTest, ExactDuplicateAllInstalled) {
 }
 
 TEST_F(AppDeduplicationServiceTest, Installation) {
-  base::FilePath path;
-  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &path));
-  path = path.AppendASCII("app_deduplication_service/binary_test_data.pb");
+  absl::optional<proto::DuplicatedGroupList> duplicated_group_list =
+      ReadProtoFromFile();
+  ASSERT_TRUE(duplicated_group_list.has_value());
 
-  std::string dedupe_pb;
-  ASSERT_TRUE(base::ReadFileToString(path, &dedupe_pb));
+  TestingProfile profile;
 
-  proto::DuplicatedGroupList duplicated_group_list;
-  ASSERT_TRUE(duplicated_group_list.ParseFromString(dedupe_pb));
-
-  TestingProfile::Builder profile_builder;
-  auto profile = profile_builder.Build();
-
-  auto* proxy = AppServiceProxyFactory::GetForProfile(profile.get());
+  auto* proxy = AppServiceProxyFactory::GetForProfile(&profile);
 
   ASSERT_TRUE(AppDeduplicationServiceFactory::
-                  IsAppDeduplicationServiceAvailableForProfile(profile.get()));
-  auto* service = AppDeduplicationServiceFactory::GetForProfile(profile.get());
+                  IsAppDeduplicationServiceAvailableForProfile(&profile));
+  auto* service = AppDeduplicationServiceFactory::GetForProfile(&profile);
   EXPECT_NE(nullptr, service);
 
-  service->OnDuplicatedGroupListUpdated(duplicated_group_list);
+  service->OnDuplicatedGroupListUpdated(duplicated_group_list.value());
 
   std::string skype_arc_app_id = "com.skype.raider";
-  std::string skype_web_app_id = "http://web.skype.com/";
+  std::string skype_web_app_id = "https://web.skype.com/";
   std::string whatsapp_arc_app_id = "com.whatsapp";
-  std::string whatsapp_web_app_id = "http://web.whatsapp.com/";
+  std::string whatsapp_web_app_id = "https://web.whatsapp.com/";
 
   EntryId skype_arc_entry_id(skype_arc_app_id, apps::AppType::kArc);
   EntryId skype_web_entry_id(skype_web_app_id, apps::AppType::kWeb);
@@ -343,12 +341,65 @@ TEST_F(AppDeduplicationServiceTest, Installation) {
               ElementsAre(Entry(skype_phonehub_entry_id)));
 }
 
+TEST_F(AppDeduplicationServiceTest, Websites) {
+  absl::optional<proto::DuplicatedGroupList> duplicated_group_list =
+      ReadProtoFromFile();
+  ASSERT_TRUE(duplicated_group_list.has_value());
+
+  TestingProfile profile;
+
+  auto* proxy = AppServiceProxyFactory::GetForProfile(&profile);
+
+  ASSERT_TRUE(AppDeduplicationServiceFactory::
+                  IsAppDeduplicationServiceAvailableForProfile(&profile));
+  auto* service = AppDeduplicationServiceFactory::GetForProfile(&profile);
+  EXPECT_NE(nullptr, service);
+
+  service->OnDuplicatedGroupListUpdated(duplicated_group_list.value());
+
+  GURL keep_website = GURL("https://keep.google.com/");
+  GURL keep_website_with_path = GURL("https://keep.google.com/testtesttest");
+  GURL not_keep_website = GURL("https://www.google.com/");
+  std::string keep_arc_app_id = "com.google.android.keep";
+  std::string keep_web_app_id = "https://keep.google.com/?usp=installed_webapp";
+  GURL wrong_scheme_website = GURL("http://www.google.com/");
+
+  EntryId keep_website_entry_id(keep_website);
+  EntryId keep_website_with_path_entry_id(keep_website_with_path);
+  EntryId keep_arc_entry_id(keep_arc_app_id, apps::AppType::kArc);
+  EntryId keep_web_entry_id(keep_web_app_id, apps::AppType::kWeb);
+  EntryId not_keep_website_entry_id(not_keep_website);
+  EntryId wrong_scheme_website_entry_id(wrong_scheme_website);
+
+  UpdateAppReadiness(proxy, "app1", keep_arc_app_id, apps::AppType::kArc,
+                     Readiness::kReady);
+  UpdateAppReadiness(proxy, "app2", keep_web_app_id, apps::AppType::kWeb,
+                     Readiness::kReady);
+
+  EXPECT_THAT(service->GetDuplicates(keep_website_entry_id),
+              ElementsAre(Entry(keep_arc_entry_id), Entry(keep_web_entry_id),
+                          Entry(keep_website_entry_id)));
+  EXPECT_THAT(service->GetDuplicates(keep_website_with_path_entry_id),
+              ElementsAre(Entry(keep_arc_entry_id), Entry(keep_web_entry_id),
+                          Entry(keep_website_entry_id)));
+  EXPECT_THAT(service->GetDuplicates(not_keep_website_entry_id),
+              testing::IsEmpty());
+  EXPECT_THAT(service->GetDuplicates(wrong_scheme_website_entry_id),
+              testing::IsEmpty());
+
+  EXPECT_TRUE(service->AreDuplicates(keep_website_with_path_entry_id,
+                                     keep_arc_entry_id));
+  EXPECT_FALSE(
+      service->AreDuplicates(not_keep_website_entry_id, keep_web_entry_id));
+  EXPECT_FALSE(
+      service->AreDuplicates(wrong_scheme_website_entry_id, keep_web_entry_id));
+}
+
 // Test updating duplication data from app provisioning data manager.
 TEST_F(AppDeduplicationServiceTest, AppPromisioningDataManagerUpdate) {
-  TestingProfile::Builder profile_builder;
-  auto profile = profile_builder.Build();
+  TestingProfile profile;
 
-  auto* proxy = AppServiceProxyFactory::GetForProfile(profile.get());
+  auto* proxy = AppServiceProxyFactory::GetForProfile(&profile);
   std::string test_arc_app = "test_arc_app_id";
   std::string test_web_app = "test_web_app_id";
   UpdateAppReadiness(proxy, "app1", test_arc_app, apps::AppType::kArc,
@@ -357,8 +408,8 @@ TEST_F(AppDeduplicationServiceTest, AppPromisioningDataManagerUpdate) {
                      Readiness::kReady);
 
   ASSERT_TRUE(AppDeduplicationServiceFactory::
-                  IsAppDeduplicationServiceAvailableForProfile(profile.get()));
-  auto* service = AppDeduplicationServiceFactory::GetForProfile(profile.get());
+                  IsAppDeduplicationServiceAvailableForProfile(&profile));
+  auto* service = AppDeduplicationServiceFactory::GetForProfile(&profile);
   EXPECT_NE(nullptr, service);
 
   std::string binary_pb = "";

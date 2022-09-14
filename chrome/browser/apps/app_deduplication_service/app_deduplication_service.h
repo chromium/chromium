@@ -39,6 +39,7 @@ class AppDeduplicationService : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest,
                            ExactDuplicateAllInstalled);
   FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest, Installation);
+  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest, Websites);
 
   enum class EntryStatus {
     // This entry is not an app entry (could be website, phonehub, etc.).
