@@ -180,8 +180,7 @@ WebRtcVideoFrameAdapter::SharedResources::GetRasterContextProvider() {
   // Recreate the context provider.
   base::WaitableEvent waitable_event;
   PostCrossThreadTask(
-      *Thread::MainThread()->GetTaskRunner(MainThreadTaskRunnerRestricted()),
-      FROM_HERE,
+      *Thread::MainThread()->GetDeprecatedTaskRunner(), FROM_HERE,
       CrossThreadBindOnce(&CreateContextProviderOnMainThread,
                           CrossThreadUnretained(&raster_context_provider_),
                           CrossThreadUnretained(&waitable_event)));

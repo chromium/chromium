@@ -242,7 +242,7 @@ void CategorizedWorkerPoolImpl::Start(int max_concurrency_foreground) {
       &has_task_for_background_priority_thread_cv_);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   thread->SetBackgroundingCallback(
-      Thread::MainThread()->GetTaskRunner(MainThreadTaskRunnerRestricted()),
+      Thread::MainThread()->GetDeprecatedTaskRunner(),
       base::BindOnce([](base::PlatformThreadId thread_id) {
         Platform::Current()->SetThreadType(thread_id,
                                            base::ThreadType::kBackground);
