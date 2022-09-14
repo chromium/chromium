@@ -325,7 +325,6 @@ public class AutofillAssistantGenericUiTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1033877")
     @DisableIf.Build(sdk_is_less_than = 21)
     public void testStaticUserInterface() {
         DrawableProto roundedRect =
