@@ -5,12 +5,13 @@
 #include "chrome/browser/apps/app_preload_service/device_info_manager.h"
 
 #include "base/system/sys_info.h"
+#include "chrome/browser/apps/user_type_filter.h"
 #include "chromeos/version/version_loader.h"
 #include "components/version_info/version_info.h"
 
 namespace apps {
 
-DeviceInfoManager::DeviceInfoManager() = default;
+DeviceInfoManager::DeviceInfoManager(Profile* profile) : profile_(profile) {}
 
 DeviceInfoManager::~DeviceInfoManager() = default;
 
@@ -27,14 +28,20 @@ std::string DeviceInfoManager::GetChromeOsPlatformVersion() const {
       chromeos::version_loader::VERSION_SHORT);
 }
 
+std::string DeviceInfoManager::GetUserType() const {
+  return apps::DetermineUserType(profile_);
+}
+
 std::ostream& operator<<(std::ostream& os,
                          const DeviceInfoManager& device_info_manager) {
   os << "Device info Manager:" << std::endl;
   os << "- Board: " << device_info_manager.GetBoard() << std::endl;
-  os << "- Ash Chrome Version: " << device_info_manager.GetChromeVersion()
+  os << "- Versions: " << std::endl;
+  os << "  - Ash Chrome: " << device_info_manager.GetChromeVersion()
      << std::endl;
-  os << "- Platform: " << device_info_manager.GetChromeOsPlatformVersion()
+  os << "  - Platform: " << device_info_manager.GetChromeOsPlatformVersion()
      << std::endl;
+  os << "- User Type: " << device_info_manager.GetUserType() << std::endl;
   return os;
 }
 
