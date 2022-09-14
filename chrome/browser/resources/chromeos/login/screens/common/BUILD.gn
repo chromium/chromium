@@ -17,7 +17,6 @@ group("polymer3_elements") {
     ":assistant_optin_module",
     ":consolidated_consent_module",
     ":device_disabled_module",
-    ":error_message_module",
     ":family_link_notice_module",
     ":gaia_signin_module",
     ":guest_tos_module",
@@ -56,7 +55,7 @@ js_type_check("closure_compile_local") {
     ":consolidated_consent.m",
     ":device_disabled.m",
     ":enable_kiosk",
-    ":error_message.m",
+    ":error_message",
     ":family_link_notice.m",
     ":fingerprint_setup",
     ":gaia_signin.m",
@@ -651,8 +650,8 @@ js_library("wrong_hwid") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("error_message.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/error_message.m.js" ]
+js_library("error_message") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/error_message.js" ]
   deps = [
     "../../:cr_ui.m",
     "../../components:display_manager_types.m",
@@ -665,7 +664,7 @@ js_library("error_message.m") {
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "//ui/webui/resources/js:parse_html_subset",
   ]
-  extra_deps = [ ":error_message_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 polymer_modulizer("app_launch_splash") {
@@ -824,15 +823,6 @@ polymer_modulizer("sync_consent") {
   migrated_imports = oobe_migrated_imports
 }
 
-polymer_modulizer("error_message") {
-  js_file = "error_message.js"
-  html_file = "error_message.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 html_to_js("web_components") {
   js_files = [
     "adb_sideloading.js",
@@ -840,6 +830,7 @@ html_to_js("web_components") {
     "arc_terms_of_service.js",
     "autolaunch.js",
     "enable_kiosk.js",
+    "error_message.js",
     "fingerprint_setup.js",
     "gesture_navigation.js",
     "local_state_error.js",

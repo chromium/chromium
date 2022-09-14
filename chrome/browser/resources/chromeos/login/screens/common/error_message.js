@@ -6,7 +6,24 @@
  * @fileoverview Offline message screen implementation.
  */
 
-/* #js_imports_placeholder */
+import '//resources/js/action_link.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
+import '../../components/buttons/oobe_back_button.m.js';
+import '../../components/buttons/oobe_text_button.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+import '../../components/network_select_login.m.js';
+
+import {SanitizeInnerHtmlOpts} from '//resources/js/parse_html_subset.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OOBE_UI_STATE} from '../../components/display_manager_types.m.js';
+import {Oobe} from '../../cr_ui.m.js';
+
 
 const USER_ACTION_LAUNCH_OOBE_GUEST = 'launch-oobe-guest';
 const USER_ACTION_SHOW_CAPTIVE_PORTAL = 'show-captive-portal';
@@ -71,9 +88,9 @@ const ERROR_STATES = [
  * @implements {OobeI18nBehaviorInterface}
  * @implements {LoginScreenBehaviorInterface}
  */
-const ErrorMessageScreenBase = Polymer.mixinBehaviors(
+const ErrorMessageScreenBase = mixinBehaviors(
     [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
-    Polymer.Element);
+    PolymerElement);
 
 /**
  * @polymer
@@ -83,7 +100,9 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
     return 'error-message-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   /** @override */
   get EXTERNAL_API() {

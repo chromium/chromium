@@ -15,7 +15,7 @@ import './screens/common/autolaunch.js';
 import './screens/common/consolidated_consent.m.js';
 import './screens/common/device_disabled.m.js';
 import './screens/common/enable_kiosk.js';
-import './screens/common/error_message.m.js';
+import './screens/common/error_message.js';
 import './screens/common/family_link_notice.m.js';
 import './screens/common/fingerprint_setup.js';
 import './screens/common/gaia_signin.m.js';
