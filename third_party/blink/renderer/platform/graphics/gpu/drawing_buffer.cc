@@ -144,7 +144,6 @@ scoped_refptr<DrawingBuffer> DrawingBuffer::Create(
     bool want_depth_buffer,
     bool want_stencil_buffer,
     bool want_antialiasing,
-    bool desynchronized,
     PreserveDrawingBuffer preserve,
     WebGLVersion webgl_version,
     ChromiumImageUsage chromium_image_usage,
@@ -200,11 +199,10 @@ scoped_refptr<DrawingBuffer> DrawingBuffer::Create(
   scoped_refptr<DrawingBuffer> drawing_buffer =
       base::AdoptRef(new DrawingBuffer(
           std::move(context_provider), graphics_info, using_swap_chain,
-          desynchronized, std::move(extensions_util), client,
-          discard_framebuffer_supported, want_alpha_channel,
-          premultiplied_alpha, preserve, webgl_version, want_depth_buffer,
-          want_stencil_buffer, chromium_image_usage, filter_quality,
-          color_space, pixel_format, gpu_preference));
+          std::move(extensions_util), client, discard_framebuffer_supported,
+          want_alpha_channel, premultiplied_alpha, preserve, webgl_version,
+          want_depth_buffer, want_stencil_buffer, chromium_image_usage,
+          filter_quality, color_space, pixel_format, gpu_preference));
   if (!drawing_buffer->Initialize(size, multisample_supported)) {
     drawing_buffer->BeginDestruction();
     return scoped_refptr<DrawingBuffer>();
@@ -216,7 +214,6 @@ DrawingBuffer::DrawingBuffer(
     std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
     const Platform::GraphicsInfo& graphics_info,
     bool using_swap_chain,
-    bool desynchronized,
     std::unique_ptr<Extensions3DUtil> extensions_util,
     Client* client,
     bool discard_framebuffer_supported,
@@ -243,7 +240,6 @@ DrawingBuffer::DrawingBuffer(
       premultiplied_alpha_(premultiplied_alpha),
       graphics_info_(graphics_info),
       using_swap_chain_(using_swap_chain),
-      low_latency_enabled_(desynchronized),
       want_depth_(want_depth),
       want_stencil_(want_stencil),
       color_space_(PredefinedColorSpaceToGfxColorSpace(color_space)),

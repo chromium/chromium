@@ -91,10 +91,8 @@ class OzoneImageBacking::OverlayOzoneImageRepresentation
     auto* ozone_backing = static_cast<OzoneImageBacking*>(backing());
     std::vector<gfx::GpuFenceHandle> fences;
     bool need_end_fence;
-    if (!ozone_backing->BeginAccess(/*readonly=*/true, AccessStream::kOverlay,
-                                    &fences, need_end_fence)) {
-      return false;
-    }
+    ozone_backing->BeginAccess(/*readonly=*/true, AccessStream::kOverlay,
+                               &fences, need_end_fence);
     // Always need an end fence when finish reading from overlays.
     DCHECK(need_end_fence);
     if (!fences.empty()) {
