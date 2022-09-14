@@ -452,6 +452,11 @@ bool IsAccessibilityOSSettingsVisibilityEnabled() {
   return ::features::IsAccessibilityOSSettingsVisibilityEnabled();
 }
 
+bool AreExperimentalAccessibilityColorEnhancementSettingsEnabled() {
+  return ::features::
+      AreExperimentalAccessibilityColorEnhancementSettingsEnabled();
+}
+
 bool IsSwitchAccessTextAllowed() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kEnableExperimentalAccessibilitySwitchAccessText);
@@ -565,6 +570,12 @@ void AccessibilitySection::AddLoadTimeData(
       {"cursorColorPink", IDS_SETTINGS_CURSOR_COLOR_PINK},
       {"highContrastLabel", IDS_SETTINGS_HIGH_CONTRAST_LABEL},
       {"highContrastDescription", IDS_SETTINGS_HIGH_CONTRAST_DESCRIPTION},
+      {"greyscaleLabel", IDS_SETTINGS_GREYSCALE_LABEL},
+      {"sepiaLabel", IDS_SETTINGS_SEPIA_LABEL},
+      {"saturationLabel", IDS_SETTINGS_SATURATION_LABEL},
+      {"hueRotationLabel", IDS_SETTINGS_HUE_ROTATION_LABEL},
+      {"colorFilterMinLabel", IDS_SETTINGS_COLOR_FILTER_MINIMUM_LABEL},
+      {"colorFilterMaxLabel", IDS_SETTINGS_COLOR_FILTER_MAXIMUM_LABEL},
       {"stickyKeysLabel", IDS_SETTINGS_STICKY_KEYS_LABEL},
       {"stickyKeysDescription", IDS_SETTINGS_STICKY_KEYS_DESCRIPTION},
       {"chromeVoxLabel", IDS_SETTINGS_CHROMEVOX_LABEL},
@@ -915,6 +926,10 @@ void AccessibilitySection::AddLoadTimeData(
 
   html_source->AddBoolean("isAccessibilityOSSettingsVisibilityEnabled",
                           IsAccessibilityOSSettingsVisibilityEnabled());
+
+  html_source->AddBoolean(
+      "areExperimentalAccessibilityColorEnhancementSettingsEnabled",
+      AreExperimentalAccessibilityColorEnhancementSettingsEnabled());
 
   ::settings::AddCaptionSubpageStrings(html_source);
 }

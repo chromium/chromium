@@ -107,6 +107,15 @@ class SettingsDisplayAndMagnificationElement extends
         },
       },
 
+      /** @protected */
+      experimentalColorEnhancementSettingsEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'areExperimentalAccessibilityColorEnhancementSettingsEnabled');
+        },
+      },
+
       /**
        * Whether the user is in kiosk mode.
        * @protected

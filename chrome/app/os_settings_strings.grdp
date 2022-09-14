@@ -997,6 +997,24 @@
   <message name="IDS_SETTINGS_HIGH_CONTRAST_DESCRIPTION" desc="Label for checkbox which enables high-contrast UI.">
     Turn light screens dark, and dark screens light. Press Search + Ctrl + H to turn color inversion on and off.
   </message>
+  <message name="IDS_SETTINGS_GREYSCALE_LABEL" desc="Label for slider which controls greyscale UI filter.">
+    Greyscale
+  </message>
+  <message name="IDS_SETTINGS_SEPIA_LABEL" desc="Label for slider which controls sepia UI filter.">
+    Sepia
+  </message>
+  <message name="IDS_SETTINGS_SATURATION_LABEL" desc="Label for slider which controls saturation filter UI.">
+    Saturation
+  </message>
+  <message name="IDS_SETTINGS_HUE_ROTATION_LABEL" desc="Label for slider which controls hue rotation filter UI.">
+    Hue rotation
+  </message>
+  <message name="IDS_SETTINGS_COLOR_FILTER_MINIMUM_LABEL" desc="Label for the side of the color filter slider control that causes the least visual change.">
+    Less
+  </message>
+  <message name="IDS_SETTINGS_COLOR_FILTER_MAXIMUM_LABEL" desc="Label for the side of the color filter slider control that causes the most visual change.">
+    More
+  </message>
   <message name="IDS_SETTINGS_STICKY_KEYS_LABEL" desc="Label for checkbox which enables sticky keys, with an explanation of the term 'sticky keys'.">
     Sticky keys
   </message>
