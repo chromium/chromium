@@ -6,6 +6,9 @@
 #define ASH_ACCELERATORS_ACCELERATOR_COMMANDS_H_
 
 #include "ash/ash_export.h"
+#include "ash/focus_cycler.h"
+#include "ash/public/cpp/accelerators.h"
+#include "ash/public/cpp/session/session_types.h"
 
 // This file contains implementations of commands that are bound to keyboard
 // shortcuts in Ash or in the embedding application (e.g. Chrome).
@@ -13,6 +16,12 @@
 // Keep the functions in this file in alphabetical order.
 namespace ash {
 namespace accelerators {
+
+// Activate desk 1 to 8.
+ASH_EXPORT void ActivateDeskAtIndex(AcceleratorAction action);
+
+// Change the scale of the active magnifier.
+ASH_EXPORT void ActiveMagnifierZoom(int delta_index);
 
 // Brightness down.
 ASH_EXPORT void BrightnessDown();
@@ -28,6 +37,9 @@ ASH_EXPORT void CycleBackwardMru();
 
 // Cycle forwards in the MRU window list. Usually Alt-Tab.
 ASH_EXPORT void CycleForwardMru();
+
+// Switch to next/previous user.
+ASH_EXPORT void CycleUser(CycleUserDirection direction);
 
 // Disable caps-lock.
 ASH_EXPORT void DisableCapsLock();
@@ -128,6 +140,9 @@ ASH_EXPORT void RestoreTab();
 // Rotate the active window 90 degrees.
 ASH_EXPORT void RotateActiveWindow();
 
+// Rotate pane focus on next/previous pane.
+ASH_EXPORT void RotatePaneFocus(FocusCycler::Direction direction);
+
 // Change primary display to the secondary display next to current primary
 // display
 ASH_EXPORT void ShiftPrimaryDisplay();
@@ -162,12 +177,21 @@ ASH_EXPORT void ToggleClipboardHistory();
 // Turn the dictation on or off.
 ASH_EXPORT void ToggleDictation();
 
+// Turn the docked magnifier on or off.
+ASH_EXPORT void ToggleDockedMagnifier();
+
 // Toggles the floating window.
 ASH_EXPORT void ToggleFloating();
 
 // Toggles the fullscreen state. The behavior can be overridden
 // by WindowStateDelegate::ToggleFullscreen().
 ASH_EXPORT void ToggleFullscreen();
+
+// Turn the fullscreen magnifier mode on or off.
+ASH_EXPORT void ToggleFullscreenMagnifier();
+
+// Turn the high contrast mode on or off.
+ASH_EXPORT void ToggleHighContrast();
 
 // Toggles to show/close the Ime Menu.
 ASH_EXPORT void ToggleImeMenuBubble();
@@ -203,6 +227,9 @@ ASH_EXPORT void ToggleProjectorMarker();
 // present.
 ASH_EXPORT void ToggleResizeLockMenu();
 
+// Turn ChromeVox (spoken feedback) on or off.
+ASH_EXPORT void ToggleSpokenFeedback();
+
 // Turn the system tray on or off.
 ASH_EXPORT void ToggleSystemTrayBubble();
 
@@ -236,6 +263,9 @@ ASH_EXPORT void VolumeUp();
 
 // Minimize the window.
 ASH_EXPORT void WindowMinimize();
+
+// Snap window to the left/right.
+ASH_EXPORT void WindowSnap(AcceleratorAction action);
 
 // Change the display zooming up or down.
 ASH_EXPORT bool ZoomDisplay(bool up);
