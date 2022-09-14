@@ -4663,7 +4663,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DirectSockets.PermissionDeniedFailures"
-    enum="DirectSocketPermissionFailureType" expires_after="2022-10-26">
+    enum="DirectSocketPermissionFailureType" expires_after="2023-09-13">
   <owner>ericwilligers@chromium.org</owner>
   <owner>glenrob@chromium.org</owner>
   <owner>greengrape@google.com</owner>
@@ -4676,7 +4676,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DirectSockets.TCPNetworkFailures" enum="NetErrorCodes"
-    expires_after="2022-10-26">
+    expires_after="2023-09-13">
   <owner>ericwilligers@chromium.org</owner>
   <owner>greengrape@google.com</owner>
   <summary>
@@ -4685,7 +4685,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DirectSockets.UDPNetworkFailures" enum="NetErrorCodes"
-    expires_after="2022-10-26">
+    expires_after="2023-09-13">
   <owner>ericwilligers@chromium.org</owner>
   <owner>greengrape@google.com</owner>
   <summary>
