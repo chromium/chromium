@@ -3672,8 +3672,6 @@ script_test("chrome_public_wpt") {
     "chrome_android",
     "--browser-apk",
     "@WrappedPath(apks/ChromePublic.apk)",
-    "--webdriver-binary",
-    "@WrappedPath(clang_x64/chromedriver)",
     "-v",
   ]
   data_deps = [

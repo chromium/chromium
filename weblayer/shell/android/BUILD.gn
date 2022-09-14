@@ -331,8 +331,6 @@ script_test("weblayer_shell_wpt") {
     "@WrappedPath(apks/WebLayerShell.apk)",
     "--additional-apk",
     "@WrappedPath(apks/WebLayerSupport.apk)",
-    "--webdriver-binary",
-    "@WrappedPath(clang_x64/chromedriver)",
     "-v",
   ]
   data_deps = [

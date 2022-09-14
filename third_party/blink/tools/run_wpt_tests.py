@@ -362,6 +362,7 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
                                  "if '--default-exclude' not provided."))
         group.add_argument('--include-file',
                            action=WPTPassThroughAction,
+                           type=os.path.abspath,
                            help='A file listing test(s) to run.')
         group.add_argument(
             '--test-filter',

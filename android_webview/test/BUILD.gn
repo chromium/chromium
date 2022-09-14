@@ -80,8 +80,6 @@ script_test("system_webview_wpt") {
     "@WrappedPath(apks/SystemWebView.apk)",
     "--browser-apk",
     "@WrappedPath(apks/SystemWebViewShell.apk)",
-    "--webdriver-binary",
-    "@WrappedPath(clang_x64/chromedriver)",
     "-v",
   ]
   data_deps = [
