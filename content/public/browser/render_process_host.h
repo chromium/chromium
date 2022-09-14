@@ -63,6 +63,11 @@ namespace base {
 class PersistentMemoryAllocator;
 class TimeDelta;
 class Token;
+#if BUILDFLAG(IS_ANDROID)
+namespace android {
+enum class ChildBindingState;
+}
+#endif
 }  // namespace base
 
 namespace blink {
@@ -316,6 +321,9 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
 #if BUILDFLAG(IS_ANDROID)
   // Return the highest importance of all widgets in this process.
   virtual ChildProcessImportance GetEffectiveImportance() = 0;
+
+  // Return the highest binding this process has.
+  virtual base::android::ChildBindingState GetEffectiveChildBindingState() = 0;
 
   // Dumps the stack of this render process without crashing it.
   virtual void DumpProcessStack() = 0;

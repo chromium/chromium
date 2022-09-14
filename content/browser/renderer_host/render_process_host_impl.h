@@ -90,6 +90,11 @@
 namespace base {
 class CommandLine;
 class PersistentMemoryAllocator;
+#if BUILDFLAG(IS_ANDROID)
+namespace android {
+enum class ChildBindingState;
+}
+#endif
 }  // namespace base
 
 namespace blink {
@@ -238,6 +243,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void ClearPriorityOverride() override;
 #if BUILDFLAG(IS_ANDROID)
   ChildProcessImportance GetEffectiveImportance() override;
+  base::android::ChildBindingState GetEffectiveChildBindingState() override;
   void DumpProcessStack() override;
 #endif
   void SetSuddenTerminationAllowed(bool enabled) override;

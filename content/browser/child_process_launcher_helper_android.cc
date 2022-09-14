@@ -250,6 +250,15 @@ base::File OpenFileToShare(const base::FilePath& path,
   return base::File(base::android::OpenApkAsset(path.value(), region));
 }
 
+base::android::ChildBindingState
+ChildProcessLauncherHelper::GetEffectiveChildBindingState() {
+  JNIEnv* env = AttachCurrentThread();
+  DCHECK(env);
+  return static_cast<base::android::ChildBindingState>(
+      Java_ChildProcessLauncherHelperImpl_getEffectiveChildBindingState(
+          env, java_peer_));
+}
+
 void ChildProcessLauncherHelper::DumpProcessStack(
     const base::Process& process) {
   JNIEnv* env = AttachCurrentThread();

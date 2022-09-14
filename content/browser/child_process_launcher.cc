@@ -21,6 +21,10 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/child_process_binding_types.h"
+#endif
+
 #if BUILDFLAG(IS_MAC)
 #include "content/browser/child_process_task_port_provider_mac.h"
 #endif
@@ -227,6 +231,11 @@ bool ChildProcessLauncher::TerminateProcess(const base::Process& process,
 }
 
 #if BUILDFLAG(IS_ANDROID)
+base::android::ChildBindingState
+ChildProcessLauncher::GetEffectiveChildBindingState() {
+  return helper_->GetEffectiveChildBindingState();
+}
+
 void ChildProcessLauncher::DumpProcessStack() {
   base::Process to_pass = process_.process.Duplicate();
   GetProcessLauncherTaskRunner()->PostTask(

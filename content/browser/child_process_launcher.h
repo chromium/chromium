@@ -40,7 +40,12 @@
 
 namespace base {
 class CommandLine;
+#if BUILDFLAG(IS_ANDROID)
+namespace android {
+enum class ChildBindingState;
 }
+#endif
+}  // namespace base
 
 namespace perfetto {
 namespace protos {
@@ -264,6 +269,9 @@ class CONTENT_EXPORT ChildProcessLauncher {
   Client* ReplaceClientForTest(Client* client);
 
 #if BUILDFLAG(IS_ANDROID)
+  // Returns the highest binding state for the ChildProcessConnection.
+  base::android::ChildBindingState GetEffectiveChildBindingState();
+
   // Dumps the stack of the child process without crashing it.
   void DumpProcessStack();
 #endif

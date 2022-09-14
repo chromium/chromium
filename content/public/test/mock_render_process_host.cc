@@ -356,6 +356,12 @@ ChildProcessImportance MockRenderProcessHost::GetEffectiveImportance() {
   return ChildProcessImportance::NORMAL;
 }
 
+base::android::ChildBindingState
+MockRenderProcessHost::GetEffectiveChildBindingState() {
+  NOTIMPLEMENTED();
+  return base::android::ChildBindingState::UNBOUND;
+}
+
 void MockRenderProcessHost::DumpProcessStack() {}
 #endif
 
@@ -598,7 +604,7 @@ void MockRenderProcessHost::OverrideRendererInterfaceForTesting(
 
 MockRenderProcessHostFactory::MockRenderProcessHostFactory() = default;
 
-MockRenderProcessHostFactory::~MockRenderProcessHostFactory() {}
+MockRenderProcessHostFactory::~MockRenderProcessHostFactory() = default;
 
 RenderProcessHost* MockRenderProcessHostFactory::CreateRenderProcessHost(
     BrowserContext* browser_context,

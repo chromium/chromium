@@ -831,6 +831,18 @@ public final class ChildProcessLauncherHelperImpl {
         }
     }
 
+    // Called on client (UI or IO) thread.
+    @CalledByNative
+    private @ChildBindingState int getEffectiveChildBindingState() {
+        ChildProcessConnection connection = mLauncher.getConnection();
+        // Here we are accessing the connection from a thread other than the launcher thread, but it
+        // does not change once it's been set. So it is safe to test whether it's null here and
+        // access it afterwards.
+        if (connection == null) return ChildBindingState.UNBOUND;
+
+        return connection.bindingStateCurrent();
+    }
+
     /**
      * Dumps the stack of the child process with |pid|  without crashing it.
      * @param pid Process id of the child process.

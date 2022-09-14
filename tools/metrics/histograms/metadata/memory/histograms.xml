@@ -2675,6 +2675,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.Total.PrivateMemoryFootprintExcludingWaivedRenderers"
+    units="MB" expires_after="2022-12-11">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    A rough estimate of the private memory footprint of all processes on Android
+    ignoring Renderers with only Waived process bindings.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android.
+  </summary>
+</histogram>
+
+<histogram
+    name="Memory.Total.PrivateMemoryFootprintVisiblePriorityOrHigherRenderers"
+    units="MB" expires_after="2022-12-11">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    A rough estimate of the private memory footprint of all visible or higher
+    importance processes on Android. This ignores Renderers with Waived or Not
+    Perceptible effective process bindings.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android.
+  </summary>
+</histogram>
+
 <histogram name="Memory.Total.RendererMalloc" units="MB"
     expires_after="2022-10-01">
   <owner>keishi@chromium.org</owner>
@@ -2702,6 +2730,34 @@ chromium-metrics-reviews@google.com.
     does not measure the same thing on each platform. We have not found a good
     way to compare any system level memory metric across platforms due to the
     different nature of memory management on each platform.
+  </summary>
+</histogram>
+
+<histogram name="Memory.Total.RendererPrivateMemoryFootprintExcludingWaived"
+    units="MB" expires_after="2022-12-11">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    A rough estimate of the private memory footprint of all renderer processes
+    on Android ignoring Renderers with only Waived process bindings.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android.
+  </summary>
+</histogram>
+
+<histogram
+    name="Memory.Total.RendererPrivateMemoryFootprintVisiblePriorityOrHigher"
+    units="MB" expires_after="2022-12-11">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    A rough estimate of the private memory footprint of all renderer processes
+    with visible or higher importance on Android. This ignores Renderers with
+    Waived or Not Perceptible effective process bindings.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android.
   </summary>
 </histogram>
 

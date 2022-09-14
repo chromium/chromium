@@ -34,6 +34,7 @@
 #include "net/base/network_isolation_key.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/child_process_binding_types.h"
 #include "content/public/browser/android/child_process_importance.h"
 #endif
 
@@ -146,6 +147,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   void ClearPriorityOverride() override;
 #if BUILDFLAG(IS_ANDROID)
   ChildProcessImportance GetEffectiveImportance() override;
+  base::android::ChildBindingState GetEffectiveChildBindingState() override;
   void DumpProcessStack() override;
 #endif
   void SetSuddenTerminationAllowed(bool allowed) override;

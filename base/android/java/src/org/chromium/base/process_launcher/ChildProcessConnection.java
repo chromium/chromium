@@ -1040,6 +1040,18 @@ public class ChildProcessConnection {
     }
 
     /**
+     * @return the current connection binding state.
+     */
+    public @ChildBindingState int bindingStateCurrent() {
+        // WARNING: this method can be called from a thread other than the launcher thread.
+        // Note that it returns the current waived bound only state and is racy. This not really
+        // preventable without changing the caller's API, short of blocking.
+        synchronized (mBindingStateLock) {
+            return mBindingState;
+        }
+    }
+
+    /**
      * @return true if the connection is bound and only bound with the waived binding or if the
      * connection is unbound and was only bound with the waived binding when it disconnected.
      */

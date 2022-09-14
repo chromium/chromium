@@ -99,8 +99,9 @@ public class ChildProcessLauncher {
     // The IBinder interfaces provided to the created service.
     private final List<IBinder> mClientInterfaces;
 
-    // The actual service connection. Set once we have connected to the service.
-    private ChildProcessConnection mConnection;
+    // The actual service connection. Set once we have connected to the service. Volatile as it is
+    // accessed from threads other than the Launcher thread.
+    private volatile ChildProcessConnection mConnection;
 
     /**
      * Constructor.

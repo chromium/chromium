@@ -950,6 +950,16 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
       "Memory.NativeLibrary.NotResidentOrderedCodeMemoryFootprint", 0);
   histograms.ExpectTotalCount(
       "Memory.NativeLibrary.ResidentNotOrderedCodeMemoryFootprint", 0);
+#if BUILDFLAG(IS_ANDROID)
+  histograms.ExpectTotalCount(
+      "Memory.Total.PrivateMemoryFootprintExcludingWaivedRenderers", 0);
+  histograms.ExpectTotalCount(
+      "Memory.Total.RendererPrivateMemoryFootprintExcludingWaived", 0);
+  histograms.ExpectTotalCount(
+      "Memory.Total.PrivateMemoryFootprintVisibleOrHigherPriorityRenderers", 0);
+  histograms.ExpectTotalCount(
+      "Memory.Total.RendererPrivateMemoryFootprintVisibleOrHigherPriority", 0);
+#endif
 
   // Simulate some metrics emission.
   scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter =
@@ -996,6 +1006,20 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
   histograms.ExpectUniqueSample(
       "Memory.NativeLibrary.ResidentNotOrderedCodeMemoryFootprint",
       kNativeLibraryResidentNotOrderedCodeFootprint, 1);
+#if BUILDFLAG(IS_ANDROID)
+  // Expect values of 0 as the Renderer is not in the list of active processes
+  // and is therefore considered UNBOUND and will not emit these values.
+  histograms.ExpectUniqueSample(
+      "Memory.Total.PrivateMemoryFootprintExcludingWaivedRenderers", 0, 1);
+  histograms.ExpectUniqueSample(
+      "Memory.Total.RendererPrivateMemoryFootprintExcludingWaived", 0, 1);
+  histograms.ExpectUniqueSample(
+      "Memory.Total.PrivateMemoryFootprintVisibleOrHigherPriorityRenderers", 0,
+      1);
+  histograms.ExpectUniqueSample(
+      "Memory.Total.RendererPrivateMemoryFootprintVisibleOrHigherPriority", 0,
+      1);
+#endif
 }
 
 TEST_F(ProcessMemoryMetricsEmitterTest, MainFramePMFEmitted) {
