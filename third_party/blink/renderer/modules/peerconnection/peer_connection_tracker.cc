@@ -193,6 +193,26 @@ String SerializeOptionalDirection(
   return direction ? SerializeDirection(*direction) : "null";
 }
 
+String SerializeTransceiverKind(const String& indent,
+                                const RTCRtpTransceiverPlatform& transceiver) {
+  DCHECK(transceiver.Receiver());
+  DCHECK(transceiver.Receiver()->Track());
+
+  auto kind = transceiver.Receiver()->Track()->GetSourceType();
+  StringBuilder result;
+  result.Append(indent);
+  result.Append("kind:");
+  if (kind == MediaStreamSource::StreamType::kTypeAudio) {
+    result.Append("'audio'");
+  } else if (kind == MediaStreamSource::StreamType::kTypeVideo) {
+    result.Append("'video'");
+  } else {
+    NOTREACHED();
+  }
+  result.Append(",\n");
+  return result.ToString();
+}
+
 String SerializeEncodingParameters(
     const String& indent,
     const std::vector<webrtc::RtpEncodingParameters>& encodings) {
@@ -246,7 +266,8 @@ String SerializeEncodingParameters(
 String SerializeSender(const String& indent,
                        const blink::RTCRtpSenderPlatform& sender) {
   StringBuilder result;
-  result.Append("{\n");
+  result.Append(indent);
+  result.Append("sender:{\n");
   // track:'id',
   result.Append(indent);
   result.Append("  track:");
@@ -266,14 +287,16 @@ String SerializeSender(const String& indent,
   result.Append(indent);
   result.Append(
       SerializeEncodingParameters(indent, sender.GetParameters()->encodings));
-  result.Append("}");
+  result.Append("},\n");
+
   return result.ToString();
 }
 
 String SerializeReceiver(const String& indent,
                          const RTCRtpReceiverPlatform& receiver) {
   StringBuilder result;
-  result.Append("{\n");
+  result.Append(indent);
+  result.Append("receiver:{\n");
   // track:'id',
   DCHECK(receiver.Track());
   result.Append(indent);
@@ -286,7 +309,7 @@ String SerializeReceiver(const String& indent,
   result.Append(SerializeMediaStreamIds(receiver.StreamIds()));
   result.Append(",\n");
   result.Append(indent);
-  result.Append("}");
+  result.Append("},\n");
   return result.ToString();
 }
 
@@ -301,14 +324,12 @@ String SerializeTransceiver(const RTCRtpTransceiverPlatform& transceiver) {
     result.Append(String(transceiver.Mid()));
     result.Append("',\n");
   }
+  // kind:audio|video
+  result.Append(SerializeTransceiverKind("  ", transceiver));
   // sender:{...},
-  result.Append("  sender:");
   result.Append(SerializeSender("  ", *transceiver.Sender()));
-  result.Append(",\n");
   // receiver:{...},
-  result.Append("  receiver:");
   result.Append(SerializeReceiver("  ", *transceiver.Receiver()));
-  result.Append(",\n");
   // direction:'sendrecv',
   result.Append("  direction:");
   result.Append(SerializeDirection(transceiver.Direction()));

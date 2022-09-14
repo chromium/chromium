@@ -30,6 +30,7 @@ namespace blink {
 const char* kDefaultTransceiverString =
     "getTransceivers()[0]:{\n"
     "  mid:null,\n"
+    "  kind:'audio',\n"
     "  sender:{\n"
     "    track:'senderTrackId',\n"
     "    streams:['senderStreamId'],\n"
@@ -283,6 +284,7 @@ TEST_F(PeerConnectionTrackerTest, AddTransceiverWithOptionalValuesPresent) {
       "\n"
       "getTransceivers()[0]:{\n"
       "  mid:'midValue',\n"
+      "  kind:'audio',\n"
       "  sender:{\n"
       "    track:'senderTrackId',\n"
       "    streams:['streamIdA','streamIdB'],\n"
@@ -324,6 +326,7 @@ TEST_F(PeerConnectionTrackerTest, AddTransceiverWithOptionalValuesNull) {
       "\n"
       "getTransceivers()[1]:{\n"
       "  mid:null,\n"
+      "  kind:'audio',\n"
       "  sender:{\n"
       "    track:null,\n"
       "    streams:[],\n"
