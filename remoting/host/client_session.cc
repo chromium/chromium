@@ -529,8 +529,7 @@ void ClientSession::CreateMediaStreams() {
 
   // Create a VideoStream to pump frames from the capturer to the client.
   DCHECK(video_streams_.empty());
-  auto composer = desktop_environment_->CreateComposingVideoCapturer(
-      connection_->client_stub());
+  auto composer = desktop_environment_->CreateComposingVideoCapturer();
   VideoStreamWithComposer video_stream;
   if (composer) {
     video_stream.composer = composer->GetWeakPtr();
@@ -538,8 +537,7 @@ void ClientSession::CreateMediaStreams() {
         connection_->StartVideoStream(kStreamName, std::move(composer));
   } else {
     video_stream.stream = connection_->StartVideoStream(
-        kStreamName, desktop_environment_->CreateVideoCapturer(
-                         desktop_environment_->CaptureOptions()));
+        kStreamName, desktop_environment_->CreateVideoCapturer());
   }
 
   // Create an AudioStream to pump audio from the capturer to the client.
@@ -582,8 +580,7 @@ void ClientSession::CreatePerMonitorVideoStreams() {
 
     HOST_LOG << "Creating video stream: " << stream_name;
 
-    auto composer = desktop_environment_->CreateComposingVideoCapturer(
-        connection_->client_stub());
+    auto composer = desktop_environment_->CreateComposingVideoCapturer();
     VideoStreamWithComposer video_stream;
     if (composer) {
       video_stream.composer = composer->GetWeakPtr();
@@ -591,8 +588,7 @@ void ClientSession::CreatePerMonitorVideoStreams() {
           connection_->StartVideoStream(stream_name, std::move(composer));
     } else {
       video_stream.stream = connection_->StartVideoStream(
-          stream_name, desktop_environment_->CreateVideoCapturer(
-                           desktop_environment_->CaptureOptions()));
+          stream_name, desktop_environment_->CreateVideoCapturer());
     }
 
     video_stream.stream->SelectSource(id);
@@ -643,6 +639,12 @@ void ClientSession::OnConnectionChannelsConnected() {
   input_injector_->Start(CreateClipboardProxy());
   SetDisableInputs(false);
 
+  // Create MouseShapePump to send mouse cursor shape.
+  mouse_shape_pump_ = std::make_unique<MouseShapePump>(
+      desktop_environment_->CreateMouseCursorMonitor(),
+      connection_->client_stub());
+  mouse_shape_pump_->SetMouseCursorMonitorCallback(this);
+
   // Create KeyboardLayoutMonitor to send keyboard layout.
   // Unretained is sound because callback will never be called after
   // |keyboard_layout_monitor_| has been destroyed, and |connection_| (which
@@ -688,6 +690,7 @@ void ClientSession::OnConnectionClosed(protocol::ErrorCode error) {
   // Stop components access the client, audio or video stubs, which are no
   // longer valid once ConnectionToClient calls OnConnectionClosed().
   audio_stream_.reset();
+  mouse_shape_pump_.reset();
   video_streams_.clear();
   keyboard_layout_monitor_.reset();
   client_clipboard_factory_.InvalidateWeakPtrs();
@@ -785,6 +788,28 @@ void ClientSession::SetComposeEnabled(bool enabled) {
   for (const auto& [_, video_stream] : video_streams_) {
     if (video_stream.composer)
       video_stream.composer->SetComposeEnabled(enabled);
+  }
+}
+
+void ClientSession::OnMouseCursor(webrtc::MouseCursor* mouse_cursor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // This method should take ownership of |mouse_cursor|.
+  std::unique_ptr<webrtc::MouseCursor> owned_cursor(mouse_cursor);
+
+  for (const auto& [_, video_stream] : video_streams_) {
+    if (video_stream.composer) {
+      video_stream.composer->SetMouseCursor(
+          base::WrapUnique(webrtc::MouseCursor::CopyOf(*owned_cursor)));
+    }
+  }
+}
+
+void ClientSession::OnMouseCursorPosition(
+    const webrtc::DesktopVector& position) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const auto& [_, video_stream] : video_streams_) {
+    if (video_stream.composer)
+      video_stream.composer->SetMouseCursorPosition(position);
   }
 }
 

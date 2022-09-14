@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
-#include "remoting/host/conditional_composer_mouse_cursor_monitor.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/protocol/desktop_capturer.h"
 
@@ -43,12 +42,10 @@ class BasicDesktopEnvironment : public DesktopEnvironment {
   std::unique_ptr<AudioCapturer> CreateAudioCapturer() override;
   std::unique_ptr<InputInjector> CreateInputInjector() override;
   std::unique_ptr<ScreenControls> CreateScreenControls() override;
-  std::unique_ptr<DesktopCapturer> CreateVideoCapturer(
-      const webrtc::DesktopCaptureOptions& capture_options) override;
-  const webrtc::DesktopCaptureOptions& CaptureOptions() const override;
+  std::unique_ptr<DesktopCapturer> CreateVideoCapturer() override;
   DesktopDisplayInfoMonitor* GetDisplayInfoMonitor() override;
-  std::unique_ptr<webrtc::MouseCursorMonitor> CreateMouseCursorMonitor(
-      const webrtc::DesktopCaptureOptions& capture_options) override;
+  std::unique_ptr<webrtc::MouseCursorMonitor> CreateMouseCursorMonitor()
+      override;
   std::unique_ptr<KeyboardLayoutMonitor> CreateKeyboardLayoutMonitor(
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback)
       override;
@@ -59,7 +56,7 @@ class BasicDesktopEnvironment : public DesktopEnvironment {
   void SetCapabilities(const std::string& capabilities) override;
   uint32_t GetDesktopSessionId() const override;
   std::unique_ptr<DesktopAndCursorConditionalComposer>
-  CreateComposingVideoCapturer(protocol::ClientStub* client_stub) override;
+  CreateComposingVideoCapturer() override;
   std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
   CreateRemoteWebAuthnStateChangeNotifier() override;
 
@@ -123,9 +120,6 @@ class BasicDesktopEnvironment : public DesktopEnvironment {
   std::unique_ptr<DesktopDisplayInfoMonitor> display_info_monitor_;
 
   DesktopEnvironmentOptions options_;
-
-  std::unique_ptr<ComposingCapturerCursorMonitorManager>
-      composing_capturer_cursor_monitor_manager_;
 };
 
 // Used to create |BasicDesktopEnvironment| instances.

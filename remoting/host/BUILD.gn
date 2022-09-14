@@ -95,7 +95,6 @@ source_set("common_headers") {
     "audio_silence_detector.h",
     "audio_volume_filter.h",
     "basic_desktop_environment.h",
-    "conditional_composer_mouse_cursor_monitor.h",
     "desktop_and_cursor_conditional_composer.h",
     "desktop_environment.h",
     "evaluate_capability.h",
@@ -431,12 +430,6 @@ static_library("common") {
     "//ui/events:dom_keycode_converter",
     "//ui/events/platform",
   ]
-
-  if (!remoting_use_wayland) {
-    sources += [ "conditional_composer_mouse_cursor_monitor_default.cc" ]
-  } else {
-    sources += [ "conditional_composer_mouse_cursor_monitor_wayland.cc" ]
-  }
 
   public_deps = [
     ":common_headers",

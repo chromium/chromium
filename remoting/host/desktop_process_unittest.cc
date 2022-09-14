@@ -43,7 +43,6 @@ using testing::AtMost;
 using testing::ByMove;
 using testing::InSequence;
 using testing::Return;
-using testing::ReturnRef;
 
 namespace remoting {
 
@@ -188,8 +187,6 @@ class DesktopProcessTest : public testing::Test {
   MockNetworkListener network_listener_;
 
   mojo::ScopedMessagePipeHandle desktop_pipe_handle_;
-
-  webrtc::DesktopCaptureOptions desktop_capture_options_;
 };
 
 DesktopProcessTest::DesktopProcessTest() = default;
@@ -217,11 +214,11 @@ DesktopProcessTest::CreateDesktopEnvironment() {
       .WillOnce(Invoke(this, &DesktopProcessTest::CreateInputInjector));
   EXPECT_CALL(*desktop_environment, CreateActionExecutor()).Times(AtMost(1));
   EXPECT_CALL(*desktop_environment, CreateScreenControls()).Times(AtMost(1));
-  EXPECT_CALL(*desktop_environment, CreateVideoCapturer(_))
+  EXPECT_CALL(*desktop_environment, CreateVideoCapturer())
       .Times(AtMost(1))
       .WillOnce(
           Return(ByMove(std::make_unique<protocol::FakeDesktopCapturer>())));
-  EXPECT_CALL(*desktop_environment, CreateMouseCursorMonitor(_))
+  EXPECT_CALL(*desktop_environment, CreateMouseCursorMonitor())
       .Times(AtMost(1))
       .WillOnce(Return(ByMove(std::make_unique<FakeMouseCursorMonitor>())));
   EXPECT_CALL(*desktop_environment, CreateKeyboardLayoutMonitor(_))
@@ -236,9 +233,6 @@ DesktopProcessTest::CreateDesktopEnvironment() {
       .Times(AtMost(1));
   EXPECT_CALL(*desktop_environment, SetCapabilities(_))
       .Times(AtMost(1));
-  EXPECT_CALL(*desktop_environment, CaptureOptions())
-      .Times(AnyNumber())
-      .WillRepeatedly(ReturnRef(desktop_capture_options_));
 
   // Notify the test that the desktop environment has been created.
   network_listener_.OnDesktopEnvironmentCreated();

@@ -32,7 +32,6 @@
 #include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
-#include "remoting/protocol/client_stub.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
@@ -67,19 +66,15 @@ class MockDesktopEnvironment : public DesktopEnvironment {
               (override));
   MOCK_METHOD(std::unique_ptr<DesktopCapturer>,
               CreateVideoCapturer,
-              (const webrtc::DesktopCaptureOptions&),
-              (override));
-  MOCK_METHOD(const webrtc::DesktopCaptureOptions&,
-              CaptureOptions,
               (),
-              (const, override));
+              (override));
   MOCK_METHOD(DesktopDisplayInfoMonitor*,
               GetDisplayInfoMonitor,
               (),
               (override));
   MOCK_METHOD(std::unique_ptr<webrtc::MouseCursorMonitor>,
               CreateMouseCursorMonitor,
-              (const webrtc::DesktopCaptureOptions&),
+              (),
               (override));
   MOCK_METHOD(std::unique_ptr<KeyboardLayoutMonitor>,
               CreateKeyboardLayoutMonitor,
@@ -95,7 +90,7 @@ class MockDesktopEnvironment : public DesktopEnvironment {
               (override));
   MOCK_METHOD(std::unique_ptr<DesktopAndCursorConditionalComposer>,
               CreateComposingVideoCapturer,
-              (protocol::ClientStub * client_stub),
+              (),
               (override));
   MOCK_METHOD(std::unique_ptr<RemoteWebAuthnStateChangeNotifier>,
               CreateRemoteWebAuthnStateChangeNotifier,

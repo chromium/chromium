@@ -292,7 +292,6 @@ class IpcDesktopEnvironmentTest : public testing::Test {
   MockClientSessionEvents client_session_events_;
   base::WeakPtrFactory<MockClientSessionEvents> client_session_events_factory_{
       &client_session_events_};
-  webrtc::DesktopCaptureOptions desktop_capture_options_;
 
  private:
   // Runs until there are no references to |task_runner_|.
@@ -378,8 +377,7 @@ void IpcDesktopEnvironmentTest::SetUp() {
   input_injector_ = desktop_environment_->CreateInputInjector();
 
   // Create the screen capturer.
-  video_capturer_ = desktop_environment_->CreateVideoCapturer(
-      desktop_environment_->CaptureOptions());
+  video_capturer_ = desktop_environment_->CreateVideoCapturer();
 
   desktop_environment_->SetCapabilities(std::string());
 
@@ -418,13 +416,13 @@ IpcDesktopEnvironmentTest::CreateDesktopEnvironment() {
       .Times(AtMost(1))
       .WillOnce(Invoke(this, &IpcDesktopEnvironmentTest::CreateInputInjector));
   EXPECT_CALL(*desktop_environment, CreateScreenControls()).Times(AtMost(1));
-  EXPECT_CALL(*desktop_environment, CreateVideoCapturer(_))
+  EXPECT_CALL(*desktop_environment, CreateVideoCapturer())
       .Times(AtMost(1))
       .WillOnce(
           Return(ByMove(std::make_unique<protocol::FakeDesktopCapturer>())));
   EXPECT_CALL(*desktop_environment, CreateActionExecutor()).Times(AtMost(1));
   EXPECT_CALL(*desktop_environment, CreateFileOperations()).Times(AtMost(1));
-  EXPECT_CALL(*desktop_environment, CreateMouseCursorMonitor(_))
+  EXPECT_CALL(*desktop_environment, CreateMouseCursorMonitor())
       .Times(AtMost(1))
       .WillOnce(Return(ByMove(std::make_unique<FakeMouseCursorMonitor>())));
   EXPECT_CALL(*desktop_environment, CreateKeyboardLayoutMonitor(_))
@@ -439,9 +437,6 @@ IpcDesktopEnvironmentTest::CreateDesktopEnvironment() {
       .Times(AtMost(1))
       .WillOnce(
           Return(ByMove(std::move(owned_remote_url_forwarder_configurator_))));
-  EXPECT_CALL(*desktop_environment, CaptureOptions())
-      .Times(AnyNumber())
-      .WillRepeatedly(ReturnRef(desktop_capture_options_));
 
   return desktop_environment;
 }

@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -74,8 +73,7 @@ DesktopDisplayInfoMonitor* IpcDesktopEnvironment::GetDisplayInfoMonitor() {
 }
 
 std::unique_ptr<webrtc::MouseCursorMonitor>
-IpcDesktopEnvironment::CreateMouseCursorMonitor(
-    const webrtc::DesktopCaptureOptions& capture_options) {
+IpcDesktopEnvironment::CreateMouseCursorMonitor() {
   return desktop_session_proxy_->CreateMouseCursorMonitor();
 }
 
@@ -86,15 +84,8 @@ IpcDesktopEnvironment::CreateKeyboardLayoutMonitor(
       std::move(callback));
 }
 
-std::unique_ptr<DesktopCapturer> IpcDesktopEnvironment::CreateVideoCapturer(
-    const webrtc::DesktopCaptureOptions& capture_options) {
+std::unique_ptr<DesktopCapturer> IpcDesktopEnvironment::CreateVideoCapturer() {
   return desktop_session_proxy_->CreateVideoCapturer();
-}
-
-const webrtc::DesktopCaptureOptions& IpcDesktopEnvironment::CaptureOptions()
-    const {
-  static const base::NoDestructor<webrtc::DesktopCaptureOptions> capturer;
-  return *capturer;
 }
 
 std::unique_ptr<FileOperations> IpcDesktopEnvironment::CreateFileOperations() {
@@ -119,8 +110,7 @@ uint32_t IpcDesktopEnvironment::GetDesktopSessionId() const {
 }
 
 std::unique_ptr<DesktopAndCursorConditionalComposer>
-IpcDesktopEnvironment::CreateComposingVideoCapturer(
-    protocol::ClientStub* client_stub) {
+IpcDesktopEnvironment::CreateComposingVideoCapturer() {
   // Cursor compositing is done by the desktop process if necessary.
   return nullptr;
 }

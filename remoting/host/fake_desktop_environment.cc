@@ -90,8 +90,7 @@ std::unique_ptr<ScreenControls> FakeDesktopEnvironment::CreateScreenControls() {
   return std::make_unique<FakeScreenControls>();
 }
 
-std::unique_ptr<DesktopCapturer> FakeDesktopEnvironment::CreateVideoCapturer(
-    const webrtc::DesktopCaptureOptions& capture_options) {
+std::unique_ptr<DesktopCapturer> FakeDesktopEnvironment::CreateVideoCapturer() {
   auto fake_capturer = std::make_unique<protocol::FakeDesktopCapturer>();
   if (!frame_generator_.is_null())
     fake_capturer->set_frame_generator(frame_generator_);
@@ -101,18 +100,12 @@ std::unique_ptr<DesktopCapturer> FakeDesktopEnvironment::CreateVideoCapturer(
   return std::move(result);
 }
 
-const webrtc::DesktopCaptureOptions& FakeDesktopEnvironment::CaptureOptions()
-    const {
-  return *options_.desktop_capture_options();
-}
-
 DesktopDisplayInfoMonitor* FakeDesktopEnvironment::GetDisplayInfoMonitor() {
   return nullptr;
 }
 
 std::unique_ptr<webrtc::MouseCursorMonitor>
-FakeDesktopEnvironment::CreateMouseCursorMonitor(
-    const webrtc::DesktopCaptureOptions& capture_options) {
+FakeDesktopEnvironment::CreateMouseCursorMonitor() {
   return std::make_unique<FakeMouseCursorMonitor>();
 }
 
@@ -142,8 +135,7 @@ uint32_t FakeDesktopEnvironment::GetDesktopSessionId() const {
 }
 
 std::unique_ptr<DesktopAndCursorConditionalComposer>
-FakeDesktopEnvironment::CreateComposingVideoCapturer(
-    protocol::ClientStub* client_stub) {
+FakeDesktopEnvironment::CreateComposingVideoCapturer() {
   return nullptr;
 }
 

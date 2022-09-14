@@ -14,9 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/desktop_and_cursor_conditional_composer.h"
-#include "remoting/protocol/client_stub.h"
 #include "remoting/protocol/desktop_capturer.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 
 namespace webrtc {
 class DesktopCapturer;
@@ -53,19 +51,15 @@ class DesktopEnvironment {
   virtual std::unique_ptr<AudioCapturer> CreateAudioCapturer() = 0;
   virtual std::unique_ptr<InputInjector> CreateInputInjector() = 0;
   virtual std::unique_ptr<ScreenControls> CreateScreenControls() = 0;
-  virtual std::unique_ptr<DesktopCapturer> CreateVideoCapturer(
-      const webrtc::DesktopCaptureOptions& capture_options) = 0;
+  virtual std::unique_ptr<DesktopCapturer> CreateVideoCapturer() = 0;
 
   // Returns a DisplayInfoMonitor that is owned by this object. Returns
   // nullptr if the implementation does not support monitoring of displays
   // (for example, in the Network process if multi-process is enabled).
   virtual DesktopDisplayInfoMonitor* GetDisplayInfoMonitor() = 0;
 
-  // Returns the default capture options for the environment.
-  virtual const webrtc::DesktopCaptureOptions& CaptureOptions() const = 0;
-
-  virtual std::unique_ptr<webrtc::MouseCursorMonitor> CreateMouseCursorMonitor(
-      const webrtc::DesktopCaptureOptions& capture_options) = 0;
+  virtual std::unique_ptr<webrtc::MouseCursorMonitor>
+  CreateMouseCursorMonitor() = 0;
   virtual std::unique_ptr<KeyboardLayoutMonitor> CreateKeyboardLayoutMonitor(
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)>
           callback) = 0;
@@ -79,9 +73,8 @@ class DesktopEnvironment {
   // stream when it is not rendered by the client, returns a composing capturer.
   // If the platform already does this, this method return null, and the caller
   // should use CreateVideoCapturer() instead.
-  // Implementations should not take ownership of the |client_stub|
   virtual std::unique_ptr<DesktopAndCursorConditionalComposer>
-  CreateComposingVideoCapturer(protocol::ClientStub* client_stub) = 0;
+  CreateComposingVideoCapturer() = 0;
 
   // Returns the set of all capabilities supported by |this|.
   virtual std::string GetCapabilities() const = 0;
