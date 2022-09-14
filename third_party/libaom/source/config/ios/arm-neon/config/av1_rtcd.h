@@ -1438,7 +1438,11 @@ uint64_t av1_wedge_sse_from_residuals_c(const int16_t* r1,
                                         const int16_t* d,
                                         const uint8_t* m,
                                         int N);
-#define av1_wedge_sse_from_residuals av1_wedge_sse_from_residuals_c
+uint64_t av1_wedge_sse_from_residuals_neon(const int16_t* r1,
+                                           const int16_t* d,
+                                           const uint8_t* m,
+                                           int N);
+#define av1_wedge_sse_from_residuals av1_wedge_sse_from_residuals_neon
 
 void av1_wiener_convolve_add_src_c(const uint8_t* src,
                                    ptrdiff_t src_stride,

@@ -1846,7 +1846,14 @@ uint64_t av1_wedge_sse_from_residuals_c(const int16_t* r1,
                                         const int16_t* d,
                                         const uint8_t* m,
                                         int N);
-#define av1_wedge_sse_from_residuals av1_wedge_sse_from_residuals_c
+uint64_t av1_wedge_sse_from_residuals_neon(const int16_t* r1,
+                                           const int16_t* d,
+                                           const uint8_t* m,
+                                           int N);
+RTCD_EXTERN uint64_t (*av1_wedge_sse_from_residuals)(const int16_t* r1,
+                                                     const int16_t* d,
+                                                     const uint8_t* m,
+                                                     int N);
 
 void av1_wiener_convolve_add_src_c(const uint8_t* src,
                                    ptrdiff_t src_stride,
@@ -2507,6 +2514,9 @@ static void setup_rtcd_internal(void) {
   av1_warp_affine = av1_warp_affine_c;
   if (flags & HAS_NEON)
     av1_warp_affine = av1_warp_affine_neon;
+  av1_wedge_sse_from_residuals = av1_wedge_sse_from_residuals_c;
+  if (flags & HAS_NEON)
+    av1_wedge_sse_from_residuals = av1_wedge_sse_from_residuals_neon;
   av1_wiener_convolve_add_src = av1_wiener_convolve_add_src_c;
   if (flags & HAS_NEON)
     av1_wiener_convolve_add_src = av1_wiener_convolve_add_src_neon;
