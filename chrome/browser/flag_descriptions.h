@@ -3094,6 +3094,9 @@ extern const char kFilesAppExperimentalDescription[];
 extern const char kFilesExtractArchiveName[];
 extern const char kFilesExtractArchiveDescription[];
 
+extern const char kFilesInlineSyncStatusName[];
+extern const char kFilesInlineSyncStatusDescription[];
+
 extern const char kFilesSinglePartitionFormatName[];
 extern const char kFilesSinglePartitionFormatDescription[];
 

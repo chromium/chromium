@@ -59030,6 +59030,7 @@ from previous Chrome versions.
   <int value="-430360431" label="disable-password-generation"/>
   <int value="-428599163" label="NTPDownloadSuggestions:enabled"/>
   <int value="-428556995" label="DesktopPWAsTabStripSettings:enabled"/>
+  <int value="-428111342" label="FilesInlineSyncStatus:enabled"/>
   <int value="-428082036" label="AnimatedImageResume:disabled"/>
   <int value="-427163069" label="isolation-by-default"/>
   <int value="-426815606" label="HomepageTile:enabled"/>
@@ -60488,6 +60489,7 @@ from previous Chrome versions.
   <int value="478380451" label="BlockMigratedDefaultChromeAppSync:disabled"/>
   <int value="479906041" label="RunAllFlashInAllowMode:disabled"/>
   <int value="480386627" label="OmniboxPedalsBatch3:enabled"/>
+  <int value="480481070" label="FilesInlineSyncStatus:disabled"/>
   <int value="480544447" label="NonValidatingReloadOnRefreshContentV2:enabled"/>
   <int value="480677983" label="WebXRARDOMOverlay:disabled"/>
   <int value="481506759" label="ServiceWorkerScriptStreaming:enabled"/>

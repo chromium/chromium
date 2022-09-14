@@ -3549,6 +3549,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "files-inline-sync-status",
+    "owners": [ "simmonsjosh@google.com", "benhartney@google.com", "msalomao" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "files-single-partition-format",
     "owners": [ "austinct", "petermarshall" ],
     "expiry_milestone": 104

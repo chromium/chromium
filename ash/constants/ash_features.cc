@@ -757,6 +757,10 @@ const base::Feature kFilesAppExperimental{"FilesAppExperimental",
 const base::Feature kFilesExtractArchive{"FilesExtractArchive",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable inline sync status in Files app.
+const base::Feature kFilesInlineSyncStatus{"FilesInlineSyncStatus",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables partitioning of removable disks in file manager.
 const base::Feature kFilesSinglePartitionFormat{
     "FilesSinglePartitionFormat", base::FEATURE_DISABLED_BY_DEFAULT};

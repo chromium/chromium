@@ -325,6 +325,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kFilesAppExperimental;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFilesExtractArchive;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kFilesInlineSyncStatus;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kFilesSinglePartitionFormat;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFilesTrash;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFilesWebDriveOffice;
