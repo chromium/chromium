@@ -255,7 +255,7 @@ void EventConverterEvdevImpl::OnKeyChange(unsigned int key,
   // the dispatched list of keyboards with this new information.
   if (key_state_.count() == 1 && ((key >= KEY_1 && key <= KEY_EQUAL) ||
                                   (key >= KEY_Q && key <= KEY_RIGHTBRACE) ||
-                                  (key <= KEY_A && key >= KEY_APOSTROPHE) ||
+                                  (key >= KEY_A && key <= KEY_APOSTROPHE) ||
                                   (key >= KEY_BACKSLASH && key <= KEY_SLASH))) {
     bool was_suspected = IsSuspectedImposter();
     SetSuspectedImposter(false);
