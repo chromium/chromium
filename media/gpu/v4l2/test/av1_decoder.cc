@@ -44,6 +44,29 @@ inline void conditionally_set_u32_flags(__u32* flags,
   *flags |= (condition ? mask : 0);
 }
 
+// TODO(stevecho): Update this function to parse the first frame using libgav1
+// parser and obtain width and height info from the sequence header. This
+// information is needed to create OUTPUT and CAPTURE queue with correct size.
+// Note that width and height info from ivf header will not be always accurate.
+const gfx::Size GetResolutionFromIvfHdr(const base::MemoryMappedFile& stream) {
+  media::IvfParser ivf_parser{};
+  media::IvfFileHeader ivf_file_header{};
+
+  if (!ivf_parser.Initialize(stream.data(), stream.length(), &ivf_file_header))
+    LOG(ERROR) << "Couldn't initialize IVF parser.";
+
+  IvfFrameHeader ivf_frame_header{};
+  const uint8_t* ivf_frame_data = nullptr;
+
+  if (!ivf_parser.ParseNextFrame(&ivf_frame_header, &ivf_frame_data))
+    LOG(ERROR) << "Failed to parse the first frame with IVF parser.";
+
+  LOG(INFO) << "Ivf file header: " << ivf_file_header.width << " x "
+            << ivf_file_header.height;
+
+  return gfx::Size(ivf_file_header.width, ivf_file_header.height);
+}
+
 // Section 5.5. Sequence header OBU syntax in the AV1 spec.
 // https://aomediacodec.github.io/av1-spec/av1-spec.pdf
 void FillSequenceParams(
@@ -507,6 +530,8 @@ std::unique_ptr<Av1Decoder> Av1Decoder::Create(
   VLOG(2) << "Attempting to create decoder with codec "
           << media::FourccToString(kDriverCodecFourcc);
 
+  const gfx::Size display_size = GetResolutionFromIvfHdr(stream);
+
   // Set up video parser.
   auto ivf_parser = std::make_unique<media::IvfParser>();
   media::IvfFileHeader file_header{};
@@ -539,24 +564,20 @@ std::unique_ptr<Av1Decoder> Av1Decoder::Create(
     return nullptr;
   }
 
-  LOG(INFO) << "Ivf file header: " << file_header.width << " x "
-            << file_header.height;
-
   // TODO(stevecho): might need to consider using more than 1 file descriptor
   // (fd) & buffer with the output queue for 4K60 requirement.
   // https://buganizer.corp.google.com/issues/202214561#comment31
   auto OUTPUT_queue = std::make_unique<V4L2Queue>(
-      V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, kDriverCodecFourcc,
-      gfx::Size(file_header.width, file_header.height), /*num_planes=*/1,
-      V4L2_MEMORY_MMAP, /*num_buffers=*/1);
+      V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, kDriverCodecFourcc, display_size,
+      /*num_planes=*/1, V4L2_MEMORY_MMAP, /*num_buffers=*/1);
 
   // TODO(stevecho): enable V4L2_MEMORY_DMABUF memory for CAPTURE queue.
   // |num_planes| represents separate memory buffers, not planes for Y, U, V.
   // https://www.kernel.org/doc/html/v5.16/userspace-api/media/v4l/pixfmt-v4l2-mplane.html#c.V4L.v4l2_plane_pix_format
   auto CAPTURE_queue = std::make_unique<V4L2Queue>(
-      V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, kUncompressedFourcc,
-      gfx::Size(file_header.width, file_header.height), /*num_planes=*/2,
-      V4L2_MEMORY_MMAP, /*num_buffers=*/kNumberOfBuffersInCaptureQueue);
+      V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, kUncompressedFourcc, display_size,
+      /*num_planes=*/2, V4L2_MEMORY_MMAP,
+      /*num_buffers=*/kNumberOfBuffersInCaptureQueue);
 
   return base::WrapUnique(
       new Av1Decoder(std::move(ivf_parser), std::move(v4l2_ioctl),
