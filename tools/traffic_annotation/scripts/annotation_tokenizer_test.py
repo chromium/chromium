@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env vpython3
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -70,20 +70,20 @@ class AnnotationTokenizerTest(unittest.TestCase):
   def testAdvanceErrorPaths(self):
     tokenizer = Tokenizer('  hello , ', 'foo.txt', 33)
     tokenizer.advance('symbol')
-    with self.assertRaisesRegexp(SourceCodeParsingError,
-                                 'Expected symbol.+at foo.txt:33'):
+    with self.assertRaisesRegex(SourceCodeParsingError,
+                                'Expected symbol.+at foo.txt:33'):
       # There are no more tokens.
       tokenizer.advance('symbol')
 
     tokenizer = Tokenizer('"hello"', 'foo.txt', 33)
-    with self.assertRaisesRegexp(SourceCodeParsingError,
-                                 'Expected comma.+at foo.txt:33'):
+    with self.assertRaisesRegex(SourceCodeParsingError,
+                                'Expected comma.+at foo.txt:33'):
       # The type doesn't match.
       tokenizer.advance('comma')
 
     tokenizer = Tokenizer('{', 'foo.txt', 33)
-    with self.assertRaisesRegexp(SourceCodeParsingError,
-                                 'Expected string_literal.+at foo.txt:33'):
+    with self.assertRaisesRegex(SourceCodeParsingError,
+                                'Expected string_literal.+at foo.txt:33'):
       # Not a valid token at all.
       tokenizer.advance('string_literal')
 
