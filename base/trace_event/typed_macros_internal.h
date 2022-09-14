@@ -139,7 +139,8 @@ inline void AddTypedTraceEventImpl(char phase,
 
     perfetto::internal::WriteTrackEventArgs(
         perfetto::EventContext(track_event.get(),
-                               track_event.incremental_state()),
+                               track_event.incremental_state(),
+                               track_event.ShouldFilterDebugAnnotations()),
         std::forward<Args>(args)...);
   }
 

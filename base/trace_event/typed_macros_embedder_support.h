@@ -34,7 +34,10 @@ class BASE_EXPORT TrackEventHandle {
   // into the event. Note that |listener| must outlive the TRACE_EVENT call,
   // i.e. cannot be destroyed until OnTrackEventCompleted() is called. Ownership
   // of both TrackEvent and the listener remains with the caller.
-  TrackEventHandle(TrackEvent*, IncrementalState*, CompletionListener*);
+  TrackEventHandle(TrackEvent*,
+                   IncrementalState*,
+                   CompletionListener*,
+                   bool filter_debug_annotations);
 
   // Creates an invalid handle.
   TrackEventHandle();
@@ -48,10 +51,15 @@ class BASE_EXPORT TrackEventHandle {
 
   IncrementalState* incremental_state() const { return incremental_state_; }
 
+  bool ShouldFilterDebugAnnotations() const {
+    return filter_debug_annotations_;
+  }
+
  private:
   raw_ptr<TrackEvent> event_;
   raw_ptr<IncrementalState> incremental_state_;
   raw_ptr<CompletionListener> listener_;
+  const bool filter_debug_annotations_ = false;
 };
 
 // Handle to a TracePacket which notifies a listener upon its destruction (after

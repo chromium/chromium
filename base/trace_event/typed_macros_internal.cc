@@ -70,13 +70,15 @@ void ResetTypedTraceEventsForTesting() {
 
 TrackEventHandle::TrackEventHandle(TrackEvent* event,
                                    IncrementalState* incremental_state,
-                                   CompletionListener* listener)
+                                   CompletionListener* listener,
+                                   bool filter_debug_annotations)
     : event_(event),
       incremental_state_(incremental_state),
-      listener_(listener) {}
+      listener_(listener),
+      filter_debug_annotations_(filter_debug_annotations) {}
 
 TrackEventHandle::TrackEventHandle()
-    : TrackEventHandle(nullptr, nullptr, nullptr) {}
+    : TrackEventHandle(nullptr, nullptr, nullptr, false) {}
 
 TrackEventHandle::~TrackEventHandle() {
   if (listener_)
