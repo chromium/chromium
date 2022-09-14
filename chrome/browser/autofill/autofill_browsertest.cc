@@ -437,41 +437,39 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, ProfileSavedWithValidCountryPhone) {
               testing::UnorderedElementsAreArray(expected_phone_numbers));
 }
 
-// Prepend country codes when formatting phone numbers if:
-// - It was provided in the first place.
-// - `AutofillInferCountryCallingCode` is enabled.
+// Prepend country codes when formatting phone numbers, but only if the user
+// provided one in the first place.
 IN_PROC_BROWSER_TEST_F(AutofillTest, AppendCountryCodeForAggregatedPhones) {
-  FormMap data = {{"NAME_FIRST", "Bob"},
-                  {"NAME_LAST", "Smith"},
-                  {"ADDRESS_HOME_LINE1", "1234 H St."},
-                  {"ADDRESS_HOME_CITY", "San Jose"},
-                  {"ADDRESS_HOME_STATE", "CA"},
-                  {"ADDRESS_HOME_ZIP", "95110"},
-                  {"ADDRESS_HOME_COUNTRY", "Germany"},
-                  {"PHONE_HOME_WHOLE_NUMBER", "+4908450777777"}};
+  FormMap data;
+  data["NAME_FIRST"] = "Bob";
+  data["NAME_LAST"] = "Smith";
+  data["ADDRESS_HOME_LINE1"] = "1234 H St.";
+  data["ADDRESS_HOME_CITY"] = "San Jose";
+  data["ADDRESS_HOME_STATE"] = "CA";
+  data["ADDRESS_HOME_ZIP"] = "95110";
+  data["ADDRESS_HOME_COUNTRY"] = "Germany";
+  data["PHONE_HOME_WHOLE_NUMBER"] = "+4908450777777";
   FillFormAndSubmit("autofill_test_form.html", data);
 
   data["ADDRESS_HOME_LINE1"] = "4321 H St.";
   data["PHONE_HOME_WHOLE_NUMBER"] = "08450777777";
   FillFormAndSubmit("autofill_test_form.html", data);
 
-  std::vector<std::u16string> actual_phone_numbers;
-  for (const AutofillProfile* profile :
-       personal_data_manager()->GetProfiles()) {
-    actual_phone_numbers.push_back(
-        profile->GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
-  }
+  ASSERT_EQ(2u, personal_data_manager()->GetProfiles().size());
+  int second_address_index =
+      personal_data_manager()->GetProfiles()[0]->GetRawInfo(
+          ADDRESS_HOME_LINE1) == u"4321 H St."
+          ? 0
+          : 1;
 
-  // With `AutofillInferCountryCallingCode` enabled, the country code of the
-  // second phone number is derived from the profile (Germany).
-  std::vector<std::u16string> expected_phone_numbers = {
-      u"+49 8450 777777",
-      base::FeatureList::IsEnabled(features::kAutofillInferCountryCallingCode)
-          ? u"+49 8450 777777"
-          : u"08450 777777"};
+  EXPECT_EQ(u"+49 8450 777777", personal_data_manager()
+                                    ->GetProfiles()[1 - second_address_index]
+                                    ->GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
 
-  EXPECT_THAT(actual_phone_numbers,
-              testing::UnorderedElementsAreArray(expected_phone_numbers));
+  EXPECT_EQ(
+      u"08450 777777",
+      personal_data_manager()->GetProfiles()[second_address_index]->GetRawInfo(
+          PHONE_HOME_WHOLE_NUMBER));
 }
 
 // Test that Autofill uses '+' sign for international numbers.
