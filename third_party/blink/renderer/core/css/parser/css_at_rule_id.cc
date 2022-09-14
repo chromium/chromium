@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/parser/css_at_rule_id.h"
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -72,74 +73,61 @@ CSSAtRuleID CssAtRuleID(StringView name) {
   return kCSSAtRuleInvalid;
 }
 
-void CountAtRule(const CSSParserContext* context, CSSAtRuleID rule_id) {
-  WebFeature feature;
+namespace {
 
+absl::optional<WebFeature> AtRuleFeature(CSSAtRuleID rule_id) {
   switch (rule_id) {
     case kCSSAtRuleCharset:
-      feature = WebFeature::kCSSAtRuleCharset;
-      break;
+      return WebFeature::kCSSAtRuleCharset;
     case kCSSAtRuleFontFace:
-      feature = WebFeature::kCSSAtRuleFontFace;
-      break;
+      return WebFeature::kCSSAtRuleFontFace;
     case kCSSAtRuleFontPaletteValues:
-      feature = WebFeature::kCSSAtRuleFontPaletteValues;
-      break;
+      return WebFeature::kCSSAtRuleFontPaletteValues;
     case kCSSAtRuleImport:
-      feature = WebFeature::kCSSAtRuleImport;
-      break;
+      return WebFeature::kCSSAtRuleImport;
     case kCSSAtRuleKeyframes:
-      feature = WebFeature::kCSSAtRuleKeyframes;
-      break;
+      return WebFeature::kCSSAtRuleKeyframes;
     case kCSSAtRuleLayer:
-      feature = WebFeature::kCSSCascadeLayers;
-      break;
+      return WebFeature::kCSSCascadeLayers;
     case kCSSAtRuleMedia:
-      feature = WebFeature::kCSSAtRuleMedia;
-      break;
+      return WebFeature::kCSSAtRuleMedia;
     case kCSSAtRuleNamespace:
-      feature = WebFeature::kCSSAtRuleNamespace;
-      break;
+      return WebFeature::kCSSAtRuleNamespace;
     case kCSSAtRulePage:
-      feature = WebFeature::kCSSAtRulePage;
-      break;
+      return WebFeature::kCSSAtRulePage;
     case kCSSAtRuleProperty:
-      feature = WebFeature::kCSSAtRuleProperty;
-      break;
+      return WebFeature::kCSSAtRuleProperty;
     case kCSSAtRuleContainer:
-      feature = WebFeature::kCSSAtRuleContainer;
-      break;
+      return WebFeature::kCSSAtRuleContainer;
     case kCSSAtRuleCounterStyle:
-      feature = WebFeature::kCSSAtRuleCounterStyle;
-      break;
+      return WebFeature::kCSSAtRuleCounterStyle;
     case kCSSAtRuleScope:
-      feature = WebFeature::kCSSAtRuleScope;
-      break;
+      return WebFeature::kCSSAtRuleScope;
     case kCSSAtRuleScrollTimeline:
-      feature = WebFeature::kCSSAtRuleScrollTimeline;
-      break;
+      return WebFeature::kCSSAtRuleScrollTimeline;
     case kCSSAtRuleSupports:
-      feature = WebFeature::kCSSAtRuleSupports;
-      break;
+      return WebFeature::kCSSAtRuleSupports;
     case kCSSAtRuleViewport:
-      feature = WebFeature::kCSSAtRuleViewport;
-      break;
+      return WebFeature::kCSSAtRuleViewport;
     case kCSSAtRulePositionFallback:
     case kCSSAtRuleTry:
       // TODO(crbug.com/1309178): Add use counter.
-      return;
-
+      return absl::nullopt;
     case kCSSAtRuleWebkitKeyframes:
-      feature = WebFeature::kCSSAtRuleWebkitKeyframes;
-      break;
-
+      return WebFeature::kCSSAtRuleWebkitKeyframes;
     case kCSSAtRuleInvalid:
-    // fallthrough
+      [[fallthrough]];
     default:
       NOTREACHED();
-      return;
+      return absl::nullopt;
   }
-  context->Count(feature);
+}
+
+}  // namespace
+
+void CountAtRule(const CSSParserContext* context, CSSAtRuleID rule_id) {
+  if (absl::optional<WebFeature> feature = AtRuleFeature(rule_id))
+    context->Count(*feature);
 }
 
 }  // namespace blink
