@@ -38,10 +38,13 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
                                    base::OnceCallback<void()> callback);
   ~ImmersiveModeController();
 
+  void Enable();
   void OnTopViewBoundsChanged(const gfx::Rect& bounds);
   void UpdateToolbarVisibility(bool always_show);
 
  private:
+  bool enabled_ = false;
+
   NSWindow* const browser_widget_;
   NSWindow* const overlay_widget_;
 

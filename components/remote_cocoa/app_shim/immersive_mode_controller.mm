@@ -133,8 +133,6 @@ ImmersiveModeController::ImmersiveModeController(
       addSubview:overlay_content_view];
   immersive_mode_titlebar_view_controller_.get().layoutAttribute =
       NSLayoutAttributeBottom;
-  [browser_widget_ addTitlebarAccessoryViewController:
-                       immersive_mode_titlebar_view_controller_];
 }
 
 ImmersiveModeController::~ImmersiveModeController() {
@@ -147,6 +145,13 @@ ImmersiveModeController::~ImmersiveModeController() {
   [immersive_mode_titlebar_view_controller_.get().view release];
   immersive_mode_titlebar_view_controller_.reset();
   browser_widget_.styleMask |= NSWindowStyleMaskFullSizeContentView;
+}
+
+void ImmersiveModeController::Enable() {
+  DCHECK(!enabled_);
+  enabled_ = true;
+  [browser_widget_ addTitlebarAccessoryViewController:
+                       immersive_mode_titlebar_view_controller_];
 }
 
 void ImmersiveModeController::OnTopViewBoundsChanged(const gfx::Rect& bounds) {

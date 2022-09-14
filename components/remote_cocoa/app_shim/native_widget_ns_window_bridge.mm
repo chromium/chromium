@@ -910,6 +910,7 @@ void NativeWidgetNSWindowBridge::EnableImmersiveFullscreen(
   immersive_mode_controller_ = std::make_unique<ImmersiveModeController>(
       ns_window(), GetFromId(fullscreen_overlay_widget_id)->ns_window(),
       std::move(callback));
+  immersive_mode_controller_->Enable();
 }
 
 void NativeWidgetNSWindowBridge::DisableImmersiveFullscreen() {
@@ -917,14 +918,12 @@ void NativeWidgetNSWindowBridge::DisableImmersiveFullscreen() {
 }
 
 void NativeWidgetNSWindowBridge::UpdateToolbarVisibility(bool always_show) {
-  if (immersive_mode_controller_)
-    immersive_mode_controller_->UpdateToolbarVisibility(always_show);
+  immersive_mode_controller_->UpdateToolbarVisibility(always_show);
 }
 
 void NativeWidgetNSWindowBridge::OnTopContainerViewBoundsChanged(
     const gfx::Rect& bounds) {
-  if (immersive_mode_controller_)
-    immersive_mode_controller_->OnTopViewBoundsChanged(bounds);
+  immersive_mode_controller_->OnTopViewBoundsChanged(bounds);
 }
 
 void NativeWidgetNSWindowBridge::SetCanGoBack(bool can_go_back) {
