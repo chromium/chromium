@@ -9,6 +9,8 @@ data:
   - file: chrome_crashpad_handler
   - file: icudtl.dat
   - file: keyboard_resources.pak
+  - file: libEGL.so
+  - file: libGLESv2.so
   - file: libminigbm.so
   - file: MEIPreload/manifest.json
   - file: MEIPreload/preloaded_data.pb
