@@ -16,7 +16,6 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_id_name_manager.h"
-#include "build/build_config.h"
 
 namespace heap_profiling {
 class HeapProfilerControllerTest;
@@ -58,6 +57,17 @@ class BASE_EXPORT SamplingHeapProfiler
 
 
     uint32_t ordinal;
+  };
+
+  // On Android this is logged to UMA - keep in sync AndroidStackUnwinder in
+  // enums.xml.
+  enum class StackUnwinder {
+    DEPRECATED_kNotChecked,
+    kDefault,
+    kCFIBacktrace,
+    kUnavailable,
+    kFramePointers,
+    kMaxValue = kFramePointers,
   };
 
   // Starts collecting allocation samples. Returns the current profile_id.
@@ -144,10 +154,8 @@ class BASE_EXPORT SamplingHeapProfiler
   // Whether it should record thread names.
   std::atomic<bool> record_thread_names_{false};
 
-#if BUILDFLAG(IS_ANDROID)
-  // Whether to use CFI unwinder or default unwinder.
-  std::atomic<bool> use_default_unwinder_{false};
-#endif
+  // Which unwinder to use.
+  std::atomic<StackUnwinder> unwinder_{StackUnwinder::kDefault};
 
   friend class heap_profiling::HeapProfilerControllerTest;
   friend class NoDestructor<SamplingHeapProfiler>;

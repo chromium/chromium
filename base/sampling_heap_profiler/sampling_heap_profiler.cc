@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/sampling_heap_profiler/lock_free_address_hash_set.h"
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/threading/thread_local_storage.h"
@@ -32,6 +33,9 @@
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \
     defined(OFFICIAL_BUILD)
 #include "base/trace_event/cfi_backtrace_android.h"  // no-presubmit-check
+#define CFI_BACKTRACE_AVAILABLE 1
+#else
+#define CFI_BACKTRACE_AVAILABLE 0
 #endif
 
 namespace base {
@@ -39,6 +43,8 @@ namespace base {
 constexpr uint32_t kMaxStackEntries = 256;
 
 namespace {
+
+using StackUnwinder = SamplingHeapProfiler::StackUnwinder;
 
 // If a thread name has been set from ThreadIdNameManager, use that. Otherwise,
 // gets the thread name from kernel if available or returns a string with id.
@@ -83,48 +89,32 @@ const char* UpdateAndGetThreadName(const char* name) {
   return thread_name;
 }
 
-#if BUILDFLAG(IS_ANDROID)
-
-// Logged to UMA - keep in sync with enums.xml.
-enum class AndroidStackUnwinder {
-  kNotChecked,
-  kDefault,
-  kCFIBacktrace,
-  kUnavailable,
-  kMaxValue = kUnavailable,
-};
-
-#if BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && defined(OFFICIAL_BUILD)
-
 // Checks whether unwinding from this function works.
-bool HasDefaultUnwindTables() {
+[[maybe_unused]] StackUnwinder CheckForDefaultUnwindTables() {
   void* stack[kMaxStackEntries];
   size_t frame_count = base::debug::CollectStackTrace(const_cast<void**>(stack),
                                                       kMaxStackEntries);
   // First frame is the current function and can be found without unwind tables.
-  return frame_count > 1;
+  return frame_count > 1 ? StackUnwinder::kDefault
+                         : StackUnwinder::kUnavailable;
 }
 
-AndroidStackUnwinder ChooseAndroidStackUnwinder() {
+StackUnwinder ChooseStackUnwinder() {
+#if CFI_BACKTRACE_AVAILABLE
   if (trace_event::CFIBacktraceAndroid::GetInitializedInstance()
           ->can_unwind_stack_frames()) {
-    return AndroidStackUnwinder::kCFIBacktrace;
+    return StackUnwinder::kCFIBacktrace;
   }
-  if (HasDefaultUnwindTables()) {
-    return AndroidStackUnwinder::kDefault;
-  }
-  return AndroidStackUnwinder::kUnavailable;
+  return CheckForDefaultUnwindTables();
+#elif BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
+  return StackUnwinder::kFramePointers;
+#elif BUILDFLAG(IS_ANDROID)
+  // Default unwind tables aren't always present on Android.
+  return CheckForDefaultUnwindTables();
+#else
+  return StackUnwinder::kDefault;
+#endif
 }
-
-#else  // !(BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && defined(OFFICIAL_BUILD))
-
-AndroidStackUnwinder ChooseAndroidStackUnwinder() {
-  return AndroidStackUnwinder::kNotChecked;
-}
-
-#endif  // BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && defined(OFFICIAL_BUILD)
-
-#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -143,23 +133,17 @@ SamplingHeapProfiler::~SamplingHeapProfiler() {
 }
 
 uint32_t SamplingHeapProfiler::Start() {
+  const auto unwinder = ChooseStackUnwinder();
 #if BUILDFLAG(IS_ANDROID)
-  const auto unwinder = ChooseAndroidStackUnwinder();
+  // Record which unwinder is in use on Android, since it's hard to keep track
+  // of which methods are available at runtime.
   base::UmaHistogramEnumeration("HeapProfiling.AndroidStackUnwinder", unwinder);
-  switch (unwinder) {
-    case AndroidStackUnwinder::kNotChecked:
-    case AndroidStackUnwinder::kCFIBacktrace:
-      // Nothing to do.
-      break;
-    case AndroidStackUnwinder::kDefault:
-      use_default_unwinder_ = true;
-      break;
-    case AndroidStackUnwinder::kUnavailable:
-      LOG(WARNING)
-          << "Sampling heap profiler: Stack unwinding is not available.";
-      return 0;
+#endif
+  if (unwinder == StackUnwinder::kUnavailable) {
+    LOG(WARNING) << "Sampling heap profiler: Stack unwinding is not available.";
+    return 0;
   }
-#endif  // BUILDFLAG(IS_ANDROID)
+  unwinder_.store(unwinder);
 
   auto* poisson_allocation_sampler = PoissonAllocationSampler::Get();
 
@@ -208,27 +192,33 @@ void** SamplingHeapProfiler::CaptureStackTrace(void** frames,
                                                size_t* count) {
   // Skip top frames as they correspond to the profiler itself.
   size_t skip_frames = 3;
-#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \
-    defined(OFFICIAL_BUILD)
   size_t frame_count = 0;
-  if (use_default_unwinder_) {
-    frame_count =
-        base::debug::CollectStackTrace(const_cast<void**>(frames), max_entries);
-  } else {
-    frame_count =
-        base::trace_event::CFIBacktraceAndroid::GetInitializedInstance()
-            ->Unwind(const_cast<const void**>(frames), max_entries);
-  }
-#elif BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
-  size_t frame_count = base::debug::TraceStackFramePointers(
-      const_cast<const void**>(frames), max_entries, skip_frames);
-  skip_frames = 0;
-#else
-  // Fall-back to capturing the stack with base::debug::CollectStackTrace,
-  // which is likely slower, but more reliable.
-  size_t frame_count =
-      base::debug::CollectStackTrace(const_cast<void**>(frames), max_entries);
+  switch (unwinder_) {
+#if CFI_BACKTRACE_AVAILABLE
+    case StackUnwinder::kCFIBacktrace:
+      frame_count =
+          base::trace_event::CFIBacktraceAndroid::GetInitializedInstance()
+              ->Unwind(const_cast<const void**>(frames), max_entries);
+      break;
 #endif
+#if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
+    case StackUnwinder::kFramePointers:
+      frame_count = base::debug::TraceStackFramePointers(
+          const_cast<const void**>(frames), max_entries, skip_frames);
+      skip_frames = 0;
+      break;
+#endif
+    case StackUnwinder::kDefault:
+      // Fall-back to capturing the stack with base::debug::CollectStackTrace,
+      // which is likely slower, but more reliable.
+      frame_count = base::debug::CollectStackTrace(frames, max_entries);
+      break;
+    default:
+      // Profiler should not be started if ChooseStackUnwinder() returns
+      // anything else.
+      NOTREACHED();
+      break;
+  }
 
   skip_frames = std::min(skip_frames, frame_count);
   *count = frame_count - skip_frames;

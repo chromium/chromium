@@ -2531,9 +2531,10 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="AndroidStackUnwinder">
-  <int value="0" label="Not checked">
+  <int value="0" label="Not checked (obsolete)">
     The stack unwinding implementation was not checked. The SamplingHeapProfiler
-    will collect stack samples but they may be invalid.
+    will collect stack samples but they may be invalid. (Starting in Sept 2022,
+    the implementation is always checked on Android so this is obsolete.)
   </int>
   <int value="1" label="Default">
     The SamplingHeapProfiler uses the default unwind tables.
@@ -2544,6 +2545,9 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Unavailable">
     Stack unwinding is not available. The SamplingHeapProfiler will not collect
     stack samples.
+  </int>
+  <int value="4" label="FramePointers">
+    The SamplingHeapProfiler uses the TraceStackFramePointers function.
   </int>
 </enum>
 
