@@ -197,10 +197,10 @@ template<typename T> void StorageBlock<T>::AllocateData() {
 template<typename T> void StorageBlock<T>::DeleteData() {
   if (own_data_) {
     if (!extended_) {
-      delete data_;
+      data_.ClearAndDelete();
     } else {
       data_->~T();
-      delete[] reinterpret_cast<char*>(data_.get());
+      delete[] reinterpret_cast<char*>(data_.ExtractAsDangling().get());
     }
     own_data_ = false;
   }
