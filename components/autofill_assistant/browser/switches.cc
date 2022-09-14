@@ -52,5 +52,8 @@ const char kAutofillAssistantServerKey[] = "autofill-assistant-key";
 // Overrides the default backend URL.
 const char kAutofillAssistantUrl[] = "autofill-assistant-url";
 
+// Allows for the logging of more information in JS flow if set to 'true'.
+const char kAutofillAssistantDebugMode[] = "autofill-assistant-debug-mode";
+
 }  // namespace switches
 }  // namespace autofill_assistant

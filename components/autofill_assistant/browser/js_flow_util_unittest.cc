@@ -7,9 +7,11 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/test/values_test_util.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant::js_flow_util {
@@ -177,6 +179,26 @@ TEST(JsFlowUtilTest, GetDevtoolsSourceUrlCommentToAppend) {
   EXPECT_THAT(GetDevtoolsSourceUrlCommentToAppend(
                   UnexpectedErrorInfoProto::JS_FLOW_LIBRARY),
               "\n//# sourceURL=JS_FLOW_LIBRARY");
+}
+
+TEST(JsFlowUtilTest, ExpectsDebugModeSetToTrue) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->AppendSwitch(switches::kAutofillAssistantDebugMode);
+  command_line->AppendSwitchASCII(switches::kAutofillAssistantDebugMode,
+                                  "true");
+  EXPECT_EQ(IsDebugMode(), true);
+}
+
+TEST(JsFlowUtilTest, ExpectsDebugModeSetToFalse) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->AppendSwitch(switches::kAutofillAssistantDebugMode);
+  command_line->AppendSwitchASCII(switches::kAutofillAssistantDebugMode,
+                                  "false");
+  EXPECT_EQ(IsDebugMode(), false);
+}
+
+TEST(JsFlowUtilTest, ExpectsDebugModeDefaultIsFalse) {
+  EXPECT_EQ(IsDebugMode(), false);
 }
 
 }  // namespace

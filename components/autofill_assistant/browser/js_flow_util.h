@@ -81,6 +81,9 @@ std::string GetDevtoolsSourceUrl(
 UnexpectedErrorInfoProto::JsExceptionLocation GetExceptionLocation(
     const std::string& devtools_source_url);
 
+// Returns if autofill assistant is running in debug mode.
+bool IsDebugMode();
+
 }  // namespace autofill_assistant::js_flow_util
 
 #endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_JS_FLOW_UTIL_H_

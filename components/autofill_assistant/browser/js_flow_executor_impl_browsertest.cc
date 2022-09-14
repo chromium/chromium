@@ -33,6 +33,7 @@
 #include "components/autofill_assistant/browser/script_executor.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/service/mock_service.h"
+#include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "components/version_info/version_info.h"
@@ -403,6 +404,50 @@ IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplBrowserTest,
   ASSERT_THAT(js_return_value, NotNull());
   // line number is 1-based in getLineNumber so this is the first line
   EXPECT_THAT(js_return_value->GetIfInt(), Optional(1));
+}
+
+IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplBrowserTest, DebugModeIsSetCorrectly) {
+  const std::string js_flow = "return DEBUG_MODE;";
+
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->AppendSwitch(switches::kAutofillAssistantDebugMode);
+  command_line->AppendSwitchASCII(switches::kAutofillAssistantDebugMode,
+                                  "true");
+
+  std::unique_ptr<base::Value> js_return_value;
+  ASSERT_THAT(RunTest(js_flow, js_return_value),
+              Property(&ClientStatus::proto_status, ACTION_APPLIED));
+
+  ASSERT_THAT(js_return_value, NotNull());
+  EXPECT_EQ(js_return_value->GetIfBool(), true);
+}
+
+IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplBrowserTest,
+                       NonDebugModeIsSetCorrectly) {
+  const std::string js_flow = "return DEBUG_MODE;";
+
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->AppendSwitch(switches::kAutofillAssistantDebugMode);
+  command_line->AppendSwitchASCII(switches::kAutofillAssistantDebugMode,
+                                  "false");
+
+  std::unique_ptr<base::Value> js_return_value;
+  ASSERT_THAT(RunTest(js_flow, js_return_value),
+              Property(&ClientStatus::proto_status, ACTION_APPLIED));
+
+  ASSERT_THAT(js_return_value, NotNull());
+  EXPECT_EQ(js_return_value->GetIfBool(), false);
+}
+
+IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplBrowserTest, NonDebugModeIsDefault) {
+  const std::string js_flow = "return DEBUG_MODE;";
+
+  std::unique_ptr<base::Value> js_return_value;
+  ASSERT_THAT(RunTest(js_flow, js_return_value),
+              Property(&ClientStatus::proto_status, ACTION_APPLIED));
+
+  ASSERT_THAT(js_return_value, NotNull());
+  EXPECT_EQ(js_return_value->GetIfBool(), false);
 }
 
 IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplBrowserTest,

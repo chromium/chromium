@@ -4,10 +4,12 @@
 
 #include "components/autofill_assistant/browser/js_flow_util.h"
 #include "base/base64.h"
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "components/autofill_assistant/browser/model.pb.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/browser/web/web_controller_util.h"
 
 namespace autofill_assistant {
@@ -235,6 +237,12 @@ std::string GetDevtoolsSourceUrlCommentToAppend(
 
   return base::StrCat(
       {kSourceUrlCommentPrefix, GetDevtoolsSourceUrl(js_exception_location)});
+}
+
+bool IsDebugMode() {
+  const auto* command_line = base::CommandLine::ForCurrentProcess();
+  return command_line->GetSwitchValueASCII(
+             switches::kAutofillAssistantDebugMode) == "true";
 }
 
 }  // namespace js_flow_util

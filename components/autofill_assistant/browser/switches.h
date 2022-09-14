@@ -18,6 +18,7 @@ extern const char kAutofillAssistantForceOnboarding[];
 extern const char kAutofillAssistantImplicitTriggeringDebugParameters[];
 extern const char kAutofillAssistantServerKey[];
 extern const char kAutofillAssistantUrl[];
+extern const char kAutofillAssistantDebugMode[];
 
 }  // namespace switches
 }  // namespace autofill_assistant
