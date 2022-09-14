@@ -339,16 +339,17 @@ void ClientControlledState::UpdateWindowForTransitionEvents(
       const bool is_restoring =
           window_state->window()->GetProperty(aura::client::kIsRestoringKey) ||
           event_type == WM_EVENT_RESTORE;
-      absl::optional<float> snap_ratio_to_restore =
+      // TODO(b/246683799): Investigate why window_state->snap_ratio() can be
+      // empty.
+      const float snap_ratio_to_restore =
           event->IsSnapInfoAvailable()
-              ? absl::make_optional(
-                    WindowSnapWMEvent::GetFloatValueForSnapRatio(
-                        static_cast<const WindowSnapWMEvent*>(event)
-                            ->snap_ratio()))
-              : (is_restoring ? window_state->snap_ratio()
-                              : absl::make_optional(kDefaultPositionRatio));
-      gfx::Rect bounds = GetSnappedWindowBoundsInParent(
-          window, next_state_type, snap_ratio_to_restore.value());
+              ? WindowSnapWMEvent::GetFloatValueForSnapRatio(
+                    static_cast<const WindowSnapWMEvent*>(event)->snap_ratio())
+              : (is_restoring && window_state->snap_ratio().has_value()
+                     ? window_state->snap_ratio().value()
+                     : kDefaultPositionRatio);
+      gfx::Rect bounds = GetSnappedWindowBoundsInParent(window, next_state_type,
+                                                        snap_ratio_to_restore);
       // We don't want Unminimize() to restore the pre-snapped state during the
       // transition. See crbug.com/1031313 for why we need this.
       // kRestoreShowStateKey property will be updated properly after the window
