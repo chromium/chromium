@@ -86,7 +86,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/cooperative_scheduling_manager.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
@@ -819,9 +819,18 @@ void V8Initializer::InitializeMainThread(
 
   ThreadScheduler* scheduler = ThreadScheduler::Current();
 
+  V8PerIsolateData::V8ContextSnapshotMode snapshot_mode =
+      GetV8ContextSnapshotMode();
+  v8::CreateHistogramCallback create_histogram_callback = nullptr;
+  v8::AddHistogramSampleCallback add_histogram_sample_callback = nullptr;
+  // We don't log histograms when taking a snapshot.
+  if (snapshot_mode != V8PerIsolateData::V8ContextSnapshotMode::kTakeSnapshot) {
+    create_histogram_callback = CreateHistogram;
+    add_histogram_sample_callback = AddHistogramSample;
+  }
   v8::Isolate* isolate = V8PerIsolateData::Initialize(
-      scheduler->V8TaskRunner(), GetV8ContextSnapshotMode(), CreateHistogram,
-      AddHistogramSample);
+      scheduler->V8TaskRunner(), snapshot_mode, create_histogram_callback,
+      add_histogram_sample_callback);
   scheduler->SetV8Isolate(isolate);
 
   // ThreadState::isolate_ needs to be set before setting the EmbedderHeapTracer

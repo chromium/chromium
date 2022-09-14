@@ -224,7 +224,6 @@ class PLATFORM_EXPORT V8PerIsolateData final {
                    V8ContextSnapshotMode,
                    v8::CreateHistogramCallback,
                    v8::AddHistogramSampleCallback);
-  explicit V8PerIsolateData(V8ContextSnapshotMode);
   ~V8PerIsolateData();
 
   // A really simple hash function, which makes lookups faster. The set of
@@ -267,10 +266,10 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   bool constructor_mode_;
   friend class ConstructorMode;
 
-  bool use_counter_disabled_;
+  bool use_counter_disabled_ = false;
   friend class UseCounterDisabledScope;
 
-  bool is_handling_recursion_level_error_;
+  bool is_handling_recursion_level_error_ = false;
 
   Vector<base::OnceClosure> end_of_scope_tasks_;
   std::unique_ptr<Data> thread_debugger_;

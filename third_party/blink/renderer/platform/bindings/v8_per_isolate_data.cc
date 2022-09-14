@@ -67,59 +67,49 @@ static void MicrotasksCompletedCallback(v8::Isolate* isolate, void* data) {
   V8PerIsolateData::From(isolate)->RunEndOfScopeTasks();
 }
 
+static bool AllowAtomicWaits(
+    V8PerIsolateData::V8ContextSnapshotMode v8_context_snapshot_mode) {
+  return !IsMainThread() ||
+         v8_context_snapshot_mode ==
+             V8PerIsolateData::V8ContextSnapshotMode::kTakeSnapshot;
+}
+
 V8PerIsolateData::V8PerIsolateData(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     V8ContextSnapshotMode v8_context_snapshot_mode,
     v8::CreateHistogramCallback create_histogram_callback,
     v8::AddHistogramSampleCallback add_histogram_sample_callback)
     : v8_context_snapshot_mode_(v8_context_snapshot_mode),
-      isolate_holder_(task_runner,
-                      gin::IsolateHolder::kSingleThread,
-                      IsMainThread() ? gin::IsolateHolder::kDisallowAtomicsWait
-                                     : gin::IsolateHolder::kAllowAtomicsWait,
-                      IsMainThread()
-                          ? gin::IsolateHolder::IsolateType::kBlinkMainThread
-                          : gin::IsolateHolder::IsolateType::kBlinkWorkerThread,
-                      gin::IsolateHolder::IsolateCreationMode::kNormal,
-                      create_histogram_callback,
-                      add_histogram_sample_callback),
+      isolate_holder_(
+          task_runner,
+          gin::IsolateHolder::kSingleThread,
+          AllowAtomicWaits(v8_context_snapshot_mode)
+              ? gin::IsolateHolder::kAllowAtomicsWait
+              : gin::IsolateHolder::kDisallowAtomicsWait,
+          IsMainThread() ? gin::IsolateHolder::IsolateType::kBlinkMainThread
+                         : gin::IsolateHolder::IsolateType::kBlinkWorkerThread,
+          v8_context_snapshot_mode ==
+                  V8PerIsolateData::V8ContextSnapshotMode::kTakeSnapshot
+              ? gin::IsolateHolder::IsolateCreationMode::kCreateSnapshot
+              : gin::IsolateHolder::IsolateCreationMode::kNormal,
+          create_histogram_callback,
+          add_histogram_sample_callback),
       string_cache_(std::make_unique<StringCache>(GetIsolate())),
       private_property_(std::make_unique<V8PrivateProperty>()),
       constructor_mode_(ConstructorMode::kCreateNewObject),
-      use_counter_disabled_(false),
-      is_handling_recursion_level_error_(false),
       runtime_call_stats_(base::DefaultTickClock::GetInstance()) {
-  // FIXME: Remove once all v8::Isolate::GetCurrent() calls are gone.
-  GetIsolate()->Enter();
-  GetIsolate()->AddBeforeCallEnteredCallback(&BeforeCallEnteredCallback);
-  GetIsolate()->AddMicrotasksCompletedCallback(&MicrotasksCompletedCallback);
+  if (v8_context_snapshot_mode == V8ContextSnapshotMode::kTakeSnapshot) {
+    // Snapshot should only execute on the main thread. SnapshotCreator enters
+    // the isolate, so we don't call Isolate::Enter() here.
+    CHECK(IsMainThread());
+  } else {
+    // FIXME: Remove once all v8::Isolate::GetCurrent() calls are gone.
+    GetIsolate()->Enter();
+    GetIsolate()->AddBeforeCallEnteredCallback(&BeforeCallEnteredCallback);
+    GetIsolate()->AddMicrotasksCompletedCallback(&MicrotasksCompletedCallback);
+  }
   if (IsMainThread())
     g_main_thread_per_isolate_data = this;
-}
-
-// This constructor is used for creating a V8 context snapshot. It must run on
-// the main thread.
-// TODO(yukishiino): This constructor may not be necessary.  Probably We can
-// reuse V8PerIsolateData(task_runner, v8_context_snapshot_mode) constructor.
-V8PerIsolateData::V8PerIsolateData(
-    V8ContextSnapshotMode v8_context_snapshot_mode)
-    : v8_context_snapshot_mode_(v8_context_snapshot_mode),
-      isolate_holder_(Thread::Current()->GetDeprecatedTaskRunner(),
-                      gin::IsolateHolder::kSingleThread,
-                      gin::IsolateHolder::kAllowAtomicsWait,
-                      gin::IsolateHolder::IsolateType::kBlinkMainThread,
-                      gin::IsolateHolder::IsolateCreationMode::kCreateSnapshot),
-      string_cache_(std::make_unique<StringCache>(GetIsolate())),
-      private_property_(std::make_unique<V8PrivateProperty>()),
-      constructor_mode_(ConstructorMode::kCreateNewObject),
-      use_counter_disabled_(false),
-      is_handling_recursion_level_error_(false),
-      runtime_call_stats_(base::DefaultTickClock::GetInstance()) {
-  CHECK(IsMainThread());
-  CHECK_EQ(v8_context_snapshot_mode_, V8ContextSnapshotMode::kTakeSnapshot);
-
-  // SnapshotCreator enters the isolate, so we don't call Isolate::Enter() here.
-  g_main_thread_per_isolate_data = this;
 }
 
 V8PerIsolateData::~V8PerIsolateData() = default;
@@ -136,14 +126,9 @@ v8::Isolate* V8PerIsolateData::Initialize(
     v8::AddHistogramSampleCallback add_histogram_sample_callback) {
   TRACE_EVENT1("v8", "V8PerIsolateData::Initialize", "V8ContextSnapshotMode",
                context_mode);
-  V8PerIsolateData* data = nullptr;
-  if (context_mode == V8ContextSnapshotMode::kTakeSnapshot) {
-    data = new V8PerIsolateData(context_mode);
-  } else {
-    data = new V8PerIsolateData(task_runner, context_mode,
-                                create_histogram_callback,
-                                add_histogram_sample_callback);
-  }
+  V8PerIsolateData* data =
+      new V8PerIsolateData(task_runner, context_mode, create_histogram_callback,
+                           add_histogram_sample_callback);
   DCHECK(data);
 
   v8::Isolate* isolate = data->GetIsolate();
