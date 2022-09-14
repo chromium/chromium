@@ -40,12 +40,16 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView {
   void HandleLocaleChange() override;
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   const char* GetClassName() const override;
 
   // Update the icons for the children views.
   void UpdateIcons();
+
+  // Update the bounds insets based on shelf alignment.
+  void UpdateBoundsInset();
 
   views::BoxLayout* layout_manager_ = nullptr;
 

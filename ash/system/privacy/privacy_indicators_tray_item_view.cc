@@ -13,12 +13,15 @@
 #include "ash/style/ash_color_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -45,10 +48,21 @@ PrivacyIndicatorsTrayItemView::PrivacyIndicatorsTrayItemView(Shelf* shelf)
   layout_manager_->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kCenter);
 
+  // Set up a solid color layer to paint the background color, then add a layer
+  // to each child so that they are visible and can perform layer animation.
+  SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  layer()->SetFillsBoundsOpaquely(false);
+  layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF{kPrivacyIndicatorsViewHeight / 2});
+
   auto camera_icon = std::make_unique<views::ImageView>();
+  camera_icon->SetPaintToLayer();
+  camera_icon->layer()->SetFillsBoundsOpaquely(false);
   camera_icon_ = container_view->AddChildView(std::move(camera_icon));
 
   auto microphone_icon = std::make_unique<views::ImageView>();
+  microphone_icon->SetPaintToLayer();
+  microphone_icon->layer()->SetFillsBoundsOpaquely(false);
   microphone_icon_ = container_view->AddChildView(std::move(microphone_icon));
 
   AddChildView(std::move(container_view));
@@ -81,6 +95,7 @@ void PrivacyIndicatorsTrayItemView::UpdateAlignmentForShelf(Shelf* shelf) {
   layout_manager_->SetOrientation(
       shelf->PrimaryAxisValue(views::BoxLayout::Orientation::kHorizontal,
                               views::BoxLayout::Orientation::kVertical));
+  UpdateBoundsInset();
 }
 
 void PrivacyIndicatorsTrayItemView::HandleLocaleChange() {
@@ -99,14 +114,15 @@ gfx::Size PrivacyIndicatorsTrayItemView::CalculatePreferredSize() const {
 
 void PrivacyIndicatorsTrayItemView::OnThemeChanged() {
   views::View::OnThemeChanged();
-
-  // We round the corners and set the border thickness based on the shorter side
-  // of the view (the shorter size changes based on shelf alignment).
-  int shorter_side = std::min(width(), height());
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      ui::kColorAshPrivacyIndicatorsBackground, shorter_side / 2,
-      shorter_side - kPrivacyIndicatorsViewHeight));
   UpdateIcons();
+
+  layer()->SetColor(
+      GetColorProvider()->GetColor(ui::kColorAshPrivacyIndicatorsBackground));
+}
+
+void PrivacyIndicatorsTrayItemView::OnBoundsChanged(
+    const gfx::Rect& previous_bounds) {
+  UpdateBoundsInset();
 }
 
 std::u16string PrivacyIndicatorsTrayItemView::GetTooltipText(
@@ -143,6 +159,21 @@ void PrivacyIndicatorsTrayItemView::UpdateIcons() {
   microphone_icon_->SetImage(
       gfx::CreateVectorIcon(kPrivacyIndicatorsMicrophoneIcon,
                             kPrivacyIndicatorsIconSize, icon_color));
+}
+
+void PrivacyIndicatorsTrayItemView::UpdateBoundsInset() {
+  gfx::Rect bounds = GetLocalBounds();
+  auto* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
+
+  // We set the bounds inset based on the shorter side of the view (the shorter
+  // size changes based on shelf alignment).
+  int shorter_side_inset = shelf->PrimaryAxisValue(height(), width()) -
+                           shelf->PrimaryAxisValue(GetPreferredSize().height(),
+                                                   GetPreferredSize().width());
+  bounds.Inset(
+      shelf->PrimaryAxisValue(gfx::Insets::VH(shorter_side_inset / 2, 0),
+                              gfx::Insets::VH(0, shorter_side_inset / 2)));
+  layer()->SetClipRect(bounds);
 }
 
 }  // namespace ash
