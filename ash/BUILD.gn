@@ -1950,8 +1950,6 @@ component("ash") {
     "wm/desks/templates/saved_desk_animations.h",
     "wm/desks/templates/saved_desk_dialog_controller.cc",
     "wm/desks/templates/saved_desk_dialog_controller.h",
-    "wm/desks/templates/saved_desk_feedback_button.cc",
-    "wm/desks/templates/saved_desk_feedback_button.h",
     "wm/desks/templates/saved_desk_grid_view.cc",
     "wm/desks/templates/saved_desk_grid_view.h",
     "wm/desks/templates/saved_desk_icon_container.cc",

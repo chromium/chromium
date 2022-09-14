@@ -29,7 +29,6 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
-#include "ash/wm/desks/templates/saved_desk_feedback_button.h"
 #include "ash/wm/desks/templates/saved_desk_grid_view.h"
 #include "ash/wm/desks/templates/saved_desk_icon_container.h"
 #include "ash/wm/desks/templates/saved_desk_icon_view.h"
@@ -2314,41 +2313,6 @@ TEST_F(SavedDeskTest, LaunchTemplateAfterClosingActiveDesk) {
   EXPECT_TRUE(InOverviewSession());
 }
 
-// Tests that multiple feedback buttons aren't created when we transition
-// between hiding and showing the templates grid without leaving overview.
-// Regression test for https://crbug.com/1299114.
-TEST_F(SavedDeskTest, VerifyFeedbackButtonCount) {
-  // One window is needed to save a template.
-  auto window = CreateAppWindow();
-
-  // Open overview and save a template. This will also take us to the desks
-  // templates grid view.
-  OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
-  ASSERT_EQ(1ul, GetAllEntries().size());
-
-  SavedDeskLibraryView* library_view =
-      GetOverviewGridList().front()->GetSavedDeskLibraryView();
-  ASSERT_TRUE(library_view);
-
-  // The library should have only one feedback button.
-  SavedDeskLibraryViewTestApi test_api(library_view);
-  auto count_feedback_button = [&test_api]() {
-    return base::ranges::count(test_api.scroll_view()->contents()->children(),
-                               FeedbackButton::kViewClassName,
-                               &views::View::GetClassName);
-  };
-  ASSERT_EQ(1, count_feedback_button());
-
-  // Click on the grid item to launch the template.
-  ClickOnView(GetItemViewFromTemplatesGrid(/*grid_item_index=*/0));
-  EXPECT_TRUE(InOverviewSession());
-
-  // Go back to the library view and verify that we should still keep only one
-  // feedback button.
-  ShowDesksTemplatesGrids();
-  ASSERT_EQ(1, count_feedback_button());
-}
-
 // Tests that the desks templates are organized in alphabetical order.
 TEST_F(SavedDeskTest, ShowTemplatesInAlphabeticalOrder) {
   // Create a window and add three test entry in different names.
@@ -4081,13 +4045,6 @@ TEST_F(SavedDeskTest, ScrollWithHighlightChange) {
     EXPECT_EQ(item_view->name_view()->GetPreferredSize(),
               item_view->name_view()->GetVisibleBounds().size());
   }
-
-  // Verify feedback button is highlighted and fully visible.
-  FeedbackButton* feedback_button = GetSavedDeskFeedbackButton();
-  SendKey(ui::VKEY_TAB);
-  EXPECT_TRUE(feedback_button->IsViewHighlighted());
-  EXPECT_EQ(feedback_button->GetPreferredSize(),
-            feedback_button->GetVisibleBounds().size());
 }
 
 // Tests that the scroll bar works with the keyboard.

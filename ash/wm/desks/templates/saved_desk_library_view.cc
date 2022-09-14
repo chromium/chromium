@@ -71,8 +71,10 @@ constexpr int kGroupContentsBetweenChildSpacingDp = 20;
 // The size of the gradient applied to the top and bottom of the scroll view.
 constexpr int kScrollViewGradientSize = 32;
 
-// Insets of Library page scroll content view.
-constexpr gfx::Insets kLibraryPageScrollContentsInsets = gfx::Insets::VH(32, 0);
+// Insets of Library page scroll content view. Note: the bottom inset is there
+// to slightly adjust the otherwise vertically centered scroll content up a tad.
+constexpr gfx::Insets kLibraryPageScrollContentsInsets =
+    gfx::Insets::TLBR(32, 0, 96, 0);
 
 // Insets for the vertical scroll bar.
 constexpr gfx::Insets kLibraryPageVerticalScrollInsets =
@@ -324,19 +326,6 @@ SavedDeskLibraryView::SavedDeskLibraryView() {
     scroll_contents->AddChildView(std::move(group_contents));
   }
 
-  feedback_button_ =
-      scroll_contents->AddChildView(std::make_unique<FeedbackButton>(
-          base::BindRepeating(&SavedDeskLibraryView::OnFeedbackButtonPressed,
-                              base::Unretained(this)),
-          l10n_util::GetStringUTF16(
-              IDS_ASH_PERSISTENT_DESKS_BAR_CONTEXT_MENU_FEEDBACK),
-          PillButton::Type::kDefaultWithIconLeading,
-          &kPersistentDesksBarFeedbackIcon));
-  feedback_button_->SetBorder(std::make_unique<views::HighlightBorder>(
-      feedback_button_->CalculatePreferredSize().height() / 2,
-      views::HighlightBorder::Type::kHighlightBorder1,
-      /*use_light_colors=*/false));
-
   no_items_label_ =
       scroll_contents->AddChildView(std::make_unique<RoundedLabel>(
           kNoItemsLabelPadding.width(), kNoItemsLabelPadding.height(),
@@ -464,19 +453,6 @@ void SavedDeskLibraryView::AnimateDeskLaunch(const base::GUID& uuid,
   DeleteTemplates({uuid}, /*delete_animation=*/false);
 }
 
-void SavedDeskLibraryView::OnFeedbackButtonPressed() {
-  std::string extra_diagnostics;
-  for (auto* grid : grid_views()) {
-    for (auto* item : grid->grid_items())
-      extra_diagnostics += (item->desk_template().ToString() + "\n");
-  }
-
-  // Note that this will activate the dialog which will exit overview and delete
-  // `this`.
-  Shell::Get()->desks_templates_delegate()->OpenFeedbackDialog(
-      extra_diagnostics);
-}
-
 bool SavedDeskLibraryView::IsAnimating() {
   for (auto* grid_view : grid_views()) {
     if (grid_view->IsAnimating())
@@ -494,8 +470,7 @@ bool SavedDeskLibraryView::IntersectsWithUi(const gfx::Point& screen_location) {
         return true;
     }
   }
-  // Check feedback button.
-  return feedback_button_->GetBoundsInScreen().Contains(screen_location);
+  return false;
 }
 
 aura::Window* SavedDeskLibraryView::GetWidgetWindow() {
@@ -547,13 +522,13 @@ void SavedDeskLibraryView::OnLocatedEvent(ui::LocatedEvent* event,
       break;
     }
     case ui::ET_GESTURE_TAP:
-      // When it's a tap outside grid items and the feedback button, it should
-      // either commit the name change or exit the overview mode. Currently
-      // those are handled in `OverviewGrid` for both saved desk library view
-      // and desk bar view. `OverviewGridEventHandler::HandleClickOrTap()` is
-      // explicitly invoked here because `ScrollBar::OnGestureEvent()` would eat
-      // tap event. With this, it would lose the gesture-triggered context menu
-      // in saved desk library view. Please see crbug.com/1339100.
+      // When it's a tap outside grid items, it should either commit the name
+      // change or exit the overview mode. Currently those are handled in
+      // `OverviewGrid` for both saved desk library view and desk bar
+      // view. `OverviewGridEventHandler::HandleClickOrTap()` is explicitly
+      // invoked here because `ScrollBar::OnGestureEvent()` would eat tap
+      // event. With this, it would lose the gesture-triggered context menu in
+      // saved desk library view. Please see crbug.com/1339100.
       // TODO(crbug.com/1341128): Investigate if we can enable the context menu
       // via long-press in library page.
       if (!IntersectsWithUi(screen_location)) {
@@ -622,7 +597,6 @@ void SavedDeskLibraryView::Layout() {
     total_saved_desks += grid_views_[i]->grid_items().size();
   }
 
-  feedback_button_->SetVisible(total_saved_desks != 0);
   no_items_label_->SetVisible(total_saved_desks == 0);
 
   scroll_view_->SetBoundsRect({0, 0, width(), height()});
@@ -661,9 +635,6 @@ void SavedDeskLibraryView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
   auto* color_provider = AshColorProvider::Get();
-  feedback_button_->SetBackgroundColor(color_provider->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80));
-
   for (views::Label* label : grid_labels_) {
     label->SetBackgroundColor(SK_ColorTRANSPARENT);
     label->SetEnabledColor(color_provider->GetContentLayerColor(
