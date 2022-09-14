@@ -99,7 +99,7 @@ for your fuzzer. This will allow more code-reuse between fuzzers, and also
 allow corpus-merging between related fuzzers.
 
 ```
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -205,7 +205,7 @@ mojolpm_fuzzer_test("code_cache_host_mojolpm_fuzzer") {
 Now, the minimal source code to load our testcases:
 
 ```c++
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
