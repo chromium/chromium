@@ -35,10 +35,7 @@ public class LogTest {
 
     @Test
     public void normalizeTagTest() {
-        assertEquals("cr_foo", Log.normalizeTag("cr.foo"));
-        assertEquals("cr_foo", Log.normalizeTag("cr_foo"));
         assertEquals("cr_foo", Log.normalizeTag("foo"));
-        assertEquals("cr_ab_foo", Log.normalizeTag("ab_foo"));
     }
 
     /** Tests that exceptions provided to the log functions are properly recognized and printed. */

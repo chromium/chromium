@@ -108,6 +108,10 @@
    @org.chromium.build.annotations.DoNotInline <fields>;
 }
 
+-alwaysinline class * {
+    @org.chromium.build.annotations.AlwaysInline *;
+}
+
 # Never merge classes horizontally or vertically with this annotation.
 # Relevant to classes being used as a key in maps or sets.
 -keep,allowaccessmodification,allowobfuscation,allowshrinking @org.chromium.base.annotations.DoNotClassMerge class *
@@ -250,6 +254,8 @@
 
 # Use assumevalues block instead of assumenosideeffects block because Google3 proguard cannot parse
 # assumenosideeffects blocks which overwrite return value.
+# chromium_code.flags rather than remove_logging.flags so that it's included
+# in cronet.
 -assumevalues class org.chromium.base.Log {
   static boolean isDebug() return false;
 }

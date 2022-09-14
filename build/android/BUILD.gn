@@ -51,6 +51,7 @@ if (enable_java_templates) {
       "java/src/org/chromium/base/annotations/MainDex.java",
       "java/src/org/chromium/base/annotations/MockedInTests.java",
       "java/src/org/chromium/base/annotations/UsedByReflection.java",
+      "java/src/org/chromium/build/annotations/AlwaysInline.java",
       "java/src/org/chromium/build/annotations/CheckDiscard.java",
       "java/src/org/chromium/build/annotations/DoNotClassMerge.java",
       "java/src/org/chromium/build/annotations/DoNotInline.java",

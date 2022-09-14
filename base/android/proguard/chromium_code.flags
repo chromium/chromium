@@ -27,6 +27,8 @@
 
 # Use assumevalues block instead of assumenosideeffects block because Google3 proguard cannot parse
 # assumenosideeffects blocks which overwrite return value.
+# chromium_code.flags rather than remove_logging.flags so that it's included
+# in cronet.
 -assumevalues class org.chromium.base.Log {
   static boolean isDebug() return false;
 }
