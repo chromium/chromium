@@ -1511,6 +1511,7 @@
 <translation id="2356070529366658676">ಕೇಳಿ</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="2358561147588818967">ಸೈಟ್‌ಗಳು Javascript ಅನ್ನು ಬಳಸಬಹುದು</translation>
+<translation id="2358777858338503863"><ph name="ORIGIN" /> ಮೂಲಕ ಅನುಮತಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ:</translation>
 <translation id="2359071692152028734">Linux ಆ್ಯಪ್‌ಗಳು ಪ್ರತಿಕ್ರಿಯೆ ರಹಿತವಾಗಬಹುದು.</translation>
 <translation id="2359345697448000899">ಪರಿಕರಗಳ ಮೆನುವಿನಲ್ಲಿರುವ ‘ವಿಸ್ತರಣೆಗಳು’ ಅನ್ನು ಕ್ಲಿಕ್ ಮಾಡುವ ಮೂಲಕ ನಿಮ್ಮ ವಿಸ್ತರಣೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ.</translation>
 <translation id="2359556993567737338">ಬ್ಲೂಟೂತ್ ಸಾಧನವನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
@@ -2252,6 +2253,7 @@
 <translation id="3046178388369461825">Linux ಡಿಸ್ಕ್ ಸ್ಥಳಾವಕಾಶ ತೀರಾ ಕಡಿಮೆಯಿದೆ</translation>
 <translation id="3046910703532196514">ವೆಬ್‌ಪುಟ, ಪೂರ್ಣಗೊಳಿಸಿ</translation>
 <translation id="304747341537320566">ಧ್ವನಿ ಎಂಜಿನ್‌ಗಳು</translation>
+<translation id="3048051495640130973">ಬ್ಯಾಟರಿ ಸೇವರ್ ಯಾವಾಗ ಆನ್ ಆಗಬೇಕು ಎಂಬುದನ್ನು ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಯಂತ್ರಿಸಬಹುದು</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> ಮಾರಾಟಗಾರರ HID ಸಾಧನಗಳು</translation>
 <translation id="3048917188684939573">ಬಿತ್ತರಿಸುವಿಕೆ ಮತ್ತು ಸಾಧನ ಲಾಗ್‌ಗಳು</translation>
 <translation id="3051250416341590778">ಡಿಸ್‌ಪ್ಲೇ ಗಾತ್ರ</translation>
@@ -2842,6 +2844,7 @@
 <translation id="3641456520301071208">ಸೈಟ್‌ಗಳು ನಿಮ್ಮ ಸ್ಥಳದ ಮಾಹಿತಿಯನ್ನು ಕೇಳಬಹುದು</translation>
 <translation id="3642070413432681490">ಮೌಸ್ ಕರ್ಸರ್ ಚಲಿಸುವಾಗ ಅದನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ</translation>
 <translation id="3642699533549879077">ಬೇರೆ ಯಾರೋ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು ನೋಡಿದಾಗ, ನಿಮಗೆ ಅಲರ್ಟ್ ದೊರೆಯುತ್ತದೆ ಮತ್ತು ಅಧಿಸೂಚನೆಯ ವಿಷಯವನ್ನು ಮರೆಮಾಡಲಾಗುತ್ತದೆ.</translation>
+<translation id="3643962751030964445">ಈ ಸಾಧನವನ್ನು <ph name="DEVICE_MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ. <ph name="DEVICE_MANAGER" /> ಪ್ರಕಾರ, <ph name="USER_EMAIL_ADDRESS" /> ಖಾತೆಗಾಗಿ ಹೊಸ ಪ್ರೊಫೈಲ್‌ನ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="3645372836428131288">ಫಿಂಗರ್‌‌ಪ್ರಿಂಟ್‌‌ನ ಬೇರೊಂದು ಭಾಗವನ್ನು ಸೆರೆಹಿಡಿಯಲು ಬೆರಳನ್ನು ನಿಧಾನವಾಗಿ ಸರಿಸಿ.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ಗಳನ್ನು <ph name="DEVICE_NAME" /> ನಿಂದ ಸ್ವೀಕರಿಸಲಾಗಿದೆ}one{<ph name="ATTACHMENTS" /> ಗಳನ್ನು <ph name="DEVICE_NAME" /> ನಿಂದ ಸ್ವೀಕರಿಸಲಾಗಿದೆ}other{<ph name="ATTACHMENTS" /> ಗಳನ್ನು <ph name="DEVICE_NAME" /> ನಿಂದ ಸ್ವೀಕರಿಸಲಾಗಿದೆ}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> ಪತ್ತೆ ಮಾಡಲಾಗಿದೆ</translation>
@@ -3412,6 +3415,7 @@
 <translation id="4175137578744761569">ತಿಳಿ ನೇರಳೆ ಮತ್ತು ಬಿಳಿ</translation>
 <translation id="4175737294868205930">ಶಾಶ್ವತವಾಗಿರುವ ಸಂಗ್ರಹಣೆ</translation>
 <translation id="4176463684765177261">ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
+<translation id="4176864026061939326">ಈ ಸಾಧನವನ್ನು ನಿರ್ವಹಿಸಲಾಗಿದೆ. ನಿಮ್ಮ ಸಾಧನದ ನಿರ್ವಾಹಕರ ಪ್ರಕಾರ, <ph name="USER_EMAIL_ADDRESS" /> ಖಾತೆಗಾಗಿ ಹೊಸ ಪ್ರೊಫೈಲ್‌ನ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="4180788401304023883">CA ಪ್ರಮಾಣಪತ್ರ "<ph name="CERTIFICATE_NAME" />" ವನ್ನು ಅಳಿಸುವುದೆ?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">ಭಾಷೆಗಳು</translation>
@@ -3543,6 +3547,7 @@
 <translation id="4306119971288449206">"<ph name="CONTENT_TYPE" />" ಪ್ರಕಾರದ ವಿಷಯದೊಂದಿಗೆ ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಒದಗಿಸಬೇಕು</translation>
 <translation id="4307992518367153382">ಬೇಸಿಕ್ಸ್</translation>
 <translation id="4309165024397827958">ಸ್ಥಳವನ್ನು ತಿಳಿದುಕೊಳ್ಳಲು ಅನುಮತಿ ಇರುವ Android ಆ್ಯಪ್‌‌ಗಳು ಮತ್ತು ಸೇವೆಗಳಿಗೆ ನಿಮ್ಮ ಸಾಧನದ ಸ್ಥಳವನ್ನು ಬಳಸಲು ಅನುಮತಿ ನೀಡಿ. Google, ಸ್ಥಳ ಡೇಟಾವನ್ನು ನಿಯಮಿತವಾಗಿ ಸಂಗ್ರಹಿಸಬಹುದು ಮತ್ತು ಸ್ಥಳದ ನಿಖರತೆ ಹಾಗೂ ಸ್ಥಳ-ಆಧಾರಿತ ಸೇವೆಗಳನ್ನು ಸುಧಾರಿಸಲು ಈ ಡೇಟಾವನ್ನು ಅನಾಮಧೇಯವಾಗಿ ಬಳಸಬಹುದು.</translation>
+<translation id="4309183709806093061">ಸಿಸ್ಟಂ ಆಡಿಯೊವನ್ನು ಸಹ ಹಂಚಿಕೊಳ್ಳಿ. ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ತಡೆಯುವುದಕ್ಕಾಗಿ ಈ ಸಾಧನವನ್ನು ಮ್ಯೂಟ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K ಲೈವ್)</translation>
 <translation id="4310132194679586591">ಈ ಲಿಂಕ್ ಅನ್ನು ತೆರೆಯಲು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಆ್ಯಪ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="4310139701823742692">ಫೈಲ್ ತಪ್ಪು ಫಾರ್ಮ್ಯಾಟ್‌ನಲ್ಲಿದೆ. PPD ಫೈಲ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ, ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -3798,6 +3803,7 @@
 <translation id="4554591392113183336">ಬಾಹ್ಯ ವಿಸ್ತರಣೆಯು ಅಸ್ತಿತ್ವದಲ್ಲಿರುವುದಕ್ಕೆ ಹೋಲಿಸಿದರೆ ಅದೇ ಅಥವಾ ಕಡಿಮೆ ಆವೃತ್ತಿಯಲ್ಲಿದೆ</translation>
 <translation id="4555769855065597957">ನೆರಳು</translation>
 <translation id="4555863373929230635">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಲು, ಸೈನ್ ಇನ್ ಮಾಡಿ ಮತ್ತು ಸಿಂಕ್ ಆನ್ ಮಾಡಿ.</translation>
+<translation id="4556194354084985730">ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬಳಸಿಕೊಂಡು ವೆಬ್‌ಸೈಟ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳಿಗೆ ಸುಲಭವಾಗಿ ಸೈನ್‌ ಇನ್‌ ಮಾಡಿ. ಈ ಆಯ್ಕೆಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದಾಗ, ಸೈನ್‌ ಇನ್‌ ಮಾಡುವ ಮೊದಲು ನೀವು ದೃಢೀಕರಣವನ್ನು ಒದಗಿಸಬೇಕಾಗುತ್ತದೆ.</translation>
 <translation id="4558426062282641716">ಸ್ವಯಂ-ಪ್ರಾರಂಭ ಅನುಮತಿಗೆ ವಿನಂತಿಸಲಾಗಿದೆ</translation>
 <translation id="4559617833001311418">ಈ ಸೈಟ್ ನಿಮ್ಮ ಚಲನೆ ಅಥವಾ ಲೈಟ್ ಸೆನ್ಸರ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸುತ್ತಿದೆ.</translation>
 <translation id="4561893854334016293">ಇತ್ತೀಚೆಗೆ ಯಾವುದೇ ಅನುಮತಿಗಳನ್ನು ಬದಲಾಯಿಸಲಾಗಿಲ್ಲ</translation>
@@ -4556,6 +4562,7 @@
 <translation id="5305145881844743843">ಈ ಖಾತೆಯನ್ನು <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
 <translation id="5307030433605830021">ಬಿತ್ತರಿಸುವಿಕೆ ಮೂಲಕ್ಕೆ ಬೆಂಬಲವಿಲ್ಲ</translation>
 <translation id="5307386115243749078">ಬ್ಲೂಟೂತ್ ಸ್ವಿಚ್ ಅನ್ನು ಜೋಡಿಸಿ</translation>
+<translation id="5307958609248661362">Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕದ ಅವಧಿ ಮೀರಿದೆ</translation>
 <translation id="5308380583665731573">ಸಂಪರ್ಕಿಸು</translation>
 <translation id="5309418307557605830">Google Assistant ಇಲ್ಲಿಯೂ ಕೆಲಸ ಮಾಡುತ್ತದೆ</translation>
 <translation id="5311304534597152726">ಇದರಂತೆ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
@@ -5354,6 +5361,7 @@
 <translation id="6077476112742402730">ಟೈಪ್ ಮಾಡಲು ಮಾತನಾಡಿ</translation>
 <translation id="6078121669093215958">{0,plural, =1{ಅತಿಥಿ}one{# ಅತಿಥಿ ವಿಂಡೋಗಳನ್ನು ತೆರೆಯಿರಿ}other{# ಅತಿಥಿ ವಿಂಡೋಗಳನ್ನು ತೆರೆಯಿರಿ}}</translation>
 <translation id="6078323886959318429">ಶಾರ್ಟ್‌ಕಟ್ ಸೇರಿಸಿ</translation>
+<translation id="6078742430369906859">"<ph name="NETWORK_ID" />" ನಲ್ಲಿನ ಸಂಪರ್ಕ ಕಲ್ಪಿಸುವಿಕೆ ಸೀಮಿತವಾಗಿರಬಹುದು</translation>
 <translation id="6078752646384677957">ನಿಮ್ಮ ಮೈಕ್ರೋಫೋನ್ ಮತ್ತು ಆಡಿಯೋ ಹಂತಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />", HID ಸಾಧನಕ್ಕೆ ಸಂಪರ್ಕಿಸಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="608029822688206592">ಯಾವುದೇ ನೆಟ್‌ವರ್ಕ್ ಕಂಡುಬಂದಿಲ್ಲ. ನಿಮ್ಮ ಸಿಮ್ ಅನ್ನು ಸೇರಿಸಿ, ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -6066,6 +6074,7 @@
 <translation id="6779447100905857289">ನಿಮ್ಮ ಕಾರ್ಟ್‌ಗಳು</translation>
 <translation id="677965093459947883">ತುಂಬಾ ಚಿಕ್ಕದು</translation>
 <translation id="6781005693196527806">ಹುಡುಕಾಟ ಎಂಜಿನ್‌ಗಳನ್ನು &amp;ನಿರ್ವಹಿಸಿ...</translation>
+<translation id="6781012982807899368">ಉಳಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ. <ph name="BEGIN_LINK" /> ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆಮದು ಮಾಡಿ<ph name="END_LINK" /></translation>
 <translation id="6781284683813954823">ಡೂಡಲ್ ಲಿಂಕ್</translation>
 <translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />ಆ್ಯಪ್ ಡೇಟಾವು ಸಂಪರ್ಕಗಳು, ಸಂದೇಶಗಳು ಮತ್ತು ಫೋಟೋಗಳಂತಹ ಡೇಟಾವನ್ನು ಒಳಗೊಂಡ ಹಾಗೆ, ಆ್ಯಪ್ ಉಳಿಸಿರುವ ಯಾವುದೇ ಡೇಟಾ (ಡೆವಲಪರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಆಧರಿಸಿ) ಆಗಿರಬಹುದು. ನಿಮ್ಮ ಮಗುವಿನ ಡ್ರೈವ್ ಸಂಗ್ರಹಣೆ ಕೋಟಾದಲ್ಲಿ ಬ್ಯಾಕಪ್‌ ಡೇಟಾ ಸೇರಿರುವುದಿಲ್ಲ.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ಈ ಸೇವೆಯನ್ನು ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಆಫ್ ಮಾಡಬಹುದು.<ph name="END_PARAGRAPH2" /></translation>
@@ -6579,6 +6588,7 @@
 <translation id="7267875682732693301">ನಿಮ್ಮ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್‌ನ ವಿವಿಧ ಭಾಗಗಳನ್ನು ಸೇರಿಸಲು ನಿಮ್ಮ ಬೆರಳನ್ನು ಎತ್ತುತ್ತಲಿರಿ</translation>
 <translation id="7267898843336437186">ಈ ಸೈಟ್ ವೀಕ್ಷಿಸಬಹುದಾದ ಫೋಲ್ಡರ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7268127947535186412">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಸಾಧನದ ಮಾಲೀಕರು ನಿರ್ವಹಿಸುತ್ತಿದ್ದಾರೆ.</translation>
+<translation id="7269229526547981029">ಈ ಪ್ರೊಫೈಲ್ ಅನ್ನು <ph name="PROFILE_MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ. <ph name="ACCOUNT_MANAGER" /> ಪ್ರಕಾರ, <ph name="USER_EMAIL_ADDRESS" /> ಖಾತೆಗಾಗಿ ಹೊಸ ಪ್ರೊಫೈಲ್‌ನ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="7269736181983384521">Nearby ಶೇರ್ ಡೇಟಾ ಬಳಕೆ</translation>
 <translation id="7272674038937250585">ಯಾವುದೇ ವಿವರಣೆಯನ್ನು ಒದಗಿಸಿಲ್ಲ</translation>
 <translation id="7273110280511444812"><ph name="DATE" /> ರಂದು ಅಂತಿಮವಾಗಿ ಲಗತ್ತಿಸಲಾಯಿತು</translation>
@@ -6754,6 +6764,7 @@
 <translation id="744341768939279100">ಹೊಸ ಪ್ರೊಫೈಲ್ ರಚಿಸಿ</translation>
 <translation id="744366959743242014">ಡೇಟಾ ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ, ಇದು ಕೆಲವು ಸೆಕೆಂಡ್‌ಗಳ ಕಾಲಾವಕಾಶವನ್ನು ತೆಗೆದುಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="7443806024147773267">ನಿಮ್ಮ Google ಖಾತೆಗೆ ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗಲೆಲ್ಲಾ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಿಗೆ ಪ್ರವೇಶ ಪಡೆಯಿರಿ</translation>
+<translation id="7444046173054089907">ಈ ಸೈಟ್ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="7444970023873202833">Google Photos ನಲ್ಲಿ ನಿಮ್ಮ ಇನ್ನಷ್ಟು ಸವಿನೆನಪುಗಳನ್ನು ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡಿ</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="7448430327655618736">ಆ್ಯಪ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
@@ -7216,6 +7227,7 @@
 <translation id="7870790288828963061">ಹೊಸ ಆವೃತ್ತಿಯೊಂದಿಗೆ ಯಾವುದೇ ಕಿಯೋಸ್ಕ್ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು ಕಂಡುಬಂದಿಲ್ಲ. ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು ಏನೂ ಇಲ್ಲ. ದಯವಿಟ್ಟು USB ಸ್ಟಿಕ್ ತೆಗೆದುಹಾಕಿ.</translation>
 <translation id="7871049986386271121">ಈ ಸೈಟ್‌ನಲ್ಲಿ ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
 <translation id="7871109039747854576">ಕ್ಯಾಂಡಿಡೇಟ್ ಪಟ್ಟಿಯನ್ನು ವಿಭಾಗಿಸಲು <ph name="COMMA" /> ಮತ್ತು <ph name="PERIOD" /> ಕೀಗಳನ್ನು ಬಳಸಿ</translation>
+<translation id="7872494313446521576"><ph name="ORIGIN" /> ಮೂಲಕ "<ph name="EXTENSIONS_REQUESTING_ACCESS" />"" ಅನ್ನು ಅನುಮತಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ:</translation>
 <translation id="787268756490971083">ಆಫ್</translation>
 <translation id="7872758299142009420">ಅತಿ ಹೆಚ್ಚು ನೆಸ್ಟ್ ಮಾಡಿದ ಗುಂಪುಗಳು: <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">Chrome ಹಿನ್ನೆಲೆಗಳು</translation>
@@ -7353,6 +7365,7 @@
 <translation id="7988805580376093356">ನಿಮ್ಮ OS ಅನ್ನು ಉಳಿಸಿಕೊಳ್ಳಿ ಹಾಗೂ USB ಯಿಂದ <ph name="DEVICE_OS" /> ಅನ್ನು ರನ್ ಮಾಡಿ.</translation>
 <translation id="7991296728590311172">ಪ್ರವೇಶದ ವಿಧಾನವನ್ನು ಬದಲಿಸುವ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="7992203134935383159">ಧ್ವನಿ ಸಂಶ್ಲೇಷಣೆ</translation>
+<translation id="799570308305997052">ವೆಬ್ ವೀಕ್ಷಣೆ</translation>
 <translation id="7997826902155442747">ಪ್ರಕ್ರಿಯೆಯ ಆದ್ಯತೆ</translation>
 <translation id="7999229196265990314">ಕೆಳಗಿನ ಫೈಲ್‌ಗಳನ್ನು ರಚಿಸಲಾಗಿದೆ:
 
@@ -7584,6 +7597,7 @@
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ಹೊಸ ಅಧಿಸೂಚನೆ}one{# ಹೊಸ ಅಧಿಸೂಚನೆಗಳು}other{# ಹೊಸ ಅಧಿಸೂಚನೆಗಳು}}</translation>
 <translation id="821119981794423735"><ph name="USER_EMAIL" /> ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು Google Password Manager ಗೆ ಆಮದು ಮಾಡಿಕೊಳ್ಳಲು, CSV ಫೈಲ್ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ಡೌನ್‌ಲೋಡ್ ಪ್ರಗತಿಯಲ್ಲಿದೆ}one{ಡೌನ್‌ಲೋಡ್‌ಗಳು ಪ್ರಗತಿಯಲ್ಲಿವೆ}other{ಡೌನ್‌ಲೋಡ್‌ಗಳು ಪ್ರಗತಿಯಲ್ಲಿವೆ}}</translation>
+<translation id="8212601853154459483">ಈ ಪ್ರೊಫೈಲ್ ಅನ್ನು <ph name="PROFILE_MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ. ಹಾಗೂ <ph name="USER_EMAIL_ADDRESS" /> ಖಾತೆಗಾಗಿ ನೀವು ಪ್ರತ್ಯೇಕ ಪ್ರೊಫೈಲ್ ಅನ್ನು ರಚಿಸುವ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="8213449224684199188">ಫೋಟೋ ಮೋಡ್ ನಮೂದಿಸಲಾಗಿದೆ</translation>
 <translation id="8214489666383623925">ಫೈಲ್ ತೆರೆಯಿರಿ...</translation>
 <translation id="8215129063232901118">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಿಂದ ನಿಮ್ಮ ಫೋನ್‌ನ ಸಾಮರ್ಥ್ಯಗಳನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
@@ -7889,6 +7903,7 @@
 <translation id="8523493869875972733">ಬದಲಾವಣೆಗಳನ್ನು ಇರಿಸು</translation>
 <translation id="8523849605371521713">ಕಾರ್ಯನೀತಿಯಿಂದ ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="8524783101666974011">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಕಾರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಿ</translation>
+<translation id="8525157245469383124">ರಿಟೇಲರ್ ಸ್ಟೋರ್ ID ಫಾರ್ಮ್ಯಾಟ್ ABC-1234 ಆಗಿದೆ</translation>
 <translation id="8525306231823319788">ಪೂರ್ಣ ಪರದೆ</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">ಭಾಷೆಗಳನ್ನು ಸೇರಿಸು</translation>

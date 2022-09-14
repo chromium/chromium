@@ -472,6 +472,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="4901778704868714008">Guardar…</translation>
 <translation id="4904877109095351937">Marcar como leídas</translation>
 <translation id="4908869848243824489">Descubre de Google</translation>
+<translation id="4916679969857390442">Lupa</translation>
 <translation id="4930714375720679147">Activar</translation>
 <translation id="4941089862236492464">Se produjo un error al compartir tu elemento.</translation>
 <translation id="4944543191714094452">Buscar en la página…</translation>
@@ -767,7 +768,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7192050974311852563">Iniciar registro</translation>
 <translation id="7203585745079012652">Decir las respuestas</translation>
 <translation id="7207023858769244910">Activa la sincronización para obtener contenido en función de tus intereses.</translation>
-<translation id="7207383424303353046">Nueva función: Para que los sitios se abran de forma automática en Chrome, elígelo como App de navegador predeterminada. <ph name="BEGIN_LINK" />Abrir Configuración<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">El sobrenombre de la tarjeta no es válido</translation>
 <translation id="722454870747268814">Nueva pestaña de incógnito</translation>
 <translation id="7265758999917665941">Nunca para este sitio</translation>
@@ -917,7 +917,6 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8533670235862049797">Se activó la Navegación segura</translation>
 <translation id="8534481786647257214">Entrada de Google+ publicada</translation>
 <translation id="8548878600947630424">Buscar en la página...</translation>
-<translation id="8574235780160508979">El 31 de marzo, cambiarán las Condiciones del Servicio de Chrome. <ph name="BEGIN_LINK" />Revísalas<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Apagada</translation>
 <translation id="8590913940444621808">Nunca preguntar</translation>
 <translation id="8591976964826315682">Bloquear cookies de terceros en modo Incógnito</translation>

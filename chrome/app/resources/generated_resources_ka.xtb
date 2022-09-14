@@ -1503,6 +1503,7 @@
 <translation id="2356070529366658676">მკითხე</translation>
 <translation id="2357330829548294574">გსურთ <ph name="USER_NAME" />-ის ამოშლა?</translation>
 <translation id="2358561147588818967">საიტებს შეუძლია JavaScript-ის გამოყენება</translation>
+<translation id="2358777858338503863">დააწკაპუნეთ, რომ <ph name="ORIGIN" />-ზე დაშვებული იყოს:</translation>
 <translation id="2359071692152028734">შესაძლოა, Linux აპებმა შეწყვიტოს რეაგირება.</translation>
 <translation id="2359345697448000899">მართეთ თქვენი გაფართოებები: დააწკაპუნეთ „გაფართოებებზე“ ხელსაწყოების მენიუში.</translation>
 <translation id="2359556993567737338">Bluetooth მოწყობილობის დაკავშირება</translation>
@@ -2244,6 +2245,7 @@
 <translation id="3046178388369461825">Linux-ისთვის დისკის მეხსიერება კრიტიკულად არასაკმარისია</translation>
 <translation id="3046910703532196514">ვებგვერდო, მთლიანი</translation>
 <translation id="304747341537320566">მეტყველების მოდულები</translation>
+<translation id="3048051495640130973">ბატარეის დამზოგის ჩართვის დროის გაკონტროლება შეგიძლიათ პარამეტრებიდან</translation>
 <translation id="3048336643003835855">HID მოწყობილობები, რომელთა მომწოდებელია <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">ტრანსლირებისა და მოწყობილობათა ჟურნალები</translation>
 <translation id="3051250416341590778">ჩვენების ზომა</translation>
@@ -2834,6 +2836,7 @@
 <translation id="3641456520301071208">საიტებს შეუძლია თქვენი მდებარეობის გამოყენების თხოვნა</translation>
 <translation id="3642070413432681490">წრის შემოხაზვა კურსორზე</translation>
 <translation id="3642699533549879077">როცა ვინმე სხვა შეხედავს თქვენს ეკრანს, თქვენ მიიღებთ ამაზე გაფრთხილებას და შეტყობინების შინაარსი დაიმალება.</translation>
+<translation id="3643962751030964445">ამ მოწყობილობას მართავს <ph name="DEVICE_MANAGER" />. <ph name="DEVICE_MANAGER" /> ითხოვს ახალ პროფილს ანგარიშისთვის <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3645372836428131288">გთხოვთ, ოდნავ გადააადგილოთ თითი თქვენი თითის ანაბეჭდის სხვა ნაწილის აღსაბეჭდად.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> მიღებულია <ph name="DEVICE_NAME" />-დან}other{<ph name="ATTACHMENTS" /> მიღებულია <ph name="DEVICE_NAME" />-დან}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> აღმოჩენილია</translation>
@@ -3403,6 +3406,7 @@
 <translation id="4175137578744761569">ღია მეწამული და თეთრი</translation>
 <translation id="4175737294868205930">მუდმივი მეხსიერება</translation>
 <translation id="4176463684765177261">გამორთული</translation>
+<translation id="4176864026061939326">ეს მოწყობილობა მართულია. მოწყობილობის ადმინისტრატორი ითხოვს ახალ პროფილს ანგარიშისთვის <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4180788401304023883">წავშალოთ CA სერტიფიკატი „<ph name="CERTIFICATE_NAME" />“?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">ენები</translation>
@@ -3789,6 +3793,7 @@
 <translation id="4554591392113183336">გარე გაფართოების ვერსია იგივე ან უფრო დაბალი ვერსიაა, არსებულთან შედარებით.</translation>
 <translation id="4555769855065597957">ჩრდილი</translation>
 <translation id="4555863373929230635">პაროლების თქვენს Google ანგარიშში შესანახად შედით სისტემაში და ჩართეთ სინქრონიზაცია.</translation>
+<translation id="4556194354084985730">მარტივად შედით საიტებსა და აპებში შენახული პაროლების მეშვეობით. როცა ეს ფუნქცია გამორთულია, სისტემაში შესვლამდე თქვენი დასტური იქნება საჭირო.</translation>
 <translation id="4558426062282641716">მოთხოვნილია ავტომატური გაშვების ნებართვა</translation>
 <translation id="4559617833001311418">ამ საიტს აქვს წვდომა მოძრაობისა თუ განათების სენსორებზე.</translation>
 <translation id="4561893854334016293">ბოლო დროს შეცვლილი ნებართვები არ არის</translation>
@@ -5343,6 +5348,7 @@
 <translation id="6077476112742402730">ტექსტის წარმოთქმით აკრეფა</translation>
 <translation id="6078121669093215958">{0,plural, =1{სტუმარი}other{სტუმრის გახსნილი # ფანჯარა}}</translation>
 <translation id="6078323886959318429">მალსახმობის დამატება</translation>
+<translation id="6078742430369906859">„<ph name="NETWORK_ID" />“-თან კავშირი, შესაძლოა, შეზღუდული იყოს</translation>
 <translation id="6078752646384677957">შეამოწმეთ მიკროფონისა და აუდიოს დონეები.</translation>
 <translation id="6078769373519310690">„<ph name="CHROME_EXTENSION_NAME" />“ ითხოვს HID მოწყობილობასთან დაკავშირებას</translation>
 <translation id="608029822688206592">ქსელი ვერ მოიძებნა. ჩასვით SIM ბარათი და ცადეთ ხელახლა.</translation>
@@ -6053,6 +6059,7 @@
 <translation id="6779447100905857289">თქვენი კალათები</translation>
 <translation id="677965093459947883">ძალიან პატარა</translation>
 <translation id="6781005693196527806">საძიებო სისტემების &amp;მართვა...</translation>
+<translation id="6781012982807899368">აქ გამოჩნდება შენახული პაროლები. <ph name="BEGIN_LINK" /> პაროლების იმპორტირება<ph name="END_LINK" /></translation>
 <translation id="6781284683813954823">Doodle-ის ბმული</translation>
 <translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />აპების მონაცემებად შეიძლება ჩაითვალოს ამა თუ იმ აპის მიერ შენახული ნებისმიერი სახის მონაცემი (დეველოპერის პარამეტრების მიხედვით), მათ შორის, ისეთი მონაცემები, როგორიცაა კონტაქტები, შეტყობინებები და ფოტოები. სარეზერვო მონაცემები არ აისახება Google Drive-ზე თქვენი შვილისთვის გამოყოფილი მეხსიერების კვოტაზე.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ამ სერვისის გამორთვა შეგიძლიათ პარამეტრებიდან.<ph name="END_PARAGRAPH2" /></translation>
@@ -6565,6 +6572,7 @@
 <translation id="7267875682732693301">რამდენჯერმე აიღეთ თითი სენსორიდან და ისევ შეახეთ, რომ თქვენი თითის ანაბეჭდის ყველა ნაწილი დაემატოს</translation>
 <translation id="7267898843336437186">აირჩიეთ საქაღალდე, რომლის ნახვაც შეუძლია ამ საიტს</translation>
 <translation id="7268127947535186412">ამ პარამეტრს მართავს მოწყობილობის მფლობელი.</translation>
+<translation id="7269229526547981029">ამ პროფილს მართავს: <ph name="PROFILE_MANAGER" />. <ph name="ACCOUNT_MANAGER" /> ითხოვს ახალ პროფილს ანგარიშისთვის <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7269736181983384521">მახლობლად გაზიარების მიერ მონაცემთა მოხმარება</translation>
 <translation id="7272674038937250585">აღწერილობა არ არის მოწოდებული</translation>
 <translation id="7273110280511444812">ბოლო მიმაგრების დრო: <ph name="DATE" /></translation>
@@ -6740,6 +6748,7 @@
 <translation id="744341768939279100">შექმენით ახალი პროფილი</translation>
 <translation id="744366959743242014">მიმდინარეობს მონაცემების ჩატვირთვა — ამას რამდენიმე წამი დასჭირდება.</translation>
 <translation id="7443806024147773267">იქონიეთ წვდომა თქვენს პაროლებზე, როცა შესული ხართ თქვენს Google ანგარიშში</translation>
+<translation id="7444046173054089907">ეს საიტი დაბლოკილია</translation>
 <translation id="7444970023873202833">გადახედეთ თქვენს სხვა მოგონებებს Google Photos-ში</translation>
 <translation id="7444983668544353857">გამორთეთ <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">აპების ავტომატურად ინსტალაცია</translation>
@@ -7203,6 +7212,7 @@
 <translation id="7870790288828963061">Kiosk აპები უფრო ახალი ვერსიით ვერ მოიძებნა. განსაახლებელი არაფერია. ამოიღეთ USB დისკი.</translation>
 <translation id="7871049986386271121">ყოველთვის ამ საიტზე</translation>
 <translation id="7871109039747854576"><ph name="COMMA" /> და <ph name="PERIOD" /> კლავიშების გამოყენება კანდიდატების სიის გვერდზე საჩვენებლად</translation>
+<translation id="7872494313446521576">დააწკაპუნეთ, რომ <ph name="ORIGIN" />-ზე „<ph name="EXTENSIONS_REQUESTING_ACCESS" />“-ისთვის დაშვებული იყოს:</translation>
 <translation id="787268756490971083">გამორთული</translation>
 <translation id="7872758299142009420">ზედმეტად ბევრი ჩადგმული ჯგუფია: <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">Chrome-ის ფონები</translation>
@@ -7572,6 +7582,7 @@
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ახალი შეტყობინება}other{# ახალი შეტყობინება}}</translation>
 <translation id="821119981794423735">Google პაროლების მმართველში, <ph name="USER_EMAIL" />-ისთვის, პაროლების იმპორტირებისთვის აირჩიეთ CSV ფაილი</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{მიმდინარეობს ჩამოტვირთვა}other{მიმდინარეობს ჩამოტვირთვები}}</translation>
+<translation id="8212601853154459483">ამ პროფილს მართავს <ph name="PROFILE_MANAGER" />, რომელიც თქვენგან ითხოვს ცალკე პროფილის შექმნას ანგარიშისთვის <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8213449224684199188">გაშვებულია ფოტო რეჟიმი</translation>
 <translation id="8214489666383623925">ფაილის გახსნა…</translation>
 <translation id="8215129063232901118">ისარგებლეთ თქვენი ტელეფონის შესაძლებლობებით თქვენი <ph name="DEVICE_TYPE" />-დან</translation>
@@ -7877,6 +7888,7 @@
 <translation id="8523493869875972733">ცვლილებების შენარჩუნება</translation>
 <translation id="8523849605371521713">დამატებულია წესების მიხედვით</translation>
 <translation id="8524783101666974011">შეინახეთ ბარათები თქვენს Google ანგარიშში</translation>
+<translation id="8525157245469383124">საცალოდ მოვაჭრე მაღაზიის ID-ს ფორმატია ABC-1234</translation>
 <translation id="8525306231823319788">მთელ ეკრანზე</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">ენების დამატება</translation>

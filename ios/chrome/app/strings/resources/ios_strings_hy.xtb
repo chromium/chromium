@@ -472,6 +472,7 @@
 <translation id="4901778704868714008">Պահել…</translation>
 <translation id="4904877109095351937">Նշել որպես կարդացված</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
+<translation id="4916679969857390442">Ոսպնապակի</translation>
 <translation id="4930714375720679147">Միացնել</translation>
 <translation id="4941089862236492464">Չհաջողվեց կիսվել տարրով։</translation>
 <translation id="4944543191714094452">Գտնել էջում…</translation>
@@ -767,7 +768,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7192050974311852563">Սկսել գրանցումը</translation>
 <translation id="7203585745079012652">Կարդալ պատասխանները</translation>
 <translation id="7207023858769244910">Միացրեք համաժամացումը՝ ձեր հետաքրքրություններին համապատասխան բովանդակություն ստանալու համար։</translation>
-<translation id="7207383424303353046">Նորո՛ւյթ․ Կայքերն ավտոմատ կերպով Chrome-ում բացելու համար դարձրեք այն ձեր կանխադրված դիտարկիչը։ <ph name="BEGIN_LINK" />Բացել կարգավորումները<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Քարտի կեղծանունն անվավեր է</translation>
 <translation id="722454870747268814">Նոր ինկոգնիտո ներդիր</translation>
 <translation id="7265758999917665941">Երբեք չպահել այս կայքի համար</translation>
@@ -917,7 +917,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8533670235862049797">Ապահով դիտարկումը միացված է</translation>
 <translation id="8534481786647257214">Google+ ցանցում փակցնումն ավարտվեց:</translation>
 <translation id="8548878600947630424">Գտնել էջում…</translation>
-<translation id="8574235780160508979">Chrome-ի օգտագործման պայմանները կթարմացվեն մարտի 31-ին: <ph name="BEGIN_LINK" />Ծանոթանալ փոփոխություններին<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Անջատված է</translation>
 <translation id="8590913940444621808">Երբեք չհարցնել</translation>
 <translation id="8591976964826315682">Արգելափակել կողմնակի կայքերի քուքիները ինկոգնիտո ռեժիմում</translation>

@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">Můžete také přecházet mezi sekcemi obrazovky. Můžete například přecházet mezi spouštěčem, poličkou a kartami prohlížeče Chrome. Na další sekci přejdete přejetím čtyřmi prsty zleva doprava. Zkuste tím pokračovat.</translation>
 <translation id="2624431853467395961">Otevřít režim výuky</translation>
 <translation id="2626530649491650971">klikatelné</translation>
+<translation id="263637551280112393">Stiskněte vyhledávací tlačítko + Shift + mezerník</translation>
 <translation id="2637227747952042642">Math</translation>
 <translation id="2638785836053527382">Bylo obnoveno stahování souboru <ph name="FILE_NAME" /></translation>
 <translation id="2639750663247012216">Modifikační klávesa ChromeVox</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">Žádná další sekce není</translation>
 <translation id="5368000168321181111">Zvukové signály vypnuty</translation>
 <translation id="5368505757342402527">Ze souboru <ph name="FILE_NAME" /> je staženo <ph name="PROGRESS" /> %. Přibližná zbývající doba: <ph name="TIME" /> <ph name="UNITS" />.</translation>
+<translation id="5381388086899614489">dlouhé kliknutí</translation>
 <translation id="5400836586163650660">Šedá</translation>
 <translation id="5402367795255837559">Braillovo písmo</translation>
 <translation id="5402791055281059602">Modální upozornění</translation>

@@ -472,6 +472,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4901778704868714008">저장...</translation>
 <translation id="4904877109095351937">읽음으로 표시</translation>
 <translation id="4908869848243824489">Google 디스커버</translation>
+<translation id="4916679969857390442">렌즈</translation>
 <translation id="4930714375720679147">사용 설정</translation>
 <translation id="4941089862236492464">죄송합니다. 항목을 공유하는 중에 문제가 발생했습니다.</translation>
 <translation id="4944543191714094452">페이지에서 찾기…</translation>
@@ -767,7 +768,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7192050974311852563">로깅 시작</translation>
 <translation id="7203585745079012652">음성 응답</translation>
 <translation id="7207023858769244910">동기화하여 내 관심분야에 맞는 콘텐츠를 받아보세요.</translation>
-<translation id="7207383424303353046">새로운 기능: 사이트가 자동으로 Chrome에서 열리도록 Chrome을 기본 브라우저 앱으로 설정하세요. <ph name="BEGIN_LINK" />설정 열기<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">잘못된 카드 닉네임</translation>
 <translation id="722454870747268814">새 시크릿 탭</translation>
 <translation id="7265758999917665941">이 사이트 제외</translation>
@@ -917,7 +917,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8533670235862049797">세이프 브라우징 사용 설정됨</translation>
 <translation id="8534481786647257214">Google+ 게시가 완료되었습니다.</translation>
 <translation id="8548878600947630424">페이지에서 찾기...</translation>
-<translation id="8574235780160508979">Chrome의 서비스 약관이 3월 31일에 변경됩니다. <ph name="BEGIN_LINK" />검토하기<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">사용 안함</translation>
 <translation id="8590913940444621808">묻지 않음</translation>
 <translation id="8591976964826315682">시크릿 모드에서 타사 쿠키 차단</translation>

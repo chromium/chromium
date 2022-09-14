@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">Можете и да се крећете између одељака на екрану. На пример, можете да се крећете између покретача, полице и Chrome картица. Да бисте прешли на следећи одељак, превуците слева надесно помоћу четири прста. Испробајте одмах да бисте наставили.</translation>
 <translation id="2624431853467395961">Отвара режим за учење</translation>
 <translation id="2626530649491650971">елемент на који може да се кликне</translation>
+<translation id="263637551280112393">Притисните тастер за претрагу + Shift + тастер за размак</translation>
 <translation id="2637227747952042642">Математика</translation>
 <translation id="2638785836053527382">Преузимање је настављено <ph name="FILE_NAME" /></translation>
 <translation id="2639750663247012216">ChromeVox модификатор</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">Нема следећег одељка</translation>
 <translation id="5368000168321181111">Звучна обавештења су искључена</translation>
 <translation id="5368505757342402527">Завршено је <ph name="PROGRESS" />% преузимања датотеке <ph name="FILE_NAME" />. Остало је око <ph name="TIME" /> <ph name="UNITS" />.</translation>
+<translation id="5381388086899614489">клик и задржавање</translation>
 <translation id="5400836586163650660">Сива</translation>
 <translation id="5402367795255837559">Брајева азбука</translation>
 <translation id="5402791055281059602">Модално обавештење</translation>

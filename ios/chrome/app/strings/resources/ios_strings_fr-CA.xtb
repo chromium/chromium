@@ -472,6 +472,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4901778704868714008">Enregistrer…</translation>
 <translation id="4904877109095351937">Marquer comme lu</translation>
 <translation id="4908869848243824489">Découvertes par Google</translation>
+<translation id="4916679969857390442">Objectif</translation>
 <translation id="4930714375720679147">Activer</translation>
 <translation id="4941089862236492464">Un problème s'est produit lors du partage de votre élément.</translation>
 <translation id="4944543191714094452">Rechercher dans la page…</translation>
@@ -767,7 +768,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7192050974311852563">Commencer la journalisation</translation>
 <translation id="7203585745079012652">Réponses vocales</translation>
 <translation id="7207023858769244910">Activez la synchronisation pour voir du contenu en fonction de vos centres d'intérêt.</translation>
-<translation id="7207383424303353046">Nouveau : Ouvrez automatiquement les sites dans Chrome en le définissant comme application de navigation par défaut.<ph name="BEGIN_LINK" />Accéder aux paramètres<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Pseudo de carte incorrect</translation>
 <translation id="722454870747268814">Nouvel onglet de navigation privée</translation>
 <translation id="7265758999917665941">Jamais pour ce site</translation>
@@ -917,7 +917,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8533670235862049797">Navigation sécuritaire activée</translation>
 <translation id="8534481786647257214">Message Google+ terminé.</translation>
 <translation id="8548878600947630424">Rechercher sur la page…</translation>
-<translation id="8574235780160508979">Les conditions d'utilisation de Chrome changeront le 31 mars. <ph name="BEGIN_LINK" />Veuillez les consulter<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Désactivée</translation>
 <translation id="8590913940444621808">Ne jamais demander</translation>
 <translation id="8591976964826315682">Bloquer les témoins tiers en navigation privée</translation>

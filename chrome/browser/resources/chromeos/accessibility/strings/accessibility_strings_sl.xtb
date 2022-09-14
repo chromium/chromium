@@ -140,6 +140,7 @@
 <translation id="1834891354138622109">Stolpec</translation>
 <translation id="1846771122725914429">Zaslon braille Bluetooth</translation>
 <translation id="1852018405765032699">Če se zaslona dotaknete s štirimi prsti, odprete in zaprete menije ChromeVoxa. V teh menijih so koristne informacije o ukazih in bližnjicah. Ko so meniji odprti, se lahko po elementih pomikate tako, da povlečete z enim prstom, elemente pa aktivirate tako, da se jih dvakrat dotaknete. Če želite nadaljevati, se dotaknite zaslona s štirimi prsti.</translation>
+<translation id="1864430479908918647">Pritisnite tipko za iskanje in preslednico</translation>
 <translation id="1865601187525349519">Konec besedila</translation>
 <translation id="1876229593313240038">dok</translation>
 <translation id="1902396333223336119">Celica</translation>
@@ -778,6 +779,7 @@
 <translation id="6236061028292614533">Naslednji naslov</translation>
 <translation id="6254901459154107917">Naslednje besedilno polje, ki ga je mogoče urejati</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> zaprt.</translation>
+<translation id="6280088282605782512">Dvakratni dotik</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">Pomembne tipke: Tipka za iskanje</translation>
 <translation id="6305702903308659374">Predvajaj pri običajni glasnosti, tudi če ChromeVox govori</translation>
@@ -981,6 +983,7 @@
 <translation id="7731785449856576010">Ni pripomočka za naslednjo predstavnost</translation>
 <translation id="7735498529470878067">Z raziskovanjem z dotikom lahko hitro dobite občutek, kaj je na zaslonu.</translation>
 <translation id="773906353055481349">Pritisnite tipko za iskanje + Ctrl + Alt s puščičnimi tipkami, če se želite pomikati po celicah</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> za: <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">Prenos se je začel (<ph name="FILE_NAME" />)</translation>
 <translation id="7768784765476638775">Izberite in poslušajte</translation>
 <translation id="7776293189010177726">Odpiranje menijev ChromeVoxa</translation>

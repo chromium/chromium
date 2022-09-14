@@ -13,11 +13,6 @@
 <translation id="112387589102719461">અંગ્રેજી (યુએસ), પ્રોગ્રામર Dvorak કીબોર્ડ સાથે</translation>
 <translation id="1134697384939541955">અંગ્રેજી (યુએસ), વધારાની કી ધરાવતા કીબોર્ડ સાથે</translation>
 <translation id="1138691154716715755">આ મહિનાની શરૂઆતમાં</translation>
-<translation id="1148097584170732637"><ph name="FILE_COUNT" /> મળી.
-    <ph name="LINE_BREAK1" />
-    સ્થાનિક સ્ટોરેજમાં પર્યાપ્ત જગ્યા ઉપલબ્ધ નથી. વધારાના <ph name="FILE_SIZE" />ની જરૂર છે.
-    <ph name="LINE_BREAK2" />
-    ઓછા ફોટા પસંદ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="1150565364351027703">ગોગલ્સ</translation>
 <translation id="115443833402798225">હંગુલ અહન્માતાએ</translation>
 <translation id="1155759005174418845">કતલાન</translation>
@@ -41,7 +36,6 @@
 <translation id="1297922636971898492">Google ડ્રાઇવ હાલમાં ઉપલબ્ધ નથી. Google ડ્રાઇવ પાછું આવી જાય તે પછી અપલોડિંગ ઑટોમૅટિક રીતે ફરીથી શરૂ થશે.</translation>
 <translation id="1307931752636661898">Linux ફાઇલો બતાવી શકાતી નથી</translation>
 <translation id="1313405956111467313">ઑટોમૅટિક પ્રૉક્સી ગોઠવણ</translation>
-<translation id="1351692861129622852"><ph name="FILE_COUNT" /> ફાઇલો આયાત કરી રહ્યું છે...</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">ફાઇલ કે ડિરેક્ટરી ઉપયોગ યોગ્ય નથી.</translation>
 <translation id="1363028406613469049">ટ્રૅક</translation>
@@ -84,6 +78,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> આઇટમને ઝિપ કરી રહ્યું છે...</translation>
 <translation id="1722687688096767818">પ્રોફાઇલ ઉમેરી રહ્યાં છીએ...</translation>
 <translation id="1726100011689679555">નામ સર્વર</translation>
+<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> આઇટમ ટ્રેશમાં ખસેડી</translation>
 <translation id="1729953886957086472">જર્મન (જર્મની)</translation>
 <translation id="1730235522912993863">ચાઇનીઝ (કેન્જી)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> આઇટમ કૉપિ કરી.</translation>
@@ -155,7 +150,6 @@
 <translation id="2307462900900812319">નેટવર્ક ગોઠવો</translation>
 <translation id="2325650632570794183">આ ફાઇલ પ્રકાર સમર્થિત નથી. આ પ્રકારની ફાઇલ ખોલી શકે તે એપ્લિકેશનને શોધવા માટે કૃપા કરીને Chrome વેબ દુકાનની મુલાકાત લો.</translation>
 <translation id="2326539130272988168">બલ્ગેરિયન</translation>
-<translation id="2352947182261340447">સ્થાનિક સ્ટોરેજમાં પર્યાપ્ત જગ્યા ઉપલબ્ધ નથી.</translation>
 <translation id="23721837607121582"><ph name="NETWORK_NAME" />ના નેટવર્ક <ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> મોબાઇલ પ્રોફાઇલ ડાઉનલોડ કરો</translation>
 <translation id="2377319039870049694">સૂચિ દૃશ્ય પર સ્વિચ કરો</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> ફોલ્ડર Linux સાથે શેર કર્યા</translation>
@@ -207,13 +201,13 @@
 <translation id="2820957248982571256">સ્કૅન કરી રહ્યાં છીએ…</translation>
 <translation id="2830077785865012357">ચાઇનીઝ ઝુયિન</translation>
 <translation id="2843806747483486897">ડિફૉલ્ટ બદલો...</translation>
-<translation id="2850124913210091882">બૅકઅપ લો</translation>
 <translation id="2873951654529031587">ટ્રેશ</translation>
 <translation id="288024221176729610">ચેક</translation>
 <translation id="2887525882758501333">PDF દસ્તાવેજ</translation>
 <translation id="2888807692577297075">કોઈ આઇટમ્સ &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt; થી મેળ ખાતી નથી</translation>
 <translation id="2894654529758326923">માહિતી</translation>
 <translation id="2902734494705624966">યુએસ વિસ્તૃત</translation>
+<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" /> આઇટમ ટ્રેશમાં ખસેડી રહ્યાં છીએ</translation>
 <translation id="290843123675549676">મરાઠી</translation>
 <translation id="2923240520113693977">એસ્ટોનિયન</translation>
 <translation id="2938685643439809023">મોંગોલિયન</translation>
@@ -224,7 +218,6 @@
 <translation id="2977940621473452797">આ ફાઇલ Macintosh સૉફ્ટવેરનો ઉપયોગ કરતા કમ્પ્યુટર માટે ડિઝાઇન કરવામાં આવી છે. તમારું ડિવાઇસ જે ChromeOS પર ચાલે છે તેની સાથે આ સુસંગત નથી. તેના બદલે કૃપા કરીને Chrome વેબ સ્ટોર પર યોગ્ય ઍપ શોધો.</translation>
 <translation id="2984337792991268709">આજે <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> આઇટમ રિસ્ટોર કરી રહ્યાં છીએ…</translation>
-<translation id="2994669386200004489"><ph name="FILE_NAME" />નો બૅકઅપ લઈ શક્યા નથી</translation>
 <translation id="299638574917407533">ફ્રેન્ચ (કેનેડા)</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, કનેક્ટ કરો</translation>
 <translation id="3003633581067744647">થંબનેલ દૃશ્ય પર સ્વિચ કરો</translation>
@@ -232,7 +225,6 @@
 <translation id="3029114385395636667">Google Docs ઑફલાઇનની સુવિધા ચાલુ કરો જેથી Docs, Sheets અને Slides ઑફલાઇન ઉપલબ્ધ રહી શકે.</translation>
 <translation id="303198083543495566">સ્થાન માહિતી</translation>
 <translation id="3047197340186497470">ચાઇનીઝ ડાયી</translation>
-<translation id="3057861065630527966">તમારા ફોટા અને વીડિયોનો બૅકઅપ લો</translation>
 <translation id="3067790092342515856">Windows ફાઇલો</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS હોસ્ટ</translation>
@@ -281,8 +273,6 @@
 <translation id="343907260260897561">ઝટપટ કૅમેરા</translation>
 <translation id="3452106565701029351">ફાઇલોના ઝડપી ઍક્સેસમાંથી અનપિન કરો</translation>
 <translation id="3455931012307786678">એસ્ટોનિયન</translation>
-<translation id="3466147780910026086">તમારા મીડિયા ઉપકરણને સ્કેન કરી રહ્યું છે...</translation>
-<translation id="3468522857997926824"><ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> પર <ph name="FILE_COUNT" /> ફોટાનો બૅકઅપ લેવાયો</translation>
 <translation id="3475447146579922140">Google સ્પ્રેડશીટ</translation>
 <translation id="3479552764303398839">હમણાં નહીં</translation>
 <translation id="3486821258960016770">મૉંગોલિયન</translation>
@@ -306,7 +296,6 @@
 <translation id="3616113530831147358">ઑડિઓ</translation>
 <translation id="3619115746895587757">કૅપુચિનો</translation>
 <translation id="3619593063686672873">તાજેતરનો કોઈ વીડિયો નથી</translation>
-<translation id="3620292326130836921">તમામનો બેક અપ લેવાયો!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે, વિગતો</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> આઇટમ ખસેડી.</translation>
 <translation id="3685122418104378273">મોબાઇલ ડેટાનો ઉપયોગ કરી રહ્યાં હોય ત્યારે, Google ડ્રાઇવ સિંક ડિફોલ્ટ રૂપે બંધ છે.</translation>
@@ -317,7 +306,6 @@
 <translation id="3726463242007121105">આ ઉપકરણ ખોલી શકાતું નથી કારણ કે તેની ફાઇલસિસ્ટમને સપોર્ટ નથી.</translation>
 <translation id="3727148787322499904">આ સેટિંગને બદલવું તમામ શેર કરેલ નેટવર્કને પ્રભાવિત કરશે</translation>
 <translation id="3737576078404241332">સાઇડબારમાંથી કાઢી નાખો</translation>
-<translation id="3741243925913727067">Google Drive પર તમારા મીડિયા ડિવાઇસના ફોટા અને વીડિયોનો બૅકઅપ લો.</translation>
 <translation id="3749289110408117711">ફાઇલનું નામ</translation>
 <translation id="3780536599611287598">તમને ફાઇલોને '<ph name="FOLDER_NAME" />'માં ખસેડવાની પરવાનગી નથી.</translation>
 <translation id="3786301125658655746">તમે ઑફલાઇન છો</translation>
@@ -362,7 +350,6 @@
 <translation id="4202977638116331303">જ્યોર્જિયન</translation>
 <translation id="421017592316736757">આ ફાઇલ એક્સેસ કરવા તમારું ઑનલાઇન હોું જરૂરી છે.</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" નામનું ફોલ્ડર પહેલાંથી અસ્તિત્વમાં છે. કૃપા કરીને કોઈ અલગ નામ પસંદ કરો.</translation>
-<translation id="4215448920900139318"><ph name="FILE_COUNT" />નો બૅકઅપ લઈ રહ્યાં છીએ</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> માટે અપવાદ કાઢી નાખો</translation>
 <translation id="4261901459838235729">Google પ્રસ્તુતિ</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> ફિલ્ટર ચાલુ છે.</translation>
@@ -427,7 +414,6 @@
 <translation id="4711094779914110278">ટર્કીશ</translation>
 <translation id="4712283082407695269">"<ph name="PATH" />" ખોલી રહ્યાં છીએ</translation>
 <translation id="4720185134442950733">મોબાઇલ ડેટા નેટવર્ક</translation>
-<translation id="4724850507808590449"><ph name="FILE_COUNT" /> ફોટાનો બેક અપ લેવાયો</translation>
 <translation id="4725096204469550614">આ વર્ષની શરૂઆતમાં</translation>
 <translation id="4725511304875193254">કોર્ગી - કૂતરાની એક પ્રજાતિ</translation>
 <translation id="4737050008115666127">લેન્ડિંગ</translation>
@@ -452,7 +438,6 @@
 <translation id="4881695831933465202">ખોલો</translation>
 <translation id="4900532980794411603">Parallels ડેસ્કટૉપ સાથે શેર કરો</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, કનેક્ટ કરો</translation>
-<translation id="4905417359854579806"><ph name="FILE_COUNT" />નો બૅકઅપ લેવા માટે તૈયાર</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" />માંથી <ph name="NETWORK_COUNT" /> નેટવર્ક, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, ફોનની બૅટરી <ph name="BATTERY_STATUS" />%, વિગતો</translation>
 <translation id="4935975195727477204">સૂર્યમુખીનું ફૂલ</translation>
 <translation id="4943368462779413526">ફૂટબૉલ</translation>
@@ -464,7 +449,6 @@
 <translation id="4988205478593450158">શું તમે ખરેખર "<ph name="FILE_NAME" />"ને ડિલીટ કરવા માંગો છો?</translation>
 <translation id="498902553138568924">લાલ પતંગિયું</translation>
 <translation id="4992066212339426712">અનમ્યૂટ કરો</translation>
-<translation id="5004584466530475658"><ph name="FILE_COUNT" /> નવા ફોટા</translation>
 <translation id="5010406651457630570">કમ્પ્યુટર</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">ઑપરેશનમાં અપેક્ષિત કરતાં વધુ સમય લાગી રહ્યો છે. શું તમે તેને નિરસ્ત કરવા માગો છો?</translation>
@@ -476,6 +460,7 @@
 <translation id="5068919226082848014">પિઝા</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> ફાઇલો ડિલીટ કરવામાં આવશે</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> આઇટમને <ph name="FOLDER_NAME" />માં ખસેડી રહ્યાં છીએ</translation>
+<translation id="5092200349368278146"><ph name="FILE_NAME" /> ટ્રેશમાં ખસેડી</translation>
 <translation id="509429900233858213">કોઈ ભૂલ આવી છે.</translation>
 <translation id="5098629044894065541">હીબ્રુ</translation>
 <translation id="5102922915594634436">સિંક કરેલા ફોલ્ડરો મેનેજ કરો</translation>
@@ -508,6 +493,7 @@
     <ph name="MARKUP_7" />એક જ સ્થાનમાં ફાઇલો શેર કરો, બનાવો<ph name="MARKUP_8" />
     અને અન્ય લોકો સાથે તેના પર સહયોગ કરો.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Driveમાંથી રિકવર કરેલી ફાઇલો</translation>
+<translation id="5286194356314741248">સ્કેનિંગ</translation>
 <translation id="5288441970121584418">બર્ગર</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5299998344490869684">શું તમે ખરેખર ટ્રેશ ખાલી કરવા માગો છો?</translation>
@@ -517,7 +503,6 @@
 <translation id="5323213332664049067">લેટિન અમેરિકન</translation>
 <translation id="5330145655348521461">આ ફાઇલોને બીજા ડેસ્કટૉપ પર ખોલી હતી. એને જોવા માટે <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) પર જાઓ.</translation>
 <translation id="5330512191124428349">માહિતી મેળવો</translation>
-<translation id="5335458522276292100"><ph name="BEGIN_LINK" />Google ડ્રાઇવ<ph name="END_LINK" />માં <ph name="FILE_COUNT" />નો બૅકઅપ લઈ રહ્યાં છીએ</translation>
 <translation id="535792325654997756">બિલાડીઓ સાથે વ્યક્તિ</translation>
 <translation id="5358764674931277">ફ્રેમ રેટ</translation>
 <translation id="5363339716524495120">ઇનપુટ ભાષા ચીની છે</translation>
@@ -559,8 +544,6 @@
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, અનલૉક કરો</translation>
 <translation id="5700087501958648444">ઑડિઓ માહિતી</translation>
 <translation id="5724172041621205163">થાઇ, Pattachote કીબોર્ડ સાથે</translation>
-<translation id="5731409020711461763">1 નવો ફોટો</translation>
-<translation id="5752453871435543420">Chrome OS ક્લાઉડ બેકઅપ</translation>
 <translation id="5756666464756035725">હંગેરિયન QWERTY</translation>
 <translation id="5763377084591234761">જર્મન (સ્વિટ્ઝર્લૅન્ડ)</translation>
 <translation id="5769519078756170258">બાકાત કરવા માટેનું હોસ્ટ અથવા ડોમેન</translation>
@@ -581,6 +564,7 @@
 <translation id="5845721951356578987">નર્સ</translation>
 <translation id="5861477046012235702">ગેમ રમનાર</translation>
 <translation id="5864471791310927901">DHCP લુકઅપ નિષ્ફળ</translation>
+<translation id="5887342613489958822"><ph name="FILE_NAME" /> ટ્રેશમાં ખસેડી રહ્યાં છીએ</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> નેટવર્ક, <ph name="NETWORK_NAME" />, સક્રિય કર્યા વિનાનું, સિગ્નલની પ્રબળતા <ph name="SIGNAL_STRENGTH" />%, વિગતો</translation>
 <translation id="5911887972742538906">તમારી Linux ઍપ્લિકેશનના ઇન્સ્ટૉલેશન દરમિયાન ભૂલ આવી.</translation>
 <translation id="5912396950572065471">ફોર્મેટ</translation>
@@ -594,7 +578,6 @@
 <translation id="6011074160056912900">ઇથરનેટ નેટવર્ક</translation>
 <translation id="60357267506638014">ચેક QWERTY</translation>
 <translation id="603895874132768835">જ્યાં સુધી તમે નવો પિન સેટઅપ નહીં કરો, ત્યાં સુધી તમે આ નેટવર્કનો ઉપયોગ કરી શકશો નહીં</translation>
-<translation id="604001903249547235">મેઘ બેકઅપ</translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> નેટવર્ક, કનેક્ટ કરેલું નથી</translation>
 <translation id="6074825444536523002">Google ફોર્મ</translation>
@@ -657,7 +640,6 @@
 <translation id="6607272825297743757">ફાઇલ માહિતી</translation>
 <translation id="6609332149380188670">Parallels ડેસ્કટૉપ સાથે <ph name="NUMBER_OF_ITEMS" /> ફોલ્ડર શેર થયા</translation>
 <translation id="6629518321609546825">ઓછામાં ઓછા 4 અંક દાખલ કરો</translation>
-<translation id="6629841649550503054">તમામનો <ph name="BEGIN_LINK" />Google ડ્રાઇવ<ph name="END_LINK" /> પર બેકઅપ લેવાયો!</translation>
 <translation id="6643016212128521049">સાફ કરો</translation>
 <translation id="6650726141019353908">ગુલાબી પતંગિયું</translation>
 <translation id="6657585470893396449">પાસવર્ડ</translation>
@@ -692,9 +674,6 @@
 <translation id="6918340160281024199">US Workman</translation>
 <translation id="6930242544192836755">અવધિ</translation>
 <translation id="6931302001003657424">ફાઇલોના ઝડપી ઍક્સેસ પર પિન કરો</translation>
-<translation id="6934241953272494177">તમારા મીડિયા ઉપકરણને સ્કૅન કરી રહ્યાં છીએ…
-    <ph name="LINE_BREAK1" />
-    <ph name="FILE_COUNT" /> મળી</translation>
 <translation id="6935521024859866267">ઊલટું</translation>
 <translation id="6943836128787782965">HTTP નિષ્ફળ ગયું</translation>
 <translation id="6949408524333579394">સર્બિયન લિપ્યંતર</translation>
@@ -740,7 +719,6 @@
 <translation id="7248671827512403053">ઍપ્લિકેશન</translation>
 <translation id="7256405249507348194">અજ્ઞાત ભૂલ: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ઉપલબ્ધ સેવાઓ</translation>
-<translation id="7283041136720745563">તમારો Google ડ્રાઇવ ક્વોટા પૂરતો મોટો નથી.</translation>
 <translation id="7294063083760278948">તેલુગુ લિપ્યંતર</translation>
 <translation id="7295662345261934369">બીજા સાથે શેર કરો</translation>
 <translation id="7297443947353982503">વપરાશકર્તાનામ/પાસવર્ડ ખોટો છે અથવા EAP-auth નિષ્ફળ થયું</translation>
@@ -758,9 +736,6 @@
 <translation id="7460898608667578234">યુક્રેનિયન</translation>
 <translation id="7469894403370665791">આ નેટવર્કમાં ઑટોમૅટિક રીતે કનેક્ટ કરો</translation>
 <translation id="7486315294984620427">ફાઇલોને Parallels Desktopમાં મૂકવા માટે, ફાઇલને Windows ફાઇલોમાં ખસેડવી આવશ્યક છે.</translation>
-<translation id="7489215562877293245"><ph name="FILE_COUNT" /> મળ્યા
-    <ph name="LINE_BREAK1" />
-    <ph name="BEGIN_LINK" />Google ડ્રાઇવ<ph name="END_LINK" /> પર બૅકઅપ માટે તૈયાર</translation>
 <translation id="749452993132003881">હિરગાન</translation>
 <translation id="7495372004724182530">મલયાલમ ફોનેટિક</translation>
 <translation id="7505167922889582512">છુપાવેલી ફાઇલો દર્શાવો</translation>
@@ -794,7 +769,6 @@
 <translation id="7708271999969613024">આ નેટવર્કનો ઉપયોગ કરવા માટે, તમારે મોબાઇલ ઑપરેટર દ્વારા પ્રદાન કરેલી 8-અંકની 'પર્સનલ અનબ્લૉકિંગ કી' (PUK) દાખલ કરવાની જરૂર છે.</translation>
 <translation id="7711920809702896782">છબીની માહિતી</translation>
 <translation id="7724603315864178912">કાપો</translation>
-<translation id="7730494089396812859">મેઘ બેકઅપ વિગતો દર્શાવો</translation>
 <translation id="7732111077498238432">નેટવર્ક પૉલિસી દ્વારા નિયંત્રિત છે</translation>
 <translation id="7748626145866214022">ક્રિયા બાર પર વધુ વિકલ્પો ઉપલબ્ધ છે. ક્રિયા બાર પર ફોકસ કરવા માટે Alt + A દબાવો.</translation>
 <translation id="7760449188139285140">ચાઇનીઝ વુબી</translation>
@@ -808,11 +782,6 @@
 <translation id="7805768142964895445">સ્થિતિ</translation>
 <translation id="7806708061868529807">હીબ્રુ</translation>
 <translation id="78104721049218340">થાઇ, Kedmanee કીબોર્ડ સાથે</translation>
-<translation id="7821462174190887129"><ph name="FILE_COUNT" /> મળ્યા.
-    <ph name="LINE_BREAK1" />
-    તમારો Google Drive ક્વોટા પૂરતો મોટો નથી. વધારાની <ph name="FILE_SIZE" />ની જરૂર છે.
-    <ph name="LINE_BREAK2" />
-    ઓછા ફોટા પસંદ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">નેટવર્કની ગોઠવણી કરતી વખતે ભૂલ આવી</translation>
 <translation id="7839804798877833423">આ ફાઇલોને મેળવવામાં લગભગ <ph name="FILE_SIZE" /> મોબાઇલ ડેટાનો ઉપયોગ થશે.</translation>

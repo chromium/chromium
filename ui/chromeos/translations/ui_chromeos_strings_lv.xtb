@@ -13,11 +13,6 @@
 <translation id="112387589102719461">Angļu (ASV), ar Dvorak tastatūru programmētājiem</translation>
 <translation id="1134697384939541955">Angļu (ASV), ar paplašināto tastatūru</translation>
 <translation id="1138691154716715755">Iepriekš šajā mēnesī</translation>
-<translation id="1148097584170732637">Atrasts: <ph name="FILE_COUNT" />.
-    <ph name="LINE_BREAK1" />
-    Vietējā krātuvē nav pietiekami daudz vietas. Nepieciešama papildu vieta: <ph name="FILE_SIZE" />.
-    <ph name="LINE_BREAK2" />
-    Atlasiet mazāk fotoattēlu.</translation>
 <translation id="1150565364351027703">Saulesbrilles</translation>
 <translation id="115443833402798225">Hangils (Ahnmatae)</translation>
 <translation id="1155759005174418845">Kataloniešu valoda</translation>
@@ -41,7 +36,6 @@
 <translation id="1297922636971898492">Google disks pašlaik nav pieejams. Augšupielāde tiks automātiski atsākta, tiklīdz Google disks atkal būs pieejams.</translation>
 <translation id="1307931752636661898">Nevar skatīt Linux failus</translation>
 <translation id="1313405956111467313">Automātiska starpniekservera konfigurācija</translation>
-<translation id="1351692861129622852">Notiek <ph name="FILE_COUNT" /> failu importēšana...</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Fails vai katalogs nav izmantojams.</translation>
 <translation id="1363028406613469049">Izsekošana</translation>
@@ -84,6 +78,7 @@
 <translation id="1722487484194605434">Notiek <ph name="NUMBER_OF_ITEMS" /> vienumu tilpsaspiešana...</translation>
 <translation id="1722687688096767818">Notiek profila pievienošana...</translation>
 <translation id="1726100011689679555">Nosaukumu serveri</translation>
+<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> faili ir pārvietoti uz atkritni.</translation>
 <translation id="1729953886957086472">Vācu (Vācija)</translation>
 <translation id="1730235522912993863">Ķīniešu, Candže</translation>
 <translation id="1731889557567069540">Nokopēti vienumi: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -155,7 +150,6 @@
 <translation id="2307462900900812319">Konfigurēt tīklu</translation>
 <translation id="2325650632570794183">Šī tipa fails netiek atbalstīts. Lūdzu, apmeklējiet Chrome interneta veikalu, lai atrastu lietotni, kas var atvērt šī tipa failus.</translation>
 <translation id="2326539130272988168">Bulgāru</translation>
-<translation id="2352947182261340447">Lokālajā krātuvē nav pietiekami daudz vietas.</translation>
 <translation id="23721837607121582">Lejupielādēt mobilo sakaru profilu, tīkls numur <ph name="NETWORK_INDEX" />, tīklu skaits ir <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Pāriet uz saraksta skatījumu</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> mapes kopīgotas ar sistēmu Linux</translation>
@@ -207,13 +201,13 @@
 <translation id="2820957248982571256">Notiek meklēšana...</translation>
 <translation id="2830077785865012357">Ķīniešu, Zhuyin</translation>
 <translation id="2843806747483486897">Mainīt noklusējumu...</translation>
-<translation id="2850124913210091882">Dublēt</translation>
 <translation id="2873951654529031587">Atkritne</translation>
 <translation id="288024221176729610">Čehu valoda</translation>
 <translation id="2887525882758501333">PDF dokuments</translation>
 <translation id="2888807692577297075">Neviens vienums neatbilst vaicājumam &lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;.</translation>
 <translation id="2894654529758326923">Informācija</translation>
 <translation id="2902734494705624966">ASV paplašinātā</translation>
+<translation id="2906052776158021882">Notiek <ph name="NUMBER_OF_ITEMS" /> failu pārvietošana uz atkritni…</translation>
 <translation id="290843123675549676">Marathu</translation>
 <translation id="2923240520113693977">Igauņu valoda</translation>
 <translation id="2938685643439809023">Mongoļu valoda</translation>
@@ -224,7 +218,6 @@
 <translation id="2977940621473452797">Šis fails ir paredzēts datoram ar Macintosh programmatūru. Tas nav saderīgs ar jūsu ierīci, kurā darbojas operētājsistēma Chrome OS. Lūdzu, meklējiet Chrome interneta veikalā atbilstošu aizstājošo lietotni.</translation>
 <translation id="2984337792991268709">Šodien plkst. <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Notiek vienumu atjaunošana (skaits: <ph name="COUNT" />)…</translation>
-<translation id="2994669386200004489">Nevarēja dublēt failu <ph name="FILE_NAME" />.</translation>
 <translation id="299638574917407533">Franču (Kanāda)</translation>
 <translation id="3003189754374775221">Tīkls numur <ph name="NETWORK_INDEX" />, tīklu kopskaits: <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, signāla stiprums procentos: <ph name="SIGNAL_STRENGTH" />, savienojums</translation>
 <translation id="3003633581067744647">Pārslēgties uz sīktēlu skatījumu</translation>
@@ -232,7 +225,6 @@
 <translation id="3029114385395636667">Iespējojiet paplašinājumu Google dokumenti bezsaistē, lai Dokumentu, Izklājlapu un Prezentāciju faili būtu pieejami bezsaistē.</translation>
 <translation id="303198083543495566">Ģeogrāfiskie dati</translation>
 <translation id="3047197340186497470">Ķīniešu, Dayi</translation>
-<translation id="3057861065630527966">Dublēt fotoattēlus un videoklipus</translation>
 <translation id="3067790092342515856">Windows faili</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">SOCKS saimniekdators</translation>
@@ -281,8 +273,6 @@
 <translation id="343907260260897561">Tūlītējo fotogrāfiju kamera</translation>
 <translation id="3452106565701029351">Atspraust no sadaļas “Ātrā piekļuve failiem”</translation>
 <translation id="3455931012307786678">Igauņu</translation>
-<translation id="3466147780910026086">Notiek multivides ierīces skenēšana...</translation>
-<translation id="3468522857997926824"><ph name="FILE_COUNT" /> fotoattēli dublēti <ph name="BEGIN_LINK" />Google diskā<ph name="END_LINK" /></translation>
 <translation id="3475447146579922140">Google izklājlapa</translation>
 <translation id="3479552764303398839">Vēlāk</translation>
 <translation id="3486821258960016770">Mongoļu</translation>
@@ -306,7 +296,6 @@
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Kapučīno</translation>
 <translation id="3619593063686672873">Nav nesenu videoklipu</translation>
-<translation id="3620292326130836921">Visi faili ir dublēti.</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, pārvalda jūsu administrators, informācija</translation>
 <translation id="3645233063072417428">Pārvietoti vienumi: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="3685122418104378273">Izmantojot mobilos datus, Google diska sinhronizācija pēc noklusējuma ir atspējota.</translation>
@@ -317,7 +306,6 @@
 <translation id="3726463242007121105">Šo ierīci nevar atvērt, jo tās failu sistēma netiek atbalstīta.</translation>
 <translation id="3727148787322499904">Nomainot šo iestatījumu, tiks ietekmēti visi koplietotie tīkli.</translation>
 <translation id="3737576078404241332">Noņemt no sānjoslas</translation>
-<translation id="3741243925913727067">Dublējiet savas multivides ierīces fotoattēlus un videoklipus Google diskā.</translation>
 <translation id="3749289110408117711">Faila nosaukums</translation>
 <translation id="3780536599611287598">Jums nav atļaujas pārvietot failus uz mapi “<ph name="FOLDER_NAME" />”.</translation>
 <translation id="3786301125658655746">Esat bezsaistē</translation>
@@ -362,7 +350,6 @@
 <translation id="4202977638116331303">Gruzīnu</translation>
 <translation id="421017592316736757">Lai piekļūtu šim failam, jums ir jābūt tiešsaistē.</translation>
 <translation id="4212740939091998969">Mape ar nosaukumu “<ph name="FOLDER_NAME" />” jau pastāv. Lūdzu, izvēlieties citu nosaukumu.</translation>
-<translation id="4215448920900139318">Dublēšana: <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">Noņemt izņēmumu, kas paredzēts <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Google prezentācija</translation>
 <translation id="4277536868133419688">Filtrs “<ph name="FILTER_NAME" />” ir ieslēgts.</translation>
@@ -427,7 +414,6 @@
 <translation id="4711094779914110278">Turku valoda</translation>
 <translation id="4712283082407695269">Notiek dokumenta “<ph name="PATH" />” atvēršana</translation>
 <translation id="4720185134442950733">Mobilo datu tīkls</translation>
-<translation id="4724850507808590449">Dublēti <ph name="FILE_COUNT" /> fotoattēli</translation>
 <translation id="4725096204469550614">Iepriekš šajā gadā</translation>
 <translation id="4725511304875193254">Korgijs</translation>
 <translation id="4737050008115666127">Ielidošana</translation>
@@ -452,7 +438,6 @@
 <translation id="4881695831933465202">Atvērt</translation>
 <translation id="4900532980794411603">Kopīgot ar Parallels Desktop</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />, tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />%, savienojums</translation>
-<translation id="4905417359854579806">Gatavs dublēšanai: <ph name="FILE_COUNT" /></translation>
 <translation id="4906580650526544301">Tīkls numur <ph name="NETWORK_INDEX" />, tīklu kopskaits: <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signāla stiprums procentos: <ph name="SIGNAL_STRENGTH" />, tālruņa akumulatora statuss procentos: <ph name="BATTERY_STATUS" />, informācija</translation>
 <translation id="4935975195727477204">Gazānijas zieds</translation>
 <translation id="4943368462779413526">Futbols</translation>
@@ -464,7 +449,6 @@
 <translation id="4988205478593450158">Vai tiesām vēlaties dzēst failu <ph name="FILE_NAME" />?</translation>
 <translation id="498902553138568924">Sarkans tauriņš</translation>
 <translation id="4992066212339426712">Ieslēgt skaņu</translation>
-<translation id="5004584466530475658"><ph name="FILE_COUNT" /> jauni fotoattēli</translation>
 <translation id="5010406651457630570">Datori</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Darbība aizņem vairāk laika, nekā paredzēts. Vai vēlaties to priekšlaikus pārtraukt?</translation>
@@ -476,6 +460,7 @@
 <translation id="5068919226082848014">Pica</translation>
 <translation id="5081517858322016911">Tiks dzēsti <ph name="TOTAL_FILE_SIZE" /> failu.</translation>
 <translation id="508423945471810158">Notiek pārvietošana uz mapi <ph name="FOLDER_NAME" />. Pārvietojamo vienumu skaits: <ph name="NUMBER_OF_ITEMS" />.</translation>
+<translation id="5092200349368278146">Fails “<ph name="FILE_NAME" />” ir pārvietots uz atkritni.</translation>
 <translation id="509429900233858213">Radās kļūda.</translation>
 <translation id="5098629044894065541">Ebreju valoda</translation>
 <translation id="5102922915594634436">Pārvaldīt sinhronizētās mapes</translation>
@@ -508,6 +493,7 @@
     <ph name="MARKUP_7" />Koplietojiet un veidojiet failus vienuviet, kā arī sadarbojieties,<ph name="MARKUP_8" />
     izmantojot failus kopā ar citiem lietotājiem.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">No Google diska atkoptie faili</translation>
+<translation id="5286194356314741248">Notiek skenēšana</translation>
 <translation id="5288441970121584418">Burgers</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5299998344490869684">Vai tiešām vēlaties iztukšot atkritni?</translation>
@@ -517,7 +503,6 @@
 <translation id="5323213332664049067">Latīņamerikas</translation>
 <translation id="5330145655348521461">Šie faili tika atvērti citā darbvirsmā. Lai skatītu šo darbvirsmu, izmantojiet profilu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Iegūt informāciju</translation>
-<translation id="5335458522276292100">Dublēšana <ph name="BEGIN_LINK" />Google diskā<ph name="END_LINK" />: <ph name="FILE_COUNT" /></translation>
 <translation id="535792325654997756">Persona ar kaķiem</translation>
 <translation id="5358764674931277">Kadri sekundē</translation>
 <translation id="5363339716524495120">Ievades valoda ir ķīniešu valoda.</translation>
@@ -559,8 +544,6 @@
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, atbloķēt</translation>
 <translation id="5700087501958648444">Audio informācija</translation>
 <translation id="5724172041621205163">Taju, ar Pattachote tastatūru</translation>
-<translation id="5731409020711461763">1 jauns fotoattēls</translation>
-<translation id="5752453871435543420">Chrome OS dublēšana mākonī</translation>
 <translation id="5756666464756035725">Ungāru valodas QWERTY tastatūra</translation>
 <translation id="5763377084591234761">Vācu (Šveice)</translation>
 <translation id="5769519078756170258">Saimniekdators vai domēns, kuru nepieciešams izslēgt</translation>
@@ -581,6 +564,7 @@
 <translation id="5845721951356578987">Medmāsa</translation>
 <translation id="5861477046012235702">Videospēļu spēlētājs</translation>
 <translation id="5864471791310927901">DHCP uzmeklēšana neizdevās</translation>
+<translation id="5887342613489958822">Notiek faila “<ph name="FILE_NAME" />” pārvietošana uz atkritni…</translation>
 <translation id="5896749729057314184">Tīkls numur <ph name="NETWORK_INDEX" /> no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nav aktivizēts, signāla stiprums procentos ir <ph name="SIGNAL_STRENGTH" />, detalizēta informācija</translation>
 <translation id="5911887972742538906">Linux lietojumprogrammas instalēšanas laikā radās kļūda.</translation>
 <translation id="5912396950572065471">Formāts</translation>
@@ -594,7 +578,6 @@
 <translation id="6011074160056912900">Ethernet tīkls</translation>
 <translation id="60357267506638014">Čehu QWERTY</translation>
 <translation id="603895874132768835">Šo tīklu nevarēsiet lietot, kamēr netiks iestatīts jauns PIN</translation>
-<translation id="604001903249547235">Dublēšana mākonī</translation>
 <translation id="6040143037577758943">Aizvērt</translation>
 <translation id="6055907707645252013">Tīkls: <ph name="NETWORK_TYPE" />, nav savienojuma ar tīklu</translation>
 <translation id="6074825444536523002">Google veidlapa</translation>
@@ -657,7 +640,6 @@
 <translation id="6607272825297743757">Faila informācija</translation>
 <translation id="6609332149380188670">Vairākas mapes (kopā <ph name="NUMBER_OF_ITEMS" />) tika kopīgotas ar Parallels Desktop</translation>
 <translation id="6629518321609546825">Ievadiet vismaz 4 ciparus</translation>
-<translation id="6629841649550503054">Visi faili ir dublēti <ph name="BEGIN_LINK" />Google diskā<ph name="END_LINK" />.</translation>
 <translation id="6643016212128521049">Notīrīt</translation>
 <translation id="6650726141019353908">Rozā tauriņš</translation>
 <translation id="6657585470893396449">Parole</translation>
@@ -692,9 +674,6 @@
 <translation id="6918340160281024199">Workman (ASV)</translation>
 <translation id="6930242544192836755">Ilgums</translation>
 <translation id="6931302001003657424">Piespraust sadaļai “Ātrā piekļuve failiem”</translation>
-<translation id="6934241953272494177">Notiek multivides ierīces skenēšana...
-    <ph name="LINE_BREAK1" />
-    Atrasts: <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Otrādi</translation>
 <translation id="6943836128787782965">Neizdevās iegūt HTTP</translation>
 <translation id="6949408524333579394">Serbu, transliterācija</translation>
@@ -740,7 +719,6 @@
 <translation id="7248671827512403053">Lietojumprogramma</translation>
 <translation id="7256405249507348194">Neatpazīta kļūda: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Pieejamie pakalpojumi</translation>
-<translation id="7283041136720745563">Jūsu Google diska kvota nav pietiekami liela.</translation>
 <translation id="7294063083760278948">Telugu, transliterācija</translation>
 <translation id="7295662345261934369">Kopīgot ar citiem</translation>
 <translation id="7297443947353982503">Lietotājvārds/parole nav pareiza vai arī EAP autentifikācija neizdevās</translation>
@@ -758,9 +736,6 @@
 <translation id="7460898608667578234">Ukraiņu valoda</translation>
 <translation id="7469894403370665791">Automātiski pievienoties šim tīklam</translation>
 <translation id="7486315294984620427">Lai nomestu failus darbvirsmā Parallels Desktop, attiecīgajam failam ir jābūt kopētam Windows failos.</translation>
-<translation id="7489215562877293245">Atrasts: <ph name="FILE_COUNT" />
-    <ph name="LINE_BREAK1" />
-    Gatavs dublēšanai <ph name="BEGIN_LINK" />Google diskā<ph name="END_LINK" /></translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malajalu, fonētiskā</translation>
 <translation id="7505167922889582512">Rādīt paslēptos failus</translation>
@@ -794,7 +769,6 @@
 <translation id="7708271999969613024">Lai izmantotu šo tīklu, jums ir jāievada astoņu ciparu personiskā atbloķēšanas atslēga (Personal Unblocking Key — PUK), ko nodrošina mobilo sakaru operators.</translation>
 <translation id="7711920809702896782">Attēla informācija</translation>
 <translation id="7724603315864178912">Izgriezt</translation>
-<translation id="7730494089396812859">Rādīt detalizētu informāciju par dublēšanu mākonī</translation>
 <translation id="7732111077498238432">Tīklu pārvalda politika</translation>
 <translation id="7748626145866214022">Vairāk pieejamu opciju darbību joslā. Lai izceltu darbību joslu, nospiediet taustiņu kombināciju Alt+A.</translation>
 <translation id="7760449188139285140">Ķīniešu, Wubi</translation>
@@ -810,11 +784,6 @@
 <translation id="7805768142964895445">Statuss</translation>
 <translation id="7806708061868529807">Ivrits</translation>
 <translation id="78104721049218340">Taju, ar Kedmanee tastatūru</translation>
-<translation id="7821462174190887129">Atrasts: <ph name="FILE_COUNT" />.
-    <ph name="LINE_BREAK1" />
-    Jūsu Google diska kvota nav pietiekami liela. Nepieciešama papildu vieta: <ph name="FILE_SIZE" />.
-    <ph name="LINE_BREAK2" />
-    Atlasiet mazāk fotoattēlu.</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Tīkla konfigurācijas kļūda</translation>
 <translation id="7839804798877833423">Izgūstot šos failus, tiks izmantoti aptuveni <ph name="FILE_SIZE" /> mobilo datu.</translation>

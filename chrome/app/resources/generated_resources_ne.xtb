@@ -1500,6 +1500,7 @@
 <translation id="2356070529366658676">सोध्नुहोस्</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> हटाउनुहोस्</translation>
 <translation id="2358561147588818967">साइटहरूले JavaScript प्रयोग गर्न सक्छन्</translation>
+<translation id="2358777858338503863"><ph name="ORIGIN" /> मा निम्न कार्य गर्ने अनुमति दिन क्लिक गर्नुहोस्:</translation>
 <translation id="2359071692152028734">Linux एपहरूले काम नगर्न सक्छन्।</translation>
 <translation id="2359345697448000899">उपकरण मेनुमा विस्तारहरू क्लिक गर्दै तपाइँका विस्तारहरूलाई व्वयस्थापन गर्नुहोस्।</translation>
 <translation id="2359556993567737338">ब्लुटुथ कनेक्ट गर्नुहोस्</translation>
@@ -2242,6 +2243,7 @@
 <translation id="3046178388369461825">Linux डिस्कमा खाली ठाउँ अत्यन्त कम छ</translation>
 <translation id="3046910703532196514">वेबपेज, पूरा</translation>
 <translation id="304747341537320566">बोलीका इन्जिनहरू</translation>
+<translation id="3048051495640130973">तपाईं सेटिङमा गई ब्याट्री सेभर कति बेला अन हुन्छ भन्ने कुरा नियन्त्रण गर्न सक्नुहुन्छ</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> विक्रेताका HID डिभाइसहरू</translation>
 <translation id="3048917188684939573">कास्ट तथा डिभाइससम्बन्धी लगहरू</translation>
 <translation id="3051250416341590778">डिस्प्लेको आकार</translation>
@@ -2832,6 +2834,7 @@
 <translation id="3641456520301071208">साइटहरूले तपाईंको स्थानसम्बन्धी जानकारी माग्न सक्छन्</translation>
 <translation id="3642070413432681490">गोलाकार कर्सर</translation>
 <translation id="3642699533549879077">अरू कसैले तपाईंको डिभाइसको स्क्रिनमा हेर्दा तपाईंलाई अलर्ट पठाइने छ र सूचनामा भएको सामग्री लुकाइने छ।</translation>
+<translation id="3643962751030964445"><ph name="DEVICE_MANAGER" /> यो डिभाइस व्यवस्थापन गर्नुहुन्छ। <ph name="DEVICE_MANAGER" /> का अनुसार <ph name="USER_EMAIL_ADDRESS" /> नामक खाताका हकमा नयाँ प्रोफाइल बनाउनु पर्छ</translation>
 <translation id="3645372836428131288">फिंगरप्रिन्टको कुनै अर्को भाग समावेश गर्न औँला थोरै सार्नुहोस्।</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> बाट <ph name="ATTACHMENTS" /> प्राप्त भए}other{<ph name="DEVICE_NAME" /> बाट <ph name="ATTACHMENTS" /> प्राप्त भए}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> पत्ता लगाइयो</translation>
@@ -3400,6 +3403,7 @@
 <translation id="4175137578744761569">हल्का बैजनी र सेतो</translation>
 <translation id="4175737294868205930">स्थायी भण्डारण</translation>
 <translation id="4176463684765177261">असक्षम गरिएको</translation>
+<translation id="4176864026061939326">एड्मिन यो डिभाइस व्यवस्थापन गर्नुहुन्छ। तपाईंको डिभाइसका एड्मिनका अनुसार <ph name="USER_EMAIL_ADDRESS" /> नामक खाताका हकमा नयाँ प्रोफाइल बनाउनु पर्छ</translation>
 <translation id="4180788401304023883">CA सर्टिफिकेट "<ph name="CERTIFICATE_NAME" />" हटाउने?</translation>
 <translation id="4181602000363099176">२० गुणा</translation>
 <translation id="4181841719683918333">भाषाहरू</translation>
@@ -3531,6 +3535,7 @@
 <translation id="4306119971288449206">एपहरू अनिवार्य रूपमा "<ph name="CONTENT_TYPE" />" नामक सामग्रीको प्रकारबाट सञ्चालित हुनु पर्छ</translation>
 <translation id="4307992518367153382">आधारभूत</translation>
 <translation id="4309165024397827958">लोकेसन प्रयोग गर्ने अनुमति पाएका Android का एप तथा सेवाहरूलाई आफ्नो डिभाइसको लोकेसन प्रयोग गर्न दिनुहोस्। Google ले आवधिक रूपमा लोकेसन डेटा सङ्कलन गर्ने, सटीक लोकेसन पत्ता लगाउने र लोकेसनमा आधारित सेवाहरूको गुणस्तर सुधार्ने प्रयोजनका लागि व्यक्तिगत पहिचान नखुल्ने गरी यो डेटा प्रयोग गर्न सक्छ।</translation>
+<translation id="4309183709806093061">सिस्टम अडियो पनि सेयर गरियोस्। प्रतिध्वनि उत्पन्न हुन नदिन यो डिभाइस म्युट गरिने छ।</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K प्रत्यक्ष)</translation>
 <translation id="4310132194679586591">यो लिंक खोल्न आफ्नो डिभाइसमा भएको कुनै एप चयन गर्नुहोस्</translation>
 <translation id="4310139701823742692">फाइलको ढाँचा गलत छ। PPD फाइल जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
@@ -3786,6 +3791,7 @@
 <translation id="4554591392113183336">अवस्थित संस्करणसँग तुलना गर्दा बाह्य विस्तार समान वा तल्लो संस्करणमा छ।</translation>
 <translation id="4555769855065597957">छाया</translation>
 <translation id="4555863373929230635">आफ्नो Google खातामा पासवर्डहरू सुरक्षित गर्न साइन इन गरी सिंक गर्ने सुविधा अन गर्नुहोस्।</translation>
+<translation id="4556194354084985730">आफूले सेभ गरेका पासवर्ड प्रयोग गरी साइट तथा एपहरूमा सजिलैसँग साइन इन गर्नुहोस्। यो सुविधा अफ गरिएको छ भने तपाईंले कुनै साइट वा एपमा साइन इन गर्दा तपाईंलाई पासवर्ड हाल्न लगाइने छ।</translation>
 <translation id="4558426062282641716">स्वत: सुरुवात अनुमति अनुरोध गरियो</translation>
 <translation id="4559617833001311418">यो साइटले तपाईंको चाल वा प्रकाशसम्बन्धी सेन्सरहरूमाथि पहुँच राखेको छ।</translation>
 <translation id="4561893854334016293">हालै परिवर्तन गरिएको कुनै पनि अनुमति छैन</translation>
@@ -4543,6 +4549,7 @@
 <translation id="5305145881844743843"><ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> ले यो खाता व्यवस्थापन गर्छ</translation>
 <translation id="5307030433605830021">स्रोत समर्थित छैन</translation>
 <translation id="5307386115243749078">ब्लुटुथको स्विचसँग कनेक्ट गर्नुहोस्</translation>
+<translation id="5307958609248661362">Google पासवर्ड म्यानेजरको समय सकियो</translation>
 <translation id="5308380583665731573">कनेक्ट गर्नुहोस्</translation>
 <translation id="5309418307557605830">Google सहायक यसमा पनि चल्छ</translation>
 <translation id="5311304534597152726">यस रूपमा साइन इन गर्दै</translation>
@@ -5339,6 +5346,7 @@
 <translation id="6077476112742402730">बोलेर टाइप गर्ने सुविधा</translation>
 <translation id="6078121669093215958">{0,plural, =1{अतिथि}other{# वटा अतिथि विन्डो खुला छन्}}</translation>
 <translation id="6078323886959318429">सर्टकट थप्नुहोस्</translation>
+<translation id="6078742430369906859">"<ph name="NETWORK_ID" />" को कनेक्टिभिटी सीमित हुन सक्छ</translation>
 <translation id="6078752646384677957">कृपया आफ्नो माइक्रोफोन र अडियोको स्तर जाँच गर्नुहोस्।</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" कुनै HID यन्त्रमा जडान गर्न चाहन्छ</translation>
 <translation id="608029822688206592">कुनै पनि नेटवर्क भेट्टिएन। कृपया डिभाइसमा आफ्नो SIM हाल्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
@@ -6049,6 +6057,7 @@
 <translation id="6779447100905857289">तपाईंका कार्टहरू</translation>
 <translation id="677965093459947883">धेरै सानो</translation>
 <translation id="6781005693196527806">&amp;सर्च इन्जिनहरू व्यवस्थापन गर्नुहोस्...</translation>
+<translation id="6781012982807899368">सेभ गरिएका पासवर्डहरू यहाँ देखिने छन्। <ph name="BEGIN_LINK" /> पासवर्डहरू इम्पोर्ट गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="6781284683813954823">Doodle लिंक</translation>
 <translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />एपसम्बन्धी डेटा सम्पर्क ठेगाना, म्यासेज र फोटो जस्ता डेटा र कुनै एपले (विकासकर्ताका सेटिङका आधारमा) सेभ गरेको कुनै पनि डेटा हुन सक्छ। डेटा ब्याकअप गर्दा तपाईंका बच्चाको Drive को भण्डारण कोटा प्रयोग हुने छैन।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />तपाईं सेटिङमा गई यो सेवा अफ गर्न सक्नुहुन्छ।<ph name="END_PARAGRAPH2" /></translation>
@@ -6561,6 +6570,7 @@
 <translation id="7267875682732693301">आफ्नो फिंगरप्रिन्टका विभिन्न भागहरू समावेश गर्न आफ्नो औँला उठाउँदै राख्दै गर्नुहोस्</translation>
 <translation id="7267898843336437186">यो साइटबाट हेर्न मिल्ने फोल्डर चयन गर्नुहोस्</translation>
 <translation id="7268127947535186412">डिभाइसका मालिक यो सेटिङको व्यवस्थापन गर्नुहुन्छ।</translation>
+<translation id="7269229526547981029"><ph name="PROFILE_MANAGER" /> यो प्रोफाइल व्यवस्थापन गर्नुहुन्छ। <ph name="ACCOUNT_MANAGER" /> का अनुसार <ph name="USER_EMAIL_ADDRESS" /> नामक खाताका हकमा छुट्टै प्रोफाइल बनाउनु पर्छ</translation>
 <translation id="7269736181983384521">नजिकैका डिभाइससँग सेयर गर्ने सुविधामा भएको डेटाको प्रयोगसम्बन्धी सेटिङ</translation>
 <translation id="7272674038937250585">वर्णन प्रदान गरिएको छैन</translation>
 <translation id="7273110280511444812">अन्तिम पटक <ph name="DATE" /> मा सङ्लग्न गरिएको थियो</translation>
@@ -6736,6 +6746,7 @@
 <translation id="744341768939279100">एउटा नयाँ प्रोफाइल बनाउनुहोस्</translation>
 <translation id="744366959743242014">डेटा लोड हुँदै छ, यो प्रक्रिया पूरा हुन केही समय लाग्न सक्छ।</translation>
 <translation id="7443806024147773267">आफ्नो Google खातामा साइन इन हुने बित्तिकै आफ्ना पासवर्डमाथिको पहुँच प्राप्त गर्नुहोस्</translation>
+<translation id="7444046173054089907">यो साइटमाथि रोक लगाइएको छ</translation>
 <translation id="7444970023873202833">Google Photos मा भएका तपाईंका अझ धेरै स्मरणीय क्षणहरू हेर्नुहोस्</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> लाई अक्षम बनाउनुहोस्</translation>
 <translation id="7448430327655618736">एपहरू स्वतः स्थापना गर्नुहोस्</translation>
@@ -7199,6 +7210,7 @@
 <translation id="7870790288828963061">नयाँ संस्करणका कुनै पनि Kiosk एपहरू भेटिएन। अद्यावधिक गर्न कुनै चिज वाँकि छैन। कृपया USB स्टिक हटाउनुहोस्।</translation>
 <translation id="7871049986386271121">सधैँ यो साइटमा</translation>
 <translation id="7871109039747854576">उम्मेदवारहरूको सूचीलाई पृष्ठमा ल्याउन <ph name="COMMA" /> र <ph name="PERIOD" /> कुञ्जीहरू प्रयोग गर्नुहोस्</translation>
+<translation id="7872494313446521576">"<ph name="EXTENSIONS_REQUESTING_ACCESS" />" लाई <ph name="ORIGIN" /> मा निम्न कार्य गर्ने अनुमति दिन क्लिक गर्नुहोस्:</translation>
 <translation id="787268756490971083">निष्क्रिय छ</translation>
 <translation id="7872758299142009420">एकभित्र अर्को गरी राखिएका अत्यन्त धेरै समूहहरू छन्: <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">Chrome का पृष्ठभूमिहरू</translation>
@@ -7336,6 +7348,7 @@
 <translation id="7988805580376093356">तपाईंको डिभाइसमा भएको OS नहटाइकन USB मार्फत <ph name="DEVICE_OS" /> चलाउनुहोस्।</translation>
 <translation id="7991296728590311172">स्विचमार्फत पहुँच राख्ने सुविधासम्बन्धी सेटिङहरू</translation>
 <translation id="7992203134935383159">टेक्स्ट-टू-स्पिच</translation>
+<translation id="799570308305997052">Webview</translation>
 <translation id="7997826902155442747">प्रक्रिया प्राथमिकता</translation>
 <translation id="7999229196265990314">निम्न फाइलहरू सिर्जना गर्‍यो:
 
@@ -7569,6 +7582,7 @@
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{नयाँ सूचना}other{# वटा नयाँ सूचना}}</translation>
 <translation id="821119981794423735">तपाईं <ph name="USER_EMAIL" /> का हकमा Google पासवर्ड म्यानेजरमा पासवर्डहरू इम्पोर्ट गर्न चाहनुहुन्छ भने CSV फाइल छनौट गर्नुहोस्</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{डाउनलोड हुँदैछ}other{डाउनलोड हुँदैछन्}}</translation>
+<translation id="8212601853154459483"><ph name="PROFILE_MANAGER" /> यो प्रोफाइल व्यवस्थापन गर्नुहुन्छ र उहाँका अनुसार तपाईंले <ph name="USER_EMAIL_ADDRESS" /> नामक खाताका हकमा छुट्टै प्रोफाइल बनाउनु पर्छ</translation>
 <translation id="8213449224684199188">तस्बिर मोडमा प्रवेश गरियो</translation>
 <translation id="8214489666383623925">फाइल खोल्नुहोस्...</translation>
 <translation id="8215129063232901118"><ph name="DEVICE_TYPE" /> मार्फत आफ्नो फोनमा उपलब्ध सुविधाहरू प्रयोग गर्नुहोस्</translation>
@@ -7874,6 +7888,7 @@
 <translation id="8523493869875972733">परिवर्तनहरू कायम राख्नुहोस्</translation>
 <translation id="8523849605371521713">नीतिद्वारा थपिएको</translation>
 <translation id="8524783101666974011">आफ्नो Google खातामा कार्डहरू सेभ गर्नुहोस्</translation>
+<translation id="8525157245469383124">खुद्रा विक्रेताको स्टोर ID को फर्म्याट ABC-1234 हो</translation>
 <translation id="8525306231823319788">पूर्ण स्क्रीन</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">भाषाहरू थप्नुहोस्</translation>

@@ -28,7 +28,6 @@
 <translation id="1111021433905331574">Баскычтоптун жарыгынын түсүн жөндөөлөрдөн өзгөртө аласыз &gt; <ph name="APP_TITLE" /></translation>
 <translation id="112308213915226829">Текчени авто-жашыруу</translation>
 <translation id="1142002900084379065">Соңку сүрөттөр</translation>
-<translation id="114451698114044150">Автоматтык түрдө чоңойтуу күйүк.</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> үчүн маалымат диалогун ачуу</translation>
 <translation id="1150989369772528668">Жылнаама</translation>
 <translation id="1153356358378277386">Жупташкан түзмөктөр</translation>
@@ -330,7 +329,6 @@
 <translation id="2894949423239620203">Кабель майнаптуулукка кедергисин тийгизиши мүмкүн</translation>
 <translation id="2903844815300039659"><ph name="NAME" /> тармагына туташып турат, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Экрандан тартылып алынгандар</translation>
-<translation id="2925246975070834767">Камераны сиз экрандын борборунда болгудай кылып автоматтык түрдө чоңойтуп көрүңүз. Аны Ыкчам параметрлерден колдонуп көрүңүз.</translation>
 <translation id="2941112035454246133">Төмөн</translation>
 <translation id="2942350706960889382">Жалгаштырылган лупа</translation>
 <translation id="2942516765047364088">Текченин жайгашуусу</translation>
@@ -474,7 +472,6 @@
 <translation id="3708186454126126312">Буга чейин туташкан түзмөктөр</translation>
 <translation id="371370241367527062">Маңдайкы микрофон</translation>
 <translation id="3713734891607377840">Жүктөлүп бүткөндөн кийин ачылсын</translation>
-<translation id="3724279623330129812">Камеранын ортосун автоматтык түрдө чоңойтуу</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> жана дагы<ph name="UNAVAILABLE_APPS_COUNT" /> колдонмо бул түзмөктө жок.</translation>
 <translation id="3735740477244556633">Төмөнкү боюнча иргөө</translation>
 <translation id="3742055079367172538">Скриншот тартылды</translation>
@@ -1034,7 +1031,6 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Бир сан калды}other{# сан калды}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> файлын жүктөп алуу тындырылды</translation>
 <translation id="6878400149835617132">Ыкчам баскыч өчүрүлдү</translation>
-<translation id="6878709625737492815">Автоматтык түрдө чоңойтуу өчүк.</translation>
 <translation id="6884665277231944629">Бүгүнкү күнгө кайтуу</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> түзмөгүңүз начар иштеши мүмкүн. Тастыкталган <ph name="PREFERRED_MINIMUM_POWER" /> Вт же андан жогору USB-C кубаттагыч адаптерин колдонуңуз.</translation>
 <translation id="688631446150864480">Терезелерди которуштуруу үчүн Ылдый жебени басыңыз</translation>
@@ -1200,7 +1196,6 @@
 <translation id="7868900307798234037">Кулпу манжа изи менен ачылууда</translation>
 <translation id="7872195908557044066">Администраторуңуз eSIM-картаны баштапкы абалга келтирүүдө. Бир нече мүнөт күтө туруңуз.</translation>
 <translation id="7872786842639831132">Өчүк</translation>
-<translation id="7875280185395705476">Автоматтык түрдө чоңойтуу</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> түзмөгүңүздө Bluetooth өчүрүлгөн окшойт. Phone Hub'ды колдонуу үчүн Bluetooth'ду күйгүзүңүз.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Түзмөктү азыр мурунку версияга өзгөртүңүз}=1{Түзмөктү 1 секунддун ичинде мурунку версияга өзгөртүңүз}other{Түзмөктү # секунддун ичинде мурунку версияга өзгөртүңүз}}</translation>
 <translation id="7886169021410746335">Купуялык жөндөөлөрүн тууралоо</translation>
@@ -1324,7 +1319,6 @@
 <translation id="856298576161209842"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> түзмөгүңүздү жаңыртууну сунуштайт</translation>
 <translation id="8563862697512465947">Билдирмелердин жөндөөлөрү</translation>
 <translation id="857201607579416096">Меню экрандын төмөнкү оң бурчуна жылдырылды.</translation>
-<translation id="8576288697319745668">Автоматтык түрдө чоңойтууну өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /></translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Колдонмолоруңузду аталышы же түсү боюнча иргей аласыз</translation>
 <translation id="8614517853887502247">Көрүүдөн коргоо функциясы күйүп тургандыктан, <ph name="APP_1_TITLE" /> менен <ph name="APP_2_TITLE" /> билдирмелери жашырылды</translation>

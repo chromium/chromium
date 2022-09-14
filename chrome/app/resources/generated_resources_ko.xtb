@@ -1519,6 +1519,7 @@
 <translation id="2356070529366658676">확인</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> 삭제</translation>
 <translation id="2358561147588818967">사이트에서 자바스크립트를 사용할 수 있음</translation>
+<translation id="2358777858338503863">클릭하여 <ph name="ORIGIN" />에서 허용하세요.</translation>
 <translation id="2359071692152028734">Linux 앱이 응답하지 않을 수 있습니다.</translation>
 <translation id="2359345697448000899">도구 메뉴에서 확장 프로그램을 클릭하여 확장 프로그램을 관리할 수 있습니다.</translation>
 <translation id="2359556993567737338">블루투스 기기 연결</translation>
@@ -3804,6 +3805,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4554591392113183336">외부 확장 프로그램의 버전이 기존 프로그램과 동일하거나 낮습니다.</translation>
 <translation id="4555769855065597957">그림자</translation>
 <translation id="4555863373929230635">Google 계정에 비밀번호를 저장하려면 로그인한 다음 동기화를 사용 설정하세요.</translation>
+<translation id="4556194354084985730">저장된 비밀번호로 사이트와 앱에 간편하게 로그인하세요. 사용 중지된 경우 로그인 전에 메시지가 표시됩니다.</translation>
 <translation id="4558426062282641716">자동 실행 권한 요청됨</translation>
 <translation id="4559617833001311418">사이트가 모션 센서 또는 조도 센서에 액세스 중입니다.</translation>
 <translation id="4561893854334016293">최근 변경된 권한 없음</translation>
@@ -5358,6 +5360,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6077476112742402730">음성으로 입력하기</translation>
 <translation id="6078121669093215958">{0,plural, =1{게스트}other{게스트 창 #개 열림}}</translation>
 <translation id="6078323886959318429">바로가기 추가</translation>
+<translation id="6078742430369906859">"<ph name="NETWORK_ID" />"에서 연결이 제한될 수 있음</translation>
 <translation id="6078752646384677957">마이크 및 오디오 음량을 확인하세요.</translation>
 <translation id="6078769373519310690">‘<ph name="CHROME_EXTENSION_NAME" />’에서 HID 기기에 연결하려고 합니다.</translation>
 <translation id="608029822688206592">네트워크를 찾을 수 없습니다. SIM을 삽입하고 다시 시도해 주세요.</translation>
@@ -6068,6 +6071,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6779447100905857289">장바구니</translation>
 <translation id="677965093459947883">아주 작게</translation>
 <translation id="6781005693196527806">검색엔진 관리(&amp;M)…</translation>
+<translation id="6781012982807899368">저장한 비밀번호가 여기에 표시됩니다. <ph name="BEGIN_LINK" /> 비밀번호 가져오기<ph name="END_LINK" /></translation>
 <translation id="6781284683813954823">기념일 로고 링크</translation>
 <translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />앱 데이터에는 연락처, 메시지, 사진을 비롯하여 개발자 설정에 따라 앱에서 저장한 모든 데이터가 포함될 수 있습니다. 백업 데이터는 자녀의 Drive 스토리지 저장용량에 포함되지 않습니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />이 서비스는 설정에서 사용 중지할 수 있습니다.<ph name="END_PARAGRAPH2" /></translation>
@@ -6755,6 +6759,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="744341768939279100">새 프로필 만들기</translation>
 <translation id="744366959743242014">데이터를 로드하는 중입니다. 몇 초 정도 소요될 수 있습니다.</translation>
 <translation id="7443806024147773267">Google 계정에 로그인되어 있으면 어디서나 비밀번호에 액세스할 수 있습니다.</translation>
+<translation id="7444046173054089907">차단된 사이트</translation>
 <translation id="7444970023873202833">Google 포토에서 더 많은 추억을 살펴보세요.</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> 사용 중지</translation>
 <translation id="7448430327655618736">앱 자동 설치</translation>
@@ -7219,6 +7224,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7870790288828963061">새로운 버전의 Kiosk 앱을 찾을 수 없습니다. 업데이트할 대상이 없습니다. USB 메모리를 제거하세요.</translation>
 <translation id="7871049986386271121">이 사이트에서 항상 사용</translation>
 <translation id="7871109039747854576"><ph name="COMMA" /> 및 <ph name="PERIOD" /> 키를 사용하여 후보 목록을 페이지에 표시</translation>
+<translation id="7872494313446521576">클릭하여 <ph name="ORIGIN" />에서 "<ph name="EXTENSIONS_REQUESTING_ACCESS" />" 확장 프로그램을 허용하세요.</translation>
 <translation id="787268756490971083">사용 안함</translation>
 <translation id="7872758299142009420">중첩된 그룹이 너무 많음: <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">Chrome 배경</translation>
@@ -7895,6 +7901,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8523493869875972733">변경사항 유지</translation>
 <translation id="8523849605371521713">정책에 의해 추가</translation>
 <translation id="8524783101666974011">Google 계정에 카드 추가</translation>
+<translation id="8525157245469383124">소매업체 매장 ID 형식은 ABC-1234입니다.</translation>
 <translation id="8525306231823319788">전체화면</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">언어 추가</translation>

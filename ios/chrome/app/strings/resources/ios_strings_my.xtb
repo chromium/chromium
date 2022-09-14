@@ -472,6 +472,7 @@
 <translation id="4901778704868714008">သိမ်းရန်...</translation>
 <translation id="4904877109095351937">ဖတ်ပြီးကြောင်း အမှတ်အသားလုပ်ရန်</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
+<translation id="4916679969857390442">မှန်ဘီလူး</translation>
 <translation id="4930714375720679147">ဖွင့်ရန်</translation>
 <translation id="4941089862236492464">ဝမ်းနည်းပါသည်၊ သင့်အကြောင်းအရာကို မျှဝေရာတွင် ပြဿနာတစ်ခုရှိနေသည်။</translation>
 <translation id="4944543191714094452">စာမျက်နှာတွင် ရှာရန်…</translation>
@@ -766,7 +767,6 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="7192050974311852563">မှတ်တမ်းစတင်ရန်</translation>
 <translation id="7203585745079012652">အဖြေများကို ပြန်လည်ပြောကြားမည်</translation>
 <translation id="7207023858769244910">သင့်စိတ်ဝင်စားမှုများအပေါ် အခြေခံသည့် အကြောင်းအရာများ ရယူရန် စင့်ခ်လုပ်နိုင်သည်။</translation>
-<translation id="7207383424303353046">အသစ်- Chrome ကို 'မူရင်း ဘရောင်ဇာအက်ပ်' ပြုလုပ်ခြင်းဖြင့် ဝဘ်ဆိုက်များကို ၎င်းတွင် အလိုအလျောက်ဖွင့်နိုင်သည်။ <ph name="BEGIN_LINK" />ဆက်တင်များ ဖွင့်ရန်<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">မမှန်ကန်သော ကတ်နာမည်ပြောင်</translation>
 <translation id="722454870747268814">ရုပ်ဖျက်တဘ်အသစ်</translation>
 <translation id="7265758999917665941">ဤဝဘ်ဆိုက်အတွက် လုံးဝမလုပ်ရန်</translation>
@@ -916,7 +916,6 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8533670235862049797">'လုံခြုံစွာ ဖွင့်ကြည့်ခြင်း' ကို ဖွင့်ထားသည်</translation>
 <translation id="8534481786647257214">Google+ မှာ တင်ပြခြင်း ပြီးစီးပါပြီ။</translation>
 <translation id="8548878600947630424">...စာမျက်နှာတွင်ရှာပါ</translation>
-<translation id="8574235780160508979">'Chrome ၏ ဝန်ဆောင်မှု စည်းမျဉ်းများ' ကို မတ် ၃၁ တွင် ပြောင်းပါမည်။ <ph name="BEGIN_LINK" />ပြန်ကြည့်ပေးပါ<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">ပိတ်ရန်</translation>
 <translation id="8590913940444621808">ဘယ်တော့မှမမေးပါနှင့်</translation>
 <translation id="8591976964826315682">ရုပ်ဖျက်မုဒ်တွင် ပြင်ပအဖွဲ့၏ကွတ်ကီးများကို ပိတ်ထားရန်</translation>

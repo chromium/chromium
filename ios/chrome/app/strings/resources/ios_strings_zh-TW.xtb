@@ -472,6 +472,7 @@
 <translation id="4901778704868714008">儲存...</translation>
 <translation id="4904877109095351937">標示為已讀取</translation>
 <translation id="4908869848243824489">Google 探索</translation>
+<translation id="4916679969857390442">透鏡</translation>
 <translation id="4930714375720679147">開啟</translation>
 <translation id="4941089862236492464">很抱歉，分享您的項目時發生問題。</translation>
 <translation id="4944543191714094452">在網頁中尋找…</translation>
@@ -767,7 +768,6 @@
 <translation id="7192050974311852563">開始記錄</translation>
 <translation id="7203585745079012652">語音答覆</translation>
 <translation id="7207023858769244910">系統會根據你的興趣提供內容。</translation>
-<translation id="7207383424303353046">新功能：將 Chrome 設為預設的瀏覽器應用程式，即可自動在 Chrome 中開啟網站。<ph name="BEGIN_LINK" />開啟設定<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">卡片暱稱無效</translation>
 <translation id="722454870747268814">新無痕式分頁</translation>
 <translation id="7265758999917665941">一律不儲存這個網站的密碼</translation>
@@ -917,7 +917,6 @@
 <translation id="8533670235862049797">已啟用安全瀏覽功能</translation>
 <translation id="8534481786647257214">已順利發布到 Google+。</translation>
 <translation id="8548878600947630424">在網頁中尋找...</translation>
-<translation id="8574235780160508979">Chrome 的服務條款將於 3 月 31 日變更。<ph name="BEGIN_LINK" />請查看新版條款<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">關閉</translation>
 <translation id="8590913940444621808">一律不詢問</translation>
 <translation id="8591976964826315682">在無痕模式中封鎖第三方 Cookie</translation>

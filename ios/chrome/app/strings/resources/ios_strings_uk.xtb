@@ -472,6 +472,7 @@
 <translation id="4901778704868714008">Зберегти…</translation>
 <translation id="4904877109095351937">Позначити як прочитані</translation>
 <translation id="4908869848243824489">Рекомендації від Google</translation>
+<translation id="4916679969857390442">Лупа</translation>
 <translation id="4930714375720679147">Увімкнути</translation>
 <translation id="4941089862236492464">Під час спроби поділитися елементом виникла проблема.</translation>
 <translation id="4944543191714094452">Знайти на сторінці…</translation>
@@ -767,7 +768,6 @@
 <translation id="7192050974311852563">Почати запис у журналі</translation>
 <translation id="7203585745079012652">Озвучувати відповіді</translation>
 <translation id="7207023858769244910">Увімкніть синхронізацію, щоб отримувати контент на основі ваших інтересів.</translation>
-<translation id="7207383424303353046">Новинка: щоб автоматично відкривати сайти в додатку Chrome, установіть його своїм веб-переглядачем за умовчанням. <ph name="BEGIN_LINK" />Відкрити налаштування<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Недійсний псевдонім картки</translation>
 <translation id="722454870747268814">Нова анонімна вкладка</translation>
 <translation id="7265758999917665941">Ніколи для цього сайту</translation>
@@ -917,7 +917,6 @@
 <translation id="8533670235862049797">Безпечний перегляд увімкнено</translation>
 <translation id="8534481786647257214">Опубліковано в Google+</translation>
 <translation id="8548878600947630424">Знайти на сторінці...</translation>
-<translation id="8574235780160508979">31 березня змінюються Умови використання Chrome. <ph name="BEGIN_LINK" />Переглянути<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Вимкнено</translation>
 <translation id="8590913940444621808">Не запитувати</translation>
 <translation id="8591976964826315682">Блокувати файли cookie третіх сторін в анонімному режимі</translation>

@@ -472,6 +472,7 @@
 <translation id="4901778704868714008">സംരക്ഷിക്കുക...</translation>
 <translation id="4904877109095351937">വായിച്ചതായി അടയാളപ്പെടുത്തുക</translation>
 <translation id="4908869848243824489">Google-ന്റെ Discover</translation>
+<translation id="4916679969857390442">ലെന്‍സ്</translation>
 <translation id="4930714375720679147">ഓണാക്കുക</translation>
 <translation id="4941089862236492464">ക്ഷമിക്കണം, നിങ്ങളുടെ ഇനം പങ്കിടുന്നതിൽ ഒരു പ്രശ്‌നമുണ്ടായിരുന്നു.</translation>
 <translation id="4944543191714094452">പേജില്‍ കണ്ടെത്തുക…</translation>
@@ -767,7 +768,6 @@
 <translation id="7192050974311852563">ലോഗിംഗ് ആരംഭിക്കുക</translation>
 <translation id="7203585745079012652">മറുപടിയായി ഉത്തരങ്ങൾ പറയുക</translation>
 <translation id="7207023858769244910">നിങ്ങളുടെ താൽപ്പര്യങ്ങൾ അടിസ്ഥാനമാക്കിയുള്ള ഉള്ളടക്കം നേടാൻ സമന്വയിപ്പിക്കൂ.</translation>
-<translation id="7207383424303353046">പുതിയത്: Chrome നിങ്ങളുടെ ഡിഫോൾഡ് ബ്രൗസർ ആപ്പ് ആയി സജ്ജീകരിച്ച് അതിൽ സൈറ്റുകൾ സ്വയമേവ തുറക്കൂ. <ph name="BEGIN_LINK" />ക്രമീകരണം തുറക്കുക<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">കാർഡിന്റെ വിളിപ്പേര് അസാധുവാണ്</translation>
 <translation id="722454870747268814">പുതിയ ആൾമാറാട്ട ടാബ്</translation>
 <translation id="7265758999917665941">ഈ സൈറ്റിൻ്റെ പാസ്‌വേഡ് ഓർക്കേണ്ടതില്ല</translation>
@@ -917,7 +917,6 @@
 <translation id="8533670235862049797">സുരക്ഷിത ബ്രൗസിംഗ് ഓണാണ്</translation>
 <translation id="8534481786647257214">Google+ പങ്കിടൽ പൂർത്തിയായി.</translation>
 <translation id="8548878600947630424">പേജിൽ കണ്ടെത്തുക...</translation>
-<translation id="8574235780160508979">Chrome-ന്റെ സേവന നിബന്ധനകളിൽ മാർച്ച് 31-ന് മാറ്റം വരുന്നു. <ph name="BEGIN_LINK" />അവലോകനം ചെയ്യുക<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">ഓഫാണ്</translation>
 <translation id="8590913940444621808">വീണ്ടും ചോദിക്കരുത്</translation>
 <translation id="8591976964826315682">അദൃശ്യ മോഡിൽ മൂന്നാം കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്യുക</translation>

@@ -3552,6 +3552,7 @@
 <translation id="4306119971288449206">యాప్‌లు తప్పనిసరిగా "<ph name="CONTENT_TYPE" />" కంటెంట్-రకంతో అందించబడాలి</translation>
 <translation id="4307992518367153382">ప్రాథమికాలు</translation>
 <translation id="4309165024397827958">లొకేషన్ అనుమతిని కలిగిన Android యాప్‌లు, సర్వీస్‌లు మీ పరికర లొకేషన్‌ను ఉపయోగించడానికి అనుమతించండి. Google కాలానుగుణంగా లొకేషన్ డేటాను సేకరించవచ్చు, లొకేషన్ ఖచ్చితత్వాన్ని, లొకేషన్-ఆధారిత సర్వీస్‌లను మెరుగుపరచడం కోసం ఈ డేటాను అజ్ఞాతంగా ఉపయోగించవచ్చు.</translation>
+<translation id="4309183709806093061">సిస్టమ్ ఆడియోను కూడా షేర్ చేయండి. ఫీడ్‌బ్యాక్‌ను నిరోధించడానికి ఈ పరికరం మ్యూట్ చేయబడుతుంది.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K ప్రత్యక్షంగా)</translation>
 <translation id="4310132194679586591">ఈ లింక్‌ను తెరవడానికి మీ పరికరంలో యాప్‌ను ఎంచుకోండి</translation>
 <translation id="4310139701823742692">ఫైల్ తప్పు ఫార్మాట్‌లో ఉంది. PPD ఫైల్‌ని చెక్ చేసి, మళ్లీ ప్రయత్నించండి.</translation>
@@ -4566,6 +4567,7 @@
 <translation id="5305145881844743843">ఈ ఖాతాను <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> మేనేజ్ చేస్తోంది</translation>
 <translation id="5307030433605830021">మూలాధారానికి మద్దతు లేదు</translation>
 <translation id="5307386115243749078">బ్లూటూత్ స్విచ్‌ను పెయిర్ చేయి</translation>
+<translation id="5307958609248661362">Google Password Manager సమయం ముగిసింది</translation>
 <translation id="5308380583665731573">కనెక్ట్ చేయండి</translation>
 <translation id="5309418307557605830">Google Assistant ఇక్కడ కూడా పని చేస్తుంది</translation>
 <translation id="5311304534597152726">ఇలా సైన్ ఇన్ చేస్తున్నారు</translation>
@@ -6763,6 +6765,7 @@
 <translation id="744341768939279100">కొత్త ప్రొఫైల్‌ను క్రియేట్ చేయండి</translation>
 <translation id="744366959743242014">డేటా లోడ్ అవుతోంది, దీనికి కొన్ని సెకన్లు పట్టవచ్చు.</translation>
 <translation id="7443806024147773267">మీ Google ఖాతాలో ఎప్పుడు సైన్ ఇన్ చేసినా, మీ పాస్‌వర్డ్‌లను యాక్సెస్ చేయండి</translation>
+<translation id="7444046173054089907">ఈ సైట్ బ్లాక్ చేయబడింది</translation>
 <translation id="7444970023873202833">Google Photosలో మీ జ్ఞాపకాల గురించి మరింత తెలుసుకోండి</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" />ను నిలిపివేయి</translation>
 <translation id="7448430327655618736">యాప్‌లను ఆటోమేటిక్‌గా ఇన్‌స్టాల్ చేస్తుంది</translation>
@@ -7363,6 +7366,7 @@
 <translation id="7988805580376093356">మీ OSను అలానే ఉంచి, USB నుండి <ph name="DEVICE_OS" />‌ను రన్ చేయండి.</translation>
 <translation id="7991296728590311172">స్విచ్ యాక్సెస్ సెట్టింగ్‌లు</translation>
 <translation id="7992203134935383159">స్పీచ్ సింథసిస్</translation>
+<translation id="799570308305997052">వెబ్ వీక్షణ</translation>
 <translation id="7997826902155442747">ప్రాసెస్ ప్రాధాన్యత</translation>
 <translation id="7999229196265990314">ఈ కింది ఫైళ్ళను సృష్టించింది:
 

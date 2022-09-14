@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">你也可以在螢幕畫面的各個部分間移動，例如在啟動器、檔案櫃和 Chrome 分頁之間移動。如要移至下一個部分，請用四指由左往右滑動。馬上試試看，接著再繼續吧！</translation>
 <translation id="2624431853467395961">開啟學習模式</translation>
 <translation id="2626530649491650971">可點擊</translation>
+<translation id="263637551280112393">按下搜尋鍵 + Shift + 空格鍵</translation>
 <translation id="2637227747952042642">數學</translation>
 <translation id="2638785836053527382">已繼續下載「<ph name="FILE_NAME" />」</translation>
 <translation id="2639750663247012216">ChromeVox 輔助鍵</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">沒有下一個區段</translation>
 <translation id="5368000168321181111">聽覺標示已關閉</translation>
 <translation id="5368505757342402527">「<ph name="FILE_NAME" />」的下載作業已完成 <ph name="PROGRESS" />%。大約還需要 <ph name="TIME" /> <ph name="UNITS" />的時間。</translation>
+<translation id="5381388086899614489">長按</translation>
 <translation id="5400836586163650660">灰</translation>
 <translation id="5402367795255837559">點字</translation>
 <translation id="5402791055281059602">強制回應警示</translation>

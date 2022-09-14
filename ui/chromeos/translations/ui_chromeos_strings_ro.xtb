@@ -13,11 +13,6 @@
 <translation id="112387589102719461">Engleză (S.U.A.) cu tastatură pentru programatori Dvorak</translation>
 <translation id="1134697384939541955">Engleză (S.U.A.) cu tastatură extinsă</translation>
 <translation id="1138691154716715755">Mai devreme în decursul acestei luni</translation>
-<translation id="1148097584170732637">S-au găsit <ph name="FILE_COUNT" />.
-    <ph name="LINE_BREAK1" />
-    Spațiu insuficient în stocarea locală. Spațiu necesar: <ph name="FILE_SIZE" />.
-    <ph name="LINE_BREAK2" />
-    Încearcă să selectezi mai puține fotografii.</translation>
 <translation id="1150565364351027703">Ochelari de soare</translation>
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Catalană</translation>
@@ -41,7 +36,6 @@
 <translation id="1297922636971898492">Google Drive nu este disponibil momentan. Încărcarea va reporni automat când Google Drive va putea fi accesat.</translation>
 <translation id="1307931752636661898">Fișierele Linux nu pot fi afișate</translation>
 <translation id="1313405956111467313">Configurare automată pentru proxy</translation>
-<translation id="1351692861129622852">Se importă <ph name="FILE_COUNT" /> fișiere...</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Fișierul sau directorul nu este utilizabil.</translation>
 <translation id="1363028406613469049">Melodia</translation>
@@ -156,7 +150,6 @@
 <translation id="2307462900900812319">Configurați rețeaua</translation>
 <translation id="2325650632570794183">Acest tip de fișier nu este acceptat. Vă rugăm să accesați Magazinul web Chrome pentru a găsi o aplicație care poate deschide acest tip de fișier.</translation>
 <translation id="2326539130272988168">Bulgară</translation>
-<translation id="2352947182261340447">Spațiu insuficient în stocarea locală.</translation>
 <translation id="23721837607121582">Descarcă profilul mobil, Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Comută la afișarea listă</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> dosare cu acces permis pentru Linux</translation>
@@ -208,7 +201,6 @@
 <translation id="2820957248982571256">Se scanează...</translation>
 <translation id="2830077785865012357">Chineză Zhuyin</translation>
 <translation id="2843806747483486897">Schimbați valoarea prestabilită...</translation>
-<translation id="2850124913210091882">Fă backup</translation>
 <translation id="2873951654529031587">Coș de gunoi</translation>
 <translation id="288024221176729610">Cehă</translation>
 <translation id="2887525882758501333">Document PDF</translation>
@@ -226,7 +218,6 @@
 <translation id="2977940621473452797">Fișierul este creat pentru un computer care folosește software Macintosh. Acesta nu este compatibil cu dispozitivul tău care rulează sistemul de operare Chrome. Caută o aplicație de înlocuire potrivită în Magazinul web Chrome.</translation>
 <translation id="2984337792991268709">Astăzi, la <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Se restabilesc <ph name="COUNT" /> elemente...</translation>
-<translation id="2994669386200004489">Nu s-a putut face backup la <ph name="FILE_NAME" /></translation>
 <translation id="299638574917407533">Franceză (Canada)</translation>
 <translation id="3003189754374775221">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, conectează-te</translation>
 <translation id="3003633581067744647">Comută la afișarea cu miniaturi</translation>
@@ -234,7 +225,6 @@
 <translation id="3029114385395636667">Activează Documente Google Offline pentru a folosi offline Documente, Foi de calcul și Prezentări.</translation>
 <translation id="303198083543495566">Geografie</translation>
 <translation id="3047197340186497470">Chineză Dayi</translation>
-<translation id="3057861065630527966">Fă backup pentru fotografii și videoclipuri</translation>
 <translation id="3067790092342515856">Fișiere Windows</translation>
 <translation id="3083975830683400843">Dispozitivele Chromebit</translation>
 <translation id="3085752524577180175">Gazdă SOCKS</translation>
@@ -283,8 +273,6 @@
 <translation id="343907260260897561">Cameră foto instantanee</translation>
 <translation id="3452106565701029351">Anulează fixarea în Fișiere rapide</translation>
 <translation id="3455931012307786678">Estoniană</translation>
-<translation id="3466147780910026086">Se scanează dispozitivul media...</translation>
-<translation id="3468522857997926824"><ph name="FILE_COUNT" /> fotografii cu backup pe <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="3475447146579922140">Foaie de calcul Google</translation>
 <translation id="3479552764303398839">Nu acum</translation>
 <translation id="3486821258960016770">Mongolă</translation>
@@ -308,7 +296,6 @@
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3619593063686672873">Niciun videoclip recent</translation>
-<translation id="3620292326130836921">S-a făcut backup pentru tot!</translation>
 <translation id="3634507049637220048">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, gestionată de administratorul tău, detalii</translation>
 <translation id="3645233063072417428">Elemente mutate: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="3685122418104378273">Sincronizarea cu Google Drive este dezactivată în mod prestabilit la folosirea datelor mobile.</translation>
@@ -319,7 +306,6 @@
 <translation id="3726463242007121105">Acest dispozitiv nu poate fi deschis, deoarece sistemul său de fișiere nu este acceptat.</translation>
 <translation id="3727148787322499904">Modificarea acestei setări se va aplica tuturor rețelelor folosite în comun</translation>
 <translation id="3737576078404241332">Elimină din bara laterală</translation>
-<translation id="3741243925913727067">Fă backup pentru fotografiile și videoclipurile de pe dispozitivul media pe Google Drive.</translation>
 <translation id="3749289110408117711">Nume de fișier</translation>
 <translation id="3780536599611287598">Nu ai permisiunea să muți fișierele în „<ph name="FOLDER_NAME" />”.</translation>
 <translation id="3786301125658655746">Ești offline</translation>
@@ -364,7 +350,6 @@
 <translation id="4202977638116331303">Georgiană</translation>
 <translation id="421017592316736757">Trebuie să fiți online pentru a accesa acest fișier.</translation>
 <translation id="4212740939091998969">Dosarul cu numele „<ph name="FOLDER_NAME" />” există deja. Alege un alt nume.</translation>
-<translation id="4215448920900139318">Se face backup pentru <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">Elimină excepția pentru <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Prezentare Google</translation>
 <translation id="4277536868133419688">Filtrul <ph name="FILTER_NAME" /> este activat.</translation>
@@ -429,7 +414,6 @@
 <translation id="4711094779914110278">Turcă</translation>
 <translation id="4712283082407695269">Se deschide „<ph name="PATH" />”</translation>
 <translation id="4720185134442950733">Rețea de date mobile</translation>
-<translation id="4724850507808590449">S-a făcut backup pentru <ph name="FILE_COUNT" /> fotografii</translation>
 <translation id="4725096204469550614">Mai devreme în decursul acestui an</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4737050008115666127">Aterizare</translation>
@@ -454,7 +438,6 @@
 <translation id="4881695831933465202">Deschide</translation>
 <translation id="4900532980794411603">Permite accesul Parallels Desktop</translation>
 <translation id="4902546322522096650">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, conectează-te</translation>
-<translation id="4905417359854579806">Gata de backup pentru <ph name="FILE_COUNT" /></translation>
 <translation id="4906580650526544301">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, bateria telefonului: <ph name="BATTERY_STATUS" /> %, detalii</translation>
 <translation id="4935975195727477204">Floare</translation>
 <translation id="4943368462779413526">Minge de fotbal</translation>
@@ -466,7 +449,6 @@
 <translation id="4988205478593450158">Sigur vrei să ștergi „<ph name="FILE_NAME" />”?</translation>
 <translation id="498902553138568924">Fluture roșu</translation>
 <translation id="4992066212339426712">Activează sunetul</translation>
-<translation id="5004584466530475658"><ph name="FILE_COUNT" /> fotografii noi</translation>
 <translation id="5010406651457630570">Computere</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">O operațiune durează mai mult decât ar trebui. Dorești să o anulezi?</translation>
@@ -511,6 +493,7 @@
     <ph name="MARKUP_7" />Trimite și creează fișiere. Colaborează<ph name="MARKUP_8" />
     cu alte persoane la realizarea fișierelor. Totul într-un singur loc.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Fișiere recuperate din Google Drive</translation>
+<translation id="5286194356314741248">Scanare</translation>
 <translation id="5288441970121584418">Burger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5299998344490869684">Sigur vrei să golești coșul de gunoi?</translation>
@@ -520,7 +503,6 @@
 <translation id="5323213332664049067">America Latină</translation>
 <translation id="5330145655348521461">Aceste fișiere au fost deschise pe alt desktop. Pentru a le vedea, treceți la <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Obține informații</translation>
-<translation id="5335458522276292100">Se face backup pentru <ph name="FILE_COUNT" /> în <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Persoană cu pisici</translation>
 <translation id="5358764674931277">Rata de cadre</translation>
 <translation id="5363339716524495120">Limba de introducere a textului este chineza</translation>
@@ -562,8 +544,6 @@
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, Deblochează</translation>
 <translation id="5700087501958648444">Informații despre fișierul audio</translation>
 <translation id="5724172041621205163">Tastatură thailandeză Pattachote</translation>
-<translation id="5731409020711461763">1 fotografie nouă</translation>
-<translation id="5752453871435543420">Backup în cloud pentru sistemul de operare Chrome</translation>
 <translation id="5756666464756035725">Maghiară QWERTY</translation>
 <translation id="5763377084591234761">Germană (Elveția)</translation>
 <translation id="5769519078756170258">Gazda sau domeniul de exclus</translation>
@@ -598,7 +578,6 @@
 <translation id="6011074160056912900">Rețeaua ethernet</translation>
 <translation id="60357267506638014">Cehă QWERTY</translation>
 <translation id="603895874132768835">Nu vei putea să folosești rețeaua dacă nu configurezi un PIN nou.</translation>
-<translation id="604001903249547235">Backup în cloud</translation>
 <translation id="6040143037577758943">Închide</translation>
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> rețea, nu este conectată</translation>
 <translation id="6074825444536523002">Formular Google</translation>
@@ -661,7 +640,6 @@
 <translation id="6607272825297743757">Informațiile fișierului</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> dosare cu acces permis pentru Parallels Desktop</translation>
 <translation id="6629518321609546825">Introdu minimum patru cifre</translation>
-<translation id="6629841649550503054">Toate fișierele cu backup pe <ph name="BEGIN_LINK" />Google Drive!<ph name="END_LINK" /></translation>
 <translation id="6643016212128521049">Șterge</translation>
 <translation id="6650726141019353908">Fluture roz</translation>
 <translation id="6657585470893396449">Parolă</translation>
@@ -696,9 +674,6 @@
 <translation id="6918340160281024199">S.U.A. Workman</translation>
 <translation id="6930242544192836755">Durată</translation>
 <translation id="6931302001003657424">Fixează în Fișiere rapide</translation>
-<translation id="6934241953272494177">Se scanează dispozitivul media...
-    <ph name="LINE_BREAK1" />
-    S-au găsit <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">Răsturnat</translation>
 <translation id="6943836128787782965">Metoda GET a protocolului HTTP nu a reușit</translation>
 <translation id="6949408524333579394">Sârbă, transliterație</translation>
@@ -744,7 +719,6 @@
 <translation id="7248671827512403053">Aplicație</translation>
 <translation id="7256405249507348194">Eroare nerecunoscută: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Servicii disponibile</translation>
-<translation id="7283041136720745563">Cota Google Drive nu este suficient de mare.</translation>
 <translation id="7294063083760278948">Telugu, transliterație</translation>
 <translation id="7295662345261934369">Permite accesul altor utilizatori</translation>
 <translation id="7297443947353982503">Numele de utilizator sau parola sunt incorecte sau autentificarea EAP nu a reușit</translation>
@@ -762,9 +736,6 @@
 <translation id="7460898608667578234">Ucraineană</translation>
 <translation id="7469894403370665791">Conectează-te automat la această rețea</translation>
 <translation id="7486315294984620427">Pentru a plasa fișiere în Parallels Desktop, trebuie să le copiezi în dosarul cu fișiere Windows.</translation>
-<translation id="7489215562877293245">S-au găsit <ph name="FILE_COUNT" />
-    <ph name="LINE_BREAK1" />
-    Gata de backup în <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam fonetică</translation>
 <translation id="7505167922889582512">Afișează fișierele ascunse</translation>
@@ -798,7 +769,6 @@
 <translation id="7708271999969613024">Pentru a folosi această rețea, trebuie să introduci cheia personală de deblocare (PUK) din 8 cifre oferită de operator.</translation>
 <translation id="7711920809702896782">Informații despre fișierul imagine</translation>
 <translation id="7724603315864178912">Decupează</translation>
-<translation id="7730494089396812859">Afișează detaliile pentru backupul în cloud</translation>
 <translation id="7732111077498238432">Rețeaua este controlată de politică</translation>
 <translation id="7748626145866214022">Mai multe opțiuni disponibile în bara de acțiuni. Apasă pe Alt + A pentru a focaliza bara de acțiune.</translation>
 <translation id="7760449188139285140">Chineză Wubi</translation>
@@ -814,11 +784,6 @@
 <translation id="7805768142964895445">Stare</translation>
 <translation id="7806708061868529807">Ebraică</translation>
 <translation id="78104721049218340">Tastatură thailandeză Kedmanee</translation>
-<translation id="7821462174190887129">S-au găsit <ph name="FILE_COUNT" />.
-    <ph name="LINE_BREAK1" />
-    Cota Google Drive nu este suficient de mare. Spațiu suplimentar necesar: <ph name="FILE_SIZE" />.
-    <ph name="LINE_BREAK2" />
-    Încearcă să selectezi mai puține fotografii.</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Eroare la configurarea rețelei</translation>
 <translation id="7839804798877833423">Preluarea acestor fișiere va utiliza aproximativ <ph name="FILE_SIZE" /> din datele mobile.</translation>

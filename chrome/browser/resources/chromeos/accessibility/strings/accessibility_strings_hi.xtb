@@ -140,6 +140,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="1834891354138622109">स्तंभ</translation>
 <translation id="1846771122725914429">ब्लूटूथ ब्रेल डिसप्ले</translation>
 <translation id="1852018405765032699">ChromeVox के मेन्यू खोलने और बंद करने के लिए, स्क्रीन पर चार उंगलियों से टैप करना होगा. इन मेन्यू में कमांड और शॉर्टकट से जुड़ी काम की जानकारी होती है. जब मेन्यू खुले हों, तब आप एक आइटम से दूसरे आइटम पर जाने के लिए, एक उंगली से स्वाइप कर सकते हैं. साथ ही, आइटम चालू करने के लिए दो बार टैप कर सकते हैं. जारी रखने के लिए, स्क्रीन पर चार उंगलियों से टैप करें.</translation>
+<translation id="1864430479908918647">Search+Space बटन दबाएं</translation>
 <translation id="1865601187525349519">लेख का अंत</translation>
 <translation id="1876229593313240038">दस्तावेज़</translation>
 <translation id="1902396333223336119">सेल</translation>
@@ -778,6 +779,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="6236061028292614533">अगला शीर्षक</translation>
 <translation id="6254901459154107917">बदलाव करने लायक अगला लेख क्षेत्र</translation>
 <translation id="6259464875943891919">बाहर निकल गए <ph name="TYPE" />.</translation>
+<translation id="6280088282605782512">दो बार टैप करें</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">ज़रूरी बटन: खोज</translation>
 <translation id="6305702903308659374">ChromeVox के बोल रहे होने पर भी, सामान्य वॉल्यूम में ही चलाएं</translation>
@@ -980,6 +982,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="7731785449856576010">आगे कोई मीडिया विजेट नहीं है</translation>
 <translation id="7735498529470878067">छूकर, उससे जुड़ी जानकारी सुनकर, आप तुरंत यह जान सकते हैं कि स्क्रीन पर क्या जानकारी दी गई है.</translation>
 <translation id="773906353055481349">सेल के मुताबिक नेविगेट करने के लिए, तीर के निशान वाले बटन के साथ Search+Ctrl+Alt दबाएं</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> से <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">डाउनलोड शुरू हो गया <ph name="FILE_NAME" /></translation>
 <translation id="7768784765476638775">चुनें और सुनें</translation>
 <translation id="7776293189010177726">ChromeVox मेनू खोलें</translation>

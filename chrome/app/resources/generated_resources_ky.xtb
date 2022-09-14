@@ -1518,6 +1518,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2356070529366658676">Сураңыз</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> өчүрүү</translation>
 <translation id="2358561147588818967">Сайттар Javascript'ти колдоно алат</translation>
+<translation id="2358777858338503863"><ph name="ORIGIN" /> сайтында уруксат берүү үчүн басыңыз:</translation>
 <translation id="2359071692152028734">Linux колдонмолору жооп бербей калышы мүмкүн.</translation>
 <translation id="2359345697448000899">Куралдар менюсундагы Кеңейтүүлөрду чыкылдатып, өз кеңейтүүлөрүңүздү башкарыңыз.</translation>
 <translation id="2359556993567737338">Bluetooth түзмөгүн туташтыруу</translation>
@@ -3805,6 +3806,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4554591392113183336">Тышкы кеңейтүү учурдагыга окшош же версиясы эскирээк.</translation>
 <translation id="4555769855065597957">Көлөкө</translation>
 <translation id="4555863373929230635">Сырсөздөрдү Google аккаунтуңузга сактоо үчүн кирип, шайкештирүүнү күйгүзүңүз.</translation>
+<translation id="4556194354084985730">Сырсөз сакталган колдонмолор менен сайттарга оңой киресиз. Өчүрүлсө, кирүүдөн мурда сырсөз суралат.</translation>
 <translation id="4558426062282641716">Авто-ишке киргизүүгө уруксат суралды</translation>
 <translation id="4559617833001311418">Бул сайт кыймыл же жарык сенсорлорун колдонуп жатат.</translation>
 <translation id="4561893854334016293">Акыркы убакта уруксаттар өзгөргөн жок</translation>
@@ -5359,6 +5361,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6077476112742402730">Айтылган кепти терүү</translation>
 <translation id="6078121669093215958">{0,plural, =1{Конок}other{# конок терезеси ачык}}</translation>
 <translation id="6078323886959318429">Кыска жол кошуу</translation>
+<translation id="6078742430369906859">"<ph name="NETWORK_ID" />" тармагындагы байланыш чектелиши мүмкүн</translation>
 <translation id="6078752646384677957">Микрофонуңузду жана аудионун үн деңгээлдерин текшериңиз.</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" HID түзмөгүнө туташканы жатат</translation>
 <translation id="608029822688206592">Тармак табылган жок. SIM-картаңызды салып, кайталап көрүңүз.</translation>
@@ -5372,6 +5375,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6087960857463881712">Сүйкүмдүү бет</translation>
 <translation id="608912389580139775">Бул баракты окуу тизмесине кошуу үчүн Кыстарма сүрөтчөсүн басыңыз</translation>
 <translation id="6091761513005122595">Түзмөк ийгиликтүү кошулду.</translation>
+<translation id="6093803049406781019">Профилди өчүрүү</translation>
 <translation id="6093888419484831006">Жаңыртууну жокко чыгаруу…</translation>
 <translation id="6095541101974653012">Чыгып кеттиңиз.</translation>
 <translation id="6095984072944024315">−</translation>
@@ -6068,6 +6072,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6779447100905857289">себеттериңиз</translation>
 <translation id="677965093459947883">Өтө кичине</translation>
 <translation id="6781005693196527806">&amp;Издөө каражаттарын башкаруу…</translation>
+<translation id="6781012982807899368">Сакталган сырсөздөр бул жерде көрүнөт. <ph name="BEGIN_LINK" /> Сырсөздөрдү өткөрүп алуу<ph name="END_LINK" /></translation>
 <translation id="6781284683813954823">Doodle шилтемеси</translation>
 <translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />Колдонмо тууралуу маалыматка иштеп чыгуучунун жөндөөлөрүнүн негизинде сакталган бардык маалымат, анын ичинде байланыштар, билдирүүлөр жана сүрөттөр кириши мүмкүн. Маалыматтын камдык көчүрмөлөрү балаңыздын Drive сактагычынан орун ээлебейт.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Бул кызматты жөндөөлөрдөн өчүрсөңүз болот.<ph name="END_PARAGRAPH2" /></translation>
@@ -6755,6 +6760,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="744341768939279100">Жаңы профиль түзүү</translation>
 <translation id="744366959743242014">Маалымат жүктөлүүдө. Бир нече секундга созулушу мүмкүн.</translation>
 <translation id="7443806024147773267">Google аккаунтуңузга кирериңиз менен сырсөздөрүңүзгө мүмкүнчүлүк аласыз</translation>
+<translation id="7444046173054089907">Бул сайт бөгөттөлдү</translation>
 <translation id="7444970023873202833">Google Фотодо дагы башка эстен кеткис көз ирмемдериңизди карап чыгыңыз</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> өчүрүү</translation>
 <translation id="7448430327655618736">Колдонмолорду автоматтык түрдө орнотуу</translation>
@@ -7218,6 +7224,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7870790288828963061">Жаңыраак версиядагы Kiosk колдонмолору табылган жок. Жаңыртыла турган эч нерсе жок. USB түзмөгүн сууруп салыңыз.</translation>
 <translation id="7871049986386271121">Ушул сайтта ар дайым</translation>
 <translation id="7871109039747854576">Талапкерлер тизмесин барактоо үчүн <ph name="COMMA" /> жана <ph name="PERIOD" /> баскычтарын колдонуңуз</translation>
+<translation id="7872494313446521576"><ph name="ORIGIN" /> сайтында "<ph name="EXTENSIONS_REQUESTING_ACCESS" />" кеңейтүүсүнө уруксат берүү үчүн басыңыз:</translation>
 <translation id="787268756490971083">Өчүк</translation>
 <translation id="7872758299142009420">Ортосуна кыстарылган топтор өтө көп: <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">Chrome'ду фондо ыңгайлаштыруу</translation>
@@ -7893,6 +7900,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8523493869875972733">Өзгөрүүлөр сакталсын</translation>
 <translation id="8523849605371521713">Ишкана саясаты тарабынан кошулду</translation>
 <translation id="8524783101666974011">Карталарды Google аккаунтуңузга сактап коюңуз</translation>
+<translation id="8525157245469383124">Чекене сатуучунун дүкөнүнүн идентификатору ABC-1234 форматында болушу керек</translation>
 <translation id="8525306231823319788">Толук экран</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Тил кошуу</translation>

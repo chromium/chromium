@@ -13,11 +13,6 @@
 <translation id="112387589102719461">Anglais (É.-U.) avec clavier Dvorak pour développeurs</translation>
 <translation id="1134697384939541955">Anglais (É.-U.) avec clavier étendu</translation>
 <translation id="1138691154716715755">Plus tôt ce mois-ci</translation>
-<translation id="1148097584170732637"><ph name="FILE_COUNT" /> trouvées.
-    <ph name="LINE_BREAK1" />
-    Espace de stockage local disponible insuffisant. <ph name="FILE_SIZE" /> supplémentaires sont nécessaires.
-    <ph name="LINE_BREAK2" />
-    Sélectionnez moins de photos.</translation>
 <translation id="1150565364351027703">Lunettes de soleil</translation>
 <translation id="115443833402798225">Hangul ahnmatae</translation>
 <translation id="1155759005174418845">Catalan</translation>
@@ -41,7 +36,6 @@
 <translation id="1297922636971898492">Google Disque n'est pas accessible pour le moment. Le téléversement reprendra lorsque Google Disque sera de nouveau fonctionnel.</translation>
 <translation id="1307931752636661898">Impossible d'afficher les fichiers Linux</translation>
 <translation id="1313405956111467313">Configuration automatique du mandataire</translation>
-<translation id="1351692861129622852">Importation de <ph name="FILE_COUNT" /> fichiers en cours...</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" /> : <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Le fichier ou le répertoire n'est pas utilisable.</translation>
 <translation id="1363028406613469049">Numéro de suivi</translation>
@@ -84,6 +78,7 @@
 <translation id="1722487484194605434">Compression de <ph name="NUMBER_OF_ITEMS" /> éléments en cours…</translation>
 <translation id="1722687688096767818">Ajout du profil en cours…</translation>
 <translation id="1726100011689679555">Serveurs de noms</translation>
+<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> éléments déplacés vers la corbeille</translation>
 <translation id="1729953886957086472">Allemand (Allemagne)</translation>
 <translation id="1730235522912993863">Chinois (cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> éléments copiés</translation>
@@ -155,7 +150,6 @@
 <translation id="2307462900900812319">Configurer le réseau</translation>
 <translation id="2325650632570794183">Ce type de fichier n'est pas pris en charge. Veuillez visiter la boutique Chrome Web Store pour trouver une application permettant de l'ouvrir.</translation>
 <translation id="2326539130272988168">Bulgare</translation>
-<translation id="2352947182261340447">Espace de stockage local disponible insuffisant.</translation>
 <translation id="23721837607121582">Télécharger le profil mobile, réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Passer à l'affichage sous forme de liste</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> dossiers partagés avec Linux</translation>
@@ -207,13 +201,13 @@
 <translation id="2820957248982571256">Recherche en cours…</translation>
 <translation id="2830077785865012357">Chinois (Zhuyin)</translation>
 <translation id="2843806747483486897">Changer l'action par défaut…</translation>
-<translation id="2850124913210091882">Sauvegarder</translation>
 <translation id="2873951654529031587">Corbeille</translation>
 <translation id="288024221176729610">Tchèque</translation>
 <translation id="2887525882758501333">Document PDF</translation>
 <translation id="2888807692577297075">Aucun élément ne correspond à votre recherche sur &lt;b&gt;« <ph name="SEARCH_STRING" /> »&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Information</translation>
 <translation id="2902734494705624966">Clavier étendu américain</translation>
+<translation id="2906052776158021882">Déplacer <ph name="NUMBER_OF_ITEMS" /> éléments vers la corbeille</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estonien</translation>
 <translation id="2938685643439809023">Mongol</translation>
@@ -224,7 +218,6 @@
 <translation id="2977940621473452797">Ce fichier est conçu pour un ordinateur utilisant un logiciel Macintosh. Il n'est pas compatible avec votre appareil qui exécute Chrome OS. Veuillez chercher une application de remplacement appropriée dans la boutique en ligne Chrome Web Store.</translation>
 <translation id="2984337792991268709">Aujourd'hui à <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Restauration de <ph name="COUNT" /> éléments en cours…</translation>
-<translation id="2994669386200004489">Impossible de sauvegarder <ph name="FILE_NAME" /></translation>
 <translation id="299638574917407533">Français (Canada)</translation>
 <translation id="3003189754374775221">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, puissance du signal : <ph name="SIGNAL_STRENGTH" /> %, connexion</translation>
 <translation id="3003633581067744647">Passer en mode d'affichage de miniatures</translation>
@@ -232,7 +225,6 @@
 <translation id="3029114385395636667">Activez Google Documents hors ligne pour rendre vos fichiers Documents, Feuilles de calcul et Présentations accessibles hors ligne.</translation>
 <translation id="303198083543495566">Géographie</translation>
 <translation id="3047197340186497470">Chinois (Dayi)</translation>
-<translation id="3057861065630527966">Sauvegarder vos photos et vidéos</translation>
 <translation id="3067790092342515856">Fichiers Windows</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Hôte SOCKS</translation>
@@ -281,8 +273,6 @@
 <translation id="343907260260897561">Appareil photo instantané</translation>
 <translation id="3452106565701029351">Annuler l'épinglage de l'accès rapide aux fichiers</translation>
 <translation id="3455931012307786678">Estonien</translation>
-<translation id="3466147780910026086">Analyse de votre appareil de stockage multimédia en cours…</translation>
-<translation id="3468522857997926824"><ph name="FILE_COUNT" /> photos sauvegardées dans <ph name="BEGIN_LINK" />Google Disque<ph name="END_LINK" /></translation>
 <translation id="3475447146579922140">Feuilles de calcul Google</translation>
 <translation id="3479552764303398839">Pas maintenant</translation>
 <translation id="3486821258960016770">Mongol</translation>
@@ -306,7 +296,6 @@
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3619593063686672873">Aucune vidéo récente</translation>
-<translation id="3620292326130836921">Tous les fichiers ont été sauvegardés!</translation>
 <translation id="3634507049637220048">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, géré par votre administrateur, détails</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> éléments déplacés.</translation>
 <translation id="3685122418104378273">La synchronisation Google Disque est désactivée par défaut, lors de l'utilisation de données mobiles.</translation>
@@ -317,7 +306,6 @@
 <translation id="3726463242007121105">Impossible d'ouvrir cet appareil, car son système de fichiers n'est pas compatible.</translation>
 <translation id="3727148787322499904">La modification de ce paramètre aura des conséquences sur tous les réseaux partagés</translation>
 <translation id="3737576078404241332">Retirer de la barre latérale</translation>
-<translation id="3741243925913727067">Sauvegarder les photos et les vidéos de votre appareil de stockage multimédia dans Google Disque.</translation>
 <translation id="3749289110408117711">Nom du fichier</translation>
 <translation id="3780536599611287598">Vous n'êtes pas autorisé à déplacer des fichiers dans « <ph name="FOLDER_NAME" /> ».</translation>
 <translation id="3786301125658655746">Vous êtes hors ligne.</translation>
@@ -362,7 +350,6 @@
 <translation id="4202977638116331303">Géorgien</translation>
 <translation id="421017592316736757">Pour accéder à ce fichier, vous devez être connecté à Internet.</translation>
 <translation id="4212740939091998969">Le dossier nommé « <ph name="FOLDER_NAME" /> » existe déjà. Veuillez choisir un autre nom.</translation>
-<translation id="4215448920900139318">Sauvegarde de <ph name="FILE_COUNT" /> en cours…</translation>
 <translation id="4218274196133425560">Retirer l'exception pour <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Présentation Google</translation>
 <translation id="4277536868133419688">Le filtre <ph name="FILTER_NAME" /> est activé.</translation>
@@ -427,7 +414,6 @@
 <translation id="4711094779914110278">Turc</translation>
 <translation id="4712283082407695269">Ouverture de « <ph name="PATH" /> » en cours…</translation>
 <translation id="4720185134442950733">Réseau de données mobiles</translation>
-<translation id="4724850507808590449"><ph name="FILE_COUNT" /> photos sauvegardées</translation>
 <translation id="4725096204469550614">Plus tôt cette année</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4737050008115666127">Piste d'atterrissage</translation>
@@ -452,7 +438,6 @@
 <translation id="4881695831933465202">Ouvrir</translation>
 <translation id="4900532980794411603">Partager avec Parallels Desktop</translation>
 <translation id="4902546322522096650">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, connexion</translation>
-<translation id="4905417359854579806">Prêt à sauvegarder <ph name="FILE_COUNT" /></translation>
 <translation id="4906580650526544301">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, puissance du signal : <ph name="SIGNAL_STRENGTH" /> %, pile du téléphone : <ph name="BATTERY_STATUS" /> %, renseignements</translation>
 <translation id="4935975195727477204">Gazania</translation>
 <translation id="4943368462779413526">Football</translation>
@@ -464,7 +449,6 @@
 <translation id="4988205478593450158">Voulez-vous vraiment supprimer « <ph name="FILE_NAME" /> »?</translation>
 <translation id="498902553138568924">Papillon rouge</translation>
 <translation id="4992066212339426712">Réactiver le son</translation>
-<translation id="5004584466530475658"><ph name="FILE_COUNT" /> nouvelles photos</translation>
 <translation id="5010406651457630570">Ordinateurs</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Une opération prend plus de temps que prévu. Voulez-vous l'annuler?</translation>
@@ -476,6 +460,7 @@
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> de fichiers seront supprimés</translation>
 <translation id="508423945471810158">Déplacement de <ph name="NUMBER_OF_ITEMS" /> éléments vers le dossier <ph name="FOLDER_NAME" /> en cours…</translation>
+<translation id="5092200349368278146"><ph name="FILE_NAME" /> déplacé vers la corbeille</translation>
 <translation id="509429900233858213">Une erreur s'est produite.</translation>
 <translation id="5098629044894065541">Hébreu</translation>
 <translation id="5102922915594634436">Gérer les dossiers synchronisés</translation>
@@ -510,6 +495,7 @@
     <ph name="MARKUP_7" />Partagez, créez et collaborez<ph name="MARKUP_8" />
     sur les mêmes fichiers pour tout le monde, à un seul endroit.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Fichiers récupérés de Google Disque</translation>
+<translation id="5286194356314741248">Recherche en cours…</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5299998344490869684">Voulez-vous vraiment vider la corbeille?</translation>
 <translation id="5305688511332277257">Aucun certificat installé</translation>
@@ -518,7 +504,6 @@
 <translation id="5323213332664049067">Amérique latine</translation>
 <translation id="5330145655348521461">Ces fichiers sont ouverts sur un autre bureau. Utilisez le compte de <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) pour les afficher.</translation>
 <translation id="5330512191124428349">En savoir plus</translation>
-<translation id="5335458522276292100">Sauvegarde de <ph name="FILE_COUNT" /> dans <ph name="BEGIN_LINK" />Google Disque<ph name="END_LINK" /> en cours…</translation>
 <translation id="535792325654997756">Personne avec des chats</translation>
 <translation id="5358764674931277">Fréquence d'images</translation>
 <translation id="5363339716524495120">La langue d'entrée définie est le chinois</translation>
@@ -560,8 +545,6 @@
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, déverrouiller</translation>
 <translation id="5700087501958648444">Renseignements sur le fichier audio</translation>
 <translation id="5724172041621205163">Thaï avec clavier Pattachote</translation>
-<translation id="5731409020711461763">1 nouvelle photo</translation>
-<translation id="5752453871435543420">Sauvegarde dans le nuage Chrome OS</translation>
 <translation id="5756666464756035725">QWERTY hongrois</translation>
 <translation id="5763377084591234761">Allemand (Suisse)</translation>
 <translation id="5769519078756170258">Hôte ou domaine à exclure</translation>
@@ -582,6 +565,7 @@
 <translation id="5845721951356578987">Infirmière</translation>
 <translation id="5861477046012235702">Joueur</translation>
 <translation id="5864471791310927901">Échec de la vérification DHCP</translation>
+<translation id="5887342613489958822">Déplacer <ph name="FILE_NAME" /> vers la corbeille</translation>
 <translation id="5896749729057314184">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, non activé, force du signal : <ph name="SIGNAL_STRENGTH" />%, renseignements</translation>
 <translation id="5911887972742538906">Une erreur s'est produite lors de l'installation de votre application Linux.</translation>
 <translation id="5912396950572065471">Format</translation>
@@ -595,7 +579,6 @@
 <translation id="6011074160056912900">Réseau Ethernet</translation>
 <translation id="60357267506638014">QWERTY tchèque</translation>
 <translation id="603895874132768835">Vous ne pourrez pas utiliser ce réseau tant que vous n'aurez pas configuré un nouveau NIP</translation>
-<translation id="604001903249547235">Sauvegarde dans le nuage</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6055907707645252013">Réseau <ph name="NETWORK_TYPE" />; non connecté</translation>
 <translation id="6074825444536523002">Formulaire Google</translation>
@@ -658,7 +641,6 @@
 <translation id="6607272825297743757">Information sur le fichier</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> dossiers sont partagés avec Parallels Desktop</translation>
 <translation id="6629518321609546825">Entrez au moins quatre chiffres</translation>
-<translation id="6629841649550503054">Tous les fichiers ont été sauvegardés dans <ph name="BEGIN_LINK" />Google Disque<ph name="END_LINK" />!</translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6650726141019353908">Papillon rose</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
@@ -693,9 +675,6 @@
 <translation id="6918340160281024199">Workman américain</translation>
 <translation id="6930242544192836755">Durée</translation>
 <translation id="6931302001003657424">Épingler à l'accès rapide aux fichiers</translation>
-<translation id="6934241953272494177">Analyse de votre appareil de stockage en cours…
-    <ph name="LINE_BREAK1" />
-    <ph name="FILE_COUNT" /> trouvées</translation>
 <translation id="6935521024859866267">À l'envers</translation>
 <translation id="6943836128787782965">Échec de l'obtention HTTP.</translation>
 <translation id="6949408524333579394">Serbe (translittération)</translation>
@@ -741,7 +720,6 @@
 <translation id="7248671827512403053">Application</translation>
 <translation id="7256405249507348194">Erreur non reconnue : <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Services disponibles</translation>
-<translation id="7283041136720745563">Votre quota Google Disque est insuffisant.</translation>
 <translation id="7294063083760278948">Télougou (translittération)</translation>
 <translation id="7295662345261934369">Partager avec d'autres personnes</translation>
 <translation id="7297443947353982503">Nom d'utilisateur ou mot de passe incorrect, ou échec de l'authentification EAP</translation>
@@ -759,9 +737,6 @@
 <translation id="7460898608667578234">Ukrainien</translation>
 <translation id="7469894403370665791">Se connecter automatiquement à ce réseau</translation>
 <translation id="7486315294984620427">Pour déposer des fichiers dans Parallels Desktop, le fichier doit être copié dans le dossier Fichiers Windows.</translation>
-<translation id="7489215562877293245"><ph name="FILE_COUNT" /> trouvées
-    <ph name="LINE_BREAK1" />
-    Prêt à sauvegarder dans <ph name="BEGIN_LINK" />Google Disque<ph name="END_LINK" /></translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam (phonétique)</translation>
 <translation id="7505167922889582512">Afficher les fichiers masqués</translation>
@@ -795,7 +770,6 @@
 <translation id="7708271999969613024">Pour utiliser ce réseau, vous devez entrer la clé personnelle de déblocage (PUK) à huit chiffres fournie par le fournisseur de service.</translation>
 <translation id="7711920809702896782">Renseignements sur le fichier image</translation>
 <translation id="7724603315864178912">Couper</translation>
-<translation id="7730494089396812859">Afficher les détails de la sauvegarde dans le nuage</translation>
 <translation id="7732111077498238432">Le réseau est contrôlé par une politique</translation>
 <translation id="7748626145866214022">Vous trouverez d'autres options dans la barre d'action. Appuyez sur Alt + A pour mettre en évidence la barre d'action.</translation>
 <translation id="7760449188139285140">Chinois (Wubi)</translation>
@@ -811,11 +785,6 @@
 <translation id="7805768142964895445">État</translation>
 <translation id="7806708061868529807">Hébreu</translation>
 <translation id="78104721049218340">Thaï avec clavier Kedmanee</translation>
-<translation id="7821462174190887129"><ph name="FILE_COUNT" /> trouvées.
-    <ph name="LINE_BREAK1" />
-    Votre quota Google Disque est insuffisant. <ph name="FILE_SIZE" /> supplémentaires sont nécessaires.
-    <ph name="LINE_BREAK2" />
-    Essayez de sélectionner moins de photos.</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> To</translation>
 <translation id="7831491651892296503">Erreur de configuration réseau</translation>
 <translation id="7839804798877833423">L'obtention de ces fichiers utilisera environ <ph name="FILE_SIZE" /> de données mobiles.</translation>

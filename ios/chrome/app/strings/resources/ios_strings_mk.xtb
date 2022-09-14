@@ -472,6 +472,7 @@
 <translation id="4901778704868714008">Зачувај…</translation>
 <translation id="4904877109095351937">Означи како прочитано</translation>
 <translation id="4908869848243824489">Discover од Google</translation>
+<translation id="4916679969857390442">Објектив</translation>
 <translation id="4930714375720679147">Вклучи</translation>
 <translation id="4941089862236492464">Се извинуваме, настана проблем при споделување на ставката.</translation>
 <translation id="4944543191714094452">Најди на страницата…</translation>
@@ -767,7 +768,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7192050974311852563">Започни со собирање евиденција</translation>
 <translation id="7203585745079012652">Изговарај ги одговорите</translation>
 <translation id="7207023858769244910">Синхронизирање за да добиете содржини според вашите интереси.</translation>
-<translation id="7207383424303353046">Ново: автоматски отворајте сајтови во Chrome така што ќе го направите ваша стандардна апликација за прелистувач. <ph name="BEGIN_LINK" />Отворете „Поставки“<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Неважечки прекар на картичка</translation>
 <translation id="722454870747268814">Нова инкогнито картичка</translation>
 <translation id="7265758999917665941">Никогаш за овој сајт</translation>
@@ -917,7 +917,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8533670235862049797">„Безбедното прелистување“ е вклучено</translation>
 <translation id="8534481786647257214">Објавата на Google+ е завршена.</translation>
 <translation id="8548878600947630424">Најди во страница...</translation>
-<translation id="8574235780160508979">„Условите за користење“ на Chrome се менуваат на 31 март. <ph name="BEGIN_LINK" />Прегледајте ги<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Исклучена</translation>
 <translation id="8590913940444621808">Никогаш не прашувај</translation>
 <translation id="8591976964826315682">Блокирајте колачиња од трети страни во „Инкогнито“</translation>

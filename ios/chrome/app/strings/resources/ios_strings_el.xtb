@@ -472,6 +472,7 @@
 <translation id="4901778704868714008">Αποθήκευση…</translation>
 <translation id="4904877109095351937">Επισήμ. ως αναγνωσμένων</translation>
 <translation id="4908869848243824489">Discover από την Google</translation>
+<translation id="4916679969857390442">Φακός</translation>
 <translation id="4930714375720679147">Ενεργοποίηση</translation>
 <translation id="4941089862236492464">Παρουσιάστηκε πρόβλημα με την κοινοποίηση του στοιχείου σας.</translation>
 <translation id="4944543191714094452">Εύρεση στη σελίδα…</translation>
@@ -768,7 +769,6 @@
 <translation id="7192050974311852563">Έναρξη καταγραφής</translation>
 <translation id="7203585745079012652">Εκφώνηση απαντήσεων</translation>
 <translation id="7207023858769244910">Συγχρονίστε για να λαμβάνετε περιεχόμενο με βάση τα ενδιαφέροντά σας.</translation>
-<translation id="7207383424303353046">Νέο: Ανοίξτε ιστοτόπους αυτόματα στο Chrome, ορίζοντάς το ως προεπιλεγμένη εφαρμογή προγράμματος περιήγησης. <ph name="BEGIN_LINK" />Άνοιγμα Ρυθμίσεων<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Μη έγκυρο ψευδώνυμο κάρτας</translation>
 <translation id="722454870747268814">Νέα καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="7265758999917665941">Ποτέ για αυτόν τον ιστότοπο</translation>
@@ -918,7 +918,6 @@
 <translation id="8533670235862049797">Η Ασφαλής περιήγηση είναι ενεργή.</translation>
 <translation id="8534481786647257214">Η ανάρτηση Google+ ολοκληρώθηκε.</translation>
 <translation id="8548878600947630424">Εύρεση στη σελίδα...</translation>
-<translation id="8574235780160508979">Οι Όροι Παροχής Υπηρεσιών του Chrome θα αλλάξουν στις 31 Μαρτίου. <ph name="BEGIN_LINK" />Αναθεωρήστε το περιεχόμενο<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Ανενεργό</translation>
 <translation id="8590913940444621808">Να μην ερωτώμαι</translation>
 <translation id="8591976964826315682">Αποκλεισμός cookie τρίτου μέρους στην ανώνυμη περιήγηση</translation>

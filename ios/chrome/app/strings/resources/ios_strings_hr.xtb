@@ -472,6 +472,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="4901778704868714008">Spremi...</translation>
 <translation id="4904877109095351937">Označi kao pročitano</translation>
 <translation id="4908869848243824489">Googleov Discover</translation>
+<translation id="4916679969857390442">Leća</translation>
 <translation id="4930714375720679147">Uključi</translation>
 <translation id="4941089862236492464">Došlo je do problema prilikom dijeljenja vaše stavke.</translation>
 <translation id="4944543191714094452">Traži na stranici…</translation>
@@ -767,7 +768,6 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7192050974311852563">Započni zapisivanje</translation>
 <translation id="7203585745079012652">Izgovaranje odgovora</translation>
 <translation id="7207023858769244910">Omogućite sinkronizaciju da biste dobivali sadržaj na temelju svojih interesa.</translation>
-<translation id="7207383424303353046">Novo: automatski otvorite web-lokacije u Chromeu tako što ćete ga postaviti kao zadanu aplikaciju preglednika. <ph name="BEGIN_LINK" />Otvorite Postavke<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Nadimak kartice nije važeći</translation>
 <translation id="722454870747268814">Nova anonimna kartica</translation>
 <translation id="7265758999917665941">Nikad za ovu web lokaciju</translation>
@@ -917,7 +917,6 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8533670235862049797">Uključeno je Sigurno pregledavanje</translation>
 <translation id="8534481786647257214">Dovršen je post za Google+.</translation>
 <translation id="8548878600947630424">Traženje na stranici...</translation>
-<translation id="8574235780160508979">Chromeovi Uvjeti pružanja usluge mijenjaju se 31. ožujka. <ph name="BEGIN_LINK" />Pregledajte<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Isključeno</translation>
 <translation id="8590913940444621808">Nikad ne pitaj</translation>
 <translation id="8591976964826315682">Blokiranje kolačića trećih strana u anonimnom načinu</translation>

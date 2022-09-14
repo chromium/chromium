@@ -472,6 +472,7 @@
 <translation id="4901778704868714008">সেভ করুন...</translation>
 <translation id="4904877109095351937">পঠিত হিসেবে চিহ্নিত করুন</translation>
 <translation id="4908869848243824489">Google-এর ডিসকভার</translation>
+<translation id="4916679969857390442">লেন্স</translation>
 <translation id="4930714375720679147">চালু করুন</translation>
 <translation id="4941089862236492464">দুঃখিত, আপনার জিনিস শেয়ার করার সময় একটা সমস্যা ছিল।</translation>
 <translation id="4944543191714094452">পৃষ্ঠাতে খুঁজুন…</translation>
@@ -768,7 +769,6 @@
 <translation id="7192050974311852563">লগ করা শুরু করুন</translation>
 <translation id="7203585745079012652">আবার উত্তরগুলি বলে</translation>
 <translation id="7207023858769244910">আপনার আগ্রহের উপর ভিত্তি করে কন্টেন্ট পেতে সিঙ্ক করুন।</translation>
-<translation id="7207383424303353046">নতুন: Chrome-কে আপনার ডিফল্ট ব্রাউজার অ্যাপ হিসেবে সেট করে এতে অটোমেটিক সাইট খুলুন। <ph name="BEGIN_LINK" />সেটিংস খুলুন<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">কার্ডের বিশেষ নামটি সঠিক নয়</translation>
 <translation id="722454870747268814">নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="7265758999917665941">এই সাইটের জন্য কখনই নয়</translation>
@@ -918,7 +918,6 @@
 <translation id="8533670235862049797">Safe Browsing চালু আছে</translation>
 <translation id="8534481786647257214">Google+ পোষ্ট সম্পূর্ণ হয়েছে৷</translation>
 <translation id="8548878600947630424">পৃষ্ঠাটি খুঁজুন...</translation>
-<translation id="8574235780160508979">৩১ মার্চ থেকে Chrome-এর 'পরিষেবার শর্তাবলী'-তে পরিবর্তন করা হবে। <ph name="BEGIN_LINK" />ভাল করে পড়ে নিন<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">বন্ধ করা আছে</translation>
 <translation id="8590913940444621808">আর কখনো দেখতে চাই না</translation>
 <translation id="8591976964826315682">'ছদ্মবেশী' মোডে থার্ড-পার্টি কুকি ব্লক করুন</translation>

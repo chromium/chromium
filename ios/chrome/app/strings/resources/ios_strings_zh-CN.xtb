@@ -472,6 +472,7 @@
 <translation id="4901778704868714008">保存…</translation>
 <translation id="4904877109095351937">标记为已读</translation>
 <translation id="4908869848243824489">Google 探索</translation>
+<translation id="4916679969857390442">镜头</translation>
 <translation id="4930714375720679147">开启</translation>
 <translation id="4941089862236492464">很抱歉，分享您的信息时出现问题。</translation>
 <translation id="4944543191714094452">在网页中查找…</translation>
@@ -767,7 +768,6 @@
 <translation id="7192050974311852563">开始生成日志</translation>
 <translation id="7203585745079012652">说出答案</translation>
 <translation id="7207023858769244910">同步即可获取系统根据您的兴趣推荐的内容。</translation>
-<translation id="7207383424303353046">新功能：将 Chrome 设为默认浏览器应用，即可自动在 Chrome 中打开网站。<ph name="BEGIN_LINK" />打开“设置”<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">卡的昵称无效</translation>
 <translation id="722454870747268814">打开新的无痕模式标签页</translation>
 <translation id="7265758999917665941">此网站一律不保存密码</translation>
@@ -917,7 +917,6 @@
 <translation id="8533670235862049797">“安全浏览”功能已开启</translation>
 <translation id="8534481786647257214">Google+ 信息发布已完成。</translation>
 <translation id="8548878600947630424">在网页中查找...</translation>
-<translation id="8574235780160508979">Chrome 的《服务条款》将于 3 月 31 日变更。<ph name="BEGIN_LINK" />请查阅<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">已关闭</translation>
 <translation id="8590913940444621808">永不询问</translation>
 <translation id="8591976964826315682">在无痕模式下阻止第三方 Cookie</translation>

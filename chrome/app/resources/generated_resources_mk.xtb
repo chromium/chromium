@@ -3554,6 +3554,7 @@
 <translation id="4306119971288449206">Апликациите мора да се послужат со типот содржина „<ph name="CONTENT_TYPE" />“</translation>
 <translation id="4307992518367153382">Основи</translation>
 <translation id="4309165024397827958">Дозволете апликациите и услугите на Android со дозвола за локација да ја користат локацијата на уредот. Google може повремено да собира податоци за локацијата и да ги користи на анонимен начин за подобрување на прецизноста на локацијата и услугите според локација.</translation>
+<translation id="4309183709806093061">Споделете го и системското аудио. Звукот на уредов ќе биде исклучен за да се спречат повратни информации.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />К (<ph name="NUM_KILOBYTES_LIVE" />К во живо)</translation>
 <translation id="4310132194679586591">Изберете апликација на уредот за да го отворите линков</translation>
 <translation id="4310139701823742692">Погрешен формат на датотека. Проверете ја PPD-датотеката и обидете се повторно.</translation>
@@ -4568,6 +4569,7 @@
 <translation id="5305145881844743843"><ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> управува со сметкава</translation>
 <translation id="5307030433605830021">Изворот не е поддржан</translation>
 <translation id="5307386115243749078">Спари Bluetooth-прекинувач</translation>
+<translation id="5307958609248661362">Истече времето за Google Password Manager</translation>
 <translation id="5308380583665731573">Поврзи</translation>
 <translation id="5309418307557605830">„Помошникот на Google“ функционира и тука</translation>
 <translation id="5311304534597152726">Се најавувате како</translation>
@@ -6767,6 +6769,7 @@
 <translation id="744341768939279100">Создај нов профил</translation>
 <translation id="744366959743242014">Се вчитуваат податоци. Ова може да потрае неколку секунди.</translation>
 <translation id="7443806024147773267">Пристапувајте до своите лозинки секогаш кога сте најавени на сметката на Google</translation>
+<translation id="7444046173054089907">Сајтов е блокиран</translation>
 <translation id="7444970023873202833">Истражете уште од вашите спомени во „Фотографии на Google“</translation>
 <translation id="7444983668544353857">Оневозможи <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Инсталирајте ги апликациите автоматски</translation>
@@ -7368,6 +7371,7 @@
 <translation id="7988805580376093356">Задржете го вашиот OS и извршете го <ph name="DEVICE_OS" /> од USB.</translation>
 <translation id="7991296728590311172">Поставки за „Пристап со прекинувачи“</translation>
 <translation id="7992203134935383159">Синтеза на говор</translation>
+<translation id="799570308305997052">Веб-приказ</translation>
 <translation id="7997826902155442747">Приоритет на процес</translation>
 <translation id="7999229196265990314">Се создадоа следниве датотеки:
 

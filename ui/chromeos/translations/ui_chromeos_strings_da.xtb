@@ -13,11 +13,6 @@
 <translation id="112387589102719461">Engelsk (USA) med Dvorak-programmeringstastatur</translation>
 <translation id="1134697384939541955">Engelsk (USA) med udvidet tastatur</translation>
 <translation id="1138691154716715755">Tidligere i denne måned</translation>
-<translation id="1148097584170732637">Der blev fundet <ph name="FILE_COUNT" />.
-    <ph name="LINE_BREAK1" />
-    Der er ikke nok tilgængelig plads på det lokale lager. Der er brug for <ph name="FILE_SIZE" /> mere.
-    <ph name="LINE_BREAK2" />
-    Prøv at vælge færre billeder.</translation>
 <translation id="1150565364351027703">Solbriller</translation>
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Catalansk</translation>
@@ -41,7 +36,6 @@
 <translation id="1297922636971898492">Google Drev er ikke tilgængeligt lige nu. Uploadet genstarter automatisk, når Google Drev er tilgængeligt igen.</translation>
 <translation id="1307931752636661898">Linux-filerne kan ikke vises</translation>
 <translation id="1313405956111467313">Automatisk proxykonfiguration</translation>
-<translation id="1351692861129622852">Importerer <ph name="FILE_COUNT" /> filer...</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Filen eller mappen kan ikke bruges.</translation>
 <translation id="1363028406613469049">Spor</translation>
@@ -84,6 +78,7 @@
 <translation id="1722487484194605434">Komprimerer <ph name="NUMBER_OF_ITEMS" /> elementer...</translation>
 <translation id="1722687688096767818">Tilføjer profilen...</translation>
 <translation id="1726100011689679555">Navneservere</translation>
+<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> elementer blev flyttet til papirkurven</translation>
 <translation id="1729953886957086472">Tysk (Tyskland)</translation>
 <translation id="1730235522912993863">Kinesisk cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elementer blev kopieret.</translation>
@@ -155,7 +150,6 @@
 <translation id="2307462900900812319">Konfigurer netværk</translation>
 <translation id="2325650632570794183">Denne filtype understøttes ikke. Gå til Chrome Webshop for at finde en app, der kan åbne denne filtype.</translation>
 <translation id="2326539130272988168">Bulgarsk</translation>
-<translation id="2352947182261340447">Der er ikke nok tilgængelig plads på det lokale lager.</translation>
 <translation id="23721837607121582">Download mobilprofil. Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Skift til listevisning</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> mapper er delt med Linux</translation>
@@ -207,13 +201,13 @@
 <translation id="2820957248982571256">Scanner…</translation>
 <translation id="2830077785865012357">Kinesisk zhuyin</translation>
 <translation id="2843806747483486897">Skift standardindstillinger...</translation>
-<translation id="2850124913210091882">Sikkerhedskopiér</translation>
 <translation id="2873951654529031587">Papirkurv</translation>
 <translation id="288024221176729610">Tjekkisk</translation>
 <translation id="2887525882758501333">PDF-dokument</translation>
 <translation id="2888807692577297075">Ingen filer matcher &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Oplysninger</translation>
 <translation id="2902734494705624966">Amerikansk (udvidet)</translation>
+<translation id="2906052776158021882">Flytter <ph name="NUMBER_OF_ITEMS" /> elementer til papirkurven</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estisk</translation>
 <translation id="2938685643439809023">Mongolsk</translation>
@@ -224,7 +218,6 @@
 <translation id="2977940621473452797">Denne fil er beregnet til en computer med Macintosh-software. Den er ikke kompatibel med din enhed, som kører Chrome OS. Søg efter en anden egnet app i Chrome Webshop.</translation>
 <translation id="2984337792991268709">I dag <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> elementer gendannes...</translation>
-<translation id="2994669386200004489"><ph name="FILE_NAME" /> kunne ikke sikkerhedskopieres</translation>
 <translation id="299638574917407533">Fransk (Canada)</translation>
 <translation id="3003189754374775221">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, opret forbindelse</translation>
 <translation id="3003633581067744647">Skift til miniaturevisning</translation>
@@ -232,7 +225,6 @@
 <translation id="3029114385395636667">Aktivér Google Docs Offline for at gøre Docs, Sheets og Slides tilgængelige offline.</translation>
 <translation id="303198083543495566">Geografi</translation>
 <translation id="3047197340186497470">Kinesisk dayi</translation>
-<translation id="3057861065630527966">Sikkerhedskopiér dine billeder og videoer</translation>
 <translation id="3067790092342515856">Windows-filer</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS-host</translation>
@@ -281,8 +273,6 @@
 <translation id="343907260260897561">Polaroidkamera</translation>
 <translation id="3452106565701029351">Frigør fra Genvej til foretrukne filer</translation>
 <translation id="3455931012307786678">Estisk</translation>
-<translation id="3466147780910026086">Din medieenhed scannes...</translation>
-<translation id="3468522857997926824"><ph name="FILE_COUNT" /> billeder blev sikkerhedskopieret til <ph name="BEGIN_LINK" />Google Drev<ph name="END_LINK" /></translation>
 <translation id="3475447146579922140">Google-regneark</translation>
 <translation id="3479552764303398839">Ikke nu</translation>
 <translation id="3486821258960016770">Mongolsk</translation>
@@ -306,7 +296,6 @@
 <translation id="3616113530831147358">Lyd</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3619593063686672873">Du har ikke åbnet nogen videoer for nylig</translation>
-<translation id="3620292326130836921">Alt er sikkerhedskopieret.</translation>
 <translation id="3634507049637220048">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, administreret af din administrator, oplysninger</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elementer blev flyttet.</translation>
 <translation id="3685122418104378273">Synkronisering af Google Drev er som standard deaktiveret, når du bruger mobildata.</translation>
@@ -317,7 +306,6 @@
 <translation id="3726463242007121105">Denne enhed kan ikke åbnes, fordi dens filsystem ikke understøttes.</translation>
 <translation id="3727148787322499904">Hvis denne indstilling ændres, påvirker det alle delte netværk</translation>
 <translation id="3737576078404241332">Fjern fra sidebjælke</translation>
-<translation id="3741243925913727067">Sikkerhedskopiér billeder og videoer på din medieenhed til Google Drev.</translation>
 <translation id="3749289110408117711">Filnavn</translation>
 <translation id="3780536599611287598">Du har ikke tilladelse til at flytte filer til "<ph name="FOLDER_NAME" />".</translation>
 <translation id="3786301125658655746">Du er offline</translation>
@@ -362,7 +350,6 @@
 <translation id="4202977638116331303">Georgisk</translation>
 <translation id="421017592316736757">Du skal være online for at få adgang til denne fil.</translation>
 <translation id="4212740939091998969">Der findes allerede en mappe med navnet "<ph name="FOLDER_NAME" />". Vælg et andet navn.</translation>
-<translation id="4215448920900139318">Sikkerhedskopierer <ph name="FILE_COUNT" /></translation>
 <translation id="4218274196133425560">Fjern undtagelsen for <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Google-præsentation</translation>
 <translation id="4277536868133419688">Filteret <ph name="FILTER_NAME" /> er aktiveret.</translation>
@@ -427,7 +414,6 @@
 <translation id="4711094779914110278">Tyrkisk</translation>
 <translation id="4712283082407695269">Åbner "<ph name="PATH" />"</translation>
 <translation id="4720185134442950733">Mobildatanetværk</translation>
-<translation id="4724850507808590449"><ph name="FILE_COUNT" /> billeder blev sikkerhedskopieret</translation>
 <translation id="4725096204469550614">Tidligere i år</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4737050008115666127">Landingsbane</translation>
@@ -452,7 +438,6 @@
 <translation id="4881695831933465202">Åbn</translation>
 <translation id="4900532980794411603">Del med Parallels Desktop</translation>
 <translation id="4902546322522096650">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, opret forbindelse</translation>
-<translation id="4905417359854579806"><ph name="FILE_COUNT" /> er klar til at blive sikkerhedskopieret</translation>
 <translation id="4906580650526544301">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, telefonbatteri <ph name="BATTERY_STATUS" />%, info</translation>
 <translation id="4935975195727477204">Blomst</translation>
 <translation id="4943368462779413526">Amerikansk fodbold</translation>
@@ -464,7 +449,6 @@
 <translation id="4988205478593450158">Er du sikker på, at du vil slette "<ph name="FILE_NAME" />"?</translation>
 <translation id="498902553138568924">Rød sommerfugl</translation>
 <translation id="4992066212339426712">Slå lyden til</translation>
-<translation id="5004584466530475658"><ph name="FILE_COUNT" /> nye billeder</translation>
 <translation id="5010406651457630570">Computere</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">En handling tager længere tid end forventet. Vil du afbryde den?</translation>
@@ -476,6 +460,7 @@
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> filer slettes</translation>
 <translation id="508423945471810158">Flytter <ph name="NUMBER_OF_ITEMS" /> elementer til <ph name="FOLDER_NAME" /></translation>
+<translation id="5092200349368278146"><ph name="FILE_NAME" /> blev flyttet til papirkurven</translation>
 <translation id="509429900233858213">Der opstod en fejl.</translation>
 <translation id="5098629044894065541">Hebræisk</translation>
 <translation id="5102922915594634436">Administrer synkroniserede mapper</translation>
@@ -508,6 +493,7 @@
         <ph name="MARKUP_7" />Del, opret og samarbejd<ph name="MARKUP_8" />
         om filer med andre på ét sted.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Gendannede filer fra Google Drev</translation>
+<translation id="5286194356314741248">Søger</translation>
 <translation id="5288441970121584418">Burger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5299998344490869684">Er du sikker på, at du vil tømme papirkurven?</translation>
@@ -517,7 +503,6 @@
 <translation id="5323213332664049067">Latinamerikansk</translation>
 <translation id="5330145655348521461">Disse filer blev åbnet på en anden computer. Skift til <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) for at se dem.</translation>
 <translation id="5330512191124428349">Hent oplysninger</translation>
-<translation id="5335458522276292100">Sikkerhedskopierer <ph name="FILE_COUNT" /> til <ph name="BEGIN_LINK" />Google Drev<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Person med katte</translation>
 <translation id="5358764674931277">Billedfrekvens</translation>
 <translation id="5363339716524495120">Inputsproget er kinesisk</translation>
@@ -559,8 +544,6 @@
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, Lås op</translation>
 <translation id="5700087501958648444">Lydoplysninger</translation>
 <translation id="5724172041621205163">Thai med Pattachote-tastatur</translation>
-<translation id="5731409020711461763">1 nyt billede</translation>
-<translation id="5752453871435543420">Sikkerhedskopiering i skyen for Chrome OS</translation>
 <translation id="5756666464756035725">Ungarsk QWERTY-tastatur</translation>
 <translation id="5763377084591234761">Tysk (Schweiz)</translation>
 <translation id="5769519078756170258">Host eller domæne, der skal ekskluderes</translation>
@@ -581,6 +564,7 @@
 <translation id="5845721951356578987">Sygeplejerske</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">DHCP-opslag mislykkedes</translation>
+<translation id="5887342613489958822">Flytter <ph name="FILE_NAME" /> til papirkurven</translation>
 <translation id="5896749729057314184">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ikke aktiveret, signalstyrke på <ph name="SIGNAL_STRENGTH" /> %, oplysninger</translation>
 <translation id="5911887972742538906">Der opstod en fejl ved installationen af Linux-appen.</translation>
 <translation id="5912396950572065471">Format</translation>
@@ -594,7 +578,6 @@
 <translation id="6011074160056912900">Ethernet-netværk</translation>
 <translation id="60357267506638014">Tjekkisk (QWERTY)</translation>
 <translation id="603895874132768835">Du kan ikke bruge dette netværk, før du har oprettet en ny pinkode</translation>
-<translation id="604001903249547235">Sikkerhedskopiering i skyen</translation>
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" />-netværk, ingen forbindelse</translation>
 <translation id="6074825444536523002">Google-formular</translation>
@@ -657,7 +640,6 @@
 <translation id="6607272825297743757">Filoplysninger</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> mapper blev delt med Parallels Desktop</translation>
 <translation id="6629518321609546825">Angiv mindst fire tal</translation>
-<translation id="6629841649550503054">Alt er sikkerhedskopieret til <ph name="BEGIN_LINK" />Google Drev<ph name="END_LINK" />.</translation>
 <translation id="6643016212128521049">Ryd</translation>
 <translation id="6650726141019353908">Lyserød sommerfugl</translation>
 <translation id="6657585470893396449">Adgangskode</translation>
@@ -692,9 +674,6 @@
 <translation id="6918340160281024199">Amerikansk Workman</translation>
 <translation id="6930242544192836755">Varighed</translation>
 <translation id="6931302001003657424">Fastgør til Genvej til foretrukne filer</translation>
-<translation id="6934241953272494177">Scanner din medienhed...
-    <ph name="LINE_BREAK1" />
-    Der blev fundet <ph name="FILE_COUNT" /></translation>
 <translation id="6935521024859866267">På hovedet</translation>
 <translation id="6943836128787782965">Det lykkedes ikke at hente HTTP</translation>
 <translation id="6949408524333579394">Serbisk translitteration</translation>
@@ -740,7 +719,6 @@
 <translation id="7248671827512403053">Applikation</translation>
 <translation id="7256405249507348194">Ukendt fejl: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Tilgængelige tjenester</translation>
-<translation id="7283041136720745563">Dine Google Drev-kvote er ikke stor nok.</translation>
 <translation id="7294063083760278948">Telugu translitteration</translation>
 <translation id="7295662345261934369">Del med andre</translation>
 <translation id="7297443947353982503">Brugernavn/adgangskode er forkert, eller også mislykkedes EAP-godkendelsen</translation>
@@ -758,9 +736,6 @@
 <translation id="7460898608667578234">ukrainsk</translation>
 <translation id="7469894403370665791">Opret automatisk forbindelse til dette netværk</translation>
 <translation id="7486315294984620427">Filer skal først kopieres til mappen med Windows-filer, før du kan trække dem til Parallels Desktop.</translation>
-<translation id="7489215562877293245">Der blev fundet <ph name="FILE_COUNT" />
-    <ph name="LINE_BREAK1" />
-    Klar til at sikkerhedskopiere til <ph name="BEGIN_LINK" />Google Drev<ph name="END_LINK" /></translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam fonetisk</translation>
 <translation id="7505167922889582512">Vis skjulte filer</translation>
@@ -794,7 +769,6 @@
 <translation id="7708271999969613024">Hvis du vil bruge dette netværk, skal du angive den 8-cifrede PUK-kode, du har fået af mobilselskabet.</translation>
 <translation id="7711920809702896782">Billedoplysninger</translation>
 <translation id="7724603315864178912">Klip</translation>
-<translation id="7730494089396812859">Vis info om sikkerhedskopiering i skyen</translation>
 <translation id="7732111077498238432">Netværket er underlagt politikker</translation>
 <translation id="7748626145866214022">Der er flere tilgængelige muligheder på handlingslinjen. Tryk på Alt+A for at fokusere på handlingslinjen.</translation>
 <translation id="7760449188139285140">Kinesisk wubi</translation>
@@ -810,11 +784,6 @@
 <translation id="7805768142964895445">Status</translation>
 <translation id="7806708061868529807">Hebræisk</translation>
 <translation id="78104721049218340">Thai med kedmanee-tastatur</translation>
-<translation id="7821462174190887129">Der blev fundet <ph name="FILE_COUNT" />.
-    <ph name="LINE_BREAK1" />
-    Din kvote for Google Drev er ikke stor nok. Der er brug for <ph name="FILE_SIZE" /> mere.
-    <ph name="LINE_BREAK2" />
-    Prøv at vælge færre billeder.</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Der opstod en fejl under konfigurationen af netværket</translation>
 <translation id="7839804798877833423">Hvis du henter disse filer, bruge du ca. <ph name="FILE_SIZE" /> mobildata.</translation>

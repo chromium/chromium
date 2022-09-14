@@ -13,11 +13,6 @@
 <translation id="112387589102719461">անգլերեն (ԱՄՆ)՝ Programmer Dvorak ստեղնաշարով</translation>
 <translation id="1134697384939541955">անգլերեն (ԱՄՆ)՝ ընդլայնված ստեղնաշարով</translation>
 <translation id="1138691154716715755">Այս ամսվա սկզբին</translation>
-<translation id="1148097584170732637">Գտնվել է <ph name="FILE_COUNT" /> ֆայլ։
-    <ph name="LINE_BREAK1" />
-    Սարքում բավարար տարածք չկա: Անհրաժեշտ է ևս <ph name="FILE_SIZE" />։
-    <ph name="LINE_BREAK2" />
-    Ընտրեք լուսանկարների մի մասը։</translation>
 <translation id="1150565364351027703">Արևային ակնոց</translation>
 <translation id="115443833402798225">Հանգուլ Անմատա</translation>
 <translation id="1155759005174418845">Կատալոնական</translation>
@@ -41,7 +36,6 @@
 <translation id="1297922636971898492">Այս պահին Google Drive-ը մատչելի չէ: Վերբեռնումը ավտոմատ կվերագործարկվի, երբ Google Drive-ը մատչելի լինի:</translation>
 <translation id="1307931752636661898">Չհաջողվեց ցուցադրել Լինուքսի ֆայլերը</translation>
 <translation id="1313405956111467313">Պրոքսի-սերվերի ինքնակազմաձևում</translation>
-<translation id="1351692861129622852">Ներմուծվում է <ph name="FILE_COUNT" /> ֆայլ...</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Ֆայլը կամ գրացուցակը վնասված են:</translation>
 <translation id="1363028406613469049">Կատարում</translation>
@@ -155,7 +149,6 @@
 <translation id="2307462900900812319">Կազմաձևել ցանցը</translation>
 <translation id="2325650632570794183">Ֆայլի այս տեսակը չի աջակցվում: Այցելեք Chrome Web Store, որպեսզի գտնեք համապատասխան հավելված, որը կարող է բացել այս տեսակի ֆայլը:</translation>
 <translation id="2326539130272988168">բուլղարերեն</translation>
-<translation id="2352947182261340447">Սարքում բավարար տարածք չկա։</translation>
 <translation id="23721837607121582">Ներբեռնել բջջային պրոֆիլը, ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Ցանկի տեսքով</translation>
 <translation id="2377590462528165447">Դուք <ph name="NUMBER_OF_ITEMS" /> պանակով կիսվեցին Լինուքսի հետ</translation>
@@ -207,7 +200,6 @@
 <translation id="2820957248982571256">Որոնում…</translation>
 <translation id="2830077785865012357">չինարեն (ժույին)</translation>
 <translation id="2843806747483486897">Փոխել կանխադրվածը…</translation>
-<translation id="2850124913210091882">Կրկնօրինակել</translation>
 <translation id="2873951654529031587">Աղբարկղ</translation>
 <translation id="288024221176729610">Չեխական</translation>
 <translation id="2887525882758501333">PDF փաստաթուղթ</translation>
@@ -224,7 +216,6 @@
 <translation id="2977940621473452797">Այս ֆայլը նախատեսված է Macintosh-ի ծրագրակազմով համակարգիչների համար։ Այն համատեղելի չէ ձեր ChromeOS-ով աշխատող սարքի հետ։ Որոնեք համապատասխան փոխարինող հավելված Chrome Web Store-ում։</translation>
 <translation id="2984337792991268709">Այսօր <ph name="TODAY_DAYTIME" />-ին</translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> տարր վերականգնվում է…</translation>
-<translation id="2994669386200004489">Չհաջողվեց պահուստավորել <ph name="FILE_NAME" /> ֆայլը</translation>
 <translation id="299638574917407533">ֆրանսերեն (Կանադա)</translation>
 <translation id="3003189754374775221">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, միացում</translation>
 <translation id="3003633581067744647">Միացնել մանրապատկերի դիտակերպը</translation>
@@ -232,7 +223,6 @@
 <translation id="3029114385395636667">Միացրեք Google Docs Offline ընդլայնումը՝ անցանց ռեժիմում Փաստաթղթերը, Աղյուսակներն ու Սլայդները օգտագործելու համար։</translation>
 <translation id="303198083543495566">Աշխարհագրություն</translation>
 <translation id="3047197340186497470">չինարեն (դայի)</translation>
-<translation id="3057861065630527966">Կրկնօրինակել ձեր լուսանկարները և տեսանյութերը</translation>
 <translation id="3067790092342515856">Windows-ի ֆայլեր</translation>
 <translation id="3083975830683400843">Chromebit սարքեր</translation>
 <translation id="3085752524577180175">SOCKS խնամորդ</translation>
@@ -281,8 +271,6 @@
 <translation id="343907260260897561">Ակնթարթային տեսախցիկ</translation>
 <translation id="3452106565701029351">Ապամրացնել ֆայլերի արագ մուտքից</translation>
 <translation id="3455931012307786678">էստոներեն</translation>
-<translation id="3466147780910026086">Որոնում մեդիա սարքում…</translation>
-<translation id="3468522857997926824"><ph name="FILE_COUNT" /> լուսանկար կրկնօրինակվեց <ph name="BEGIN_LINK" />Google Drive-ում<ph name="END_LINK" /></translation>
 <translation id="3475447146579922140">Google աղյուսակ</translation>
 <translation id="3479552764303398839">Հիմա չէ</translation>
 <translation id="3486821258960016770">մոնղոլերեն</translation>
@@ -306,7 +294,6 @@
 <translation id="3616113530831147358">Աուդիո</translation>
 <translation id="3619115746895587757">Կապուչինո</translation>
 <translation id="3619593063686672873">Վերջերս դիտված տեսանյութեր չկան</translation>
-<translation id="3620292326130836921">Բոլորը ֆայլերը կրկնօրինակվեցին:</translation>
 <translation id="3634507049637220048">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, կառավարվում է ձեր ադմինիստրատորի կողմից, մանրամասներ</translation>
 <translation id="3645233063072417428">Տեղափոխվեց <ph name="NUMBER_OF_ITEMS" /> տարր։</translation>
 <translation id="3685122418104378273">Շարժական տվյալներն օգտագործելիս Google Drive համաժամացումը ըստ կանխադրման անջատվում է:</translation>
@@ -317,7 +304,6 @@
 <translation id="3726463242007121105">Հնարավոր չէ բացել սարքը, քանի որ նրա ֆայլային համակարգը չի աջակցվում:</translation>
 <translation id="3727148787322499904">Եթե փոխեք այս կարգավորումը, այն կազդի բոլոր ընդհանուր ցանցերի վրա</translation>
 <translation id="3737576078404241332">Հեռացնել կողագոտուց</translation>
-<translation id="3741243925913727067">Կրկնօրինակեք ձեր մեդիա սարքի լուսանկարներն ու տեսանյութերը Google Drive-ում:</translation>
 <translation id="3749289110408117711">Ֆայլի անունը</translation>
 <translation id="3780536599611287598">Դուք այս ֆայլերը «<ph name="FOLDER_NAME" />» պանակ տեղափոխելու թույլտվություն չունեք։</translation>
 <translation id="3786301125658655746">Դուք միացած չեք ցանցին</translation>
@@ -362,7 +348,6 @@
 <translation id="4202977638116331303">վրացերեն</translation>
 <translation id="421017592316736757">Այս ֆայլն օգտագործելու համար դուք պետք է առցանց լինեք:</translation>
 <translation id="4212740939091998969">«<ph name="FOLDER_NAME" />» անունով պանակ արդեն գոյություն ունի: Ընտրեք այլ անուն:</translation>
-<translation id="4215448920900139318">Ֆայլերի պահուստավորում (<ph name="FILE_COUNT" />)</translation>
 <translation id="4218274196133425560">Հեռացնել բացառումը <ph name="HOST_NAME" />-ի համար</translation>
 <translation id="4261901459838235729">Google ներկայացում</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> զտիչը միացված է։</translation>
@@ -427,7 +412,6 @@
 <translation id="4711094779914110278">Թուրքական</translation>
 <translation id="4712283082407695269">«<ph name="PATH" />» արխիվը բացվում է</translation>
 <translation id="4720185134442950733">Բջջային ցանց</translation>
-<translation id="4724850507808590449">Կրկնօրինակվեց <ph name="FILE_COUNT" /> լուսանկար</translation>
 <translation id="4725096204469550614">Այս տարվա սկզբին</translation>
 <translation id="4725511304875193254">Կորգի</translation>
 <translation id="4737050008115666127">Վայրէջք</translation>
@@ -452,7 +436,6 @@
 <translation id="4881695831933465202">Բացել</translation>
 <translation id="4900532980794411603">Հասանելի դարձնել Parallels Desktop-ին</translation>
 <translation id="4902546322522096650">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կապակցում</translation>
-<translation id="4905417359854579806"><ph name="FILE_COUNT" /> ֆայլ պատրաստ է պահուստավորման</translation>
 <translation id="4906580650526544301">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, մարտկոցի լիցքը՝ <ph name="BATTERY_STATUS" />%, մանրամասներ</translation>
 <translation id="4935975195727477204">Ծաղիկ</translation>
 <translation id="4943368462779413526">Ֆուտբոլ</translation>
@@ -464,7 +447,6 @@
 <translation id="4988205478593450158">Ջնջե՞լ «<ph name="FILE_NAME" />» ֆայլը։</translation>
 <translation id="498902553138568924">Կարմիր թիթեռ</translation>
 <translation id="4992066212339426712">Միացնել ձայնը</translation>
-<translation id="5004584466530475658"><ph name="FILE_COUNT" /> նոր լուսանկար</translation>
 <translation id="5010406651457630570">Համակարգիչներ</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Գործողությունը սպասվածից երկար է տևում: Ցանկանո՞ւմ եք ընդհատել:</translation>
@@ -508,6 +490,7 @@
     <ph name="MARKUP_7" />Ստեղծեք, կիսվեք և համագործակցեք<ph name="MARKUP_8" />
     ուրիշների հետ մեկ վայրում:<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Վերականգնված ֆայլեր Google Drive-ից</translation>
+<translation id="5286194356314741248">Որոնում</translation>
 <translation id="5288441970121584418">Բուրգեր</translation>
 <translation id="5299998344490869684">Իսկապե՞ս ուզում եք դատարկել աղբարկղը։</translation>
 <translation id="5305688511332277257">Տեղադրված չկա</translation>
@@ -516,7 +499,6 @@
 <translation id="5323213332664049067">Լատինամերիկյան</translation>
 <translation id="5330145655348521461">Այս ֆայլերը բացված են այլ աշխատասեղանի վրա: Դիտելու համար տեղափոխվեք <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />):</translation>
 <translation id="5330512191124428349">Ստանալ տեղեկություններ</translation>
-<translation id="5335458522276292100"><ph name="FILE_COUNT" /> ֆայլ պահուստավորվում է <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />-ում</translation>
 <translation id="535792325654997756">Կատուներով մարդ</translation>
 <translation id="5358764674931277">Կադրերի արագությունը</translation>
 <translation id="5363339716524495120">Ներածման լեզուն չինարենն է</translation>
@@ -558,8 +540,6 @@
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, Ապակողպել</translation>
 <translation id="5700087501958648444">Տեղեկություններ աուդիո ֆայլի մասին</translation>
 <translation id="5724172041621205163">թայերեն (Pattachote ստեղնաշար)</translation>
-<translation id="5731409020711461763">1 նոր լուսանկար</translation>
-<translation id="5752453871435543420">Chrome OS Ամպում կրկնօրինակելու պանակ</translation>
 <translation id="5756666464756035725">Հունգարական QWERTY</translation>
 <translation id="5763377084591234761">գերմաներեն (Շվեյցարիա)</translation>
 <translation id="5769519078756170258">Հանգույցը կամ տիրույթը, որը ուզում եք բացառել</translation>
@@ -593,7 +573,6 @@
 <translation id="6011074160056912900">Ethernet ցանց</translation>
 <translation id="60357267506638014">Չեխական QWERTY</translation>
 <translation id="603895874132768835">Դուք չեք կարողանա օգտագործել այս ցանցը, մինչև չսահմանեք նոր PIN կոդ։</translation>
-<translation id="604001903249547235">Կրկնօրինակում ամպում</translation>
 <translation id="6040143037577758943">Փակել</translation>
 <translation id="6055907707645252013">Կապը <ph name="NETWORK_TYPE" /> ցանցի հետ հաստատված չէ</translation>
 <translation id="6074825444536523002">Google ձևաթուղթ</translation>
@@ -656,7 +635,6 @@
 <translation id="6607272825297743757">Ֆայլի տվյալներ</translation>
 <translation id="6609332149380188670">Parallels Desktop-ին հասանելի է դարձել <ph name="NUMBER_OF_ITEMS" /> պանակ</translation>
 <translation id="6629518321609546825">Մուտքագրեք առնվազն 4 նիշ</translation>
-<translation id="6629841649550503054">Բոլոր ֆայլերը կրկնօրինակվեցին <ph name="BEGIN_LINK" />Google Drive-ում<ph name="END_LINK" /></translation>
 <translation id="6643016212128521049">Մաքրել</translation>
 <translation id="6650726141019353908">Վարդագույն թիթեռ</translation>
 <translation id="6657585470893396449">Գաղտնաբառ</translation>
@@ -691,9 +669,6 @@
 <translation id="6918340160281024199">US Workman</translation>
 <translation id="6930242544192836755">Տևողություն</translation>
 <translation id="6931302001003657424">Ամրացնել ֆայլերի արագ մուտքին</translation>
-<translation id="6934241953272494177">Որոնում մեդիա սարքում…
-    <ph name="LINE_BREAK1" />
-    Գտնվել է <ph name="FILE_COUNT" /> ֆայլ</translation>
 <translation id="6935521024859866267">Գլխիվայր</translation>
 <translation id="6943836128787782965">HTTP GET-ի սխալ</translation>
 <translation id="6949408524333579394">սերբերեն (տառադարձություն)</translation>
@@ -739,7 +714,6 @@
 <translation id="7248671827512403053">Հավելված</translation>
 <translation id="7256405249507348194">Չճանաչված սխալ՝ <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Հասանելի ծառայություններ</translation>
-<translation id="7283041136720745563">Ձեր Google Drive-ում բավարար տարածք չկա։</translation>
 <translation id="7294063083760278948">տելուգու (տառադարձություն)</translation>
 <translation id="7295662345261934369">Կիսվել այլ օգտատերերի հետ</translation>
 <translation id="7297443947353982503">Օգտանունը/գաղտնաբառը սխալ է կամ EAP իսկորոշումը չհաջողվեց</translation>
@@ -757,9 +731,6 @@
 <translation id="7460898608667578234">Ուկրաինական</translation>
 <translation id="7469894403370665791">Ավտոմատ միանալ այս ցանցին</translation>
 <translation id="7486315294984620427">Ֆայլերը Parallels Desktop քաշելու և թողնելու համար նախ պատճենեք դրանք «Windows-ի ֆայլեր» պանակում։</translation>
-<translation id="7489215562877293245">Գտնվել է <ph name="FILE_COUNT" /> ֆայլ
-    <ph name="LINE_BREAK1" />
-    Ֆայլերը պատրաստ են պահուստավորման <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />-ում</translation>
 <translation id="749452993132003881">հիրագանա</translation>
 <translation id="7495372004724182530">մալայալամ (հնչյունային)</translation>
 <translation id="7505167922889582512">Ցուցադրել թաքցված ֆայլերը</translation>
@@ -793,7 +764,6 @@
 <translation id="7708271999969613024">Այս ցանցն օգտագործելու համար անհրաժեշտ է մուտքագրել 8 թվանշանից բաղկացած անձնական արգելահանման բանալին (PUK), որը տրամադրվել է ձեր օպերատորի կողմից։</translation>
 <translation id="7711920809702896782">Տեղեկություններ պատկերի մասին</translation>
 <translation id="7724603315864178912">Կտրել</translation>
-<translation id="7730494089396812859">Ցույց տալ Ամպում կրկնօրինակելու մանրամասները</translation>
 <translation id="7732111077498238432">Ցանցը վերահսկվում է քաղաքականությամբ</translation>
 <translation id="7748626145866214022">Գործողությունների գոտում առկա են լրացուցիչ ընտրանքներ: Սեղմեք Alt+A՝ գործողությունների գոտին նշելու համար:</translation>
 <translation id="7760449188139285140">չինարեն (Wubi)</translation>
@@ -809,11 +779,6 @@
 <translation id="7805768142964895445">Կարգավիճակ</translation>
 <translation id="7806708061868529807">եբրայերեն</translation>
 <translation id="78104721049218340">թայերեն (Kedmanee ստեղնաշար)</translation>
-<translation id="7821462174190887129">Գտնվել է <ph name="FILE_COUNT" /> ֆայլ։
-    <ph name="LINE_BREAK1" />
-    Ձեր Google Drive-ում բավարար տարածք չկա։ Անհրաժեշտ է ևս <ph name="FILE_SIZE" />։
-    <ph name="LINE_BREAK2" />
-    Ընտրեք լուսանկարների մի մասը։</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ՏԲ</translation>
 <translation id="7831491651892296503">Չհաջողվեց կազմաձևել ցանցը</translation>
 <translation id="7839804798877833423">Այս ֆայլերը քաշելու համար կպահանջվի մոտ <ph name="FILE_SIZE" /> բջջային տվյալների հոսք:</translation>

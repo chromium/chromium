@@ -1505,6 +1505,7 @@
 <translation id="2356070529366658676">Спрашивать</translation>
 <translation id="2357330829548294574">Удалить пользователя <ph name="USER_NAME" /></translation>
 <translation id="2358561147588818967">Разрешить сайтам использовать JavaScript</translation>
+<translation id="2358777858338503863">Нажмите, чтобы разрешить расширению доступ к сайту <ph name="ORIGIN" />:</translation>
 <translation id="2359071692152028734">Приложения Linux могут перестать отвечать.</translation>
 <translation id="2359345697448000899">Управлять расширениями можно на вкладке "Расширения" в меню "Инструменты".</translation>
 <translation id="2359556993567737338">Подключение устройства Bluetooth</translation>
@@ -3791,6 +3792,7 @@
 <translation id="4554591392113183336">Внешнее расширение не новее существующего.</translation>
 <translation id="4555769855065597957">Тень</translation>
 <translation id="4555863373929230635">Чтобы сохранять пароли в аккаунте Google, войдите в него и включите синхронизацию.</translation>
+<translation id="4556194354084985730">Легко входите на сайты и в приложения с помощью сохраненных паролей. Если функция отключена, система будет запрашивать подтверждение при каждом входе.</translation>
 <translation id="4558426062282641716">Требуется разрешение на автозапуск</translation>
 <translation id="4559617833001311418">Этот сайт может использовать датчики движения и освещенности.</translation>
 <translation id="4561893854334016293">Недавних изменений в разрешениях не найдено.</translation>
@@ -5345,6 +5347,7 @@
 <translation id="6077476112742402730">Голосовой ввод</translation>
 <translation id="6078121669093215958">{0,plural, =1{Гость}one{# открытое окно в гостевом режиме}few{# открытых окна в гостевом режиме}many{# открытых окон в гостевом режиме}other{# открытого окна в гостевом режиме}}</translation>
 <translation id="6078323886959318429">Новый ярлык</translation>
+<translation id="6078742430369906859">Обмен данными в сети "<ph name="NETWORK_ID" />" может быть ограничен.</translation>
 <translation id="6078752646384677957">Проверьте микрофон и уровни громкости.</translation>
 <translation id="6078769373519310690">Расширение "<ph name="CHROME_EXTENSION_NAME" />" запрашивает разрешение на подключение к HID-устройству</translation>
 <translation id="608029822688206592">Сеть не найдена. Установите SIM-карту и повторите попытку.</translation>
@@ -6061,6 +6064,7 @@
 <translation id="6779447100905857289">корзины</translation>
 <translation id="677965093459947883">Очень мелкий</translation>
 <translation id="6781005693196527806">&amp;Управление поисковыми системами…</translation>
+<translation id="6781012982807899368">Здесь появятся сохраненные пароли. <ph name="BEGIN_LINK" /> Импортировать пароли<ph name="END_LINK" />.</translation>
 <translation id="6781284683813954823">Ссылка на дудл</translation>
 <translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />Данные приложений – это любая информация, которую приложения сохраняют на устройстве согласно настройкам разработчиков, например контакты, сообщения и фотографии. Резервные копии не занимают места на Google Диске ребенка.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Вы можете отключить эту функцию в настройках.<ph name="END_PARAGRAPH2" /></translation>
@@ -6748,6 +6752,7 @@
 <translation id="744341768939279100">Создать профиль</translation>
 <translation id="744366959743242014">Идет загрузка данных. Это может занять несколько секунд.</translation>
 <translation id="7443806024147773267">Войдите в аккаунт Google с любого устройства, чтобы получить доступ ко всем вашим паролям.</translation>
+<translation id="7444046173054089907">Сайт заблокирован</translation>
 <translation id="7444970023873202833">Посмотрите другие воспоминания в Google Фото</translation>
 <translation id="7444983668544353857">Отключить <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">Устанавливайте приложения автоматически</translation>
@@ -7211,6 +7216,7 @@
 <translation id="7870790288828963061">Новых версий киоск-приложений нет. Обновление не требуется. Извлеките USB-накопитель.</translation>
 <translation id="7871049986386271121">Всегда на этом сайте</translation>
 <translation id="7871109039747854576">Пролистывать список вариантов клавишами "<ph name="COMMA" />" и "<ph name="PERIOD" />"</translation>
+<translation id="7872494313446521576">Нажмите, чтобы разрешить расширению "<ph name="EXTENSIONS_REQUESTING_ACCESS" />" доступ к сайту <ph name="ORIGIN" />:</translation>
 <translation id="787268756490971083">Отключено</translation>
 <translation id="7872758299142009420">Слишком много вложенных групп: <ph name="ERROR_LINE" />.</translation>
 <translation id="7874257161694977650">Фоновые изображения Chrome</translation>
@@ -7886,6 +7892,7 @@
 <translation id="8523493869875972733">Закрыть</translation>
 <translation id="8523849605371521713">Добавлено по правилу</translation>
 <translation id="8524783101666974011">Сохраните карты в аккаунте Google</translation>
+<translation id="8525157245469383124">Идентификатор розничного магазина в формате ABC-1234</translation>
 <translation id="8525306231823319788">Полноэкранный режим</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">Добавить языки</translation>

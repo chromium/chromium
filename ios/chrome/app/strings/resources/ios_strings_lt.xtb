@@ -472,6 +472,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="4901778704868714008">Išsaugoti...</translation>
 <translation id="4904877109095351937">Pažymėti kaip skaitytus</translation>
 <translation id="4908869848243824489">„Google“ funkcija „Discover“</translation>
+<translation id="4916679969857390442">Objektyvas</translation>
 <translation id="4930714375720679147">Įjungti</translation>
 <translation id="4941089862236492464">Apgailestaujame, bendrinant elementą kilo problema.</translation>
 <translation id="4944543191714094452">Rasti puslapyje…</translation>
@@ -767,7 +768,6 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7192050974311852563">Pradėti registravimą</translation>
 <translation id="7203585745079012652">Sakyti atsakymus</translation>
 <translation id="7207023858769244910">Sinchronizuokite, kad gautumėte turinio pagal savo pomėgius.</translation>
-<translation id="7207383424303353046">Naujiena: automatiškai atidarykite svetaines naršyklėje „Chrome“, nustatę ją kaip numatytąją naršyklės programą. <ph name="BEGIN_LINK" />Atidarykite skiltį „Nustatymai“<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Netinkamas kortelės slapyvardis</translation>
 <translation id="722454870747268814">Naujas inkognito skirtukas</translation>
 <translation id="7265758999917665941">Niekada šioje svetainėje</translation>
@@ -917,7 +917,6 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8533670235862049797">Saugus naršymas įjungtas</translation>
 <translation id="8534481786647257214">„Google+“ įrašas paskelbtas.</translation>
 <translation id="8548878600947630424">Ieškoti puslapyje...</translation>
-<translation id="8574235780160508979">Kovo 31 dieną bus pakeistos „Chrome“ paslaugų teikimo sąlygos. <ph name="BEGIN_LINK" />Peržiūrėkite<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Išjungta</translation>
 <translation id="8590913940444621808">Niekada neklausti</translation>
 <translation id="8591976964826315682">Blokuoti trečiųjų šalių slapukus inkognito režimu</translation>

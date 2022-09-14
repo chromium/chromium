@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">ທ່ານສາມາດເລື່ອນໄປມາລະຫວ່າງພາກສ່ວນຂອງໜ້າຈໍໄດ້. ຕົວຢ່າງ: ທ່ານສາມາດເລື່ອນໄປມາລະຫວ່າງຕົວເປີດໃຊ້, ຖ້ານ ແລະ ແຖບ Chrome ຂອງທ່ານໄດ້. ເພື່ອເລື່ອນໄປພາກສ່ວນຕໍ່ໄປ, ໃຫ້ປັດຈາກຊ້າຍໄປຂວາດ້ວຍສີ່ນິ້ວ. ລອງເຮັດຕອນນີ້ເພື່ອສືບຕໍ່.</translation>
 <translation id="2624431853467395961">ເປີດໂໝດການຮຽນຮູ້</translation>
 <translation id="2626530649491650971">ສາມາດຄລິກໄດ້</translation>
+<translation id="263637551280112393">ກົດ ຊອກຫາ+Shift+ຍະຫວ່າງ</translation>
 <translation id="2637227747952042642">ຄະນິດສາດ</translation>
 <translation id="2638785836053527382">ສືບຕໍ່ການດາວໂຫລດແລ້ວ <ph name="FILE_NAME" /></translation>
 <translation id="2639750663247012216">ຕົວຂະຫຍາຍ ChromeVox</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">ບໍ່ມີພາກສ່ວນຖັດໄປ</translation>
 <translation id="5368000168321181111">Earcons ປິດ</translation>
 <translation id="5368505757342402527">ດາວໂຫຼດສຳເລັດ <ph name="PROGRESS" />% <ph name="FILE_NAME" />. ຍັງອີກປະມານ <ph name="TIME" /> <ph name="UNITS" />.</translation>
+<translation id="5381388086899614489">ຄລິກຄ້າງ</translation>
 <translation id="5400836586163650660">ສີເທົາ</translation>
 <translation id="5402367795255837559">ຕົວໜັງສືນູນ</translation>
 <translation id="5402791055281059602">ການແຈ້ງເຕືອນແບບວິທີ</translation>

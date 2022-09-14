@@ -13,11 +13,6 @@
 <translation id="112387589102719461">Anglais (États-Unis) avec clavier Dvorak pour programmeurs</translation>
 <translation id="1134697384939541955">Anglais (États-Unis) avec clavier étendu</translation>
 <translation id="1138691154716715755">Plus tôt ce mois-ci</translation>
-<translation id="1148097584170732637"><ph name="FILE_COUNT" /> trouvées.
-    <ph name="LINE_BREAK1" />
-    Espace disponible insuffisant dans le stockage local. <ph name="FILE_SIZE" /> supplémentaires requis.
-    <ph name="LINE_BREAK2" />
-    Essayez de sélectionner moins de photos.</translation>
 <translation id="1150565364351027703">Lunettes de soleil</translation>
 <translation id="115443833402798225">Hangûl ahnmatae</translation>
 <translation id="1155759005174418845">Catalan</translation>
@@ -41,7 +36,6 @@
 <translation id="1297922636971898492">Google Drive n'est pas disponible pour le moment. L'importation reprendra lorsque Google Drive sera à nouveau disponible.</translation>
 <translation id="1307931752636661898">Impossible d'afficher les fichiers Linux</translation>
 <translation id="1313405956111467313">Configuration automatique du proxy</translation>
-<translation id="1351692861129622852">Importation de <ph name="FILE_COUNT" /> fichiers en cours…</translation>
 <translation id="1353686479385938207">"<ph name="PROVIDER_NAME" />" : "<ph name="NETWORK_NAME" />"</translation>
 <translation id="1358735829858566124">Le fichier ou le répertoire ne sont pas utilisables.</translation>
 <translation id="1363028406613469049">Titre</translation>
@@ -155,7 +149,6 @@
 <translation id="2307462900900812319">Configurer le réseau</translation>
 <translation id="2325650632570794183">Ce type de fichier n'est pas compatible. Veuillez accéder au Chrome Web Store pour trouver une application pouvant l'ouvrir.</translation>
 <translation id="2326539130272988168">Bulgare</translation>
-<translation id="2352947182261340447">Espace insuffisant sur le stockage local.</translation>
 <translation id="23721837607121582">Téléchargez le profil mobile, Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Passer en mode Liste</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> dossiers partagés avec Linux</translation>
@@ -207,7 +200,6 @@
 <translation id="2820957248982571256">Recherche…</translation>
 <translation id="2830077785865012357">Chinois (Zhuyin)</translation>
 <translation id="2843806747483486897">Modifier l'action par défaut…</translation>
-<translation id="2850124913210091882">Sauvegarder</translation>
 <translation id="2873951654529031587">Corbeille</translation>
 <translation id="288024221176729610">Tchèque</translation>
 <translation id="2887525882758501333">Document PDF</translation>
@@ -224,7 +216,6 @@
 <translation id="2977940621473452797">Ce fichier est conçu pour un ordinateur utilisant un logiciel Macintosh. Il n'est pas compatible avec votre appareil qui exécute Chrome OS. Veuillez rechercher une appli de remplacement appropriée sur le Chrome Web Store.</translation>
 <translation id="2984337792991268709">Aujourd'hui à <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">Restauration de <ph name="COUNT" /> éléments…</translation>
-<translation id="2994669386200004489">Impossible de sauvegarder <ph name="FILE_NAME" /></translation>
 <translation id="299638574917407533">Français (Canada)</translation>
 <translation id="3003189754374775221">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, connexion</translation>
 <translation id="3003633581067744647">Passer en mode Vignette</translation>
@@ -232,7 +223,6 @@
 <translation id="3029114385395636667">Activez Google Docs hors connexion pour rendre vos documents Google Docs, Sheets et Slides disponibles hors connexion.</translation>
 <translation id="303198083543495566">Géographie</translation>
 <translation id="3047197340186497470">Chinois (Dayi)</translation>
-<translation id="3057861065630527966">Sauvegarder vos photos et vos vidéos</translation>
 <translation id="3067790092342515856">Fichiers Windows</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Hôte SOCKS</translation>
@@ -281,8 +271,6 @@
 <translation id="343907260260897561">Appareil photo instantané</translation>
 <translation id="3452106565701029351">Retirer des fichiers rapides</translation>
 <translation id="3455931012307786678">Estonien</translation>
-<translation id="3466147780910026086">Analyse du périphérique multimédia en cours</translation>
-<translation id="3468522857997926824"><ph name="FILE_COUNT" /> photos ont été sauvegardées sur <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />.</translation>
 <translation id="3475447146579922140">Feuille de calcul Google</translation>
 <translation id="3479552764303398839">Pas maintenant</translation>
 <translation id="3486821258960016770">Mongol</translation>
@@ -306,7 +294,6 @@
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3619593063686672873">Aucune vidéo récente</translation>
-<translation id="3620292326130836921">Tout le contenu a été sauvegardé</translation>
 <translation id="3634507049637220048">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, géré par votre administrateur, détails</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> éléments déplacés.</translation>
 <translation id="3685122418104378273">Par défaut, la synchronisation Google Drive est désactivée lors de l'utilisation des données mobiles.</translation>
@@ -317,7 +304,6 @@
 <translation id="3726463242007121105">Impossible d'ouvrir ce périphérique, car son système de fichiers n'est pas compatible.</translation>
 <translation id="3727148787322499904">Les modifications apportées à ce paramètre s'appliquent à tous les réseaux partagés</translation>
 <translation id="3737576078404241332">Supprimer de la barre latérale</translation>
-<translation id="3741243925913727067">Sauvegardez les photos et les vidéos de votre périphérique multimédia sur Google Drive.</translation>
 <translation id="3749289110408117711">Nom du fichier</translation>
 <translation id="3780536599611287598">Vous n'êtes pas autorisé à déplacer des fichiers vers "<ph name="FOLDER_NAME" />".</translation>
 <translation id="3786301125658655746">Vous êtes actuellement hors connexion.</translation>
@@ -362,7 +348,6 @@
 <translation id="4202977638116331303">Géorgien</translation>
 <translation id="421017592316736757">Pour accéder à ce fichier, vous devez être connecté à Internet.</translation>
 <translation id="4212740939091998969">Le nom "<ph name="FOLDER_NAME" />" est déjà attribué à un dossier. Veuillez en choisir un autre.</translation>
-<translation id="4215448920900139318">Sauvegarde de <ph name="FILE_COUNT" />…</translation>
 <translation id="4218274196133425560">Supprimer l'exception pour <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Présentation Google</translation>
 <translation id="4277536868133419688">Le filtre <ph name="FILTER_NAME" /> est activé.</translation>
@@ -427,7 +412,6 @@
 <translation id="4711094779914110278">Turc</translation>
 <translation id="4712283082407695269">Ouverture de "<ph name="PATH" />"…</translation>
 <translation id="4720185134442950733">Réseau de données mobiles</translation>
-<translation id="4724850507808590449"><ph name="FILE_COUNT" /> photos ont été sauvegardées</translation>
 <translation id="4725096204469550614">Plus tôt cette année</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4737050008115666127">Piste d'atterrissage</translation>
@@ -452,7 +436,6 @@
 <translation id="4881695831933465202">Ouvrir</translation>
 <translation id="4900532980794411603">Partager avec Parallels Desktop</translation>
 <translation id="4902546322522096650">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, connexion</translation>
-<translation id="4905417359854579806">Prêt à sauvegarder <ph name="FILE_COUNT" /></translation>
 <translation id="4906580650526544301">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, batterie du téléphone à <ph name="BATTERY_STATUS" /> %, détails</translation>
 <translation id="4935975195727477204">Fleur de gazania</translation>
 <translation id="4943368462779413526">Football américain</translation>
@@ -464,7 +447,6 @@
 <translation id="4988205478593450158">Voulez-vous vraiment supprimer "<ph name="FILE_NAME" />" ?</translation>
 <translation id="498902553138568924">Papillon rouge</translation>
 <translation id="4992066212339426712">Réactiver le son</translation>
-<translation id="5004584466530475658"><ph name="FILE_COUNT" /> nouvelles photos</translation>
 <translation id="5010406651457630570">Ordinateurs</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Une opération dure plus longtemps que prévu. Voulez-vous l'annuler ?</translation>
@@ -508,6 +490,7 @@
     <ph name="MARKUP_7" />Travaillez en groupe, et créez et partagez<ph name="MARKUP_8" />
     des fichiers depuis une seule et même interface.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Fichiers récupérés sur Google Drive</translation>
+<translation id="5286194356314741248">Recherche…</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5299998344490869684">Voulez-vous vraiment vider la corbeille ?</translation>
@@ -517,7 +500,6 @@
 <translation id="5323213332664049067">Espagnol d'Amérique latine</translation>
 <translation id="5330145655348521461">Ces fichiers sont ouverts sur un autre bureau. Utilisez le compte de <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) pour les afficher.</translation>
 <translation id="5330512191124428349">Lire les informations</translation>
-<translation id="5335458522276292100">Sauvegarde de <ph name="FILE_COUNT" /> sur <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />…</translation>
 <translation id="535792325654997756">Personne avec des chats</translation>
 <translation id="5358764674931277">Fréquence d'images</translation>
 <translation id="5363339716524495120">Langue de saisie : chinois</translation>
@@ -559,8 +541,6 @@
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, Déverrouiller</translation>
 <translation id="5700087501958648444">Informations sur le fichier audio</translation>
 <translation id="5724172041621205163">Thaï avec clavier Pattachote</translation>
-<translation id="5731409020711461763">Une nouvelle photo</translation>
-<translation id="5752453871435543420">Sauvegarde Cloud de Chrome OS</translation>
 <translation id="5756666464756035725">Clavier QWERTY hongrois</translation>
 <translation id="5763377084591234761">Allemand (Suisse)</translation>
 <translation id="5769519078756170258">Hôte ou domaine à exclure</translation>
@@ -594,7 +574,6 @@
 <translation id="6011074160056912900">Réseau Ethernet</translation>
 <translation id="60357267506638014">QWERTY tchèque</translation>
 <translation id="603895874132768835">Vous ne pourrez pas utiliser ce réseau tant que vous n'aurez pas défini un nouveau code PIN</translation>
-<translation id="604001903249547235">Sauvegarde Cloud</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6055907707645252013">Réseau <ph name="NETWORK_TYPE" />, non connecté</translation>
 <translation id="6074825444536523002">Formulaire Google</translation>
@@ -657,7 +636,6 @@
 <translation id="6607272825297743757">Informations sur le fichier</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> dossiers partagés avec Parallels Desktop</translation>
 <translation id="6629518321609546825">Saisissez au moins 4 chiffres</translation>
-<translation id="6629841649550503054">Tous les contenus sont sauvegardés sur <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />.</translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6650726141019353908">Papillon rose</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
@@ -692,9 +670,6 @@
 <translation id="6918340160281024199">Clavier Workman américain</translation>
 <translation id="6930242544192836755">Durée</translation>
 <translation id="6931302001003657424">Épingler aux fichiers rapides</translation>
-<translation id="6934241953272494177">Analyse du périphérique multimédia…
-    <ph name="LINE_BREAK1" />
-    <ph name="FILE_COUNT" /> trouvées</translation>
 <translation id="6935521024859866267">À l'envers</translation>
 <translation id="6943836128787782965">Échec de l'obtention HTTP.</translation>
 <translation id="6949408524333579394">Serbe (translittération)</translation>
@@ -740,7 +715,6 @@
 <translation id="7248671827512403053">Application</translation>
 <translation id="7256405249507348194">Erreur non reconnue : <ph name="DESC" />.</translation>
 <translation id="7268659760406822741">Services disponibles</translation>
-<translation id="7283041136720745563">Votre quota Google Drive est insuffisant.</translation>
 <translation id="7294063083760278948">Télougou (translittération)</translation>
 <translation id="7295662345261934369">Partager</translation>
 <translation id="7297443947353982503">Nom d'utilisateur/mot de passe incorrect ou échec de l'authentification EAP.</translation>
@@ -758,9 +732,6 @@
 <translation id="7460898608667578234">Ukrainien</translation>
 <translation id="7469894403370665791">Se connecter automatiquement à ce réseau</translation>
 <translation id="7486315294984620427">Pour déposer des fichiers dans Parallels Desktop, vous devez copier le fichier dans le dossier "Fichiers Windows".</translation>
-<translation id="7489215562877293245"><ph name="FILE_COUNT" /> trouvées
-    <ph name="LINE_BREAK1" />
-    Prêt à sauvegarder sur <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam (phonétique)</translation>
 <translation id="7505167922889582512">Afficher les fichiers masqués</translation>
@@ -794,7 +765,6 @@
 <translation id="7708271999969613024">Pour utiliser ce réseau, vous devez saisir le code de déblocage personnel (PUK) à huit chiffres fourni par l'opérateur.</translation>
 <translation id="7711920809702896782">Informations sur les fichiers image</translation>
 <translation id="7724603315864178912">Couper</translation>
-<translation id="7730494089396812859">Afficher les détails de la sauvegarde Cloud</translation>
 <translation id="7732111077498238432">Le réseau est soumis à des règles</translation>
 <translation id="7748626145866214022">D'autres options sont disponibles dans la barre d'action. Appuyez sur Alt+A pour la sélectionner.</translation>
 <translation id="7760449188139285140">Chinois (Wubi)</translation>
@@ -810,11 +780,6 @@
 <translation id="7805768142964895445">État</translation>
 <translation id="7806708061868529807">Hébreu</translation>
 <translation id="78104721049218340">Thaï avec clavier Kedmanee</translation>
-<translation id="7821462174190887129"><ph name="FILE_COUNT" /> trouvées.
-    <ph name="LINE_BREAK1" />
-    Votre quota Google Drive est insuffisant. <ph name="FILE_SIZE" /> supplémentaires sont nécessaires.
-    <ph name="LINE_BREAK2" />
-    Essayez de sélectionner moins de photos.</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> To</translation>
 <translation id="7831491651892296503">Erreur lors de la configuration du réseau</translation>
 <translation id="7839804798877833423">L'opération de récupération de ces fichiers consommera environ <ph name="FILE_SIZE" /> de données mobiles.</translation>

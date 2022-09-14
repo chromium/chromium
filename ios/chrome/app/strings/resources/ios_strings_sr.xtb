@@ -472,6 +472,7 @@
 <translation id="4901778704868714008">Сачувај...</translation>
 <translation id="4904877109095351937">Означи као прочитано</translation>
 <translation id="4908869848243824489">Google Discover</translation>
+<translation id="4916679969857390442">Објектив</translation>
 <translation id="4930714375720679147">Укључи</translation>
 <translation id="4941089862236492464">Жао нам је, дошло је до проблема при дељењу ставке.</translation>
 <translation id="4944543191714094452">Пронађи на страници…</translation>
@@ -767,7 +768,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7192050974311852563">Покрени евидентирање</translation>
 <translation id="7203585745079012652">Изговарај одговоре</translation>
 <translation id="7207023858769244910">Синхронизујте да бисте добијали садржај на основу интересовања.</translation>
-<translation id="7207383424303353046">Ново: Отварајте сајтове у Chrome-у аутоматски тако што ћете га подесити као подразумевану апликацију за прегледач. <ph name="BEGIN_LINK" />Отворите Подешавања<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Неважећи надимак картице</translation>
 <translation id="722454870747268814">Нова картица без архивирањa</translation>
 <translation id="7265758999917665941">Никада за овај сајт</translation>
@@ -917,7 +917,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8533670235862049797">Безбедно прегледање је укључено</translation>
 <translation id="8534481786647257214">Google+ пост је довршен.</translation>
 <translation id="8548878600947630424">Пронађи на страници...</translation>
-<translation id="8574235780160508979">Chrome услови коришћења услуге се мењају 31. марта. <ph name="BEGIN_LINK" />Прегледајте<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Искључено</translation>
 <translation id="8590913940444621808">Никада не питај</translation>
 <translation id="8591976964826315682">Блокирајте колачиће трећих страна у режиму без архивирања</translation>

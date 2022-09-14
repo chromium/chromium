@@ -13,11 +13,6 @@
 <translation id="112387589102719461">Englisch (USA) mit „Programmer Dvorak“-Tastatur</translation>
 <translation id="1134697384939541955">Englisch (USA) mit erweiterter Tastatur</translation>
 <translation id="1138691154716715755">Früher in diesem Monat</translation>
-<translation id="1148097584170732637"><ph name="FILE_COUNT" /> gefunden.
-    <ph name="LINE_BREAK1" />
-    Nicht genügend Platz im lokalen Speicher. Zusätzlich <ph name="FILE_SIZE" /> erforderlich.
-    <ph name="LINE_BREAK2" />
-    Wähle weniger Fotos aus.</translation>
 <translation id="1150565364351027703">Sonnenbrille</translation>
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Katalanisch</translation>
@@ -41,7 +36,6 @@
 <translation id="1297922636971898492">Google Drive ist momentan nicht verfügbar. Das Hochladen deiner Dateien wird automatisch fortgesetzt, sobald Google Drive wieder verfügbar ist.</translation>
 <translation id="1307931752636661898">Linux-Dateien können nicht angezeigt werden</translation>
 <translation id="1313405956111467313">Automatische Proxy-Konfiguration</translation>
-<translation id="1351692861129622852"><ph name="FILE_COUNT" /> Dateien werden importiert...</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Die Datei oder das Verzeichnis kann nicht verwendet werden.</translation>
 <translation id="1363028406613469049">Titel</translation>
@@ -84,6 +78,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> Elemente werden gezippt...</translation>
 <translation id="1722687688096767818">Profil wird hinzugefügt…</translation>
 <translation id="1726100011689679555">Nameserver</translation>
+<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> Elemente in Papierkorb verschoben</translation>
 <translation id="1729953886957086472">Deutsch (Deutschland)</translation>
 <translation id="1730235522912993863">Chinesisch (Cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> Elemente kopiert.</translation>
@@ -155,7 +150,6 @@
 <translation id="2307462900900812319">Netzwerk konfigurieren</translation>
 <translation id="2325650632570794183">Dieser Dateityp wird nicht unterstützt. Finde im Chrome Web Store eine App, mit der du diesen Dateityp öffnen kannst.</translation>
 <translation id="2326539130272988168">Bulgarisch</translation>
-<translation id="2352947182261340447">Nicht genug Platz im lokalen Speicher.</translation>
 <translation id="23721837607121582">Mobiles Profil herunterladen, Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Zur Listenansicht wechseln</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> Ordner für Linux freigegeben</translation>
@@ -207,13 +201,13 @@
 <translation id="2820957248982571256">Wird gescannt...</translation>
 <translation id="2830077785865012357">Chinesisch (Zhuyin)</translation>
 <translation id="2843806747483486897">Standardeinstellungen ändern...</translation>
-<translation id="2850124913210091882">Sichern</translation>
 <translation id="2873951654529031587">Papierkorb</translation>
 <translation id="288024221176729610">Tschechisch</translation>
 <translation id="2887525882758501333">PDF-Dokument</translation>
 <translation id="2888807692577297075">Keine Elemente für &lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; gefunden</translation>
 <translation id="2894654529758326923">Informationen</translation>
 <translation id="2902734494705624966">USA – erweitert</translation>
+<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" /> Elemente werden in den Papierkorb verschoben</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estnisch</translation>
 <translation id="2938685643439809023">Mongolisch</translation>
@@ -224,7 +218,6 @@
 <translation id="2977940621473452797">Diese Datei wurde für Computer mit Macintosh-Software entwickelt. Sie ist nicht mit deinem Chrome OS-Gerät kompatibel. Suche im Chrome Web Store nach einer geeigneten Ersatz-App.</translation>
 <translation id="2984337792991268709">Heute <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> Elemente werden wiederhergestellt…</translation>
-<translation id="2994669386200004489"><ph name="FILE_NAME" /> konnte nicht gesichert werden</translation>
 <translation id="299638574917407533">Französisch (Kanada)</translation>
 <translation id="3003189754374775221">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Verbinden</translation>
 <translation id="3003633581067744647">Zur Miniaturansicht wechseln</translation>
@@ -232,7 +225,6 @@
 <translation id="3029114385395636667">Wenn du Google Docs Offline aktivierst, kannst du Dokumente, Tabellen und Präsentationen offline nutzen.</translation>
 <translation id="303198083543495566">Längen- und Breitengrad</translation>
 <translation id="3047197340186497470">Chinesisch (Dayi)</translation>
-<translation id="3057861065630527966">Fotos und Videos sichern</translation>
 <translation id="3067790092342515856">Windows-Dateien</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS-Host</translation>
@@ -281,8 +273,6 @@
 <translation id="343907260260897561">Sofortbildkamera</translation>
 <translation id="3452106565701029351">Von Schnellzugriff loslösen</translation>
 <translation id="3455931012307786678">Estnisch</translation>
-<translation id="3466147780910026086">Mediengerät wird durchsucht...</translation>
-<translation id="3468522857997926824"><ph name="FILE_COUNT" /> Fotos auf <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> gesichert</translation>
 <translation id="3475447146579922140">Google-Tabellendokument</translation>
 <translation id="3479552764303398839">Jetzt nicht</translation>
 <translation id="3486821258960016770">Mongolisch</translation>
@@ -306,7 +296,6 @@
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3619593063686672873">Keine zuletzt angesehenen Videos</translation>
-<translation id="3620292326130836921">Alle Daten gesichert</translation>
 <translation id="3634507049637220048">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, von deinem Administrator verwaltet, Details</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> Elemente verschoben.</translation>
 <translation id="3685122418104378273">Die Google Drive-Synchronisierung ist bei der mobilen Datennutzung standardmäßig deaktiviert.</translation>
@@ -317,7 +306,6 @@
 <translation id="3726463242007121105">Dieses Gerät kann nicht geöffnet werden, da das zugehörige Dateisystem nicht unterstützt wird.</translation>
 <translation id="3727148787322499904">Änderungen dieser Einstellung wirken sich auf alle freigegebenen Netzwerke aus</translation>
 <translation id="3737576078404241332">Aus der Seitenleiste entfernen</translation>
-<translation id="3741243925913727067">Fotos und Videos des Mediengeräts auf Google Drive sichern</translation>
 <translation id="3749289110408117711">Dateiname</translation>
 <translation id="3780536599611287598">Du bist nicht dazu berechtigt, Dateien in "<ph name="FOLDER_NAME" />" zu verschieben.</translation>
 <translation id="3786301125658655746">Du bist offline</translation>
@@ -362,7 +350,6 @@
 <translation id="4202977638116331303">Georgisch</translation>
 <translation id="421017592316736757">Du musst online sein, um auf diese Datei zugreifen zu können.</translation>
 <translation id="4212740939091998969">Es existiert bereits ein Ordner mit dem Namen "<ph name="FOLDER_NAME" />". Wähle bitte einen anderen Namen aus.</translation>
-<translation id="4215448920900139318"><ph name="FILE_COUNT" /> werden gesichert</translation>
 <translation id="4218274196133425560">Ausnahme für <ph name="HOST_NAME" /> entfernen</translation>
 <translation id="4261901459838235729">Google-Präsentation</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" />-Filter ist an.</translation>
@@ -427,7 +414,6 @@
 <translation id="4711094779914110278">Türkisch</translation>
 <translation id="4712283082407695269">„<ph name="PATH" />“ wird geöffnet</translation>
 <translation id="4720185134442950733">Mobilfunknetz</translation>
-<translation id="4724850507808590449"><ph name="FILE_COUNT" /> Fotos gesichert</translation>
 <translation id="4725096204469550614">Früher in diesem Jahr</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4737050008115666127">Landung</translation>
@@ -452,7 +438,6 @@
 <translation id="4881695831933465202">Öffnen</translation>
 <translation id="4900532980794411603">Für Parallels Desktop freigeben</translation>
 <translation id="4902546322522096650">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Verbinden</translation>
-<translation id="4905417359854579806">Bereit zum Sichern von <ph name="FILE_COUNT" /></translation>
 <translation id="4906580650526544301">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Smartphone-Akku bei <ph name="BATTERY_STATUS" /> %, Details</translation>
 <translation id="4935975195727477204">Mittagsgoldblume</translation>
 <translation id="4943368462779413526">American Football</translation>
@@ -464,7 +449,6 @@
 <translation id="4988205478593450158">Soll "<ph name="FILE_NAME" />" wirklich gelöscht werden?</translation>
 <translation id="498902553138568924">Roter Schmetterling</translation>
 <translation id="4992066212339426712">Stummschaltung aufheben</translation>
-<translation id="5004584466530475658"><ph name="FILE_COUNT" /> neue Fotos</translation>
 <translation id="5010406651457630570">Computer</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Ein Vorgang dauert länger als erwartet. Möchtest du ihn abbrechen?</translation>
@@ -476,6 +460,7 @@
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> an Dateien werden gelöscht</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> Elemente werden in den Ordner "<ph name="FOLDER_NAME" />" verschoben</translation>
+<translation id="5092200349368278146"><ph name="FILE_NAME" /> in den Papierkorb verschoben</translation>
 <translation id="509429900233858213">Ein Fehler ist aufgetreten.</translation>
 <translation id="5098629044894065541">Hebräisch</translation>
 <translation id="5102922915594634436">Synchronisierte Ordner verwalten</translation>
@@ -508,6 +493,7 @@
     <ph name="MARKUP_7" />Teile, erstelle und bearbeite<ph name="MARKUP_8" />
     deine Dateien mit anderen an einem zentralen Ort.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Wiederhergestellte Dateien von Google Drive</translation>
+<translation id="5286194356314741248">Durchsuchen</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5299998344490869684">Möchtest du den Papierkorb wirklich leeren?</translation>
@@ -517,7 +503,6 @@
 <translation id="5323213332664049067">Lateinamerikanisch</translation>
 <translation id="5330145655348521461">Diese Dateien wurden auf einem anderen Desktop geöffnet. Wechsle zu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), um sie anzusehen.</translation>
 <translation id="5330512191124428349">Informationen ansehen</translation>
-<translation id="5335458522276292100"><ph name="FILE_COUNT" /> werden auf <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> gesichert</translation>
 <translation id="535792325654997756">Person mit Katzen</translation>
 <translation id="5358764674931277">Framerate</translation>
 <translation id="5363339716524495120">Eingabesprache ist Chinesisch</translation>
@@ -559,8 +544,6 @@
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, Entsperren</translation>
 <translation id="5700087501958648444">Audioinformationen</translation>
 <translation id="5724172041621205163">Thai mit Pattachote-Tastatur</translation>
-<translation id="5731409020711461763">1 neues Foto</translation>
-<translation id="5752453871435543420">Chrome OS-Cloud-Sicherung</translation>
 <translation id="5756666464756035725">Ungarisch – QWERTY</translation>
 <translation id="5763377084591234761">Deutsch (Schweiz)</translation>
 <translation id="5769519078756170258">Auszuschließende Host oder Domain</translation>
@@ -581,6 +564,7 @@
 <translation id="5845721951356578987">Pflegekraft</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">DHCP-Suche fehlgeschlagen</translation>
+<translation id="5887342613489958822"><ph name="FILE_NAME" /> wird in den Papierkorb verschoben</translation>
 <translation id="5896749729057314184">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nicht aktiviert, Signalstärke <ph name="SIGNAL_STRENGTH" /> %, Details</translation>
 <translation id="5911887972742538906">Bei der Installation deiner Linux-Anwendung ist ein Fehler aufgetreten.</translation>
 <translation id="5912396950572065471">Format</translation>
@@ -594,7 +578,6 @@
 <translation id="6011074160056912900">Ethernet-Netzwerk</translation>
 <translation id="60357267506638014">Tschechisch – QWERTY</translation>
 <translation id="603895874132768835">Du kannst dieses Mobilfunknetz erst verwenden, wenn du eine neue PIN festlegst</translation>
-<translation id="604001903249547235">Cloudsicherung</translation>
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="6055907707645252013">Netzwerk: <ph name="NETWORK_TYPE" />, nicht verbunden</translation>
 <translation id="6074825444536523002">Google-Formular</translation>
@@ -657,7 +640,6 @@
 <translation id="6607272825297743757">Dateiinformationen</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> Ordner für Parallels Desktop freigegeben</translation>
 <translation id="6629518321609546825">Gib mindestens 4 Ziffern ein</translation>
-<translation id="6629841649550503054">Alle Daten wurden in <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> gesichert.</translation>
 <translation id="6643016212128521049">Löschen</translation>
 <translation id="6650726141019353908">Rosa Schmetterling</translation>
 <translation id="6657585470893396449">Passwort</translation>
@@ -692,9 +674,6 @@
 <translation id="6918340160281024199">US-amerikanische Workman-Tastatur</translation>
 <translation id="6930242544192836755">Dauer</translation>
 <translation id="6931302001003657424">An Schnellzugriff anpinnen</translation>
-<translation id="6934241953272494177">Mediengerät wird durchsucht...
-    <ph name="LINE_BREAK1" />
-    <ph name="FILE_COUNT" /> gefunden</translation>
 <translation id="6935521024859866267">Auf dem Kopf</translation>
 <translation id="6943836128787782965">HTTP-Abruf fehlgeschlagen</translation>
 <translation id="6949408524333579394">Serbisch (Transliteration)</translation>
@@ -740,7 +719,6 @@
 <translation id="7248671827512403053">App</translation>
 <translation id="7256405249507348194">Unbekannter Fehler: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Verfügbare Dienste</translation>
-<translation id="7283041136720745563">Dein Google Drive-Kontingent ist zu klein.</translation>
 <translation id="7294063083760278948">Telugu (Transliteration)</translation>
 <translation id="7295662345261934369">Mit anderen teilen</translation>
 <translation id="7297443947353982503">Nutzername/Passwort falsch oder Fehler bei EAP-Authentifizierung</translation>
@@ -758,9 +736,6 @@
 <translation id="7460898608667578234">Ukrainisch</translation>
 <translation id="7469894403370665791">Verbindung zu diesem Netzwerk automatisch herstellen</translation>
 <translation id="7486315294984620427">Um Dateien in Parallels Desktop per Drag-and-drop abzulegen, muss die Datei in „Windows-Dateien“ kopiert werden.</translation>
-<translation id="7489215562877293245"><ph name="FILE_COUNT" /> gefunden
-    <ph name="LINE_BREAK1" />
-    Bereit für die Sicherung auf <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam (phonetisch)</translation>
 <translation id="7505167922889582512">Versteckte Dateien anzeigen</translation>
@@ -794,7 +769,6 @@
 <translation id="7708271999969613024">Wenn du dieses Netzwerk nutzen möchtest, musst du den 8-stelligen PUK (Personal Unblocking Key) eingeben, den du vom Mobilfunkanbieter erhalten hast.</translation>
 <translation id="7711920809702896782">Bildinformationen</translation>
 <translation id="7724603315864178912">Ausschneiden</translation>
-<translation id="7730494089396812859">Details der Cloudsicherung anzeigen</translation>
 <translation id="7732111077498238432">Das Netzwerk ist richtliniengesteuert</translation>
 <translation id="7748626145866214022">Auf der Aktionsleiste sind weitere Optionen verfügbar. Drücke Alt + A, um den Fokus auf die Aktionsleiste zu setzen.</translation>
 <translation id="7760449188139285140">Chinesisch (Wubi)</translation>
@@ -810,11 +784,6 @@
 <translation id="7805768142964895445">Status</translation>
 <translation id="7806708061868529807">Hebräisch</translation>
 <translation id="78104721049218340">Thai mit Kedmanee-Tastatur</translation>
-<translation id="7821462174190887129"><ph name="FILE_COUNT" /> gefunden.
-    <ph name="LINE_BREAK1" />
-    Dein Google Drive-Kontingent ist zu klein. Zusätzliche <ph name="FILE_SIZE" /> sind erforderlich.
-    <ph name="LINE_BREAK2" />
-    Wähle weniger Fotos aus.</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Fehler bei der Netzwerkkonfiguration</translation>
 <translation id="7839804798877833423">Zum Abrufen dieser Dateien werden etwa <ph name="FILE_SIZE" /> mobile Daten benötigt.</translation>

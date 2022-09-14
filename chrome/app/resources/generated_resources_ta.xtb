@@ -1518,6 +1518,7 @@
 <translation id="2356070529366658676">கேள்</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> ஐ அகற்றும்</translation>
 <translation id="2358561147588818967">Javascriptடைப் பயன்படுத்த தளங்கள் அனுமதி கேட்க வேண்டும்</translation>
+<translation id="2358777858338503863"><ph name="ORIGIN" /> தளத்தில் அனுமதிக்க கிளிக் செய்யவும்:</translation>
 <translation id="2359071692152028734">Linux ஆப்ஸ் செயல்படாமல் போகக்கூடும்.</translation>
 <translation id="2359345697448000899">கருவிகள் மெனுவில் நீட்டிப்புகள் என்பதைக் கிளிக் செய்து நீட்டிப்புகளை நிர்வகிக்கவும்.</translation>
 <translation id="2359556993567737338">புளூடூத் சாதனத்தை இணைத்தல்</translation>
@@ -3805,6 +3806,7 @@
 <translation id="4554591392113183336">ஏற்கனவே இருப்பதுடன் ஒப்பிடும் போது வெளிப்புற நீட்டிப்பு ஒரே அல்லது குறைவான பதிப்பைக் கொண்டுள்ளது.</translation>
 <translation id="4555769855065597957">நிழல்</translation>
 <translation id="4555863373929230635">கடவுச்சொற்களை உங்கள் Google கணக்கில் சேமிக்க உள்நுழைந்து ஒத்திசைவை இயக்கவும்.</translation>
+<translation id="4556194354084985730">சேமித்த கடவுச்சொற்கள் மூலம் தளங்களிலும் ஆப்ஸிலும் சுலபமாக உள்நுழையலாம். முடக்கப்பட்டிருக்கும்போது, உள்நுழையும் முன் உறுதிபடுத்தும்படி கேட்கப்படுவீர்கள்.</translation>
 <translation id="4558426062282641716">தானியங்கு துவக்கத்திற்கான அனுமதி கோரப்பட்டது</translation>
 <translation id="4559617833001311418">நகர்வு அல்லது ஒளி சென்சார்களை இந்தத் தளம் பயன்படுத்துகிறது.</translation>
 <translation id="4561893854334016293">சமீபத்தில் மாற்றப்பட்ட அனுமதிகள் எதுவும் இல்லை</translation>
@@ -5360,6 +5362,7 @@
 <translation id="6077476112742402730">பேச்சு மூலம் உள்ளிடும் வசதி</translation>
 <translation id="6078121669093215958">{0,plural, =1{விருந்தினர்}other{திறந்துள்ள விருந்தினர் சாளரங்கள்: #}}</translation>
 <translation id="6078323886959318429">ஷார்ட்கட்டைச் சேர்</translation>
+<translation id="6078742430369906859">"<ph name="NETWORK_ID" />" இல் இணைப்புநிலை கட்டுப்படுத்தப்பட்டிருக்கலாம்</translation>
 <translation id="6078752646384677957">உங்கள் மைக்ரோஃபோனையும் ஆடியோ நிலைகளையும் சரிபார்க்கவும்.</translation>
 <translation id="6078769373519310690">ஒரு HID சாதனத்துடன் "<ph name="CHROME_EXTENSION_NAME" />" இணைய விரும்புகிறது</translation>
 <translation id="608029822688206592">நெட்வொர்க் கிடைக்கவில்லை. சிம்மைச் செருகி மீண்டும் முயலவும்.</translation>
@@ -6070,6 +6073,7 @@
 <translation id="6779447100905857289">உங்கள் கார்ட்டுகள்</translation>
 <translation id="677965093459947883">மிகச் சிறியது</translation>
 <translation id="6781005693196527806">&amp;தேடல் இன்ஜின்களை நிர்வகிக்கவும்...</translation>
+<translation id="6781012982807899368">சேமிக்கப்பட்ட கடவுச்சொற்கள் இங்கே காட்டப்படும். <ph name="BEGIN_LINK" /> கடவுச்சொற்களை ஏற்றுதல்<ph name="END_LINK" /></translation>
 <translation id="6781284683813954823">Doodle இணைப்பு</translation>
 <translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />ஆப்ஸ் தரவு என்பது தொடர்புகள், மெசேஜ்கள், படங்கள் போன்ற தரவு உட்பட ஆப்ஸ் சேமித்த (டெவெலப்பர் அமைப்புகளின் அடிப்படையில்) எந்தத் தரவாகவும் இருக்கலாம். உங்கள் பிள்ளையின் Drive சேமிப்பக ஒதுக்கீட்டில் காப்புப் பிரதித் தரவு கணக்கிடப்படாது.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />இந்தச் சேவையை அமைப்புகளில் முடக்கலாம்.<ph name="END_PARAGRAPH2" /></translation>
@@ -6757,6 +6761,7 @@
 <translation id="744341768939279100">புதிய சுயவிவரத்தை உருவாக்கு</translation>
 <translation id="744366959743242014">தரவை ஏற்றுகிறது, இதற்குச் சில வினாடிகள் ஆகலாம்.</translation>
 <translation id="7443806024147773267">உங்கள் Google கணக்கில் உள்நுழைந்திருக்கும் போதெல்லாம் உங்கள் கடவுச்சொற்களைப் பயன்படுத்தலாம்</translation>
+<translation id="7444046173054089907">இந்தத் தளம் தடுக்கப்பட்டது</translation>
 <translation id="7444970023873202833">Google Photosஸில் மேலும் பல நினைவுகளைப் பாருங்கள்</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> ஐ முடக்கு</translation>
 <translation id="7448430327655618736">ஆப்ஸைத் தானாகவே நிறுவும்</translation>
@@ -7220,6 +7225,7 @@
 <translation id="7870790288828963061">புதிய பதிப்பு கொண்ட கியாஸ்க் ஆப்ஸ் எதுவும் காணப்படவில்லை. புதுப்பிக்க எதுவுமில்லை. USB சாதனத்தை அகற்றவும்.</translation>
 <translation id="7871049986386271121">இந்தத் தளத்திற்கு எப்போதும்</translation>
 <translation id="7871109039747854576">நபர் பட்டியலைப் பக்கமாக்க <ph name="COMMA" /> மற்றும் <ph name="PERIOD" /> விசைகளைப் பயன்படுத்துக</translation>
+<translation id="7872494313446521576">"<ph name="EXTENSIONS_REQUESTING_ACCESS" />" ஐ <ph name="ORIGIN" /> தளத்தில் அனுமதிக்க கிளிக் செய்யவும்:</translation>
 <translation id="787268756490971083">ஆஃப்</translation>
 <translation id="7872758299142009420">உள்ளாக இடப்பட்ட குழுக்கள் அதிகமாக உள்ளன: <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">Chrome பின்னணிகள்</translation>
@@ -7896,6 +7902,7 @@
 <translation id="8523493869875972733">மாற்றங்களை வைத்திரு</translation>
 <translation id="8523849605371521713">கொள்கை மூலம் சேர்க்கப்பட்டது</translation>
 <translation id="8524783101666974011">உங்கள் Google கணக்கில் கார்டுகளைச் சேமியுங்கள்</translation>
+<translation id="8525157245469383124">ரீட்டெயிலர் ஸ்டோர் ஐடியின் வடிவம்: ABC-1234</translation>
 <translation id="8525306231823319788">முழுத்திரை</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">மொழிகளைச் சேர்</translation>

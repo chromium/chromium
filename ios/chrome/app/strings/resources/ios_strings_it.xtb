@@ -472,6 +472,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="4901778704868714008">Salva…</translation>
 <translation id="4904877109095351937">Segna come già letti</translation>
 <translation id="4908869848243824489">Discover di Google</translation>
+<translation id="4916679969857390442">Lente</translation>
 <translation id="4930714375720679147">Attiva</translation>
 <translation id="4941089862236492464">Spiacenti, si è verificato un problema di condivisione.</translation>
 <translation id="4944543191714094452">Trova nella pagina…</translation>
@@ -767,7 +768,6 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7192050974311852563">Avvia logging</translation>
 <translation id="7203585745079012652">Pronuncia le risposte</translation>
 <translation id="7207023858769244910">Sincronizza per ricevere contenuti in base ai tuoi interessi.</translation>
-<translation id="7207383424303353046">Novità: apri automaticamente siti in Chrome impostandolo come App browser predefinita. <ph name="BEGIN_LINK" />Apri le Impostazioni<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Nickname carta non valido</translation>
 <translation id="722454870747268814">Nuova scheda in incognito</translation>
 <translation id="7265758999917665941">Mai per questo sito</translation>
@@ -917,7 +917,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8533670235862049797">Navigazione sicura attiva</translation>
 <translation id="8534481786647257214">Pubblicazione su Google+ completata.</translation>
 <translation id="8548878600947630424">Trova nella pagina...</translation>
-<translation id="8574235780160508979">I Termini di servizio di Chrome cambieranno il 31 marzo. <ph name="BEGIN_LINK" />Ti invitiamo a leggerli<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Non attiva</translation>
 <translation id="8590913940444621808">Non chiedere mai</translation>
 <translation id="8591976964826315682">Blocca cookie di terze parti in modalità di navigazione in incognito</translation>

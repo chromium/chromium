@@ -472,6 +472,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="4901778704868714008">Gem...</translation>
 <translation id="4904877109095351937">Markér som læst</translation>
 <translation id="4908869848243824489">Discover fra Google</translation>
+<translation id="4916679969857390442">Objektiv</translation>
 <translation id="4930714375720679147">Aktivér</translation>
 <translation id="4941089862236492464">Beklager, men der opstod et problem med at dele dit element.</translation>
 <translation id="4944543191714094452">Find på siden…</translation>
@@ -767,7 +768,6 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7192050974311852563">Start logføring</translation>
 <translation id="7203585745079012652">Giv talte svar</translation>
 <translation id="7207023858769244910">Synkroniser for at få indhold baseret på dine interesser.</translation>
-<translation id="7207383424303353046">Nyt! Åbn automatisk websites i Chrome ved at gøre den til din standardbrowser. <ph name="BEGIN_LINK" />Åbn indstillinger<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Kortets kaldenavn er ugyldigt</translation>
 <translation id="722454870747268814">Ny inkognitofane</translation>
 <translation id="7265758999917665941">Aldrig for dette website</translation>
@@ -917,7 +917,6 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8533670235862049797">Beskyttet browsing er aktiveret</translation>
 <translation id="8534481786647257214">Indlæg delt på Google+.</translation>
 <translation id="8548878600947630424">Find på siden...</translation>
-<translation id="8574235780160508979">Servicevilkårene for Chrome ændres den 31. marts <ph name="BEGIN_LINK" />Gennemgå dem<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Fra</translation>
 <translation id="8590913940444621808">Spørg aldrig</translation>
 <translation id="8591976964826315682">Bloker tredjepartscookies i inkognito</translation>

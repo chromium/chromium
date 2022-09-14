@@ -237,6 +237,7 @@
 <translation id="2619344480613750862">Ekran qismlarini ham shunday varaqlash mumkin. Masalan launcher, javon yoki Chrome varaqlariaro. Keyingi qismga almashtirish uchun toʻrtta barmoq bilan ekranni chapga suring. Buni hoziroq sinab koʻring.</translation>
 <translation id="2624431853467395961">O‘rganish rejimini ochish</translation>
 <translation id="2626530649491650971">clickable</translation>
+<translation id="263637551280112393">Search+Shift+Space tugmalarini bosing</translation>
 <translation id="2637227747952042642">Matem</translation>
 <translation id="2638785836053527382">Yuklab olish davom ettirildi: <ph name="FILE_NAME" /></translation>
 <translation id="2639750663247012216">ChromeVox modifikatori</translation>
@@ -649,6 +650,7 @@
 <translation id="5355014376930441909">Keyingi qism mavjud emas</translation>
 <translation id="5368000168321181111">Ovoz signallari o‘chirib qo‘yildi</translation>
 <translation id="5368505757342402527">Yuklab olinmoqda (<ph name="PROGRESS" />%): <ph name="FILE_NAME" />. Taxminan <ph name="TIME" /> <ph name="UNITS" /> qoldi.</translation>
+<translation id="5381388086899614489">bosib turing</translation>
 <translation id="5400836586163650660">Kulrang</translation>
 <translation id="5402367795255837559">Brayl yozuvi</translation>
 <translation id="5402791055281059602">Modal bildirishnoma</translation>

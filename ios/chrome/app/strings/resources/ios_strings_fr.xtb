@@ -472,6 +472,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4901778704868714008">Enregistrer…</translation>
 <translation id="4904877109095351937">Marquer comme lues</translation>
 <translation id="4908869848243824489">Discover de Google</translation>
+<translation id="4916679969857390442">Loupe</translation>
 <translation id="4930714375720679147">Activer</translation>
 <translation id="4941089862236492464">Désolé, un problème est survenu lors du partage de l'élément.</translation>
 <translation id="4944543191714094452">Rechercher sur la page…</translation>
@@ -767,7 +768,6 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7192050974311852563">Démarrer la journalisation</translation>
 <translation id="7203585745079012652">Énoncer les réponses</translation>
 <translation id="7207023858769244910">Activez la synchronisation pour bénéficier de contenus correspondant à vos centres d'intérêt.</translation>
-<translation id="7207383424303353046">Nouveau : Ouvrez automatiquement les sites dans Chrome en le définissant comme appli de navigation par défaut. <ph name="BEGIN_LINK" />Accéder aux paramètres<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">Pseudo incorrect associé à la carte</translation>
 <translation id="722454870747268814">Nouvel onglet de navigation privée 
 </translation>
@@ -918,7 +918,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8533670235862049797">Navigation sécurisée activée</translation>
 <translation id="8534481786647257214">Post Google+ publié.</translation>
 <translation id="8548878600947630424">Rechercher sur la page…</translation>
-<translation id="8574235780160508979">Les conditions d'utilisation de Chrome vont changer le 31 mars. <ph name="BEGIN_LINK" />Veuillez consulter les modifications<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Éteinte</translation>
 <translation id="8590913940444621808">Ne jamais demander</translation>
 <translation id="8591976964826315682">Bloquer les cookies tiers en mode navigation privée</translation>

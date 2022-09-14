@@ -472,6 +472,7 @@
 <translation id="4901778704868714008">සුරකින්න...</translation>
 <translation id="4904877109095351937">කියවූ ලෙස ලකුණු කරන්න</translation>
 <translation id="4908869848243824489">Google වෙතින් Discover</translation>
+<translation id="4916679969857390442">කාච</translation>
 <translation id="4930714375720679147">ක්‍රියාත්මක කරන්න</translation>
 <translation id="4941089862236492464">කනගාටුයි, ඔබේ අයිතමය බෙදා ගැනීමේ ගැටලුවක් විය.</translation>
 <translation id="4944543191714094452">පිටුව තුළ සොයන්න…</translation>
@@ -767,7 +768,6 @@
 <translation id="7192050974311852563">ලොග් කිරීම අරඹන්න</translation>
 <translation id="7203585745079012652">පිළිතුරු ආපසු දෙන්න</translation>
 <translation id="7207023858769244910">ඔබගේ ලැදිකම් මත පදනම්ව අන්තර්ගතය ලබා ගැනීමට සමමුහුර්ත කරන්න.</translation>
-<translation id="7207383424303353046">නව: ඔබගේ පෙරනිමි බ්‍රව්සර යෙදුම බවට Chrome පත් කිරීමෙන් එහි අඩවි ස්වයංක්‍රියව විවෘත කරන්න. <ph name="BEGIN_LINK" />සැකසීම් විවෘත කරන්න<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">වලංගු නොවන කාඩ්පත් අපනාමය</translation>
 <translation id="722454870747268814">නව අප්‍රසිද්ධ පටිත්ත</translation>
 <translation id="7265758999917665941">කිසි විටෙක මෙම වෙබ් අඩවිය සඳහා නැත</translation>
@@ -917,7 +917,6 @@
 <translation id="8533670235862049797">සුරක්ෂිත බ්‍රවුස් කිරීම ක්‍රියාත්මකයි</translation>
 <translation id="8534481786647257214">Google+ පළ කිරීම සම්පූර්ණයි.</translation>
 <translation id="8548878600947630424">පිටුව තුළ සොයන්න...</translation>
-<translation id="8574235780160508979">මාර්තු 31 වෙනිදා Chrome හි සේවා නියම වෙනස් වේ. <ph name="BEGIN_LINK" />සමාලෝචනය කරන්න<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">අක්‍රිය</translation>
 <translation id="8590913940444621808">කිසි විටක නොඅසන්න</translation>
 <translation id="8591976964826315682">අප්‍රසිද්ධය තුළ තෙවන පාර්ශ්ව කුකි අවහිර කරන්න</translation>

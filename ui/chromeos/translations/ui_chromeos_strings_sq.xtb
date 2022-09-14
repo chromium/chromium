@@ -13,11 +13,6 @@
 <translation id="112387589102719461">Anglisht (SHBA) me tastierën Programmer Dvorak</translation>
 <translation id="1134697384939541955">Anglisht (SHBA) me tastierën e zgjeruar</translation>
 <translation id="1138691154716715755">Më herët këtë muaj</translation>
-<translation id="1148097584170732637"><ph name="FILE_COUNT" /> të gjetura.
-    <ph name="LINE_BREAK1" />
-    Nuk ka hapësirë të mjaftueshme në hapësirën ruajtëse lokale. Nevojiten edhe <ph name="FILE_SIZE" /> më shumë.
-    <ph name="LINE_BREAK2" />
-    Provo të zgjedhësh më pak fotografi.</translation>
 <translation id="1150565364351027703">Syze dielli</translation>
 <translation id="115443833402798225">Hangul ahnmatae</translation>
 <translation id="1155759005174418845">Katalonisht</translation>
@@ -41,7 +36,6 @@
 <translation id="1297922636971898492">"Disku i Google" nuk ofrohet tani. Ngarkimi do të rifillojë automatikisht pasi të kthehet "Disku i Google".</translation>
 <translation id="1307931752636661898">Nuk mund të shihen skedarët e Linux</translation>
 <translation id="1313405956111467313">Konfigurimi automatik i përfaqësuesit</translation>
-<translation id="1351692861129622852">Po importon <ph name="FILE_COUNT" /> skedarë...</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Skedari ose direktoria nuk është i përdorshëm.</translation>
 <translation id="1363028406613469049">Pjesa muzikore</translation>
@@ -155,7 +149,6 @@
 <translation id="2307462900900812319">Konfiguro rrjetin</translation>
 <translation id="2325650632570794183">Ky lloj skedari nuk mbështetet. Vizito Dyqanin e uebit të Chrome për të gjetur një aplikacion që mund të hapë këtë lloj skedari.</translation>
 <translation id="2326539130272988168">Bullgarisht</translation>
-<translation id="2352947182261340447">Nuk ka hapësirë të mjaftueshme në hapësirën ruajtëse lokale.</translation>
 <translation id="23721837607121582">Shkarko profilin e celularit, rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Kalo te pamja e listës</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> dosje të ndara me Linux</translation>
@@ -207,7 +200,6 @@
 <translation id="2820957248982571256">Po skanon...</translation>
 <translation id="2830077785865012357">Kinezisht Zhuyin</translation>
 <translation id="2843806747483486897">Ndrysho parazgjedhjen...</translation>
-<translation id="2850124913210091882">Rezervimi</translation>
 <translation id="2873951654529031587">Koshi</translation>
 <translation id="288024221176729610">Çekisht</translation>
 <translation id="2887525882758501333">Dokument PDF</translation>
@@ -224,7 +216,6 @@
 <translation id="2977940621473452797">Ky skedar është i projektuar për një kompjuter që përdor softuerë të Macintosh. Kjo nuk përputhet me pajisjen tënde e cila funksionon me ChromeOS. Kërko "Dyqanin e uebit të Chrome" për një aplikacion të përshtatshëm zëvendësimi.</translation>
 <translation id="2984337792991268709">Sot <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> artikuj po restaurohen...</translation>
-<translation id="2994669386200004489"><ph name="FILE_NAME" /> nuk mund të rezervohej</translation>
 <translation id="299638574917407533">Frëngjisht (Kanada)</translation>
 <translation id="3003189754374775221">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, lidhu</translation>
 <translation id="3003633581067744647">Kalo te pamja e miniaturës</translation>
@@ -232,7 +223,6 @@
 <translation id="3029114385395636667">Aktivizo "Dokumentet e Google jashtë linje" për t'i bërë "Dokumentet", "Fletët" dhe "Diapozitivat" të disponueshme jashtë linje.</translation>
 <translation id="303198083543495566">Gjeografia</translation>
 <translation id="3047197340186497470">Kinezisht Dayi</translation>
-<translation id="3057861065630527966">Rezervo fotografitë dhe videot</translation>
 <translation id="3067790092342515856">Skedarët e Windows</translation>
 <translation id="3083975830683400843">Pajisjet Chromebit</translation>
 <translation id="3085752524577180175">Strehuesi i protokollit SOCKS</translation>
@@ -281,8 +271,6 @@
 <translation id="343907260260897561">Kamerë e çastit</translation>
 <translation id="3452106565701029351">Zhgozhdo nga "Skedarët e shpejtë"</translation>
 <translation id="3455931012307786678">Estonisht</translation>
-<translation id="3466147780910026086">Po skanon pajisjen e medias...</translation>
-<translation id="3468522857997926824"><ph name="FILE_COUNT" /> fotografi u rezervuan te <ph name="BEGIN_LINK" />Disku i Google<ph name="END_LINK" /></translation>
 <translation id="3475447146579922140">Fletëllogaritësja e Google</translation>
 <translation id="3479552764303398839">Jo tani</translation>
 <translation id="3486821258960016770">Mongolisht</translation>
@@ -306,7 +294,6 @@
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Kapuçino</translation>
 <translation id="3619593063686672873">Nuk ka video të fundit</translation>
-<translation id="3620292326130836921">Të gjitha u rezervuan!</translation>
 <translation id="3634507049637220048">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, menaxhuar nga administratori yt, detaje</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> artikuj janë zhvendosur.</translation>
 <translation id="3685122418104378273">Sinkronizimi i "Diskut të Google" është çaktivizuar si parazgjedhje kur përdor të dhënat celulare.</translation>
@@ -317,7 +304,6 @@
 <translation id="3726463242007121105">Kjo pajisje nuk mund të hapet sepse sistemi i saj i skedarëve nuk mbështetet.</translation>
 <translation id="3727148787322499904">Ndryshimi i këtij cilësimi do të ndikojë në të gjitha rrjetet e ndara</translation>
 <translation id="3737576078404241332">Hiq nga shiriti anësor</translation>
-<translation id="3741243925913727067">Rezervo fotografitë dhe videot e pajisjes media te "Disku i Google".</translation>
 <translation id="3749289110408117711">Emri i skedarit</translation>
 <translation id="3780536599611287598">Nuk ke autorizim për t'i lëvizur skedarët në "<ph name="FOLDER_NAME" />".</translation>
 <translation id="3786301125658655746">Je jashtë linje</translation>
@@ -362,7 +348,6 @@
 <translation id="4202977638116331303">Gjeorgjisht</translation>
 <translation id="421017592316736757">Duhet të jesh në linjë për t'u qasur te ky skedar.</translation>
 <translation id="4212740939091998969">Dosja e emërtuar "<ph name="FOLDER_NAME" />" ekziston tashmë. Zgjidh një emër tjetër.</translation>
-<translation id="4215448920900139318"><ph name="FILE_COUNT" /> po rezervohen</translation>
 <translation id="4218274196133425560">Hiq përjashtimin për <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Prezantim i Google</translation>
 <translation id="4277536868133419688">Filtri <ph name="FILTER_NAME" /> është aktiv.</translation>
@@ -427,7 +412,6 @@
 <translation id="4711094779914110278">Turqisht</translation>
 <translation id="4712283082407695269">Po hap "<ph name="PATH" />"</translation>
 <translation id="4720185134442950733">Rrjeti i të dhënave celulare</translation>
-<translation id="4724850507808590449"><ph name="FILE_COUNT" /> fotografi u rezervuan</translation>
 <translation id="4725096204469550614">Më herët këtë vit</translation>
 <translation id="4725511304875193254">Korgi</translation>
 <translation id="4737050008115666127">Zbritja</translation>
@@ -452,7 +436,6 @@
 <translation id="4881695831933465202">Hap</translation>
 <translation id="4900532980794411603">Ndaj me Parallels Desktop</translation>
 <translation id="4902546322522096650">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, lidhu</translation>
-<translation id="4905417359854579806">Gati për të rezervuar <ph name="FILE_COUNT" /></translation>
 <translation id="4906580650526544301">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bateria e telefonit <ph name="BATTERY_STATUS" />%, detaje</translation>
 <translation id="4935975195727477204">Lule Gazania</translation>
 <translation id="4943368462779413526">Futboll</translation>
@@ -464,7 +447,6 @@
 <translation id="4988205478593450158">Je i sigurt se dëshiron të fshish "<ph name="FILE_NAME" />"?</translation>
 <translation id="498902553138568924">Flutur e kuqe</translation>
 <translation id="4992066212339426712">Aktivizo zërin</translation>
-<translation id="5004584466530475658"><ph name="FILE_COUNT" /> fotografi të reja</translation>
 <translation id="5010406651457630570">Kompjuterët</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Një operacion po zgjat më shumë nga sa pritej. Dëshiron që ta braktisësh?</translation>
@@ -508,6 +490,7 @@
     <ph name="MARKUP_7" />Ndaj, krijo dhe bashkëpuno<ph name="MARKUP_8" />
     me të tjerët për skedarët, të gjitha në një vend të vetëm.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Skedarët e rikuperuar nga "Disku i Google"</translation>
+<translation id="5286194356314741248">Po skanon</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5299998344490869684">Je i/e sigurt që dëshiron të zbrazësh "Koshin"?</translation>
 <translation id="5305688511332277257">Nuk është instaluar asnjë</translation>
@@ -516,7 +499,6 @@
 <translation id="5323213332664049067">Tastiera amerikano-latine</translation>
 <translation id="5330145655348521461">Këta skedarë u hapën në një desktop tjetër. Lëviz te <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) për ta parë.</translation>
 <translation id="5330512191124428349">Merr informacione</translation>
-<translation id="5335458522276292100">Po rezervohen <ph name="FILE_COUNT" /> te <ph name="BEGIN_LINK" />Disku i Google<ph name="END_LINK" /></translation>
 <translation id="535792325654997756">Person me mace</translation>
 <translation id="5358764674931277">Shpejtësia e kuadrove</translation>
 <translation id="5363339716524495120">Gjuha e hyrjes është kinezisht</translation>
@@ -558,8 +540,6 @@
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, Shkyç</translation>
 <translation id="5700087501958648444">Informacionet e audios</translation>
 <translation id="5724172041621205163">Tajlandisht me tastierë Pattachote</translation>
-<translation id="5731409020711461763">1 fotografi e re</translation>
-<translation id="5752453871435543420">Rezervimi në renë kompjuterike për sistemin operativ Chrome</translation>
 <translation id="5756666464756035725">Tastiera QWERTY në hungarisht</translation>
 <translation id="5763377084591234761">Gjermanisht (Zvicër)</translation>
 <translation id="5769519078756170258">Pritësi ose domeni për ta përjashtuar</translation>
@@ -593,7 +573,6 @@
 <translation id="6011074160056912900">Rrjeti i eternetit</translation>
 <translation id="60357267506638014">Tastierë çeke QWERTY</translation>
 <translation id="603895874132768835">Nuk do të mund ta përdorësh këtë rrjet derisa të konfigurosh një kod të ri PIN</translation>
-<translation id="604001903249547235">Rezervimi në renë kompjuterike</translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6055907707645252013">Rrjeti <ph name="NETWORK_TYPE" />, nuk është lidhur</translation>
 <translation id="6074825444536523002">Formulari i Google</translation>
@@ -656,7 +635,6 @@
 <translation id="6607272825297743757">Informacioni i skedarit</translation>
 <translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> dosje të ndara me Parallels Desktop</translation>
 <translation id="6629518321609546825">Fut të paktën 4 numra</translation>
-<translation id="6629841649550503054">Të gjitha u rezervuan te <ph name="BEGIN_LINK" />Disku i Google!<ph name="END_LINK" /></translation>
 <translation id="6643016212128521049">Pastro</translation>
 <translation id="6650726141019353908">Flutur rozë</translation>
 <translation id="6657585470893396449">Fjalëkalimi</translation>
@@ -691,9 +669,6 @@
 <translation id="6918340160281024199">Tastiera amerikane Workman</translation>
 <translation id="6930242544192836755">Kohëzgjatja</translation>
 <translation id="6931302001003657424">Gozhdo te "Skedarët e shpejtë"</translation>
-<translation id="6934241953272494177">Po skanon pajisjen tënde të medias...
-    <ph name="LINE_BREAK1" />
-    <ph name="FILE_COUNT" /> të gjetura</translation>
 <translation id="6935521024859866267">Përmbys</translation>
 <translation id="6943836128787782965">Marrja e HTTP-së dështoi</translation>
 <translation id="6949408524333579394">Serbisht me transliterim</translation>
@@ -739,7 +714,6 @@
 <translation id="7248671827512403053">Aplikacion</translation>
 <translation id="7256405249507348194">Gabim i panjohur: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Shërbimet që ofrohen</translation>
-<translation id="7283041136720745563">Kuota e "Diskut të Google" nuk është e mjaftueshme.</translation>
 <translation id="7294063083760278948">Telugisht me transliterim</translation>
 <translation id="7295662345261934369">Ndaj me të tjerët</translation>
 <translation id="7297443947353982503">Emri i përdoruesit/fjalëkalimi është i pasaktë ose vërtetimi i EAP-së dështoi</translation>
@@ -757,9 +731,6 @@
 <translation id="7460898608667578234">Ukrainisht</translation>
 <translation id="7469894403370665791">Lidhu automatikisht me këtë rrjet</translation>
 <translation id="7486315294984620427">Për t'i lëshuar skedarët në Parallels Desktop, skedari duhet të kopjohet te dosja e skedarëve të Windows.</translation>
-<translation id="7489215562877293245"><ph name="FILE_COUNT" /> të gjetura
-    <ph name="LINE_BREAK1" />
-    Gati për të rezervuar te <ph name="BEGIN_LINK" />Disku i Google<ph name="END_LINK" /></translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malajalamisht fonetike</translation>
 <translation id="7505167922889582512">Shfaq skedarët e fshehur</translation>
@@ -793,7 +764,6 @@
 <translation id="7708271999969613024">Për të përdorur këtë rrjet, duhet të futësh "Çelësin personal të zhbllokimit" (PUK) me 8 shifra të dhënë nga operatori celular.</translation>
 <translation id="7711920809702896782">Informacionet e imazhit</translation>
 <translation id="7724603315864178912">Prite</translation>
-<translation id="7730494089396812859">Shfaq detaje të rezervimit në "Renë kompjuterike"</translation>
 <translation id="7732111077498238432">Rrjeti kontrollohet nga një politikë</translation>
 <translation id="7748626145866214022">Më shumë opsione ofrohen në shiritin e veprimeve. Shtyp Alt + A për t'u fokusuar te shiriti e veprimeve.</translation>
 <translation id="7760449188139285140">Kinezisht Wubi</translation>
@@ -809,11 +779,6 @@
 <translation id="7805768142964895445">Statusi</translation>
 <translation id="7806708061868529807">Hebraisht</translation>
 <translation id="78104721049218340">Tajlandisht me tastierë Kedmanee</translation>
-<translation id="7821462174190887129"><ph name="FILE_COUNT" /> të gjetura.
-    <ph name="LINE_BREAK1" />
-    Kuota e "Diskut të Google" nuk është mjaft e madhe. Nevojiten edhe <ph name="FILE_SIZE" /> më shumë.
-    <ph name="LINE_BREAK2" />
-    Provo të zgjedhësh më pak fotografi.</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Gabim gjatë konfigurimit të rrjetit</translation>
 <translation id="7839804798877833423">Marrja e këtyre skedarëve do të përdorë afro <ph name="FILE_SIZE" /> të dhëna celulare.</translation>

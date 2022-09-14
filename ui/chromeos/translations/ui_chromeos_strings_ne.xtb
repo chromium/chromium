@@ -13,11 +13,6 @@
 <translation id="112387589102719461">अङ्ग्रेजी (सं. रा. अमेरिकी) प्रोग्रामर ड्भोराक किबोर्ड</translation>
 <translation id="1134697384939541955">अङ्ग्रेजी (सं. रा. अमेरिकी) विस्तारित किबोर्ड</translation>
 <translation id="1138691154716715755">यो महिनाको सुरुवातमा</translation>
-<translation id="1148097584170732637"><ph name="FILE_COUNT" /> फेला पर्‍यो।
-    <ph name="LINE_BREAK1" />
-    स्थानीय भण्डारणमा पर्याप्त खाली ठाउँ उपलब्ध छैन। अतिरिक्त <ph name="FILE_SIZE" /> आवश्यक छ।
-    <ph name="LINE_BREAK2" />
-    अझ थोरै तस्बिरहरू चयन गरी हेर्नुहोस्।</translation>
 <translation id="1150565364351027703">शीतल चस्मा</translation>
 <translation id="115443833402798225">हंगुल Ahnmatae</translation>
 <translation id="1155759005174418845">क्याटालान</translation>
@@ -41,7 +36,6 @@
 <translation id="1297922636971898492">Google ड्राइभ अहिले उपलब्ध छैन। Google ड्राइभ एकपटक फर्केपचि अपलोड स्वत: सुरुवात हुनेछ।</translation>
 <translation id="1307931752636661898">Linux का फाइलहरू हेर्न सकिएन</translation>
 <translation id="1313405956111467313">स्वचालित प्रोक्सी कन्फिगरेसन</translation>
-<translation id="1351692861129622852"><ph name="FILE_COUNT" /> फाइलहरू आयात गर्दै...</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">फाइलवा डाइरेक्टरी प्रयोगयोग्य छैन।</translation>
 <translation id="1363028406613469049">ट्रयाक</translation>
@@ -84,6 +78,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> वस्तुहरू जिप गर्दै...</translation>
 <translation id="1722687688096767818">प्रोफाइल थपिँदै छ…</translation>
 <translation id="1726100011689679555">नामका सर्भरहरू</translation>
+<translation id="1726600877401297672"><ph name="NUMBER_OF_ITEMS" /> वटा फाइल ट्र्यासमा सारियो</translation>
 <translation id="1729953886957086472">जर्मन (जर्मनी)</translation>
 <translation id="1730235522912993863">चिनियाँ क्यान्जी</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> वटा वस्तु कपी गरिए।</translation>
@@ -155,7 +150,6 @@
 <translation id="2307462900900812319">नेटवर्क कन्फिगर गर्नुहोस्</translation>
 <translation id="2325650632570794183">यो फाइल प्रकार समर्थन गरिएको छैन। यो फाइल खोल्न सक्ने एक अनु्प्रयोग फेला पार्नको लागि कृपया Chrome वेब भण्डार भ्रमण गर्नुहोस्।</translation>
 <translation id="2326539130272988168">बुल्गेरियाली</translation>
-<translation id="2352947182261340447">स्थानीय भण्डारणमा पर्याप्त खाली ठाउँ उपलब्ध छैन।</translation>
 <translation id="23721837607121582">मोबाइल प्रोफाइल डाउनलोड गर्नुहोस्, <ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">सूची दृश्यमा बदल्नुहोस्‌</translation>
 <translation id="2377590462528165447">Linux सँग <ph name="NUMBER_OF_ITEMS" /> फोल्डरहरू आदान प्रदान गरिए</translation>
@@ -207,13 +201,13 @@
 <translation id="2820957248982571256">स्क्यान गर्दै...</translation>
 <translation id="2830077785865012357">चिनियाँ झुयिन</translation>
 <translation id="2843806747483486897">डिफल्ट परिवर्तन गर्नुहोस्...</translation>
-<translation id="2850124913210091882">जगेडा गर्नुहोस्</translation>
 <translation id="2873951654529031587">ट्र्यास</translation>
 <translation id="288024221176729610">चेक</translation>
 <translation id="2887525882758501333">PDF दस्तावेज</translation>
 <translation id="2888807692577297075">कुनैपनि वस्तुहरू मेल खाएनन् &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/ b&gt;</translation>
 <translation id="2894654529758326923">जानकारी</translation>
 <translation id="2902734494705624966">युएस विस्तारित</translation>
+<translation id="2906052776158021882"><ph name="NUMBER_OF_ITEMS" /> वटा फाइल ट्र्यासमा सारिँदै छ</translation>
 <translation id="290843123675549676">मराठी</translation>
 <translation id="2923240520113693977">इस्टोनिया</translation>
 <translation id="2938685643439809023">मङ्गोलियन</translation>
@@ -224,7 +218,6 @@
 <translation id="2977940621473452797">यो फाइल Macintosh सफ्टवेयर प्रयोग गर्ने कम्प्युटरका लागि तयार पारिएको हो। यो फाइल ChromeOS चल्ने तपाईंको डिभाइससँग कम्प्याटिबल छैन। कृपया Chrome वेब स्टोरमा कुनै मिल्दो एप खोज्नुहोस् र उक्त एप इन्स्टल गर्नुहोस्।</translation>
 <translation id="2984337792991268709">आज <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337"><ph name="COUNT" /> वटा वस्तु रिस्टोर गरिँदै छ...</translation>
-<translation id="2994669386200004489"><ph name="FILE_NAME" /> ब्याकअप गर्न सकिएन</translation>
 <translation id="299638574917407533">फ्रान्सेली (क्यानाडा)</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, कनेक्ट गर्नुहोस्</translation>
 <translation id="3003633581067744647">थम्बनेल दृश्यमा बदल्नुहोस्‌</translation>
@@ -232,7 +225,6 @@
 <translation id="3029114385395636667">डकुमेन्ट, पाना तथा स्लाइडहरू अफलाइन हेर्न तथा प्रयोग गर्नका निम्ति 'Google कागजात अफलाइन' अन गर्नुहोस्।</translation>
 <translation id="303198083543495566">भूगोल</translation>
 <translation id="3047197340186497470">चिनियाँ दायी</translation>
-<translation id="3057861065630527966">तपाईँको तस्बिर र भिडियोहरू जगेडा गर्नुहोस्</translation>
 <translation id="3067790092342515856">Windows फाइलहरू</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">SOCKS को होस्ट</translation>
@@ -281,8 +273,6 @@
 <translation id="343907260260897561">इन्स्ट्यान्ट क्यामेरा</translation>
 <translation id="3452106565701029351">"क्विक फाइलहरू" बाट अनपिन गरियोस्</translation>
 <translation id="3455931012307786678">इस्टोनियन</translation>
-<translation id="3466147780910026086">तपाईँको मिडिया यन्त्र स्क्यान गरिँदै...</translation>
-<translation id="3468522857997926824"><ph name="FILE_COUNT" /> तस्बिरहरू <ph name="BEGIN_LINK" />Google ड्राइभ<ph name="END_LINK" /> मा जगेडा गरियो</translation>
 <translation id="3475447146579922140">Google स्प्रेडसिट</translation>
 <translation id="3479552764303398839">अहिले होइन</translation>
 <translation id="3486821258960016770">मङ्गोलियाली</translation>
@@ -306,7 +296,6 @@
 <translation id="3616113530831147358">अडियो</translation>
 <translation id="3619115746895587757">कापाचिनो</translation>
 <translation id="3619593063686672873">हालसालै कुनै पनि भिडियो हेरिएको छैन</translation>
-<translation id="3620292326130836921">सबै जगेडा गरियो!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ, विवरणहरू</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> वटा वस्तु सारिए।</translation>
 <translation id="3685122418104378273">Google ड्राइभ सिंक डिफल्ट रूपमा अक्षम गरिएको हुन्छ, मोबाइल डेटाको खपत गर्ने क्रममा।</translation>
@@ -317,7 +306,6 @@
 <translation id="3726463242007121105">यो यन्त्रलाई खोल्न सकिँदैन किनभने यसको फाइल सिस्टम समर्थित छैन।</translation>
 <translation id="3727148787322499904">यो सेटिङ परिवर्तन गर्नुले आदान प्रदान गरिएका सबै नेटवर्कहरूमा असर पार्नेछ</translation>
 <translation id="3737576078404241332">साइडबारबाट हटाउनुहोस्</translation>
-<translation id="3741243925913727067">Google ड्राइभमा तपाईँको मिडिया यन्त्रको तस्बिर र भिडियोहरू जगेडा गर्नुहोस्।</translation>
 <translation id="3749289110408117711">फाइल नाम</translation>
 <translation id="3780536599611287598">तपाईंसँग '<ph name="FOLDER_NAME" />' मा फाइलहरू सार्ने अनुमति छैन।</translation>
 <translation id="3786301125658655746">तपाईं अफलाइन हुनुहुन्छ</translation>
@@ -362,7 +350,6 @@
 <translation id="4202977638116331303">जर्जियाली</translation>
 <translation id="421017592316736757">यो फाइलको पहुँच गर्न तपाईं अनलाइन हुनु पर्छ।</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" नाम गरेको फोल्डर पहिलेदेखि नै अवस्थित छ। कृपया कुनै फरक नाम चयन गर्नुहोस्।</translation>
-<translation id="4215448920900139318"><ph name="FILE_COUNT" /> ब्याकअप गर्दै</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> को अपवाद हटाउनुहोस्</translation>
 <translation id="4261901459838235729">Google प्रस्तुती</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> फिल्टर अन छ।</translation>
@@ -427,7 +414,6 @@
 <translation id="4711094779914110278">टर्किश</translation>
 <translation id="4712283082407695269">"<ph name="PATH" />" खोलिँदै</translation>
 <translation id="4720185134442950733">मोबाइल डेटा नेटवर्क</translation>
-<translation id="4724850507808590449"><ph name="FILE_COUNT" /> तस्बिरहरू जगेडा गरियो</translation>
 <translation id="4725096204469550614">यो वर्षको सुरुवातमा</translation>
 <translation id="4725511304875193254">कोर्गी</translation>
 <translation id="4737050008115666127">ल्यान्डिङ</translation>
@@ -452,7 +438,6 @@
 <translation id="4881695831933465202">खोल्नुहोस्</translation>
 <translation id="4900532980794411603">Parallels Desktop सँग सेयर गर्नुहोस्</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, जोड्नुहोस्</translation>
-<translation id="4905417359854579806"><ph name="FILE_COUNT" /> ब्याकअपको लागि तयार छ</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, फोनको ब्याट्रीको स्तर <ph name="BATTERY_STATUS" />%, विवरणहरू</translation>
 <translation id="4935975195727477204">गाजानिया फुल</translation>
 <translation id="4943368462779413526">फुटबल</translation>
@@ -464,7 +449,6 @@
 <translation id="4988205478593450158">तपाईं "<ph name="FILE_NAME" />" लाई मेटाउने कुरामा निश्चित हुनुहुन्छ?</translation>
 <translation id="498902553138568924">रातो पुतली</translation>
 <translation id="4992066212339426712">आवाज खोल्नुहोस्</translation>
-<translation id="5004584466530475658"><ph name="FILE_COUNT" /> नयाँ तस्बिरहरू</translation>
 <translation id="5010406651457630570">कम्प्युटरहरू</translation>
 <translation id="5011233892417813670">Chromeपुस्तिका</translation>
 <translation id="5024856940085636730">एउटा कार्यले अपेक्षा गरेभन्दा बढी समय लिइरहेको छ। के तपाईं त्यसलाई रद्द गर्न चाहनुहुन्छ?</translation>
@@ -476,6 +460,7 @@
 <translation id="5068919226082848014">पिजा</translation>
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> फाइलहरू मेटाइने छन्</translation>
 <translation id="508423945471810158"><ph name="FOLDER_NAME" /> मा <ph name="NUMBER_OF_ITEMS" /> वटा वस्तु सारिँदै छन्</translation>
+<translation id="5092200349368278146"><ph name="FILE_NAME" /> ट्र्यासमा सारियो</translation>
 <translation id="509429900233858213">त्रुटि भयो।</translation>
 <translation id="5098629044894065541">हिब्रू</translation>
 <translation id="5102922915594634436">सिंक गरिएका फोल्डरहरू व्यवस्थापन गर्नुहोस्</translation>
@@ -508,6 +493,7 @@
     <ph name="MARKUP_7" />फाइलहरूलाई साझेदारी, सिर्जना गर्नुहोस् र अन्यसँग मिलेर तिनीहरूमा सहकार्य गर्नुहोस्<ph name="MARKUP_8" />
     र यो सब एकै ठाउँमा गर्नुहोस्।<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google ड्राइभ फाइलहरू पुन: प्राप्त गरियो</translation>
+<translation id="5286194356314741248">स्क्यान गर्दै</translation>
 <translation id="5288441970121584418">बर्गर</translation>
 <translation id="5299998344490869684">तपाईंले ट्र्यास खाली गर्न खोज्नुभएकै हो?</translation>
 <translation id="5305688511332277257">कुनै स्थापित छैन</translation>
@@ -516,7 +502,6 @@
 <translation id="5323213332664049067">ल्याटिन अमेरिकी</translation>
 <translation id="5330145655348521461">यी फाइलहरू एउटा फरक डेस्कटपमा खुलेका थिए। यसलाई हेर्नको लागि <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) मा लैजानुहोस्।</translation>
 <translation id="5330512191124428349">जानकारी प्राप्त गर्नुहोस्</translation>
-<translation id="5335458522276292100"><ph name="FILE_COUNT" /> <ph name="BEGIN_LINK" />Google ड्राइभ <ph name="END_LINK" /> मा ब्याकअप गरिँदैछ</translation>
 <translation id="535792325654997756">बिरालो बोकिरहेका व्यक्ति</translation>
 <translation id="5358764674931277">फ्रेम रेट</translation>
 <translation id="5363339716524495120">इनपुट भाषा चिनियाँ हो</translation>
@@ -558,8 +543,6 @@
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, अनलक गर्नुहोस्</translation>
 <translation id="5700087501958648444">अडियोसम्बन्धी जानकारी</translation>
 <translation id="5724172041621205163">थाई पत्ताचोते किबोर्ड</translation>
-<translation id="5731409020711461763">१ नयाँ तस्बिर</translation>
-<translation id="5752453871435543420">Chrome OS क्लाउड जगेडा</translation>
 <translation id="5756666464756035725">हंगेरी QWERTY</translation>
 <translation id="5763377084591234761">जर्मन (स्विजरल्यान्ड)</translation>
 <translation id="5769519078756170258">वर्जित गर्नु पर्ने होस्ट वा डोमेन</translation>
@@ -580,6 +563,7 @@
 <translation id="5845721951356578987">नर्स</translation>
 <translation id="5861477046012235702">गेमर</translation>
 <translation id="5864471791310927901">DHCP खोज्ने असफल भयो</translation>
+<translation id="5887342613489958822"><ph name="FILE_NAME" /> ट्र्यासमा सारिँदै छ</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, अन नगरिएको, सिग्नलको क्षमता<ph name="SIGNAL_STRENGTH" />%, विवरणहरू</translation>
 <translation id="5911887972742538906">तपाईंको Linux एप स्थापना गर्ने क्रममा त्रुटि भयो।</translation>
 <translation id="5912396950572065471">ढाँचा</translation>
@@ -593,7 +577,6 @@
 <translation id="6011074160056912900">इथरनेट नेटवर्क</translation>
 <translation id="60357267506638014">चेक QWERTY</translation>
 <translation id="603895874132768835">नयाँ PIN सेटअप गरेपछि मात्र तपाईं यो नेटवर्क प्रयोग गर्न सक्नुहुन्छ</translation>
-<translation id="604001903249547235">क्लाउड जगेडा</translation>
 <translation id="6040143037577758943">बन्द गर्नुहोस्</translation>
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> नेटवर्क, जोडिएको छैन</translation>
 <translation id="6074825444536523002">Google फारम</translation>
@@ -656,7 +639,6 @@
 <translation id="6607272825297743757">फाइल बारे जानकारी</translation>
 <translation id="6609332149380188670">Parallels Desktop सँग <ph name="NUMBER_OF_ITEMS" /> वटा फोल्डर सेयर गरियो</translation>
 <translation id="6629518321609546825">कम्तीमा ४ वटा नम्बर हाल्नुहोस्</translation>
-<translation id="6629841649550503054">सबै <ph name="BEGIN_LINK" />Google ड्राइभ<ph name="END_LINK" /> मा जगेडा गरियो!</translation>
 <translation id="6643016212128521049">खालि गर्नुहोस्</translation>
 <translation id="6650726141019353908">गुलाफी पुतली</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
@@ -684,6 +666,7 @@
 <translation id="6874758081814639712">ताइ ची गरिरहेका व्यक्ति</translation>
 <translation id="6876155724392614295">साइकल</translation>
 <translation id="6878261347041253038">देवनागरी किबोर्ड (ध्वन्यात्मक)</translation>
+<translation id="6881853403185175088">कार्यालय</translation>
 <translation id="6885780034956018177">चिप्लेकिरो</translation>
 <translation id="6896758677409633944">प्रतिलिपि गर्नुहोस्</translation>
 <translation id="6898028766943174120">थप उप फोल्डरहरू...</translation>
@@ -691,9 +674,6 @@
 <translation id="6918340160281024199">US Workman</translation>
 <translation id="6930242544192836755">अवधि</translation>
 <translation id="6931302001003657424">"क्विक फाइलहरू" मा पिन गरियोस्</translation>
-<translation id="6934241953272494177">तपाईंको मिडिया यन्त्र स्क्यान गर्दै...
-    <ph name="LINE_BREAK1" />
-    <ph name="FILE_COUNT" /> फेला पर्‍यो</translation>
 <translation id="6935521024859866267">उल्टो</translation>
 <translation id="6943836128787782965">HTTP प्राप्त असफल भयो</translation>
 <translation id="6949408524333579394">सर्बियाली लिपि रूपान्तरण</translation>
@@ -739,7 +719,6 @@
 <translation id="7248671827512403053">एप</translation>
 <translation id="7256405249507348194">पहिचान नभएको त्रुटि: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">उपलब्ध सेवाहरू</translation>
-<translation id="7283041136720745563">तपाईंको Google ड्राइभको कोटा पर्याप्त ठुलो छैन।</translation>
 <translation id="7294063083760278948">तेलगू लिपि रूपान्तरण</translation>
 <translation id="7295662345261934369">अरूसँग सेयर गर्नुहोस्</translation>
 <translation id="7297443947353982503">एक-पटके टेक्स्ट म्यासेज/पासवर्ड गलत वा EAP-प्रमाणीकरणअसफल</translation>
@@ -757,9 +736,6 @@
 <translation id="7460898608667578234">युक्रेनियन</translation>
 <translation id="7469894403370665791">यो नेटवर्कमा स्वचालित रूपमा कनेक्ट गर्नुहोस्</translation>
 <translation id="7486315294984620427">फाइल ड्र्याग गरेर Parallels Desktop मा ड्रप गर्न सो फाइल कपी गरेर 'Windows फाइलहरू' फोल्डरमा पेस्ट गर्नु पर्ने हुन्छ।</translation>
-<translation id="7489215562877293245"><ph name="FILE_COUNT" /> फेला पर्‍यो
-    <ph name="LINE_BREAK1" />
-    <ph name="BEGIN_LINK" />Google ड्राइभ<ph name="END_LINK" /> मा ब्याकअप गर्न तयार</translation>
 <translation id="749452993132003881">हिरागाना</translation>
 <translation id="7495372004724182530">मलयालम फोनेटिक</translation>
 <translation id="7505167922889582512">लुकेका फाइलहरू देखाउनुहोस्</translation>
@@ -793,7 +769,6 @@
 <translation id="7708271999969613024">तपाईं यो नेटवर्क प्रयोग गर्न चाहनुहुन्छ भने तपाईंले सेवा प्रदायकले उपलब्ध गराएको ८ अङ्कको पर्सनल अनब्लकिङ की (PUK) हाल्नु पर्ने हुन्छ।</translation>
 <translation id="7711920809702896782">छविको जानकारी</translation>
 <translation id="7724603315864178912">काट्नुहोस्</translation>
-<translation id="7730494089396812859">क्लाउड जगेडा विवरणहरू देखाउनुहोस्</translation>
 <translation id="7732111077498238432">नेटवर्क नीतिद्वारा नियन्त्रित छ</translation>
 <translation id="7748626145866214022">कारबाहीसम्बन्धी पट्टीमा थप विकल्पहरू उपलब्ध छन्। कारबाहीसम्बन्धी पट्टीमा फोकस गर्न Alt + A कुन्जी थिच्नुहोस्।</translation>
 <translation id="7760449188139285140">चिनियाँ वुबी</translation>
@@ -809,11 +784,6 @@
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7806708061868529807">हिब्रू</translation>
 <translation id="78104721049218340">थाई केडमानी किबोर्ड</translation>
-<translation id="7821462174190887129"><ph name="FILE_COUNT" /> फेला पर्‍यो।
-    <ph name="LINE_BREAK1" />
-    तपाईंको Google ड्राइभ कोटा पर्याप्त ठुलो छैन। थप <ph name="FILE_SIZE" /> आवश्यक छ।
-    <ph name="LINE_BREAK2" />
-    अझ थोरै तस्बिरहरू चयन गरी हेर्नुहोस्।</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> टि.बि.</translation>
 <translation id="7831491651892296503">नेटवर्क कन्फिगर गर्दा त्रुटि भयो</translation>
 <translation id="7839804798877833423">यी फाइलहरू ल्याउने क्रममा लगभग <ph name="FILE_SIZE" /> को मोबाइल लगत प्रयोग गर्छ।</translation>

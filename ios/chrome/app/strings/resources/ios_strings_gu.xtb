@@ -472,6 +472,7 @@
 <translation id="4901778704868714008">સાચવો...</translation>
 <translation id="4904877109095351937">વાંચેલ તરીકે ચિહ્નિત કરો</translation>
 <translation id="4908869848243824489">Googleનું Discover</translation>
+<translation id="4916679969857390442">લેન્સ</translation>
 <translation id="4930714375720679147">ચાલુ કરો</translation>
 <translation id="4941089862236492464">માફ કરશો, તમારી આઇટમને શેર કરવામાં સમસ્યા આવી હતી.</translation>
 <translation id="4944543191714094452">પેજમાં શોધો…</translation>
@@ -767,7 +768,6 @@
 <translation id="7192050974311852563">લૉગિંગ શરૂ કરો</translation>
 <translation id="7203585745079012652">જવાબો પાછા બોલો</translation>
 <translation id="7207023858769244910">તમારી રુચિઓના આધારે કન્ટેન્ટ મેળવવા માટે સિંક કરો.</translation>
-<translation id="7207383424303353046">નવું: Chromeને તમારી ડિફૉલ્ટ બ્રાઉઝર ઍપ બનાવીને સાઇટને તેમાં ઑટોમૅટિક રીતે ખોલો. <ph name="BEGIN_LINK" />સેટિંગ ખોલો<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">કાર્ડનું અમાન્ય ઉપનામ</translation>
 <translation id="722454870747268814">નવું છૂપું ટૅબ</translation>
 <translation id="7265758999917665941">આ સાઇટ માટે ક્યારેય નહીં</translation>
@@ -917,7 +917,6 @@
 <translation id="8533670235862049797">Safe Browsingની સુવિધા ચાલુ છે</translation>
 <translation id="8534481786647257214">Google+ પોસ્ટ પૂર્ણ કરેલ છે.</translation>
 <translation id="8548878600947630424">પેજમાં શોધો...</translation>
-<translation id="8574235780160508979">Chromeની સેવાની શરતો 31મી માર્ચથી બદલાઈ રહી છે. <ph name="BEGIN_LINK" />કૃપા કરીને તેનો રિવ્યૂ કરો<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">બંધ</translation>
 <translation id="8590913940444621808">ક્યારેય પૂછશો નહીં</translation>
 <translation id="8591976964826315682">ત્રીજા પક્ષની કુકીને છૂપા મોડમાં બ્લૉક કરો</translation>

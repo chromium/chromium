@@ -238,6 +238,7 @@
 <translation id="2619344480613750862">Também pode deslocar-se entre secções no ecrã. Por exemplo, pode deslocar-se entre o Launcher, a prateleira e os seus separadores do Chrome. Para se deslocar para a secção seguinte, deslize rapidamente da esquerda para a direita com quatro dedos. Experimente agora para continuar.</translation>
 <translation id="2624431853467395961">Abrir modo de aprendizagem</translation>
 <translation id="2626530649491650971">clicável</translation>
+<translation id="263637551280112393">Prima Pesquisa + Shift + Espaço</translation>
 <translation id="2637227747952042642">Matemática</translation>
 <translation id="2638785836053527382">Transferência de <ph name="FILE_NAME" /> retomada</translation>
 <translation id="2639750663247012216">Modificador do ChromeVox</translation>
@@ -650,6 +651,7 @@
 <translation id="5355014376930441909">Não existe nenhuma secção seguinte.</translation>
 <translation id="5368000168321181111">Ícones sonoros desativados</translation>
 <translation id="5368505757342402527">A transferência do ficheiro <ph name="FILE_NAME" /> está <ph name="PROGRESS" />% concluída. Faltam cerca de <ph name="TIME" /> <ph name="UNITS" />.</translation>
+<translation id="5381388086899614489">clique prolongado</translation>
 <translation id="5400836586163650660">Cinzento</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402791055281059602">Um alerta modal</translation>

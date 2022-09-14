@@ -472,6 +472,7 @@
 <translation id="4901778704868714008">सेभ गर्नुहोस्...</translation>
 <translation id="4904877109095351937">पढिसकिएको भनी चिन्ह लगाउनुहोस्</translation>
 <translation id="4908869848243824489">Google को Discover</translation>
+<translation id="4916679969857390442">लेन्सहरू</translation>
 <translation id="4930714375720679147">अन गर्नुहोस्</translation>
 <translation id="4941089862236492464">माफ गर्नुहोस्, तपाईंको वस्तु साझेदारी गर्दा समस्या भयो।</translation>
 <translation id="4944543191714094452">पृष्ठमा फेला पार्नुहोस्…</translation>
@@ -767,7 +768,6 @@
 <translation id="7192050974311852563">लग गर्न सुरु गर्नुहोस्</translation>
 <translation id="7203585745079012652">जवाफहरू पुन: भन्नुहोस्</translation>
 <translation id="7207023858769244910">आफ्नो रुचिअनुसारका सामग्री प्राप्त गर्न सिंक गर्नुहोस्।</translation>
-<translation id="7207383424303353046">नयाँ: Chrome लाई आफ्नो डिफल्ट ब्राउजर एप बनाएर साइटहरू स्वतः Chrome मा खोल्नुहोस्। <ph name="BEGIN_LINK" />सेटिङ खोल्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="721597782417389033">कार्डको उपनाम अवैध छ</translation>
 <translation id="722454870747268814">नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="7265758999917665941">यो साइटका हकमा कहिल्यै पनि नसम्झनुहोस्</translation>
@@ -917,7 +917,6 @@
 <translation id="8533670235862049797">Safe Browsing अन छ</translation>
 <translation id="8534481786647257214">Google+ पोस्ट पूरा भयो।</translation>
 <translation id="8548878600947630424">पृष्ठमा फेला पार्नुहोस्...</translation>
-<translation id="8574235780160508979">३१ मार्चदेखि Chrome को सेवाका सर्तहरू परिवर्तन हुँदै छन्। <ph name="BEGIN_LINK" />कृपया समीक्षा गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">निष्क्रिय</translation>
 <translation id="8590913940444621808">कहिल्यै नसोधियोस्</translation>
 <translation id="8591976964826315682">इन्कोग्निटो मोडमा तेस्रो पक्षीय कुकीलाई रोक लगाइयोस्</translation>
