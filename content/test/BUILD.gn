@@ -2893,7 +2893,6 @@ test("content_unittests") {
       "../browser/android/android_overlay_provider_impl_unittest.cc",
       "../browser/android/java/gin_java_method_invocation_helper_unittest.cc",
       "../browser/android/java/java_type_unittest.cc",
-      "../browser/android/message_payload_unittest.cc",
       "../browser/android/overscroll_controller_android_unittest.cc",
       "../browser/android/scoped_surface_request_manager_unittest.cc",
       "../browser/font_unique_name_lookup/font_unique_name_lookup_unittest.cc",

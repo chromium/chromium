@@ -8,6 +8,7 @@ import android.os.Handler;
 
 import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.content.browser.AppWebMessagePort;
+import org.chromium.content.browser.AppWebMessagePortDescriptor;
 
 /**
  * Interface for message ports that handle postMessage requests.
@@ -32,6 +33,14 @@ public interface MessagePort {
      */
     public static MessagePort[] createPair() {
         return AppWebMessagePort.createPair();
+    }
+
+    /**
+     * Called to create a port from {@link AppWebMessagePortDescriptor}.
+     * @return A {@link MessagePort} instance.
+     */
+    public static MessagePort create(AppWebMessagePortDescriptor descriptor) {
+        return AppWebMessagePort.create(descriptor);
     }
 
     /**
