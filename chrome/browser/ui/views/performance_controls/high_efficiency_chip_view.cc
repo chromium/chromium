@@ -33,7 +33,8 @@ HighEfficiencyChipView::HighEfficiencyChipView(
     : PageActionIconView(command_updater,
                          0,
                          icon_label_bubble_delegate,
-                         page_action_icon_delegate),
+                         page_action_icon_delegate,
+                         "HighEfficiency"),
       browser_(browser) {
   DCHECK(browser_);
 

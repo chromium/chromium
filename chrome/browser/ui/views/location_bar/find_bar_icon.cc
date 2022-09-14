@@ -20,7 +20,8 @@ FindBarIcon::FindBarIcon(
     : PageActionIconView(nullptr,
                          0,
                          icon_label_bubble_delegate,
-                         page_action_icon_delegate),
+                         page_action_icon_delegate,
+                         "Find"),
       browser_(browser) {
   DCHECK(browser_);
 }

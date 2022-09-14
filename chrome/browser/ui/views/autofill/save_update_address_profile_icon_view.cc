@@ -22,7 +22,8 @@ SaveUpdateAddressProfileIconView::SaveUpdateAddressProfileIconView(
     : PageActionIconView(command_updater,
                          IDC_SAVE_AUTOFILL_ADDRESS,
                          icon_label_bubble_delegate,
-                         page_action_icon_delegate) {}
+                         page_action_icon_delegate,
+                         "SaveAutofillAddress") {}
 
 SaveUpdateAddressProfileIconView::~SaveUpdateAddressProfileIconView() = default;
 

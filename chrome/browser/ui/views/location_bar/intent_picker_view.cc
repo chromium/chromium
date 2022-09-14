@@ -28,7 +28,8 @@ IntentPickerView::IntentPickerView(
     : PageActionIconView(nullptr,
                          0,
                          icon_label_bubble_delegate,
-                         page_action_icon_delegate),
+                         page_action_icon_delegate,
+                         "IntentPicker"),
       browser_(browser) {}
 
 IntentPickerView::~IntentPickerView() = default;

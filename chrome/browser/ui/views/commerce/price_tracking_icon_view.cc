@@ -14,7 +14,11 @@
 PriceTrackingIconView::PriceTrackingIconView(
     IconLabelBubbleView::Delegate* parent_delegate,
     Delegate* delegate)
-    : PageActionIconView(nullptr, 0, parent_delegate, delegate) {
+    : PageActionIconView(nullptr,
+                         0,
+                         parent_delegate,
+                         delegate,
+                         "PriceTracking") {
   SetProperty(views::kElementIdentifierKey, kPriceTrackingChipElementId);
 }
 

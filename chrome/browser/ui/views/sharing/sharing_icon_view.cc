@@ -28,7 +28,9 @@ SharingIconView::SharingIconView(
     : PageActionIconView(/*command_updater=*/nullptr,
                          /*command_id=*/0,
                          icon_label_bubble_delegate,
-                         page_action_icon_delegate),
+                         page_action_icon_delegate,
+                         "ClickToCall"),  // Naming corresponds to
+                                          // PageActionIconType.
       get_controller_callback_(std::move(get_controller_callback)),
       get_bubble_callback_(std::move(get_bubble_callback)) {
   SetVisible(false);

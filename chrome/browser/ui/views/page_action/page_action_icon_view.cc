@@ -59,11 +59,13 @@ PageActionIconView::PageActionIconView(
     int command_id,
     IconLabelBubbleView::Delegate* parent_delegate,
     PageActionIconView::Delegate* delegate,
+    const char* name_for_histograms,
     const gfx::FontList& font_list)
     : IconLabelBubbleView(font_list, parent_delegate),
       command_updater_(command_updater),
       delegate_(delegate),
-      command_id_(command_id) {
+      command_id_(command_id),
+      name_for_histograms_(name_for_histograms) {
   DCHECK(delegate_);
 
   image()->SetFlipCanvasOnPaintForRTLUI(true);

@@ -82,6 +82,8 @@ class PageActionIconView : public IconLabelBubbleView {
 
   SkColor GetLabelColorForTesting() const;
 
+  const char* name_for_histograms() const { return name_for_histograms_; }
+
   void ExecuteForTesting();
 
   // Creates and updates the loading indicator.
@@ -105,6 +107,7 @@ class PageActionIconView : public IconLabelBubbleView {
                      int command_id,
                      IconLabelBubbleView::Delegate* parent_delegate,
                      Delegate* delegate,
+                     const char* name_for_histograms,
                      const gfx::FontList& = gfx::FontList());
 
   // Returns true if a related bubble is showing.
@@ -184,6 +187,9 @@ class PageActionIconView : public IconLabelBubbleView {
 
   // The command ID executed when the user clicks this icon.
   const int command_id_;
+
+  // String that represents the page action type for metrics purposes.
+  const char* const name_for_histograms_;
 
   // The active node_data. The precise definition of "active" is unique to each
   // subclass, but generally indicates that the associated feature is acting on

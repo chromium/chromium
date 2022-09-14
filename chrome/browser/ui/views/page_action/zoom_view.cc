@@ -22,7 +22,8 @@ ZoomView::ZoomView(IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
     : PageActionIconView(nullptr,
                          0,
                          icon_label_bubble_delegate,
-                         page_action_icon_delegate),
+                         page_action_icon_delegate,
+                         "Zoom"),
       icon_(&kZoomMinusIcon) {
   SetVisible(false);
 }

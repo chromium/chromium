@@ -26,7 +26,8 @@ OfferNotificationIconView::OfferNotificationIconView(
     : PageActionIconView(command_updater,
                          IDC_OFFERS_AND_REWARDS_FOR_PAGE,
                          icon_label_bubble_delegate,
-                         page_action_icon_delegate) {}
+                         page_action_icon_delegate,
+                         "PaymentsOfferNotification") {}
 
 OfferNotificationIconView::~OfferNotificationIconView() = default;
 

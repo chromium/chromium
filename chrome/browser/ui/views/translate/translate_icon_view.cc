@@ -29,7 +29,8 @@ TranslateIconView::TranslateIconView(
     : PageActionIconView(command_updater,
                          IDC_TRANSLATE_PAGE,
                          icon_label_bubble_delegate,
-                         page_action_icon_delegate) {
+                         page_action_icon_delegate,
+                         "Translate") {
   SetID(VIEW_ID_TRANSLATE_BUTTON);
 }
 

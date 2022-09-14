@@ -52,7 +52,8 @@ SharingHubIconView::SharingHubIconView(
     : PageActionIconView(command_updater,
                          IDC_SHARING_HUB,
                          icon_label_bubble_delegate,
-                         page_action_icon_delegate) {
+                         page_action_icon_delegate,
+                         "SharingHub") {
   SetID(VIEW_ID_SHARING_HUB_BUTTON);
   SetVisible(false);
   SetLabel(

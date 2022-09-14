@@ -24,7 +24,8 @@ VirtualCardManualFallbackIconView::VirtualCardManualFallbackIconView(
     : PageActionIconView(command_updater,
                          IDC_VIRTUAL_CARD_MANUAL_FALLBACK,
                          icon_label_bubble_delegate,
-                         delegate) {}
+                         delegate,
+                         "VirtualCardManualFallback") {}
 
 VirtualCardManualFallbackIconView::~VirtualCardManualFallbackIconView() =
     default;

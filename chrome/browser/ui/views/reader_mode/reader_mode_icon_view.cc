@@ -49,7 +49,8 @@ ReaderModeIconView::ReaderModeIconView(
     : PageActionIconView(command_updater,
                          IDC_DISTILL_PAGE,
                          icon_label_bubble_delegate,
-                         page_action_icon_delegate),
+                         page_action_icon_delegate,
+                         "ReaderMode"),
       pref_service_(pref_service) {}
 
 ReaderModeIconView::~ReaderModeIconView() {

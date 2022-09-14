@@ -27,7 +27,8 @@ VirtualCardEnrollIconView::VirtualCardEnrollIconView(
     : PageActionIconView(command_updater,
                          IDC_VIRTUAL_CARD_ENROLL,
                          icon_label_bubble_delegate,
-                         delegate) {}
+                         delegate,
+                         "VirtualCardEnroll") {}
 
 VirtualCardEnrollIconView::~VirtualCardEnrollIconView() = default;
 

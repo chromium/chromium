@@ -29,7 +29,8 @@ SendTabToSelfIconView::SendTabToSelfIconView(
     : PageActionIconView(command_updater,
                          IDC_SEND_TAB_TO_SELF,
                          icon_label_bubble_delegate,
-                         page_action_icon_delegate) {
+                         page_action_icon_delegate,
+                         "SendTabToSelf") {
   SetVisible(false);
   SetLabel(l10n_util::GetStringUTF16(IDS_OMNIBOX_ICON_SEND_TAB_TO_SELF));
   SetUpForInOutAnimation();

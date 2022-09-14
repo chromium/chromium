@@ -27,7 +27,8 @@ SavePaymentIconView::SavePaymentIconView(
     : PageActionIconView(command_updater,
                          IDC_SAVE_CREDIT_CARD_FOR_PAGE,
                          icon_label_bubble_delegate,
-                         page_action_icon_delegate) {
+                         page_action_icon_delegate,
+                         "SaveCard") {
   SetID(VIEW_ID_SAVE_CREDIT_CARD_BUTTON);
   SetUpForInOutAnimation();
 }
