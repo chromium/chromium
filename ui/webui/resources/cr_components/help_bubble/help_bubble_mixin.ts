@@ -180,6 +180,7 @@ export const HelpBubbleMixin = dedupingMixin(
           bubble.buttons = params.buttons;
           if (params.timeout) {
             bubble.timeoutMs = Number(params.timeout!.microseconds / 1000n);
+            assert(bubble.timeoutMs > 0);
           }
 
           assert(
