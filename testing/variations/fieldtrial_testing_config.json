@@ -4493,6 +4493,21 @@
             ]
         }
     ],
+    "GlobalMediaControlsForCast": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlobalMediaControlsForCast"
+                    ]
+                }
+            ]
+        }
+    ],
     "GoogleLensDesktopContextMenuStringUpdates": [
         {
             "platforms": [
