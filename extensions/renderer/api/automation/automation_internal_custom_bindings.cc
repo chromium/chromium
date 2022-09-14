@@ -108,6 +108,8 @@ api::automation::MarkerType ConvertMarkerTypeFromAXToAutomation(
   }
 }
 
+// TODO(crbug.com/1357889): Move this and other converters between
+// automation and AX types to a utility file.
 api::automation::TreeChangeType ConvertToAutomationTreeChangeType(
     ax::mojom::Mutation change_type) {
   switch (change_type) {
@@ -186,31 +188,16 @@ api::automation::EventType AXGeneratedEventToAutomationEventType(
   return (*enum_map)[static_cast<int>(event_type)];
 }
 
-const std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>&
-AutomationEventTypeToAXEventWrapper(api::automation::EventType event_type) {
-  // Create a static list containing all the existing ax::mojom::Event and
-  // ui::AXEventGenerator::Event types, indexed by api::automation::EventType
-  // as an integer.
-  static base::NoDestructor<
-      std::vector<std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>>>
-      enum_map;
-  if (enum_map->empty()) {
-    for (int i = static_cast<int>(api::automation::EVENT_TYPE_NONE);
-         i < static_cast<int>(api::automation::EVENT_TYPE_LAST); i++) {
-      const char* val =
-          api::automation::ToString(static_cast<api::automation::EventType>(i));
-      ax::mojom::Event ax_event = ax::mojom::Event::kNone;
-      ui::MaybeParseAXEnum<ax::mojom::Event>(val, &ax_event);
-      ui::AXEventGenerator::Event generated_event =
-          ui::AXEventGenerator::Event::NONE;
-      ui::MaybeParseGeneratedEvent(val, &generated_event);
-      std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event> result(
-          ax_event, generated_event);
-      enum_map->emplace_back(result);
-    }
-  }
-
-  return (*enum_map)[static_cast<int>(event_type)];
+std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>
+AutomationEventTypeToAXEventTuple(api::automation::EventType event_type) {
+  const char* val = api::automation::ToString(event_type);
+  ax::mojom::Event ax_event = ax::mojom::Event::kNone;
+  ui::MaybeParseAXEnum<ax::mojom::Event>(val, &ax_event);
+  ui::AXEventGenerator::Event generated_event =
+      ui::AXEventGenerator::Event::NONE;
+  ui::MaybeParseGeneratedEvent(val, &generated_event);
+  return std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>(
+      ax_event, generated_event);
 }
 
 //
@@ -1790,7 +1777,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
              ui::AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node,
              api::automation::EventType event_type) {
         tree_wrapper->EventListenerAdded(
-            AutomationEventTypeToAXEventWrapper(event_type), node);
+            AutomationEventTypeToAXEventTuple(event_type), node);
         TreeEventListenersChanged(tree_wrapper);
       });
   RouteNodeIDPlusEventFunction(
@@ -1799,7 +1786,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
              ui::AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node,
              api::automation::EventType event_type) {
         tree_wrapper->EventListenerRemoved(
-            AutomationEventTypeToAXEventWrapper(event_type), node);
+            AutomationEventTypeToAXEventTuple(event_type), node);
         TreeEventListenersChanged(tree_wrapper);
       });
 }
@@ -2439,7 +2426,7 @@ void AutomationInternalCustomBindings::SendAutomationEvent(
 
   while (node && tree_wrapper && !fire_event) {
     if (tree_wrapper->HasEventListener(
-            AutomationEventTypeToAXEventWrapper(automation_event_type), node)) {
+            AutomationEventTypeToAXEventTuple(automation_event_type), node)) {
       fire_event = true;
       break;
     }

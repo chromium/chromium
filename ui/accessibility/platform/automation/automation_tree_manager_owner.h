@@ -19,6 +19,8 @@ class AutomationInternalCustomBindingsTest;
 namespace ui {
 
 // Virtual class that owns one or more AutomationAXTreeWrappers.
+// TODO(crbug.com/1357889): Merge some of this interface with
+// AXTreeManager if possible.
 class AX_EXPORT AutomationTreeManagerOwner {
  public:
   AutomationTreeManagerOwner();
