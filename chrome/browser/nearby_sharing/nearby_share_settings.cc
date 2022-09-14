@@ -243,10 +243,7 @@ void NearbyShareSettings::OnEnabledPrefChanged() {
     remote->OnEnabledChanged(enabled);
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kNearbySharingBackgroundScanning)) {
-    ProcessFastInitiationNotificationParentPrefChanged(enabled);
-  }
+  ProcessFastInitiationNotificationParentPrefChanged(enabled);
 }
 
 void NearbyShareSettings::OnFastInitiationNotificationStatePrefChanged() {

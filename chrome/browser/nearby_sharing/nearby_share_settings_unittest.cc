@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
@@ -86,11 +85,6 @@ class FakeNearbyShareSettingsObserver
 class NearbyShareSettingsTest : public ::testing::Test {
  public:
   NearbyShareSettingsTest() : local_device_data_manager_(kDefaultDeviceName) {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kNearbySharing,
-                              features::kNearbySharingBackgroundScanning},
-        /*disabled_features=*/{});
-
     RegisterNearbySharingPrefs(pref_service_.registry());
     nearby_share_settings_ = std::make_unique<NearbyShareSettings>(
         &pref_service_, &local_device_data_manager_);
@@ -118,7 +112,6 @@ class NearbyShareSettingsTest : public ::testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   TestingPrefServiceSimple pref_service_;
   FakeNearbyShareLocalDeviceDataManager local_device_data_manager_;
   FakeNearbyShareSettingsObserver observer_;

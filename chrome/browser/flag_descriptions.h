@@ -3271,9 +3271,6 @@ extern const char kMultilingualTypingDescription[];
 extern const char kNearbySharingArcName[];
 extern const char kNearbySharingArcDescription[];
 
-extern const char kNearbySharingBackgroundScanningName[];
-extern const char kNearbySharingBackgroundScanningDescription[];
-
 extern const char kNearbySharingOnePageOnboardingName[];
 extern const char kNearbySharingOnePageOnboardingDescription[];
 

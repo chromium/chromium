@@ -631,10 +631,6 @@ void MultiDeviceSection::AddLoadTimeData(
       "isNearbyShareSupported",
       NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
           profile()));
-  // Background scanning depends on Bluetooth Advertisement Monitoring.
-  html_source->AddBoolean("isNearbyShareBackgroundScanningEnabled",
-                          base::FeatureList::IsEnabled(
-                              ::features::kNearbySharingBackgroundScanning));
   html_source->AddBoolean("isEcheAppEnabled", features::IsEcheSWAEnabled());
   OnEnableScreenLockChanged();
   OnScreenLockStatusChanged();

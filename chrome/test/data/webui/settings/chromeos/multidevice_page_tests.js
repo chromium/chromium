@@ -700,15 +700,9 @@ suite('Multidevice', function() {
         setNearbyShareDisallowedByPolicy(false);
         assertTrue(isChildVisible(
             multidevicePage, '#nearbySetUp', /*checkLightDom=*/ false));
-        if (loadTimeData.getValue('isNearbyShareBackgroundScanningEnabled')) {
-          assertTrue(isChildVisible(
-              multidevicePage, '#nearbyShareSubpageArrow',
-              /*checkLightDom=*/ false));
-        } else {
-          assertFalse(isChildVisible(
-              multidevicePage, '#nearbyShareSubpageArrow',
-              /*checkLightDom=*/ false));
-        }
+        assertTrue(isChildVisible(
+            multidevicePage, '#nearbyShareSubpageArrow',
+            /*checkLightDom=*/ false));
 
         setNearbyShareIsOnboardingComplete(true);
         setNearbyShareEnabled(true);
@@ -724,40 +718,24 @@ suite('Multidevice', function() {
         setNearbyShareDisallowedByPolicy(false);
         assertTrue(isChildVisible(
             multidevicePage, '#nearbySetUp', /*checkLightDom=*/ false));
-        if (loadTimeData.getValue('isNearbyShareBackgroundScanningEnabled')) {
-          assertTrue(isChildVisible(
-              multidevicePage, '#nearbyShareSubpageArrow',
-              /*checkLightDom=*/ false));
-        } else {
-          assertFalse(isChildVisible(
-              multidevicePage, '#nearbyShareSubpageArrow',
-              /*checkLightDom=*/ false));
-        }
+        assertTrue(isChildVisible(
+            multidevicePage, '#nearbyShareSubpageArrow',
+            /*checkLightDom=*/ false));
 
         const router = Router.getInstance();
         multidevicePage.shadowRoot.querySelector('#nearbyLinkWrapper').click();
         await flushAsync();
         assertEquals(routes.NEARBY_SHARE, router.getCurrentRoute());
-        if (loadTimeData.getValue('isNearbyShareBackgroundScanningEnabled')) {
-          assertFalse(router.getQueryParameters().has('onboarding'));
-        } else {
-          assertTrue(router.getQueryParameters().has('onboarding'));
-        }
+        assertFalse(router.getQueryParameters().has('onboarding'));
       });
 
   test('Clicking nearby subpage after onboarding enters subpage', async () => {
     setNearbyShareDisallowedByPolicy(false);
     assertTrue(isChildVisible(
         multidevicePage, '#nearbySetUp', /*checkLightDom=*/ false));
-    if (loadTimeData.getValue('isNearbyShareBackgroundScanningEnabled')) {
-      assertTrue(isChildVisible(
-          multidevicePage, '#nearbyShareSubpageArrow',
-          /*checkLightDom=*/ false));
-    } else {
-      assertFalse(isChildVisible(
-          multidevicePage, '#nearbyShareSubpageArrow',
-          /*checkLightDom=*/ false));
-    }
+    assertTrue(isChildVisible(
+        multidevicePage, '#nearbyShareSubpageArrow',
+        /*checkLightDom=*/ false));
 
     setNearbyShareIsOnboardingComplete(true);
     setNearbyShareEnabled(true);
@@ -799,76 +777,62 @@ suite('Multidevice', function() {
     assertTrue(multidevicePage.isPhoneScreenLockEnabled_);
   });
 
-  suite('Background Scanning Enabled', function() {
-    suiteSetup(function() {
-      loadTimeData.overrideValues({
-        isNearbyShareBackgroundScanningEnabled: true,
-      });
-    });
+  test('Nearby share sub page arrow is visible before onboarding', async () => {
+    // Arrow only visible if background scanning feature flag is enabled
+    // and hardware offloading is supported.
+    await flushAsync();
+    setNearbyShareDisallowedByPolicy(false);
+    multidevicePage.set('settings.isFastInitiationHardwareSupported', true);
 
-    test(
-        'Nearby share sub page arrow is visible before onboarding',
-        async () => {
-          // Arrow only visible if background scanning feature flag is enabled
-          // and hardware offloading is supported.
-          await flushAsync();
-          setNearbyShareDisallowedByPolicy(false);
-          multidevicePage.set(
-              'settings.isFastInitiationHardwareSupported', true);
+    setNearbyShareDisallowedByPolicy(false);
+    assertTrue(isChildVisible(
+        multidevicePage, '#nearbySetUp', /*checkLightDom=*/ false));
+    assertTrue(isChildVisible(
+        multidevicePage, '#nearbyShareSubpageArrow',
+        /*checkLightDom=*/ false));
 
-          setNearbyShareDisallowedByPolicy(false);
-          assertTrue(isChildVisible(
-              multidevicePage, '#nearbySetUp', /*checkLightDom=*/ false));
-          assertTrue(isChildVisible(
-              multidevicePage, '#nearbyShareSubpageArrow',
-              /*checkLightDom=*/ false));
+    setNearbyShareIsOnboardingComplete(true);
+    setNearbyShareEnabled(true);
+    await flushAsync();
+    assertTrue(isChildVisible(
+        multidevicePage, '#nearbyShareSubpageArrow',
+        /*checkLightDom=*/ false));
+  });
 
-          setNearbyShareIsOnboardingComplete(true);
-          setNearbyShareEnabled(true);
-          await flushAsync();
-          assertTrue(isChildVisible(
-              multidevicePage, '#nearbyShareSubpageArrow',
-              /*checkLightDom=*/ false));
-        });
+  test('No Background Scanning hardware support', async () => {
+    // Ensure initial nearby settings values are set before overriding.
+    await flushAsync();
+    setNearbyShareDisallowedByPolicy(false);
+    multidevicePage.set('settings.isFastInitiationHardwareSupported', false);
+    await flushAsync();
 
-    test('No Background Scanning hardware support', async () => {
-      // Ensure initial nearby settings values are set before overriding.
-      await flushAsync();
-      setNearbyShareDisallowedByPolicy(false);
-      multidevicePage.set('settings.isFastInitiationHardwareSupported', false);
-      await flushAsync();
+    assertTrue(isChildVisible(
+        multidevicePage, '#nearbySetUp', /*checkLightDom=*/ false));
+    assertFalse(isChildVisible(
+        multidevicePage, '#nearbyShareSubpageArrow',
+        /*checkLightDom=*/ false));
 
-      assertTrue(isChildVisible(
-          multidevicePage, '#nearbySetUp', /*checkLightDom=*/ false));
-      assertFalse(isChildVisible(
-          multidevicePage, '#nearbyShareSubpageArrow',
-          /*checkLightDom=*/ false));
+    // Clicking on Nearby Subpage row should initiate onboarding.
+    const router = Router.getInstance();
+    assertTrue(
+        !!multidevicePage.shadowRoot.querySelector('#nearbyLinkWrapper'));
+    multidevicePage.shadowRoot.querySelector('#nearbyLinkWrapper').click();
+    await flushAsync();
+    assertEquals(routes.NEARBY_SHARE, router.getCurrentRoute());
+    assertTrue(router.getQueryParameters().has('onboarding'));
+  });
 
-      // Clicking on Nearby Subpage row should initiate onboarding.
-      const router = Router.getInstance();
-      assertTrue(
-          !!multidevicePage.shadowRoot.querySelector('#nearbyLinkWrapper'));
-      multidevicePage.shadowRoot.querySelector('#nearbyLinkWrapper').click();
-      await flushAsync();
-      assertEquals(routes.NEARBY_SHARE, router.getCurrentRoute());
-      assertTrue(router.getQueryParameters().has('onboarding'));
-    });
+  test('Clicking nearby subpage before onboarding enters subpage', async () => {
+    setNearbyShareDisallowedByPolicy(false);
+    await flushAsync();
 
-    test(
-        'Clicking nearby subpage before onboarding enters subpage',
-        async () => {
-          setNearbyShareDisallowedByPolicy(false);
-          await flushAsync();
+    const router = Router.getInstance();
+    assertTrue(
+        !!multidevicePage.shadowRoot.querySelector('#nearbyLinkWrapper'));
 
-          const router = Router.getInstance();
-          assertTrue(
-              !!multidevicePage.shadowRoot.querySelector('#nearbyLinkWrapper'));
-
-          multidevicePage.shadowRoot.querySelector('#nearbyLinkWrapper')
-              .click();
-          await flushAsync();
-          assertEquals(routes.NEARBY_SHARE, router.getCurrentRoute());
-          assertFalse(router.getQueryParameters().has('onboarding'));
-        });
+    multidevicePage.shadowRoot.querySelector('#nearbyLinkWrapper').click();
+    await flushAsync();
+    assertEquals(routes.NEARBY_SHARE, router.getCurrentRoute());
+    assertFalse(router.getQueryParameters().has('onboarding'));
   });
 });

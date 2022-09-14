@@ -556,8 +556,7 @@ class SettingsNearbyShareSubpageElement extends
    * @private
    */
   computeShouldShowFastInititationNotificationToggle_(is_hardware_supported) {
-    return loadTimeData.getBoolean('isNearbyShareBackgroundScanningEnabled') &&
-        is_hardware_supported;
+    return is_hardware_supported;
   }
 }
 

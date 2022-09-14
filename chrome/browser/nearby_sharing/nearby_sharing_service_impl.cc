@@ -111,11 +111,6 @@ constexpr base::TimeDelta kClearNearbyProcessUnexpectedShutdownCountDelay =
 // nearby_share_prefs).
 constexpr base::TimeDelta kNearbyVisibilityReminderTimerDelay = base::Days(180);
 
-bool IsBackgroundScanningFeatureEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kNearbySharingBackgroundScanning);
-}
-
 std::string ReceiveSurfaceStateToString(
     NearbySharingService::ReceiveSurfaceState state) {
   switch (state) {
@@ -327,10 +322,8 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
   DCHECK(nearby_connections_manager_);
   DCHECK(power_client_);
 
-  if (IsBackgroundScanningFeatureEnabled()) {
-    fast_initiation_scanning_metrics_ =
-        std::make_unique<FastInitiationScannerFeatureUsageMetrics>(prefs_);
-  }
+  fast_initiation_scanning_metrics_ =
+      std::make_unique<FastInitiationScannerFeatureUsageMetrics>(prefs_);
 
   RecordNearbyShareEnabledMetric(GetNearbyShareEnabledState(prefs_));
 
@@ -375,9 +368,7 @@ void NearbySharingServiceImpl::Shutdown() {
   observers_.Clear();
 
   StopAdvertising();
-  if (IsBackgroundScanningFeatureEnabled()) {
-    StopFastInitiationScanning();
-  }
+  StopFastInitiationScanning();
   StopFastInitiationAdvertising();
   StopScanning();
   nearby_connections_manager_->Shutdown();
@@ -1245,9 +1236,6 @@ void NearbySharingServiceImpl::OnEnabledChanged(bool enabled) {
 
 void NearbySharingServiceImpl::OnFastInitiationNotificationStateChanged(
     FastInitiationNotificationState state) {
-  if (!IsBackgroundScanningFeatureEnabled()) {
-    return;
-  }
   NS_LOG(VERBOSE) << __func__
                   << ": Fast Initiation Notification state: " << state;
   // Runs through a series of checks to determine if background scanning should
@@ -1349,10 +1337,6 @@ void NearbySharingServiceImpl::
     LowEnergyScanSessionHardwareOffloadingStatusChanged(
         device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
             status) {
-  if (!IsBackgroundScanningFeatureEnabled()) {
-    return;
-  }
-
   NS_LOG(VERBOSE)
       << __func__
       << ": Bluetooth low energy scan session hardware offloading status : "
@@ -1454,10 +1438,7 @@ void NearbySharingServiceImpl::OnGetBluetoothAdapter(
     scoped_refptr<device::BluetoothAdapter> adapter) {
   bluetooth_adapter_ = adapter;
   bluetooth_adapter_->AddObserver(this);
-
-  if (IsBackgroundScanningFeatureEnabled()) {
-    fast_initiation_scanning_metrics_->SetBluetoothAdapter(adapter);
-  }
+  fast_initiation_scanning_metrics_->SetBluetoothAdapter(adapter);
 
   // TODO(crbug/1147652): The call to update the advertising interval is
   // removed to prevent a Bluez crash. We need to either reduce the global
@@ -1913,9 +1894,7 @@ void NearbySharingServiceImpl::InvalidateFastInitiationAdvertising() {
 
 void NearbySharingServiceImpl::InvalidateReceiveSurfaceState() {
   InvalidateAdvertisingState();
-  if (IsBackgroundScanningFeatureEnabled()) {
-    InvalidateFastInitiationScanning();
-  }
+  InvalidateFastInitiationScanning();
 }
 
 void NearbySharingServiceImpl::InvalidateAdvertisingState() {
@@ -2161,9 +2140,6 @@ void NearbySharingServiceImpl::StopAdvertisingAndInvalidateSurfaceState() {
 }
 
 void NearbySharingServiceImpl::InvalidateFastInitiationScanning() {
-  if (!IsBackgroundScanningFeatureEnabled())
-    return;
-
   bool is_hardware_offloading_supported =
       IsBluetoothPresent() &&
       FastInitiationScanner::Factory::IsHardwareSupportAvailable(
@@ -3854,13 +3830,11 @@ void NearbySharingServiceImpl::OnPayloadTransferUpdate(
         text.set_text_body(std::string());
     }
 
-    if (IsBackgroundScanningFeatureEnabled()) {
-      fast_initiation_scanner_cooldown_timer_.Start(
-          FROM_HERE, kFastInitiationScannerCooldown,
-          base::BindRepeating(
-              &NearbySharingServiceImpl::InvalidateFastInitiationScanning,
-              base::Unretained(this)));
-    }
+    fast_initiation_scanner_cooldown_timer_.Start(
+        FROM_HERE, kFastInitiationScannerCooldown,
+        base::BindRepeating(
+            &NearbySharingServiceImpl::InvalidateFastInitiationScanning,
+            base::Unretained(this)));
   }
 
   // Make sure to call this before calling Disconnect or we risk loosing some

@@ -10,7 +10,6 @@
 namespace features {
 
 extern const base::Feature kNearbySharing;
-extern const base::Feature kNearbySharingBackgroundScanning;
 extern const base::Feature kNearbySharingChildAccounts;
 extern const base::Feature kNearbySharingDeviceContacts;
 extern const base::Feature kNearbySharingOnePageOnboarding;

@@ -679,7 +679,6 @@ class SettingsMultidevicePageElement extends
     let params = undefined;
     if (!nearbyEnabled) {
       if (onboardingComplete) {
-
         // If we have already run onboarding at least once, we don't need to do
         // it again, just enabled the feature in place.
         this.setPrefValue('nearby_sharing.enabled', true);
@@ -772,8 +771,7 @@ class SettingsMultidevicePageElement extends
    */
   computeShouldEnableNearbyShareBackgroundScanningRevamp_(
       is_hardware_supported) {
-    return loadTimeData.getBoolean('isNearbyShareBackgroundScanningEnabled') &&
-        is_hardware_supported;
+    return is_hardware_supported;
   }
 
   /**

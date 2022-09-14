@@ -5726,13 +5726,6 @@ const char kNearbySharingArcName[] = "ARC Nearby Sharing";
 const char kNearbySharingArcDescription[] =
     "Enables Nearby Sharing from ARC apps.";
 
-const char kNearbySharingBackgroundScanningName[] =
-    "Nearby Sharing Background Scanning";
-const char kNearbySharingBackgroundScanningDescription[] =
-    "Enables background scanning for Nearby Share, allowing devices to "
-    "persistently scan and present a notification when a nearby device is "
-    "attempting to share.";
-
 const char kNearbySharingOnePageOnboardingName[] =
     "Nearby Sharing one-page Onboarding.";
 const char kNearbySharingOnePageOnboardingDescription[] =
