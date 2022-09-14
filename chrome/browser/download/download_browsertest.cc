@@ -1382,8 +1382,8 @@ class FakeDownloadProtectionService
       DownloadItem* download_item,
       safe_browsing::CheckDownloadRepeatingCallback callback) override {
     DownloadProtectionService::SetDownloadProtectionData(
-        download_item, "token",
-        safe_browsing::ClientDownloadResponse::UNCOMMON);
+        download_item, "token", safe_browsing::ClientDownloadResponse::UNCOMMON,
+        safe_browsing::ClientDownloadResponse::TailoredVerdict());
     std::move(callback).Run(safe_browsing::DownloadCheckResult::UNCOMMON);
   }
 };

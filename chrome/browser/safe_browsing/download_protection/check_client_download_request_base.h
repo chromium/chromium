@@ -106,7 +106,8 @@ class CheckClientDownloadRequestBase {
   // was returned and the returned verdict is unsafe (i.e. not safe or unknown).
   virtual void SetDownloadProtectionData(
       const std::string& token,
-      const ClientDownloadResponse::Verdict& verdict) = 0;
+      const ClientDownloadResponse::Verdict& verdict,
+      const ClientDownloadResponse::TailoredVerdict& tailored_verdict) = 0;
 
   // Called when a valid response has been received from the server.
   virtual void MaybeStorePingsForDownload(DownloadCheckResult result,

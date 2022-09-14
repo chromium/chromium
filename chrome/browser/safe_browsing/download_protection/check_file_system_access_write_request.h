@@ -49,7 +49,8 @@ class CheckFileSystemAccessWriteRequest
   void NotifySendRequest(const ClientDownloadRequest* request) override;
   void SetDownloadProtectionData(
       const std::string& token,
-      const ClientDownloadResponse::Verdict& verdict) override;
+      const ClientDownloadResponse::Verdict& verdict,
+      const ClientDownloadResponse::TailoredVerdict& tailored_verdict) override;
   void MaybeStorePingsForDownload(DownloadCheckResult result,
                                   bool upload_requested,
                                   const std::string& request_data,

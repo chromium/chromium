@@ -144,7 +144,7 @@ class DownloadDangerPromptTest : public InProcessBrowserTest {
     EXPECT_CALL(download_, GetDangerType()).WillRepeatedly(Return(danger_type));
     auto token_obj =
         std::make_unique<DownloadProtectionService::DownloadProtectionData>(
-            token, download_verdict);
+            token, download_verdict, ClientDownloadResponse::TailoredVerdict());
     download_.SetUserData(DownloadProtectionService::kDownloadProtectionDataKey,
                           std::move(token_obj));
   }

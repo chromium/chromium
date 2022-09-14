@@ -86,7 +86,8 @@ void CheckFileSystemAccessWriteRequest::NotifySendRequest(
 
 void CheckFileSystemAccessWriteRequest::SetDownloadProtectionData(
     const std::string& token,
-    const ClientDownloadResponse::Verdict& verdict) {
+    const ClientDownloadResponse::Verdict& verdict,
+    const ClientDownloadResponse::TailoredVerdict& tailored_verdict) {
   // TODO(https://crbug.com/996797): Actually store token for
   // IncidentReportingService usage.
 }

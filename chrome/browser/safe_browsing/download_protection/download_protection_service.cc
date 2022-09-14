@@ -441,10 +441,12 @@ void DownloadProtectionService::ShowDetailsForDownload(
 void DownloadProtectionService::SetDownloadProtectionData(
     download::DownloadItem* item,
     const std::string& token,
-    const ClientDownloadResponse::Verdict& verdict) {
+    const ClientDownloadResponse::Verdict& verdict,
+    const ClientDownloadResponse::TailoredVerdict& tailored_verdict) {
   if (item) {
     item->SetUserData(kDownloadProtectionDataKey,
-                      std::make_unique<DownloadProtectionData>(token, verdict));
+                      std::make_unique<DownloadProtectionData>(
+                          token, verdict, tailored_verdict));
   }
 }
 
@@ -468,6 +470,18 @@ DownloadProtectionService::GetDownloadProtectionVerdict(
     return static_cast<DownloadProtectionData*>(protection_data)->verdict();
   else
     return ClientDownloadResponse::SAFE;
+}
+
+ClientDownloadResponse::TailoredVerdict
+DownloadProtectionService::GetDownloadProtectionTailoredVerdict(
+    const download::DownloadItem* item) {
+  base::SupportsUserData::Data* protection_data =
+      item->GetUserData(kDownloadProtectionDataKey);
+  if (protection_data)
+    return static_cast<DownloadProtectionData*>(protection_data)
+        ->tailored_verdict();
+  else
+    return ClientDownloadResponse::TailoredVerdict();
 }
 
 void DownloadProtectionService::MaybeSendDangerousDownloadOpenedReport(

@@ -216,9 +216,11 @@ void CheckClientDownloadRequest::NotifySendRequest(
 
 void CheckClientDownloadRequest::SetDownloadProtectionData(
     const std::string& token,
-    const ClientDownloadResponse::Verdict& verdict) {
+    const ClientDownloadResponse::Verdict& verdict,
+    const ClientDownloadResponse::TailoredVerdict& tailored_verdict) {
   DCHECK(!token.empty());
-  DownloadProtectionService::SetDownloadProtectionData(item_, token, verdict);
+  DownloadProtectionService::SetDownloadProtectionData(item_, token, verdict,
+                                                       tailored_verdict);
 }
 
 void CheckClientDownloadRequest::MaybeStorePingsForDownload(

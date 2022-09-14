@@ -95,8 +95,9 @@ TEST_F(SafeBrowsingServiceTest, SendDownloadReport_Success) {
       .WillRepeatedly(Return(danger_type));
   EXPECT_CALL(*download_item, GetURL()).WillRepeatedly(ReturnRef(url));
 
-  DownloadProtectionService::SetDownloadProtectionData(download_item.get(),
-                                                       token, download_verdict);
+  DownloadProtectionService::SetDownloadProtectionData(
+      download_item.get(), token, download_verdict,
+      ClientDownloadResponse::TailoredVerdict());
 
   auto* ping_manager =
       ChromePingManagerFactory::GetForBrowserContext(profile());

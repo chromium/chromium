@@ -177,12 +177,16 @@ class DownloadProtectionService {
   static void SetDownloadProtectionData(
       download::DownloadItem* item,
       const std::string& token,
-      const ClientDownloadResponse::Verdict& verdict);
+      const ClientDownloadResponse::Verdict& verdict,
+      const ClientDownloadResponse::TailoredVerdict& tailored_verdict);
 
   static std::string GetDownloadPingToken(const download::DownloadItem* item);
 
   static ClientDownloadResponse::Verdict GetDownloadProtectionVerdict(
       const download::DownloadItem* item);
+
+  static ClientDownloadResponse::TailoredVerdict
+  GetDownloadProtectionTailoredVerdict(const download::DownloadItem* item);
 
   // Sends dangerous download opened report when download is opened or
   // shown in folder, and if the following conditions are met:
@@ -265,18 +269,25 @@ class DownloadProtectionService {
    public:
     explicit DownloadProtectionData(
         const std::string& token,
-        const ClientDownloadResponse::Verdict& verdict)
-        : token_string_(token), verdict_(verdict) {}
+        const ClientDownloadResponse::Verdict& verdict,
+        const ClientDownloadResponse::TailoredVerdict& tailored_verdict)
+        : token_string_(token),
+          verdict_(verdict),
+          tailored_verdict_(tailored_verdict) {}
 
     DownloadProtectionData(const DownloadProtectionData&) = delete;
     DownloadProtectionData& operator=(const DownloadProtectionData&) = delete;
 
     std::string token_string() { return token_string_; }
     ClientDownloadResponse::Verdict verdict() { return verdict_; }
+    ClientDownloadResponse::TailoredVerdict tailored_verdict() {
+      return tailored_verdict_;
+    }
 
    private:
     std::string token_string_;
     ClientDownloadResponse::Verdict verdict_;
+    ClientDownloadResponse::TailoredVerdict tailored_verdict_;
   };
 
   // Cancels all requests in |download_requests_|, and empties it, releasing
