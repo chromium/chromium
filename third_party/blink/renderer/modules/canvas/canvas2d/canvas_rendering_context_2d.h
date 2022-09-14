@@ -54,7 +54,7 @@ class Layer;
 
 namespace blink {
 
-class CanvasFormattedText;
+class FormattedText;
 class CanvasImageSource;
 class Element;
 class ExceptionState;
@@ -133,7 +133,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void strokeText(const String& text, double x, double y);
   void strokeText(const String& text, double x, double y, double max_width);
   TextMetrics* measureText(const String& text);
-  void drawFormattedText(CanvasFormattedText* formatted_text,
+  void drawFormattedText(FormattedText* formatted_text,
                          double x,
                          double y,
                          ExceptionState&);

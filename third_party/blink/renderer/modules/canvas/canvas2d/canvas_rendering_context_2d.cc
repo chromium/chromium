@@ -64,9 +64,9 @@
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_formatted_text.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/path_2d.h"
+#include "third_party/blink/renderer/modules/formatted_text/formatted_text.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
@@ -926,7 +926,7 @@ TextMetrics* CanvasRenderingContext2D::measureText(const String& text) {
 }
 
 void CanvasRenderingContext2D::drawFormattedText(
-    CanvasFormattedText* formatted_text,
+    FormattedText* formatted_text,
     double x,
     double y,
     ExceptionState& exception_state) {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_FORMATTED_TEXT_STYLE_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_FORMATTED_TEXT_STYLE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FORMATTED_TEXT_FORMATTED_TEXT_STYLE_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_FORMATTED_TEXT_FORMATTED_TEXT_STYLE_H_
 
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/cssom/style_property_map.h"
@@ -11,13 +11,12 @@
 namespace blink {
 
 class CSSParserContext;
-class FontDescription;
 
-class CanvasFormattedTextStyle : public GarbageCollectedMixin {
+class FormattedTextStyle : public GarbageCollectedMixin {
   DISALLOW_NEW();
 
  public:
-  explicit CanvasFormattedTextStyle() = default;
+  explicit FormattedTextStyle() = default;
 
   const CSSPropertyValueSet* GetCssPropertySet() const;
   void SetStyle(const CSSParserContext* context, const String& style_text);
@@ -30,4 +29,4 @@ class CanvasFormattedTextStyle : public GarbageCollectedMixin {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_FORMATTED_TEXT_STYLE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_FORMATTED_TEXT_FORMATTED_TEXT_STYLE_H_

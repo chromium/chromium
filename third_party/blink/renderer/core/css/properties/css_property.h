@@ -65,11 +65,11 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   bool IsValidForFirstLine() const { return flags_ & kValidForFirstLine; }
   bool IsValidForCue() const { return flags_ & kValidForCue; }
   bool IsValidForMarker() const { return flags_ & kValidForMarker; }
-  bool IsValidForCanvasFormattedText() const {
-    return flags_ & kValidForCanvasFormattedText;
+  bool IsValidForFormattedText() const {
+    return flags_ & kValidForFormattedText;
   }
-  bool IsValidForCanvasFormattedTextRun() const {
-    return flags_ & kValidForCanvasFormattedTextRun;
+  bool IsValidForFormattedTextRun() const {
+    return flags_ & kValidForFormattedTextRun;
   }
   bool IsValidForKeyframe() const { return flags_ & kValidForKeyframe; }
   bool IsValidForPositionFallback() const {
@@ -187,8 +187,8 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     // Set if the css property can apply to the experiemental canvas
     // formatted text API to render multiline text in canvas.
     // https://github.com/WICG/canvas-formatted-text
-    kValidForCanvasFormattedText = 1 << 26,
-    kValidForCanvasFormattedTextRun = 1 << 27,
+    kValidForFormattedText = 1 << 26,
+    kValidForFormattedTextRun = 1 << 27,
     // See overlapping in css_properties.json5.
     kOverlapping = 1 << 28,
     // See legacy_overlapping in css_properties.json5.

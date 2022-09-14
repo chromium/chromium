@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_FORMATTED_TEXT_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_FORMATTED_TEXT_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FORMATTED_TEXT_FORMATTED_TEXT_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_FORMATTED_TEXT_FORMATTED_TEXT_H_
 
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_formatted_text_run.h"
+#include "third_party/blink/renderer/modules/formatted_text/formatted_text_run.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -26,31 +26,30 @@ class FontDescription;
 class LayoutBlockFlow;
 class V8UnionFormattedTextRunOrFormattedTextRunOrStringSequenceOrString;
 
-class MODULES_EXPORT CanvasFormattedText final
-    : public ScriptWrappable,
-      public CanvasFormattedTextStyle {
+class MODULES_EXPORT FormattedText final : public ScriptWrappable,
+                                           public FormattedTextStyle {
   DEFINE_WRAPPERTYPEINFO();
-  USING_PRE_FINALIZER(CanvasFormattedText, Dispose);
+  USING_PRE_FINALIZER(FormattedText, Dispose);
 
  public:
-  explicit CanvasFormattedText(ExecutionContext* execution_context);
-  CanvasFormattedText(const CanvasFormattedText&) = delete;
-  CanvasFormattedText& operator=(const CanvasFormattedText&) = delete;
+  explicit FormattedText(ExecutionContext* execution_context);
+  FormattedText(const FormattedText&) = delete;
+  FormattedText& operator=(const FormattedText&) = delete;
 
   void Trace(Visitor* visitor) const override;
 
-  static CanvasFormattedText* format(
+  static FormattedText* format(
       ExecutionContext* execution_context,
       V8UnionFormattedTextRunOrFormattedTextRunOrStringSequenceOrString* text,
       const String& style,
       ExceptionState& exception_state);
-  static CanvasFormattedText* format(
+  static FormattedText* format(
       ExecutionContext* execution_context,
       V8UnionFormattedTextRunOrFormattedTextRunOrStringSequenceOrString* text,
       const String& style,
       double inline_constraint,
       ExceptionState& exception_state);
-  static CanvasFormattedText* format(
+  static FormattedText* format(
       ExecutionContext* execution_context,
       V8UnionFormattedTextRunOrFormattedTextRunOrStringSequenceOrString* text,
       const String& style,
@@ -60,8 +59,8 @@ class MODULES_EXPORT CanvasFormattedText final
 
   bool CheckViewExists(ExceptionState* exception_state) const;
 
-  CanvasFormattedTextRun* AppendRun(CanvasFormattedTextRun* run,
-                                    ExceptionState& exception_state);
+  FormattedTextRunInternal* AppendRun(FormattedTextRunInternal* run,
+                                      ExceptionState& exception_state);
 
   sk_sp<PaintRecord> PaintFormattedText(Document& document,
                                         const FontDescription& font,
@@ -73,7 +72,7 @@ class MODULES_EXPORT CanvasFormattedText final
   void Dispose();
 
  private:
-  static CanvasFormattedText* FormatImpl(
+  static FormattedText* FormatImpl(
       ExecutionContext* execution_context,
       V8UnionFormattedTextRunOrFormattedTextRunOrStringSequenceOrString* text,
       const String& style,
@@ -85,7 +84,7 @@ class MODULES_EXPORT CanvasFormattedText final
                                     const FontDescription& defaultFont);
 
  private:
-  HeapVector<Member<CanvasFormattedTextRun>> text_runs_;
+  HeapVector<Member<FormattedTextRunInternal>> text_runs_;
   Member<LayoutBlockFlow> block_;
 
   LayoutUnit inline_constraint_ = kIndefiniteSize;
@@ -94,4 +93,4 @@ class MODULES_EXPORT CanvasFormattedText final
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_FORMATTED_TEXT_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_FORMATTED_TEXT_FORMATTED_TEXT_H_

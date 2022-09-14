@@ -557,7 +557,7 @@ void LayoutObject::AddChild(LayoutObject* new_child,
                             LayoutObject* before_child) {
   NOT_DESTROYED();
   DCHECK(IsAllowedToModifyLayoutTreeStructure(GetDocument()) ||
-         IsLayoutNGObjectForCanvasFormattedText());
+         IsLayoutNGObjectForFormattedText());
 
   LayoutObjectChildList* children = VirtualChildren();
   DCHECK(children);
@@ -626,7 +626,7 @@ void LayoutObject::AddChild(LayoutObject* new_child,
 void LayoutObject::RemoveChild(LayoutObject* old_child) {
   NOT_DESTROYED();
   DCHECK(IsAllowedToModifyLayoutTreeStructure(GetDocument()) ||
-         IsLayoutNGObjectForCanvasFormattedText());
+         IsLayoutNGObjectForFormattedText());
 
   LayoutObjectChildList* children = VirtualChildren();
   DCHECK(children);

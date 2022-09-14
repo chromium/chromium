@@ -2173,7 +2173,7 @@ void StyleResolver::Trace(Visitor* visitor) const {
   visitor->Trace(selector_filter_);
   visitor->Trace(document_);
   visitor->Trace(tracker_);
-  visitor->Trace(canvas_formatted_text_element_);
+  visitor->Trace(formatted_text_element_);
 }
 
 bool StyleResolver::IsForcedColorsModeEnabled() const {
@@ -2459,24 +2459,24 @@ void StyleResolver::PropagateStyleToViewport() {
 #undef PROPAGATE_VALUE
 #undef PROPAGATE_FROM
 
-scoped_refptr<const ComputedStyle> StyleResolver::StyleForCanvasFormattedText(
+scoped_refptr<const ComputedStyle> StyleResolver::StyleForFormattedText(
     bool is_text_run,
     const FontDescription& default_font,
     const CSSPropertyValueSet* css_property_value_set) {
-  return StyleForCanvasFormattedText(is_text_run, &default_font,
-                                     /*parent_style*/ nullptr,
-                                     css_property_value_set);
+  return StyleForFormattedText(is_text_run, &default_font,
+                               /*parent_style*/ nullptr,
+                               css_property_value_set);
 }
 
-scoped_refptr<const ComputedStyle> StyleResolver::StyleForCanvasFormattedText(
+scoped_refptr<const ComputedStyle> StyleResolver::StyleForFormattedText(
     bool is_text_run,
     const ComputedStyle& parent_style,
     const CSSPropertyValueSet* css_property_value_set) {
-  return StyleForCanvasFormattedText(is_text_run, /*default_font*/ nullptr,
-                                     &parent_style, css_property_value_set);
+  return StyleForFormattedText(is_text_run, /*default_font*/ nullptr,
+                               &parent_style, css_property_value_set);
 }
 
-scoped_refptr<const ComputedStyle> StyleResolver::StyleForCanvasFormattedText(
+scoped_refptr<const ComputedStyle> StyleResolver::StyleForFormattedText(
     bool is_text_run,
     const FontDescription* default_font,
     const ComputedStyle* parent_style,
@@ -2498,7 +2498,7 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForCanvasFormattedText(
     // Use a dummy/disconnected element when resolving the styles so that we
     // don't inherit anything from existing elements.
     StyleResolverState state(
-        GetDocument(), EnsureElementForCanvasFormattedText(),
+        GetDocument(), EnsureElementForFormattedText(),
         nullptr /* StyleRecalcContext */,
         StyleRequest{parent_style ? parent_style : &InitialStyle()});
     state.SetStyle(style);
@@ -2516,11 +2516,11 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForCanvasFormattedText(
   return style;
 }
 
-Element& StyleResolver::EnsureElementForCanvasFormattedText() {
-  if (!canvas_formatted_text_element_)
-    canvas_formatted_text_element_ =
+Element& StyleResolver::EnsureElementForFormattedText() {
+  if (!formatted_text_element_)
+    formatted_text_element_ =
         MakeGarbageCollected<Element>(html_names::kSpanTag, &GetDocument());
-  return *canvas_formatted_text_element_;
+  return *formatted_text_element_;
 }
 
 scoped_refptr<const ComputedStyle> StyleResolver::ResolvePositionFallbackStyle(

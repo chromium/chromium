@@ -622,22 +622,22 @@
       valid_type: "bool",
     },
 
-    // - valid_for_canvas_formatted_text: true
+    // - valid_for_formatted_text: true
     //
     // Whether the property can be used to style the top-level container
     // (similar to display:block, but supporting fewer properties), in the
     // experimental API to bring multiline text rendering to HTML canvas.
     // https://github.com/WICG/canvas-formatted-text/
-    valid_for_canvas_formatted_text: {
+    valid_for_formatted_text: {
       default: false,
       valid_type: "bool",
     },
 
-    // - valid_for_canvas_formatted_text_run: true
+    // - valid_for_formatted_text_run: true
     //
     // Whether the property can be used to style individual text runs, in the
     // experimental API to bring multiline text rendering to HTML canvas.
-    valid_for_canvas_formatted_text_run: {
+    valid_for_formatted_text_run: {
       default: false,
       valid_type: "bool",
     },
@@ -901,8 +901,8 @@
       valid_for_marker: true,
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
-      valid_for_canvas_formatted_text: true,
-      valid_for_canvas_formatted_text_run: true,
+      valid_for_formatted_text: true,
+      valid_for_formatted_text_run: true,
       is_highlight_colors: true,
     },
     {
@@ -919,8 +919,8 @@
       style_builder_custom_functions: ["value"],
       priority: "High",
       valid_for_marker: true,
-      valid_for_canvas_formatted_text: true,
-      valid_for_canvas_formatted_text_run: true,
+      valid_for_formatted_text: true,
+      valid_for_formatted_text_run: true,
     },
     {
       name: "font-family",
@@ -938,8 +938,8 @@
       valid_for_cue: true,
       valid_for_marker: true,
       tree_scoped_value: true,
-      valid_for_canvas_formatted_text: true,
-      valid_for_canvas_formatted_text_run: true,
+      valid_for_formatted_text: true,
+      valid_for_formatted_text_run: true,
     },
     {
       name: "font-kerning",
@@ -954,8 +954,8 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_marker: true,
-      valid_for_canvas_formatted_text: true,
-      valid_for_canvas_formatted_text_run: true,
+      valid_for_formatted_text: true,
+      valid_for_formatted_text_run: true,
     },
     {
       name: "font-optical-sizing",
@@ -1002,8 +1002,8 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
-      valid_for_canvas_formatted_text: true,
-      valid_for_canvas_formatted_text_run: true,
+      valid_for_formatted_text: true,
+      valid_for_formatted_text_run: true,
     },
     {
       name: "font-size-adjust",
@@ -1040,8 +1040,8 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
-      valid_for_canvas_formatted_text: true,
-      valid_for_canvas_formatted_text_run: true,
+      valid_for_formatted_text: true,
+      valid_for_formatted_text_run: true,
     },
     {
       name: "font-style",
@@ -1058,8 +1058,8 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
-      valid_for_canvas_formatted_text: true,
-      valid_for_canvas_formatted_text_run: true,
+      valid_for_formatted_text: true,
+      valid_for_formatted_text_run: true,
     },
     {
       name: "font-variant-ligatures",
@@ -1080,8 +1080,8 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_marker: true,
-      valid_for_canvas_formatted_text: true,
-      valid_for_canvas_formatted_text_run: true,
+      valid_for_formatted_text: true,
+      valid_for_formatted_text_run: true,
     },
     {
       name: "font-variant-caps",
@@ -1099,8 +1099,8 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_marker: true,
-      valid_for_canvas_formatted_text: true,
-      valid_for_canvas_formatted_text_run: true,
+      valid_for_formatted_text: true,
+      valid_for_formatted_text_run: true,
     },
     {
       name: "font-variant-east-asian",
@@ -1118,8 +1118,8 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_marker: true,
-      valid_for_canvas_formatted_text: true,
-      valid_for_canvas_formatted_text_run: true,
+      valid_for_formatted_text: true,
+      valid_for_formatted_text_run: true,
     },
     {
       name: "font-variant-numeric",
@@ -1138,8 +1138,8 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_marker: true,
-      valid_for_canvas_formatted_text: true,
-      valid_for_canvas_formatted_text_run: true,
+      valid_for_formatted_text: true,
+      valid_for_formatted_text_run: true,
     },
     {
       name: "font-weight",
@@ -1157,8 +1157,8 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
-      valid_for_canvas_formatted_text: true,
-      valid_for_canvas_formatted_text_run: true,
+      valid_for_formatted_text: true,
+      valid_for_formatted_text_run: true,
     },
     {
       name: "font-synthesis-weight",
@@ -1217,8 +1217,8 @@
       valid_for_first_line: true,
       valid_for_marker: true,
       computable: false,
-      valid_for_canvas_formatted_text: true,
-      valid_for_canvas_formatted_text_run: true,
+      valid_for_formatted_text: true,
+      valid_for_formatted_text_run: true,
     },
     {
       name: "font-variation-settings",
@@ -1236,8 +1236,8 @@
       valid_for_cue: true,
       valid_for_marker: true,
       computable: false,
-      valid_for_canvas_formatted_text: true,
-      valid_for_canvas_formatted_text_run: true,
+      valid_for_formatted_text: true,
+      valid_for_formatted_text_run: true,
     },
     {
       name: "-webkit-font-smoothing",
@@ -1296,7 +1296,7 @@
       style_builder_custom_functions: ["initial", "inherit", "value"],
       priority: "High",
       computable: false,
-      valid_for_canvas_formatted_text: true,
+      valid_for_formatted_text: true,
     },
     {
       name: "-webkit-text-orientation",
@@ -1319,7 +1319,7 @@
       type_name: "WritingMode",
       style_builder_custom_functions: ["initial", "inherit", "value"],
       priority: "High",
-      valid_for_canvas_formatted_text: true,
+      valid_for_formatted_text: true,
     },
     {
       name: "-webkit-writing-mode",
@@ -2811,7 +2811,7 @@
         resolver: "vertical",
       },
       supports_incremental_style: true,
-      valid_for_canvas_formatted_text: true,
+      valid_for_formatted_text: true,
       valid_for_position_fallback: true,
     },
     {
@@ -4452,7 +4452,7 @@
       default_value: "start",
       getter: "GetTextAlign",
       style_builder_custom_functions: ["value"],
-      valid_for_canvas_formatted_text: true,
+      valid_for_formatted_text: true,
     },
     {
       name: "text-align-last",
@@ -4486,7 +4486,7 @@
       name_for_methods: "TextCombine",
       valid_for_marker: true,
       computable: false,
-      valid_for_canvas_formatted_text: true,
+      valid_for_formatted_text: true,
     },
     {
       name: "text-decoration-color",
@@ -4508,8 +4508,8 @@
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       supports_incremental_style: true,
-      valid_for_canvas_formatted_text: true,
-      valid_for_canvas_formatted_text_run: true,
+      valid_for_formatted_text: true,
+      valid_for_formatted_text_run: true,
     },
     {
       name: "text-decoration-line",
@@ -4526,8 +4526,8 @@
       valid_for_cue: true,
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
-      valid_for_canvas_formatted_text: true,
-      valid_for_canvas_formatted_text_run: true,
+      valid_for_formatted_text: true,
+      valid_for_formatted_text_run: true,
     },
     {
       name: "text-decoration-skip-ink",
@@ -4544,8 +4544,8 @@
       valid_for_marker: true,
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
-      valid_for_canvas_formatted_text: true,
-      valid_for_canvas_formatted_text_run: true,
+      valid_for_formatted_text: true,
+      valid_for_formatted_text_run: true,
     },
     {
       name: "text-decoration-style",
@@ -4560,8 +4560,8 @@
       valid_for_cue: true,
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
-      valid_for_canvas_formatted_text: true,
-      valid_for_canvas_formatted_text_run: true,
+      valid_for_formatted_text: true,
+      valid_for_formatted_text_run: true,
     },
     {
       name: "text-decoration-thickness",
@@ -4580,8 +4580,8 @@
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       computable: false,
-      valid_for_canvas_formatted_text: true,
-      valid_for_canvas_formatted_text_run: true,
+      valid_for_formatted_text: true,
+      valid_for_formatted_text_run: true,
     },
     {
       name: "text-indent",
@@ -4602,7 +4602,7 @@
       keywords: ["clip", "ellipsis"],
       typedom_types: ["Keyword"],
       default_value: "clip",
-      valid_for_canvas_formatted_text: true,
+      valid_for_formatted_text: true,
     },
     {
       name: "text-shadow",
@@ -4624,8 +4624,8 @@
       valid_for_marker: true,
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
-      valid_for_canvas_formatted_text: true,
-      valid_for_canvas_formatted_text_run: true,
+      valid_for_formatted_text: true,
+      valid_for_formatted_text_run: true,
     },
     {
       name: "text-size-adjust",
@@ -4654,8 +4654,8 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_marker: true,
-      valid_for_canvas_formatted_text: true,
-      valid_for_canvas_formatted_text_run: true,
+      valid_for_formatted_text: true,
+      valid_for_formatted_text_run: true,
     },
     {
       name: "text-underline-offset",
@@ -4671,8 +4671,8 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       computable: false,
-      valid_for_canvas_formatted_text: true,
-      valid_for_canvas_formatted_text_run: true,
+      valid_for_formatted_text: true,
+      valid_for_formatted_text_run: true,
     },
     {
       name: "text-underline-position",
@@ -4689,8 +4689,8 @@
       typedom_types: ["Keyword"],
       valid_for_first_letter: true,
       valid_for_first_line: true,
-      valid_for_canvas_formatted_text: true,
-      valid_for_canvas_formatted_text_run: true,
+      valid_for_formatted_text: true,
+      valid_for_formatted_text_run: true,
     },
     {
       name: "toggle-group",
@@ -5247,7 +5247,7 @@
       keywords: ["auto", "loose", "normal", "strict", "after-white-space", "anywhere"],
       default_value: "auto",
       type_name: "LineBreak",
-      valid_for_canvas_formatted_text: true,
+      valid_for_formatted_text: true,
     },
     {
       name: "line-break",
@@ -5257,7 +5257,7 @@
       keywords: ["auto", "loose", "normal", "strict", "anywhere"],
       typedom_types: ["Keyword"],
       valid_for_marker: true,
-      valid_for_canvas_formatted_text: true,
+      valid_for_formatted_text: true,
       surrogate_for: "-webkit-line-break",
     },
     // An Apple extension.
@@ -5658,7 +5658,7 @@
         resolver: "horizontal",
       },
       supports_incremental_style: true,
-      valid_for_canvas_formatted_text: true,
+      valid_for_formatted_text: true,
       valid_for_position_fallback: true,
     },
     {

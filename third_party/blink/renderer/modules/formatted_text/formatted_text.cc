@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_formatted_text.h"
+#include "third_party/blink/renderer/modules/formatted_text/formatted_text.h"
+
 #include "third_party/blink/renderer/bindings/modules/v8/v8_formatted_text_run.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_formattedtextrun_formattedtextrunorstringsequence_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_formattedtextrun_string.h"
@@ -24,14 +25,14 @@
 
 namespace blink {
 
-void CanvasFormattedText::Trace(Visitor* visitor) const {
+void FormattedText::Trace(Visitor* visitor) const {
   visitor->Trace(text_runs_);
   visitor->Trace(block_);
   ScriptWrappable::Trace(visitor);
-  CanvasFormattedTextStyle::Trace(visitor);
+  FormattedTextStyle::Trace(visitor);
 }
 
-CanvasFormattedText::CanvasFormattedText(ExecutionContext* execution_context) {
+FormattedText::FormattedText(ExecutionContext* execution_context) {
   // Refrain from extending the use of document, apart from creating layout
   // block flow. In the future we should handle execution_context's from worker
   // threads that do not have a document.
@@ -41,19 +42,19 @@ CanvasFormattedText::CanvasFormattedText(ExecutionContext* execution_context) {
   style->SetDisplay(EDisplay::kBlock);
   block_ =
       LayoutBlockFlow::CreateAnonymous(document, style, LegacyLayout::kAuto);
-  block_->SetIsLayoutNGObjectForCanvasFormattedText(true);
+  block_->SetIsLayoutNGObjectForFormattedText(true);
 }
 
-void CanvasFormattedText::Dispose() {
+void FormattedText::Dispose() {
   AllowDestroyingLayoutObjectInFinalizerScope scope;
   if (block_)
     block_->Destroy();
 }
 
-void CanvasFormattedText::UpdateComputedStylesIfNeeded(
+void FormattedText::UpdateComputedStylesIfNeeded(
     Document& document,
     const FontDescription& defaultFont) {
-  auto style = document.GetStyleResolver().StyleForCanvasFormattedText(
+  auto style = document.GetStyleResolver().StyleForFormattedText(
       /*is_text_run*/ false, defaultFont, GetCssPropertySet());
   block_->SetStyle(style, LayoutObject::ApplyStyleChanges::kNo);
   block_->SetHorizontalWritingMode(style->IsHorizontalWritingMode());
@@ -61,8 +62,8 @@ void CanvasFormattedText::UpdateComputedStylesIfNeeded(
     text_run->UpdateStyle(document, /*parent_style*/ *style);
 }
 
-CanvasFormattedTextRun* CanvasFormattedText::AppendRun(
-    CanvasFormattedTextRun* run,
+FormattedTextRunInternal* FormattedText::AppendRun(
+    FormattedTextRunInternal* run,
     ExceptionState& exception_state) {
   if (!CheckViewExists(&exception_state))
     return nullptr;
@@ -71,42 +72,41 @@ CanvasFormattedTextRun* CanvasFormattedText::AppendRun(
   return run;
 }
 
-CanvasFormattedText* CanvasFormattedText::format(
+FormattedText* FormattedText::format(
     ExecutionContext* execution_context,
     V8UnionFormattedTextRunOrFormattedTextRunOrStringSequenceOrString* text,
     const String& style,
     ExceptionState& exception_state) {
-  return CanvasFormattedText::FormatImpl(execution_context, text, style,
-                                         kIndefiniteSize, kIndefiniteSize,
-                                         exception_state);
+  return FormattedText::FormatImpl(execution_context, text, style,
+                                   kIndefiniteSize, kIndefiniteSize,
+                                   exception_state);
 }
 
-CanvasFormattedText* CanvasFormattedText::format(
+FormattedText* FormattedText::format(
     ExecutionContext* execution_context,
     V8UnionFormattedTextRunOrFormattedTextRunOrStringSequenceOrString* text,
     const String& style,
     double inline_constraint,
     ExceptionState& exception_state) {
-  return CanvasFormattedText::FormatImpl(
-      execution_context, text, style,
-      LayoutUnit(std::max(0.0, inline_constraint)), kIndefiniteSize,
-      exception_state);
+  return FormattedText::FormatImpl(execution_context, text, style,
+                                   LayoutUnit(std::max(0.0, inline_constraint)),
+                                   kIndefiniteSize, exception_state);
 }
 
-CanvasFormattedText* CanvasFormattedText::format(
+FormattedText* FormattedText::format(
     ExecutionContext* execution_context,
     V8UnionFormattedTextRunOrFormattedTextRunOrStringSequenceOrString* text,
     const String& style,
     double inline_constraint,
     double block_constraint,
     ExceptionState& exception_state) {
-  return CanvasFormattedText::FormatImpl(
-      execution_context, text, style,
-      LayoutUnit(std::max(0.0, inline_constraint)),
-      LayoutUnit(std::max(0.0, block_constraint)), exception_state);
+  return FormattedText::FormatImpl(execution_context, text, style,
+                                   LayoutUnit(std::max(0.0, inline_constraint)),
+                                   LayoutUnit(std::max(0.0, block_constraint)),
+                                   exception_state);
 }
 
-CanvasFormattedText* CanvasFormattedText::FormatImpl(
+FormattedText* FormattedText::FormatImpl(
     ExecutionContext* execution_context,
     V8UnionFormattedTextRunOrFormattedTextRunOrStringSequenceOrString*
         text_runs,
@@ -115,12 +115,11 @@ CanvasFormattedText* CanvasFormattedText::FormatImpl(
     LayoutUnit block_constraint,
     ExceptionState& exception_state) {
   // Create a new FormattedText object
-  auto* canvas_formatted_text =
-      MakeGarbageCollected<CanvasFormattedText>(execution_context);
+  auto* formatted_text = MakeGarbageCollected<FormattedText>(execution_context);
 
   // Set the constraints
-  canvas_formatted_text->inline_constraint_ = inline_constraint;
-  canvas_formatted_text->block_constraint_ = block_constraint;
+  formatted_text->inline_constraint_ = inline_constraint;
+  formatted_text->block_constraint_ = block_constraint;
 
   // Helper function to lazily construct a CSSParserContext
   CSSParserContext* parser_context_instance = nullptr;
@@ -138,20 +137,20 @@ CanvasFormattedText* CanvasFormattedText::FormatImpl(
       // This is a dictionary object with 'text' and 'style' members
       const FormattedTextRun* text_run = single_run->GetAsFormattedTextRun();
       if (text_run->hasText() && !text_run->text().IsEmpty()) {
-        auto* cft_run = MakeGarbageCollected<CanvasFormattedTextRun>(
+        auto* ft_run = MakeGarbageCollected<FormattedTextRunInternal>(
             execution_context, text_run->text());
         if (text_run->hasStyle() && !text_run->style().IsEmpty())
-          cft_run->SetStyle(parser_context(), text_run->style());
-        canvas_formatted_text->AppendRun(cft_run, exception_state);
+          ft_run->SetStyle(parser_context(), text_run->style());
+        formatted_text->AppendRun(ft_run, exception_state);
       }
     } else {
       // This is a simple string, without any styles
       DCHECK(single_run->IsString());
       const String& text = single_run->GetAsString();
       if (!text.IsEmpty()) {
-        auto* cft_run = MakeGarbageCollected<CanvasFormattedTextRun>(
+        auto* ft_run = MakeGarbageCollected<FormattedTextRunInternal>(
             execution_context, text);
-        canvas_formatted_text->AppendRun(cft_run, exception_state);
+        formatted_text->AppendRun(ft_run, exception_state);
       }
     }
   };
@@ -171,11 +170,11 @@ CanvasFormattedText* CanvasFormattedText::FormatImpl(
 
   // Apply global styles
   if (!style.IsEmpty())
-    canvas_formatted_text->SetStyle(parser_context(), style);
-  return canvas_formatted_text;
+    formatted_text->SetStyle(parser_context(), style);
+  return formatted_text;
 }
 
-sk_sp<PaintRecord> CanvasFormattedText::PaintFormattedText(
+sk_sp<PaintRecord> FormattedText::PaintFormattedText(
     Document& document,
     const FontDescription& font,
     double x,
@@ -208,8 +207,7 @@ sk_sp<PaintRecord> CanvasFormattedText::PaintFormattedText(
   return paint_record_builder->EndRecording();
 }
 
-bool CanvasFormattedText::CheckViewExists(
-    ExceptionState* exception_state) const {
+bool FormattedText::CheckViewExists(ExceptionState* exception_state) const {
   if (!block_ || !block_->View()) {
     if (exception_state) {
       exception_state->ThrowDOMException(

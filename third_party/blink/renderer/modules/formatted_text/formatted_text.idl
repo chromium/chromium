@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 [
-    RuntimeEnabled=CanvasFormattedText
+    RuntimeEnabled=FormattedText
 ]
 dictionary FormattedTextRun {
     DOMString? text;
@@ -15,9 +15,9 @@ typedef (DOMString or FormattedTextRun) FormattedTextRunSingle;
 typedef sequence<FormattedTextRunSingle> FormattedTextRunList;
 
 [
-    RuntimeEnabled=CanvasFormattedText,
+    RuntimeEnabled=FormattedText,
     Exposed=Window
 ]
-interface CanvasFormattedText {
-    [CallWith=ExecutionContext, RaisesException] static CanvasFormattedText? format((FormattedTextRunList or FormattedTextRunSingle) text_runs, optional DOMString? style = null, optional double inline_constraint, optional double block_constraint);
+interface FormattedText {
+    [CallWith=ExecutionContext, RaisesException] static FormattedText? format((FormattedTextRunList or FormattedTextRunSingle) text_runs, optional DOMString? style = null, optional double inline_constraint, optional double block_constraint);
 };

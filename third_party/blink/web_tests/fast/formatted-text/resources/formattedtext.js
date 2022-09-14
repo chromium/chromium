@@ -9,7 +9,7 @@ function RenderWithCanvas(parent) {
         canvas.setAttribute("style", "border: 1px solid black");
         canvas.setAttribute("height", test_case.height ? test_case.height : 60);
         parent.appendChild(canvas);
-        var text = CanvasFormattedText.format(test_case.text,
+        var text = FormattedText.format(test_case.text,
           `color:black; font:${test_case.font_size}px Arial`, canvas.width);
 
         var context = canvas.getContext("2d", { alpha: false });

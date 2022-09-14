@@ -192,7 +192,7 @@ LayoutText::LayoutText(Node* node, scoped_refptr<StringImpl> str)
   // Call GetSecureTextTimers() and GetSelectionDisplayItemClientMap() to ensure
   // map exists. They are called in pre-finalizer where allocation is not
   // allowed.
-  // TODO(yukiy): Remove these if CanvasFormattedTextRun::Dispose() can be
+  // TODO(yukiy): Remove these if FormattedTextRun::Dispose() can be
   // removed.
   GetSecureTextTimers();
   GetSelectionDisplayItemClientMap();

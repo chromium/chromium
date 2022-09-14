@@ -13,12 +13,6 @@ blink_modules_sources("canvas") {
     "canvas2d/canvas_filter.h",
     "canvas2d/canvas_filter_operation_resolver.cc",
     "canvas2d/canvas_filter_operation_resolver.h",
-    "canvas2d/canvas_formatted_text.cc",
-    "canvas2d/canvas_formatted_text.h",
-    "canvas2d/canvas_formatted_text_run.cc",
-    "canvas2d/canvas_formatted_text_run.h",
-    "canvas2d/canvas_formatted_text_style.cc",
-    "canvas2d/canvas_formatted_text_style.h",
     "canvas2d/canvas_gradient.cc",
     "canvas2d/canvas_gradient.h",
     "canvas2d/canvas_image_source_util.cc",
@@ -56,7 +50,10 @@ blink_modules_sources("canvas") {
     "testing/canvas_test_utils.cc",
   ]
 
-  deps = [ "//third_party/blink/renderer/modules/webcodecs" ]
+  deps = [
+    "//third_party/blink/renderer/modules/formatted_text",
+    "//third_party/blink/renderer/modules/webcodecs",
+  ]
   allow_circular_includes_from =
       [ "//third_party/blink/renderer/modules/webcodecs" ]
 }

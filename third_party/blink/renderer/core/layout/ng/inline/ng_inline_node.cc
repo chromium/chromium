@@ -1015,7 +1015,7 @@ const NGInlineNodeData& NGInlineNode::EnsureData() const {
 
 const NGOffsetMapping* NGInlineNode::ComputeOffsetMappingIfNeeded() const {
   DCHECK(!GetLayoutBlockFlow()->GetDocument().NeedsLayoutTreeUpdate() ||
-         GetLayoutBlockFlow()->IsLayoutNGObjectForCanvasFormattedText());
+         GetLayoutBlockFlow()->IsLayoutNGObjectForFormattedText());
 
   NGInlineNodeData* data = MutableData();
   if (!data->offset_mapping) {
@@ -1031,7 +1031,7 @@ void NGInlineNode::ComputeOffsetMapping(LayoutBlockFlow* layout_block_flow,
                                         NGInlineNodeData* data) {
   DCHECK(!data->offset_mapping);
   DCHECK(!layout_block_flow->GetDocument().NeedsLayoutTreeUpdate() ||
-         layout_block_flow->IsLayoutNGObjectForCanvasFormattedText());
+         layout_block_flow->IsLayoutNGObjectForFormattedText());
 
   const SvgTextChunkOffsets* chunk_offsets = nullptr;
   if (data->svg_node_data_ && data->svg_node_data_->chunk_offsets.size() > 0)

@@ -761,7 +761,6 @@ const char kTextControlChanged[] = "Text control changed";
 const char kSvgChanged[] = "SVG changed";
 const char kScrollbarChanged[] = "Scrollbar changed";
 const char kDisplayLock[] = "Display lock";
-const char kCanvasFormattedTextRunChange[] = "CanvasFormattedText runs changed";
 const char kDevtools[] = "Inspected by devtools";
 }  // namespace layout_invalidation_reason
 

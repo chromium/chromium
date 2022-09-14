@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<link rel="match" href="references/canvas-formattedtext-style-expected.html">
+<link rel="match" href="references/formattedtext-style-expected.html">
 <!-- Mac/GPU tests will have slightly different underline/strikethrough rendering -->
 <meta name=fuzzy content="maxDifference=255;totalPixels=12">
 <html>
@@ -49,7 +49,7 @@
       // Test font-size-dependant lengths
       text.push(" ", {text: "1em", style: 'text-decoration:underline; text-decoration-thickness:1em; text-underline-offset:0px; font-size:25px;'});
 
-      var cft = CanvasFormattedText.format(text, null, 500);
+      var cft = FormattedText.format(text, null, 500);
       context.drawFormattedText(cft, 0, 0, 500);
     };
     testFontRelatedStyles();
@@ -61,7 +61,7 @@
       var text = [];
       text.push(" ", styledRun('font-weight:bold'));
 
-      var cft = CanvasFormattedText.format(text, null, 500);
+      var cft = FormattedText.format(text, null, 500);
       context.drawFormattedText(cft, 0, 0);
     };
     testFontRelatedStyles2();
@@ -74,7 +74,7 @@
       text.push(" ", styledRun('font-stretch:condensed'));
       text.push(" ", styledRun('font-variant-caps:small-caps'));
 
-      var cft = CanvasFormattedText.format(text, null, 500);
+      var cft = FormattedText.format(text, null, 500);
       context.drawFormattedText(cft, 0, 0);
     };
     testFontRelatedStyles3();
@@ -86,7 +86,7 @@
       var text = [];
       text.push(" ", styledRun('font-style:italic'));
 
-      var cft = CanvasFormattedText.format(text, null, 500);
+      var cft = FormattedText.format(text, null, 500);
       context.drawFormattedText(cft, 0, 0);
     };
     testFontRelatedStyles3();
@@ -100,7 +100,7 @@
       var text = 'Hello World !';
       var styles = "direction: rtl; width: 500px;";
 
-      var cft = CanvasFormattedText.format(text, styles, 500);
+      var cft = FormattedText.format(text, styles, 500);
       context.drawFormattedText(cft, 0, 0);
     }
   </script>
@@ -113,7 +113,7 @@
       var text = 'Hello World ! Hello World ! Hello World ! Hello World ! Hello World !';
       var styles = 'text-align: center; width: 500px';
 
-      var cft = CanvasFormattedText.format(text, styles, 500);
+      var cft = FormattedText.format(text, styles, 500);
       context.drawFormattedText(cft, 0, 0);
     }
   </script>
@@ -126,7 +126,7 @@
       var text = 'ABC DEF GHI JKL MNO PQR';
       var styles = 'width: 100px; writing-mode: vertical-lr;';
 
-      var cft = CanvasFormattedText.format(text, styles, 100, 70);
+      var cft = FormattedText.format(text, styles, 100, 70);
       context.drawFormattedText(cft, 0, 0);
     }
   </script>
@@ -137,7 +137,7 @@
       var text = 'ABC DEF GHI JKL MNO PQR';
       var styles = 'width: 100px; writing-mode: vertical-rl;';
 
-      var cft = CanvasFormattedText.format(text, styles, 100, 70);
+      var cft = FormattedText.format(text, styles, 100, 70);
       context.drawFormattedText(cft, 0, 0);
     }
   </script>
@@ -148,7 +148,7 @@
       var text = 'ABC DEF GHI JKL MNO PQR';
       var styles = 'width: 100px; writing-mode: vertical-rl; text-orientation: upright;';
 
-      var cft = CanvasFormattedText.format(text, styles, 100, 70);
+      var cft = FormattedText.format(text, styles, 100, 70);
       context.drawFormattedText(cft, 0, 0);
     }
   </script>

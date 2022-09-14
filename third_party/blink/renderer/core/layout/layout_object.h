@@ -3553,13 +3553,13 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     bitfields_.SetIsLayoutNGObjectForListMarkerImage(b);
   }
 
-  bool IsLayoutNGObjectForCanvasFormattedText() const {
+  bool IsLayoutNGObjectForFormattedText() const {
     NOT_DESTROYED();
-    return bitfields_.IsLayoutNGObjectForCanvasFormattedText();
+    return bitfields_.IsLayoutNGObjectForFormattedText();
   }
-  void SetIsLayoutNGObjectForCanvasFormattedText(bool b) {
+  void SetIsLayoutNGObjectForFormattedText(bool b) {
     NOT_DESTROYED();
-    bitfields_.SetIsLayoutNGObjectForCanvasFormattedText(b);
+    bitfields_.SetIsLayoutNGObjectForFormattedText(b);
   }
 
   bool PreviousVisibilityVisible() const {
@@ -4031,7 +4031,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           is_table_column_constraints_dirty_(false),
           is_grid_placement_dirty_(true),
           transform_affects_vector_effect_(false),
-          is_layout_ng_object_for_canvas_formatted_text(false),
+          is_layout_ng_object_for_formatted_text(false),
           should_skip_next_layout_shift_tracking_(true),
           should_assume_paint_offset_translation_for_layout_shift_tracking_(
               false),
@@ -4356,8 +4356,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // included).
     ADD_BOOLEAN_BITFIELD(transform_affects_vector_effect_,
                          TransformAffectsVectorEffect);
-    ADD_BOOLEAN_BITFIELD(is_layout_ng_object_for_canvas_formatted_text,
-                         IsLayoutNGObjectForCanvasFormattedText);
+    ADD_BOOLEAN_BITFIELD(is_layout_ng_object_for_formatted_text,
+                         IsLayoutNGObjectForFormattedText);
 
     // Whether to skip layout shift tracking in the next paint invalidation.
     // See PaintInvalidator::UpdateLayoutShiftTracking().

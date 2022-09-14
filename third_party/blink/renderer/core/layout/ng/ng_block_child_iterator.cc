@@ -96,7 +96,7 @@ NGBlockChildIterator::Entry NGBlockChildIterator::NextChild(
   // impossible scenario)
 #if DCHECK_IS_ON()
   if (const LayoutBox* box = current_child.GetLayoutBox())
-    DCHECK(box->IsLayoutNGObjectForCanvasFormattedText() || box->Parent());
+    DCHECK(box->IsLayoutNGObjectForFormattedText() || box->Parent());
 #endif
   return Entry(current_child, current_child_break_token, current_child_idx);
 }

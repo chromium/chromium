@@ -1710,13 +1710,11 @@ crbug.com/1189359 external/wpt/css/css-flexbox/table-as-item-stretch-cross-size-
 crbug.com/6606 external/wpt/css/css-display/display-math-on-non-mathml-elements.html [ Failure ]
 crbug.com/6606 external/wpt/css/css-typed-om/the-stylepropertymap/properties/display.html [ Failure ]
 
-# CanvasFormattedText is supported only through layout NG
-crbug.com/1176933 fast/canvas/canvas-formattedtext-1.html [ Skip ]
-crbug.com/1176933 fast/canvas/canvas-formattedtext-2.html [ Skip ]
-crbug.com/1176933 fast/canvas-api/canvas-formattedtext.html [ Skip ]
-crbug.com/1176933 wpt_internal/canvas/canvas-formattedtext-style.html [ Skip ]
-crbug.com/1176933 virtual/gpu/fast/canvas/canvas-formattedtext-1.html [ Skip ]
-crbug.com/1176933 virtual/gpu/fast/canvas/canvas-formattedtext-2.html [ Skip ]
+# FormattedText is supported only through layout NG
+crbug.com/1176933 fast/formatted-text/formattedtext-1.html [ Skip ]
+crbug.com/1176933 fast/formatted-text/formattedtext-2.html [ Skip ]
+crbug.com/1176933 fast/formatted-text/formattedtext-api.html [ Skip ]
+crbug.com/1176933 wpt_internal/formatted-text/formattedtext-style.html [ Skip ]
 
 # DPI-independent text
 crbug.com/1327530 fast/css/text-rendering.html [ Failure ]

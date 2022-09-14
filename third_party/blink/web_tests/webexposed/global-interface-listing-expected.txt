@@ -1096,10 +1096,6 @@ interface CanvasCaptureMediaStreamTrack : MediaStreamTrack
 interface CanvasFilter
     attribute @@toStringTag
     method constructor
-interface CanvasFormattedText
-    static method format
-    attribute @@toStringTag
-    method constructor
 interface CanvasGradient
     attribute @@toStringTag
     method addColorStop
@@ -2805,6 +2801,10 @@ interface FormData
 interface FormDataEvent : Event
     attribute @@toStringTag
     getter formData
+    method constructor
+interface FormattedText
+    static method format
+    attribute @@toStringTag
     method constructor
 interface FragmentDirective
     attribute @@toStringTag

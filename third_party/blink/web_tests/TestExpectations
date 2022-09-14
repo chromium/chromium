@@ -189,12 +189,6 @@ crbug.com/949003 http/tests/printing/cross-site-frame.html [ Failure Pass ]
 crbug.com/881555 external/wpt/css/css-position/sticky/position-sticky-fixed-ancestor-iframe.html [ Failure ]
 crbug.com/881555 external/wpt/css/css-position/sticky/position-sticky-fixed-ancestor.html [ Failure ]
 
-# --- CanvasFormattedText tests ---
-# Fails on linux-rel even though actual and expected appear the same.
-crbug.com/1176933 [ Linux ] virtual/gpu/fast/canvas/canvas-formattedtext-2.html [ Skip ]
-
-# --- END CanvasFormattedText tests
-
 # These tests block fixes done in V8. The tests run on the V8 bots as well.
 crbug.com/v8/12227 external/wpt/wasm/jsapi/interface.any.html [ Failure Pass ]
 crbug.com/v8/12227 external/wpt/wasm/jsapi/interface.any.worker.html [ Failure Pass ]

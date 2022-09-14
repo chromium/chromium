@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <body></body>
@@ -25,7 +26,7 @@ function getCanvas2DContext(name) {
   This method checks to see if something was rendered on the canvas
   at the passed in location. The purposed of these tests are not to
   accuratley validate rendering results but to check that mutations
-  on the CanvasFormattedText succeed, hence the all sanity check
+  on the FormattedText succeed, hence the all sanity check
   validates is that there are expected number of rendered pixels.
 
   After checking, this method also draws a line over the pixels that
@@ -89,15 +90,15 @@ function garbageCollect() {
 test(function(t) {
   var context = getCanvas2DContext(t.name);
 
-  var text = CanvasFormattedText.format("ERun1", null, 100);
+  var text = FormattedText.format("ERun1", null, 100);
   context.drawFormattedText(text, 0, 0);
   sanity_check_rendering(context, 2, 0);
 
-  var text = CanvasFormattedText.format({text: "ERun2"}, null, 100);
+  var text = FormattedText.format({text: "ERun2"}, null, 100);
   context.drawFormattedText(text, 0, 10);
   sanity_check_rendering(context, 3, 10);
 
-  var text = CanvasFormattedText.format([{text: "ERun"}, "3"], null, 100);
+  var text = FormattedText.format([{text: "ERun"}, "3"], null, 100);
   context.drawFormattedText(text, 0, 20);
   sanity_check_rendering(context, 3, 20);
 }, 'Factory method variants');
@@ -105,7 +106,7 @@ test(function(t) {
 test(function (t) {
   // Create an iframe and CFT on that frame
   var frame = document.body.appendChild(document.createElement("iframe"));
-  var cft = frame.contentWindow.CanvasFormattedText.format("1");
+  var cft = frame.contentWindow.FormattedText.format("1");
 
   // Destroy the frame & call GC to make sure it gets cleaned up
   frame.remove();

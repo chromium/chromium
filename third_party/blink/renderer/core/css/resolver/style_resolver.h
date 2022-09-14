@@ -95,11 +95,11 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       const AtomicString& page_name);
   scoped_refptr<const ComputedStyle> StyleForText(Text*);
   scoped_refptr<ComputedStyle> StyleForViewport();
-  scoped_refptr<const ComputedStyle> StyleForCanvasFormattedText(
+  scoped_refptr<const ComputedStyle> StyleForFormattedText(
       bool is_text_run,
       const ComputedStyle& parent_style,
       const CSSPropertyValueSet* css_property_value_set);
-  scoped_refptr<const ComputedStyle> StyleForCanvasFormattedText(
+  scoped_refptr<const ComputedStyle> StyleForFormattedText(
       bool is_text_run,
       const FontDescription& default_font,
       const CSSPropertyValueSet* css_property_value_set);
@@ -311,9 +311,9 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
 
   Member<StyleRuleUsageTracker> tracker_;
 
-  // This is a dummy/disconnected element that we use for CanvasFormattedText
-  // style computations; see `EnsureElementForCanvasFormattedText`.
-  Member<Element> canvas_formatted_text_element_;
+  // This is a dummy/disconnected element that we use for FormattedText
+  // style computations; see `EnsureElementForFormattedText`.
+  Member<Element> formatted_text_element_;
 
   bool print_media_type_ = false;
   bool was_viewport_resized_ = false;
@@ -322,8 +322,8 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   friend class StyleResolverTest;
   FRIEND_TEST_ALL_PREFIXES(StyleResolverTest, TreeScopedReferences);
 
-  Element& EnsureElementForCanvasFormattedText();
-  scoped_refptr<const ComputedStyle> StyleForCanvasFormattedText(
+  Element& EnsureElementForFormattedText();
+  scoped_refptr<const ComputedStyle> StyleForFormattedText(
       bool is_text_run,
       const FontDescription* default_font,
       const ComputedStyle* parent_style,

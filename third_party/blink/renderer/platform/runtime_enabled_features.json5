@@ -407,11 +407,6 @@
       status: "experimental",
     },
     {
-      name: "CanvasFormattedText",
-      depends_on: ["LayoutNG"],
-      status: "experimental",
-    },
-    {
       name: "CanvasHDR",
       status: "experimental",
     },
@@ -1253,6 +1248,11 @@
     {
       name: "ForceTallerSelectPopup",
       status: {"ChromeOS_Ash": "stable", "ChromeOS_Lacros": "stable"},
+    },
+    {
+      name: "FormattedText",
+      depends_on: ["LayoutNG"],
+      status: "experimental",
     },
     {
       name: "FormRelAttribute",
