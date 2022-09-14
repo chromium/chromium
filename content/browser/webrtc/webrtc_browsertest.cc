@@ -87,14 +87,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
 
 // These tests will make a complete PeerConnection-based call and verify that
 // video is playing for the call.
-// https://crbug.com/1346488 Flaky on linux-lacros-rel
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_CanSetupDefaultVideoCall DISABLED_CanSetupDefaultVideoCall
-#else
-#define MAYBE_CanSetupDefaultVideoCall CanSetupDefaultVideoCall
-#endif
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
-                       MAYBE_CanSetupDefaultVideoCall) {
+IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest, CanSetupDefaultVideoCall) {
   MakeTypicalPeerConnectionCall(
       "callAndExpectResolution({video: true}, 640, 480);");
 }
