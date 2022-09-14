@@ -16,6 +16,7 @@ NULLABILITY_PATTERN = r'(nonnull|nullable|_Nullable|_Nonnull)'
 TODO_PATTERN = r'TO[D]O\(([^\)]*)\)'
 CRBUG_PATTERN = r'crbug\.com/\d+$'
 INCLUDE_PATTERN = r'^#include'
+PIPE_IN_COMMENT_PATTERN = r'//.*[^|]\|(?!\|)'
 IOS_PACKAGE_PATTERN = r'^ios'
 ARC_COMPILE_GUARD = [
     '#if !defined(__has_feature) || !__has_feature(objc_arc)',
@@ -140,6 +141,28 @@ def _CheckHasNoIncludeDirectives(input_api, output_api):
     return [output_api.PresubmitError(error_message)]
 
 
+def _CheckHasNoPipeInComment(input_api, output_api):
+    """ Checks that comments don't contain pipes."""
+    pipe_regex = input_api.re.compile(PIPE_IN_COMMENT_PATTERN)
+
+    errors = []
+    for f in input_api.AffectedFiles():
+        if not _IsInIosPackage(input_api, f.LocalPath()):
+            continue
+        for line_num, line in f.ChangedContents():
+            if pipe_regex.search(line):
+                errors.append('%s:%s' % (f.LocalPath(), line_num))
+    if not errors:
+        return []
+    error_message = '\n'.join([
+        'Please use backticks "`" instead of pipes "|" if you need to quote'
+        ' variable names and symbols in comments.\n'
+        'Found potential uses of pipes in:'
+    ] + errors) + '\n'
+
+    return [output_api.PresubmitPromptWarning(error_message)]
+
+
 def _IsInIosPackage(input_api, path):
     """ Returns True if path is within ios package"""
     ios_package_regex = input_api.re.compile(IOS_PACKAGE_PATTERN)
@@ -172,4 +195,5 @@ def CheckChangeOnUpload(input_api, output_api):
     results.extend(_CheckNullabilityAnnotations(input_api, output_api))
     results.extend(_CheckARCCompilationGuard(input_api, output_api))
     results.extend(_CheckHasNoIncludeDirectives(input_api, output_api))
+    results.extend(_CheckHasNoPipeInComment(input_api, output_api))
     return results

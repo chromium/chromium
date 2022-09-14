@@ -128,5 +128,36 @@ class CheckHasNoIncludeDirectivesTest(unittest.TestCase):
         self.assertTrue('ios/path/foo_controller.mm:4' in errors[0].message)
 
 
+class CheckHasNoPipeInCommentTest(unittest.TestCase):
+    """Test the _CheckHasNoPipeInComment presubmit check."""
+
+    def testFindsIncludeDirectives(self):
+        good_lines = [
+            '#if !defined(__has_feature) || !__has_feature(objc_arc)',
+            '// This does A || B', '// `MySymbol` is correct',
+            'bitVariable1 | bitVariable2'
+        ]
+        bad_lines = [
+            '// |MySymbol| is wrong', '// What is wrong is: |MySymbol|'
+        ]
+        mock_input = PRESUBMIT_test_mocks.MockInputApi()
+        mock_input.files = [
+            PRESUBMIT_test_mocks.MockFile('ios/path/foo_controller.mm',
+                                          good_lines + bad_lines),
+            PRESUBMIT_test_mocks.MockFile('ios/path/foo_controller.h',
+                                          bad_lines + good_lines),
+        ]
+        mock_output = PRESUBMIT_test_mocks.MockOutputApi()
+        errors = PRESUBMIT._CheckHasNoPipeInComment(mock_input, mock_output)
+        self.assertEqual(len(errors), 1)
+        self.assertEqual('warning', errors[0].type)
+        self.assertTrue('ios/path/foo_controller.mm:5' in errors[0].message)
+        self.assertTrue('ios/path/foo_controller.mm:6' in errors[0].message)
+        self.assertTrue('ios/path/foo_controller.h:1' in errors[0].message)
+        self.assertTrue('ios/path/foo_controller.h:2' in errors[0].message)
+        error_lines = errors[0].message.split('\n')
+        self.assertEqual(len(error_lines), len(bad_lines) * 2 + 3)
+
+
 if __name__ == '__main__':
     unittest.main()
