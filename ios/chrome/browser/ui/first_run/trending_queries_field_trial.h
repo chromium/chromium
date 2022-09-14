@@ -16,14 +16,14 @@ extern const char kTrendingQueriesFieldTrialName[];
 namespace {
 
 // Variation IDs for Trending Queries experiment arms.
-const variations::VariationID kTrendingQueriesEnabledAllUsersID = 3350760;
-const variations::VariationID kTrendingQueriesEnabledAllUsersHideShortcutsID =
-    3350761;
-const variations::VariationID kTrendingQueriesEnabledDisabledFeedID = 3350762;
-const variations::VariationID kTrendingQueriesEnabledSignedOutID = 3350763;
-const variations::VariationID kTrendingQueriesEnabledNeverShowModuleID =
-    4833277;
-const variations::VariationID kTrendingQueriesControlID = 3350764;
+const variations::VariationID kTrendingQueriesEnabledModuleEnabledID = 4857971;
+const variations::VariationID
+    kTrendingQueriesEnabledMinimalSpacingModuleEnabledID = 4857972;
+const variations::VariationID
+    kTrendingQueriesEnabledMinimalSpacingRemoveHeaderModuleEnabledID = 4857973;
+const variations::VariationID
+    kTrendingQueriesKeepShortcutsEnabledModuleEnabledID = 4857974;
+const variations::VariationID kTrendingQueriesControlID = 4857975;
 
 }  // namespace
 

@@ -9499,44 +9499,6 @@
             ]
         }
     ],
-    "StartSurface": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "ShrinkLogo",
-                    "params": {
-                        "ReturnToStartSurfaceInactiveDurationInSeconds": "21600",
-                        "show_return_to_recent_tab": "true",
-                        "shrink_logo": "true"
-                    },
-                    "enable_features": [
-                        "StartSurface"
-                    ]
-                },
-                {
-                    "name": "Start+ModuleRefresh",
-                    "params": {
-                        "ReturnToStartSurfaceInactiveDurationInSeconds": "21600",
-                        "show_return_to_recent_tab": "true",
-                        "shrink_logo": "true"
-                    },
-                    "enable_features": [
-                        "ContentSuggestionsUIModuleRefresh",
-                        "StartSurface"
-                    ]
-                },
-                {
-                    "name": "ModuleRefresh",
-                    "enable_features": [
-                        "ContentSuggestionsUIModuleRefresh"
-                    ]
-                }
-            ]
-        }
-    ],
     "StylusWritingToInput": [
         {
             "platforms": [
