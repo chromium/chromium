@@ -182,7 +182,7 @@ HeapVector<Member<Animation>> DocumentAnimations::getAnimations(
 
 void DocumentAnimations::ValidateTimelines() {
   for (auto& timeline : unvalidated_timelines_) {
-    if (auto* scroll_timeline = DynamicTo<CSSScrollTimeline>(timeline.Get()))
+    if (auto* scroll_timeline = DynamicTo<ScrollTimeline>(timeline.Get()))
       scroll_timeline->ValidateState();
   }
 

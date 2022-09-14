@@ -29,6 +29,8 @@ class CORE_EXPORT CSSScrollTimeline : public ScrollTimeline {
             const AtomicString& name,
             TimelineAxis);
 
+    static ScrollTimeline::ScrollDirection ComputeScrollDirection(TimelineAxis);
+
    private:
     friend class CSSScrollTimeline;
 

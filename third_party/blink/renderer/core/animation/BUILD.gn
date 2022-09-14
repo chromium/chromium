@@ -68,6 +68,8 @@ blink_core_sources("animation") {
     "css/css_transition.h",
     "css/css_transition_data.cc",
     "css/css_transition_data.h",
+    "css/css_view_timeline.cc",
+    "css/css_view_timeline.h",
     "css_angle_interpolation_type.cc",
     "css_angle_interpolation_type.h",
     "css_aspect_ratio_interpolation_type.cc",

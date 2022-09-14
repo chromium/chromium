@@ -1324,7 +1324,16 @@ Element* Element::OffsetParent() {
 int Element::clientLeft() {
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
+  return ClientLeftNoLayout();
+}
 
+int Element::clientTop() {
+  GetDocument().UpdateStyleAndLayoutForNode(this,
+                                            DocumentUpdateReason::kJavaScript);
+  return ClientTopNoLayout();
+}
+
+int Element::ClientLeftNoLayout() const {
   if (const auto* layout_object = GetLayoutBox()) {
     return AdjustForAbsoluteZoom::AdjustLayoutUnit(layout_object->ClientLeft(),
                                                    layout_object->StyleRef())
@@ -1333,10 +1342,7 @@ int Element::clientLeft() {
   return 0;
 }
 
-int Element::clientTop() {
-  GetDocument().UpdateStyleAndLayoutForNode(this,
-                                            DocumentUpdateReason::kJavaScript);
-
+int Element::ClientTopNoLayout() const {
   if (const auto* layout_object = GetLayoutBox()) {
     return AdjustForAbsoluteZoom::AdjustLayoutUnit(layout_object->ClientTop(),
                                                    layout_object->StyleRef())

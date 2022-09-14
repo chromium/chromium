@@ -192,14 +192,24 @@ class CORE_EXPORT CSSAnimations final {
     CSSScrollTimeline* GetScrollTimeline() const {
       return scroll_timeline_.Get();
     }
-    bool IsEmpty() const { return !scroll_timeline_; }
-    void Clear() { scroll_timeline_ = nullptr; }
+    void SetViewTimeline(const AtomicString& name, CSSViewTimeline*);
+    CSSViewTimeline* GetViewTimeline(const AtomicString& name) const;
+    const CSSViewTimelineMap& GetViewTimelines() const {
+      return view_timelines_;
+    }
+
+    bool IsEmpty() const {
+      return !scroll_timeline_ && view_timelines_.IsEmpty();
+    }
+    void Clear() {
+      scroll_timeline_ = nullptr;
+      view_timelines_.clear();
+    }
     void Trace(Visitor*) const;
 
    private:
     Member<CSSScrollTimeline> scroll_timeline_;
-    // TODO(crbug.com/1344151): Add a hash map of view timelines here in the
-    // future.
+    CSSViewTimelineMap view_timelines_;
   };
 
   TimelineData timeline_data_;
@@ -268,14 +278,26 @@ class CORE_EXPORT CSSAnimations final {
   static void CalculateScrollTimelineUpdate(CSSAnimationUpdate&,
                                             Element& animating_element,
                                             const ComputedStyle&);
+  static void CalculateViewTimelineUpdate(CSSAnimationUpdate&,
+                                          Element& animating_element,
+                                          const ComputedStyle&);
 
   static const TimelineData* GetTimelineData(const Element&);
 
-  static CSSScrollTimeline* FindTimelineForNode(const AtomicString& name,
-                                                Node*,
-                                                const CSSAnimationUpdate*);
+  static ScrollTimeline* FindTimelineForNode(const AtomicString& name,
+                                             Node*,
+                                             const CSSAnimationUpdate*);
+  static CSSScrollTimeline* FindScrollTimelineForElement(
+      const AtomicString& name,
+      Element&,
+      const CSSAnimationUpdate*,
+      const TimelineData*);
+  static CSSViewTimeline* FindViewTimelineForElement(const AtomicString& name,
+                                                     Element&,
+                                                     const CSSAnimationUpdate*,
+                                                     const TimelineData*);
 
-  static CSSScrollTimeline* FindPreviousSiblingAncestorTimeline(
+  static ScrollTimeline* FindPreviousSiblingAncestorTimeline(
       const AtomicString& name,
       Node*,
       const CSSAnimationUpdate*);

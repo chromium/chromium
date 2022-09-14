@@ -494,6 +494,52 @@ void CSSAnimations::CalculateScrollTimelineUpdate(CSSAnimationUpdate& update,
     update.SetChangedScrollTimeline(new_timeline);
 }
 
+void CSSAnimations::CalculateViewTimelineUpdate(CSSAnimationUpdate& update,
+                                                Element& animating_element,
+                                                const ComputedStyle& style) {
+  const Vector<AtomicString>& names = style.ViewTimelineName();
+  const Vector<TimelineAxis>& axes = style.ViewTimelineAxis();
+  // TODO(crbug.com/1344151): view-timeline-inset
+
+  const CSSAnimations::TimelineData* timeline_data =
+      GetTimelineData(animating_element);
+
+  if (names.IsEmpty() && (!timeline_data || timeline_data->IsEmpty()))
+    return;
+
+  CSSViewTimelineMap changed_timelines;
+
+  // We initially assume that all timelines will be removed, and then un-remove
+  // for matching timelines in the for-loop below.
+  if (timeline_data) {
+    for (const AtomicString& name : timeline_data->GetViewTimelines().Keys()) {
+      changed_timelines.Set(name, nullptr);
+    }
+  }
+
+  for (wtf_size_t i = 0; i < names.size(); ++i) {
+    const AtomicString& name = names[i];
+    if (name.IsEmpty())
+      continue;
+    TimelineAxis axis = axes.IsEmpty() ? TimelineAxis::kBlock
+                                       : axes[std::min(i, axes.size() - 1)];
+    CSSViewTimeline* existing_timeline =
+        timeline_data ? timeline_data->GetViewTimeline(name) : nullptr;
+    CSSViewTimeline::Options options(&animating_element, axis);
+    if (existing_timeline && existing_timeline->Matches(options)) {
+      // Don't clear this timeline after all.
+      changed_timelines.erase(name);
+      continue;
+    }
+    CSSViewTimeline* new_timeline = MakeGarbageCollected<CSSViewTimeline>(
+        &animating_element.GetDocument(), std::move(options));
+    new_timeline->ServiceAnimations(kTimingUpdateOnDemand);
+    changed_timelines.Set(name, new_timeline);
+  }
+
+  update.SetChangedViewTimelines(std::move(changed_timelines));
+}
+
 const CSSAnimations::TimelineData* CSSAnimations::GetTimelineData(
     const Element& element) {
   const ElementAnimations* element_animations = element.GetElementAnimations();
@@ -502,7 +548,7 @@ const CSSAnimations::TimelineData* CSSAnimations::GetTimelineData(
              : nullptr;
 }
 
-CSSScrollTimeline* CSSAnimations::FindTimelineForNode(
+ScrollTimeline* CSSAnimations::FindTimelineForNode(
     const AtomicString& name,
     Node* node,
     const CSSAnimationUpdate* update) {
@@ -510,7 +556,19 @@ CSSScrollTimeline* CSSAnimations::FindTimelineForNode(
   if (!element)
     return nullptr;
   const TimelineData* timeline_data = GetTimelineData(*element);
-  CSSScrollTimeline* existing_timeline =
+  if (CSSViewTimeline* timeline =
+          FindViewTimelineForElement(name, *element, update, timeline_data)) {
+    return timeline;
+  }
+  return FindScrollTimelineForElement(name, *element, update, timeline_data);
+}
+
+CSSScrollTimeline* CSSAnimations::FindScrollTimelineForElement(
+    const AtomicString& name,
+    Element& element,
+    const CSSAnimationUpdate* update,
+    const TimelineData* timeline_data) {
+  CSSScrollTimeline* existing_scroll_timeline =
       timeline_data ? timeline_data->GetScrollTimeline() : nullptr;
   // The pending CSSScrollTimeline (if any) takes precedence over the
   // timeline stored on CSSAnimations::TimelineData.
@@ -518,30 +576,45 @@ CSSScrollTimeline* CSSAnimations::FindTimelineForNode(
       update ? update->ChangedScrollTimeline()
              : absl::optional<CSSScrollTimeline*>();
   CSSScrollTimeline* pending_aware_timeline =
-      pending_timeline.value_or(existing_timeline);
+      pending_timeline.value_or(existing_scroll_timeline);
   if (pending_aware_timeline && pending_aware_timeline->Name() == name)
     return pending_aware_timeline;
   return nullptr;
 }
 
-// Find a CSSScrollTimeline in the inclusive sibling-ancestors.
+CSSViewTimeline* CSSAnimations::FindViewTimelineForElement(
+    const AtomicString& name,
+    Element& element,
+    const CSSAnimationUpdate* update,
+    const TimelineData* timeline_data) {
+  CSSViewTimeline* existing_timeline =
+      timeline_data ? timeline_data->GetViewTimeline(name) : nullptr;
+  // The pending CSSViewTimeline (if any) takes precedence over the
+  // timeline stored on CSSAnimations::TimelineData.
+  absl::optional<CSSViewTimeline*> pending_timeline =
+      update ? update->ChangedViewTimeline(name)
+             : absl::optional<CSSViewTimeline*>();
+  return pending_timeline.value_or(existing_timeline);
+}
+
+// Find a ScrollTimeline in the inclusive sibling-ancestors.
 //
 // The reason `update` is provided from the outside rather than just fetching
 // it from ElementAnimations, is that for the current node we're resolving style
 // for, the update hasn't actually been stored on ElementAnimations yet.
-CSSScrollTimeline* CSSAnimations::FindPreviousSiblingAncestorTimeline(
+ScrollTimeline* CSSAnimations::FindPreviousSiblingAncestorTimeline(
     const AtomicString& name,
     Node* node,
     const CSSAnimationUpdate* update) {
   DCHECK(node);
 
-  if (CSSScrollTimeline* timeline = FindTimelineForNode(name, node, update))
+  if (ScrollTimeline* timeline = FindTimelineForNode(name, node, update))
     return timeline;
 
   // TODO(crbug.com/1356098): Use flat-tree siblings.
   for (Node* prev = node->previousSibling(); prev;
        prev = prev->previousSibling()) {
-    if (CSSScrollTimeline* timeline =
+    if (ScrollTimeline* timeline =
             FindTimelineForNode(name, prev, GetPendingAnimationUpdate(*prev))) {
       return timeline;
     }
@@ -726,6 +799,7 @@ void CSSAnimations::CalculateTimelineUpdate(CSSAnimationUpdate& update,
                                             Element& animating_element,
                                             const ComputedStyle& style) {
   CalculateScrollTimelineUpdate(update, animating_element, style);
+  CalculateViewTimelineUpdate(update, animating_element, style);
 }
 
 void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
@@ -1216,6 +1290,9 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
   if (absl::optional<CSSScrollTimeline*> changed_timeline =
           pending_update_.ChangedScrollTimeline()) {
     timeline_data_.SetScrollTimeline(*changed_timeline);
+  }
+  for (auto [name, value] : pending_update_.ChangedViewTimelines()) {
+    timeline_data_.SetViewTimeline(name, value.Get());
   }
 
   for (wtf_size_t paused_index :
@@ -1825,8 +1902,24 @@ void CSSAnimations::Cancel() {
   pending_update_.Clear();
 }
 
+void CSSAnimations::TimelineData::SetViewTimeline(const AtomicString& name,
+                                                  CSSViewTimeline* timeline) {
+  if (timeline == nullptr) {
+    view_timelines_.erase(name);
+  } else {
+    view_timelines_.Set(name, timeline);
+  }
+}
+
+CSSViewTimeline* CSSAnimations::TimelineData::GetViewTimeline(
+    const AtomicString& name) const {
+  auto i = view_timelines_.find(name);
+  return i != view_timelines_.end() ? i->value.Get() : nullptr;
+}
+
 void CSSAnimations::TimelineData::Trace(blink::Visitor* visitor) const {
   visitor->Trace(scroll_timeline_);
+  visitor->Trace(view_timelines_);
 }
 
 namespace {

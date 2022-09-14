@@ -9,9 +9,19 @@
 
 namespace blink {
 
-namespace {
+CSSScrollTimeline::Options::Options(
+    Document& document,
+    ScrollTimeline::ReferenceType reference_type,
+    absl::optional<Element*> reference_element,
+    const AtomicString& name,
+    TimelineAxis axis)
+    : reference_type_(reference_type),
+      reference_element_(reference_element),
+      direction_(ComputeScrollDirection(axis)),
+      name_(name) {}
 
-ScrollTimeline::ScrollDirection ComputeScrollDirection(TimelineAxis axis) {
+ScrollTimeline::ScrollDirection
+CSSScrollTimeline::Options::ComputeScrollDirection(TimelineAxis axis) {
   using ScrollDirection = ScrollTimeline::ScrollDirection;
 
   switch (axis) {
@@ -28,19 +38,6 @@ ScrollTimeline::ScrollDirection ComputeScrollDirection(TimelineAxis axis) {
   NOTREACHED();
   return ScrollDirection::kBlock;
 }
-
-}  // anonymous namespace
-
-CSSScrollTimeline::Options::Options(
-    Document& document,
-    ScrollTimeline::ReferenceType reference_type,
-    absl::optional<Element*> reference_element,
-    const AtomicString& name,
-    TimelineAxis axis)
-    : reference_type_(reference_type),
-      reference_element_(reference_element),
-      direction_(ComputeScrollDirection(axis)),
-      name_(name) {}
 
 CSSScrollTimeline::CSSScrollTimeline(Document* document, Options&& options)
     : ScrollTimeline(document,

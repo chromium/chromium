@@ -180,6 +180,8 @@ bool HasAnimationsOrTransitions(const StyleResolverState& state) {
 bool HasTimelines(const StyleResolverState& state) {
   if (!state.Style()->ScrollTimelineName().IsEmpty())
     return true;
+  if (!state.Style()->ViewTimelineName().IsEmpty())
+    return true;
   if (ElementAnimations* element_animations = GetElementAnimations(state))
     return element_animations->CssAnimations().HasTimelines();
   return false;

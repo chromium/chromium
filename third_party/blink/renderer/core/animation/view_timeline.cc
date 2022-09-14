@@ -22,10 +22,13 @@ double ComputeOffset(LayoutBox* subject,
   gfx::PointF point = gfx::PointF(
       subject->LocalToAncestorPoint(PhysicalOffset(), source, flags));
 
+  // We can not call the regular clientLeft/Top functions here, because we
+  // may reach this function during style resolution, and clientLeft/Top
+  // also attempt to update style/layout.
   if (physical_orientation == kHorizontalScroll)
-    return point.x() - source_element->clientLeft();
+    return point.x() - source_element->ClientLeftNoLayout();
   else
-    return point.y() - source_element->clientTop();
+    return point.y() - source_element->ClientTopNoLayout();
 }
 
 }  // end namespace
@@ -40,6 +43,12 @@ ViewTimeline* ViewTimeline::Create(Document& document,
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Invalid axis");
     return nullptr;
+  }
+  if (subject) {
+    // This ensures that Client[Left,Top]NoLayout (reached via SnapshotState)
+    // returns up-to-date information.
+    document.UpdateStyleAndLayoutForNode(subject,
+                                         DocumentUpdateReason::kJavaScript);
   }
   ViewTimeline* view_timeline =
       MakeGarbageCollected<ViewTimeline>(&document, subject, orientation);
