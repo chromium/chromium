@@ -36,11 +36,17 @@ content::WebUIDataSource* CreatePasswordsUIHTMLSource(Profile* profile) {
       {"autosigninDescription", IDS_PASSWORD_MANAGER_UI_AUTOSIGNIN_TOGGLE_DESC},
       {"checkup", IDS_PASSWORD_MANAGER_UI_CHECKUP},
       {"clearSearch", IDS_CLEAR_SEARCH},
+      {"exportPasswords", IDS_PASSWORD_MANAGER_UI_EXPORT_BANNER_TITLE},
+      {"exportPasswordsDescription", IDS_PASSWORD_MANAGER_UI_EXPORT_BANNER_DESCRIPTION},
+      {"importPasswords", IDS_PASSWORD_MANAGER_UI_IMPORT_BANNER_TITLE},
+      {"importPasswordsDescription", IDS_PASSWORD_MANAGER_UI_IMPORT_BANNER_DESCRIPTION},
       {"passwords", IDS_PASSWORD_MANAGER_UI_PASSWORDS},
       {"savePasswordsLabel", IDS_PASSWORD_MANAGER_UI_SAVE_PASSWORDS_TOGGLE_LABEL},
       {"searchPrompt", IDS_PASSWORD_MANAGER_UI_SEARCH_PROMPT},
       {"settings", IDS_PASSWORD_MANAGER_UI_SETTINGS},
       {"title", IDS_PASSWORD_MANAGER_UI_TITLE},
+      {"trustedVaultBannerLabelOfferOptIn", IDS_PASSWORD_MANAGER_UI_TRUSTED_VAULT_OPT_IN_TITLE},
+      {"trustedVaultBannerSubLabelOfferOptIn", IDS_PASSWORD_MANAGER_UI_RUSTED_VAULT_OPT_IN_DESCRIPTION},
   };
   source->AddLocalizedStrings(kStrings);
 
