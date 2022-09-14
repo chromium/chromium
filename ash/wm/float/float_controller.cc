@@ -10,6 +10,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/window_properties.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
@@ -24,6 +26,9 @@
 #include "chromeos/ui/wm/window_util.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/views/background.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash {
 namespace {
@@ -31,6 +36,9 @@ namespace {
 // TODO(sophiewen): Remove this once the untuck window widget is implemented. It
 // is temporarily here to give users a way to untuck the window.
 constexpr int kTuckedFloatWindowVisibleWidth = 100;
+constexpr int kTuckHandleCornerRadius = 8;
+constexpr int kTuckHandleWidth = 20;
+constexpr int kTuckHandleHeight = 116;
 
 // Disables the window's position auto management and returns its original
 // value.
@@ -57,8 +65,7 @@ void UpdateWindowBoundsForTablet(aura::Window* window) {
 }  // namespace
 
 // Scoped class which makes modifications while a window is tucked. It owns a
-// widget which is used to untuck the window.
-// TODO(sophiewen): Fill in this class.
+// handle widget which is used to untuck the window.
 class FloatController::ScopedWindowTucker {
  public:
   explicit ScopedWindowTucker(aura::Window* window) : window_(window) {
@@ -68,8 +75,50 @@ class FloatController::ScopedWindowTucker {
   ScopedWindowTucker& operator=(const ScopedWindowTucker&) = delete;
   ~ScopedWindowTucker() = default;
 
+  void ShowTuckHandle(const MagnetismCorner magnetism_corner) {
+    views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+    params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+    params.parent = window_->parent();
+    params.init_properties_container.SetProperty(kHideInOverviewKey, true);
+    params.init_properties_container.SetProperty(kForceVisibleInMiniViewKey,
+                                                 false);
+    params.name = "TuckHandleWidget";
+    tuck_handle_widget_->Init(std::move(params));
+    tuck_handle_widget_->SetContentsView(
+        views::Builder<views::View>()
+            .SetBackground(views::CreateThemedRoundedRectBackground(
+                kColorAshShieldAndBase80, kTuckHandleCornerRadius))
+            .Build());
+    tuck_handle_widget_->Show();
+
+    // The window should already be tucked offscreen.
+    gfx::Point tuck_handle_origin = window_->GetTargetBounds().left_center();
+    switch (magnetism_corner) {
+      case MagnetismCorner::kTopLeft:
+      case MagnetismCorner::kBottomLeft:
+        tuck_handle_origin = window_->GetTargetBounds().right_center() -
+                             gfx::Vector2d(0, kTuckHandleHeight / 2);
+
+        break;
+      case MagnetismCorner::kTopRight:
+      case MagnetismCorner::kBottomRight:
+        tuck_handle_origin =
+            window_->GetTargetBounds().left_center() -
+            gfx::Vector2d(kTuckHandleWidth, kTuckHandleHeight / 2);
+        break;
+    }
+    tuck_handle_widget_->SetBounds(gfx::Rect(
+        tuck_handle_origin, gfx::Size(kTuckHandleWidth, kTuckHandleHeight)));
+  }
+
+  views::Widget* tuck_handle_widget_for_testing() {
+    return tuck_handle_widget_.get();
+  }
+
  private:
   aura::Window* window_;
+  views::UniqueWidgetPtr tuck_handle_widget_ =
+      std::make_unique<views::Widget>();
 };
 
 // -----------------------------------------------------------------------------
@@ -103,14 +152,21 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
   }
 
   void MaybeTuckWindow() {
-    if (!scoped_window_tucker_) {
-      scoped_window_tucker_ =
-          std::make_unique<ScopedWindowTucker>(floated_window_);
-    }
+    scoped_window_tucker_ =
+        std::make_unique<ScopedWindowTucker>(floated_window_);
+
     UpdateWindowBoundsForTablet(floated_window_);
+
+    // Must be called after the tucked window bounds are updated, to align the
+    // handle with the window.
+    scoped_window_tucker_->ShowTuckHandle(magnetism_corner_);
   }
 
   void MaybeUntuckWindow() { scoped_window_tucker_.reset(); }
+
+  views::Widget* GetTuckHandleWidgetForTesting() {
+    return scoped_window_tucker_->tuck_handle_widget_for_testing();  // IN-TEST
+  }
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override {
@@ -258,6 +314,13 @@ bool FloatController::IsFloatedWindowTuckedForTablet(
   auto* floated_window_info = MaybeGetFloatedWindowInfo(floated_window);
   DCHECK(floated_window_info);
   return floated_window_info->is_tucked_for_tablet();
+}
+
+views::Widget* FloatController::GetTuckHandleWidgetForTesting(
+    const aura::Window* floated_window) const {
+  auto* floated_window_info = MaybeGetFloatedWindowInfo(floated_window);
+  DCHECK(floated_window_info);
+  return floated_window_info->GetTuckHandleWidgetForTesting();  // IN-TEST
 }
 
 void FloatController::OnDragCompletedForTablet(
