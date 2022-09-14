@@ -1384,17 +1384,6 @@ ProfileImpl::GetFederatedIdentitySharingPermissionContext() {
   return FederatedIdentitySharingPermissionContextFactory::GetForProfile(this);
 }
 
-std::unique_ptr<content::KAnonymityServiceDelegate>
-ProfileImpl::CreateKAnonymityServiceDelegate() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (!base::FeatureList::IsEnabled(features::kKAnonymityService))
-    return nullptr;
-  return std::make_unique<KAnonymityServiceClient>(this);
-#else
-  return nullptr;
-#endif
-}
-
 content::ReduceAcceptLanguageControllerDelegate*
 ProfileImpl::GetReduceAcceptLanguageControllerDelegate() {
   return ReduceAcceptLanguageFactory::GetForProfile(this);

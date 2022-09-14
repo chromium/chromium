@@ -614,15 +614,6 @@ const base::Feature kKioskEnableAppService("KioskEnableAppService",
                                            base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// When enabled, allows other features to use the k-Anonymity Service.
-const base::Feature kKAnonymityService{"KAnonymityService",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
-
-// When enabled, the k-Anonymity Service will send requests to the Join and
-// Query k-anonymity servers.
-const base::Feature kKAnonymityServiceOHTTPRequests{
-    "KAnonymityServiceOHTTPRequests", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // When enabled, removes any entry points to the history UI from Incognito mode.
 const base::Feature kUpdateHistoryEntryPointsInIncognito{
     "UpdateHistoryEntryPointsInIncognito", base::FEATURE_ENABLED_BY_DEFAULT};
