@@ -8,6 +8,7 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -22,6 +23,7 @@ import androidx.annotation.StyleRes;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.components.autofill_assistant.LayoutUtils;
 import org.chromium.components.autofill_assistant.R;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.widget.ChromeImageView;
@@ -90,7 +92,12 @@ public class ButtonView extends LinearLayout {
 
         ViewCompat.setPaddingRelative(this, leadingElementPadding, 0, leadingElementPadding, 0);
 
-        mPrimaryText = new TextView(new ContextThemeWrapper(getContext(), R.style.ChipTextView));
+        LayoutInflater layoutInflater = LayoutUtils.createInflater(getContext());
+        // Creating TextView from the layout file. Creating it programmatically using TextView
+        // constructor was not setting the required font (see b/245452057).
+        mPrimaryText = (TextView) layoutInflater.inflate(
+                R.layout.autofill_assistant_button_text_view, /* root= */ null);
+
         ApiCompatibilityUtils.setTextAppearance(mPrimaryText, primaryTextAppearance);
         ViewCompat.setPaddingRelative(mPrimaryText, ViewUtils.dpToPx(context, 4), 0, 0, 0);
         addView(mPrimaryText);
@@ -165,8 +172,9 @@ public class ButtonView extends LinearLayout {
      */
     public TextView getSecondaryTextView() {
         if (mSecondaryText == null) {
-            mSecondaryText =
-                    new TextView(new ContextThemeWrapper(getContext(), R.style.ChipTextView));
+            LayoutInflater layoutInflater = LayoutUtils.createInflater(getContext());
+            mSecondaryText = (TextView) layoutInflater.inflate(
+                    R.layout.autofill_assistant_button_text_view, /* root= */ null);
             ApiCompatibilityUtils.setTextAppearance(mSecondaryText, mSecondaryTextAppearanceId);
             addView(mSecondaryText);
         }
