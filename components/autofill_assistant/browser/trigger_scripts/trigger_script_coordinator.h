@@ -127,7 +127,13 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   friend class TriggerScriptCoordinatorTest;
 
   // From content::WebContentsObserver.
+  // By default, DidFinishNavigation will be used and the other one will early
+  // return. In case DidNavigation will not work properly, we a feature toggle
+  // to invert the situation.
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void PrimaryPageChanged(content::Page& page) override;
+
   void OnVisibilityChanged(content::Visibility visibility) override;
   void WebContentsDestroyed() override;
 

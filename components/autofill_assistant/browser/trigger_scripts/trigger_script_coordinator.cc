@@ -410,6 +410,12 @@ void TriggerScriptCoordinator::Stop(Metrics::TriggerScriptFinishedState state) {
 }
 
 void TriggerScriptCoordinator::PrimaryPageChanged(content::Page& page) {
+  // Early return if we want to use DidFinishNavigation instead.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAssistantUseDidFinishNavigation)) {
+    return;
+  }
+
   // Ignore navigation events if any of the following is true:
   // - not currently checking for preconditions (i.e., not yet started).
   if (!is_checking_trigger_conditions_)
@@ -448,6 +454,62 @@ void TriggerScriptCoordinator::PrimaryPageChanged(content::Page& page) {
   }
 
   ukm_source_id_ = page.GetMainDocument().GetPageUkmSourceId();
+  dynamic_trigger_conditions_->SetURL(GetCurrentURL());
+  RunOutOfScheduleTriggerConditionCheck();
+}
+
+void TriggerScriptCoordinator::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // Early return if we want to use PrimaryPageChanged instead.
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillAssistantUseDidFinishNavigation)) {
+    return;
+  }
+
+  // Ignore navigation events if any of the following is true:
+  // - not currently checking for preconditions (i.e., not yet started).
+  // - Navigation not in primary main frame
+  // - Navigation is not committed (like a download)
+  if (!is_checking_trigger_conditions_ ||
+      !navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+
+  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
+  // A navigation also serves as a boundary for NOT_NOW. This prevents possible
+  // race conditions where the UI remains on screen even after navigations.
+  for (auto& trigger_script : trigger_scripts_) {
+    trigger_script->waiting_for_precondition_no_longer_true(false);
+  }
+
+  // Chrome has encountered an error and is now displaying an error message
+  // (e.g., network connection lost). This will cancel the current trigger
+  // script session.
+  if (rfh->IsErrorDocument()) {
+    Stop(Metrics::TriggerScriptFinishedState::NAVIGATION_ERROR);
+    return;
+  }
+
+  // The user has navigated away from the target domain. This will cancel the
+  // current trigger script session.
+  if (!(url_utils::IsSamePublicSuffixDomain(deeplink_url_, GetCurrentURL()) &&
+        url_utils::IsAllowedSchemaTransition(deeplink_url_, GetCurrentURL())) &&
+      !url_utils::IsInDomainOrSubDomain(GetCurrentURL(),
+                                        additional_allowed_domains_)) {
+#ifndef NDEBUG
+    VLOG(2) << "Unexpected navigation to " << GetCurrentURL();
+    VLOG(2) << "List of allowed domains:";
+    VLOG(2) << "\t" << deeplink_url_.host();
+    for (const auto& domain : additional_allowed_domains_) {
+      VLOG(2) << "\t" << domain;
+    }
+#endif
+    Stop(Metrics::TriggerScriptFinishedState::PROMPT_FAILED_NAVIGATE);
+    return;
+  }
+
+  ukm_source_id_ = rfh->GetPageUkmSourceId();
   dynamic_trigger_conditions_->SetURL(GetCurrentURL());
   RunOutOfScheduleTriggerConditionCheck();
 }
