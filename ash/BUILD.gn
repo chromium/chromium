@@ -1775,8 +1775,6 @@ component("ash") {
     "system/unified/notification_icons_controller.h",
     "system/unified/page_indicator_view.cc",
     "system/unified/page_indicator_view.h",
-    "system/unified/quick_settings_button_base.cc",
-    "system/unified/quick_settings_button_base.h",
     "system/unified/quick_settings_metrics_util.cc",
     "system/unified/quick_settings_metrics_util.h",
     "system/unified/quick_settings_view.cc",

@@ -22,7 +22,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/collapse_button.h"
-#include "ash/system/unified/quick_settings_button_base.h"
+#include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
 #include "ash/system/unified/user_chooser_view.h"
@@ -45,170 +45,70 @@ namespace {
 
 class UserAvatarButton : public views::Button {
  public:
-  explicit UserAvatarButton(PressedCallback callback);
+  explicit UserAvatarButton(PressedCallback callback)
+      : Button(std::move(callback)) {
+    SetLayoutManager(std::make_unique<views::FillLayout>());
+    SetBorder(views::CreateEmptyBorder(kUnifiedCircularButtonFocusPadding));
+    AddChildView(CreateUserAvatarView(0 /* user_index */));
+    SetTooltipText(GetUserItemAccessibleString(0 /* user_index */));
+    SetInstallFocusRingOnFocus(true);
+    views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
+
+    views::InstallCircleHighlightPathGenerator(this);
+  }
+
   UserAvatarButton(const UserAvatarButton&) = delete;
   UserAvatarButton& operator=(const UserAvatarButton&) = delete;
   ~UserAvatarButton() override = default;
 };
 
-UserAvatarButton::UserAvatarButton(PressedCallback callback)
-    : Button(std::move(callback)) {
-  SetLayoutManager(std::make_unique<views::FillLayout>());
-  SetBorder(views::CreateEmptyBorder(kUnifiedCircularButtonFocusPadding));
-  AddChildView(CreateUserAvatarView(0 /* user_index */));
-  SetTooltipText(GetUserItemAccessibleString(0 /* user_index */));
-  SetInstallFocusRingOnFocus(true);
-  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
-
-  views::InstallCircleHighlightPathGenerator(this);
-}
-
-// The avatar button delegate, which creates the `UserAvatarButton`.
-class ASH_EXPORT UserAvatarButtonDelegate : public QuickSettingsButtonDelegate {
- public:
-  explicit UserAvatarButtonDelegate(UnifiedSystemTrayController* controller)
-      : QuickSettingsButtonDelegate(
-            QsButtonCatalogName::kAvatarButton,
-            base::BindRepeating(
-                &UnifiedSystemTrayController::ShowUserChooserView,
-                base::Unretained(controller))) {}
-
-  UserAvatarButtonDelegate(const UserAvatarButtonDelegate&) = delete;
-  UserAvatarButtonDelegate& operator=(const UserAvatarButtonDelegate&) = delete;
-  ~UserAvatarButtonDelegate() override = default;
-
-  // QuickSettingsButtonDelegate:
-  std::unique_ptr<views::Button> BuildButton(
-      views::Button::PressedCallback callback) override {
-    return std::make_unique<UserAvatarButton>(std::move(callback));
-  }
+auto avatar_button_lambda = [](UnifiedSystemTrayController* controller,
+                               const ui::Event& event) {
+  quick_settings_metrics_util::RecordQsButtonActivated(
+      QsButtonCatalogName::kAvatarButton, event);
+  controller->ShowUserChooserView();
 };
 
-class ASH_EXPORT SignOutButtonDelegate : public QuickSettingsButtonDelegate {
- public:
-  explicit SignOutButtonDelegate(UnifiedSystemTrayController* controller)
-      : QuickSettingsButtonDelegate(
-            QsButtonCatalogName::kSignOutButton,
-            base::BindRepeating(
-                &UnifiedSystemTrayController::HandleSignOutAction,
-                base::Unretained(controller))) {}
-
-  SignOutButtonDelegate(const SignOutButtonDelegate&) = delete;
-  SignOutButtonDelegate& operator=(const SignOutButtonDelegate&) = delete;
-  ~SignOutButtonDelegate() override = default;
-
-  // QuickSettingsButtonDelegate:
-  std::unique_ptr<views::Button> BuildButton(
-      views::Button::PressedCallback callback) override {
-    return std::make_unique<PillButton>(
-        std::move(callback),
-        user::GetLocalizedSignOutStringForStatus(
-            Shell::Get()->session_controller()->login_status(),
-            /*multiline=*/false),
-        PillButton::Type::kDefaultWithoutIcon,
-        /*icon=*/nullptr);
-  }
+auto sign_out_button_lambda = [](UnifiedSystemTrayController* controller,
+                                 const ui::Event& event) {
+  quick_settings_metrics_util::RecordQsButtonActivated(
+      QsButtonCatalogName::kSignOutButton, event);
+  controller->HandleSignOutAction();
 };
 
-// The round Icon button delegate. This delegate renders buttons based on the
-// passed in catalog name. Currently it used for settings, lock and power
-// button.
-class ASH_EXPORT QsIconButtonDelegate : public QuickSettingsButtonDelegate {
- public:
-  QsIconButtonDelegate(UnifiedSystemTrayController* controller,
-                       const QsButtonCatalogName button_catalog_name)
-      : QuickSettingsButtonDelegate(
-            button_catalog_name,
-            base::BindRepeating(&QsIconButtonDelegate::OnButtonPressed,
-                                base::Unretained(this))),
-        controller_(controller),
-        catalog_name_(button_catalog_name) {}
+auto power_button_lambda = [](UnifiedSystemTrayController* controller,
+                              const ui::Event& event) {
+  quick_settings_metrics_util::RecordQsButtonActivated(
+      QsButtonCatalogName::kPowerButton, event);
+  controller->HandlePowerAction();
+};
 
-  QsIconButtonDelegate(const QsIconButtonDelegate&) = delete;
-  QsIconButtonDelegate& operator=(const QsIconButtonDelegate&) = delete;
-  ~QsIconButtonDelegate() override = default;
+auto lock_button_lambda = [](UnifiedSystemTrayController* controller,
+                             const ui::Event& event) {
+  quick_settings_metrics_util::RecordQsButtonActivated(
+      QsButtonCatalogName::kLockButton, event);
+  controller->HandleLockAction();
+};
 
-  // QuickSettingsButtonDelegate:
-  std::unique_ptr<views::Button> BuildButton(
-      views::Button::PressedCallback callback) override {
-    return std::make_unique<IconButton>(std::move(callback),
-                                        IconButton::Type::kSmall,
-                                        GetVectorIcon(), GetAccessibleName());
-  }
+auto settings_button_lambda = [](UnifiedSystemTrayController* controller,
+                                 const ui::Event& event) {
+  quick_settings_metrics_util::RecordQsButtonActivated(
+      QsButtonCatalogName::kSettingsButton, event);
+  controller->HandleSettingsAction();
+};
 
- private:
-  void OnButtonPressed(const ui::Event& event) {
-    switch (catalog_name_) {
-      case QsButtonCatalogName::kLockButton:
-        controller_->HandleLockAction();
-        return;
-      case QsButtonCatalogName::kSettingsButton:
-        controller_->HandleSettingsAction();
-        return;
-      case QsButtonCatalogName::kPowerButton:
-        controller_->HandlePowerAction();
-        return;
-      default: {
-        NOTREACHED();
-      }
-    }
-  }
-
-  const gfx::VectorIcon* GetVectorIcon() {
-    switch (catalog_name_) {
-      case QsButtonCatalogName::kLockButton:
-        return &kUnifiedMenuLockIcon;
-      case QsButtonCatalogName::kSettingsButton:
-        return &vector_icons::kSettingsOutlineIcon;
-      case QsButtonCatalogName::kPowerButton:
-        return &kUnifiedMenuPowerIcon;
-      default: {
-        NOTREACHED();
-      }
-    }
-    return &kUnifiedMenuLockIcon;
-  }
-
-  int GetAccessibleName() {
-    switch (catalog_name_) {
-      case QsButtonCatalogName::kLockButton:
-        return IDS_ASH_STATUS_TRAY_LOCK;
-      case QsButtonCatalogName::kSettingsButton:
-        return IDS_ASH_STATUS_TRAY_SETTINGS;
-      case QsButtonCatalogName::kPowerButton: {
-        bool reboot = Shell::Get()->shutdown_controller()->reboot_on_shutdown();
-        return reboot ? IDS_ASH_STATUS_TRAY_REBOOT
-                      : IDS_ASH_STATUS_TRAY_SHUTDOWN;
-      }
-      default: {
-        NOTREACHED();
-      }
-    }
-    return IDS_ASH_STATUS_TRAY_LOCK;
-  }
-
-  // Unowned. Owned by `UnifiedSystemTrayBubble` and passed to the
-  // `UnifiedSystemTrayView`.
-  const base::raw_ptr<UnifiedSystemTrayController> controller_;
-
-  const QsButtonCatalogName catalog_name_;
+auto collapse_button_lambda = [](UnifiedSystemTrayController* controller,
+                                 const ui::Event& event) {
+  quick_settings_metrics_util::RecordQsButtonActivated(
+      QsButtonCatalogName::kCollapseButton, event);
+  controller->ToggleExpanded();
 };
 
 }  // namespace
 
-TopShortcutButtonContainer::TopShortcutButtonContainer() {
-#if DCHECK_IS_ON()
-  // Only need it for `DCHECK` in `OnChildViewAdded`.
-  AddObserver(this);
-#endif  // DCHECK_IS_ON()
-}
+TopShortcutButtonContainer::TopShortcutButtonContainer() = default;
 
-TopShortcutButtonContainer::~TopShortcutButtonContainer() {
-#if DCHECK_IS_ON()
-  // Only need it for `DCHECK` in `OnChildViewAdded`.
-  RemoveObserver(this);
-#endif  // DCHECK_IS_ON()
-}
+TopShortcutButtonContainer::~TopShortcutButtonContainer() = default;
 
 // Buttons are equally spaced by the default value, but the gap will be
 // narrowed evenly when the parent view is not large enough.
@@ -295,45 +195,26 @@ views::View* TopShortcutButtonContainer::AddUserAvatarButton(
   return user_avatar_button_;
 }
 
-views::View* TopShortcutButtonContainer::AddSignOutButton(
-    std::unique_ptr<views::View> sign_out_button) {
+views::Button* TopShortcutButtonContainer::AddSignOutButton(
+    std::unique_ptr<views::Button> sign_out_button) {
   sign_out_button_ = AddChildView(std::move(sign_out_button));
   return sign_out_button_;
 }
 
-void TopShortcutButtonContainer::OnChildViewAdded(View* observed_view,
-                                                  View* child) {
-  if (observed_view != this)
-    return;
-
-  // Make sure all buttons here are with `VIEW_ID_QS_*`. So the view id and
-  // UMA metrics will be correctly handled.
-  DCHECK(child->GetID() >= VIEW_ID_QS_MIN && child->GetID() <= VIEW_ID_QS_MAX);
-}
-
-TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller)
-    : user_avatar_button_delegate_(
-          std::make_unique<UserAvatarButtonDelegate>(controller)),
-      sign_out_button_delegate_(
-          std::make_unique<SignOutButtonDelegate>(controller)),
-      lock_button_delegate_(std::make_unique<QsIconButtonDelegate>(
-          controller,
-          QsButtonCatalogName::kLockButton)),
-      settings_button_delegate_(std::make_unique<QsIconButtonDelegate>(
-          controller,
-          QsButtonCatalogName::kSettingsButton)),
-      power_button_delegate_(std::make_unique<QsIconButtonDelegate>(
-          controller,
-          QsButtonCatalogName::kPowerButton)) {
+TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller) {
   DCHECK(controller);
+
+#if DCHECK_IS_ON()
+  // Only need it for `DCHECK` in `OnChildViewAdded`.
+  AddObserver(this);
+#endif  // DCHECK_IS_ON()
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kUnifiedTopShortcutPadding,
       kUnifiedTopShortcutSpacing));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
-  container_ = new TopShortcutButtonContainer();
-  AddChildView(container_);
+  auto button_container = std::make_unique<TopShortcutButtonContainer>();
 
   Shell* shell = Shell::Get();
 
@@ -343,22 +224,47 @@ TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller)
   bool can_lock_screen = shell->session_controller()->CanLockScreen();
 
   if (!is_on_login_screen) {
-    auto* user_avatar_button = container_->AddUserAvatarButton(
-        user_avatar_button_delegate_->CreateButton());
-    user_avatar_button->SetEnabled(
+    user_avatar_button_ = button_container->AddUserAvatarButton(
+        std::make_unique<UserAvatarButton>(base::BindRepeating(
+            avatar_button_lambda, base::Unretained(controller))));
+    user_avatar_button_->SetEnabled(
         UserChooserDetailedViewController::IsUserChooserEnabled());
+    user_avatar_button_->SetID(VIEW_ID_QS_USER_AVATAR_BUTTON);
 
-    container_->AddSignOutButton(sign_out_button_delegate_->CreateButton());
+    sign_out_button_ =
+        button_container->AddSignOutButton(std::make_unique<PillButton>(
+            base::BindRepeating(sign_out_button_lambda,
+                                base::Unretained(controller)),
+            user::GetLocalizedSignOutStringForStatus(
+                Shell::Get()->session_controller()->login_status(),
+                /*multiline=*/false),
+            PillButton::Type::kDefaultWithoutIcon,
+            /*icon=*/nullptr));
+    sign_out_button_->SetID(VIEW_ID_QS_SIGN_OUT_BUTTON);
   }
-  container_->AddChildView(power_button_delegate_->CreateButton());
+  bool reboot = shell->shutdown_controller()->reboot_on_shutdown();
+  power_button_ = button_container->AddChildView(std::make_unique<IconButton>(
+      base::BindRepeating(power_button_lambda, base::Unretained(controller)),
+      IconButton::Type::kSmall, &kUnifiedMenuPowerIcon,
+      reboot ? IDS_ASH_STATUS_TRAY_REBOOT : IDS_ASH_STATUS_TRAY_SHUTDOWN));
+  power_button_->SetID(VIEW_ID_QS_POWER_BUTTON);
 
   if (can_show_settings && can_lock_screen) {
-    container_->AddChildView(lock_button_delegate_->CreateButton());
+    lock_button_ = button_container->AddChildView(std::make_unique<IconButton>(
+        base::BindRepeating(lock_button_lambda, base::Unretained(controller)),
+        IconButton::Type::kSmall, &kUnifiedMenuLockIcon,
+        IDS_ASH_STATUS_TRAY_LOCK));
+    lock_button_->SetID(VIEW_ID_QS_LOCK_BUTTON);
   }
 
   if (can_show_settings) {
     settings_button_ =
-        container_->AddChildView(settings_button_delegate_->CreateButton());
+        button_container->AddChildView(std::make_unique<IconButton>(
+            base::BindRepeating(settings_button_lambda,
+                                base::Unretained(controller)),
+            IconButton::Type::kSmall, &vector_icons::kSettingsOutlineIcon,
+            IDS_ASH_STATUS_TRAY_SETTINGS));
+    settings_button_->SetID(VIEW_ID_QS_SETTINGS_BUTTON);
 
     local_state_pref_change_registrar_.Init(Shell::Get()->local_state());
     local_state_pref_change_registrar_.Add(
@@ -368,6 +274,8 @@ TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller)
     UpdateSettingsButtonState();
   }
 
+  container_ = AddChildView(std::move(button_container));
+
   // |collapse_button_| should be right-aligned, so we make the buttons
   // container flex occupying all remaining space.
   layout->SetFlexForView(container_, 1);
@@ -375,21 +283,27 @@ TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller)
   if (features::IsQsRevampEnabled())
     return;
 
-  auto* collapse_button_container =
-      AddChildView(std::make_unique<views::View>());
-  collapse_button_ =
-      collapse_button_container->AddChildView(std::make_unique<CollapseButton>(
-          base::BindRepeating(&UnifiedSystemTrayController::ToggleExpanded,
-                              base::Unretained(controller))));
+  auto collapse_button_container = std::make_unique<views::View>();
+  collapse_button_ = collapse_button_container->AddChildView(
+      std::make_unique<CollapseButton>(base::BindRepeating(
+          collapse_button_lambda, base::Unretained(controller))));
+  collapse_button_->SetID(VIEW_ID_QS_COLLAPSE_BUTTON);
   const gfx::Size collapse_button_size = collapse_button_->GetPreferredSize();
   collapse_button_container->SetPreferredSize(
       gfx::Size(collapse_button_size.width(),
                 collapse_button_size.height() + kUnifiedTopShortcutSpacing));
   collapse_button_->SetBoundsRect(gfx::Rect(
       gfx::Point(0, kUnifiedTopShortcutSpacing), collapse_button_size));
+
+  AddChildView(std::move(collapse_button_container));
 }
 
-TopShortcutsView::~TopShortcutsView() = default;
+TopShortcutsView::~TopShortcutsView() {
+#if DCHECK_IS_ON()
+  // Only need it for `DCHECK` in `OnChildViewAdded`.
+  RemoveObserver(this);
+#endif  // DCHECK_IS_ON()
+}
 
 // static
 void TopShortcutsView::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -404,6 +318,27 @@ void TopShortcutsView::SetExpandedAmount(double expanded_amount) {
 
 const char* TopShortcutsView::GetClassName() const {
   return "TopShortcutsView";
+}
+
+void TopShortcutsView::OnChildViewAdded(View* observed_view, View* child) {
+  if (observed_view != this)
+    return;
+
+  if (child->children().empty()) {
+    DCHECK(child->GetID() >= VIEW_ID_QS_MIN && child->GetID() <= VIEW_ID_QS_MAX)
+        << "All buttons directly added to this view must have a view ID with  "
+           "VIEW_ID_QS_*, and record a metric using QsButtonCatalogName (see "
+           "other usages of the catalog names for an example)";
+    return;
+  }
+
+  for (View* button : child->children()) {
+    DCHECK(button->GetID() >= VIEW_ID_QS_MIN &&
+           button->GetID() <= VIEW_ID_QS_MAX)
+        << "All buttons directly added to each container must have a view ID "
+           "with VIEW_ID_QS_*, and record a metric using QsButtonCatalogName "
+           "(see other usages of the catalog names for an example)";
+  }
 }
 
 void TopShortcutsView::UpdateSettingsButtonState() {

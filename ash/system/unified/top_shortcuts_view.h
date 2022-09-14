@@ -8,23 +8,26 @@
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "quick_settings_button_base.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
 class PrefRegistrySimple;
 
+namespace views {
+class Button;
+}
+
 namespace ash {
 
 class CollapseButton;
+class IconButton;
 class TopShortcutsViewTest;
 class UnifiedSystemTrayController;
 
 // Container for the top shortcut buttons. The view may narrow gaps between
 // buttons when there's not enough space. When those doesn't fit in the view
 // even after that, the sign-out button will be resized.
-class TopShortcutButtonContainer : public views::View,
-                                   public views::ViewObserver {
+class TopShortcutButtonContainer : public views::View {
  public:
   TopShortcutButtonContainer();
 
@@ -42,18 +45,17 @@ class TopShortcutButtonContainer : public views::View,
   views::View* AddUserAvatarButton(
       std::unique_ptr<views::View> user_avatar_button);
   // Add the sign-out button, which can be resized upon layout.
-  views::View* AddSignOutButton(std::unique_ptr<views::View> sign_out_button);
-
-  // views::ViewObserver:
-  void OnChildViewAdded(View* observed_view, View* child) override;
+  views::Button* AddSignOutButton(
+      std::unique_ptr<views::Button> sign_out_button);
 
  private:
   views::View* user_avatar_button_ = nullptr;
-  views::View* sign_out_button_ = nullptr;
+  views::Button* sign_out_button_ = nullptr;
 };
 
 // Top shortcuts view shown on the top of UnifiedSystemTrayView.
-class ASH_EXPORT TopShortcutsView : public views::View {
+class ASH_EXPORT TopShortcutsView : public views::View,
+                                    public views::ViewObserver {
  public:
   explicit TopShortcutsView(UnifiedSystemTrayController* controller);
 
@@ -72,19 +74,20 @@ class ASH_EXPORT TopShortcutsView : public views::View {
  private:
   friend class TopShortcutsViewTest;
 
+  // views::ViewObserver:
+  void OnChildViewAdded(View* observed_view, View* child) override;
+
   // Disables/Enables the |settings_button_| based on kSettingsIconEnabled pref.
   void UpdateSettingsButtonState();
 
   // Owned by views hierarchy.
+  views::View* user_avatar_button_ = nullptr;
+  views::Button* sign_out_button_ = nullptr;
   TopShortcutButtonContainer* container_ = nullptr;
-  views::Button* settings_button_ = nullptr;
+  IconButton* lock_button_ = nullptr;
+  IconButton* settings_button_ = nullptr;
+  IconButton* power_button_ = nullptr;
   CollapseButton* collapse_button_ = nullptr;
-
-  std::unique_ptr<QuickSettingsButtonDelegate> user_avatar_button_delegate_;
-  std::unique_ptr<QuickSettingsButtonDelegate> sign_out_button_delegate_;
-  std::unique_ptr<QuickSettingsButtonDelegate> lock_button_delegate_;
-  std::unique_ptr<QuickSettingsButtonDelegate> settings_button_delegate_;
-  std::unique_ptr<QuickSettingsButtonDelegate> power_button_delegate_;
 
   PrefChangeRegistrar local_state_pref_change_registrar_;
 };

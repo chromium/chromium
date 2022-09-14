@@ -5,6 +5,7 @@
 #include "ash/system/unified/top_shortcuts_view.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/system/unified/collapse_button.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -93,6 +94,14 @@ TEST_F(TopShortcutsViewTest, ButtonNames) {
   CreateUserSessions(1);
   SetUpView();
 
+  //`QsButtonCatalogName` should be in synced with the buttton `VIEW_ID_QS*`,
+  // which is verified in the `OnChildViewAded` method in each QS parent view.
+  //
+  // The number of view id should be the number of catalog name -1, since
+  // `QsButtonCatalogName` has an extra `kUnknown` type.
+  EXPECT_EQ(VIEW_ID_QS_MAX - VIEW_ID_QS_MIN,
+            static_cast<int>(QsButtonCatalogName::kMaxValue) - 1);
+
   // No metrics logged before clicking on any buttons.
   auto histogram_tester = std::make_unique<base::HistogramTester>();
   histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.Button.Activated",
@@ -115,9 +124,10 @@ TEST_F(TopShortcutsViewTest, ButtonNames) {
   EXPECT_EQ(VIEW_ID_QS_POWER_BUTTON, GetPowerButton()->GetID());
 
   EXPECT_TRUE(GetCollapseButton()->GetVisible());
+  EXPECT_EQ(VIEW_ID_QS_COLLAPSE_BUTTON, GetCollapseButton()->GetID());
 
-  // Pick one button to test the UMA tracking. The user metrics tracking is
-  // added in the base class, so testing on one button should be enough.
+  // Pick one button which can process the controller's handle action to test
+  // the UMA tracking.
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(
       GetLockButton()->GetBoundsInScreen().CenterPoint());
