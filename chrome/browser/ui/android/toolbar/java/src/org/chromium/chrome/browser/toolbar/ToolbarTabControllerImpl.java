@@ -75,8 +75,8 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
             activityTabSupplier.addObserver(mOnActivityTabCallback);
             bottomControlsCoordinatorSupplier.addObserver(
                     mBottomControlsCoordinatorAvailableCallback);
+            onBackPressedChanged();
         }
-        onBackPressedChanged();
     }
 
     @Override
@@ -207,24 +207,32 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
             public void webContentsWillSwap(Tab tab) {
                 if (tab.getWebContents() != null) {
                     tab.getWebContents().removeObserver(webContentsObserver);
-                    onBackPressedChanged();
                 }
+                onBackPressedChanged();
             }
 
             @Override
             public void onWebContentsSwapped(Tab tab, boolean didStartLoad, boolean didFinishLoad) {
                 if (tab.getWebContents() != null) {
                     tab.getWebContents().addObserver(webContentsObserver);
-                    onBackPressedChanged();
                 }
+                onBackPressedChanged();
             }
 
             @Override
             public void onDestroyed(Tab tab) {
                 if (tab.getWebContents() != null) {
                     tab.getWebContents().removeObserver(webContentsObserver);
-                    onBackPressedChanged();
                 }
+                onBackPressedChanged();
+            }
+
+            @Override
+            public void onContentChanged(Tab tab) {
+                if (tab.getWebContents() != null) {
+                    tab.getWebContents().addObserver(webContentsObserver);
+                }
+                onBackPressedChanged();
             }
         };
 

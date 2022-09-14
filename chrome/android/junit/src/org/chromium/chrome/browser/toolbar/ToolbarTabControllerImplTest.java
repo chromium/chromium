@@ -15,6 +15,7 @@ import static org.mockito.Mockito.verify;
 
 import android.text.TextUtils;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,6 +32,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
@@ -38,6 +40,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -99,9 +103,7 @@ public class ToolbarTabControllerImplTest {
         doReturn(mProfile).when(mMockProfileNatives).fromWebContents(any());
         doReturn(mNativePage).when(mTab).getNativePage();
         TrackerFactory.setTrackerForTests(mTracker);
-        mToolbarTabController = new ToolbarTabControllerImpl(mTabSupplier,
-                mOverrideHomePageSupplier, mTrackerSupplier, mBottomControlsCoordinatorSupplier,
-                ToolbarManager::homepageUrl, mRunnable, new ObservableSupplierImpl<>());
+        initToolbarTabController();
     }
 
     @Test
@@ -127,10 +129,28 @@ public class ToolbarTabControllerImplTest {
     }
 
     @Test
+    @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
     public void back_handledByBottomControls() {
         doReturn(mBottomControlsCoordinator).when(mBottomControlsCoordinatorSupplier).get();
         doReturn(true).when(mBottomControlsCoordinator).onBackPressed();
-        mToolbarTabController.back();
+        Assert.assertTrue(mToolbarTabController.back());
+
+        verify(mBottomControlsCoordinator).onBackPressed();
+        verify(mRunnable, never()).run();
+        verify(mTab, never()).goBack();
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    public void back_handledByBottomControls_backGestureRefactor() {
+        doReturn(mBottomControlsCoordinator).when(mBottomControlsCoordinatorSupplier).get();
+        doReturn(true).when(mBottomControlsCoordinator).onBackPressed();
+        ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
+        supplier.set(true);
+        doReturn(supplier).when(mBottomControlsCoordinator).getHandleBackPressChangedSupplier();
+        initToolbarTabController();
+        Assert.assertTrue(mToolbarTabController.getHandleBackPressChangedSupplier().get());
+        mToolbarTabController.handleBackPress();
 
         verify(mBottomControlsCoordinator).onBackPressed();
         verify(mRunnable, never()).run();
@@ -191,5 +211,11 @@ public class ToolbarTabControllerImplTest {
         }
         verify(mTab).loadUrl(argThat(new LoadUrlParamsMatcher(
                 new LoadUrlParams(homePageUrl, PageTransition.HOME_PAGE))));
+    }
+
+    private void initToolbarTabController() {
+        mToolbarTabController = new ToolbarTabControllerImpl(mTabSupplier,
+                mOverrideHomePageSupplier, mTrackerSupplier, mBottomControlsCoordinatorSupplier,
+                ToolbarManager::homepageUrl, mRunnable, new ObservableSupplierImpl<>());
     }
 }
