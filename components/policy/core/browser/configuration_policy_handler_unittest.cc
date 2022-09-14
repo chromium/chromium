@@ -17,7 +17,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema.h"
 #include "components/prefs/pref_value_map.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace policy {
 
@@ -102,8 +102,9 @@ class TestSchemaValidatingPolicyHandler : public SchemaValidatingPolicyHandler {
   void ApplyPolicySettings(const policy::PolicyMap&, PrefValueMap*) override {}
 
   bool CheckAndGetValueForTest(const PolicyMap& policies,
+                               PolicyErrorMap* errors,
                                std::unique_ptr<base::Value>* value) {
-    return SchemaValidatingPolicyHandler::CheckAndGetValue(policies, nullptr,
+    return SchemaValidatingPolicyHandler::CheckAndGetValue(policies, errors,
                                                            value);
   }
 };
@@ -713,7 +714,8 @@ TEST(SchemaValidatingPolicyHandlerTest, CheckAndGetValueInvalid) {
 
   TestSchemaValidatingPolicyHandler handler(schema, SCHEMA_ALLOW_UNKNOWN);
   std::unique_ptr<base::Value> output_value;
-  EXPECT_FALSE(handler.CheckAndGetValueForTest(policy_map, &output_value));
+  EXPECT_FALSE(handler.CheckAndGetValueForTest(policy_map, /*errors=*/nullptr,
+                                               &output_value));
 }
 
 TEST(SchemaValidatingPolicyHandlerTest, CheckAndGetValueUnknown) {
@@ -753,10 +755,26 @@ TEST(SchemaValidatingPolicyHandlerTest, CheckAndGetValueUnknown) {
                       POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD);
 
   TestSchemaValidatingPolicyHandler handler(schema, SCHEMA_ALLOW_UNKNOWN);
+
+  // Test that CheckPolicySettings() is true but outputs warnings about unknown
+  // properties.
+  PolicyErrorMap error_map;
+  ASSERT_TRUE(handler.CheckPolicySettings(policy_map, &error_map));
+  EXPECT_THAT(error_map.GetErrors(kPolicyName),
+              testing::ElementsAre(testing::FieldsAre(
+                  testing::_, PolicyMap::MessageType::kWarning)));
+  error_map.Clear();
+
   std::unique_ptr<base::Value> output_value;
-  ASSERT_TRUE(handler.CheckAndGetValueForTest(policy_map, &output_value));
+  ASSERT_TRUE(
+      handler.CheckAndGetValueForTest(policy_map, &error_map, &output_value));
   ASSERT_TRUE(output_value);
   ASSERT_TRUE(output_value->is_dict());
+
+  // Test that CheckAndGetValue outputs warnings about unknown properties.
+  EXPECT_THAT(error_map.GetErrors(kPolicyName),
+              testing::ElementsAre(testing::FieldsAre(
+                  testing::_, PolicyMap::MessageType::kWarning)));
 
   // Test that CheckAndGetValue() actually dropped unknown properties.
   absl::optional<int> one_two_three = output_value->FindIntKey("OneToThree");

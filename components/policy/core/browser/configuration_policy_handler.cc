@@ -398,11 +398,17 @@ bool SchemaValidatingPolicyHandler::CheckPolicySettings(
 
   PolicyErrorPath error_path;
   std::string error;
+  std::vector<PolicyMap::PolicyMapType::value_type> errors_with_path;
   bool result = schema_.Validate(*value, strategy_, &error_path, &error);
 
   if (errors && !error.empty()) {
+    // Set error_level based on whether strategy_ tolerates this error without
+    // failure.
     errors->AddError(policy_name(), IDS_POLICY_SCHEMA_VALIDATION_ERROR, error,
-                     error_path);
+                     error_path,
+                     /*error_level=*/
+                     result ? PolicyMap::MessageType::kWarning
+                            : PolicyMap::MessageType::kError);
   }
 
   return result;
@@ -424,8 +430,13 @@ bool SchemaValidatingPolicyHandler::CheckAndGetValue(
       schema_.Normalize(output->get(), strategy_, &error_path, &error, nullptr);
 
   if (errors && !error.empty()) {
+    // Set error_level based on whether strategy_ tolerates this error without
+    // failure.
     errors->AddError(policy_name(), IDS_POLICY_SCHEMA_VALIDATION_ERROR, error,
-                     error_path);
+                     error_path,
+                     /*error_level=*/
+                     result ? PolicyMap::MessageType::kWarning
+                            : PolicyMap::MessageType::kError);
   }
 
   return result;
