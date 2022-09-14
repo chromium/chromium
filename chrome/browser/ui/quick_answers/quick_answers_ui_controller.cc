@@ -51,7 +51,7 @@ constexpr char kQuickAnswersSettingsUrl[] =
 // Open the specified URL in a new tab in the primary browser.
 void OpenUrl(const GURL& url) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
