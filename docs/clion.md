@@ -75,7 +75,7 @@ that will be used to create the build targets.
 1. Fill the form:
     1. Name: `autoninja - Default`
     1. Program: `<absolute path to depot_tools/autoninja>`
-    1. Arguments: `autoninja -C out/Default chrome`
+    1. Arguments: `-C out/Default chrome`
     1. Working Directory: `<absolute path to chromium/src>`
 1. Click `Ok` to close the dialog.
 
