@@ -597,11 +597,15 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRule(CSSParserTokenStream& stream,
   // @import rules have a URI component that is not technically part of the
   // prelude.
   AtomicString import_prelude_uri;
-  if (allowed_rules <= kAllowImportRules && id == kCSSAtRuleImport)
+  if (allowed_rules <= kAllowImportRules &&
+      id == CSSAtRuleID::kCSSAtRuleImport) {
     import_prelude_uri = ConsumeStringOrURI(stream);
+  }
 
-  if (id != kCSSAtRuleInvalid && context_->IsUseCounterRecordingEnabled())
+  if (id != CSSAtRuleID::kCSSAtRuleInvalid &&
+      context_->IsUseCounterRecordingEnabled()) {
     CountAtRule(context_, id);
+  }
 
   if (allowed_rules == kKeyframeRules || allowed_rules == kFontFeatureRules ||
       allowed_rules == kNoRules) {
@@ -612,15 +616,17 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRule(CSSParserTokenStream& stream,
   }
 
   stream.EnsureLookAhead();
-  if (allowed_rules == kAllowCharsetRules && id == kCSSAtRuleCharset) {
+  if (allowed_rules == kAllowCharsetRules &&
+      id == CSSAtRuleID::kCSSAtRuleCharset) {
     return ConsumeCharsetRule(stream);
-  } else if (allowed_rules <= kAllowImportRules && id == kCSSAtRuleImport) {
+  } else if (allowed_rules <= kAllowImportRules &&
+             id == CSSAtRuleID::kCSSAtRuleImport) {
     return ConsumeImportRule(std::move(import_prelude_uri), stream);
   } else if (allowed_rules <= kAllowNamespaceRules &&
-             id == kCSSAtRuleNamespace) {
+             id == CSSAtRuleID::kCSSAtRuleNamespace) {
     return ConsumeNamespaceRule(stream);
   } else if (allowed_rules == kTryRules) {
-    if (id == kCSSAtRuleTry)
+    if (id == CSSAtRuleID::kCSSAtRuleTry)
       return ConsumeTryRule(stream);
     ConsumeErroneousAtRule(stream);
     return nullptr;
@@ -628,35 +634,40 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRule(CSSParserTokenStream& stream,
     DCHECK_LE(allowed_rules, kRegularRules);
 
     switch (id) {
-      case kCSSAtRuleContainer:
+      case CSSAtRuleID::kCSSAtRuleContainer:
         return ConsumeContainerRule<UseArena>(stream);
-      case kCSSAtRuleMedia:
+      case CSSAtRuleID::kCSSAtRuleMedia:
         return ConsumeMediaRule<UseArena>(stream);
-      case kCSSAtRuleSupports:
+      case CSSAtRuleID::kCSSAtRuleSupports:
         return ConsumeSupportsRule<UseArena>(stream);
-      case kCSSAtRuleViewport:
+      case CSSAtRuleID::kCSSAtRuleViewport:
         return ConsumeViewportRule(stream);
-      case kCSSAtRuleFontFace:
+      case CSSAtRuleID::kCSSAtRuleFontFace:
         return ConsumeFontFaceRule(stream);
-      case kCSSAtRuleFontPaletteValues:
+      case CSSAtRuleID::kCSSAtRuleFontPaletteValues:
         return ConsumeFontPaletteValuesRule(stream);
-      case kCSSAtRuleWebkitKeyframes:
+      case CSSAtRuleID::kCSSAtRuleWebkitKeyframes:
         return ConsumeKeyframesRule<UseArena>(true, stream);
-      case kCSSAtRuleKeyframes:
+      case CSSAtRuleID::kCSSAtRuleKeyframes:
         return ConsumeKeyframesRule<UseArena>(false, stream);
-      case kCSSAtRuleLayer:
+      case CSSAtRuleID::kCSSAtRuleLayer:
         return ConsumeLayerRule<UseArena>(stream);
-      case kCSSAtRulePage:
+      case CSSAtRuleID::kCSSAtRulePage:
         return ConsumePageRule(stream);
-      case kCSSAtRuleProperty:
+      case CSSAtRuleID::kCSSAtRuleProperty:
         return ConsumePropertyRule(stream);
-      case kCSSAtRuleScope:
+      case CSSAtRuleID::kCSSAtRuleScope:
         return ConsumeScopeRule<UseArena>(stream);
-      case kCSSAtRuleCounterStyle:
+      case CSSAtRuleID::kCSSAtRuleCounterStyle:
         return ConsumeCounterStyleRule(stream);
-      case kCSSAtRulePositionFallback:
+      case CSSAtRuleID::kCSSAtRulePositionFallback:
         return ConsumePositionFallbackRule(stream);
-      default:
+      case CSSAtRuleID::kCSSAtRuleInvalid:
+      case CSSAtRuleID::kCSSAtRuleCharset:
+      case CSSAtRuleID::kCSSAtRuleImport:
+      case CSSAtRuleID::kCSSAtRuleNamespace:
+      case CSSAtRuleID::kCSSAtRuleScrollTimeline:
+      case CSSAtRuleID::kCSSAtRuleTry:
         ConsumeErroneousAtRule(stream);
         return nullptr;  // Parse error, unrecognised or not-allowed at-rule
     }
