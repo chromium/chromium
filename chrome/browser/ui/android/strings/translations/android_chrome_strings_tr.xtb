@@ -1251,7 +1251,7 @@ Güven jetonları, web'deki gizliliği artırır ve kim olduğunuzu bulmak için
 <translation id="7772032839648071052">Parolayı onayla</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> penceresini kapat</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ve <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ödeme yöntemi daha}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ve <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ödeme yöntemi daha}}</translation>
-<translation id="7778840695157240389">Yeni hikaye için daha sonra tekrar kontrol edin</translation>
+<translation id="7778840695157240389">Yeni haberler için sonra yine gelin</translation>
 <translation id="7780645209293383778">Sizi Google uygulamalarında korumak için oturumunuz açıkken bu verileri geçici olarak Google Hesabınıza bağlar</translation>
 <translation id="7786595606756654269">Google Asistan hem web'de arama yapmak hem de açtığınız sitelerle etkileşim kurmak için daha iyi ses deneyimi sağlar. Google Asistan, Asistan'ı kullandığınız sitelerin URL'leri ile içeriklerini alır.</translation>
 <translation id="7791543448312431591">Ekle</translation>
@@ -1385,7 +1385,7 @@ Güven jetonları, web'deki gizliliği artırır ve kim olduğunuzu bulmak için
 <translation id="8430824733382774043">Yalnızca ekran görüntüsü paylaşılıyor</translation>
 <translation id="8438566539970814960">Aramaları ve göz atmayı daha iyi yap</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> - Dil hazır, <ph name="APP_NAME" /> uygulamasını yeniden başlatın.</translation>
-<translation id="8442258441309440798">Kullanılabilir hikaye yok</translation>
+<translation id="8442258441309440798">Şu anda yeni haber bulunmuyor</translation>
 <translation id="8443209985646068659">Chrome güncellenemiyor</translation>
 <translation id="8445448999790540984">Şifreler dışa aktarılamıyor</translation>
 <translation id="8446884382197647889">Daha Fazla Bilgi Edinin</translation>
