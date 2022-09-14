@@ -9,6 +9,7 @@
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/session/connection_holder.h"
 #include "ash/shell.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
@@ -41,9 +42,6 @@ class ArcGameModeCriteria : public GameModeController::GameModeCriteria {
     auto* profile = ProfileManager::GetPrimaryUserProfile();
     DCHECK(arc::IsArcAllowedForProfile(profile));
 
-    if (!base::FeatureList::IsEnabled(arc::kGameModeFeature))
-      return;
-
     connection_ = ArcAppListPrefs::Get(profile)->app_connection_holder();
     auto* app_instance = ARC_GET_INSTANCE_FOR_METHOD(connection_, GetTaskInfo);
     if (!app_instance) {
@@ -62,8 +60,7 @@ class ArcGameModeCriteria : public GameModeController::GameModeCriteria {
     bool is_known_game = g_arc_game_pkg_names->count(pkg_name);
     VLOG(2) << "ARC task package " << pkg_name << " is game? " << is_known_game;
     if (is_known_game) {
-      enabler_ =
-          std::make_unique<GameModeController::GameModeEnabler>(GameMode::ARC);
+      Enable();
     } else if (auto* app_instance =
                    ARC_GET_INSTANCE_FOR_METHOD(connection_, GetAppCategory);
                app_instance) {
@@ -79,14 +76,19 @@ class ArcGameModeCriteria : public GameModeController::GameModeCriteria {
   void OnReceiveAppCategory(arc::mojom::AppCategory category) {
     VLOG(2) << "ARC app category is: " << category;
     if (category == arc::mojom::AppCategory::kGame) {
-      enabler_ =
-          std::make_unique<GameModeController::GameModeEnabler>(GameMode::ARC);
+      Enable();
     }
   }
 
   GameMode mode() const override { return GameMode::ARC; }
 
  private:
+  void Enable() {
+    bool signal_resourced = base::FeatureList::IsEnabled(arc::kGameModeFeature);
+    enabler_ = std::make_unique<GameModeController::GameModeEnabler>(
+        GameMode::ARC, signal_resourced);
+  }
+
   arc::ConnectionHolder<arc::mojom::AppInstance, arc::mojom::AppHost>*
       connection_;
 
@@ -210,7 +212,8 @@ void GameModeController::WindowTracker::UpdateGameModeStatus(
   if (mode == GameMode::BOREALIS) {
     // Borealis has no further criteria than the window being fullscreen and
     // focused, already guaranteed by WindowTracker existing.
-    game_mode_criteria_ = std::make_unique<GameModeEnabler>(GameMode::BOREALIS);
+    game_mode_criteria_ = std::make_unique<GameModeEnabler>(
+        GameMode::BOREALIS, /*signal_resourced=*/true);
   } else if (mode == GameMode::ARC) {
     // We know GetWindowTaskId will not return absl::nullopt since ModeOfWindow
     // already verified it.
@@ -230,9 +233,13 @@ void GameModeController::WindowTracker::OnWindowDestroying(
 
 bool GameModeController::GameModeEnabler::should_record_failure;
 
-GameModeController::GameModeEnabler::GameModeEnabler(GameMode mode)
-    : mode_(mode) {
+GameModeController::GameModeEnabler::GameModeEnabler(GameMode mode,
+                                                     bool signal_resourced)
+    : mode_(mode), signal_resourced_(signal_resourced) {
   DCHECK(mode != GameMode::OFF);
+
+  if (!signal_resourced)
+    return;
 
   GameModeEnabler::should_record_failure = true;
   RecordBorealisGameModeResultHistogram(BorealisGameModeResult::kAttempted);
@@ -247,6 +254,14 @@ GameModeController::GameModeEnabler::GameModeEnabler(GameMode mode)
 }
 
 GameModeController::GameModeEnabler::~GameModeEnabler() {
+  auto time_in_mode = began_.Elapsed();
+
+  base::UmaHistogramLongTimes100(TimeInGameModeHistogramName(mode_),
+                                 time_in_mode);
+
+  if (!signal_resourced_)
+    return;
+
   timer_.Stop();
   VLOG(1) << "Turning off game mode type: " << static_cast<int>(mode_);
   if (ash::ResourcedClient::Get()) {

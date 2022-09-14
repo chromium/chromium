@@ -185,5 +185,27 @@ TEST_F(GameModeControllerForArcTest, IdentifyGameWithGetAppCategory) {
   EXPECT_EQ(1, fake_resourced_client_->get_enter_game_mode_count());
 }
 
+TEST_F(GameModeControllerForArcTest, RecordLengthOfGameModeHistogram) {
+  arc_app_test_.app_instance()->set_app_category_of_pkg(
+      "org.an_awesome.game", arc::mojom::AppCategory::kGame);
+  arc_app_test_.app_instance()->SetTaskInfo(9882, "org.an_awesome.game",
+                                            "activity");
+
+  auto game_widget = CreateArcTaskWidget(9882);
+
+  histogram_tester_->ExpectBucketCount(
+      TimeInGameModeHistogramName(GameMode::ARC), 5000.0, 0);
+
+  game_widget->Show();
+  fake_resourced_client_->set_set_game_mode_response(
+      ash::ResourcedClient::GameMode::OFF);
+  game_widget->SetFullscreen(true);
+  task_environment()->FastForwardBy(base::Seconds(5));
+  game_widget->SetFullscreen(false);
+
+  histogram_tester_->ExpectBucketCount(
+      TimeInGameModeHistogramName(GameMode::ARC), 5000.0, 1);
+}
+
 }  // namespace
 }  // namespace game_mode

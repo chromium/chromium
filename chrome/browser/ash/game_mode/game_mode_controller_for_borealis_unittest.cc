@@ -173,6 +173,10 @@ TEST_F(GameModeControllerForBorealisTest, GameModeMetricsRecorded) {
   histogram_tester_->ExpectBucketCount(kBorealisGameModeResultHistogram,
                                        BorealisGameModeResult::kFailed, 1);
 
+  // Having left game mode, the time spent in game mode should be recorded.
+  histogram_tester_->ExpectTimeBucketCount(
+      TimeInGameModeHistogramName(GameMode::BOREALIS), base::Seconds(122), 1);
+
   // Enter game mode again, should record attempted again.
   test_widget->SetFullscreen(true);
   EXPECT_TRUE(ash::WindowState::Get(window)->IsFullscreen());

@@ -8,6 +8,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_observer.h"
 #include "base/scoped_observation.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "ui/aura/client/focus_change_observer.h"
@@ -16,6 +17,13 @@
 namespace game_mode {
 
 using GameMode = ash::ResourcedClient::GameMode;
+
+inline const char* TimeInGameModeHistogramName(GameMode mode) {
+  if (mode == GameMode::BOREALIS)
+    return "GameMode.TimeInGameMode.Borealis";
+  DCHECK(mode == GameMode::ARC);
+  return "GameMode.TimeInGameMode.Arc";
+}
 
 void AddArcPkgNameForTesting(const std::string& pkg_name);
 void ClearArcPkgNamesForTesting();
@@ -82,7 +90,12 @@ class GameModeController : public aura::client::FocusChangeObserver {
   // of GameModeCriteria which is always true.
   class GameModeEnabler : public GameModeCriteria {
    public:
-    explicit GameModeEnabler(GameMode mode);
+    // `signal_resourced` indicates resourced will be notified of the game mode
+    // state. Metrics on the amount of time spent in game mode are recorded
+    // by the GameModeEnabler regardless of resourced signaling, which allows
+    // A/B testing of the effect of optimizations on time spent playing the
+    // game.
+    GameModeEnabler(GameMode mode, bool signal_resourced);
     ~GameModeEnabler() override;
 
     GameMode mode() const override;
@@ -95,7 +108,10 @@ class GameModeController : public aura::client::FocusChangeObserver {
     // Used to determine if it's the first instance of game mode failing.
     static bool should_record_failure;
     base::RepeatingTimer timer_;
+    base::ElapsedTimer began_;
+
     const GameMode mode_;
+    const bool signal_resourced_;
   };
 
   static GameMode ModeOfWindow(aura::Window* window);
