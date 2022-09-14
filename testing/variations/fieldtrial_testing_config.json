@@ -6830,6 +6830,24 @@
             ]
         }
     ],
+    "OmniboxFuzzyUrlSuggestions": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxFuzzyUrlSuggestions"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxImplementationChangeIOS": [
         {
             "platforms": [
