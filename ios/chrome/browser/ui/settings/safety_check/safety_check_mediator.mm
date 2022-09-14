@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/settings_icon.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_consumer.h"
@@ -264,13 +265,21 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
         [[SettingsCheckItem alloc] initWithType:PasswordItemType];
     _passwordCheckItem.text =
         l10n_util::GetNSString(IDS_IOS_SETTINGS_SAFETY_CHECK_PASSWORDS_TITLE);
-    NSString* imageName =
-        base::FeatureList::IsEnabled(
-            password_manager::features::kIOSEnablePasswordManagerBrandingUpdate)
-            ? @"password_key"
-            : @"legacy_password_key";
-    UIImage* passwordCheckIcon = [[UIImage imageNamed:imageName]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+
+    UIImage* passwordCheckIcon = nil;
+    if (UseSymbols()) {
+      passwordCheckIcon = CustomSymbolTemplateWithPointSize(
+          kPasswordSymbol, kLeadingSymbolImagePointSize);
+    } else {
+      NSString* imageName = base::FeatureList::IsEnabled(
+                                password_manager::features::
+                                    kIOSEnablePasswordManagerBrandingUpdate)
+                                ? @"password_key"
+                                : @"legacy_password_key";
+      passwordCheckIcon = [[UIImage imageNamed:imageName]
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    }
+
     _passwordCheckItem.leadingIcon = passwordCheckIcon;
     _passwordCheckItem.leadingIconTintColor =
         [UIColor colorNamed:kGrey400Color];
@@ -295,8 +304,11 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
     _safeBrowsingCheckItem.text = l10n_util::GetNSString(
         IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_TITLE);
     UIImage* safeBrowsingCheckIcon =
-        [[UIImage imageNamed:@"settings_safe_browsing"]
-            imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        UseSymbols()
+            ? CustomSymbolWithPointSize(kPrivacySymbol,
+                                        kLeadingSymbolImagePointSize)
+            : [[UIImage imageNamed:@"settings_safe_browsing"]
+                  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     _safeBrowsingCheckItem.leadingIcon = safeBrowsingCheckIcon;
     _safeBrowsingCheckItem.leadingIconTintColor =
         [UIColor colorNamed:kGrey400Color];

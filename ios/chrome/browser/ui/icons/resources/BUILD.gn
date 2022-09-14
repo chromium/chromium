@@ -13,8 +13,15 @@ symbolset("arrow_clockwise") {
 
 symbolset("checkerboard_shield") {
   sources = [
-    "cherckerboard_shield.symbolset/Contents.json",
-    "cherckerboard_shield.symbolset/checkerboard.shield.cr.svg",
+    "checkerboard_shield.symbolset/Contents.json",
+    "checkerboard_shield.symbolset/checkerboard.shield.cr.svg",
+  ]
+}
+
+symbolset("checkermark_shield") {
+  sources = [
+    "checkermark_shield.symbolset/Contents.json",
+    "checkermark_shield.symbolset/checkermark.shield.cr.svg",
   ]
 }
 

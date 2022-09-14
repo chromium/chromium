@@ -13,15 +13,15 @@
 const CGFloat kSettingsRootSymbolImagePointSize = 18;
 
 // Custom symbol names.
+NSString* const kPrivacySymbol = @"checkerboard_shield";
 NSString* const kSyncDisabledSymbol = @"arrow_triangle_slash_circlepath";
-NSString* const kSafetyCheckSymbol = @"checkerboard_shield";
+NSString* const kSafetyCheckSymbol = @"checkermark_shield";
 
 // Default symbol names.
 NSString* const kSyncErrorSymbol =
     @"exclamationmark.arrow.triangle.2.circlepath";
 NSString* const kSyncEnabledSymbol = @"arrow.triangle.2.circlepath";
 NSString* const kDefaultBrowserSymbol = @"app.badge.checkmark";
-NSString* const kPrivacySecuritySymbol = @"checkerboard.shield";
 NSString* const kDiscoverSymbol = @"flame";
 
 UIImage* DefaultSettingsRootSymbol(NSString* symbol_name) {

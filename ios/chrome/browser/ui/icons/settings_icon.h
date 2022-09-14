@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 // Custom symbol names.
+extern NSString* const kPrivacySymbol;
 extern NSString* const kSyncDisabledSymbol;
 extern NSString* const kSafetyCheckSymbol;
 
@@ -15,7 +16,6 @@ extern NSString* const kSafetyCheckSymbol;
 extern NSString* const kSyncErrorSymbol;
 extern NSString* const kSyncEnabledSymbol;
 extern NSString* const kDefaultBrowserSymbol;
-extern NSString* const kPrivacySecuritySymbol;
 extern NSString* const kDiscoverSymbol;
 
 // Returns a SF symbol named `symbol_name` configured for the Settings root
