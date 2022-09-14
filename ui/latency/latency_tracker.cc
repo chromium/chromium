@@ -362,20 +362,6 @@ void LatencyTracker::ComputeEndToEndLatencyHistograms(
           "Event.Latency.EndToEnd.Mouse", original_timestamp,
           gpu_swap_begin_timestamp);
     } else if (latency.source_event_type() == SourceEventType::TOUCHPAD) {
-      base::TimeTicks timestamp;
-      if (latency.FindLatency(ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT,
-                              &timestamp)) {
-        UMA_HISTOGRAM_INPUT_LATENCY_CUSTOM_MICROSECONDS(
-            "Event.Latency.EventToRender.TouchpadPinch", original_timestamp,
-            timestamp);
-      }
-      {
-        // TODO(nburris): Deprecate Event.Latency.EndToEnd.TouchpadPinch in
-        // favor of TouchpadPinch2 once we have stable data for that one.
-        UMA_HISTOGRAM_INPUT_LATENCY_CUSTOM_MICROSECONDS(
-            "Event.Latency.EndToEnd.TouchpadPinch", original_timestamp,
-            gpu_swap_begin_timestamp);
-      }
       UMA_HISTOGRAM_INPUT_LATENCY_CUSTOM_1_SECOND_MAX_MICROSECONDS(
           "Event.Latency.EndToEnd.TouchpadPinch2", original_timestamp,
           gpu_swap_begin_timestamp);

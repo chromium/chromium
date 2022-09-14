@@ -266,16 +266,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.Latency.EndToEnd.TouchpadPinch" units="microseconds"
-    expires_after="2020-10-11">
-  <owner>nzolghadr@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Time between the OS receiving a touchpad pinch event and the resulting GPU
-    frame swap. If no swap was induced by the event, no recording is made.
-  </summary>
-</histogram>
-
 <histogram name="Event.Latency.EndToEnd.TouchpadPinch2" units="microseconds"
     expires_after="2023-02-12">
   <owner>nzolghadr@chromium.org</owner>
@@ -283,16 +273,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time between the OS receiving a touchpad pinch event and the resulting GPU
     frame swap. If no swap was induced by the event, no recording is made.
-  </summary>
-</histogram>
-
-<histogram name="Event.Latency.EventToRender.TouchpadPinch"
-    units="microseconds" expires_after="M81">
-  <owner>nzolghadr@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Time between the OS receiving a touchpad pinch event and RenderWidgetHost
-    sending event to render.
   </summary>
 </histogram>
 

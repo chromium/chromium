@@ -1000,8 +1000,6 @@ TEST_F(RenderWidgetHostLatencyTrackerTest, TouchpadPinchEvents) {
                                  base::TimeTicks() + base::Milliseconds(5));
   viz_tracker()->OnGpuSwapBuffersCompleted({latency});
 
-  EXPECT_TRUE(HistogramSizeEq("Event.Latency.EventToRender.TouchpadPinch", 1));
-  EXPECT_TRUE(HistogramSizeEq("Event.Latency.EndToEnd.TouchpadPinch", 1));
   EXPECT_TRUE(HistogramSizeEq("Event.Latency.EndToEnd.TouchpadPinch2", 1));
 }
 
