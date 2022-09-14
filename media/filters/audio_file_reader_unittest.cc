@@ -205,7 +205,7 @@ TEST_F(AudioFileReaderTest, CorruptMP3) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 TEST_F(AudioFileReaderTest, AAC) {
   RunTest("sfx.m4a", "0.79,2.31,4.15,4.92,4.04,1.44,", 1, 44100,
-          base::Microseconds(371660), 16391, 12701);
+          base::Microseconds(347665), 15333, 12701);
 }
 
 TEST_F(AudioFileReaderTest, AAC_SinglePacket) {

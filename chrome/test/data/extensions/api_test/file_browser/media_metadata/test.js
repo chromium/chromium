@@ -178,7 +178,7 @@ function verifyExpectedVideoMetadata(metadata) {
   chrome.test.assertEq(1920, metadata.width);
   chrome.test.assertEq(1080, metadata.height);
 
-  chrome.test.assertEq(0.196, metadata.duration);
+  chrome.test.assertEq(0.196056, metadata.duration);
   chrome.test.assertEq(90, metadata.rotation);
   chrome.test.assertEq('eng', metadata.language);
 
