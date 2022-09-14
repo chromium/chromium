@@ -2571,8 +2571,8 @@ TEST_F(TraceEventTestFixture, MAYBE_TraceFilteringMode) {
   Clear();
 }
 
-// Flaky on iOS device, see crbug.com/908002
-#if BUILDFLAG(IS_IOS) && !(TARGET_OS_SIMULATOR)
+// Flaky on iOS device, see crbug.com/908002, crbug.com/1363545
+#if BUILDFLAG(IS_IOS)
 #define MAYBE_EventFiltering DISABLED_EventFiltering
 #else
 #define MAYBE_EventFiltering EventFiltering
