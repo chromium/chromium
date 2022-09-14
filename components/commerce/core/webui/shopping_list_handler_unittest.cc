@@ -60,6 +60,13 @@ TEST_F(ShoppingListHandlerTest, ConvertToMojoTypes) {
       bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
       true, 1230000, "usd");
 
+  const std::string image_url = "https://example.com/image.png";
+  std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+      power_bookmarks::GetNodePowerBookmarkMeta(bookmark_model_.get(), product);
+  meta->mutable_lead_image()->set_url(image_url);
+  power_bookmarks::SetNodePowerBookmarkMeta(bookmark_model_.get(), product,
+                                            std::move(meta));
+
   std::vector<const bookmarks::BookmarkNode*> bookmark_list;
   bookmark_list.push_back(product);
 
@@ -71,6 +78,7 @@ TEST_F(ShoppingListHandlerTest, ConvertToMojoTypes) {
   EXPECT_EQ(mojo_list[0]->info->current_price, "$1.23");
   EXPECT_EQ(mojo_list[0]->info->domain, "example.com");
   EXPECT_EQ(mojo_list[0]->info->title, "product 1");
+  EXPECT_EQ(mojo_list[0]->info->image_url.spec(), image_url);
 }
 
 TEST_F(ShoppingListHandlerTest, TestTrackProdcutSuccess) {

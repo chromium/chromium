@@ -104,9 +104,10 @@ std::vector<BookmarkProductInfoPtr> ShoppingListHandler::BookmarkListToMojoList(
     auto bookmark_info = BookmarkProductInfo::New();
     bookmark_info->bookmark_id = node->id();
 
+    std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+        power_bookmarks::GetNodePowerBookmarkMeta(&model, node);
     const power_bookmarks::ShoppingSpecifics specifics =
-        power_bookmarks::GetNodePowerBookmarkMeta(&model, node)
-            ->shopping_specifics();
+        meta->shopping_specifics();
 
     bookmark_info->info = shopping_list::mojom::ProductInfo::New();
     bookmark_info->info->title = specifics.title();
@@ -115,7 +116,7 @@ std::vector<BookmarkProductInfoPtr> ShoppingListHandler::BookmarkListToMojoList(
             GURL(node->url())));
 
     bookmark_info->info->product_url = node->url();
-    bookmark_info->info->image_url = GURL(specifics.image_url());
+    bookmark_info->info->image_url = GURL(meta->lead_image().url());
 
     const power_bookmarks::ProductPrice price = specifics.current_price();
     std::string current_code = price.currency_code();
