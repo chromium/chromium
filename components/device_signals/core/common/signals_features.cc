@@ -30,10 +30,8 @@ const base::Feature kDeviceSignalsPromoAfterSigninIntercept{
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 bool IsNewFunctionEnabled(NewEvFunction new_ev_function) {
-  if (!base::FeatureList::IsEnabled(kNewEvSignalsEnabled)) {
-    return false;
-  }
-
+  // AntiVirus and Hotfix are considered "Launched". So only rely on the value
+  // of the kill-switch to control the feature's behavior.
   bool disable_function = false;
   switch (new_ev_function) {
     case NewEvFunction::kFileSystemInfo:
@@ -43,12 +41,15 @@ bool IsNewFunctionEnabled(NewEvFunction new_ev_function) {
       disable_function = kDisableSettings.Get();
       break;
     case NewEvFunction::kAntiVirus:
-      disable_function = kDisableAntiVirus.Get();
-      break;
+      return !kDisableAntiVirus.Get();
     case NewEvFunction::kHotfix:
-      disable_function = kDisableHotfix.Get();
-      break;
+      return !kDisableHotfix.Get();
   }
+
+  if (!base::FeatureList::IsEnabled(kNewEvSignalsEnabled)) {
+    return false;
+  }
+
   return !disable_function;
 }
 
