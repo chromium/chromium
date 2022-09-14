@@ -77,7 +77,8 @@ class AccountSelectFillData {
   // Adds form structure from |form_data| to internal lists of known forms and
   // overrides known credentials with credentials from |form_data|. So only the
   // credentials from the latest |form_data| will be shown to the user.
-  void Add(const autofill::PasswordFormFillData& form_data);
+  void Add(const autofill::PasswordFormFillData& form_data,
+           bool is_cross_origin_iframe);
   void Reset();
   bool Empty() const;
 

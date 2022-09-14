@@ -192,7 +192,7 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
     PasswordFormHelper* formHelper =
         [[PasswordFormHelper alloc] initWithWebState:webState];
     PasswordSuggestionHelper* suggestionHelper =
-        [[PasswordSuggestionHelper alloc] init];
+        [[PasswordSuggestionHelper alloc] initWithWebState:_webState];
     PasswordControllerDriverHelper* driverHelper =
         [[PasswordControllerDriverHelper alloc] initWithWebState:_webState];
     _sharedPasswordController = [[SharedPasswordController alloc]

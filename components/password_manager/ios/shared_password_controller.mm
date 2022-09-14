@@ -71,6 +71,7 @@ using l10n_util::GetNSStringF;
 using password_manager::AccountSelectFillData;
 using password_manager::FillData;
 using password_manager::GetPageURLAndCheckTrustLevel;
+using password_manager::IsCrossOriginIframe;
 using password_manager::JsonStringToFormData;
 using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordGenerationFrameHelper;
@@ -278,7 +279,8 @@ BOOL canProcessCrossOriginIframes() {
   [self.formHelper setUpForUniqueIDsWithInitialState:nextAvailableRendererID
                                              inFrame:web_frame];
 
-  if ([self isCrossOriginIframe:web_frame] && !canProcessCrossOriginIframes()) {
+  if (IsCrossOriginIframe(_webState, web_frame) &&
+      !canProcessCrossOriginIframes()) {
     return;
   }
 
@@ -300,7 +302,8 @@ BOOL canProcessCrossOriginIframes() {
     return;
   }
 
-  if ([self isCrossOriginIframe:web_frame] && !canProcessCrossOriginIframes()) {
+  if (IsCrossOriginIframe(_webState, web_frame) &&
+      !canProcessCrossOriginIframes()) {
     return;
   }
 
@@ -351,14 +354,13 @@ BOOL canProcessCrossOriginIframes() {
   // previous clicked field in the previous password form. Getting the frame
   // from this previous frame id will result in a null frame pointer, hence
   // the check below.
-  if (!frame ||
-      ([self isCrossOriginIframe:frame] && !canProcessCrossOriginIframes())) {
+  if (!frame || (IsCrossOriginIframe(_webState, frame) &&
+                 !canProcessCrossOriginIframes())) {
     completion(NO);
     return;
   }
   [self.suggestionHelper
       checkIfSuggestionsAvailableForForm:formQuery
-                                webState:webState
                        completionHandler:^(BOOL suggestionsAvailable) {
                          // Always display "Show All..." for password fields.
                          completion([formQuery isOnPasswordField] ||
@@ -418,7 +420,8 @@ BOOL canProcessCrossOriginIframes() {
   web::WebFrame* frame =
       web::GetWebFrameWithId(_webState, SysNSStringToUTF8(formQuery.frameID));
 
-  if ([self isCrossOriginIframe:frame] && !canProcessCrossOriginIframes()) {
+  if (IsCrossOriginIframe(_webState, frame) &&
+      !canProcessCrossOriginIframes()) {
     completion({}, self);
     return;
   }
@@ -584,7 +587,8 @@ BOOL canProcessCrossOriginIframes() {
   if (frame->IsMainFrame()) {
     _passwordManager->OnPasswordFormSubmitted(driver, form);
   } else {
-    if ([self isCrossOriginIframe:frame] && !canProcessCrossOriginIframes()) {
+    if (IsCrossOriginIframe(_webState, frame) &&
+        !canProcessCrossOriginIframes()) {
       return;
     }
     // Show a save prompt immediately because for iframes it is very hard to
@@ -861,12 +865,6 @@ BOOL canProcessCrossOriginIframes() {
   return YES;
 }
 
-- (BOOL)isCrossOriginIframe:(web::WebFrame*)webFrame {
-  return !webFrame->IsMainFrame() &&
-         _webState->GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
-             webFrame->GetSecurityOrigin();
-}
-
 #pragma mark - FormActivityObserver
 
 - (void)webState:(web::WebState*)webState
@@ -877,7 +875,8 @@ BOOL canProcessCrossOriginIframes() {
   GURL pageURL;
   if (!GetPageURLAndCheckTrustLevel(webState, &pageURL) || !frame ||
       !frame->CanCallJavaScriptFunction() || params.input_missing ||
-      ([self isCrossOriginIframe:frame] && !canProcessCrossOriginIframes())) {
+      (IsCrossOriginIframe(_webState, frame) &&
+       !canProcessCrossOriginIframes())) {
     _lastFocusedFormIdentifier = FormRendererId();
     _lastFocusedFieldIdentifier = FieldRendererId();
     _lastFocusedFrame = nullptr;
@@ -922,7 +921,8 @@ BOOL canProcessCrossOriginIframes() {
     didRegisterFormRemoval:(const autofill::FormRemovalParams&)params
                    inFrame:(web::WebFrame*)frame {
   DCHECK_EQ(_webState, webState);
-  if ([self isCrossOriginIframe:frame] && !canProcessCrossOriginIframes()) {
+  if (IsCrossOriginIframe(_webState, frame) &&
+      !canProcessCrossOriginIframes()) {
     return;
   }
   if (!params.unique_form_id) {

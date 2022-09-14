@@ -49,6 +49,12 @@ class WebState;
 // Delegate to receive callbacks.
 @property(nonatomic, weak) id<PasswordSuggestionHelperDelegate> delegate;
 
+// Creates a instance with the given |webState|.
+- (instancetype)initWithWebState:(web::WebState*)webState
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
 // Retrieves suggestions as username and realm pairs
 // (defined in |password_manager::UsernameAndRealm|) and converts
 // them into objective C representations. In the returned |FormSuggestion|
@@ -67,7 +73,6 @@ class WebState;
 // of other parameters.
 - (void)checkIfSuggestionsAvailableForForm:
             (FormSuggestionProviderQuery*)formQuery
-                                  webState:(web::WebState*)webState
                          completionHandler:
                              (SuggestionsAvailableCompletion)completion;
 

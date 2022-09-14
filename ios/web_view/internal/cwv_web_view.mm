@@ -758,7 +758,7 @@ BOOL gChromeContextMenuEnabled = NO;
   PasswordFormHelper* formHelper =
       [[PasswordFormHelper alloc] initWithWebState:_webState.get()];
   PasswordSuggestionHelper* suggestionHelper =
-      [[PasswordSuggestionHelper alloc] init];
+      [[PasswordSuggestionHelper alloc] initWithWebState:_webState.get()];
   PasswordControllerDriverHelper* driverHelper =
       [[PasswordControllerDriverHelper alloc] initWithWebState:_webState.get()];
   SharedPasswordController* passwordController =

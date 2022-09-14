@@ -9,6 +9,7 @@
 #import "components/autofill/ios/browser/form_suggestion.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/ios/account_select_fill_data.h"
+#import "components/password_manager/ios/password_manager_ios_util.h"
 #include "ios/web/public/js_messaging/web_frame.h"
 #include "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/web_state.h"
@@ -17,21 +18,24 @@
 #error "This file requires ARC support."
 #endif
 
-using autofill::FormData;
-using autofill::PasswordFormFillData;
-using autofill::FormRendererId;
 using autofill::FieldRendererId;
+using autofill::FormData;
+using autofill::FormRendererId;
+using autofill::PasswordFormFillData;
 using base::SysNSStringToUTF16;
 using base::SysNSStringToUTF8;
 using base::SysUTF16ToNSString;
 using base::SysUTF8ToNSString;
 using password_manager::AccountSelectFillData;
 using password_manager::FillData;
+using password_manager::IsCrossOriginIframe;
 
 typedef void (^PasswordSuggestionsAvailableCompletion)(
     const password_manager::AccountSelectFillData* __nullable);
 
 @implementation PasswordSuggestionHelper {
+  base::WeakPtr<web::WebState> _webState;
+
   // The value of the map is a C++ interface to cache and retrieve password
   // suggestions. The interfaces are grouped by the frame of the form.
   base::flat_map<web::WebFrame*, std::unique_ptr<AccountSelectFillData>>
@@ -50,9 +54,12 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
   PasswordSuggestionsAvailableCompletion _suggestionsAvailableCompletion;
 }
 
-- (instancetype)init {
+#pragma mark - Initialization
+
+- (instancetype)initWithWebState:(web::WebState*)webState {
   self = [super init];
   if (self) {
+    _webState = webState->GetWeakPtr();
     _sentPasswordFormToPasswordManager = NO;
   }
   return self;
@@ -97,7 +104,6 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
 
 - (void)checkIfSuggestionsAvailableForForm:
             (FormSuggestionProviderQuery*)formQuery
-                                  webState:(web::WebState*)webState
                          completionHandler:
                              (SuggestionsAvailableCompletion)completion {
   // When password controller's -processWithPasswordFormFillData: is already
@@ -106,8 +112,9 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
   // Otherwise, -suggestionHelperShouldTriggerFormExtraction: will be called
   // and |completion| will not be called until
   // -processWithPasswordFormFillData: is called.
-  web::WebFrame* frame =
-      web::GetWebFrameWithId(webState, SysNSStringToUTF8(formQuery.frameID));
+  DCHECK(_webState.get());
+  web::WebFrame* frame = web::GetWebFrameWithId(
+      _webState.get(), SysNSStringToUTF8(formQuery.frameID));
   DCHECK(frame);
 
   BOOL isPasswordField = [formQuery isOnPasswordField];
@@ -159,7 +166,9 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
     fillData = it.first->second.get();
   }
 
-  fillData->Add(formData);
+  DCHECK(_webState.get());
+  fillData->Add(formData, IsCrossOriginIframe(_webState.get(), frame));
+
   _processedPasswordSuggestions = YES;
 
   if (_suggestionsAvailableCompletion) {

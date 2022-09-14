@@ -29,8 +29,8 @@ Credential::~Credential() = default;
 AccountSelectFillData::AccountSelectFillData() = default;
 AccountSelectFillData::~AccountSelectFillData() = default;
 
-void AccountSelectFillData::Add(
-    const autofill::PasswordFormFillData& form_data) {
+void AccountSelectFillData::Add(const autofill::PasswordFormFillData& form_data,
+                                bool is_cross_origin_iframe) {
   auto iter_ok = forms_.insert(
       std::make_pair(form_data.form_renderer_id.value(), FormInfo()));
   FormInfo& form_info = iter_ok.first->second;
@@ -43,15 +43,22 @@ void AccountSelectFillData::Add(
   // the latest known credentials, since credentials can be updated between
   // loading of different forms.
   credentials_.clear();
-  credentials_.push_back({form_data.username_field.value,
-                          form_data.password_field.value,
-                          form_data.preferred_realm});
+
+  credentials_.push_back(
+      {form_data.username_field.value, form_data.password_field.value,
+       is_cross_origin_iframe && form_data.preferred_realm.empty()
+           ? form_data.url.spec()
+           : form_data.preferred_realm});
 
   for (const auto& username_password_and_realm : form_data.additional_logins) {
     const std::u16string& username = username_password_and_realm.username;
     const std::u16string& password = username_password_and_realm.password;
     const std::string& realm = username_password_and_realm.realm;
-    credentials_.push_back({username, password, realm});
+    if (is_cross_origin_iframe && realm.empty()) {
+      credentials_.push_back({username, password, form_data.url.spec()});
+    } else {
+      credentials_.push_back({username, password, realm});
+    }
   }
 }
 

@@ -57,4 +57,10 @@ bool JsonStringToFormData(NSString* json_string,
       page_url.DeprecatedGetOriginAsURL(), form_data);
 }
 
+bool IsCrossOriginIframe(web::WebState* web_state, web::WebFrame* web_frame) {
+  return !web_frame->IsMainFrame() &&
+         !url::Origin::Create(web_state->GetLastCommittedURL())
+              .IsSameOriginWith(web_frame->GetSecurityOrigin());
+}
+
 }  // namespace password_manager
