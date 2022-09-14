@@ -27,6 +27,9 @@ fn main() {
     if target.contains("darwin") {
         println!("cargo:rustc-cfg=is_mac");
     }
+
+    // Check that we can get a `rustenv` variable from the build script.
+    let _ = env!("BUILD_SCRIPT_TEST_VARIABLE");
 }
 
 fn rustc_minor_version() -> Option<u32> {

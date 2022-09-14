@@ -291,6 +291,7 @@ template("cargo_crate") {
         if (defined(invoker.build_deps)) {
           deps = invoker.build_deps
         }
+        rustenv = _rustenv
         forward_variables_from(invoker,
                                [
                                  "features",

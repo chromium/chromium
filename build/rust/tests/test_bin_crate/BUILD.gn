@@ -10,4 +10,6 @@ cargo_crate("test_bin_crate") {
   sources = [ "crate/src/main.rs" ]
   build_sources = [ "crate/build.rs" ]
   build_root = "crate/build.rs"
+
+  rustenv = [ "BUILD_SCRIPT_TEST_VARIABLE=123" ]
 }
