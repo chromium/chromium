@@ -313,26 +313,6 @@
       </cr-menu>
     </menus>
 
-    <div id="cloud-import-details" class="hidden" hidden>
-      <div class="banner">
-        <div class="title">$i18n{CLOUD_IMPORT_TITLE}</div>
-        <div class="description">$i18n{CLOUD_IMPORT_DESCRIPTION}</div>
-      </div>
-      <div class="main">
-        <div class="status">
-          <iron-icon icon="files:cloud-queue"></iron-icon>
-          <div class="content"></div>
-        </div>
-        <div class="progress"><div class="value"></div></div>
-        <cr-button class="import action-button" tabindex="0">
-          <span>$i18n{CLOUD_IMPORT_COMMAND}</span>
-        </cr-button>
-        <cr-button class="cancel cancel-button" tabindex="0">
-          <span>$i18n{CLOUD_IMPORT_CANCEL_COMMAND}</span>
-        </cr-button>
-      </div>
-    </div>
-
     <div class="dialog-container">
       <div class="dialog-navigation-list">
         <div class="dialog-navigation-list-contents" role="navigation">
@@ -424,30 +404,6 @@
               <files-ripple></files-ripple>
               <div class="icon"></div>
             </cr-button>
-            <div id="cloud-import-combo-button"
-                 class="cloud-import-combo-button"
-                 hidden>
-              <div class="buttons">
-                <cr-button id="cloud-import-button"
-                        class="icon-button menu-button"
-                        tabindex="0"
-                        aria-label="$i18n{CLOUD_IMPORT_COMMAND}"
-                        has-tooltip>
-                  <iron-icon icon="files:cloud-queue"></iron-icon>
-                </cr-button>
-                <cr-button id="cloud-import-details-button"
-                        class="icon-button menu-button"
-                        tabindex="0"
-                        aria-label="$i18n{CLOUD_IMPORT_SHOW_DETAILS}"
-                        has-tooltip>
-                  <iron-icon icon="files:arrow-drop-down"></iron-icon>
-                </cr-button>
-              </div>
-              <div class="ripples">
-                <paper-ripple></paper-ripple>
-                <files-toggle-ripple></files-toggle-ripple>
-              </div>
-            </div>
             <cr-button id="view-button" class="icon-button menu-button" tabindex="0"
                     aria-label="$i18n{CHANGE_TO_THUMBNAILVIEW_BUTTON_LABEL}"
                     has-tooltip>
