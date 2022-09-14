@@ -103,9 +103,11 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
     mixer[kColorRealboxResultsBackground] = {kColorOmniboxResultsBackground};
     mixer[kColorRealboxResultsBackgroundHovered] = {
         kColorOmniboxResultsBackgroundHovered};
-    mixer[kColorRealboxResultsControlBackgroundHovered] =
-        ui::SetAlpha({gfx::kGoogleGrey200},
-                     /* 10% opacity */ 0.1 * 255);
+    if (dark_mode) {
+      mixer[kColorRealboxResultsControlBackgroundHovered] =
+          ui::SetAlpha({gfx::kGoogleGrey200},
+                       /* 10% opacity */ 0.1 * 255);
+    }
     mixer[kColorRealboxResultsDimSelected] = {
         kColorOmniboxResultsBackgroundSelected};
     mixer[kColorRealboxResultsForeground] = {ui::kColorTextfieldForeground};
