@@ -32,7 +32,10 @@ ts_library("trusted_ts") {
   path_mappings =
       [ "/*|" + rebase_path("$root_gen_dir/mojom-webui/*", target_gen_dir) ]
 
-  deps = [ "../../mojom:mojom_ts" ]
+  deps = [
+    "../../mojom:mojom_ts",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+  ]
 }
 
 generate_grd("trusted_grd") {
