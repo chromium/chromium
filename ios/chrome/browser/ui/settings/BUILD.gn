@@ -175,6 +175,7 @@ source_set("settings") {
     "//ios/chrome/browser/ui/settings/language:language",
     "//ios/chrome/browser/ui/settings/language:language_ui",
     "//ios/chrome/browser/ui/settings/password",
+    "//ios/chrome/browser/ui/settings/price_notifications",
     "//ios/chrome/browser/ui/settings/privacy",
     "//ios/chrome/browser/ui/settings/privacy:privacy_ui",
     "//ios/chrome/browser/ui/settings/safety_check",
