@@ -423,13 +423,16 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, DisplayNoneSetSrc) {
   EXPECT_TRUE(test_passed_listener.WaitUntilSatisfied());
 }
 
-// This test verifies that hiding the guest triggers WebContents::WasHidden().
+// This test verifies that hiding the guest triggers visibility change notifications.
 IN_PROC_BROWSER_TEST_F(WebViewAPITest, GuestVisibilityChanged) {
   LaunchApp("web_view/visibility_changed");
 
   base::RunLoop run_loop;
-  WebContentsHiddenObserver observer(GetGuestWebContents(),
-                                     run_loop.QuitClosure());
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  EXPECT_TRUE(guest_view);
+  RenderWidgetHostVisibilityObserver observer(
+      guest_view->GetGuestMainFrame()->GetRenderWidgetHost(),
+      run_loop.QuitClosure());
 
   // Handled in web_view/visibility_changed/main.js
   SendMessageToEmbedder("hide-guest");
