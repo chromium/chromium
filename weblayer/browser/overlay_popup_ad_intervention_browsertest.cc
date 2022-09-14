@@ -56,8 +56,16 @@ class OverlayPopupAdViolationBrowserTest : public SubresourceFilterBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(https://crbug.com/1199860): Fails on Linux MSan.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_NoOverlayPopupAd_AdInterventionNotTriggered \
+  DISABLED_NoOverlayPopupAd_AdInterventionNotTriggered
+#else
+#define MAYBE_NoOverlayPopupAd_AdInterventionNotTriggered \
+  NoOverlayPopupAd_AdInterventionNotTriggered
+#endif
 IN_PROC_BROWSER_TEST_F(OverlayPopupAdViolationBrowserTest,
-                       NoOverlayPopupAd_AdInterventionNotTriggered) {
+                       MAYBE_NoOverlayPopupAd_AdInterventionNotTriggered) {
   base::HistogramTester histogram_tester;
 
   GURL url = embedded_test_server()->GetURL(
