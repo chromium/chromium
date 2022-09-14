@@ -51,8 +51,8 @@ files_app_path =
 js_type_check("closure_compile") {
   deps = [
     ":main_js",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:load_time_data",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
   closure_flags =
       default_closure_args + mojom_js_args + [
@@ -142,7 +142,10 @@ optimize_webui("build") {
     "shared.rollup.js",
   ]
 
-  excludes = [ "chrome://resources/mojo/mojo/public/js/bindings.js" ]
+  excludes = [
+    "chrome://resources/js/load_time_data.m.js",
+    "chrome://resources/mojo/mojo/public/js/bindings.js",
+  ]
 
   external_paths = [ "chrome://file-manager|$files_app_path" ]
 
