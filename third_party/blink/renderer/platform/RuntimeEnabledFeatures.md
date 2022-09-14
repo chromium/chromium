@@ -76,10 +76,35 @@ If a feature is not stable and no longer under active development, remove `statu
 
 ### Relationship between a Chromium Feature and a Blink Feature
 
-In some cases, e.g. for finch experiment, you may need to define a Chromium feature for a blink feature. Their relationship is
-defined in [content/child/runtime_features.cc]. See the [initialize blink features] doc for more details.
+In some cases, e.g. for finch experiment, you may need to define a Chromium
+feature for a blink feature. If you need a Chromium feature just for finch
+experiment for a blink feature, see the next section. Otherwise,
+their relationship is defined in [content/child/runtime_features.cc]. See the
+[initialize blink features] doc for more details.
 
 **Note:** If a feature is implemented at both Chromium side and blink side, as the blink feature doesn't fully work by itself, we normally don't set the blink feature's status so that the Chromium feature can fully control the blink feature ([example][controlled by chromium feature]).
+
+If you need to update or check a blink feature status from outside of blink,
+you can generate methods of `WebRuntimeFeatures` by adding `public: true,` to
+the feature entry in `runtime_enabled_features.json5`.
+
+### Generate a `base::Feature` instance from a Blink Feature
+
+If your feature is guarded only by a blink feature and you need to prepare
+Finch experiment for the feature, including a kill switch, you can
+generate a `base::Feature` instance for the blink feature entry by adding:
+
+```js
+  base_feature: "AmazingNewFeature",
+```
+
+It generates a `base::Feature` instance as `kAmazingNewFeature` in
+`blink::features` namespace. The `base_feature` value is used for the feature
+name which is referred in `--enable-features=` flag and Finch configurations.
+
+The generated `base::Feature` is enabled by default if the status of the blink
+feature is `stable`, and disabled by default otherwise. This behavior can be
+overridden by `base_feature_status` field.
 
 ### Introducing dependencies among Runtime Enabled Features
 
