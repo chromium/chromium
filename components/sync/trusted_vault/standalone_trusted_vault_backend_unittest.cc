@@ -83,6 +83,17 @@ CoreAccountInfo MakeAccountInfoWithGaiaId(const std::string& gaia_id) {
   return account_info;
 }
 
+bool WriteLocalTrustedVaultFile(const sync_pb::LocalTrustedVault& content,
+                                const base::FilePath& path) {
+  std::string encrypted_content;
+  if (!OSCrypt::EncryptString(content.SerializeAsString(),
+                              &encrypted_content)) {
+    return false;
+  }
+  return base::WriteFile(path, encrypted_content.c_str(),
+                         encrypted_content.size()) != -1;
+}
+
 sync_pb::LocalTrustedVault ReadLocalTrustedVaultFile(
     const base::FilePath& path) {
   std::string ciphertext;
@@ -259,13 +270,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   backend()->WriteDegradedRecoverabilityState(degraded_recoverability_state);
 
   // Read the file from disk.
-  std::string ciphertext;
-  std::string decrypted_content;
-  sync_pb::LocalTrustedVault proto;
-  EXPECT_TRUE(base::ReadFileToString(file_path(), &ciphertext));
-  EXPECT_THAT(ciphertext, Ne(""));
-  EXPECT_TRUE(OSCrypt::DecryptString(ciphertext, &decrypted_content));
-  EXPECT_TRUE(proto.ParseFromString(decrypted_content));
+  sync_pb::LocalTrustedVault proto = ReadLocalTrustedVaultFile(file_path());
   ASSERT_THAT(proto.user_size(), Eq(1));
   EXPECT_THAT(proto.user(0).degraded_recoverability_state(),
               DegradedRecoverabilityStateEq(degraded_recoverability_state));
@@ -317,12 +322,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldReadAndFetchNonEmptyKeys) {
   user_data2->add_vault_key()->set_key_material(kKey2.data(), kKey2.size());
   user_data2->add_vault_key()->set_key_material(kKey3.data(), kKey3.size());
 
-  std::string encrypted_data;
-  ASSERT_TRUE(OSCrypt::EncryptString(initial_data.SerializeAsString(),
-                                     &encrypted_data));
-  ASSERT_NE(-1, base::WriteFile(file_path(), encrypted_data.c_str(),
-                                encrypted_data.size()));
-
+  ASSERT_TRUE(WriteLocalTrustedVaultFile(initial_data, file_path()));
   backend()->ReadDataFromDisk();
 
   // Keys should be fetched immediately for both accounts.
@@ -345,12 +345,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFilterOutConstantKey) {
       GetConstantTrustedVaultKey().data(), GetConstantTrustedVaultKey().size());
   user_data->add_vault_key()->set_key_material(kKey.data(), kKey.size());
 
-  std::string encrypted_data;
-  ASSERT_TRUE(OSCrypt::EncryptString(initial_data.SerializeAsString(),
-                                     &encrypted_data));
-  ASSERT_NE(-1, base::WriteFile(file_path(), encrypted_data.c_str(),
-                                encrypted_data.size()));
-
+  ASSERT_TRUE(WriteLocalTrustedVaultFile(initial_data, file_path()));
   backend()->ReadDataFromDisk();
 
   // Keys should be fetched immediately, constant key must be filtered out.
@@ -374,13 +369,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldStoreKeys) {
   backend()->StoreKeys(kGaiaId2, {kKey3, kKey4}, /*last_key_version=*/9);
 
   // Read the file from disk.
-  std::string ciphertext;
-  std::string decrypted_content;
-  sync_pb::LocalTrustedVault proto;
-  EXPECT_TRUE(base::ReadFileToString(file_path(), &ciphertext));
-  EXPECT_THAT(ciphertext, Ne(""));
-  EXPECT_TRUE(OSCrypt::DecryptString(ciphertext, &decrypted_content));
-  EXPECT_TRUE(proto.ParseFromString(decrypted_content));
+  sync_pb::LocalTrustedVault proto = ReadLocalTrustedVaultFile(file_path());
   ASSERT_THAT(proto.user_size(), Eq(2));
   EXPECT_THAT(proto.user(0).vault_key(), ElementsAre(KeyMaterialEq(kKey1)));
   EXPECT_THAT(proto.user(0).last_vault_key_version(), Eq(7));
@@ -411,23 +400,12 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   AssignBytesToProtoString(kKey2,
                            user_data2->add_vault_key()->mutable_key_material());
 
-  std::string encrypted_data;
-  ASSERT_TRUE(OSCrypt::EncryptString(initial_data.SerializeAsString(),
-                                     &encrypted_data));
-  ASSERT_NE(-1, base::WriteFile(file_path(), encrypted_data.c_str(),
-                                encrypted_data.size()));
-
+  ASSERT_TRUE(WriteLocalTrustedVaultFile(initial_data, file_path()));
   // Backend should fix corrupted data and write new state.
   backend()->ReadDataFromDisk();
 
   // Read the file from disk.
-  std::string ciphertext;
-  std::string decrypted_content;
-  sync_pb::LocalTrustedVault proto;
-  ASSERT_TRUE(base::ReadFileToString(file_path(), &ciphertext));
-  ASSERT_THAT(ciphertext, Ne(""));
-  ASSERT_TRUE(OSCrypt::DecryptString(ciphertext, &decrypted_content));
-  ASSERT_TRUE(proto.ParseFromString(decrypted_content));
+  sync_pb::LocalTrustedVault proto = ReadLocalTrustedVaultFile(file_path());
   ASSERT_THAT(proto.user_size(), Eq(2));
   // Constant key should be added for the first user.
   EXPECT_THAT(proto.user(0).vault_key(),
@@ -452,11 +430,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   user_data1->set_keys_are_stale(true);
   user_data2->set_gaia_id(account_info_2.gaia);
   user_data2->set_keys_are_stale(true);
-  std::string encrypted_data;
-  ASSERT_TRUE(OSCrypt::EncryptString(initial_data.SerializeAsString(),
-                                     &encrypted_data));
-  ASSERT_NE(-1, base::WriteFile(file_path(), encrypted_data.c_str(),
-                                encrypted_data.size()));
+  ASSERT_TRUE(WriteLocalTrustedVaultFile(initial_data, file_path()));
 
   // Backend should reset |keys_are_stale| for both accounts and write new
   // state.
