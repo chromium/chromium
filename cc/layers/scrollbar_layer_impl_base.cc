@@ -300,6 +300,10 @@ bool ScrollbarLayerImplBase::JumpOnTrackClick() const {
   return false;
 }
 
+bool ScrollbarLayerImplBase::IsFluentScrollbarEnabled() const {
+  return layer_tree_impl()->settings().enable_fluent_scrollbar;
+}
+
 gfx::Rect ScrollbarLayerImplBase::BackButtonRect() const {
   return gfx::Rect(0, 0);
 }

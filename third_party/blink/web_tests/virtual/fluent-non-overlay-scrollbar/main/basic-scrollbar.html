@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<!-- Basic appearance of non-composited Fluent non-overlay scrollbar. -->
+<!-- The basic appearance of non-composited Fluent non-overlay scrollbar.
+     Verifying regular and left side scrollbars. -->
 <style>
   body {
     background-color: green;
@@ -9,6 +10,13 @@
     height: 200px;
     overflow: scroll;
   }
+  #scrollable-rtl {
+    width: 200px;
+    height: 200px;
+    margin-top: 10px;
+    overflow: scroll;
+    direction: rtl;
+  }
   #content {
     background-color: lightgreen;
     height: 400px;
@@ -16,6 +24,8 @@
   }
 </style>
 <div id="scrollable">
-  <div id="content">
-  </div>
+  <div id="content"></div>
+</div>
+<div id="scrollable-rtl">
+  <div id="content"></div>
 </div>

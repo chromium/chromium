@@ -52,7 +52,7 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
   void PushPropertiesTo(LayerImpl* layer) override;
 
   // Thumb quad rect in layer space.
-  gfx::Rect ComputeThumbQuadRect() const;
+  virtual gfx::Rect ComputeThumbQuadRect() const;
   gfx::Rect ComputeExpandedThumbQuadRect() const;
 
   float thumb_thickness_scale_factor() {
@@ -85,6 +85,8 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
   // opacity. This method will return the user visible opacity of an overlay
   // scrollbar regardless of the underlying mechanism or platform.
   virtual float OverlayScrollbarOpacity() const;
+
+  bool IsFluentScrollbarEnabled() const;
 
  protected:
   ScrollbarLayerImplBase(LayerTreeImpl* tree_impl,
