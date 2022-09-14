@@ -54,6 +54,7 @@ class WaylandKeyboard::ZCRExtendedKeyboard {
 
   void AckKey(uint32_t serial, bool handled) {
     zcr_extended_keyboard_v1_ack_key(obj_.get(), serial, handled);
+    keyboard_->connection_->Flush();
   }
 
   // Returns true if connected object will send zcr_extended_keyboard::peek_key.
