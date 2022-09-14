@@ -6165,32 +6165,90 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        EmbedderTrigger_SameOriginRedirection) {
-  const GURL kInitialUrl = GetUrl("/empty.html");
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  const GURL kRedirectedUrl = GetUrl("/empty.html?prerender");
-  const GURL kPrerenderingUrl =
-      GetUrl("/server-redirect?" + kRedirectedUrl.spec());
+  const GURL initial_url = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  const GURL redirected_url_node_2 = GetUrl("/empty.html?prerender");
+  const GURL redirected_url_node_1 =
+      GetUrl("/server-redirect?" + redirected_url_node_2.spec());
+  const GURL prerender_initial_url =
+      GetUrl("/server-redirect?" + redirected_url_node_1.spec());
 
   RedirectChainObserver redirect_chain_observer(*shell()->web_contents(),
-                                                kRedirectedUrl);
+                                                redirected_url_node_2);
 
   // Start prerendering by embedder triggered prerendering.
   std::unique_ptr<PrerenderHandle> prerender_handle =
       web_contents_impl()->StartPrerendering(
-          kPrerenderingUrl, PrerenderTriggerType::kEmbedder,
+          prerender_initial_url, PrerenderTriggerType::kEmbedder,
           "EmbedderSuffixForTest",
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
           nullptr);
   EXPECT_TRUE(prerender_handle);
   test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
-      *shell()->web_contents(), kPrerenderingUrl);
-  ASSERT_EQ(2u, redirect_chain_observer.redirect_chain().size());
+      *shell()->web_contents(), prerender_initial_url);
+  ASSERT_EQ(3u, redirect_chain_observer.redirect_chain().size());
+
+  // Prerender is not canceled.
+  EXPECT_TRUE(HasHostForUrl(prerender_initial_url));
+
+  // Regression test for https://crbug.com/1211274. Make sure that we don't
+  // crash when activating a prerendered page which performed a same-origin
+  // redirect.
+  RedirectChainObserver activation_redirect_chain_observer(
+      *shell()->web_contents(), redirected_url_node_2);
+  content::test::PrerenderHostObserver prerender_observer(
+      *web_contents_impl(), prerender_initial_url);
+  shell()->web_contents()->OpenURL(content::OpenURLParams(
+      prerender_initial_url, content::Referrer(),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+      /*is_renderer_initiated=*/false));
+
+  prerender_observer.WaitForActivation();
+  ASSERT_EQ(1u, activation_redirect_chain_observer.redirect_chain().size());
+  EXPECT_EQ(redirected_url_node_2,
+            activation_redirect_chain_observer.redirect_chain()[0]);
+}
+
+// If there is a cross-origin url in the redirection chain, tests prerender
+// should be canceled.
+IN_PROC_BROWSER_TEST_F(
+    PrerenderBrowserTest,
+    EmbedderTrigger_CancelIfCrossOriginUrlInRedirectionChain) {
+  GURL initial_url = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Prerendering a url that will be redirected to same_origin_redirected_url
+  // and then cross_origin_redirected_url.
+  GURL cross_origin_redirected_url = GetCrossOriginUrl("/empty.html");
+  GURL same_origin_redirected_url =
+      GetUrl("/server-redirect?" + cross_origin_redirected_url.spec());
+  GURL prerendering_initial_url =
+      GetUrl("/server-redirect?" + same_origin_redirected_url.spec());
+
+  RedirectChainObserver redirect_chain_observer(*shell()->web_contents(),
+                                                cross_origin_redirected_url);
+
+  // Start prerendering by embedder triggered prerendering.
+  std::unique_ptr<PrerenderHandle> prerender_handle =
+      web_contents_impl()->StartPrerendering(
+          prerendering_initial_url, PrerenderTriggerType::kEmbedder,
+          "EmbedderSuffixForTest",
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          nullptr);
+  EXPECT_TRUE(prerender_handle);
+  test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
+      *shell()->web_contents(), prerendering_initial_url);
 
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
       "EmbedderSuffixForTest",
-      PrerenderHost::FinalStatus::kEmbedderTriggeredAndSameOriginRedirected, 1);
+      PrerenderHost::FinalStatus::kEmbedderTriggeredAndCrossOriginRedirected,
+      1);
+  EXPECT_FALSE(HasHostForUrl(prerendering_initial_url));
 }
 
 void PrerenderEmbedderTriggeredCrossOriginRedirectionPage(

@@ -192,18 +192,12 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   }
 
   if (prerender_host->IsBrowserInitiated()) {
-    // Cancel an embedder triggered prerendering whenever redirected, this
-    // redirection can be same-origin or cross-origin to the initial
-    // prerendering URL.
+    // Cancel an embedder triggered prerendering if it is redirected to a URL
+    // cross-origin to the initial prerendering URL.
     if (is_redirection) {
       url::Origin initial_origin =
           url::Origin::Create(prerender_host->GetInitialUrl());
-      if (initial_origin == prerendering_origin) {
-        prerender_host_registry->CancelHost(
-            frame_tree_node->frame_tree_node_id(),
-            PrerenderHost::FinalStatus::
-                kEmbedderTriggeredAndSameOriginRedirected);
-      } else {
+      if (initial_origin != prerendering_origin) {
         AnalyzeCrossOriginRedirection(
             prerendering_origin, initial_origin, prerender_host->trigger_type(),
             prerender_host->embedder_histogram_suffix());
@@ -211,8 +205,8 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
             frame_tree_node->frame_tree_node_id(),
             PrerenderHost::FinalStatus::
                 kEmbedderTriggeredAndCrossOriginRedirected);
+        return CANCEL;
       }
-      return CANCEL;
     }
 
     // Skip the same-origin check for non-redirected cases as the initiator
