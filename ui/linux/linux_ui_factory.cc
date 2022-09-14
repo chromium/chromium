@@ -81,12 +81,12 @@ LinuxUi* GetDefaultLinuxUi() {
   }
 }
 
-LinuxUi* GetLinuxUi(SystemTheme system_theme) {
+LinuxUiTheme* GetLinuxUiTheme(SystemTheme system_theme) {
   switch (system_theme) {
     case SystemTheme::kQt:
-      return GetQtUi();
+      return GetQtUi()->AsLinuxUiTheme();
     case SystemTheme::kGtk:
-      return GetGtkUi();
+      return GetGtkUi()->AsLinuxUiTheme();
     case SystemTheme::kDefault:
       return nullptr;
   }

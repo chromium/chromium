@@ -259,9 +259,6 @@ gfx::Rect DesktopWindowTreeHostLinux::GetGuessedFullScreenSizeInPx() const {
 void DesktopWindowTreeHostLinux::AddAdditionalInitProperties(
     const Widget::InitParams& params,
     ui::PlatformWindowInitProperties* properties) {
-  const ui::LinuxUi* linux_ui = ui::LinuxUi::instance();
-  properties->prefer_dark_theme = linux_ui && linux_ui->PreferDarkTheme();
-
   // Set the background color on startup to make the initial flickering
   // happening between the XWindow is mapped and the first expose event
   // is completely handled less annoying. If possible, we use the content

@@ -108,13 +108,19 @@ class ThemeScoper {
 class LinuxUiGetterImpl : public ui::LinuxUiGetter {
  public:
   explicit LinuxUiGetterImpl(bool use_system_theme)
-      : linux_ui_(use_system_theme ? ui::LinuxUi::instance() : nullptr) {}
+      : linux_ui_theme_(use_system_theme
+                            ? ui::LinuxUi::instance()->AsLinuxUiTheme()
+                            : nullptr) {}
   ~LinuxUiGetterImpl() override = default;
-  ui::LinuxUi* GetForWindow(aura::Window* window) override { return linux_ui_; }
-  ui::LinuxUi* GetForProfile(Profile* profile) override { return linux_ui_; }
+  ui::LinuxUiTheme* GetForWindow(aura::Window* window) override {
+    return linux_ui_theme_;
+  }
+  ui::LinuxUiTheme* GetForProfile(Profile* profile) override {
+    return linux_ui_theme_;
+  }
 
  private:
-  ui::LinuxUi* const linux_ui_;
+  ui::LinuxUiTheme* const linux_ui_theme_;
 };
 #endif
 
@@ -244,7 +250,7 @@ class ColorProviderTest
 #if BUILDFLAG(IS_LINUX)
     if (system_theme == SystemTheme::kCustom) {
       const auto* linux_ui = ui::GetDefaultLinuxUi();
-      native_theme_ = linux_ui->GetNativeTheme();
+      native_theme_ = linux_ui->AsLinuxUiTheme()->GetNativeTheme();
     }
 #endif
     original_forced_colors_ = native_theme_->InForcedColorsMode();

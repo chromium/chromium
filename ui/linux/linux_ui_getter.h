@@ -15,9 +15,9 @@ class Window;
 
 namespace ui {
 
-class LinuxUi;
+class LinuxUiTheme;
 
-// Use the getters in LinuxUi instead of using this class directly.
+// Use the getters in LinuxUiTheme instead of using this class directly.
 class COMPONENT_EXPORT(LINUX_UI) LinuxUiGetter {
  public:
   LinuxUiGetter& operator=(const LinuxUiGetter&) = delete;
@@ -26,8 +26,8 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUiGetter {
   LinuxUiGetter();
   virtual ~LinuxUiGetter();
 
-  virtual LinuxUi* GetForWindow(aura::Window* window) = 0;
-  virtual LinuxUi* GetForProfile(Profile* profile) = 0;
+  virtual LinuxUiTheme* GetForWindow(aura::Window* window) = 0;
+  virtual LinuxUiTheme* GetForProfile(Profile* profile) = 0;
 
   static LinuxUiGetter* instance() { return instance_; }
   static void set_instance(LinuxUiGetter* instance) { instance_ = instance; }

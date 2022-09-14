@@ -35,22 +35,22 @@ std::unique_ptr<OpaqueBrowserFrameView> CreateOpaqueBrowserFrameView(
     BrowserView* browser_view) {
 #if BUILDFLAG(IS_LINUX)
   auto* profile = browser_view->browser()->profile();
-  auto* linux_ui = ui::LinuxUi::GetForProfile(profile);
+  auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile);
   auto* theme_service_factory = ThemeServiceFactory::GetForProfile(profile);
   auto* app_controller = browser_view->browser()->app_controller();
   // Ignore the toolkit theme for web apps with window-controls-overlay as the
   // display_override so the web contents can blend with the overlay by using
   // the developer-provided theme color for a better experience. Context:
   // https://crbug.com/1219073.
-  if (linux_ui && theme_service_factory->UsingSystemTheme() &&
+  if (linux_ui_theme && theme_service_factory->UsingSystemTheme() &&
       !(app_controller && app_controller->AppUsesWindowControlsOverlay())) {
-    auto nav_button_provider = linux_ui->CreateNavButtonProvider();
+    auto nav_button_provider = linux_ui_theme->CreateNavButtonProvider();
     if (nav_button_provider) {
       bool solid_frame = !static_cast<DesktopBrowserFrameAuraLinux*>(
                               frame->native_browser_frame())
                               ->ShouldDrawRestoredFrameShadow();
       auto* window_frame_provider =
-          linux_ui->GetWindowFrameProvider(solid_frame);
+          linux_ui_theme->GetWindowFrameProvider(solid_frame);
       DCHECK(window_frame_provider);
       auto* layout = new BrowserFrameViewLayoutLinuxNative(
           nav_button_provider.get(), window_frame_provider);

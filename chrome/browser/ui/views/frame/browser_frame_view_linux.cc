@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux.h"
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -21,16 +22,14 @@ BrowserFrameViewLinux::BrowserFrameViewLinux(
     BrowserFrameViewLayoutLinux* layout)
     : OpaqueBrowserFrameView(frame, browser_view, layout), layout_(layout) {
   layout->set_view(this);
-  if (ui::LinuxUi* ui = ui::LinuxUi::instance()) {
-    ui->AddWindowButtonOrderObserver(this);
+  if (auto* linux_ui_theme =
+          ui::LinuxUiTheme::GetForProfile(browser_view->browser()->profile())) {
+    window_button_order_observation_.Observe(linux_ui_theme);
     OnWindowButtonOrderingChange();
   }
 }
 
-BrowserFrameViewLinux::~BrowserFrameViewLinux() {
-  if (ui::LinuxUi* ui = ui::LinuxUi::instance())
-    ui->RemoveWindowButtonOrderObserver(this);
-}
+BrowserFrameViewLinux::~BrowserFrameViewLinux() = default;
 
 SkRRect BrowserFrameViewLinux::GetRestoredClipRegion() const {
   gfx::RectF bounds_dip(GetLocalBounds());

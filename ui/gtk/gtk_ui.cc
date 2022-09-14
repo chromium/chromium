@@ -165,9 +165,9 @@ gfx::FontRenderParams GetGtkFontRenderParams() {
   return params;
 }
 
-ui::LinuxUi::WindowFrameAction GetDefaultMiddleClickAction() {
+ui::LinuxUiTheme::WindowFrameAction GetDefaultMiddleClickAction() {
   if (GtkCheckVersion(3, 14))
-    return ui::LinuxUi::WindowFrameAction::kNone;
+    return ui::LinuxUiTheme::WindowFrameAction::kNone;
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   switch (base::nix::GetDesktopEnvironment(env.get())) {
     case base::nix::DESKTOP_ENVIRONMENT_KDE4:
@@ -176,9 +176,9 @@ ui::LinuxUi::WindowFrameAction GetDefaultMiddleClickAction() {
       // middle mouse button to create tab groups. We don't support that in
       // Chrome, but at least avoid lowering windows in response to middle
       // clicks to avoid surprising users who expect the KDE behavior.
-      return ui::LinuxUi::WindowFrameAction::kNone;
+      return ui::LinuxUiTheme::WindowFrameAction::kNone;
     default:
-      return ui::LinuxUi::WindowFrameAction::kLower;
+      return ui::LinuxUiTheme::WindowFrameAction::kLower;
   }
 }
 
@@ -242,8 +242,8 @@ bool GtkUi::Initialize() {
   // so this must be done after to avoid the race condition.
   shell_dialog_linux::Initialize();
 
-  using Action = ui::LinuxUi::WindowFrameAction;
-  using ActionSource = ui::LinuxUi::WindowFrameActionSource;
+  using Action = ui::LinuxUiTheme::WindowFrameAction;
+  using ActionSource = ui::LinuxUiTheme::WindowFrameActionSource;
   window_frame_actions_ = {
       {ActionSource::kDoubleClick, Action::kToggleMaximize},
       {ActionSource::kMiddleClick, GetDefaultMiddleClickAction()},
@@ -479,7 +479,7 @@ ui::SelectFileDialog* GtkUi::CreateSelectFileDialog(
       std::move(policy));
 }
 
-ui::LinuxUi::WindowFrameAction GtkUi::GetWindowFrameAction(
+ui::LinuxUiTheme::WindowFrameAction GtkUi::GetWindowFrameAction(
     WindowFrameActionSource source) {
   return window_frame_actions_[source];
 }
@@ -625,6 +625,10 @@ gfx::Size GtkUi::GetPdfPaperSize(printing::PrintingContextLinux* context) {
   return GetPdfPaperSizeDeviceUnitsGtk(context);
 }
 #endif
+
+ui::LinuxUiTheme* GtkUi::AsLinuxUiTheme() {
+  return this;
+}
 
 void GtkUi::OnThemeChanged(GtkSettings* settings, GtkParamSpec* param) {
   colors_.clear();

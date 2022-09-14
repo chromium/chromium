@@ -31,20 +31,6 @@ LinuxUi* LinuxUi::instance() {
   return g_linux_ui;
 }
 
-// static
-LinuxUi* LinuxUi::GetForWindow(aura::Window* window) {
-  if (auto* getter = LinuxUiGetter::instance())
-    return getter->GetForWindow(window);
-  return nullptr;
-}
-
-// static
-LinuxUi* LinuxUi::GetForProfile(Profile* profile) {
-  if (auto* getter = LinuxUiGetter::instance())
-    return getter->GetForProfile(profile);
-  return nullptr;
-}
-
 LinuxUi::LinuxUi() = default;
 
 LinuxUi::~LinuxUi() = default;
@@ -56,16 +42,6 @@ LinuxUi::CmdLineArgs::CmdLineArgs(CmdLineArgs&&) = default;
 LinuxUi::CmdLineArgs& LinuxUi::CmdLineArgs::operator=(CmdLineArgs&&) = default;
 
 LinuxUi::CmdLineArgs::~CmdLineArgs() = default;
-
-void LinuxUi::AddWindowButtonOrderObserver(
-    WindowButtonOrderObserver* observer) {
-  window_button_order_observer_list_.AddObserver(observer);
-}
-
-void LinuxUi::RemoveWindowButtonOrderObserver(
-    WindowButtonOrderObserver* observer) {
-  window_button_order_observer_list_.RemoveObserver(observer);
-}
 
 void LinuxUi::AddDeviceScaleFactorObserver(
     DeviceScaleFactorObserver* observer) {
@@ -91,6 +67,10 @@ void LinuxUi::RemoveCursorThemeObserver(CursorThemeManagerObserver* observer) {
   cursor_theme_observer_list_.RemoveObserver(observer);
 }
 
+const LinuxUiTheme* LinuxUi::AsLinuxUiTheme() const {
+  return const_cast<LinuxUi*>(this)->AsLinuxUiTheme();
+}
+
 // static
 LinuxUi::CmdLineArgs LinuxUi::CopyCmdLine(
     const base::CommandLine& command_line) {
@@ -110,6 +90,34 @@ LinuxUi::CmdLineArgs LinuxUi::CopyCmdLine(
   cmd_line.argc = cmd_line.argv.size();
 
   return cmd_line;
+}
+
+LinuxUiTheme::LinuxUiTheme() = default;
+
+LinuxUiTheme::~LinuxUiTheme() = default;
+
+// static
+LinuxUiTheme* LinuxUiTheme::GetForWindow(aura::Window* window) {
+  if (auto* getter = LinuxUiGetter::instance())
+    return getter->GetForWindow(window);
+  return nullptr;
+}
+
+// static
+LinuxUiTheme* LinuxUiTheme::GetForProfile(Profile* profile) {
+  if (auto* getter = LinuxUiGetter::instance())
+    return getter->GetForProfile(profile);
+  return nullptr;
+}
+
+void LinuxUiTheme::AddWindowButtonOrderObserver(
+    WindowButtonOrderObserver* observer) {
+  window_button_order_observer_list_.AddObserver(observer);
+}
+
+void LinuxUiTheme::RemoveWindowButtonOrderObserver(
+    WindowButtonOrderObserver* observer) {
+  window_button_order_observer_list_.RemoveObserver(observer);
 }
 
 }  // namespace ui

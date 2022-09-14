@@ -57,6 +57,11 @@ class BrowserDesktopWindowTreeHostLinux
   void UpdateFrameHints();
 
  private:
+  // DesktopWindowTreeHostPlatform:
+  void AddAdditionalInitProperties(
+      const views::Widget::InitParams& params,
+      ui::PlatformWindowInitProperties* properties) override;
+
   // BrowserDesktopWindowTreeHost:
   DesktopWindowTreeHost* AsDesktopWindowTreeHost() override;
   int GetMinimizeButtonOffset() const override;

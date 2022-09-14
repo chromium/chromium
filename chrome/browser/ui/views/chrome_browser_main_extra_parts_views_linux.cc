@@ -22,11 +22,11 @@ class LinuxUiGetterImpl : public ui::LinuxUiGetter {
  public:
   LinuxUiGetterImpl() = default;
   ~LinuxUiGetterImpl() override = default;
-  ui::LinuxUi* GetForWindow(aura::Window* window) override {
+  ui::LinuxUiTheme* GetForWindow(aura::Window* window) override {
     return window ? GetForProfile(GetThemeProfileForWindow(window)) : nullptr;
   }
-  ui::LinuxUi* GetForProfile(Profile* profile) override {
-    return ui::GetLinuxUi(
+  ui::LinuxUiTheme* GetForProfile(Profile* profile) override {
+    return ui::GetLinuxUiTheme(
         ThemeServiceAuraLinux::GetSystemThemeForProfile(profile));
   }
 };

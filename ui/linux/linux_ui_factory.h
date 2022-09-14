@@ -11,6 +11,7 @@
 namespace ui {
 
 class LinuxUi;
+class LinuxUiTheme;
 enum class SystemTheme : int;
 
 // TODO(https://crbug.com/1317782): Remove in M110.
@@ -23,7 +24,7 @@ COMPONENT_EXPORT(LINUX_UI_FACTORY)
 LinuxUi* GetDefaultLinuxUi();
 
 COMPONENT_EXPORT(LINUX_UI_FACTORY)
-LinuxUi* GetLinuxUi(SystemTheme system_theme);
+LinuxUiTheme* GetLinuxUiTheme(SystemTheme system_theme);
 
 COMPONENT_EXPORT(LINUX_UI_FACTORY)
 SystemTheme GetDefaultSystemTheme();

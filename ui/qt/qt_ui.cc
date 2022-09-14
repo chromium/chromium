@@ -322,6 +322,10 @@ gfx::Size QtUi::GetPdfPaperSize(printing::PrintingContextLinux* context) {
 }
 #endif
 
+ui::LinuxUiTheme* QtUi::AsLinuxUiTheme() {
+  return this;
+}
+
 void QtUi::FontChanged() {
   auto params = shim_->GetFontRenderParams();
   auto desc = shim_->GetFontDescription();

@@ -73,21 +73,21 @@ void SystemThemeLinux::StopUsingTheme() {
   pref_service_->SetInteger(prefs::kSystemTheme,
                             static_cast<int>(ui::SystemTheme::kDefault));
   // Have the former theme notify its observers of change.
-  if (auto* linux_ui = ui::GetLinuxUi(system_theme_))
-    linux_ui->GetNativeTheme()->NotifyOnNativeThemeUpdated();
+  if (auto* linux_ui_theme = ui::GetLinuxUiTheme(system_theme_))
+    linux_ui_theme->GetNativeTheme()->NotifyOnNativeThemeUpdated();
 }
 
 bool SystemThemeLinux::GetColor(int id, SkColor* color) const {
-  if (auto* linux_ui = ui::GetLinuxUi(system_theme_)) {
-    return linux_ui->GetColor(
+  if (auto* linux_ui_theme = ui::GetLinuxUiTheme(system_theme_)) {
+    return linux_ui_theme->GetColor(
         id, color, pref_service_->GetBoolean(prefs::kUseCustomChromeFrame));
   }
   return false;
 }
 
 bool SystemThemeLinux::GetDisplayProperty(int id, int* result) const {
-  if (auto* linux_ui = ui::GetLinuxUi(system_theme_))
-    return linux_ui->GetDisplayProperty(id, result);
+  if (auto* linux_ui_theme = ui::GetLinuxUiTheme(system_theme_))
+    return linux_ui_theme->GetDisplayProperty(id, result);
   return false;
 }
 
@@ -100,8 +100,8 @@ bool SystemThemeLinux::HasCustomImage(int id) const {
 }
 
 ui::NativeTheme* SystemThemeLinux::GetNativeTheme() const {
-  if (auto* linux_ui = ui::GetLinuxUi(system_theme_)) {
-    if (auto* native_theme = linux_ui->GetNativeTheme())
+  if (auto* linux_ui_theme = ui::GetLinuxUiTheme(system_theme_)) {
+    if (auto* native_theme = linux_ui_theme->GetNativeTheme())
       return native_theme;
   }
   return CustomThemeSupplier::GetNativeTheme();
@@ -122,7 +122,7 @@ void ThemeServiceAuraLinux::UseTheme(ui::SystemTheme system_theme) {
     UseDefaultTheme();
     return;
   }
-  if (ui::GetLinuxUi(system_theme)) {
+  if (ui::GetLinuxUiTheme(system_theme)) {
     SetCustomDefaultTheme(
         new SystemThemeLinux(profile()->GetPrefs(), system_theme));
   }
@@ -132,7 +132,7 @@ void ThemeServiceAuraLinux::UseSystemTheme() {
   if (UsingSystemTheme())
     return;
   if (auto* linux_ui = ui::LinuxUi::instance()) {
-    if (auto* native_theme = linux_ui->GetNativeTheme()) {
+    if (auto* native_theme = linux_ui->AsLinuxUiTheme()->GetNativeTheme()) {
       UseTheme(native_theme->system_theme());
       return;
     }

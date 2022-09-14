@@ -20,9 +20,11 @@
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/linux/linux_ui.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/extensions/x11_extension.h"
+#include "ui/platform_window/platform_window_init_properties.h"
 
 namespace {
 
@@ -72,6 +74,18 @@ BrowserDesktopWindowTreeHostLinux::~BrowserDesktopWindowTreeHostLinux() =
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserDesktopWindowTreeHostLinux,
 //     BrowserDesktopWindowTreeHost implementation:
+
+void BrowserDesktopWindowTreeHostLinux::AddAdditionalInitProperties(
+    const views::Widget::InitParams& params,
+    ui::PlatformWindowInitProperties* properties) {
+  views::DesktopWindowTreeHostLinux::AddAdditionalInitProperties(params,
+                                                                 properties);
+
+  auto* profile = browser_view_->browser()->profile();
+  const auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile);
+  properties->prefer_dark_theme =
+      linux_ui_theme && linux_ui_theme->PreferDarkTheme();
+}
 
 views::DesktopWindowTreeHost*
 BrowserDesktopWindowTreeHostLinux::AsDesktopWindowTreeHost() {
