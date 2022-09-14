@@ -452,18 +452,20 @@ class PdfPluginContextMenuBrowserTest : public InProcessBrowserTest {
                                "var l = document.getElementById('link1');"
                                "l.click();"));
 
-    // Wait for the guest contents of the PDF plugin is created.
-    WebContents* guest_contents =
-        test_guest_view_manager_->DeprecatedWaitForSingleGuestCreated();
-    TestMimeHandlerViewGuest* guest = static_cast<TestMimeHandlerViewGuest*>(
-        extensions::MimeHandlerViewGuest::FromWebContents(guest_contents));
-    ASSERT_TRUE(guest);
-    // Wait for the guest is attached to the embedder.
+    // Wait for the guest view of the PDF plugin to be created.
+    auto* guest_view =
+        test_guest_view_manager_->WaitForSingleGuestViewCreated();
+    ASSERT_TRUE(guest_view);
+    TestMimeHandlerViewGuest* guest =
+        static_cast<TestMimeHandlerViewGuest*>(guest_view);
+
+    // Wait for the guest to be attached to the embedder.
     guest->WaitForGuestAttached();
-    ASSERT_NE(web_contents, guest_contents);
+
     // Get the pdf plugin's main frame.
-    content::RenderFrameHost* frame = guest_contents->GetPrimaryMainFrame();
+    content::RenderFrameHost* frame = guest_view->GetGuestMainFrame();
     ASSERT_TRUE(frame);
+    ASSERT_NE(web_contents->GetPrimaryMainFrame(), frame);
 
     content::ContextMenuParams params;
     params.page_url = page_url;
