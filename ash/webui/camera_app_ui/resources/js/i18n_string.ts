@@ -41,6 +41,7 @@ export enum I18nString {
   DOCUMENT_MODE_DIALOG_GOT_IT = 'document_mode_dialog_got_it',
   DOCUMENT_MODE_DIALOG_MSG = 'document_mode_dialog_msg',
   DOCUMENT_MODE_DIALOG_INTRO_TITLE = 'document_mode_dialog_intro_title',
+  DOCUMENT_MODE_MULTI_PAGE_TOAST = 'document_mode_multi_page_toast',
   DOWNLOADING_DOCUMENT_SCANNING_FEATURE =
       'downloading_document_scanning_feature',
   ERROR_MSG_CAMERA_PAUSED = 'error_msg_camera_paused',

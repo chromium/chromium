@@ -451,6 +451,7 @@ export class PortraitModeProcessError extends Error {
 export enum LocalStorageKey {
   CUSTOM_VIDEO_PARAMETERS = 'customVideoParameters',
   DOC_MODE_DIALOG_SHOWN = 'isDocModeDialogShown',
+  DOC_MODE_MULTI_PAGE_TOAST_SHOWN = 'isDocModeMultiPageToastShown',
   DOC_MODE_TOAST_SHOWN = 'isDocModeToastShown',
   ENABLE_FPS_PICKER = 'enableFPSPicker',
   ENABLE_FULL_SIZED_VIDEO_SNAPSHOT = 'enableFullSizedVideoSnapshot',

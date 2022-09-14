@@ -713,6 +713,9 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Message for the next page count of document scanning mode." name="IDS_NEXT_PAGE_COUNT">
         Scanning page <ph name="count">$1<ex>2</ex></ph>
       </message>
+      <message desc="Toast message notifying user about multi-page PDF in document mode is available." name="IDS_DOCUMENT_MODE_MULTI_PAGE_TOAST">
+        You can now create multi-page PDF
+      </message>
     </messages>
   </release>
 </grit>

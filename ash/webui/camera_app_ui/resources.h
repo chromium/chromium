@@ -50,6 +50,7 @@ const struct {
     {"document_mode_dialog_got_it", IDS_DOCUMENT_MODE_DIALOG_GOT_IT},
     {"document_mode_dialog_msg", IDS_DOCUMENT_MODE_DIALOG_MSG},
     {"document_mode_dialog_intro_title", IDS_DOCUMENT_MODE_DIALOG_INTRO_TITLE},
+    {"document_mode_multi_page_toast", IDS_DOCUMENT_MODE_MULTI_PAGE_TOAST},
     {"downloading_document_scanning_feature",
      IDS_DOWNLOADING_DOCUMENT_SCANNING_FEATURE},
     {"error_msg_camera_paused", IDS_ERROR_MSG_CAMERA_PAUSED},

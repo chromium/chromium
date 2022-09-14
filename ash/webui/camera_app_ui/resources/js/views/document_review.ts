@@ -3,15 +3,26 @@
 // found in the LICENSE file.
 
 import {assertInstanceof, assertNotReached} from '../assert.js';
+import {IndicatorType, showIndicator} from '../custom_effect.js';
 import * as dom from '../dom.js';
 import {Point} from '../geometry.js';
 import {I18nString} from '../i18n_string.js';
 import {Filenamer} from '../models/file_namer.js';
+import {
+  getBool as getLocalStorage,
+  set as setLocalStorage,
+} from '../models/local_storage.js';
 import {ResultSaver} from '../models/result_saver.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import * as nav from '../nav.js';
 import {show as showToast} from '../toast.js';
-import {MimeType, Resolution, Rotation, ViewName} from '../type.js';
+import {
+  LocalStorageKey,
+  MimeType,
+  Resolution,
+  Rotation,
+  ViewName,
+} from '../type.js';
 import {instantiateTemplate, loadImage, share} from '../util.js';
 
 import {DocumentFixMode} from './document_fix_mode.js';
@@ -89,6 +100,12 @@ export class DocumentReview extends View {
    */
   private pendingUpdatePayload: [number, Page]|null = null;
 
+  /**
+   * The function to hide the multi-page available indicator at leave. Should be
+   * set once the indicator shows.
+   */
+  private hideMultiPageAvailableIndicator: (() => void)|null = null;
+
   constructor(protected readonly resultSaver: ResultSaver) {
     super(
         ViewName.DOCUMENT_REVIEW,
@@ -126,7 +143,7 @@ export class DocumentReview extends View {
     const fixMode = new DocumentFixMode({
       target: this.previewElement,
       onExit: () => {
-        this.waitForUpdatingPage(() => this.changeMode(Mode.PREVIEW));
+        this.waitForUpdatingPage(() => this.showMode(Mode.PREVIEW));
       },
       onUpdatePage: ({corners, rotation}) => {
         this.updatePage(this.selectedIndex, {
@@ -146,7 +163,7 @@ export class DocumentReview extends View {
         this.close();
       },
       onFix: () => {
-        this.changeMode(Mode.FIX);
+        this.showMode(Mode.FIX);
       },
       onShare: () => {
         this.share(
@@ -230,7 +247,7 @@ export class DocumentReview extends View {
    */
   async open({fix}: {fix?: boolean}): Promise<number> {
     await this.selectPage(this.pages.length - 1);
-    await this.changeMode(fix === true ? Mode.FIX : Mode.PREVIEW);
+    await this.showMode(fix === true ? Mode.FIX : Mode.PREVIEW);
     await nav.open(this.name).closed;
     return this.pages.length;
   }
@@ -243,15 +260,17 @@ export class DocumentReview extends View {
   }
 
   /**
-   * Changes mode to fix or preview and updates the elements of corresponding
-   * mode.
+   * Shows/Updates the elements of the mode and hide another mode if necessary.
    */
-  async changeMode(mode: Mode): Promise<void> {
+  async showMode(mode: Mode): Promise<void> {
     if (this.mode !== mode) {
       await this.updateModeView(mode);
       this.modes[this.mode].hide();
       this.modes[mode].show();
       this.mode = mode;
+    }
+    if (this.mode === Mode.PREVIEW) {
+      this.showMultiPageAvailableIndicatorAtFirstTime();
     }
   }
 
@@ -392,5 +411,27 @@ export class DocumentReview extends View {
 
   private getPageImageElement(node: ParentNode) {
     return dom.getFrom(node, `.${this.classes.thumbnail}`, HTMLImageElement);
+  }
+
+  private showMultiPageAvailableIndicatorAtFirstTime() {
+    if (getLocalStorage(LocalStorageKey.DOC_MODE_MULTI_PAGE_TOAST_SHOWN)) {
+      return;
+    }
+    setLocalStorage(LocalStorageKey.DOC_MODE_MULTI_PAGE_TOAST_SHOWN, true);
+    const addPageButton = dom.getFrom(
+        this.root, 'button[i18n-aria=add_new_page_button]', HTMLButtonElement);
+    const {hide} = showIndicator(
+        addPageButton, IndicatorType.DOC_MODE_MULTI_PAGE_AVAILABLE);
+    addPageButton.addEventListener('click', hide, {once: true});
+    this.hideMultiPageAvailableIndicator = () => {
+      hide();
+      addPageButton.removeEventListener('click', hide);
+    };
+  }
+
+  protected override leaving(): boolean {
+    this.hideMultiPageAvailableIndicator?.();
+    this.hideMultiPageAvailableIndicator = null;
+    return true;
   }
 }
