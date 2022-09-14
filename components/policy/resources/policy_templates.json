@@ -29911,7 +29911,8 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'schema': {
         'type': 'string',
         'enum': [
-          'remove_all',
+          'none',
+          'keep_none',
           'keep_safe_data',
           'keep_all'
         ],
@@ -29949,6 +29950,8 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'caption': '''Choose what happens with user data after <ph name="LACROS_NAME">Lacros</ph> is disabled''',
       'tags': [],
       'desc': '''This setting decides how much user data is kept after <ph name="LACROS_NAME">Lacros</ph> is disabled.
+
+      If the policy is set to <ph name="LACROS_BACKWARD_MIGRATION_NONE">none</ph>, backward data migration is not performed.
 
       If the policy is set to <ph name="LACROS_BACKWARD_MIGRATION_KEEP_NONE">keep_none</ph>, all user data is removed. This is the safest option.
 
