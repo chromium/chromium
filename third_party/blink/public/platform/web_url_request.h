@@ -74,7 +74,7 @@ class WebSecurityOrigin;
 class WebString;
 class WebURL;
 
-class WebURLRequest {
+class BLINK_PLATFORM_EXPORT WebURLRequest {
  public:
   // The enum values should remain synchronized with the enum
   // WebURLRequestPriority in tools/metrics/histograms.enums.xml.
@@ -89,149 +89,140 @@ class WebURLRequest {
     kHighest = kVeryHigh,
   };
 
-  BLINK_PLATFORM_EXPORT ~WebURLRequest();
-  BLINK_PLATFORM_EXPORT WebURLRequest();
+  ~WebURLRequest();
+  WebURLRequest();
   WebURLRequest(const WebURLRequest&) = delete;
-  BLINK_PLATFORM_EXPORT WebURLRequest(WebURLRequest&&);
-  BLINK_PLATFORM_EXPORT explicit WebURLRequest(const WebURL&);
+  WebURLRequest(WebURLRequest&&);
+  explicit WebURLRequest(const WebURL&);
   WebURLRequest& operator=(const WebURLRequest&) = delete;
-  BLINK_PLATFORM_EXPORT WebURLRequest& operator=(WebURLRequest&&);
-  BLINK_PLATFORM_EXPORT void CopyFrom(const WebURLRequest&);
+  WebURLRequest& operator=(WebURLRequest&&);
+  void CopyFrom(const WebURLRequest&);
 
-  BLINK_PLATFORM_EXPORT bool IsNull() const;
+  bool IsNull() const;
 
-  BLINK_PLATFORM_EXPORT WebURL Url() const;
-  BLINK_PLATFORM_EXPORT void SetUrl(const WebURL&);
+  WebURL Url() const;
+  void SetUrl(const WebURL&);
 
   // Used to implement third-party cookie blocking.
-  BLINK_PLATFORM_EXPORT const net::SiteForCookies& SiteForCookies() const;
-  BLINK_PLATFORM_EXPORT void SetSiteForCookies(const net::SiteForCookies&);
+  const net::SiteForCookies& SiteForCookies() const;
+  void SetSiteForCookies(const net::SiteForCookies&);
 
-  BLINK_PLATFORM_EXPORT absl::optional<WebSecurityOrigin> TopFrameOrigin()
-      const;
-  BLINK_PLATFORM_EXPORT void SetTopFrameOrigin(const WebSecurityOrigin&);
+  absl::optional<WebSecurityOrigin> TopFrameOrigin() const;
+  void SetTopFrameOrigin(const WebSecurityOrigin&);
 
   // https://fetch.spec.whatwg.org/#concept-request-origin
-  BLINK_PLATFORM_EXPORT WebSecurityOrigin RequestorOrigin() const;
-  BLINK_PLATFORM_EXPORT void SetRequestorOrigin(const WebSecurityOrigin&);
+  WebSecurityOrigin RequestorOrigin() const;
+  void SetRequestorOrigin(const WebSecurityOrigin&);
 
   // The origin of the isolated world - set if this is a fetch/XHR initiated by
   // an isolated world.
-  BLINK_PLATFORM_EXPORT WebSecurityOrigin IsolatedWorldOrigin() const;
+  WebSecurityOrigin IsolatedWorldOrigin() const;
 
   // Controls whether user name, password, and cookies may be sent with the
   // request.
-  BLINK_PLATFORM_EXPORT bool AllowStoredCredentials() const;
-  BLINK_PLATFORM_EXPORT void SetAllowStoredCredentials(bool);
+  bool AllowStoredCredentials() const;
+  void SetAllowStoredCredentials(bool);
 
-  BLINK_PLATFORM_EXPORT mojom::FetchCacheMode GetCacheMode() const;
-  BLINK_PLATFORM_EXPORT void SetCacheMode(mojom::FetchCacheMode);
+  mojom::FetchCacheMode GetCacheMode() const;
+  void SetCacheMode(mojom::FetchCacheMode);
 
-  BLINK_PLATFORM_EXPORT base::TimeDelta TimeoutInterval() const;
+  base::TimeDelta TimeoutInterval() const;
 
-  BLINK_PLATFORM_EXPORT WebString HttpMethod() const;
-  BLINK_PLATFORM_EXPORT void SetHttpMethod(const WebString&);
+  WebString HttpMethod() const;
+  void SetHttpMethod(const WebString&);
 
-  BLINK_PLATFORM_EXPORT WebString HttpContentType() const;
+  WebString HttpContentType() const;
 
-  BLINK_PLATFORM_EXPORT bool IsFormSubmission() const;
+  bool IsFormSubmission() const;
 
-  BLINK_PLATFORM_EXPORT WebString HttpHeaderField(const WebString& name) const;
+  WebString HttpHeaderField(const WebString& name) const;
   // It's not possible to set the referrer header using this method. Use
   // SetReferrerString instead.
-  BLINK_PLATFORM_EXPORT void SetHttpHeaderField(const WebString& name,
-                                                const WebString& value);
-  BLINK_PLATFORM_EXPORT void AddHttpHeaderField(const WebString& name,
-                                                const WebString& value);
-  BLINK_PLATFORM_EXPORT void ClearHttpHeaderField(const WebString& name);
-  BLINK_PLATFORM_EXPORT void VisitHttpHeaderFields(WebHTTPHeaderVisitor*) const;
+  void SetHttpHeaderField(const WebString& name, const WebString& value);
+  void AddHttpHeaderField(const WebString& name, const WebString& value);
+  void ClearHttpHeaderField(const WebString& name);
+  void VisitHttpHeaderFields(WebHTTPHeaderVisitor*) const;
 
-  BLINK_PLATFORM_EXPORT WebHTTPBody HttpBody() const;
-  BLINK_PLATFORM_EXPORT void SetHttpBody(const WebHTTPBody&);
+  WebHTTPBody HttpBody() const;
+  void SetHttpBody(const WebHTTPBody&);
 
-  BLINK_PLATFORM_EXPORT WebHTTPBody AttachedCredential() const;
-  BLINK_PLATFORM_EXPORT void SetAttachedCredential(const WebHTTPBody&);
+  WebHTTPBody AttachedCredential() const;
+  void SetAttachedCredential(const WebHTTPBody&);
 
   // Controls whether upload progress events are generated when a request
   // has a body.
-  BLINK_PLATFORM_EXPORT bool ReportUploadProgress() const;
-  BLINK_PLATFORM_EXPORT void SetReportUploadProgress(bool);
+  bool ReportUploadProgress() const;
+  void SetReportUploadProgress(bool);
 
-  BLINK_PLATFORM_EXPORT mojom::RequestContextType GetRequestContext() const;
-  BLINK_PLATFORM_EXPORT void SetRequestContext(mojom::RequestContextType);
+  mojom::RequestContextType GetRequestContext() const;
+  void SetRequestContext(mojom::RequestContextType);
 
-  BLINK_PLATFORM_EXPORT network::mojom::RequestDestination
-  GetRequestDestination() const;
-  BLINK_PLATFORM_EXPORT void SetRequestDestination(
-      network::mojom::RequestDestination);
+  network::mojom::RequestDestination GetRequestDestination() const;
+  void SetRequestDestination(network::mojom::RequestDestination);
 
-  BLINK_PLATFORM_EXPORT void SetReferrerString(const WebString& referrer);
-  BLINK_PLATFORM_EXPORT void SetReferrerPolicy(
-      network::mojom::ReferrerPolicy referrer_policy);
+  void SetReferrerString(const WebString& referrer);
+  void SetReferrerPolicy(network::mojom::ReferrerPolicy referrer_policy);
 
-  BLINK_PLATFORM_EXPORT WebString ReferrerString() const;
-  BLINK_PLATFORM_EXPORT network::mojom::ReferrerPolicy GetReferrerPolicy()
-      const;
+  WebString ReferrerString() const;
+  network::mojom::ReferrerPolicy GetReferrerPolicy() const;
 
   // Sets an HTTP origin header if it is empty and the HTTP method of the
   // request requires it.
-  BLINK_PLATFORM_EXPORT void SetHttpOriginIfNeeded(const WebSecurityOrigin&);
+  void SetHttpOriginIfNeeded(const WebSecurityOrigin&);
 
   // True if the request was user initiated.
-  BLINK_PLATFORM_EXPORT bool HasUserGesture() const;
-  BLINK_PLATFORM_EXPORT void SetHasUserGesture(bool);
+  bool HasUserGesture() const;
+  void SetHasUserGesture(bool);
 
-  BLINK_PLATFORM_EXPORT bool HasTextFragmentToken() const;
+  bool HasTextFragmentToken() const;
 
   // A consumer controlled value intended to be used to identify the
   // requestor.
-  BLINK_PLATFORM_EXPORT int RequestorID() const;
-  BLINK_PLATFORM_EXPORT void SetRequestorID(int);
+  int RequestorID() const;
+  void SetRequestorID(int);
 
   // If true, the client expects to receive the raw response pipe. Similar to
   // UseStreamOnResponse but the stream will be a mojo DataPipe rather than a
   // WebDataConsumerHandle.
   // If the request is fetched synchronously the response will instead be piped
   // to a blob if this flag is set to true.
-  BLINK_PLATFORM_EXPORT bool PassResponsePipeToClient() const;
+  bool PassResponsePipeToClient() const;
 
   // True if the requestor wants to receive the response body as a stream.
-  BLINK_PLATFORM_EXPORT bool UseStreamOnResponse() const;
-  BLINK_PLATFORM_EXPORT void SetUseStreamOnResponse(bool);
+  bool UseStreamOnResponse() const;
+  void SetUseStreamOnResponse(bool);
 
   // True if the request can work after the fetch group is terminated.
-  BLINK_PLATFORM_EXPORT bool GetKeepalive() const;
-  BLINK_PLATFORM_EXPORT void SetKeepalive(bool);
+  bool GetKeepalive() const;
+  void SetKeepalive(bool);
 
   // True if the service workers should not get events for the request.
-  BLINK_PLATFORM_EXPORT bool GetSkipServiceWorker() const;
-  BLINK_PLATFORM_EXPORT void SetSkipServiceWorker(bool);
+  bool GetSkipServiceWorker() const;
+  void SetSkipServiceWorker(bool);
 
   // True if corresponding AppCache group should be resetted.
-  BLINK_PLATFORM_EXPORT bool ShouldResetAppCache() const;
-  BLINK_PLATFORM_EXPORT void SetShouldResetAppCache(bool);
+  bool ShouldResetAppCache() const;
+  void SetShouldResetAppCache(bool);
 
   // The request mode which will be passed to the ServiceWorker.
-  BLINK_PLATFORM_EXPORT network::mojom::RequestMode GetMode() const;
-  BLINK_PLATFORM_EXPORT void SetMode(network::mojom::RequestMode);
+  network::mojom::RequestMode GetMode() const;
+  void SetMode(network::mojom::RequestMode);
 
   // True if the request is for a favicon.
-  BLINK_PLATFORM_EXPORT bool GetFavicon() const;
-  BLINK_PLATFORM_EXPORT void SetFavicon(bool);
+  bool GetFavicon() const;
+  void SetFavicon(bool);
 
   // The credentials mode which will be passed to the ServiceWorker.
-  BLINK_PLATFORM_EXPORT network::mojom::CredentialsMode GetCredentialsMode()
-      const;
-  BLINK_PLATFORM_EXPORT void SetCredentialsMode(
-      network::mojom::CredentialsMode);
+  network::mojom::CredentialsMode GetCredentialsMode() const;
+  void SetCredentialsMode(network::mojom::CredentialsMode);
 
   // The redirect mode which is used in Fetch API.
-  BLINK_PLATFORM_EXPORT network::mojom::RedirectMode GetRedirectMode() const;
-  BLINK_PLATFORM_EXPORT void SetRedirectMode(network::mojom::RedirectMode);
+  network::mojom::RedirectMode GetRedirectMode() const;
+  void SetRedirectMode(network::mojom::RedirectMode);
 
   // The integrity which is used in Fetch API.
-  BLINK_PLATFORM_EXPORT WebString GetFetchIntegrity() const;
-  BLINK_PLATFORM_EXPORT void SetFetchIntegrity(const WebString&);
+  WebString GetFetchIntegrity() const;
+  void SetFetchIntegrity(const WebString&);
 
   // Extra data associated with the underlying resource request. Resource
   // requests can be copied. If non-null, each copy of a resource requests
@@ -239,89 +230,82 @@ class WebURLRequest {
   // deleted when the last resource request is destroyed. Setting the extra
   // data pointer will cause the underlying resource request to be
   // dissociated from any existing non-null extra data pointer.
-  BLINK_PLATFORM_EXPORT const scoped_refptr<WebURLRequestExtraData>&
-  GetURLRequestExtraData() const;
-  BLINK_PLATFORM_EXPORT void SetURLRequestExtraData(
-      scoped_refptr<WebURLRequestExtraData>);
+  const scoped_refptr<WebURLRequestExtraData>& GetURLRequestExtraData() const;
+  void SetURLRequestExtraData(scoped_refptr<WebURLRequestExtraData>);
 
   // The request is downloaded to the network cache, but not rendered or
   // executed.
-  BLINK_PLATFORM_EXPORT bool IsDownloadToNetworkCacheOnly() const;
-  BLINK_PLATFORM_EXPORT void SetDownloadToNetworkCacheOnly(bool);
+  bool IsDownloadToNetworkCacheOnly() const;
+  void SetDownloadToNetworkCacheOnly(bool);
 
-  BLINK_PLATFORM_EXPORT Priority GetPriority() const;
-  BLINK_PLATFORM_EXPORT void SetPriority(Priority);
+  Priority GetPriority() const;
+  void SetPriority(Priority);
 
-  BLINK_PLATFORM_EXPORT network::mojom::CorsPreflightPolicy
-  GetCorsPreflightPolicy() const;
+  network::mojom::CorsPreflightPolicy GetCorsPreflightPolicy() const;
 
   // If this request was created from an anchor with a download attribute, this
   // is the value provided there.
-  BLINK_PLATFORM_EXPORT absl::optional<WebString> GetSuggestedFilename() const;
+  absl::optional<WebString> GetSuggestedFilename() const;
 
   // Returns true if this request is tagged as an ad. This is done using various
   // heuristics so it is not expected to be 100% accurate.
-  BLINK_PLATFORM_EXPORT bool IsAdResource() const;
+  bool IsAdResource() const;
 
   // Should be set to true if this request (including redirects) should be
   // upgraded to HTTPS due to an Upgrade-Insecure-Requests requirement.
-  BLINK_PLATFORM_EXPORT void SetUpgradeIfInsecure(bool);
+  void SetUpgradeIfInsecure(bool);
 
   // Returns true if request (including redirects) should be upgraded to HTTPS
   // due to an Upgrade-Insecure-Requests requirement.
-  BLINK_PLATFORM_EXPORT bool UpgradeIfInsecure() const;
+  bool UpgradeIfInsecure() const;
 
-  BLINK_PLATFORM_EXPORT bool SupportsAsyncRevalidation() const;
+  bool SupportsAsyncRevalidation() const;
 
   // Returns true when the request is for revalidation.
-  BLINK_PLATFORM_EXPORT bool IsRevalidating() const;
+  bool IsRevalidating() const;
 
   // Returns the DevTools ID to throttle the network request.
-  BLINK_PLATFORM_EXPORT const absl::optional<base::UnguessableToken>&
-  GetDevToolsToken() const;
+  const absl::optional<base::UnguessableToken>& GetDevToolsToken() const;
 
   // Remembers 'X-Requested-With' header value. Blink should not set this header
   // value until CORS checks are done to avoid running checks even against
   // headers that are internally set.
-  BLINK_PLATFORM_EXPORT const WebString GetRequestedWithHeader() const;
-  BLINK_PLATFORM_EXPORT void SetRequestedWithHeader(const WebString&);
+  const WebString GetRequestedWithHeader() const;
+  void SetRequestedWithHeader(const WebString&);
 
   // Remembers 'Purpose' header value. Blink should not set this header value
   // until CORS checks are done to avoid running checks even against headers
   // that are internally set.
-  BLINK_PLATFORM_EXPORT const WebString GetPurposeHeader() const;
+  const WebString GetPurposeHeader() const;
 
   // https://fetch.spec.whatwg.org/#concept-request-window
   // See network::ResourceRequest::fetch_window_id for details.
-  BLINK_PLATFORM_EXPORT const base::UnguessableToken& GetFetchWindowId() const;
-  BLINK_PLATFORM_EXPORT void SetFetchWindowId(const base::UnguessableToken&);
+  const base::UnguessableToken& GetFetchWindowId() const;
+  void SetFetchWindowId(const base::UnguessableToken&);
 
-  BLINK_PLATFORM_EXPORT absl::optional<WebString> GetDevToolsId() const;
+  absl::optional<WebString> GetDevToolsId() const;
 
-  BLINK_PLATFORM_EXPORT int GetLoadFlagsForWebUrlRequest() const;
+  int GetLoadFlagsForWebUrlRequest() const;
 
-  BLINK_PLATFORM_EXPORT bool IsFromOriginDirtyStyleSheet() const;
+  bool IsFromOriginDirtyStyleSheet() const;
 
-  BLINK_PLATFORM_EXPORT absl::optional<base::UnguessableToken>
-  RecursivePrefetchToken() const;
+  absl::optional<base::UnguessableToken> RecursivePrefetchToken() const;
 
   // Specifies a Trust Tokens protocol operation to execute alongside the
   // request's load (https://github.com/wicg/trust-token-api).
-  BLINK_PLATFORM_EXPORT network::OptionalTrustTokenParams TrustTokenParams()
-      const;
+  network::OptionalTrustTokenParams TrustTokenParams() const;
 
-  BLINK_PLATFORM_EXPORT absl::optional<WebURL> WebBundleUrl() const;
-  BLINK_PLATFORM_EXPORT absl::optional<base::UnguessableToken> WebBundleToken()
-      const;
+  absl::optional<WebURL> WebBundleUrl() const;
+  absl::optional<base::UnguessableToken> WebBundleToken() const;
 
 #if INSIDE_BLINK
-  BLINK_PLATFORM_EXPORT ResourceRequest& ToMutableResourceRequest();
-  BLINK_PLATFORM_EXPORT const ResourceRequest& ToResourceRequest() const;
+  ResourceRequest& ToMutableResourceRequest();
+  const ResourceRequest& ToResourceRequest() const;
 
  protected:
   // Permit subclasses to set arbitrary ResourceRequest pointer as
   // |resource_request_|. |owned_resource_request_| is not set in this case.
-  BLINK_PLATFORM_EXPORT explicit WebURLRequest(ResourceRequest&);
+  explicit WebURLRequest(ResourceRequest&);
 #endif
 
  private:

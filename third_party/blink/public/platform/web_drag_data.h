@@ -52,7 +52,7 @@ using FileSystemAccessDropData =
 
 // Holds data that may be exchanged through a drag-n-drop operation. It is
 // inexpensive to copy a WebDragData object.
-class WebDragData {
+class BLINK_PLATFORM_EXPORT WebDragData {
  public:
   struct Item {
     enum StorageType {
@@ -111,12 +111,12 @@ class WebDragData {
 
   WebVector<Item> Items() const { return item_list_; }
 
-  BLINK_PLATFORM_EXPORT void SetItems(WebVector<Item> item_list);
+  void SetItems(WebVector<Item> item_list);
   // FIXME: SetItems is slow because SetItems copies WebVector.
   // Instead, use SwapItems.
   void SwapItems(WebVector<Item>& item_list) { item_list_.Swap(item_list); }
 
-  BLINK_PLATFORM_EXPORT void AddItem(const Item&);
+  void AddItem(const Item&);
 
   WebString FilesystemId() const { return filesystem_id_; }
 

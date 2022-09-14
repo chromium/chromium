@@ -149,25 +149,23 @@ class WebCryptoAlgorithmPrivate;
 //
 // If WebCryptoAlgorithm "IsNull()" then it is invalid to call any of the other
 // methods on it (other than destruction, assignment, or IsNull()).
-class WebCryptoAlgorithm {
+class BLINK_PLATFORM_EXPORT WebCryptoAlgorithm {
  public:
 #if INSIDE_BLINK
   WebCryptoAlgorithm() = default;
-  BLINK_PLATFORM_EXPORT WebCryptoAlgorithm(
-      WebCryptoAlgorithmId,
-      std::unique_ptr<WebCryptoAlgorithmParams>);
+  WebCryptoAlgorithm(WebCryptoAlgorithmId,
+                     std::unique_ptr<WebCryptoAlgorithmParams>);
 #endif
 
-  BLINK_PLATFORM_EXPORT static WebCryptoAlgorithm CreateNull();
-  BLINK_PLATFORM_EXPORT static WebCryptoAlgorithm AdoptParamsAndCreate(
-      WebCryptoAlgorithmId,
-      WebCryptoAlgorithmParams*);
+  static WebCryptoAlgorithm CreateNull();
+  static WebCryptoAlgorithm AdoptParamsAndCreate(WebCryptoAlgorithmId,
+                                                 WebCryptoAlgorithmParams*);
 
   // Returns a WebCryptoAlgorithmInfo for the algorithm with the given ID. If
   // the ID is invalid, return 0. The caller can assume the pointer will be
   // valid for the program's entire runtime.
-  BLINK_PLATFORM_EXPORT static const WebCryptoAlgorithmInfo*
-      LookupAlgorithmInfo(WebCryptoAlgorithmId);
+  static const WebCryptoAlgorithmInfo* LookupAlgorithmInfo(
+      WebCryptoAlgorithmId);
 
   ~WebCryptoAlgorithm() { Reset(); }
 
@@ -177,48 +175,41 @@ class WebCryptoAlgorithm {
     return *this;
   }
 
-  BLINK_PLATFORM_EXPORT bool IsNull() const;
+  bool IsNull() const;
 
-  BLINK_PLATFORM_EXPORT WebCryptoAlgorithmId Id() const;
+  WebCryptoAlgorithmId Id() const;
 
-  BLINK_PLATFORM_EXPORT WebCryptoAlgorithmParamsType ParamsType() const;
+  WebCryptoAlgorithmParamsType ParamsType() const;
 
   // Retrieves the type-specific parameters. The algorithm contains at most 1
   // type of parameters. Retrieving an invalid parameter will return 0.
-  BLINK_PLATFORM_EXPORT const WebCryptoAesCbcParams* AesCbcParams() const;
-  BLINK_PLATFORM_EXPORT const WebCryptoAesKeyGenParams* AesKeyGenParams() const;
-  BLINK_PLATFORM_EXPORT const WebCryptoHmacImportParams* HmacImportParams()
-      const;
-  BLINK_PLATFORM_EXPORT const WebCryptoHmacKeyGenParams* HmacKeyGenParams()
-      const;
-  BLINK_PLATFORM_EXPORT const WebCryptoAesGcmParams* AesGcmParams() const;
-  BLINK_PLATFORM_EXPORT const WebCryptoRsaOaepParams* RsaOaepParams() const;
-  BLINK_PLATFORM_EXPORT const WebCryptoAesCtrParams* AesCtrParams() const;
-  BLINK_PLATFORM_EXPORT const WebCryptoRsaHashedImportParams*
-  RsaHashedImportParams() const;
-  BLINK_PLATFORM_EXPORT const WebCryptoRsaHashedKeyGenParams*
-  RsaHashedKeyGenParams() const;
-  BLINK_PLATFORM_EXPORT const WebCryptoRsaPssParams* RsaPssParams() const;
-  BLINK_PLATFORM_EXPORT const WebCryptoEcdsaParams* EcdsaParams() const;
-  BLINK_PLATFORM_EXPORT const WebCryptoEcKeyGenParams* EcKeyGenParams() const;
-  BLINK_PLATFORM_EXPORT const WebCryptoEcKeyImportParams* EcKeyImportParams()
-      const;
-  BLINK_PLATFORM_EXPORT const WebCryptoEcdhKeyDeriveParams*
-  EcdhKeyDeriveParams() const;
-  BLINK_PLATFORM_EXPORT const WebCryptoAesDerivedKeyParams*
-  AesDerivedKeyParams() const;
-  BLINK_PLATFORM_EXPORT const WebCryptoHkdfParams* HkdfParams() const;
-  BLINK_PLATFORM_EXPORT const WebCryptoPbkdf2Params* Pbkdf2Params() const;
+  const WebCryptoAesCbcParams* AesCbcParams() const;
+  const WebCryptoAesKeyGenParams* AesKeyGenParams() const;
+  const WebCryptoHmacImportParams* HmacImportParams() const;
+  const WebCryptoHmacKeyGenParams* HmacKeyGenParams() const;
+  const WebCryptoAesGcmParams* AesGcmParams() const;
+  const WebCryptoRsaOaepParams* RsaOaepParams() const;
+  const WebCryptoAesCtrParams* AesCtrParams() const;
+  const WebCryptoRsaHashedImportParams* RsaHashedImportParams() const;
+  const WebCryptoRsaHashedKeyGenParams* RsaHashedKeyGenParams() const;
+  const WebCryptoRsaPssParams* RsaPssParams() const;
+  const WebCryptoEcdsaParams* EcdsaParams() const;
+  const WebCryptoEcKeyGenParams* EcKeyGenParams() const;
+  const WebCryptoEcKeyImportParams* EcKeyImportParams() const;
+  const WebCryptoEcdhKeyDeriveParams* EcdhKeyDeriveParams() const;
+  const WebCryptoAesDerivedKeyParams* AesDerivedKeyParams() const;
+  const WebCryptoHkdfParams* HkdfParams() const;
+  const WebCryptoPbkdf2Params* Pbkdf2Params() const;
 
   // Returns true if the provided algorithm ID is for a hash (in other words,
   // SHA-*)
-  BLINK_PLATFORM_EXPORT static bool IsHash(WebCryptoAlgorithmId);
+  static bool IsHash(WebCryptoAlgorithmId);
   // Returns true if the provided algorithm ID is for a key derivation function
-  BLINK_PLATFORM_EXPORT static bool IsKdf(WebCryptoAlgorithmId);
+  static bool IsKdf(WebCryptoAlgorithmId);
 
  private:
-  BLINK_PLATFORM_EXPORT void Assign(const WebCryptoAlgorithm& other);
-  BLINK_PLATFORM_EXPORT void Reset();
+  void Assign(const WebCryptoAlgorithm& other);
+  void Reset();
 
   WebPrivatePtr<WebCryptoAlgorithmPrivate> private_;
 };

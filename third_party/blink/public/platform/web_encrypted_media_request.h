@@ -20,26 +20,22 @@ class WebSecurityOrigin;
 template <typename T>
 class WebVector;
 
-class WebEncryptedMediaRequest {
+class BLINK_PLATFORM_EXPORT WebEncryptedMediaRequest {
  public:
-  BLINK_PLATFORM_EXPORT WebEncryptedMediaRequest(
-      const WebEncryptedMediaRequest&);
-  BLINK_PLATFORM_EXPORT ~WebEncryptedMediaRequest();
+  WebEncryptedMediaRequest(const WebEncryptedMediaRequest&);
+  ~WebEncryptedMediaRequest();
 
-  BLINK_PLATFORM_EXPORT WebString KeySystem() const;
-  BLINK_PLATFORM_EXPORT const WebVector<WebMediaKeySystemConfiguration>&
-  SupportedConfigurations() const;
+  WebString KeySystem() const;
+  const WebVector<WebMediaKeySystemConfiguration>& SupportedConfigurations()
+      const;
 
-  BLINK_PLATFORM_EXPORT WebSecurityOrigin GetSecurityOrigin() const;
+  WebSecurityOrigin GetSecurityOrigin() const;
 
-  BLINK_PLATFORM_EXPORT void RequestSucceeded(
-      std::unique_ptr<WebContentDecryptionModuleAccess>);
-  BLINK_PLATFORM_EXPORT void RequestNotSupported(
-      const WebString& error_message);
+  void RequestSucceeded(std::unique_ptr<WebContentDecryptionModuleAccess>);
+  void RequestNotSupported(const WebString& error_message);
 
 #if INSIDE_BLINK
-  BLINK_PLATFORM_EXPORT explicit WebEncryptedMediaRequest(
-      EncryptedMediaRequest*);
+  explicit WebEncryptedMediaRequest(EncryptedMediaRequest*);
 #endif
 
  private:

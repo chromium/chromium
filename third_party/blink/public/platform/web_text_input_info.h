@@ -37,7 +37,7 @@
 
 namespace blink {
 
-struct WebTextInputInfo {
+struct BLINK_PLATFORM_EXPORT WebTextInputInfo {
   // Identifier for the currently focused input field, or 0 if there is no
   // focus. This identifier is unique for nodes within the same document.
   int node_id = 0;
@@ -78,7 +78,7 @@ struct WebTextInputInfo {
   // The array of ime_text_spans at the current caret position.
   WebVector<ui::ImeTextSpan> ime_text_spans;
 
-  BLINK_PLATFORM_EXPORT bool Equals(const WebTextInputInfo&) const;
+  bool Equals(const WebTextInputInfo&) const;
 };
 
 inline bool operator==(const WebTextInputInfo& a, const WebTextInputInfo& b) {

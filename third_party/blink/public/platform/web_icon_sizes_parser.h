@@ -19,10 +19,9 @@ class WebString;
 // Helper class for parsing icon sizes. The spec is:
 // https://html.spec.whatwg.org/multipage/semantics.html#attr-link-sizes
 // TODO(zqzhang): merge with WebIconURL, and rename it "WebIcon"?
-class WebIconSizesParser {
+class BLINK_PLATFORM_EXPORT WebIconSizesParser {
  public:
-  BLINK_PLATFORM_EXPORT static WebVector<gfx::Size> ParseIconSizes(
-      const WebString& sizes_string);
+  static WebVector<gfx::Size> ParseIconSizes(const WebString& sizes_string);
 };
 
 }  // namespace blink

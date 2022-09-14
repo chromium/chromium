@@ -38,7 +38,7 @@ namespace blink {
 
 class FontDescription;
 
-struct WebFontDescription {
+struct BLINK_PLATFORM_EXPORT WebFontDescription {
   enum GenericFamily {
     kGenericFamilyNone,
     kGenericFamilyStandard,
@@ -77,8 +77,8 @@ struct WebFontDescription {
   int16_t word_spacing = 0;
 
 #if INSIDE_BLINK
-  BLINK_PLATFORM_EXPORT WebFontDescription(const FontDescription&);
-  BLINK_PLATFORM_EXPORT operator FontDescription() const;
+  WebFontDescription(const FontDescription&);
+  operator FontDescription() const;
 #endif
 };
 

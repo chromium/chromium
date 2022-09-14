@@ -46,28 +46,28 @@ class RawData;
 
 // A container for raw bytes. It is inexpensive to copy a WebThreadSafeData
 // object.  It is safe to pass a WebThreadSafeData across threads.
-class WebThreadSafeData {
+class BLINK_PLATFORM_EXPORT WebThreadSafeData {
  public:
   WebThreadSafeData() = default;
-  BLINK_PLATFORM_EXPORT WebThreadSafeData(const char* data, size_t length);
+  WebThreadSafeData(const char* data, size_t length);
 
   ~WebThreadSafeData() { Reset(); }
 
-  BLINK_PLATFORM_EXPORT void Assign(const WebThreadSafeData&);
-  BLINK_PLATFORM_EXPORT void Reset();
+  void Assign(const WebThreadSafeData&);
+  void Reset();
 
-  BLINK_PLATFORM_EXPORT size_t size() const;
-  BLINK_PLATFORM_EXPORT const char* Data() const;
+  size_t size() const;
+  const char* Data() const;
 
   bool IsEmpty() const { return !size(); }
 
-  BLINK_PLATFORM_EXPORT WebThreadSafeData(const WebThreadSafeData&);
-  BLINK_PLATFORM_EXPORT WebThreadSafeData& operator=(const WebThreadSafeData&);
+  WebThreadSafeData(const WebThreadSafeData&);
+  WebThreadSafeData& operator=(const WebThreadSafeData&);
 
 #if INSIDE_BLINK
-  BLINK_PLATFORM_EXPORT WebThreadSafeData(scoped_refptr<RawData>);
-  BLINK_PLATFORM_EXPORT WebThreadSafeData(scoped_refptr<RawData>&&);
-  BLINK_PLATFORM_EXPORT WebThreadSafeData& operator=(scoped_refptr<RawData>);
+  WebThreadSafeData(scoped_refptr<RawData>);
+  WebThreadSafeData(scoped_refptr<RawData>&&);
+  WebThreadSafeData& operator=(scoped_refptr<RawData>);
 #else
   operator std::string() const {
     size_t len = size();

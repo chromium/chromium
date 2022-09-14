@@ -44,7 +44,7 @@ namespace blink {
 
 // WebFontRenderStyle describes the user's preferences for rendering a font at a
 // given size.
-struct WebFontRenderStyle {
+struct BLINK_PLATFORM_EXPORT WebFontRenderStyle {
   enum {
     kNoPreference = 2,
   };
@@ -59,14 +59,14 @@ struct WebFontRenderStyle {
            use_subpixel_positioning == a.use_subpixel_positioning;
   }
 
-  BLINK_PLATFORM_EXPORT static void SetSkiaFontManager(sk_sp<SkFontMgr>);
-  BLINK_PLATFORM_EXPORT static void SetHinting(SkFontHinting);
-  BLINK_PLATFORM_EXPORT static void SetAutoHint(bool);
-  BLINK_PLATFORM_EXPORT static void SetUseBitmaps(bool);
-  BLINK_PLATFORM_EXPORT static void SetAntiAlias(bool);
-  BLINK_PLATFORM_EXPORT static void SetSubpixelRendering(bool);
-  BLINK_PLATFORM_EXPORT static void SetSubpixelPositioning(bool);
-  BLINK_PLATFORM_EXPORT static void SetSystemFontFamily(const WebString& name);
+  static void SetSkiaFontManager(sk_sp<SkFontMgr>);
+  static void SetHinting(SkFontHinting);
+  static void SetAutoHint(bool);
+  static void SetUseBitmaps(bool);
+  static void SetAntiAlias(bool);
+  static void SetSubpixelRendering(bool);
+  static void SetSubpixelPositioning(bool);
+  static void SetSystemFontFamily(const WebString& name);
 
   static WebFontRenderStyle GetDefault();
 

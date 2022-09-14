@@ -44,7 +44,7 @@ class MediaStreamSource;
 class WebPlatformMediaStreamSource;
 class WebString;
 
-class WebMediaStreamSource {
+class BLINK_PLATFORM_EXPORT WebMediaStreamSource {
  public:
   enum Type { kTypeAudio, kTypeVideo };
 
@@ -63,30 +63,29 @@ class WebMediaStreamSource {
     return *this;
   }
 
-  BLINK_PLATFORM_EXPORT void Assign(const WebMediaStreamSource&);
+  void Assign(const WebMediaStreamSource&);
 
-  BLINK_PLATFORM_EXPORT void Initialize(
-      const WebString& id,
-      Type,
-      const WebString& name,
-      bool remote,
-      std::unique_ptr<WebPlatformMediaStreamSource>);
-  BLINK_PLATFORM_EXPORT void Reset();
+  void Initialize(const WebString& id,
+                  Type,
+                  const WebString& name,
+                  bool remote,
+                  std::unique_ptr<WebPlatformMediaStreamSource>);
+  void Reset();
   bool IsNull() const { return private_.IsNull(); }
 
-  BLINK_PLATFORM_EXPORT WebString Id() const;
-  BLINK_PLATFORM_EXPORT Type GetType() const;
+  WebString Id() const;
+  Type GetType() const;
 
-  BLINK_PLATFORM_EXPORT void SetReadyState(ReadyState);
-  BLINK_PLATFORM_EXPORT ReadyState GetReadyState() const;
+  void SetReadyState(ReadyState);
+  ReadyState GetReadyState() const;
 
-  BLINK_PLATFORM_EXPORT WebPlatformMediaStreamSource* GetPlatformSource() const;
+  WebPlatformMediaStreamSource* GetPlatformSource() const;
 
 #if INSIDE_BLINK
-  BLINK_PLATFORM_EXPORT explicit WebMediaStreamSource(MediaStreamSource*);
-  BLINK_PLATFORM_EXPORT WebMediaStreamSource& operator=(MediaStreamSource*);
-  BLINK_PLATFORM_EXPORT operator scoped_refptr<MediaStreamSource>() const;
-  BLINK_PLATFORM_EXPORT operator MediaStreamSource*() const;
+  explicit WebMediaStreamSource(MediaStreamSource*);
+  WebMediaStreamSource& operator=(MediaStreamSource*);
+  operator scoped_refptr<MediaStreamSource>() const;
+  operator MediaStreamSource*() const;
 #endif
 
  private:

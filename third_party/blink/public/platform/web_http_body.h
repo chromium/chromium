@@ -50,7 +50,7 @@ namespace blink {
 
 class EncodedFormData;
 
-class WebHTTPBody {
+class BLINK_PLATFORM_EXPORT WebHTTPBody {
  public:
   struct Element {
     HTTPBodyElementType type;
@@ -74,55 +74,53 @@ class WebHTTPBody {
     return *this;
   }
 
-  BLINK_PLATFORM_EXPORT void Initialize();
-  BLINK_PLATFORM_EXPORT void Reset();
-  BLINK_PLATFORM_EXPORT void Assign(const WebHTTPBody&);
+  void Initialize();
+  void Reset();
+  void Assign(const WebHTTPBody&);
 
   bool IsNull() const { return !private_; }
 
   // Returns the number of elements comprising the http body.
-  BLINK_PLATFORM_EXPORT size_t ElementCount() const;
+  size_t ElementCount() const;
 
   // Sets the values of the element at the given index. Returns false if
   // index is out of bounds.
-  BLINK_PLATFORM_EXPORT bool ElementAt(size_t index, Element&) const;
+  bool ElementAt(size_t index, Element&) const;
 
   // Append to the list of elements.
-  BLINK_PLATFORM_EXPORT void AppendData(const WebData&);
+  void AppendData(const WebData&);
   // Passing -1 to |file_length| means to the end of the file.
-  BLINK_PLATFORM_EXPORT void AppendFileRange(
-      const WebString&,
-      int64_t file_start,
-      int64_t file_length,
-      const absl::optional<base::Time>& modification_time);
-  BLINK_PLATFORM_EXPORT void AppendBlob(const WebString& uuid);
+  void AppendFileRange(const WebString&,
+                       int64_t file_start,
+                       int64_t file_length,
+                       const absl::optional<base::Time>& modification_time);
+  void AppendBlob(const WebString& uuid);
   // TODO(shimazu): Remove this once Network Service is enabled.
-  BLINK_PLATFORM_EXPORT void AppendBlob(
-      const WebString& uuid,
-      uint64_t length,
-      CrossVariantMojoRemote<mojom::BlobInterfaceBase> blob);
-  BLINK_PLATFORM_EXPORT void AppendDataPipe(
+  void AppendBlob(const WebString& uuid,
+                  uint64_t length,
+                  CrossVariantMojoRemote<mojom::BlobInterfaceBase> blob);
+  void AppendDataPipe(
       CrossVariantMojoRemote<network::mojom::DataPipeGetterInterfaceBase>
           data_pipe_getter);
 
-  BLINK_PLATFORM_EXPORT void SetUniqueBoundary();
+  void SetUniqueBoundary();
 
   // Identifies a particular form submission instance. A value of 0 is
   // used to indicate an unspecified identifier.
-  BLINK_PLATFORM_EXPORT int64_t Identifier() const;
-  BLINK_PLATFORM_EXPORT void SetIdentifier(int64_t);
+  int64_t Identifier() const;
+  void SetIdentifier(int64_t);
 
-  BLINK_PLATFORM_EXPORT bool ContainsPasswordData() const;
-  BLINK_PLATFORM_EXPORT void SetContainsPasswordData(bool);
+  bool ContainsPasswordData() const;
+  void SetContainsPasswordData(bool);
 
 #if INSIDE_BLINK
-  BLINK_PLATFORM_EXPORT WebHTTPBody(scoped_refptr<EncodedFormData>);
-  BLINK_PLATFORM_EXPORT WebHTTPBody& operator=(scoped_refptr<EncodedFormData>);
-  BLINK_PLATFORM_EXPORT operator scoped_refptr<EncodedFormData>() const;
+  WebHTTPBody(scoped_refptr<EncodedFormData>);
+  WebHTTPBody& operator=(scoped_refptr<EncodedFormData>);
+  operator scoped_refptr<EncodedFormData>() const;
 #endif
 
  private:
-  BLINK_PLATFORM_EXPORT void EnsureMutable();
+  void EnsureMutable();
 
   WebPrivatePtr<EncodedFormData> private_;
 };
