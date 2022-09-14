@@ -431,7 +431,7 @@ void AppListControllerImpl::ShowAppList() {
   }
   DCHECK(!features::IsProductivityLauncherEnabled() ||
          !bubble_presenter_->IsShowing());
-  fullscreen_presenter_->Show(AppListViewState::kPeeking,
+  fullscreen_presenter_->Show(AppListViewState::kFullscreenAllApps,
                               GetDisplayIdToShowAppListOn(), base::TimeTicks(),
                               /*show_source=*/absl::nullopt);
 }
@@ -543,7 +543,7 @@ void AppListControllerImpl::Show(int64_t display_id,
     bubble_presenter_->Show(display_id);
     return;
   }
-  fullscreen_presenter_->Show(AppListViewState::kPeeking, display_id,
+  fullscreen_presenter_->Show(AppListViewState::kFullscreenAllApps, display_id,
                               event_time_stamp, show_source);
 }
 

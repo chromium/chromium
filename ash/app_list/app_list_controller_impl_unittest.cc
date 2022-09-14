@@ -295,6 +295,35 @@ TEST_F(AppListControllerImplTest, PageResetByTimerInTabletMode) {
   EXPECT_EQ(0, apps_grid_view->pagination_model()->selected_page());
 }
 
+// Verifies that the the virtual keyboard does not get shown if the search box
+// is activated by user typing when the app list in the fullscreen state in
+// tablet mode.
+TEST_F(AppListControllerImplTest, VirtualKeyboardNotShownWhenUserStartsTyping) {
+  Shell::Get()->keyboard_controller()->SetEnableFlag(
+      keyboard::KeyboardEnableFlag::kShelfEnabled);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  // Show the AppListView, then simulate a key press - verify that the virtual
+  // keyboard is not shown.
+  ShowAppListNow(AppListViewState::kFullscreenAllApps);
+  EXPECT_EQ(AppListViewState::kFullscreenAllApps,
+            GetAppListView()->app_list_state());
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_0);
+  EXPECT_EQ(AppListViewState::kFullscreenSearch,
+            GetAppListView()->app_list_state());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(GetVirtualKeyboardWindow()->IsVisible());
+
+  // The keyboard should get shown if the user taps on the search box.
+  GestureTapOn(GetAppListView()->search_box_view());
+  ASSERT_TRUE(keyboard::WaitUntilShown());
+
+  DismissAppListNow();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(nullptr, GetVirtualKeyboardWindow());
+}
+
 // Verifies that in tablet mode, the AppListView has correct bounds when the
 // virtual keyboard is dismissed (see https://crbug.com/944133).
 TEST_F(AppListControllerImplTest, CheckAppListViewBoundsWhenDismissVKeyboard) {
@@ -740,6 +769,211 @@ TEST_F(AppListControllerImplTest, CreatePage) {
 
   // Verify that there is no page break items.
   EXPECT_EQ(0, CountPageBreakItems());
+}
+
+// The test parameter indicates whether the shelf should auto-hide. In either
+// case the animation behaviors should be the same.
+class AppListAnimationTest : public AshTestBase,
+                             public testing::WithParamInterface<bool> {
+ public:
+  AppListAnimationTest() = default;
+
+  AppListAnimationTest(const AppListAnimationTest&) = delete;
+  AppListAnimationTest& operator=(const AppListAnimationTest&) = delete;
+
+  ~AppListAnimationTest() override = default;
+
+  void SetUp() override {
+    AshTestBase::SetUp();
+
+    Shelf* const shelf = AshTestBase::GetPrimaryShelf();
+    shelf->SetAlignment(ShelfAlignment::kBottom);
+
+    if (GetParam()) {
+      shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+    }
+
+    // The shelf should be shown at this point despite auto hide behavior, given
+    // that no windows are shown.
+    shown_shelf_bounds_ = shelf->shelf_widget()->GetWindowBoundsInScreen();
+  }
+
+  int GetAppListCurrentTop() {
+    gfx::Point app_list_top =
+        GetAppListView()->GetBoundsInScreen().top_center();
+    GetAppListView()->GetWidget()->GetLayer()->transform().TransformPoint(
+        &app_list_top);
+    return app_list_top.y();
+  }
+
+  int GetAppListTargetTop() {
+    gfx::Point app_list_top =
+        GetAppListView()->GetBoundsInScreen().top_center();
+    GetAppListView()
+        ->GetWidget()
+        ->GetLayer()
+        ->GetTargetTransform()
+        .TransformPoint(&app_list_top);
+    return app_list_top.y();
+  }
+
+  int shown_shelf_top() const { return shown_shelf_bounds_.y(); }
+
+  // The offset that should be animated between kFullscreenAllApps and kClosed
+  // app list view states - the vertical distance between shelf top (in shown
+  // state) and the app list top in fullscreen state.
+  int FullscreenHeightOffset() const {
+    return shown_shelf_bounds_.y() - FullscreenHeightTop();
+  }
+
+  // The app list view y coordinate in peeking state.
+  int FullscreenHeightTop() const {
+    return shown_shelf_bounds_.bottom() -
+           GetAppListView()->GetHeightForState(
+               AppListViewState::kFullscreenAllApps);
+  }
+
+ private:
+  // Set during setup.
+  gfx::Rect shown_shelf_bounds_;
+};
+
+INSTANTIATE_TEST_SUITE_P(AutoHideShelf, AppListAnimationTest, testing::Bool());
+
+// Tests app list animation to fullscreen state.
+TEST_P(AppListAnimationTest, AppListShowFullscreenAnimation) {
+  // Set the normal transition duration so tests can easily determine intended
+  // animation length, and calculate expected app list position at different
+  // animation step points. Also, prevents the app list view to snapping to the
+  // final position.
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  ShowAppListNow(AppListViewState::kFullscreenAllApps);
+
+  // Verify that the app list view's top matches the shown shelf top as the show
+  // animation starts.
+  EXPECT_EQ(shown_shelf_top(), GetAppListCurrentTop());
+  EXPECT_EQ(FullscreenHeightTop(), GetAppListTargetTop());
+}
+
+// Tests app list animation from fullscreen to closed state.
+TEST_P(AppListAnimationTest, AppListCloseFromFullscreenAnimation) {
+  ShowAppListNow(AppListViewState::kFullscreenAllApps);
+
+  // Set the normal transition duration so tests can easily determine intended
+  // animation length, and calculate expected app list position at different
+  // animation step points. Also, prevents the app list view to snapping to the
+  // final position.
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  // Dismiss app list, initial app list position should be at fullscreen height.
+  const int offset_to_animate = FullscreenHeightOffset();
+  DismissAppListNow();
+  EXPECT_EQ(shown_shelf_top() - offset_to_animate, GetAppListCurrentTop());
+  EXPECT_EQ(shown_shelf_top(), GetAppListTargetTop());
+}
+
+// Tests app list close animation when app list gets dismissed while animating
+// to fullscreen state.
+TEST_P(AppListAnimationTest, AppListDismissWhileShowingFullscreen) {
+  // Set the normal transition duration so tests can easily determine intended
+  // animation length, and calculate expected app list position at different
+  // animation step points. Also, prevents the app list view to snapping to the
+  // final position.
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  ShowAppListNow(AppListViewState::kFullscreenAllApps);
+
+  // Verify that the app list view's top matches the shown shelf top as the show
+  // animation starts.
+  EXPECT_EQ(shown_shelf_top(), GetAppListCurrentTop());
+  EXPECT_EQ(FullscreenHeightTop(), GetAppListTargetTop());
+
+  // Start dismissing app list. Verify the new animation starts at the same
+  // point the show animation ended.
+  DismissAppListNow();
+
+  EXPECT_EQ(shown_shelf_top(), GetAppListTargetTop());
+}
+
+// Tests app list animation when show is requested while app list close
+// animation is in progress.
+TEST_P(AppListAnimationTest, AppListShowFullscreenWhileClosing) {
+  // Show app list while animations are still instantanious.
+  ShowAppListNow(AppListViewState::kFullscreenAllApps);
+
+  // Set the normal transition duration so tests can easily determine intended
+  // animation length, and calculate expected app list position at different
+  // animation step points. Also, prevents the app list view to snapping to the
+  // final position.
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  int offset_to_animate = FullscreenHeightOffset();
+  DismissAppListNow();
+
+  // Verify that the app list view's top initially matches the fullscreen
+  // height.
+  EXPECT_EQ(shown_shelf_top() - offset_to_animate, GetAppListCurrentTop());
+  EXPECT_EQ(shown_shelf_top(), GetAppListTargetTop());
+
+  // Start showing the app list. Verify the new animation starts at the same
+  // point the show animation ended.
+  ShowAppListNow(AppListViewState::kFullscreenAllApps);
+
+  EXPECT_EQ(FullscreenHeightTop(), GetAppListTargetTop());
+}
+
+// Tests that how search box opacity is animated when the app list is shown and
+// closed.
+TEST_P(AppListAnimationTest, SearchBoxOpacityDuringShowAndClose) {
+  // Set a transition duration that prevents the app list view from snapping to
+  // the final position.
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  ShowAppListNow(AppListViewState::kFullscreenAllApps);
+
+  SearchBoxView* const search_box = GetSearchBoxView();
+
+  // The search box opacity should start  at 0, and animate to 1.
+  EXPECT_EQ(0.0f, search_box->layer()->opacity());
+  EXPECT_EQ(1.0f, search_box->layer()->GetTargetOpacity());
+
+  // If the app list is closed while the animation is still in progress, the
+  // search box opacity should animate from the current opacity.
+  DismissAppListNow();
+
+  EXPECT_EQ(0.0f, search_box->layer()->opacity());
+  EXPECT_EQ(0.0f, search_box->layer()->GetTargetOpacity());
+
+  search_box->layer()->GetAnimator()->StopAnimating();
+
+  // When show again, verify the app list animates from 0 opacity again.
+  ShowAppListNow(AppListViewState::kFullscreenAllApps);
+
+  EXPECT_EQ(0.0f, search_box->layer()->opacity());
+  EXPECT_EQ(1.0f, search_box->layer()->GetTargetOpacity());
+
+  search_box->layer()->GetAnimator()->StopAnimating();
+  EXPECT_EQ(1.0f, search_box->layer()->opacity());
+
+  // Search box opacity animates from the current (full opacity) when closed
+  // from shown state.
+  DismissAppListNow();
+
+  EXPECT_EQ(1.0f, search_box->layer()->opacity());
+  EXPECT_EQ(0.0f, search_box->layer()->GetTargetOpacity());
+
+  // If the app list is show again during close animation, the search box
+  // opacity should animate from the current value.
+  ShowAppListNow(AppListViewState::kFullscreenAllApps);
+
+  EXPECT_EQ(1.0f, search_box->layer()->opacity());
+  EXPECT_EQ(1.0f, search_box->layer()->GetTargetOpacity());
 }
 
 class AppListControllerImplMetricsTest : public AshTestBase {

@@ -10,7 +10,6 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_model_provider.h"
-#include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_view.h"
@@ -31,7 +30,6 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/wm/core/window_util.h"
 
 namespace ash {
 namespace {
@@ -69,8 +67,9 @@ class AppListPresenterImplTest : public AshTestBase {
 
   // Shows the app list on the primary display.
   void ShowAppList() {
-    presenter()->Show(AppListViewState::kPeeking, GetPrimaryDisplay().id(),
-                      base::TimeTicks(), /*show_source=*/absl::nullopt);
+    presenter()->Show(AppListViewState::kFullscreenAllApps,
+                      GetPrimaryDisplay().id(), base::TimeTicks(),
+                      /*show_source=*/absl::nullopt);
   }
 
   // Shows the Assistant UI.

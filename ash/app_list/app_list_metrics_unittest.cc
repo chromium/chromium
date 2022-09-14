@@ -27,7 +27,6 @@
 #include "ash/app_list/views/search_result_container_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/app_list/views/search_result_tile_item_list_view.h"
-#include "ash/app_list/views/search_result_tile_item_view.h"
 #include "ash/app_list/views/suggestion_chip_container_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -38,7 +37,6 @@
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shelf/shelf_view_test_api.h"
-#include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -322,38 +320,6 @@ TEST_F(AppListMetricsPeekingLauncherTest, FullscreenAllAppsLaunchFromShelf) {
       "Apps.AppListAppLaunchedV2.FullscreenAllApps",
       AppListLaunchedFrom::kLaunchedFromShelf,
       1 /* Number of times launched from shelf */);
-}
-
-// Test that the histogram records an app launch from the shelf while the
-// peeking launcher is showing.
-TEST_F(AppListMetricsPeekingLauncherTest, PeekingLaunchFromShelf) {
-  base::HistogramTester histogram_tester;
-
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
-
-  CreateAndClickShelfItem();
-
-  histogram_tester.ExpectBucketCount(
-      "Apps.AppListAppLaunchedV2.Peeking",
-      AppListLaunchedFrom::kLaunchedFromShelf,
-      1 /* Number of times launched from shelf */);
-}
-
-// Test that the histogram records an app launch from a suggestion chip while
-// the peeking launcher is showing.
-TEST_F(AppListMetricsPeekingLauncherTest, PeekingLaunchFromChip) {
-  base::HistogramTester histogram_tester;
-
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
-
-  PopulateAndLaunchSuggestionChip();
-
-  histogram_tester.ExpectBucketCount(
-      "Apps.AppListAppLaunchedV2.Peeking",
-      AppListLaunchedFrom::kLaunchedFromSuggestionChip,
-      1 /* Number of times launched from chip */);
 }
 
 // Test that the histogram records an app launch from the shelf while the

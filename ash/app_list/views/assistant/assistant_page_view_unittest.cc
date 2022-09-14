@@ -253,12 +253,13 @@ class AssistantInteractionCounter
   assistant::ScopedAssistantInteractionSubscriber interaction_observer_{this};
 };
 
-TEST_F(AssistantPageNonBubbleTest, ShouldStartInPeekingState) {
+TEST_F(AssistantPageNonBubbleTest, ShouldStartInFullscreenAllAppsState) {
   DoNotShowOnboardingViews();
 
   ShowAssistantUi();
 
-  EXPECT_EQ(AppListViewState::kPeeking, app_list_view()->app_list_state());
+  EXPECT_EQ(AppListViewState::kFullscreenAllApps,
+            app_list_view()->app_list_state());
 }
 
 TEST_F(AssistantPageNonBubbleTest, ShouldStartAtMinimumHeight) {

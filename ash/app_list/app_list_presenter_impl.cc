@@ -345,9 +345,8 @@ ShelfAction AppListPresenterImpl::ToggleAppList(
     Dismiss(event_time_stamp);
     return SHELF_ACTION_APP_LIST_DISMISSED;
   }
-  Show(request_fullscreen ? AppListViewState::kFullscreenAllApps
-                          : AppListViewState::kPeeking,
-       display_id, event_time_stamp, show_source);
+  Show(AppListViewState::kFullscreenAllApps, display_id, event_time_stamp,
+       show_source);
   return SHELF_ACTION_APP_LIST_SHOWN;
 }
 
