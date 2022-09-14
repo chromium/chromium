@@ -4939,8 +4939,10 @@ TEST_F(NetworkContextTest, FactoryParams_DisableSecureDns) {
 #if BUILDFLAG(IS_CT_SUPPORTED)
 TEST_F(NetworkContextTest, ExpectCT) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      net::features::kPartitionExpectCTStateByNetworkIsolationKey);
+  feature_list.InitWithFeatures(
+      {net::TransportSecurityState::kDynamicExpectCTFeature,
+       net::features::kPartitionExpectCTStateByNetworkIsolationKey},
+      {});
 
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());

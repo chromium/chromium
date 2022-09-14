@@ -383,7 +383,7 @@ bool DecodeHSTSPreload(const std::string& search_hostname, PreloadResult* out) {
 
 // static
 const base::Feature TransportSecurityState::kDynamicExpectCTFeature{
-    "DynamicExpectCT", base::FEATURE_ENABLED_BY_DEFAULT};
+    "DynamicExpectCT", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // static
 const base::Feature TransportSecurityState::kCertificateTransparencyEnforcement{

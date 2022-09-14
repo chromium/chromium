@@ -150,6 +150,9 @@ class URLRequestQuicTest
     context_builder_->set_http_network_session_params(params);
     context_builder_->SetCertVerifier(std::move(cert_verifier));
     context_builder_->set_net_log(NetLog::Get());
+
+    scoped_feature_list_.InitAndEnableFeature(
+        TransportSecurityState::kDynamicExpectCTFeature);
   }
 
   void TearDown() override {
@@ -285,6 +288,7 @@ class URLRequestQuicTest
   quic::QuicMemoryCacheBackend memory_cache_backend_;
   std::unique_ptr<URLRequestContextBuilder> context_builder_;
   quic::test::QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // A URLRequest::Delegate that checks LoadTimingInfo when response headers are

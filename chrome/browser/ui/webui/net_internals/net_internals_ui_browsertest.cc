@@ -43,6 +43,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/host_resolver_source.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "net/http/transport_security_state.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/network/test/test_network_context.h"
@@ -347,6 +348,8 @@ void NetInternalsTest::MessageHandler::ResetNetworkContextForTesting(
 NetInternalsTest::NetInternalsTest()
     : test_server_started_(false) {
   message_handler_ = std::make_unique<MessageHandler>(this);
+  scoped_feature_list_.InitAndEnableFeature(
+      net::TransportSecurityState::kDynamicExpectCTFeature);
 }
 
 NetInternalsTest::~NetInternalsTest() {

@@ -51,6 +51,10 @@ namespace {
 content::WebUIDataSource* CreateNetInternalsHTMLSource() {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUINetInternalsHost);
+  source->UseStringsJs();
+  source->AddBoolean("expectCTEnabled",
+                     base::FeatureList::IsEnabled(
+                         net::TransportSecurityState::kDynamicExpectCTFeature));
   source->AddResourcePaths(
       base::make_span(kNetInternalsResources, kNetInternalsResourcesSize));
   source->SetDefaultResource(IDR_NET_INTERNALS_INDEX_HTML);

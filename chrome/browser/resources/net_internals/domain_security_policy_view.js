@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
+import './strings.js';
 import {BrowserBridge} from './browser_bridge.js';
 import {addNode, addNodeWithText, addTextNode} from './util.js';
 import {DivView} from './view.js';
@@ -54,17 +56,22 @@ export class DomainSecurityPolicyView extends DivView {
     form = $(DomainSecurityPolicyView.QUERY_HSTS_FORM_ID);
     form.addEventListener('submit', this.onSubmitHSTSQuery_.bind(this), false);
 
-    form = $(DomainSecurityPolicyView.ADD_EXPECT_CT_FORM_ID);
-    form.addEventListener(
-        'submit', this.onSubmitExpectCTAdd_.bind(this), false);
+    if (loadTimeData.getBoolean('expectCTEnabled')) {
+      form = $(DomainSecurityPolicyView.ADD_EXPECT_CT_FORM_ID);
+      form.addEventListener(
+          'submit', this.onSubmitExpectCTAdd_.bind(this), false);
 
-    form = $(DomainSecurityPolicyView.QUERY_EXPECT_CT_FORM_ID);
-    form.addEventListener(
-        'submit', this.onSubmitExpectCTQuery_.bind(this), false);
+      form = $(DomainSecurityPolicyView.QUERY_EXPECT_CT_FORM_ID);
+      form.addEventListener(
+          'submit', this.onSubmitExpectCTQuery_.bind(this), false);
 
-    form = $(DomainSecurityPolicyView.TEST_REPORT_EXPECT_CT_FORM_ID);
-    form.addEventListener(
-        'submit', this.onSubmitExpectCTTestReport_.bind(this), false);
+      form = $(DomainSecurityPolicyView.TEST_REPORT_EXPECT_CT_FORM_ID);
+      form.addEventListener(
+          'submit', this.onSubmitExpectCTTestReport_.bind(this), false);
+    } else {
+      $(DomainSecurityPolicyView.EXPECT_CT_SECTION_ID)
+          .setAttribute('hidden', true);
+    }
 
     this.hstsObservers_ = [];
     this.expectCTObservers_ = [];
@@ -314,6 +321,7 @@ DomainSecurityPolicyView.DELETE_FORM_ID =
     'domain-security-policy-view-delete-form';
 DomainSecurityPolicyView.DELETE_SUBMIT_ID =
     'domain-security-policy-view-delete-submit';
+DomainSecurityPolicyView.EXPECT_CT_SECTION_ID = 'expect-ct';
 // HSTS form elements
 DomainSecurityPolicyView.ADD_HSTS_INPUT_ID = 'hsts-view-add-input';
 DomainSecurityPolicyView.ADD_STS_CHECK_ID = 'hsts-view-check-sts-input';

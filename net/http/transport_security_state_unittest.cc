@@ -365,6 +365,12 @@ class TransportSecurityStateTest : public ::testing::Test,
     // Need mocked out time for pruning tests. Don't start with a
     // time of 0, as code doesn't generally expect it.
     FastForwardBy(base::Days(1));
+
+    // By default Expect-CT should be disabled, but enable it for tests.
+    EXPECT_FALSE(base::FeatureList::IsEnabled(
+        TransportSecurityState::kDynamicExpectCTFeature));
+    scoped_feature_list_.InitAndEnableFeature(
+        TransportSecurityState::kDynamicExpectCTFeature);
   }
 
   ~TransportSecurityStateTest() override {
@@ -416,6 +422,9 @@ class TransportSecurityStateTest : public ::testing::Test,
                         TransportSecurityState::ExpectCTState* result) {
     return state->GetStaticExpectCTState(host, result);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(TransportSecurityStateTest, DomainNameOddities) {
