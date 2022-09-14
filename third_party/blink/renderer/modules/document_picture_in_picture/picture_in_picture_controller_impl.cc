@@ -424,6 +424,13 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
     PictureInPictureWindowOptions* options,
     ScriptPromiseResolver* resolver,
     ExceptionState& exception_state) {
+  if (!LocalFrame::ConsumeTransientUserActivation(opener.GetFrame())) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotAllowedError,
+        "Document PiP requires user activation"));
+    return;
+  }
+
   WebPictureInPictureWindowOptions web_options;
   web_options.initial_aspect_ratio = options->initialAspectRatio();
   web_options.lock_aspect_ratio = options->lockAspectRatio();

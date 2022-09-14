@@ -725,6 +725,8 @@ TEST_F(PictureInPictureControllerTestWithWidget,
   ScriptState* script_state =
       ToScriptStateForMainWorld(GetDocument().GetFrame());
   ScriptState::Scope entered_context_scope(script_state);
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
   OpenDocumentPictureInPictureSession(v8_scope, GetDocument(),
                                       CopyStyleSheetOptions::kNo);
 
@@ -837,6 +839,8 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
                          .pictureInPictureWindow());
   V8TestingScope v8_scope;
   InitializeDocumentPictureInPictureOpener(v8_scope);
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
   DocumentPictureInPictureSession* pictureInPictureSession =
       OpenDocumentPictureInPictureSession(v8_scope, GetDocument(),
                                           CopyStyleSheetOptions::kNo);
@@ -886,6 +890,8 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
        CopyStylesToDocumentPictureInPictureWindow) {
   V8TestingScope v8_scope;
   InitializeDocumentPictureInPictureOpener(v8_scope);
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
   DocumentPictureInPictureSession* pictureInPictureSession =
       OpenDocumentPictureInPictureSession(v8_scope, GetDocument(),
                                           CopyStyleSheetOptions::kYes);
@@ -906,12 +912,24 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
   ASSERT_NE(sheet, nullptr);
   sheet->setDisabled(true);
 
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
   DocumentPictureInPictureSession* pictureInPictureSession =
       OpenDocumentPictureInPictureSession(v8_scope, GetDocument(),
                                           CopyStyleSheetOptions::kYes);
   Document* pictureInPictureDocument = pictureInPictureSession->document();
   EXPECT_EQ(GetBodyBackgroundColor(v8_scope, pictureInPictureDocument),
             "rgba(0, 0, 0, 0)");
+}
+
+TEST_F(PictureInPictureControllerTestWithChromeClient, RequiresUserGesture) {
+  V8TestingScope v8_scope;
+  InitializeDocumentPictureInPictureOpener(v8_scope);
+
+  DocumentPictureInPictureSession* pictureInPictureSession =
+      OpenDocumentPictureInPictureSession(v8_scope, GetDocument(),
+                                          CopyStyleSheetOptions::kYes);
+  EXPECT_FALSE(pictureInPictureSession);
 }
 
 }  // namespace blink

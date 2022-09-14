@@ -1,14 +1,16 @@
 <!DOCTYPE html>
-<title>Test that navigator.documentPictureInPictureSessionrequestWindow()
+<title>Test that navigator.documentPictureInPicture.requestWindow()
   returns a DocumentPictureInPictureSession object with a document</title>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/user-gesture-utils.js"></script>
 <body>
   <div id="div"></div>
 <script>
 const div = document.getElementById('div');
 
 async_test((t) => {
+  focusWithUserGesture(window);
   navigator.documentPictureInPicture.requestWindow().then(t.step_func_done(
       (pipSession) => {
     assert_true(!!pipSession.document,
@@ -18,7 +20,7 @@ async_test((t) => {
     assert_true(pipSession.window.document === pipSession.document,
         'DocumentPictureInPictureSession window should contain its document');
     assert_true(navigator.documentPictureInPicture.session === pipSession,
-        'DocumentPictureInPictureSession window should contain its document');
+        'DocumentPictureInPicture.session should match the current session');
 
     // We should be able to move an element to that document.
     assert_true(document.body.contains(div),
@@ -33,3 +35,4 @@ async_test((t) => {
   }));
 });
 </script>
+</body>
