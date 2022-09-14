@@ -59,9 +59,6 @@ bool TestDesksTemplatesDelegate::IsWindowSupportedForDeskTemplate(
   return DeskTemplate::IsAppTypeSupported(window);
 }
 
-void TestDesksTemplatesDelegate::OpenFeedbackDialog(
-    const std::string& extra_diagnostics) {}
-
 std::string TestDesksTemplatesDelegate::GetAppShortName(
     const std::string& app_id) {
   return std::string();

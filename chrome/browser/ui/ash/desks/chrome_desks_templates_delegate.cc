@@ -428,18 +428,6 @@ bool ChromeDesksTemplatesDelegate::IsWindowSupportedForDeskTemplate(
   return !IsIncognitoWindow(window);
 }
 
-void ChromeDesksTemplatesDelegate::OpenFeedbackDialog(
-    const std::string& extra_diagnostics) {
-  // Shows a feedback dialog which prompts users to help us identify which
-  // template(s) and app(s) are problematic.
-  chrome::ShowFeedbackPage(
-      /*browser=*/nullptr, chrome::kFeedbackSourceDesksTemplates,
-      /*description_template=*/
-      "#SavedDesks",
-      /*description_placeholder_text=*/std::string(),
-      /*category_tag=*/std::string(), extra_diagnostics);
-}
-
 std::string ChromeDesksTemplatesDelegate::GetAppShortName(
     const std::string& app_id) {
   std::string name;

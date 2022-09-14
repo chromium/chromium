@@ -51,7 +51,6 @@ class ChromeDesksTemplatesDelegate : public ash::DesksTemplatesDelegate {
                               base::Time time_launch_started,
                               base::TimeDelta delay) override;
   bool IsWindowSupportedForDeskTemplate(aura::Window* window) const override;
-  void OpenFeedbackDialog(const std::string& extra_diagnostics) override;
   std::string GetAppShortName(const std::string& app_id) override;
   bool IsAppAvailable(const std::string& app_id) const override;
 
