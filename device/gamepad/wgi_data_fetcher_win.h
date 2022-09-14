@@ -11,6 +11,7 @@
 #include <wrl/event.h>
 
 #include <memory>
+#include <string>
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
@@ -18,6 +19,7 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
 #include "device/gamepad/wgi_gamepad_device.h"
 #include "device/gamepad/xinput_data_fetcher_win.h"
@@ -97,6 +99,11 @@ class DEVICE_GAMEPAD_EXPORT WgiDataFetcherWin final
   GetActivationFactoryFunctionCallback();
 
   std::u16string GetGamepadDisplayName(
+      ABI::Windows::Gaming::Input::IGamepad* gamepad);
+
+  std::u16string BuildGamepadIdString(
+      GamepadId gamepad_id,
+      const std::u16string& display_name,
       ABI::Windows::Gaming::Input::IGamepad* gamepad);
 
   Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IRawGameController>

@@ -15,6 +15,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
@@ -47,6 +49,8 @@ constexpr uint16_t kHardwareProductId = 0x028e;
 constexpr uint16_t kTriggerRumbleHardwareProductId = 0x0b13;
 
 constexpr char kGamepadDisplayName[] = "XBOX_SERIES_X";
+constexpr char16_t kKnownXInputDeviceId[] =
+    u"Xbox 360 Controller (XInput STANDARD GAMEPAD)";
 constexpr double kErrorTolerance = 1e-5;
 
 constexpr unsigned int kGamepadButtonsLength = 17;
@@ -586,33 +590,6 @@ TEST_F(WgiDataFetcherWinTest, WgiGamepadActivationFactoryErrorHandling) {
       WgiDataFetcherWin::InitializationState::kRoGetActivationFactoryFailed);
 }
 
-// If RawGameController2::get_DisplayName fails when calling
-// WgiDataFetcherWin::GetDisplayName, a gamepad will be added with a default
-// DisplayName.
-TEST_F(WgiDataFetcherWinTest, FailuretoGetDisplayNameOnGamepadAdded) {
-  constexpr char16_t kDefaultDisplayName[] = u"Unknown Gamepad";
-  SetUpTestEnv(
-      WgiTestErrorCode::kErrorWgiRawGameControllerGetDisplayNameFailed);
-
-  const auto fake_gamepad = Microsoft::WRL::Make<FakeIGamepad>();
-  auto* fake_gamepad_statics = FakeIGamepadStatics::GetInstance();
-
-  fake_gamepad_statics->SimulateGamepadAdded(
-      fake_gamepad, kHardwareProductId, kHardwareVendorId, kGamepadDisplayName);
-
-  // Wait for the gampad polling thread to handle the gamepad added event.
-  FlushPollingThread();
-
-  // Assert that the gamepad has not been added to the DataFetcher.
-  const base::flat_map<int, std::unique_ptr<WgiGamepadDevice>>& gamepads =
-      fetcher().GetGamepadsForTesting();
-  ASSERT_EQ(gamepads.size(), 1u);
-  PadState* pad = fetcher().GetPadState(gamepads.begin()->first);
-  std::u16string display_id(pad->data.id);
-  EXPECT_EQ(kDefaultDisplayName, display_id);
-  CheckGamepadAdded(pad, GamepadHapticActuatorType::kDualRumble);
-}
-
 // This test case checks that the gamepad data obtained by WgiDataFetcherWin is
 // correct for the following PadState array configuration:
 // Index 0: Generic gamepad with source = GAMEPAD_SOURCE_TEST;
@@ -978,5 +955,68 @@ TEST_P(WgiDataFetcherWinXInputErrorTest, MetaUnavailableWhenXInputFailsToLoad) {
 INSTANTIATE_TEST_SUITE_P(WgiDataFetcherWinXInputErrorTests,
                          WgiDataFetcherWinXInputErrorTest,
                          testing::ValuesIn(kXInputLoadErrors));
+
+// Tests the gamepad id generation both when RawGameController2::get_DisplayName
+// succeeds and fails when calling WgiDataFetcherWin::GetDisplayName. In case of
+// failure, a gamepad will be added with a default DisplayName.
+class WgiDataFetcherWinGamepadIdTest
+    : public WgiDataFetcherWinTest,
+      public testing::WithParamInterface<bool> {};
+
+TEST_P(WgiDataFetcherWinGamepadIdTest, GamepadIds) {
+  const bool should_get_display_name_fail = GetParam();
+  std::string display_name;
+  if (should_get_display_name_fail) {
+    SetUpTestEnv(
+        WgiTestErrorCode::kErrorWgiRawGameControllerGetDisplayNameFailed);
+    display_name = "Unknown Gamepad";
+  } else {
+    SetUpTestEnv();
+    display_name = kGamepadDisplayName;
+  }
+
+  constexpr GamepadId kGamepadIds[] = {// XInputTypeNone gamepad.
+                                       GamepadId::kMicrosoftProduct0b21,
+                                       // XInputTypeXbox360 gamepad.
+                                       GamepadId::kMicrosoftProduct028e,
+                                       // XInputTypeXboxOne gamepad.
+                                       GamepadId::kMicrosoftProduct0b12};
+
+  // Iterate and add fake gamepads.
+  auto* fake_gamepad_statics = FakeIGamepadStatics::GetInstance();
+  for (const GamepadId& device_id : kGamepadIds) {
+    const auto fake_gamepad = Microsoft::WRL::Make<FakeIGamepad>();
+    uint16_t vendor_id, product_id;
+    std::tie(vendor_id, product_id) =
+        GamepadIdList::Get().GetDeviceIdsFromGamepadId(device_id);
+    fake_gamepad_statics->SimulateGamepadAdded(fake_gamepad, product_id,
+                                               vendor_id, display_name);
+  }
+
+  // Wait for the gampad polling thread to handle the gamepad added event.
+  FlushPollingThread();
+
+  // Assert that the gamepads have been added to the DataFetcher.
+  const base::flat_map<int, std::unique_ptr<WgiGamepadDevice>>& gamepads =
+      fetcher().GetGamepadsForTesting();
+  EXPECT_EQ(gamepads.size(), 3u);
+
+  // Build vector with the expected id strings.
+  std::vector<std::u16string> expected_gamepad_id_strings{
+      base::StringPrintf(u"%ls (STANDARD GAMEPAD Vendor: 045e Product: 0b21)",
+                         base::UTF8ToUTF16(display_name).data()),
+      kKnownXInputDeviceId, kKnownXInputDeviceId};
+
+  size_t id_string_index = 0;
+  for (auto it = gamepads.begin(); it != gamepads.end(); ++it) {
+    PadState* pad = fetcher().GetPadState(it->first);
+    std::u16string display_id(pad->data.id);
+    EXPECT_EQ(display_id, expected_gamepad_id_strings[id_string_index++]);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(WgiDataFetcherWinGamepadIdTests,
+                         WgiDataFetcherWinGamepadIdTest,
+                         testing::Bool());
 
 }  // namespace device

@@ -17,6 +17,7 @@
 #include "base/containers/flat_map.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util_win.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/core_winrt_util.h"
@@ -32,6 +33,9 @@
 namespace device {
 
 namespace {
+
+constexpr char16_t kKnownXInputDeviceId[] =
+    u"Xbox 360 Controller (XInput STANDARD GAMEPAD)";
 
 Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IRawGameController>
 GetRawGameController(ABI::Windows::Gaming::Input::IGamepad* gamepad,
@@ -279,7 +283,7 @@ void WgiDataFetcherWin::OnGamepadAdded(
     return;
   state->is_initialized = true;
   Gamepad& pad = state->data;
-  pad.SetID(display_name);
+  pad.SetID(BuildGamepadIdString(gamepad_id, display_name, gamepad));
   pad.connected = true;
 
   if (HasTriggerRumbleSupport(gamepad_id)) {
@@ -501,6 +505,26 @@ std::u16string WgiDataFetcherWin::GetGamepadDisplayName(
   }
   base::win::ScopedHString scoped_display_name(display_name);
   return base::AsString16(scoped_display_name.Get());
+}
+
+std::u16string WgiDataFetcherWin::BuildGamepadIdString(
+    GamepadId gamepad_id,
+    const std::u16string& display_name,
+    ABI::Windows::Gaming::Input::IGamepad* gamepad) {
+  uint16_t vendor_id, product_id;
+  std::tie(vendor_id, product_id) =
+      GamepadIdList::Get().GetDeviceIdsFromGamepadId(gamepad_id);
+  XInputType xinput_type =
+      GamepadIdList::Get().GetXInputType(vendor_id, product_id);
+  if (xinput_type == kXInputTypeNone) {
+    return base::StringPrintf(
+        u"%ls (STANDARD GAMEPAD Vendor: %04x Product: %04x)",
+        display_name.data(), vendor_id, product_id);
+  }
+
+  // If the device is an already known XInput device that is now being
+  // enumerated by WGI, return the old XInput id string.
+  return kKnownXInputDeviceId;
 }
 
 void WgiDataFetcherWin::UnregisterEventHandlers() {
