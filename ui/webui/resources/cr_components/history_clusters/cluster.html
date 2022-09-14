@@ -7,7 +7,7 @@
     padding-bottom: var(--cluster-padding-vertical);
   }
 
-  :host([in-side-panel]) {
+  :host([in-side-panel_]) {
     padding-bottom: 8px;
   }
 
@@ -21,17 +21,17 @@
     margin-bottom: var(--cluster-padding-vertical);
   }
 
-  :host([in-side-panel]) #container {
+  :host([in-side-panel_]) #container {
     border-bottom: 3px solid var(--cr-separator-color);
   }
 
-  :host([in-side-panel]) #container url-visit:last-of-type {
+  :host([in-side-panel_]) #container url-visit:last-of-type {
     padding-bottom: 8px;
   }
 
   /* We need an inner container div to apply spacing between clusters. This is
      because iron-list ignores the margin on the host element. */
-  :host(:not([in-side-panel])) #container {
+  :host(:not([in-side-panel_])) #container {
     background-color: var(--cr-card-background-color);
     border-radius: var(--cr-card-border-radius);
     box-shadow: var(--cr-card-shadow);
@@ -49,7 +49,7 @@
     user-select: none;
   }
 
-  :host([in-side-panel]) .label-row {
+  :host([in-side-panel_]) .label-row {
     padding-inline-start: 16px;
   }
 
@@ -128,7 +128,7 @@
   <!-- In the side panel the label and timestamp should be stacked on the
        left, while outside the side panel the timestamp and the menu should
        be side by side on the right. -->
-  <div class="label-row" hidden="[[!inSidePanel]]">
+  <div class="label-row" hidden="[[!inSidePanel_]]">
     <div id="label-and-timestamp">
       <div id="labelSidePanel" class="label"></div>
       <div class="debug-info">[[cluster.debugInfo]]</div>
@@ -136,7 +136,7 @@
     </div>
     <cluster-menu></cluster-menu>
   </div>
-  <div class="label-row" hidden="[[inSidePanel]]">
+  <div class="label-row" hidden="[[inSidePanel_]]">
     <div id="label" class="label"></div>
     <div class="debug-info">[[cluster.debugInfo]]</div>
     <div class="timestamp-and-menu">

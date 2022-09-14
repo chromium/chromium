@@ -70,7 +70,7 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
       /**
        * Whether the clusters are in the side panel.
        */
-      inSidePanel: {
+      inSidePanel_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('inSidePanel'),
         reflectToAttribute: true,
@@ -122,10 +122,10 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   // Properties
   //============================================================================
 
-  inSidePanel: boolean;
   query: string;
   private callbackRouter_: PageCallbackRouter;
   private headerText_: string;
+  private inSidePanel_: boolean;
   private onClustersQueryResultListenerId_: number|null = null;
   private onVisitsRemovedListenerId_: number|null = null;
   private onHistoryDeletedListenerId_: number|null = null;
@@ -327,7 +327,7 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
     });
     this.showSpinner_ = false;
 
-    if (loadTimeData.getBoolean('inSidePanel')) {
+    if (this.inSidePanel_) {
       this.pageHandler_.showSidePanelUI();
     }
   }

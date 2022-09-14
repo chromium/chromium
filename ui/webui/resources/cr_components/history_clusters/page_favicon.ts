@@ -36,7 +36,7 @@ class PageFavicon extends PolymerElement {
       /**
        * Whether the cluster is in the side panel.
        */
-      inSidePanel: {
+      inSidePanel_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('inSidePanel'),
         reflectToAttribute: true,

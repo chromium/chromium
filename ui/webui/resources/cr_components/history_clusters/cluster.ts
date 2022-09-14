@@ -69,7 +69,7 @@ class HistoryClusterElement extends HistoryClusterElementBase {
       /**
        * Whether the cluster is in the side panel.
        */
-      inSidePanel: {
+      inSidePanel_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('inSidePanel'),
         reflectToAttribute: true,
@@ -123,11 +123,11 @@ class HistoryClusterElement extends HistoryClusterElementBase {
 
   cluster: Cluster;
   index: number;
-  inSidePanel: boolean;
   query: string;
   private callbackRouter_: PageCallbackRouter;
   private expanded_: boolean;
   private hiddenVisits_: URLVisit[];
+  private inSidePanel_: boolean;
   private onVisitsRemovedListenerId_: number|null = null;
   private unusedLabel_: string;
   private visibleVisits_: URLVisit[];
@@ -311,7 +311,7 @@ class HistoryClusterElement extends HistoryClusterElementBase {
       return 'no_label';
     }
 
-    const label = this.inSidePanel ? this.$.labelSidePanel : this.$.label;
+    const label = this.inSidePanel_ ? this.$.labelSidePanel : this.$.label;
     insertHighlightedTextWithMatchesIntoElement(
         label, this.cluster.label!, this.cluster.labelMatchPositions);
     return this.cluster.label!;

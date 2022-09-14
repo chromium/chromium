@@ -100,7 +100,7 @@ class VisitRowElement extends ClusterMenuElementBase {
       /**
        * Whether the cluster is in the side panel.
        */
-      inSidePanel: {
+      inSidePanel_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('inSidePanel'),
         reflectToAttribute: true,
@@ -137,6 +137,7 @@ class VisitRowElement extends ClusterMenuElementBase {
   private annotations_: string[];
   private allowDeletingHistory_: boolean;
   private debugInfo_: string;
+  private inSidePanel_: boolean;
   private unusedTitle_: string;
   private unusedVisibleUrl_: string;
 
