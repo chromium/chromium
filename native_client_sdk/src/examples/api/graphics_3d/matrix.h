@@ -1,7 +1,7 @@
 #ifndef EXAMPLES_API_GRAPHICS_3D_MATRIX_H_
 #define EXAMPLES_API_GRAPHICS_3D_MATRIX_H_
 
-/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+/* Copyright 2012 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
