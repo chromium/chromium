@@ -25,7 +25,13 @@ source_set("profile") {
   sources = [
     "profile.cc",
     "profile.h",
+    "profile_keyed_service_factory.cc",
+    "profile_keyed_service_factory.h",
     "profile_observer.h",
+    "profile_selections.cc",
+    "profile_selections.h",
+    "refcounted_profile_keyed_service_factory.cc",
+    "refcounted_profile_keyed_service_factory.h",
   ]
 
   public_deps = [ "//base" ]
