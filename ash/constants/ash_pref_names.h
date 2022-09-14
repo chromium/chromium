@@ -482,6 +482,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFilesAppFolderShortcuts[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFilesAppUIPrefsMigrated[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFilesAppTrashEnabled[];
+
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kLoginScreenWebUILazyLoading[];
 

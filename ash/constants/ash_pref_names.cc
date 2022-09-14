@@ -1050,6 +1050,10 @@ const char kFilesAppFolderShortcuts[] = "ash.filesapp.folder_shortcuts";
 // the Chrome app to System Web App.
 const char kFilesAppUIPrefsMigrated[] = "ash.filesapp.ui_prefs_migrated";
 
+// A boolean pref that indicates if files can be trashed (on a supported
+// filesystem) or must be always permanently deleted.
+const char kFilesAppTrashEnabled[] = "ash.filesapp.trash_enabled";
+
 // Boolean value for the DeviceLoginScreenWebUILazyLoading device policy.
 const char kLoginScreenWebUILazyLoading[] =
     "ash.login.LoginScreenWebUILazyLoading";
