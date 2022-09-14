@@ -91,6 +91,7 @@ class TestResultsFetcher(object):
             return '%s/%s/layout-test-results' % (url_base, build_number)
         return self.accumulated_results_url_base(builder_name)
 
+    @memoized
     def get_artifact_list_for_test(self, host, result_name):
         """Fetches the list of artifacts for a test-result.
         """
