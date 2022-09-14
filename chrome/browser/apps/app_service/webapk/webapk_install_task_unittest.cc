@@ -218,8 +218,6 @@ TEST_F(WebApkInstallTaskTest, SuccessfulInstall) {
             "org.chromium.webapk.some_package");
   histograms.ExpectBucketCount(apps::kWebApkInstallResultHistogram,
                                apps::WebApkInstallStatus::kSuccess, 1);
-  histograms.ExpectBucketCount(apps::kWebApkArcInstallResultHistogram,
-                               arc::mojom::WebApkInstallResult::kSuccess, 1);
 }
 
 TEST_F(WebApkInstallTaskTest, ShareTarget) {
@@ -304,9 +302,6 @@ TEST_F(WebApkInstallTaskTest, FailedArcInstall) {
   ASSERT_EQ(apps::webapk_prefs::GetWebApkAppIds(profile()).size(), 0u);
   histograms.ExpectBucketCount(apps::kWebApkInstallResultHistogram,
                                apps::WebApkInstallStatus::kGooglePlayError, 1);
-  histograms.ExpectBucketCount(
-      apps::kWebApkArcInstallResultHistogram,
-      arc::mojom::WebApkInstallResult::kErrorResolveNetworkError, 1);
 }
 
 TEST_F(WebApkInstallTaskTest, MinterTimeout) {
@@ -508,8 +503,6 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateMultipleChanges) {
               testing::IsEmpty());
   histograms.ExpectBucketCount(apps::kWebApkUpdateResultHistogram,
                                apps::WebApkInstallStatus::kSuccess, 1);
-  histograms.ExpectBucketCount(apps::kWebApkArcUpdateResultHistogram,
-                               arc::mojom::WebApkInstallResult::kSuccess, 1);
 }
 
 TEST_F(WebApkInstallTaskTest, AbandonedUpdateNoChanges) {

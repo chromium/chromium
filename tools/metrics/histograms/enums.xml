@@ -101521,23 +101521,6 @@ others/histograms.xml -->
   <int value="10" label="Vsync timing update (zcr)"/>
 </enum>
 
-<enum name="WebApkArcInstallResultChromeOS">
-  <int value="0" label="Success"/>
-  <int value="1" label="Unknown error"/>
-  <int value="2" label="Service communication error"/>
-  <int value="3" label="Service communication timeout"/>
-  <int value="4" label="Caller verification failed"/>
-  <int value="5" label="Install policy violation"/>
-  <int value="6" label="Install API disabled"/>
-  <int value="7" label="Unknown account"/>
-  <int value="8" label="Network error while resolving WebAPK"/>
-  <int value="9" label="Error while resolving WebAPK"/>
-  <int value="10" label="WebAPK is not Google signed"/>
-  <int value="11" label="Download cancelled"/>
-  <int value="12" label="Download error"/>
-  <int value="13" label="Install error"/>
-</enum>
-
 <enum name="WebApkDistributor">
   <int value="0" label="Browser"/>
   <int value="1" label="Device Policy"/>
