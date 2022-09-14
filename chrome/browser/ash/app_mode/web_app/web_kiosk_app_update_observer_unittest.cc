@@ -113,6 +113,14 @@ class WebKioskAppUpdateObserverTest : public BrowserWithTestWindowTest {
     app_service_test_.WaitForAppService();
     app_service_ = apps::AppServiceProxyFactory::GetForProfile(profile());
 
+    // |WebKioskAppUpdateObserver| requires WebAppProvider to be ready before it
+    // is created.
+    fake_web_app_provider_ = web_app::FakeWebAppProvider::Get(profile());
+    fake_web_app_provider_->SetDefaultFakeSubsystems();
+    fake_web_app_provider_->SetRunSubsystemStartupTasks(true);
+
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+
     app_publisher_ =
         std::make_unique<FakePublisher>(app_service_, apps::AppType::kWeb);
 
@@ -129,6 +137,7 @@ class WebKioskAppUpdateObserverTest : public BrowserWithTestWindowTest {
   void TearDown() override {
     app_update_observer_.reset();
     app_manager_.reset();
+    fake_web_app_provider_->Shutdown();
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -152,6 +161,14 @@ class WebKioskAppUpdateObserverTest : public BrowserWithTestWindowTest {
 
   WebKioskAppManager* app_manager() { return app_manager_.get(); }
 
+  web_app::WebAppProvider* web_app_provider() {
+    return web_app::WebAppProvider::GetForTest(profile());
+  }
+
+  web_app::WebAppSyncBridge& sync_bridge() {
+    return web_app_provider()->sync_bridge();
+  }
+
   const WebKioskAppData* app_data() {
     return app_manager_->GetAppByAccountId(account_id_);
   }
@@ -169,6 +186,9 @@ class WebKioskAppUpdateObserverTest : public BrowserWithTestWindowTest {
 
   apps::AppServiceTest app_service_test_;
   apps::AppServiceProxy* app_service_ = nullptr;
+
+  // A keyed service not owned by this class.
+  raw_ptr<web_app::FakeWebAppProvider> fake_web_app_provider_;
 
   std::unique_ptr<FakePublisher> app_publisher_;
 
@@ -304,40 +324,7 @@ TEST_F(WebKioskAppUpdateObserverTest, ShouldNotUpdateAppInfoForNonKioskApps) {
   EXPECT_NE(app_data()->launch_url(), kAppLaunchUrl);
 }
 
-class WebKioskAppUpdateObserverWithWebAppProviderTest
-    : public WebKioskAppUpdateObserverTest {
- public:
-  void SetUp() override {
-    WebKioskAppUpdateObserverTest::SetUp();
-
-    fake_web_app_provider_ = web_app::FakeWebAppProvider::Get(profile());
-    fake_web_app_provider_->SetDefaultFakeSubsystems();
-    fake_web_app_provider_->SetRunSubsystemStartupTasks(true);
-
-    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
-  }
-
-  void TearDown() override {
-    fake_web_app_provider_->Shutdown();
-    WebKioskAppUpdateObserverTest::TearDown();
-  }
-
- protected:
-  web_app::WebAppProvider* web_app_provider() {
-    return web_app::WebAppProvider::GetForTest(profile());
-  }
-
-  web_app::WebAppSyncBridge& sync_bridge() {
-    return web_app_provider()->sync_bridge();
-  }
-
- private:
-  // A keyed service not owner by this class.
-  raw_ptr<web_app::FakeWebAppProvider> fake_web_app_provider_;
-};
-
-TEST_F(WebKioskAppUpdateObserverWithWebAppProviderTest,
-       ShouldNotUpdateAppInfoForPlaceholders) {
+TEST_F(WebKioskAppUpdateObserverTest, ShouldNotUpdateAppInfoForPlaceholders) {
   app_manager()->AddAppForTesting(account_id(), GURL(kAppInstallUrl));
   EXPECT_EQ(app_data()->status(), WebKioskAppData::Status::kInit);
   EXPECT_NE(app_data()->name(), kAppTitle);
