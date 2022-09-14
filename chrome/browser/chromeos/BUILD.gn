@@ -2892,6 +2892,7 @@ fuzzer_test("zeroconf_printer_detector_fuzzer") {
   deps = [
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/ash:ash",
     "//chrome/browser/chromeos",
     "//components/exo/wayland:weston_test",
   ]
