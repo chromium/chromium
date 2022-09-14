@@ -13,7 +13,7 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -186,4 +186,4 @@ TEST_F(NetworkPortalNotificationControllerTest, NotificationUpdated) {
   EXPECT_TRUE(HasNotification());
 }
 
-}  // namespace chromeos
+}  // namespace ash

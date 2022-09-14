@@ -20,7 +20,6 @@
 #include "base/memory/ref_counted.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/mobile/mobile_activator.h"
-#include "chrome/browser/ash/net/network_portal_web_dialog.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/notifications/notification_handler.h"
@@ -44,14 +43,14 @@
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "ui/views/widget/widget.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
 const char kNotifierNetworkPortalDetector[] = "ash.network.portal-detector";
 
 std::unique_ptr<message_center::Notification> CreatePost2022Notification(
-    const ash::NetworkState* network,
+    const NetworkState* network,
     scoped_refptr<message_center::NotificationDelegate> delegate,
     message_center::NotifierId notifier_id,
     bool is_wifi,
@@ -102,7 +101,7 @@ std::unique_ptr<message_center::Notification> CreatePost2022Notification(
 }
 
 std::unique_ptr<message_center::Notification> CreatePre2022Notification(
-    const ash::NetworkState* network,
+    const NetworkState* network,
     scoped_refptr<message_center::NotificationDelegate> delegate,
     message_center::NotifierId notifier_id,
     bool is_wifi) {
@@ -127,39 +126,31 @@ void CloseNotification() {
       NetworkPortalNotificationController::kNotificationId);
 }
 
-class NetworkPortalNotificationControllerDelegate
+}  // namespace
+
+class NetworkPortalNotificationController::Delegate
     : public message_center::NotificationDelegate {
  public:
-  explicit NetworkPortalNotificationControllerDelegate(
-      const std::string& guid,
+  explicit Delegate(
       base::WeakPtr<NetworkPortalNotificationController> controller)
-      : guid_(guid), clicked_(false), controller_(controller) {}
+      : controller_(controller) {}
 
-  NetworkPortalNotificationControllerDelegate(
-      const NetworkPortalNotificationControllerDelegate&) = delete;
-  NetworkPortalNotificationControllerDelegate& operator=(
-      const NetworkPortalNotificationControllerDelegate&) = delete;
+  Delegate(const Delegate&) = delete;
+  Delegate& operator=(const Delegate&) = delete;
 
   // Overridden from message_center::NotificationDelegate:
   void Click(const absl::optional<int>& button_index,
              const absl::optional<std::u16string>& reply) override;
 
  private:
-  ~NetworkPortalNotificationControllerDelegate() override {}
-
-  // GUID of the network this notification is generated for.
-  std::string guid_;
-
-  bool clicked_;
+  ~Delegate() override = default;
 
   base::WeakPtr<NetworkPortalNotificationController> controller_;
 };
 
-void NetworkPortalNotificationControllerDelegate::Click(
+void NetworkPortalNotificationController::Delegate::Click(
     const absl::optional<int>& button_index,
     const absl::optional<std::u16string>& reply) {
-  clicked_ = true;
-
   Profile* profile = ProfileManager::GetActiveUserProfile();
 
   const bool use_incognito_profile =
@@ -181,14 +172,12 @@ void NetworkPortalNotificationControllerDelegate::Click(
   CloseNotification();
 }
 
-}  // namespace
-
 // static
 const char NetworkPortalNotificationController::kNotificationId[] =
     "chrome://net/network_portal_detector";
 
 NetworkPortalNotificationController::NetworkPortalNotificationController() {
-  if (NetworkHandler::IsInitialized()) // May be null in tests.
+  if (NetworkHandler::IsInitialized())  // May be null in tests.
     NetworkHandler::Get()->network_state_handler()->AddObserver(this);
   DCHECK(session_manager::SessionManager::Get());
   session_manager::SessionManager::Get()->AddObserver(this);
@@ -224,7 +213,7 @@ void NetworkPortalNotificationController::PortalStateChanged(
   }
 
   // Don't do anything if we're currently activating the device.
-  if (ash::MobileActivator::GetInstance()->RunningActivation())
+  if (MobileActivator::GetInstance()->RunningActivation())
     return;
 
   // Don't do anything if notification for |network| already was
@@ -266,21 +255,19 @@ void NetworkPortalNotificationController::OnDialogDestroyed(
     const NetworkPortalWebDialog* dialog) {
   if (dialog == dialog_) {
     dialog_ = nullptr;
-    ash::SigninProfileHandler::Get()->ClearSigninProfile(base::NullCallback());
+    SigninProfileHandler::Get()->ClearSigninProfile(base::NullCallback());
   }
 }
 
 std::unique_ptr<message_center::Notification>
 NetworkPortalNotificationController::CreateDefaultCaptivePortalNotification(
-    const ash::NetworkState* network,
+    const NetworkState* network,
     NetworkState::PortalState portal_state) {
-  auto delegate =
-      base::MakeRefCounted<NetworkPortalNotificationControllerDelegate>(
-          network->guid(), weak_factory_.GetWeakPtr());
+  auto delegate = base::MakeRefCounted<Delegate>(weak_factory_.GetWeakPtr());
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT,
       kNotifierNetworkPortalDetector,
-      ash::NotificationCatalogName::kNetworkPortalDetector);
+      NotificationCatalogName::kNetworkPortalDetector);
   bool is_wifi = NetworkTypePattern::WiFi().MatchesType(network->type());
   std::unique_ptr<message_center::Notification> notification;
   if (ash::features::IsCaptivePortalUI2022Enabled()) {
@@ -302,9 +289,8 @@ void NetworkPortalNotificationController::CloseDialog() {
     dialog_->Close();
 }
 
-const NetworkPortalWebDialog*
-NetworkPortalNotificationController::GetDialogForTesting() const {
-  return dialog_;
+bool NetworkPortalNotificationController::IsDialogShownForTesting() const {
+  return !!dialog_;
 }
 
-}  // namespace chromeos
+}  // namespace ash

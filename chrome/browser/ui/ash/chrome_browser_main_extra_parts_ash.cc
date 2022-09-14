@@ -290,7 +290,7 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kTestType)) {
     network_portal_notification_controller_ =
-        std::make_unique<chromeos::NetworkPortalNotificationController>();
+        std::make_unique<ash::NetworkPortalNotificationController>();
   }
 
   ash_web_view_factory_ = std::make_unique<AshWebViewFactoryImpl>();

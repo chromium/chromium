@@ -195,16 +195,9 @@ class NetworkPortalDetectorImplBrowserTest
     network_portal_notification_controller_->SetIgnoreNoNetworkForTesting();
   }
 
-  const NetworkPortalWebDialog* GetDialog() const {
-    return network_portal_notification_controller_->GetDialogForTesting();
-  }
-
  protected:
   AccountId test_account_id_;
-
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-
- private:
   NetworkPortalDetectorImpl* network_portal_detector_;
   std::unique_ptr<NetworkPortalNotificationController>
       network_portal_notification_controller_;
@@ -268,7 +261,8 @@ void NetworkPortalDetectorImplBrowserTestIgnoreProxy::TestImpl(
 
   content::RunAllPendingInMessageLoop();
 
-  EXPECT_EQ(preference_value, static_cast<bool>(GetDialog()));
+  EXPECT_EQ(preference_value,
+            network_portal_notification_controller_->IsDialogShownForTesting());
 }
 
 IN_PROC_BROWSER_TEST_P(NetworkPortalDetectorImplBrowserTestIgnoreProxy,

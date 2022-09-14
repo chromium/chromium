@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_NET_NETWORK_PORTAL_WEB_DIALOG_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/ash/network/network_portal_notification_controller.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
 namespace views {
@@ -19,12 +18,20 @@ namespace ash {
 // It is automatically closed when successful authorization is detected.
 class NetworkPortalWebDialog : public ui::WebDialogDelegate {
  public:
-  explicit NetworkPortalWebDialog(
-      base::WeakPtr<NetworkPortalNotificationController> controller);
+  class Delegate {
+   public:
+    Delegate() = default;
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+    virtual ~Delegate() = default;
 
+    // Called once when the dialog is destroyed.
+    virtual void OnDialogDestroyed(const NetworkPortalWebDialog* dialog) = 0;
+  };
+
+  explicit NetworkPortalWebDialog(base::WeakPtr<Delegate> delegate);
   NetworkPortalWebDialog(const NetworkPortalWebDialog&) = delete;
   NetworkPortalWebDialog& operator=(const NetworkPortalWebDialog&) = delete;
-
   ~NetworkPortalWebDialog() override;
 
   void SetWidget(views::Widget* widget);
@@ -44,16 +51,11 @@ class NetworkPortalWebDialog : public ui::WebDialogDelegate {
                        bool* out_close_dialog) override;
   bool ShouldShowDialogTitle() const override;
 
-  base::WeakPtr<NetworkPortalNotificationController> controller_;
+  base::WeakPtr<Delegate> delegate_;
 
   views::Widget* widget_;
 };
 
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos {
-using ::ash::NetworkPortalWebDialog;
-}
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_PORTAL_WEB_DIALOG_H_
