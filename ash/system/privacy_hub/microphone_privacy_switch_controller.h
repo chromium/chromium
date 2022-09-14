@@ -11,13 +11,15 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "ui/events/devices/microphone_mute_switch_monitor.h"
 
 namespace ash {
 
 // This controller keeps the KUserMicrophoneAllowed preference and the state of
 // the system input mute in sync.
 class ASH_EXPORT MicrophonePrivacySwitchController
-    : public CrasAudioHandler::AudioObserver,
+    : public ui::MicrophoneMuteSwitchMonitor::Observer,
+      public CrasAudioHandler::AudioObserver,
       public SessionObserver {
  public:
   MicrophonePrivacySwitchController();
@@ -28,11 +30,17 @@ class ASH_EXPORT MicrophonePrivacySwitchController
   MicrophonePrivacySwitchController& operator=(
       const MicrophonePrivacySwitchController&) = delete;
 
-  // SessionObserver:
+  // SessionObserver
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
-  // CrasAudioHandler::AudioObserver:
+  // CrasAudioHandler::AudioObserver
   void OnInputMuteChanged(bool mute_on) override;
+
+  // CrasAudioHandler::AudioObserver
+  void OnAudioNodesChanged() override;
+
+  // ui::MicrophoneMuteSwitchMonitor::Observer
+  void OnMicrophoneMuteSwitchValueChanged(bool muted) override;
 
  private:
   // A callback that is invoked when the user changes KUserMicrophoneAllowed

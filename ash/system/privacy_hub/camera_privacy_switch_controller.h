@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 
 namespace ash {
 
@@ -30,7 +31,9 @@ class CameraPrivacySwitchAPI {
 // It listens on both ends and changes UI to reflect changes in
 // the backend and notifies the backend of changes in the user
 // preference setting.
-class ASH_EXPORT CameraPrivacySwitchController : public SessionObserver {
+class ASH_EXPORT CameraPrivacySwitchController
+    : public SessionObserver,
+      public media::CameraPrivacySwitchObserver {
  public:
   CameraPrivacySwitchController();
 
@@ -43,9 +46,18 @@ class ASH_EXPORT CameraPrivacySwitchController : public SessionObserver {
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
+  // media::CameraPrivacySwitchObserver
+  void OnCameraHWPrivacySwitchStatusChanged(
+      int32_t camera_id,
+      cros::mojom::CameraPrivacySwitchState state) override;
+
   // Handles user toggling the camera switch on Privacy Hub UI.
   void OnPreferenceChanged(const std::string& pref_name);
 
+  // Returns the last observed HW switch state for the camera.
+  cros::mojom::CameraPrivacySwitchState HWSwitchState() const;
+
+  // Sets Privacy switch API for testing
   void SetCameraPrivacySwitchAPIForTest(
       std::unique_ptr<CameraPrivacySwitchAPI> switch_api);
 
@@ -55,6 +67,7 @@ class ASH_EXPORT CameraPrivacySwitchController : public SessionObserver {
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::unique_ptr<CameraPrivacySwitchAPI> switch_api_;
+  cros::mojom::CameraPrivacySwitchState camera_privacy_switch_state_;
 };
 
 }  // namespace ash

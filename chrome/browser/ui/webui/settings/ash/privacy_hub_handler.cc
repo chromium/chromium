@@ -5,9 +5,13 @@
 #include "chrome/browser/ui/webui/settings/ash/privacy_hub_handler.h"
 
 #include "base/bind.h"
+#include "base/logging.h"
+#include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
+
+namespace chromeos::settings {
 
 namespace {
-
+// Translates CameraPrivacySwitch state into base::Value
 base::Value CameraPrivacySwitchStateToBaseValue(
     cros::mojom::CameraPrivacySwitchState state) {
   switch (state) {
@@ -22,23 +26,14 @@ base::Value CameraPrivacySwitchStateToBaseValue(
 
 }  // namespace
 
-namespace chromeos::settings {
-
-PrivacyHubHandler::PrivacyHubHandler()
-    : camera_privacy_switch_state_(media::CameraHalDispatcherImpl::GetInstance()
-                                       ->AddCameraPrivacySwitchObserver(this)) {
-  ui::MicrophoneMuteSwitchMonitor::Get()->AddObserver(this);
-  CrasAudioHandler::Get()->AddAudioObserver(this);
-}
+PrivacyHubHandler::PrivacyHubHandler() = default;
 
 PrivacyHubHandler::~PrivacyHubHandler() {
-  media::CameraHalDispatcherImpl::GetInstance()
-      ->RemoveCameraPrivacySwitchObserver(this);
-  ui::MicrophoneMuteSwitchMonitor::Get()->RemoveObserver(this);
-  CrasAudioHandler::Get()->RemoveAudioObserver(this);
+  ash::privacy_hub_util::SetFrontend(nullptr);
 }
 
 void PrivacyHubHandler::RegisterMessages() {
+  ash::privacy_hub_util::SetFrontend(this);
   web_ui()->RegisterMessageCallback(
       "getInitialCameraHardwareToggleState",
       base::BindRepeating(&PrivacyHubHandler::HandleInitialCameraSwitchState,
@@ -56,37 +51,13 @@ void PrivacyHubHandler::RegisterMessages() {
           base::Unretained(this)));
 }
 
-void PrivacyHubHandler::OnAudioNodesChanged() {
+void PrivacyHubHandler::NotifyJS(const std::string& event_name,
+                                 const base::Value& value) {
   if (IsJavascriptAllowed()) {
-    FireWebUIListener(
-        "availability-of-microphone-for-simple-usage-changed",
-        base::Value(
-            CrasAudioHandler::Get()->HasActiveInputDeviceForSimpleUsage()));
+    FireWebUIListener(event_name, value);
   } else {
-    DVLOG(1) << "JS disabled. Skip updating the availability of microphone for "
-                "simple usage until enabled";
-  }
-}
-
-void PrivacyHubHandler::OnCameraHWPrivacySwitchStatusChanged(
-    int32_t camera_id,
-    cros::mojom::CameraPrivacySwitchState state) {
-  camera_privacy_switch_state_ = state;
-  if (IsJavascriptAllowed()) {
-    const base::Value value =
-        CameraPrivacySwitchStateToBaseValue(camera_privacy_switch_state_);
-    FireWebUIListener("camera-hardware-toggle-changed", value);
-  } else {
-    DVLOG(1) << "JS disabled. Skip camera privacy switch update until enabled";
-  }
-}
-
-void PrivacyHubHandler::OnMicrophoneMuteSwitchValueChanged(bool muted) {
-  if (IsJavascriptAllowed()) {
-    FireWebUIListener("microphone-hardware-toggle-changed", base::Value(muted));
-  } else {
-    DVLOG(1) << "JS disabled. Skip microphone hardware privacy switch update "
-                "until enabled";
+    DVLOG(1) << "JS disabled. Skip \"" << event_name
+             << "\" event until enabled.";
   }
 }
 
@@ -97,8 +68,8 @@ void PrivacyHubHandler::HandleInitialCameraSwitchState(
   DCHECK_GE(1U, args.size()) << ": Did not expect arguments";
   DCHECK_EQ(1U, args.size()) << ": Callback ID is required";
   const auto& callback_id = args[0];
-  const base::Value value =
-      CameraPrivacySwitchStateToBaseValue(camera_privacy_switch_state_);
+  const base::Value value = CameraPrivacySwitchStateToBaseValue(
+      ash::privacy_hub_util::CameraHWSwitchState());
 
   ResolveJavascriptCallback(callback_id, value);
 }
@@ -110,8 +81,8 @@ void PrivacyHubHandler::HandleInitialMicrophoneSwitchState(
   DCHECK_GE(1U, args.size()) << ": Did not expect arguments";
   DCHECK_EQ(1U, args.size()) << ": Callback ID is required";
   const auto& callback_id = args[0];
-  const base::Value value = base::Value(
-      ui::MicrophoneMuteSwitchMonitor::Get()->microphone_mute_switch_on());
+  const base::Value value =
+      base::Value(ash::privacy_hub_util::MicrophoneSwitchState());
 
   ResolveJavascriptCallback(callback_id, value);
 }
@@ -123,10 +94,27 @@ void PrivacyHubHandler::HandleInitialAvailabilityOfMicrophoneForSimpleUsage(
   DCHECK_GE(1U, args.size()) << ": Did not expect arguments";
   DCHECK_EQ(1U, args.size()) << ": Callback ID is required";
   const auto& callback_id = args[0];
-  const base::Value value = base::Value(
-      CrasAudioHandler::Get()->HasActiveInputDeviceForSimpleUsage());
+
+  const base::Value value =
+      base::Value(ash::privacy_hub_util::HasActiveInputDeviceForSimpleUsage());
 
   ResolveJavascriptCallback(callback_id, value);
+}
+
+void PrivacyHubHandler::AvailabilityOfMicrophoneChanged(
+    bool has_active_input_device) {
+  NotifyJS("availability-of-microphone-for-simple-usage-changed",
+           base::Value(has_active_input_device));
+}
+
+void PrivacyHubHandler::MicrophoneHardwareToggleChanged(bool muted) {
+  NotifyJS("microphone-hardware-toggle-changed", base::Value(muted));
+}
+
+void PrivacyHubHandler::CameraHardwareToggleChanged(
+    cros::mojom::CameraPrivacySwitchState state) {
+  NotifyJS("camera-hardware-toggle-changed",
+           CameraPrivacySwitchStateToBaseValue(state));
 }
 
 }  // namespace chromeos::settings

@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "content/public/test/test_web_ui.h"
+#include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos::settings {
@@ -20,8 +21,6 @@ class TestPrivacyHubHandler : public PrivacyHubHandler {
   using PrivacyHubHandler::HandleInitialAvailabilityOfMicrophoneForSimpleUsage;
   using PrivacyHubHandler::HandleInitialCameraSwitchState;
   using PrivacyHubHandler::HandleInitialMicrophoneSwitchState;
-  using PrivacyHubHandler::OnAudioNodesChanged;
-  using PrivacyHubHandler::OnCameraHWPrivacySwitchStatusChanged;
 };
 
 using cps = cros::mojom::CameraPrivacySwitchState;
@@ -129,9 +128,8 @@ class PrivacyHubHandlerCameraTest : public PrivacyHubHandlerTest,
   }
 };
 
-TEST_P(PrivacyHubHandlerCameraTest, CameraHardwarePrivacySwitchChanged) {
-  privacy_hub_handler_.OnCameraHWPrivacySwitchStatusChanged(/*camera_id=*/0,
-                                                            GetParam());
+TEST_P(PrivacyHubHandlerCameraTest, CameraHardwareToggleChanged) {
+  privacy_hub_handler_.CameraHardwareToggleChanged(GetParam());
 
   const base::Value data =
       GetLastWebUIListenerData("camera-hardware-toggle-changed");
@@ -158,7 +156,7 @@ TEST_F(PrivacyHubHandlerCameraTest, HandleInitialCameraSwitchState) {
 
 TEST_P(PrivacyHubHandlerMicrophoneTest,
        MicrophoneHardwarePrivacySwitchChanged) {
-  SetParamValueMicrophoneMute();
+  privacy_hub_handler_.MicrophoneHardwareToggleChanged(GetParam());
 
   const base::Value data =
       GetLastWebUIListenerData("microphone-hardware-toggle-changed");
@@ -179,13 +177,25 @@ TEST_P(PrivacyHubHandlerMicrophoneTest, HandleInitialMicrophoneSwitchState) {
   ExpectValueMatchesBoolParam(data);
 }
 
-TEST_F(PrivacyHubHandlerMicrophoneTest, OnAudioNodesChanged) {
-  privacy_hub_handler_.OnAudioNodesChanged();
+TEST_F(PrivacyHubHandlerMicrophoneTest,
+       HandleInitialAvailabilityOfSimpleMicrophone) {
+  base::Value::List args;
+  args.Append(this_test_name_);
+
+  privacy_hub_handler_.HandleInitialAvailabilityOfMicrophoneForSimpleUsage(
+      args);
+
+  const base::Value data = GetLastWebUIResponse(this_test_name_);
+  EXPECT_FALSE(data.is_none());
+}
+
+TEST_P(PrivacyHubHandlerMicrophoneTest, AvailabilityOfMicrophoneChanged) {
+  privacy_hub_handler_.AvailabilityOfMicrophoneChanged(GetParam());
 
   const base::Value data = GetLastWebUIListenerData(
       "availability-of-microphone-for-simple-usage-changed");
 
-  EXPECT_FALSE(data.is_none());
+  ExpectValueMatchesBoolParam(data);
 }
 
 INSTANTIATE_TEST_SUITE_P(HardwareSwitchStates,

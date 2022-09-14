@@ -2139,6 +2139,8 @@ source_set("ash") {
     "printing/usb_printer_util.h",
     "printing/zeroconf_printer_detector.cc",
     "printing/zeroconf_printer_detector.h",
+    "privacy_hub/privacy_hub_util.cc",
+    "privacy_hub/privacy_hub_util.h",
     "process_snapshot_server.cc",
     "process_snapshot_server.h",
     "profiles/browser_context_helper_delegate_impl.cc",
