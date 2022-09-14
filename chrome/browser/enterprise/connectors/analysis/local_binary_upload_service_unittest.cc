@@ -1,0 +1,165 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/enterprise/connectors/analysis/local_binary_upload_service.h"
+
+#include "analysis_settings.h"
+#include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_sdk_manager.h"
+#include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_sdk_manager.h"
+#include "chrome/test/base/testing_profile.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace enterprise_connectors {
+
+using ::safe_browsing::BinaryUploadService;
+using ::testing::_;
+using ::testing::Invoke;
+using ::testing::NiceMock;
+using ::testing::NotNull;
+using ::testing::Return;
+using ::testing::SaveArg;
+
+class MockRequest : public BinaryUploadService::Request {
+ public:
+  MockRequest(BinaryUploadService::ContentAnalysisCallback callback,
+              LocalAnalysisSettings settings)
+      : BinaryUploadService::Request(
+            std::move(callback),
+            CloudOrLocalAnalysisSettings(std::move(settings))) {}
+  MOCK_METHOD1(GetRequestData, void(DataCallback));
+};
+
+class LocalBinaryUploadServiceTest : public testing::Test {
+ public:
+  LocalBinaryUploadServiceTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    service_ = std::make_unique<LocalBinaryUploadService>();
+  }
+
+  std::unique_ptr<MockRequest> MakeRequest(
+      BinaryUploadService::Result* scanning_result,
+      ContentAnalysisResponse* scanning_response) {
+    LocalAnalysisSettings settings;
+    settings.local_path = "local_system_path";
+    settings.user_specific = false;
+    auto request = std::make_unique<NiceMock<MockRequest>>(
+        base::BindOnce(
+            [](BinaryUploadService::Result* target_result,
+               ContentAnalysisResponse* target_response,
+               BinaryUploadService::Result result,
+               ContentAnalysisResponse response) {
+              *target_result = result;
+              *target_response = response;
+            },
+            scanning_result, scanning_response),
+        settings);
+
+    ON_CALL(*request, GetRequestData(_))
+        .WillByDefault(
+            Invoke([](BinaryUploadService::Request::DataCallback callback) {
+              BinaryUploadService::Request::Data data;
+              data.contents = "contents";
+              data.size = data.contents.size();
+              std::move(callback).Run(BinaryUploadService::Result::SUCCESS,
+                                      std::move(data));
+            }));
+    return request;
+  }
+
+ protected:
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
+  FakeContentAnalysisSdkManager fake_sdk_manager_;
+  std::unique_ptr<LocalBinaryUploadService> service_;
+};
+
+TEST_F(LocalBinaryUploadServiceTest, ClientCreatedFromMaybeAcknowledge) {
+  LocalBinaryUploadService lbus;
+
+  LocalAnalysisSettings settings;
+  settings.local_path = "local_system_path";
+  settings.user_specific = false;
+  content_analysis::sdk::Client::Config config{settings.local_path,
+                                               settings.user_specific};
+
+  auto ack = std::make_unique<safe_browsing::BinaryUploadService::Ack>(
+      CloudOrLocalAnalysisSettings(std::move(settings)));
+  lbus.MaybeAcknowledge(std::move(ack));
+
+  EXPECT_TRUE(fake_sdk_manager_.HasClientForTesting(config));
+}
+
+TEST_F(LocalBinaryUploadServiceTest, ClientDestroyedWhenAckStatusIsAbnormal) {
+  LocalBinaryUploadService lbus;
+
+  fake_sdk_manager_.SetClientAckStatus(-1);
+
+  LocalAnalysisSettings settings;
+  settings.local_path = "local_system_path";
+  settings.user_specific = false;
+  content_analysis::sdk::Client::Config config{"local_system_path", false};
+
+  auto ack = std::make_unique<safe_browsing::BinaryUploadService::Ack>(
+      CloudOrLocalAnalysisSettings(std::move(settings)));
+  lbus.MaybeAcknowledge(std::move(ack));
+
+  EXPECT_TRUE(fake_sdk_manager_.HasClientForTesting(config));
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(fake_sdk_manager_.HasClientForTesting(config));
+}
+
+TEST_F(LocalBinaryUploadServiceTest, UploadSucceeds) {
+  LocalBinaryUploadService lbus;
+
+  BinaryUploadService::Result result;
+  ContentAnalysisResponse response;
+  lbus.MaybeUploadForDeepScanning(MakeRequest(&result, &response));
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(result, BinaryUploadService::Result::SUCCESS);
+}
+
+TEST_F(LocalBinaryUploadServiceTest, UploadFailsWhenClientUnableToSend) {
+  LocalBinaryUploadService lbus;
+
+  fake_sdk_manager_.SetClientSendStatus(-1);
+
+  BinaryUploadService::Result result;
+  ContentAnalysisResponse response;
+  lbus.MaybeUploadForDeepScanning(MakeRequest(&result, &response));
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(result, BinaryUploadService::Result::UPLOAD_FAILURE);
+}
+
+TEST_F(LocalBinaryUploadServiceTest,
+       VerifyRequestTokenParityWhenUploadSucceeds) {
+  LocalBinaryUploadService lbus;
+
+  BinaryUploadService::Result result;
+  ContentAnalysisResponse response;
+  lbus.MaybeUploadForDeepScanning(MakeRequest(&result, &response));
+
+  task_environment_.RunUntilIdle();
+
+  FakeContentAnalysisSdkClient* fake_client_ptr =
+      fake_sdk_manager_.GetFakeClient({"local_system_path", false});
+  ASSERT_THAT(fake_client_ptr, NotNull());
+
+  const content_analysis::sdk::ContentAnalysisRequest& sdk_request =
+      fake_client_ptr->GetRequest();
+  EXPECT_EQ(result, BinaryUploadService::Result::SUCCESS);
+  EXPECT_TRUE(sdk_request.has_request_token());
+  EXPECT_EQ(sdk_request.request_token(), response.request_token());
+}
+
+}  // namespace enterprise_connectors

@@ -6353,10 +6353,6 @@ static_library("browser") {
       "enterprise/chrome_browser_main_extra_parts_enterprise.h",
       "enterprise/connectors/analysis/content_analysis_sdk_manager.cc",
       "enterprise/connectors/analysis/content_analysis_sdk_manager.h",
-      "enterprise/connectors/analysis/fake_content_analysis_sdk_client.cc",
-      "enterprise/connectors/analysis/fake_content_analysis_sdk_client.h",
-      "enterprise/connectors/analysis/fake_content_analysis_sdk_manager.cc",
-      "enterprise/connectors/analysis/fake_content_analysis_sdk_manager.h",
       "enterprise/connectors/analysis/local_binary_upload_service.cc",
       "enterprise/connectors/analysis/local_binary_upload_service.h",
       "enterprise/connectors/analysis/local_binary_upload_service_factory.cc",
@@ -6400,7 +6396,8 @@ static_library("browser") {
       "//components/device_signals/core/browser",
       "//components/device_signals/core/common",
     ]
-    public_deps += [ "//third_party/content_analysis_sdk:liblcasdk" ]
+    public_deps +=
+        [ "//chrome/browser/enterprise/connectors/analysis:sdk_manager" ]
 
     if (is_win) {
       deps += [

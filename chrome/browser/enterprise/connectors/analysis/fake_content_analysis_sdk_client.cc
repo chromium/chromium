@@ -20,6 +20,9 @@ FakeContentAnalysisSdkClient::GetConfig() const {
 int FakeContentAnalysisSdkClient::Send(
     const content_analysis::sdk::ContentAnalysisRequest& request,
     content_analysis::sdk::ContentAnalysisResponse* response) {
+  request_ = request;
+  // To correlate request and response, just like what the real agent should do.
+  response_.set_request_token(request_.request_token());
   *response = response_;
   return send_status_;
 }
@@ -29,6 +32,15 @@ int FakeContentAnalysisSdkClient::Acknowledge(
   return ack_status_;
 }
 
+const content_analysis::sdk::ContentAnalysisRequest&
+FakeContentAnalysisSdkClient::GetRequest() {
+  return request_;
+}
+
+void FakeContentAnalysisSdkClient::SetAckStatus(int status) {
+  ack_status_ = status;
+}
+
 void FakeContentAnalysisSdkClient::SetSendStatus(int status) {
   send_status_ = status;
 }
@@ -36,10 +48,6 @@ void FakeContentAnalysisSdkClient::SetSendStatus(int status) {
 void FakeContentAnalysisSdkClient::SetSendResponse(
     const content_analysis::sdk::ContentAnalysisResponse& response) {
   response_ = response;
-}
-
-void FakeContentAnalysisSdkClient::SetAckStatus(int status) {
-  ack_status_ = status;
 }
 
 }  // namespace enterprise_connectors

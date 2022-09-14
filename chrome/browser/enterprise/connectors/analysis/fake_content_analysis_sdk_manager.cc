@@ -17,11 +17,43 @@ FakeContentAnalysisSdkManager::~FakeContentAnalysisSdkManager() {
   ContentAnalysisSdkManager::SetManagerForTesting(nullptr);
 }
 
-// TODO(b/226679912): May need to add setter methods to access fake client.
+void FakeContentAnalysisSdkManager::SetClientSendStatus(int status) {
+  send_status_ = status;
+}
+
+void FakeContentAnalysisSdkManager::SetClientSendResponse(
+    const content_analysis::sdk::ContentAnalysisResponse& response) {
+  response_ = response;
+}
+
+void FakeContentAnalysisSdkManager::SetClientAckStatus(int status) {
+  ack_status_ = status;
+}
+
 std::unique_ptr<content_analysis::sdk::Client>
 FakeContentAnalysisSdkManager::CreateClient(
     const content_analysis::sdk::Client::Config& config) {
-  return std::make_unique<FakeContentAnalysisSdkClient>(config);
+  auto client = std::make_unique<FakeContentAnalysisSdkClient>(config);
+  client->SetSendStatus(send_status_);
+  client->SetSendResponse(response_);
+  client->SetAckStatus(ack_status_);
+  fake_clients_.insert(std::make_pair(std::move(config), client.get()));
+
+  return client;
+}
+
+void FakeContentAnalysisSdkManager::ResetClient(
+    const content_analysis::sdk::Client::Config& config) {
+  ContentAnalysisSdkManager::ResetClient(config);
+  fake_clients_.erase(config);
+}
+
+FakeContentAnalysisSdkClient* FakeContentAnalysisSdkManager::GetFakeClient(
+    const content_analysis::sdk::Client::Config& config) {
+  auto it = fake_clients_.find(config);
+  if (it != fake_clients_.end())
+    return it->second;
+  return nullptr;
 }
 
 }  // namespace enterprise_connectors

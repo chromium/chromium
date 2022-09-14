@@ -8008,9 +8008,12 @@ test("unit_tests") {
     if (is_linux || is_mac || is_win) {
       sources += [
         "../browser/enterprise/connectors/analysis/content_analysis_sdk_manager_unittest.cc",
+        "../browser/enterprise/connectors/analysis/local_binary_upload_service_unittest.cc",
         "../browser/policy/local_sync_policy_handler_unittest.cc",
         "../common/extensions/api/system_indicator/system_indicator_handler_unittest.cc",
       ]
+
+      deps += [ "../browser/enterprise/connectors/analysis:test_support" ]
     }
 
     allow_circular_includes_from = [

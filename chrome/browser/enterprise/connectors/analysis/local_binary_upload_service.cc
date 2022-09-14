@@ -163,6 +163,7 @@ void HandleResponseFromSDK(
     ContentAnalysisSdkManager::Get()->ResetClient(
         SDKConfigFromRequest(request.get()));
   }
+
   request->FinishRequest(result, std::move(response));
 }
 

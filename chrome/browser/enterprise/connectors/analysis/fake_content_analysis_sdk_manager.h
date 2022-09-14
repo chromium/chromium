@@ -12,14 +12,44 @@
 namespace enterprise_connectors {
 // A derivative of ContentAnalysisSdkManager that creates fake SDK clients
 // in order to not depend on having a real service provider agent running.
-class FakeContentAnalysisSdkManager : public ContentAnalysisSdkManager {
- protected:
+class FakeContentAnalysisSdkManager final : public ContentAnalysisSdkManager {
+ public:
   FakeContentAnalysisSdkManager();
 
   ~FakeContentAnalysisSdkManager();
 
   std::unique_ptr<content_analysis::sdk::Client> CreateClient(
       const content_analysis::sdk::Client::Config& config) override;
+
+  void ResetClient(
+      const content_analysis::sdk::Client::Config& config) override;
+
+  void SetClientSendStatus(int status);
+
+  void SetClientSendResponse(
+      const content_analysis::sdk::ContentAnalysisResponse& response);
+
+  void SetClientAckStatus(int status);
+
+  FakeContentAnalysisSdkClient* GetFakeClient(
+      const content_analysis::sdk::Client::Config& config);
+
+ private:
+  int send_status_ = 0;
+  int ack_status_ = 0;
+  content_analysis::sdk::ContentAnalysisResponse response_;
+
+  constexpr static auto CompareConfig =
+      [](const content_analysis::sdk::Client::Config& c1,
+         const content_analysis::sdk::Client::Config& c2) {
+        return (c1.name < c2.name) ||
+               (c1.name == c2.name && !c1.user_specific && c2.user_specific);
+      };
+
+  std::map<content_analysis::sdk::Client::Config,
+           FakeContentAnalysisSdkClient*,
+           decltype(CompareConfig)>
+      fake_clients_{CompareConfig};
 };
 
 }  // namespace enterprise_connectors
