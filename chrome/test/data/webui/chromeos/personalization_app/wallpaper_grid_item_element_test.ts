@@ -132,6 +132,20 @@ suite('WallpaperGridItemTest', function() {
     assertEquals(img?.getAttribute('auto-src'), newSrc.url, 'new url is set');
   });
 
+  test('does not set placeholder if new image src is identical', async () => {
+    const src: Url = {url: createSvgDataUrl('svg-test')};
+    wallpaperGridItemElement = initElement(WallpaperGridItem, {src});
+    assertTrue(wallpaperGridItemElement.hasAttribute('placeholder'));
+    await waitAfterNextRender(wallpaperGridItemElement);
+    assertFalse(wallpaperGridItemElement.hasAttribute('placeholder'));
+
+    const newSrc: Url = {url: src.url};
+    wallpaperGridItemElement.src = newSrc;
+    assertFalse(wallpaperGridItemElement.hasAttribute('placeholder'));
+    await waitAfterNextRender(wallpaperGridItemElement);
+    assertFalse(wallpaperGridItemElement.hasAttribute('placeholder'));
+  });
+
   test('displays first two images', async () => {
     const src: Url[] = [
       {url: createSvgDataUrl('svg-0')},

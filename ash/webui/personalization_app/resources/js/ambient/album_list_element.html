@@ -9,20 +9,20 @@
   }
 
 </style>
-<iron-list id="grid" items="[[albums]]" as="album" grid role="listbox"
-    aria-setsize$="[[albums.length]]">
+<iron-list aria-setsize$="[[albums.length]]" as="album" grid id="grid"
+    items="[[albums]]" role="listbox">
   <template>
-    <wallpaper-grid-item
-        aria-label$="[[album.title]]"
+    <wallpaper-grid-item aria-label$="[[album.title]]"
         aria-posinset$="[[getAriaIndex_(index)]]"
         class$="[[getAlbumItemClass_(album, albums)]]"
-        src="[[album.url]]"
+        index="[[index]]"
         on-click="onAlbumSelected_"
         on-keypress="onAlbumSelected_"
         primary-text="[[album.title]]"
         role="option"
         secondary-text="[[getSecondaryText_(album, topicSource)]]"
         selected="[[isAlbumSelected_(album, albums)]]"
+        src="[[album.url]]"
         tabindex$="[[tabIndex]]">
     </wallpaper-grid-item>
   </template>

@@ -101,10 +101,19 @@ export class WallpaperGridItem extends PolymerElement {
   private imageStatus_: ImageStatus[];
 
   // Invoked on changes to |imageSrc|.
-  private onImageSrcChanged_(src: Url|Url[]|undefined) {
+  private onImageSrcChanged_(
+      src: Url|Url[]|undefined, old: Url|Url[]|undefined) {
     // Set loading status if src has just changed while we wait for new images.
-    this.imageStatus_ =
-        new Array(this.getSrcArray_(src).length).fill(ImageStatus.LOADING);
+    const oldSrcArray = this.getSrcArray_(old);
+    this.imageStatus_ = this.getSrcArray_(src).map(({url}, i) => {
+      if (oldSrcArray.length > i && oldSrcArray[i].url === url) {
+        // If the underlying url has not changed, keep the prior image status.
+        // If we have a new |Url| object but the underlying url is the same, the
+        // img onload event will not fire and reset the status to ready.
+        return this.imageStatus_[i];
+      }
+      return ImageStatus.LOADING;
+    });
   }
 
   private onSelectedChanged_(selected: boolean|undefined) {
