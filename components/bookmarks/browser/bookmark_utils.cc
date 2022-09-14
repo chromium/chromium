@@ -116,15 +116,12 @@ bool HasSelectedAncestor(BookmarkModel* model,
   return HasSelectedAncestor(model, selected_nodes, node->parent());
 }
 
-// Recursively searches for a node satisfying the functor |pred| . Returns
-// nullptr if not found.
-template <typename Predicate>
-const BookmarkNode* FindNode(const BookmarkNode* node, Predicate pred) {
-  if (pred(node))
+const BookmarkNode* GetNodeByID(const BookmarkNode* node, int64_t id) {
+  if (node->id() == id)
     return node;
 
   for (const auto& child : node->children()) {
-    const BookmarkNode* result = FindNode(child.get(), pred);
+    const BookmarkNode* result = GetNodeByID(child.get(), id);
     if (result)
       return result;
   }
@@ -561,15 +558,8 @@ bool IsBookmarkedByUser(BookmarkModel* model, const GURL& url) {
 
 const BookmarkNode* GetBookmarkNodeByID(const BookmarkModel* model,
                                         int64_t id) {
-  return FindNode(model->root_node(),
-                  [id](const BookmarkNode* node) { return node->id() == id; });
-}
-
-const BookmarkNode* GetBookmarkNodeByGUID(const BookmarkModel* model,
-                                          const base::GUID& guid) {
-  return FindNode(model->root_node(), [&guid](const BookmarkNode* node) {
-    return node->guid() == guid;
-  });
+  // TODO(sky): TreeNode needs a method that visits all nodes using a predicate.
+  return GetNodeByID(model->root_node(), id);
 }
 
 bool IsDescendantOf(const BookmarkNode* node, const BookmarkNode* root) {
