@@ -286,6 +286,12 @@ class OsSettingsA11YPageElement extends OsSettingsA11YPageElementBase {
   onAudioAndCaptionsTap_() {
     Router.getInstance().navigateTo(routes.A11Y_AUDIO_AND_CAPTIONS);
   }
+
+  /** @private */
+  onAdditionalFeaturesClick_() {
+    window.open(
+        'https://chrome.google.com/webstore/category/collection/3p_accessibility_extensions');
+  }
 }
 
 customElements.define(OsSettingsA11YPageElement.is, OsSettingsA11YPageElement);

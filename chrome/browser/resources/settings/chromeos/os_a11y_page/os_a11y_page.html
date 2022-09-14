@@ -68,17 +68,11 @@
     </template>
     <template is="dom-if"
         if="[[shouldShowAdditionalFeaturesLink_(isKioskModeActive_, isGuest_)]]">
-      <a class="settings-box inherit-color no-outline" tabindex="-1"
-          id="additionalFeaturesLink" target="_blank"
-          href="https://chrome.google.com/webstore/category/collection/3p_accessibility_extensions">
-        <div class="start settings-box-text">
-          $i18n{additionalFeaturesTitle}
-        </div>
-        <cr-icon-button class="icon-external"
-            aria-label="$i18n{additionalFeaturesTitle}"
-            aria-describedby="moreFeaturesSecondary">
-        </cr-icon-button>
-      </a>
+      <cr-link-row
+          id="additionalFeaturesLink" class="hr"
+          label="$i18n{additionalFeaturesTitle}"
+          on-click="onAdditionalFeaturesClick_" external>
+      </cr-link-row>
     </template>
   </div>
 

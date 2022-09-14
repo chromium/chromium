@@ -819,6 +819,12 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
   onChangeDictationLocalesDialogClosed_() {
     this.showDictationLocaleMenu_ = false;
   }
+
+  /** @private */
+  onAdditionalFeaturesClick_() {
+    window.open(
+        'https://chrome.google.com/webstore/category/collection/3p_accessibility_extensions');
+  }
 }
 
 customElements.define(
