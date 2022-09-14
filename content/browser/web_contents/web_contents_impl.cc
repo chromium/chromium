@@ -4495,9 +4495,10 @@ void WebContentsImpl::RecordAccessibilityEvents(
   // Only pass a callback to RecordAccessibilityEvents when starting to record.
   DCHECK_EQ(start_recording, callback.has_value());
   if (start_recording) {
-    SetAccessibilityMode(ui::AXMode::kWebContents);
+    BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
+        ui::kAXModeBasic.mode());
     auto* ax_mgr = GetOrCreateRootBrowserAccessibilityManager();
-    DCHECK(ax_mgr);
+    CHECK(ax_mgr);
     base::ProcessId pid = base::Process::Current().Pid();
     gfx::AcceleratedWidget widget =
         ax_mgr->GetBrowserAccessibilityRoot()
