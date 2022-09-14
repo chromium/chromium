@@ -3766,12 +3766,14 @@ void RenderViewContextMenu::ExecTranslate() {
 }
 
 void RenderViewContextMenu::ExecPartialTranslate() {
-  // TODO(crbug/1314825): When the PartialTranslateManager is added this call
-  // will be updated to use language information from the page. The view state
-  // will also depend on the Partial Translate response, rather than being
-  // hardcoded to 'waiting'.
-  GetBrowser()->window()->StartPartialTranslate("fr", "en",
-                                                params_.selection_text);
+  std::string source_language;
+  std::string target_language;
+  ChromeTranslateClient* chrome_translate_client =
+      ChromeTranslateClient::FromWebContents(embedder_web_contents_);
+  chrome_translate_client->GetTranslateLanguages(
+      embedder_web_contents_, &source_language, &target_language);
+  GetBrowser()->window()->StartPartialTranslate(
+      source_language, target_language, params_.selection_text);
 }
 
 void RenderViewContextMenu::ExecLanguageSettings(int event_flags) {
