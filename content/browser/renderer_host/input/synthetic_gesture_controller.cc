@@ -26,8 +26,11 @@ SyntheticGestureController::SyntheticGestureController(
 }
 
 SyntheticGestureController::~SyntheticGestureController() {
-  if (!pending_gesture_queue_.IsEmpty())
-    GestureCompleted(SyntheticGesture::GESTURE_FINISHED);
+  while (!pending_gesture_queue_.IsEmpty()) {
+    pending_gesture_queue_.FrontCallback().Run(
+        SyntheticGesture::GESTURE_FINISHED);
+    pending_gesture_queue_.Pop();
+  }
 }
 
 void SyntheticGestureController::EnsureRendererInitialized(
