@@ -14,6 +14,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/extensions/api/developer_private.h"
+#include "extensions/common/url_pattern.h"
+#include "extensions/common/url_pattern_set.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 class SupervisedUserService;
@@ -64,11 +66,10 @@ class ExtensionInfoGenerator {
                             bool include_terminated,
                             ExtensionInfosCallback callback);
 
-  // Creates and synchronously returns a RuntimeHostPermissions object with the
-  // given extension's host permissions.
-  static api::developer_private::RuntimeHostPermissions
-  CreateRuntimeHostPermissionsInfo(content::BrowserContext* browser_context,
-                                   const Extension& extension);
+  // Returns a list of URLPatterns where no pattern is completely contained by
+  // another pattern in the list.
+  static std::vector<URLPattern> GetDistinctHosts(
+      const URLPatternSet& patterns);
 
  private:
   // Creates an ExtensionInfo for the given |extension| and |state|, and
