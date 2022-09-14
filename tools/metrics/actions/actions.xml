@@ -15730,8 +15730,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="LensUnifiedSidePanel.RemoveLensEntry_SearchEngineChanged">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of the metric.</description>
+  <owner>stanfield@google.com</owner>
+  <owner>benwgold@google.com</owner>
+  <owner>juanmojica@google.com</owner>
+  <owner>schechter@google.com</owner>
+  <owner>apalanki@google.com</owner>
+  <description>
+    Search engine selection changed, so removing lens entry from the side panel.
+  </description>
 </action>
 
 <action name="LensUnifiedSidePanel.ResultLinkClick">
