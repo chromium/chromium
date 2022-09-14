@@ -9386,6 +9386,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebAuthnConditionalUIDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kWebAuthConditionalUI)},
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"arc-nearby-share-fuse-box", flag_descriptions::kArcNearbyShareFuseBoxName,
+     flag_descriptions::kArcNearbyShareFuseBoxDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(arc::kEnableArcNearbyShareFuseBox)}
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

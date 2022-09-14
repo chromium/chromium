@@ -57740,6 +57740,7 @@ from previous Chrome versions.
   <int value="-1222214250" label="AutofillSaveCardUiExperiment:disabled"/>
   <int value="-1222159993"
       label="HappinessTrackingSurveysForDesktopSettings:enabled"/>
+  <int value="-1222106729" label="ArcNearbyShareFuseBox:enabled"/>
   <int value="-1220675698" label="OmniboxDeferredKeyboardPopup:enabled"/>
   <int value="-1219547098" label="SearchWebInSidePanel:disabled"/>
   <int value="-1218608640" label="disable-offline-load-stale-cache"/>
@@ -59382,6 +59383,7 @@ from previous Chrome versions.
   <int value="-200792853" label="UnifiedPasswordManagerAndroid:disabled"/>
   <int value="-200160012" label="RelatedSearchesUi:disabled"/>
   <int value="-199690952" label="PageInfoV2:enabled"/>
+  <int value="-198388861" label="ArcNearbyShareFuseBox:disabled"/>
   <int value="-198002129" label="MetricsSettingsAndroid:disabled"/>
   <int value="-196110497" label="force-text-direction"/>
   <int value="-195242003"

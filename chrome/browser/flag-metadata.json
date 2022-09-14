@@ -245,6 +245,16 @@
     "expiry_milestone": -1
   },
   {
+    "name": "arc-nearby-share-fuse-box",
+    "owners": ["tsergeant", "phshah", "cros-sharesheet@google.com"],
+    "expiry_milestone": 111
+  },
+  {
+    "name": "arc-right-click-long-press",
+    "owners": [ "yhanada", "mduggan" ],
+    "expiry_milestone": 102
+  },
+  {
     "name": "arc-rt-vcpu-dual-core",
     "owners": [ "kansho" ],
     "expiry_milestone": 100
