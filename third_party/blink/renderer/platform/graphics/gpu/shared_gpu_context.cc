@@ -139,7 +139,7 @@ void SharedGpuContext::CreateContextProviderIfNeeded(
     // this once per thread.
     base::WaitableEvent waitable_event;
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-        Thread::MainThread()->GetDeprecatedTaskRunner();
+        Thread::MainThread()->GetTaskRunner(MainThreadTaskRunnerRestricted());
     PostCrossThreadTask(
         *task_runner, FROM_HERE,
         CrossThreadBindOnce(
