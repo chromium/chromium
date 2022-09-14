@@ -54,7 +54,8 @@ bool IsUrlPotentiallySecure(const GURL& url) {
 // This method should return the same results as
 // SchemeRegistry::shouldTreatURLSchemeAsRestrictingMixedContent.
 bool DoesOriginSchemeRestrictMixedContent(const url::Origin& origin) {
-  return origin.scheme() == url::kHttpsScheme;
+  return origin.GetTupleOrPrecursorTupleIfOpaque().scheme() ==
+         url::kHttpsScheme;
 }
 
 void UpdateRendererOnMixedContentFound(NavigationRequest* navigation_request,
