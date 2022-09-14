@@ -543,26 +543,28 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestContextMenu) {
   LaunchApp("web_view/visibility_changed");
 
   // Ensure the webview's surface is ready for hit testing.
-  content::WebContents* guest_web_contents = GetGuestWebContents();
-  content::WaitForHitTestData(guest_web_contents);
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(guest_view);
+
+  auto* guest_rfh = guest_view->GetGuestMainFrame();
+  content::WaitForHitTestData(guest_rfh);
 
   // Create a ContextMenuInterceptor to intercept the ShowContextMenu event
   // before RenderFrameHost receives.
   auto context_menu_interceptor =
-      std::make_unique<content::ContextMenuInterceptor>(
-          guest_web_contents->GetPrimaryMainFrame());
+      std::make_unique<content::ContextMenuInterceptor>(guest_rfh);
 
   // Trigger the context menu. AppShell doesn't show a context menu; this is
   // just a sanity check that nothing breaks.
-  content::WebContents* root_web_contents =
-      guest_web_contents->GetOutermostWebContents();
-  content::RenderWidgetHostView* guest_view =
-      guest_web_contents->GetRenderWidgetHostView();
+  content::WebContents* embedder_web_contents = GetEmbedderWebContents();
+
+  content::RenderWidgetHostView* guest_rwhv =
+      guest_rfh->GetRenderWidgetHost()->GetView();
   gfx::Point guest_context_menu_position(5, 5);
   gfx::Point root_context_menu_position =
-      guest_view->TransformPointToRootCoordSpace(guest_context_menu_position);
+      guest_rwhv->TransformPointToRootCoordSpace(guest_context_menu_position);
   content::SimulateMouseClickAt(
-      root_web_contents, blink::WebInputEvent::kNoModifiers,
+      embedder_web_contents, blink::WebInputEvent::kNoModifiers,
       blink::WebMouseEvent::Button::kRight, root_context_menu_position);
   context_menu_interceptor->Wait();
 }
