@@ -210,6 +210,10 @@ class AssistiveSuggester : public SuggestionsSource {
   absl::optional<AssistiveSuggesterSwitch::EnabledSuggestions>
       enabled_suggestions_from_last_onfocus_;
 
+  std::u16string last_surrounding_text_ = u"";
+
+  int last_cursor_pos_ = 0;
+
   base::WeakPtrFactory<AssistiveSuggester> weak_ptr_factory_{this};
 };
 

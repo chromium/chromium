@@ -454,7 +454,13 @@ bool AssistiveSuggester::HandleLongpressEnabledKeyEvent(
 }
 
 void AssistiveSuggester::OnLongpressDetected() {
-  if (!current_longpress_keydown_.has_value()) {
+  if (!current_longpress_keydown_.has_value() ||
+      // If the following conditions are met, its possible the text box does not
+      // support IME operations.
+      last_surrounding_text_.empty() || last_cursor_pos_ <= 0 ||
+      last_surrounding_text_.length() < last_cursor_pos_ ||
+      last_surrounding_text_[last_cursor_pos_ - 1] !=
+          current_longpress_keydown_->GetCharacter()) {
     return;
   }
   if (longpress_diacritics_suggester_.TrySuggestOnLongpress(
@@ -563,6 +569,8 @@ bool AssistiveSuggester::WithinGrammarFragment(int cursor_pos, int anchor_pos) {
 void AssistiveSuggester::OnSurroundingTextChanged(const std::u16string& text,
                                                   int cursor_pos,
                                                   int anchor_pos) {
+  last_surrounding_text_ = text;
+  last_cursor_pos_ = cursor_pos;
   suggester_switch_->FetchEnabledSuggestionsThen(base::BindOnce(
       &AssistiveSuggester::ProcessOnSurroundingTextChanged,
       weak_ptr_factory_.GetWeakPtr(), text, cursor_pos, anchor_pos));
