@@ -15,7 +15,7 @@ public interface WebLayerVersionConstants {
      *
      * @see WebLayer#isAvailable()
      */
-    int MAX_SKEW = 7;
+    int MAX_SKEW = 9;
 
     /**
      * Minimum version of client and implementation.
