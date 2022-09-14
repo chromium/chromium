@@ -7,6 +7,7 @@
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #import "base/callback_helpers.h"
+#import "base/feature_list.h"
 #import "base/i18n/message_formatter.h"
 #import "base/ios/ios_util.h"
 #import "base/logging.h"
@@ -150,6 +151,13 @@
 #endif
 
 namespace {
+
+// Feature to control whether Search Intents (Widgets, Application
+// Shortcuts menu) forcibly open a new tab, rather than reusing an
+// existing NTP. See http://crbug.com/1363375 for details.
+const base::Feature kForceNewTabForIntentSearch(
+    "ForceNewTabForIntentSearch",
+    base::FEATURE_ENABLED_BY_DEFAULT);
 
 // A rough estimate of the expected duration of a view controller transition
 // animation. It's used to temporarily disable mutally exclusive chrome
@@ -2789,10 +2797,15 @@ bool IsSigninForcedByPolicy() {
   web::WebState* currentWebState =
       targetInterface.browser->GetWebStateList()->GetActiveWebState();
 
+  BOOL forceNewTabForIntentSearch =
+      base::FeatureList::IsEnabled(kForceNewTabForIntentSearch) &&
+      (self.startupParameters.postOpeningAction == FOCUS_OMNIBOX);
+
   // Don't call loadWithParams for chrome://newtab when it's already loaded.
   // Note that it's safe to use -GetVisibleURL here, as it doesn't matter if the
   // NTP hasn't finished loading.
-  if (currentWebState && IsURLNtp(currentWebState->GetVisibleURL()) &&
+  if (!forceNewTabForIntentSearch && currentWebState &&
+      IsURLNtp(currentWebState->GetVisibleURL()) &&
       IsURLNtp(urlLoadParams.web_params.url)) {
     if (tabOpenedCompletion) {
       tabOpenedCompletion();
@@ -2805,6 +2818,7 @@ bool IsSigninForcedByPolicy() {
   // time being, always load within a new tab when this feature is enabled.
   // TODO(crbug.com/931284): Revert this change when fixed.
   BOOL alwaysInsertNewTab =
+      forceNewTabForIntentSearch ||
       base::FeatureList::IsEnabled(kBlockNewTabPagePendingLoad);
   // If the current tab isn't an NTP, open a new tab.  Be sure to use
   // -GetLastCommittedURL incase the NTP is still loading.
