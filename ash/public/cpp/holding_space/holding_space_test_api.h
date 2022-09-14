@@ -71,6 +71,9 @@ class ASH_EXPORT HoldingSpaceTestApi {
   // mirrored for RTL).
   std::vector<views::View*> GetHoldingSpaceItemViews();
 
+  // Returns the container of the suggestions section in holding space UI.
+  views::View* GetSuggestionsSectionContainer();
+
   // Returns the header of the suggestions section in holding space UI.
   views::View* GetSuggestionsSectionHeader();
 

@@ -526,6 +526,42 @@ class HoldingSpaceTrayTest : public HoldingSpaceTrayTestBase {
         features::kHoldingSpacePredictability, false);
   }
 
+  // Verifies that the user's preferences and the suggestion section's visual
+  // appearance match a test's current scenario.
+  void VerifySuggestionsSectionState(bool expanded, bool item_present) {
+    AccountId account_id = AccountId::FromUserEmail(kTestUser);
+    auto* prefs = GetSessionControllerClient()->GetUserPrefService(account_id);
+    ASSERT_TRUE(prefs);
+
+    const auto expected_chevron_skia =
+        gfx::ImageSkiaOperations::CreateRotatedImage(
+            gfx::CreateVectorIcon(
+                kChevronRightIcon, kHoldingSpaceSectionChevronIconSize,
+                AshColorProvider::Get()->GetContentLayerColor(
+                    AshColorProvider::ContentLayerType::kIconColorSecondary)),
+            expanded ? SkBitmapOperations::ROTATION_270_CW
+                     : SkBitmapOperations::ROTATION_90_CW);
+
+    // Changes to the section's expanded state should be stored persistently.
+    EXPECT_EQ(holding_space_prefs::IsSuggestionsExpanded(prefs), expanded);
+
+    // The section header should be visible as long as suggestions are
+    // available.
+    EXPECT_EQ(IsViewVisible(test_api()->GetSuggestionsSectionHeader()),
+              item_present);
+
+    // The section header's chevron icon should indicate whether the section is
+    // expanded or collapsed.
+    EXPECT_TRUE(gfx::BitmapsAreEqual(
+        *test_api()->GetSuggestionsSectionChevronIcon()->GetImage().bitmap(),
+        *expected_chevron_skia.bitmap()));
+
+    // The section content should be visible as long as suggestions are
+    // available and the section is expanded.
+    EXPECT_EQ(test_api()->GetSuggestionsSectionContainer()->GetVisible(),
+              expanded && item_present);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -1149,56 +1185,63 @@ TEST_F(HoldingSpaceTrayTest, EnterKeyTogglesSuggestionsExpanded) {
   // Focus the suggestions section header.
   auto* suggestions_section_header = test_api()->GetSuggestionsSectionHeader();
   ASSERT_TRUE(suggestions_section_header);
-  EXPECT_TRUE(PressTabUntilFocused(suggestions_section_header));
-
-  // Cache `prefs` and expected chevron icons in preparation for verifying that
-  // activating the section header toggles whether the section is expanded.
-  AccountId account_id = AccountId::FromUserEmail(kTestUser);
-  auto* prefs = GetSessionControllerClient()->GetUserPrefService(account_id);
-  ASSERT_TRUE(prefs);
-
-  const auto chevron_expanded_skia =
-      gfx::ImageSkiaOperations::CreateRotatedImage(
-          gfx::CreateVectorIcon(
-              kChevronRightIcon, kHoldingSpaceSectionChevronIconSize,
-              AshColorProvider::Get()->GetContentLayerColor(
-                  AshColorProvider::ContentLayerType::kIconColorSecondary)),
-          SkBitmapOperations::ROTATION_270_CW);
-
-  const auto chevron_collapsed_skia =
-      gfx::ImageSkiaOperations::CreateRotatedImage(
-          gfx::CreateVectorIcon(
-              kChevronRightIcon, kHoldingSpaceSectionChevronIconSize,
-              AshColorProvider::Get()->GetContentLayerColor(
-                  AshColorProvider::ContentLayerType::kIconColorSecondary)),
-          SkBitmapOperations::ROTATION_90_CW);
 
   // Verify that the section starts out expanded.
-  EXPECT_TRUE(holding_space_prefs::IsSuggestionsExpanded(prefs));
-  EXPECT_TRUE(gfx::BitmapsAreEqual(
-      *test_api()->GetSuggestionsSectionChevronIcon()->GetImage().bitmap(),
-      *chevron_expanded_skia.bitmap()));
+  {
+    SCOPED_TRACE("Initially expanded.");
+    VerifySuggestionsSectionState(/*expanded=*/true, /*item_present=*/true);
+  }
 
-  // Press ENTER and expect an attempt to collapse the suggestions section.
+  // Press ENTER and expect the section to collapse.
+  EXPECT_TRUE(PressTabUntilFocused(suggestions_section_header));
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  {
+    SCOPED_TRACE("First collapse.");
+    VerifySuggestionsSectionState(/*expanded=*/false, /*item_present=*/true);
+  }
 
-  // Verify that the section is not expanded.
-  EXPECT_FALSE(holding_space_prefs::IsSuggestionsExpanded(prefs));
-  EXPECT_TRUE(gfx::BitmapsAreEqual(
-      *test_api()->GetSuggestionsSectionChevronIcon()->GetImage().bitmap(),
-      *chevron_collapsed_skia.bitmap()));
-
-  // Press ENTER and expect an attempt to expand the section.
+  // Press ENTER and expect the section to expand.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  {
+    SCOPED_TRACE("First expand.");
+    VerifySuggestionsSectionState(/*expanded=*/true, /*item_present=*/true);
+  }
 
-  // Verify that the section is expanded.
-  EXPECT_TRUE(holding_space_prefs::IsSuggestionsExpanded(prefs));
-  EXPECT_TRUE(gfx::BitmapsAreEqual(
-      *test_api()->GetSuggestionsSectionChevronIcon()->GetImage().bitmap(),
-      *chevron_expanded_skia.bitmap()));
+  // Remove the section's item and expect the section header to stop showing.
+  RemoveAllItems();
+  {
+    SCOPED_TRACE("Item removed (expanded).");
+    VerifySuggestionsSectionState(/*expanded=*/true, /*item_present=*/false);
+  }
 
-  // TODO(crbug/1358331): Verify effect of expanding/collapsing on visibility of
-  // item chips once implemented.
+  // Add a suggested item and expect the section header to show again.
+  AddItem(HoldingSpaceItem::Type::kLocalSuggestion,
+          base::FilePath("/tmp/fake2"));
+  {
+    SCOPED_TRACE("Item added (expanded).");
+    VerifySuggestionsSectionState(/*expanded=*/true, /*item_present=*/true);
+  }
+
+  // Verify that removing and adding an item works with the section collapsed.
+  EXPECT_TRUE(PressTabUntilFocused(suggestions_section_header));
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  {
+    SCOPED_TRACE("Second collapse.");
+    VerifySuggestionsSectionState(/*expanded=*/false, /*item_present=*/true);
+  }
+
+  RemoveAllItems();
+  {
+    SCOPED_TRACE("Item removed (collapsed).");
+    VerifySuggestionsSectionState(/*expanded=*/false, /*item_present=*/false);
+  }
+
+  AddItem(HoldingSpaceItem::Type::kLocalSuggestion,
+          base::FilePath("/tmp/fake3"));
+  {
+    SCOPED_TRACE("Item added (collapsed).");
+    VerifySuggestionsSectionState(/*expanded=*/false, /*item_present=*/true);
+  }
 }
 
 // User should be able to open the Downloads folder in the Files app by pressing

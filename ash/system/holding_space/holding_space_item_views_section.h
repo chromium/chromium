@@ -103,6 +103,14 @@ class ASH_EXPORT HoldingSpaceItemViewsSection : public views::View {
   // Invoked to destroy `placeholder_`.
   void DestroyPlaceholder();
 
+  // Whether to display this section's contents: either its `container_` or its
+  // `placeholder_` as applicable. Sections that have no concept of expanded
+  // state are always treated as expanded.
+  virtual bool IsExpanded();
+
+  // Updates the section's views based on changes to the expanded state.
+  void OnExpandedChanged();
+
   HoldingSpaceViewDelegate* delegate() { return delegate_; }
 
  private:

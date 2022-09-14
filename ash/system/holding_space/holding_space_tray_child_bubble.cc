@@ -110,6 +110,9 @@ class TopAlignedBoxLayout : public views::BoxLayout {
     int width = contents_bounds.width();
 
     for (views::View* child : host->children()) {
+      if (!child->GetVisible())
+        continue;
+
       gfx::Size size(width, child->GetHeightForWidth(width));
       child->SetBounds(left, top, size.width(), size.height());
       top += size.height() + between_child_spacing();

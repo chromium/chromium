@@ -74,11 +74,12 @@ constexpr int kHoldingSpacePinnedFilesSectionId = 14;
 constexpr int kHoldingSpaceRecentFilesBubbleId = 15;
 constexpr int kHoldingSpaceScreenCapturePlayIconId = 16;
 constexpr int kHoldingSpaceSuggestionsChevronIconId = 17;
-constexpr int kHoldingSpaceSuggestionsSectionHeaderId = 18;
-constexpr int kHoldingSpaceSuggestionsSectionId = 19;
-constexpr int kHoldingSpaceTrayDefaultIconId = 20;
-constexpr int kHoldingSpaceTrayDropTargetOverlayId = 21;
-constexpr int kHoldingSpaceTrayPreviewsIconId = 22;
+constexpr int kHoldingSpaceSuggestionsSectionContainerId = 18;
+constexpr int kHoldingSpaceSuggestionsSectionHeaderId = 19;
+constexpr int kHoldingSpaceSuggestionsSectionId = 20;
+constexpr int kHoldingSpaceTrayDefaultIconId = 21;
+constexpr int kHoldingSpaceTrayDropTargetOverlayId = 22;
+constexpr int kHoldingSpaceTrayPreviewsIconId = 23;
 
 // The maximum allowed age for files restored into the holding space model.
 // Note that this is not enforced for pinned items.

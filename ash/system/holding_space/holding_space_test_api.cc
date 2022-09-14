@@ -130,6 +130,13 @@ std::vector<views::View*> HoldingSpaceTestApi::GetHoldingSpaceItemViews() {
   return item_views;
 }
 
+views::View* HoldingSpaceTestApi::GetSuggestionsSectionContainer() {
+  return holding_space_tray_->GetBubbleView()
+             ? holding_space_tray_->GetBubbleView()->GetViewByID(
+                   kHoldingSpaceSuggestionsSectionContainerId)
+             : nullptr;
+}
+
 views::View* HoldingSpaceTestApi::GetSuggestionsSectionHeader() {
   return holding_space_tray_->GetBubbleView()
              ? holding_space_tray_->GetBubbleView()->GetViewByID(

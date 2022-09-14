@@ -152,6 +152,18 @@ SuggestionsSection::SuggestionsSection(HoldingSpaceViewDelegate* delegate)
                                     HoldingSpaceItem::Type::kLocalSuggestion},
                                    /*max_count=*/kMaxSuggestions) {
   SetID(kHoldingSpaceSuggestionsSectionId);
+
+  auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(prefs);
+
+  // NOTE: The binding of this callback is scoped to `pref_change_registrar_`,
+  // which is owned by `this`, so it is safe to bind with an unretained raw
+  // pointer.
+  holding_space_prefs::AddSuggestionsExpandedChangedCallback(
+      pref_change_registrar_.get(),
+      base::BindRepeating(&SuggestionsSection::OnExpandedChanged,
+                          base::Unretained(this)));
 }
 
 SuggestionsSection::~SuggestionsSection() = default;
@@ -166,6 +178,7 @@ std::unique_ptr<views::View> SuggestionsSection::CreateHeader() {
 
 std::unique_ptr<views::View> SuggestionsSection::CreateContainer() {
   return views::Builder<views::View>()
+      .SetID(kHoldingSpaceSuggestionsSectionContainerId)
       .SetLayoutManager(std::make_unique<SimpleGridLayout>(
           kHoldingSpaceChipCountPerRow,
           /*column_spacing=*/kHoldingSpaceSectionContainerChildSpacing,
@@ -176,6 +189,11 @@ std::unique_ptr<views::View> SuggestionsSection::CreateContainer() {
 std::unique_ptr<HoldingSpaceItemView> SuggestionsSection::CreateView(
     const HoldingSpaceItem* item) {
   return std::make_unique<HoldingSpaceItemChipView>(delegate(), item);
+}
+
+bool SuggestionsSection::IsExpanded() {
+  auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
+  return holding_space_prefs::IsSuggestionsExpanded(prefs);
 }
 
 }  // namespace ash

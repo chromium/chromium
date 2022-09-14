@@ -214,6 +214,9 @@ void HoldingSpaceItemViewsSection::Reset() {
 
 std::vector<HoldingSpaceItemView*>
 HoldingSpaceItemViewsSection::GetHoldingSpaceItemViews() {
+  if (!IsExpanded())
+    return {};
+
   std::vector<HoldingSpaceItemView*> views;
   for (views::View* view : container_->children()) {
     DCHECK(HoldingSpaceItemView::IsInstance(view));
@@ -260,19 +263,17 @@ void HoldingSpaceItemViewsSection::ViewHierarchyChanged(
   if (container_->children().size() != 1u)
     return;
 
-  // Disable propagation of `PreferredSizeChanged()` while modifying child
-  // view visibility to reduce the number of layout events bubbling up.
-  disable_preferred_size_changed_ = true;
+  {
+    // Disable propagation of `PreferredSizeChanged()` while modifying child
+    // view visibility to reduce the number of layout events bubbling up.
+    base::AutoReset<bool> reset(&disable_preferred_size_changed_, true);
 
-  header_->SetVisible(placeholder_ || details.is_add);
-  container_->SetVisible(details.is_add);
+    header_->SetVisible(details.is_add || placeholder_);
+    container_->SetVisible(details.is_add && IsExpanded());
 
-  if (placeholder_)
-    placeholder_->SetVisible(!details.is_add);
-
-  // Re-enable propagation of `PreferredSizeChanged()` after modifying child
-  // view visibility.
-  disable_preferred_size_changed_ = false;
+    if (placeholder_)
+      placeholder_->SetVisible(!details.is_add && IsExpanded());
+  }
   PreferredSizeChanged();
 }
 
@@ -327,6 +328,14 @@ void HoldingSpaceItemViewsSection::DestroyPlaceholder() {
   // when `container_` is non-empty.
   if (header_->GetVisible() && container_->children().empty())
     header_->SetVisible(false);
+}
+
+bool HoldingSpaceItemViewsSection::IsExpanded() {
+  return true;
+}
+
+void HoldingSpaceItemViewsSection::OnExpandedChanged() {
+  MaybeAnimateOut();
 }
 
 void HoldingSpaceItemViewsSection::MaybeAnimateIn() {
@@ -481,6 +490,12 @@ void HoldingSpaceItemViewsSection::OnAnimateOutCompleted(
       },
       base::Unretained(this)));
 
+  // Removing the item views will cause the `header_` to go invisible, clearing
+  // its focus. Make sure that if the `header_` was focused and is meant to stay
+  // visible after this animation, focus is restored after the `header_` becomes
+  // visible again.
+  bool header_focused = header_->HasFocus();
+
   RemoveAllHoldingSpaceItemViews();
   DCHECK(views_by_item_id_.empty());
 
@@ -505,6 +520,9 @@ void HoldingSpaceItemViewsSection::OnAnimateOutCompleted(
           container_->AddChildViewAt(CreateView(item.get()), 0);
     }
   }
+
+  if (header_->GetVisible() && header_focused)
+    header_->RequestFocus();
 
   // Only animate this section in if it has content to show.
   if (placeholder_ || !container_->children().empty())
