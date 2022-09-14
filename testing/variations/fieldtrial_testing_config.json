@@ -1600,25 +1600,6 @@
             ]
         }
     ],
-    "AvoidEarlyExtensionScriptContextCreation": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220819",
-                    "enable_features": [
-                        "AvoidEarlyExtensionScriptContextCreation"
-                    ]
-                }
-            ]
-        }
-    ],
     "AvoidUnnecessaryBeforeUnloadCheckSync": [
         {
             "platforms": [
@@ -7777,13 +7758,16 @@
             ],
             "experiments": [
                 {
-                    "name": "FirstScriptLazy_20220829",
+                    "name": "FirstScriptLazy_20220914",
                     "params": {
                         "compile-strategy": "first-script-lazy",
-                        "inline-script-timeout": "5ms"
+                        "inline-script-timeout": "5ms",
+                        "preload-processing-mode": "immediate"
                     },
                     "enable_features": [
-                        "PrecompileInlineScripts"
+                        "AvoidEarlyExtensionScriptContextCreation",
+                        "PrecompileInlineScripts",
+                        "ThreadedPreloadScanner"
                     ]
                 }
             ]
@@ -9937,31 +9921,6 @@
                     "name": "ThreadedHtmlTokenizer",
                     "enable_features": [
                         "ThreadedHtmlTokenizer"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ThreadedPreloadScanner": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Immediate",
-                    "params": {
-                        "preload-processing-mode": "immediate"
-                    },
-                    "enable_features": [
-                        "ThreadedPreloadScanner"
                     ]
                 }
             ]
