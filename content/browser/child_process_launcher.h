@@ -299,6 +299,10 @@ class CONTENT_EXPORT ChildProcessLauncher {
   // shutdown. Default behavior is to terminate the child.
   const bool terminate_child_on_shutdown_;
 
+  // Indicates if the child process should be launched with elevated privileges.
+  // Can only be true on Windows.
+  bool should_launch_elevated_ = false;
+
   scoped_refptr<internal::ChildProcessLauncherHelper> helper_;
 
   SEQUENCE_CHECKER(sequence_checker_);

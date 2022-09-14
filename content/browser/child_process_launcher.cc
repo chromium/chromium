@@ -112,6 +112,10 @@ ChildProcessLauncher::ChildProcessLauncher(
 {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+#if BUILDFLAG(IS_WIN)
+  should_launch_elevated_ = delegate->ShouldLaunchElevated();
+#endif
+
   helper_ = base::MakeRefCounted<ChildProcessLauncherHelper>(
       child_process_id, std::move(command_line), std::move(delegate),
       weak_factory_.GetWeakPtr(), terminate_on_shutdown,
@@ -192,7 +196,9 @@ ChildProcessTerminationInfo ChildProcessLauncher::GetChildTerminationInfo(
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  auto cpu_usage = GetCPUUsage(process_.process.Handle());
+  base::TimeDelta cpu_usage;
+  if (!should_launch_elevated_)
+    cpu_usage = GetCPUUsage(process_.process.Handle());
 #endif
 
   termination_info_ = helper_->GetTerminationInfo(process_, known_dead);
