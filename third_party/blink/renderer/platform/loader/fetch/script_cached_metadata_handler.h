@@ -116,12 +116,8 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandlerWithHashing final
     kUninitialized,  // hash_ has not been written.
     kDeserialized,   // hash_ contains data from the code cache that has not yet
                      // been checked for matching the script text.
-
-    // Terminal states: once hash_state_ reaches one of the following, neither
-    // hash_state_ nor hash_ will ever change again.
-
-    kChecked,        // hash_ contains the hash of the script text.
-    kFailedToCheck,  // hash_ contains garbage. Computing the hash failed.
+    kChecked,        // hash_ contains the hash of the script text. Neither
+                     // hash_state_ nor hash_ will ever change again.
   };
   HashState hash_state_ = kUninitialized;
 };

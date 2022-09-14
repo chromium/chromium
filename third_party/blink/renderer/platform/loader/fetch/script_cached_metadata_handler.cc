@@ -129,27 +129,25 @@ void ScriptCachedMetadataHandler::CommitToPersistentStorage(
 void ScriptCachedMetadataHandlerWithHashing::Check(
     CodeCacheHost* code_cache_host,
     const ParkableString& source_text) {
-  // If we already attempted to Check once and couldn't compute the hash, just
-  // give up.
-  if (hash_state_ == kFailedToCheck)
-    return;
-
-  DigestValue digest;
-  const String& unparked = source_text.ToString();
-  if (!ComputeDigest(kHashAlgorithmSha256,
-                     static_cast<const char*>(unparked.Bytes()),
-                     unparked.CharactersSizeInBytes(), digest)) {
-    // Something went wrong computing the hash. We can't use the cached
-    // metadata, but we don't need to clear it on disk.
-    ClearCachedMetadata(code_cache_host, kClearLocally);
-    hash_state_ = kFailedToCheck;
-    return;
+  std::unique_ptr<ParkableStringImpl::SecureDigest> digest_holder;
+  const ParkableStringImpl::SecureDigest* digest;
+  // ParkableStrings have usually already computed the digest unless they're
+  // quite short (see ParkableStringManager::ShouldPark), so usually we can just
+  // use the pre-existing digest.
+  ParkableStringImpl* impl = source_text.Impl();
+  if (impl && impl->may_be_parked()) {
+    digest = impl->digest();
+  } else {
+    const String& unparked = source_text.ToString();
+    digest_holder = ParkableStringImpl::HashString(unparked.Impl());
+    digest = digest_holder.get();
   }
-  CHECK_EQ(digest.size(), kSha256Bytes);
+
+  CHECK_EQ(digest->size(), kSha256Bytes);
 
   if (hash_state_ != kUninitialized) {
     // Compare the hash of the new source text with the one previously loaded.
-    if (memcmp(digest.data(), hash_, kSha256Bytes) != 0) {
+    if (memcmp(digest->data(), hash_, kSha256Bytes) != 0) {
       // If this handler was previously checked and is now being checked again
       // with a different hash value, then something bad happened. We expect the
       // handler to only be used with one script source text.
@@ -162,7 +160,7 @@ void ScriptCachedMetadataHandlerWithHashing::Check(
 
   // Remember the computed hash so that it can be used when saving data to
   // persistent storage.
-  memcpy(hash_, digest.data(), kSha256Bytes);
+  memcpy(hash_, digest->data(), kSha256Bytes);
   hash_state_ = kChecked;
 }
 
@@ -174,9 +172,8 @@ void ScriptCachedMetadataHandlerWithHashing::SetSerializedCachedMetadata(
   DCHECK(!cached_metadata_);
   DCHECK_EQ(hash_state_, kUninitialized);
 
-  // kChecked and kFailedToCheck states guarantees that hash_ will never be
-  // updated again.
-  CHECK(hash_state_ != kChecked && hash_state_ != kFailedToCheck);
+  // The kChecked state guarantees that hash_ will never be updated again.
+  CHECK(hash_state_ != kChecked);
 
   const uint32_t kMetadataTypeSize = sizeof(uint32_t);
   const uint32_t kHashingHeaderSize = kMetadataTypeSize + kSha256Bytes;
@@ -206,16 +203,11 @@ ScriptCachedMetadataHandlerWithHashing::GetCachedMetadata(
   // okay for that metadata to possibly mismatch with the loaded script content,
   // then you can pass kAllowUnchecked as the second parameter.
   if (behavior == kCrashIfUnchecked) {
-    CHECK(hash_state_ == kChecked || hash_state_ == kFailedToCheck);
+    CHECK(hash_state_ == kChecked);
   }
 
   scoped_refptr<CachedMetadata> result =
       ScriptCachedMetadataHandler::GetCachedMetadata(data_type_id, behavior);
-
-  // The cached metadata should have been cleared if hash computation failed.
-  if (hash_state_ == kFailedToCheck) {
-    CHECK_EQ(result, nullptr);
-  }
 
   return result;
 }
