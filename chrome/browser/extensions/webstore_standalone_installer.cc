@@ -31,24 +31,24 @@
 
 using content::WebContents;
 
+namespace {
+constexpr char kProfileShuttingDown[] = "The profile is shutting down.";
+}
+
 namespace extensions {
 
 WebstoreStandaloneInstaller::WebstoreStandaloneInstaller(
     const std::string& webstore_item_id,
     Profile* profile,
     Callback callback)
-    : id_(webstore_item_id),
-      callback_(std::move(callback)),
-      profile_(profile),
-      install_source_(WebstoreInstaller::INSTALL_SOURCE_INLINE),
-      show_user_count_(true),
-      average_rating_(0.0),
-      rating_count_(0) {}
+    : id_(webstore_item_id), callback_(std::move(callback)), profile_(profile) {
+  observation_.Observe(profile);
+}
 
 void WebstoreStandaloneInstaller::BeginInstall() {
   // Add a ref to keep this alive for WebstoreDataFetcher.
   // All code paths from here eventually lead to either CompleteInstall or
-  // AbortInstall, which both release this ref.
+  // AbortInstall, which both call CleanUp to release this ref.
   AddRef();
 
   if (!crx_file::id_util::IdIsValid(id_)) {
@@ -95,8 +95,8 @@ void WebstoreStandaloneInstaller::AbortInstall() {
   if (webstore_data_fetcher_) {
     webstore_data_fetcher_.reset();
     scoped_active_install_.reset();
-    Release();  // Matches the AddRef in BeginInstall.
   }
+  CleanUp();
 }
 
 bool WebstoreStandaloneInstaller::EnsureUniqueInstall(
@@ -125,7 +125,7 @@ void WebstoreStandaloneInstaller::CompleteInstall(
   scoped_active_install_.reset();
   if (!callback_.is_null())
     RunCallback(result == webstore_install::SUCCESS, error, result);
-  Release();  // Matches the AddRef in BeginInstall.
+  CleanUp();
 }
 
 void WebstoreStandaloneInstaller::ProceedWithInstallPrompt() {
@@ -404,6 +404,15 @@ void WebstoreStandaloneInstaller::OnExtensionInstallFailure(
   CompleteInstall(install_result, error);
 }
 
+void WebstoreStandaloneInstaller::OnProfileWillBeDestroyed(Profile* profile) {
+  DCHECK(profile == profile_);
+
+  if (!callback_.is_null())
+    RunCallback(false, kProfileShuttingDown, webstore_install::ABORTED);
+
+  AbortInstall();
+}
+
 void WebstoreStandaloneInstaller::ShowInstallUI() {
   scoped_refptr<const Extension> localized_extension =
       GetLocalizedExtensionForDisplay();
@@ -427,6 +436,14 @@ void WebstoreStandaloneInstaller::OnWebStoreDataFetcherDone() {
   // data fetcher to avoid calling Release in AbortInstall while any of these
   // operations are in progress.
   webstore_data_fetcher_.reset();
+}
+
+void WebstoreStandaloneInstaller::CleanUp() {
+  // Once install has either completed or aborted, don't observe the
+  // Profile lifetime any longer.
+  observation_.Reset();
+  // Matches the AddRef in BeginInstall.
+  Release();
 }
 
 }  // namespace extensions
