@@ -562,8 +562,7 @@ void TabGroupEditorBubbleView::OnBubbleClose() {
   // If we're doing the "create a tab group" tutorial, note whether the user
   // actually entered a tab name.
   if (browser_->window()->IsFeaturePromoActive(
-          feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
-          /*include_continued_promos =*/true)) {
+          feature_engagement::kIPHDesktopTabGroupsNewGroupFeature)) {
     UMA_HISTOGRAM_BOOLEAN("Tutorial.TabGroup.EditedTitle",
                           !title_field_->GetText().empty());
   }

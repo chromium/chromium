@@ -1661,7 +1661,7 @@ void BrowserView::OnTabRestored(int command_id) {
       command_id != IDC_RESTORE_TAB)
     return;
   if (feature_promo_controller_) {
-    feature_promo_controller_->CloseBubble(
+    feature_promo_controller_->EndPromo(
         feature_engagement::kIPHReopenTabFeature);
   }
 }
@@ -4549,11 +4549,10 @@ BrowserFeaturePromoController* BrowserView::GetFeaturePromoController() {
   return feature_promo_controller_.get();
 }
 
-bool BrowserView::IsFeaturePromoActive(const base::Feature& iph_feature,
-                                       bool include_continued_promos) const {
+bool BrowserView::IsFeaturePromoActive(const base::Feature& iph_feature) const {
   return feature_promo_controller_ &&
-         feature_promo_controller_->IsPromoActive(iph_feature,
-                                                  include_continued_promos);
+         feature_promo_controller_->IsPromoActive(
+             iph_feature, user_education::FeaturePromoStatus::kContinued);
 }
 
 bool BrowserView::MaybeShowFeaturePromo(
@@ -4562,21 +4561,36 @@ bool BrowserView::MaybeShowFeaturePromo(
         body_text_replacements,
     user_education::FeaturePromoController::BubbleCloseCallback
         close_callback) {
-  if (!feature_promo_controller_)
-    return false;
-  return feature_promo_controller_->MaybeShowPromo(
-      iph_feature, body_text_replacements, std::move(close_callback));
+  return feature_promo_controller_ &&
+         feature_promo_controller_->MaybeShowPromo(
+             iph_feature, body_text_replacements, std::move(close_callback));
+}
+
+bool BrowserView::MaybeShowStartupFeaturePromo(
+    const base::Feature& iph_feature,
+    user_education::FeaturePromoSpecification::StringReplacements
+        body_text_replacements,
+    user_education::FeaturePromoController::StartupPromoCallback promo_callback,
+    user_education::FeaturePromoController::BubbleCloseCallback
+        close_callback) {
+  return feature_promo_controller_ &&
+         feature_promo_controller_->MaybeShowStartupPromo(
+             iph_feature, body_text_replacements, std::move(promo_callback),
+             std::move(close_callback));
 }
 
 bool BrowserView::CloseFeaturePromo(const base::Feature& iph_feature) {
   return feature_promo_controller_ &&
-         feature_promo_controller_->CloseBubble(iph_feature);
+         feature_promo_controller_->EndPromo(iph_feature);
 }
 
 user_education::FeaturePromoHandle BrowserView::CloseFeaturePromoAndContinue(
     const base::Feature& iph_feature) {
-  if (!IsFeaturePromoActive(iph_feature))
+  if (!feature_promo_controller_ ||
+      feature_promo_controller_->GetPromoStatus(iph_feature) !=
+          user_education::FeaturePromoStatus::kBubbleShowing) {
     return user_education::FeaturePromoHandle();
+  }
   return feature_promo_controller_->CloseBubbleAndContinuePromo(iph_feature);
 }
 

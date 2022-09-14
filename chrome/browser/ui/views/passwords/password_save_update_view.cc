@@ -704,7 +704,7 @@ void PasswordSaveUpdateView::CloseIPHBubbleIfOpen() {
   if (!promo_controller)
     return;
 
-  promo_controller->CloseBubble(
+  promo_controller->EndPromo(
       feature_engagement::kIPHPasswordsAccountStorageFeature);
 }
 

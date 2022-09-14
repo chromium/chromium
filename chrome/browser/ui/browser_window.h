@@ -575,16 +575,18 @@ class BrowserWindow : public ui::BaseWindow {
   virtual user_education::FeaturePromoController*
   GetFeaturePromoController() = 0;
 
-  // Returns whether the promo bubble associated with `iph_feature` is visible.
-  // If `include_continued_promos` is true, will also return true if
-  // CloseFeaturePromoAndContinue() has been called to hide the bubble but the
-  // promo is still running in the background.
-  virtual bool IsFeaturePromoActive(
-      const base::Feature& iph_feature,
-      bool include_continued_promos = false) const = 0;
+  // Returns whether the promo associated with `iph_feature` is running.
+  //
+  // Includes promos with visible bubbles and those which have been continued
+  // with CloseFeaturePromoAndContinue() and are still running in the
+  // background.
+  virtual bool IsFeaturePromoActive(const base::Feature& iph_feature) const = 0;
 
   // Maybe shows an in-product help promo. Returns true if the promo is shown.
   // In cases where there is no promo controller, immediately returns false.
+  //
+  // If this feature promo is likely to be shown at browser startup, prefer
+  // calling MaybeShowStartupFeaturePromo() instead.
   virtual bool MaybeShowFeaturePromo(
       const base::Feature& iph_feature,
       user_education::FeaturePromoSpecification::StringReplacements
@@ -592,8 +594,32 @@ class BrowserWindow : public ui::BaseWindow {
       user_education::FeaturePromoController::BubbleCloseCallback
           close_callback = base::DoNothing()) = 0;
 
-  // Closes the in-product help promo for `iph_feature` if it is showing;
-  // returns true if the promo was closed, false if it was not showing.
+  // Maybe shows an in-product help promo at startup, whenever the Feature
+  // Engagement system is fully initialized. If the promo cannot be queued for
+  // whatever reason, fails and returns false. The promo may still not run if it
+  // is excluded for other reasons (e.g. another promo starts first; its Feature
+  // Engagement conditions are not satisfied).
+  //
+  // On success, when the FE system is initialized (which might be immediately),
+  // `promo_callback` is called with the result of whether the promo was
+  // actually shown. Since `promo_callback` could be called any time, make sure
+  // that you will not experience any race conditions or UAFs if the calling
+  // object goes out of scope.
+  //
+  // If your promo is not likely to be shown at browser startup, prefer using
+  // MaybeShowFeaturePromo() - which always runs synchronously - instead.
+  virtual bool MaybeShowStartupFeaturePromo(
+      const base::Feature& iph_feature,
+      user_education::FeaturePromoSpecification::StringReplacements
+          body_text_replacements = {},
+      user_education::FeaturePromoController::StartupPromoCallback
+          promo_callback = base::DoNothing(),
+      user_education::FeaturePromoController::BubbleCloseCallback
+          close_callback = base::DoNothing()) = 0;
+
+  // Closes the in-product help promo for `iph_feature` if it is showing or
+  // cancels a pending startup promo; returns true if a promo bubble was
+  // actually closed.
   virtual bool CloseFeaturePromo(const base::Feature& iph_feature) = 0;
 
   // Closes the bubble for a feature promo but continues the promo; returns a

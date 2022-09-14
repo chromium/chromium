@@ -5,13 +5,16 @@
 #ifndef COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_CONTROLLER_H_
 #define COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_CONTROLLER_H_
 
+#include <initializer_list>
+#include <map>
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/callback_list.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -38,11 +41,22 @@ class FeaturePromoSnoozeService;
 class HelpBubbleFactoryRegistry;
 class TutorialService;
 
+// Describes the status of a feature promo.
+enum class FeaturePromoStatus {
+  kNotRunning,        // The promo is not running or queued.
+  kQueuedForStartup,  // The promo is waiting for the FE backend to initialize.
+  kBubbleShowing,     // The promo bubble is showing.
+  kContinued          // The bubble was closed but the promo is still active.
+};
+
 // Mostly virtual base class for feature promos; used to mock the interface in
 // tests.
 class FeaturePromoController {
  public:
   using BubbleCloseCallback = base::OnceClosure;
+  using StartupPromoCallback =
+      base::OnceCallback<void(const base::Feature& iph_feature,
+                              bool promo_shown)>;
 
   FeaturePromoController();
   FeaturePromoController(const FeaturePromoController& other) = delete;
@@ -54,6 +68,8 @@ class FeaturePromoController {
   // components/feature_engagement/public/feature_list.cc and registered
   // with |FeaturePromoRegistry|. Note that this is different than the
   // feature that the IPH is showing for.
+  //
+  // If the Feature Engagement backend is not initialized, returns false.
   //
   // If the body text is parameterized, pass text replacements in
   // |body_text_replacements|.
@@ -70,33 +86,70 @@ class FeaturePromoController {
   virtual bool MaybeShowPromo(
       const base::Feature& iph_feature,
       FeaturePromoSpecification::StringReplacements body_text_replacements = {},
-      BubbleCloseCallback close_callback = BubbleCloseCallback()) = 0;
+      BubbleCloseCallback close_callback = base::DoNothing()) = 0;
 
-  // Returns whether a bubble is showing for the given promo. If
-  // `include_continued_promos` is set, also returns true if a promo bubble has
-  // been hidden with CloseBubbleAndContinuePromo() but the promo is still
-  // active in the background.
-  virtual bool IsPromoActive(const base::Feature& iph_feature,
-                             bool include_continued_promos) const = 0;
+  // Tries to start the promo at a time when the Feature Engagement backend may
+  // not yet be initialized. Once it is initialized (which could be
+  // immediately), attempts to show the promo and calls `promo_callback` with
+  // the result. If EndPromo() is called before the promo is shown, the promo
+  // is canceled immediately.
+  //
+  // Returns whether the promo was queued, not whether it was actually shown.
+  // A promo may be queued and then not show due to its Feature Engagement
+  // conditions not being satisfied. For example, if multiple promos with a
+  // session limit of 1 are queued, both may queue successfully, but only one
+  // will actually show. If you care about whether the promo is actually shown,
+  // pass an appropriate `promo_callback`.
+  //
+  // Note: Since `promo_callback` is asynchronous and can theoretically still
+  // be pending after the caller's scope disappears, care must be taken to avoid
+  // a UAF on callback; the caller should prefer to either not bind transient
+  // objects (e.g. only use the callback for things like UMA logging) or use a
+  // weak pointer to avoid this situation.
+  //
+  // Otherwise, this is identical to MaybeShowPromo().
+  virtual bool MaybeShowStartupPromo(
+      const base::Feature& iph_feature,
+      FeaturePromoSpecification::StringReplacements body_text_replacements = {},
+      StartupPromoCallback promo_callback = base::DoNothing(),
+      BubbleCloseCallback close_callback = base::DoNothing()) = 0;
+
+  // Gets the current status of the promo associated with `iph_feature`.
+  virtual FeaturePromoStatus GetPromoStatus(
+      const base::Feature& iph_feature) const = 0;
+
+  // Returns whether the promo for `iph_feature` matches kBubbleShowing or any
+  // of `additional_status`.
+  template <typename... Args>
+  bool IsPromoActive(const base::Feature& iph_feature,
+                     Args... additional_status) const {
+    const FeaturePromoStatus actual = GetPromoStatus(iph_feature);
+    const std::initializer_list<FeaturePromoStatus> list{additional_status...};
+    DCHECK(!base::Contains(list, FeaturePromoStatus::kNotRunning));
+    return actual == FeaturePromoStatus::kBubbleShowing ||
+           base::Contains(list, actual);
+  }
 
   // Starts a promo with the settings for skipping any logging or filtering
   // provided by the implementation for MaybeShowPromo.
   virtual bool MaybeShowPromoForDemoPage(
       const base::Feature* iph_feature,
       FeaturePromoSpecification::StringReplacements body_text_replacements = {},
-      BubbleCloseCallback close_callback = BubbleCloseCallback()) = 0;
+      BubbleCloseCallback close_callback = base::DoNothing()) = 0;
 
-  // If a bubble is showing for |iph_feature| close it and end the
-  // promo. Does nothing otherwise. Returns true if a bubble was closed
-  // and false otherwise.
+  // Ends or cancels the current promo if it is queued. Returns true if a promo
+  // was successfully canceled or a bubble closed.
   //
-  // Calling this has no effect if |CloseBubbleAndContinuePromo()| was
-  // called for |iph_feature|.
-  virtual bool CloseBubble(const base::Feature& iph_feature) = 0;
+  // Has no effect for promos closed with CloseBubbleAndContinuePromo(); discard
+  // or release the FeaturePromoHandle to end those promos.
+  virtual bool EndPromo(const base::Feature& iph_feature) = 0;
 
-  // Like CloseBubble() but does not end the promo yet. The caller takes
-  // ownership of the promo (e.g. to show a highlight in a menu or on a
-  // button). The returned FeaturePromoHandle represents this ownership.
+  // Closes the promo for `iph_feature` - which must be showing - but continues
+  // the promo via the return value. Dispose or release the resulting handle to
+  // actually end the promo.
+  //
+  // Useful when a promo chains into some other user action and you don't want
+  // other promos to be able to show until after the operation is finished.
   virtual FeaturePromoHandle CloseBubbleAndContinuePromo(
       const base::Feature& iph_feature) = 0;
 
@@ -154,14 +207,19 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   bool MaybeShowPromo(
       const base::Feature& iph_feature,
       FeaturePromoSpecification::StringReplacements body_text_replacements = {},
-      BubbleCloseCallback close_callback = BubbleCloseCallback()) override;
-  bool IsPromoActive(const base::Feature& iph_feature,
-                     bool include_continued_promos = false) const override;
+      BubbleCloseCallback close_callback = base::DoNothing()) override;
+  bool MaybeShowStartupPromo(
+      const base::Feature& iph_feature,
+      FeaturePromoSpecification::StringReplacements body_text_replacements = {},
+      StartupPromoCallback promo_callback = base::DoNothing(),
+      BubbleCloseCallback close_callback = base::DoNothing()) override;
+  FeaturePromoStatus GetPromoStatus(
+      const base::Feature& iph_feature) const override;
   bool MaybeShowPromoForDemoPage(
       const base::Feature* iph_feature,
       FeaturePromoSpecification::StringReplacements body_text_replacements = {},
-      BubbleCloseCallback close_callback = BubbleCloseCallback()) override;
-  bool CloseBubble(const base::Feature& iph_feature) override;
+      BubbleCloseCallback close_callback = base::DoNothing()) override;
+  bool EndPromo(const base::Feature& iph_feature) override;
   FeaturePromoHandle CloseBubbleAndContinuePromo(
       const base::Feature& iph_feature) override;
   base::WeakPtr<FeaturePromoController> GetAsWeakPtr() override;
@@ -262,6 +320,13 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // all of this logic can be rewritten.
   bool CheckScreenReaderPromptAvailable() const;
 
+  // Handles firing async promos.
+  void OnFeatureEngagementTrackerInitialized(
+      const base::Feature* iph_feature,
+      FeaturePromoSpecification::StringReplacements body_text_replacements,
+      BubbleCloseCallback close_callback,
+      bool tracker_initialized_successfully);
+
   // Method that creates the bubble for a feature promo. May return null if the
   // bubble cannot be shown.
   std::unique_ptr<HelpBubble> ShowPromoBubbleImpl(
@@ -357,6 +422,9 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // against to verify the right feature is bypassing. this page is located at
   // internals/user-education.
   raw_ptr<const base::Feature> iph_feature_bypassing_tracker_ = nullptr;
+
+  // Tracks pending startup promos that have not been canceled.
+  std::map<const base::Feature*, StartupPromoCallback> startup_promos_;
 
   base::WeakPtrFactory<FeaturePromoControllerCommon> weak_ptr_factory_{this};
 

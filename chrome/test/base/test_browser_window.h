@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/test_download_shelf.h"
@@ -233,13 +234,19 @@ class TestBrowserWindow : public BrowserWindow {
   void CloseTabSearchBubble() override {}
 
   user_education::FeaturePromoController* GetFeaturePromoController() override;
-  bool IsFeaturePromoActive(
-      const base::Feature& iph_feature,
-      bool include_continued_promos = false) const override;
+  bool IsFeaturePromoActive(const base::Feature& iph_feature) const override;
   bool MaybeShowFeaturePromo(
       const base::Feature& iph_feature,
       user_education::FeaturePromoSpecification::StringReplacements
           body_text_replacements = {},
+      user_education::FeaturePromoController::BubbleCloseCallback
+          close_callback = base::DoNothing()) override;
+  bool MaybeShowStartupFeaturePromo(
+      const base::Feature& iph_feature,
+      user_education::FeaturePromoSpecification::StringReplacements
+          body_text_replacements = {},
+      user_education::FeaturePromoController::StartupPromoCallback
+          promo_callback = base::DoNothing(),
       user_education::FeaturePromoController::BubbleCloseCallback
           close_callback = base::DoNothing()) override;
   bool CloseFeaturePromo(const base::Feature& iph_feature) override;

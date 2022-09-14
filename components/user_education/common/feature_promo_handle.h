@@ -22,7 +22,7 @@ class FeaturePromoController;
 // FeaturePromoHandle is a value-typed, movable smart reference; default
 // constructed instances are falsy (i.e. operator bool and is_valid() return
 // false), as are any instances that have been moved or released.
-class FeaturePromoHandle {
+class [[nodiscard]] FeaturePromoHandle {
  public:
   FeaturePromoHandle();
   FeaturePromoHandle(base::WeakPtr<FeaturePromoController> controller,

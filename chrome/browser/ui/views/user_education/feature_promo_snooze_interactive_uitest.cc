@@ -309,13 +309,12 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
   AttemptIPH(false);
 }
 
-IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
-                       CloseBubbleSetsPrefs) {
+IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest, EndPromoSetsPrefs) {
   base::Time show_time_min = base::Time::Now();
   ASSERT_NO_FATAL_FAILURE(AttemptIPH(true));
   base::Time show_time_max = base::Time::Now();
 
-  promo_controller_->CloseBubble(kSnoozeTestFeature);
+  promo_controller_->EndPromo(kSnoozeTestFeature);
 
   CheckSnoozePrefs(kSnoozeTestFeature,
                    /* is_dismiss */ false,

@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/common/buildflags.h"
 #include "components/infobars/core/infobar_container.h"
+#include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo_handle.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/permission_controller.h"
@@ -611,13 +612,19 @@ class BrowserView : public BrowserWindow,
   LocationBarView* GetLocationBarView() const;
 
   BrowserFeaturePromoController* GetFeaturePromoController() override;
-  bool IsFeaturePromoActive(
-      const base::Feature& iph_feature,
-      bool include_continued_promos = false) const override;
+  bool IsFeaturePromoActive(const base::Feature& iph_feature) const override;
   bool MaybeShowFeaturePromo(
       const base::Feature& iph_feature,
       user_education::FeaturePromoSpecification::StringReplacements
           body_text_replacements = {},
+      user_education::FeaturePromoController::BubbleCloseCallback
+          close_callback = base::DoNothing()) override;
+  bool MaybeShowStartupFeaturePromo(
+      const base::Feature& iph_feature,
+      user_education::FeaturePromoSpecification::StringReplacements
+          body_text_replacements = {},
+      user_education::FeaturePromoController::StartupPromoCallback
+          promo_callback = base::DoNothing(),
       user_education::FeaturePromoController::BubbleCloseCallback
           close_callback = base::DoNothing()) override;
   bool CloseFeaturePromo(const base::Feature& iph_feature) override;

@@ -56,6 +56,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "feature_promo_controller_unittest.cc",
     "feature_promo_snooze_service_unittest.cc",
     "help_bubble_factory_registry_unittest.cc",
     "tutorial_unittest.cc",

@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "components/user_education/common/feature_promo_controller.h"
+#include <initializer_list>
 #include <string>
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -47,12 +49,20 @@ FeaturePromoControllerCommon::FeaturePromoControllerCommon(
   DCHECK(snooze_service_);
 }
 
-FeaturePromoControllerCommon::~FeaturePromoControllerCommon() = default;
+FeaturePromoControllerCommon::~FeaturePromoControllerCommon() {
+  // Inform any pending startup promos that they were not shown.
+  for (auto& [feature, callback] : startup_promos_)
+    std::move(callback).Run(*feature, false);
+}
 
 bool FeaturePromoControllerCommon::MaybeShowPromo(
     const base::Feature& iph_feature,
     FeaturePromoSpecification::StringReplacements body_text_replacements,
     BubbleCloseCallback close_callback) {
+  // Fail if the promo is already queued to run at FE initialization.
+  if (base::Contains(startup_promos_, &iph_feature))
+    return false;
+
   const FeaturePromoSpecification* spec =
       registry()->GetParamsForFeature(iph_feature);
   if (!spec)
@@ -73,12 +83,38 @@ bool FeaturePromoControllerCommon::MaybeShowPromo(
                                          std::move(close_callback));
 }
 
+bool FeaturePromoControllerCommon::MaybeShowStartupPromo(
+    const base::Feature& iph_feature,
+    FeaturePromoSpecification::StringReplacements body_text_replacements,
+    StartupPromoCallback promo_callback,
+    BubbleCloseCallback close_callback) {
+  // If the promo is currently running, fail.
+  if (current_iph_feature_ == &iph_feature)
+    return false;
+
+  // If the promo is already queued, fail.
+  if (base::Contains(startup_promos_, &iph_feature))
+    return false;
+
+  // Queue the promo.
+  startup_promos_.emplace(&iph_feature, std::move(promo_callback));
+  feature_engagement_tracker_->AddOnInitializedCallback(base::BindOnce(
+      &FeaturePromoControllerCommon::OnFeatureEngagementTrackerInitialized,
+      weak_ptr_factory_.GetWeakPtr(), base::Unretained(&iph_feature),
+      std::move(body_text_replacements), std::move(close_callback)));
+
+  // The promo has been successfully queued. Once the FE backend is initialized,
+  // MaybeShowPromo() will be called to see if the promo should actually be
+  // shown.
+  return true;
+}
+
 bool FeaturePromoControllerCommon::MaybeShowPromoForDemoPage(
     const base::Feature* iph_feature,
     FeaturePromoSpecification::StringReplacements body_text_replacements,
     BubbleCloseCallback close_callback) {
   if (current_iph_feature_ && promo_bubble_)
-    CloseBubble(*current_iph_feature_);
+    EndPromo(*current_iph_feature_);
   iph_feature_bypassing_tracker_ = iph_feature;
 
   bool showed_promo = MaybeShowPromo(*iph_feature);
@@ -168,7 +204,7 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowCriticalPromo(
   // If a normal bubble is showing, close it. Won't affect a promo continued
   // after its bubble has closed.
   if (current_iph_feature_)
-    CloseBubble(*current_iph_feature_);
+    EndPromo(*current_iph_feature_);
 
   // Snooze and tutorial are not supported for critical promos.
   DCHECK_NE(FeaturePromoSpecification::PromoType::kSnooze, spec.promo_type());
@@ -182,19 +218,28 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowCriticalPromo(
   return bubble;
 }
 
-bool FeaturePromoControllerCommon::IsPromoActive(
-    const base::Feature& iph_feature,
-    bool include_continued_promos) const {
+FeaturePromoStatus FeaturePromoControllerCommon::GetPromoStatus(
+    const base::Feature& iph_feature) const {
+  if (base::Contains(startup_promos_, &iph_feature))
+    return FeaturePromoStatus::kQueuedForStartup;
   if (current_iph_feature_ != &iph_feature)
-    return false;
-  return include_continued_promos ||
-         (promo_bubble_ && promo_bubble_->is_open());
+    return FeaturePromoStatus::kNotRunning;
+  return (promo_bubble_ && promo_bubble_->is_open())
+             ? FeaturePromoStatus::kBubbleShowing
+             : FeaturePromoStatus::kContinued;
 }
 
-bool FeaturePromoControllerCommon::CloseBubble(
-    const base::Feature& iph_feature) {
+bool FeaturePromoControllerCommon::EndPromo(const base::Feature& iph_feature) {
+  const auto it = startup_promos_.find(&iph_feature);
+  if (it != startup_promos_.end()) {
+    std::move(it->second).Run(iph_feature, false);
+    startup_promos_.erase(it);
+    return true;
+  }
+
   if (current_iph_feature_ != &iph_feature)
     return false;
+
   const bool was_open = promo_bubble_ && promo_bubble_->is_open();
   if (promo_bubble_)
     promo_bubble_->Close();
@@ -209,7 +254,7 @@ bool FeaturePromoControllerCommon::DismissNonCriticalBubbleInRegion(
     const gfx::Rect& screen_bounds) {
   if (promo_bubble_ && promo_bubble_->is_open() &&
       promo_bubble_->GetBoundsInScreen().Intersects(screen_bounds)) {
-    const bool result = CloseBubble(*current_iph_feature_);
+    const bool result = EndPromo(*current_iph_feature_);
     DCHECK(result);
     return result;
   }
@@ -220,7 +265,7 @@ FeaturePromoHandle FeaturePromoControllerCommon::CloseBubbleAndContinuePromo(
     const base::Feature& iph_feature) {
   DCHECK_EQ(current_iph_feature_, &iph_feature);
   continuing_after_bubble_closed_ = true;
-  const bool result = CloseBubble(iph_feature);
+  const bool result = EndPromo(iph_feature);
   DCHECK(result);
   return FeaturePromoHandle(GetAsWeakPtr(), &iph_feature);
 }
@@ -233,7 +278,7 @@ FeaturePromoControllerCommon::GetAsWeakPtr() {
 FeaturePromoControllerCommon::TestLock
 FeaturePromoControllerCommon::BlockPromosForTesting() {
   if (current_iph_feature_)
-    CloseBubble(*current_iph_feature_);
+    EndPromo(*current_iph_feature_);
   return std::make_unique<base::AutoReset<bool>>(&promos_blocked_for_testing_,
                                                  true);
 }
@@ -264,6 +309,29 @@ bool FeaturePromoControllerCommon::CheckScreenReaderPromptAvailable() const {
   feature_engagement_tracker_->Dismissed(*prompt_feature);
 
   return true;
+}
+
+void FeaturePromoControllerCommon::OnFeatureEngagementTrackerInitialized(
+    const base::Feature* iph_feature,
+    FeaturePromoSpecification::StringReplacements body_text_replacements,
+    BubbleCloseCallback close_callback,
+    bool tracker_initialized_successfully) {
+  // If the promo has been canceled, do not proceed.
+  const auto it = startup_promos_.find(iph_feature);
+  if (it == startup_promos_.end())
+    return;
+
+  // Store the callback and remove the promo from the pending list.
+  StartupPromoCallback callback = std::move(it->second);
+  startup_promos_.erase(it);
+
+  // Try to start the promo, assuming the tracker was successfully initialized.
+  bool success = false;
+  if (tracker_initialized_successfully) {
+    success = MaybeShowPromo(*iph_feature, std::move(body_text_replacements),
+                             std::move(close_callback));
+  }
+  std::move(callback).Run(*iph_feature, success);
 }
 
 std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
