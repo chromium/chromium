@@ -139,7 +139,8 @@ class AccessibilityTeardownTestMessageFilter : public ui::HWNDMessageFilter {
   }
 
  private:
-  raw_ptr<LegacyRenderWidgetHostHWND> legacy_render_widget_host_HWND_;
+  raw_ptr<LegacyRenderWidgetHostHWND, DanglingUntriaged>
+      legacy_render_widget_host_HWND_;
 };
 
 IN_PROC_BROWSER_TEST_F(AccessibilityObjectLifetimeWinBrowserTest,
