@@ -42,7 +42,7 @@ struct CONTENT_EXPORT StorageInterestGroup {
 
     // Unique identifier associated with the data being anonymized, usually a
     // URL.
-    GURL key;
+    std::string key;
     // Whether the `key` was k-anonymous during the last update.
     bool is_k_anonymous;
     // The last time the unique user count was updated.

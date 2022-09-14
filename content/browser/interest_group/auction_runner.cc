@@ -168,6 +168,7 @@ void AuctionRunner::OnReportingPhaseComplete(
 
   interest_group_manager_->RecordInterestGroupWin(winning_group_key,
                                                   ad_metadata);
+  interest_group_manager_->RegisterAdAsWon(auction_.top_bid()->bid->render_url);
 
   std::vector<GURL> debug_win_report_urls;
   std::vector<GURL> debug_loss_report_urls;

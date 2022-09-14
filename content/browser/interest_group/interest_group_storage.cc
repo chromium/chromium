@@ -26,6 +26,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -85,12 +86,6 @@ const int kCompatibleVersionNumber = 10;
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
 const int kDeprecatedVersionNumber = 5;
-
-GURL KAnonKeyFor(url::Origin interest_group_owner,
-                 std::string interest_group_name) {
-  return interest_group_owner.GetURL().Resolve(
-      base::EscapePath(interest_group_name));
-}
 
 std::string Serialize(const base::Value& value) {
   std::string json_output;
@@ -626,7 +621,7 @@ bool UpgradeV6SchemaToV7(sql::Database& db, sql::MetaTable& meta_table) {
 }
 
 bool DoCreateOrMarkKAnonReferenced(sql::Database& db,
-                                   const GURL& key,
+                                   const std::string key,
                                    const base::Time& now) {
   base::Time distant_past = base::Time::Min();
   base::Time cutoff = now - InterestGroupStorage::kHistoryLength;
@@ -654,7 +649,7 @@ bool DoCreateOrMarkKAnonReferenced(sql::Database& db,
 
   maybe_insert_kanon.Reset(true);
   maybe_insert_kanon.BindTime(0, now);
-  maybe_insert_kanon.BindString(1, Serialize(key));
+  maybe_insert_kanon.BindString(1, key);
   maybe_insert_kanon.BindTime(2, distant_past);
   maybe_insert_kanon.BindTime(3, distant_past);
 
@@ -686,7 +681,7 @@ bool DoCreateOrMarkKAnonReferenced(sql::Database& db,
   update_kanon.BindTime(0, now);
   update_kanon.BindTime(1, cutoff);
   update_kanon.BindTime(2, distant_past);
-  update_kanon.BindString(3, Serialize(key));
+  update_kanon.BindString(3, key);
 
   return update_kanon.Run();
 }
@@ -702,13 +697,13 @@ bool DoCreateOrMarkInterestGroupUpdateURLReferenced(
     sql::Database& db,
     const GURL& daily_update_url,
     const base::Time& now) {
-  return DoCreateOrMarkKAnonReferenced(db, daily_update_url, now);
+  return DoCreateOrMarkKAnonReferenced(db, daily_update_url.spec(), now);
 }
 
 bool DoCreateOrMarkAdReferenced(sql::Database& db,
                                 const blink::InterestGroup::Ad& ad,
                                 const base::Time& now) {
-  return DoCreateOrMarkKAnonReferenced(db, ad.render_url, now);
+  return DoCreateOrMarkKAnonReferenced(db, ad.render_url.spec(), now);
 }
 
 // Takes a blink::InterestGroup, or InterestGroupUpdate.
@@ -1310,15 +1305,12 @@ bool DoRecordInterestGroupWin(sql::Database& db,
 }
 
 bool DoUpdateKAnonymity(sql::Database& db,
-                        const StorageInterestGroup::KAnonymityData& data,
-                        const absl::optional<base::Time>& update_sent_time) {
+                        const StorageInterestGroup::KAnonymityData& data) {
   // clang-format off
   sql::Statement update(
       db.GetCachedStatement(SQL_FROM_HERE,
       "UPDATE k_anon "
-      "SET is_k_anon=?, last_k_anon_updated_time=?,"
-          "last_reported_to_anon_server_time="
-            "IFNULL(?,last_reported_to_anon_server_time) "
+      "SET is_k_anon=?, last_k_anon_updated_time=? "
       "WHERE key=?"));
   // clang-format on
   if (!update.is_valid())
@@ -1327,35 +1319,32 @@ bool DoUpdateKAnonymity(sql::Database& db,
   update.Reset(true);
   update.BindInt(0, data.is_k_anonymous);
   update.BindTime(1, data.last_updated);
-  if (update_sent_time)
-    update.BindTime(2, update_sent_time.value());
-  else
-    update.BindNull(2);
-  update.BindString(3, Serialize(data.key));
+  update.BindString(2, data.key);
   return update.Run();
 }
 
-base::Time DoGetLastKAnonymityReported(sql::Database& db, const GURL& key) {
+absl::optional<base::Time> DoGetLastKAnonymityReported(sql::Database& db,
+                                                       const std::string& key) {
   sql::Statement get_reported(db.GetCachedStatement(
       SQL_FROM_HERE,
       "SELECT last_reported_to_anon_server_time FROM k_anon WHERE key=?"));
   if (!get_reported.is_valid()) {
     DLOG(ERROR) << "GetLastKAnonymityReported SQL statement did not compile: "
                 << db.GetErrorMessage();
-    return {};
+    return absl::nullopt;
   }
   get_reported.Reset(true);
-  get_reported.BindString(0, key.spec());
+  get_reported.BindString(0, key);
   if (!get_reported.Step()) {
-    return {};
+    return absl::nullopt;
   }
   if (!get_reported.Succeeded())
-    return {};
+    return absl::nullopt;
   return get_reported.ColumnTime(0);
 }
 
 void DoUpdateLastKAnonymityReported(sql::Database& db,
-                                    const GURL& key,
+                                    const std::string& key,
                                     base::Time now) {
   sql::Statement set_reported(db.GetCachedStatement(
       SQL_FROM_HERE,
@@ -1368,7 +1357,7 @@ void DoUpdateLastKAnonymityReported(sql::Database& db,
   }
   set_reported.Reset(true);
   set_reported.BindTime(0, now);
-  set_reported.BindString(1, key.spec());
+  set_reported.BindString(1, key);
   if (!set_reported.Run()) {
     return;
   }
@@ -1424,7 +1413,7 @@ absl::optional<std::vector<url::Origin>> DoGetAllInterestGroupJoiningOrigins(
 
 bool DoGetKAnonymity(
     sql::Database& db,
-    const GURL& key,
+    const std::string& key,
     absl::optional<StorageInterestGroup::KAnonymityData>& output) {
   // clang-format off
   sql::Statement interest_group_kanon(
@@ -1443,7 +1432,7 @@ bool DoGetKAnonymity(
   }
 
   interest_group_kanon.Reset(true);
-  interest_group_kanon.BindString(0, Serialize(key));
+  interest_group_kanon.BindString(0, key);
 
   if (!interest_group_kanon.Step()) {
     return false;
@@ -1460,6 +1449,13 @@ bool DoGetInterestGroupNameKAnonymity(
     const std::string& name,
     absl::optional<StorageInterestGroup::KAnonymityData>& output) {
   return DoGetKAnonymity(db, KAnonKeyFor(owner, name), output);
+}
+
+bool DoGetURLKAnonymity(
+    sql::Database& db,
+    const GURL& url,
+    absl::optional<StorageInterestGroup::KAnonymityData>& output) {
+  return DoGetKAnonymity(db, url.spec(), output);
 }
 
 bool GetPreviousWins(sql::Database& db,
@@ -1591,10 +1587,20 @@ absl::optional<StorageInterestGroup> DoGetStoredInterestGroup(
 
   if (!DoGetInterestGroupNameKAnonymity(db, group_key.owner, group_key.name,
                                         db_interest_group.name_kanon)) {
-    return absl::nullopt;
+    // This should only happen if the database was created with an older version
+    // of the k-anon key for interest group names. Try the old group name.
+    // TODO(behamilton): Remove this in a new version
+    if (!DoGetKAnonymity(db,
+                         group_key.owner.GetURL()
+                             .Resolve(base::EscapePath(group_key.name))
+                             .spec(),
+                         db_interest_group.name_kanon))
+      return absl::nullopt;
+    db_interest_group.name_kanon->key =
+        KAnonKeyFor(group_key.owner, group_key.name);
   }
   if (db_interest_group.interest_group.daily_update_url &&
-      !DoGetKAnonymity(
+      !DoGetURLKAnonymity(
           db, db_interest_group.interest_group.daily_update_url.value(),
           db_interest_group.daily_update_url_kanon)) {
     return absl::nullopt;
@@ -1602,7 +1608,7 @@ absl::optional<StorageInterestGroup> DoGetStoredInterestGroup(
   if (db_interest_group.interest_group.ads) {
     for (auto& ad : db_interest_group.interest_group.ads.value()) {
       absl::optional<StorageInterestGroup::KAnonymityData> ad_kanon;
-      if (!DoGetKAnonymity(db, ad.render_url, ad_kanon)) {
+      if (!DoGetURLKAnonymity(db, ad.render_url, ad_kanon)) {
         return absl::nullopt;
       }
       if (!ad_kanon)
@@ -1613,7 +1619,7 @@ absl::optional<StorageInterestGroup> DoGetStoredInterestGroup(
   if (db_interest_group.interest_group.ad_components) {
     for (auto& ad : db_interest_group.interest_group.ad_components.value()) {
       absl::optional<StorageInterestGroup::KAnonymityData> ad_kanon;
-      if (!DoGetKAnonymity(db, ad.render_url, ad_kanon)) {
+      if (!DoGetURLKAnonymity(db, ad.render_url, ad_kanon)) {
         return absl::nullopt;
       }
       if (!ad_kanon)
@@ -2209,18 +2215,18 @@ void InterestGroupStorage::RecordInterestGroupWin(
 }
 
 void InterestGroupStorage::UpdateKAnonymity(
-    const StorageInterestGroup::KAnonymityData& data,
-    const absl::optional<base::Time>& update_sent_time) {
+    const StorageInterestGroup::KAnonymityData& data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized())
     return;
 
-  if (!DoUpdateKAnonymity(*db_, data, update_sent_time)) {
+  if (!DoUpdateKAnonymity(*db_, data)) {
     DLOG(ERROR) << "Could not update k-anonymity: " << db_->GetErrorMessage();
   }
 }
 
-base::Time InterestGroupStorage::GetLastKAnonymityReported(const GURL& key) {
+absl::optional<base::Time> InterestGroupStorage::GetLastKAnonymityReported(
+    const std::string& key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized())
     return {};
@@ -2228,7 +2234,8 @@ base::Time InterestGroupStorage::GetLastKAnonymityReported(const GURL& key) {
   return DoGetLastKAnonymityReported(*db_, key);
 }
 
-void InterestGroupStorage::UpdateLastKAnonymityReported(const GURL& key) {
+void InterestGroupStorage::UpdateLastKAnonymityReported(
+    const std::string& key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized())
     return;

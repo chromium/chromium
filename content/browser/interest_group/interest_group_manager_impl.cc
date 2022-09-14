@@ -96,7 +96,8 @@ InterestGroupManagerImpl::InterestGroupManagerImpl(
     const base::FilePath& path,
     bool in_memory,
     ProcessMode process_mode,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<KAnonymityServiceDelegate> k_anonymity_service)
     : impl_(base::ThreadPool::CreateSequencedTaskRunner(
                 {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
                  base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
@@ -107,6 +108,9 @@ InterestGroupManagerImpl::InterestGroupManagerImpl(
                                      new DedicatedAuctionProcessManager())
                                : new InRendererAuctionProcessManager())),
       update_manager_(this, std::move(url_loader_factory)),
+      k_anonymity_manager_(std::make_unique<InterestGroupKAnonymityManager>(
+          this,
+          std::move(k_anonymity_service))),
       max_active_report_requests_(kMaxActiveReportRequests),
       max_report_queue_length_(kMaxReportQueueLength),
       reporting_interval_(kReportingInterval),
@@ -159,8 +163,27 @@ void InterestGroupManagerImpl::JoinInterestGroup(blink::InterestGroup group,
                                                  const GURL& joining_url) {
   NotifyInterestGroupAccessed(InterestGroupObserverInterface::kJoin,
                               group.owner.Serialize(), group.name);
+  blink::InterestGroupKey group_key(group.owner, group.name);
   impl_.AsyncCall(&InterestGroupStorage::JoinInterestGroup)
       .WithArgs(std::move(group), std::move(joining_url));
+  // This needs to happen second so that the DB row is created.
+  GetInterestGroup(
+      group_key,
+      base::BindOnce(
+          &InterestGroupManagerImpl::
+              QueueKAnonymityUpdateForInterestGroupFromJoinInterestGroup,
+          weak_factory_.GetWeakPtr()));
+}
+
+void InterestGroupManagerImpl::
+    QueueKAnonymityUpdateForInterestGroupFromJoinInterestGroup(
+        absl::optional<StorageInterestGroup> maybe_group) {
+  // We just joined the group, so it must exist.
+  // We don't need to worry about the DB size limit, since older groups
+  // are removed first.
+  DCHECK(maybe_group);
+  if (maybe_group)
+    QueueKAnonymityUpdateForInterestGroup(*maybe_group);
 }
 
 void InterestGroupManagerImpl::LeaveInterestGroup(
@@ -214,6 +237,10 @@ void InterestGroupManagerImpl::RecordInterestGroupWin(
                               group_key.owner.Serialize(), group_key.name);
   impl_.AsyncCall(&InterestGroupStorage::RecordInterestGroupWin)
       .WithArgs(group_key, std::move(ad_json));
+}
+
+void InterestGroupManagerImpl::RegisterAdAsWon(const GURL& render_url) {
+  k_anonymity_manager_->RegisterAdAsWon(render_url);
 }
 
 void InterestGroupManagerImpl::GetInterestGroup(
@@ -465,6 +492,31 @@ void InterestGroupManagerImpl::SetInterestGroupPriority(
     double priority) {
   impl_.AsyncCall(&InterestGroupStorage::SetInterestGroupPriority)
       .WithArgs(group_key, priority);
+}
+
+void InterestGroupManagerImpl::QueueKAnonymityUpdateForInterestGroup(
+    const StorageInterestGroup& group) {
+  k_anonymity_manager_->QueryKAnonymityForInterestGroup(group);
+  k_anonymity_manager_->RegisterInterestGroupAsJoined(group.interest_group);
+}
+
+void InterestGroupManagerImpl::UpdateKAnonymity(
+    const StorageInterestGroup::KAnonymityData& data) {
+  impl_.AsyncCall(&InterestGroupStorage::UpdateKAnonymity).WithArgs(data);
+}
+
+void InterestGroupManagerImpl::GetLastKAnonymityReported(
+    const std::string& key,
+    base::OnceCallback<void(absl::optional<base::Time>)> callback) {
+  impl_.AsyncCall(&InterestGroupStorage::GetLastKAnonymityReported)
+      .WithArgs(key)
+      .Then(std::move(callback));
+}
+
+void InterestGroupManagerImpl::UpdateLastKAnonymityReported(
+    const std::string& key) {
+  impl_.AsyncCall(&InterestGroupStorage::UpdateLastKAnonymityReported)
+      .WithArgs(key);
 }
 
 void InterestGroupManagerImpl::set_max_report_queue_length_for_testing(

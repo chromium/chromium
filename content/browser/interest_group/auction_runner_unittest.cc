@@ -1664,7 +1664,8 @@ class AuctionRunnerTest : public testing::Test,
     interest_group_manager_ = std::make_unique<InterestGroupManagerImpl>(
         base::FilePath(), /*in_memory=*/true,
         InterestGroupManagerImpl::ProcessMode::kDedicated,
-        /*url_loader_factory=*/nullptr);
+        /*url_loader_factory=*/nullptr,
+        /*k_anonymity_service=*/nullptr);
     if (!auction_process_manager_) {
       auction_process_manager_ =
           std::make_unique<SameProcessAuctionProcessManager>();

@@ -1332,7 +1332,8 @@ void StoragePartitionImpl::Initialize(
 #else
         InterestGroupManagerImpl::ProcessMode::kDedicated,
 #endif
-        GetURLLoaderFactoryForBrowserProcess());
+        GetURLLoaderFactoryForBrowserProcess(),
+        browser_context_->CreateKAnonymityServiceDelegate());
   }
 
   // The Topics API is not available in Incognito mode.
