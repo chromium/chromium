@@ -20,9 +20,9 @@
 
 namespace video_capture {
 
-// Implementation of media::VideoFrameReceiver that distributes frames to
+// Implementation of mojom::VideoFrameHandler that distributes frames to
 // potentially multiple clients.
-class BroadcastingReceiver : public media::VideoFrameReceiver {
+class BroadcastingReceiver : public mojom::VideoFrameHandler {
  public:
   class BufferContext {
    public:
@@ -33,6 +33,9 @@ class BroadcastingReceiver : public media::VideoFrameReceiver {
     BufferContext& operator=(BufferContext&& other);
     int32_t buffer_context_id() const { return buffer_context_id_; }
     int32_t buffer_id() const { return buffer_id_; }
+    void SetFrameAccessHandlerRemote(
+        scoped_refptr<VideoFrameAccessHandlerRemote>
+            frame_access_handler_remote);
     void IncreaseConsumerCount();
     void DecreaseConsumerCount();
     bool IsStillBeingConsumed() const;
@@ -50,6 +53,7 @@ class BroadcastingReceiver : public media::VideoFrameReceiver {
 
     int32_t buffer_context_id_;
     int32_t buffer_id_;
+    scoped_refptr<VideoFrameAccessHandlerRemote> frame_access_handler_remote_;
     media::mojom::VideoBufferHandlePtr buffer_handle_;
     // Indicates how many consumers are currently relying on
     // |access_permission_|.
@@ -59,8 +63,6 @@ class BroadcastingReceiver : public media::VideoFrameReceiver {
 
   BroadcastingReceiver();
   ~BroadcastingReceiver() override;
-
-  base::WeakPtr<media::VideoFrameReceiver> GetWeakPtr();
 
   // Indicates to the BroadcastingReceiver that we want to restart the source
   // without letting connected clients know about the restart. The
@@ -81,12 +83,15 @@ class BroadcastingReceiver : public media::VideoFrameReceiver {
   // Returns ownership of the client back to the caller.
   mojo::Remote<mojom::VideoFrameHandler> RemoveClient(int32_t client_id);
 
-  // media::VideoFrameReceiver:
+  // video_capture::mojom::VideoFrameHandler:
   void OnNewBuffer(int32_t buffer_id,
                    media::mojom::VideoBufferHandlePtr buffer_handle) override;
+  void OnFrameAccessHandlerReady(
+      mojo::PendingRemote<video_capture::mojom::VideoFrameAccessHandler>
+          frame_access_handler_remote) override;
   void OnFrameReadyInBuffer(
-      media::ReadyFrameInBuffer frame,
-      std::vector<media::ReadyFrameInBuffer> scaled_frames) override;
+      mojom::ReadyFrameInBufferPtr buffer,
+      std::vector<mojom::ReadyFrameInBufferPtr> scaled_buffers) override;
   void OnBufferRetired(int32_t buffer_id) override;
   void OnError(media::VideoCaptureError error) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
@@ -98,8 +103,6 @@ class BroadcastingReceiver : public media::VideoFrameReceiver {
   void OnStopped() override;
 
  private:
-  friend class BroadcastingReceiverTest;
-
   enum class Status {
     kOnStartedHasNotYetBeenCalled,
     kOnStartedHasBeenCalled,
@@ -162,12 +165,6 @@ class BroadcastingReceiver : public media::VideoFrameReceiver {
   // This is used for relaying the error event to clients that connect after the
   // OnError() call has been received.
   media::VideoCaptureError error_;
-
-  std::map<
-      int32_t,
-      std::unique_ptr<
-          media::VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>>
-      scoped_access_permissions_by_buffer_context_id_;
 
   // Keeps track of the id value for the next client to be added. This member is
   // incremented each time a client is added and represents a unique identifier
