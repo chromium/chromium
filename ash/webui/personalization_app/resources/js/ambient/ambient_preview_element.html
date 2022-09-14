@@ -222,11 +222,11 @@
             [[getAlbumDescription_(topicSource_, previewAlbums_)]]
           </span>
         </h3>
-        <div id="collageContainer"
+        <div aria-hidden="true"
             class$="[[getCollageContainerClass_(collageImages_)]]"
-            on-click="onClickPreviewImage_"
-            on-keypress="onClickPreviewImage_"
-            aria-hidden="true">
+            on-click="onClickPhotoCollage_"
+            on-keypress="onClickPhotoCollage_"
+            id="collageContainer">
           <template is="dom-repeat" items="[[collageImages_]]">
             <img class="collage-item" is="cr-auto-img"
                 auto-src="[[item.url]]" is-google-photos>

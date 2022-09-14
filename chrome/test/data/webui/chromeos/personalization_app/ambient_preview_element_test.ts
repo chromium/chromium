@@ -98,4 +98,88 @@ suite('AmbientPreviewTest', function() {
         assertEquals(Paths.AMBIENT, path);
         assertDeepEquals({}, queryParams);
       });
+
+  test('click big image preview goes to ambient subpage', async () => {
+    personalizationStore.data.ambient = {
+      ...personalizationStore.data.ambient,
+      albums: ambientProvider.albums,
+      topicSource: TopicSource.kArtGallery,
+      ambientModeEnabled: true,
+      googlePhotosAlbumsPreviews: ambientProvider.googlePhotosAlbumsPreviews,
+    };
+    ambientPreviewElement = initElement(AmbientPreview, {clickable: true});
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(ambientPreviewElement);
+
+    const original = PersonalizationRouter.instance;
+    const goToRoutePromise = new Promise<[Paths, Object]>(resolve => {
+      PersonalizationRouter.instance = () => {
+        return {
+          goToRoute(path: Paths, queryParams: Object = {}) {
+            resolve([path, queryParams]);
+            PersonalizationRouter.instance = original;
+          },
+        } as PersonalizationRouter;
+      };
+    });
+
+    ambientPreviewElement.shadowRoot!
+        .querySelector<HTMLImageElement>('.preview-image.clickable')!.click();
+
+    const [path, queryParams] = await goToRoutePromise;
+
+    assertEquals(Paths.AMBIENT, path, 'navigates to ambient subpage');
+    assertDeepEquals({}, queryParams, 'no query params set');
+  });
+
+  test('click ambient collage goes to ambient albums subpage', async () => {
+    personalizationStore.data.ambient = {
+      ...personalizationStore.data.ambient,
+      albums: ambientProvider.albums,
+      topicSource: TopicSource.kArtGallery,
+      ambientModeEnabled: true,
+      googlePhotosAlbumsPreviews: ambientProvider.googlePhotosAlbumsPreviews,
+    };
+    ambientPreviewElement = initElement(AmbientPreview, {clickable: true});
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(ambientPreviewElement);
+
+    function setFakeRouter() {
+      const original = PersonalizationRouter.instance;
+      return new Promise<TopicSource>(resolve => {
+        PersonalizationRouter.instance = () => {
+          return {
+            selectAmbientAlbums(topicSource: TopicSource) {
+              resolve(topicSource);
+              PersonalizationRouter.instance = original;
+            },
+          } as PersonalizationRouter;
+        };
+      });
+    }
+
+    const artGalleryPromise = setFakeRouter();
+
+    ambientPreviewElement.shadowRoot!.getElementById(
+                                         'collageContainer')!.click();
+
+    let topicSource = await artGalleryPromise;
+    assertEquals(
+        topicSource, TopicSource.kArtGallery,
+        'navigates to art gallery topic source');
+
+    // Set the topic source to kGooglePhotos and check that clicking the photo
+    // collage goes to kGooglePhotos subpage.
+    personalizationStore.data.ambient.topicSource = TopicSource.kGooglePhotos;
+    personalizationStore.notifyObservers();
+    const googlePhotosPromise = setFakeRouter();
+
+    ambientPreviewElement.shadowRoot!.getElementById(
+                                         'collageContainer')!.click();
+
+    topicSource = await googlePhotosPromise;
+    assertEquals(
+        topicSource, TopicSource.kGooglePhotos,
+        'navigates to google photos topic source');
+  });
 });

@@ -153,6 +153,16 @@ export class AmbientPreview extends WithPersonalizationStore {
   }
 
   /**
+   * Navigate directly to photo selection subpage. Should only be possible to
+   * call this function if |topic_source| is set and photo collage is visible.
+   */
+  private onClickPhotoCollage_(event: Event) {
+    assert(typeof this.topicSource_ === 'number', 'topic source required');
+    event.stopPropagation();
+    PersonalizationRouter.instance().selectAmbientAlbums(this.topicSource_);
+  }
+
+  /**
    * Return the array of images that form the collage.
    * When topic source is Google Photos:
    *   - if |googlePhotosAlbumsPreviews_| is non-empty but contains fewer than 4
