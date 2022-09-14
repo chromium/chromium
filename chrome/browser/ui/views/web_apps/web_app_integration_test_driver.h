@@ -206,8 +206,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
 
   // Automated Testing Actions
   //
-  // Actions are defined in the following spreadsheet:
-  // https://docs.google.com/spreadsheets/d/1d3iAOAnojp4_WrPky9exz1-mjkeulOJVUav5QYG99MQ/edit#gid=2008870403
+  // Actions are defined in chrome/test/webapps/data/actions.md
 
   // State change actions:
   void AcceptAppIdUpdateDialog();
