@@ -53,9 +53,9 @@ TEST_F(CookieAccessDelegateImplTest, NullFirstPartySetsManager) {
               Optional(std::ref(expected_metadata)));
 
   EXPECT_THAT(
-      delegate().FindFirstPartySetOwners(
+      delegate().FindFirstPartySetEntries(
           {site},
-          base::BindOnce([](FirstPartySetsManager::OwnersResult) { FAIL(); })),
+          base::BindOnce([](FirstPartySetsManager::EntriesResult) { FAIL(); })),
       Optional(IsEmpty()));
 }
 

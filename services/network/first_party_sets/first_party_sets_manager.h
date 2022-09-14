@@ -30,7 +30,7 @@ namespace network {
 // answers queries about First-Party Sets after they've been loaded.
 class FirstPartySetsManager {
  public:
-  using OwnersResult =
+  using EntriesResult =
       base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>;
   using FlattenedSets =
       base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>;
@@ -80,10 +80,10 @@ class FirstPartySetsManager {
   // with the result. The callback will be invoked iff the return value is
   // nullopt; i.e. a result will be provided via return value or callback, but
   // not both, and not neither.
-  [[nodiscard]] absl::optional<OwnersResult> FindOwners(
+  [[nodiscard]] absl::optional<EntriesResult> FindEntries(
       const base::flat_set<net::SchemefulSite>& sites,
       const net::FirstPartySetsContextConfig& fps_context_config,
-      base::OnceCallback<void(OwnersResult)> callback);
+      base::OnceCallback<void(EntriesResult)> callback);
 
  private:
   // Same as `ComputeMetadata`, but plumbs the result into the callback. Must
@@ -125,17 +125,17 @@ class FirstPartySetsManager {
       const net::SchemefulSite& site,
       const net::FirstPartySetsContextConfig& fps_context_config) const;
 
-  // Same as `FindOwners`, but plumbs the result into the callback. Must only be
-  // called once the instance is fully initialized.
-  void FindOwnersAndInvoke(
+  // Same as `FindEntries`, but plumbs the result into the callback. Must only
+  // be called once the instance is fully initialized.
+  void FindEntriesAndInvoke(
       const base::flat_set<net::SchemefulSite>& sites,
       const net::FirstPartySetsContextConfig& fps_context_config,
-      base::OnceCallback<void(OwnersResult)> callback,
+      base::OnceCallback<void(EntriesResult)> callback,
       base::ElapsedTimer timer) const;
 
-  // Synchronous version of `FindOwners`, to be run only once the instance is
+  // Synchronous version of `FindEntries`, to be run only once the instance is
   // initialized.
-  OwnersResult FindOwnersInternal(
+  EntriesResult FindEntriesInternal(
       const base::flat_set<net::SchemefulSite>& sites,
       const net::FirstPartySetsContextConfig& fps_context_config) const;
 

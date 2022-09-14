@@ -48,7 +48,7 @@ CookieAccessDelegate::FirstPartySetifyPartitionKey(
   }
 
   absl::optional<base::flat_map<net::SchemefulSite, FirstPartySetEntry>>
-      maybe_entries = delegate->FindFirstPartySetOwners(
+      maybe_entries = delegate->FindFirstPartySetEntries(
           {cookie_partition_key.site()},
           base::BindOnce(&CreateCookiePartitionKeyFromFirstPartySetEntry,
                          cookie_partition_key)

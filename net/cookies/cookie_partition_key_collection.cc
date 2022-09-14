@@ -82,7 +82,7 @@ CookiePartitionKeyCollection::FirstPartySetify(
   if (sites.empty())
     return *this;
   absl::optional<base::flat_map<SchemefulSite, FirstPartySetEntry>>
-      maybe_sites_to_entries = cookie_access_delegate->FindFirstPartySetOwners(
+      maybe_sites_to_entries = cookie_access_delegate->FindFirstPartySetEntries(
           sites,
           base::BindOnce(&TransformWithFirstPartySetEntries, PartitionKeys())
               .Then(std::move(callback)));

@@ -47,7 +47,7 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
       const std::set<SchemefulSite>& party_context,
       base::OnceCallback<void(FirstPartySetMetadata)> callback) const override;
   absl::optional<base::flat_map<SchemefulSite, FirstPartySetEntry>>
-  FindFirstPartySetOwners(
+  FindFirstPartySetEntries(
       const base::flat_set<SchemefulSite>& sites,
       base::OnceCallback<
           void(base::flat_map<SchemefulSite, FirstPartySetEntry>)> callback)
@@ -67,7 +67,7 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
       bool require_secure_origin);
 
   // Set the test delegate's First-Party Sets. The map's keys are the sites in
-  // the sets. Owner sites must be included among the keys for a given set.
+  // the sets. Primary sites must be included among the keys for a given set.
   void SetFirstPartySets(
       const base::flat_map<SchemefulSite, FirstPartySetEntry>& sets);
 
@@ -76,8 +76,8 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
   }
 
  private:
-  // Synchronous version of FindFirstPartySetOwner, for convenience.
-  absl::optional<FirstPartySetEntry> FindFirstPartySetOwnerSync(
+  // Finds a FirstPartySetEntry for the given site, if one exists.
+  absl::optional<FirstPartySetEntry> FindFirstPartySetEntry(
       const SchemefulSite& site) const;
 
   // Discard any leading dot in the domain string.

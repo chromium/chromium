@@ -72,15 +72,15 @@ CookieAccessDelegateImpl::ComputeFirstPartySetMetadataMaybeAsync(
       site, top_frame_site, party_context, std::move(callback));
 }
 
-absl::optional<FirstPartySetsAccessDelegate::OwnersResult>
-CookieAccessDelegateImpl::FindFirstPartySetOwners(
+absl::optional<FirstPartySetsAccessDelegate::EntriesResult>
+CookieAccessDelegateImpl::FindFirstPartySetEntries(
     const base::flat_set<net::SchemefulSite>& sites,
-    base::OnceCallback<void(FirstPartySetsAccessDelegate::OwnersResult)>
+    base::OnceCallback<void(FirstPartySetsAccessDelegate::EntriesResult)>
         callback) const {
   if (!first_party_sets_access_delegate_)
     return {{}};
-  return first_party_sets_access_delegate_->FindOwners(sites,
-                                                       std::move(callback));
+  return first_party_sets_access_delegate_->FindEntries(sites,
+                                                        std::move(callback));
 }
 
 }  // namespace network

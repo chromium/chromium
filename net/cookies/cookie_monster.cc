@@ -2263,7 +2263,7 @@ bool CookieMonster::DoRecordPeriodicStats() {
       }
     }
     absl::optional<base::flat_map<SchemefulSite, FirstPartySetEntry>>
-        maybe_sets = cookie_access_delegate()->FindFirstPartySetOwners(
+        maybe_sets = cookie_access_delegate()->FindFirstPartySetEntries(
             sites,
             base::BindOnce(&CookieMonster::RecordPeriodicFirstPartySetsStats,
                            weak_ptr_factory_.GetWeakPtr()));

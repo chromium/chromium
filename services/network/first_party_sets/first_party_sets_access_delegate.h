@@ -31,7 +31,7 @@ namespace network {
 class FirstPartySetsAccessDelegate
     : public mojom::FirstPartySetsAccessDelegate {
  public:
-  using OwnersResult = FirstPartySetsManager::OwnersResult;
+  using EntriesResult = FirstPartySetsManager::EntriesResult;
   using FlattenedSets = FirstPartySetsManager::FlattenedSets;
 
   // Construct a FirstPartySetsAccessDelegate that provides customizations
@@ -68,21 +68,16 @@ class FirstPartySetsAccessDelegate
       const std::set<net::SchemefulSite>& party_context,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback);
 
-  // Batched version of `FindOwner`. Returns the mapping of sites to owners for
-  // the given input sites (if an owner exists).
-  //
-  // When FPS is disabled, returns an empty map.
-  // When FPS is enabled, this maps each input site to its owner (if one
-  // exists), and returns the resulting mapping. If a site isn't in a
-  // non-trivial First-Party Set, it is not added to the output map.
+  // Calls FirstPartySetsManager::FindEntries either asynchronously or
+  // synchronously, once initialization is complete.
   //
   // This may return a result synchronously, or asynchronously invoke `callback`
   // with the result. The callback will be invoked iff the return value is
   // nullopt; i.e. a result will be provided via return value or callback, but
   // not both, and not neither.
-  [[nodiscard]] absl::optional<OwnersResult> FindOwners(
+  [[nodiscard]] absl::optional<EntriesResult> FindEntries(
       const base::flat_set<net::SchemefulSite>& sites,
-      base::OnceCallback<void(OwnersResult)> callback);
+      base::OnceCallback<void(EntriesResult)> callback);
 
  private:
   // Same as `ComputeMetadata`, but plumbs the result into the callback. Must
@@ -93,11 +88,11 @@ class FirstPartySetsAccessDelegate
       const std::set<net::SchemefulSite>& party_context,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const;
 
-  // Same as `FindOwners`, but plumbs the result into the callback. Must only be
-  // called once the instance is fully initialized.
-  void FindOwnersAndInvoke(
+  // Same as `FindEntries`, but plumbs the result into the callback. Must only
+  // be called once the instance is fully initialized.
+  void FindEntriesAndInvoke(
       const base::flat_set<net::SchemefulSite>& sites,
-      base::OnceCallback<void(OwnersResult)> callback) const;
+      base::OnceCallback<void(EntriesResult)> callback) const;
 
   // Runs all pending queries. Must not be called until the instance is fully
   // initialized.

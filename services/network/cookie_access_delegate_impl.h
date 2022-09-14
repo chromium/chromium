@@ -62,10 +62,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieAccessDelegateImpl
       const std::set<net::SchemefulSite>& party_context,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback)
       const override;
-  [[nodiscard]] absl::optional<FirstPartySetsAccessDelegate::OwnersResult>
-  FindFirstPartySetOwners(
+  [[nodiscard]] absl::optional<FirstPartySetsAccessDelegate::EntriesResult>
+  FindFirstPartySetEntries(
       const base::flat_set<net::SchemefulSite>& sites,
-      base::OnceCallback<void(FirstPartySetsAccessDelegate::OwnersResult)>
+      base::OnceCallback<void(FirstPartySetsAccessDelegate::EntriesResult)>
           callback) const override;
 
  private:

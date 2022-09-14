@@ -78,7 +78,7 @@ class NET_EXPORT CookieAccessDelegate {
   // not both, and not neither.
   [[nodiscard]] virtual absl::optional<
       base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>>
-  FindFirstPartySetOwners(
+  FindFirstPartySetEntries(
       const base::flat_set<net::SchemefulSite>& sites,
       base::OnceCallback<
           void(base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>)>
