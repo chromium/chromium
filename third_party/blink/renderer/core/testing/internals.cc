@@ -679,11 +679,6 @@ void Internals::ResetToConsistentState(Page* page) {
       ScrollOffset(), mojom::blink::ScrollType::kProgrammatic);
   OverrideUserPreferredLanguagesForTesting(Vector<AtomicString>());
 
-  if (ScrollingCoordinator* scrolling_coordinator =
-          page->GetScrollingCoordinator()) {
-    scrolling_coordinator->Reset(frame);
-  }
-
   KeyboardEventManager::SetCurrentCapsLockState(
       OverrideCapsLockState::kDefault);
 

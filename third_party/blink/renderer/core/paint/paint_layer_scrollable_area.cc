@@ -206,9 +206,6 @@ void PaintLayerScrollableArea::DisposeImpl() {
 
   non_composited_main_thread_scrolling_reasons_ = 0;
 
-  if (ScrollingCoordinator* scrolling_coordinator = GetScrollingCoordinator())
-    scrolling_coordinator->WillDestroyScrollableArea(this);
-
   if (!GetLayoutBox()->DocumentBeingDestroyed()) {
     if (auto* element = DynamicTo<Element>(GetLayoutBox()->GetNode()))
       element->SetSavedLayerScrollOffset(scroll_offset_);

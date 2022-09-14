@@ -31,28 +31,16 @@
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
-namespace cc {
-class ScrollbarLayerBase;
-}  // namespace cc
-
 namespace blink {
+
 class LocalFrame;
 class Page;
 class ScrollableArea;
 
-using MainThreadScrollingReasons = uint32_t;
-using ScrollbarId = uint64_t;
-
-// ScrollingCoordinator is a page-level object that mediates interactions
-// between Blink and the compositor's scroll-related APIs on the composited
-// layer representing the scrollbar.
-//
-// It's responsible for propagating scroll offsets, main-thread scrolling
-// reasons, touch action regions, and non-fast-scrollable regions into the
-// compositor, as well as creating and managing scrollbar layers.
+// ScrollingCoordinator is a page-level object that mediates scroll-related
+// interactions between Blink and the compositor.
 class CORE_EXPORT ScrollingCoordinator final
     : public GarbageCollected<ScrollingCoordinator>,
       public CompositorScrollCallbacks {
@@ -64,8 +52,6 @@ class CORE_EXPORT ScrollingCoordinator final
   void Trace(Visitor*) const;
 
   void WillBeDestroyed();
-
-  void WillDestroyScrollableArea(ScrollableArea*);
 
   // Updates scroll offset in cc scroll tree immediately. We don't wait for
   // a full document lifecycle update to propagate the scroll offset from blink
@@ -94,26 +80,10 @@ class CORE_EXPORT ScrollingCoordinator final
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  // For testing purposes only. This ScrollingCoordinator is reused between
-  // web tests, and must be reset for the results to be valid.
-  void Reset(LocalFrame*);
-
  protected:
   Member<Page> page_;
 
  private:
-  void SetScrollbarLayer(ScrollableArea*,
-                         ScrollbarOrientation,
-                         scoped_refptr<cc::ScrollbarLayerBase>);
-  cc::ScrollbarLayerBase* GetScrollbarLayer(ScrollableArea*,
-                                            ScrollbarOrientation);
-  void RemoveScrollbarLayer(ScrollableArea*, ScrollbarOrientation);
-
-  using ScrollbarMap = HeapHashMap<Member<ScrollableArea>,
-                                   scoped_refptr<cc::ScrollbarLayerBase>>;
-  ScrollbarMap horizontal_scrollbars_;
-  ScrollbarMap vertical_scrollbars_;
-
   base::WeakPtrFactory<ScrollingCoordinator> weak_ptr_factory_{this};
 };
 
