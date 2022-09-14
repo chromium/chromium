@@ -432,6 +432,12 @@ extern const base::Feature kKioskEnableAppService;
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kKAnonymityService;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kKAnonymityServiceOHTTPRequests;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kUpdateHistoryEntryPointsInIncognito;
 
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)

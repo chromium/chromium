@@ -25,17 +25,19 @@ class CONTENT_EXPORT KAnonymityServiceDelegate {
   // JoinSets marks the provided ID as being used by this client. The
   // caller of this function should avoid calling this function repeatedly for
   // the same IDs, as there is no guarantee the implementer deduplicates calls.
-  // The callback is called when the join has completed or failed. A value of
-  // 'true' passed to the callback indicates the join completed successfully.
+  // The callback is called asynchronously when the join has completed or
+  // failed. A value of 'true' passed to the callback indicates the join
+  // completed successfully.
   virtual void JoinSet(std::string id,
                        base::OnceCallback<void(bool)> callback) = 0;
 
-  // QuerySet requests the k-anonymity status of the provided IDs. If the
-  // request is successful, the callback will be passed a vector where `true`
-  // means the ID in the same index of the request is k-anonymous and `false`
-  // means that the ID isn't k-anonymous. In the event of an error, an empty
-  // vector will be passed to the callback. There is no requirement that a user
-  // has joined an ID or has not joined and ID to perform a query on that ID.
+  // QuerySet requests the k-anonymity status of the provided IDs. The callback
+  // will be called asynchronously. If the request is successful, the callback
+  // will be passed a vector where `true` means the ID in the same index of the
+  // request is k-anonymous and `false` means that the ID isn't k-anonymous. In
+  // the event of an error, an empty vector will be passed to the callback.
+  // There is no requirement that a user has joined an ID or has not joined and
+  // ID to perform a query on that ID.
   virtual void QuerySets(
       std::vector<std::string> ids,
       base::OnceCallback<void(std::vector<bool>)> callback) = 0;
