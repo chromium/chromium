@@ -12,7 +12,6 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -398,7 +397,6 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
-  base::WeakPtrFactory<AttributionStorageSql> weak_factory_{this};
 };
 
 }  // namespace content

@@ -1925,11 +1925,10 @@ bool AttributionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
       .exclusive_locking = true, .page_size = 4096, .cache_size = 32});
   db_->set_histogram_tag("Conversions");
 
-  // Supply this callback with a weak_ptr to avoid calling the error callback
-  // after |this| has been deleted.
-  db_->set_error_callback(
-      base::BindRepeating(&AttributionStorageSql::DatabaseErrorCallback,
-                          weak_factory_.GetWeakPtr()));
+  // `base::Unretained()` is safe because the callback will only be called
+  // while the `sql::Database` in `db_` is alive, and this instance owns `db_`.
+  db_->set_error_callback(base::BindRepeating(
+      &AttributionStorageSql::DatabaseErrorCallback, base::Unretained(this)));
 
   if (path_to_database_.value() == kInMemoryPath) {
     if (!db_->OpenInMemory()) {
