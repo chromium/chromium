@@ -8,17 +8,11 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file.h"
-#include "base/files/file_util.h"
-#include "base/files/important_file_writer.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
-#include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/values.h"
 #include "content/browser/first_party_sets/addition_overlaps_union_find.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
@@ -139,12 +133,6 @@ std::vector<SingleSet> NormalizeAdditionSets(
 
 }  // namespace
 
-bool FirstPartySetsHandler::PolicyParsingError::operator==(
-    const FirstPartySetsHandler::PolicyParsingError& other) const {
-  return std::tie(error, set_type, error_index) ==
-         std::tie(other.error, other.set_type, other.error_index);
-}
-
 // static
 FirstPartySetsHandler* FirstPartySetsHandler::GetInstance() {
   return FirstPartySetsHandlerImpl::GetInstance();
@@ -159,14 +147,16 @@ FirstPartySetsHandlerImpl* FirstPartySetsHandlerImpl::GetInstance() {
 }
 
 // static
-absl::optional<FirstPartySetsHandler::PolicyParsingError>
+base::expected<std::vector<FirstPartySetsHandler::ParseWarning>,
+               FirstPartySetsHandler::ParseError>
 FirstPartySetsHandler::ValidateEnterprisePolicy(
     const base::Value::Dict& policy) {
-  base::expected<FirstPartySetParser::ParsedPolicySetLists,
-                 FirstPartySetParser::PolicyParsingError>
-      parsed = FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy);
-  return parsed.has_value() ? absl::nullopt
-                            : absl::make_optional(parsed.error());
+  FirstPartySetParser::PolicyParseResult parsed_or_error =
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy);
+  if (!parsed_or_error.has_value()) {
+    return base::unexpected(parsed_or_error.error());
+  }
+  return parsed_or_error.value().second;
 }
 
 void FirstPartySetsHandlerImpl::GetCustomizationForPolicy(
@@ -460,14 +450,12 @@ FirstPartySetsHandler::PolicyCustomization
 FirstPartySetsHandlerImpl::GetCustomizationForPolicyInternal(
     const base::Value::Dict& policy) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::expected<FirstPartySetParser::ParsedPolicySetLists,
-                 FirstPartySetParser::PolicyParsingError>
-      parsed_policy =
-          FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy);
+  FirstPartySetParser::PolicyParseResult parsed_or_error =
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy);
   // Provide empty customization if the policy is malformed.
-  return parsed_policy.has_value()
+  return parsed_or_error.has_value()
              ? FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
-                   public_sets_.value(), parsed_policy.value())
+                   public_sets_.value(), parsed_or_error.value().first)
              : FirstPartySetsHandlerImpl::PolicyCustomization();
 }
 

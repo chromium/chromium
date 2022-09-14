@@ -11,7 +11,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
-#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
@@ -42,6 +41,12 @@ namespace {
 using PolicyCustomization = FirstPartySetsHandlerImpl::PolicyCustomization;
 using FlattenedSets = FirstPartySetsHandlerImpl::FlattenedSets;
 using SingleSet = FirstPartySetParser::SingleSet;
+using ParseErrorType = FirstPartySetsHandler::ParseErrorType;
+using ParseWarningType = FirstPartySetsHandler::ParseWarningType;
+
+const char* kAdditionsField = "additions";
+const char* kPrimaryField = "primary";
+const char* kCctldsField = "ccTLDs";
 
 MATCHER_P(SerializesTo, want, "") {
   const std::string got = arg.Serialize();
@@ -153,8 +158,46 @@ TEST(FirstPartySetsHandlerImpl, ValidateEnterprisePolicy_ValidPolicy) {
               }
             )")
                           .value();
-  EXPECT_EQ(FirstPartySetsHandler::ValidateEnterprisePolicy(input.GetDict()),
-            absl::nullopt);
+  // Validation doesn't fail with an error and there are no warnings to output.
+  base::expected<std::vector<FirstPartySetsHandler::ParseWarning>,
+                 FirstPartySetsHandler::ParseError>
+      warnings_or_error =
+          FirstPartySetsHandler::ValidateEnterprisePolicy(input.GetDict());
+  EXPECT_TRUE(warnings_or_error.has_value());
+  EXPECT_THAT(warnings_or_error.value(), IsEmpty());
+}
+
+TEST(FirstPartySetsHandlerImpl,
+     ValidateEnterprisePolicy_ValidPolicyWithWarnings) {
+  // Some input that matches our policies schema but returns non-fatal warnings.
+  base::Value input = base::JSONReader::Read(R"(
+              {
+                "replacements": [],
+                "additions": [
+                  {
+                    "primary": "https://primary1.test",
+                    "associatedSites": ["https://associatedsite1.test"],
+                    "ccTLDs": {
+                      "https://non-canonical.test": ["https://primary1.test"]
+                    }
+                  }
+                ]
+              }
+            )")
+                          .value();
+  // Validation succeeds without errors.
+  base::expected<std::vector<FirstPartySetsHandler::ParseWarning>,
+                 FirstPartySetsHandler::ParseError>
+      warnings_or_error =
+          FirstPartySetsHandler::ValidateEnterprisePolicy(input.GetDict());
+  EXPECT_TRUE(warnings_or_error.has_value());
+  // Outputs metadata that can be used to surface a descriptive warning.
+  EXPECT_EQ(warnings_or_error.value(),
+            std::vector<FirstPartySetsHandler::ParseWarning>{
+                FirstPartySetsHandler::ParseWarning(
+                    ParseWarningType::kCctldKeyNotCanonical,
+                    {kAdditionsField, 0, kCctldsField,
+                     "https://non-canonical.test"})});
 }
 
 TEST(FirstPartySetsHandlerImpl, ValidateEnterprisePolicy_InvalidPolicy) {
@@ -177,11 +220,17 @@ TEST(FirstPartySetsHandlerImpl, ValidateEnterprisePolicy_InvalidPolicy) {
               }
             )")
                           .value();
-  FirstPartySetsHandler::PolicyParsingError expected_error{
-      FirstPartySetsHandler::ParseError::kNonDisjointSets,
-      FirstPartySetsHandler::PolicySetType::kAddition, 0};
-  EXPECT_EQ(FirstPartySetsHandler::ValidateEnterprisePolicy(input.GetDict()),
-            expected_error);
+  // Validation fails with an error.
+  base::expected<std::vector<FirstPartySetsHandler::ParseWarning>,
+                 FirstPartySetsHandler::ParseError>
+      warnings_or_error =
+          FirstPartySetsHandler::ValidateEnterprisePolicy(input.GetDict());
+  EXPECT_FALSE(warnings_or_error.has_value());
+  // An appropriate PolicyParseErrorType is returned.
+  EXPECT_EQ(
+      warnings_or_error.error(),
+      FirstPartySetsHandler::ParseError(ParseErrorType::kNonDisjointSets,
+                                        {kAdditionsField, 0, kPrimaryField}));
 }
 
 class FirstPartySetsHandlerImplTest : public ::testing::Test {

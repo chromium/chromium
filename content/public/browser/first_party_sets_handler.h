@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/files/file.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "content/common/content_export.h"
@@ -27,7 +28,7 @@ class BrowserContext;
 // First-Party Sets inputs from custom sources.
 class CONTENT_EXPORT FirstPartySetsHandler {
  public:
-  enum class ParseError {
+  enum class ParseErrorType {
     // The set definition was not the correct data type.
     kInvalidType,
     // A string in the set was not a registrable domain.
@@ -40,18 +41,56 @@ class CONTENT_EXPORT FirstPartySetsHandler {
     kRepeatedDomain,
   };
 
-  enum class PolicySetType { kReplacement, kAddition };
-
-  struct CONTENT_EXPORT PolicyParsingError {
-    bool operator==(const PolicyParsingError& other) const;
-
-    // The kind of error that was found when parsing the policy sets.
-    ParseError error;
-    // The field of the policy that was being parsed when the error was found.
-    PolicySetType set_type;
-    // The index of the set in the 'set_type' list where the error was found.
-    int error_index;
+  enum class ParseWarningType {
+    // The "ccTLDs" map has a key that isn't a canonical site (present in the
+    // set).
+    kCctldKeyNotCanonical,
+    // The "ccTLDs" maps a site that differs from its canonical key beyond just
+    // TLD.
+    kAliasNotCctldVariant,
   };
+
+  // Contains metadata about an <T> issue for later use in outputting
+  // descriptive messages about the issue.
+  template <typename T>
+  class IssueWithMetadata {
+   public:
+    IssueWithMetadata<T>(
+        const T& issue_type,
+        const std::vector<absl::variant<int, std::string>>& issue_path)
+        : issue_type_(issue_type), issue_path_(issue_path) {}
+    ~IssueWithMetadata<T>() = default;
+    IssueWithMetadata<T>(const IssueWithMetadata<T>&) = default;
+
+    bool operator==(const IssueWithMetadata<T>& other) const {
+      return std::tie(issue_type_, issue_path_) ==
+             std::tie(other.issue_type_, other.issue_path_);
+    }
+
+    // Inserts path_prefix at the beginning of the path stored for this issue.
+    void PrependPath(
+        const std::vector<absl::variant<int, std::string>>& path_prefix) {
+      issue_path_.insert(issue_path_.begin(), path_prefix.begin(),
+                         path_prefix.end());
+    }
+
+    // The type of issue that was found when parsing the policy sets.
+    T type() const { return issue_type_; }
+
+    // The path within the policy that was being parsed when the issue was
+    // found. Based on the policy::PolicyErrorPath type defined in
+    // components/policy.
+    std::vector<absl::variant<int, std::string>> path() const {
+      return issue_path_;
+    }
+
+   private:
+    T issue_type_;
+    std::vector<absl::variant<int, std::string>> issue_path_;
+  };
+
+  using ParseError = IssueWithMetadata<ParseErrorType>;
+  using ParseWarning = IssueWithMetadata<ParseWarningType>;
 
   // The keys are member sites and the values are their entries in the final
   // list of First-Party Sets that result from combining the public sets and
@@ -67,15 +106,15 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   static FirstPartySetsHandler* GetInstance();
 
   // Validates the First-Party Sets Overrides enterprise policy in `policy`,
-  // and may return an error containing information about why the policy is
-  // invalid.
+  // and either returns warnings that arise when parsing or returns an error
+  // containing information about why the policy is invalid.
   //
   // This validation only checks that all sets in this policy are valid
   // First-Party Sets and disjoint from each other. It doesn't require
   // disjointness with other sources, such as the public sets, since this policy
   // will be used override First-Party Sets in those sources.
-  static absl::optional<PolicyParsingError> ValidateEnterprisePolicy(
-      const base::Value::Dict& policy);
+  static base::expected<std::vector<ParseWarning>, ParseError>
+  ValidateEnterprisePolicy(const base::Value::Dict& policy);
 
   // Returns whether First-Party Sets is enabled.
   //

@@ -8,7 +8,6 @@
 #include <istream>
 #include <utility>
 
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/types/expected.h"
@@ -28,9 +27,8 @@ class CONTENT_EXPORT FirstPartySetParser {
   using Aliases = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
   using SingleSet = SetsMap;
   using SetsAndAliases = std::pair<SetsMap, Aliases>;
-  using ParseError = FirstPartySetsHandler::ParseError;
-  using PolicySetType = FirstPartySetsHandler::PolicySetType;
-  using PolicyParsingError = FirstPartySetsHandler::PolicyParsingError;
+
+  enum class PolicySetType { kReplacement, kAddition };
 
   struct CONTENT_EXPORT ParsedPolicySetLists {
     ParsedPolicySetLists(std::vector<SingleSet> replacement_list,
@@ -48,6 +46,11 @@ class CONTENT_EXPORT FirstPartySetParser {
     std::vector<SingleSet> replacements;
     std::vector<SingleSet> additions;
   };
+
+  using PolicyParseResult = base::expected<
+      std::pair<ParsedPolicySetLists,
+                std::vector<FirstPartySetsHandler::ParseWarning>>,
+      FirstPartySetsHandler::ParseError>;
 
   FirstPartySetParser() = delete;
   ~FirstPartySetParser() = delete;
@@ -75,10 +78,10 @@ class CONTENT_EXPORT FirstPartySetParser {
   // Parses two lists of First-Party Sets from `policy` using the "replacements"
   // and "additions" list fields if present.
   //
-  // Returns the parsed lists if successful; otherwise, returns a
-  // PolicyParsingError encoding the error and its location.
-  [[nodiscard]] static base::expected<ParsedPolicySetLists, PolicyParsingError>
-  ParseSetsFromEnterprisePolicy(const base::Value::Dict& policy);
+  // Returns the parsed lists and a list of warnings if successful; otherwise,
+  // returns an error.
+  [[nodiscard]] static PolicyParseResult ParseSetsFromEnterprisePolicy(
+      const base::Value::Dict& policy);
 };
 
 }  // namespace content

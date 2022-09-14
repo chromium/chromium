@@ -6,8 +6,6 @@
 
 #include <string>
 
-#include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "components/policy/core/browser/configuration_policy_pref_store_test.h"
@@ -16,8 +14,6 @@
 #include "components/policy/policy_constants.h"
 
 namespace first_party_sets {
-
-namespace {
 
 class FirstPartySetsOverridesPolicyHandlerTest
     : public policy::ConfigurationPolicyPrefStoreTest {
@@ -378,10 +374,10 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
 
   EXPECT_FALSE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
-  EXPECT_EQ(
-      errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
-      u"Error at FirstPartySetsOverrides.replacements[0]: Schema validation "
-      u"error: This set contains an invalid origin.");
+  EXPECT_EQ(errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
+            u"Error at FirstPartySetsOverrides.replacements[0].primary: Schema "
+            u"validation "
+            u"error: This set contains an invalid origin.");
 }
 
 TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
@@ -401,9 +397,11 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
 
   EXPECT_FALSE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
-  EXPECT_EQ(errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
-            u"Error at FirstPartySetsOverrides.additions[0]: Schema validation "
-            u"error: This set contains an invalid origin.");
+  EXPECT_EQ(
+      errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
+      u"Error at FirstPartySetsOverrides.additions[0].associatedSites[1]: "
+      u"Schema validation "
+      u"error: This set contains an invalid origin.");
 }
 
 TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
@@ -424,7 +422,8 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
   EXPECT_FALSE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
   EXPECT_EQ(errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
-            u"Error at FirstPartySetsOverrides.replacements[0]: Schema "
+            u"Error at "
+            u"FirstPartySetsOverrides.replacements[0].associatedSites: Schema "
             u"validation error: This set doesn't contain any sites in its "
             u"associatedSites list.");
 }
@@ -449,10 +448,12 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
 
   EXPECT_FALSE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
-  EXPECT_EQ(errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
-            u"Error at FirstPartySetsOverrides.additions[1]: Schema validation "
-            u"error: This set contains a domain that also exists in another "
-            u"First-Party Set.");
+  EXPECT_EQ(
+      errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
+      u"Error at FirstPartySetsOverrides.additions[1].associatedSites[0]: "
+      u"Schema validation "
+      u"error: This set contains a domain that also exists in another "
+      u"First-Party Set.");
 }
 
 TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
@@ -476,10 +477,12 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
 
   EXPECT_FALSE(
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
-  EXPECT_EQ(errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
-            u"Error at FirstPartySetsOverrides.additions[0]: Schema validation "
-            u"error: This set contains a domain that also exists in another "
-            u"First-Party Set.");
+  EXPECT_EQ(
+      errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
+      u"Error at FirstPartySetsOverrides.additions[0].associatedSites[0]: "
+      u"Schema validation "
+      u"error: This set contains a domain that also exists in another "
+      u"First-Party Set.");
 }
 
 TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
@@ -505,7 +508,8 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
   EXPECT_EQ(
       errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
-      u"Error at FirstPartySetsOverrides.replacements[0]: Schema validation "
+      u"Error at FirstPartySetsOverrides.replacements[0].associatedSites[0]: "
+      u"Schema validation "
       u"error: This set contains more than one occurrence of the same domain.");
 }
 
@@ -532,7 +536,8 @@ TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
       handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
   EXPECT_EQ(
       errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
-      u"Error at FirstPartySetsOverrides.additions[0]: Schema validation "
+      u"Error at FirstPartySetsOverrides.additions[0].associatedSites[0]: "
+      u"Schema validation "
       u"error: This set contains more than one occurrence of the same domain.");
 }
 
@@ -598,6 +603,58 @@ TEST_F(
   EXPECT_TRUE(errors.empty());
 }
 
-}  // namespace
+TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
+       CheckPolicySettings_Handler_WarnsWhenIgnoringNonCanonicalCctldKey) {
+  policy::PolicyErrorMap errors;
+  std::string input = R"(
+              {
+                "replacements": [
+                  {
+                    "primary": "https://primary1.test",
+                    "associatedSites": ["https://associate1.test"],
+                    "ccTLDs": {
+                      "https://not_in_set.test": ["https://primary1.test"]
+                    }
+                  }
+                ],
+                "additions": []
+              }
+            )";
+
+  EXPECT_TRUE(
+      handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
+  EXPECT_EQ(errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
+            u"Error at FirstPartySetsOverrides.replacements[0].ccTLDs.https://"
+            u"not_in_set.test: Schema validation error: This \"ccTLDs\" entry "
+            u"is ignored since this key is not in the set.");
+  EXPECT_FALSE(errors.HasFatalError(policy::key::kFirstPartySetsOverrides));
+}
+
+TEST_F(FirstPartySetsOverridesPolicyHandlerTest,
+       CheckPolicySettings_Handler_WarnsWhenAliasIsntCctldVariant) {
+  policy::PolicyErrorMap errors;
+  std::string input = R"(
+              {
+                "replacements": [
+                  {
+                    "primary": "https://primary1.test",
+                    "associatedSites": ["https://associate1.test"],
+                    "ccTLDs": {
+                      "https://primary1.test": ["https://primary1-diff.cctld"]
+                    }
+                  }
+                ],
+                "additions": []
+              }
+            )";
+
+  EXPECT_TRUE(
+      handler()->CheckPolicySettings(MakePolicyWithInput(input), &errors));
+  EXPECT_EQ(errors.GetErrorMessages(policy::key::kFirstPartySetsOverrides),
+            u"Error at FirstPartySetsOverrides.replacements[0].ccTLDs.https://"
+            u"primary1.test[0]: Schema validation error: This \"ccTLD\" is "
+            u"ignored since it differs from its key by more than eTLD.");
+  EXPECT_FALSE(errors.HasFatalError(policy::key::kFirstPartySetsOverrides));
+}
 
 }  // namespace first_party_sets
