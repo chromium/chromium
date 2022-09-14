@@ -34,10 +34,7 @@ using ::testing::Not;
 //    presence or absence of the above string.
 TEST(LibcppHardeningTest, Assertions) {
   std::vector<int> vec = {0, 1, 2};
-// Windows uses the default handler even for non-debug builds as it lacks
-// support for weak symbols, which are required to override the default
-// assertion handler.
-#if defined NDEBUG && !BUILDFLAG(IS_WIN)
+#ifdef NDEBUG
 // We have to explicitly check for the GTEST_HAS_DEATH_TEST macro instead of
 // using EXPECT_DEATH_IF_SUPPORTED(...) for the following reasons:
 //
@@ -54,10 +51,10 @@ TEST(LibcppHardeningTest, Assertions) {
   EXPECT_DEATH(vec[3], Not(ContainsRegex(".*assertion.*failed:")));
 #else
   GTEST_UNSUPPORTED_DEATH_TEST(vec[3], "", );
-#endif  // GTEST_HAS_DEATH_TEST
+#endif  // GTEST_HAS_DEATH_TEST && !GTEST_OS_LINUX_ANDROID
 #else
   EXPECT_DEATH_IF_SUPPORTED(vec[3], ".*assertion.*failed:");
-#endif  // defined NDEBUG && !BUILDFLAG(IS_WIN)
+#endif  // ifdef NDEBUG
 }
 
 }  // namespace

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <__config>
-#include <__verbose_abort>
 
 #include "base/base_export.h"
 #include "base/immediate_crash.h"
