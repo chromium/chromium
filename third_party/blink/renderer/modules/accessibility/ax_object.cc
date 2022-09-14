@@ -748,7 +748,8 @@ bool AXObject::IsRoot() const {
 }
 
 void AXObject::SetParent(AXObject* new_parent) const {
-#if DCHECK_IS_ON()
+// TODO(crbug.com/1353205): Re-enable DCHECK for all platforms.
+#if DCHECK_IS_ON() && !BUILDFLAG(IS_CHROMEOS_ASH)
   if (!new_parent && !IsRoot()) {
     std::ostringstream message;
     message << "Parent cannot be null, except at the root. "
