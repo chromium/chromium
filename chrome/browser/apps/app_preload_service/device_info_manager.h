@@ -18,7 +18,14 @@ class DeviceInfoManager {
   DeviceInfoManager& operator=(const DeviceInfoManager&) = delete;
   ~DeviceInfoManager();
 
+  // Returns the board family of the device. e.g. brya.
   std::string GetBoard() const;
+
+  // Returns the Chrome browser version of the device. e.g. (107.0.5296.0)
+  std::string GetChromeVersion() const;
+
+  // Returns the ChromeOS platform version of the device. e.g. (15088.0.0)
+  std::string GetChromeOsPlatformVersion() const;
 };
 
 std::ostream& operator<<(std::ostream& os,

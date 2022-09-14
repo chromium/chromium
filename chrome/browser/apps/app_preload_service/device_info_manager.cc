@@ -5,6 +5,8 @@
 #include "chrome/browser/apps/app_preload_service/device_info_manager.h"
 
 #include "base/system/sys_info.h"
+#include "chromeos/version/version_loader.h"
+#include "components/version_info/version_info.h"
 
 namespace apps {
 
@@ -16,10 +18,23 @@ std::string DeviceInfoManager::GetBoard() const {
   return base::SysInfo::HardwareModelName();
 }
 
+std::string DeviceInfoManager::GetChromeVersion() const {
+  return version_info::GetVersionNumber();
+}
+
+std::string DeviceInfoManager::GetChromeOsPlatformVersion() const {
+  return chromeos::version_loader::GetVersion(
+      chromeos::version_loader::VERSION_SHORT);
+}
+
 std::ostream& operator<<(std::ostream& os,
                          const DeviceInfoManager& device_info_manager) {
   os << "Device info Manager:" << std::endl;
-  os << "- Board: " << device_info_manager.GetBoard();
+  os << "- Board: " << device_info_manager.GetBoard() << std::endl;
+  os << "- Ash Chrome Version: " << device_info_manager.GetChromeVersion()
+     << std::endl;
+  os << "- Platform: " << device_info_manager.GetChromeOsPlatformVersion()
+     << std::endl;
   return os;
 }
 
