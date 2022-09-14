@@ -2169,6 +2169,10 @@ StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
 
   Vector<String> backing_strings;
   backing_strings.push_back(text);
+  // CSSTokenizer may allocate new strings for some tokens (e.g. for escapes)
+  // and produce tokens that point to those strings. We need to retain those
+  // strings (if any) as well.
+  backing_strings.AppendVector(tokenizer.StringPool());
 
   const bool has_font_units = false;
   const bool has_root_font_units = false;
