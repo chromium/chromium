@@ -117,6 +117,7 @@ bool IsFromUserInteraction(FeedbackSource source) {
     case kFeedbackSourceMdSettingsAboutPage:
     case kFeedbackSourceOldSettingsAboutPage:
     case kFeedbackSourceQuickAnswers:
+    case kFeedbackSourceSettingsPerformancePage:
       return true;
     default:
       return false;

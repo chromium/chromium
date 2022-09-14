@@ -738,8 +738,19 @@ void AddImportDataStrings(content::WebUIDataSource* html_source) {
 void AddPerformanceStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"performancePageTitle", IDS_SETTINGS_PERFORMANCE_PAGE_TITLE},
+      {"highEfficiencyModeLabel",
+       IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddString(
+      "highEfficiencyModeDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING_DESCRIPTION,
+          base::UTF8ToUTF16(chrome::kHighEfficiencyModeLearnMoreUrl)));
+
+  html_source->AddString("highEfficiencyLearnMoreUrl",
+                         chrome::kHighEfficiencyModeLearnMoreUrl);
 }
 
 void AddLanguagesStrings(content::WebUIDataSource* html_source,

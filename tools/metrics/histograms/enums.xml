@@ -41694,6 +41694,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="23" label="Desks Templates"/>
   <int value="24" label="Files App"/>
   <int value="25" label="Channel Indicator"/>
+  <int value="26" label="Settings Performance Page"/>
 </enum>
 
 <enum name="FeedContentOrder">

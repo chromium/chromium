@@ -14,10 +14,7 @@ import '../settings_shared.css.js';
 
 import {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// <if expr="chromeos_ash">
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-
-// </if>
 
 import {SettingsBooleanControlMixin} from './settings_boolean_control_mixin.js';
 import {getTemplate} from './settings_toggle_button.html.js';
@@ -62,12 +59,12 @@ export class SettingsToggleButtonElement extends
         reflectToAttribute: true,
       },
 
-      // <if expr="chromeos_ash">
       subLabelWithLink: {
         type: String,
         reflectToAttribute: true,
       },
 
+      // <if expr="chromeos_ash">
       icon: String,
       // </if>
 
@@ -90,9 +87,7 @@ export class SettingsToggleButtonElement extends
 
   learnMoreUrl: string;
 
-  // <if expr="chromeos_ash">
   subLabelWithLink: string;
-  // </if>
 
   subLabelIcon: string;
 
@@ -102,9 +97,9 @@ export class SettingsToggleButtonElement extends
     this.addEventListener('click', this.onHostTap_);
   }
 
-  private fire_(eventName: string) {
+  private fire_(eventName: string, detail?: any) {
     this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true}));
+        new CustomEvent(eventName, {detail, bubbles: true, composed: true}));
   }
 
   override focus() {
@@ -150,7 +145,6 @@ export class SettingsToggleButtonElement extends
     this.fire_('learn-more-clicked');
   }
 
-  // <if expr="chromeos_ash">
   /**
    * Set up the contents of sub label with link.
    */
@@ -161,13 +155,13 @@ export class SettingsToggleButtonElement extends
   }
 
   private onSubLabelTextWithLinkClick_(e: Event) {
-    if ((e.target as HTMLElement).tagName === 'A') {
-      this.fire_('sub-label-link-clicked');
+    const target = e.target as HTMLElement;
+    if (target.tagName === 'A') {
+      this.fire_('sub-label-link-clicked', target.id);
       e.preventDefault();
       e.stopPropagation();
     }
   }
-  // </if>
 
   private onChange_(e: CustomEvent<boolean>) {
     this.checked = e.detail;

@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/webui/settings/metrics_reporting_handler.h"
 #include "chrome/browser/ui/webui/settings/on_startup_handler.h"
 #include "chrome/browser/ui/webui/settings/people_handler.h"
+#include "chrome/browser/ui/webui/settings/performance_handler.h"
 #include "chrome/browser/ui/webui/settings/privacy_sandbox_handler.h"
 #include "chrome/browser/ui/webui/settings/profile_info_handler.h"
 #include "chrome/browser/ui/webui/settings/protocol_handlers_handler.h"
@@ -427,6 +428,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(features::kSafetyCheckPermissions));
 
   // Performance
+  AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());
   html_source->AddBoolean(
       "highEfficiencyModeAvailable",
       base::FeatureList::IsEnabled(

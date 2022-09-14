@@ -1393,6 +1393,9 @@
   <message name="IDS_SETTINGS_PERFORMANCE_PAGE_TITLE" desc="Title of the performance page">
     Performance
   </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING" desc="High efficiency mode setting label">
+    Memory Saver
+  </message>
 
   <!-- Languages Page -->
   <message name="IDS_SETTINGS_LANGUAGES_PAGE_TITLE" desc="Name of the settings page which displays language preferences.">

@@ -42,6 +42,7 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/payments/core/payment_prefs.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
@@ -921,6 +922,11 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[::prefs::kSwReporterReportingEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 #endif
+
+  // Performance settings.
+  (*s_allowlist)
+      [performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled] =
+          settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
   return *s_allowlist;
 }

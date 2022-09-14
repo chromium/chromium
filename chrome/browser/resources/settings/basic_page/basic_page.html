@@ -146,6 +146,15 @@
               </settings-section>
             </template>
 </if>
+            <template is="dom-if"
+                if="[[showPerformancePage_(pageVisibility.performance)]]"
+                restamp>
+              <settings-section page-title="$i18n{performancePageTitle}"
+                  section="performance" id="performanceSettingsSection">
+                <settings-performance-page prefs="{{prefs}}">
+                </settings-performance-page>
+              </settings-section>
+            </template>
             <template is="dom-if" if="[[showPage_(pageVisibility.downloads)]]"
                 restamp>
               <settings-section page-title="$i18n{downloadsPageTitle}"

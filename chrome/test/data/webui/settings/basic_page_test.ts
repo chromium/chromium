@@ -9,6 +9,7 @@ import 'chrome://settings/settings.js';
 import 'chrome://settings/lazy_load.js';
 
 import {isChromeOS, isLacros, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrSettingsPrefs, MetricsBrowserProxyImpl, pageVisibility, PrivacyGuideBrowserProxy, PrivacyGuideBrowserProxyImpl, PrivacyGuideInteractions, Router, routes, SettingsBasicPageElement, SettingsIdleLoadElement, SettingsPrefsElement, SettingsSectionElement, StatusAction, SyncStatus} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -103,15 +104,24 @@ suite('SettingsBasicPage', () => {
   });
 
   test('safetyCheckVisibilityTest', function() {
+    function querySafetyCheckSection() {
+      return page.shadowRoot!.querySelector('#safetyCheckSettingsSection');
+    }
+
+    // Set the visibility of the pages under test to their default value.
+    page.pageVisibility = pageVisibility;
+    flush();
+
+    assertTrue(
+        !!querySafetyCheckSection(),
+        'Safety check section should be visible with default page visibility');
     // Set the visibility of the pages under test to "false".
     page.pageVisibility = Object.assign(pageVisibility || {}, {
       safetyCheck: false,
     });
     flush();
 
-    const sectionElement =
-        page.shadowRoot!.querySelector('settings-section-safety-check');
-    assertFalse(!!sectionElement);
+    assertFalse(!!querySafetyCheckSection());
   });
 
   function assertActiveSection(section: string) {
@@ -402,5 +412,73 @@ suite('PrivacyGuidePromo', () => {
     const result = await testMetricsBrowserProxy.whenCalled(
         'recordPrivacyGuideEntryExitHistogram');
     assertEquals(result, PrivacyGuideInteractions.PROMO_ENTRY);
+  });
+});
+
+suite('SettingsBasicPagePerformance', () => {
+  let page: SettingsBasicPageElement;
+  function queryPerformanceSettingsSection() {
+    return page.shadowRoot!.querySelector('#performanceSettingsSection');
+  }
+
+  async function createNewBasicPage() {
+    document.body.innerHTML = '';
+    page = document.createElement('settings-basic-page');
+    document.body.appendChild(page);
+    flush();
+    await page.shadowRoot!
+        .querySelector<SettingsIdleLoadElement>('#advancedPageTemplate')!.get();
+    const sections = page.shadowRoot!.querySelectorAll('settings-section');
+    assertTrue(sections.length > 1);
+  }
+
+  test('performanceVisibilityTestFeaturesNotAvailable', async function() {
+    loadTimeData.overrideValues({
+      highEfficiencyModeAvailable: false,
+    });
+    await createNewBasicPage();
+    // Set the visibility of the pages under test to their default value.
+    page.pageVisibility = pageVisibility;
+    flush();
+
+    assertFalse(
+        !!queryPerformanceSettingsSection(),
+        'Performance section should not be visible with default page ' +
+            'visibility if feature flags are off');
+
+    // Set the visibility of the pages under test to "false".
+    page.pageVisibility = Object.assign(pageVisibility || {}, {
+      performance: false,
+    });
+    flush();
+
+    assertFalse(
+        !!queryPerformanceSettingsSection(),
+        'Performance section should not be visible when visibility is false');
+  });
+
+  test('performanceVisibilityTestFeaturesAvailable', async function() {
+    loadTimeData.overrideValues({
+      highEfficiencyModeAvailable: true,
+    });
+    await createNewBasicPage();
+    // Set the visibility of the pages under test to their default value.
+    page.pageVisibility = pageVisibility;
+    flush();
+
+    assertTrue(
+        !!queryPerformanceSettingsSection(),
+        'Performance section should be visible with default page visibility ' +
+            'if feature flags are on');
+
+    // Set the visibility of the pages under test to "false".
+    page.pageVisibility = Object.assign(pageVisibility || {}, {
+      performance: false,
+    });
+    flush();
+
+    assertFalse(
+        !!queryPerformanceSettingsSection(),
+        'Performance section should not be visible when visibility is false');
   });
 });

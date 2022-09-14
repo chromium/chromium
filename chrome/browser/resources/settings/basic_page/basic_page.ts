@@ -19,6 +19,7 @@ import '../controls/settings_idle_load.js';
 import '../on_startup_page/on_startup_page.js';
 import '../people_page/people_page.js';
 import '../reset_page/reset_profile_banner.js';
+import '../performance_page/performance_page.js';
 import '../search_page/search_page.js';
 import '../settings_page/settings_section.js';
 import '../settings_page_styles.css.js';
@@ -401,6 +402,11 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
 
   private showAdvancedSettings_(visibility?: boolean): boolean {
     return visibility !== false;
+  }
+
+  private showPerformancePage_(visibility?: boolean): boolean {
+    return visibility !== false &&
+        loadTimeData.getBoolean('highEfficiencyModeAvailable');
   }
 }
 

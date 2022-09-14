@@ -181,6 +181,9 @@ extern const char kGooglePasswordManagerURL[];
 // URL of the Google Photos.
 extern const char kGooglePhotosURL[];
 
+// The URL for the "Learn more" link for the High Efficiency Mode.
+extern const char kHighEfficiencyModeLearnMoreUrl[];
+
 // The URL for the "Learn more" page for the usage/crash reporting option in the
 // first run dialog.
 extern const char kLearnMoreReportingURL[];

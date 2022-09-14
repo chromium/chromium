@@ -276,6 +276,11 @@
     Google Assistant in Chromium can complete actions across websites for you
   </message>
 
+  <!-- Performance Page -->
+  <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING_DESCRIPTION" desc="Description for the high efficiency mode setting">
+    When on, Chromium reclaims memory from tabs you aren't actively using. This frees up your computer's resources for other tasks and keeps Chromium speedy. Inactive tabs appear empty and automatically reload when you click them. <ph name="BEGIN_LINK">&lt;a id="highEfficiencyLearnMore" target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph> or <ph name="BEGIN_LINK_2">&lt;a id="highEfficiencySendFeedback" href="#"&gt;</ph>send feedback<ph name="END_LINK_2">&lt;/a&gt;</ph>
+  </message>
+
   <!-- Languages Page -->
   <if expr="is_win">
     <message name="IDS_SETTINGS_LANGUAGES_IS_DISPLAYED_IN_THIS_LANGUAGE" desc="The label for a language that is currently used as the UI display language.">

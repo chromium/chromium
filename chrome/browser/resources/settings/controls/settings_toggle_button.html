@@ -74,14 +74,12 @@
           $i18n{learnMore}
         </a>
       </template>
-<if expr="chromeos_ash">
       <template is="dom-if" if="[[subLabelWithLink]]">
         <div id="sub-label-text-with-link" aria-hidden="true"
             inner-h-t-m-l="[[getSubLabelWithLinkContent_(subLabelWithLink)]]"
             on-click="onSubLabelTextWithLinkClick_">
         </div>
       </template>
-</if>
     </div>
   </div>
   <slot name="more-actions"></slot>
