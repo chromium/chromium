@@ -416,7 +416,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Emmc.LifeUsed" enum="EmmcLifeUsed"
-    expires_after="2023-02-12">
+    expires_after="2023-09-12">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
@@ -428,7 +428,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FileSystem.ErrorCount" units="errors"
-    expires_after="2022-10-01">
+    expires_after="2023-09-01">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
@@ -438,7 +438,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FileSystem.FsckNeeded" enum="Boolean"
-    expires_after="2022-10-01">
+    expires_after="2023-09-01">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
@@ -449,7 +449,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FileSystem.RecoveryNeeded" enum="Boolean"
-    expires_after="2022-10-01">
+    expires_after="2023-09-01">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
@@ -1112,7 +1112,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.ReadSectorsLong" units="sectors per second"
-    expires_after="2022-10-01">
+    expires_after="2023-09-01">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
@@ -1122,7 +1122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.ReadSectorsShort" units="sectors per second"
-    expires_after="2022-12-04">
+    expires_after="2023-09-04">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
@@ -1132,7 +1132,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.SATA.AvailableReservedSpace" units="%"
-    expires_after="2022-10-21">
+    expires_after="2023-09-08">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
@@ -1143,7 +1143,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.SATA.LogicalSectorsRead" units="512-byte sectors"
-    expires_after="2022-10-21">
+    expires_after="2023-09-08">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
@@ -1154,7 +1154,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.SATA.LogicalSectorsWritten" units="512-byte sectors"
-    expires_after="2022-10-21">
+    expires_after="2023-09-08">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
@@ -1165,7 +1165,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.SATA.PercentageUsed" units="%"
-    expires_after="2023-02-26">
+    expires_after="2023-09-08">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
@@ -1178,14 +1178,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.SmartTransferErrors" units="units"
-    expires_after="2030-07-08">
+    expires_after="2023-09-08">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>Disk communication errors (SMART 199), sent at boot.</summary>
 </histogram>
 
 <histogram name="Platform.SmartUncorrectableErrors" units="units"
-    expires_after="2030-07-08">
+    expires_after="2023-09-08">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>Uncorrectable disk errors (SMART 187), sent at boot.</summary>
@@ -1208,7 +1208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.StatefulFormat" enum="StatefulFormat"
-    expires_after="2023-02-26">
+    expires_after="2023-09-25">
   <owner>sarthakkukreti@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
@@ -1216,7 +1216,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.StatefulFreeSpace" units="MB"
-    expires_after="2022-10-21">
+    expires_after="2023-09-21">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
@@ -1270,7 +1270,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.StatefulUsedSpace" units="GB"
-    expires_after="2030-08-29">
+    expires_after="2023-09-29">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
@@ -1301,7 +1301,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Storage.Nvme.PercentageUsed" units="%"
-    expires_after="2023-02-26">
+    expires_after="2023-09-25">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
@@ -1315,7 +1315,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Storage.Ufs.LifeUsed" enum="EmmcLifeUsed"
-    expires_after="2022-10-21">
+    expires_after="2023-09-21">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
