@@ -9,6 +9,8 @@ body {
   --focused-details-button-border: rgba(26, 115, 232, 0.4);
   --header-color: var(--google-gray-900);
   --paragraph-color: var(--google-gray-700);
+  --callout-text-color: var(--google-gray-900);
+  --callout-bg-color: var(--google-gray-100);
   font-family: "Roboto", sans-serif;
   padding: 24px 24px 20px 24px;
 }
@@ -270,7 +272,7 @@ picture {
 
 .interstitial-refresh-enabled #block-reason {
   align-items: center;
-  background-color: var(--google-gray-100);
+  background-color: var(--callout-bg-color);
   border-radius: 8px;
   color: var(--header-color);
   display: flex;
@@ -288,6 +290,7 @@ picture {
 }
 
 .interstitial-refresh-enabled #block-reason-message {
+  color: var(--callout-text-color);
   font-weight: 400;
   font-size: 14px;
   line-height: 20px;
@@ -322,6 +325,8 @@ button:focus-visible {
   body.supervised-user-block.interstitial-refresh-enabled {
     --header-color: #e9eaed;
     --paragraph-color: var(--google-gray-500);
+    --callout-bg-color: var(--google-gray-800);
+    --callout-text-color: var(--google-gray-200);
   }
 
   .interstitial-refresh-enabled .remote-approvals-button {

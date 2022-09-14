@@ -27,7 +27,13 @@
         src="error_page_illustration_light_theme.svg">
     </picture>
     <div id="block-reason">
-      <img id="blocked-icon" src="blocked_icon.svg">
+      <picture id="blocked-icon">
+        <source
+          srcset="blocked_icon_dark_theme.svg"
+          media="(prefers-color-scheme: dark)">
+        <img id="illustration"
+          src="blocked_icon_light_theme.svg">
+      </picture>
       <div>
         <h2 id="block-reason-header">$i18n{siteBlockHeader}</h2>
         <p id="block-reason-message">$i18n{blockReasonMessage}</p>
