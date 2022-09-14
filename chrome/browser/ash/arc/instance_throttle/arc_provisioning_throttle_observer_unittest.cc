@@ -79,6 +79,7 @@ class ArcProvisioningThrottleObserverTest : public testing::Test {
   }
 
   void StartArc(bool accept_tos) {
+    session_manager()->AllowActivation();
     session_manager()->RequestEnable();
     if (accept_tos) {
       session_manager()->EmulateRequirementCheckCompletionForTesting();

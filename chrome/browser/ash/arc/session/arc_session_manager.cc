@@ -813,6 +813,7 @@ void ArcSessionManager::ShutdownSession() {
       VLOG(1) << "Skipping session shutdown because state is: " << state_;
       break;
     case State::CHECKING_REQUIREMENTS:
+    case State::READY:
       // We need to kill the mini-container that might be running here.
       arc_session_runner_->RequestStop();
       // While RequestStop is asynchronous, ArcSessionManager is agnostic to the
@@ -917,6 +918,14 @@ void ArcSessionManager::RequestEnable() {
   skipped_terms_of_service_negotiation_ = RequestEnableImpl();
 }
 
+void ArcSessionManager::AllowActivation() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  activation_is_allowed_ = true;
+  if (state_ == State::READY)
+    StartArcForRegularBoot();
+}
+
 bool ArcSessionManager::IsPlaystoreLaunchRequestedForTesting() const {
   return playstore_launcher_.get();
 }
@@ -1007,9 +1016,11 @@ bool ArcSessionManager::RequestEnableImpl() {
   // In Public Session mode ARC should be started silently without user
   // interaction. If opt-in verification is disabled, skip negotiation, too.
   // This is for testing purpose.
+  const bool should_start_arc_without_user_interaction =
+      ShouldArcAlwaysStart() || IsRobotOrOfflineDemoAccountMode() ||
+      IsArcOptInVerificationDisabled();
   const bool skip_terms_of_service_negotiation =
-      signed_in || ShouldArcAlwaysStart() ||
-      IsRobotOrOfflineDemoAccountMode() || IsArcOptInVerificationDisabled();
+      signed_in || should_start_arc_without_user_interaction;
   // When ARC is blocked because of filesystem compatibility, do not proceed
   // to starting ARC nor follow further state transitions.
   if (IsArcBlockedDueToIncompatibleFileSystem(profile_)) {
@@ -1048,17 +1059,15 @@ bool ArcSessionManager::RequestEnableImpl() {
         profile_, profile_->GetPrefs());
   }
 
+  if (should_start_arc_without_user_interaction)
+    AllowActivation();
+
   if (skip_terms_of_service_negotiation) {
-    StartArc();
-    // Check Android management in parallel.
-    // Note: StartBackgroundRequirementManagementChecks() may call
-    // OnBackgroundRequirementChecksDone() synchronously (or asynchronously). In
-    // the callback, Google Play Store enabled preference can be set to false if
-    // Android management is enabled, and it triggers RequestDisable() via
-    // ArcPlayStoreEnabledPreferenceHandler.
-    // Thus, StartArc() should be called so that disabling should work even
-    // if synchronous call case.
-    StartBackgroundRequirementChecks();
+    state_ = State::READY;
+    if (activation_is_allowed_)
+      StartArcForRegularBoot();
+    else
+      VLOG(1) << "Activation is not allowed yet. Not starting ARC for now.";
     return true;
   }
 
@@ -1272,7 +1281,8 @@ void ArcSessionManager::OnBackgroundRequirementChecksDone(
 
 void ArcSessionManager::StartArc() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(state_ == State::STOPPED || state_ == State::CHECKING_REQUIREMENTS)
+  DCHECK(state_ == State::STOPPED || state_ == State::CHECKING_REQUIREMENTS ||
+         state_ == State::READY)
       << state_;
   state_ = State::ACTIVE;
 
@@ -1331,6 +1341,24 @@ void ArcSessionManager::StartArc() {
       profile_->GetProfilePolicyConnector()->IsManaged();
 
   arc_session_runner_->RequestUpgrade(std::move(params));
+}
+
+void ArcSessionManager::StartArcForRegularBoot() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_EQ(state_, State::READY);
+  DCHECK(activation_is_allowed_);
+
+  VLOG(1) << "Starting ARC for a regular boot.";
+  StartArc();
+  // Check Android management in parallel.
+  // Note: StartBackgroundRequirementManagementChecks() may call
+  // OnBackgroundRequirementChecksDone() synchronously (or asynchronously). In
+  // the callback, Google Play Store enabled preference can be set to false if
+  // Android management is enabled, and it triggers RequestDisable() via
+  // ArcPlayStoreEnabledPreferenceHandler.
+  // Thus, StartArc() should be called so that disabling should work even
+  // if synchronous call case.
+  StartBackgroundRequirementChecks();
 }
 
 void ArcSessionManager::RequestStopOnLowDiskSpace() {
@@ -1641,6 +1669,7 @@ std::ostream& operator<<(std::ostream& os,
     MAP_STATE(STOPPED);
     MAP_STATE(CHECKING_REQUIREMENTS);
     MAP_STATE(REMOVING_DATA_DIR);
+    MAP_STATE(READY);
     MAP_STATE(ACTIVE);
     MAP_STATE(STOPPING);
   }

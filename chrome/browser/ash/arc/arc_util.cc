@@ -144,6 +144,7 @@ bool IsUnaffiliatedArcAllowed() {
         break;
       case ArcSessionManager::State::CHECKING_REQUIREMENTS:
       case ArcSessionManager::State::REMOVING_DATA_DIR:
+      case ArcSessionManager::State::READY:
       case ArcSessionManager::State::ACTIVE:
       case ArcSessionManager::State::STOPPING:
         // Never forbid unaffiliated ARC while ARC is running
@@ -384,10 +385,12 @@ bool SetArcPlayStoreEnabledForProfile(Profile* profile, bool enabled) {
     // |arc_session_manager| can be nullptr in unit_tests.
     if (!arc_session_manager)
       return false;
-    if (enabled)
+    if (enabled) {
+      arc_session_manager->AllowActivation();
       arc_session_manager->RequestEnable();
-    else
+    } else {
       arc_session_manager->RequestDisableWithArcDataRemoval();
+    }
 
     return true;
   }
