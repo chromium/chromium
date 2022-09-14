@@ -17074,6 +17074,26 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="5" label="From external"/>
 </enum>
 
+<enum name="ClientSafeBrowsingReportType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="URL phishing"/>
+  <int value="2" label="URL malware"/>
+  <int value="3" label="URL unwanted"/>
+  <int value="4" label="URL client side phishing"/>
+  <int value="5" label="URL client side malware"/>
+  <int value="6" label="dangerous download recovery"/>
+  <int value="7" label="dangerous download warning"/>
+  <int value="10" label="dangerous download by API"/>
+  <int value="12" label="URL password protection phishing"/>
+  <int value="13" label="dangerous download opened"/>
+  <int value="14" label="Ad sample"/>
+  <int value="15" label="URL suspicious"/>
+  <int value="16" label="URL billing"/>
+  <int value="17" label="APK download"/>
+  <int value="19" label="Blocked Ad redirect"/>
+  <int value="20" label="Blocked Ad popup"/>
+</enum>
+
 <enum name="ClientSidePhishingResult">
   <summary>
     Enumerates the possible results from the client side phishing detector.

@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
@@ -176,6 +177,9 @@ PingManager::ReportThreatDetailsResult PingManager::ReportThreatDetails(
     ReportThreatDetailsOnGotAccessToken(serialized_report, empty_access_token);
   }
 
+  base::UmaHistogramExactLinear(
+      "SafeBrowsing.ClientSafeBrowsingReport.ReportType", report->type(),
+      ClientSafeBrowsingReportRequest::ReportType_MAX + 1);
   // The following is to log this ClientSafeBrowsingReportRequest on any open
   // chrome://safe-browsing pages.
   ui_task_runner_->PostTask(
